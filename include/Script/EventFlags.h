@@ -1,0 +1,70 @@
+#ifndef GITEN_SCRIPT_EVENTFLAGS_H
+#define GITEN_SCRIPT_EVENTFLAGS_H
+
+#include <rva.h>
+
+#include <Ints.h>
+
+#include <stdio.h>
+
+// One 256-bit bank of the saved event flags. Bank 15 doubles as a settings
+// record.
+// @identity-TODO: the owners of bank 15's packed word and five-byte tag are
+// unrecovered.
+typedef union FlagBank {
+    u8 bits[32];
+    u32 words[8];
+    struct {
+        u32 packed;
+        u8 tag[5];
+    } sys;
+} FlagBank;
+
+// The event-flag banks, saved and loaded as one 512-byte block.
+extern FlagBank g_eventFlags[16];
+
+i16 CheckFlagWord(u16* condition);
+i16 MatchFlagWord(u16* condition);
+
+void SetFlagBank(i16 bank);
+void ClearFlagBank(i16 bank);
+i32 ChangeEventFlag(u16 bank, u16 index, i16 op);
+i32 ClearEventFlag(u16 bank, u16 index);
+i32 SetEventFlag(u16 bank, u16 index);
+i32 ToggleEventFlag(u16 bank, u16 index);
+i32 IsEventFlagSet(u16 bank, u16 index);
+i32 ModifyEventFlag(u16 bank, u16 index, i16 op);
+i32 TestEventFlag(u16 bank, u16 index);
+u32 GetFlagSettings(void);
+void SetFlagSettings(u32 packed);
+
+void OpModifyEventFlagByValue(void);
+
+void OpTestEventFlagByValue(void);
+
+// Store a value into script variable N (g_scriptVars[N]).
+RVA_DECL(0x000395d0)
+void OpStoreScriptVar(void);
+
+// Load script variable N into a script register.
+RVA_DECL(0x000395f0)
+void OpLoadScriptVar(void);
+
+void OpModifyEventFlag(void);
+
+void OpTestEventFlag(void);
+
+// The save-file sections of the flag banks and script variables.
+i16 ReadEventFlags(FILE* fp);
+i16 WriteEventFlags(FILE* fp);
+i16 ReadScriptVars(FILE* fp);
+i16 WriteScriptVars(FILE* fp);
+
+// Whether event flag bank/index matches (a script block entry's condition).
+i16 MatchEventFlag(u16 bank, u16 index);
+i16 ReadAndMatchEventFlag(void);
+i16 ReadFlagOperand(u16* bank, u16* index);
+
+void ResetEventFlags(void);
+
+#endif // GITEN_SCRIPT_EVENTFLAGS_H

@@ -1,0 +1,13 @@
+# The data-matching switch (docs/build-system.md, "Data matching").
+#
+# true   strict: every referenced datum needs a provided identity, relocation
+#        targets are scored by name and addend, the data-placement gates fail.
+# false  relaxed: data relocation targets are not scored, unprovided identities
+#        and placeholder externs are counted worklists, the data-placement
+#        gates report without failing.
+#
+# Flipping it changes what scores mean: rebase the ledger afterwards with
+# `giten verify bank --rebase-data-matching`.
+
+[compare]
+data_matching = false

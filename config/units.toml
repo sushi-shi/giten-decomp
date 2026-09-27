@@ -1,0 +1,755 @@
+# units.toml - the per-translation-unit build manifest (single source of truth).
+#
+# PURE DATA - no prose. The compile-flag evidence lives in docs/compiler-flags.md;
+# this file is machine-edited in bulk, so comments here both rot and get eaten by
+# sweeps.
+#
+# [build]  global toolchain config, passed through to the objdiff scratch block.
+# [flags]  named profiles; every [[unit]] picks one by name. A profile is the FULL
+#          flag set - there are no per-unit bolt-ons (`extra` is rejected).
+#            c         the game's C: /Ox /ML (no /Gf pooling, no /Gy; static LIBC.LIB).
+#            cpp       C++ in the Windows platform layer: /Ox /Ob0 /Zp1 /ML /GX (no RTTI).
+#            cpp-noeh  C++ without /GX, for a TU with zero EH frames.
+# [[unit]] unit (stem; must match symbol_names.csv's unit column), source, flags.
+#
+# Add a TU: add an [[unit]] block, then `giten build` (the generator edge re-emits
+# build.ninja).
+
+[build]
+compiler = "msvc5.0"
+platform = "win32"
+
+[flags]
+c        = ["/nologo", "/c", "/Ox", "/Zp1", "/ML"]
+cpp      = ["/nologo", "/c", "/Ox", "/Ob0", "/Zp1", "/ML", "/GX"]
+cpp-noeh = ["/nologo", "/c", "/Ox", "/Ob0", "/Zp1", "/ML"]
+
+[[unit]]
+unit = "range"
+source = "src/Util/range.c"
+flags = "c"
+
+[[unit]]
+unit = "compare"
+source = "src/Util/compare.c"
+flags = "c"
+
+[[unit]]
+unit = "level"
+source = "src/Util/level.c"
+flags = "c"
+
+[[unit]]
+unit = "nibble"
+source = "src/Util/nibble.c"
+flags = "c"
+
+[[unit]]
+unit = "scripttext"
+source = "src/Script/scripttext.c"
+flags = "c"
+
+[[unit]]
+unit = "recordcache"
+source = "src/Script/recordcache.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptop"
+source = "src/Script/scriptop.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptvm"
+source = "src/Script/scriptvm.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptsprite"
+source = "src/Script/scriptsprite.c"
+flags = "c"
+
+[[unit]]
+unit = "fieldview"
+source = "src/Game/fieldview.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptflow"
+source = "src/Script/scriptflow.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptctx"
+source = "src/Script/scriptctx.c"
+flags = "c"
+
+[[unit]]
+unit = "eventflags"
+source = "src/Script/eventflags.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptcmd"
+source = "src/Script/scriptcmd.c"
+flags = "c"
+
+[[unit]]
+unit = "textstate"
+source = "src/Script/textstate.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptactor"
+source = "src/Script/scriptactor.c"
+flags = "c"
+
+[[unit]]
+unit = "datafile"
+source = "src/File/datafile.c"
+flags = "c"
+
+[[unit]]
+unit = "vram"
+source = "src/Gfx/vram.c"
+flags = "c"
+
+[[unit]]
+unit = "message"
+source = "src/Ui/message.c"
+flags = "c"
+
+[[unit]]
+unit = "vramaccess"
+source = "src/Gfx/vramaccess.c"
+flags = "c"
+
+[[unit]]
+unit = "vramcell"
+source = "src/Gfx/vramcell.c"
+flags = "c"
+
+[[unit]]
+unit = "gameloop"
+source = "src/Game/gameloop.c"
+flags = "c"
+
+[[unit]]
+unit = "pool"
+source = "src/Mem/pool.c"
+flags = "c"
+
+[[unit]]
+unit = "playtime"
+source = "src/Game/playtime.c"
+flags = "c"
+
+[[unit]]
+unit = "blit"
+source = "src/Gfx/blit.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptvars"
+source = "src/Script/scriptvars.c"
+flags = "c"
+
+[[unit]]
+unit = "character"
+source = "src/Game/character.c"
+flags = "c"
+
+[[unit]]
+unit = "charpool"
+source = "src/Game/charpool.c"
+flags = "c"
+
+[[unit]]
+unit = "condition"
+source = "src/Game/condition.c"
+flags = "c"
+
+[[unit]]
+unit = "charinfo"
+source = "src/Game/charinfo.c"
+flags = "c"
+
+[[unit]]
+unit = "party"
+source = "src/Game/party.c"
+flags = "c"
+
+[[unit]]
+unit = "affinity"
+source = "src/Game/affinity.c"
+flags = "c"
+
+[[unit]]
+unit = "statusdraw"
+source = "src/Game/statusdraw.c"
+flags = "c"
+
+[[unit]]
+unit = "gamestate"
+source = "src/Game/gamestate.c"
+flags = "c"
+
+[[unit]]
+unit = "statusline"
+source = "src/Game/statusline.c"
+flags = "c"
+
+[[unit]]
+unit = "charsave"
+source = "src/Game/charsave.c"
+flags = "c"
+
+[[unit]]
+unit = "alignchart"
+source = "src/Game/alignchart.c"
+flags = "c"
+
+[[unit]]
+unit = "abortflag"
+source = "src/Game/abortflag.c"
+flags = "c"
+
+[[unit]]
+unit = "bmpseek"
+source = "src/Gfx/bmpseek.c"
+flags = "c"
+
+[[unit]]
+unit = "textapi"
+source = "src/Text/textapi.c"
+flags = "c"
+
+[[unit]]
+unit = "mouse"
+source = "src/Input/mouse.c"
+flags = "c"
+
+[[unit]]
+unit = "screensave"
+source = "src/Gfx/screensave.c"
+flags = "c"
+
+[[unit]]
+unit = "modeflags"
+source = "src/Game/modeflags.c"
+flags = "c"
+
+[[unit]]
+unit = "stattotal"
+source = "src/Game/stattotal.c"
+flags = "c"
+
+[[unit]]
+unit = "clickwait"
+source = "src/Game/clickwait.c"
+flags = "c"
+
+[[unit]]
+unit = "menuresult"
+source = "src/Ui/menuresult.c"
+flags = "c"
+
+[[unit]]
+unit = "bitset"
+source = "src/Util/bitset.c"
+flags = "c"
+
+[[unit]]
+unit = "handle"
+source = "src/Mem/handle.c"
+flags = "c"
+
+[[unit]]
+unit = "motion"
+source = "src/Gfx/motion.c"
+flags = "c"
+
+[[unit]]
+unit = "savegame"
+source = "src/Game/savegame.c"
+flags = "c"
+
+[[unit]]
+unit = "texttoken"
+source = "src/Script/texttoken.c"
+flags = "c"
+
+[[unit]]
+unit = "hotspot"
+source = "src/Ui/hotspot.c"
+flags = "c"
+
+[[unit]]
+unit = "displayconfig"
+source = "src/Gfx/displayconfig.c"
+flags = "c"
+
+[[unit]]
+unit = "font"
+source = "src/Text/font.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "textchar"
+source = "src/Text/textchar.c"
+flags = "c"
+
+[[unit]]
+unit = "vec3"
+source = "src/Math/vec3.c"
+flags = "c"
+
+[[unit]]
+unit = "shot"
+source = "src/Gfx/shot.c"
+flags = "c"
+
+[[unit]]
+unit = "field"
+source = "src/Game/field.c"
+flags = "c"
+
+[[unit]]
+unit = "d3dapp"
+source = "src/Platform/d3dapp.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "statestack"
+source = "src/Game/statestack.c"
+flags = "c"
+
+[[unit]]
+unit = "texture"
+source = "src/Gfx/texture.c"
+flags = "c"
+
+[[unit]]
+unit = "joystick"
+source = "src/Platform/joystick.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "winmain"
+source = "src/Platform/winmain.cpp"
+flags = "cpp"
+
+[[unit]]
+unit = "midistream"
+source = "src/Sound/midistream.cpp"
+flags = "cpp"
+
+[[unit]]
+unit = "levelup"
+source = "src/Game/levelup.c"
+flags = "c"
+
+[[unit]]
+unit = "worldmap"
+source = "src/Game/worldmap.c"
+flags = "c"
+
+[[unit]]
+unit = "fieldmain"
+source = "src/Game/fieldmain.c"
+flags = "c"
+
+[[unit]]
+unit = "analyze"
+source = "src/Game/analyze.c"
+flags = "c"
+
+[[unit]]
+unit = "picture"
+source = "src/Gfx/picture.c"
+flags = "c"
+
+[[unit]]
+unit = "automap"
+source = "src/Gfx/automap.c"
+flags = "c"
+
+[[unit]]
+unit = "fieldobj"
+source = "src/Game/fieldobj.c"
+flags = "c"
+
+[[unit]]
+unit = "partypick"
+source = "src/Game/partypick.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptoperand"
+source = "src/Script/scriptoperand.c"
+flags = "c"
+
+[[unit]]
+unit = "areamap"
+source = "src/Game/areamap.c"
+flags = "c"
+
+[[unit]]
+unit = "skilluse"
+source = "src/Game/skilluse.c"
+flags = "c"
+
+[[unit]]
+unit = "videostate"
+source = "src/Gfx/videostate.c"
+flags = "c"
+
+[[unit]]
+unit = "equipscreen"
+source = "src/Game/equipscreen.c"
+flags = "c"
+
+[[unit]]
+unit = "itemrecord"
+source = "src/Game/itemrecord.c"
+flags = "c"
+
+[[unit]]
+unit = "demontable"
+source = "src/Game/demontable.c"
+flags = "c"
+
+[[unit]]
+unit = "windowcolor"
+source = "src/Script/windowcolor.c"
+flags = "c"
+
+[[unit]]
+unit = "familiarity"
+source = "src/Game/familiarity.c"
+flags = "c"
+
+[[unit]]
+unit = "fieldscreen"
+source = "src/Game/fieldscreen.c"
+flags = "c"
+
+[[unit]]
+unit = "worldblocks"
+source = "src/Game/worldblocks.c"
+flags = "c"
+
+[[unit]]
+unit = "menucursor"
+source = "src/Game/menucursor.c"
+flags = "c"
+
+[[unit]]
+unit = "maxstats"
+source = "src/Game/maxstats.c"
+flags = "c"
+
+[[unit]]
+unit = "panel"
+source = "src/Ui/panel.c"
+flags = "c"
+
+[[unit]]
+unit = "panelinput"
+source = "src/Ui/panelinput.c"
+flags = "c"
+
+[[unit]]
+unit = "equipeffect"
+source = "src/Game/equipeffect.c"
+flags = "c"
+
+[[unit]]
+unit = "itemuse"
+source = "src/Game/itemuse.c"
+flags = "c"
+
+[[unit]]
+unit = "clockops"
+source = "src/Script/clockops.c"
+flags = "c"
+
+[[unit]]
+unit = "fieldskill"
+source = "src/Game/fieldskill.c"
+flags = "c"
+
+[[unit]]
+unit = "automapbits"
+source = "src/Game/automapbits.c"
+flags = "c"
+
+[[unit]]
+unit = "scenecell"
+source = "src/Game/scenecell.c"
+flags = "c"
+
+[[unit]]
+unit = "statusmenu"
+source = "src/Game/statusmenu.c"
+flags = "c"
+
+[[unit]]
+unit = "statusscreen"
+source = "src/Game/statusscreen.c"
+flags = "c"
+
+[[unit]]
+unit = "restore"
+source = "src/Game/restore.c"
+flags = "c"
+
+[[unit]]
+unit = "worldevents"
+source = "src/Game/worldevents.c"
+flags = "c"
+
+[[unit]]
+unit = "worldplaces"
+source = "src/Game/worldplaces.c"
+flags = "c"
+
+[[unit]]
+unit = "list"
+source = "src/Util/list.c"
+flags = "c"
+
+[[unit]]
+unit = "areanpc"
+source = "src/Game/areanpc.c"
+flags = "c"
+
+[[unit]]
+unit = "training"
+source = "src/Game/training.c"
+flags = "c"
+
+[[unit]]
+unit = "clock"
+source = "src/Game/clock.c"
+flags = "c"
+
+[[unit]]
+unit = "debugmenu"
+source = "src/Game/debugmenu.c"
+flags = "c"
+
+[[unit]]
+unit = "menubox"
+source = "src/Ui/menubox.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptpanel"
+source = "src/Script/scriptpanel.c"
+flags = "c"
+
+[[unit]]
+unit = "itemmenu"
+source = "src/Game/itemmenu.c"
+flags = "c"
+
+[[unit]]
+unit = "subscreen"
+source = "src/Game/subscreen.c"
+flags = "c"
+
+[[unit]]
+unit = "infobar"
+source = "src/Game/infobar.c"
+flags = "c"
+
+[[unit]]
+unit = "partyaction"
+source = "src/Game/partyaction.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptswitch"
+source = "src/Script/scriptswitch.c"
+flags = "c"
+
+[[unit]]
+unit = "scriptfield"
+source = "src/Script/scriptfield.c"
+flags = "c"
+
+[[unit]]
+unit = "attack"
+source = "src/Game/attack.c"
+flags = "c"
+
+[[unit]]
+unit = "worldmapgfx"
+source = "src/Platform/worldmap.cpp"
+flags = "cpp"
+
+[[unit]]
+unit = "worldtravel"
+source = "src/Game/worldtravel.c"
+flags = "c"
+
+[[unit]]
+unit = "worldencounter"
+source = "src/Game/worldencounter.c"
+flags = "c"
+
+[[unit]]
+unit = "weaponattack"
+source = "src/Game/weaponattack.c"
+flags = "c"
+
+[[unit]]
+unit = "skillattack"
+source = "src/Game/skillattack.c"
+flags = "c"
+
+[[unit]]
+unit = "itemattack"
+source = "src/Game/itemattack.c"
+flags = "c"
+
+[[unit]]
+unit = "ddsmenu"
+source = "src/Game/ddsmenu.c"
+flags = "c"
+
+[[unit]]
+unit = "partypicker"
+source = "src/Game/partypicker.c"
+flags = "c"
+
+[[unit]]
+unit = "waitstate"
+source = "src/Game/waitstate.c"
+flags = "c"
+
+[[unit]]
+unit = "partyreorder"
+source = "src/Game/partyreorder.c"
+flags = "c"
+
+[[unit]]
+unit = "celltrap"
+source = "src/Game/celltrap.c"
+flags = "c"
+
+[[unit]]
+unit = "fusion"
+source = "src/Game/fusion.c"
+flags = "c"
+
+[[unit]]
+unit = "treasurebox"
+source = "src/Game/treasurebox.c"
+flags = "c"
+
+[[unit]]
+unit = "fusioncompare"
+source = "src/Game/fusioncompare.c"
+flags = "c"
+
+[[unit]]
+unit = "statuspanel"
+source = "src/Game/statuspanel.c"
+flags = "c"
+
+[[unit]]
+unit = "fusionscreen"
+source = "src/Game/fusionscreen.c"
+flags = "c"
+
+[[unit]]
+unit = "windowtext"
+source = "src/Text/windowtext.c"
+flags = "c"
+
+[[unit]]
+unit = "resourcebitmap"
+source = "src/Gfx/resourcebitmap.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "bitmapio"
+source = "src/Gfx/bitmapio.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "sprite"
+source = "src/Gfx/sprite.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "screeneffect"
+source = "src/Game/screeneffect.c"
+flags = "c"
+
+[[unit]]
+unit = "objecttexture"
+source = "src/Gfx/objecttexture.c"
+flags = "c"
+
+[[unit]]
+unit = "texturebitmap"
+source = "src/Gfx/texturebitmap.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "layertexture"
+source = "src/Gfx/layertexture.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "walltexture"
+source = "src/Gfx/walltexture.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "resourceblit"
+source = "src/Gfx/resourceblit.cpp"
+flags = "c"
+
+[[unit]]
+unit = "fusionmenu"
+source = "src/Game/fusionmenu.c"
+flags = "c"
+
+[[unit]]
+unit = "statedispatch"
+source = "src/Game/statedispatch.c"
+flags = "c"
+
+[[unit]]
+unit = "surfacecopy"
+source = "src/Gfx/surfacecopy.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "hotspotclick"
+source = "src/Ui/hotspotclick.cpp"
+flags = "c"
+
+[[unit]]
+unit = "effectdraw"
+source = "src/Gfx/effectdraw.cpp"
+flags = "cpp-noeh"
+
+[[unit]]
+unit = "fieldmark"
+source = "src/Game/fieldmark.c"
+flags = "c"
+
+[[unit]]
+unit = "treasurestate"
+source = "src/Game/treasurestate.c"
+flags = "c"
+
+[[unit]]
+unit = "devicesettings"
+source = "src/Platform/devicesettings.cpp"
+flags = "cpp-noeh"

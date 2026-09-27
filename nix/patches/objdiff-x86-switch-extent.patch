@@ -1,0 +1,334 @@
+--- a/objdiff-core/src/arch/mod.rs
++++ b/objdiff-core/src/arch/mod.rs
+@@ -493,6 +493,7 @@
+     fn infer_function_size(
+         &self,
+         symbol: &Symbol,
++        _symbol_index: usize,
+         _section: &Section,
+         next_address: u64,
+     ) -> Result<u64> {
+--- a/objdiff-core/src/arch/arm.rs
++++ b/objdiff-core/src/arch/arm.rs
+@@ -471,6 +471,7 @@
+     fn infer_function_size(
+         &self,
+         symbol: &Symbol,
++        _symbol_index: usize,
+         section: &Section,
+         mut next_address: u64,
+     ) -> Result<u64> {
+--- a/objdiff-core/src/arch/mips.rs
++++ b/objdiff-core/src/arch/mips.rs
+@@ -351,6 +351,7 @@
+     fn infer_function_size(
+         &self,
+         symbol: &Symbol,
++        _symbol_index: usize,
+         section: &Section,
+         next_address: u64,
+     ) -> Result<u64> {
+--- a/objdiff-core/src/arch/ppc/mod.rs
++++ b/objdiff-core/src/arch/ppc/mod.rs
+@@ -462,6 +462,7 @@
+     fn infer_function_size(
+         &self,
+         symbol: &Symbol,
++        _symbol_index: usize,
+         section: &Section,
+         mut next_address: u64,
+     ) -> Result<u64> {
+--- a/objdiff-core/src/arch/x86.rs
++++ b/objdiff-core/src/arch/x86.rs
+@@ -46,6 +46,116 @@
+             address,
+             DecoderOptions::NONE,
+         )
++    }
++
++    // MSVC emits a byte-index table after the relocated switch destinations.
++    // Its last byte must not be decoded as an instruction consuming alignment.
++    // Recognize the bounded dispatch, rather than stripping possible table values.
++    fn indirect_table_end(
++        &self,
++        symbol: &Symbol,
++        symbol_index: usize,
++        section: &Section,
++        code: &[u8],
++        instructions: &[Instruction],
++        table_address: u64,
++    ) -> Option<u64> {
++        use iced_x86::Mnemonic;
++        if !matches!(self.arch, Architecture::X86) {
++            return None;
++        }
++        let dir32 = |address| {
++            section.relocations.iter().find(|r| {
++                r.address == address && r.flags == RelocationFlags::Coff(pe::IMAGE_REL_I386_DIR32)
++            })
++        };
++        for dispatch in instructions.windows(5) {
++            let [cmp, above, zero, load, jump] = dispatch else { unreachable!() };
++            if cmp.mnemonic() != Mnemonic::Cmp
++                || cmp.op0_kind() != OpKind::Register
++                || above.mnemonic() != Mnemonic::Ja
++                || above.near_branch_target() < symbol.address
++                || above.near_branch_target() >= table_address
++                || zero.mnemonic() != Mnemonic::Xor
++                || zero.op0_kind() != OpKind::Register
++                || zero.op1_kind() != OpKind::Register
++                || zero.op0_register() != zero.op1_register()
++                || load.mnemonic() != Mnemonic::Mov
++                || load.op0_kind() != OpKind::Register
++                || load.op1_kind() != OpKind::Memory
++                || !((load.memory_base() == cmp.op0_register()
++                    && load.memory_index() == Register::None)
++                    || (load.memory_base() == Register::None
++                        && load.memory_index() == cmp.op0_register()
++                        && load.memory_index_scale() == 1))
++                || jump.mnemonic() != Mnemonic::Jmp
++                || jump.op0_kind() != OpKind::Memory
++                || jump.memory_base() != Register::None
++                || jump.memory_index() != zero.op0_register()
++                || jump.memory_index_scale() != 4
++            {
++                continue;
++            }
++            let full = match load.op0_register() {
++                Register::AL => Register::EAX,
++                Register::CL => Register::ECX,
++                Register::DL => Register::EDX,
++                Register::BL => Register::EBX,
++                _ => continue,
++            };
++            if full != zero.op0_register() || full == cmp.op0_register() {
++                continue;
++            }
++            let bound = match cmp.op1_kind() {
++                OpKind::Immediate8to32 => cmp.immediate8to32() as u32,
++                OpKind::Immediate32 => cmp.immediate32(),
++                _ => continue,
++            };
++            let Some(load_reloc) = dir32(load.next_ip().checked_sub(4)?) else { continue };
++            let Some(jump_reloc) = dir32(jump.next_ip().checked_sub(4)?) else { continue };
++            if load_reloc.target_symbol != symbol_index
++                || load_reloc.target_symbol != jump_reloc.target_symbol
++                || jump_reloc.addend < 0
++                || symbol.address.checked_add(jump_reloc.addend as u64)? != table_address
++                || load_reloc.addend < jump_reloc.addend
++            {
++                continue;
++            }
++            let byte_start = usize::try_from(load_reloc.addend).ok()?;
++            let table_start = usize::try_from(jump_reloc.addend).ok()?;
++            let table_size = byte_start.checked_sub(table_start)?;
++            if table_size == 0 || table_size % 4 != 0 {
++                continue;
++            }
++            let entries = table_size / 4;
++            if !(1..=256).contains(&entries) {
++                continue;
++            }
++            let end = byte_start.checked_add(bound as usize)?.checked_add(1)?;
++            let Some(indices) = code.get(byte_start..end) else { continue };
++            let Some(padding) = code.get(end..) else { continue };
++            if indices.iter().any(|&v| v as usize >= entries)
++                || padding.len() > 15
++                || padding.iter().any(|&v| v != 0x90)
++            {
++                continue;
++            }
++            let valid_entries = (table_start..byte_start).step_by(4).all(|offset| {
++                dir32(symbol.address + offset as u64).is_some_and(|r| {
++                    r.target_symbol == jump_reloc.target_symbol
++                        && r.addend >= 0
++                        && (r.addend as usize) < table_start
++                })
++            });
++            let no_tail_relocs = !section.relocations.iter().any(|r| {
++                r.address >= symbol.address + byte_start as u64
++                    && r.address < symbol.address + code.len() as u64
++            });
++            if valid_entries && no_tail_relocs {
++                return Some(end as u64);
++            }
++        }
++        None
+     }
+ 
+     fn formatter(&self, diff_config: &DiffObjConfig) -> Box<dyn iced_x86::Formatter> {
+@@ -378,6 +488,7 @@
+     fn infer_function_size(
+         &self,
+         symbol: &Symbol,
++        symbol_index: usize,
+         section: &Section,
+         next_address: u64,
+     ) -> Result<u64> {
+@@ -391,6 +502,7 @@
+         let mut decoder = self.decoder(code, symbol.address);
+         let mut instruction = Instruction::default();
+         let mut new_address = 0;
++        let mut instructions = Vec::new();
+         let mut reloc_iter = section.relocations.iter().peekable();
+         'outer: while decoder.can_decode() {
+             let address = decoder.ip();
+@@ -401,6 +513,16 @@
+                     }
+                     Ordering::Equal => {
+                         // If the instruction starts at a relocation, it's inline data
++                        if let Some(end) = self.indirect_table_end(
++                            symbol,
++                            symbol_index,
++                            section,
++                            code,
++                            &instructions,
++                            address,
++                        ) {
++                            return Ok(end);
++                        }
+                         let reloc_size = self.reloc_size(reloc.flags).with_context(|| {
+                             format!("Unsupported inline x86 relocation {:?}", reloc.flags)
+                         })?;
+@@ -414,6 +536,7 @@
+                 }
+             }
+             decoder.decode_out(&mut instruction);
++            instructions.push(instruction);
+             if instruction.mnemonic() != iced_x86::Mnemonic::Nop {
+                 new_address = instruction.next_ip();
+             }
+@@ -578,6 +701,122 @@
+ mod test {
+     use super::*;
+     use crate::obj::{Relocation, ResolvedRelocation};
++
++    fn byte_switch(entries: usize, indices: &[u8], padding: usize) -> (Section, Symbol) {
++        // cmp ecx,bound; ja default; xor edx,edx; mov dl,[ecx+indices];
++        // jmp [edx*4+destinations]; default: ret; destinations; indices.
++        let mut code = alloc::vec![
++            0x83,
++            0xf9,
++            (indices.len() - 1) as u8,
++            0x77,
++            0x0f,
++            0x33,
++            0xd2,
++            0x8a,
++            0x91,
++            0,
++            0,
++            0,
++            0,
++            0xff,
++            0x24,
++            0x95,
++            0,
++            0,
++            0,
++            0,
++            0xc3,
++        ];
++        let table = code.len();
++        let byte_start = table + entries * 4;
++        let reloc = |address, addend| Relocation {
++            flags: RelocationFlags::Coff(pe::IMAGE_REL_I386_DIR32),
++            address,
++            target_symbol: 0,
++            addend,
++        };
++        let mut relocations = alloc::vec![reloc(9, byte_start as i64), reloc(16, table as i64)];
++        for _ in 0..entries {
++            relocations.push(reloc(code.len() as u64, 20));
++            code.extend_from_slice(&20u32.to_le_bytes());
++        }
++        code.extend_from_slice(indices);
++        code.resize(code.len() + padding, 0x90);
++        (
++            Section {
++                size: code.len() as u64,
++                data: crate::obj::SectionData(code),
++                relocations,
++                ..Default::default()
++            },
++            Symbol::default(),
++        )
++    }
++
++    #[test]
++    fn test_infer_byte_switch_extent() {
++        let arch = ArchX86 { arch: Architecture::X86, endianness: object::Endianness::Little };
++        for padding in [0, 1, 5, 15] {
++            let (section, symbol) = byte_switch(3, &[0, 1, 2], padding);
++            assert_eq!(arch.infer_function_size(&symbol, 0, &section, section.size).unwrap(), 36);
++        }
++        let (mut section, mut symbol) = byte_switch(3, &[0, 1, 2], 5);
++        section.address = 0x1000;
++        symbol.address = 0x1000;
++        for reloc in &mut section.relocations {
++            reloc.address += 0x1000;
++        }
++        assert_eq!(
++            arch.infer_function_size(&symbol, 0, &section, section.address + section.size).unwrap(),
++            36
++        );
++        // A real 0x90 table index is data, even when followed by NOP padding.
++        let (section, symbol) = byte_switch(145, &[0x90], 5);
++        assert_eq!(arch.infer_function_size(&symbol, 0, &section, section.size).unwrap(), 602);
++    }
++
++    #[test]
++    fn test_byte_switch_extent_requires_valid_dispatch() {
++        let arch = ArchX86 { arch: Architecture::X86, endianness: object::Endianness::Little };
++        let (mut section, symbol) = byte_switch(3, &[0, 1, 2], 5);
++        let instructions: Vec<_> = arch.decoder(&section.data[..21], 0).into_iter().collect();
++        assert_eq!(
++            arch.indirect_table_end(&symbol, 0, &section, &section.data, &instructions, 21),
++            Some(36)
++        );
++        for reloc in &mut section.relocations {
++            reloc.target_symbol = 1;
++        }
++        assert_eq!(
++            arch.indirect_table_end(&symbol, 0, &section, &section.data, &instructions, 21),
++            None
++        );
++        assert_eq!(
++            arch.indirect_table_end(&symbol, 1, &section, &section.data, &instructions, 21),
++            Some(36)
++        );
++        for reloc in &mut section.relocations {
++            reloc.target_symbol = 0;
++        }
++        section.data.0[35] = 3; // Out-of-range index must not be discarded.
++        assert_eq!(
++            arch.indirect_table_end(&symbol, 0, &section, &section.data, &instructions, 21),
++            None
++        );
++        section.data.0[35] = 2;
++        section.relocations[2].target_symbol = 1;
++        assert_eq!(
++            arch.indirect_table_end(&symbol, 0, &section, &section.data, &instructions, 21),
++            None
++        );
++        section.relocations[2].target_symbol = 0;
++        section.data.0[40] = 0xcc; // Unrecognized tail is left to ordinary inference.
++        assert_eq!(
++            arch.indirect_table_end(&symbol, 0, &section, &section.data, &instructions, 21),
++            None
++        );
++    }
+ 
+     #[test]
+     fn test_scan_instructions() {
+--- a/objdiff-core/src/obj/read.rs
++++ b/objdiff-core/src/obj/read.rs
+@@ -337,7 +337,7 @@
+             // diffing them, so no need to unhide these.
+             0
+         } else if section.kind == SectionKind::Code {
+-            arch.infer_function_size(symbol, section, next_address)?
++            arch.infer_function_size(symbol, symbol_idx, section, next_address)?
+         } else {
+             next_address.saturating_sub(symbol.address)
+         };

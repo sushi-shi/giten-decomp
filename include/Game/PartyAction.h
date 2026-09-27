@@ -1,0 +1,58 @@
+#ifndef GITEN_GAME_PARTYACTION_H
+#define GITEN_GAME_PARTYACTION_H
+
+#include <Game/Character.h>
+#include <Ui/MenuBox.h>
+
+i16 PickPartyMember(i16 index);
+i16 FindPickablePartyMember(i16 index);
+i16 CountPickablePartyMembers(void);
+i16 GetMemberPanelState(i16 member);
+i16 ReadActionResultFlags(void);
+i16 GetActionCondition(Character* actor);
+i16 PickActorAction(Character* actor);
+
+i16 PickRandomCombatant(u8 sides);
+i16 PickRandomOpponentAttack(i16 id);
+i16 PickRandomAllyAttack(i16 id);
+i16 PickRandomAttack(i16 id);
+
+i16 PickActorDialogue(i16 id);
+i16 DelayActionSide(i16 id);
+i16 ResetActionWaits(void);
+i16 SwapPartyRows(void);
+i16 AdjustActorAction(i16 id, i16 action);
+
+// @identity-TODO: text shown for unavailable commands; storage extent is unproven.
+extern char g_unavailableCommandText[];
+
+MenuBox* OpenActorCommandMenu(i16 id);
+void ActorCommandMenuHandler(MenuBox* menu, i16 index, i16 event);
+i16 PollActorCommandMenu(MenuBox* menu);
+i16 RunActorCommandMenu(i16 id);
+i16 FormatAttackCommand(Character* actor);
+i16 FormatGunCommand(Character* actor);
+i16 FormatMagicCommand(Character* actor);
+i16 FormatItemCommand(Character* actor);
+i16 FormatCompCommand(Character* actor);
+i16 FormatExtraCommand(Character* actor);
+i16 FormatReturnCommand(Character* actor);
+i16 FormatDefenceCommand(Character* actor);
+
+void FillCharacterCommands(i16* list, i16 id);
+
+i32 ScaleActionValue(i32 value, i16 resistance, i16 multiplier);
+// @identity-TODO: attribute and mode are the skill/item attack domains;
+// negative results encode special resistance outcomes whose names are unproven.
+i16 CheckBattleProtection(Character* actor, i16 attribute, i16 mode, i16 report);
+i16 GetActionResistance(Character* actor, i16 attribute, i16 mode, i16 report, i16 sameSide);
+
+i16 GetSkillResistance(Character* actor, i16 skill, i16 report, i16 sameSide, i16* attribute);
+i16 GetItemResistance(Character* actor, i16 item, i16 report, i16 sameSide, i16* attribute);
+i16 GetPickedAttackAttribute(Character* actor, i16* condition);
+void ApplyResistanceOutcome(Character* actor, i16 resistance, i32 amount);
+
+// -1 for two party combatants, 1 for two field objects, otherwise zero.
+i16 GetCombatantSideRelation(void);
+
+#endif // GITEN_GAME_PARTYACTION_H

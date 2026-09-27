@@ -1,0 +1,547 @@
+// @identity-TODO: the owning TU is unproven; this unit holds one contiguous
+// retail span until link-order evidence names it.
+
+#include <rva.h>
+
+#include <Sound/MidiStream.h>
+#include <Sound/Mmio.h>
+
+#include <string.h>
+
+RVA(0x00055a00, 0x79)
+CMidiStream::CMidiStream()
+    : m_stream(NULL),
+      m_device(MIDI_MAPPER),
+      m_playing(FALSE),
+      m_looping(FALSE),
+      m_prepared(FALSE),
+      m_state(MIDI_STATE_EMPTY),
+      m_reserved1(0),
+      m_reserved3(0),
+      m_volume(0),
+      m_channelVolumes(NULL),
+      m_restart(FALSE) {
+    int i;
+
+    m_part = MIDI_PART_INTRO;
+    for (i = 0; i < MIDI_PART_COUNT; i++) {
+        m_files[i][0] = '\0';
+        m_bufferCounts[i] = 0;
+        m_buffers[i] = NULL;
+    }
+}
+
+// @dead-code
+// Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
+RVA(0x00055a80, 0x8e)
+CMidiStream::CMidiStream(LPCSTR intro, LPCSTR loop)
+    : m_stream(NULL),
+      m_device(MIDI_MAPPER),
+      m_playing(FALSE),
+      m_looping(FALSE),
+      m_prepared(FALSE),
+      m_state(MIDI_STATE_EMPTY),
+      m_reserved1(0),
+      m_reserved3(0),
+      m_volume(0),
+      m_channelVolumes(NULL),
+      m_restart(FALSE) {
+    int i;
+
+    m_part = MIDI_PART_INTRO;
+    for (i = 0; i < MIDI_PART_COUNT; i++) {
+        m_files[i][0] = '\0';
+        m_bufferCounts[i] = 0;
+        m_buffers[i] = NULL;
+    }
+    Open(intro, loop);
+}
+
+RVA(0x00055b10, 0x17)
+CMidiStream::~CMidiStream() {
+    CloseStream();
+    FreeBuffers();
+}
+
+RVA(0x00055b30, 0x80)
+BOOL CMidiStream::CloseStream() {
+    DWORD count;
+    MidiStreamBuffer* buffer;
+
+    if (m_stream == NULL || midiOutReset(GetMidiOutputHandle(m_stream)) != MMSYSERR_NOERROR) {
+        return FALSE;
+    }
+    buffer = m_buffers[m_part];
+    for (count = m_bufferCounts[m_part]; count != 0; count--) {
+        midiOutUnprepareHeader(GetMidiOutputHandle(m_stream), &buffer->header, sizeof(MIDIHDR));
+        buffer = GetNextMidiStreamBuffer(buffer);
+    }
+    if (midiStreamClose(m_stream) != MMSYSERR_NOERROR) {
+        return FALSE;
+    }
+    m_stream = NULL;
+    m_device = MIDI_MAPPER;
+    return TRUE;
+}
+
+RVA(0x00055bb0, 0x53)
+BOOL CMidiStream::Stop() {
+    if (m_playing) {
+        m_playing = FALSE;
+        m_prepared = FALSE;
+        m_restart = FALSE;
+        m_state = MIDI_STATE_STOPPED;
+        if (midiStreamStop(m_stream) == MMSYSERR_NOERROR) {
+            CloseStream();
+            return TRUE;
+        }
+        return FALSE;
+    }
+    return TRUE;
+}
+
+RVA(0x00055c10, 0x75)
+void CMidiStream::FreeBuffers() {
+    int i;
+
+    Stop();
+    for (i = 0; i < MIDI_PART_COUNT; i++) {
+        if (m_buffers[i] != NULL) {
+            HGLOBAL memory = GlobalHandle(m_buffers[i]);
+            GlobalUnlock(memory);
+            GlobalFree(memory);
+            m_buffers[i] = NULL;
+            m_files[i][0] = '\0';
+        }
+    }
+    m_state = MIDI_STATE_EMPTY;
+}
+
+RVA(0x00055c90, 0xb7)
+BOOL CMidiStream::ReadFormat(void* data, DWORD size, int part) {
+    if (data == NULL) {
+        return FALSE;
+    }
+    CMMMemoryIOInfo info(static_cast<char*>(data), size, 0);
+    CMMIO mmio(info);
+    CMMTypeChunk riff('M', 'I', 'D', 'S');
+    mmio.Descend(riff, MMIO_FINDRIFF);
+    CMMIdChunk chunk('f', 'm', 't', ' ');
+    mmio.Descend(chunk, riff, MMIO_FINDCHUNK);
+    mmio.Read(&m_formats[part], sizeof(MidsFormat));
+    mmio.Ascend(chunk, 0);
+    return TRUE;
+}
+
+// @early-stop register residue: retail loads src's fields before dst's and
+// swaps the two spill homes around the memcpy; CFG and every operation
+// match. Declaration-order and permuter sweeps are flat.
+RVA(0x00055d50, 0xfe)
+BOOL CMidiStream::ConvertBuffer(MIDIHDR* dst, MIDIHDR* src) {
+    // The pun: stream events are DWORD-granular.
+    DWORD* out = reinterpret_cast<DWORD*>(dst->lpData);
+    DWORD outLeft = dst->dwBufferLength;
+    DWORD* in = reinterpret_cast<DWORD*>(src->lpData);
+    DWORD inLeft = src->dwBytesRecorded;
+
+    if (inLeft & 3) {
+        return FALSE;
+    }
+    while (inLeft != 0) {
+        DWORD event;
+        DWORD length;
+
+        if (outLeft < 3 * sizeof(DWORD)) {
+            return FALSE;
+        }
+        *out++ = *in++;
+        inLeft -= sizeof(DWORD);
+        *out++ = 0;
+        outLeft -= 2 * sizeof(DWORD);
+        if (inLeft == 0) {
+            return FALSE;
+        }
+        event = *in;
+        length = 0;
+        if (event & MEVT_F_LONG) {
+            length = MEVT_EVENTPARM(event);
+        }
+        length = (length + 3) & ~3;
+        *out++ = event;
+        in++;
+        inLeft -= sizeof(DWORD);
+        outLeft -= sizeof(DWORD);
+        if (length != 0) {
+            if (length > inLeft || length > outLeft) {
+                return FALSE;
+            }
+            memcpy(out, in, length);
+        }
+        out += length / sizeof(DWORD);
+        in += length / sizeof(DWORD);
+        inLeft -= length;
+        outLeft -= length;
+    }
+    // The pun: the byte count of the DWORD events written.
+    dst->dwBytesRecorded = reinterpret_cast<BYTE*>(out) - reinterpret_cast<BYTE*>(dst->lpData);
+    return TRUE;
+}
+
+RVA(0x00055e50, 0x262)
+BOOL CMidiStream::ReadBuffers(void* data, DWORD size, int part) {
+    if (data == NULL) {
+        return FALSE;
+    }
+    CMMMemoryIOInfo info(static_cast<char*>(data), size, 0);
+    CMMIO mmio(info);
+    CMMTypeChunk riff('M', 'I', 'D', 'S');
+    mmio.Descend(riff, MMIO_FINDRIFF);
+    CMMIdChunk chunk('d', 'a', 't', 'a');
+    mmio.Descend(chunk, riff, MMIO_FINDCHUNK);
+    BYTE* blocks = static_cast<BYTE*>(GlobalAllocPtr(GMEM_MOVEABLE, chunk.cksize));
+    if (blocks == NULL) {
+        return FALSE;
+    }
+    mmio.Read(&m_bufferCounts[part], sizeof(DWORD));
+    mmio.Read(blocks, chunk.cksize - sizeof(DWORD));
+    m_buffers[part] = static_cast<MidiStreamBuffer*>(GlobalAllocPtr(
+        GMEM_MOVEABLE,
+        (m_formats[part].maxBuffer + sizeof(MidiStreamBuffer)) * m_bufferCounts[part]
+    ));
+    if (m_buffers[part] == NULL) {
+        GlobalFreePtr(blocks);
+        return FALSE;
+    }
+    MidiStreamBuffer* buffer = m_buffers[part];
+    BYTE* next = blocks;
+    for (int left = m_bufferCounts[part]; left > 0; left--) {
+        buffer->header.lpData = buffer->events;
+        buffer->header.dwBufferLength = m_formats[part].maxBuffer;
+        buffer->header.dwFlags = 0;
+        buffer->header.dwUser = 0;
+        buffer->header.lpNext = NULL;
+        MidsBuffer* block = reinterpret_cast<MidsBuffer*>(next);
+        next = block->events;
+        if (m_formats[part].flags & MDS_F_NOSTREAMID) {
+            MIDIHDR source;
+            // The pun: the events stay in the block buffer.
+            source.lpData = reinterpret_cast<LPSTR>(next);
+            source.dwBufferLength = source.dwBytesRecorded = block->byteCount;
+            if (!ConvertBuffer(&buffer->header, &source)) {
+                GlobalFreePtr(blocks);
+                return FALSE;
+            }
+        } else {
+            buffer->header.dwBytesRecorded = block->byteCount;
+            memcpy(buffer->header.lpData, next, block->byteCount);
+        }
+        next += block->byteCount;
+        buffer = reinterpret_cast<MidiStreamBuffer*>(buffer->events + m_formats[part].maxBuffer);
+    }
+    GlobalFreePtr(blocks);
+    return TRUE;
+}
+
+RVA(0x000560c0, 0x10d)
+BOOL CMidiStream::LoadFile(LPCSTR path, int part) {
+    BOOL result = FALSE;
+    HANDLE file = CreateFile(
+        path,
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        NULL,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+    if (file == INVALID_HANDLE_VALUE) {
+        return FALSE;
+    }
+    DWORD size = GetFileSize(file, NULL);
+    if (size != INVALID_FILE_SIZE) {
+        void* data = GlobalAllocPtr(GMEM_MOVEABLE | GMEM_SHARE, size);
+        if (data != NULL) {
+            DWORD read;
+            if (ReadFile(file, data, size, &read, NULL) && read == size) {
+                ReadFormat(data, size, part);
+                ReadBuffers(data, size, part);
+                GlobalFreePtr(data);
+                strcpy(m_files[part], path);
+                result = TRUE;
+            }
+        }
+    }
+    CloseHandle(file);
+    return result;
+}
+
+RVA(0x000561d0, 0x45)
+BOOL CMidiStream::Open(LPCSTR intro, LPCSTR loop) {
+    FreeBuffers();
+    if (intro == NULL) {
+        return FALSE;
+    }
+    if (!LoadFile(intro, MIDI_PART_INTRO)) {
+        return FALSE;
+    }
+    if (loop == NULL) {
+        return TRUE;
+    }
+    return LoadFile(loop, MIDI_PART_LOOP);
+}
+
+RVA(0x00056220, 0x8d)
+BOOL CMidiStream::OpenStream() {
+    MIDIPROPTIMEDIV property;
+
+    if (m_stream != NULL) {
+        CloseStream();
+    }
+    // API-forced: midiStreamOpen takes the callback and instance as DWORDs.
+    if (midiStreamOpen(
+            &m_stream,
+            &m_device,
+            1,
+            reinterpret_cast<DWORD>(StreamProc), // API-forced
+            reinterpret_cast<DWORD>(this),       // API-forced
+            CALLBACK_FUNCTION
+        )
+        != MMSYSERR_NOERROR) {
+        return FALSE;
+    }
+    property.cbStruct = sizeof(property);
+    property.dwTimeDiv = m_formats[m_part].timeFormat;
+    // API-forced: midiStreamProperty takes the property block as bytes.
+    if (midiStreamProperty(
+            m_stream,
+            reinterpret_cast<LPBYTE>(&property),
+            MIDIPROP_SET | MIDIPROP_TIMEDIV
+        )
+        != MMSYSERR_NOERROR) {
+        CloseStream();
+        return FALSE;
+    }
+    return TRUE;
+}
+
+RVA(0x000562b0, 0x83)
+BOOL CMidiStream::QueueBuffers() {
+    MidiStreamBuffer* buffer = m_buffers[m_part];
+    DWORD count;
+
+    for (count = m_bufferCounts[m_part]; count != 0; count--) {
+        if (midiOutPrepareHeader(GetMidiOutputHandle(m_stream), &buffer->header, sizeof(MIDIHDR))
+                != MMSYSERR_NOERROR
+            || midiStreamOut(m_stream, &buffer->header, sizeof(MIDIHDR)) != MMSYSERR_NOERROR) {
+            Stop();
+            return FALSE;
+        }
+        buffer = GetNextMidiStreamBuffer(buffer);
+    }
+    return TRUE;
+}
+
+RVA(0x00056340, 0x69)
+BOOL CMidiStream::Prepare() {
+    if (!HasBuffers()) {
+        return FALSE;
+    }
+    if (m_playing) {
+        if (!m_restart) {
+            return TRUE;
+        }
+        if (!Stop()) {
+            return FALSE;
+        }
+    }
+    if (m_prepared && !Stop()) {
+        return FALSE;
+    }
+    if (!OpenStream()) {
+        return FALSE;
+    }
+    return QueueBuffers() ? TRUE : FALSE;
+}
+
+// @early-stop register residue: in the all-channel loop retail builds the
+// message in eax and loads the stream handle into edx; here the two swap.
+// Message-shape, counter-type and permuter sweeps are flat.
+RVA(0x000563b0, 0xcd)
+BOOL CMidiStream::SetVolume(DWORD volume, DWORD* channelVolumes) {
+    int channel;
+
+    if (!m_playing) {
+        return TRUE;
+    }
+    m_volume = volume;
+    if (channelVolumes != NULL) {
+        m_channelVolumes = channelVolumes;
+        for (channel = 0; channel < 16; channel++) {
+            if (m_channelVolumes[channel] != 0) {
+                if (midiOutShortMsg(
+                        GetMidiOutputHandle(m_stream),
+                        PackMidiVolumeMessage(channel, m_volume * m_channelVolumes[channel] / 100)
+                    )
+                    != MMSYSERR_NOERROR) {
+                    return FALSE;
+                }
+            }
+        }
+    } else {
+        for (channel = 0; channel < 16; channel++) {
+            if (midiOutShortMsg(
+                    GetMidiOutputHandle(m_stream),
+                    PackMidiVolumeMessage(channel, volume)
+                )
+                != MMSYSERR_NOERROR) {
+                return FALSE;
+            }
+        }
+    }
+    return TRUE;
+}
+
+RVA(0x00056480, 0x128)
+BOOL CMidiStream::Play(
+    LPCSTR intro,
+    LPCSTR loop,
+    BOOL looping,
+    DWORD volume,
+    DWORD* channelVolumes
+) {
+    if (strcmp(m_files[0], intro) != 0 || (loop != NULL && strcmp(m_files[1], loop) != 0)) {
+        if (!Open(intro, loop)) {
+            return FALSE;
+        }
+    }
+    if (Prepare()) {
+        m_doneCount = 0;
+        if (midiStreamRestart(m_stream) != MMSYSERR_NOERROR) {
+            Stop();
+            return FALSE;
+        }
+        m_looping = looping;
+        m_state = MIDI_STATE_PLAYING;
+        m_playing = TRUE;
+        m_volume = volume;
+        m_channelVolumes = channelVolumes;
+        if (!SetVolume(volume, channelVolumes)) {
+            Stop();
+            return FALSE;
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+
+RVA(0x000565b0, 0x8f)
+BOOL CMidiStream::Replay(BOOL looping, DWORD volume, DWORD* channelVolumes) {
+    if (Prepare()) {
+        m_doneCount = 0;
+        if (midiStreamRestart(m_stream) != MMSYSERR_NOERROR) {
+            Stop();
+            return FALSE;
+        }
+        m_looping = looping;
+        m_state = MIDI_STATE_PLAYING;
+        m_playing = TRUE;
+        m_volume = volume;
+        m_channelVolumes = channelVolumes;
+        if (!SetVolume(volume, channelVolumes)) {
+            Stop();
+            return FALSE;
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// @dead-code
+// Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
+RVA(0x00056640, 0xf0)
+BOOL CMidiStream::Restore() {
+    char files[2][MAX_PATH];
+    int i;
+
+    for (i = 0; i < MIDI_PART_COUNT; i++) {
+        strcpy(files[i], m_files[i]);
+    }
+    switch (m_state) {
+        case MIDI_STATE_EMPTY:
+            break;
+        case MIDI_STATE_STOPPED:
+            Open(files[0], files[1]);
+            Prepare();
+            m_doneCount = 0;
+            m_prepared = TRUE;
+            break;
+        case MIDI_STATE_PLAYING:
+            Open(files[0], files[1]);
+            Replay(m_looping, m_volume, m_channelVolumes);
+            return TRUE;
+        default:
+            m_state = MIDI_STATE_EMPTY;
+            return FALSE;
+    }
+    return TRUE;
+}
+
+// @dead-code
+// Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
+RVA(0x00056730, 0x26)
+BOOL CMidiStream::Pause() {
+    MidiPlayState state = m_state;
+    if (!Stop()) {
+        m_state = state;
+        return FALSE;
+    }
+    m_state = state;
+    return TRUE;
+}
+
+RVA(0x00056760, 0x24)
+void CALLBACK
+CMidiStream::StreamProc(HMIDIOUT out, UINT msg, DWORD instance, DWORD param1, DWORD param2) {
+    if (instance != 0) {
+        // API-forced: midiStreamOpen hands the player back as the instance DWORD.
+        reinterpret_cast<CMidiStream*>(instance)->OnMessage(out, msg, param1, param2);
+    }
+}
+
+RVA(0x00056790, 0xc8)
+void CMidiStream::OnMessage(HMIDIOUT out, UINT msg, DWORD param1, DWORD param2) {
+    if (msg != MOM_DONE) {
+        return;
+    }
+    if (++m_doneCount < m_bufferCounts[m_part] || !m_playing) {
+        return;
+    }
+    m_playing = FALSE;
+    if (m_part == MIDI_PART_INTRO && m_files[MIDI_PART_LOOP][0] != '\0') {
+        m_part = MIDI_PART_LOOP;
+    } else if (!m_looping) {
+        return;
+    }
+    if (!QueueBuffers()) {
+        return;
+    }
+    m_doneCount = 0;
+    if (midiStreamRestart(m_stream) == MMSYSERR_NOERROR) {
+        m_state = MIDI_STATE_PLAYING;
+        m_playing = TRUE;
+        if (SetVolume(m_volume, m_channelVolumes)) {
+            return;
+        }
+    }
+    Stop();
+}
+
+// The scalar deleting destructor the vtable's only slot names.
+RVA_COMPGEN(0x00056860, 0x1e, ??_GCMidiStream@@UAEPAXI@Z)
+
+// @dead-code
+// Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
+RVA(0x00056a30, 0x1b)
+void CMMIO::Open(char* name, DWORD flags) {
+    m_hmmio = mmioOpen(name, NULL, flags);
+}

@@ -1,0 +1,33 @@
+# Statically-linked library DATA labels: CRT tables, DirectX GUIDs, library
+# constants named by game code. Never reconstructed game-owned data.
+rva	size	name	unit	note
+0x05a3e0	0x18	_c_dfDIKeyboard	library_data	DINPUT.LIB dilib2.obj; complete 0x1018-byte section matches with all 257 DIR32 targets resolved against DXGUID.LIB and its object-format array
+0x05a470	0x18	_c_dfDIMouse	library_data	DINPUT.LIB dilib1.obj; complete 0x88-byte section matches with all 4 DIR32 targets resolved against DXGUID.LIB and its object-format array
+0x065908	0x10	_GUID_SysMouse	library_data	DXGUID.LIB dxguid.obj; unique exact 16-byte GUID, passed to IDirectInput::CreateDevice
+0x065918	0x10	_GUID_SysKeyboard	library_data	DXGUID.LIB dxguid.obj; unique exact 16-byte GUID, passed to IDirectInput::CreateDevice
+0x070e78	0x18	_DoubleFormat	library_data	LIBC intrncvt.obj static DoubleFormat; unique exact 24-byte object, referenced by _ld12tod
+0x070e90	0x18	_FloatFormat	library_data	LIBC intrncvt.obj static FloatFormat; unique exact 24-byte object, referenced by _ld12tof
+0x090c10	0x101	__mbctype	library_data	LIBC masked-coff:mbctype.obj; game code reads _mbctype+1 through the _ismbblead macro
+0x06e6dc	0x4	__aexit_rtn	library_data	LIBC wincrt0.obj named .data object; DIR32 initializer resolves to __exit (0x5bfc0), adjacent app_type DWORD is 2; referenced by amsg_exit
+0x090e8c	0x4	___error_mode	library_data	LIBC wincrt0.obj named .bss object at +8; startup relocation anchors aenvptr at 0x90e84, complete 12-byte BSS is zero; both error handlers reference +8
+0x070be0	0x4	?__pUnexpected@@3P6AXXZA	library_data	LIBC hooks.obj named .data object +0; DIR32 initializer targets terminate (0x5fb50)
+0x070be4	0x4	?__pInconsistency@@3P6AXXZA	library_data	LIBC hooks.obj named .data object +4; DIR32 initializer targets terminate (0x5fb50), referenced by inconsistency
+0x090ee8	0x4	?__pTerminate@@3P6AXXZA	library_data	LIBC hooks.obj named zero-initialized .bss object; sole handler-pointer relocation in uniquely verified terminate resolves here
+0x091038	0x4	_pOldExceptFilter	library_data	LIBC unhandld.obj static pOldExceptFilter; sole 4-byte zero BSS object, shared by exact CxxSetUnhandledExceptionFilter and CxxRestoreUnhandledExceptionFilter bodies
+0x090ed4	0x4	__newmode	library_data	LIBC _newmode.obj sole named 4-byte zero BSS object; malloc DIR32 +1 resolves here
+0x06e6cc	0x10	__NLG_Destination	library_data	LIBC exsup.obj named 16-byte .data object; unique exact bytes including signature 0x19930520, referenced by both NLG notification entries
+0x090e78	0x1	__exitflag	library_data	LIBC crt0dat.obj named BSS object at +0x40; endstdio compares a byte, zero value and shared startup BSS offsets agree
+0x06e978	0x18	__cfltcvt_tab	library_data	LIBC cmiscdat.obj sole named 24-byte object; six DIR32 initializers target fptrap, cfltcvt_init references offsets 0..20
+0x090e34	0x4	__adjust_fdiv	library_data	LIBC fpinit.obj named BSS DWORD at +4; fpmath stores the fdiv-test result here
+0x06e3f8	0x4	__FPinit	library_data	LIBC fpinit.obj named .data pointer at +8; initializer targets fpmath (0x5b1e0), full 20-byte object bytes and relocations agree
+0x068000	0x4	___xc_a	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XCA; cinit ordered boundary relocation resolves here
+0x06801c	0x4	___xc_z	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XCZ; cinit ordered boundary relocation resolves here
+0x068020	0x4	___xi_a	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XIA; cinit ordered boundary relocation resolves here
+0x068030	0x4	___xi_z	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XIZ; cinit ordered boundary relocation resolves here
+0x064ae8	0x10	_IID_IDirectDraw2	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirectDraw::QueryInterface
+0x064e08	0x10	_IID_IDirect3D2	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirectDraw2::QueryInterface
+0x064ec8	0x10	_IID_IDirect3DTexture2	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirectDrawSurface::QueryInterface
+0x064e28	0x10	_IID_IDirect3DRampDevice	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirect3D2::CreateDevice
+0x064e38	0x10	_IID_IDirect3DRGBDevice	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirect3D2::CreateDevice
+0x064e48	0x10	_IID_IDirect3DHALDevice	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirect3D2::CreateDevice
+0x064e58	0x10	_IID_IDirect3DMMXDevice	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirect3D2::CreateDevice

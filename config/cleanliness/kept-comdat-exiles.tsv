@@ -1,0 +1,10 @@
+# Kept-COMDAT exile bodies - DRAINED 2026-08-15 (zero rows).
+#
+# Every row this ledger carried is dissolved: the bodies now live in their
+# retail-evidenced homes (header inlines materialized by their keeper TUs, or
+# out-of-line definitions in the keeper compiland), so the tu-order gate's
+# contiguity spans need no exclusions. The file remains because the verify
+# graph lists it as an input; a NEW row here is a regression - home the body
+# instead (https://github.com/sushi-shi/gruntz-decomp/blob/b27b05deb249e4cacbb29f55f17b469ecfe56f26/docs/link-text-layout.md).
+#
+# rva	owner_unit	host_unit	name	evidence

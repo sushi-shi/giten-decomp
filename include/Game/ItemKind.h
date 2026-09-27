@@ -1,0 +1,26 @@
+#ifndef GITEN_GAME_ITEMKIND_H
+#define GITEN_GAME_ITEMKIND_H
+
+#include <EnumDomain.h>
+#include <Ints.h>
+
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(ItemKind, u8)
+    ITEM_KIND_INCENSE = 2,
+    ITEM_KIND_SOFTWARE = 7,
+    ITEM_KIND_KEYCARD = 8,
+    ITEM_KIND_GEM = 9,
+    ITEM_KIND_SCENARIO = 10,
+    ITEM_KIND_WEAPON = 11,
+    ITEM_KIND_GUN = 12,
+    ITEM_KIND_AMMO = 13,
+    ITEM_KIND_FULL_BODY_ARMOR = 14,
+    ITEM_KIND_HEAD_ARMOR = 15,
+    ITEM_KIND_BODY_ARMOR = 16,
+    ITEM_KIND_ARM_ARMOR = 17,
+    ITEM_KIND_LEG_ARMOR = 18,
+    ITEM_KIND_ACCESSORY = 19,
+GZ_ENUM_END_SPLIT(ItemKind)
+// clang-format on
+
+#endif // GITEN_GAME_ITEMKIND_H

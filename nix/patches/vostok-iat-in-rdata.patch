@@ -1,0 +1,86 @@
+diff -ru a/src/main.rs b/src/main.rs
+--- a/src/main.rs	2026-09-26 00:59:32.158499903 +0200
++++ b/src/main.rs	2026-09-26 00:59:51.918768417 +0200
+@@ -302,14 +302,35 @@
+         let Some(data_sec) = exe.section_by_name(".data") else {
+             anyhow::bail!("Missing .data section");
+         };
+-        let Some(idata_sec) = exe.section_by_name(".idata") else {
+-            anyhow::bail!("Missing .idata section");
+-        };
+-
+         let text = build_sec_info(text_sec)?;
+         let rdata = build_sec_info(rdata_sec)?;
+         let data = build_sec_info(data_sec)?;
+-        let idata = build_sec_info(idata_sec)?;
++        let idata = match exe.section_by_name(".idata") {
++            Some(idata_sec) => build_sec_info(idata_sec)?,
++            // A non-incremental link can merge the import tables into .rdata: take the
++            // IAT from the data directory and give it a synthetic section id past the
++            // real ones - the segment the synthetic PDB assigns to its __imp_ symbols.
++            None => {
++                let dir = exe
++                    .data_directories()
++                    .get(object::pe::IMAGE_DIRECTORY_ENTRY_IAT)
++                    .filter(|dir| dir.virtual_address.get(LittleEndian) != 0)
++                    .ok_or_else(|| anyhow::anyhow!("Missing .idata section and IAT directory"))?;
++                let rva = dir.virtual_address.get(LittleEndian).to_usize();
++                let size = dir.size.get(LittleEndian).to_usize();
++                let offset = rva
++                    .checked_sub(rdata.rva)
++                    .filter(|offset| offset + size <= rdata.data.len())
++                    .ok_or_else(|| anyhow::anyhow!("IAT {rva:#x} is not inside .rdata"))?;
++                SecInfo {
++                    rva,
++                    va: rva + image_base.to_usize(),
++                    size,
++                    id: u16::try_from(exe.sections().count() + 1)?,
++                    data: &rdata.data[offset..offset + size],
++                }
++            }
++        };
+ 
+         Ok(Self {
+             image_base,
+diff -ru a/src/relocs.rs b/src/relocs.rs
+--- a/src/relocs.rs	2026-09-26 00:59:32.183215245 +0200
++++ b/src/relocs.rs	2026-09-26 00:59:52.023964198 +0200
+@@ -380,8 +380,10 @@
+ 
+             let coff_data_reloc = &mut coff_data[reloc_rva..reloc_rva + 4];
+ 
++            // The IAT may lie inside .rdata (no .idata section): classify it first.
++            let in_iat = (env.idata.rva..env.idata.rva + env.idata.size).contains(&target_rva);
+             match () {
+-                () if (env.text.rva..env.text.rva + env.text.size).contains(&target_rva) => {
++                () if !in_iat && (env.text.rva..env.text.rva + env.text.size).contains(&target_rva) => {
+                     // Undo the /INCREMENTAL thunk indirection: the object's
+                     // DIR32 named the body, never the link-generated thunk.
+                     let target_rva =
+@@ -428,7 +430,7 @@
+                         },
+                     );
+                 }
+-                () if (env.rdata.rva..env.rdata.rva + env.rdata.size).contains(&target_rva) => {
++                () if !in_iat && (env.rdata.rva..env.rdata.rva + env.rdata.size).contains(&target_rva) => {
+                     if let Some((addend, owner, _owner_rva)) = resolve_manifest_alias(
+                         reloc_aliases,
+                         &symbols.constants,
+@@ -549,7 +551,7 @@
+                         }
+                     };
+                 }
+-                () if (env.data.rva..env.data.rva + env.data.size).contains(&target_rva) => {
++                () if !in_iat && (env.data.rva..env.data.rva + env.data.size).contains(&target_rva) => {
+                     if let Some((addend, owner, owner_rva)) = resolve_manifest_alias(
+                         reloc_aliases,
+                         &symbols.statics,
+@@ -689,7 +691,7 @@
+                         },
+                     );
+                 }
+-                () if (env.idata.rva..env.idata.rva + env.idata.size).contains(&target_rva) => {
++                () if in_iat => {
+                     let Some(symbol) = symbols.imports.get(&target_rva) else {
+                         anyhow::bail!(
+                             "IAT relocation target {target_rva:#x} has no exact PDB symbol"

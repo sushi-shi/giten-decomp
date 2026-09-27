@@ -1,0 +1,455 @@
+"""giten.verify.undefined_closure - fake views + declared-only aliases (normal).
+
+The MERGED declared_only + view_debt check: one mechanism, one gate. objdiff's
+% is gameable by a fake VIEW - a declared-only method makes a call compile and
+reloc-masking hides the target - but the SYMBOL survives: an undefined
+external that NO base obj defines and retail's delinked namespace never
+names. Two reports off one closure:
+
+  * PURE-PHANTOM CLASSES (view_debt): a class with >= 1 such phantom method,
+    ZERO defined bodies anywhere, no admitted RTTI/vtable row, and not a
+    library class - a fake view by construction. Plus project-local
+    definitions that SHADOW a library class. Both FATAL.
+  * DECLARED-ONLY debt (declared_only): the rest - free functions, methods on
+    real classes, data externs - undefined everywhere, absent from the
+    delinked target namespace, and resolvable from no toolchain .LIB.
+    Ratcheted against config/cleanliness/declared-only-baseline.tsv (absent
+    file = empty set = pure fail-closed).
+
+A third report covers DATA externs (COFF type not DT_FUNCTION), which the
+two above leave to it:
+
+  * PLACEHOLDER EXTERNS: a datum some base obj references through a plain
+    `extern` (the owner module's header) whose identity no base obj provides:
+    no live base obj defines it with a Model claim, no retail provider table
+    names it, it is not an IAT import and no toolchain .LIB supplies it. With
+    `data_matching = true` (config/compare.toml) every row FAILS until the
+    owner TU defines and claims the global; with `false` the rows are the
+    counted placeholder-extern debt, listed and passing - so flipping the
+    switch back turns this list into the "define these" worklist.
+
+    python3 -m giten.verify.undefined_closure [--list] [--update]
+"""
+
+from __future__ import annotations
+
+import re
+import struct
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+from giten.core.coff import Coff
+from giten.core.paths import BUILD, CONFIG, REPO
+
+TARGET = BUILD / "delink/named"
+BASE = BUILD / "objdiff/base"
+BASELINE = CONFIG / "cleanliness/declared-only-baseline.tsv"
+LIB_CACHE = BUILD / "gen/lib_symbols.txt"
+
+LIBRARY_CLASSES = {
+    "CString", "CObject", "CWnd", "CDialog", "CDC", "CGdiObject", "CFile",
+    "CArchive", "CException", "CMemoryException", "CFileException",
+    "CNotSupportedException", "CPtrList", "CObList", "CObArray", "CStringList",
+    "CPtrArray", "CByteArray", "CDWordArray", "CMapStringToOb",
+    "CMapStringToPtr", "CMapPtrToPtr", "CList", "CMap", "CArray", "CRgn",
+    "CBitmap", "CFont", "CPen", "CBrush", "CPalette", "CMenu", "CImageList",
+    "CTime", "CTimeSpan", "CPoint", "CRect", "CSize", "CRuntimeClass",
+    "CCmdTarget", "CWinApp", "CWinThread", "CFrameWnd", "CView", "CDocument",
+    "CControlBar", "CStatic", "CButton", "CEdit", "CListBox", "CComboBox",
+    "CScrollBar",
+}
+LIBRARY_EXTRA = {
+    "ios", "istream", "ostream", "iostream", "ifstream", "ofstream", "fstream",
+    "filebuf", "streambuf", "strstreambuf", "istrstream", "ostrstream",
+    "strstream", "stdiobuf", "Iostream_init", "exception", "type_info",
+    "bad_cast", "bad_typeid", "CMemFile", "CStdioFile", "CPaintDC",
+    "CDumpContext", "CArchiveException", "CSize", "AFX_MODULE_STATE",
+    "CStringArray", "CWordArray", "CUIntArray",
+}
+
+_EXTERNAL = 2
+#: COFF complex type DT_FUNCTION, in the high nibble of the symbol type.
+_DT_FUNCTION = 2
+#: Model channels that PROVIDE an identity from a retail table rather than
+#: from a source definition (a source claim must also be defined to count).
+_SOURCE_CHANNELS = ("src", "src_compgen", "src_dyninit", "src_data_compgen")
+
+
+def live_base_objs() -> list[Path]:
+    from giten import manifest
+    live = {u["unit"] for u in manifest.units()}
+    return [p for p in sorted(BASE.glob("*.obj")) if p.stem in live]
+
+
+def _sym_sets(paths) -> tuple[set[str], set[str]]:
+    """(defined, undefined) across `paths` (COMMONs count as defined)."""
+    defined, undef = set(), set()
+    for p in paths:
+        try:
+            c = Coff(p)
+        except (ValueError, OSError, struct.error):
+            continue
+        for name, value, sec, st in c.symbols:
+            if name.startswith("."):
+                continue
+            if sec > 0:
+                defined.add(name)
+            elif sec == 0 and st == _EXTERNAL:
+                (defined if value else undef).add(name)
+    return defined, undef
+
+
+#: first line of LIB_CACHE - the archive set the cached symbols came from
+_CACHE_STAMP = "# libs "
+
+
+def _toolchain_libs() -> list[Path]:
+    """Every archive the REAL link line searches.
+
+    The toolchain/SDK dirs, PLUS the import libs we synthesize into
+    build/lib and pass to link.exe by substitution (giten.graph.link
+    LINK_LIBS/implib): mss32 and smackw32 ship no .LIB, so their
+    `__imp__AIL_*` / `__imp__Smack*` imports resolve from ours. Scanning
+    only the toolchain made the closure check answer for a link line we do
+    not use, and report 26 symbols as guaranteed-unresolved that the real
+    link resolves.
+    """
+    import os
+    libs: list[Path] = []
+    for env in ("MSVC_DIR", "DXSDK_DIR"):
+        d = os.environ.get(env)
+        if d:
+            for sub in ("lib", "Lib"):
+                p = Path(d) / sub
+                if p.is_dir():
+                    libs += [q for q in p.iterdir()
+                             if q.suffix.lower() == ".lib"]
+    from giten.graph import implib
+    libs += [p for p in implib.on_disk() if p.is_file()]
+    return sorted(libs)
+
+
+def _lib_stamp(libs: list[Path]) -> str:
+    """Identity of the archive SET: path + size of every .LIB.
+
+    The cache is keyed on this because $MSVC_DIR is a nix store path: a
+    toolchain bump changes it, and a cache keyed on nothing survives the bump
+    and answers for the OLD toolchain forever. Measured 2026-08-16: the r2
+    cache was still answering under r3 (46,866 live symbols vs 56,474 cached;
+    7,106 live-only, 16,714 cache-only), so `verify link-tier` called 42
+    resolvable Win32 imports "a guaranteed unresolved external" while the
+    candidate link itself reported ZERO unresolved.
+    """
+    import hashlib
+    h = hashlib.sha1()
+    for p in libs:
+        try:
+            h.update(f"{p}:{p.stat().st_size}\n".encode())
+        except OSError:
+            h.update(f"{p}:?\n".encode())
+    return h.hexdigest()
+
+
+def lib_symbols() -> set[str]:
+    """Every symbol the toolchain .LIB archives can supply, read in-process
+    from each archive's first linker member (the linker's own answer to 'can
+    this resolve').
+
+    Cached, but keyed on the archive set (see _lib_stamp) so a toolchain bump
+    re-scans instead of answering for the previous one. An EMPTY scan is never
+    cached and never replaces a populated cache: outside the dev shell
+    $MSVC_DIR is unset, and an empty answer poisons every consumer.
+    """
+    libs = _toolchain_libs()
+    stamp = _lib_stamp(libs)
+    cached: set[str] = set()
+    if LIB_CACHE.is_file():
+        lines = LIB_CACHE.read_text(errors="ignore").split("\n")
+        head = lines[0] if lines else ""
+        cached = {s for s in lines if s and not s.startswith("#")}
+        if cached and head == _CACHE_STAMP + stamp:
+            return cached
+    syms: set[str] = set()
+    for lib in libs:
+        try:
+            b = lib.read_bytes()
+        except OSError:
+            continue
+        if not b.startswith(b"!<arch>\n"):
+            continue
+        # first linker member: big-endian count, offsets, then NUL-joined names
+        off = 8
+        if b[off:off + 1] != b"/":
+            continue
+        size = int(b[off + 48:off + 58].split()[0])
+        body = b[off + 60:off + 60 + size]
+        if len(body) < 4:
+            continue
+        n = struct.unpack_from(">I", body, 0)[0]
+        names = body[4 + 4 * n:].split(b"\0")
+        syms.update(nm.decode("latin-1") for nm in names[:n] if nm)
+    if not syms:
+        return cached          # no toolchain reachable: keep the last answer
+    LIB_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    LIB_CACHE.write_text(_CACHE_STAMP + stamp + "\n" + "\n".join(sorted(syms)))
+    return syms
+
+
+def _class_of_method(sym: str) -> str | None:
+    """?Method@CClass@@<member-code>... -> CClass (methods only, not data)."""
+    m = re.match(r"\?[^@]+((?:@[A-Za-z_]\w*)+)@@([A-Za-z])", sym)
+    return m.group(1).split("@")[1] if m else None
+
+
+def _sym_class(sym: str) -> str | None:
+    m = re.match(r"\?\?(?:_?[0-9A-Z])([A-Za-z_]\w*)?@@", sym)
+    if m:
+        return m.group(1)
+    m = re.match(r"\?[^@]+((?:@[A-Za-z_]\w*)+)@@", sym)
+    if m:
+        return m.group(1).split("@")[1]
+    return None
+
+
+def _is_library(sym: str, libs: set[str]) -> bool:
+    if not sym.startswith("?"):
+        return True                      # C symbol / __imp_ - the link audit's turf
+    if sym in libs or sym.lstrip("_") in libs:
+        return True
+    c = _sym_class(sym)
+    if c is not None:
+        return c in LIBRARY_CLASSES or c in LIBRARY_EXTRA or c.startswith("std")
+    if sym.startswith("??"):
+        return True                      # class-less global operator
+    return bool(re.match(r"\?_?Afx", sym))
+
+
+def _rtti_classes() -> set[str]:
+    """Classes with an admitted vtable row (the Model's data_vtables names)."""
+    from giten.model import resolve
+    out = set()
+    for b in resolve().data:
+        if b.kind == "vtable" and b.name:
+            m = re.search(r"\?\?_7([A-Za-z_]\w*)@", b.name)
+            if m:
+                out.add(m.group(1))
+    return out
+
+
+CLASS_DEF_RE = re.compile(r"\b(?:class|struct)\s+([A-Za-z_]\w*)\s*(?::[^;{}]*)?\{",
+                          re.S)
+
+
+def source_library_shadows() -> list[tuple[str, str]]:
+    """Project definitions that replace an MFC/CRT class (the allowlist's
+    blind spot, closed at the source-definition boundary)."""
+    out = []
+    for root in (REPO / "include", REPO / "src"):
+        for path in root.rglob("*"):
+            if path.suffix.lower() not in {".h", ".hpp", ".c", ".cpp"}:
+                continue
+            text = re.sub(r"/\*.*?\*/|//[^\n]*", "",
+                          path.read_text(encoding="utf-8", errors="replace"),
+                          flags=re.S)
+            for name in CLASS_DEF_RE.findall(text):
+                if name in LIBRARY_CLASSES:
+                    out.append((path.relative_to(REPO).as_posix(), name))
+    return sorted(out)
+
+
+def analyse():
+    """(phantom {class: [syms]}, shadows, declared_only set)."""
+    bdef, bund = _sym_sets(live_base_objs())
+    tdef, tund = _sym_sets(sorted(TARGET.glob("*.obj")))
+    never = bund - bdef
+    libs = lib_symbols()
+    rtti = _rtti_classes()
+    defined_cls = {c for c in (_class_of_method(s) for s in bdef
+                               if s.startswith("?")) if c}
+
+    phantom: dict[str, list] = defaultdict(list)
+    for s in never:
+        if not s.startswith("?"):
+            continue
+        c = _class_of_method(s)
+        if not c or c in LIBRARY_CLASSES or c.startswith("std"):
+            continue
+        if c in defined_cls or c in rtti:
+            continue
+        phantom[c].append(s)
+
+    alias = never - tdef - tund
+    data_refs, _defined = _data_externs(live_base_objs())
+    declared = {s for s in alias
+                if not _is_library(s, libs) and s not in data_refs}
+    return phantom, source_library_shadows(), declared
+
+
+def _data_externs(paths) -> tuple[dict[str, set[str]], set[str]]:
+    """({undefined data external: {referencing unit}}, {defined names}) over
+    `paths` - a COMMON is a definition, a DT_FUNCTION reference is not data."""
+    from giten.compare.canonicalize import CoffObject
+    refs: dict[str, set[str]] = defaultdict(set)
+    defined: set[str] = set()
+    for p in paths:
+        try:
+            coff = CoffObject(Path(p).read_bytes())
+        except (ValueError, OSError, struct.error):
+            continue
+        for sym in coff.symbols.values():
+            if sym.name.startswith("."):
+                continue
+            if sym.section > 0 or (sym.section == 0 and sym.value
+                                   and sym.storage_class == _EXTERNAL):
+                defined.add(sym.name)
+            elif (sym.section == 0 and sym.storage_class == _EXTERNAL
+                    and (sym.typ >> 4) & 0x3 != _DT_FUNCTION):
+                refs[sym.name].add(Path(p).stem)
+    return refs, defined
+
+
+def _data_claims() -> tuple[set[str], set[str]]:
+    """(names a SOURCE channel claims, names a retail PROVIDER table binds)."""
+    from giten.model import resolve
+    src, provided = set(), set()
+    for b in resolve().data:
+        if b.channel and b.name:
+            (src if b.channel in _SOURCE_CHANNELS else provided).add(b.name)
+    return src, provided
+
+
+def placeholder_externs(paths=None, libs=None) -> dict[str, dict]:
+    """{symbol: {units, reason}} - the placeholder-extern debt.
+
+    reason is `undefined` (no live base obj defines it) or `unclaimed` (a base
+    obj defines it but no Model claim names it, so the delinker has no
+    identity to give the referencing unit's target either)."""
+    paths = live_base_objs() if paths is None else paths
+    refs, defined = _data_externs(paths)
+    if not refs:
+        return {}
+    libs = lib_symbols() if libs is None else libs
+    src, provided = _data_claims()
+    out = {}
+    for name, units in refs.items():
+        if name.startswith("__imp_") or name in libs or name in provided:
+            continue
+        if name in defined and name in src:
+            continue
+        out[name] = {"units": sorted(units),
+                     "reason": "unclaimed" if name in defined else "undefined"}
+    return out
+
+
+def placeholder_lines(debt: dict[str, dict]) -> list[str]:
+    return [f"placeholder extern {name} ({row['reason']}; referenced by "
+            f"{', '.join(row['units'])}) - define and DATA()-claim it in its "
+            f"owner TU"
+            for name, row in sorted(debt.items())]
+
+
+def _read_baseline() -> set[str]:
+    if not BASELINE.is_file():
+        return set()
+    return {ln.split("\t")[0].strip() for ln in BASELINE.read_text().splitlines()
+            if ln.strip() and not ln.startswith("#")}
+
+
+def _write_baseline(syms) -> None:
+    rows = "\n".join(sorted(syms))
+    BASELINE.write_text(
+        "# declared-only debt (giten.verify.undefined_closure): symbols some "
+        "base obj\n# references that NO base obj defines and retail's "
+        "namespace never names -\n# fabricated aliases / phantom externs. "
+        "RATCHET: new rows are FATAL; fix rows,\n# then --update. Drive to 0.\n"
+        + rows + ("\n" if rows else ""))
+
+
+def gate_findings() -> list[str]:
+    """The FAILING findings; with data matching on they include every
+    placeholder extern (`gate_verdict` also returns the relaxed-mode debt)."""
+    return gate_verdict()[0]
+
+
+def gate_verdict() -> tuple[list[str], list[str]]:
+    """(failing findings, advisory placeholder-extern debt)."""
+    from giten.core import data_matching
+    if not BASE.is_dir() or not any(BASE.glob("*.obj")):
+        return ["undefined-closure: no base objs - run `giten build` first "
+                "(never vacuous)"], []
+    debt = placeholder_lines(placeholder_externs())
+    hard = _closure_findings()
+    if data_matching.enabled():
+        return hard + debt, []
+    return hard, debt
+
+
+def _closure_findings() -> list[str]:
+    phantom, shadows, declared = analyse()
+    out = []
+    for c in sorted(phantom, key=lambda c: -len(phantom[c])):
+        out.append(f"pure-phantom class {c} ({len(phantom[c])} declared-only "
+                   f"method(s), no body, no RTTI): "
+                   + " ".join(sorted(phantom[c])[:4]))
+    for path, name in shadows:
+        out.append(f"library-class shadow: {path} defines {name}")
+    base = _read_baseline()
+    for s in sorted(declared - base):
+        out.append(f"NEW declared-only alias: {s} (defined nowhere, unknown "
+                   f"to retail, resolvable from no .LIB)")
+    return out
+
+
+def main(argv=None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser(prog="giten verify undefined-closure",
+                                 description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--list", action="store_true",
+                    help="list every phantom class and declared-only symbol")
+    ap.add_argument("--update", action="store_true",
+                    help="MANUAL bless: rewrite the declared-only baseline")
+    a = ap.parse_args(argv)
+    if not BASE.is_dir() or not any(BASE.glob("*.obj")):
+        print("undefined-closure: no base objs - run `giten build` first",
+              file=sys.stderr)
+        return 1
+    from giten.core import data_matching
+    phantom, shadows, declared = analyse()
+    base = _read_baseline()
+    new = declared - base
+    fixed = base - declared
+    debt = placeholder_externs()
+    print(f"undefined-closure: {len(phantom)} pure-phantom class(es), "
+          f"{sum(len(v) for v in phantom.values())} phantom method(s); "
+          f"{len(shadows)} library shadow(s); declared-only {len(declared)} "
+          f"(baseline {len(base)}, fixed {len(fixed)}, NEW {len(new)}); "
+          f"placeholder externs {len(debt)} ({data_matching.label()}: "
+          f"{'fatal' if data_matching.enabled() else 'listed debt'})")
+    if a.update:
+        _write_baseline(declared)
+        print(f"undefined-closure: baseline rewritten ({len(declared)} row(s))")
+        return 0
+    if a.list:
+        for c in sorted(phantom):
+            print(f"  {c}:")
+            for s in sorted(phantom[c]):
+                print(f"      {s}")
+        for s in sorted(declared):
+            print(("  NEW " if s in new else "      ") + s)
+        for line in placeholder_lines(debt):
+            print("  " + line)
+    bad = gate_findings()
+    if bad:
+        for b in bad:
+            print("  " + b, file=sys.stderr)
+        return 1
+    if fixed:
+        print(f"undefined-closure: {len(fixed)} baselined row(s) now resolved "
+              f"- ratchet down with --update")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

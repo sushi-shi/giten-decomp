@@ -1,0 +1,5 @@
+# data-tu-order baseline: ordinary-data defs that land inside another
+# TU's same-storage band (known scattered singletons / accepted homes).
+# DRAINED 2026-08-15: zero crossings remain; the file stays because the
+# verify graph lists it as an input. Regenerate: python3 -m giten.verify.data_tu_order --update
+# rva	name	owner_cpp	container_cpp	storage

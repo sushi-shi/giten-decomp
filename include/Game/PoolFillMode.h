@@ -1,0 +1,11 @@
+#ifndef GITEN_GAME_POOLFILLMODE_H
+#define GITEN_GAME_POOLFILLMODE_H
+
+#include <EnumDomain.h>
+#include <Ints.h>
+
+GZ_ENUM_BEGIN_SPLIT(PoolFillMode, i16)
+POOL_FILL_TO_MAX = 0, POOL_FILL_TO_USHORT_MAX = 1, POOL_FILL_TO_DOUBLE_MAX = 2,
+                      GZ_ENUM_END_SPLIT(PoolFillMode)
+
+#endif // GITEN_GAME_POOLFILLMODE_H

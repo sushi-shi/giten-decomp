@@ -1,0 +1,19 @@
+#ifndef GITEN_GAME_CONDITIONID_H
+#define GITEN_GAME_CONDITIONID_H
+
+#include <Enums.h>
+
+// clang-format off
+GZ_ENUM_BEGIN(ConditionId)
+    CONDITION_ASH = 0,
+    CONDITION_DEAD = 1,
+    CONDITION_DYING = 2,
+    CONDITION_ZOMBIE = 8,
+    CONDITION_SLEEP = 13,
+    CONDITION_POISON = 15,
+    CONDITION_DOZE = 25,
+    CONDITION_SEVERE_POISON = 32
+GZ_ENUM_END(ConditionId);
+// clang-format on
+
+#endif // GITEN_GAME_CONDITIONID_H

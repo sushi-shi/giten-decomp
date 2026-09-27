@@ -1,0 +1,24 @@
+#ifndef GITEN_GAME_BATTLESTAT_H
+#define GITEN_GAME_BATTLESTAT_H
+
+#include <Enums.h>
+
+// Known combat outputs in the 24-entry derived-stat array.
+// clang-format off
+GZ_ENUM_BEGIN(BattleStatIndex)
+    BATTLE_STAT_WEAPON_ACCURACY = 2,
+    BATTLE_STAT_WEAPON_POWER = 3,
+    BATTLE_STAT_WEAPON_EVASION = 4,
+    BATTLE_STAT_WEAPON_DEFENSE = 5,
+    BATTLE_STAT_GUN_ACCURACY = 8,
+    BATTLE_STAT_GUN_POWER = 9,
+    BATTLE_STAT_GUN_EVASION = 10,
+    BATTLE_STAT_GUN_DEFENSE = 11,
+    BATTLE_STAT_MAGIC_ACCURACY = 14,
+    BATTLE_STAT_MAGIC_POWER = 15,
+    BATTLE_STAT_MAGIC_EVASION = 16,
+    BATTLE_STAT_MAGIC_DEFENSE = 17,
+GZ_ENUM_END(BattleStatIndex);
+// clang-format on
+
+#endif // GITEN_GAME_BATTLESTAT_H

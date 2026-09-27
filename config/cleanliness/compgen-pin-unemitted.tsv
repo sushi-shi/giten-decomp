@@ -1,0 +1,26 @@
+# RVA_COMPGEN pins cl does not emit in their own TU. Gated by
+# giten.audit.compgen_pins --gate: a pin NOT listed here is FATAL, because a
+# dropped pin silently removes a compiler-generated body from the scored
+# universe and surfaces only as the README's anonymous (unmatched) row.
+#
+# A row here is an EMISSION problem, never a matching one: the body is
+# compiler-generated and byte-correct the moment cl emits it.
+#
+# MECHANISM (measured 2026-08-09, docs/patterns/inline-budget-emits-ool-comdat.md):
+# cl 5.0 keeps ONE inline-expansion budget PER CALLING FUNCTION, shared across
+# every inline expanded there. Sites that overrun it become real calls, and
+# THOSE DECLINED SITES ARE WHAT EMIT THE COMDAT. So retail having both an
+# out-of-line body and inline expansions needs no device at all - just `inline`
+# in the header and callers that expand enough to overrun the budget.
+# The budget is per CALLER, not per TU, and caller SIZE alone does nothing
+# (2 sites in a caller padded 86 -> 3779 instructions still both inlined).
+#
+# Therefore a row below means OUR CALLERS INLINE LESS THAN RETAIL'S DID - a
+# reconstruction gap in the callers, not a missing device. Fix the callers.
+#
+# rva	symbol	reason
+#
+# EMPTY as of 2026-08-09: every RVA_COMPGEN pin in the tree is emitted by its
+# own TU. The last row here, 0xd5d70, was not an emission problem at all - it
+# was a class-ownership bug (the body is ~CWapObj, not ~CLoadable).
+

@@ -1,0 +1,4 @@
+# Retail DDS.EXE link order - one row per unit's contiguous contribution band,
+# ascending band start = link order. Empty until matched units prove bands.
+#
+# seq	unit	start	end	class	module	n	evidence	notes

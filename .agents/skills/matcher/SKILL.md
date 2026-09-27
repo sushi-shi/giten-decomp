@@ -1,0 +1,162 @@
+---
+name: matcher
+description: Reconstruct and byte-match Giten C++ functions, translation units, classes, globals, and referents against retail DDS.EXE with MSVC 5.0 SP3. Use for function matching, low historical-MAX work, TU reconstruction, class/type recovery, vtable or calling-convention recovery, relocation/referent correction, data modeling, and diagnosing a plateau before declaring it bounded or using the permuter.
+---
+
+# Giten matcher
+
+Recover the source structure that explains retail bytes. `AGENTS.md` holds the
+authority, modeling rules, and validation cadence; this skill is the working
+loop. Use `wall-identifier` to classify a plateau and `permute` only for a
+diagnosed register/schedule residue.
+
+Do not write per-function plan files or formal matching plans unless the user
+asks. A brief note of target, hypothesis, and next compiler control is enough.
+
+## Choose work
+
+- Prioritize missing/unmatched bodies before polishing reconstructed walls:
+  recovering their callers and callees exposes helpers that were inlined.
+  Include functions without baseline rows when deriving the queue; the scored
+  inventory alone is not a complete list of missing bodies. Carry recovered
+  helper boundaries across every supported site.
+- Work the lowest HIST rows first from `giten walls inventory --todo`
+  (default output is truncated; pass `--limit N`), or recover `HIST > MAX`
+  rows (CUR/MAX/HIST are defined in `AGENTS.md`). A bounded `@early-stop`
+  stays in that derived queue; there is no hand-kept exclusion ledger.
+- Do not revisit a function whose MAX is 100%. Do not investigate an
+  unrelated current-score dip; the MAX gate decides regressions at merge
+  preparation (`giten build verify`).
+- Before inventing a spelling, run `giten walls priors <rva>`: many rows
+  already carry a written verdict in the source comment or review ledger.
+
+## Evidence pass (before editing)
+
+```sh
+giten walls diagnose <rva> --asm   # first divergence class, counts, both sides
+giten walls semdiff <rva>          # operands, FP opcodes, constants, ordered referents
+giten sema disasm <rva>            # retail assembly (never a decompile)
+giten sema xref <rva>              # callers/callees, identity
+giten sema class <Class>           # vtable slots, hierarchy
+```
+
+For switches, compare each case-to-arm mapping against retail's jump tables,
+including shared arms and the default path, using assembly and table data.
+
+Also read the whole source function, declaration, callers, callees, adjacent
+family members, class layout, and any lineage candidate
+(`giten lineage inventory`). Resolve identity or layout doubts before calling
+a row codegen residue. Mine history every time:
+
+```sh
+git log -S'<function-name>' -- src include config/match_baseline.tsv
+git log -G'<mangled-name>.*100\.0000' -- config/match_baseline.tsv
+```
+
+For `HIST > MAX`, recover the exact source-hash transition before
+inventing new forms.
+
+## Reconstruct, then compare
+
+Prioritize hypotheses by evidence:
+
+1. surviving/source-oracle body and complete family;
+2. identity, ABI, ownership, type, layout, referent, or missing-body defects;
+3. authentic inline/helper/macro/operator/constructor boundaries;
+4. local census, scope, lifetime, initialization, parameter reuse, and
+   statement/control-flow shape;
+5. expression, loop, library/MFC idiom, and evaluation order;
+6. classified compiler-state experiments, only after semantics, call set,
+   CFG, constants, and referents are credible.
+
+A missing out-of-line copy is not evidence against an inline helper. In the
+cl 5.0 inline-budget model, an eligible trivial accessor or setter with a
+front-end cost of at most 40 is budget-exempt and can expand at every site,
+leaving no out-of-line copy in retail. Eligibility still depends on the TU's
+compiler settings and visible body; this does not override Giten's `/Ob0`
+Windows-layer build.
+
+Retail's bytes may not distinguish a trivial accessor from direct member
+access, but inline sites affect the caller's budget arithmetic. When an
+inline-budget measurement (`giten walls inline-model`, threshold probes)
+shows missing sites, recover the repeated accessor spellings that explain
+them and apply them across every supported site in the tree. Do not require
+an out-of-line retail copy as proof of each accessor, or invent helpers solely
+to pad the budget. Use the `holista` skill to recover the abstraction from
+repeated operations, ownership, and caller/callee evidence.
+
+[references/levers.md](references/levers.md) catalogs the levers that have
+produced exact closures; scan it so the search is not limited to the first
+familiar explanation. `docs/patterns/INDEX.md` lists compiler mechanisms.
+
+For each candidate, name the source change and the expected emitted delta,
+run `giten match <unit>`, and compare from the first
+real divergence: instructions, constants, call/CFG structure, and ordered
+relocations. Fuzzy alone is insufficient. A single dip does not reject a
+sourced or structurally convergent base, but confirm the
+feature you are chasing was absent from the baseline first.
+
+"Checked" means a real-TU A/B was compiled, or retail/source evidence proves
+the form inapplicable. Do not mix several independent levers in one
+experiment. Do not retain probes, unused declarations, artificial locals, or
+distorted source.
+
+## Classify the plateau
+
+Route in this order; do not call a wall class N while class N-1 still diverges:
+
+1. **Referent:** masked bytes identical, relocation targets differ — fix the
+   claim or identity (`giten verify assert-relocs <rva>`).
+2. **Inline/call set:** out-of-line callee multiset or ordered relocations
+   differ — incomplete body, inline boundary, or duplicated call tail.
+3. **CFG:** block, branch, or return counts differ — structural source work.
+4. **Register/schedule:** same calls and skeleton — widths, lifetimes, helper
+   boundaries, then classified `giten permute state|variants`.
+
+Details and proven exceptions: the `wall-identifier` skill.
+
+## Model real entities
+
+`AGENTS.md` "Source rules" governs. In practice:
+
+- Casts are symptoms: retype the member or canonical class until placeholder
+  casts disappear. Raw offsets, casts of `this`, and `.cpp`-local views are
+  defects.
+- Recover vtables mechanically from `giten sema class`: `inherited` declares
+  nothing, `override` uses `OVERRIDE`, `new` is plain `virtual`. Never add
+  dummy virtuals (placeholder slots once shipped a live crash by truncating a
+  vtable); one class has one real `??_7`. RTTI is module-scoped (`/GR` only
+  for the Giten project), so missing RTTI does not prove a class
+  non-polymorphic.
+- Pin `__thiscall`/`__stdcall`/`__cdecl` from the disassembly (callee `ret N`
+  versus caller `add esp,N`). A destructible stack local forces the `/GX` EH
+  frame; unwind states are evidence of the local census.
+- External engine, DirectX, Win32, and COM callees are modeled as declarations
+  with no body; their `rel32`/`DIR32` referents must still be the right names.
+- A datum is a real definition with `DATA(rva)`. `DATA_COMPGEN` is a last
+  resort for payloads the automatic oracles cannot identify; header-inline
+  COMMONs live in `config/retail/data_compgen.tsv`. A `$E` helper is pinned
+  at its owner with `RVA_DYNINIT`.
+- Never model an interior address as independent storage, and never add
+  source padding to fit a final-image gap.
+
+## Stop and hand off
+
+- Claim exact closure only from an actual compile of the intended
+  fingerprint. If an unchanged function reaches exact under a disposable TU
+  state, bank MAX while exact, then remove the perturbation.
+- Claim a bounded residue only after the applicable lever families have
+  evidence-backed dispositions; then mark the complete body `@early-stop`.
+  It never excuses missing logic, wrong referents, or an unresolved identity.
+- A 100% match is kept even when its source breaks a project rule; record
+  it in `docs/todos/rule-exceptions.tsv` (with the gate's allow entry if a
+  gate objects).
+- A short or user-directed batch may stop sooner: mark remaining hypotheses
+  open in the handoff.
+
+Commit the focused source, reusable pattern docs, and baseline rows once
+`giten build` is clean; `giten build verify` runs the gates at merge
+preparation. Matching work runs no test suites (`AGENTS.md` "Tests").
+
+Report the MAX change, the structural correction, its evidence and
+compiler controls, the referent verdict, and any remaining wall.

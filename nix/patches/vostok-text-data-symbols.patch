@@ -1,0 +1,117 @@
+Honor explicit PDB data records in executable storage before function lookup.
+
+Resolve exact data starts as external DIR32 data symbols; do not invent storage
+or infer an untyped datum extent from its neighboring function.
+
+--- a/src/pdb_symbols.rs
++++ b/src/pdb_symbols.rs
+@@ -10,6 +10,7 @@
+     pub functions: BTreeMap<usize, Vec<RawString<'static>>>,
+     pub strings: BTreeMap<usize, (RawString<'static>, Vec<u8>)>,
+ 
++    pub text_data: BTreeMap<usize, RawString<'static>>,
+     pub constants: BTreeMap<usize, RawString<'static>>,
+     pub statics: BTreeMap<usize, RawString<'static>>,
+     pub imports: BTreeMap<usize, RawString<'static>>,
+@@ -106,6 +107,12 @@
+                 {
+                     let old_symbol = self.imports.insert(symbol_rva, name);
+                     assert_eq!(old_symbol, None, "Import symbols cannot repeat");
++                }
++
++                pdb2::SymbolData::Data(pdb2::DataSymbol { .. })
++                    if offset.section == env.text.id =>
++                {
++                    self.text_data.entry(symbol_rva).or_insert(name);
+                 }
+ 
+                 // Unmangled data symbols to cover missing spots.
+@@ -186,6 +193,9 @@
+ 
+                     Ok(pdb2::SymbolData::Data(pdb2::DataSymbol { offset, name, .. })) => {
+                         let symbol_rva = match () {
++                            () if offset.section == env.text.id => {
++                                env.text.rva + offset.offset.to_usize()
++                            }
+                             () if offset.section == env.rdata.id => {
+                                 env.rdata.rva + offset.offset.to_usize()
+                             }
+@@ -199,6 +209,9 @@
+                         };
+ 
+                         match () {
++                            () if offset.section == env.text.id => {
++                                self.text_data.insert(symbol_rva, name);
++                            }
+                             () if offset.section == env.rdata.id => {
+                                 let _old_symbol = self.constants.insert(symbol_rva, name);
+                             }
+--- a/src/relocs.rs
++++ b/src/relocs.rs
+@@ -22,6 +22,12 @@
+         // false for an absolute code reference taken from the .reloc table
+         // (e.g. `push offset fn`, a vftable slot -> IMAGE_REL_I386_DIR32).
+         relative: bool,
++    },
++
++    // A PDB data identity in executable storage. Preserve an external data
++    // reference; its storage must not be copied into a fabricated .rdata slot.
++    ExternalData {
++        symbol: RawString<'static>,
+     },
+ 
+     // .rdata
+@@ -384,6 +390,18 @@
+             let in_iat = (env.idata.rva..env.idata.rva + env.idata.size).contains(&target_rva);
+             match () {
+                 () if !in_iat && (env.text.rva..env.text.rva + env.text.size).contains(&target_rva) => {
++                    // An explicit data record outranks the nearest preceding
++                    // function. Only exact starts are proven here: no guessed
++                    // extent or interior addend for an untyped PDB datum.
++                    if let Some(symbol) = symbols.text_data.get(&target_rva) {
++                        coff_data_reloc.copy_from_slice(&0_u32.to_le_bytes());
++                        relocs_rva.insert(
++                            reloc_rva,
++                            RelocKind::ExternalData { symbol: *symbol },
++                        );
++                        continue;
++                    }
++
+                     // Undo the /INCREMENTAL thunk indirection: the object's
+                     // DIR32 named the body, never the link-generated thunk.
+                     let target_rva =
+--- a/src/object_files.rs
++++ b/src/object_files.rs
+@@ -775,6 +775,15 @@
+                 }
+             }
+ 
++            RelocKind::ExternalData { .. } => {
++                self.add_relocation(
++                    reloc_name,
++                    ObjectLocation::Extern(object::SymbolKind::Data),
++                    reloc_offset,
++                    false,
++                )?;
++            }
++
+             RelocKind::Import { symbol: _ } => {
+                 self.add_relocation(
+                     reloc_name,
+@@ -1189,6 +1198,7 @@
+     fn external_symbol_kind(self) -> object::SymbolKind {
+         match self {
+             Self::Function { .. } => object::SymbolKind::Text,
++            Self::ExternalData { .. } => object::SymbolKind::Data,
+             _ => object::SymbolKind::Unknown,
+         }
+     }
+@@ -1213,7 +1223,7 @@
+                 target_rva: _,
+                 storage: _,
+             } => Name::Borrowed(reloc_name),
+-            Self::Import { symbol } => Name::Borrowed(symbol),
++            Self::Import { symbol } | Self::ExternalData { symbol } => Name::Borrowed(symbol),
+         }
+     }
+ 

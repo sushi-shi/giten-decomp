@@ -1,0 +1,3 @@
+# Per-site retail relocation REFERENTS whose exact spelling (symbol + addend)
+# strict data containment cannot infer. Retail evidence; consumed by the delinker.
+function_rva	target_rva	site_rva	owner	addend	occurrences	provenance

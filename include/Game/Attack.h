@@ -1,0 +1,103 @@
+#ifndef GITEN_GAME_ATTACK_H
+#define GITEN_GAME_ATTACK_H
+
+#include <rva.h>
+
+#include <Game/Character.h>
+#include <Game/Condition.h>
+#include <Ints.h>
+
+// Shared state of the attack being resolved, defined in Game/attack.c.
+extern i16 g_attackResistance;
+extern i16 g_attackAttribute;
+extern i16 g_attackCondition;
+
+static __inline double GetExceptionalAttackLuck(Character* actor) {
+    double value = GetStatTotal(actor, 0);
+    value *= 0.5;
+    value += GetStatTotal(actor, 10);
+    return value;
+}
+
+static __inline i32 GetExceptionalAttackBase(Character* actor) {
+    return GetStatTotal(actor, 4) + GetStatTotal(actor, 0);
+}
+
+#define ApplyAttackAccuracyConditions(character, accuracy)                                         \
+    do {                                                                                           \
+        if (HasCondition(GetCharacterConditions(character), 23)) {                                 \
+            (accuracy) /= 4;                                                                       \
+            if ((accuracy) < 1) {                                                                  \
+                (accuracy) = 1;                                                                    \
+            }                                                                                      \
+        }                                                                                          \
+    } while (0)
+
+// Both integer condition rolls and floating-point damage apply these boosts.
+#define ApplyWeaponPowerConditions(character, power)                                               \
+    do {                                                                                           \
+        if (HasCondition(GetCharacterConditions(character), 19)) {                                 \
+            (power) *= 2;                                                                          \
+        }                                                                                          \
+        if (HasCondition(GetCharacterConditions(character), 26)) {                                 \
+            (power) *= 2;                                                                          \
+        }                                                                                          \
+    } while (0)
+
+i16 RollWeaponCondition(
+    Character* attacker,
+    Character* target,
+    i16 resistance,
+    i16 condition,
+    i16 mode
+);
+i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result);
+i16 RollWeaponHit(Character* attacker, Character* target, i16 resistance);
+i16 RollExceptionalWeaponAttack(Character* attacker, Character* target, i16 mode, i16 resistance);
+
+i16 GetEquipmentHitModifier(Character* attacker, Character* target);
+i16 GetCombatantFacingDifference(i16 first, i16 second);
+i16 GetCombatantDistance(i16 first, i16 second);
+i16 GetCombatantAttackRange(i16 id);
+i16 GetAttackRangeExcess(i16 first, i16 second);
+i16 RollExceptionalAttack(Character* attacker, Character* target, i16 mode, i16 resistance);
+i16 RollGunHit(Character* attacker, Character* target, i16 resistance);
+i16 GetGunAttackPower(Character* attacker);
+i32 ComputeGunDamage(Character* attacker, Character* target, i16 result);
+i16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
+
+// The field battle's attack rolls; each sets the attacker's `lastChange` and
+// `result` and the action globals of Game/BattleEffect.h.
+// @identity-TODO: what `mode` (IsFieldModeAtLeast(0) for an object target, else
+// 0) changes is unrecovered.
+
+// An attack with the weapon (equipment slot 5).
+i16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode);
+
+// An attack with the gun (slot 6) and its ammunition (slot 7).
+i16 ResolveGunAttack(Character* attacker, Character* target, i16 mode);
+
+i16 RollSkillHit(Character* attacker, Character* target, i16 sameSide);
+i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit);
+i16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
+i16 ApplySkillResistanceOutcome(Character* attacker, i32 amount);
+i16 ResolveSkillAttack(Character* attacker, Character* target);
+
+// Spends the rounds a party member's gun attack used.
+void SpendGunRounds(Character* attacker);
+
+// Keeps the gun's targets up to the rounds loaded; returns the new count.
+i16 FilterGunTargets(Character* attacker, i16 count);
+i16 GetGunBurstRounds(Character* attacker);
+i16 PrepareGunBurst(Character* attacker, i16 count);
+i16 GetGunRequirementPenalty(i16 stat, i16 requirement);
+i16 DistributeGunRounds(i16 rounds, i16 count);
+i16 ComputeGunBurstPower(i16 rounds);
+
+// Spends every round the gun attack used.
+void SpendAllGunRounds(Character* attacker);
+
+// The percentage weights that divide a gun burst among its targets.
+void LoadGunDistributionTable(void);
+
+#endif // GITEN_GAME_ATTACK_H

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Giten Matcher"
+  short_description: "Reconstruct and byte-match Giten C++"
+  default_prompt: "Use $matcher to reconstruct and verify a Giten function against retail."

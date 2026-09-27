@@ -1,0 +1,13 @@
+# The retail image's coarse LINK-LAYOUT bands - DERIVED [lo, hi) bands over
+# .text AND the data sections. Bands classify REGIONS, not rows.
+# .text evidence: DDS.EXE is a non-incremental link (no ILT band). The CRT
+# (VS97 SP3 LIBC.LIB, functions_static_libs HIGH rows) is the tail of .text,
+# so cmdline ends at the first HIGH LIBC body of that tail; C++ EH funclets
+# sit inside it. Data sections are single bands until contribution-group
+# edges are proven.
+lo	hi	band	note
+0x001000	0x05a490	cmdline	command-line objects: game C + the Windows platform layer
+0x05a490	0x0632c4	static-libs	VS97 SP3 LIBC.LIB members
+0x064000	0x0672f6	rdata	.rdata (IAT, imports, CRT + game constants)
+0x068000	0x071200	data-init	initialized .data
+0x071200	0x092b54	bss	loader zero fill (.data virtual tail)

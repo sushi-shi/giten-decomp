@@ -1,0 +1,132 @@
+// @identity-TODO: the owning TU is unproven; this unit holds one contiguous
+// retail span until link-order evidence names it.
+
+#include <rva.h>
+
+#include <Input/Mouse.h>
+#include <Sound/Sound.h>
+
+DATA(0x00091540)
+i16 g_mouseLeftClick;
+
+DATA(0x00091982)
+i16 g_mouseLeftClickX;
+
+DATA(0x00091984)
+i16 g_mouseLeftClickY;
+
+DATA(0x0009199c)
+i16 g_mouseRightClickY;
+
+DATA(0x0009199e)
+i16 g_mouseRightClickX;
+
+DATA(0x000919e8)
+MousePosition g_mousePosition;
+
+DATA(0x000919fa)
+i16 g_mouseRightClick;
+
+static __inline void
+LatchMouseButtonClick(i16 pressed, i16 x, i16 y, i16* click, i16* clickX, i16* clickY) {
+    if (pressed && *click == 0) {
+        *click = -1;
+        *clickX = x;
+        *clickY = y;
+    }
+}
+
+RVA(0x00002a00, 0x5d)
+void LatchMouseClicks(void) {
+    u8 buttons = g_mousePosition.buttons;
+    i16 y = g_mousePosition.y;
+    i16 x = g_mousePosition.x;
+    LatchMouseButtonClick(
+        buttons & MOUSE_LEFT_PRESSED,
+        x,
+        y,
+        &g_mouseLeftClick,
+        &g_mouseLeftClickX,
+        &g_mouseLeftClickY
+    );
+    LatchMouseButtonClick(
+        buttons & MOUSE_RIGHT_PRESSED,
+        x,
+        y,
+        &g_mouseRightClick,
+        &g_mouseRightClickX,
+        &g_mouseRightClickY
+    );
+}
+
+RVA(0x00002a60, 0xf)
+void ClearMouseClicks(void) {
+    g_mouseLeftClick = 0;
+    g_mouseRightClick = 0;
+}
+
+// A pending right-click cancels: consume the clicks, optionally drop the
+// hovered and selected objects, and play the cancel sound.
+RVA(0x00002a70, 0x40)
+i16 TakeMouseCancel(i16 clearSelection) {
+    if (g_mouseRightClick == 0) {
+        return 0;
+    }
+    ClearMouseClicks();
+    if (clearSelection == 0) {
+        return 0;
+    }
+    ClearMouseSelection();
+    PlaySoundEffect(2);
+    return -1;
+}
+
+RVA(0x00002ab0, 0x22)
+i16 TakeMouseCancelSound(void) {
+    if (g_mouseRightClick == 0) {
+        return 0;
+    }
+    ClearMouseClicks();
+    PlaySoundEffect(2);
+    return -1;
+}
+
+RVA(0x00002ae0, 0x18)
+i16 TakeMouseLeftClick(void) {
+    if (g_mouseLeftClick != 0) {
+        ClearMouseClicks();
+        return -1;
+    }
+    return 0;
+}
+
+RVA(0x00002b00, 0x24)
+void SetMouseState(i16 buttons, i16 x, i16 y) {
+    g_mousePosition.buttons = buttons;
+    g_mousePosition.x = x;
+    g_mousePosition.y = y;
+}
+
+// @dead-code
+// Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
+RVA(0x00002b30, 0x7)
+i16 GetMouseX(void) {
+    return g_mousePosition.x;
+}
+
+// @dead-code
+// Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
+RVA(0x00002b40, 0x7)
+i16 GetMouseY(void) {
+    return g_mousePosition.y;
+}
+
+RVA(0x00002b50, 0x7)
+i16 GetMouseRightClick(void) {
+    return g_mouseRightClick;
+}
+
+RVA(0x00002b60, 0x7)
+i16 GetMouseLeftClick(void) {
+    return g_mouseLeftClick;
+}

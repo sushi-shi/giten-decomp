@@ -1,0 +1,274 @@
+# Statically-linked library FUNCTION labels (VS97 SP3 LIBC.LIB, /ML): RVAs
+# proven NOT reconstructable game code, excluded from the match denominator.
+# Label-only - no sizes; extents come from functions.tsv. HIGH rows are
+# active claims (a relocation-masked exact body match at ONE address);
+# LOW rows are diagnostic leads only (the body occurs at several addresses).
+# An rva may carry SEVERAL rows (alias spellings of one body).
+# HAND-OWNED after admission (tools/libmatch.py in the investigation).
+rva	name	lib	confidence	source
+0x002db0	__scalb	LIBC	LOW	masked-coff:ieeemisc.obj
+0x004520	__lrotl	LIBC	LOW	masked-coff:rotl.obj
+0x004520	__lrotr	LIBC	LOW	masked-coff:rotr.obj
+0x004520	_is_wctype	LIBC	LOW	masked-coff:iswctype.obj
+0x004520	_putc	LIBC	LOW	masked-coff:fputc.obj
+0x004520	_putwc	LIBC	LOW	masked-coff:fputwc.obj
+0x004600	_strtoul	LIBC	LOW	masked-coff:strtol.obj
+0x004600	_wcstoul	LIBC	LOW	masked-coff:wcstol.obj
+0x0046b0	__lrotl	LIBC	LOW	masked-coff:rotl.obj
+0x0046b0	__lrotr	LIBC	LOW	masked-coff:rotr.obj
+0x0046b0	_is_wctype	LIBC	LOW	masked-coff:iswctype.obj
+0x0046b0	_putc	LIBC	LOW	masked-coff:fputc.obj
+0x0046b0	_putwc	LIBC	LOW	masked-coff:fputwc.obj
+0x0046d0	__lrotl	LIBC	LOW	masked-coff:rotl.obj
+0x0046d0	__lrotr	LIBC	LOW	masked-coff:rotr.obj
+0x0046d0	_is_wctype	LIBC	LOW	masked-coff:iswctype.obj
+0x0046d0	_putc	LIBC	LOW	masked-coff:fputc.obj
+0x0046d0	_putwc	LIBC	LOW	masked-coff:fputwc.obj
+0x039250	__execv	LIBC	LOW	masked-coff:execv.obj
+0x039250	__execvp	LIBC	LOW	masked-coff:execvp.obj
+0x039250	__wexecv	LIBC	LOW	masked-coff:wexecv.obj
+0x039250	__wexecvp	LIBC	LOW	masked-coff:wexecvp.obj
+0x039310	__lrotl	LIBC	LOW	masked-coff:rotl.obj
+0x039310	__lrotr	LIBC	LOW	masked-coff:rotr.obj
+0x039310	_is_wctype	LIBC	LOW	masked-coff:iswctype.obj
+0x039310	_putc	LIBC	LOW	masked-coff:fputc.obj
+0x039310	_putwc	LIBC	LOW	masked-coff:fputwc.obj
+0x039330	__scalb	LIBC	LOW	masked-coff:ieeemisc.obj
+0x03e6b0	__lrotl	LIBC	LOW	masked-coff:rotl.obj
+0x03e6b0	__lrotr	LIBC	LOW	masked-coff:rotr.obj
+0x03e6b0	_is_wctype	LIBC	LOW	masked-coff:iswctype.obj
+0x03e6b0	_putc	LIBC	LOW	masked-coff:fputc.obj
+0x03e6b0	_putwc	LIBC	LOW	masked-coff:fputwc.obj
+0x054b90	__lrotl	LIBC	LOW	masked-coff:rotl.obj
+0x054b90	__lrotr	LIBC	LOW	masked-coff:rotr.obj
+0x054b90	_is_wctype	LIBC	LOW	masked-coff:iswctype.obj
+0x054b90	_putc	LIBC	LOW	masked-coff:fputc.obj
+0x054b90	_putwc	LIBC	LOW	masked-coff:fputwc.obj
+0x056860	??_G__non_rtti_object@@UAEPAXI@Z	LIBC	LOW	masked-coff:rtti.obj
+0x056860	??_Gbad_cast@@UAEPAXI@Z	LIBC	LOW	masked-coff:rtti.obj
+0x056860	??_Gbad_typeid@@UAEPAXI@Z	LIBC	LOW	masked-coff:rtti.obj
+0x056860	??_Gexception@@UAEPAXI@Z	LIBC	LOW	masked-coff:stdexcpt.obj
+0x056860	??_Gtype_info@@UAEPAXI@Z	LIBC	LOW	masked-coff:typinfo.obj
+0x05a490	_sprintf	LIBC	HIGH	masked-coff:sprintf.obj
+0x05a500	__setmbcp	LIBC	HIGH	masked-coff:mbctype.obj
+0x05a710	_getSystemCP	LIBC	HIGH	masked-coff:mbctype.obj
+0x05a760	_CPtoLCID	LIBC	HIGH	masked-coff:mbctype.obj
+0x05a7c0	_setSBCS	LIBC	HIGH	masked-coff:mbctype.obj
+0x05a800	_setSBUpLow	LIBC	HIGH	masked-coff:mbctype.obj
+0x05a9e0	___initmbctable	LIBC	HIGH	masked-coff:mbctype.obj; complete 11-byte body uniquely matches with sole REL32 +3 to setmbcp (0x5a500), zero addend
+0x05a9f0	_fread	LIBC	HIGH	masked-coff:fread.obj
+0x05ab30	_setvbuf	LIBC	HIGH	masked-coff:setvbuf.obj
+0x05abf0	__fsopen	LIBC	HIGH	masked-coff:fopen.obj; narrow: calls __openfile (0x5d950), not __wopenfile
+0x05ac20	_fopen	LIBC	HIGH	masked-coff:fopen.obj; narrow: calls __fsopen (0x5abf0)
+0x05ac40	_fclose	LIBC	HIGH	masked-coff:fclose.obj
+0x05acc0	__filelength	LIBC	HIGH	masked-coff:flength.obj
+0x05ad50	_memcpy	LIBC	LOW	masked-coff:memcpy.obj
+0x05ad50	_memmove	LIBC	HIGH	masked-coff:memmove.obj; full 0x335-byte body unique in .text, all 46 DIR32 targets verified; overlap-safe copy (memcpy.obj is byte-identical)
+0x05b090	_fwrite	LIBC	HIGH	masked-coff:fwrite.obj
+0x05b1e0	__fpmath	LIBC	HIGH	masked-coff:fpinit.obj; complete 23-byte body unique with all four ordered references verified
+0x05b200	__fpclear	LIBC	HIGH	masked-coff:fpinit.obj; RET plus 15 NOPs matches; identity proven by both FPmtinit/FPmtterm pointers in exact 20-byte fpinit data object
+0x05b210	__cfltcvt_init	LIBC	HIGH	masked-coff:fpinit.obj; complete 56-byte body unique; all 11 DIR32 targets and table addends verified against six-slot cfltcvt_tab
+0x05b250	__ftol	LIBC	HIGH	masked-coff:ftol.obj
+0x05b280	_srand	LIBC	HIGH	masked-coff:rand.obj; narrow: stores its argument to holdrand (0x46e404), the seed _rand (0x5b290) steps
+0x05b290	_rand	LIBC	HIGH	masked-coff:rand.obj
+0x05b2c0	__mbsinc	LIBC	HIGH	masked-coff:mbsinc.obj
+0x05b2e0	__mbsnextc	LIBC	HIGH	masked-coff:mbsnextc.obj
+0x05b300	_strncpy	LIBC	HIGH	masked-coff:strncpy.obj
+0x05b400	__snprintf	LIBC	HIGH	masked-coff:snprintf.obj
+0x05b470	_qsort	LIBC	HIGH	masked-coff:qsort.obj
+0x05b620	_shortsort	LIBC	HIGH	masked-coff:qsort.obj
+0x05b680	_swap	LIBC	HIGH	masked-coff:qsort.obj
+0x05b6b0	__ismbcprint	LIBC	HIGH	masked-coff:ismbprn.obj
+0x05b750	__mbbtombc	LIBC	HIGH	masked-coff:tombbmbc.obj
+0x05b7d0	__mbschr	LIBC	HIGH	masked-coff:mbschr.obj
+0x05b880	__onexit	LIBC	HIGH	masked-coff:onexit.obj
+0x05b900	_atexit	LIBC	HIGH	masked-coff:onexit.obj
+0x05b920	___onexitinit	LIBC	HIGH	masked-coff:onexit.obj
+0x05b960	_realloc	LIBC	HIGH	masked-coff:realloc.obj
+0x05bb00	??2@YAPAXI@Z	LIBC	HIGH	body-proof:new.obj (return _nh_malloc(size, 1))
+0x05bb10	??3@YAXPAX@Z	LIBC	HIGH	body-proof:delete.obj (push p; call free)
+0x05bb20	?_JumpToContinuation@@YGXPAXPAUEHRegistrationNode@@@Z	LIBC	HIGH	masked-coff:trnsctrl.obj
+0x05bb60	?_CallMemberFunction0@@YGXPAX0@Z	LIBC	HIGH	byte-proof:trnsctrl.obj; unique exact 7-byte body, zero relocations; DestructExceptionObject +0x44 references this entry, proving three identical COMDAT wrappers folded together
+0x05bb60	?_CallMemberFunction1@@YGXPAX00@Z	LIBC	HIGH	byte-proof:trnsctrl.obj; unique exact 7-byte body, zero relocations; BuildCatchObject +0x1ce references this entry, proving three identical COMDAT wrappers folded together
+0x05bb60	?_CallMemberFunction2@@YGXPAX00H@Z	LIBC	HIGH	byte-proof:trnsctrl.obj; unique exact 7-byte body, zero relocations; BuildCatchObject +0x1b1 references this entry, proving three identical COMDAT wrappers folded together
+0x05bb70	?_UnwindNestedFrames@@YGXPAUEHRegistrationNode@@PAUEHExceptionRecord@@@Z	LIBC	HIGH	masked-coff:trnsctrl.obj
+0x05bbd0	___CxxFrameHandler	LIBC	HIGH	masked-coff:trnsctrl.obj
+0x05bc10	?_CallCatchBlock2@@YAPAXPAUEHRegistrationNode@@PBU_s_FuncInfo@@PAXHK@Z	LIBC	HIGH	masked-coff:trnsctrl.obj
+0x05bc70	?CatchGuardHandler@@YA?AW4_EXCEPTION_DISPOSITION@@PAUEHExceptionRecord@@PAUCatchGuardRN@@PAX2@Z	LIBC	HIGH	masked-coff:trnsctrl.obj
+0x05bca0	?_CallSETranslator@@YAHPAUEHExceptionRecord@@PAUEHRegistrationNode@@PAX2PBU_s_FuncInfo@@H1@Z	LIBC	HIGH	masked-coff:trnsctrl.obj
+0x05bd70	?TranslatorGuardHandler@@YA?AW4_EXCEPTION_DISPOSITION@@PAUEHExceptionRecord@@PAUTranslatorGuardRN@@PAX2@Z	LIBC	HIGH	masked-coff:trnsctrl.obj
+0x05be00	?_GetRangeOfTrysToCheck@@YAPBU_s_TryBlockMapEntry@@PBU_s_FuncInfo@@HHPAI1@Z	LIBC	HIGH	masked-coff:trnsctrl.obj
+0x05be80	__global_unwind2	LIBC	HIGH	masked-coff:exsup.obj
+0x05bea0	__unwind_handler	LIBC	HIGH	masked-coff:exsup.obj
+0x05bec2	__local_unwind2	LIBC	HIGH	masked-coff:exsup.obj
+0x05bf2a	__abnormal_termination	LIBC	HIGH	masked-coff:exsup.obj
+0x05bf4d	__NLG_Notify1	LIBC	HIGH	masked-coff:exsup.obj; complete 9-byte entry uniquely matches; DIR32 +3 targets NLG_Destination (0x6e6cc), short branch joins proven NLG_Notify at +10
+0x05bf56	__NLG_Notify	LIBC	HIGH	masked-coff:exsup.obj
+0x05bf70	__cinit	LIBC	HIGH	masked-coff:crt0dat.obj; complete 48-byte body uniquely matches with all seven references to FPinit, initterm and CRT initializer boundaries verified
+0x05bfa0	_exit	LIBC	HIGH	masked-coff:crt0dat.obj
+0x05bfc0	__exit	LIBC	HIGH	masked-coff:crt0dat.obj
+0x05bfe0	_doexit	LIBC	HIGH	masked-coff:crt0dat.obj
+0x05c090	__initterm	LIBC	HIGH	masked-coff:crt0dat.obj
+0x05c0b0	_fseek	LIBC	HIGH	masked-coff:fseek.obj
+0x05c150	_WinMainCRTStartup	LIBC	HIGH	masked-coff:wincrt0.obj
+0x05c2f0	__amsg_exit	LIBC	HIGH	masked-coff:wincrt0.obj; complete 42-byte body uniquely matches with all four ordered relocations: CRT error_mode, FF_MSGBANNER, NMSG_WRITE and __aexit_rtn (0x6e6dc), initialized to __exit
+0x05c2f0	__amsg_exit	LIBC	LOW	masked-coff:wwincrt0.obj
+0x05c320	_fast_error_exit	LIBC	HIGH	masked-coff:wincrt0.obj; complete 39-byte body uniquely matches with all four ordered relocations: CRT error_mode, FF_MSGBANNER, NMSG_WRITE and ExitProcess IAT (0x64148)
+0x05c320	_fast_error_exit	LIBC	LOW	masked-coff:wwincrt0.obj
+0x05c350	__flsbuf	LIBC	HIGH	masked-coff:_flsbuf.obj
+0x05c480	__output	LIBC	HIGH	masked-coff:output.obj
+0x05ce10	_write_char	LIBC	HIGH	masked-coff:output.obj
+0x05ce60	_write_multi_char	LIBC	HIGH	masked-coff:output.obj; full 57-byte body unique in .text, sole REL32 +0x1f resolves to _write_char (0x5ce10), addend 0
+0x05ce60	_write_multi_char	LIBC	LOW	masked-coff:woutput.obj
+0x05cea0	_write_string	LIBC	HIGH	masked-coff:output.obj
+0x05cee0	_get_int_arg	LIBC	LOW	masked-coff:cprintf.obj
+0x05cee0	_get_int_arg	LIBC	HIGH	masked-coff:output.obj; full 17-byte body unique in .text, no relocations
+0x05cee0	_get_int_arg	LIBC	LOW	masked-coff:woutput.obj
+0x05cf00	_get_int64_arg	LIBC	LOW	masked-coff:cprintf.obj
+0x05cf00	_get_int64_arg	LIBC	HIGH	masked-coff:output.obj; full 18-byte body unique in .text, no relocations
+0x05cf00	_get_int64_arg	LIBC	LOW	masked-coff:woutput.obj
+0x05cf20	_get_short_arg	LIBC	LOW	masked-coff:cprintf.obj
+0x05cf20	_get_short_arg	LIBC	HIGH	masked-coff:output.obj; full 18-byte body unique in .text, no relocations
+0x05cf40	___crtLCMapStringA	LIBC	HIGH	masked-coff:aw_map.obj
+0x05d170	_strncnt	LIBC	LOW	masked-coff:aw_cmp.obj
+0x05d170	_strncnt	LIBC	HIGH	masked-coff:aw_map.obj; full 47-byte body unique in .text, no relocations
+0x05d1a0	___crtGetStringTypeA	LIBC	HIGH	masked-coff:aw_str.obj
+0x05d2e0	__filbuf	LIBC	HIGH	masked-coff:_filbuf.obj
+0x05d3d0	__read	LIBC	HIGH	masked-coff:read.obj
+0x05d630	___initstdio	LIBC	HIGH	masked-coff:_file.obj
+0x05d6f0	___endstdio	LIBC	HIGH	masked-coff:_file.obj; complete 20-byte body uniquely matches; ordered references flushall (0x5d8c0), exitflag (0x90e78), fcloseall (0x60b20)
+0x05d710	_malloc	LIBC	HIGH	masked-coff:malloc.obj; complete 20-byte body uniquely matches, DIR32 +1 targets newmode (0x90ed4), REL32 +0xc targets nh_malloc (0x5d730), zero addends
+0x05d730	__nh_malloc	LIBC	HIGH	masked-coff:malloc.obj
+0x05d780	__heap_alloc	LIBC	HIGH	masked-coff:malloc.obj
+0x05d7c0	__freebuf	LIBC	HIGH	masked-coff:_freebuf.obj
+0x05d800	_fflush	LIBC	HIGH	masked-coff:fflush.obj
+0x05d850	__flush	LIBC	HIGH	masked-coff:fflush.obj
+0x05d8c0	__flushall	LIBC	HIGH	masked-coff:fflush.obj; complete 11-byte body uniquely matches with sole REL32 +3 to flsall (0x5d8d0), zero addend
+0x05d8d0	_flsall	LIBC	HIGH	masked-coff:fflush.obj
+0x05d950	__openfile	LIBC	HIGH	masked-coff:_open.obj
+0x05db20	__getstream	LIBC	HIGH	masked-coff:stream.obj
+0x05dbb0	_free	LIBC	HIGH	masked-coff:free.obj
+0x05dc00	__close	LIBC	HIGH	masked-coff:close.obj
+0x05dce0	__lseek	LIBC	HIGH	masked-coff:lseek.obj
+0x05dda0	__ioinit	LIBC	HIGH	masked-coff:ioinit.obj
+0x05dfa0	__write	LIBC	HIGH	masked-coff:write.obj
+0x05e1c0	__setdefaultprecision	LIBC	HIGH	masked-coff:fp8.obj
+0x05e1e0	__ms_p5_test_fdiv	LIBC	HIGH	masked-coff:testfdiv.obj
+0x05e230	__ms_p5_mp_test_fdiv	LIBC	HIGH	masked-coff:testfdiv.obj
+0x05e260	__forcdecpt	LIBC	HIGH	masked-coff:cvt.obj
+0x05e2c0	__cropzeros	LIBC	HIGH	masked-coff:cvt.obj
+0x05e330	__positive	LIBC	HIGH	masked-coff:cvt.obj
+0x05e350	__fassign	LIBC	HIGH	masked-coff:cvt.obj
+0x05e3b0	__cftoe	LIBC	HIGH	masked-coff:cvt.obj
+0x05e4f0	__cftof	LIBC	HIGH	masked-coff:cvt.obj
+0x05e5f0	__cftog	LIBC	HIGH	masked-coff:cvt.obj
+0x05e6a0	__cftoe_g	LIBC	HIGH	masked-coff:cvt.obj
+0x05e6d0	__cftof_g	LIBC	HIGH	masked-coff:cvt.obj
+0x05e700	__cfltcvt	LIBC	HIGH	masked-coff:cvt.obj
+0x05e770	__shift	LIBC	HIGH	masked-coff:cvt.obj
+0x05e7b0	_strchr	LIBC	HIGH	masked-coff:strchr.obj
+0x05e870	__msize	LIBC	HIGH	masked-coff:msize.obj
+0x05e8b0	__callnewh	LIBC	HIGH	masked-coff:handler.obj
+0x05e8d0	__heap_init	LIBC	HIGH	masked-coff:heapinit.obj
+0x05e910	___sbh_new_region	LIBC	HIGH	masked-coff:sbheap.obj
+0x05ea80	___sbh_release_region	LIBC	HIGH	masked-coff:sbheap.obj
+0x05eae0	___sbh_decommit_pages	LIBC	HIGH	masked-coff:sbheap.obj
+0x05ebb0	___sbh_find_block	LIBC	HIGH	masked-coff:sbheap.obj
+0x05ec10	___sbh_free_block	LIBC	HIGH	masked-coff:sbheap.obj
+0x05ec70	___sbh_alloc_block	LIBC	HIGH	masked-coff:sbheap.obj
+0x05eeb0	___sbh_alloc_block_from_page	LIBC	HIGH	masked-coff:sbheap.obj
+0x05f030	___sbh_resize_block	LIBC	HIGH	masked-coff:sbheap.obj
+0x05f100	___InternalCxxFrameHandler	LIBC	HIGH	masked-coff:frame.obj
+0x05f1d0	?FindHandler@@YAXPAUEHExceptionRecord@@PAUEHRegistrationNode@@PAU_CONTEXT@@PAXPBU_s_FuncInfo@@EH1@Z	LIBC	HIGH	masked-coff:frame.obj
+0x05f480	?FindHandlerForForeignException@@YAXPAUEHExceptionRecord@@PAUEHRegistrationNode@@PAU_CONTEXT@@PAXPBU_s_FuncInfo@@HH1@Z	LIBC	HIGH	masked-coff:frame.obj
+0x05f550	___FrameUnwindToState	LIBC	HIGH	masked-coff:frame.obj
+0x05f610	?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z	LIBC	LOW	masked-coff:ehvecdtr.obj
+0x05f610	?FrameUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z	LIBC	HIGH	masked-coff:frame.obj; complete 22-byte body unique with sole REL32 +0xf to terminate (0x5fb50); FrameUnwindToState relocation +0x7b proves filter identity
+0x05f630	?CatchIt@@YAXPAUEHExceptionRecord@@PAUEHRegistrationNode@@PAU_CONTEXT@@PAXPBU_s_FuncInfo@@PBU_s_HandlerType@@PBU_s_CatchableType@@PBU_s_TryBlockMapEntry@@H1@Z	LIBC	HIGH	masked-coff:frame.obj
+0x05f6c0	?CallCatchBlock@@YAPAXPAUEHExceptionRecord@@PAUEHRegistrationNode@@PAU_CONTEXT@@PBU_s_FuncInfo@@PAXHK@Z	LIBC	HIGH	masked-coff:frame.obj
+0x05f810	?ExFilterRethrow@@YAHPAU_EXCEPTION_POINTERS@@@Z	LIBC	HIGH	masked-coff:frame.obj
+0x05f840	?BuildCatchObject@@YAXPAUEHExceptionRecord@@PAUEHRegistrationNode@@PBU_s_HandlerType@@PBU_s_CatchableType@@@Z	LIBC	HIGH	masked-coff:frame.obj
+0x05fa50	?_DestructExceptionObject@@YAXPAUEHExceptionRecord@@E@Z	LIBC	HIGH	masked-coff:frame.obj
+0x05fad0	?AdjustPointer@@YAPAXPAXABUPMD@@@Z	LIBC	HIGH	masked-coff:frame.obj
+0x05fb00	__CallSettingFrame@12	LIBC	HIGH	masked-coff:lowhelpr.obj
+0x05fb50	?_inconsistency@@YAXXZ	LIBC	LOW	masked-coff:hooks.obj
+0x05fb50	?terminate@@YAXXZ	LIBC	HIGH	masked-coff:hooks.obj; complete 133-byte body and all ordered relocations verified, unique call to abort (0x61d40); 24-byte SEH table resolves all internal labels, handler at +0x6e
+0x05fbe0	?_inconsistency@@YAXXZ	LIBC	HIGH	masked-coff:hooks.obj; complete 133-byte body and all ordered relocations verified, unique call to terminate (0x5fb50); 24-byte SEH table resolves all internal labels, handler at +0x6e
+0x05fbe0	?terminate@@YAXXZ	LIBC	LOW	masked-coff:hooks.obj
+0x05fc70	_ftell	LIBC	HIGH	masked-coff:ftell.obj
+0x05fe20	__XcptFilter	LIBC	HIGH	masked-coff:winxfltr.obj
+0x05ff60	_xcptlookup	LIBC	HIGH	masked-coff:winxfltr.obj
+0x05ffb0	__ismbblead	LIBC	HIGH	masked-coff:ismbbyte.obj
+0x05ffd0	_x_ismbbtype	LIBC	HIGH	masked-coff:ismbbyte.obj
+0x060010	__setenvp	LIBC	HIGH	masked-coff:stdenvp.obj
+0x060100	__setargv	LIBC	HIGH	masked-coff:stdargv.obj
+0x0601a0	_parse_cmdline	LIBC	HIGH	masked-coff:stdargv.obj
+0x0603b0	___crtGetEnvironmentStringsA	LIBC	HIGH	masked-coff:aw_env.obj
+0x060518	__except_handler3	LIBC	HIGH	masked-coff:exsup3.obj
+0x0605d5	__seh_longjmp_unwind@4	LIBC	HIGH	masked-coff:exsup3.obj
+0x0605f0	__FF_MSGBANNER	LIBC	HIGH	masked-coff:crt0msg.obj
+0x060630	__NMSG_WRITE	LIBC	HIGH	masked-coff:crt0msg.obj
+0x060810	__getbuf	LIBC	HIGH	masked-coff:_getbuf.obj
+0x060870	__isatty	LIBC	HIGH	masked-coff:isatty.obj
+0x0608a0	_wctomb	LIBC	HIGH	masked-coff:wctomb.obj
+0x060920	__aulldiv	LIBC	HIGH	masked-coff:ulldiv.obj
+0x060990	__aullrem	LIBC	HIGH	masked-coff:ullrem.obj
+0x060a10	_calloc	LIBC	HIGH	masked-coff:calloc.obj
+0x060ab0	__dosmaperr	LIBC	HIGH	masked-coff:dosmap.obj
+0x060b20	__fcloseall	LIBC	HIGH	masked-coff:closeall.obj
+0x060b90	__commit	LIBC	HIGH	masked-coff:commit.obj
+0x060bf0	__sopen	LIBC	HIGH	masked-coff:open.obj
+0x060fb0	__alloc_osfhnd	LIBC	HIGH	masked-coff:osfinfo.obj
+0x061070	__set_osfhnd	LIBC	HIGH	masked-coff:osfinfo.obj
+0x061120	__free_osfhnd	LIBC	HIGH	masked-coff:osfinfo.obj
+0x0611c0	__get_osfhandle	LIBC	HIGH	masked-coff:osfinfo.obj
+0x061210	__control87	LIBC	HIGH	masked-coff:ieee87.obj
+0x061250	__controlfp	LIBC	HIGH	masked-coff:ieee87.obj
+0x061270	__abstract_cw	LIBC	HIGH	masked-coff:ieee87.obj
+0x061310	__hw_cw	LIBC	HIGH	masked-coff:ieee87.obj
+0x0613a0	__isctype	LIBC	HIGH	masked-coff:isctype.obj
+0x061440	_tolower	LIBC	HIGH	masked-coff:tolower.obj
+0x061540	__ZeroTail	LIBC	HIGH	masked-coff:intrncvt.obj
+0x0615b0	__IncMan	LIBC	HIGH	masked-coff:intrncvt.obj
+0x061620	__RoundMan	LIBC	HIGH	masked-coff:intrncvt.obj
+0x0616c0	__CopyMan	LIBC	HIGH	masked-coff:intrncvt.obj
+0x0616e0	__FillZeroMan	LIBC	HIGH	masked-coff:intrncvt.obj; complete 15-byte body unique in .text, zero relocations, clears all three mantissa DWORDs
+0x0616f0	__IsZeroMan	LIBC	HIGH	masked-coff:intrncvt.obj
+0x061710	__ShrMan	LIBC	HIGH	masked-coff:intrncvt.obj
+0x0617d0	__ld12cvt	LIBC	HIGH	masked-coff:intrncvt.obj
+0x0619a0	__ld12tod	LIBC	HIGH	masked-coff:intrncvt.obj; full 24-byte body; ordered relocations resolve to DoubleFormat and _ld12cvt; unique complete identity
+0x0619a0	__ld12tof	LIBC	LOW	masked-coff:intrncvt.obj
+0x0619c0	__ld12tod	LIBC	LOW	masked-coff:intrncvt.obj
+0x0619c0	__ld12tof	LIBC	HIGH	masked-coff:intrncvt.obj; full 24-byte body; ordered relocations resolve to FloatFormat and _ld12cvt; unique complete identity
+0x0619e0	__atodbl	LIBC	HIGH	masked-coff:intrncvt.obj; full 56-byte body; ordered calls resolve to __strgtold12 and _ld12tod; unique complete identity
+0x0619e0	__atoflt	LIBC	LOW	masked-coff:intrncvt.obj
+0x061a20	__atodbl	LIBC	LOW	masked-coff:intrncvt.obj
+0x061a20	__atoflt	LIBC	HIGH	masked-coff:intrncvt.obj; full 56-byte body; ordered calls resolve to __strgtold12 and _ld12tof; unique complete identity
+0x061a60	__fptostr	LIBC	HIGH	masked-coff:_fptostr.obj
+0x061b00	__fltout	LIBC	HIGH	masked-coff:cfout.obj
+0x061b80	___dtold	LIBC	HIGH	masked-coff:cfout.obj
+0x061c40	__fptrap	LIBC	HIGH	masked-coff:crt0fp.obj; complete 11-byte body uniquely matches with sole REL32 +3 to amsg_exit (0x5c2f0), zero addend
+0x061c50	?__CxxUnhandledExceptionFilter@@YGJPAU_EXCEPTION_POINTERS@@@Z	LIBC	HIGH	masked-coff:unhandld.obj
+0x061cb0	?__CxxSetUnhandledExceptionFilter@@YAXXZ	LIBC	HIGH	masked-coff:unhandld.obj; complete 17-byte body uniquely matches with all ordered DIR32 targets: CxxUnhandledExceptionFilter (0x61c50), SetUnhandledExceptionFilter IAT and saved filter; saved filter is the same BSS DWORD at 0x91038
+0x061cd0	?__CxxRestoreUnhandledExceptionFilter@@YAXXZ	LIBC	HIGH	masked-coff:unhandld.obj; complete 13-byte body uniquely matches with all ordered DIR32 targets: saved filter and SetUnhandledExceptionFilter IAT; saved filter is the same BSS DWORD at 0x91038
+0x061ce0	?_ValidateRead@@YAHPBXI@Z	LIBC	HIGH	masked-coff:validate.obj; full 32-byte body; sole DIR32 resolves to IsBadReadPtr IAT; unique complete identity
+0x061ce0	?_ValidateWrite@@YAHPAXI@Z	LIBC	LOW	masked-coff:validate.obj
+0x061d00	?_ValidateRead@@YAHPBXI@Z	LIBC	LOW	masked-coff:validate.obj
+0x061d00	?_ValidateWrite@@YAHPAXI@Z	LIBC	HIGH	masked-coff:validate.obj; full 32-byte body; sole DIR32 resolves to IsBadWritePtr IAT; unique complete identity
+0x061d40	_abort	LIBC	HIGH	masked-coff:abort.obj; complete 31-byte body uniquely matches with ordered REL32 targets NMSG_WRITE (0x60630), raise (0x62c90), exit (0x5bfc0), all addends zero
+0x061d20	?_ValidateExecute@@YAHP6GHXZ@Z	LIBC	HIGH	masked-coff:validate.obj
+0x061d60	___crtMessageBoxA	LIBC	HIGH	masked-coff:crtmbox.obj
+0x061df0	__chsize	LIBC	HIGH	masked-coff:chsize.obj
+0x061f70	___addl	LIBC	HIGH	masked-coff:mantold.obj
+0x061fa0	___add_12	LIBC	HIGH	masked-coff:mantold.obj
+0x062010	___shl_12	LIBC	HIGH	masked-coff:mantold.obj
+0x062040	___shr_12	LIBC	HIGH	masked-coff:mantold.obj
+0x062070	___mtold12	LIBC	HIGH	masked-coff:mantold.obj
+0x062170	___strgtold12	LIBC	HIGH	masked-coff:strgtold.obj
+0x062900	_$I10_OUTPUT	LIBC	HIGH	masked-coff:x10fout.obj
+0x062c90	_raise	LIBC	HIGH	masked-coff:winsig.obj
+0x062e10	_siglookup	LIBC	HIGH	masked-coff:winsig.obj
+0x062e60	__setmode	LIBC	HIGH	masked-coff:setmode.obj
+0x062ee0	__chkstk	LIBC	HIGH	byte-proof:chkstk.obj; unique exact 47-byte body, no relocations; archive __alloca_probe is an alias at the same entry
+0x062f10	___ld12mul	LIBC	HIGH	masked-coff:tenpow.obj
+0x0631d0	___multtenpow12	LIBC	HIGH	masked-coff:tenpow.obj
