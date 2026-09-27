@@ -114,7 +114,7 @@ offsets/types/identities/addends. A state-bearing exact candidate is retained as
 | :-- | :-- | :-- |
 | `giten sema rva\|disasm\|dump\|xref\|strings\|vtable\|class\|map\|match` | `giten.sema.*` | the retail-image navigator; assembly only, never a decompile |
 | `giten lsp refs\|hover\|rename\|index` | `giten.lsp.*` | clangd-backed, USR-exact source navigation and bulk member rename |
-| `giten rsrc check` | `giten.rsrc.check` | optional resource comparison; no resource script is currently tracked |
+| `giten link` resource edge | `giten.rsrc.retail_res` | convert the locally supplied original EXE's `.rsrc` to an ignored `.res` for the candidate link |
 | `giten ghidra build\|update\|verify\|status\|export` | `giten.ghidra.*` | the one-way viewer export; nothing flows back |
 
 `giten sema -` is batch mode (newline-delimited view commands on stdin,

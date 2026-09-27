@@ -93,8 +93,29 @@ its `.map`, and `giten verify check --tier link` audits it for unresolved
 externals, the section table against retail's, and every 100% function's bytes
 at its link-assigned address. See [`docs/image-diff.md`](docs/image-diff.md).
 
-## Resources
+## Local candidate and resources
 
-Not reconstructed yet. DDS.EXE's `.rsrc` (12 MB: WAVE sounds and bitmaps) is
-not built from source; the candidate links without one until a resource script
-exists.
+`giten link` reads the original EXE named by `GITEN_RETAIL_EXE`, writes an
+ignored `build/gen/retail.res`, and links those resources into
+`build/exe/DDS.candidate.EXE`. All 446 resource identities and payloads were
+verified against the local original. The generated resource file is ignored;
+no resource payload is tracked. The candidate also needs any game files stored
+outside the EXE.
+
+To build it, set the original EXE path before entering the shell:
+
+```sh
+export GITEN_RETAIL_EXE=/absolute/path/to/original/DDS.EXE
+nix develop
+giten link
+```
+
+To launch it, use an installed game directory containing the external `et/`,
+`fc/`, and other game files. The original game's `DevConfig` binary value must
+also be present under `HKCU\\Software\\ASCII\\GITEN_DDS` in the Wine prefix;
+without it `WinMain` exits before creating a window. Run from that directory:
+
+```sh
+cd /path/to/game-directory
+wine "$GITEN_DIR/build/exe/DDS.candidate.EXE"
+```
