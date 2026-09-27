@@ -55,7 +55,7 @@ i16 g_cellDestArea;
 
 // The kind of each special cell code.
 DATA(0x00068e50)
-static const CellKind s_cellKinds[] = {
+static CellKind s_cellKinds[] = {
     {CELL_STAIRS_UP, CELL_EVENT_STAIRS, 0, 0},
     {CELL_STAIRS_DOWN, CELL_EVENT_STAIRS, 0, 0},
     {0x90, CELL_EVENT_STAIRS, 0, 0},

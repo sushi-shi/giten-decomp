@@ -123,6 +123,9 @@ static char s_skillHeaderLine[4];
 DATA(0x00083c90)
 static char s_emptySkillLabel[4];
 
+DATA(0x00083c94)
+char g_emptyEquipPickLabel[4];
+
 DATA(0x000649b8)
 static const i16 s_equipPickCategories[8] = {
     EQUIP_PART_WEAPON,

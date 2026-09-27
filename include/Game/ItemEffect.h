@@ -9,7 +9,6 @@
 #include <Ints.h>
 
 // The condition a restorative item or a skill inflicts once its effect lands.
-// @identity-TODO: its owner TU is unclaimed (0x42ceb0 sets it too).
 extern i16 g_pendingCondition;
 
 // The item-effect handlers ApplyItemEffect picks by the used item's kind:

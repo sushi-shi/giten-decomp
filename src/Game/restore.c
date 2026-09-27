@@ -14,6 +14,9 @@
 #include <math.h>
 #include <string.h>
 
+DATA(0x000919fc)
+i16 g_effectCondition;
+
 // The condition groups selected by restoration kinds 53..59, 62 and 64.
 DATA(0x00064558)
 static const i16 s_mentalRecoveryConditions[] = {14, 18, 19, 27, 28, 29, -1};

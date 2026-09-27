@@ -1,2 +1,9 @@
 # Compiler-generated DATA with no reachable source spelling (class common|copy).
 rva	size	name	owner	class
+0x0847b0	1	_?$S@?1??DrawDragOutline@@YAXXZ@4EA$S	winmain	copy
+0x0847b4	1	_?$S@?1??RenderFieldView@@YAXH@Z@4EA$S	winmain	copy
+0x08f1fc	1	_?$S@?1??RenderNPC@@YAXH@Z@4EA$S	winmain	copy
+0x08f200	1	_?$S@?1??DrawStairs@@YAXXZ@4EA$S	winmain	copy
+0x08f2f4	1	_?$S@?1??RenderTBox@@YAXXZ@4EA$S	winmain	copy
+0x08fb00	1	_?$S@?1??RenderEnemy@@YAXHHH@Z@4EA$S	winmain	copy
+0x090a60	1	_?$S@?1??DrawScreenFade@@YAXXZ@4EA$S	winmain	copy

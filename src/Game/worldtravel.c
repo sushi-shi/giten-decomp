@@ -24,8 +24,11 @@ static i16 s_travelHistoryCount;
 DATA(0x0007b500)
 static u8 s_travelScores[5][5];
 
+DATA(0x0007b520)
+MapCoord g_worldTravelHistory[128];
+
 DATA(0x000644a8)
-static u8 s_travelWeights[3][5][5] = {
+static const u8 s_travelWeights[3][5][5] = {
     {{4, 12, 20, 16, 8},
      {36, 44, 52, 48, 40},
      {68, 76, 0, 80, 72},

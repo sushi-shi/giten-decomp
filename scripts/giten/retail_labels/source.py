@@ -365,6 +365,16 @@ def compgen_value(value_src: str) -> tuple[str | None, bytes | str]:
         except (UnicodeDecodeError, UnicodeEncodeError):
             return None, "unsupported escape in string literal"
         return "str", payload
+    if v.count("/") == 1:
+        numerator, denominator = (part.strip() for part in v.split("/"))
+        left, left_bytes = compgen_value(numerator)
+        right, right_bytes = compgen_value(denominator)
+        if left in ("f32", "f64") and right in ("f32", "f64"):
+            divisor = struct.unpack("<f" if right == "f32" else "<d", right_bytes)[0]
+            if divisor:
+                dividend = struct.unpack("<f" if left == "f32" else "<d", left_bytes)[0]
+                kind = "f32" if left == right == "f32" else "f64"
+                return kind, struct.pack("<f" if kind == "f32" else "<d", dividend / divisor)
     m = _FLOAT_RE.fullmatch(v)
     if m:
         try:

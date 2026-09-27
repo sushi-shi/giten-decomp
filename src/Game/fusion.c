@@ -20,7 +20,7 @@
 #include <string.h>
 
 DATA(0x00064670)
-static i16 s_fusionFlagLevelBonuses[4] = {0, 5, 7, 10};
+static const i16 s_fusionFlagLevelBonuses[4] = {0, 5, 7, 10};
 
 DATA(0x00080a38)
 static i16 s_randomFusion;

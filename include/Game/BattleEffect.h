@@ -6,7 +6,6 @@
 
 // The HP and MP change and the cured condition the last applied effect
 // reports to the battle messages (0x41fe90 writes them).
-// @identity-TODO: their owner TU is unclaimed.
 extern i16 g_hpChange;
 extern i16 g_mpChange;
 extern i16 g_effectCondition;
@@ -39,7 +38,6 @@ static __inline i16 SetActionResult(Character* actor, i16 result) {
 
 // The skill or item id of the action being resolved (the actor's
 // `pickTarget`).
-// @identity-TODO: its owner TU is unclaimed.
 extern i16 g_actionId;
 
 // @identity-TODO: the outcome the script reads (OpGetBattleOutcome): 1 for a
@@ -47,10 +45,5 @@ extern i16 g_actionId;
 // (OpIfBattleResult).
 extern i16 g_battleOutcome;
 extern i16 g_targetCount;
-
-// @identity-TODO: the party position of the member whose command is resolved
-// (RunPartyCommandInput copies it); the summoning skill swaps the summoned
-// demon into it.
-extern i16 g_commandPosition;
 
 #endif // GITEN_GAME_BATTLEEFFECT_H

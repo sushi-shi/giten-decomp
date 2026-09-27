@@ -25,6 +25,11 @@
 #include <stdio.h>
 #include <string.h>
 
+// @identity-TODO: the original source unit for this shared work buffer is
+// unproven; text formatting is its most frequent use.
+DATA(0x00091340)
+char g_scratchBuffer[0x200];
+
 // The script's stacked windows, newest last.
 DATA(0x00081220)
 static ScriptWindowNode* s_windowStack;

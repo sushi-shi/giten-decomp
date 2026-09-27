@@ -92,11 +92,11 @@ b32 CreatePicture(
         }
         picture->surface->SetColorKey(DDCKEY_SRCBLT, &key);
     } else if (result == DDERR_INVALIDOBJECT) {
-        OutputDebugString("GetSurfaceDesc() returns DDERR_INVALIDOBJECT");
+        OutputDebugString("GetSurfaceDesc() returns DDERR_INVALIDOBJECT\n");
     } else if (result == DDERR_INVALIDPARAMS) {
-        OutputDebugString("GetSurfaceDesc() returns DDERR_INVALIDPARAMS");
+        OutputDebugString("GetSurfaceDesc() returns DDERR_INVALIDPARAMS\n");
     } else {
-        OutputDebugString("GetSurfaceDesc() returns UNKNOWN");
+        OutputDebugString("GetSurfaceDesc() returns UNKNOWN\n");
     }
     return TRUE;
 }

@@ -29,7 +29,8 @@ typedef struct NpcTexture {
     u32 other;
 } NpcTexture;
 
-// @identity-TODO: the six NPC picture textures; placeholder extern.
+// @identity-TODO: five adjacent identical records may extend this allocation;
+// only six texture slots are used by the recovered readers and loader.
 extern NpcTexture g_npcTextures[6];
 
 // The map cell the field view is drawing.

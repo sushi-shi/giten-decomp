@@ -30,6 +30,16 @@
 #include <Script/EventFlags.h>
 #include <Util/BitSet.h>
 
+DATA(0x00068b8c)
+NpcTexture g_npcTextures[6] = {
+    {0, 0xffff},
+    {0, 0xffff},
+    {0, 0xffff},
+    {0, 0xffff},
+    {0, 0xffff},
+    {0, 0xffff},
+};
+
 // The room-region grids (a byte per cell of a 64x64 map in a memory handle):
 // the current regions and the copy RoomRegionsChanged compares against.
 DATA(0x0007d62c)

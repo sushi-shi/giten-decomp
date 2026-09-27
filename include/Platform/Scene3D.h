@@ -476,14 +476,4 @@ BOOL TurnLeftCommand(i16 nextPhase);
 #define SPREAD_SLOTS 3
 #define SPREAD_SLOT_LEFT 2
 
-// Billboard brightness remains full within two cells, then attenuates by distance.
-#define SetDistanceLight(light, distance)                                                          \
-    do {                                                                                           \
-        if ((distance) < 640.0) {                                                                  \
-            (light) = 1.0f;                                                                        \
-        } else {                                                                                   \
-            (light) = (320.0 - (distance) / 6.0) / ((distance) - 323.2);                           \
-        }                                                                                          \
-    } while (0)
-
 #endif // GITEN_PLATFORM_SCENE3D_H

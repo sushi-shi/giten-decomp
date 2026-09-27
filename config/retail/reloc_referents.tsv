@@ -1,3 +1,11 @@
 # Per-site retail relocation REFERENTS whose exact spelling (symbol + addend)
 # strict data containment cannot infer. Retail evidence; consumed by the delinker.
 function_rva	target_rva	site_rva	owner	addend	occurrences	provenance
+0x0000bed0	0x000684e6	0x0000bf94	_s_viewFloodMask$S	0xfffffffe	1	west-neighbor array address
+0x0000bed0	0x000684da	0x0000bf0b	_s_viewFloodMask$S	0xfffffff2	1	north-neighbor array address
+0x0000bed0	0x000684ea	0x0000bf3b	_s_viewFloodMask$S	0x00000002	1	east-neighbor array address
+0x0004f260	0x0006bdc4	0x0004f2f8	_s_quadIndices$S	0x0000000c	1	index loop one-past limit
+0x0004fcd0	0x0006b78c	0x0004fd04	?g_menuButtonX@@3PAIA	0x0000001c	1	menu-button loop one-past limit
+0x000520b0	0x00090a60	0x000520d1	_g_textPlanes	0x00000cb8	1	text-plane loop one-past limit
+0x00054bb0	0x0008fb4c	0x00054bc5	_g_screenLayers	0x0000003c	1	screen-layer loop one-past limit
+0x00055760	0x00090be8	0x000557fb	_s_panelCommandIds$S	0x00000010	1	panel-command loop one-past limit

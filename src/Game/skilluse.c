@@ -55,6 +55,48 @@
 #include <stdio.h>
 #include <string.h>
 
+DATA(0x00091542)
+i16 g_battleOutcome;
+
+DATA(0x00091546)
+i16 g_pendingCondition;
+
+DATA(0x0009154c)
+i32 g_rewardMacca;
+
+DATA(0x00091552)
+i16 g_actionId;
+
+DATA(0x00091986)
+i16 g_drainAmount;
+
+DATA(0x00091988)
+i32 g_rewardMagnetite;
+
+DATA(0x0009198c)
+i16 g_mpChange;
+
+DATA(0x00091990)
+i32 g_rewardExperience;
+
+DATA(0x00091994)
+i16 g_actionResult;
+
+DATA(0x00091996)
+i16 g_targetId;
+
+DATA(0x00091998)
+i16 g_hpChange;
+
+DATA(0x0009199a)
+i16 g_statusCondition;
+
+DATA(0x000919f0)
+i16 g_targetCount;
+
+DATA(0x000919f6)
+i16 g_actorId;
+
 // @identity-TODO: the requested effect position and mode are stored but
 // never read by the Windows action-state implementation.
 DATA(0x000690c8)
@@ -150,6 +192,9 @@ static i16 s_actionRoleKept;
 
 DATA(0x00080d2c)
 static i16 s_actionPickKept;
+
+DATA(0x00080d34)
+char g_emptySkillMenuLabel[4];
 
 // The conditions that block a skill as they would a spell: severe poison and
 // sealed magic.

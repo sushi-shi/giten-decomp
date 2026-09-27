@@ -59,7 +59,6 @@ extern i16 g_mouseRightClickY;
 // @identity-TODO: object ids the cursor code maintains (0x40a050 sets the
 // hovered one and copies it to the selected one; the menu pick 0x4537a0 sets
 // the item hit and the value it selects); a right-click cancel clears both.
-// COMMON storage: no TU placement names an owner.
 extern i16 g_hoveredObjectId;
 extern i16 g_selectedObjectId;
 

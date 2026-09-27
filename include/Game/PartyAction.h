@@ -24,7 +24,7 @@ i16 SwapPartyRows(void);
 i16 AdjustActorAction(i16 id, i16 action);
 
 // @identity-TODO: text shown for unavailable commands; storage extent is unproven.
-extern char g_unavailableCommandText[];
+extern char g_unavailableCommandText[8];
 
 MenuBox* OpenActorCommandMenu(i16 id);
 void ActorCommandMenuHandler(MenuBox* menu, i16 index, i16 event);

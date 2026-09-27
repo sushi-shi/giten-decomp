@@ -29,7 +29,7 @@ static char s_emptyLabels[4][4];
 // The debug menu: each row starts scene 0xaf (0xd1 for the last) with its
 // value, except the magic test (row 2) and destroying every demon (row 4).
 DATA(0x000641f0)
-static MenuEntry s_debugEntries[15] = {
+static const MenuEntry s_debugEntries[15] = {
     {0, 0, "\202\141\202\146\202\154"},         // "ＢＧＭ"
     {0, 1, "\202\162\202\144"},                 // "ＳＥ"
     {1, 3, "\226\202\226\100\214\370\211\312"}, // "魔法効果" (magic effects)
@@ -49,7 +49,7 @@ static MenuEntry s_debugEntries[15] = {
 
 // The magic test's rows: step the skill id, set the shot's rise, launch it.
 DATA(0x00064250)
-static MenuEntry s_magicEntries[8] = {
+static const MenuEntry s_magicEntries[8] = {
     {0, 1, "\201\173\202\120"},                    // "＋１"
     {0, -1, "\201\174\202\120"},                   // "－１"
     {0, 10, "\201\173\202\120\202\117"},           // "＋１０"

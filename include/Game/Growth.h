@@ -29,9 +29,8 @@ typedef struct LearnableSkillRequirement {
 void LoadLearnableSkillTables(void);
 i16 TakeLearnableSkill(Character* character, i16* skills);
 
-// @identity-TODO: retail has nonzero unreferenced words after the four
-// stat pairs; the storage boundary before the next object is unproven.
-extern i16 g_affiliationGrowthStats[4][2];
+// Four stat pairs; unrelated nonzero words follow this table in retail.
+extern const i16 g_affiliationGrowthStats[4][2];
 
 #define GetAffiliationGrowthStat(affiliation, choice)                                              \
     (g_affiliationGrowthStats[(affiliation) & 3][choice])

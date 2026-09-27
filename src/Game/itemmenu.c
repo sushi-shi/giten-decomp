@@ -34,6 +34,10 @@ static i16 s_itemMenuEquipGroup = -1;
 DATA(0x00068c4c)
 static i16 s_itemMenuMember = -1;
 
+// The ammunition kind used by the open item menu.
+DATA(0x00068c50)
+i16 g_itemMenuAmmoType = -1;
+
 DATA(0x0007d5c0)
 static ItemStackList* s_itemMenuLimits;
 

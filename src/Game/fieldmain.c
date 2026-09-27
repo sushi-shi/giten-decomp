@@ -50,6 +50,12 @@
 #include <Util/Range.h>
 #include <Util/Scratch.h>
 
+DATA(0x00091210)
+u8 g_leftFrontWalls[4][3];
+
+DATA(0x000912f0)
+u8 g_rightFrontWalls[4][3];
+
 // The world-map route queue (MapCoord points in a memory handle): its
 // capacity, read and write positions, and whether a route is being walked.
 DATA(0x0007b72c)

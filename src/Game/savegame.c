@@ -63,6 +63,9 @@ static SystemMenuEntry s_displayEntries[2] = {
     {0, "\214\305\222\350\225\134\216\246"}, // "固定表示" (fixed display)
 };
 
+DATA(0x00076050)
+i16 g_loadedBefore;
+
 DATA(0x00076054)
 static MenuBox* s_systemMenu;
 

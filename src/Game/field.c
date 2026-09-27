@@ -45,6 +45,9 @@
 
 #include <stddef.h>
 
+DATA(0x000919f2)
+i16 g_fieldBattleActive;
+
 DATA(0x0006840c)
 static i16 s_fieldCountA = -1;
 

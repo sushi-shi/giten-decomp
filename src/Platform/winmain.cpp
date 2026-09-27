@@ -21,6 +21,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Billboard brightness remains full within two cells, then attenuates by distance.
+#define SetDistanceLight(light, distance)                                                                                                         \
+    do {                                                                                                                                          \
+        if ((distance) < 640.0) {                                                                                                                 \
+            (light) = 1.0f;                                                                                                                       \
+        } else {                                                                                                                                  \
+            (light) =                                                                                                                             \
+                (DATA_COMPGEN(0x00064a88, 320.0) - (distance) * DATA_COMPGEN(0x00064a80, 1.0 / 6.0)) / ((distance) - DATA_COMPGEN(0x00064a90, 323.2)); \
+        }                                                                                                                                         \
+    } while (0)
+
 DATA(0x0008778c)
 HWND g_mainWindow;
 
@@ -1731,7 +1742,7 @@ void RenderTBox(void) {
                 dx += 40;
                 break;
         }
-        s_box[0].x = g_billboardX * 40.0;
+        s_box[0].x = g_billboardX * DATA_COMPGEN(0x00064a78, 40.0);
         s_box[1].x = -g_billboardX * 40.0;
         s_box[0].z = g_billboardZ * 40.0;
         s_box[1].z = -g_billboardZ * 40.0;
@@ -1886,7 +1897,7 @@ void RenderNPC(BOOL ownCellOnly) {
         }
         dx = (cellX - partyX) * 320 + offsetX;
         dz = (partyY - cellY) * 320 + offsetZ;
-        s_npc[3].x = s_npc[0].x = g_billboardX * 128.0;
+        s_npc[3].x = s_npc[0].x = g_billboardX * DATA_COMPGEN(0x00064a98, 128.0);
         s_npc[2].x = s_npc[1].x = -g_billboardX * 128.0;
         s_npc[3].z = s_npc[0].z = g_billboardZ * 128.0;
         s_npc[2].z = s_npc[1].z = -g_billboardZ * 128.0;
@@ -1912,7 +1923,7 @@ void RenderNPC(BOOL ownCellOnly) {
                 TraceD3DCallError("lpD3DDev->SetLightState()@RenderNPC() returns ", result);
             }
         }
-        s_npc[0].y = s_npc[1].y = 256.0f - bottomMargin;
+        s_npc[0].y = s_npc[1].y = DATA_COMPGEN(0x00064aa0, 256.0f) - bottomMargin;
         s_npc[2].y = s_npc[3].y = -bottomMargin;
         DrawLitQuad(s_npc);
         if (IsCellInViewCone(partyX, partyY, cell[0], cell[1]) && kind != 0) {

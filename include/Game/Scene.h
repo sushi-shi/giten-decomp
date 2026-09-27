@@ -7,7 +7,7 @@
 #include <Game/StateStack.h>
 
 // @identity-TODO: the Windows video-state stubs do not prove its saved extent.
-extern u8 g_sceneVideoState[];
+extern u8 g_sceneVideoState[16];
 i16 RunCellScene(void);
 i16 RunFieldTextScene(void);
 i16 RunFrozenFieldScene(void);
@@ -45,9 +45,9 @@ i16 GetSceneCellKind(void);
 u32 GetSceneEntry(i16 index);
 
 // @identity-TODO: legacy frame arrays have no live caller proving their extents.
-extern i32 g_sceneFrameSaves[];
-extern u8 g_sceneFrameIds[][2];
-extern i16 g_sceneFramePositions[][2];
+extern i32 g_sceneFrameSaves[32];
+extern u8 g_sceneFrameIds[32][2];
+extern i16 g_sceneFramePositions[32][2];
 void RestoreSceneFrame(i16 slot);
 void DrawSceneFrame(i16 image, i16 slot, i16 frame, i16 x, i16 y, i16 mode);
 

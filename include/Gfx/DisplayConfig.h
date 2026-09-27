@@ -18,8 +18,7 @@ typedef struct DisplayConfig {
 extern "C" {
 #endif
 
-    // @identity-TODO: the all-zero GUID the defaults start from (a 16-byte
-    // .rdata constant at 0x466328); placeholder extern until its owner is known.
+    // The all-zero GUID the defaults start from.
     extern const GUID g_defaultDriverGuid;
 
     i32 LoadDisplayConfig(DisplayConfig* config);

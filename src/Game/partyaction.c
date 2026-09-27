@@ -58,6 +58,9 @@ static i16 s_actionConditions[] = {7, 17, 30, 14, 18, 16, 27, 28, 29, 26, -1};
 DATA(0x00078514)
 static MenuBox* s_commandMenu;
 
+DATA(0x00078538)
+char g_unavailableCommandText[8];
+
 RVA(0x00005a80, 0x86)
 i16 PickPartyMember(i16 index) {
     Character* member;

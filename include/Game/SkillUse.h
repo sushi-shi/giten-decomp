@@ -61,7 +61,7 @@ i16 AddRelatedCombatTargets(i16 x, i16 y, i16 flags, i16 target, i16 actor);
 i16 AddObjectTargetsAtCell(i16 x, i16 y);
 i16 AddPartyTargetsAtCell(i16 x, i16 y);
 
-// @identity-TODO: the zero-initialized empty skill label's extent is unproven.
+// The zero-initialized empty skill label.
 extern char g_emptySkillMenuLabel[];
 
 void UseAttackSkill(Character* user, Character* target);

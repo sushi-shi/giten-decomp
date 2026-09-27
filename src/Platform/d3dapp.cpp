@@ -1157,10 +1157,11 @@ BOOL InitDirect3D(void) {
     viewport.dwHeight = g_viewClearRect.y2;
     viewport.dvMinZ = 0.0f;
     viewport.dvMaxZ = 1.0f;
-    viewport.dvClipHeight = g_viewClearRect.x2 * 2.0 / g_viewClearRect.y2 / 3.0;
-    viewport.dvClipX = -1.0f / 3.0f;
-    viewport.dvClipWidth = 2.0f / 3.0f;
-    viewport.dvClipY = viewport.dvClipHeight / 6.0f;
+    viewport.dvClipHeight =
+        g_viewClearRect.x2 * 2.0 / g_viewClearRect.y2 * DATA_COMPGEN(0x00064a20, 1.0 / 3.0);
+    viewport.dvClipX = DATA_COMPGEN(0x00064a0c, -1.0f / 3.0f);
+    viewport.dvClipWidth = DATA_COMPGEN(0x00064a10, 2.0f / 3.0f);
+    viewport.dvClipY = viewport.dvClipHeight * DATA_COMPGEN(0x00064a28, 1.0f / 6.0f);
     if (g_screenViewport->SetViewport2(&viewport) != D3D_OK) {
         return FALSE;
     }

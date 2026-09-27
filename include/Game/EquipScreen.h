@@ -42,7 +42,7 @@ i16 OpenItemInfoPlane(i16 item);
 
 i16 DrawEquipPickRow(i16 member, i16 part, i32 attr);
 
-// @identity-TODO: empty picker label storage extent is unproven.
+// The zero-initialized empty picker label.
 extern char g_emptyEquipPickLabel[];
 
 // Count slots for equipment kinds 11 through 19; ammunition is handled separately.

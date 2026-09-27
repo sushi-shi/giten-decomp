@@ -45,6 +45,9 @@ i16 g_guestIndex = -1;
 DATA(0x00068404)
 static i16 s_swapSaved = -1;
 
+DATA(0x000784c8)
+i16 g_commandPosition;
+
 DATA(0x000784cc)
 static i16 s_pickScreenSaved;
 
@@ -57,6 +60,9 @@ static i16 s_pickDone;
 // The list menu a picked member acts through (NULL: none open).
 DATA(0x00078520)
 static MenuBox* s_pickMenu;
+
+DATA(0x00078528)
+u8 g_pickScreenSave[16];
 
 static __inline void ResetPartyCommandPick(void) {
     s_pickMode = 0;
@@ -344,7 +350,7 @@ i16 RunPartyCommandInput(void) {
             if (result < 1) {
                 break;
             }
-            g_pickHoveredObject = g_hoveredObjectId;
+            g_commandPosition = g_hoveredObjectId;
             if (!GetPickBlockingCondition(GetCharacterConditions(character))) {
                 QueueActionWait(GetCharacterActionWait(character));
             }

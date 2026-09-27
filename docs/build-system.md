@@ -161,8 +161,10 @@ structural.
    — function records with the claim-resolved extent and a synthetic
    `c:\proj\<unit>.c` source file so the delinker emits one `<unit>.c.obj` per
    TU, plus data records for every relocation-target address renamed to the
-   claimed source names, cl's own `??_C@` string-pool spellings, and the proven
-   `__imp_` IAT decorations. An identity is always PROVIDED, never invented: a
+   claimed source names, cl's own `??_C@` string-pool spellings, uniquely
+   paired C `$SG` literals (with RVA-unique manifest names when separate TUs
+   reuse an ordinal), and the proven `__imp_` IAT decorations. An identity
+   is always PROVIDED, never invented: a
    target no name reaches keeps a fence spelling that states the verdict —
    `DAT_<va>` when only library bands reference it, `UNPROVISIONED_<va>` (which
    the delinker refuses to emit) when a game band does. The surviving
@@ -277,7 +279,7 @@ score-relaxing step, data relocation relaxation, is separate and runs only with
 
 ```toml
 [compare]
-data_matching = false
+data_matching = true
 ```
 
 It is a separate file, not a `config/units.toml` key, because every `cl` edge
