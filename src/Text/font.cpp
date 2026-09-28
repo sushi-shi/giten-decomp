@@ -3205,7 +3205,25 @@ u8* RenderGlyph(u16 code, u8* glyph) {
             glyph[i * 2 + 1] = 0;
         }
     } else {
+#ifdef GITEN_BUGFIX
+        // Retail ignores the result. GDI fails for an empty glyph (U+3000) or one
+        // taller than the buffer and leaves `metrics` unset, so the row lookup
+        // below indexed with stack garbage. The callers pass a cleared glyph.
+        if (GetGlyphOutline(
+                g_fontDC,
+                code,
+                GGO_BITMAP,
+                &metrics,
+                sizeof(bits),
+                bits,
+                &s_identityMatrix
+            )
+            == GDI_ERROR) {
+            return glyph;
+        }
+#else
         GetGlyphOutline(g_fontDC, code, GGO_BITMAP, &metrics, 64, bits, &s_identityMatrix);
+#endif
         if (metrics.gmBlackBoxX <= 7) {
             for (i = 0; i < 64; i += 4) {
                 char carry = bits[i] & 0x0f;
@@ -3214,6 +3232,15 @@ u8* RenderGlyph(u16 code, u8* glyph) {
             }
         }
         if (code != SJIS_LOW_LINE) {
+#ifdef GITEN_BUGFIX
+            // A font other than MS Gothic can place a glyph's top outside the table.
+            if (metrics.gmptGlyphOrigin.y < 0
+                || metrics.gmptGlyphOrigin.y >= static_cast<LONG>(
+                       sizeof(s_glyphRowOffset) / sizeof(s_glyphRowOffset[0])
+                   )) {
+                return glyph;
+            }
+#endif
             for (i = s_glyphRowOffset[metrics.gmptGlyphOrigin.y], j = 0; i < 30; i += 2, j += 4) {
                 glyph[i + 2] = bits[j];
                 glyph[i + 3] = bits[j + 1];
