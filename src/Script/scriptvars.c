@@ -60,6 +60,7 @@
 #include <mbstring.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 DATA(0x00069828)
@@ -157,9 +158,7 @@ RVA(0x0003a370, 0x36)
 void OpFadeIn(void) {
     i16 variant = ReadScriptValue();
     i16 steps = ReadScriptValue();
-    if (steps < 1) {
-        steps = 1;
-    }
+    steps = max(1, steps);
     if (!variant) {
         StartScreenFade(SCREEN_FADE_FROM_BLACK, steps);
     } else {
@@ -171,9 +170,7 @@ RVA(0x0003a3b0, 0x36)
 void OpFadeOut(void) {
     i16 variant = ReadScriptValue();
     i16 steps = ReadScriptValue();
-    if (steps < 1) {
-        steps = 1;
-    }
+    steps = max(1, steps);
     if (!variant) {
         StartScreenFade(SCREEN_FADE_TO_BLACK, steps);
     } else {

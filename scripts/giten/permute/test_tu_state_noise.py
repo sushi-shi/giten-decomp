@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from unittest import mock
 
 from giten.permute import tu_state_noise as noise
+from giten.permute.test_tu_state_metrics import make_object
 
 
 class TuStateNoiseTests(unittest.TestCase):
@@ -51,6 +52,26 @@ class TuStateNoiseTests(unittest.TestCase):
             "ordered relocation offsets/types/identities/addends differ from retail",
             noise.exact_closure_rejections(100.0, 6, 6, metrics, other),
         )
+
+    def test_exact_extent_uses_the_same_padding_rule_on_both_sides(self):
+        symbol = "?Probe@@YAHXZ"
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "padded.obj"
+            path.write_bytes(make_object(b"\xcc\xcc"))
+            size = noise.retail_function_size(path, symbol)
+            metrics = noise.object_metrics(path)[symbol]
+        self.assertEqual(size, 6)
+        self.assertEqual(metrics["size"], 8)
+        self.assertEqual(noise.exact_closure_rejections(100.0, 6, size, metrics, metrics), [])
+        self.assertTrue(noise.exact_closure_rejections(100.0, 5, size, metrics, metrics))
+
+    def test_retail_extent_fails_closed_for_missing_or_ambiguous_symbols(self):
+        for scores, sizes, counts in [({}, {}, {}), ({"f": 100.0}, {"f": 6}, {"f": 2})]:
+            with self.subTest(counts=counts), mock.patch.object(
+                noise, "objdiff_scores", return_value=(scores, sizes, counts, "")
+            ):
+                with self.assertRaisesRegex(ValueError, "cannot establish retail"):
+                    noise.retail_function_size(Path("unused.obj"), "f")
 
     def test_disposable_objects_use_the_authoritative_canonical_view(self):
         with tempfile.TemporaryDirectory() as directory:

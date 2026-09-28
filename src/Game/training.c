@@ -12,6 +12,7 @@
 #include <Script/EventFlags.h>
 #include <Util/Range.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 DATA(0x0007d618)
@@ -168,9 +169,7 @@ u32 AddTrainingPointsRaw(Character* character, i16 kind, u32 amount) {
     u32 limit;
     amount += *points;
     limit = TrainingThreshold(99);
-    if (limit < amount) {
-        amount = limit;
-    }
+    amount = min(limit, amount);
     *points = amount;
     return amount;
 }

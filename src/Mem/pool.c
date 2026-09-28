@@ -8,6 +8,7 @@
 #include <Mem/Handle.h>
 #include <Mem/Pool.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 // Eight-row screen cells with four, three, two or one colour planes.
@@ -34,7 +35,7 @@ void AllocatePool(ElementPool* pools, i16 index, u16 count) {
     }
     remaining = count;
     for (chunk = 0; chunk < chunks; chunk++) {
-        u16 part = remaining < 256 ? remaining : 256;
+        u16 part = min(remaining, 256);
         i32 handle = AllocArrayHandle(part, size);
         ElementPool* writable = HandleWritePtr((i32)pools);
         writable[index].chunks[chunk] = handle;

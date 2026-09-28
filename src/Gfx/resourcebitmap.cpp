@@ -67,7 +67,7 @@ b32 CreatePicture(
         return false;
     }
     memset(picture, 0, sizeof(*picture));
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
     desc.dwWidth = surfaceWidth;
@@ -88,7 +88,7 @@ b32 CreatePicture(
         if (desc.ddpfPixelFormat.dwRGBBitCount < 16) {
             key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = colorKey;
         } else {
-            memset(&key, 0, sizeof(key));
+            ZeroMemory(&key, sizeof(key));
         }
         picture->surface->SetColorKey(DDCKEY_SRCBLT, &key);
     } else if (result == DDERR_INVALIDOBJECT) {
@@ -141,7 +141,7 @@ void ShadeTexture(Texture* texture, TextureShade shade) {
     if (result != D3D_OK) {
         TraceD3DCallError("lpTS->material[col]->GetHandle() returns ", result);
     }
-    memset(&material, 0, sizeof(material));
+    ZeroMemory(&material, sizeof(material));
     material.dwSize = sizeof(material);
     material.dwRampSize = 16;
     material.diffuse.r = s_textureDiffuse[shade][0];

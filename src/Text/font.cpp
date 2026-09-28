@@ -12,6 +12,7 @@
 #include <Platform/Com.h>
 #include <Platform/GameApi.h>
 #include <Platform/Scene3D.h>
+#include <Platform/WindowsX.h>
 #include <Text/FontApi.h>
 
 #include <stdio.h>
@@ -3334,7 +3335,7 @@ RVA(0x00051540, 0xbd)
 b32 CreateGlyphSurface(void) {
     DDSURFACEDESC desc;
 
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
     desc.dwWidth = 1;
@@ -3362,7 +3363,7 @@ b32 CreateGlyphSurface(void) {
     if (s_glyphSurface->GetDC(&g_fontDC) != DD_OK) {
         return false;
     }
-    SelectObject(g_fontDC, s_glyphFont);
+    SelectFont(g_fontDC, s_glyphFont);
     return true;
 }
 
@@ -3370,7 +3371,7 @@ b32 CreateGlyphSurface(void) {
 RVA(0x00051600, 0x41)
 void FreeGlyphSurface(void) {
     if (s_glyphSurface != NULL) {
-        DeleteObject(s_glyphFont);
+        DeleteFont(s_glyphFont);
         s_glyphSurface->ReleaseDC(g_fontDC);
         ReleaseComObject(s_glyphSurface);
     }
@@ -3513,9 +3514,7 @@ b16 DrawBandText(i16 x, i16 y, const char* text, i32 attr, i16 band) {
     picture->surface->ReleaseDC(dc);
     if (band == TEXT_BAND_RIGHT) {
         source = picture->rect;
-        if (SCREEN_WIDTH - x < source.right) {
-            source.right = SCREEN_WIDTH - x;
-        }
+        source.right = min(SCREEN_WIDTH - x, source.right);
         g_renderTarget->BltFast(x, y, picture->surface, &source, DDBLTFAST_SRCCOLORKEY);
         return false;
     }
@@ -3781,7 +3780,7 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
     if (g_primarySurface->GetSurfaceDesc(&primary) != DD_OK) {
         return 0;
     }
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
     desc.dwWidth = s_planeLayouts[kind].width;
@@ -3804,7 +3803,7 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
         ReleaseComObject(p->surface);
         return -1;
     }
-    memset(&key, 0, sizeof(key));
+    ZeroMemory(&key, sizeof(key));
     p->glyphSurface->SetColorKey(DDCKEY_SRCBLT, &key);
     p->text = new u8*[TEXT_PLANE_MAX_ROWS];
     p->attrs = new TextAttr*[TEXT_PLANE_MAX_ROWS];
@@ -4130,14 +4129,10 @@ void SetTextPlaneCursor(i16 plane, i16 x, i16 y) {
     }
     p = GetTextPlane(plane);
     v = p->cols;
-    if (x < v) {
-        v = x;
-    }
+    v = min(x, v);
     p->cursorX = v;
     v = p->rows;
-    if (y < v) {
-        v = y;
-    }
+    v = min(y, v);
     p->cursorY = v;
 }
 
@@ -5420,7 +5415,7 @@ void DrawPlaneMapTileLit(i16 tile, i16 x, i16 y, i16 plane) {
     cell.right = px + MAP_CELL - 1;
     cell.bottom = py + MAP_CELL - 1;
     source.left = 0;
-    memset(&fx, 0, sizeof(fx));
+    ZeroMemory(&fx, sizeof(fx));
     fx.dwSize = sizeof(fx);
     fx.dwFillColor = (g_greenMask >> 1) & g_greenMask;
     GetTextPlane(plane)->glyphSurface->Blt(&cell, NULL, NULL, DDBLT_COLORFILL, &fx);
@@ -5450,7 +5445,7 @@ void DrawPlaneMapTile(i16 tile, i16 x, i16 y, i16 plane) {
     cell.top = static_cast<i16>((y + 1) * MAP_CELL);
     cell.right = static_cast<i16>((x + 1) * MAP_CELL) + MAP_CELL;
     cell.bottom = static_cast<i16>((y + 1) * MAP_CELL) + MAP_CELL;
-    memset(&fx, 0, sizeof(fx));
+    ZeroMemory(&fx, sizeof(fx));
     fx.dwSize = sizeof(fx);
     fx.dwFillColor = 0;
     GetTextPlane(plane)->glyphSurface->Blt(&cell, NULL, NULL, DDBLT_COLORFILL, &fx);
@@ -5549,10 +5544,10 @@ void DrawLayerGauge(i16 slot, u16 value, u16 max, i16 upper) {
         used.bottom = 55;
         full.bottom = 55;
     }
-    memset(&red, 0, sizeof(red));
+    ZeroMemory(&red, sizeof(red));
     red.dwSize = sizeof(red);
     red.dwFillColor = g_redMask;
-    memset(&green, 0, sizeof(green));
+    ZeroMemory(&green, sizeof(green));
     green.dwSize = sizeof(green);
     green.dwFillColor = g_greenMask;
     layer = g_screenLayers[slot];
@@ -5899,7 +5894,7 @@ b32 CreateScreenLayer(i32 slot) {
     if (g_primarySurface->GetSurfaceDesc(&primary) != DD_OK) {
         return false;
     }
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
     desc.dwWidth = s_layerSize[slot].cx;
@@ -5910,7 +5905,7 @@ b32 CreateScreenLayer(i32 slot) {
         delete layer;
         return true;
     }
-    memset(&key, 0, sizeof(key));
+    ZeroMemory(&key, sizeof(key));
     layer->surface->SetColorKey(DDCKEY_SRCBLT, &key);
     if (!PaintLayer(slot, layer)) {
         ReleaseComObject(layer->surface);
@@ -5971,7 +5966,7 @@ i32 LayerAtPoint(u32 x, u32 y) {
             }
             dx = x - layer->x;
             dy = y - layer->y;
-            memset(&desc, 0, sizeof(desc));
+            ZeroMemory(&desc, sizeof(desc));
             surface = layer->surface;
             desc.dwSize = sizeof(desc);
             desc.dwFlags = DDSD_CAPS;
@@ -6021,7 +6016,7 @@ b32 PadButtonAtPoint(u32 x, u32 y) {
     if (LAYER_HIT(layer, x, y) && layer->slot == SCREEN_LAYER_NAVIGATION) {
         dx = x - layer->x;
         dy = y - layer->y;
-        memset(&desc, 0, sizeof(desc));
+        ZeroMemory(&desc, sizeof(desc));
         surface = layer->surface;
         desc.dwSize = sizeof(desc);
         desc.dwFlags = DDSD_CAPS;
