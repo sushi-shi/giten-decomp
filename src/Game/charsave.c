@@ -98,7 +98,7 @@ i16 AddHundredths(Character* character, i16 amount) {
 // party slot `position`). Returns 1 when the member died.
 RVA(0x00041180, 0x118)
 b16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position) {
-    i16 died = false;
+    b16 died = false;
     if (hero->magnetite >= cost) {
         hero->magnetite -= cost;
         cost = 0;

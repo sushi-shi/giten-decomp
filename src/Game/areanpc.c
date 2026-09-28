@@ -105,8 +105,8 @@ u8 GetGridByte(i32* grid, i16 x, i16 y) {
 // clear for a pair whose bank byte (at offset + 2) is nonzero.
 // @identity-TODO: the meaning of the nonzero byte is unrecovered.
 RVA(0x0001ebe0, 0x2e)
-i16 IsRegionFlagOn(u8* list, i16 offset) {
-    i16 invert = list[offset + 2] != 0;
+b16 IsRegionFlagOn(u8* list, i16 offset) {
+    b16 invert = list[offset + 2] != 0;
     return (IsCellFlagSet((CellHead*)list, offset) != 0) ^ invert;
 }
 

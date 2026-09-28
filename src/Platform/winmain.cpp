@@ -915,7 +915,7 @@ static i32 s_doorFrame;
 RVA(0x0004a530, 0x104)
 static b32 SlideForward(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = false;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
@@ -949,7 +949,7 @@ static b32 SlideForward(D3DVALUE* progress) {
 RVA(0x0004a640, 0x104)
 static b32 SlideBack(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = false;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
@@ -983,7 +983,7 @@ static b32 SlideBack(D3DVALUE* progress) {
 RVA(0x0004a750, 0x104)
 static b32 SlideLeft(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = false;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
@@ -1017,7 +1017,7 @@ static b32 SlideLeft(D3DVALUE* progress) {
 RVA(0x0004a860, 0x104)
 static b32 SlideRight(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = false;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
@@ -1265,7 +1265,7 @@ static i32 s_movePadButtons[8] = {
 // view is redrawn at the party's new cell. Returns whether a move ran.
 RVA(0x0004ad60, 0xcb)
 b32 AnimateMove(void) {
-    BOOL moving = false;
+    b32 moving = false;
 
     if (g_moveState & MOVE_STATE_KIND) {
         if (s_lastMoveState != g_moveState) {
@@ -2859,13 +2859,13 @@ static BOOL s_fogEnabled;
 // Without `draw` only the door keeps opening.
 RVA(0x0004e3d0, 0x53e)
 void RenderViewMode(BOOL draw) {
-    BOOL moved = FALSE;
+    b32 moved = false;
     Texture* texture;
     HRESULT result;
     MapPosition* position;
 
     if (AnimateMove()) {
-        moved = TRUE;
+        moved = true;
     }
     if (g_scenePicture.visible) {
         g_renderTarget->BltFast(0, 0, g_scenePicture.surface, &g_scenePicture.rect, DDBLTFAST_WAIT);
@@ -4201,7 +4201,7 @@ u8 PollInput(void) {
 // the party's cell.
 RVA(0x00050220, 0x5d)
 b32 MoveForwardCommand(i16 nextPhase) {
-    BOOL moved = false;
+    b32 moved = false;
     i16 step = StepParty(STEP_FORWARD);
 
     if (step) {
@@ -4220,7 +4220,7 @@ b32 MoveForwardCommand(i16 nextPhase) {
 
 RVA(0x00050280, 0x45)
 b32 TurnAroundCommand(i16 nextPhase) {
-    BOOL moved = false;
+    b32 moved = false;
 
     if (FindObjectAtParty() < 0) {
         if (nextPhase) {
@@ -4236,7 +4236,7 @@ b32 TurnAroundCommand(i16 nextPhase) {
 
 RVA(0x000502d0, 0x61)
 b32 MoveBackCommand(i16 nextPhase) {
-    BOOL moved = false;
+    b32 moved = false;
     i16 step = StepParty(STEP_BACK);
 
     if (step) {
@@ -4255,7 +4255,7 @@ b32 MoveBackCommand(i16 nextPhase) {
 
 RVA(0x00050340, 0x45)
 b32 TurnLeftCommand(i16 nextPhase) {
-    BOOL moved = false;
+    b32 moved = false;
 
     if (FindObjectAtParty() < 0) {
         if (nextPhase) {
@@ -4271,7 +4271,7 @@ b32 TurnLeftCommand(i16 nextPhase) {
 
 RVA(0x00050390, 0x61)
 b32 MoveLeftCommand(i16 nextPhase) {
-    BOOL moved = false;
+    b32 moved = false;
     i16 step = StepParty(STEP_LEFT);
 
     if (step) {
@@ -4290,7 +4290,7 @@ b32 MoveLeftCommand(i16 nextPhase) {
 
 RVA(0x00050400, 0x45)
 b32 TurnRightCommand(i16 nextPhase) {
-    BOOL moved = false;
+    b32 moved = false;
 
     if (FindObjectAtParty() < 0) {
         if (nextPhase) {
@@ -4306,7 +4306,7 @@ b32 TurnRightCommand(i16 nextPhase) {
 
 RVA(0x00050450, 0x61)
 b32 MoveRightCommand(i16 nextPhase) {
-    BOOL moved = false;
+    b32 moved = false;
     i16 step = StepParty(STEP_RIGHT);
 
     if (step) {

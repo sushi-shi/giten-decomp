@@ -65,7 +65,7 @@ i16 CompareInt(i32 a, i32 b) {
 RVA(0x000346b0, 0x8c)
 b32 CompareByOp(ComparisonOperator op, i32 a, i32 b) {
     i16 order = CompareInt(a, b);
-    i32 holds = false;
+    b32 holds = false;
     switch (op) {
         case COMPARE_EQUAL:
             if (order == 0) {
@@ -438,7 +438,7 @@ void OpJumpUnlessActorVisible(i16 invert) {
     if (GetFieldMarker()) {
         jump = invert == 0;
     } else {
-        i16 view = GetPartyView(
+        b16 view = GetPartyView(
             ((FieldActor*)g_curScript->actor)->pos.x,
             ((FieldActor*)g_curScript->actor)->pos.y
         );

@@ -982,7 +982,7 @@ DWORD __fastcall ZBufferDepth(D3DDEVICEDESC* desc) {
 // FALSE when a restore fails.
 RVA(0x00047de0, 0x87)
 b32 RestoreSurfaces(BOOL restore) {
-    BOOL ok = true;
+    b32 ok = true;
 
     if (restore) {
         if (g_primarySurface != NULL && g_primarySurface->IsLost() == DDERR_SURFACELOST

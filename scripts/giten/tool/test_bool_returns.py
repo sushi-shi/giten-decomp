@@ -118,7 +118,7 @@ int Parameter(int x, int test) { if (test) return x; x = 1; return x; }
 """)
         self.assertEqual(names, {'Flag'})
         self.rewrite()
-        self.assertIn('int flag = false; if (x) flag = true;', self.source.read_text())
+        self.assertIn('b32 flag = false; if (x) flag = true;', self.source.read_text())
 
     def test_missing_alias_is_defined_once_in_owner_header(self):
         self.scan('unsigned char Byte() { return 1; }')
@@ -138,6 +138,55 @@ int Parameter(int x, int test) { if (test) return x; x = 1; return x; }
             '--target=i686-pc-windows-msvc', '/I' + str(self.header.parent),
             '/DRESULT=' + value] for p, value in ((self.source, '2'), (other, '1'))}, self.root)
         self.assertFalse(br.infer(functions))
+
+    def test_local_types_in_nonboolean_functions_and_shared_declarations(self):
+        self.scan("""
+int Predicate() { return 1; }
+void Flags(int x) {
+    int holds = false;
+    short moved = 0;
+    unsigned int ready = Predicate();
+    bool native = true;
+    const int fixed = 1;
+    int first = 0, second = 1;
+    int flag = 0, count = 2;
+    if (x) { holds = true; moved = 1; ready = 0; }
+}
+int Nonboolean() { int flag = 0; return flag + 7; }
+""")
+        self.rewrite()
+        source = self.source.read_text()
+        for declaration in ('b32 holds = false;', 'b16 moved = false;',
+                            'ub32 ready = Predicate();', 'bool native = true;',
+                            'const b32 fixed = true;', 'b32 first = false, second = true;',
+                            'int flag = 0, count = 2;', 'b32 flag = false; return flag + 7;'):
+            self.assertIn(declaration, source)
+        self.scan(source.removeprefix('#include <Ints.h>\n'))
+        self.assertEqual(self.rewrite(), 0)
+
+    def test_local_flags_reject_unknown_calls_and_nonboolean_writes(self):
+        self.scan("""
+int Unknown();
+void Reject(int x) {
+    int unknown = Unknown();
+    int later = false;
+    int counter = false;
+    int parenthesized = false;
+    (parenthesized) = 7;
+    if (x) later = 7;
+    counter++;
+}
+""")
+        self.assertEqual(self.rewrite(), 0)
+
+    def test_bitwise_combinations_of_proven_flags(self):
+        names = self.scan("""
+int Xor(int x, int y) { int invert = y != 0; return (x != 0) ^ invert; }
+int And(int x, int y) { return (x != 0) & (y != 0); }
+int Or(int x, int y) { return (x != 0) | (y != 0); }
+int Mask(int x) { return x & 3; }
+""")
+        self.assertEqual(names, {'Xor', 'And', 'Or'})
 
     def test_parse_errors_abort(self):
         with self.assertRaises(ValueError):

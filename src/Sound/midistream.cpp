@@ -244,7 +244,7 @@ b32 CMidiStream::ReadBuffers(void* data, DWORD size, int part) {
 
 RVA(0x000560c0, 0x10d)
 b32 CMidiStream::LoadFile(LPCSTR path, int part) {
-    BOOL result = false;
+    b32 result = false;
     HANDLE file = CreateFile(
         path,
         GENERIC_READ,

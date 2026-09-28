@@ -58,7 +58,7 @@ void SetGridByte(i32* grid, i16 x, i16 y, u8 value);
 void FillEmptyRegions(i16 width, i16 height, u8 value);
 u8 GetRoomRegion(i16 x, i16 y);
 u8 GetGridByte(i32* grid, i16 x, i16 y);
-i16 IsRegionFlagOn(u8* list, i16 offset);
+b16 IsRegionFlagOn(u8* list, i16 offset);
 void MarkRegionList(u8* list, i16 stride, u8 code, i16 width, i16 height);
 u8* FindRegionData(u8* list, i16 stride, i16 index);
 void SetPrevRegion(i16 x, i16 y, u8 value);

@@ -286,7 +286,7 @@ RVA(0x0003fc30, 0x74)
 i16 CountFallenHumans(void) {
     i16 shown = GetShownPanelCharacter();
     i16 fallen = 0;
-    i16 found = 0;
+    b16 found = false;
     i16 i;
     Character* character;
     for (i = 0; i < 6; i++) {
@@ -294,7 +294,7 @@ i16 CountFallenHumans(void) {
         if (character) {
             if (!GetFatalCondition(GetCharacterConditions(character))) {
                 if (character->id == shown) {
-                    found = 1;
+                    found = true;
                 }
             } else if (IsHumanCharacter(character)) {
                 fallen++;

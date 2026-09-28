@@ -139,7 +139,7 @@ i16 CountHotspotsOfKind(i16 kind, i16 consume) {
 RVA(0x000456e0, 0xf3)
 i16 PickSceneHotspot(i16 x, i16 y) {
     SceneSprite sprite;
-    i16 button = PollScenePointer(x, y, &x, &y);
+    b16 button = PollScenePointer(x, y, &x, &y);
     i16 index;
     if (button < 0) {
         return button;

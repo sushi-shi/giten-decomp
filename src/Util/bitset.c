@@ -14,21 +14,21 @@ b32 TestBit(u8* bits, i16 index) {
 // Each setter returns the bit's previous state.
 RVA(0x0000b700, 0x37)
 b32 SetBit(u8* bits, u16 index) {
-    i32 prev = TestBit(bits, index);
+    b32 prev = TestBit(bits, index);
     bits[index >> 3] |= GetPixelMask(index);
     return prev;
 }
 
 RVA(0x0000b740, 0x39)
 b32 ClearBit(u8* bits, u16 index) {
-    i32 prev = TestBit(bits, index);
+    b32 prev = TestBit(bits, index);
     bits[index >> 3] &= ~GetPixelMask(index);
     return prev;
 }
 
 RVA(0x0000b780, 0x37)
 b32 ToggleBit(u8* bits, u16 index) {
-    i32 prev = TestBit(bits, index);
+    b32 prev = TestBit(bits, index);
     bits[index >> 3] ^= GetPixelMask(index);
     return prev;
 }

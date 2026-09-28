@@ -127,7 +127,7 @@ b16 InitFieldObjects(void) {
 // with an event goes.
 RVA(0x0000d7f0, 0x145)
 void RemoveFieldObject(i16 index, i16 announce) {
-    i16 queued = 0;
+    b16 queued = false;
     i16 i;
     if (announce != 0 && s_objects[index].layer != -1) {
         if (!(s_objects[index].flagBank == 0 && s_objects[index].flagIndex == 0)
@@ -140,7 +140,7 @@ void RemoveFieldObject(i16 index, i16 announce) {
         }
         if (s_objects[index].event >= 0) {
             QueueObjectEvent(s_objects[index].event);
-            queued = 1;
+            queued = true;
         }
     }
     s_objects[index].layer = -1;

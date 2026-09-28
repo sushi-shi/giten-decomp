@@ -13,7 +13,7 @@ b32 LoadDeviceSettings(DeviceSettings* settings) {
     DWORD size = sizeof(DeviceSettings);
     HKEY key;
     char name[MAX_PATH];
-    BOOL loaded = false;
+    b32 loaded = false;
     if (RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\ASCII\\GITEN_DDS", 0, KEY_QUERY_VALUE, &key)
         == ERROR_SUCCESS) {
         GetDeviceSettingsValueName(name);

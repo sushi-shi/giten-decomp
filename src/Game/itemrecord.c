@@ -1842,7 +1842,7 @@ i16 ResolveInflictedCondition(i16 code, Character* target) {
 
 RVA(0x00025840, 0x7c)
 void InflictCondition(i16 code, Character* target) {
-    i16 had = HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE);
+    b16 had = HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE);
     i16 condition = ResolveInflictedCondition(code, target);
 
     if (condition >= 1) {

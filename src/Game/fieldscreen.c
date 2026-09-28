@@ -469,7 +469,7 @@ void SetFieldPanelImage(u32 image) {
 // sets `set` in its flags; returns whether it was checked before.
 RVA(0x00014e70, 0x5e)
 b32 RunFieldPanelRow(i16 row, i32 op, u16 clear, u16 set) {
-    i32 checked = TestFlagBits(&GetPanelRow(&s_fieldPanel.panel, row)->flags, PANEL_ROW_CHECKED);
+    b32 checked = TestFlagBits(&GetPanelRow(&s_fieldPanel.panel, row)->flags, PANEL_ROW_CHECKED);
     RunPanelRow(&s_fieldPanel.panel, row, op == 1);
     ClearFlagBits(&GetPanelRow(&s_fieldPanel.panel, row)->flags, clear);
     SetFlagBits(&GetPanelRow(&s_fieldPanel.panel, row)->flags, set);
@@ -479,7 +479,7 @@ b32 RunFieldPanelRow(i16 row, i32 op, u16 clear, u16 set) {
 // Sets or clears field panel row `row`'s check; returns whether it was set.
 RVA(0x00014ed0, 0x30)
 b32 SetFieldPanelRowChecked(i16 row, i16 on) {
-    i32 checked = IsPanelRowChecked(&s_fieldPanel.panel, row);
+    b32 checked = IsPanelRowChecked(&s_fieldPanel.panel, row);
     SetPanelRowFlags(&s_fieldPanel.panel, row, PANEL_ROW_CHECKED, on);
     return checked;
 }
@@ -882,14 +882,14 @@ void FreeCommandMenuImage(void) {
 
 RVA(0x00015870, 0x35)
 b16 SetFieldStatusBit11(i16 on) {
-    i16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, 0x800);
+    b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, 0x800);
     SetPanelRowFlags(&s_commandPanel.panel, 1, 0x800, on);
     return old;
 }
 
 RVA(0x000158b0, 0x2f)
 b16 SetFieldStatusBit0(i16 on) {
-    i16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, PANEL_ROW_CHECKED);
+    b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, PANEL_ROW_CHECKED);
     SetPanelRowFlags(&s_commandPanel.panel, 1, PANEL_ROW_CHECKED, on);
     return old;
 }
