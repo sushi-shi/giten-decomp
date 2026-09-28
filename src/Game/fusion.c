@@ -40,7 +40,6 @@
 #include <Util/Level.h>
 #include <Util/Scratch.h>
 
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

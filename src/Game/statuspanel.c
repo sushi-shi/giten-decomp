@@ -36,7 +36,6 @@
 #include <Mem/Alloc.h>
 #include <Script/EventFlags.h>
 #include <Script/ScriptOps.h>
-#include <Script/TextToken.h>
 #include <Text/Font.h>
 #include <Text/TextPlane.h>
 #include <Text/TextWindow.h>
