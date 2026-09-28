@@ -5749,18 +5749,21 @@ static i16 s_panelCommandIds[8];
 DATA(0x00090b10)
 static i16 s_shownCharacter;
 
-// the pun: DdsCommand and StatusCommand take no argument; the table calls
-// every command with the character.
+// the pun: DdsCommand, StatusCommand and SetEncounterPending take no
+// argument; the table calls every command with the character. Id 8 (the
+// encounter command FillCharacterCommands lists in render mode 6) is the
+// ninth handler.
 DATA(0x0006dbc0)
-static void (*s_panelCommands[8])(i16 character) = {
+static void (*s_panelCommands[9])(i16 character) = {
     FightCommand,
     GunCommand,
     SkillCommand,
     ItemCommand,
     DefenceCommand,
     ReturnCommand,
-    reinterpret_cast<void (*)(i16)>(DdsCommand),    // the pun: see the table
-    reinterpret_cast<void (*)(i16)>(StatusCommand), // the pun: see the table
+    reinterpret_cast<void (*)(i16)>(DdsCommand),          // the pun: see the table
+    reinterpret_cast<void (*)(i16)>(StatusCommand),       // the pun: see the table
+    reinterpret_cast<void (*)(i16)>(SetEncounterPending), // the pun: see the table
 };
 
 // The pad button last pressed down.

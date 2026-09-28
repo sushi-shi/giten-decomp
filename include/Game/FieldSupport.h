@@ -28,6 +28,8 @@ i16 GetFieldBusy(void);
 // Drops the cached field image (FreeImageHandle on it).
 void ReleaseFieldImage(void);
 
+void SetEncounterPending(void);
+
 void ClearEncounterPending(void);
 
 i16 GetEncounterPending(void);
