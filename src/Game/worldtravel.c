@@ -1,31 +1,29 @@
-// @identity-TODO: the owning TU is unproven; this unit holds one contiguous
-// retail span until link-order evidence names it.
+// @identity-TODO: the owning TU is unproven. One retail object: the world-map
+// travel code, the route queue and the world-map place names. Their .bss
+// statics form one run (0x47b500..0x47b73f) ahead of fieldmain's, and their
+// initialized data forms one .data run out of .text order (the place-name
+// words, then the travel-history limit) closed by the place-name code's
+// literal, before fieldmain's .data.
 
 #include <rva.h>
 
+#include <File/DataFile.h>
 #include <Game/FieldMain.h>
 #include <Game/FieldScreen.h>
 #include <Game/FieldView.h>
+#include <Game/InfoBar.h>
 #include <Game/WorldMap.h>
 #include <Gfx/Scene.h>
+#include <Gfx/ScreenLayer.h>
+#include <Gfx/VramAccess.h>
 #include <Input/Mouse.h>
+#include <Mem/Handle.h>
+#include <Platform/GameCalls.h>
+#include <Util/Range.h>
+#include <Util/Scratch.h>
 
 #include <stdlib.h>
-
-DATA(0x000912fc)
-i16 g_destinationY;
-
-DATA(0x000912fe)
-i16 g_destinationX;
-
-DATA(0x0007b720)
-static i16 s_travelHistoryCount;
-
-DATA(0x0007b500)
-static u8 s_travelScores[5][5];
-
-DATA(0x0007b520)
-MapCoord g_worldTravelHistory[128] = {0};
+#include <string.h>
 
 DATA(0x000644a8)
 static const u8 s_travelWeights[3][5][5] = {
@@ -49,8 +47,29 @@ static const u8 s_travelWeights[3][5][5] = {
 DATA(0x000644f8)
 const u8 g_worldTravelTerrainFlags[16] = {0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
 
+DATA(0x00068628)
+static i16 s_shownPlace = -1;
+
+DATA(0x0006862c)
+static i16 s_place = -1;
+
 DATA(0x00068630)
 static i16 s_travelHistoryLimit = 64;
+
+DATA(0x000912fc)
+i16 g_destinationY;
+
+DATA(0x000912fe)
+i16 g_destinationX;
+
+DATA(0x0007b720)
+static i16 s_travelHistoryCount;
+
+DATA(0x0007b500)
+static u8 s_travelScores[5][5];
+
+DATA(0x0007b520)
+MapCoord g_worldTravelHistory[128] = {0};
 
 static __inline void SetWorldTravelDestination(MapCoord destination) {
     g_destinationX = destination.x;
@@ -318,4 +337,151 @@ void ExcludeWorldTravelStep(i16 x, i16 y, i16 direction) {
     if (row >= -2 && row <= 2 && column >= -2 && column <= 2) {
         s_travelScores[row + 2][column + 2] = 0;
     }
+}
+
+// The world-map route queue (MapCoord points in a memory handle): its
+// capacity, read and write positions, and whether a route is being walked.
+DATA(0x0007b72c)
+static i32 s_route;
+
+DATA(0x0007b730)
+static i16 s_routeCapacity;
+
+DATA(0x0007b734)
+static i16 s_routeRead;
+
+DATA(0x0007b738)
+static i16 s_routeCount;
+
+DATA(0x0007b73c)
+static b16 s_routeActive;
+
+// Makes room for `more` points in the world-map route queue (starting it
+// active when it was empty).
+RVA(0x00011ed0, 0x48)
+void GrowRoute(i16 more) {
+    if (!s_route) {
+        s_routeRead = 0;
+        s_routeCount = 0;
+        s_routeActive = true;
+    }
+    s_routeCapacity += more;
+    s_route = ResizeHandle(s_route, s_routeCapacity * 4);
+}
+
+RVA(0x00011f20, 0x28)
+void FreeRoute(void) {
+    s_route = FreeHandle(s_route);
+    s_routeCapacity = 0;
+    s_routeRead = 0;
+    s_routeCount = 0;
+}
+
+RVA(0x00011f50, 0x3e)
+void PushRoutePoint(MapCoord point) {
+    if (s_routeCount >= s_routeCapacity) {
+        GrowRoute(1);
+    }
+    ((MapCoord*)HandleWritePtr(s_route))[s_routeCount] = point;
+    s_routeCount++;
+}
+
+// The next route point ((-1, -1) and inactive when the route is done).
+RVA(0x00011f90, 0x7d)
+MapCoord PopRoutePoint(void) {
+    MapCoord point;
+    point.x = -1;
+    point.y = -1;
+    if (!s_route) {
+        s_routeActive = false;
+        return point;
+    }
+    if (s_routeRead >= s_routeCount) {
+        FreeRoute();
+        s_routeActive = false;
+        return point;
+    }
+    point = ((MapCoord*)HandleReadPtr(s_route))[s_routeRead++];
+    if (s_routeRead >= s_routeCount) {
+        FreeRoute();
+    }
+    return point;
+}
+
+RVA(0x00012010, 0x7)
+i16 IsRouteActive(void) {
+    return s_routeActive;
+}
+
+DATA(0x0007b724)
+static i32 s_placeGrid;
+DATA(0x0007b728)
+static i32 s_placeNames;
+
+RVA(0x00012020, 0x41)
+void LoadWorldMapPlaces(void) {
+    FILE* fp = OpenDataFile(13, 12, 0);
+    s_placeGrid = ReadCryptHandle(fp);
+    s_placeNames = ReadCryptHandle(fp);
+    CloseDataFile(fp);
+    s_shownPlace = -1;
+}
+
+RVA(0x00012070, 0x31)
+void FreeWorldMapPlaces(void) {
+    s_placeGrid = FreeHandle(s_placeGrid);
+    s_placeNames = FreeHandle(s_placeNames);
+    s_shownPlace = -1;
+}
+
+static __inline void* GetWorldMapPlaceEntry(i32 handle, i16 index) {
+    WorldMapPlaceOffsets* table = HandleReadPtr(handle);
+    return OffsetBy(table, table->offsets[index]);
+}
+
+RVA(0x000120b0, 0x8f)
+char* FormatWorldMapPlaceAt(i16 x, i16 y) {
+    i16 block = GetWorldMapBlock(x, y);
+    MapCoord offset = GetWorldBlockOffset(x, y);
+    WorldMapPlaceGrid* grid;
+    offset.x /= 32;
+    offset.y /= 40;
+    block *= 2;
+    grid = GetWorldMapPlaceEntry(s_placeGrid, block);
+    return FormatWorldMapPlace(grid->places[offset.y][offset.x]);
+}
+
+RVA(0x00012140, 0x58)
+char* FormatWorldMapPlace(i16 place) {
+    const char* name;
+    s_place = place;
+    name = GetWorldMapPlaceEntry(s_placeNames, place);
+    strcpy(g_scratchBuffer, name);
+    return g_scratchBuffer;
+}
+
+RVA(0x000121a0, 0x34)
+void ShowWorldMapPlaceName(i16 x, i16 y, i16 force) {
+    FormatWorldMapPlaceAt(x, y);
+    if (force) {
+        s_shownPlace = -1;
+    }
+    DrawWorldMapPlaceName(s_place);
+}
+
+RVA(0x000121e0, 0x55)
+void DrawWorldMapPlaceName(i16 place) {
+    i16 saved;
+    if (place != s_shownPlace) {
+        s_shownPlace = place;
+        saved = SaveDrawState();
+        ClearLocationCaption();
+        DrawLayerText(SCREEN_LAYER_LOCATION, 8, 8, g_scratchBuffer, 0x3400);
+        RestoreDrawState(saved);
+    }
+}
+
+RVA(0x00012240, 0x18)
+char* FormatWorldMapLocation(void) {
+    return FormatWorldMapPlaceAt(g_worldMapX, g_worldMapY);
 }

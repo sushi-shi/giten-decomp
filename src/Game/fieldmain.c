@@ -56,23 +56,6 @@ u8 g_leftFrontWalls[4][3];
 DATA(0x000912f0)
 u8 g_rightFrontWalls[4][3];
 
-// The world-map route queue (MapCoord points in a memory handle): its
-// capacity, read and write positions, and whether a route is being walked.
-DATA(0x0007b72c)
-static i32 s_route;
-
-DATA(0x0007b730)
-static i16 s_routeCapacity;
-
-DATA(0x0007b734)
-static i16 s_routeRead;
-
-DATA(0x0007b738)
-static i16 s_routeCount;
-
-DATA(0x0007b73c)
-static b16 s_routeActive;
-
 // The level event bits (one per level, MarkLevelEvent).
 DATA(0x0007b740)
 static u8 s_levelEvents[0x20];
@@ -214,63 +197,6 @@ static i32 s_eventStates;
 // Counts frames so the enemies act on every fourth.
 DATA(0x0007b7d4)
 static i16 s_enemyTick;
-
-// Makes room for `more` points in the world-map route queue (starting it
-// active when it was empty).
-RVA(0x00011ed0, 0x48)
-void GrowRoute(i16 more) {
-    if (!s_route) {
-        s_routeRead = 0;
-        s_routeCount = 0;
-        s_routeActive = true;
-    }
-    s_routeCapacity += more;
-    s_route = ResizeHandle(s_route, s_routeCapacity * 4);
-}
-
-RVA(0x00011f20, 0x28)
-void FreeRoute(void) {
-    s_route = FreeHandle(s_route);
-    s_routeCapacity = 0;
-    s_routeRead = 0;
-    s_routeCount = 0;
-}
-
-RVA(0x00011f50, 0x3e)
-void PushRoutePoint(MapCoord point) {
-    if (s_routeCount >= s_routeCapacity) {
-        GrowRoute(1);
-    }
-    ((MapCoord*)HandleWritePtr(s_route))[s_routeCount] = point;
-    s_routeCount++;
-}
-
-// The next route point ((-1, -1) and inactive when the route is done).
-RVA(0x00011f90, 0x7d)
-MapCoord PopRoutePoint(void) {
-    MapCoord point;
-    point.x = -1;
-    point.y = -1;
-    if (!s_route) {
-        s_routeActive = false;
-        return point;
-    }
-    if (s_routeRead >= s_routeCount) {
-        FreeRoute();
-        s_routeActive = false;
-        return point;
-    }
-    point = ((MapCoord*)HandleReadPtr(s_route))[s_routeRead++];
-    if (s_routeRead >= s_routeCount) {
-        FreeRoute();
-    }
-    return point;
-}
-
-RVA(0x00012010, 0x7)
-i16 IsRouteActive(void) {
-    return s_routeActive;
-}
 
 // Saves the party's cell as the saved point (its direction goes to
 // g_savedDirection separately).

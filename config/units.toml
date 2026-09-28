@@ -425,11 +425,6 @@ source = "src/Game/restore.c"
 flags = "c"
 
 [[unit]]
-unit = "worldplaces"
-source = "src/Game/worldplaces.c"
-flags = "c"
-
-[[unit]]
 unit = "list"
 source = "src/Util/list.c"
 flags = "c"
