@@ -380,11 +380,6 @@ source = "src/Script/scriptoperand.c"
 flags = "c"
 
 [[unit]]
-unit = "areamap"
-source = "src/Game/areamap.c"
-flags = "c"
-
-[[unit]]
 unit = "skilluse"
 source = "src/Game/skilluse.c"
 flags = "c"
@@ -432,11 +427,6 @@ flags = "c"
 [[unit]]
 unit = "maxstats"
 source = "src/Game/maxstats.c"
-flags = "c"
-
-[[unit]]
-unit = "panel"
-source = "src/Ui/panel.c"
 flags = "c"
 
 [[unit]]
