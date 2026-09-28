@@ -60,7 +60,7 @@ static u32 s_sceneEntries[32];
 
 // @identity-TODO: a redraw flag and a hold word of the scene code.
 DATA(0x0007be80)
-static i16 s_sceneDirty;
+static b16 s_sceneDirty;
 
 DATA(0x0007be84)
 static i16 s_sceneHold;
@@ -134,7 +134,7 @@ i16 ExchangeSceneHold(i16 hold) {
 
 RVA(0x00017ab0, 0xa)
 void MarkSceneDirty(void) {
-    s_sceneDirty = 1;
+    s_sceneDirty = true;
 }
 
 RVA(0x00017ac0, 0x43)
@@ -335,7 +335,7 @@ b16 RunCellScene(void) {
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             break;
         case 4:
-            s_sceneDirty = 0;
+            s_sceneDirty = false;
             FreeSceneSprites();
             SceneNop();
             s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
@@ -418,7 +418,7 @@ RVA(0x00018230, 0x10e)
 b16 RunFieldTextScene(void) {
     switch (GetGamePhase()) {
         case 1:
-            s_sceneDirty = 0;
+            s_sceneDirty = false;
             FreeSceneSprites();
             ReturnFromGameState();
             LockStatusRedraw(0);
@@ -452,7 +452,7 @@ RVA(0x00018340, 0x157)
 b16 RunFrozenFieldScene(void) {
     switch (GetGamePhase()) {
         case 1:
-            s_sceneDirty = 0;
+            s_sceneDirty = false;
             FreeSceneSprites();
             ReturnFromGameState();
             ExchangeObjectsFrozen(s_sceneObjectsFrozen);
@@ -504,7 +504,7 @@ b16 RunPictureTransition(void) {
             StartDebugScene(0x2d, 0, 0);
             break;
         case 3:
-            s_sceneDirty = 0;
+            s_sceneDirty = false;
             FreeSceneSprites();
             LockStatusRedraw(0);
             s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
@@ -548,7 +548,7 @@ b16 RunBackgroundScene(void) {
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             break;
         case 4:
-            s_sceneDirty = 0;
+            s_sceneDirty = false;
             FreeSceneSprites();
             SceneNop();
             s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);

@@ -15,7 +15,7 @@
 
 // A refresh request transferred to the field redraw flag by RedrawScreen.
 DATA(0x00075fec)
-static i16 s_refreshRequested;
+static b16 s_refreshRequested;
 
 DATA(0x00091550)
 i16 g_fieldRedrawRequest;
@@ -61,7 +61,7 @@ b32 RestoreScreenSave() {
 
 RVA(0x00003970, 0xa)
 void RequestRefresh(void) {
-    s_refreshRequested = 1;
+    s_refreshRequested = true;
 }
 
 RVA(0x00003980, 0x77)
@@ -76,6 +76,6 @@ b16 RedrawScreen(i16 drawView, i16 unused) {
         DrawMapOverlay(g_field.pos);
     }
     g_fieldRedrawRequest = s_refreshRequested;
-    s_refreshRequested = 0;
+    s_refreshRequested = false;
     return true;
 }

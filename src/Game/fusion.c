@@ -23,7 +23,7 @@ DATA(0x00064670)
 static i16 s_fusionFlagLevelBonuses[4] = {0, 5, 7, 10};
 
 DATA(0x00080a38)
-static i16 s_randomFusion;
+static b16 s_randomFusion;
 DATA(0x00080a3c)
 static i16 s_fusionLevelAllowance;
 
@@ -821,7 +821,7 @@ i16 CalculateTripleFusion(i16 first, i16 second, i16 third) {
     if (!GetRosterCharacter(third)) {
         return 0;
     }
-    s_randomFusion = 0;
+    s_randomFusion = false;
     s_fusionLevelAllowance = 5;
     result = ResolveSpecialRaceTripleFusion(first, second, third);
     if (!result) {
@@ -846,7 +846,7 @@ i16 CalculateTripleFusion(i16 first, i16 second, i16 third) {
 
 RVA(0x00027c20, 0xa)
 void MarkRandomFusion(void) {
-    s_randomFusion = 1;
+    s_randomFusion = true;
 }
 
 RVA(0x00027c30, 0x129)

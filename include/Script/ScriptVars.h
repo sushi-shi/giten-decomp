@@ -56,7 +56,7 @@ i32 FreeCallFrames(i32 stack);
 void TransferFrameVars(i32 frame, i16 load);
 
 // Set while a script builds a choice list.
-extern i16 g_inChoices;
+extern b16 g_inChoices;
 
 // The script engine's numbered variables (saved and loaded as one block).
 extern i32 g_scriptVars[256];

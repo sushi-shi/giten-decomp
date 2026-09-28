@@ -118,7 +118,7 @@ DATA(0x0007be3c)
 i16 g_statusMember;
 
 DATA(0x0007be40)
-i16 g_statusFixedMember;
+b16 g_statusFixedMember;
 
 RVA(0x00016e50, 0xc)
 void SetStatusAnalyzeMode(i16 on) {
@@ -144,7 +144,7 @@ b16 RunStatusScreen(void) {
             if (s_statusAnalyzeMode) {
                 NextGamePhase();
                 g_statusMember = 15;
-                g_statusFixedMember = 1;
+                g_statusFixedMember = true;
             }
             break;
         case 1:
@@ -152,7 +152,7 @@ b16 RunStatusScreen(void) {
             RunStatusListPicker(1);
             RequestFieldRefresh();
             LeaveStatusScreen(0);
-            g_statusFixedMember = 0;
+            g_statusFixedMember = false;
             SetFieldPanelRowChecked(1, 0);
             g_statusMember = 0;
             ErasePictureSurface(0x36);

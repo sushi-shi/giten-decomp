@@ -20,18 +20,30 @@ precede VC5's older SDK copies. The generator checks coverage through the consum
 can lose the rest of the AST. Clang reads this dialect approximately; its
 diagnostics do not establish build or match correctness. Use VC5 and objdiff.
 
-## Boolean returns and locals
+## Boolean values
 
 `python3 -m giten.tool.bool_returns` reports functions whose return values are
 provably zero or one, and initialized locals whose writes stay in that domain.
-Add `--write` to update their types, function declarations, and literals under `src/` and `include/`. The pylibclang script uses the same
-compilation database, follows direct calls recursively, and checks conditional
+Globals, file/function statics, static members, and scalar fields are checked
+across all compilation-database translation units as well. Add `--write` to
+update their types, function declarations, and literals under `src/` and
+`include/`. The pylibclang script uses the same compilation database, follows direct calls recursively, and checks conditional
 returns, bitwise combinations of proven flags, and initialized local flags.
 Locals are checked in every function, including functions returning other
 values or `void`. Mixed declarations are left intact when a sibling is not
 proven Boolean. Unknown values, escaping locals, indirect or virtual calls,
 uneditable macros, and missing return paths are left alone.
-Parse errors abort the rewrite.
+
+Storage needs an owned definition, proven Boolean initializers/writes, and a
+flag-domain witness (a possible one, a comparison/logical result, or an existing
+Boolean type). Zero-only cleanup handles and unclassified cleared words are
+left alone. The
+scan includes constructor member initializers and distinguishes value arguments
+from mutable references. Address escapes, unknown member implementations,
+aggregate initialization/copies, raw-memory access, volatile storage, and
+bitfields are excluded. Whole-object exclusions also cover nested records.
+This is a closed-source analysis: unmodeled writers outside the compilation
+database require manual review. Parse errors abort the rewrite.
 
 `Ints.h` owns the boolean aliases and C `true`/`false` definitions. Storage and
 return width and signedness are preserved; C++ `bool` stays `bool`. Integer-valued C++

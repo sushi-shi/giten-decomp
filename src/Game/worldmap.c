@@ -53,7 +53,7 @@ static i16 s_mapLayer;
 
 // Set while the party travels towards a picked destination.
 DATA(0x0007be70)
-static i16 s_traveling;
+static b16 s_traveling;
 
 // Travel ticks since the last party step effect, cleared while idle.
 DATA(0x0007be74)
@@ -88,7 +88,7 @@ b16 RunWorldMap(void) {
         case 0:
             ClearSceneSurfaces();
             NextGamePhase();
-            s_traveling = 0;
+            s_traveling = false;
             g_field.pos.area = 0xff;
             g_field.pos.level = 0;
             g_field.pos.x = 3;
@@ -177,7 +177,7 @@ b16 RunWorldMap(void) {
                 return false;
             }
             if (PickWorldMapDestination(s_mapLayer)) {
-                s_traveling = 1;
+                s_traveling = true;
                 NextGamePhase();
                 if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
                     DrawInfoBar(1, 1);
@@ -196,7 +196,7 @@ b16 RunWorldMap(void) {
             steps = StepWorldMapTravel(s_mapLayer, 2);
             if (steps == 0) {
                 PrevGamePhase();
-                s_traveling = 0;
+                s_traveling = false;
             } else {
                 AdvanceClock(steps * 5);
                 if (TickStepCounter()) {
@@ -217,7 +217,7 @@ b16 RunWorldMap(void) {
             if (CheckWorldMapEvent(g_worldMapX, g_worldMapY)) {
                 CloseMessageWindow();
                 SetGamePhase(9);
-                s_traveling = 0;
+                s_traveling = false;
                 SetGameStep(0x17);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
                 return false;

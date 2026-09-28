@@ -91,7 +91,7 @@ static i16 s_tickCountOn;
 // Set while a script builds a choice list; the text writer takes it with
 // every character.
 DATA(0x00081654)
-i16 g_inChoices;
+b16 g_inChoices;
 
 DATA(0x00081658)
 static i16 s_pendingScene;
@@ -330,7 +330,7 @@ b16 OpBeginChoices(i16 window) {
     PushTextDelay(0);
     s_choiceIndex = -1;
     width = ReadScriptValue();
-    g_inChoices = 1;
+    g_inChoices = true;
     size = GetTextPlaneSize(window);
     s_choiceTop = GetTextPlaneCursorY(window);
     size.x -= GetActiveTextPlaneIndent(window);
@@ -391,7 +391,7 @@ RVA(0x0003a9a0, 0x1f)
 b16 OpEndChoices(i16 window) {
     FinishScriptChoice(window);
     PopTextDelay();
-    g_inChoices = 0;
+    g_inChoices = false;
     return false;
 }
 

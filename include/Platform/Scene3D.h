@@ -21,7 +21,7 @@ extern Picture g_fightBannerPicture;
 
 // @identity-TODO: set when the billboards keep full brightness; its setter
 // is unrecovered.
-extern BOOL g_fixedLighting;
+extern b32 g_fixedLighting;
 
 // The direction the party faces (0..3).
 extern i32 g_viewDirection;
@@ -34,7 +34,7 @@ extern D3DVALUE g_billboardZ;
 // The treasure box being opened (its closed frame then shows open).
 // @identity-TODO: set by 0x449fc0 with two other flags; the names are
 // inferred.
-extern BOOL g_boxOpening;
+extern b32 g_boxOpening;
 extern struct TreasureBox* g_openingBox;
 
 // The camera's eye and the point it looks at.

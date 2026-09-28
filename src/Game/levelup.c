@@ -64,7 +64,7 @@ static i16 s_learnableSkills[64];
 
 // Set when a battle's rewards wait to be handed out.
 DATA(0x0007be90)
-static i16 s_rewardsPending;
+static b16 s_rewardsPending;
 
 // The stat most recently raised.
 DATA(0x0007be94)
@@ -269,7 +269,7 @@ i16 GrantBattleRewards(void) {
         DrawInfoBar(0, 0);
         ShareExperience(g_rewardExperience);
         g_rewardExperience = 0;
-        s_rewardsPending = 0;
+        s_rewardsPending = false;
         return CountPartyPendingLevels();
     }
     return 0;
@@ -277,7 +277,7 @@ i16 GrantBattleRewards(void) {
 
 RVA(0x00018b50, 0xa)
 void MarkRewardsPending(void) {
-    s_rewardsPending = 1;
+    s_rewardsPending = true;
 }
 
 static __inline void FinishLevelGain(Character* character) {

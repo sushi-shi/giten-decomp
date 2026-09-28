@@ -75,7 +75,7 @@ DATA(0x0007d5fc)
 static i16 s_mapScreenY;
 
 DATA(0x0007d600)
-static i16 s_mapActive;
+static b16 s_mapActive;
 
 DATA(0x0007c2e0)
 static i16 s_mapPlane;
@@ -372,7 +372,7 @@ b16 RunAutomapState(void) {
     switch (GetGamePhase()) {
         case 0:
             NextGamePhase();
-            s_mapActive = 1;
+            s_mapActive = true;
             RestoreDrawState(SaveDrawState());
             s_mapPosition = g_field.pos;
             s_mapPlane = CreateTextPlane(31, 0);
@@ -447,7 +447,7 @@ b16 RunAutomapState(void) {
             RequestFieldRefresh();
             RunFieldPanelRow(7, 0, 0, 0);
             ReturnFromGameState();
-            s_mapActive = 0;
+            s_mapActive = false;
             break;
     }
     return false;

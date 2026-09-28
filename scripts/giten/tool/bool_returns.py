@@ -1,4 +1,4 @@
-"""Find boolean-valued returns and locals with pylibclang; optionally rewrite them.
+"""Find boolean-valued returns, locals, globals, statics and fields with pylibclang; optionally rewrite them.
 
     python3 -m giten.graph.compdb
     python3 -m giten.tool.bool_returns          # report only
@@ -311,7 +311,7 @@ def boolean_type(type):
 
 def type_edit(cursor):
     """Find the declared type, excluding annotations and calling conventions."""
-    type = cursor.type if cursor.kind == K.VAR_DECL else cursor.result_type
+    type = cursor.type if cursor.kind in {K.VAR_DECL, K.FIELD_DECL} else cursor.result_type
     alias = boolean_type(type)
     qualifiers = ' '.join(q for q in ('const', 'volatile')
                           if getattr(type, f'is_{q}_qualified')())
@@ -394,7 +394,254 @@ def local_edits(functions, candidates, root):
     return edits
 
 
-def plan(functions, candidates, root=REPO):
+def storage_edits(parsed, functions, candidates, root):
+    """Check every observed write to scalar storage across all parsed TUs.
+
+    This is a closed-source proof: unknown definitions, address escapes,
+    reference arguments, aggregate initialization/copies and raw-memory access
+    disqualify storage. A read passed to a scalar value parameter is harmless.
+    """
+    declarations = defaultdict(dict)
+    writes = defaultdict(list)
+    definitions, blocked, fields, records_blocked = set(), set(), {}, set()
+    has_assembly = False
+    available = set(functions)
+    member_calls = set()
+    returned_records = set()
+    contained = defaultdict(set)
+    groups = defaultdict(set)
+    paths = {}
+
+    def source_file(node):
+        file = node.location.file
+        if file is None:
+            return None
+        if file.name not in paths:
+            path = Path(file.name).resolve()
+            paths[file.name] = path if any(path.is_relative_to(root / d)
+                                          for d in ('src', 'include')) else None
+        return paths[file.name]
+    refs = {K.DECL_REF_EXPR, K.MEMBER_REF_EXPR}
+    casts = {K.CSTYLE_CAST_EXPR, K.CXX_REINTERPRET_CAST_EXPR,
+             K.CXX_CONST_CAST_EXPR, K.CXX_STATIC_CAST_EXPR}
+
+    def record(type):
+        type = type.get_canonical()
+        while type.kind in {ci.TypeKind.POINTER, ci.TypeKind.LVALUEREFERENCE,
+                            ci.TypeKind.RVALUEREFERENCE, ci.TypeKind.CONSTANTARRAY,
+                            ci.TypeKind.INCOMPLETEARRAY}:
+            type = (type.element_type if type.kind in {ci.TypeKind.CONSTANTARRAY,
+                    ci.TypeKind.INCOMPLETEARRAY} else type.get_pointee()).get_canonical()
+        return type.get_declaration().get_usr() if type.kind == ci.TypeKind.RECORD else None
+
+    def unwrap(node):
+        while node.kind in {K.PAREN_EXPR, K.UNEXPOSED_EXPR}:
+            children = list(node.get_children())
+            if len(children) != 1:
+                break
+            node = children[0]
+        return node
+
+    def references(node):
+        return {n.referenced.get_usr() for n in node.walk_preorder()
+                if n.kind in refs and n.referenced}
+
+    def escape(node):
+        blocked.update(references(node))
+        for n in node.walk_preorder():
+            owner = record(n.type)
+            if owner:
+                records_blocked.add(owner)
+
+    def visit(node, parents=(), locals=None):
+        nonlocal has_assembly
+        if node.kind == K.TRANSLATION_UNIT:
+            for child in node.get_children():
+                if source_file(child):
+                    visit(child)
+            return
+        if not source_file(node):
+            return
+        if node.kind in FUNCTIONS | {K.CONSTRUCTOR, K.DESTRUCTOR}:
+            locals = local_values(node)
+        children = list(node.get_children())
+        if node.kind == K.CONSTRUCTOR and node.is_definition():
+            available.add(node.get_usr())
+            for index, child in enumerate(children):
+                if child.kind == K.MEMBER_REF and child.referenced:
+                    usr = child.referenced.get_usr()
+                    if index + 1 < len(children) and children[index + 1].kind.is_expression():
+                        writes[usr].append((children[index + 1], locals))
+                    else:
+                        blocked.add(usr)
+        if node.kind == K.FIELD_DECL and record(node.type):
+            contained[node.semantic_parent.get_usr()].add(record(node.type))
+        if node.kind in {K.VAR_DECL, K.FIELD_DECL}:
+            usr = node.get_usr()
+            owner = node.semantic_parent
+            shared = (node.kind == K.FIELD_DECL or owner.kind not in
+                      FUNCTIONS | {K.CONSTRUCTOR, K.DESTRUCTOR} or
+                      node.storage_class in {ci.StorageClass.STATIC, ci.StorageClass.EXTERN})
+            if shared:
+                path = source_file(node)
+                declarations[usr][(path, node.location.offset)] = node
+                groups[(path, node.extent.start.offset)].add(usr)
+                if node.kind == K.FIELD_DECL:
+                    fields[usr] = owner.get_usr()
+                    definitions.add(usr)
+                    if node.is_bitfield() or owner.kind == K.UNION_DECL:
+                        blocked.add(usr)
+                elif node.is_definition() or (
+                        Path(node.translation_unit.spelling).suffix == '.c' and
+                        node.storage_class != ci.StorageClass.EXTERN):
+                    # libclang does not call C tentative definitions definitions.
+                    definitions.add(usr)
+                if boolean_type(node.type) is None or node.type.is_volatile_qualified():
+                    blocked.add(usr)
+                initializer = [c for c in children if c.kind.is_expression()]
+                if initializer:
+                    writes[usr].append((initializer[-1], locals))
+                # Record initializers may write fields without MEMBER_REF_EXPR.
+                if record(node.type) and initializer and initializer[-1].kind != K.CALL_EXPR:
+                    records_blocked.add(record(node.type))
+            elif record(node.type) and any(c.kind.is_expression() and c.kind != K.CALL_EXPR
+                                         for c in children):
+                records_blocked.add(record(node.type))
+        if node.kind == K.BINARY_OPERATOR and operator(node, children) == '=':
+            lhs = unwrap(children[0])
+            if lhs.kind in refs and lhs.referenced:
+                writes[lhs.referenced.get_usr()].append((children[1], locals))
+            else:
+                escape(children[0])
+            if record(lhs.type):
+                records_blocked.add(record(lhs.type))
+        if node.kind == K.BINARY_OPERATOR and not operator(node, children):
+            # Macro expansion locations may hide the assignment operator.
+            escape(node)
+        if node.kind == K.COMPOUND_ASSIGNMENT_OPERATOR:
+            escape(children[0])
+        if node.kind == K.UNARY_OPERATOR:
+            tokens = list(node.get_tokens())
+            if tokens and (tokens[0].spelling in ('&', '++', '--') or
+                           tokens[-1].spelling in ('++', '--')):
+                escape(node)
+        if node.kind in casts:
+            # Scalar value conversions do not alias storage; pointer/reference
+            # conversions and type-punning do.
+            if record(node.type) or any(record(c.type) for c in children) or \
+                    node.type.kind in {ci.TypeKind.POINTER, ci.TypeKind.LVALUEREFERENCE,
+                                       ci.TypeKind.RVALUEREFERENCE}:
+                escape(node)
+        if node.kind == K.VAR_DECL and node.type.kind in {
+                ci.TypeKind.LVALUEREFERENCE, ci.TypeKind.RVALUEREFERENCE}:
+            escape(node)
+        if node.kind == K.CALL_EXPR:
+            target = node.referenced
+            if record(node.type):
+                returned_records.add((target.get_usr() if target else '', record(node.type)))
+            parameters = list(target.get_arguments()) if target and target.kind in \
+                FUNCTIONS | {K.CONSTRUCTOR} else []
+            for i, arg in enumerate(node.get_arguments()):
+                if record(arg.type) or i >= len(parameters) or parameters[i].type.get_canonical().kind in {
+                        ci.TypeKind.POINTER, ci.TypeKind.LVALUEREFERENCE,
+                        ci.TypeKind.RVALUEREFERENCE}:
+                    escape(arg)
+            # An unavailable member implementation may write through this.
+            if target and target.kind in {K.CXX_METHOD, K.CONSTRUCTOR}:
+                member_calls.add((target.get_usr(), target.semantic_parent.get_usr()))
+        if node.kind in {K.ASM_STMT, K.MS_ASM_STMT}:
+            escape(node)
+            # Inline assembly references are not reliably represented in ASTs.
+            has_assembly = True
+        if node.kind == K.RETURN_STMT and parents:
+            function = next((p for p in reversed(parents) if p.kind in FUNCTIONS), None)
+            if function and function.result_type.get_canonical().kind in {
+                    ci.TypeKind.LVALUEREFERENCE, ci.TypeKind.RVALUEREFERENCE}:
+                escape(node)
+        for child in children:
+            visit(child, parents + (node,), locals)
+
+    for tu in parsed:
+        visit(tu.cursor)
+    if has_assembly:
+        return set()
+    records_blocked.update(owner for usr, owner in member_calls | returned_records
+                           if usr not in available)
+    while True:
+        nested = set().union(*(contained[r] for r in records_blocked))
+        if nested <= records_blocked:
+            break
+        records_blocked.update(nested)
+    def flag_witness(value, locals, seen=frozenset()):
+        """A zero-only cleanup result does not establish a flag domain."""
+        value = unwrap(value)
+        if value.type.get_canonical().kind == ci.TypeKind.BOOL:
+            return True
+        if value.kind == K.INTEGER_LITERAL:
+            return integer_value(value) == 1
+        children = list(value.get_children())
+        if value.kind == K.UNARY_OPERATOR:
+            tokens = list(value.get_tokens())
+            return bool(tokens) and tokens[0].spelling == '!'
+        if value.kind == K.BINARY_OPERATOR:
+            op = operator(value, children)
+            if op in ('==', '!=', '<', '<=', '>', '>=', '&&', '||'):
+                return True
+            if op == ',':
+                return flag_witness(children[-1], locals, seen)
+            if op in ('&', '|', '^'):
+                return any(flag_witness(c, locals, seen) for c in children)
+        if value.kind == K.CONDITIONAL_OPERATOR:
+            return any(flag_witness(c, locals, seen) for c in children[1:])
+        if value.kind in {K.DECL_REF_EXPR, K.CALL_EXPR} and value.referenced:
+            usr = value.referenced.get_usr()
+            if usr in seen:
+                return False
+            if value.kind == K.DECL_REF_EXPR and locals and usr in locals:
+                return any(flag_witness(c, locals, seen | {usr}) for c in locals[usr])
+            if value.kind == K.CALL_EXPR and usr in candidates:
+                return any(flag_witness(c, local_values(function), seen | {usr})
+                           for function, returns in functions[usr].variants
+                           for ret in returns for c in ret.get_children())
+        return False
+
+    proven = {}
+    for usr, decls in declarations.items():
+        if usr in blocked or usr not in definitions or not writes[usr]:
+            continue
+        if fields.get(usr) in records_blocked:
+            continue
+        results = [expression(value, locals) for value, locals in writes[usr]]
+        typed = any(re.sub(r'\b(const|volatile)\s+', '', c.type.spelling)
+                    in ALIASES.values() for c in decls.values())
+        witness = typed or any(flag_witness(value, locals) for value, locals in writes[usr])
+        if witness and all(r is not None and r[0] <= candidates for r in results):
+            proven[usr] = set().union(*(r[1] for r in results))
+    # Declarations sharing one type token must be changed as a group.
+    for group in groups.values():
+        if not group <= proven.keys():
+            for usr in group:
+                proven.pop(usr, None)
+    edits = set()
+    for usr, literals in proven.items():
+        own = set(literals)
+        try:
+            for declaration in declarations[usr].values():
+                edit = type_edit(declaration)
+                if edit:
+                    own.add(edit)
+        except ValueError as error:
+            print(f'skip storage: {error}', file=sys.stderr)
+            continue
+        edits.update(own)
+        c = next(iter(declarations[usr].values()))
+        print(f'{source_file(c).relative_to(root)}:{c.location.line}: storage '
+              f'{c.spelling}: {c.type.spelling} -> {boolean_type(c.type)}')
+    print(f'{len(proven)} boolean-valued storage declarations', file=sys.stderr)
+    return edits
+
+
+def plan(functions, candidates, root=REPO, parsed=()):
     edits = set()
     for usr in sorted(candidates):
         f = functions[usr]
@@ -413,6 +660,7 @@ def plan(functions, candidates, root=REPO):
               f'{c.displayname}: {c.result_type.spelling} -> '
               f'{ALIASES[c.result_type.get_canonical().spelling]}')
     edits.update(local_edits(functions, candidates, root))
+    edits.update(storage_edits(parsed, functions, candidates, root))
     # Add only aliases the inferred functions actually need; preserve their
     # primitive types and keep all definitions in the existing owner header.
     header = root / 'include/Ints.h'
@@ -465,7 +713,7 @@ def main():
     try:
         parsed, functions = collect(units)
         candidates = infer(functions)
-        edits = plan(functions, candidates)
+        edits = plan(functions, candidates, parsed=parsed)
         print(f'{len(functions)} definitions; {len(candidates)} boolean-valued functions; '
               f'{len(edits)} edits', file=sys.stderr)
         if args.write:

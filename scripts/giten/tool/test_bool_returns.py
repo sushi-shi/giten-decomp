@@ -31,7 +31,7 @@ class BooleanReturns(unittest.TestCase):
         return {self.functions[u].cursor.spelling for u in self.candidates}
 
     def rewrite(self):
-        return br.apply(br.plan(self.functions, self.candidates, self.root), self.root)
+        return br.apply(br.plan(self.functions, self.candidates, self.root, self.parsed), self.root)
 
     def test_recursive_groups_and_transitive_unknowns(self):
         names = self.scan('''
@@ -187,6 +187,117 @@ int Or(int x, int y) { return (x != 0) | (y != 0); }
 int Mask(int x) { return x & 3; }
 """)
         self.assertEqual(names, {'Xor', 'And', 'Or'})
+
+    def test_storage_c_tentative_definitions(self):
+        self.source = self.root / 'src/unit.c'
+        self.scan("""
+extern short external;
+static short event;
+int running;
+void Set(void) { extern int running; event = 1; event = 0; running = 1; external = 0; }
+""")
+        self.rewrite()
+        source = self.source.read_text()
+        self.assertIn('static b16 event;', source)
+        self.assertIn('b32 running;', source)
+        self.assertIn('extern b32 running;', source)
+        self.assertIn('event = false;', source)
+        self.assertIn('running = true;', source)
+        self.assertIn('extern short external;', source)
+        self.assertIn('external = 0;', source)
+
+    def test_storage_globals_statics_and_fields(self):
+        self.scan("""
+extern int running;
+int running;
+static short event;
+struct Flags { short active; static int shared; Flags() : active(0) {} };
+Flags instance;
+int Flags::shared;
+int Predicate() { return 1; }
+void Read(int);
+void Set(Flags *state) {
+    static int once;
+    running = 1; running = 0; event = 1; once = true; once = false;
+    state->active = Predicate(); Flags::shared = 1; Flags::shared = 0;
+    Read(event);
+}
+""")
+        self.rewrite()
+        source = self.source.read_text()
+        for declaration in ('extern b32 running;', 'b32 running;', 'static b16 event;',
+                            'b16 active;', 'static b32 shared;', 'b32 Flags::shared;',
+                            'static b32 once;', 'running = false;', 'event = true;',
+                            'Flags::shared = false;', 'active(false)'):
+            self.assertIn(declaration, source)
+        self.scan(source.removeprefix('#include <Ints.h>\n'))
+        self.assertEqual(self.rewrite(), 0)
+
+    def test_storage_rejects_escapes_unknown_writes_and_aggregate_updates(self):
+        self.scan("""
+extern int external;
+int numeric, escaped, ref, incremented;
+struct Raw { int flag; };
+struct Initialized { int flag; };
+Initialized initialized = {7};
+struct Constructed { int flag; Constructed() : flag(7) {} };
+void Modify(int&);
+void Bytes(void *);
+int& Leak() { return ref; }
+void Set(Raw *raw, Initialized *init, Constructed *ctor) {
+    external = 0; numeric = 0; numeric = 2;
+    escaped = 0; Modify(escaped); ref = 1;
+    incremented = 0; ++incremented;
+    raw->flag = 0; Bytes(raw);
+    init->flag = 0; ctor->flag = 0;
+}
+""")
+        self.assertEqual(self.rewrite(), 0)
+
+    def test_storage_shared_declarations_and_hidden_writes(self):
+        self.scan("""
+#define SET_NUMERIC(x) ((x) = 7)
+int flag = 0, count = 2;
+int macro = 0;
+struct Inner { int field; };
+struct Outer { Inner inner; };
+Outer aggregate = {{9}};
+void Set(Inner *p) { flag = 1; SET_NUMERIC(macro); p->field = 0; }
+""")
+        self.assertEqual(self.rewrite(), 0)
+
+    def test_storage_does_not_turn_zero_only_cleanup_handles_into_flags(self):
+        self.scan("""
+unsigned int Free(unsigned int handle) { return 0; }
+unsigned int image;
+short unused;
+int flag;
+int Predicate() { return 1; }
+void Clear() { image = Free(image); unused = 0; flag = Predicate(); }
+""")
+        self.rewrite()
+        source = self.source.read_text()
+        self.assertIn('unsigned int image;', source)
+        self.assertIn('short unused;', source)
+        self.assertIn('unused = 0;', source)
+        self.assertIn('b32 flag;', source)
+
+    def test_storage_observes_writes_in_other_translation_units(self):
+        self.scan('int running; void Start() { running = 1; }',
+                  'extern int running;\n')
+        other = self.root / 'src/other.cpp'
+        other.write_text('#include <Ints.h>\nvoid Change() { running = 7; }\n')
+        units = {str(p): ['--target=i686-pc-windows-msvc', '-fms-extensions',
+                 '/I' + str(self.header.parent)] for p in (self.source, other)}
+        self.parsed, self.functions = br.collect(units, self.root)
+        self.candidates = br.infer(self.functions)
+        self.assertEqual(self.rewrite(), 0)
+        other.write_text('#include <Ints.h>\nvoid Change() { running = 0; }\n')
+        self.parsed, self.functions = br.collect(units, self.root)
+        self.candidates = br.infer(self.functions)
+        self.rewrite()
+        self.assertIn('extern b32 running;', self.header.read_text())
+        self.assertIn('running = false;', other.read_text())
 
     def test_parse_errors_abort(self):
         with self.assertRaises(ValueError):
