@@ -48,7 +48,6 @@ u32 TrainingThreshold(i16 level);
 u32 AddTrainingPointsRaw(Character* character, i16 kind, u32 amount);
 u32 AddTrainingPoints(Character* character, i16 kind, i16 amount);
 i16 ApplyTraining(Character* character, i16 kind);
-void NormalizeAffiliations(Character* character);
 void RaiseAffiliationLevels(Character* character);
 
 void ShowStatPointPrompt(i16 points);

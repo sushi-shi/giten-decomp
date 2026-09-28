@@ -54,7 +54,6 @@ struct Character* FindCharacterById(i16 id);
 i16 ComputeActionSpeed(struct Character* character);
 
 // Clamps a character's three affiliation bytes to -1..3 and compacts them.
-// @identity-TODO: label-only.
 void NormalizeAffiliations(struct Character* character);
 
 #endif // GITEN_GAME_SAVEGAME_H
