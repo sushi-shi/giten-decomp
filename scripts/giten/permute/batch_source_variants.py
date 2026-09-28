@@ -69,6 +69,8 @@ from giten.permute.tu_state_noise import (
 from giten.permute.topology import (
     compare_topology, function_topology, topology_rank,
 )
+from giten.permute.tu_state_metrics import read_coff
+from giten.tool.objdump import disassemble
 
 
 @dataclass(frozen=True)
@@ -116,6 +118,21 @@ def result_rank(row: dict, retail_size: int, retail_relocs: int):
 
 def topology_result_rank(row: dict):
     return (*topology_rank(row["topology"], row["score"]), row["trial"])
+
+
+def target_disassembly(path: Path, symbol: str) -> str:
+    """Decode the scored extent, including code after internal COFF labels."""
+    _digest, rows = read_coff(path)
+    row = next((row for row in rows if row["function"] == symbol), None)
+    if row is None:
+        raise ValueError(f"{path}: function not found: {symbol}")
+    assembly = disassemble(row["bytes"])
+    # Raw decoding cannot annotate COFF operands. Keep the full ordered
+    # relocation stream beside it, with the same function-relative offsets.
+    relocations = "\n".join(row["reloc_stream"])
+    return (f"{symbol}: {row['size']} bytes; offsets relative to function start\n"
+            f"{assembly}\nRelocations (offset:type:identity:addend bytes):\n"
+            f"{relocations}\n")
 
 
 def retain_frontier_candidate(
@@ -777,34 +794,18 @@ def main(argv=None) -> int:
                 if exact_source is not None and not args.continue_after_exact:
                     break
             if args.show_best_disasm and best_object_rank is not None:
-                command = [
-                    "llvm-objdump", "-dr", f"--disassemble-symbols={target.symbol}",
-                    str(scratch / "best.obj"),
-                ]
-                disassembly = subprocess.run(command, capture_output=True, text=True)
-                best_disasm = disassembly.stdout + disassembly.stderr
+                best_disasm = target_disassembly(scratch / "best.obj", target.symbol)
                 if best_topology_object_rank is not None:
-                    command[-1] = str(scratch / "best-topology.obj")
-                    topology_disassembly = subprocess.run(
-                        command, capture_output=True, text=True
-                    )
-                    best_topology_disasm = (
-                        topology_disassembly.stdout + topology_disassembly.stderr
+                    best_topology_disasm = target_disassembly(
+                        scratch / "best-topology.obj", target.symbol
                     )
             retained_frontier = sorted(
                 frontier_by_state.values(), key=lambda item: item["rank"]
             )
             frontier_dir = output / "frontier"
             frontier_dir.mkdir()
-            retail_command = [
-                "llvm-objdump", "-dr", f"--disassemble-symbols={target.symbol}",
-                str(target_obj),
-            ]
-            retail_disassembly = subprocess.run(
-                retail_command, capture_output=True, text=True
-            )
             (frontier_dir / "retail.asm").write_text(
-                retail_disassembly.stdout + retail_disassembly.stderr
+                target_disassembly(target_obj, target.symbol)
             )
             frontier_summary = []
             for frontier_index, record in enumerate(retained_frontier, 1):
@@ -816,13 +817,8 @@ def main(argv=None) -> int:
                 source_suffix = ("-disposable" if state_bearing else "") + source.suffix
                 (frontier_dir / f"{stem}{source_suffix}").write_bytes(record["source"])
                 shutil.copyfile(record["object"], frontier_dir / f"{stem}.obj")
-                command = [
-                    "llvm-objdump", "-dr", f"--disassemble-symbols={target.symbol}",
-                    str(record["object"]),
-                ]
-                disassembly = subprocess.run(command, capture_output=True, text=True)
                 (frontier_dir / f"{stem}.asm").write_text(
-                    disassembly.stdout + disassembly.stderr
+                    target_disassembly(record["object"], target.symbol)
                 )
                 frontier_summary.append({
                     "rank": frontier_index,
