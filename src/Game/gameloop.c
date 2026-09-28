@@ -71,13 +71,13 @@ i16 g_cellDestArea = 0;
 DATA(0x000919e2)
 i16 g_featureMask;
 
+DATA(0x000712c8)
+i16 g_quitRequest = 0;
+
 // @identity-TODO: consumed and cleared by the main-loop step, which then
 // advances the play clock by 31 ticks instead of 24; set by a script command.
 DATA(0x000712cc)
-static i16 s_longFrame;
-
-DATA(0x000712c8)
-i16 g_quitRequest = 0;
+static i16 s_longFrame = 0;
 
 // A matching map position requests exit; all five selectors start disabled.
 DATA(0x00068170)

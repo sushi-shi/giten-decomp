@@ -18,7 +18,19 @@ read the COFF symbol table (`b` and `c` are in `.bss`, `a` has section 0);
 link two such objects and read the map (`<common>` entries follow both
 `.bss` contributions).
 
-Limits: within one object, VC5 does not emit uninitialized statics in
-declaration or first-use order, so `.bss` addresses order objects, not
-source declarations. `.data` follows declaration order. A `.bss` run does not
-say whether the retail file was C with a zero initializer or C++.
+Within one object, the uninitialized statics come first, in an order
+derived from their names. The explicitly zero-initialized definitions
+(`static` or global) follow them in definition order. A static that retail
+places after a zero-initialized global in the same run therefore has a zero
+initializer itself and is defined after that global.
+
+Evidence: compile `static short s1; short g1 = 0; static short s2;
+short g2 = 0; static short s3 = 0; short g3 = 0;` plus a few more
+uninitialized statics with the `c` profile. The symbol table puts every
+uninitialized static first, then `g1`, `g2`, `s3` and `g3` in that order.
+
+Limits: VC5 does not emit uninitialized statics in declaration or first-use
+order, so their addresses order objects, not source declarations. `.data`
+follows declaration order. A `.bss` run does not say whether the retail file
+was C with a zero initializer or C++. An unreferenced datum can fill a slot
+in the run without any other trace.
