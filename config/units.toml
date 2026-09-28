@@ -435,11 +435,6 @@ source = "src/Game/fieldscreen.c"
 flags = "c"
 
 [[unit]]
-unit = "worldblocks"
-source = "src/Game/worldblocks.c"
-flags = "c"
-
-[[unit]]
 unit = "menucursor"
 source = "src/Game/menucursor.c"
 flags = "c"
