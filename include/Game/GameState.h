@@ -1,8 +1,6 @@
 #ifndef GITEN_GAME_GAMESTATE_H
 #define GITEN_GAME_GAMESTATE_H
 
-#include <rva.h>
-
 #include <Game/Character.h>
 #include <Game/MapCoord.h>
 #include <Ints.h>
@@ -79,13 +77,11 @@ Character* GetRosterEntry(i16 slot);
 i16 GetPartySlot(i16 index);
 
 // Puts roster slot `slot` into party position `index`; returns the slot it held.
-// @identity-TODO: label-only until the party TU claims it.
 i16 ExchangePartySlot(i16 index, i16 slot);
 Character* GetPartyEntry(i16 index);
 Character* GetPartyCharacter(i16 index);
 Character* GetRosterLeader(void);
 
-// @identity-TODO: label-only until the party TU claims them.
 // The roster member whose id is `id` (NULL when none).
 Character* GetCharacterById(i16 id);
 
@@ -101,7 +97,6 @@ i16 FindEmptySlot(i16 inParty);
 // when any wore off.
 i16 TickPartyConditions(void);
 
-RVA_DECL(0x0003fb30)
 void ResetRosterBattleState(void);
 
 void ResetRosterStatModifiers(void);
