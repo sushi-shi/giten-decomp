@@ -19,7 +19,6 @@
 #include <Game/DropTable.h>
 #include <Game/Familiarity.h>
 #include <Game/Field.h>
-#include <Game/FieldMain.h>
 #include <Game/FieldObject.h>
 #include <Game/FieldScreen.h>
 #include <Game/FieldSight.h>
