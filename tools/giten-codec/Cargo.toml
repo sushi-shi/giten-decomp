@@ -1,0 +1,15 @@
+[package]
+name = "giten-codec"
+version = "0.1.0"
+edition = "2024"
+license = "CC0-1.0"
+description = "Allocation-free readers for Giten's Windows resource formats"
+
+[features]
+default = []
+oracle = []
+
+[[bin]]
+name = "codec-oracle"
+path = "src/bin/oracle.rs"
+required-features = ["oracle"]

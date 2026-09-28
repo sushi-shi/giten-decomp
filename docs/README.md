@@ -6,6 +6,7 @@
 - [Compiler profiles](compiler-flags.md) and [toolchain evidence](compiler-detection.md).
 - [Relocations](relocations.md) and [data attribution](data-attribution.md).
 - [Retail libraries and SDK helpers](vendor-libraries.md).
+- [Resource codec execution](codecs.md): retail/candidate/Rust comparisons on original resources.
 - [Candidate linking](linker-flags.md) and [clangd](clangd.md).
 - [Permutation experiments](permuter.md) and [compiler patterns](patterns/INDEX.md).
 - [Source markers](comment-markers.md), [todo ledgers](todos/README.md), and [configuration](../config/README.md).
