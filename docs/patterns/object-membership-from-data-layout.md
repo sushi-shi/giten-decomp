@@ -3,9 +3,10 @@
 VC5 `cl` writes a translation unit's initialized data to `.data` (and its
 `const` data to `.rdata`) in definition order, including function-local
 statics at their point of definition. It writes every string literal after
-all of the TU's initialized data. Uninitialized statics, zero-initialized C
-globals and C++ globals go to the object's `.bss` in an order that follows
-their names, not their definitions. `link.exe` 5.10 lays each object's
+all of the TU's initialized data. Uninitialized statics go to the object's
+`.bss` first, in an order hashed from their names; zero-initialized
+definitions follow in definition order (see
+[C globals and COMMONs](c-bss-globals-and-commons.md)). `link.exe` 5.10 lays each object's
 contributions out contiguously and in link order (the `.text` order).
 
 Signatures:
@@ -28,12 +29,14 @@ Signatures:
 Evidence: compile a scratch file with the `c` profile and read the COFF symbol
 table. Test initialized statics and globals defined around several functions
 that use literals, and uninitialized statics defined in reverse order. The
-data follow definition order and every `$SG` literal follows them. The `.bss`
-layout does not change when the definitions are reversed. For link order, see
+data follow definition order and every `$SG` literal follows them. The layout
+of uninitialized statics in `.bss` does not change when the definitions are
+reversed. For link order, see
 [C globals and COMMONs](c-bss-globals-and-commons.md).
 
-Limits: the recovered names are not the original names, so `.bss` order says
-nothing about source order. An unreferenced datum can occupy a gap without
+Limits: the recovered names are not the original names, so the order of
+uninitialized statics says nothing about source order; zero-initialized ones
+follow definition order. An unreferenced datum can occupy a gap without
 leaving any other trace. Retail order and declaration before use bound where a
 folded TU defines its data, but do not fix that position. Folding units
 changes TU state, and unchanged functions in it can gain or lose exact matches.

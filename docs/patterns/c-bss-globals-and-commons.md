@@ -19,18 +19,35 @@ link two such objects and read the map (`<common>` entries follow both
 `.bss` contributions).
 
 Within one object, the uninitialized statics come first, in an order
-derived from their names. The explicitly zero-initialized definitions
-(`static` or global) follow them in definition order. A static that retail
-places after a zero-initialized global in the same run therefore has a zero
-initializer itself and is defined after that global.
+hashed from their names. The explicitly zero-initialized definitions
+(`static` or global) follow them in definition order. Every item of eight
+bytes or more starts on an eight-byte boundary; smaller ones take four-byte
+slots. A static that retail places after a zero-initialized global in the
+same run therefore has a zero initializer itself and is defined after that
+global.
+
+Signature: an object's `.bss` run that interleaves globals read by other
+objects with statics, or that follows the order in which its code reads
+them (counters from the smallest unit up, a queue's handle, capacity, read
+and write positions). Giten's C objects zero-initialize their file-scope
+statics: define the run with zero initializers in address order. Where one
+item is read before the code that precedes it in the run, the whole run sits
+ahead of that code. Compiling the object then reproduces the run's retail
+offsets, including the eight-byte alignment gaps.
 
 Evidence: compile `static short s1; short g1 = 0; static short s2;
 short g2 = 0; static short s3 = 0; short g3 = 0;` plus a few more
 uninitialized statics with the `c` profile. The symbol table puts every
 uninitialized static first, then `g1`, `g2`, `s3` and `g3` in that order.
+Uninitialized statics named for a route queue (`s_route`, `s_routeCapacity`,
+`s_routeRead`, ...) come out scattered. Arrays and structures of 8, 12, 16
+and 64 bytes after a two-byte static all start eight-byte aligned, with or
+without `/Zp1`, `/O1` or `/Od`.
 
-Limits: VC5 does not emit uninitialized statics in declaration or first-use
-order, so their addresses order objects, not source declarations. `.data`
-follows declaration order. A `.bss` run does not say whether the retail file
-was C with a zero initializer or C++. An unreferenced datum can fill a slot
-in the run without any other trace.
+Limits: the hashed order of uninitialized statics orders objects, not
+source declarations, and cannot be reproduced without the original names.
+`.data` follows declaration order. A `.bss` run does not say whether the
+retail file was C with a zero initializer or C++ (an uninitialized C++
+global joins the hashed block). An unreferenced datum can fill a slot in
+the run without any other trace. A retail item of eight bytes or more on a
+four-byte boundary is several smaller definitions, not one.
