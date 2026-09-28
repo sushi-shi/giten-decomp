@@ -1522,7 +1522,7 @@ void UseRestoreSkill(Character* user, Character* target) {
     user->pickNoEffect = 1;
     g_actionResult = result;
     user->result = result;
-    if (result >= 3 && result <= 5 && hit > 0
+    if (RestoreEffectAllowsCondition(result) && hit > 0
         && !IsConditionResisted(target, GetSkillInflictedCondition(&s_effectSkill))) {
         g_statusCondition = g_pendingCondition = GetSkillInflictedCondition(&s_effectSkill);
         InflictCondition(GetSkillInflictedCondition(&s_effectSkill), target);

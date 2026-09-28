@@ -2760,45 +2760,11 @@ void BlitScreenLayers(i32 first, i32 last, u32 flags) {
     if (flags & BLIT_LAYERS_ORDERED) {
         for (i = first; i < last; i++) {
             index = s_layerOrder[i];
-            if (g_screenLayers[index]->visible) {
-                g_renderTarget->BltFast(
-                    g_screenLayers[index]->x,
-                    g_screenLayers[index]->y,
-                    g_screenLayers[index]->surface,
-                    &g_screenLayers[index]->source,
-                    g_screenLayers[index]->bltFlags
-                );
-                if (g_screenLayers[index]->canvas != NULL) {
-                    g_renderTarget->BltFast(
-                        g_screenLayers[index]->x,
-                        g_screenLayers[index]->y,
-                        g_screenLayers[index]->canvas,
-                        &g_screenLayers[index]->source,
-                        DDBLTFAST_SRCCOLORKEY
-                    );
-                }
-            }
+            BlitScreenLayer(g_renderTarget, g_screenLayers[index]);
         }
     } else {
         for (i = last - 1; i >= first; i--) {
-            if (g_layerStack[i]->visible) {
-                g_renderTarget->BltFast(
-                    g_layerStack[i]->x,
-                    g_layerStack[i]->y,
-                    g_layerStack[i]->surface,
-                    &g_layerStack[i]->source,
-                    g_layerStack[i]->bltFlags
-                );
-                if (g_layerStack[i]->canvas != NULL) {
-                    g_renderTarget->BltFast(
-                        g_layerStack[i]->x,
-                        g_layerStack[i]->y,
-                        g_layerStack[i]->canvas,
-                        &g_layerStack[i]->source,
-                        DDBLTFAST_SRCCOLORKEY
-                    );
-                }
-            }
+            BlitScreenLayer(g_renderTarget, g_layerStack[i]);
         }
     }
 }

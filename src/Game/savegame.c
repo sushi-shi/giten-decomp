@@ -135,11 +135,14 @@ i16 WriteSaveHeader(FILE* fp) {
 RVA(0x00003bf0, 0x38)
 void RecordMarkInLeader(void) {
     Character* leader = GetRosterCharacter(0);
-    leader->markPosition.area = g_field.pos.area;
-    leader->markPosition.level = g_field.pos.level;
-    leader->markPosition.x = (u8)g_field.pos.x;
-    leader->markPosition.y = (u8)g_field.pos.y;
-    leader->markPosition.direction = (u8)g_field.pos.direction;
+    SetSavedMapPosition(
+        &leader->markPosition,
+        g_field.pos.area,
+        g_field.pos.level,
+        g_field.pos.x,
+        g_field.pos.y,
+        g_field.pos.direction
+    );
 }
 
 // Loads save slot `slot` (without `keepField`, resetting the field objects

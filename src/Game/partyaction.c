@@ -804,8 +804,10 @@ i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
         case 1:
             *condition = 0;
             if (GetCharacterEquipment(actor)[5].item != -1) {
-                *condition = GetLoadedRecord(GetCharacterEquipment(actor)[5].item)->params[0x24];
-                return GetLoadedRecord(GetCharacterEquipment(actor)[5].item)->params[0x21];
+                *condition = GetEquipmentInflictedCondition(
+                    GetLoadedRecord(GetCharacterEquipment(actor)[5].item)
+                );
+                return GetEquipmentAttribute(GetLoadedRecord(GetCharacterEquipment(actor)[5].item));
             }
             break;
         case 4:
@@ -813,8 +815,8 @@ i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
             return GetSkillAttackAttribute(GetCachedSkill(actor->pickTarget));
         case 2:
         case 5:
-            *condition = GetLoadedRecord(actor->pickTarget)->params[0x24];
-            return GetLoadedRecord(actor->pickTarget)->params[0x21];
+            *condition = GetEquipmentInflictedCondition(GetLoadedRecord(actor->pickTarget));
+            return GetEquipmentAttribute(GetLoadedRecord(actor->pickTarget));
     }
     return 0;
 }

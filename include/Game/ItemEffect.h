@@ -14,7 +14,7 @@ extern i16 g_pendingCondition;
 // The item-effect handlers ApplyItemEffect picks by the used item's kind:
 // kind 1 restores HP/MP (and may inflict a condition), kind 4 attacks, kind 5
 // and kinds 6..19 change nothing.
-// @identity-TODO: what kinds 4 and 5 are is unrecovered.
+// @identity-TODO: the mixed effects represented by kind 5 remain unrecovered.
 void UseRestoreItem(Character* user, Character* target);
 void UseAttackItem(Character* user, Character* target);
 void UseKind5Item(Character* user, Character* target);
@@ -27,6 +27,8 @@ i16 ComputeRestoreAmount(i16 code, Character* user, u16 max);
 // Applies an HP/MP restoration of kind `kind` to `target`; returns the result
 // code (3..5 let a condition follow).
 i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp);
+
+#define RestoreEffectAllowsCondition(result) ((result) >= 3 && (result) <= 5)
 
 // Clears a restoration group and records the last condition that was present.
 static __inline void ClearEffectConditions(ConditionSet* conditions, const i16* list) {

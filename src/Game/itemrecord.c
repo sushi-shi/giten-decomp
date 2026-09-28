@@ -144,7 +144,7 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
     src += sizeof(record->price);
     record->kind = *src++;
     switch (record->kind) {
-        case 1:
+        case ITEM_KIND_RESTORATIVE:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
             record->params[7] = *src++;
@@ -160,12 +160,12 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
             ReadItemTargeting(record, src);
             record->params[0xb] = *src++;
             break;
-        case 3:
+        case ITEM_KIND_ENHANCER:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
             src = ReadItemMessages(record, src, 1, 1);
             break;
-        case 4:
+        case ITEM_KIND_ATTACK:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
             record->params[0xc] = *src++;
@@ -423,10 +423,10 @@ RVA(0x00023480, 0x70)
 u16 GetItemStackLimit(i16 id) {
     DecodeItemRecord(&g_loadedItem, id);
     switch (g_loadedItem.kind) {
-        case 1:
+        case ITEM_KIND_RESTORATIVE:
         case ITEM_KIND_INCENSE:
-        case 3:
-        case 4:
+        case ITEM_KIND_ENHANCER:
+        case ITEM_KIND_ATTACK:
         case 5:
         case 6:
         case ITEM_KIND_SOFTWARE:
@@ -503,10 +503,10 @@ RVA(0x000235f0, 0xa0)
 i16 GetItemCategory(i16 id) {
     DecodeItemRecord(&g_loadedItem, id);
     switch (g_loadedItem.kind) {
-        case 1:
+        case ITEM_KIND_RESTORATIVE:
         case ITEM_KIND_INCENSE:
-        case 3:
-        case 4:
+        case ITEM_KIND_ENHANCER:
+        case ITEM_KIND_ATTACK:
         case 5:
         case 6:
         case ITEM_KIND_SOFTWARE:
@@ -1281,10 +1281,10 @@ RVA(0x00024890, 0xc0)
 void ApplyItemEffect(i16 item, Character* user, Character* target) {
     s_usedItem = *GetLoadedRecord(item);
     switch (s_usedItem.kind) {
-        case 1:
+        case ITEM_KIND_RESTORATIVE:
             UseRestoreItem(user, target);
             break;
-        case 4:
+        case ITEM_KIND_ATTACK:
             UseAttackItem(user, target);
             break;
         case 5:
@@ -1331,7 +1331,7 @@ void UseRestoreItem(Character* user, Character* target) {
     user->pickNoEffect = 1;
     user->result = result;
     g_pendingCondition = s_usedItem.params[10];
-    if (g_pendingCondition != 0 && result >= 3 && result <= 5
+    if (g_pendingCondition != 0 && RestoreEffectAllowsCondition(result)
         && !IsConditionResisted(target, g_pendingCondition)) {
         g_statusCondition = g_pendingCondition;
         InflictCondition(g_pendingCondition, target);
@@ -1492,7 +1492,8 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
         case ITEM_KIND_ACCESSORY:
             bonuses[BATTLE_STAT_WEAPON_POWER] += GetItemAttackPower(&g_loadedItem);
             bonuses[BATTLE_STAT_WEAPON_DEFENSE] += GetItemDefensePower(&g_loadedItem);
-            bonuses[BATTLE_STAT_WEAPON_ACCURACY] += (i8)g_loadedItem.params[0x1b];
+            bonuses[BATTLE_STAT_WEAPON_ACCURACY] +=
+                GetItemRecordPhysicalAccuracyBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_WEAPON_EVASION] += GetItemRecordPhysicalEvasionBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_MAGIC_POWER] += GetItemRecordMagicPowerBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_MAGIC_DEFENSE] += GetItemRecordMagicDefenseBonus(&g_loadedItem);
@@ -1502,7 +1503,7 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
         case ITEM_KIND_AMMO:
             bonuses[BATTLE_STAT_GUN_POWER] += GetItemAttackPower(&g_loadedItem);
             bonuses[BATTLE_STAT_GUN_DEFENSE] += GetItemDefensePower(&g_loadedItem);
-            bonuses[BATTLE_STAT_GUN_ACCURACY] += (i8)g_loadedItem.params[0x1b];
+            bonuses[BATTLE_STAT_GUN_ACCURACY] += GetItemRecordPhysicalAccuracyBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_GUN_EVASION] += GetItemRecordPhysicalEvasionBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_MAGIC_POWER] += GetItemRecordMagicPowerBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_MAGIC_DEFENSE] += GetItemRecordMagicDefenseBonus(&g_loadedItem);
@@ -1529,7 +1530,8 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
             bonuses[BATTLE_STAT_GUN_ACCURACY] += 20;
             break;
         case 0x36:
-            bonuses[BATTLE_STAT_WEAPON_ACCURACY] += (i8)g_loadedItem.params[0x1b];
+            bonuses[BATTLE_STAT_WEAPON_ACCURACY] +=
+                GetItemRecordPhysicalAccuracyBonus(&g_loadedItem);
             break;
         case 0x37:
             bonuses[BATTLE_STAT_MAGIC_EVASION] += 4;
@@ -1675,7 +1677,7 @@ i16 IsItemGuardingElement(i16 item, i16 element) {
     if (GetItemEquipCode(&g_loadedItem) < 0) {
         return 0;
     }
-    if (element >= 2 && element <= 5 && element == g_loadedItem.params[0x21]) {
+    if (element >= 2 && element <= 5 && element == GetEquipmentAttribute(&g_loadedItem)) {
         return 1;
     }
     return 0;

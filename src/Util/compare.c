@@ -460,13 +460,13 @@ void OpJumpUnlessInRoster(i16 invert) {
     ScriptJumpUnless(target, jump);
 }
 
-// Jumps unless the roster holds the field count less 6 entries or more.
+// Jumps unless the roster holds the roster capacity less 6 entries or more.
 RVA(0x00035140, 0x4c)
 void OpJumpUnlessRosterFull(i16 invert) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
     i16 count = CountRosterEntries(1);
-    i16 limit = GetFieldCount() - 6;
+    i16 limit = GetRosterCapacity() - 6;
     if ((count >= limit && !invert) || (count < limit && invert)) {
         jump = 1;
     }
