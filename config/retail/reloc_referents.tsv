@@ -4,6 +4,8 @@ function_rva	target_rva	site_rva	owner	addend	occurrences	provenance
 0x0000bed0	0x000684da	0x0000bf0b	_s_viewFloodMask$S	0xfffffff2	1	north-neighbor array address
 0x0000bed0	0x000684ea	0x0000bf3b	_s_viewFloodMask$S	0x00000002	1	east-neighbor array address
 0x0000bed0	0x000684e6	0x0000bf94	_s_viewFloodMask$S	0xfffffffe	1	west-neighbor array address
+0x0000c330	0x0006858c	0x0000c3be	_s_viewCellOrder$S	0xfffffffc	1	view-cell order indexed from one
+0x0000c330	0x0006858e	0x0000c3c6	_s_viewCellOrder$S	0xfffffffe	1	view-cell order indexed from one, row member
 0x00011b30	0x0007b4fb	0x00011ba7	_s_travelScores$S	0xfffffffb	1	travel-score preceding-row index
 0x00011b30	0x0007b4fb	0x00011c19	_s_travelScores$S	0xfffffffb	1	travel-score preceding-row index
 0x00043ac0	0x0006498a	0x00043bd9	_s_equipCountSlots$S	0xffffffea	1	equipment-kind table index minus weapon kind
