@@ -3381,6 +3381,37 @@ static DWORD s_lastDrawTime;
 // The minimum time between drawn frames of an animated mode, in ms.
 #define FRAME_INTERVAL 50
 
+#ifdef GITEN_BUGFIX
+// The display refresh the vertical-blank wait held the main loop to.
+#define REFRESH_RATE 60
+// A frame later than this restarts the clock instead of running to catch up.
+#define FRAME_MAX_LAG 100
+
+static DWORD s_frameClockStart;
+static DWORD s_frameClockCount;
+
+// Retail paces the main loop, one game step per pass, on WaitForVerticalBlank.
+// Wine returns from it at once, so the game stepped at the timer's rate. This
+// sleeps to the next 1/REFRESH_RATE s boundary instead.
+static void WaitForFrame(void) {
+    DWORD now = timeGetTime();
+    LONG ahead;
+
+    if (s_frameClockCount == REFRESH_RATE) {
+        s_frameClockStart += 1000;
+        s_frameClockCount = 0;
+    }
+    ahead = static_cast<LONG>(s_frameClockStart + s_frameClockCount * 1000 / REFRESH_RATE - now);
+    if (ahead > 0) {
+        Sleep(ahead);
+    } else if (ahead < -FRAME_MAX_LAG) {
+        s_frameClockStart = now;
+        s_frameClockCount = 0;
+    }
+    s_frameClockCount++;
+}
+#endif
+
 // One frame: restores lost surfaces, steps the fade and runs the render mode's
 // handler (drawing only if the mode is static, the view changed or the frame
 // interval passed), the fade and the cursor, then waits for the vertical blank
@@ -3407,7 +3438,11 @@ void RenderFrame(void) {
         }
         s_viewChanged = FALSE;
         DrawMouseCursor();
+#ifdef GITEN_BUGFIX
+        WaitForFrame();
+#else
         g_ddraw->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL);
+#endif
         if (draw) {
             if (g_deviceType == D3D_DEVICE_HAL) {
                 while ((result = g_primarySurface->Flip(NULL, DDFLIP_WAIT)) != DD_OK) {
