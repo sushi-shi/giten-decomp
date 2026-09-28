@@ -25,8 +25,6 @@ giten build verify         # merge checks
 Read [AGENTS.md](AGENTS.md) for reconstruction rules and the
 [documentation index](docs/README.md) for build, data, and compiler references.
 Use `giten --help` for commands. [clangd setup](docs/clangd.md) provides editor navigation.
-The [Boolean rewrite](docs/clangd.md#boolean-values) checks returns, locals,
-globals, statics, and member fields while preserving their storage types.
 
 <!-- match-score:start -->
 ## Match status
