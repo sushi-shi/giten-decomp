@@ -234,7 +234,7 @@ areamap	_IsCellFlagSet	100.0000	100.0000	1	8150ea63a3d7	0x21810	100.0000
 areamap	_IsDarkCell	100.0000	100.0000	2	48d077d0485d	0x21dc0	100.0000	
 areamap	_IsLevelMapRevealed	100.0000	100.0000	2	c65bd1ed75c7	0x225d0	100.0000	
 areamap	_IsRoomCell	100.0000	100.0000	1	cc1b46a3654f	0x21ea0	100.0000	
-areamap	_IsSpawnEnabled	91.2963	91.2963	2	ed420803658a	0x21160	91.2963	
+areamap	_IsSpawnEnabled	100.0000	91.2963	2	ed420803658a	0x21160	100.0000	
 areamap	_IsStepBarred	100.0000	100.0000	3	05a359ca36f7	0x221f0	100.0000	
 areamap	_LatchCellDestination	100.0000	100.0000	2	e54212a59ac5	0x21d20	100.0000	
 areamap	_LoadAreaMap	100.0000	100.0000	4	96911704c21e	0x213a0	100.0000	
@@ -324,7 +324,7 @@ attack	_GetGunRequirementPenalty	100.0000	91.5625	1	9d271a629c5c	0x91b0	100.0000
 attack	_LoadGunDistributionTable	100.0000	100.0000	1	2282d9a67f6b	0x8fe0	100.0000	
 attack	_PrepareGunBurst	100.0000	100.0000	8	d3a0e7e88d30	0x90c0	100.0000	
 attack	_ResolveGunAttack	100.0000	100.0000	7	5c1cb055ab4c	0x8e60	100.0000	
-attack	_RollExceptionalAttack	99.4314	99.4314	5	cec84366749b	0x8700	99.4314	
+attack	_RollExceptionalAttack	100.0000	99.4314	5	cec84366749b	0x8700	100.0000	
 attack	_RollGunCondition	100.0000	100.0000	9	db417547c5a3	0x8d30	100.0000	
 attack	_RollGunHit	100.0000	100.0000	8	49f2594ef957	0x8910	100.0000	
 attack	_SpendAllGunRounds	100.0000	100.0000	1	285b0f0f8efa	0x93b0	100.0000	
@@ -378,7 +378,7 @@ blit	_SkipLegacyScriptBlit	100.0000	100.0000	1	4ad4aeb0b11d	0x1850	100.0000
 blit	_SkipOffsetSceneSprite	100.0000	100.0000	1	9fb1518ceaeb	0x16d0	100.0000	
 blit	_SkipViewportSceneSprite	100.0000	100.0000	1	116c8f7a81da	0x16e0	100.0000	
 blit	_TestSceneSpritePixel	100.0000	100.0000	3	9dbf51c44bb0	0x17c0	100.0000	
-bmpseek	_LoadBitmapToSurface16	99.8728	99.8728	9	65b873ed1cc7	0x56bd0	99.8728	
+bmpseek	_LoadBitmapToSurface16	100.0000	99.8728	9	65b873ed1cc7	0x56bd0	100.0000	
 bmpseek	_LoadBitmapToSurface8	100.0000	100.0000	7	ed9a52845111	0x56de0	100.0000	
 bmpseek	_SeekBitmap	100.0000	100.0000	3	79cc1e98cdd6	0x56b00	100.0000	
 celltrap	_GetCellTrapDamage	100.0000	98.8571	4	873bac125595	0x1c920	100.0000	
@@ -1533,7 +1533,7 @@ list	_ListLast	100.0000	100.0000	3	a822a97ecba8	0xbce0	100.0000
 list	_ListNext	100.0000	100.0000	1	6712be4d9ab3	0xbcd0	100.0000	
 list	_ListPopLast	100.0000	100.0000	1	78577c66c9d7	0xbda0	100.0000	
 list	_ListUnlink	100.0000	100.0000	1	baa4bfdeea33	0xbd70	100.0000	
-maxstats	_CalcMaxHp	89.7083	89.7083	1	3d565d96e5f7	0x3cec0	89.7083	
+maxstats	_CalcMaxHp	100.0000	89.7083	1	3d565d96e5f7	0x3cec0	100.0000	
 maxstats	_CalcMaxMp	100.0000	100.0000	5	63a32e7117aa	0x3cf70	100.0000	
 menubox	_BuildMenuPage	100.0000	100.0000	3	f249967ac5b3	0x20830	100.0000	
 menubox	_CloseListMenu	100.0000	100.0000	1	808f7d30c30a	0x20af0	100.0000	
@@ -1614,7 +1614,7 @@ midistream	?StreamProc@CMidiStream@@KGXPAXIKKK@Z	100.0000	100.0000	1	11d9bca841a
 modeflags	_ClearModeFlags	100.0000	100.0000	1	2657fedb7b60	0x43b0	100.0000	
 modeflags	_SetModeFlags	100.0000	100.0000	1	5e1a67a98b30	0x4390	100.0000	
 modeflags	_TestFeatureMask	70.0000	70.0000	1	0b66dcc0d826	0x4370	70.0000	
-modeflags	_TestModeFlags	70.0000	70.0000	1	bfd8c032b3f1	0x4380	70.0000	
+modeflags	_TestModeFlags	100.0000	70.0000	1	bfd8c032b3f1	0x4380	100.0000	
 motion	_AcquireEffectImageSet	100.0000	100.0000	1	c24261034f58	0x4fb0	100.0000	
 motion	_AcquireEffectRecord	100.0000	100.0000	1	db860d784313	0x5240	100.0000	
 motion	_ClampEffectCount	100.0000	100.0000	1	1390a30d9a8c	0x4bb0	100.0000	
@@ -1955,7 +1955,7 @@ scenecell	_RunCellScene	100.0000	100.0000	5	87f3192a476d	0x17ef0	100.0000
 scenecell	_RunFieldTextScene	100.0000	100.0000	1	c899129e48ef	0x18230	100.0000	
 scenecell	_RunFrozenFieldScene	100.0000	100.0000	6	4251816f712b	0x18340	100.0000	
 scenecell	_RunPictureTransition	100.0000	100.0000	5	6e6f20f66854	0x184a0	100.0000	
-scenecell	_ScaleByMoonValue	85.4545	85.4545	3	75f2e6af8b3d	0x17a40	85.4545	
+scenecell	_ScaleByMoonValue	100.0000	85.4545	3	75f2e6af8b3d	0x17a40	100.0000	
 scenecell	_SceneNop	100.0000	100.0000	1	7678c6b3da35	0x17b90	100.0000	
 scenecell	_SetCellScript	100.0000	100.0000	1	ffc80ffb8d9c	0x17d30	100.0000	
 scenecell	_SetSceneCell	100.0000	100.0000	2	183dc0231ee3	0x17ce0	100.0000	
@@ -2200,7 +2200,7 @@ scripttext	_OpGetMenuCursor	100.0000	100.0000	1	16d0c77c3972	0x2f480	100.0000
 scripttext	_OpGetMenuTag	100.0000	100.0000	2	3c32306583c7	0x2f3e0	100.0000	
 scripttext	_OpLoadDataFile	100.0000	100.0000	1	24b9397d309e	0x2f7f0	100.0000	
 scripttext	_OpPushScriptWindow	100.0000	100.0000	1	c90f43b87c4c	0x2fc00	100.0000	
-scripttext	_OpReadDataInt	96.2281	96.2281	2	f4975f1d06ea	0x2f950	96.2281	
+scripttext	_OpReadDataInt	100.0000	96.2281	2	f4975f1d06ea	0x2f950	100.0000	
 scripttext	_OpReadRecordInt	100.0000	100.0000	2	9fa403a5e00e	0x2f8a0	100.0000	
 scripttext	_OpRedrawScriptMenu	100.0000	100.0000	1	aa20cffe99e1	0x2f4a0	100.0000	
 scripttext	_OpRunScriptMenu	100.0000	100.0000	1	858773488625	0x2f340	100.0000	
@@ -2622,7 +2622,7 @@ waitstate	_StepWaitState	100.0000	100.0000	3	4b11dc60400b	0x1a870	100.0000
 walltexture	_LoadWallTextures	100.0000	100.0000	1	ddc4b33bcce4	0x57e80	100.0000	
 weaponattack	_ComputeWeaponDamage	100.0000	100.0000	6	c0f7ae411313	0xa270	100.0000	
 weaponattack	_ResolveWeaponAttack	100.0000	100.0000	5	de1bc6e4deb2	0xa8a0	100.0000	
-weaponattack	_RollExceptionalWeaponAttack	99.4444	99.4183	5	980b28feb8d3	0xa690	99.4444	
+weaponattack	_RollExceptionalWeaponAttack	100.0000	99.4183	5	980b28feb8d3	0xa690	100.0000	
 weaponattack	_RollWeaponCondition	100.0000	100.0000	8	4a95cca4b7f0	0xa120	100.0000	
 weaponattack	_RollWeaponHit	100.0000	100.0000	8	603537d7b73b	0xa490	100.0000	
 windowcolor	_BeginWindowAltText	100.0000	100.0000	1	ad7b58476188	0x2ebc0	100.0000	
