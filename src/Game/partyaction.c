@@ -131,8 +131,88 @@ static i16 (*s_commandLabels[])(Character*) = {
 DATA(0x00068450)
 static i16 s_actionConditions[] = {7, 17, 30, 14, 18, 16, 27, 28, 29, 26, -1};
 
+DATA(0x00078488)
+static i16 s_gunPower[16] = {0};
+
+DATA(0x000784a8)
+static i16 s_gunRounds[16] = {0};
+
+DATA(0x000784c8)
+i16 g_commandPosition = 0;
+
+DATA(0x000784cc)
+static b16 s_pickScreenSaved = false;
+
+DATA(0x000784d0)
+static i16 s_pickMode = 0;
+
+DATA(0x000784d4)
+static b16 s_pickDone = false;
+
+DATA(0x000784d8)
+i16 g_attackResistance = 0;
+
+DATA(0x000784dc)
+i16 g_attackAttribute = 0;
+
+DATA(0x000784e0)
+i16 g_attackCondition = 0;
+
+// @identity-TODO: the penalties use total stats 8 and 6 respectively;
+// the stat names are not yet recovered.
+DATA(0x000784e4)
+static i16 s_gunPenaltyA = 0;
+
+DATA(0x000784e8)
+static i16 s_gunPenaltyB = 0;
+
+DATA(0x000784ec)
+static i16 s_gunRoundPower = 0;
+
+DATA(0x000784f0)
+static i16 s_gunBasePower = 0;
+
+DATA(0x000784f4)
+static i16 s_fieldMap = 0;
+
+DATA(0x000784f8)
+static i16 s_fieldEntryState = 0;
+
+DATA(0x000784fc)
+static b16 s_fieldMarker = false;
+
+DATA(0x00078500)
+static i16 s_fieldPairFirst = 0;
+
+DATA(0x00078504)
+static i16 s_fieldPairSecond = 0;
+
+DATA(0x00078508)
+static i16 s_fieldParamThird = 0;
+
+// Set when the map was left by abort or a proximity event; feeds script register 0.
+DATA(0x0007850c)
+static b16 s_fieldLeftEarly = false;
+
+DATA(0x00078510)
+static b16 s_fieldRefresh = false;
+
 DATA(0x00078514)
-static MenuBox* s_commandMenu;
+static MenuBox* s_commandMenu = 0;
+
+// The palette snapshot held while an encounter runs.
+DATA(0x00078518)
+static PaletteState* s_fieldPaletteState = 0;
+
+DATA(0x0007851c)
+static i32 s_gunDistribution = 0;
+
+// The list menu a picked member acts through (NULL: none open).
+DATA(0x00078520)
+static MenuBox* s_pickMenu = 0;
+
+DATA(0x00078528)
+u8 g_pickScreenSave[16] = {0};
 
 DATA(0x00078538)
 char g_unavailableCommandText[8] = {0};
@@ -928,35 +1008,6 @@ void ApplyResistanceOutcome(Character* actor, i16 resistance, i32 amount) {
 DATA(0x000919f2)
 i16 g_fieldBattleActive;
 
-DATA(0x000784f4)
-static i16 s_fieldMap;
-
-DATA(0x000784f8)
-static i16 s_fieldEntryState;
-
-DATA(0x000784fc)
-static b16 s_fieldMarker;
-
-DATA(0x00078500)
-static i16 s_fieldPairFirst;
-
-DATA(0x00078504)
-static i16 s_fieldPairSecond;
-
-DATA(0x00078508)
-static i16 s_fieldParamThird;
-
-// Set when the map was left by abort or a proximity event; feeds script register 0.
-DATA(0x0007850c)
-static b16 s_fieldLeftEarly;
-
-DATA(0x00078510)
-static b16 s_fieldRefresh;
-
-// The palette snapshot held while an encounter runs.
-DATA(0x00078518)
-static PaletteState* s_fieldPaletteState;
-
 RVA(0x000070d0, 0xa)
 void MarkFieldRefresh(void) {
     s_fieldRefresh = true;
@@ -1708,29 +1759,6 @@ i16 RunPartyTurn(i16 ticks) {
     return index + 1;
 }
 
-DATA(0x00078488)
-static i16 s_gunPower[16];
-DATA(0x000784a8)
-static i16 s_gunRounds[16];
-DATA(0x000784d8)
-i16 g_attackResistance = 0;
-DATA(0x000784dc)
-i16 g_attackAttribute = 0;
-DATA(0x000784e0)
-i16 g_attackCondition = 0;
-// @identity-TODO: the penalties use total stats 8 and 6 respectively;
-// the stat names are not yet recovered.
-DATA(0x000784e4)
-static i16 s_gunPenaltyA;
-DATA(0x000784e8)
-static i16 s_gunPenaltyB;
-DATA(0x000784ec)
-static i16 s_gunRoundPower;
-DATA(0x000784f0)
-static i16 s_gunBasePower;
-DATA(0x0007851c)
-static i32 s_gunDistribution;
-
 RVA(0x00008450, 0x2f)
 i16 GetCombatantSideRelation(void) {
     if (g_targetId < 0 && g_actorId < 0) {
@@ -2203,25 +2231,6 @@ void SpendAllGunRounds(Character* attacker) {
         }
     }
 }
-
-DATA(0x000784c8)
-i16 g_commandPosition = 0;
-
-DATA(0x000784cc)
-static b16 s_pickScreenSaved;
-
-DATA(0x000784d0)
-static i16 s_pickMode;
-
-DATA(0x000784d4)
-static b16 s_pickDone;
-
-// The list menu a picked member acts through (NULL: none open).
-DATA(0x00078520)
-static MenuBox* s_pickMenu;
-
-DATA(0x00078528)
-u8 g_pickScreenSave[16] = {0};
 
 static __inline void ResetPartyCommandPick(void) {
     s_pickMode = 0;
