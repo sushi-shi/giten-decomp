@@ -38,8 +38,8 @@
 #include <Game/PartyAction.h>
 #include <Game/PartyCommand.h>
 #include <Game/Skill.h>
-#include <Game/StatUpdate.h>
 #include <Game/Stats.h>
+#include <Game/StatUpdate.h>
 #include <Game/TargetFlags.h>
 #include <Game/WorldMap.h>
 #include <Gfx/ScreenMode.h>

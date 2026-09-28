@@ -11,8 +11,8 @@
 #include <Game/Attack.h>
 #include <Game/Battle.h>
 #include <Game/BattleEffect.h>
-#include <Game/CharInfo.h>
 #include <Game/Character.h>
+#include <Game/CharInfo.h>
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>

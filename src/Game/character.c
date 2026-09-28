@@ -10,8 +10,8 @@
 
 #include <File/DataFile.h>
 #include <Game/Alignment.h>
-#include <Game/CharInfo.h>
 #include <Game/Character.h>
+#include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
@@ -39,13 +39,14 @@
 #include <Game/Pool.h>
 #include <Game/SaveGame.h>
 #include <Game/SkillUse.h>
-#include <Game/StatUpdate.h>
 #include <Game/Stats.h>
+#include <Game/StatUpdate.h>
 #include <Game/StatusDraw.h>
 #include <Game/StatusScreen.h>
 #include <Game/WorldMap.h>
 #include <Gfx/ScreenLayer.h>
 #include <Input/Mouse.h>
+#include <Ints.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
@@ -63,7 +64,6 @@
 #include <Util/Scratch.h>
 #include <Util/WordList.h>
 
-#include <Ints.h>
 #include <math.h>
 #include <memory.h>
 #include <stddef.h>
