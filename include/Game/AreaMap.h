@@ -24,6 +24,8 @@ typedef struct CellHead {
     u8 code;
 } CellHead;
 
+#define IsCellListEnd(cell) ((cell)->x == 0xff)
+
 typedef enum CellEventKind {
     CELL_EVENT_NONE = 0,
     CELL_EVENT_WARP = 1,

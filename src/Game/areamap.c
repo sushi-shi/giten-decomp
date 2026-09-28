@@ -235,7 +235,7 @@ void SpawnLevelObjects(void) {
         return;
     }
     ClearAreaNpcs();
-    for (cell = g_areaLevel->objects; cell->head.x != 0xff; cell++) {
+    for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
         if (!IsCellFlagSet(&cell->head, 3) && IsReservedObjectCell(&cell->head)
             && !IsObjectCell(GetMapCellCode(cell->head.x, cell->head.y))) {
             AddAreaNpc((u8*)cell);
@@ -501,7 +501,7 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
     const CellKind* kind;
     i16 layer;
 
-    for (warp = AreaLevelAt(g_areaMap, level)->warps; warp->head.x != 0xff; warp++) {
+    for (warp = AreaLevelAt(g_areaMap, level)->warps; !IsCellListEnd(&warp->head); warp++) {
         if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(&warp->head, 6)) {
             LatchCellDestination(&warp->head, 3, 4, -1, 5, 8);
             SetSceneCell(&warp->head);
@@ -513,7 +513,7 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         }
     }
 
-    for (battle = AreaLevelAt(g_areaMap, level)->battles; battle->head.x != 0xff; battle++) {
+    for (battle = AreaLevelAt(g_areaMap, level)->battles; !IsCellListEnd(&battle->head); battle++) {
         if (IsCellAt(x, y, &battle->head) && !IsCellFlagSet(&battle->head, 3)
             && !IsCellFlagSet(&battle->head, 7)) {
             SetFieldPair(battle->battleFlag[0], battle->battleFlag[1]);
@@ -523,7 +523,7 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         }
     }
 
-    for (link = AreaLevelAt(g_areaMap, level)->links; link->head.x != 0xff; link++) {
+    for (link = AreaLevelAt(g_areaMap, level)->links; !IsCellListEnd(&link->head); link++) {
         if (!IsCellAt(x, y, &link->head) || IsCellFlagSet(&link->head, 3)) {
             continue;
         }
@@ -553,7 +553,7 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         return kind->kind;
     }
 
-    for (object = AreaLevelAt(g_areaMap, level)->objects; object->head.x != 0xff; object++) {
+    for (object = AreaLevelAt(g_areaMap, level)->objects; !IsCellListEnd(&object->head); object++) {
         if (IsReservedObjectCell(&object->head)) {
             continue;
         }
@@ -571,7 +571,7 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         }
     }
 
-    for (exit = AreaLevelAt(g_areaMap, level)->exits; exit->head.x != 0xff; exit++) {
+    for (exit = AreaLevelAt(g_areaMap, level)->exits; !IsCellListEnd(&exit->head); exit++) {
         if (!IsCellAt(x, y, &exit->head)) {
             continue;
         }
@@ -595,7 +595,7 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         return kind->kind;
     }
 
-    for (box = AreaLevelAt(g_areaMap, level)->boxes; box->head.x != 0xff; box++) {
+    for (box = AreaLevelAt(g_areaMap, level)->boxes; !IsCellListEnd(&box->head); box++) {
         if (!IsCellAt(x, y, &box->head)) {
             continue;
         }
@@ -609,7 +609,7 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         return kind->kind;
     }
 
-    for (script = AreaLevelAt(g_areaMap, level)->scripts; script->head.x != 0xff; script++) {
+    for (script = AreaLevelAt(g_areaMap, level)->scripts; !IsCellListEnd(&script->head); script++) {
         if (!IsCellAt(x, y, &script->head) || IsCellFlagSet(&script->head, 3)) {
             continue;
         }
@@ -654,7 +654,7 @@ i16 IsDarkCell(i16 x, i16 y) {
     if (g_areaLevel == NULL) {
         return 1;
     }
-    for (cell = g_areaLevel->objects; cell->head.x != 0xff; cell++) {
+    for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
         if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(&cell->head, 3)
             && cell->head.code == 0x8d) {
             return 1;
@@ -671,7 +671,7 @@ i16 IsCellCommandBlocked(i16 x, i16 y) {
     if (g_areaLevel == NULL) {
         return 1;
     }
-    for (cell = g_areaLevel->objects; cell->head.x != 0xff; cell++) {
+    for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
         if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(&cell->head, 3)
             && cell->head.code == 0x8e) {
             return 1;
@@ -704,27 +704,27 @@ i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
     TreasureBox* box;
     i16 hit;
     i16 index;
-    for (warp = AreaLevelAt(g_areaMap, level)->warps; warp->head.x != 0xff; warp++) {
+    for (warp = AreaLevelAt(g_areaMap, level)->warps; !IsCellListEnd(&warp->head); warp++) {
         if ((hit = CheckBlockingCell(&warp->head, mode, 6, x, y)) > 0) {
             return hit;
         }
     }
-    for (battle = AreaLevelAt(g_areaMap, level)->battles; battle->head.x != 0xff; battle++) {
+    for (battle = AreaLevelAt(g_areaMap, level)->battles; !IsCellListEnd(&battle->head); battle++) {
         if ((hit = CheckBlockingCell(&battle->head, mode, 3, x, y)) > 0) {
             return hit;
         }
     }
-    for (link = AreaLevelAt(g_areaMap, level)->links; link->head.x != 0xff; link++) {
+    for (link = AreaLevelAt(g_areaMap, level)->links; !IsCellListEnd(&link->head); link++) {
         if ((hit = CheckBlockingCell(&link->head, mode, 3, x, y)) > 0) {
             return hit;
         }
     }
-    for (script = AreaLevelAt(g_areaMap, level)->scripts; script->head.x != 0xff; script++) {
+    for (script = AreaLevelAt(g_areaMap, level)->scripts; !IsCellListEnd(&script->head); script++) {
         if ((hit = CheckBlockingCell(&script->head, mode, 3, x, y)) > 0) {
             return hit;
         }
     }
-    for (exit = AreaLevelAt(g_areaMap, level)->exits; exit->head.x != 0xff; exit++) {
+    for (exit = AreaLevelAt(g_areaMap, level)->exits; !IsCellListEnd(&exit->head); exit++) {
         if (exit->head.code == CELL_CHUTE) {
             if ((hit = CheckBlockingCell(&exit->head, mode, 6, x, y)) > 0) {
                 return hit;
@@ -735,7 +735,7 @@ i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
             }
         }
     }
-    for (box = AreaLevelAt(g_areaMap, level)->boxes; box->head.x != 0xff; box++) {
+    for (box = AreaLevelAt(g_areaMap, level)->boxes; !IsCellListEnd(&box->head); box++) {
         if ((hit = CheckBlockingCell(&box->head, mode, 0xb, x, y)) > 0) {
             return hit;
         }
@@ -776,17 +776,17 @@ i16 GetEventCellCode(i16 x, i16 y) {
     if (g_areaLevel == NULL) {
         return 0;
     }
-    for (warp = g_areaLevel->warps; warp->head.x != 0xff; warp++) {
+    for (warp = g_areaLevel->warps; !IsCellListEnd(&warp->head); warp++) {
         if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(&warp->head, 6)) {
             return warp->head.code;
         }
     }
-    for (link = g_areaLevel->links; link->head.x != 0xff; link++) {
+    for (link = g_areaLevel->links; !IsCellListEnd(&link->head); link++) {
         if (IsCellAt(x, y, &link->head) && !IsCellFlagSet(&link->head, 3)) {
             return link->head.code;
         }
     }
-    for (script = g_areaLevel->scripts; script->head.x != 0xff; script++) {
+    for (script = g_areaLevel->scripts; !IsCellListEnd(&script->head); script++) {
         if (IsCellAt(x, y, &script->head) && !IsCellFlagSet(&script->head, 3)) {
             return script->head.code;
         }
@@ -802,7 +802,7 @@ i16 IsStepBarred(i16 x, i16 y, i16 direction, i16 turn) {
         return 0;
     }
     facing = TurnDirection(direction, turn);
-    for (door = g_areaLevel->doors; door->head.x != 0xff; door++) {
+    for (door = g_areaLevel->doors; !IsCellListEnd(&door->head); door++) {
         if ((door->head.code & 0xf) != 0xb && (door->head.code >> 4) == facing
             && IsCellAt(x, y, &door->head) && !IsCellFlagSet(&door->head, 3)) {
             return door->head.code;
@@ -877,7 +877,7 @@ void ClampMapPosition(i16* x, i16* y) {
 #define ReturnWarpCodeAt(firstWarp, mapX, mapY, codeFlags)                                         \
     do {                                                                                           \
         WarpCell* warp;                                                                            \
-        for (warp = (firstWarp); warp->head.x != 0xff; warp++) {                                   \
+        for (warp = (firstWarp); !IsCellListEnd(&warp->head); warp++) {                            \
             if ((mapX) == warp->head.x && (mapY) == warp->head.y) {                                \
                 return warp->head.code | (codeFlags);                                              \
             }                                                                                      \
@@ -946,7 +946,7 @@ TreasureBox* FindTreasureBoxAt(i16 x, i16 y, i16 select) {
     if (g_areaLevel == NULL) {
         return NULL;
     }
-    for (box = g_areaLevel->boxes; box->head.x != 0xff; box++) {
+    for (box = g_areaLevel->boxes; !IsCellListEnd(&box->head); box++) {
         if (IsCellAt(x, y, &box->head)) {
             if (select) {
                 SetSceneCell(&box->head);
@@ -985,7 +985,7 @@ ExitCell* CopyExitAt(i16 x, i16 y, ExitCell* out) {
     if (g_areaLevel == NULL) {
         return NULL;
     }
-    for (exit = g_areaLevel->exits; exit->head.x != 0xff; exit++) {
+    for (exit = g_areaLevel->exits; !IsCellListEnd(&exit->head); exit++) {
         if (IsCellAt(x, y, &exit->head)) {
             kind = FindCellKind(&exit->head);
             if (kind == NULL) {
