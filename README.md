@@ -3,7 +3,8 @@
 Binary-matching reconstruction of **Giten Megami Tensei: Tokyo Mokushiroku**
 (偽典・女神転生 東京黙示録; ASCII / Yū-Kikaku), the 1999 Windows `DDS.EXE`.
 The build compares reconstructed C and platform C++ with retail using MSVC 5.0 SP3.
-The optional candidate EXE omits game resources and is not a complete game image.
+`giten play` builds a playable image with retail bug fixes and starts it under Wine;
+see [Playing](docs/play.md).
 
 ## Quickstart
 

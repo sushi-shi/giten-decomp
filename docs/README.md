@@ -8,6 +8,7 @@
 - [Retail libraries and SDK helpers](vendor-libraries.md).
 - [Resource codec execution](codecs.md): retail/candidate/Rust comparisons on original resources.
 - [Candidate linking](linker-flags.md) and [clangd](clangd.md).
+- [Playing](play.md): the bug-fixed image and its Wine runtime.
 - [Permutation experiments](permuter.md) and [compiler patterns](patterns/INDEX.md).
 - [Source markers](comment-markers.md), [todo ledgers](todos/README.md), and [configuration](../config/README.md).
 
