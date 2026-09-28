@@ -52,7 +52,7 @@ charinfo	13	12
 charpool	29	28
 charsave	11	10
 clickwait	1	1
-clock	9	7
+clock	9	8
 clockops	6	6
 compare	74	72
 condition	23	22
@@ -456,7 +456,7 @@ clock	_HasTurnElapsed	100.0000	100.0000	1	d7ecacf43f65	0x20f20	100.0000
 clock	_InitClock	100.0000	100.0000	2	cd83bceb0657	0x20b00	100.0000	
 clock	_LoadClock	100.0000	100.0000	1	517a076cb2f2	0x20f60	100.0000	
 clock	_SaveClock	100.0000	100.0000	1	be821d4729fb	0x20f30	100.0000	
-clock	_TickClock	99.6709	99.6709	2	603e3326a079	0x20bf0	99.6709	
+clock	_TickClock	100.0000	100.0000	3	eedfd446444e	0x20bf0	100.0000	
 clock	_TickGameClock	100.0000	100.0000	2	c9cf1694e76d	0x20e90	100.0000	
 clockops	_OpAdvanceClock	100.0000	100.0000	1	46d605c8a60a	0x36670	100.0000	
 clockops	_OpGetActorMoonValue	100.0000	100.0000	1	f0a41a892c6d	0x36630	100.0000	

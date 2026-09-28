@@ -71,8 +71,6 @@ GZ_ENUM_STORAGE(ClockUpdate, i16) AdvanceClock(u16 minutes) {
 }
 
 // Adds `minutes`: 3, | 4 when an hour passed, | 8 a day, | 0x10 a moon phase.
-// @early-stop: retail sums the day count in edx and stores it after the moon
-// tick load; here it is eax and stored first.
 RVA(0x00020bf0, 0xfe)
 GZ_ENUM_STORAGE(ClockUpdate, i16) TickClock(u16 minutes) {
     GZ_ENUM_STORAGE(ClockUpdate, i16) changed = CLOCK_UPDATE_TICK | CLOCK_UPDATE_MINUTE;
@@ -89,7 +87,8 @@ GZ_ENUM_STORAGE(ClockUpdate, i16) TickClock(u16 minutes) {
         changed |= CLOCK_UPDATE_DAY;
     }
     g_clock.days += carry;
-    total = g_clock.moonTicks + minutes;
+    total = g_clock.moonTicks;
+    total = total + minutes;
     carry = total / 0x5f0;
     g_clock.moonTicks = total % 0x5f0;
     if (carry) {
