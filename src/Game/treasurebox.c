@@ -88,9 +88,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-DATA(0x00064618)
-const i16 g_affiliationGrowthStats[4][2] = {{5, 7}, {8, 0}, {2, 1}, {3, 9}};
-
 DATA(0x00068b30)
 static AutomapIcon s_mapIcons[] = {
     {0x40, 6, AUTOMAP_DETAIL_BASIC},  {0x41, 7, AUTOMAP_DETAIL_BASIC},
