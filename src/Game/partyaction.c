@@ -75,62 +75,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// The temporary swap: the party position and the roster slot it held.
-DATA(0x00068400)
-i16 g_guestIndex = -1;
-
-DATA(0x00068404)
-static i16 s_swapSaved = -1;
-
-// @identity-TODO: the party position the picker last targeted (-1: none).
-DATA(0x00068408)
-static i16 s_pickedIndex = -1;
-
-DATA(0x0006840c)
-static i16 s_fieldCountA = -1;
-
-DATA(0x00068410)
-static i16 s_fieldRateA = 100;
-
-DATA(0x00068414)
-static i16 s_fieldCountB = -1;
-
-DATA(0x00068418)
-static i16 s_fieldRateB = 100;
-
-// -1 while no field map is active.
-DATA(0x0006841c)
-static i16 s_fieldMode = -1;
-
-// The music track that was playing when the encounter started (or the field
-// map was entered).
-DATA(0x00068420)
-static i16 s_fieldMusic = -1;
-
-DATA(0x00068424)
-static i16 s_fieldOption = 20;
-
-DATA(0x00068428)
-static i16 s_fieldParamFirst = 1;
-
-DATA(0x0006842c)
-static i16 s_fieldParamSecond = -1;
-
-DATA(0x00068430)
-static i16 (*s_commandLabels[])(Character*) = {
-    FormatAttackCommand,
-    FormatGunCommand,
-    FormatCompCommand,
-    FormatMagicCommand,
-    FormatItemCommand,
-    FormatExtraCommand,
-    FormatReturnCommand,
-    FormatDefenceCommand
-};
-
-DATA(0x00068450)
-static i16 s_actionConditions[] = {7, 17, 30, 14, 18, 16, 27, 28, 29, 26, -1};
-
 DATA(0x00078488)
 static i16 s_gunPower[16] = {0};
 
@@ -216,6 +160,62 @@ u8 g_pickScreenSave[16] = {0};
 
 DATA(0x00078538)
 char g_unavailableCommandText[8] = {0};
+
+// The temporary swap: the party position and the roster slot it held.
+DATA(0x00068400)
+i16 g_guestIndex = -1;
+
+DATA(0x00068404)
+static i16 s_swapSaved = -1;
+
+// @identity-TODO: the party position the picker last targeted (-1: none).
+DATA(0x00068408)
+static i16 s_pickedIndex = -1;
+
+DATA(0x0006840c)
+static i16 s_fieldCountA = -1;
+
+DATA(0x00068410)
+static i16 s_fieldRateA = 100;
+
+DATA(0x00068414)
+static i16 s_fieldCountB = -1;
+
+DATA(0x00068418)
+static i16 s_fieldRateB = 100;
+
+// -1 while no field map is active.
+DATA(0x0006841c)
+static i16 s_fieldMode = -1;
+
+// The music track that was playing when the encounter started (or the field
+// map was entered).
+DATA(0x00068420)
+static i16 s_fieldMusic = -1;
+
+DATA(0x00068424)
+static i16 s_fieldOption = 20;
+
+DATA(0x00068428)
+static i16 s_fieldParamFirst = 1;
+
+DATA(0x0006842c)
+static i16 s_fieldParamSecond = -1;
+
+DATA(0x00068430)
+static i16 (*s_commandLabels[])(Character*) = {
+    FormatAttackCommand,
+    FormatGunCommand,
+    FormatCompCommand,
+    FormatMagicCommand,
+    FormatItemCommand,
+    FormatExtraCommand,
+    FormatReturnCommand,
+    FormatDefenceCommand
+};
+
+DATA(0x00068450)
+static i16 s_actionConditions[] = {7, 17, 30, 14, 18, 16, 27, 28, 29, 26, -1};
 
 RVA(0x00005a80, 0x86)
 i16 PickPartyMember(i16 index) {
