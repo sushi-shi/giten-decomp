@@ -199,22 +199,8 @@ void ClearCapturedText(void) {
     memset(g_capturedText, 0, sizeof(g_capturedText));
 }
 
-// Formats a number `width` wide with at least `digits` digits (left-aligned
-// with `left`) into the text line at `column`, padding the line up to the
-// column with spaces.
-RVA(0x0002f5a0, 0x98)
-void OpFormatNumber(void) {
-    i16 column = ReadScriptValue();
-    i16 width = ReadScriptValue();
-    i16 digits = ReadScriptValue();
-    i16 left = ReadScriptValue();
-    i32 value = ReadScriptValue();
+static __inline void WriteFormattedTextLine(i16 column) {
     i16 i;
-    if (left) {
-        sprintf(g_scratchBuffer, "%-*.*ld", width, digits, value);
-    } else {
-        sprintf(g_scratchBuffer, "%*.*ld", width, digits, value);
-    }
     for (i = 0; i < column; i++) {
         if (g_textLine[i] == 0) {
             g_textLine[i] = ' ';
@@ -225,30 +211,37 @@ void OpFormatNumber(void) {
     }
 }
 
+// Formats a number `width` wide with at least `digits` digits (left-aligned
+// with `left`) into the text line at `column`, padding the line up to the
+// column with spaces.
+RVA(0x0002f5a0, 0x98)
+void OpFormatNumber(void) {
+    i16 column = ReadScriptValue();
+    i16 width = ReadScriptValue();
+    i16 digits = ReadScriptValue();
+    i16 left = ReadScriptValue();
+    i32 value = ReadScriptValue();
+    if (left) {
+        sprintf(g_scratchBuffer, "%-*.*ld", width, digits, value);
+    } else {
+        sprintf(g_scratchBuffer, "%*.*ld", width, digits, value);
+    }
+    WriteFormattedTextLine(column);
+}
+
 // The same for the captured text, `width` wide and at most `length` long.
-// @early-stop: TU state; the same body as OpFormatNumber's tail, but here
-// the second loop's two setup instructions swap (the permuter's search is
-// flat).
 RVA(0x0002f640, 0x93)
 void OpFormatCapturedText(void) {
     i16 column = ReadScriptValue();
     i16 width = ReadScriptValue();
     i16 length = ReadScriptValue();
     i16 left = ReadScriptValue();
-    i16 i;
     if (left) {
         sprintf(g_scratchBuffer, "%-*.*s", width, length, g_capturedText);
     } else {
         sprintf(g_scratchBuffer, "%*.*s", width, length, g_capturedText);
     }
-    for (i = 0; i < column; i++) {
-        if (g_textLine[i] == 0) {
-            g_textLine[i] = ' ';
-        }
-    }
-    for (i = 0; g_scratchBuffer[i]; i++) {
-        g_textLine[column + i] = g_scratchBuffer[i];
-    }
+    WriteFormattedTextLine(column);
 }
 
 RVA(0x0002f6e0, 0x29)

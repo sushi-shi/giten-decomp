@@ -39,7 +39,7 @@ alignchart	1	1
 analyze	3	3
 areamap	42	36
 areanpc	60	56
-attack	21	18
+attack	21	19
 automap	1	1
 automapbits	23	20
 bitmapio	2	2
@@ -135,7 +135,7 @@ scriptoperand	8	8
 scriptpanel	20	19
 scriptsprite	2	2
 scriptswitch	10	10
-scripttext	39	36
+scripttext	39	38
 scriptvars	108	106
 scriptvm	2	2
 shot	15	14
@@ -208,19 +208,19 @@ analyze	_RunAnalyzeWindow	100.0000	100.0000	11	775a7e57d96f	0x1ad50	100.0000
 analyze	_SetAnalyzeTarget	100.0000	100.0000	1	163865b8161f	0x1ad40	100.0000	
 areamap	_BuildRoomMap	100.0000	100.0000	1	465439efbabb	0x211b0	100.0000	
 areamap	_CheckBlockingCell	80.4865	80.4865	1	83852b0c64be	0x220b0	80.4865	
-areamap	_CheckCellEvent	99.3541	99.3541	6	eb522036a9f4	0x21880	99.3541	
+areamap	_CheckCellEvent	99.3541	99.3541	7	c5eb78ecd3b6	0x21880	99.3541	
 areamap	_ClampMapCoord	100.0000	100.0000	1	d8d50387fabb	0x222c0	100.0000	
 areamap	_ClampMapPosition	100.0000	100.0000	1	9bfed5219665	0x223a0	100.0000	
-areamap	_CopyExitAt	100.0000	100.0000	1	94f755f82b3e	0x22600	100.0000	
+areamap	_CopyExitAt	100.0000	100.0000	2	8e62392c4b5f	0x22600	100.0000	
 areamap	_DecodeAreaMap	75.0698	74.2326	9	90f8bb8b908e	0x21470	75.0698	
 areamap	_FindCellKind	100.0000	100.0000	1	6568aa3013f9	0x21850	100.0000	
-areamap	_FindTreasureBoxAt	100.0000	100.0000	1	208096c0a6ca	0x22560	100.0000	
+areamap	_FindTreasureBoxAt	100.0000	100.0000	2	fc7e7f5c850f	0x22560	100.0000	
 areamap	_GetAreaLevelCount	100.0000	100.0000	1	074500fa1285	0x21710	100.0000	
 areamap	_GetAreaName	100.0000	100.0000	1	8b4b612e8652	0x21750	100.0000	
 areamap	_GetAreaSize	100.0000	100.0000	2	525ec9f54018	0x21720	100.0000	
 areamap	_GetCellAtOffset	80.4568	80.4568	3	d19f521b938c	0x22460	80.4568	
 areamap	_GetCurrentArea	100.0000	100.0000	1	2668c09bcabe	0x21700	100.0000	
-areamap	_GetEventCellCode	100.0000	100.0000	1	0b6e3c341c99	0x22120	100.0000	
+areamap	_GetEventCellCode	100.0000	100.0000	2	e500ff8ceb37	0x22120	100.0000	
 areamap	_GetLevelFloor	100.0000	100.0000	2	c7937fb508b3	0x21770	100.0000	
 areamap	_GetLevelList	100.0000	100.0000	1	501271d0cc9a	0x22540	100.0000	
 areamap	_GetMapSize	100.0000	100.0000	1	44b1c7242cd8	0x21790	100.0000	
@@ -228,14 +228,14 @@ areamap	_GetMapTreasureBoxes	100.0000	100.0000	1	88c4ab1c7949	0x225c0	100.0000
 areamap	_GetWallMap	100.0000	100.0000	1	eb58b9d24626	0x217d0	100.0000	
 areamap	_GetWarpCodeAtOffset	100.0000	100.0000	2	c556e5575953	0x22400	100.0000	
 areamap	_IsCellAt	100.0000	100.0000	1	1b64bc5ddf1a	0x217e0	100.0000	
-areamap	_IsCellBlocked	99.5862	99.5862	4	84dc02394e85	0x21ed0	99.5862	
-areamap	_IsCellCommandBlocked	100.0000	100.0000	1	71adb5395c81	0x21e30	100.0000	
+areamap	_IsCellBlocked	99.5862	99.5862	5	ab3be5f93b4c	0x21ed0	99.5862	
+areamap	_IsCellCommandBlocked	100.0000	100.0000	2	148bf28a2a24	0x21e30	100.0000	
 areamap	_IsCellFlagSet	100.0000	100.0000	1	8150ea63a3d7	0x21810	100.0000	
-areamap	_IsDarkCell	100.0000	100.0000	1	f7a9efa1402d	0x21dc0	100.0000	
+areamap	_IsDarkCell	100.0000	100.0000	2	48d077d0485d	0x21dc0	100.0000	
 areamap	_IsLevelMapRevealed	100.0000	100.0000	2	c65bd1ed75c7	0x225d0	100.0000	
 areamap	_IsRoomCell	100.0000	100.0000	1	cc1b46a3654f	0x21ea0	100.0000	
 areamap	_IsSpawnEnabled	91.2963	91.2963	2	ed420803658a	0x21160	91.2963	
-areamap	_IsStepBarred	100.0000	100.0000	2	3892aa52829e	0x221f0	100.0000	
+areamap	_IsStepBarred	100.0000	100.0000	3	05a359ca36f7	0x221f0	100.0000	
 areamap	_LatchCellDestination	100.0000	100.0000	2	e54212a59ac5	0x21d20	100.0000	
 areamap	_LoadAreaMap	100.0000	100.0000	4	96911704c21e	0x213a0	100.0000	
 areamap	_PlayLevelMusic	100.0000	100.0000	2	3837071c8da0	0x21680	100.0000	
@@ -243,7 +243,7 @@ areamap	_RespawnAreaActors	100.0000	100.0000	1	0eb9c5b02681	0x21260	100.0000
 areamap	_RevealAreaMapAt	100.0000	100.0000	1	9201fda7e80f	0x222e0	100.0000	
 areamap	_SelectAreaLevel	100.0000	100.0000	3	13e55892a635	0x212a0	100.0000	
 areamap	_SetAreaFlagPreservation	100.0000	100.0000	2	1b474a025d4b	0x20fc0	100.0000	
-areamap	_SpawnLevelObjects	100.0000	100.0000	1	a8c9df6017b5	0x211f0	100.0000	
+areamap	_SpawnLevelObjects	100.0000	100.0000	2	08c841e441e9	0x211f0	100.0000	
 areamap	_SpawnMapObjects	100.0000	100.0000	4	02f4b745247d	0x21010	100.0000	
 areamap	_UnloadAreaMap	100.0000	100.0000	1	0b5bff4429ca	0x20ff0	100.0000	
 areamap	_WrapMapCoord	100.0000	100.0000	1	8a746fb03631	0x22290	100.0000	
@@ -320,11 +320,11 @@ attack	_GetCombatantSideRelation	100.0000	100.0000	4	70b8dfb4e261	0x8450	100.000
 attack	_GetEquipmentHitModifier	100.0000	100.0000	4	7571f7679ade	0x8480	100.0000	
 attack	_GetGunAttackPower	100.0000	100.0000	3	1aba1c1775cc	0x8b20	100.0000	
 attack	_GetGunBurstRounds	100.0000	100.0000	4	5e1b6fead023	0x9050	100.0000	
-attack	_GetGunRequirementPenalty	100.0000	91.5625	1	9d271a629c5c	0x91b0	100.0000	
+attack	_GetGunRequirementPenalty	100.0000	100.0000	1	9d271a629c5c	0x91b0	100.0000	
 attack	_LoadGunDistributionTable	100.0000	100.0000	1	2282d9a67f6b	0x8fe0	100.0000	
 attack	_PrepareGunBurst	100.0000	100.0000	8	d3a0e7e88d30	0x90c0	100.0000	
-attack	_ResolveGunAttack	100.0000	100.0000	6	e5f934fc7e93	0x8e60	100.0000	
-attack	_RollExceptionalAttack	99.4314	99.4314	5	cec84366749b	0x8700	99.4314	
+attack	_ResolveGunAttack	100.0000	100.0000	7	5c1cb055ab4c	0x8e60	100.0000	
+attack	_RollExceptionalAttack	99.4314	99.4183	5	cec84366749b	0x8700	99.4314	
 attack	_RollGunCondition	100.0000	100.0000	9	db417547c5a3	0x8d30	100.0000	
 attack	_RollGunHit	100.0000	100.0000	8	49f2594ef957	0x8910	100.0000	
 attack	_SpendAllGunRounds	100.0000	100.0000	1	285b0f0f8efa	0x93b0	100.0000	
@@ -538,7 +538,7 @@ compare	_OpStashItemLists	100.0000	100.0000	2	9c6af501a041	0x35830	100.0000
 compare	_OpTakeDropSlot	99.0625	99.0625	4	cf4e138bf036	0x35a90	99.0625	
 compare	_OpTakeItem	100.0000	100.0000	1	11891eb1b1cf	0x356d0	100.0000	
 compare	_PlayScreenTransition	100.0000	100.0000	1	a8697aea9b43	0x36010	100.0000	
-condition	_AddCondition	99.9419	99.9419	5	5275d8f9857f	0x3e6d0	99.9419	
+condition	_AddCondition	99.9419	99.9419	6	b335e08da1d3	0x3e6d0	99.9419	
 condition	_AgeCondition	100.0000	100.0000	4	29577e1910e8	0x3efa0	100.0000	
 condition	_AgeConditions	100.0000	100.0000	2	ade7fe44a58d	0x3ef60	100.0000	
 condition	_ApplyEmptyPools	100.0000	100.0000	5	f793c56d10c0	0x3f0f0	100.0000	
@@ -1484,7 +1484,7 @@ itemrecord	_TakeFromPool	100.0000	100.0000	4	839a9aa94385	0x23920	100.0000
 itemrecord	_TakeGemItems	100.0000	100.0000	4	cadc405b2d5e	0x24720	100.0000	
 itemrecord	_TakeGemItemsAt	95.6000	95.6000	4	325174fd552a	0x24660	95.6000	
 itemrecord	_TakePooledItems	100.0000	100.0000	4	2893edca478b	0x23a30	100.0000	
-itemrecord	_UseAttackItem	100.0000	100.0000	4	4b8e9ffea89a	0x24a50	100.0000	
+itemrecord	_UseAttackItem	100.0000	100.0000	5	b117398c7f54	0x24a50	100.0000	
 itemrecord	_UseInertItem	100.0000	100.0000	2	6dc820de9ede	0x24b60	100.0000	
 itemrecord	_UseKind5Item	100.0000	100.0000	2	8acbb43e0780	0x24b20	100.0000	
 itemrecord	_UseRestoreItem	100.0000	100.0000	3	b5ff97e8df8f	0x24950	100.0000	
@@ -1788,10 +1788,10 @@ partyaction	_OpenActorCommandMenu	100.0000	100.0000	2	f90af8b9b790	0x6340	100.00
 partyaction	_PickActorAction	100.0000	100.0000	5	5171452ba31c	0x5cd0	100.0000	
 partyaction	_PickActorDialogue	100.0000	100.0000	1	31b0b61f1e9f	0x5fc0	100.0000	
 partyaction	_PickPartyMember	100.0000	100.0000	10	a5d83c5603ad	0x5a80	100.0000	
-partyaction	_PickRandomAllyAttack	100.0000	100.0000	2	27a480ad3e8e	0x5f30	100.0000	
-partyaction	_PickRandomAttack	100.0000	100.0000	2	c49b7adcbf96	0x60c0	100.0000	
+partyaction	_PickRandomAllyAttack	100.0000	100.0000	3	de809f784e0b	0x5f30	100.0000	
+partyaction	_PickRandomAttack	100.0000	100.0000	3	0c27f611e562	0x60c0	100.0000	
 partyaction	_PickRandomCombatant	100.0000	100.0000	5	6b412f678a0f	0x5e50	100.0000	
-partyaction	_PickRandomOpponentAttack	100.0000	100.0000	2	e56b5392c2d8	0x5dc0	100.0000	
+partyaction	_PickRandomOpponentAttack	100.0000	100.0000	3	b2242aab5e34	0x5dc0	100.0000	
 partyaction	_PollActorCommandMenu	100.0000	100.0000	1	eeba145c01f8	0x6440	100.0000	
 partyaction	_PrepareMemberPickTarget	100.0000	100.0000	2	a274320fdb65	0x6840	100.0000	
 partyaction	_ReadActionResultFlags	100.0000	100.0000	1	e522e33f26e4	0x5c60	100.0000	
@@ -2191,8 +2191,8 @@ scripttext	_OpCaptureRecordString	100.0000	100.0000	1	baa1a9f764e6	0x2fa70	100.0
 scripttext	_OpClearMenuHighlight	100.0000	100.0000	1	73a9a7669775	0x2f460	100.0000	
 scripttext	_OpCreateScriptMenu	100.0000	100.0000	4	318ef8b6bb91	0x2f1c0	100.0000	
 scripttext	_OpDestroyScriptMenu	100.0000	100.0000	1	df68775945e1	0x2f370	100.0000	
-scripttext	_OpFormatCapturedText	96.2264	96.2264	1	5b435190bd20	0x2f640	96.2264	
-scripttext	_OpFormatNumber	96.4912	96.4912	1	47cb0503de5f	0x2f5a0	96.4912	
+scripttext	_OpFormatCapturedText	100.0000	100.0000	2	a82aff36c87f	0x2f640	100.0000	
+scripttext	_OpFormatNumber	100.0000	100.0000	2	466fb44d4d0b	0x2f5a0	100.0000	
 scripttext	_OpFreeDataFile	100.0000	100.0000	1	eba6eb84ac76	0x2f870	100.0000	
 scripttext	_OpFreeLongArray	100.0000	100.0000	1	070c70c95109	0x2f740	100.0000	
 scripttext	_OpGetLongArrayItem	100.0000	100.0000	1	9103eb63d3d1	0x2f770	100.0000	
@@ -2379,14 +2379,14 @@ skilluse	_PlayActionEffect	100.0000	100.0000	5	69ab1ea1b824	0x2c050	100.0000
 skilluse	_PushPromptState	100.0000	100.0000	1	9c36853ef043	0x2ab40	100.0000	
 skilluse	_RemoveCombatTarget	100.0000	100.0000	2	019b41001958	0x2aae0	100.0000	
 skilluse	_ReportBattleTally	100.0000	100.0000	2	a1184d4eb7bb	0x2b5f0	100.0000	
-skilluse	_ResolveCombatAction	93.2619	93.2619	19	0d9d9b177e99	0x2ac90	93.2619	
+skilluse	_ResolveCombatAction	93.2619	93.2619	20	c40d7e0b66c9	0x2ac90	93.2619	
 skilluse	_ResolveKnockout	99.6667	99.6667	8	0878de1b8a92	0x2b490	99.6667	
-skilluse	_RunBattleAction	96.4543	96.4543	21	6fc8ca076fa5	0x2b6a0	96.4543	
+skilluse	_RunBattleAction	96.4543	96.4543	22	dd9f2818d53a	0x2b6a0	96.4543	
 skilluse	_SetActionOutcome	100.0000	100.0000	1	69ab7be48b5b	0x2c2b0	100.0000	
 skilluse	_SetWorldMapActive	100.0000	100.0000	1	da2e7e2ed80d	0x2aa20	100.0000	
 skilluse	_ShowKnockoutMessage	100.0000	100.0000	2	0ebefd906d5d	0x2c210	100.0000	
-skilluse	_UseAttackSkill	100.0000	100.0000	5	b9ae3d83322c	0x2cd80	100.0000	
-skilluse	_UseBattleStatSkill	100.0000	100.0000	11	819ec536b97a	0x2d060	100.0000	
+skilluse	_UseAttackSkill	100.0000	100.0000	6	16801efe8482	0x2cd80	100.0000	
+skilluse	_UseBattleStatSkill	100.0000	100.0000	12	d39b78d70adc	0x2d060	100.0000	
 skilluse	_UseBattleTallySkill	99.7826	99.7826	8	a592a51a64f2	0x2cf90	99.7826	
 skilluse	_UseClearBattleTallySkill	100.0000	100.0000	5	615bed2e3df6	0x2d390	100.0000	
 skilluse	_UseFieldEffectSkill	100.0000	100.0000	4	745c1d83f378	0x2d700	100.0000	
@@ -2394,7 +2394,7 @@ skilluse	_UseInertSkill	100.0000	100.0000	4	d74f2264128d	0x2d750	100.0000
 skilluse	_UseKind12Skill	100.0000	100.0000	6	32d346465fe5	0x2d5e0	100.0000	
 skilluse	_UseKind13Skill	100.0000	100.0000	6	faf49f53bb8b	0x2d640	100.0000	
 skilluse	_UseKind14Skill	100.0000	100.0000	6	50254d3d8754	0x2d6a0	100.0000	
-skilluse	_UseResetBattleStatsSkill	100.0000	100.0000	5	198b391fb3f6	0x2d400	100.0000	
+skilluse	_UseResetBattleStatsSkill	100.0000	100.0000	6	64c46e3d64da	0x2d400	100.0000	
 skilluse	_UseRestoreSkill	100.0000	100.0000	7	88d1204a4e31	0x2ceb0	100.0000	
 sprite	_FreeSpriteImages	100.0000	100.0000	3	67391d8e7b90	0x58820	100.0000	
 sprite	_IsSpriteFrameLoaded	100.0000	100.0000	4	2431484388bb	0x58870	100.0000	
@@ -2621,7 +2621,7 @@ waitstate	_RunScreenFadeState	100.0000	100.0000	1	8c38a5993417	0x1a960	100.0000
 waitstate	_StepWaitState	100.0000	100.0000	3	4b11dc60400b	0x1a870	100.0000	
 walltexture	_LoadWallTextures	100.0000	100.0000	1	ddc4b33bcce4	0x57e80	100.0000	
 weaponattack	_ComputeWeaponDamage	100.0000	100.0000	6	c0f7ae411313	0xa270	100.0000	
-weaponattack	_ResolveWeaponAttack	100.0000	100.0000	4	2b2ab1a2f5b9	0xa8a0	100.0000	
+weaponattack	_ResolveWeaponAttack	100.0000	100.0000	5	de1bc6e4deb2	0xa8a0	100.0000	
 weaponattack	_RollExceptionalWeaponAttack	99.4444	99.4444	5	980b28feb8d3	0xa690	99.4444	
 weaponattack	_RollWeaponCondition	100.0000	100.0000	8	4a95cca4b7f0	0xa120	100.0000	
 weaponattack	_RollWeaponHit	100.0000	100.0000	8	603537d7b73b	0xa490	100.0000	
