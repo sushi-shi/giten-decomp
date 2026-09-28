@@ -3,13 +3,13 @@
 #include <rva.h>
 
 #include <Gfx/Bitmap.h>
+#include <Gfx/DDraw.h>
 #include <Gfx/DDError.h>
 #include <Gfx/Picture.h>
 #include <Gfx/Texture.h>
 #include <Platform/Com.h>
 #include <Platform/D3DApp.h>
 #include <Platform/GameApi.h>
-#include <Gfx/DDraw.h>
 
 #include <string.h>
 
