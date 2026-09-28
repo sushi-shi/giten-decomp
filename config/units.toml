@@ -35,11 +35,6 @@ source = "src/Util/compare.c"
 flags = "c"
 
 [[unit]]
-unit = "level"
-source = "src/Util/level.c"
-flags = "c"
-
-[[unit]]
 unit = "nibble"
 source = "src/Util/nibble.c"
 flags = "c"
@@ -160,48 +155,8 @@ source = "src/Game/character.c"
 flags = "c"
 
 [[unit]]
-unit = "charpool"
-source = "src/Game/charpool.c"
-flags = "c"
-
-[[unit]]
-unit = "condition"
-source = "src/Game/condition.c"
-flags = "c"
-
-[[unit]]
-unit = "charinfo"
-source = "src/Game/charinfo.c"
-flags = "c"
-
-[[unit]]
-unit = "party"
-source = "src/Game/party.c"
-flags = "c"
-
-[[unit]]
-unit = "affinity"
-source = "src/Game/affinity.c"
-flags = "c"
-
-[[unit]]
-unit = "statusdraw"
-source = "src/Game/statusdraw.c"
-flags = "c"
-
-[[unit]]
 unit = "gamestate"
 source = "src/Game/gamestate.c"
-flags = "c"
-
-[[unit]]
-unit = "statusline"
-source = "src/Game/statusline.c"
-flags = "c"
-
-[[unit]]
-unit = "charsave"
-source = "src/Game/charsave.c"
 flags = "c"
 
 [[unit]]
@@ -237,11 +192,6 @@ flags = "c"
 [[unit]]
 unit = "modeflags"
 source = "src/Game/modeflags.c"
-flags = "c"
-
-[[unit]]
-unit = "stattotal"
-source = "src/Game/stattotal.c"
 flags = "c"
 
 [[unit]]
@@ -392,11 +342,6 @@ flags = "c"
 [[unit]]
 unit = "fieldscreen"
 source = "src/Game/fieldscreen.c"
-flags = "c"
-
-[[unit]]
-unit = "maxstats"
-source = "src/Game/maxstats.c"
 flags = "c"
 
 [[unit]]
