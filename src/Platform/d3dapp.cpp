@@ -866,7 +866,7 @@ BOOL InitDirectDraw(void) {
     if (g_ddraw->SetDisplayMode(g_windowRect.right, g_windowRect.bottom, PIXEL_BITS_16) != DD_OK) {
         return FALSE;
     }
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
     desc.ddsCaps.dwCaps =
@@ -881,7 +881,7 @@ BOOL InitDirectDraw(void) {
             return FALSE;
         }
     }
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_PIXELFORMAT;
     g_ddraw->GetDisplayMode(&desc);
@@ -1007,7 +1007,7 @@ u16 ReadSurfaceWord(LPDIRECTDRAWSURFACE surface, i32 x, i32 pitch, i32 y) {
     DDSURFACEDESC desc;
     u16 value;
 
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS;
     desc.ddsCaps.dwCaps = DDSCAPS_SYSTEMMEMORY;
@@ -1129,7 +1129,7 @@ BOOL InitDirect3D(void) {
     if (g_d3dDevice->AddViewport(g_viewport) != D3D_OK) {
         return FALSE;
     }
-    memset(&viewport, 0, sizeof(viewport));
+    ZeroMemory(&viewport, sizeof(viewport));
     viewport.dvMinZ = 0.0f;
     viewport.dwSize = sizeof(viewport);
     viewport.dwWidth = 640;
@@ -1151,7 +1151,7 @@ BOOL InitDirect3D(void) {
     if (g_screenDevice->AddViewport(g_screenViewport) != D3D_OK) {
         return FALSE;
     }
-    memset(&viewport, 0, sizeof(viewport));
+    ZeroMemory(&viewport, sizeof(viewport));
     viewport.dwSize = sizeof(viewport);
     viewport.dwWidth = g_viewClearRect.x2;
     viewport.dwHeight = g_viewClearRect.y2;
@@ -1168,13 +1168,13 @@ BOOL InitDirect3D(void) {
         return FALSE;
     }
     g_d3d->CreateMaterial(&material, NULL);
-    memset(&materialDesc, 0, sizeof(materialDesc));
+    ZeroMemory(&materialDesc, sizeof(materialDesc));
     materialDesc.dwSize = sizeof(materialDesc);
     material->SetMaterial(&materialDesc);
     material->GetHandle(g_d3dDevice, &backgroundHandle);
     g_viewport->SetBackground(backgroundHandle);
     g_d3d->CreateMaterial(&lighting, NULL);
-    memset(&lightingDesc, 0, sizeof(lightingDesc));
+    ZeroMemory(&lightingDesc, sizeof(lightingDesc));
     lightingDesc.dwSize = sizeof(lightingDesc);
     lightingDesc.diffuse.r = 1.0f;
     lightingDesc.diffuse.g = 1.0f;
@@ -1256,7 +1256,7 @@ BOOL InitDirect3D(void) {
         g_screenDevice->SetRenderState(D3DRENDERSTATE_ALPHAFUNC, D3DCMP_NEVER);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
     }
-    memset(&g_textureFormat, 0, sizeof(g_textureFormat));
+    ZeroMemory(&g_textureFormat, sizeof(g_textureFormat));
     g_d3dDevice->EnumTextureFormats(ChooseTextureFormat, &g_textureFormat);
     return TRUE;
 }
@@ -1275,9 +1275,9 @@ BOOL InitDirectSound(void) {
         g_directSound->Release();
         return FALSE;
     }
-    memset(&format, 0, sizeof(format));
+    ZeroMemory(&format, sizeof(format));
     format.cbSize = 0;
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     format.wFormatTag = WAVE_FORMAT_PCM;
     format.nChannels = 1;
     format.nSamplesPerSec = 22050;
@@ -1461,30 +1461,29 @@ i16 MapSoundEffectId(i16 id) {
 // foreground.
 RVA(0x00048ce0, 0xc1)
 BOOL InitDirectInput(void) {
-    if (DirectInputCreate(g_instance, DIRECTINPUT_VERSION, &g_directInput, NULL) < 0) {
+    if (FAILED(DirectInputCreate(g_instance, DIRECTINPUT_VERSION, &g_directInput, NULL))) {
         return FALSE;
     }
-    if (g_directInput->CreateDevice(GUID_SysMouse, &g_mouseDevice, NULL) < 0) {
+    if (FAILED(g_directInput->CreateDevice(GUID_SysMouse, &g_mouseDevice, NULL))) {
         return FALSE;
     }
-    if (g_mouseDevice->SetDataFormat(&c_dfDIMouse) < 0) {
+    if (FAILED(g_mouseDevice->SetDataFormat(&c_dfDIMouse))) {
         return FALSE;
     }
-    if (g_mouseDevice->SetCooperativeLevel(g_mainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND)
-        < 0) {
+    if (FAILED(
+            g_mouseDevice->SetCooperativeLevel(g_mainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND)
+        )) {
         return FALSE;
     }
-    if (g_directInput->CreateDevice(GUID_SysKeyboard, &g_keyboardDevice, NULL) < 0) {
+    if (FAILED(g_directInput->CreateDevice(GUID_SysKeyboard, &g_keyboardDevice, NULL))) {
         return FALSE;
     }
-    if (g_keyboardDevice->SetDataFormat(&c_dfDIKeyboard) < 0) {
+    if (FAILED(g_keyboardDevice->SetDataFormat(&c_dfDIKeyboard))) {
         return FALSE;
     }
-    return g_keyboardDevice->SetCooperativeLevel(
-               g_mainWindow,
-               DISCL_NONEXCLUSIVE | DISCL_FOREGROUND
-           )
-           >= 0;
+    return SUCCEEDED(
+        g_keyboardDevice->SetCooperativeLevel(g_mainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND)
+    );
 }
 
 RVA(0x00048db0, 0x62)
@@ -1515,7 +1514,7 @@ u8 PollMouseButtons(void) {
             result = g_mouseDevice->GetDeviceState(sizeof(state), &state);
             if (result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED) {
                 result = g_mouseDevice->Acquire();
-                if (result < 0) {
+                if (FAILED(result)) {
                     right = left = 0;
                     break;
                 }
@@ -1527,7 +1526,7 @@ u8 PollMouseButtons(void) {
             right = state.rgbButtons[1];
             break;
         }
-        if (result < 0) {
+        if (FAILED(result)) {
             right = left = 0;
         }
     } else {
@@ -1551,7 +1550,7 @@ RVA(0x00048f20, 0x61)
 void ClearScreenSurfaces(void) {
     DDBLTFX fx;
 
-    memset(&fx, 0, sizeof(fx));
+    ZeroMemory(&fx, sizeof(fx));
     fx.dwSize = sizeof(fx);
     fx.dwFillColor = 0;
     if (g_deviceType == D3D_DEVICE_HAL) {

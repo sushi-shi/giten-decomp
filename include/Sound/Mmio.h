@@ -36,7 +36,7 @@ class CMMIOInfo : public MMIOINFO {
 public:
     RVA(0x00056950, 0x12)
     CMMIOInfo() {
-        memset(this, 0, sizeof(MMIOINFO));
+        ZeroMemory(this, sizeof(MMIOINFO));
     }
 };
 

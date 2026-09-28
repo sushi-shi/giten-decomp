@@ -46,7 +46,7 @@ b32 CopyResourceBitmap16(BitmapResource* bmp, IDirectDrawSurface** surface, i32 
         src -= bmp->info.biWidth;
     }
     (*surface)->Unlock(NULL);
-    memset(&key, 0, sizeof(key));
+    ZeroMemory(&key, sizeof(key));
     (*surface)->SetColorKey(DDCKEY_SRCBLT, &key);
     return TRUE;
 }
@@ -90,7 +90,7 @@ b32 CopyResourceBitmap8(
         src -= bmp->info.biWidth;
     }
     (*surface)->Unlock(NULL);
-    memset(&key, 0, sizeof(key));
+    ZeroMemory(&key, sizeof(key));
     (*surface)->SetColorKey(DDCKEY_SRCBLT, &key);
     return TRUE;
 }

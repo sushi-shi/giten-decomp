@@ -45,7 +45,7 @@ b32 ClickHotspotAt(i32 x, i32 y) {
         texture = GetHotspot(i)->texture;
         pixels = GetBitmapPixels(texture->image);
         width = texture->width;
-        height = width > 256 ? 256 : width;
+        height = min(256, width);
         u = (x - GetHotspot(i)->rect.left) * width
             / (GetHotspot(i)->rect.right - GetHotspot(i)->rect.left);
         v = height

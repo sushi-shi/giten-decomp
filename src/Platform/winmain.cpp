@@ -281,12 +281,12 @@ RVA(0x00049840, 0x64)
 void ConfineCursor(void) {
     if (!GetClipCursor(&g_savedClipRect)) {
         if (!GetWindowRect(GetDesktopWindow(), &g_savedClipRect)) {
-            memset(&g_savedClipRect, 0, sizeof(g_savedClipRect));
+            ZeroMemory(&g_savedClipRect, sizeof(g_savedClipRect));
             return;
         }
     }
     if (!ClipCursor(&g_windowRect)) {
-        memset(&g_savedClipRect, 0, sizeof(g_savedClipRect));
+        ZeroMemory(&g_savedClipRect, sizeof(g_savedClipRect));
     }
 }
 
@@ -1572,10 +1572,10 @@ void DrawDragOutline(void) {
         D3DTLVERTEX(D3DVECTOR(0.0f, 0.0f, 0.0f), 1.0f, 0xffffffff, 0, 0.0f, 0.0f),
     };
 
-    s_outline[0].sx = s_outline[3].sx = s_outline[4].sx = static_cast<D3DVALUE>(g_dragRect.left);
-    s_outline[0].sy = s_outline[1].sy = s_outline[4].sy = static_cast<D3DVALUE>(g_dragRect.top);
-    s_outline[1].sx = s_outline[2].sx = static_cast<D3DVALUE>(g_dragRect.right);
-    s_outline[2].sy = s_outline[3].sy = static_cast<D3DVALUE>(g_dragRect.bottom);
+    s_outline[0].sx = s_outline[3].sx = s_outline[4].sx = D3DVAL(g_dragRect.left);
+    s_outline[0].sy = s_outline[1].sy = s_outline[4].sy = D3DVAL(g_dragRect.top);
+    s_outline[1].sx = s_outline[2].sx = D3DVAL(g_dragRect.right);
+    s_outline[2].sy = s_outline[3].sy = D3DVAL(g_dragRect.bottom);
     g_screenDevice->BeginScene();
     g_screenDevice
         ->DrawPrimitive(D3DPT_LINESTRIP, D3DVT_TLVERTEX, s_outline, 5, D3DDP_DONOTUPDATEEXTENTS);
@@ -2163,7 +2163,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     anim = GetObjectAnim(index);
                     width = s_enemySizes[anim - 1][0];
                     height = s_enemySizes[anim - 1][1];
-                    light = static_cast<D3DVALUE>(anim) * 0.125f;
+                    light = D3DVAL(anim) * 0.125f;
                     level = static_cast<int>(light * 255.0f);
                     SetQuadSpecular(s_enemy, RGBA_MAKE(level, level, level, 0xff));
                 } else {
@@ -2410,8 +2410,8 @@ void DrawHotspotMarks(void) {
         );
         s_markFrame++;
     } else {
-        x = s_markX - MARK_HALF > 0 ? s_markX - MARK_HALF : 0;
-        y = s_markY - MARK_HALF > 0 ? s_markY - MARK_HALF : 0;
+        x = max(s_markX - MARK_HALF, 0);
+        y = max(s_markY - MARK_HALF, 0);
         source.top = 0;
         source.left = 0;
         source.bottom = MARK_SIZE;
@@ -3127,7 +3127,7 @@ void RenderFieldView(BOOL draw) {
         if (level > 8) {
             level = 7;
         }
-        light = static_cast<D3DVALUE>(level) * 0.125f;
+        light = D3DVAL(level) * 0.125f;
         tint = static_cast<int>(light * 255.0f);
         specular = RGBA_MAKE(tint, tint, tint, 0xff);
         s_backdrop[0].specular = s_backdrop[1].specular = s_backdrop[2].specular =
@@ -3468,7 +3468,7 @@ void BuildQuadMesh(Mesh* mesh) {
             for (k = 0; k < 4; k++, mesh->vertexCount++) {
                 mesh->vertices[mesh->vertexCount].sx = 0;
                 mesh->vertices[mesh->vertexCount].sz = 0;
-                mesh->vertices[mesh->vertexCount].sy = static_cast<D3DVALUE>(s_quadY[quad * 4 + k]);
+                mesh->vertices[mesh->vertexCount].sy = D3DVAL(s_quadY[quad * 4 + k]);
                 mesh->vertices[mesh->vertexCount].color = 0xffffffff;
                 mesh->vertices[mesh->vertexCount].specular = 0;
                 mesh->vertices[mesh->vertexCount].tu = s_quadUV[quad * 4 + k][0];
@@ -3550,10 +3550,8 @@ void BuildRoomMesh(Mesh* mesh, i32 cols, i32 rows) {
                     }
                 }
                 for (k = 0; k < 4; k++, mesh->vertexCount++) {
-                    mesh->vertices[mesh->vertexCount].sx =
-                        static_cast<D3DVALUE>(s_cellCorner[k][0] + x);
-                    mesh->vertices[mesh->vertexCount].sz =
-                        static_cast<D3DVALUE>(z + s_cellCorner[k][1]);
+                    mesh->vertices[mesh->vertexCount].sx = D3DVAL(s_cellCorner[k][0] + x);
+                    mesh->vertices[mesh->vertexCount].sz = D3DVAL(z + s_cellCorner[k][1]);
                     mesh->vertices[mesh->vertexCount].specular = 0;
                     if (layer == 0) {
                         mesh->vertices[mesh->vertexCount].sy = 0;
@@ -4126,7 +4124,7 @@ void ResetDisplayGlobals(void) {
     g_viewClearRect.x2 = g_windowRect.right = 640;
     g_viewClearRect.y2 = g_windowRect.bottom = 480;
     srand(timeGetTime());
-    memset(&g_clearBltFx, 0, sizeof(g_clearBltFx));
+    ZeroMemory(&g_clearBltFx, sizeof(g_clearBltFx));
     g_clearBltFx.dwSize = sizeof(g_clearBltFx);
 }
 
@@ -4145,7 +4143,7 @@ BOOL CreateMainWindow(HINSTANCE instance) {
     windowClass.hInstance = instance;
     windowClass.hIcon = LoadIcon(instance, IDI_APPLICATION);
     windowClass.hCursor = NULL;
-    windowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    windowClass.hbrBackground = GetStockBrush(BLACK_BRUSH);
     windowClass.lpszMenuName = NULL;
     windowClass.lpszClassName = "CLASSSDDSWIN";
     if (!RegisterClass(&windowClass)) {
