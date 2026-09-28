@@ -415,18 +415,8 @@ source = "src/Game/treasurebox.c"
 flags = "c"
 
 [[unit]]
-unit = "fusioncompare"
-source = "src/Game/fusioncompare.c"
-flags = "c"
-
-[[unit]]
 unit = "statuspanel"
 source = "src/Game/statuspanel.c"
-flags = "c"
-
-[[unit]]
-unit = "fusionscreen"
-source = "src/Game/fusionscreen.c"
 flags = "c"
 
 [[unit]]
@@ -448,11 +438,6 @@ flags = "cpp-noeh"
 unit = "sprite"
 source = "src/Gfx/sprite.cpp"
 flags = "cpp-noeh"
-
-[[unit]]
-unit = "screeneffect"
-source = "src/Game/screeneffect.c"
-flags = "c"
 
 [[unit]]
 unit = "objecttexture"
@@ -477,11 +462,6 @@ flags = "cpp-noeh"
 [[unit]]
 unit = "resourceblit"
 source = "src/Gfx/resourceblit.cpp"
-flags = "c"
-
-[[unit]]
-unit = "fusionmenu"
-source = "src/Game/fusionmenu.c"
 flags = "c"
 
 [[unit]]
