@@ -3172,6 +3172,18 @@ MapScreenOffset g_mapScreenOffsets[MAP_SCREEN_COUNT] = {
     {464, 164},
 };
 
+DATA(0x0006b7a8)
+JoystickKey g_joystickKeys[8] = {
+    {JOY_UP, VK_UP},
+    {JOY_DOWN, VK_DOWN},
+    {JOY_LEFT, VK_LEFT},
+    {JOY_RIGHT, VK_RIGHT},
+    {1 << JOY_BUTTON_SHIFT, VK_RETURN},
+    {2 << JOY_BUTTON_SHIFT, VK_SPACE},
+    {4 << JOY_BUTTON_SHIFT, VK_SHIFT},
+    {0, 0},
+};
+
 DATA(0x0008f570)
 MarkerColor g_markerColors[4];
 
