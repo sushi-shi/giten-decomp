@@ -148,8 +148,8 @@ or reconstructed resource script. Changing the supplied EXE rebuilds the
 resource file and candidate; no resource payloads or download links are tracked.
 
 The candidate still needs the original installation's external game files and
-valid runtime settings. See [local build/run instructions](../README.md#local-candidate-and-resources)
-and [runtime validation](runtime-validation.md). Optional candidate-image
+valid runtime settings. See [local build/run instructions](../README.md#local-candidate-and-resources).
+Optional candidate-image
 checks remain in `giten verify check --tier link`.
 
 ## Formatting and navigation

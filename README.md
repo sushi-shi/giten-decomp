@@ -80,8 +80,3 @@ binary value only bypasses the presence check. Run from that directory:
 cd /path/to/game-directory
 wine "$GITEN_DIR/build/exe/DDS.candidate.EXE"
 ```
-
-Correct rendering and gameplay have not been validated. Both the original
-and candidate show display problems in the current Wine setup. See
-[runtime prerequisites and validation](docs/runtime-validation.md) before
-treating a successful launch or matching screenshots as a working game.

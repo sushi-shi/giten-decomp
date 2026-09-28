@@ -33,8 +33,7 @@ masking. A masked pointer still needs referent evidence; see [data attribution](
 
 `giten link` builds `.rsrc` from the original executable supplied through
 `GITEN_RETAIL_EXE`; the generated `.res` stays under ignored `build/`.
-See [resource linking](build-system.md#candidate-linking-and-resources) and
-[runtime validation](runtime-validation.md). External game files and valid
+See [resource linking](build-system.md#candidate-linking-and-resources). External game files and valid
 runtime settings are still required, and correct gameplay is not yet verified.
 Do not use `/FORCE` or fabricated padding to hide
 unresolved symbols, duplicate definitions, or placement differences.
