@@ -37,7 +37,7 @@ abortflag	16	15
 affinity	6	6
 alignchart	1	1
 analyze	3	3
-areamap	42	36
+areamap	42	37
 areanpc	60	56
 attack	21	18
 automap	1	1
@@ -228,7 +228,7 @@ areamap	_GetMapTreasureBoxes	100.0000	100.0000	1	88c4ab1c7949	0x225c0	100.0000
 areamap	_GetWallMap	100.0000	100.0000	1	eb58b9d24626	0x217d0	100.0000	
 areamap	_GetWarpCodeAtOffset	100.0000	100.0000	2	c556e5575953	0x22400	100.0000	
 areamap	_IsCellAt	100.0000	100.0000	2	6fe4a8f00fe7	0x217e0	100.0000	
-areamap	_IsCellBlocked	99.5862	99.5862	4	84dc02394e85	0x21ed0	99.5862	
+areamap	_IsCellBlocked	100.0000	100.0000	5	a736cec50503	0x21ed0	100.0000	
 areamap	_IsCellCommandBlocked	100.0000	100.0000	2	497cb80dccc1	0x21e30	100.0000	
 areamap	_IsCellFlagSet	100.0000	100.0000	2	2334bfdacddf	0x21810	100.0000	
 areamap	_IsDarkCell	100.0000	100.0000	2	858fbc5177c8	0x21dc0	100.0000	
