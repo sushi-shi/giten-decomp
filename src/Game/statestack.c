@@ -1166,7 +1166,7 @@ void SceneNop(void) {}
 
 RVA(0x00017ba0, 0xf3)
 void RestoreBackground(void) {
-    MapPosition position = g_field.pos;
+    MapPosition position = g_party.field.pos;
     if (position.area == 0x82) {
         if (position.x == 12 && position.y == 11 && position.level == 8) {
             s_sceneCell[9] = 0x31;
@@ -2212,11 +2212,11 @@ b16 RunWorldMap(void) {
             ClearSceneSurfaces();
             NextGamePhase();
             s_traveling = false;
-            g_field.pos.area = 0xff;
-            g_field.pos.level = 0;
-            g_field.pos.x = 3;
-            g_field.pos.y = 3;
-            g_field.pos.direction = 0;
+            g_party.field.pos.area = 0xff;
+            g_party.field.pos.level = 0;
+            g_party.field.pos.x = 3;
+            g_party.field.pos.y = 3;
+            g_party.field.pos.direction = 0;
             LoadAreaMap(0xff, 0);
             SetModeFlags(MODE_WORLD_MAP);
             if (g_worldMapRequest > 0) {
@@ -2347,9 +2347,9 @@ b16 RunWorldMap(void) {
             }
             if (RollWorldMapEncounter(g_worldMapX, g_worldMapY) > 0) {
                 CloseMessageWindow();
-                g_field.pos.x = 3;
-                g_field.pos.y = 3;
-                g_field.pos.direction = 0;
+                g_party.field.pos.x = 3;
+                g_party.field.pos.y = 3;
+                g_party.field.pos.direction = 0;
                 SetGamePhase(9);
                 SetGameStep(0x22);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
@@ -2522,19 +2522,19 @@ void SetCellMark(i16 area, i16 level, i16 x, i16 y, i16 direction) {
 RVA(0x0001a0d0, 0x32)
 void SaveFieldPosition(void) {
     SetCellMark(
-        g_field.pos.area,
-        g_field.pos.level,
-        g_field.pos.x,
-        g_field.pos.y,
-        g_field.pos.direction
+        g_party.field.pos.area,
+        g_party.field.pos.level,
+        g_party.field.pos.x,
+        g_party.field.pos.y,
+        g_party.field.pos.direction
     );
 }
 
 RVA(0x0001a110, 0x67)
 i16 IsOnCellMark(i16 checkDirection) {
-    if (g_field.pos.x == s_markedX && g_field.pos.y == s_markedY && g_field.pos.area == s_markedArea
-        && g_field.pos.level == s_markedLevel) {
-        if (checkDirection && g_field.pos.direction != s_markedDirection) {
+    if (g_party.field.pos.x == s_markedX && g_party.field.pos.y == s_markedY
+        && g_party.field.pos.area == s_markedArea && g_party.field.pos.level == s_markedLevel) {
+        if (checkDirection && g_party.field.pos.direction != s_markedDirection) {
             return 1;
         }
         return 0;

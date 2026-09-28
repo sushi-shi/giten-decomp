@@ -136,11 +136,11 @@ void RecordMarkInLeader(void) {
     Character* leader = GetRosterCharacter(0);
     SetSavedMapPosition(
         &leader->markPosition,
-        g_field.pos.area,
-        g_field.pos.level,
-        g_field.pos.x,
-        g_field.pos.y,
-        g_field.pos.direction
+        g_party.field.pos.area,
+        g_party.field.pos.level,
+        g_party.field.pos.x,
+        g_party.field.pos.y,
+        g_party.field.pos.direction
     );
 }
 
@@ -179,9 +179,15 @@ i16 LoadGame(i16 slot, i16 keepField) {
     errors |= LoadScreenLayers(fp);
     fclose(fp);
     if (!g_loadedBefore) {
-        g_field.pos.direction += 2;
-        g_field.pos.direction &= 3;
-        OffsetMapCoordFacing(&g_field.pos.x, &g_field.pos.y, g_field.pos.direction, 0, -1);
+        g_party.field.pos.direction += 2;
+        g_party.field.pos.direction &= 3;
+        OffsetMapCoordFacing(
+            &g_party.field.pos.x,
+            &g_party.field.pos.y,
+            g_party.field.pos.direction,
+            0,
+            -1
+        );
     }
     CompactBag();
     for (i = 0; i < 32; i++) {
@@ -307,9 +313,9 @@ static b16 RunDisplayChoice(void) {
                 SetGamePhase(0);
             } else {
                 if (GetGamePhase() == 3) {
-                    g_fieldStatus.automapFixed = g_selectedObjectId;
+                    g_party.status.automapFixed = g_selectedObjectId;
                 } else {
-                    g_fieldStatus.navigationFixed = g_selectedObjectId;
+                    g_party.status.navigationFixed = g_selectedObjectId;
                 }
                 g_fieldRedrawRequest = 1;
                 SetGamePhase(1);

@@ -504,12 +504,12 @@ void OpJumpUnlessActorCanStep(i16 invert, i16 turn) {
         i16 x = ((FieldActor*)g_curScript->actor)->pos.x;
         i16 y = ((FieldActor*)g_curScript->actor)->pos.y;
         i16 direction = ((FieldActor*)g_curScript->actor)->direction;
-        i16 relative = RelativeDirection(x, y, g_field.pos.x, g_field.pos.y, direction);
+        i16 relative = RelativeDirection(x, y, g_party.field.pos.x, g_party.field.pos.y, direction);
         turn = (relative + turn) & 3;
         blocked = GetMapWallKind(x, y, (direction + turn) & 3);
         if (!blocked) {
             StepMapCoord(&x, &y, direction, turn);
-            blocked = IsCellBlocked(g_field.pos.level, 1, x, y);
+            blocked = IsCellBlocked(g_party.field.pos.level, 1, x, y);
         }
     }
     if ((!blocked && !invert) || (blocked && invert)) {
@@ -548,8 +548,8 @@ void OpJumpUnlessPlayerInLine(i16 invert) {
             actor->pos.x,
             actor->pos.y,
             actor->direction,
-            g_field.pos.x,
-            g_field.pos.y
+            g_party.field.pos.x,
+            g_party.field.pos.y
         );
         if ((offset.x == 0 && offset.y <= 0 && invert == 0)
             || ((offset.x != 0 || offset.y > 0) && invert != 0)) {
@@ -925,8 +925,8 @@ void GotoScript(i16 file, i16 entry) {
         entry = 9;
     } else if (file == 0x2c && entry == 4) {
         ResetSprites(SPRITE_LAYERS_PARTY_AND_TEXT);
-    } else if (file == 0x5b && entry == 0x22 && g_field.pos.x == 1 && g_field.pos.y == 4
-               && g_field.pos.level == 1 && g_field.pos.area == 0x83) {
+    } else if (file == 0x5b && entry == 0x22 && g_party.field.pos.x == 1 && g_party.field.pos.y == 4
+               && g_party.field.pos.level == 1 && g_party.field.pos.area == 0x83) {
         LoadSpriteImage(0, 0x42, 0);
         PlaceSprite(0, 0, 0, 40, 240);
     }
@@ -1066,7 +1066,7 @@ void OpLoadRecord(void) {
                 "\226\330\202\314\216\360\217\352\202\305\202\310\202\242\217\352\215\207\202\315"
                 "\230A\227\215\202\265\202\304\211\272\202\263\202\242\201BTakubo\012"
             );
-        } else if (entry == 0x100 || (entry == 0x101 && g_field.pos.area == 0x83)) {
+        } else if (entry == 0x100 || (entry == 0x101 && g_party.field.pos.area == 0x83)) {
             LoadSpriteImage(0x1f, 0x79, 0);
             PlaceSprite(0x1f, 0x1f, 0, 0x28, 0xd3);
             // 初台以外の道具屋＆レジスタンス前線基地の薬屋でない場合は連絡して下さい。Takubo
@@ -1077,7 +1077,7 @@ void OpLoadRecord(void) {
                 "\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304\211\272\202\263\202"
                 "\242\201BTakubo\012"
             );
-        } else if (entry == 0x101 && g_field.pos.area == 0x2e && g_field.pos.x == 7) {
+        } else if (entry == 0x101 && g_party.field.pos.area == 0x2e && g_party.field.pos.x == 7) {
             LoadSpriteImage(0x1f, 0xc7, 1);
             PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xe1);
             // 六本木の防具屋でない場合は連絡して下さい。Takubo
@@ -1088,17 +1088,18 @@ void OpLoadRecord(void) {
             );
         } else if (entry == 0x101) {
             LoadSpriteImage(0x1f, 0x79, 1);
-            if ((g_field.pos.area == 0x06 && g_field.pos.y == 0x12)
-                || (g_field.pos.area == 0x0a && g_field.pos.y == 0x0d)
-                || (g_field.pos.area == 0x13 && g_field.pos.y == 0x01)
-                || (g_field.pos.area == 0x1b && g_field.pos.y == 0x05)
-                || (g_field.pos.area == 0x8a && g_field.pos.y == 0x02)
-                || (g_field.pos.area == 0x1f && g_field.pos.level == 2)
-                || (g_field.pos.area == 0x1a && g_field.pos.x == 0x0a)
-                || (g_field.pos.area == 0x34 && g_field.pos.level == 0) || g_field.pos.area == 0x2e
-                || (g_field.pos.area == 0x25 && g_field.pos.level == 0)
-                || (g_field.pos.area == 0x21 && g_field.pos.y == 0x09)
-                || (g_field.pos.area == 0x30 && g_field.pos.y == 0x0b)) {
+            if ((g_party.field.pos.area == 0x06 && g_party.field.pos.y == 0x12)
+                || (g_party.field.pos.area == 0x0a && g_party.field.pos.y == 0x0d)
+                || (g_party.field.pos.area == 0x13 && g_party.field.pos.y == 0x01)
+                || (g_party.field.pos.area == 0x1b && g_party.field.pos.y == 0x05)
+                || (g_party.field.pos.area == 0x8a && g_party.field.pos.y == 0x02)
+                || (g_party.field.pos.area == 0x1f && g_party.field.pos.level == 2)
+                || (g_party.field.pos.area == 0x1a && g_party.field.pos.x == 0x0a)
+                || (g_party.field.pos.area == 0x34 && g_party.field.pos.level == 0)
+                || g_party.field.pos.area == 0x2e
+                || (g_party.field.pos.area == 0x25 && g_party.field.pos.level == 0)
+                || (g_party.field.pos.area == 0x21 && g_party.field.pos.y == 0x09)
+                || (g_party.field.pos.area == 0x30 && g_party.field.pos.y == 0x0b)) {
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xda);
                 // 臨海コロシアム以外の武器屋でない場合は連絡して下さい。Takubo
                 DebugTrace(
@@ -1117,7 +1118,7 @@ void OpLoadRecord(void) {
                 );
             }
         } else if (entry == 0x102 || entry == 0x104) {
-            if (g_field.pos.area == 0x1a && g_field.pos.level == 3) {
+            if (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 3) {
                 LoadSpriteImage(0x1f, 0x4f, 1);
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xd4);
                 // 銀座地下街秘密区の薬屋でない場合は連絡して下さい。Takubo
@@ -1126,8 +1127,8 @@ void OpLoadRecord(void) {
                     "\211\256\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202\265"
                     "\202\304\211\272\202\263\202\242\201BTakubo\012"
                 );
-            } else if (g_field.pos.area == 0x06 || g_field.pos.area == 0x1b
-                       || g_field.pos.area == 0x34 || g_field.pos.area == 0x25) {
+            } else if (g_party.field.pos.area == 0x06 || g_party.field.pos.area == 0x1b
+                       || g_party.field.pos.area == 0x34 || g_party.field.pos.area == 0x25) {
                 LoadSpriteImage(0x1f, 0x79, 2);
                 PlaceSprite(0x1f, 0x1f, 2, 0x28, 0xda);
                 // 新宿地下街・神田地下街・恵比寿ガーデン・浅草地下鉄ビルの薬屋でない場合は連絡して下さい。Takubo
@@ -1138,7 +1139,7 @@ void OpLoadRecord(void) {
                     "\362\211\256\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202"
                     "\265\202\304\211\272\202\263\202\242\201BTakubo\012"
                 );
-            } else if (g_field.pos.area == 0x56) {
+            } else if (g_party.field.pos.area == 0x56) {
                 LoadSpriteImage(0x1f, 0x2b, 3);
                 PlaceSprite(0x1f, 0x1f, 3, 0x28, 0xd4);
                 // 臨海コロシアムの薬屋でない場合は連絡して下さい。Takubo
@@ -1182,7 +1183,7 @@ void OpLoadRecord(void) {
                 "\215\202\265\202\304\211\272\202\263\202\242\201BTakubo\012"
             );
         } else if (entry == 0x105) {
-            if (g_field.pos.area == 0x21) {
+            if (g_party.field.pos.area == 0x21) {
                 LoadSpriteImage(0x1f, 0x79, 2);
                 PlaceSprite(0x1f, 0x1f, 2, 0x28, 0xda);
                 // アメ屋プラザ２階の薬屋でない場合は連絡して下さい。Takubo
@@ -1202,7 +1203,7 @@ void OpLoadRecord(void) {
                 );
             }
         } else if (entry == 0x106) {
-            if (g_field.pos.x == 1 && g_field.pos.y == 5) {
+            if (g_party.field.pos.x == 1 && g_party.field.pos.y == 5) {
                 LoadSpriteImage(0x1f, 0x7f, 3);
                 PlaceSprite(0x1f, 0x1f, 3, 0x28, 0xd5);
                 // 臨海コロシアムの道具屋でない場合は連絡して下さい。Takubo
@@ -1213,7 +1214,7 @@ void OpLoadRecord(void) {
                 );
             } else {
                 LoadSpriteImage(0x1f, 0x7f, 2);
-                if (g_field.pos.y == 9) {
+                if (g_party.field.pos.y == 9) {
                     PlaceSprite(0x1f, 0x1f, 2, 0x28, 0xd5);
                     // 臨海コロシアムの武器屋でない場合は連絡して下さい。Takubo
                     DebugTrace(
@@ -1243,7 +1244,7 @@ void OpLoadRecord(void) {
                 "\272\202\263\202\242\201BTakubo\012"
             );
         } else if (entry == 0x115) {
-            if (g_field.pos.area == 0x21) {
+            if (g_party.field.pos.area == 0x21) {
                 LoadSpriteImage(0x1f, 0x2c, 1);
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xf0);
                 // アメ屋プラザの病院でない場合は連絡して下さい。Takubo
@@ -1252,7 +1253,7 @@ void OpLoadRecord(void) {
                     "\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304"
                     "\211\272\202\263\202\242\201BTakubo\012"
                 );
-            } else if (g_field.pos.area == 0x56) {
+            } else if (g_party.field.pos.area == 0x56) {
                 LoadSpriteImage(0x1f, 0x76, 1);
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xf0);
                 // 臨海コロシアムの病院でない場合は連絡して下さい。Takubo
@@ -1895,8 +1896,8 @@ void OpIfFacing(i16 negate) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
     i16 direction = ReadScriptValue() & 3;
-    if ((direction == g_field.pos.direction && !negate)
-        || (direction != g_field.pos.direction && negate)) {
+    if ((direction == g_party.field.pos.direction && !negate)
+        || (direction != g_party.field.pos.direction && negate)) {
         jump = 1;
     }
     ScriptJumpUnless(target, jump);
@@ -1909,12 +1910,12 @@ void OpIfReturnFacing(i16 negate) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
     i16 direction = ReadScriptValue() & 3;
-    if (g_savedDirection == -1) {
+    if (g_party.savedDirection == -1) {
         if (negate) {
             jump = 1;
         }
-    } else if ((direction == g_savedDirection && !negate)
-               || (direction != g_savedDirection && negate)) {
+    } else if ((direction == g_party.savedDirection && !negate)
+               || (direction != g_party.savedDirection && negate)) {
         jump = 1;
     }
     ScriptJumpUnless(target, jump);
@@ -2278,8 +2279,9 @@ void OpQueueAutoMoves(void) {
     i = 0;
     move = ReadScriptByte();
     while (move != 0xff) {
-        if (i == 0 && g_field.pos.area == 0x82 && g_field.pos.level == 5 && g_field.pos.x == 4
-            && g_field.pos.y == 9 && g_field.pos.direction == 3 && move == 3) {
+        if (i == 0 && g_party.field.pos.area == 0x82 && g_party.field.pos.level == 5
+            && g_party.field.pos.x == 4 && g_party.field.pos.y == 9
+            && g_party.field.pos.direction == 3 && move == 3) {
             move = 1;
         }
         PushAutoMove(move);
@@ -2332,15 +2334,15 @@ void OpAddRoutePoint(void) {
 RVA(0x00035e70, 0x75)
 void OpGetPlayerLocation(void) {
     i16 index = ReadLongVarIndex();
-    SetScriptLongVar(index, g_field.pos.area);
+    SetScriptLongVar(index, g_party.field.pos.area);
     index = ReadLongVarIndex();
-    SetScriptLongVar(index, g_field.pos.level);
+    SetScriptLongVar(index, g_party.field.pos.level);
     index = ReadLongVarIndex();
-    SetScriptLongVar(index, g_field.pos.x);
+    SetScriptLongVar(index, g_party.field.pos.x);
     index = ReadLongVarIndex();
-    SetScriptLongVar(index, g_field.pos.y);
+    SetScriptLongVar(index, g_party.field.pos.y);
     index = ReadLongVarIndex();
-    SetScriptLongVar(index, g_field.pos.direction);
+    SetScriptLongVar(index, g_party.field.pos.direction);
 }
 
 RVA(0x00035ef0, 0x23)
@@ -2354,9 +2356,9 @@ RVA(0x00035f20, 0xe8)
 void OpIfBlockedToward(i16 negate, i16 turn) {
     i32 matches = 0;
     i16 target = ReadBranchTarget();
-    i16 x = g_field.pos.x;
-    i16 y = g_field.pos.y;
-    i16 direction = g_field.pos.direction;
+    i16 x = g_party.field.pos.x;
+    i16 y = g_party.field.pos.y;
+    i16 direction = g_party.field.pos.direction;
     i16 blocked;
     if (TestModeFlags(MODE_WORLD_MAP)) {
         blocked = 1;
@@ -2365,7 +2367,7 @@ void OpIfBlockedToward(i16 negate, i16 turn) {
     }
     if (!blocked) {
         StepMapCoord(&x, &y, direction, turn);
-        blocked = IsCellBlocked(g_field.pos.level, 1, x, y);
+        blocked = IsCellBlocked(g_party.field.pos.level, 1, x, y);
         if (!blocked && g_curScript->actor != NULL) {
             blocked = DistanceToParty((FieldActor*)g_curScript->actor) == 0;
         }

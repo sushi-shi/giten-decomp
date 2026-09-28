@@ -559,7 +559,7 @@ i16 ResolveCombatAction(void) {
         GetCharacterFlags(attacker)[1] |= 0x80;
     }
     if (g_targetId >= 0) {
-        GetFieldActor(g_targetId)->facing = OppositeDirection(g_field.pos.direction);
+        GetFieldActor(g_targetId)->facing = OppositeDirection(g_party.field.pos.direction);
         AlertActor(target, 2);
         GetCharacterFlags(target)[1] |= 0x40;
         if (attacker->pickRole == 4) {
@@ -1455,7 +1455,7 @@ i16 CollectTargetsAlongLine(i16 area, i16 flags, i16 range, i16 target, i16 acto
         direction = GetObjectDirection(target);
     } else {
         origin = GetMapCoord();
-        direction = g_field.pos.direction;
+        direction = g_party.field.pos.direction;
     }
     if (target >= 0) {
         offset = GetObjectCoord(target);
@@ -1480,7 +1480,7 @@ RVA(0x0002cc80, 0x100)
 i16 CollectTargetsInView(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
     MapCoord origin;
     i16 count = 0;
-    i16 direction = g_field.pos.direction;
+    i16 direction = g_party.field.pos.direction;
     i16 distance;
     i16 across;
     i16 along;

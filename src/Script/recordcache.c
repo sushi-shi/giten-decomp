@@ -488,7 +488,7 @@ i16 CheckSkillArea(i16 id) {
     if (GetFieldMarker()) {
         return 0;
     }
-    return (s_areaSkillFlags[g_field.pos.area] & 1) * 2 - 1;
+    return (s_areaSkillFlags[g_party.field.pos.area] & 1) * 2 - 1;
 }
 
 // A record's signed cost byte: negative costs HP (which must not reach 0),

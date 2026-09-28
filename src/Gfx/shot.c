@@ -55,8 +55,8 @@ i16 SetShotPath(i16 fromX, i16 fromY, i16 toX, i16 toY) {
     i16 distance;
     i16 dx, dz;
     double lateral;
-    RotateOffset(&fromX, &fromY, origin.x, origin.y, g_field.pos.direction);
-    RotateOffset(&toX, &toY, origin.x, origin.y, g_field.pos.direction);
+    RotateOffset(&fromX, &fromY, origin.x, origin.y, g_party.field.pos.direction);
+    RotateOffset(&toX, &toY, origin.x, origin.y, g_party.field.pos.direction);
     distance = toY - fromY;
     CellToField(fromX, fromY, 4, &s_shotStart);
     CellToField(toX, toY, 4, &s_shotTarget);

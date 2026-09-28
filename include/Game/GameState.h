@@ -42,24 +42,28 @@ typedef struct FieldStatus {
     i16 navigationFixed : 1;
 } FieldStatus;
 
-extern FieldState g_field;
+// The party: its place on the field, its six positions and its roster, saved
+// and restored member by member. One object: `slots` is two-aligned, which no
+// standalone twelve-byte COMMON is, and InitNewGame's roster clear follows the
+// field stores only when the roster and the field share an object.
+typedef struct Party {
+    FieldState field;
+    // @identity-TODO: the facing restored with a saved position (-1 when unset).
+    i16 savedDirection;
+    // The party's six roster indices (-1 = empty slot).
+    i16 slots[6];
+    FieldStatus status;
+    // The roster: characters the party can field; ids below 32 are human members.
+    Character* roster[32];
+} Party;
 
-// @identity-TODO: the facing restored with a saved position (-1 when unset).
-extern i16 g_savedDirection;
-
-extern FieldStatus g_fieldStatus;
-
-// The party's six roster indices (-1 = empty slot).
-extern i16 g_party[6];
+extern Party g_party;
 
 // Direct position access; the caller supplies a valid party index.
-#define PartySlotAt(index) (g_party[(index)])
-
-// The roster: characters the party can field; ids below 32 are human members.
-extern Character* g_roster[32];
+#define PartySlotAt(index) (g_party.slots[(index)])
 
 // Direct slot access; the caller supplies a valid roster index.
-#define RosterMemberAt(slot) (g_roster[(slot)])
+#define RosterMemberAt(slot) (g_party.roster[(slot)])
 
 void InitNewGame(void);
 

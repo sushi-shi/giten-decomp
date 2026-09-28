@@ -17,7 +17,7 @@ void NotifyEncounterEnd(void);
 i16 HasTurnElapsed(void);
 
 // @identity-TODO: that 0x211b0/0x21010/0x211f0/0x1f070 re-place the current area's map objects
-// is inferred from their use of g_field and 0xdbf0/0xda00; decode 0x21010.
+// is inferred from their use of g_party.field and 0xdbf0/0xda00; decode 0x21010.
 void RespawnAreaActors(void);
 
 // Marks the cell (area, level, x, y, facing) the party must leave before a

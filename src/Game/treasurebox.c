@@ -320,7 +320,7 @@ void PrepareViewedTreasureBox(void) {
     if (box) {
         IsTreasureBoxOpen(box);
         GetApproachOffset(g_viewLateral, g_viewDepth);
-        s_viewedBox.position = g_field.pos;
+        s_viewedBox.position = g_party.field.pos;
         s_viewedBox.position.x = g_viewLateral;
         s_viewedBox.position.y = g_viewDepth;
         memcpy(&s_viewedBox.cell, &box->head, sizeof(s_viewedBox.cell));
@@ -1884,8 +1884,8 @@ void MarkMapCell(i16 kind, i16 x, i16 y) {
     }
     TransformAutomapPoint(&x, &y);
     if (x >= 0 && x < s_mapWidth && y >= 0 && y < s_mapHeight) {
-        if (g_field.pos.area == 0x82 && g_field.pos.level == 15) {
-            if (!g_fieldStatus.navigationFixed && (g_field.pos.direction & 1)) {
+        if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 15) {
+            if (!g_party.status.navigationFixed && (g_party.field.pos.direction & 1)) {
                 x += 3;
                 y += 2;
             } else {
@@ -1911,10 +1911,10 @@ b16 RunAutomapState(void) {
             NextGamePhase();
             s_mapActive = true;
             RestoreDrawState(SaveDrawState());
-            s_mapPosition = g_field.pos;
+            s_mapPosition = g_party.field.pos;
             s_mapPlane = CreateTextPlane(31, 0);
             s_mapPanel = CreateKindPanel(s_mapPanel, 0x11d, 4, 31);
-            if (g_fieldStatus.automapFixed) {
+            if (g_party.status.automapFixed) {
                 s_mapPosition.direction = 0;
             }
             s_mapDetail = AUTOMAP_DETAIL_NONE;
@@ -2081,11 +2081,11 @@ void DrawAutomapRegion(i16 x, i16 y, i16 width, i16 height, i16 across, i16 alon
         }
     }
     IsCellBlocked(s_mapPosition.level, 0, 0, 0);
-    if (s_mapPosition.level == g_field.pos.level) {
+    if (s_mapPosition.level == g_party.field.pos.level) {
         DrawAutomapMark(
-            TurnDirection(g_field.pos.direction, -s_mapDirection),
-            g_field.pos.x,
-            g_field.pos.y
+            TurnDirection(g_party.field.pos.direction, -s_mapDirection),
+            g_party.field.pos.x,
+            g_party.field.pos.y
         );
     }
 }
@@ -2208,7 +2208,7 @@ void DrawMapOverlay(MapPosition position) {
         return;
     }
     ClearLayerSurface(6);
-    if (g_fieldStatus.navigationFixed) {
+    if (g_party.status.navigationFixed) {
         position.direction = 0;
     }
     s_mapDetail = AUTOMAP_DETAIL_NONE;
@@ -2224,7 +2224,7 @@ void DrawMapOverlay(MapPosition position) {
     if (s_mapDetail < AUTOMAP_DETAIL_BASIC) {
         return;
     }
-    if (IsDarkCell(g_field.pos.x, g_field.pos.y)) {
+    if (IsDarkCell(g_party.field.pos.x, g_party.field.pos.y)) {
         return;
     }
     GetMapSize(&width, &height);
@@ -2320,14 +2320,18 @@ void DrawMapOverlay(MapPosition position) {
             DrawMapOverlayTile(tile, cell.x, cell.y);
         }
     }
-    IsCellBlocked(g_field.pos.level, 0, 0, 0);
+    IsCellBlocked(g_party.field.pos.level, 0, 0, 0);
     if (s_mapDetail >= AUTOMAP_DETAIL_NPCS) {
         MarkAreaNpcs();
     }
     if (s_mapDetail >= AUTOMAP_DETAIL_OBJECTS) {
         MarkObjectsOnMap();
     }
-    MarkMapCell(TurnDirection(g_field.pos.direction, -direction), g_field.pos.x, g_field.pos.y);
+    MarkMapCell(
+        TurnDirection(g_party.field.pos.direction, -direction),
+        g_party.field.pos.x,
+        g_party.field.pos.y
+    );
 }
 
 RVA(0x0001e210, 0xf0)
@@ -2339,8 +2343,8 @@ void DrawMapOverlayTile(i16 tile, i16 x, i16 y) {
     }
     TransformAutomapPoint(&x, &y);
     if (x >= 0 && x < s_mapWidth && y >= 0 && y < s_mapHeight) {
-        if (g_field.pos.area == 0x82 && g_field.pos.level == 15) {
-            if (!g_fieldStatus.navigationFixed && (g_field.pos.direction & 1)) {
+        if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 15) {
+            if (!g_party.status.navigationFixed && (g_party.field.pos.direction & 1)) {
                 x += 3;
                 y += 2;
             } else {
@@ -2414,7 +2418,7 @@ i16 WriteAutomapAreas(FILE* fp) {
             }
         }
     }
-    LoadAutomapLevel(g_field.pos.area, g_field.pos.level);
+    LoadAutomapLevel(g_party.field.pos.area, g_party.field.pos.level);
     return errors;
 }
 
@@ -2467,7 +2471,7 @@ i16 LoadAutomapAreas(FILE* fp) {
 
 RVA(0x0001e6f0, 0x2a)
 void DrawFieldView(void) {
-    DrawMapOverlay(g_field.pos);
+    DrawMapOverlay(g_party.field.pos);
 }
 
 RVA(0x0001e720, 0x12)
@@ -2763,7 +2767,7 @@ i16 GetMapCellCode(i16 x, i16 y) {
 
 RVA(0x0001eec0, 0x18)
 i16 GetPartyCellCode(void) {
-    return GetMapCellCode(g_field.pos.x, g_field.pos.y);
+    return GetMapCellCode(g_party.field.pos.x, g_party.field.pos.y);
 }
 
 // Whether a region code is a door (0x80..).
@@ -2850,11 +2854,12 @@ void EnterRoom(i16 code) {
 RVA(0x0001f070, 0xb6)
 void UpdateCurrentRoom(void) {
     i16 code;
-    if (!CellCodeDiffers(GetCurrentRoomCode(), g_field.pos.x, g_field.pos.y)) {
-        if (g_field.pos.area == 0x85 && g_field.pos.level == 3 && g_field.pos.x == 3) {
-            if (g_field.pos.y == 4) {
+    if (!CellCodeDiffers(GetCurrentRoomCode(), g_party.field.pos.x, g_party.field.pos.y)) {
+        if (g_party.field.pos.area == 0x85 && g_party.field.pos.level == 3
+            && g_party.field.pos.x == 3) {
+            if (g_party.field.pos.y == 4) {
                 LoadNpcTexture(0, 0x53, 0);
-            } else if (g_field.pos.y == 5) {
+            } else if (g_party.field.pos.y == 5) {
                 LoadNpcTexture(0, 0x4c, 0);
             }
         }
@@ -2863,7 +2868,7 @@ void UpdateCurrentRoom(void) {
     RequestFieldRefresh();
     ResetFieldObjects();
     ResetFieldScene();
-    code = GetMapCellCode(g_field.pos.x, g_field.pos.y);
+    code = GetMapCellCode(g_party.field.pos.x, g_party.field.pos.y);
     EnterRoom(code);
     SpawnMapObjects(code);
 }
@@ -2872,9 +2877,9 @@ void UpdateCurrentRoom(void) {
 // region, resets the field and enters that region.
 RVA(0x0001f130, 0x99)
 void FinishDoorStep(void) {
-    i16 x = g_field.pos.x;
-    i16 y = g_field.pos.y;
-    i16 direction = TurnDirection(g_field.pos.direction, g_field.moveCommand);
+    i16 x = g_party.field.pos.x;
+    i16 y = g_party.field.pos.y;
+    i16 direction = TurnDirection(g_party.field.pos.direction, g_party.field.moveCommand);
     StepMapCoordBy(&x, &y, direction, 0, -1);
     if (CellCodeDiffers(GetCurrentRoomCode(), x, y)) {
         i16 code;
@@ -3034,13 +3039,14 @@ RVA(0x0001f550, 0xd0)
 void LoadNpcTexture(i16 slot, i16 code, i16 mode) {
     ImageRequest request;
     void* image;
-    if (code == 0x2b && mode == 0 && g_field.pos.area == 0x82 && g_field.pos.level == 8) {
-        if ((g_field.pos.x == 0xb && g_field.pos.y == 7)
-            || (g_field.pos.x == 0xc && g_field.pos.y == 6)) {
+    if (code == 0x2b && mode == 0 && g_party.field.pos.area == 0x82
+        && g_party.field.pos.level == 8) {
+        if ((g_party.field.pos.x == 0xb && g_party.field.pos.y == 7)
+            || (g_party.field.pos.x == 0xc && g_party.field.pos.y == 6)) {
             code = 0x24;
         }
-    } else if (code == 0x53 && mode == 0 && g_field.pos.area == 0x85 && g_field.pos.level == 3
-               && g_field.pos.y > 4) {
+    } else if (code == 0x53 && mode == 0 && g_party.field.pos.area == 0x85
+               && g_party.field.pos.level == 3 && g_party.field.pos.y > 4) {
         code = 0x4c;
     }
     request.file = code + 0x4000;
@@ -3149,15 +3155,15 @@ i16 KnockBack(i16 who) {
     i16* at;
     i16 direction;
     if (who < 0) {
-        direction = g_field.pos.direction;
-        at = &g_field.pos.x;
+        direction = g_party.field.pos.direction;
+        at = &g_party.field.pos.x;
     } else {
         i16 object;
         i16 code;
         i16 x;
         i16 y;
         Character* actor;
-        direction = OppositeDirection(g_field.pos.direction);
+        direction = OppositeDirection(g_party.field.pos.direction);
         object = GetLiveObject(who);
         if (object < 0) {
             return -1;
@@ -3175,7 +3181,7 @@ i16 KnockBack(i16 who) {
         if (CellCodeDiffers(code, x, y)) {
             return -1;
         }
-        if (IsCellBlocked(g_field.pos.level, 1, x, y)) {
+        if (IsCellBlocked(g_party.field.pos.level, 1, x, y)) {
             return -1;
         }
     }

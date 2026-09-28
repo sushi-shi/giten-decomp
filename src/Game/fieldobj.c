@@ -280,7 +280,7 @@ void RemoveFieldObject(i16 index, i16 announce) {
     }
     ModifyEventFlag(8, 0, 1);
     if (queued != 0 && !HasQueuedObjectEvents()) {
-        MarkLevelEvent(g_field.pos.level);
+        MarkLevelEvent(g_party.field.pos.level);
     }
 }
 
@@ -794,7 +794,8 @@ i16 GetObjectImageCode(i16 index) {
 RVA(0x0000e600, 0x77)
 i16 GetObjectFacingImageCode(i16 index) {
     FieldObject* object = &s_objects[index];
-    i16 imageCode = s_facingImageCodes[RelativeFacing(g_field.pos.direction, object->direction)];
+    i16 imageCode =
+        s_facingImageCodes[RelativeFacing(g_party.field.pos.direction, object->direction)];
     if (object->redraw != 0) {
         imageCode = 4;
     } else if (object->anim != 0) {
@@ -1079,11 +1080,11 @@ i16 SpawnRandomEnemy(void) {
     }
     for (tries = 0; tries < 10; tries++) {
         offset = RandomNearOffset();
-        x = offset.x + g_field.pos.x;
-        y = offset.y + g_field.pos.y;
+        x = offset.x + g_party.field.pos.x;
+        y = offset.y + g_party.field.pos.y;
         x = WrapMapCoord(x, width);
         y = WrapMapCoord(y, height);
-        if (!IsCellBlocked(g_field.pos.level, 1, x, y) && GetMapCellCode(x, y) == code) {
+        if (!IsCellBlocked(g_party.field.pos.level, 1, x, y) && GetMapCellCode(x, y) == code) {
             break;
         }
     }
@@ -1226,7 +1227,7 @@ i16 DirectionToParty(i16 x, i16 y) {
     coord = GetMapCoord();
     direction = RelativeDirection(x, y, coord.x, coord.y, 0);
     if (x == coord.x && y == coord.y) {
-        direction = TurnDirection(g_field.pos.direction, 2);
+        direction = TurnDirection(g_party.field.pos.direction, 2);
     }
     return direction;
 }
@@ -1267,7 +1268,7 @@ RVA(0x0000f240, 0x48)
 i16 GetPartySide(i16 x, i16 y, i16 direction) {
     MapCoord offset;
     i16 side;
-    offset = RelativeOffset(x, y, direction, g_field.pos.x, g_field.pos.y);
+    offset = RelativeOffset(x, y, direction, g_party.field.pos.x, g_party.field.pos.y);
     if (offset.x < 0) {
         side = 3;
     } else if (offset.x > 0) {
@@ -1314,7 +1315,7 @@ b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
             StepMapCoord(&x, &y, object->direction, 0);
             WrapMapPosition(&x, &y);
-            if (!CellCodeDiffers(code, x, y) && !IsCellBlocked(g_field.pos.level, 1, x, y)) {
+            if (!CellCodeDiffers(code, x, y) && !IsCellBlocked(g_party.field.pos.level, 1, x, y)) {
                 visible |= GetPartyView(x, y);
                 object->pos.y = y;
                 object->pos.x = x;
@@ -2460,17 +2461,17 @@ void PrepareFieldRandom(void) {
     i16 spread;
     Character* actor;
     for (i = 0; i < s_encounterCount; i++) {
-        x = g_field.pos.x;
-        y = g_field.pos.y;
+        x = g_party.field.pos.x;
+        y = g_party.field.pos.y;
         along = RandomAverage(-3, 0, 0);
         spread = s_encounterSpread[-along];
         across = RandomAverage(-spread, spread, 0);
-        OffsetMapCoord(&x, &y, g_field.pos.direction, across, along);
+        OffsetMapCoord(&x, &y, g_party.field.pos.direction, across, along);
         SpawnFieldObject(
             g_worldEncounterGroupSlots[i],
             x,
             y,
-            OppositeDirection(g_field.pos.direction),
+            OppositeDirection(g_party.field.pos.direction),
             s_encounterGroups[g_worldEncounterGroupSlots[i]],
             0,
             -1,

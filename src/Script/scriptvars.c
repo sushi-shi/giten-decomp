@@ -205,8 +205,8 @@ void OpFadeOutAndClear(void) {
     ReadScriptValue();
     StartScreenFade(SCREEN_FADE_TO_BLACK, 1);
     FinishScreenFade();
-    if (g_field.pos.area == 0x82 && g_field.pos.level == 8 && g_field.pos.x == 2
-        && g_field.pos.y == 1 && GetRenderMode() == 2) {
+    if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 8 && g_party.field.pos.x == 2
+        && g_party.field.pos.y == 1 && GetRenderMode() == 2) {
         ResetSprites(SPRITE_LAYERS_PARTY_AND_TEXT);
     }
 }
@@ -771,7 +771,7 @@ RVA(0x0003b340, 0x10f)
 void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor) {
     i16 window;
     CloseMessageWindow();
-    actor->facing = OppositeDirection(g_field.pos.direction);
+    actor->facing = OppositeDirection(g_party.field.pos.direction);
     RequestFieldRefresh();
     RedrawFieldView();
     PushGameState(10);

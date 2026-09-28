@@ -200,7 +200,7 @@ i16 RunDebugMenu(void) {
                     s_debugMenu = DestroyMenuBox(s_debugMenu);
                     SetGameSub(0);
                     from = GetMapCoord();
-                    to = MoveMapCoord(from, g_field.pos.direction, 0, -s_shotRise);
+                    to = MoveMapCoord(from, g_party.field.pos.direction, 0, -s_shotRise);
                     PushGameState(0xc);
                     LaunchShot(
                         GetSkillShotId(s_testSkill),

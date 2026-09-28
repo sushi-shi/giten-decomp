@@ -348,15 +348,15 @@ void SpawnMapObjects(i16 cellCode) {
     i16 layer;
     i16 object;
     SetSpawnInterval(GetCellSpawnRate(cellCode));
-    if (TestLevelEvent(g_field.pos.level) == 1) {
+    if (TestLevelEvent(g_party.field.pos.level) == 1) {
         return;
     }
     if (!g_areaLevel) {
         return;
     }
-    if (g_field.pos.area == 0x10 && g_field.pos.level == 6) {
+    if (g_party.field.pos.area == 0x10 && g_party.field.pos.level == 6) {
         special = 1;
-    } else if (g_field.pos.area == 0x13 && g_field.pos.level == 4) {
+    } else if (g_party.field.pos.area == 0x13 && g_party.field.pos.level == 4) {
         special = 2;
     }
     for (entry = g_areaLevel->spawns; entry->xLayer != 0xff; entry++, index++) {
@@ -481,8 +481,8 @@ void SelectAreaLevel(i16 level, i16 force) {
         }
         RespawnAreaActors();
     }
-    g_field.pos.x = WrapMapCoord(g_field.pos.x, g_areaLevel->width);
-    g_field.pos.y = WrapMapCoord(g_field.pos.y, g_areaLevel->height);
+    g_party.field.pos.x = WrapMapCoord(g_party.field.pos.x, g_areaLevel->width);
+    g_party.field.pos.y = WrapMapCoord(g_party.field.pos.y, g_areaLevel->height);
     PlayLevelMusic();
     s_currentLevel = level;
     AllocAutomapLevels();
@@ -1088,8 +1088,8 @@ i16 GetWarpCodeAtOffset(i16 dx, i16 dy) {
     if (g_areaLevel == NULL) {
         return 0;
     }
-    dx += g_field.pos.x;
-    dy += g_field.pos.y;
+    dx += g_party.field.pos.x;
+    dy += g_party.field.pos.y;
     ReturnWarpCodeAt(g_areaLevel->warps, dx, dy, 0);
     return 0;
 }
@@ -1108,9 +1108,9 @@ i16 GetCellAtOffset(i16 dx, i16 dy) {
     if (g_areaLevel == NULL) {
         return 0;
     }
-    x = g_field.pos.x;
-    y = g_field.pos.y;
-    if (x == 2 && y == 5 && g_field.pos.area == 9 && g_field.pos.level == 6 && dx == -1
+    x = g_party.field.pos.x;
+    y = g_party.field.pos.y;
+    if (x == 2 && y == 5 && g_party.field.pos.area == 9 && g_party.field.pos.level == 6 && dx == -1
         && dy == 0) {
         return CELL_STAIRS_UP;
     }
