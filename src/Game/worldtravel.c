@@ -8,7 +8,6 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
-#include <Game/FieldMain.h>
 #include <Game/FieldScreen.h>
 #include <Game/FieldView.h>
 #include <Game/InfoBar.h>
