@@ -289,30 +289,6 @@ i16 LoadClock(FILE* fp) {
     return errors;
 }
 
-DATA(0x000712a4)
-static i16 s_cellX;
-
-DATA(0x000712a8)
-static i16 s_cellY;
-
-DATA(0x000712ac)
-u8 g_cellCode = 0;
-
-DATA(0x000712b0)
-static u8 s_cellDestDirection;
-
-DATA(0x000712b4)
-i16 g_cellDestX = 0;
-
-DATA(0x000712b8)
-i16 g_cellDestY = 0;
-
-DATA(0x000712bc)
-i16 g_cellDestLevel = 0;
-
-DATA(0x000712c0)
-i16 g_cellDestArea = 0;
-
 DATA(0x0007fe54)
 AreaMap* g_areaMap = 0;
 
@@ -854,13 +830,13 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
 RVA(0x00021d20, 0x91)
 void LatchCellDestination(const CellHead* cell, i16 x, i16 y, i16 direction, i16 level, i16 area) {
     const u8* bytes = &cell->x;
-    s_cellX = cell->x;
-    s_cellY = cell->y;
+    g_cellX = cell->x;
+    g_cellY = cell->y;
     g_cellCode = cell->code;
     g_cellDestX = bytes[x];
     g_cellDestY = bytes[y];
     if (direction != -1) {
-        s_cellDestDirection = bytes[direction];
+        g_cellDestDirection = bytes[direction];
     }
     if (level != -1) {
         g_cellDestLevel = bytes[level];

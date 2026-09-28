@@ -40,6 +40,33 @@
 DATA(0x00091580)
 i32 g_scriptVars[256];
 
+// The cell event's latch (declared in <Game/AreaMap.h>). Its .bss run lies
+// between blit's and gameloop's statics, apart from the area map's object.
+// @identity-TODO: blit.c may own it instead.
+DATA(0x000712a4)
+i16 g_cellX = 0;
+
+DATA(0x000712a8)
+i16 g_cellY = 0;
+
+DATA(0x000712ac)
+u8 g_cellCode = 0;
+
+DATA(0x000712b0)
+u8 g_cellDestDirection = 0;
+
+DATA(0x000712b4)
+i16 g_cellDestX = 0;
+
+DATA(0x000712b8)
+i16 g_cellDestY = 0;
+
+DATA(0x000712bc)
+i16 g_cellDestLevel = 0;
+
+DATA(0x000712c0)
+i16 g_cellDestArea = 0;
+
 // Set to 0xc000 by the start-up path in this span; tested by TestFeatureMask.
 DATA(0x000919e2)
 i16 g_featureMask;
