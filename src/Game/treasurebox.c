@@ -329,6 +329,9 @@ void PrepareViewedTreasureBox(void) {
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).
+// No return without a box: retail returns FindTreasureBoxAt's NULL as it is.
+// Retail also stores the result into `index`'s slot before returning; assigning
+// the result to `index` (returned or not) does not keep that store.
 RVA(0x0001ab40, 0x46)
 b32 IsHotspotTreasureOpen(i32 index) {
     SceneSprite* sprite = GetHotspotSprite(index);
@@ -336,7 +339,6 @@ b32 IsHotspotTreasureOpen(i32 index) {
     if (box) {
         return IsTreasureBoxOpen(box);
     }
-    return false;
 }
 
 RVA(0x0001ab90, 0x168)
