@@ -72,13 +72,16 @@ GAP_COLUMNS = ["rva", "length", "section", "verdict", "addressed", "touched",
 def load_claims(path=MANIFEST):
     """Every enrolled datum. The same retail extent appears once per object
     that defines it (a folded COMDAT literal or vtable), so a caller needing
-    the covered byte SET must dedupe on (rva, size) - `coverage()` does."""
+    the covered byte SET must dedupe on (rva, size) - `coverage()` does.
+    A `provisional-` band gap is a comparison fence over bytes nobody
+    modelled, not a claim: counting it would hide exactly those bytes."""
     if not path.is_file():
         raise SystemExit(f"no {path} - run `giten build` first")
     _b, _h, rows = read_tsv(path)
     return [{"name": r["name"], "object": r["object"], "storage": r["storage"],
              "rva": int(r["rva"], 16), "size": int(r["size"], 16)}
-            for r in rows]
+            for r in rows
+            if not r.get("provenance", "").startswith("provisional-")]
 
 
 def load_sections(path=SECTIONS):
@@ -161,6 +164,45 @@ def _name_key(claim):
     return (claim["name"].startswith("<"), claim["name"])
 
 
+def _data_pieces(img, runs, starts, ends):
+    """The uncovered ranges between covered runs, cut where the storage
+    changes. The import tables are the linker's storage, not data. `.text`
+    between two data claims is library data (DINPUT's formats live there);
+    any other `.text` stretch is code, and alignment slack between sections
+    is not image content."""
+    reg = img.pe.data_regions()
+    linker = [reg.pop("idata")]
+    # The rest of the import tables (descriptors, lookup tables, hint/name
+    # strings) follow the import directory to the end of merged .rdata.
+    imp, _size = img.pe.directories[1]
+    if reg["rdata"][0] <= imp < reg["rdata"][1]:
+        linker.append((imp, reg["rdata"][1]))
+    bands = []
+    for lo, hi in reg.values():
+        for xlo, xhi in sorted(linker):
+            if lo < xlo < hi:
+                bands.append((lo, xlo))
+            if xlo < hi and xhi > lo:
+                lo = max(lo, xhi)
+        if lo < hi:
+            bands.append((lo, hi))
+    tlo, thi = img.pe.text_span()
+
+    def text_datum(rva, end):
+        return any(c["rva"] >= tlo and c["rva"] + c["size"] <= thi
+                   for c in ends.get(rva, ())) and \
+            any(c["rva"] >= tlo and c["rva"] < thi for c in starts.get(end, ()))
+
+    for (_a1, b1), (a2, _b2) in zip(runs, runs[1:]):
+        if tlo <= b1 and a2 <= thi:
+            if text_datum(b1, a2):
+                yield b1, a2
+            continue
+        for lo, hi in bands:
+            if max(b1, lo) < min(a2, hi):
+                yield max(b1, lo), min(a2, hi)
+
+
 def gaps(img, claims, sections=(), touched=None):
     """Every uncovered range strictly between two covered runs, with a verdict.
 
@@ -180,7 +222,7 @@ def gaps(img, claims, sections=(), touched=None):
 
     tstarts, tends, tsites = touched or ([], [], [])
     out = []
-    for (_a1, b1), (a2, _b2) in zip(runs, runs[1:]):
+    for b1, a2 in _data_pieces(img, runs, starts, ends):
         n = a2 - b1
         pay = img.read(b1, n) or b""
         nz = sum(1 for x in pay if x)
