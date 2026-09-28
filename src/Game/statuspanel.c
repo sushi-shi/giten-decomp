@@ -654,8 +654,10 @@ i16 AlignmentChartCell(i16 value) {
     return 23 - (i16)(((value - -128.0) / 256.0) * 24.0);
 }
 
+// The Character `ammoCounts` entry of equipment kinds 11 through 19 (-1 for
+// ammunition). character has an identical copy of its own (s_itemCountSlots).
 DATA(0x000649a0)
-const i16 g_equipCountSlots[9] = {0, 1, -1, 4, 3, 4, 5, 6, 7};
+static const i16 s_equipCountSlots[9] = {0, 1, -1, 4, 3, 4, 5, 6, 7};
 
 // The equipment page's state: the menu of bag items to equip, the equipment
 // panel, the picked item's name and description, the picked bag entry or
@@ -1137,7 +1139,7 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
         } else {
             // Kind 19 selects index 7, overwriting returnPosition.area in
             // the saved preview copy; retain this original store.
-            saved->ammoCounts[g_equipCountSlots[kind - ITEM_KIND_WEAPON]] = count;
+            saved->ammoCounts[s_equipCountSlots[kind - ITEM_KIND_WEAPON]] = count;
             slot.quantity = 1;
         }
         if (kind == ITEM_KIND_GUN) {

@@ -247,9 +247,10 @@ static const ConditionName s_conditionNames[] = {
     {34, "\212O\217\235"},                         // 外傷
 };
 
-// Only the first word of this retail read-only span is referenced by code.
-DATA(0x000648fc)
-const i16 g_ammoCountIndex = -1;
+// The Character `ammoCounts` entry of equipment kinds 11 through 19 (-1 for
+// ammunition). statuspanel has an identical copy of its own (s_equipCountSlots).
+DATA(0x000648f8)
+static const i16 s_itemCountSlots[9] = {0, 1, -1, 4, 3, 4, 5, 6, 7};
 
 // "CNL" / "DNL": the letters for alignment classes -1/0/1 on the two axes.
 DATA(0x00064910)
@@ -2713,8 +2714,8 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
                 }
             } else {
                 TakeBagItems(item.item, item.quantity);
-                if (character && g_ammoCountIndex >= 0) {
-                    i16 at = g_ammoCountIndex;
+                if (character && s_itemCountSlots[ITEM_KIND_AMMO - ITEM_KIND_WEAPON] >= 0) {
+                    i16 at = s_itemCountSlots[ITEM_KIND_AMMO - ITEM_KIND_WEAPON];
                     character->ammoCounts[at] = (u8)count;
                 }
             }
