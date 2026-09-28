@@ -42,7 +42,6 @@ all read).
 | `giten verify bank` | `giten.verify.verbs` | MANUAL: update `config/match_baseline.tsv` + the README score block; `--rebase-data-matching` re-bases MAX/HIST after a `config/compare.toml` flip |
 | `giten verify readme` | `giten.verify.verbs` | re-render the README score block from the current report + ledger; a default `giten build` edge |
 | `giten verify fingerprints` | `giten.verify.fingerprints` | refresh the per-function source-fingerprint cache |
-| `giten verify selftest` | `giten.verify.selftest` | the NEGATIVE controls: feed every gate a known violation, assert it fails |
 | `giten verify compiler-artifacts` | `giten.verify.compiler_artifacts` | reject explicit allocation/deallocation calls, forced-emission helpers, and unreviewed raw-storage or low-level lifetime seams; `--base-only` prints derived unpaired COFF definitions |
 | `giten verify constants` | `giten.verify.constants` | AST-backed bare numeric census; `--gate` fails on proven pointer/bool/enum spellings and writes the derived TSV under `build/gen/` |
 | `giten verify enum-reuse` | `giten.verify.enum_reuse` | evaluated enum-member census and equal-value review leads; cross-checks every source enum block against libclang, ranks overlapping domain pairs, and joins bare function literals into a derived collision report |

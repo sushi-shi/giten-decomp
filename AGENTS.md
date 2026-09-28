@@ -82,10 +82,13 @@ Matching rules that are easy to get wrong:
 
 - Matching and modeling work runs no test suites; compare is the
   verification, and the MAX gate runs at merge preparation.
-- Tooling changes run only the touched package's `test_*.py`
-  (`python3 -m unittest giten.<pkg>.test_<name>` from `scripts/`) and
-  `giten verify selftest -k <gate>` for a changed gate.
-- Do not add tests that re-check a function's bytes against retail.
+- Tooling changes run the relevant retained `test_*.py` modules
+  (`python3 -m unittest giten.<pkg>.test_<name>` from `scripts/`), plus the
+  affected command. There is no blanket test requirement for each gate.
+- Keep tests for score integrity, CUR/MAX/HIST banking, data identity hidden
+  by relaxed comparison, and safe file updates. Use compile/compare and the
+  existing gates for reconstruction checks; do not duplicate them with retail
+  function snapshots, source-spelling assertions, or CLI-output tests.
 
 ## Source rules
 

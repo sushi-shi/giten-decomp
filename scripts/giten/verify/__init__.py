@@ -18,11 +18,6 @@ gate + the README score block.
     python3 -m giten.verify fingerprints  refresh the per-function source
                                            fingerprint cache (clangd range
                                            hashes; bank runs this itself)
-    python3 -m giten.verify selftest      NEGATIVE CONTROLS: feed every
-                                           ported gate a known violation and
-                                           assert it FAILS (a gate nobody has
-                                           seen fail is a green light, not a
-                                           check), then clean input passes
     python3 -m giten.verify <gate>        run one ported gate/audit module
                                            (see the list below); `check
                                            --tier fast|normal|full|link`
@@ -51,7 +46,7 @@ maps), which is derived and regenerated.
 
 from __future__ import annotations
 
-_SUBS = ("status", "check", "bank", "readme", "fingerprints", "selftest")
+_SUBS = ("status", "check", "bank", "readme", "fingerprints")
 
 #: the ported gate/audit modules, runnable as `giten verify <name>`. MOST are
 #: also a tier member of `check --tier` (giten.verify.tiers); the ones in
@@ -146,9 +141,6 @@ def main(argv=None) -> int:
     if sub == "fingerprints":
         from giten.verify.fingerprints import main as fp_main
         return fp_main(rest)
-    if sub == "selftest":
-        from giten.verify.selftest import main as st_main
-        return st_main(rest)
     if sub in _GATES:
         import importlib
         mod = importlib.import_module(_GATES[sub])

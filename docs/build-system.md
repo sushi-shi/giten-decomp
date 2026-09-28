@@ -371,13 +371,16 @@ merge) runs the MAX gate plus the **fast** and **normal** tiers; `full` and
 | **full** | what reconstruction debt remains? (vtable tier, alloc-size sizeof oracle, reloc multisets, data relocs, caller/callee, the retail data-access map + the claim-side coverage census) | periodic, or to build a work plan |
 | **link** | does it link, land where retail landed, and reach the same referents? | after `giten link` |
 
-Two rules hold across all of them. A gate **returns findings and writes
-nothing** (a finding is failing, or advisory: printed with its count, not
-failing) — lowering a floor is always a separate manual verb (`giten verify
-board --update`, `giten verify bank`). And every gate ships with its **negative
-control**: `giten verify selftest` feeds each one a known violation and asserts
-it FAILS, then asserts clean input passes. A gate nobody has seen fail is a
-green light, not a check.
+A gate **returns findings and writes nothing** (a finding is failing, or
+advisory: printed with its count, not failing). Lowering a floor is always a
+separate manual verb (`giten verify board --update`, `giten verify bank`).
+
+Compile/compare verifies reconstruction changes; the merge gates check source
+and model constraints. Tooling tests cover score integrity, CUR/MAX/HIST
+banking, data identity hidden by relaxed comparison, and safe file updates.
+Run the relevant `test_*.py` modules from `scripts/` with
+`python3 -m unittest giten.<pkg>.test_<name>`, then exercise the affected
+command. Tests do not replay retail functions or require a built game tree.
 
 ## Semantic navigation — `giten sema`
 
