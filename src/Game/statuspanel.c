@@ -35,12 +35,6 @@
 DATA(0x0006a0f8)
 static i16 s_statusCommandHotspots[11] = {-1, -1, -1, 55, 56, 57, -1, -1, 60, 61, 62};
 
-DATA(0x00083c70)
-static i16 s_previousStatusStep;
-
-DATA(0x00083c74)
-char g_emptyBattleSkillLabel[4];
-
 DATA(0x0006499c)
 static const i8 s_battleStatIcons[4] = {0, 1, 8, 9};
 
@@ -295,11 +289,11 @@ i16 RunStatusCommands(void) {
     } else {
         command = -1;
     }
-    if (s_previousStatusStep != GetGameStep()) {
-        if (s_previousStatusStep == 8) {
+    if (g_previousStatusStep != GetGameStep()) {
+        if (g_previousStatusStep == 8) {
             DrawStatTotals(3, 25, GetRosterCharacter(g_statusMember), NULL);
         }
-        s_previousStatusStep = GetGameStep();
+        g_previousStatusStep = GetGameStep();
     }
     switch (GetGameStep()) {
         case 0:

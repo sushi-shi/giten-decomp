@@ -33,8 +33,6 @@ void SetStatusMenuItemsHidden(i16 on);
 // Eleven stat names followed by the null terminator.
 extern char* g_statusStatNames[12];
 extern char* g_statusBattleLabels[7];
-// The zero-initialized empty skill label.
-extern char g_emptyBattleSkillLabel[];
 // Full-width decimal labels, indexed by the displayed number.
 extern char* g_statusNumberLabels[40];
 

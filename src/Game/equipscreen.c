@@ -108,6 +108,12 @@ static char s_skillHeaderLine[4];
 DATA(0x00083c90)
 static char s_emptySkillLabel[4];
 
+DATA(0x00083c70)
+i16 g_previousStatusStep;
+
+DATA(0x00083c74)
+char g_emptyBattleSkillLabel[4];
+
 DATA(0x00083c94)
 char g_emptyEquipPickLabel[4];
 
