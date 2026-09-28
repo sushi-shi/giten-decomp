@@ -25,7 +25,6 @@ b16 SortRoster(void);
 i16 FilterPartyMember(i16 slot, i16 mode);
 i16 DamageParty(i16 percent, i16 skipId13);
 i16 HealParty(i16 percent);
-void ClearRosterConditions(void);
 Character* CopyCharacter(Character* src, Character* dst);
 i32 AddMacca(Character* character, i32 amount);
 i32 AddMagnetite(Character* character, i32 amount);

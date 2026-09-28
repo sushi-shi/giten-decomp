@@ -28,8 +28,6 @@ i16 LoadAutomapAreas(FILE* fp); // the automap area store
 i16 LoadFieldMemory(FILE* fp);  // the field memory handle and 0x47b740
 i16 LoadScreenLayers(FILE* fp); // the screen layer records (font.cpp)
 
-void ReturnToCurrentCell(void);
-
 struct Character;
 i16 LoadCharacter(FILE* fp, struct Character* character);
 
