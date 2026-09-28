@@ -88,3 +88,4 @@ rva	size	name	unit	note
 0x091050	0x4	_ctrlbreak_action	library_data	LIBC winsig.obj static .bss object; the DIR32 in raise resolves here
 0x091054	0x4	_abort_action	library_data	LIBC winsig.obj static .bss object; the DIR32 in raise resolves here
 0x091058	0x4	_term_action	library_data	LIBC winsig.obj static .bss object; the DIR32 in raise resolves here
+0x06e6e0	0x4	___app_type	library_data	LIBC wincrt0.obj named .data DWORD at +4 after __aexit_rtn; value 2 (_GUI_APP), read by _FF_MSGBANNER, _NMSG_WRITE and _free_osfhnd
