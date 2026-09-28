@@ -232,9 +232,9 @@ b16 PrepareFieldRedraw(i16 force) {
         return true;
     }
     FlushPlaneUpdates();
-    g_viewX = g_field.pos.x;
-    g_viewY = g_field.pos.y;
-    g_viewFacing = g_field.pos.direction;
+    g_viewX = g_party.field.pos.x;
+    g_viewY = g_party.field.pos.y;
+    g_viewFacing = g_party.field.pos.direction;
     g_viewReset = 0;
     return true;
 }
@@ -307,7 +307,7 @@ MapCoord GetMouseTravelCell(void) {
 RVA(0x00014960, 0x93)
 b16 CanOpenAutomap(void) {
     Character* character;
-    if (IsCellCommandBlocked(g_field.pos.x, g_field.pos.y) == 1) {
+    if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) == 1) {
         return false;
     }
     character = GetCharacterById(0);
@@ -810,7 +810,7 @@ void OpenAutomap(void) {
 // Whether this character can use the automap command on the current cell.
 RVA(0x00015530, 0x56)
 b16 CanCharacterOpenAutomap(Character* character) {
-    if (IsCellCommandBlocked(g_field.pos.x, g_field.pos.y) != 1 && character != NULL
+    if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) != 1 && character != NULL
         && (character->id == 0 || character->id == 10 || character->id == 11)
         && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
@@ -825,7 +825,7 @@ i16 GetFieldBattleActive(void) {
 
 RVA(0x000155a0, 0x29)
 void RevealAutomapRoom(i16 x, i16 y) {
-    s_roomSize = GetAreaSize(g_field.pos.level);
+    s_roomSize = GetAreaSize(g_party.field.pos.level);
     RevealAutomapCells(x, y);
 }
 
@@ -857,7 +857,7 @@ static i16 MarkAutomapRowSpan(i16* x, i16 y) {
     if (right < s_roomSize.x) {
         next = right + 1;
         while (right < s_roomSize.x) {
-            MarkAutomapCell(g_field.pos.area, g_field.pos.level, right, y);
+            MarkAutomapCell(g_party.field.pos.area, g_party.field.pos.level, right, y);
             wall = GetMapWallKind(right, y, 1);
             if (WallStops(wall, WALL_STOP_MOVEMENT) || next >= s_roomSize.x
                 || !IsRoomCell(next, y)) {
@@ -868,7 +868,7 @@ static i16 MarkAutomapRowSpan(i16* x, i16 y) {
         }
     }
     while (*x >= 0) {
-        MarkAutomapCell(g_field.pos.area, g_field.pos.level, *x, y);
+        MarkAutomapCell(g_party.field.pos.area, g_party.field.pos.level, *x, y);
         wall = GetMapWallKind(*x, y, 3);
         if (WallStops(wall, WALL_STOP_MOVEMENT)) {
             break;
@@ -896,7 +896,7 @@ static b16 CanRevealAutomapSouth(i16 x, i16 y) {
     if (!IsRoomCell(x, y)) {
         return false;
     }
-    return IsAutomapCellHidden(x, y, g_field.pos.area, g_field.pos.level) != 0;
+    return IsAutomapCellHidden(x, y, g_party.field.pos.area, g_party.field.pos.level) != 0;
 }
 
 RVA(0x000157b0, 0x6f)
@@ -912,7 +912,7 @@ static b16 CanRevealAutomapNorth(i16 x, i16 y) {
     if (!IsRoomCell(x, y)) {
         return false;
     }
-    return IsAutomapCellHidden(x, y, g_field.pos.area, g_field.pos.level) != 0;
+    return IsAutomapCellHidden(x, y, g_party.field.pos.area, g_party.field.pos.level) != 0;
 }
 
 RVA(0x00015820, 0x10)
@@ -1044,7 +1044,7 @@ i16 GetObjectsHidden(void) {
 // Switches the area palette on while the party stands on a dark cell.
 RVA(0x00015ac0, 0x4e)
 void UpdateAreaPalette(void) {
-    if (IsDarkCell(g_field.pos.x, g_field.pos.y)) {
+    if (IsDarkCell(g_party.field.pos.x, g_party.field.pos.y)) {
         SetAreaPaletteMode(1);
         s_areaPaletteOn = true;
         return;
@@ -1061,9 +1061,9 @@ void UpdateViewPalette(void) {
     i16 y;
     i16 x;
     i16 direction;
-    x = g_field.pos.x;
-    y = g_field.pos.y;
-    direction = TurnDirection(g_field.pos.direction, g_field.moveCommand);
+    x = g_party.field.pos.x;
+    y = g_party.field.pos.y;
+    direction = TurnDirection(g_party.field.pos.direction, g_party.field.moveCommand);
     StepMapCoordBy(&x, &y, direction, 0, -1);
     if (IsDarkCell(x, y)) {
         SetViewPaletteMode(1);
@@ -1077,7 +1077,7 @@ void RedrawFieldViewAt(VideoPlane* header, i16 unused);
 // Rebuilds the field view at the party's position.
 RVA(0x00015b90, 0x44)
 b16 RebuildFieldView(void) {
-    RevealAreaMapAt(g_field.pos.x, g_field.pos.y);
+    RevealAreaMapAt(g_party.field.pos.x, g_party.field.pos.y);
     ClearDrawTable();
     FlushPlaneUpdates();
     RedrawFieldViewAt(GetPlaneHeader(0), 0);
@@ -1088,7 +1088,7 @@ b16 RebuildFieldView(void) {
 // @identity-TODO: both arguments are unused.
 RVA(0x00015be0, 0x20)
 void RedrawFieldViewAt(VideoPlane* header, i16 unused) {
-    RedrawFieldAt(g_field.pos.x, g_field.pos.y, g_field.pos.direction);
+    RedrawFieldAt(g_party.field.pos.x, g_party.field.pos.y, g_party.field.pos.direction);
 }
 
 RVA(0x00015c00, 0x1d)
@@ -1159,7 +1159,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
     MapCoord origin;
     MapCoord cell;
     center = left = right = leftBlocked = rightBlocked = 0;
-    if (IsDarkCell(g_field.pos.x, g_field.pos.y)) {
+    if (IsDarkCell(g_party.field.pos.x, g_party.field.pos.y)) {
         return;
     }
     origin.x = x;
@@ -1606,7 +1606,7 @@ i16 WorldRowHandler(PanelRow* row, i16 value, i16 op) {
 
 RVA(0x000169c0, 0x18)
 void ClearFieldPanelSelection(void) {
-    if (g_field.moveState == 0) {
+    if (g_party.field.moveState == 0) {
         ClearPanelChecks(&s_worldPanel.panel);
     }
 }

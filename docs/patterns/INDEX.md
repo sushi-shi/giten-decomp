@@ -14,7 +14,7 @@ Short observations, not a wall database. [Scope and admission rules](README.md).
 - [Call arguments](call-argument-evaluated-before-pushes-means-a-temporary.md) — an inner call evaluated before the other pushes went through a local.
 - [Call products](call-product-statement-boundary.md) — assigning a product before comparing can change allocation across the function.
 - [Translation-unit context](tu-state-probe-family-decides-reachability.md) — unchanged function text can emit different code.
-- [C globals and COMMONs](c-bss-globals-and-commons.md) — a C global inside an object's `.bss` run was zero-initialized; bare ones are linked after all `.bss`; zero-initialized definitions keep definition order after the hashed uninitialized statics.
+- [C globals and COMMONs](c-bss-globals-and-commons.md) — a C global inside an object's `.bss` run was zero-initialized; bare ones are linked after all `.bss`, each aligned to its size's power of two up to 32; zero-initialized definitions keep definition order after the hashed uninitialized statics.
 - [Object boundaries from data](object-membership-from-data-layout.md) — interleaved statics, data order and literal runs show which units form one object.
 - [Signed remainder](signed-modulo-pow2-abs-restore.md) — sign correction around a power-of-two mask.
 - [Extraction and consumer widths](wide-extraction-narrow-consumer.md) — a wide mask can feed a narrow index without a runtime copy.

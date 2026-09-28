@@ -13,10 +13,20 @@ COMMON block is an uninitialized C global with external linkage, never a
 `static`; COMMONs there pack to their own size (two-byte ones sit two bytes
 apart), while each object's `.bss` members are four-byte aligned.
 
+`link.exe` aligns each COMMON to its size rounded up to a power of two,
+capped at 32: a 12-byte COMMON starts on a 16-byte boundary, one of 16 bytes
+or more on a 32-byte boundary. A datum in the COMMON block that sits below
+that alignment is a member of a larger COMMON; the enclosing object starts
+at an address its own size aligns, and the code that clears or copies it
+shows which neighbours it holds.
+
 Evidence: compile `int a; int b = 0; static int c;` with the `c` profile and
 read the COFF symbol table (`b` and `c` are in `.bss`, `a` has section 0);
 link two such objects and read the map (`<common>` entries follow both
-`.bss` contributions).
+`.bss` contributions). For the alignment, link one object that defines
+uninitialized `char` arrays of 1 to 256 bytes, each followed by a one-byte
+array, with `/NODEFAULTLIB /ENTRY:main /MAP`: every `<common>` address is a
+multiple of its size's power of two, up to 32.
 
 Within one object, the uninitialized statics come first, in an order
 hashed from their names. The explicitly zero-initialized definitions

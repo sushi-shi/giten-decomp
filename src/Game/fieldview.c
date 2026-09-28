@@ -31,11 +31,10 @@ static i16 s_viewFloodMask[4][7] = {
     {0, 0, 0, 1, 0, 0, 0},
 };
 
-// The view cells in the order the occlusion pass visits them (entry 0 unused):
-// the far row left to right, then each nearer row.
-DATA(0x0006858c)
-static ViewCell s_viewCellOrder[17] = {
-    {0, 0},
+// The view cells in the order the occlusion pass visits them (cell k at
+// k - 1): the far row left to right, then each nearer row.
+DATA(0x00068590)
+static ViewCell s_viewCellOrder[16] = {
     {0, 0},
     {1, 0},
     {2, 0},
@@ -373,8 +372,8 @@ void UpdateViewCells(i16 x, i16 y) {
     g_viewCells[3][4] = 0;
     g_viewCells[3][2] = 0;
     for (k = 1; k < 17; k++) {
-        col = s_viewCellOrder[k].col;
-        row = s_viewCellOrder[k].row;
+        col = s_viewCellOrder[k - 1].col;
+        row = s_viewCellOrder[k - 1].row;
         switch (k) {
             case 1:
             case 2:
@@ -760,7 +759,7 @@ i16 GetWallStopCode(u16 cell, i16 mode) {
 // count, here only its byte; i16/u16 locals and casts tried.
 RVA(0x0000d2a0, 0xf)
 i32 GetFacingBit(void) {
-    return 1 << g_field.pos.direction;
+    return 1 << g_party.field.pos.direction;
 }
 
 // x1/y1 relative to x0/y0 in the frame of `direction`.

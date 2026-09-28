@@ -2334,7 +2334,7 @@ i16 GetRosterId(i16 slot) {
 RVA(0x0003fed0, 0x1e)
 Character* SetRosterEntry(i16 slot, Character* character) {
     Character* prev = GetRosterEntry(slot);
-    g_roster[slot] = character;
+    g_party.roster[slot] = character;
     return prev;
 }
 
@@ -2373,7 +2373,7 @@ void SetPartySlot(i16 index, i16 slot) {
             ClearLeaveConditions(GetCharacterConditions(character));
         }
     }
-    g_party[index] = slot;
+    g_party.slots[index] = slot;
 }
 
 RVA(0x0003ffd0, 0x17)
@@ -2473,15 +2473,15 @@ void SwapPartySlots(i16 a, i16 b) {
     i16 slot;
     if (a != b) {
         slot = PartySlotAt(a);
-        g_party[a] = PartySlotAt(b);
-        g_party[b] = slot;
+        g_party.slots[a] = PartySlotAt(b);
+        g_party.slots[b] = slot;
         if (PartySlotAt(0) == -1 && PartySlotAt(1) == -1 && PartySlotAt(2) == -1) {
-            g_party[0] = PartySlotAt(3);
-            g_party[1] = PartySlotAt(4);
-            g_party[2] = PartySlotAt(5);
-            g_party[3] = -1;
-            g_party[4] = -1;
-            g_party[5] = -1;
+            g_party.slots[0] = PartySlotAt(3);
+            g_party.slots[1] = PartySlotAt(4);
+            g_party.slots[2] = PartySlotAt(5);
+            g_party.slots[3] = -1;
+            g_party.slots[4] = -1;
+            g_party.slots[5] = -1;
         }
     }
 }
@@ -3143,11 +3143,11 @@ i16 WriteFieldState(FILE* fp) {
     i32 i;
     i16 id;
     SortRoster();
-    failed = 1 - fwrite(&g_field, 0x10, 1, fp);
-    failed |= 1 - fwrite(&g_savedDirection, 2, 1, fp);
-    failed |= 6 - fwrite(g_party, 2, 6, fp);
-    failed |= 1 - fwrite(&g_fieldStatus, 2, 1, fp);
-    slot = g_roster;
+    failed = 1 - fwrite(&g_party.field, 0x10, 1, fp);
+    failed |= 1 - fwrite(&g_party.savedDirection, 2, 1, fp);
+    failed |= 6 - fwrite(g_party.slots, 2, 6, fp);
+    failed |= 1 - fwrite(&g_party.status, 2, 1, fp);
+    slot = g_party.roster;
     for (i = 32; i != 0; i--) {
         id = -1;
         if (*slot == NULL) {
@@ -3192,14 +3192,14 @@ i16 WriteCharacters(FILE* fp) {
 // or a demon's own record read after it).
 RVA(0x00041660, 0xec)
 i16 LoadFieldState(FILE* fp) {
-    i16 failed = 1 - fread(&g_field, 0x10, 1, fp);
+    i16 failed = 1 - fread(&g_party.field, 0x10, 1, fp);
     Character** slot;
     i32 i;
     i16 id;
-    failed |= 1 - fread(&g_savedDirection, 2, 1, fp);
-    failed |= 6 - fread(g_party, 2, 6, fp);
-    failed |= 1 - fread(&g_fieldStatus, 2, 1, fp);
-    slot = g_roster;
+    failed |= 1 - fread(&g_party.savedDirection, 2, 1, fp);
+    failed |= 6 - fread(g_party.slots, 2, 6, fp);
+    failed |= 1 - fread(&g_party.status, 2, 1, fp);
+    slot = g_party.roster;
     for (i = 32; i != 0; i--) {
         *slot = FreeCharacterRecord(*slot);
         failed |= 1 - fread(&id, 2, 1, fp);

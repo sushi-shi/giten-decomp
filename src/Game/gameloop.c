@@ -179,9 +179,9 @@ i16 StepGame(void) {
     g_mouseLeftClick = 0;
     g_mouseRightClick = 0;
     AdvancePlayTime(state ? 31 : 24);
-    if (g_field.pos.area == s_quitArea && g_field.pos.level == s_quitLevel
-        && g_field.pos.x == s_quitX && g_field.pos.y == s_quitY
-        && g_field.pos.direction == s_quitDirection) {
+    if (g_party.field.pos.area == s_quitArea && g_party.field.pos.level == s_quitLevel
+        && g_party.field.pos.x == s_quitX && g_party.field.pos.y == s_quitY
+        && g_party.field.pos.direction == s_quitDirection) {
         g_quitRequest = -1;
     }
     return g_quitRequest;

@@ -484,8 +484,8 @@ b16 SwapPartyRows(void) {
     i16 member;
     for (i = 0; i < 3; i++) {
         member = PartySlotAt(i);
-        g_party[i] = PartySlotAt(i + 3);
-        g_party[i + 3] = member;
+        g_party.slots[i] = PartySlotAt(i + 3);
+        g_party.slots[i + 3] = member;
     }
     MarkPickDone();
     FlushStatusRedraw(1);
@@ -1128,7 +1128,7 @@ void SpawnSecondGroupActor(i16 x, i16 y, i16 battle) {
         1,
         x,
         y,
-        OppositeDirection(g_field.pos.direction),
+        OppositeDirection(g_party.field.pos.direction),
         s_fieldParamSecond,
         battle,
         -1,
@@ -1141,7 +1141,13 @@ i16 GetFacingWall(i16 map) {
     i16 width;
     i16 height;
     GetMapSize(&width, &height);
-    return GetWallAt(g_field.pos.x, g_field.pos.y, g_field.pos.direction, width, height);
+    return GetWallAt(
+        g_party.field.pos.x,
+        g_party.field.pos.y,
+        g_party.field.pos.direction,
+        width,
+        height
+    );
 }
 
 // Runs one frame of a field encounter, by phase: 0 enters it (step 0 spawns the
@@ -1180,9 +1186,9 @@ b16 RunFieldEncounter(void) {
                         for (i = 0; i < s_fieldParamFirst; i++) {
                             SpawnFieldObject(
                                 0,
-                                g_field.pos.x,
-                                g_field.pos.y,
-                                (g_field.pos.direction - 2) & 3,
+                                g_party.field.pos.x,
+                                g_party.field.pos.y,
+                                (g_party.field.pos.direction - 2) & 3,
                                 s_fieldMap,
                                 1,
                                 -1,
@@ -1191,7 +1197,7 @@ b16 RunFieldEncounter(void) {
                         }
                         if (s_fieldParamSecond >= 0) {
                             for (i = 0; i < s_fieldParamThird; i++) {
-                                SpawnSecondGroupActor(g_field.pos.x, g_field.pos.y, 1);
+                                SpawnSecondGroupActor(g_party.field.pos.x, g_party.field.pos.y, 1);
                             }
                         }
                         if (s_fieldRefresh) {
@@ -1200,17 +1206,17 @@ b16 RunFieldEncounter(void) {
                             s_fieldMusic = PlayMusic(0xd, 1);
                         }
                     } else {
-                        x = g_field.pos.x;
-                        y = g_field.pos.y;
+                        x = g_party.field.pos.x;
+                        y = g_party.field.pos.y;
                         if (!GetFacingWall(s_fieldMap)) {
-                            OffsetMapCoord(&x, &y, g_field.pos.direction, 0, -1);
+                            OffsetMapCoord(&x, &y, g_party.field.pos.direction, 0, -1);
                         }
                         for (i = 0; i < s_fieldParamFirst; i++) {
                             SpawnFieldObject(
                                 0,
                                 x,
                                 y,
-                                (g_field.pos.direction - 2) & 3,
+                                (g_party.field.pos.direction - 2) & 3,
                                 s_fieldMap,
                                 1,
                                 -1,
@@ -1552,7 +1558,7 @@ b16 RollProximityEvent(void) {
     for (index = 15; index >= 0; index--) {
         if (GetLiveObject(index) >= 0) {
             pos = GetObjectCoord(index);
-            distance = GridDistance(g_field.pos.x, g_field.pos.y, pos.x, pos.y);
+            distance = GridDistance(g_party.field.pos.x, g_party.field.pos.y, pos.x, pos.y);
             if (distance <= nearest) {
                 nearest = distance;
                 object = index;
@@ -1791,7 +1797,7 @@ i16 GetEquipmentHitModifier(Character* attacker, Character* target) {
 
 static __inline i16 GetCombatantFacing(i16 id) {
     if (id < 0) {
-        return g_field.pos.direction;
+        return g_party.field.pos.direction;
     }
     return GetFieldActor(id)->facing;
 }

@@ -24,19 +24,20 @@ b16 OpLoadSprite(void) {
     i16 image = ReadScriptValue();
     i16 arg = ReadScriptValue();
 
-    if (image == 0xe && g_field.pos.area == 0x83 && g_field.pos.level == 3 && g_field.pos.x == 4
-        && g_field.pos.y == 2) {
+    if (image == 0xe && g_party.field.pos.area == 0x83 && g_party.field.pos.level == 3
+        && g_party.field.pos.x == 4 && g_party.field.pos.y == 2) {
         g_shopKind = 1;
         slot = 1;
-    } else if (slot == 2 && image == 2 && g_field.pos.area == 0x82 && g_field.pos.level == 8
-               && g_field.pos.x == 2 && g_field.pos.y == 1) {
+    } else if (slot == 2 && image == 2 && g_party.field.pos.area == 0x82
+               && g_party.field.pos.level == 8 && g_party.field.pos.x == 2
+               && g_party.field.pos.y == 1) {
         g_shopKind = 2;
         slot = 0;
     } else if (slot == 1 && image == 0x18) {
         g_shopKind = 3;
     } else if (image == 0x25) {
-        if (g_field.pos.area == 0x82 && g_field.pos.level == 6 && g_field.pos.x == 7
-            && g_field.pos.y == 6) {
+        if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 6
+            && g_party.field.pos.x == 7 && g_party.field.pos.y == 6) {
             g_shopKind = 5;
             // 初台の道具屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -45,8 +46,8 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x29) {
-        if (g_field.pos.area == 0x82 && g_field.pos.level == 6 && g_field.pos.x == 8
-            && g_field.pos.y == 2) {
+        if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 6
+            && g_party.field.pos.x == 8 && g_party.field.pos.y == 2) {
             g_shopKind = 9;
             // 初台Ｂ６Ｆの食料庫でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -56,8 +57,8 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x2b) {
-        if (g_field.pos.area == 0x56 && g_field.pos.level == 1 && g_field.pos.x == 0xb
-            && g_field.pos.y == 9) {
+        if (g_party.field.pos.area == 0x56 && g_party.field.pos.level == 1
+            && g_party.field.pos.x == 0xb && g_party.field.pos.y == 9) {
             g_shopKind = 9;
             // 臨海コロシアムの薬屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -65,26 +66,26 @@ b16 OpLoadSprite(void) {
                 "\310\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304\211\272\202\263"
                 "\202\242\201BTakubo\n"
             );
-        } else if ((g_field.pos.area == 0x82 && g_field.pos.level == 8 && g_field.pos.x == 7
-                    && g_field.pos.y == 7)
-                   || (g_field.pos.area == 0xa && g_field.pos.level == 0 && g_field.pos.x == 5
-                       && g_field.pos.y == 9)
-                   || (g_field.pos.area == 0x13 && g_field.pos.level == 0 && g_field.pos.x == 0xa
-                       && g_field.pos.y == 3)
-                   || (g_field.pos.area == 0x8a && g_field.pos.level == 6 && g_field.pos.x == 1
-                       && g_field.pos.y == 5)
-                   || (g_field.pos.area == 0x1f && g_field.pos.level == 2 && g_field.pos.x == 8
-                       && g_field.pos.y == 1)
-                   || (g_field.pos.area == 0x53 && g_field.pos.level == 1 && g_field.pos.x == 6
-                       && g_field.pos.y == 2)
-                   || (g_field.pos.area == 0x1a && g_field.pos.level == 2 && g_field.pos.x == 0x13
-                       && g_field.pos.y == 6)
-                   || (g_field.pos.area == 0x2e && g_field.pos.level == 1 && g_field.pos.x == 5
-                       && g_field.pos.y == 1)
-                   || (g_field.pos.area == 0x21 && g_field.pos.level == 0 && g_field.pos.x == 5
-                       && g_field.pos.y == 0)
-                   || (g_field.pos.area == 0x21 && g_field.pos.level == 1 && g_field.pos.x == 4
-                       && g_field.pos.y == 4)) {
+        } else if ((g_party.field.pos.area == 0x82 && g_party.field.pos.level == 8
+                    && g_party.field.pos.x == 7 && g_party.field.pos.y == 7)
+                   || (g_party.field.pos.area == 0xa && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 5 && g_party.field.pos.y == 9)
+                   || (g_party.field.pos.area == 0x13 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 0xa && g_party.field.pos.y == 3)
+                   || (g_party.field.pos.area == 0x8a && g_party.field.pos.level == 6
+                       && g_party.field.pos.x == 1 && g_party.field.pos.y == 5)
+                   || (g_party.field.pos.area == 0x1f && g_party.field.pos.level == 2
+                       && g_party.field.pos.x == 8 && g_party.field.pos.y == 1)
+                   || (g_party.field.pos.area == 0x53 && g_party.field.pos.level == 1
+                       && g_party.field.pos.x == 6 && g_party.field.pos.y == 2)
+                   || (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 2
+                       && g_party.field.pos.x == 0x13 && g_party.field.pos.y == 6)
+                   || (g_party.field.pos.area == 0x2e && g_party.field.pos.level == 1
+                       && g_party.field.pos.x == 5 && g_party.field.pos.y == 1)
+                   || (g_party.field.pos.area == 0x21 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 5 && g_party.field.pos.y == 0)
+                   || (g_party.field.pos.area == 0x21 && g_party.field.pos.level == 1
+                       && g_party.field.pos.x == 4 && g_party.field.pos.y == 4)) {
             g_shopKind = 9;
             // レジスタンス前線基地・新宿地下街・神田地下街・銀座地下街秘密区・恵比寿ガーデン・浅草地下街・臨海コロシアム以外の薬屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -97,16 +98,16 @@ b16 OpLoadSprite(void) {
                 "\242\217\352\215\207\202\315\230A\227\215\202\265\202\304\211\272\202\263\202\242"
                 "\201BTakubo\n"
             );
-        } else if ((g_field.pos.area == 0x82 && g_field.pos.level == 8 && g_field.pos.x == 7
-                    && g_field.pos.y == 6)
-                   || (g_field.pos.area == 0xa && g_field.pos.level == 5 && g_field.pos.x == 0
-                       && g_field.pos.y == 1)
-                   || (g_field.pos.area == 0x8a && g_field.pos.level == 6 && g_field.pos.x == 8
-                       && g_field.pos.y == 3)
-                   || (g_field.pos.area == 0x53 && g_field.pos.level == 1 && g_field.pos.x == 4
-                       && g_field.pos.y == 4)
-                   || (g_field.pos.area == 0x18 && g_field.pos.level == 0 && g_field.pos.x == 0
-                       && g_field.pos.y == 5)) {
+        } else if ((g_party.field.pos.area == 0x82 && g_party.field.pos.level == 8
+                    && g_party.field.pos.x == 7 && g_party.field.pos.y == 6)
+                   || (g_party.field.pos.area == 0xa && g_party.field.pos.level == 5
+                       && g_party.field.pos.x == 0 && g_party.field.pos.y == 1)
+                   || (g_party.field.pos.area == 0x8a && g_party.field.pos.level == 6
+                       && g_party.field.pos.x == 8 && g_party.field.pos.y == 3)
+                   || (g_party.field.pos.area == 0x53 && g_party.field.pos.level == 1
+                       && g_party.field.pos.x == 4 && g_party.field.pos.y == 4)
+                   || (g_party.field.pos.area == 0x18 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 0 && g_party.field.pos.y == 5)) {
             g_shopKind = 9;
             // 初台・マイシティ・御茶ノ水・ミレニアム病院の病院でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -116,8 +117,8 @@ b16 OpLoadSprite(void) {
                 "\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304\211"
                 "\272\202\263\202\242\201BTakubo\n"
             );
-        } else if (g_field.pos.area == 0x14 && g_field.pos.level == 3 && g_field.pos.x == 1
-                   && g_field.pos.y == 4) {
+        } else if (g_party.field.pos.area == 0x14 && g_party.field.pos.level == 3
+                   && g_party.field.pos.x == 1 && g_party.field.pos.y == 4) {
             g_shopKind = 9;
             // 市ヶ谷の受付でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -126,16 +127,16 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x2c) {
-        if ((g_field.pos.area == 0xa && g_field.pos.level == 0 && g_field.pos.x == 0
-             && g_field.pos.y == 8)
-            || (g_field.pos.area == 0x13 && g_field.pos.level == 2 && g_field.pos.x == 5
-                && g_field.pos.y == 4)
-            || (g_field.pos.area == 0x1f && g_field.pos.level == 2 && g_field.pos.x == 4
-                && g_field.pos.y == 0)
-            || (g_field.pos.area == 0x1a && g_field.pos.level == 2 && g_field.pos.x == 0x13
-                && g_field.pos.y == 8)
-            || (g_field.pos.area == 0x2e && g_field.pos.level == 0 && g_field.pos.x == 0xb
-                && g_field.pos.y == 1)) {
+        if ((g_party.field.pos.area == 0xa && g_party.field.pos.level == 0
+             && g_party.field.pos.x == 0 && g_party.field.pos.y == 8)
+            || (g_party.field.pos.area == 0x13 && g_party.field.pos.level == 2
+                && g_party.field.pos.x == 5 && g_party.field.pos.y == 4)
+            || (g_party.field.pos.area == 0x1f && g_party.field.pos.level == 2
+                && g_party.field.pos.x == 4 && g_party.field.pos.y == 0)
+            || (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 2
+                && g_party.field.pos.x == 0x13 && g_party.field.pos.y == 8)
+            || (g_party.field.pos.area == 0x2e && g_party.field.pos.level == 0
+                && g_party.field.pos.x == 0xb && g_party.field.pos.y == 1)) {
             g_shopKind = 5;
             // コンピュータショップでない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -143,8 +144,8 @@ b16 OpLoadSprite(void) {
                 "\203V\203\207\203b\203v\202\305\202\310\202\242\217\352\215\207\202\315\230A\227"
                 "\215\202\265\202\304\211\272\202\263\202\242\201BTakubo\n"
             );
-        } else if (g_field.pos.area == 0x21 && g_field.pos.level == 0 && g_field.pos.x == 1
-                   && g_field.pos.y == 1) {
+        } else if (g_party.field.pos.area == 0x21 && g_party.field.pos.level == 0
+                   && g_party.field.pos.x == 1 && g_party.field.pos.y == 1) {
             g_shopKind = 4;
             // アメ屋プラザの病院でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -154,8 +155,8 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x4f) {
-        if (g_field.pos.area == 0x1a && g_field.pos.level == 3 && g_field.pos.x == 8
-            && g_field.pos.y == 5) {
+        if (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 3
+            && g_party.field.pos.x == 8 && g_party.field.pos.y == 5) {
             g_shopKind = 9;
             // 銀座地下街秘密区の薬屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -165,8 +166,8 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x56) {
-        if (g_field.pos.area == 0x2e && g_field.pos.level == 0 && g_field.pos.x == 5
-            && g_field.pos.y == 3) {
+        if (g_party.field.pos.area == 0x2e && g_party.field.pos.level == 0
+            && g_party.field.pos.x == 5 && g_party.field.pos.y == 3) {
             g_shopKind = 4;
             // 六本木の酒場でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -176,8 +177,8 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x71) {
-        if (g_field.pos.area == 0x29 && g_field.pos.level == 0 && g_field.pos.x == 4
-            && g_field.pos.y == 1) {
+        if (g_party.field.pos.area == 0x29 && g_party.field.pos.level == 0
+            && g_party.field.pos.x == 4 && g_party.field.pos.y == 1) {
             g_shopKind = 9;
             // 品川ホテル（幻）のフロントでない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -187,20 +188,20 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x74) {
-        if ((g_field.pos.area == 0xa && g_field.pos.level == 0 && g_field.pos.x == 3
-             && g_field.pos.y == 6)
-            || (g_field.pos.area == 0x13 && g_field.pos.level == 2 && g_field.pos.x == 4
-                && g_field.pos.y == 1)
-            || (g_field.pos.area == 0x1b && g_field.pos.level == 5 && g_field.pos.x == 6
-                && g_field.pos.y == 8)
-            || (g_field.pos.area == 0x8a && g_field.pos.level == 6 && g_field.pos.x == 2
-                && g_field.pos.y == 0)
-            || (g_field.pos.area == 0x1f && g_field.pos.level == 2 && g_field.pos.x == 3
-                && g_field.pos.y == 4)
-            || (g_field.pos.area == 0x1a && g_field.pos.level == 2 && g_field.pos.x == 0xd
-                && g_field.pos.y == 1)
-            || (g_field.pos.area == 0x34 && g_field.pos.level == 0 && g_field.pos.x == 0xd
-                && g_field.pos.y == 0xc)) {
+        if ((g_party.field.pos.area == 0xa && g_party.field.pos.level == 0
+             && g_party.field.pos.x == 3 && g_party.field.pos.y == 6)
+            || (g_party.field.pos.area == 0x13 && g_party.field.pos.level == 2
+                && g_party.field.pos.x == 4 && g_party.field.pos.y == 1)
+            || (g_party.field.pos.area == 0x1b && g_party.field.pos.level == 5
+                && g_party.field.pos.x == 6 && g_party.field.pos.y == 8)
+            || (g_party.field.pos.area == 0x8a && g_party.field.pos.level == 6
+                && g_party.field.pos.x == 2 && g_party.field.pos.y == 0)
+            || (g_party.field.pos.area == 0x1f && g_party.field.pos.level == 2
+                && g_party.field.pos.x == 3 && g_party.field.pos.y == 4)
+            || (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 2
+                && g_party.field.pos.x == 0xd && g_party.field.pos.y == 1)
+            || (g_party.field.pos.area == 0x34 && g_party.field.pos.level == 0
+                && g_party.field.pos.x == 0xd && g_party.field.pos.y == 0xc)) {
             g_shopKind = 4;
             // マイシティ・シャンシャンシティ２・神田地下街・御茶ノ水・秋葉原・銀座地下街・恵比寿ガーデンプレイスの酒場でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -215,8 +216,8 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x76) {
-        if (g_field.pos.area == 0x56 && g_field.pos.level == 1 && g_field.pos.x == 2
-            && g_field.pos.y == 0) {
+        if (g_party.field.pos.area == 0x56 && g_party.field.pos.level == 1
+            && g_party.field.pos.x == 2 && g_party.field.pos.y == 0) {
             g_shopKind = 4;
             // 臨海コロシアムの病院でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -226,10 +227,10 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x78) {
-        if ((g_field.pos.area == 0x1b && g_field.pos.level == 5 && g_field.pos.x == 2
-             && g_field.pos.y == 9)
-            || (g_field.pos.area == 0x1a && g_field.pos.level == 2 && g_field.pos.x == 0x13
-                && g_field.pos.y == 4)) {
+        if ((g_party.field.pos.area == 0x1b && g_party.field.pos.level == 5
+             && g_party.field.pos.x == 2 && g_party.field.pos.y == 9)
+            || (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 2
+                && g_party.field.pos.x == 0x13 && g_party.field.pos.y == 4)) {
             g_shopKind = 4;
             // 神田地下街・銀座地下街の病院でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -240,32 +241,32 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x79) {
-        if ((g_field.pos.area == 6 && g_field.pos.level == 1 && g_field.pos.x == 7
-             && g_field.pos.y == 0x12)
-            || (g_field.pos.area == 0xa && g_field.pos.level == 5 && g_field.pos.x == 4
-                && g_field.pos.y == 0xd)
-            || (g_field.pos.area == 0x13 && g_field.pos.level == 0 && g_field.pos.x == 0xf
-                && g_field.pos.y == 1)
-            || (g_field.pos.area == 0x13 && g_field.pos.level == 5 && g_field.pos.x == 0xf
-                && g_field.pos.y == 1)
-            || (g_field.pos.area == 0x1b && g_field.pos.level == 5 && g_field.pos.x == 1
-                && g_field.pos.y == 5)
-            || (g_field.pos.area == 0x8a && g_field.pos.level == 5 && g_field.pos.x == 4
-                && g_field.pos.y == 2)
-            || (g_field.pos.area == 0x1f && g_field.pos.level == 2 && g_field.pos.x == 9
-                && g_field.pos.y == 4)
-            || (g_field.pos.area == 0x1a && g_field.pos.level == 2 && g_field.pos.x == 0xa
-                && g_field.pos.y == 9)
-            || (g_field.pos.area == 0x34 && g_field.pos.level == 0 && g_field.pos.x == 0xc
-                && g_field.pos.y == 9)
-            || (g_field.pos.area == 0x2e && g_field.pos.level == 0 && g_field.pos.x == 9
-                && g_field.pos.y == 1)
-            || (g_field.pos.area == 0x25 && g_field.pos.level == 0 && g_field.pos.x == 1
-                && g_field.pos.y == 4)
-            || (g_field.pos.area == 0x21 && g_field.pos.level == 0 && g_field.pos.x == 5
-                && g_field.pos.y == 9)
-            || (g_field.pos.area == 0x30 && g_field.pos.level == 2 && g_field.pos.x == 9
-                && g_field.pos.y == 0xd)) {
+        if ((g_party.field.pos.area == 6 && g_party.field.pos.level == 1 && g_party.field.pos.x == 7
+             && g_party.field.pos.y == 0x12)
+            || (g_party.field.pos.area == 0xa && g_party.field.pos.level == 5
+                && g_party.field.pos.x == 4 && g_party.field.pos.y == 0xd)
+            || (g_party.field.pos.area == 0x13 && g_party.field.pos.level == 0
+                && g_party.field.pos.x == 0xf && g_party.field.pos.y == 1)
+            || (g_party.field.pos.area == 0x13 && g_party.field.pos.level == 5
+                && g_party.field.pos.x == 0xf && g_party.field.pos.y == 1)
+            || (g_party.field.pos.area == 0x1b && g_party.field.pos.level == 5
+                && g_party.field.pos.x == 1 && g_party.field.pos.y == 5)
+            || (g_party.field.pos.area == 0x8a && g_party.field.pos.level == 5
+                && g_party.field.pos.x == 4 && g_party.field.pos.y == 2)
+            || (g_party.field.pos.area == 0x1f && g_party.field.pos.level == 2
+                && g_party.field.pos.x == 9 && g_party.field.pos.y == 4)
+            || (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 2
+                && g_party.field.pos.x == 0xa && g_party.field.pos.y == 9)
+            || (g_party.field.pos.area == 0x34 && g_party.field.pos.level == 0
+                && g_party.field.pos.x == 0xc && g_party.field.pos.y == 9)
+            || (g_party.field.pos.area == 0x2e && g_party.field.pos.level == 0
+                && g_party.field.pos.x == 9 && g_party.field.pos.y == 1)
+            || (g_party.field.pos.area == 0x25 && g_party.field.pos.level == 0
+                && g_party.field.pos.x == 1 && g_party.field.pos.y == 4)
+            || (g_party.field.pos.area == 0x21 && g_party.field.pos.level == 0
+                && g_party.field.pos.x == 5 && g_party.field.pos.y == 9)
+            || (g_party.field.pos.area == 0x30 && g_party.field.pos.level == 2
+                && g_party.field.pos.x == 9 && g_party.field.pos.y == 0xd)) {
             g_shopKind = 7;
             // 臨海コロシアム以外の武器屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -273,28 +274,28 @@ b16 OpLoadSprite(void) {
                 "\355\211\256\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202\265"
                 "\202\304\211\272\202\263\202\242\201BTakubo\n"
             );
-        } else if ((g_field.pos.area == 6 && g_field.pos.level == 1 && g_field.pos.x == 7
-                    && g_field.pos.y == 0x14)
-                   || (g_field.pos.area == 0xa && g_field.pos.level == 5 && g_field.pos.x == 3
-                       && g_field.pos.y == 7)
-                   || (g_field.pos.area == 0x13 && g_field.pos.level == 0 && g_field.pos.x == 0xf
-                       && g_field.pos.y == 5)
-                   || (g_field.pos.area == 0x1b && g_field.pos.level == 5 && g_field.pos.x == 0
-                       && g_field.pos.y == 9)
-                   || (g_field.pos.area == 0x8a && g_field.pos.level == 4 && g_field.pos.x == 4
-                       && g_field.pos.y == 4)
-                   || (g_field.pos.area == 0x1f && g_field.pos.level == 1 && g_field.pos.x == 9
-                       && g_field.pos.y == 4)
-                   || (g_field.pos.area == 0x1a && g_field.pos.level == 2 && g_field.pos.x == 9
-                       && g_field.pos.y == 3)
-                   || (g_field.pos.area == 0x2e && g_field.pos.level == 0 && g_field.pos.x == 7
-                       && g_field.pos.y == 1)
-                   || (g_field.pos.area == 0x25 && g_field.pos.level == 1 && g_field.pos.x == 6
-                       && g_field.pos.y == 6)
-                   || (g_field.pos.area == 0x21 && g_field.pos.level == 0 && g_field.pos.x == 7
-                       && g_field.pos.y == 0xd)
-                   || (g_field.pos.area == 0x30 && g_field.pos.level == 2 && g_field.pos.x == 9
-                       && g_field.pos.y == 0xb)) {
+        } else if ((g_party.field.pos.area == 6 && g_party.field.pos.level == 1
+                    && g_party.field.pos.x == 7 && g_party.field.pos.y == 0x14)
+                   || (g_party.field.pos.area == 0xa && g_party.field.pos.level == 5
+                       && g_party.field.pos.x == 3 && g_party.field.pos.y == 7)
+                   || (g_party.field.pos.area == 0x13 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 0xf && g_party.field.pos.y == 5)
+                   || (g_party.field.pos.area == 0x1b && g_party.field.pos.level == 5
+                       && g_party.field.pos.x == 0 && g_party.field.pos.y == 9)
+                   || (g_party.field.pos.area == 0x8a && g_party.field.pos.level == 4
+                       && g_party.field.pos.x == 4 && g_party.field.pos.y == 4)
+                   || (g_party.field.pos.area == 0x1f && g_party.field.pos.level == 1
+                       && g_party.field.pos.x == 9 && g_party.field.pos.y == 4)
+                   || (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 2
+                       && g_party.field.pos.x == 9 && g_party.field.pos.y == 3)
+                   || (g_party.field.pos.area == 0x2e && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 7 && g_party.field.pos.y == 1)
+                   || (g_party.field.pos.area == 0x25 && g_party.field.pos.level == 1
+                       && g_party.field.pos.x == 6 && g_party.field.pos.y == 6)
+                   || (g_party.field.pos.area == 0x21 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 7 && g_party.field.pos.y == 0xd)
+                   || (g_party.field.pos.area == 0x30 && g_party.field.pos.level == 2
+                       && g_party.field.pos.x == 9 && g_party.field.pos.y == 0xb)) {
             g_shopKind = 8;
             // 臨海コロシアム・六本木以外の防具屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -302,32 +303,32 @@ b16 OpLoadSprite(void) {
                 "\226\330\210\310\212O\202\314\226h\213\357\211\256\202\305\202\310\202\242\217\352"
                 "\215\207\202\315\230A\227\215\202\265\202\304\211\272\202\263\202\242\201BTakubo\n"
             );
-        } else if ((g_field.pos.area == 6 && g_field.pos.level == 1 && g_field.pos.x == 4
-                    && g_field.pos.y == 0xf)
-                   || (g_field.pos.area == 0xa && g_field.pos.level == 0 && g_field.pos.x == 0
-                       && g_field.pos.y == 4)
-                   || (g_field.pos.area == 0x13 && g_field.pos.level == 0 && g_field.pos.x == 0x11
-                       && g_field.pos.y == 1)
-                   || (g_field.pos.area == 0x1b && g_field.pos.level == 5 && g_field.pos.x == 0
-                       && g_field.pos.y == 7)
-                   || (g_field.pos.area == 0x8a && g_field.pos.level == 5 && g_field.pos.x == 5
-                       && g_field.pos.y == 5)
-                   || (g_field.pos.area == 0x1f && g_field.pos.level == 2 && g_field.pos.x == 0xc
-                       && g_field.pos.y == 4)
-                   || (g_field.pos.area == 0x1a && g_field.pos.level == 2 && g_field.pos.x == 8
-                       && g_field.pos.y == 9)
-                   || (g_field.pos.area == 0x34 && g_field.pos.level == 0 && g_field.pos.x == 0xe
-                       && g_field.pos.y == 6)
-                   || (g_field.pos.area == 0x2e && g_field.pos.level == 0 && g_field.pos.x == 0xd
-                       && g_field.pos.y == 1)
-                   || (g_field.pos.area == 0x25 && g_field.pos.level == 0 && g_field.pos.x == 6
-                       && g_field.pos.y == 5)
-                   || (g_field.pos.area == 0x25 && g_field.pos.level == 3 && g_field.pos.x == 6
-                       && g_field.pos.y == 6)
-                   || (g_field.pos.area == 0x21 && g_field.pos.level == 0 && g_field.pos.x == 2
-                       && g_field.pos.y == 0xd)
-                   || (g_field.pos.area == 0x83 && g_field.pos.level == 3 && g_field.pos.x == 0xd
-                       && g_field.pos.y == 8)) {
+        } else if ((g_party.field.pos.area == 6 && g_party.field.pos.level == 1
+                    && g_party.field.pos.x == 4 && g_party.field.pos.y == 0xf)
+                   || (g_party.field.pos.area == 0xa && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 0 && g_party.field.pos.y == 4)
+                   || (g_party.field.pos.area == 0x13 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 0x11 && g_party.field.pos.y == 1)
+                   || (g_party.field.pos.area == 0x1b && g_party.field.pos.level == 5
+                       && g_party.field.pos.x == 0 && g_party.field.pos.y == 7)
+                   || (g_party.field.pos.area == 0x8a && g_party.field.pos.level == 5
+                       && g_party.field.pos.x == 5 && g_party.field.pos.y == 5)
+                   || (g_party.field.pos.area == 0x1f && g_party.field.pos.level == 2
+                       && g_party.field.pos.x == 0xc && g_party.field.pos.y == 4)
+                   || (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 2
+                       && g_party.field.pos.x == 8 && g_party.field.pos.y == 9)
+                   || (g_party.field.pos.area == 0x34 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 0xe && g_party.field.pos.y == 6)
+                   || (g_party.field.pos.area == 0x2e && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 0xd && g_party.field.pos.y == 1)
+                   || (g_party.field.pos.area == 0x25 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 6 && g_party.field.pos.y == 5)
+                   || (g_party.field.pos.area == 0x25 && g_party.field.pos.level == 3
+                       && g_party.field.pos.x == 6 && g_party.field.pos.y == 6)
+                   || (g_party.field.pos.area == 0x21 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 2 && g_party.field.pos.y == 0xd)
+                   || (g_party.field.pos.area == 0x83 && g_party.field.pos.level == 3
+                       && g_party.field.pos.x == 0xd && g_party.field.pos.y == 8)) {
             g_shopKind = 5;
             // 初台以外の道具屋＆レジスタンス前線基地の薬屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -337,14 +338,14 @@ b16 OpLoadSprite(void) {
                 "\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304\211\272\202\263\202"
                 "\242\201BTakubo\n"
             );
-        } else if ((g_field.pos.area == 6 && g_field.pos.level == 1 && g_field.pos.x == 4
-                    && g_field.pos.y == 0x11)
-                   || (g_field.pos.area == 0x1b && g_field.pos.level == 5 && g_field.pos.x == 5
-                       && g_field.pos.y == 4)
-                   || (g_field.pos.area == 0x34 && g_field.pos.level == 0 && g_field.pos.x == 6
-                       && g_field.pos.y == 5)
-                   || (g_field.pos.area == 0x25 && g_field.pos.level == 0 && g_field.pos.x == 5
-                       && g_field.pos.y == 7)) {
+        } else if ((g_party.field.pos.area == 6 && g_party.field.pos.level == 1
+                    && g_party.field.pos.x == 4 && g_party.field.pos.y == 0x11)
+                   || (g_party.field.pos.area == 0x1b && g_party.field.pos.level == 5
+                       && g_party.field.pos.x == 5 && g_party.field.pos.y == 4)
+                   || (g_party.field.pos.area == 0x34 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 6 && g_party.field.pos.y == 5)
+                   || (g_party.field.pos.area == 0x25 && g_party.field.pos.level == 0
+                       && g_party.field.pos.x == 5 && g_party.field.pos.y == 7)) {
             g_shopKind = 7;
             // 新宿地下街・神田地下街・恵比寿ガーデン・浅草地下鉄ビルの薬屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -356,8 +357,8 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0x7f) {
-        if (g_field.pos.area == 0x56 && g_field.pos.level == 1 && g_field.pos.x == 1
-            && g_field.pos.y == 5) {
+        if (g_party.field.pos.area == 0x56 && g_party.field.pos.level == 1
+            && g_party.field.pos.x == 1 && g_party.field.pos.y == 5) {
             g_shopKind = 5;
             // 臨海コロシアムの道具屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -365,8 +366,8 @@ b16 OpLoadSprite(void) {
                 "\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304\211\272"
                 "\202\263\202\242\201BTakubo\n"
             );
-        } else if (g_field.pos.area == 0x56 && g_field.pos.level == 1 && g_field.pos.x == 1
-                   && g_field.pos.y == 9) {
+        } else if (g_party.field.pos.area == 0x56 && g_party.field.pos.level == 1
+                   && g_party.field.pos.x == 1 && g_party.field.pos.y == 9) {
             g_shopKind = 5;
             // 臨海コロシアムの武器屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -374,8 +375,8 @@ b16 OpLoadSprite(void) {
                 "\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304\211\272"
                 "\202\263\202\242\201BTakubo\n"
             );
-        } else if (g_field.pos.area == 0x56 && g_field.pos.level == 1 && g_field.pos.x == 6
-                   && g_field.pos.y == 1) {
+        } else if (g_party.field.pos.area == 0x56 && g_party.field.pos.level == 1
+                   && g_party.field.pos.x == 6 && g_party.field.pos.y == 1) {
             g_shopKind = 6;
             // 臨海コロシアムの防具屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -385,8 +386,8 @@ b16 OpLoadSprite(void) {
             );
         }
     } else if (image == 0xc7) {
-        if (g_field.pos.area == 0x2d && g_field.pos.level == 0 && g_field.pos.x == 6
-            && g_field.pos.y == 1) {
+        if (g_party.field.pos.area == 0x2d && g_party.field.pos.level == 0
+            && g_party.field.pos.x == 6 && g_party.field.pos.y == 1) {
             g_shopKind = 5;
             // 大歓楽街の酒場でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -394,8 +395,8 @@ b16 OpLoadSprite(void) {
                 "\352\215\207\202\315\230A\227\215\202\265\202\304\211\272\202\263\202\242\201BTaku"
                 "bo\n"
             );
-        } else if (g_field.pos.area == 0x2e && g_field.pos.level == 0 && g_field.pos.x == 7
-                   && g_field.pos.y == 1) {
+        } else if (g_party.field.pos.area == 0x2e && g_party.field.pos.level == 0
+                   && g_party.field.pos.x == 7 && g_party.field.pos.y == 1) {
             g_shopKind = 6;
             // 六本木の防具屋でない場合は連絡して下さい。Takubo
             DebugTrace(
@@ -404,8 +405,8 @@ b16 OpLoadSprite(void) {
                 "\315\230A\227\215\202\265\202\304\211\272\202\263\202\242\201BTakubo\n"
             );
         }
-    } else if (image == -0x1d9e && arg == 3 && g_field.pos.area == 0x24 && g_field.pos.x == 5
-               && g_field.pos.y == 0xb) {
+    } else if (image == -0x1d9e && arg == 3 && g_party.field.pos.area == 0x24
+               && g_party.field.pos.x == 5 && g_party.field.pos.y == 0xb) {
         image = -0x176e;
         arg = 0;
         // 御花屋敷のオサキ狐イベントでない場合は連絡して下さい。Takubo
