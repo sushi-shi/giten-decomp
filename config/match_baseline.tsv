@@ -39,14 +39,14 @@ alignchart	1	1
 analyze	3	3
 areamap	42	36
 areanpc	60	56
-attack	21	19
+attack	21	18
 automap	1	1
 automapbits	23	20
 bitmapio	2	2
 bitset	5	5
 blit	18	16
 bmpseek	3	2
-celltrap	2	1
+celltrap	2	0
 character	12	12
 charinfo	13	12
 charpool	29	27
@@ -69,17 +69,17 @@ equipscreen	25	23
 eventflags	28	28
 familiarity	19	18
 field	27	27
-fieldmain	64	61
+fieldmain	64	60
 fieldmark	5	5
 fieldobj	79	73
-fieldscreen	77	74
+fieldscreen	77	75
 fieldskill	5	5
 fieldview	38	36
-font	150	142
+font	150	143
 fusion	58	55
 fusioncompare	8	8
 fusionmenu	3	3
-fusionscreen	38	36
+fusionscreen	38	38
 gameloop	7	7
 gamestate	8	7
 handle	33	32
@@ -139,16 +139,16 @@ scripttext	39	38
 scriptvars	108	106
 scriptvm	2	2
 shot	15	14
-skillattack	5	3
+skillattack	5	4
 skilluse	48	43
 sprite	7	6
 statedispatch	1	1
 statestack	21	21
-stattotal	1	0
+stattotal	1	1
 statusdraw	9	8
 statusline	8	8
 statusmenu	9	9
-statuspanel	23	22
+statuspanel	23	23
 statusscreen	4	3
 subscreen	3	3
 surfacecopy	1	1
@@ -212,7 +212,7 @@ areamap	_CheckCellEvent	99.3541	99.3541	7	c5eb78ecd3b6	0x21880	99.3541
 areamap	_ClampMapCoord	100.0000	100.0000	1	d8d50387fabb	0x222c0	100.0000	
 areamap	_ClampMapPosition	100.0000	100.0000	1	9bfed5219665	0x223a0	100.0000	
 areamap	_CopyExitAt	100.0000	100.0000	2	8e62392c4b5f	0x22600	100.0000	
-areamap	_DecodeAreaMap	75.0698	74.2326	9	90f8bb8b908e	0x21470	75.0698	
+areamap	_DecodeAreaMap	75.0698	75.0698	9	90f8bb8b908e	0x21470	75.0698	
 areamap	_FindCellKind	100.0000	100.0000	1	6568aa3013f9	0x21850	100.0000	
 areamap	_FindTreasureBoxAt	100.0000	100.0000	2	fc7e7f5c850f	0x22560	100.0000	
 areamap	_GetAreaLevelCount	100.0000	100.0000	1	074500fa1285	0x21710	100.0000	
@@ -320,11 +320,11 @@ attack	_GetCombatantSideRelation	100.0000	100.0000	4	70b8dfb4e261	0x8450	100.000
 attack	_GetEquipmentHitModifier	100.0000	100.0000	4	7571f7679ade	0x8480	100.0000	
 attack	_GetGunAttackPower	100.0000	100.0000	3	1aba1c1775cc	0x8b20	100.0000	
 attack	_GetGunBurstRounds	100.0000	100.0000	4	5e1b6fead023	0x9050	100.0000	
-attack	_GetGunRequirementPenalty	100.0000	100.0000	1	9d271a629c5c	0x91b0	100.0000	
+attack	_GetGunRequirementPenalty	100.0000	91.5625	1	9d271a629c5c	0x91b0	100.0000	
 attack	_LoadGunDistributionTable	100.0000	100.0000	1	2282d9a67f6b	0x8fe0	100.0000	
 attack	_PrepareGunBurst	100.0000	100.0000	8	d3a0e7e88d30	0x90c0	100.0000	
 attack	_ResolveGunAttack	100.0000	100.0000	7	5c1cb055ab4c	0x8e60	100.0000	
-attack	_RollExceptionalAttack	99.4314	99.4183	5	cec84366749b	0x8700	99.4314	
+attack	_RollExceptionalAttack	99.4314	99.4314	5	cec84366749b	0x8700	99.4314	
 attack	_RollGunCondition	100.0000	100.0000	9	db417547c5a3	0x8d30	100.0000	
 attack	_RollGunHit	100.0000	100.0000	8	49f2594ef957	0x8910	100.0000	
 attack	_SpendAllGunRounds	100.0000	100.0000	1	285b0f0f8efa	0x93b0	100.0000	
@@ -381,7 +381,7 @@ blit	_TestSceneSpritePixel	100.0000	100.0000	3	9dbf51c44bb0	0x17c0	100.0000
 bmpseek	_LoadBitmapToSurface16	99.7110	99.7110	9	65b873ed1cc7	0x56bd0	99.7110	
 bmpseek	_LoadBitmapToSurface8	100.0000	100.0000	7	ed9a52845111	0x56de0	100.0000	
 bmpseek	_SeekBitmap	100.0000	100.0000	3	79cc1e98cdd6	0x56b00	100.0000	
-celltrap	_GetCellTrapDamage	100.0000	100.0000	4	873bac125595	0x1c920	100.0000	
+celltrap	_GetCellTrapDamage	100.0000	98.8571	4	873bac125595	0x1c920	100.0000	
 celltrap	_RunCellTrap	99.9024	99.9024	4	5a10f8b6df26	0x1c9f0	99.9024	
 character	_CopyCharacterCore	100.0000	100.0000	4	427c81e7906f	0x3c990	100.0000	
 character	_FindCharacter	100.0000	100.0000	1	1606c69cc349	0x3cdb0	100.0000	
@@ -413,8 +413,8 @@ charpool	_ApplyStatFlags	100.0000	100.0000	5	7d6c201952a8	0x3da90	100.0000
 charpool	_CalcGunAccuracyStat	100.0000	100.0000	3	67bdc428b06f	0x3d2c0	100.0000	
 charpool	_CalcGunEvasionStat	100.0000	100.0000	3	39915b3c5fcb	0x3d340	100.0000	
 charpool	_CalcMagicAccuracyStat	100.0000	100.0000	3	833b1b3c5cde	0x3d4d0	100.0000	
-charpool	_CalcMagicDefenseStat	100.0000	100.0000	4	6df12c7428d4	0x3d530	100.0000	
-charpool	_CalcMagicEvasionStat	100.0000	99.8182	3	5dec2476bff6	0x3d510	100.0000	
+charpool	_CalcMagicDefenseStat	100.0000	99.8461	4	6df12c7428d4	0x3d530	100.0000	
+charpool	_CalcMagicEvasionStat	100.0000	100.0000	3	5dec2476bff6	0x3d510	100.0000	
 charpool	_CalcMagicPowerStat	100.0000	100.0000	3	f5c725b233b2	0x3d4f0	100.0000	
 charpool	_CalcPhysicalDefenseStat	100.0000	100.0000	3	e138d9ed0d1e	0x3d240	100.0000	
 charpool	_CalcWeaponAccuracyStat	100.0000	100.0000	3	de42b2daba86	0x3d390	100.0000	
@@ -578,10 +578,10 @@ d3dapp	?InitDirectInput@@YAHXZ	100.0000	100.0000	2	02c24f1465ef	0x48ce0	100.0000
 d3dapp	?InitDirectSound@@YAHXZ	100.0000	100.0000	2	613635376e2e	0x488a0	100.0000	
 d3dapp	?KeepDeviceDesc@@YGJPAU_GUID@@PAD1PAU_D3DDeviceDesc@@2PAX@Z	100.0000	100.0000	1	18286bd4ce87	0x477e0	100.0000	
 d3dapp	?Magnitude@@YAMABU_D3DVECTOR@@@Z	100.0000	100.0000	1	header:96c4b6ace3bd	0x490f0	100.0000	
-d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	98.9268	98.9268	1	86daea2860ef	0x46230	98.9268	
+d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	98.9268	98.9024	1	86daea2860ef	0x46230	98.9268	
 d3dapp	?Normalize@@YA?AU_D3DVECTOR@@ABU1@@Z	100.0000	100.0000	1	header:9f72dd33a7f5	0x49090	100.0000	
 d3dapp	?PollMouseButtons@@YAEXZ	88.8028	88.8028	5	042af438f6be	0x48e60	88.8028	
-d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	93.9325	93.9325	4	cba51180c80d	0x46060	93.9325	
+d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	93.9325	93.8344	4	cba51180c80d	0x46060	93.9325	
 d3dapp	?QueryD3DDevices@@YAXXZ	100.0000	100.0000	4	44d942462a32	0x47c00	100.0000	
 d3dapp	?ReadSurfaceWord@@YAGPAUIDirectDrawSurface@@HHH@Z	100.0000	100.0000	1	9b36214089f4	0x47e70	100.0000	
 d3dapp	?ReleaseDirectInput@@YAXXZ	100.0000	100.0000	3	de724fbf4fca	0x48db0	100.0000	
@@ -787,7 +787,7 @@ fieldmain	_HasQueuedObjectEvents	100.0000	100.0000	1	bfba1224c61d	0x13c00	100.00
 fieldmain	_IsRouteActive	100.0000	100.0000	1	a486d4271fbc	0x12010	100.0000	
 fieldmain	_LoadFieldEventTable	100.0000	100.0000	1	25ba1d1ca953	0x13d10	100.0000	
 fieldmain	_LoadFieldImage	100.0000	100.0000	2	caffed40de0c	0x144c0	100.0000	
-fieldmain	_LoadFieldMemory	100.0000	100.0000	2	5df7d0d13c11	0x13ca0	100.0000	
+fieldmain	_LoadFieldMemory	100.0000	87.0270	2	5df7d0d13c11	0x13ca0	100.0000	
 fieldmain	_MarkFieldViewCells	100.0000	100.0000	1	2544b75863e1	0x13d70	100.0000	
 fieldmain	_MarkLevelEvent	100.0000	100.0000	1	93bdb7a82f49	0x13b20	100.0000	
 fieldmain	_MarkVisibleFieldCells	99.2951	99.2951	2	61f26b6c1332	0x13d90	99.2951	
@@ -931,7 +931,7 @@ fieldscreen	_DdsCommand	100.0000	100.0000	1	b95a45d9b823	0x15430	100.0000
 fieldscreen	_DdsRowHandler	100.0000	100.0000	2	316c89d69e44	0x14b90	100.0000	
 fieldscreen	_DefenceCommand	100.0000	100.0000	2	8a52603fbeff	0x153b0	100.0000	
 fieldscreen	_DrawFieldMessage	100.0000	100.0000	5	131c21f3114e	0x160c0	100.0000	
-fieldscreen	_DrawPanel	100.0000	99.8947	4	fe062e1c7fed	0x15940	100.0000	
+fieldscreen	_DrawPanel	100.0000	100.0000	4	fe062e1c7fed	0x15940	100.0000	
 fieldscreen	_DrawPanelRow	100.0000	100.0000	4	f252d56046af	0x159a0	100.0000	
 fieldscreen	_ExchangeObjectsHidden	100.0000	100.0000	1	858194495c33	0x15a90	100.0000	
 fieldscreen	_ExchangeViewHold	100.0000	100.0000	1	757dbf531074	0x14730	100.0000	
@@ -1182,7 +1182,7 @@ font	_SetWindowHalfWidth	100.0000	100.0000	4	bfc266b9c5f7	0x52930	100.0000
 font	_SetWindowOpaqueBg	100.0000	100.0000	3	ce6a40059341	0x528b0	100.0000	
 font	_ShowScreenLayer	100.0000	100.0000	3	7f03ebd878cc	0x54360	100.0000	
 font	_TakeWindowDeferredChar	100.0000	100.0000	2	29396fa2d472	0x53bc0	100.0000	
-font	_TextPlaneCellAt	99.8809	99.8809	4	4b2ad45d1849	0x53830	99.8809	
+font	_TextPlaneCellAt	100.0000	100.0000	4	4b2ad45d1849	0x53830	100.0000	
 font	_TextPlaneRowToLine	100.0000	100.0000	3	5768f0b9b023	0x52b40	100.0000	
 font	_ToggleCurrentTextHighlight	100.0000	100.0000	2	c9ece8bf06e7	0x52f30	100.0000	
 font	_ToggleTextRunHighlight	85.4310	85.4310	6	c41f1deb7fc3	0x51ef0	85.4310	
@@ -1270,7 +1270,7 @@ fusionscreen	_CreatePairFusionCharacter	100.0000	100.0000	5	bb1541df0044	0x28950
 fusionscreen	_DrawFusionCharacterDetails	100.0000	100.0000	4	940b4a72590d	0x293f0	100.0000	
 fusionscreen	_DrawFusionPreviewCard	100.0000	100.0000	5	71a9a9161cd4	0x29bf0	100.0000	
 fusionscreen	_DrawFusionStatGroup	100.0000	100.0000	2	26dae92559a5	0x29590	100.0000	
-fusionscreen	_DrawFusionSummaryGrid	100.0000	99.9390	4	b4e195456a6b	0x28ed0	100.0000	
+fusionscreen	_DrawFusionSummaryGrid	100.0000	100.0000	4	b4e195456a6b	0x28ed0	100.0000	
 fusionscreen	_EndFusion	100.0000	100.0000	1	2e0ddb250e9e	0x2a1e0	100.0000	
 fusionscreen	_FusionListMenuHandler	100.0000	100.0000	4	f2a4b0c86d62	0x291b0	100.0000	
 fusionscreen	_FusionSelectionTextHook	100.0000	100.0000	1	ab8e6e18c3ef	0x29350	100.0000	
@@ -1285,7 +1285,7 @@ fusionscreen	_PreviewFusionCharacter	100.0000	100.0000	2	0ed3c358243a	0x29fe0	10
 fusionscreen	_ReleaseFusionSelectionResources	100.0000	100.0000	2	1c80a59b20b4	0x28860	100.0000	
 fusionscreen	_ResetThirdFusionSlot	100.0000	100.0000	1	8562f007f66b	0x28890	100.0000	
 fusionscreen	_RestoreFusionCharacter	100.0000	100.0000	1	f66478e6baef	0x2a440	100.0000	
-fusionscreen	_RunFirstFusionPicker	100.0000	99.9459	2	68aa6500018e	0x28be0	100.0000	
+fusionscreen	_RunFirstFusionPicker	100.0000	100.0000	2	68aa6500018e	0x28be0	100.0000	
 fusionscreen	_RunPairFusion	100.0000	100.0000	3	5d0867c63d37	0x2a0d0	100.0000	
 fusionscreen	_RunSecondFusionPicker	100.0000	100.0000	3	bcd2ec06f9af	0x29de0	100.0000	
 fusionscreen	_RunThirdFusionPicker	100.0000	100.0000	2	0f7319b644bb	0x29f00	100.0000	
@@ -1917,7 +1917,7 @@ resourcebitmap	_LoadPictureFile	100.0000	100.0000	1	c68d81bb9ebf	0x57520	100.000
 resourcebitmap	_ReleaseTexture	100.0000	100.0000	3	ad2cadccb436	0x576d0	100.0000	
 resourcebitmap	_ShadeTexture	100.0000	100.0000	3	ea2fca5c4cd1	0x57590	100.0000	
 resourceblit	_BlitImage	100.0000	100.0000	1	f911230f7de1	0x57290	100.0000	
-resourceblit	_CopyResourceBitmap16	99.7597	99.7597	5	426ff26e69fb	0x56f30	99.7597	
+resourceblit	_CopyResourceBitmap16	99.7597	99.6299	5	426ff26e69fb	0x56f30	99.7597	
 resourceblit	_CopyResourceBitmap8	100.0000	100.0000	6	cc15b2e119d3	0x57120	100.0000	
 restore	_ApplyRestoreEffect	100.0000	100.0000	12	6e32c9aa9376	0x1fe90	100.0000	
 restore	_ComputeRestoreAmount	100.0000	100.0000	4	a4dd284d8beb	0x1fdc0	100.0000	
@@ -2344,7 +2344,7 @@ shot	_StartShot	100.0000	100.0000	3	0762ead00fee	0x5620	100.0000
 shot	_StepShot	75.9539	75.9539	1	653dffe37a31	0x56e0	75.9539	
 shot	_StopShot	100.0000	100.0000	1	eb752c1ebfec	0x5800	100.0000	
 skillattack	_ApplySkillResistanceOutcome	100.0000	100.0000	1	1909e14736cc	0xaf70	100.0000	
-skillattack	_ComputeSkillDamage	98.4266	98.4266	7	a90e460c0181	0xac50	98.4266	
+skillattack	_ComputeSkillDamage	100.0000	100.0000	7	a90e460c0181	0xac50	100.0000	
 skillattack	_ResolveSkillAttack	100.0000	100.0000	4	4758c7a873b2	0xafb0	100.0000	
 skillattack	_RollSkillCondition	100.0000	100.0000	8	a2d66cf4e21b	0xae20	100.0000	
 skillattack	_RollSkillHit	98.6216	98.6216	9	da186d82b3dc	0xaa20	98.6216	
@@ -2425,7 +2425,7 @@ statestack	_ReturnFromGameState	100.0000	100.0000	1	42e6ce93bb34	0x16c20	100.000
 statestack	_SaveGameState	100.0000	100.0000	1	c051d32fd3cc	0x169f0	100.0000	
 statestack	_SetGamePhase	100.0000	100.0000	1	b2d246cb250e	0x16aa0	100.0000	
 statestack	_SetGamePhaseKeepStep	100.0000	100.0000	1	e6db86902e4e	0x16b10	100.0000	
-stattotal	_UpdateStatTotals	100.0000	99.6957	1	1634119fea7d	0x3dee0	100.0000	
+stattotal	_UpdateStatTotals	100.0000	100.0000	1	1634119fea7d	0x3dee0	100.0000	
 statusdraw	_ClearPartySlotSelection	100.0000	100.0000	1	60909298c86b	0x3e660	100.0000	
 statusdraw	_DrawPartyStatusSlot	100.0000	100.0000	4	58f8426a6268	0x3e1f0	100.0000	
 statusdraw	_FlushStatusRedraw	100.0000	100.0000	2	95b1a76f0f59	0x3e360	100.0000	
@@ -2457,7 +2457,7 @@ statuspanel	_DrawBattleStatColumn	100.0000	100.0000	1	49e17f763d77	0x42920	100.0
 statuspanel	_DrawBattleStatsPanel	100.0000	100.0000	6	1b613ebc6678	0x42a00	100.0000	
 statuspanel	_DrawStatBar	100.0000	100.0000	2	a2ebb38f0efd	0x42520	100.0000	
 statuspanel	_DrawStatBarSegment	100.0000	100.0000	2	be26fe74e9c8	0x425c0	100.0000	
-statuspanel	_DrawStatLine	100.0000	99.9420	5	92c01e0d41fc	0x42830	100.0000	
+statuspanel	_DrawStatLine	100.0000	100.0000	5	92c01e0d41fc	0x42830	100.0000	
 statuspanel	_DrawStatList	100.0000	100.0000	5	792baf415af5	0x42450	100.0000	
 statuspanel	_DrawStatTotals	100.0000	100.0000	2	50fce968537d	0x42780	100.0000	
 statuspanel	_DrawStatusCapacity	100.0000	100.0000	4	342146361cc5	0x41ee0	100.0000	
@@ -2622,7 +2622,7 @@ waitstate	_StepWaitState	100.0000	100.0000	3	4b11dc60400b	0x1a870	100.0000
 walltexture	_LoadWallTextures	100.0000	100.0000	1	ddc4b33bcce4	0x57e80	100.0000	
 weaponattack	_ComputeWeaponDamage	100.0000	100.0000	6	c0f7ae411313	0xa270	100.0000	
 weaponattack	_ResolveWeaponAttack	100.0000	100.0000	5	de1bc6e4deb2	0xa8a0	100.0000	
-weaponattack	_RollExceptionalWeaponAttack	99.4444	99.4444	5	980b28feb8d3	0xa690	99.4444	
+weaponattack	_RollExceptionalWeaponAttack	99.4444	99.4183	5	980b28feb8d3	0xa690	99.4444	
 weaponattack	_RollWeaponCondition	100.0000	100.0000	8	4a95cca4b7f0	0xa120	100.0000	
 weaponattack	_RollWeaponHit	100.0000	100.0000	8	603537d7b73b	0xa490	100.0000	
 windowcolor	_BeginWindowAltText	100.0000	100.0000	1	ad7b58476188	0x2ebc0	100.0000	
