@@ -128,15 +128,15 @@ u8 g_blueLoss;
 DATA(0x00084328)
 BOOL g_bilinearFiltering;
 
-// The WAVE resource of each sound effect (0 = none).
-DATA(0x0006a6c6)
-static u16 s_soundResources[SOUND_COUNT] = {
-    0,   383, 384, 385, 386, 387, 388, 389, 390, 392, 393, 394, 0,   395, 396, 397, 398, 399, 727,
-    400, 401, 728, 402, 403, 729, 404, 405, 0,   406, 407, 408, 409, 410, 411, 412, 413, 414, 732,
-    415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 0,
-    433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 0,   0,   0,   0,   0,   0,   0,   0,
-    0,   444, 445, 446, 447, 448, 449, 450, 0,   451, 452, 453, 454, 455, 456, 0,   457, 458, 459,
-    460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 0,   470, 471, 730, 0,   0,   472,
+// The WAVE resource of each sound effect (0 = none), sound 1 first.
+DATA(0x0006a6c8)
+static u16 s_soundResources[SOUND_COUNT - 1] = {
+    383, 384, 385, 386, 387, 388, 389, 390, 392, 393, 394, 0,   395, 396, 397, 398, 399, 727, 400,
+    401, 728, 402, 403, 729, 404, 405, 0,   406, 407, 408, 409, 410, 411, 412, 413, 414, 732, 415,
+    416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 0,   433,
+    434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 0,   0,   0,   0,   0,   0,   0,   0,   0,
+    444, 445, 446, 447, 448, 449, 450, 0,   451, 452, 453, 454, 455, 456, 0,   457, 458, 459, 460,
+    461, 462, 463, 464, 465, 466, 467, 468, 469, 0,   470, 471, 730, 0,   0,   472,
 };
 
 // The identity matrix the Set*Matrix helpers start from.
@@ -1321,10 +1321,10 @@ void PlaySoundEffect(i16 sound) {
         g_longSoundBuffer->Stop();
         return;
     }
-    if (s_soundResources[sound] == 0) {
+    if (s_soundResources[sound - 1] == 0) {
         return;
     }
-    resource = FindResource(NULL, MAKEINTRESOURCE(s_soundResources[sound]), "WAVE");
+    resource = FindResource(NULL, MAKEINTRESOURCE(s_soundResources[sound - 1]), "WAVE");
     if (resource == NULL) {
         return;
     }
