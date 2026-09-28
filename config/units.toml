@@ -400,18 +400,8 @@ source = "src/Game/itemrecord.c"
 flags = "c"
 
 [[unit]]
-unit = "demontable"
-source = "src/Game/demontable.c"
-flags = "c"
-
-[[unit]]
 unit = "windowcolor"
 source = "src/Script/windowcolor.c"
-flags = "c"
-
-[[unit]]
-unit = "familiarity"
-source = "src/Game/familiarity.c"
 flags = "c"
 
 [[unit]]
@@ -562,11 +552,6 @@ flags = "cpp"
 [[unit]]
 unit = "worldtravel"
 source = "src/Game/worldtravel.c"
-flags = "c"
-
-[[unit]]
-unit = "worldencounter"
-source = "src/Game/worldencounter.c"
 flags = "c"
 
 [[unit]]
