@@ -131,8 +131,6 @@ PaletteState* g_fusionPaletteState;
 DATA(0x00080a24)
 static FusionSummary* s_fusionSummaryTable;
 
-// @dead-code
-// Zero-ref: no retail call, jump, or relocated pointer reaches this helper.
 DATA(0x00080a84)
 static b16 s_fusionPageActionPending;
 
@@ -142,6 +140,8 @@ char g_fusionMissingName[4];
 DATA(0x00080a8c)
 char g_fusionMissingRace[4];
 
+// @dead-code
+// Zero-ref: no retail call, jump, or relocated pointer reaches this helper.
 RVA(0x00028840, 0x16)
 void AcquireFusionSelectionMode(void) {
     s_fusionSelectionPaletteState = SavePaletteState(s_fusionSelectionPaletteState, 1);
