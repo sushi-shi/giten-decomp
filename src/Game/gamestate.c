@@ -6,10 +6,7 @@
 #include <Game/Clock.h>
 #include <Game/GameState.h>
 #include <Game/Party.h>
-#include <Game/Stats.h>
-#include <Util/Range.h>
 
-#include <math.h>
 #include <string.h>
 
 DATA(0x00091080)
@@ -95,25 +92,4 @@ u8 GetMapArea(void) {
 RVA(0x0003c800, 0x6)
 u8 GetMapLevel(void) {
     return g_field.pos.level;
-}
-
-// Action speed from agility, reduced by armor defense scaled by vitality;
-// never below 1.
-RVA(0x0003c810, 0x97)
-i16 ComputeActionSpeed(Character* character) {
-    double base = sqrt(GetStatTotal(character, STAT_AGILITY)) * 4.0;
-    double burden = (u16)SumArmorDefenseBonus(character);
-    double root = sqrt(GetStatTotal(character, STAT_VITALITY));
-    u16 speed;
-    if (root < 1.0) {
-        root = 1.0;
-    }
-    burden /= root;
-    burden *= 0.25;
-    base -= burden;
-    speed = RoundToShort(base);
-    if (speed < 1) {
-        speed = 1;
-    }
-    return speed;
 }
