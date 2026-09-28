@@ -340,16 +340,6 @@ source = "src/Sound/midistream.cpp"
 flags = "cpp"
 
 [[unit]]
-unit = "levelup"
-source = "src/Game/levelup.c"
-flags = "c"
-
-[[unit]]
-unit = "worldmap"
-source = "src/Game/worldmap.c"
-flags = "c"
-
-[[unit]]
 unit = "fieldmain"
 source = "src/Game/fieldmain.c"
 flags = "c"
@@ -410,11 +400,6 @@ source = "src/Game/fieldscreen.c"
 flags = "c"
 
 [[unit]]
-unit = "menucursor"
-source = "src/Game/menucursor.c"
-flags = "c"
-
-[[unit]]
 unit = "maxstats"
 source = "src/Game/maxstats.c"
 flags = "c"
@@ -427,11 +412,6 @@ flags = "c"
 [[unit]]
 unit = "equipeffect"
 source = "src/Game/equipeffect.c"
-flags = "c"
-
-[[unit]]
-unit = "itemuse"
-source = "src/Game/itemuse.c"
 flags = "c"
 
 [[unit]]
@@ -450,18 +430,8 @@ source = "src/Game/automapbits.c"
 flags = "c"
 
 [[unit]]
-unit = "scenecell"
-source = "src/Game/scenecell.c"
-flags = "c"
-
-[[unit]]
 unit = "statusmenu"
 source = "src/Game/statusmenu.c"
-flags = "c"
-
-[[unit]]
-unit = "statusscreen"
-source = "src/Game/statusscreen.c"
 flags = "c"
 
 [[unit]]
@@ -520,11 +490,6 @@ source = "src/Game/itemmenu.c"
 flags = "c"
 
 [[unit]]
-unit = "subscreen"
-source = "src/Game/subscreen.c"
-flags = "c"
-
-[[unit]]
 unit = "infobar"
 source = "src/Game/infobar.c"
 flags = "c"
@@ -567,16 +532,6 @@ flags = "c"
 [[unit]]
 unit = "itemattack"
 source = "src/Game/itemattack.c"
-flags = "c"
-
-[[unit]]
-unit = "ddsmenu"
-source = "src/Game/ddsmenu.c"
-flags = "c"
-
-[[unit]]
-unit = "partypicker"
-source = "src/Game/partypicker.c"
 flags = "c"
 
 [[unit]]
@@ -675,11 +630,6 @@ source = "src/Game/fusionmenu.c"
 flags = "c"
 
 [[unit]]
-unit = "statedispatch"
-source = "src/Game/statedispatch.c"
-flags = "c"
-
-[[unit]]
 unit = "surfacecopy"
 source = "src/Gfx/surfacecopy.cpp"
 flags = "cpp-noeh"
@@ -693,11 +643,6 @@ flags = "c"
 unit = "effectdraw"
 source = "src/Gfx/effectdraw.cpp"
 flags = "cpp-noeh"
-
-[[unit]]
-unit = "fieldmark"
-source = "src/Game/fieldmark.c"
-flags = "c"
 
 [[unit]]
 unit = "treasurestate"
