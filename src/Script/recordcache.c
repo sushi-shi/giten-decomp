@@ -607,17 +607,19 @@ static __inline i16 RollCachedSkillWearPercent(void) {
 }
 
 // The legacy routine evaluates the worn values but discards the quotients.
-// Retail retains these divisions; their source spelling remains unresolved.
+// Retail keeps each quotient's store to one stack slot, which /Ox only
+// retains for a volatile local.
 RVA(0x0002e8a0, 0xad)
 void WearCachedSkill(void) {
     i16 percent;
+    volatile i32 worn;
     if (g_cachedRecordId == -1) {
         return;
     }
     percent = RollCachedSkillWearPercent();
-    (i16)((100 - percent) * s_valueA) / 100;
-    (i16)((100 - percent) * s_valueB) / 100;
-    (i16)((100 - percent) * g_recordBaseValue) / 100;
+    worn = (i16)((100 - percent) * s_valueA) / 100;
+    worn = (i16)((100 - percent) * s_valueB) / 100;
+    worn = (i16)((100 - percent) * g_recordBaseValue) / 100;
     s_skillUses++;
 }
 
