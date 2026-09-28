@@ -118,20 +118,117 @@ i16 GetGameState(void);
 void ClearSelectedHotspot(void);
 i16 GetFieldMarker(void);
 
+// One bit per id: whether it has been analyzed.
+DATA(0x00078878)
+static u8 s_analyzed[0x40] = {0};
+
+DATA(0x000788b8)
+static i16 s_encounterGroups[2] = {0};
+
+DATA(0x000788c0)
+u8 g_worldEncounterGroupSlots[16] = {0};
+
+// @identity-TODO: nine cumulative weights per encounter row (data file 5).
+DATA(0x000788d0)
+static u8 s_encounterBuffer[0x100] = {0};
+
 DATA(0x000789d0)
-static FieldObject s_objects[16];
+static FieldObject s_objects[16] = {0};
+
+// The 7x7 sight grid around the object being stepped (1: seen).
+DATA(0x0007ada0)
+static u8 s_sight[7][7] = {0};
+
+// @identity-TODO: a count per id (0..255) whose eighth is the familiarity.
+DATA(0x0007add8)
+static u8 s_familiarityCounts[0x200] = {0};
+
+// The object record buffer every record read goes through.
+DATA(0x0007afd8)
+static ObjectRecord s_record = {0};
+
+DATA(0x0007b058)
+static u8 s_scriptSetBuffer[0x50] = {0};
+
+DATA(0x0007b0a8)
+static i16 s_encounterCount = 0;
+
+DATA(0x0007b0ac)
+static i16 s_fieldTableIndex = 0;
 
 // While set, GetLiveObject accepts any index.
 DATA(0x0007b0b0)
-static i16 s_objectCheckBypass;
+static i16 s_objectCheckBypass = 0;
 
 // While set, a hidden object is not removed (DeferObjectRemoval instead).
 DATA(0x0007b0b4)
-static i16 s_objectRemovalDeferred;
+static i16 s_objectRemovalDeferred = 0;
 
 // While set, the objects are not marked on the automap.
 DATA(0x0007b0b8)
-static i16 s_objectsFrozen;
+static i16 s_objectsFrozen = 0;
+
+DATA(0x0007b0bc)
+static i16 s_encounterChanceBonus = 0;
+
+DATA(0x0007b0c0)
+static i32 s_encounterChoices = 0;
+
+DATA(0x0007b0c4)
+static i32 s_encounterWeights = 0;
+
+DATA(0x0007b0c8)
+static i32 s_encounterBlock = 0;
+
+DATA(0x0007b0cc)
+static i32 s_fieldTable = 0;
+
+// Record and race-class tables, followed by the four name tables.
+DATA(0x0007b0d0)
+static i32 s_demonRecords = 0;
+
+DATA(0x0007b0d4)
+static i32 s_raceClasses = 0;
+
+DATA(0x0007b0d8)
+static i32 s_raceNames = 0;
+
+DATA(0x0007b0dc)
+static i32 s_pantheonNames = 0;
+
+DATA(0x0007b0e0)
+static i32 s_humanTitles = 0;
+
+DATA(0x0007b0e4)
+static i32 s_classNames = 0;
+
+DATA(0x0007b0e8)
+static u32 s_lastEncounterMinute = 0;
+
+DATA(0x0007b0ec)
+static u8* s_fieldEncounterWeights = 0;
+
+// The countdown (in ticks) to the next random spawn and the spawn interval
+// in seconds.
+DATA(0x0007b0f0)
+static i32 s_spawnTimer = 0;
+
+DATA(0x0007b0f4)
+static u16 s_spawnInterval = 0;
+
+DATA(0x0007b0f8)
+static FieldLayer s_layers[2] = {0};
+
+DATA(0x0007b2f8)
+static FieldLayer s_savedLayers[2] = {0};
+
+// The object script block (data file 0x6800), loaded on first use.
+DATA(0x0007b4f4)
+static ScriptBlock* s_objectScripts = 0;
+
+// The script-set table: three data-file numbers per set (0xff: none).
+DATA(0x0007b4f8)
+static u8* s_scriptSets = 0;
 
 RVA(0x0000d790, 0x52)
 b16 InitFieldObjects(void) {
@@ -757,23 +854,6 @@ i16 GetObjectLayer(i16 index) {
     return s_objects[index].layer;
 }
 
-DATA(0x0007b058)
-static u8 s_scriptSetBuffer[0x50];
-
-DATA(0x0007b0f8)
-static FieldLayer s_layers[2];
-
-DATA(0x0007b2f8)
-static FieldLayer s_savedLayers[2];
-
-// The script-set table: three data-file numbers per set (0xff: none).
-DATA(0x0007b4f8)
-static u8* s_scriptSets;
-
-// The object script block (data file 0x6800), loaded on first use.
-DATA(0x0007b4f4)
-static ScriptBlock* s_objectScripts;
-
 static __inline u8 GetScriptSetFile(i16 set, i16 index) {
     return s_scriptSets[set * 3 + index];
 }
@@ -952,25 +1032,6 @@ void LoadLayerScriptSet(FieldLayer* layer, i16 set) {
     }
     LoadLayerScripts(layer, layer->record.id, 14, 0, 0x10);
 }
-
-// The spawn interval in seconds and the countdown (in ticks) to the next
-// random spawn.
-DATA(0x0007b0f4)
-static u16 s_spawnInterval;
-
-DATA(0x0007b0f0)
-static i32 s_spawnTimer;
-
-// The 7x7 sight grid around the object being stepped (1: seen).
-DATA(0x0007ada0)
-static u8 s_sight[7][7];
-
-// @identity-TODO: nine cumulative weights per encounter row (data file 5).
-DATA(0x000788d0)
-static u8 s_encounterBuffer[0x100];
-
-DATA(0x0007b0ec)
-static u8* s_fieldEncounterWeights;
 
 MapCoord RandomNearOffset(void);
 
@@ -1636,29 +1697,6 @@ b16 BeginPartyTargetSkill(Character* character) {
     return true;
 }
 
-// Record and race-class tables, followed by the four name tables.
-DATA(0x0007b0d0)
-static i32 s_demonRecords;
-
-DATA(0x0007b0d4)
-static i32 s_raceClasses;
-
-DATA(0x0007b0d8)
-static i32 s_raceNames;
-
-DATA(0x0007b0dc)
-static i32 s_pantheonNames;
-
-DATA(0x0007b0e0)
-static i32 s_humanTitles;
-
-DATA(0x0007b0e4)
-static i32 s_classNames;
-
-// The object record buffer every record read goes through.
-DATA(0x0007afd8)
-static ObjectRecord s_record;
-
 static __inline const DemonTable* ReadDemonTable(void) {
     return HandleReadPtr(s_demonRecords);
 }
@@ -2072,14 +2110,6 @@ i32 ReadObjectRecordField(i16 kind, i16 offset, i16 size) {
     return *(i32*)(buffer + offset);
 }
 
-// @identity-TODO: a count per id (0..255) whose eighth is the familiarity.
-DATA(0x0007add8)
-static u8 s_familiarityCounts[0x200];
-
-// One bit per id: whether it has been analyzed.
-DATA(0x00078878)
-static u8 s_analyzed[0x40];
-
 RVA(0x00010ba0, 0x20)
 void SetFamiliarityCount(i16 id, i16 count) {
     s_familiarityCounts[id] = ClampShort(count, 0, 0xff);
@@ -2231,36 +2261,6 @@ i16 LoadAnalyzed(FILE* fp) {
     ClearAnalyzed();
     return 0x40 - fread(s_analyzed, 1, 0x40, fp);
 }
-
-DATA(0x0007b0c0)
-static i32 s_encounterChoices;
-
-DATA(0x0007b0c4)
-static i32 s_encounterWeights;
-
-DATA(0x0007b0c8)
-static i32 s_encounterBlock;
-
-DATA(0x0007b0cc)
-static i32 s_fieldTable;
-
-DATA(0x0007b0bc)
-static i16 s_encounterChanceBonus;
-
-DATA(0x0007b0e8)
-static u32 s_lastEncounterMinute;
-
-DATA(0x000788b8)
-static i16 s_encounterGroups[2];
-
-DATA(0x000788c0)
-u8 g_worldEncounterGroupSlots[16] = {0};
-
-DATA(0x0007b0a8)
-static i16 s_encounterCount;
-
-DATA(0x0007b0ac)
-static i16 s_fieldTableIndex;
 
 RVA(0x00010f70, 0x4f)
 void FreeEncounterTables(void) {
