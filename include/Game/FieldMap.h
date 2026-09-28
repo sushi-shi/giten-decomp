@@ -30,6 +30,10 @@ void SaveFieldPosition(void);
 // another way).
 i16 IsOnCellMark(i16 checkDirection);
 
+// The region code the field last entered (EnterRoom sets it).
+i16 GetCurrentRoomCode(void);
+i16 SetCurrentRoomCode(i16 code);
+
 // Resets field layers 1 and 0 between 0x1f540 and 0x1a190(-1).
 // @identity-TODO: what 0x1f540 and 0x1a190 reset is undecoded.
 void ResetFieldScene(void);

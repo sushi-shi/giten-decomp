@@ -3,7 +3,6 @@
 
 #include <rva.h>
 
-#include <Game/AreaNpc.h>
 #include <Game/FieldMap.h>
 #include <Game/GameState.h>
 

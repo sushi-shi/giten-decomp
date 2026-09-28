@@ -16,6 +16,7 @@
 #include <Game/FieldActor.h>
 #include <Game/FieldHud.h>
 #include <Game/FieldMain.h>
+#include <Game/FieldMap.h>
 #include <Game/FieldObject.h>
 #include <Game/FieldScreen.h>
 #include <Game/FieldSight.h>

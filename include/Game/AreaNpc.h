@@ -67,10 +67,6 @@ u8 GetPrevRegion(i16 x, i16 y);
 u8* GetRoomData(i16 code);
 void EnterRoom(i16 code);
 
-// The region code the field last entered (EnterRoom sets it).
-i16 GetCurrentRoomCode(void);
-i16 SetCurrentRoomCode(i16 code);
-
 i16 FindCellObject(i16 id, i16 x, i16 y);
 i16 NextNpcSlot(void);
 void CountPlacedNpc(void);
