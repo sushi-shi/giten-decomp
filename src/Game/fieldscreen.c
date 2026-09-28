@@ -49,39 +49,7 @@
 #include <stddef.h>
 #include <string.h>
 
-// The field panel: nine command rows (their ids pick the command; flag
-// PANEL_INPUT_DISABLED, set by SetFieldMenuMode, disables a row). Its picture is set by
-// SetFieldPanelImage.
-DATA(0x000687e8)
-static struct {
-    Panel panel;
-    PanelRow more[8];
-} s_fieldPanel = {
-    {0, 0, 0, 9, 0, 0, 0, {0}, {{0, 5, 0, ReorderRowHandler}}},
-    {
-        {0, 8, 0, StatusRowHandler},
-        {0, 3, 0, SkillRowHandler},
-        {0, 2, 0, ItemRowHandler},
-        {0, 4, 0, DdsRowHandler},
-        {0, 0, 0, FightRowHandler},
-        {0, 1, 0, TalkRowHandler},
-        {0, 7, 0, MappingRowHandler},
-        {0, 6, 0, MenuRowHandler},
-    },
-};
-
 // @identity-TODO: a hold word the field view update (0x414770) reads.
-// The field command panel: row 0 (flag PANEL_INPUT_DISABLED, id 2) has no handler; row 1
-// (id 1) carries the field status bits 0 and 11.
-DATA(0x00068858)
-static struct {
-    Panel panel;
-    PanelRow more[1];
-} s_commandPanel = {
-    {0, 0, 0, 2, 0, 0, 0, {0}, {{PANEL_INPUT_DISABLED, 2, 0, NULL}}},
-    {{0, 1, 0, CommandRowHandler}},
-};
-
 DATA(0x0007b7f0)
 static i16 s_viewHold;
 
@@ -109,13 +77,6 @@ static i16 s_cursorCellX = -1;
 
 DATA(0x00068694)
 static i16 s_cursorCellY = -1;
-
-// @identity-TODO: two words reset to -1 together.
-DATA(0x000686a0)
-static i16 s_cursorA = -1;
-
-DATA(0x000686a2)
-static i16 s_cursorB = -1;
 
 // Set while the area palette is switched on (a dark cell).
 DATA(0x0007b7ec)
@@ -149,6 +110,45 @@ static i16 s_objectsHidden;
 
 DATA(0x0007b80c)
 static i32 s_fieldMessages;
+
+// @identity-TODO: two words reset to -1 together.
+DATA(0x000686a0)
+static i16 s_cursorA = -1;
+
+DATA(0x000686a2)
+static i16 s_cursorB = -1;
+
+// The field panel: nine command rows (their ids pick the command; flag
+// PANEL_INPUT_DISABLED, set by SetFieldMenuMode, disables a row). Its picture is set by
+// SetFieldPanelImage.
+DATA(0x000687e8)
+static struct {
+    Panel panel;
+    PanelRow more[8];
+} s_fieldPanel = {
+    {0, 0, 0, 9, 0, 0, 0, {0}, {{0, 5, 0, ReorderRowHandler}}},
+    {
+        {0, 8, 0, StatusRowHandler},
+        {0, 3, 0, SkillRowHandler},
+        {0, 2, 0, ItemRowHandler},
+        {0, 4, 0, DdsRowHandler},
+        {0, 0, 0, FightRowHandler},
+        {0, 1, 0, TalkRowHandler},
+        {0, 7, 0, MappingRowHandler},
+        {0, 6, 0, MenuRowHandler},
+    },
+};
+
+// The field command panel: row 0 (flag PANEL_INPUT_DISABLED, id 2) has no handler; row 1
+// (id 1) carries the field status bits 0 and 11.
+DATA(0x00068858)
+static struct {
+    Panel panel;
+    PanelRow more[1];
+} s_commandPanel = {
+    {0, 0, 0, 2, 0, 0, 0, {0}, {{PANEL_INPUT_DISABLED, 2, 0, NULL}}},
+    {{0, 1, 0, CommandRowHandler}},
+};
 
 RVA(0x00014730, 0x12)
 i16 ExchangeViewHold(i16 hold) {
