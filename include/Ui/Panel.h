@@ -135,7 +135,7 @@ void DrawPanel(Panel* panel, i16* cell, i16 mode);
 void DrawPanelRow(Panel* panel, i16 x, i16 y, i16 row, i16 mode);
 void ClearPanel(Panel* panel, i16* cell);
 void ClearPanelRow(Panel* panel, i16 x, i16 y, i16 row);
-i16 HitTestPanelRow(Panel* panel, i16 id, i16 x, i16 y, u8 flags);
+i16 HitTestPanelRow(Panel* panel, i16 id, i16 x, i16 y, u16 flags);
 
 // The panel input layer (Ui/panelinput.c).
 void SetPanelSilent(i16 silent);

@@ -1025,7 +1025,7 @@ void ClearPanelRow(Panel* panel, i16 x, i16 y, i16 row) {
 
 // Whether x/y hits the hotspot of a row (`flags` bit 0: strict).
 RVA(0x00015a70, 0x20)
-i16 HitTestPanelRow(Panel* panel, i16 id, i16 x, i16 y, u8 flags) {
+i16 HitTestPanelRow(Panel* panel, i16 id, i16 x, i16 y, u16 flags) {
     return HitTestHotspot(id, x, y, flags & 1);
 }
 
