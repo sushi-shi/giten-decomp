@@ -1357,7 +1357,6 @@ void ShadeMesh(Mesh* mesh) {
     D3DVECTOR view;
     u32 i;
     D3DVALUE shade;
-    i32 level;
 
     if (g_deviceType == D3D_DEVICE_RAMP) {
         for (i = 0; i < mesh->vertexCount; i++) {
@@ -1383,8 +1382,7 @@ void ShadeMesh(Mesh* mesh) {
         } else {
             shade = (320.0f - view.z * 0.125f) / (view.z - 640.0);
         }
-        level = static_cast<i32>(shade * 255.0f);
-        mesh->vertices[i].color = RGBA_MAKE(level, level, level, 0xff);
+        mesh->vertices[i].color = D3DRGB(shade, shade, shade);
     }
 }
 
@@ -1658,7 +1656,6 @@ void RenderTBox(void) {
     int i;
     double distance;
     D3DVALUE light;
-    int shade;
     HRESULT result;
 
     box = GetMapTreasureBoxes();
@@ -1751,8 +1748,7 @@ void RenderTBox(void) {
                 dz -= static_cast<int>(g_cameraAt.z);
                 distance = sqrt(static_cast<double>(dx * dx + dz * dz));
                 SetDistanceLight(light, distance);
-                shade = static_cast<int>(light * 255.0f);
-                SetQuadColor(s_box, RGBA_MAKE(shade, shade, shade, 0xff));
+                SetQuadColor(s_box, D3DRGB(light, light, light));
             }
         }
         if (g_deviceType == D3D_DEVICE_RAMP) {
@@ -1816,7 +1812,6 @@ void RenderNPC(BOOL ownCellOnly) {
     i16 dz;
     double distance;
     D3DVALUE light;
-    int shade;
     i16 textureSlot;
     Texture* texture;
     D3DVALUE bottomMargin;
@@ -1896,8 +1891,7 @@ void RenderNPC(BOOL ownCellOnly) {
             dz -= static_cast<int>(g_cameraAt.z);
             distance = sqrt(static_cast<double>(dx * dx + dz * dz));
             SetDistanceLight(light, distance);
-            shade = static_cast<int>(light * 255.0f);
-            SetQuadColor(s_npc, RGBA_MAKE(shade, shade, shade, 0xff));
+            SetQuadColor(s_npc, D3DRGB(light, light, light));
         }
         textureSlot = GetAreaNpcTextureSlot(npc);
         SelectNpcBillboardTexture(texture, textureSlot);
@@ -3114,7 +3108,6 @@ void RenderFieldView(BOOL draw) {
         D3DTLVERTEX(D3DVECTOR(480.0f, 324.0f, 0.0f), 1.0f, 0xffffffff, 0xff000000, 1.0f, 1.0f),
     };
     int level;
-    int tint;
     D3DVALUE light;
     D3DCOLOR specular;
 
@@ -3128,8 +3121,7 @@ void RenderFieldView(BOOL draw) {
             level = 7;
         }
         light = D3DVAL(level) * 0.125f;
-        tint = static_cast<int>(light * 255.0f);
-        specular = RGBA_MAKE(tint, tint, tint, 0xff);
+        specular = D3DRGB(light, light, light);
         s_backdrop[0].specular = s_backdrop[1].specular = s_backdrop[2].specular =
             s_backdrop[3].specular = specular;
     } else {
@@ -3742,9 +3734,9 @@ void BuildRoomGeometry(void) {
                     }
                     for (corner = 0; corner < 4; corner++, g_wallMesh.vertexCount++) {
                         g_wallMesh.vertices[g_wallMesh.vertexCount].sx =
-                            static_cast<D3DVALUE>(s_wallCorners[(corner & 1) + side][0] + cellX);
+                            D3DVAL(s_wallCorners[(corner & 1) + side][0] + cellX);
                         g_wallMesh.vertices[g_wallMesh.vertexCount].sz =
-                            static_cast<D3DVALUE>(s_wallCorners[(corner & 1) + side][1] + cellZ);
+                            D3DVAL(s_wallCorners[(corner & 1) + side][1] + cellZ);
                         g_wallMesh.vertices[g_wallMesh.vertexCount].sy =
                             corner < 2 ? WALL_TOP : 0.0f;
                         g_wallMesh.vertices[g_wallMesh.vertexCount].specular = 0;

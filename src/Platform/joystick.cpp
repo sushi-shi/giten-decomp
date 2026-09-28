@@ -24,9 +24,7 @@ void InitJoystick(void) {
     i32 i;
 
     s_joystickCount = joyGetNumDevs();
-    if (s_joystickCount > 1) {
-        s_joystickCount = 1;
-    }
+    s_joystickCount = min(1, s_joystickCount);
     for (i = 0; i < s_joystickCount; i++) {
         ZeroMemory(&caps, sizeof(caps));
         joyGetDevCaps(i, &caps, sizeof(caps));

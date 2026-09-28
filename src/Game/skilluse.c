@@ -53,6 +53,7 @@
 #include <math.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 // @identity-TODO: the requested effect position and mode are stored but
@@ -395,9 +396,7 @@ i16 ResolveCombatAction(void) {
         attacker->lastChange = 0;
         g_hpChange = 0;
         g_mpChange = 0;
-        if (s_targetHpBefore < 1) {
-            s_targetHpBefore = 1;
-        }
+        s_targetHpBefore = max(1, s_targetHpBefore);
     }
 
     if (IsSkillAction(attacker)) {
@@ -451,9 +450,7 @@ i16 ResolveCombatAction(void) {
                         g_mpChange = attacker->lastChange;
                         goto done;
                     case 8:
-                        if (target->experience < attacker->lastChange) {
-                            attacker->lastChange = target->experience;
-                        }
+                        attacker->lastChange = min(target->experience, attacker->lastChange);
                         target->experience -= attacker->lastChange;
                         attacker->experience += attacker->lastChange;
                         g_actionResult |= 0x80;

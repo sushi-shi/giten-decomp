@@ -51,6 +51,7 @@
 
 #include <math.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 RVA(0x00034690, 0x1c)
 i16 CompareInt(i32 a, i32 b) {
@@ -775,9 +776,7 @@ RVA(0x00035830, 0x7d)
 void OpStashItemLists(void) {
     i16 restore = ReadScriptValue();
     i16 var = ReadScriptValue();
-    if (var >= 0xb0) {
-        var = 0xb0;
-    }
+    var = min(var, 0xb0);
     if (!restore) {
         SaveGemItems((ItemStack*)&g_scriptVars[var]);
         ResetGemItems(GetGemItemBase());

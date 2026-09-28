@@ -3514,9 +3514,7 @@ i16 DrawBandText(i16 x, i16 y, const char* text, i32 attr, i16 band) {
     picture->surface->ReleaseDC(dc);
     if (band == TEXT_BAND_RIGHT) {
         source = picture->rect;
-        if (SCREEN_WIDTH - x < source.right) {
-            source.right = SCREEN_WIDTH - x;
-        }
+        source.right = min(SCREEN_WIDTH - x, source.right);
         g_renderTarget->BltFast(x, y, picture->surface, &source, DDBLTFAST_SRCCOLORKEY);
         return 0;
     }
@@ -4131,14 +4129,10 @@ void SetTextPlaneCursor(i16 plane, i16 x, i16 y) {
     }
     p = GetTextPlane(plane);
     v = p->cols;
-    if (x < v) {
-        v = x;
-    }
+    v = min(x, v);
     p->cursorX = v;
     v = p->rows;
-    if (y < v) {
-        v = y;
-    }
+    v = min(y, v);
     p->cursorY = v;
 }
 

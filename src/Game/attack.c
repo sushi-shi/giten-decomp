@@ -23,6 +23,7 @@
 #include <Util/Range.h>
 
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
 
 DATA(0x00078488)
@@ -486,9 +487,7 @@ i16 ComputeGunBurstPower(i16 rounds) {
     for (index = 0; index < rounds; index++) {
         total += power;
         power -= penalty;
-        if (power < 1) {
-            power = 1;
-        }
+        power = max(1, power);
     }
     return total + s_gunBasePower;
 }
