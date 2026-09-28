@@ -451,7 +451,7 @@ charsave	_WriteFieldState	100.0000	100.0000	1	cc334fbae606	0x414b0	100.0000
 clickwait	_TakeClickUnlessCancel	100.0000	100.0000	1	49b00a210859	0x41ab0	100.0000	
 clock	_AdvanceClock	100.0000	100.0000	2	97343a5de148	0x20b80	100.0000	
 clock	_ApplyClockChanges	100.0000	100.0000	3	7c4931326201	0x20cf0	100.0000	
-clock	_ClearMoonFlags	99.3103	99.3103	1	fffdbdd2b828	0x20e40	99.3103	
+clock	_ClearMoonFlags	100.0000	99.3103	1	fffdbdd2b828	0x20e40	100.0000	
 clock	_HasTurnElapsed	100.0000	100.0000	1	d7ecacf43f65	0x20f20	100.0000	
 clock	_InitClock	100.0000	100.0000	2	cd83bceb0657	0x20b00	100.0000	
 clock	_LoadClock	100.0000	100.0000	1	517a076cb2f2	0x20f60	100.0000	
