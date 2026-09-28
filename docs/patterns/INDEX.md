@@ -16,8 +16,3 @@ Short observations, not a wall database. [Scope and admission rules](README.md).
 - [Translation-unit context](tu-state-probe-family-decides-reachability.md) — unchanged function text can emit different code.
 - [Signed remainder](signed-modulo-pow2-abs-restore.md) — sign correction around a power-of-two mask.
 - [Extraction and consumer widths](wide-extraction-narrow-consumer.md) — a wide mask can feed a narrow index without a runtime copy.
-
-## Limits of external evidence
-
-- [Sibling binaries](cross-game-binary-oracle-proves-shared-source-family.md) — shared implementation evidence is not recovered source text.
-- [Surviving source and debug objects](surviving-source-lineage-restores-typed-layers-and-order.md) — recover complete families; check revision differences against retail.
