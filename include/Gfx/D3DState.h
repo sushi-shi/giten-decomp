@@ -14,6 +14,12 @@
 // full-screen viewport, used for 2D overlays.
 extern IDirect3DDevice2* g_d3dDevice;
 
+#define SetDeviceAlphaBlend(device, enabled)                                                       \
+    do {                                                                                           \
+        IDirect3DDevice2_SetRenderState((device), D3DRENDERSTATE_ALPHABLENDENABLE, (enabled));     \
+        IDirect3DDevice2_SetRenderState((device), D3DRENDERSTATE_STIPPLEDALPHA, !(enabled));       \
+    } while (0)
+
 #define SetTextureFiltering(filter)                                                                \
     do {                                                                                           \
         IDirect3DDevice2_SetRenderState(g_d3dDevice, D3DRENDERSTATE_TEXTUREMAG, filter);           \

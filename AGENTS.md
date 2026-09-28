@@ -8,10 +8,8 @@ conventions, referents) outranks any score.
 ## Environment
 
 - Work inside `nix develop`. Builds are per worktree: `export GITEN_DIR=$PWD`.
-- Never run or launch the game. Never use the Ghidra decompiler on
-  `DDS.EXE`; read assembly, xrefs, RTTI, vtables, data, and relocations.
-- `CLAUDE.md` is a symlink to this file; skills live in `.agents/skills/`
-  (`.claude/skills` links there). Edit the canonical file only.
+- Never use the Ghidra decompiler on `DDS.EXE`;
+  read assembly, xrefs, RTTI, vtables, data, and relocations.
 
 ## Objective and scores
 

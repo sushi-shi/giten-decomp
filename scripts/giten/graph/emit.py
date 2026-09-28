@@ -22,7 +22,7 @@ is the DEFAULT target; `verify_check` runs only for the `verify` target
     verify_readme report x ledger -> README's score block (write-if-changed)
     verify_check the MAX gate + the fast+normal tiers -> a stamp; FATAL;
                 opt-in (`giten build verify`)
-    rc / link   PHASE 2, opt-in (`ninja candidate`): base objs + .res ->
+    retail_res / link   PHASE 2, opt-in (`ninja candidate`): base objs + .res ->
                 the candidate image + .map for the link-order study
 
 Two edges declare a STAMP rather than their real outputs, because neither set
@@ -248,28 +248,6 @@ def prune_orphan_artifacts(units: list[dict]) -> int:
 # --------------------------------------------------------------------------- #
 # the graph
 # --------------------------------------------------------------------------- #
-def era_rc_available() -> bool:
-    """True when the pinned toolchain ships RC.EXE (release r3+).
-
-    Probed at CONFIGURE time because the answer decides an edge, not a flag:
-    without it the candidate links with no `.rsrc` and every MFC dialog - which
-    is created from a DIALOG resource - is missing, so the image is a
-    link-ORDER artifact only. The `.map` is what phase 2 is for, and it comes
-    out either way, so a toolchain without rc.exe must not block it.
-
-    $MSVC_DIR is environment, not a declared input, so this answer is frozen
-    into the manifest until the next `giten configure`: re-pinning r3 does
-    not grow the edge by itself, and `giten link` therefore asks the emitted
-    manifest whether the `.res` target exists rather than re-probing.
-    """
-    try:
-        from giten.core.paths import msvc_dir
-        from giten.tool.wine import find_ci
-        return find_ci(msvc_dir() / "bin", "rc.exe") is not None
-    except (RuntimeError, OSError):
-        return True     # cannot probe (no dev shell): assume the full toolchain
-
-
 def toolchain_id() -> str:
     """The pinned toolchain's identity, as the text that goes in TOOLCHAIN_ID.
 
@@ -328,7 +306,7 @@ def write_comparator_id(out: Path | None = None) -> bool:
     return True
 
 
-def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str]) -> None:
+def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str], retail: str) -> None:
     """PHASE 2: base objs -> candidate .EXE + .map. Opt-in, never in `all`.
 
     The deliverable is the `.map`: every function's link-assigned RVA and its
@@ -337,38 +315,23 @@ def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str]) -> None:
     cross-TU = object link order). A normal build never links, so this stays
     out of the default target and behind `ninja candidate` / `giten link`.
 
-    The .rsrc comes from the era RC.EXE (toolchain r3+) over the tracked
-    resource script - once it exists. DDS.EXE's .rsrc (WAVE and BITMAP data)
-    is not reconstructed yet, so until then the candidate links without one.
+    The resource payloads come from the locally supplied retail image. The
+    ignored .res is rebuilt by the graph and passed to the era linker; nothing
+    from .rsrc enters the tracked source tree.
     """
     w.comment("=== PHASE 2: link -> candidate .EXE + .map (opt-in: `ninja candidate`) ===")
-    with_res = era_rc_available() and (REPO / graph.RESOURCE_SCRIPT).exists()
-    if not (REPO / graph.RESOURCE_SCRIPT).exists():
-        w.comment(f"no tracked {graph.RESOURCE_SCRIPT} yet: the candidate links "
-                  "WITHOUT a .rsrc; the .map is still exact.")
-    elif not with_res:
-        print("[configure] the pinned toolchain ships no RC.EXE (pre-r3): the "
-              "candidate will link WITHOUT a .rsrc and `giten rsrc check` "
-              "cannot run. Re-pin an r3+ toolchain and reconfigure.",
-              file=sys.stderr)
-    if with_res:
-        w.rule("rc", command="$py -m giten.tool.rc --out $out --src $in",
-               description="rc $out")
-        w.build(graph.RESOURCE_RES, "rc", inputs=graph.RESOURCE_SCRIPT,
-                implicit=_mods("tool/rc.py") + TOOL_MODS)
-    else:
-        w.comment("this toolchain ships no RC.EXE (pre-r3), so the candidate "
-                  "links WITHOUT a .rsrc: the .map is still exact, the image "
-                  "has no dialogs. Re-pin an r3+ toolchain and reconfigure.")
-    res_flag = f" --res {graph.RESOURCE_RES}" if with_res else ""
+    w.rule("retail_res",
+           command="$py -m giten.rsrc.retail_res --exe $in --out $out",
+           description="copy local retail resources -> $out", restat=True)
+    w.build(graph.RESOURCE_RES, "retail_res", inputs=retail,
+            implicit=_mods("rsrc/retail_res.py", "core/pe.py", "core/paths.py"))
     w.rule("link",
            command=(f"$py -m giten.graph.link --out {graph.CANDIDATE_EXE} "
-                    f"--objs-dir {graph.BASE_DIR}{res_flag}"),
+                    f"--objs-dir {graph.BASE_DIR} --res {graph.RESOURCE_RES}"),
            description="link candidate EXE + map")
     w.build([graph.CANDIDATE_EXE, graph.CANDIDATE_MAP], "link",
             inputs=base_objs,
-            implicit=([graph.RESOURCE_RES] if with_res else [])
-                     + [MANIFEST] + LINK_MODS)
+            implicit=[graph.RESOURCE_RES, MANIFEST] + LINK_MODS)
     w.build("candidate", "phony", inputs=[graph.CANDIDATE_EXE, graph.CANDIDATE_MAP])
     w.newline()
 
@@ -614,7 +577,7 @@ def emit(out: Path | None = None) -> tuple[int, int]:
         w.default(["all"])
         w.newline()
 
-        emit_link_phase(w, base_objs)
+        emit_link_phase(w, base_objs, retail)
 
     return len(units), pruned
 

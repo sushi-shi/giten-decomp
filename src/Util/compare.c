@@ -460,13 +460,13 @@ void OpJumpUnlessInRoster(i16 invert) {
     ScriptJumpUnless(target, jump);
 }
 
-// Jumps unless the roster holds the field count less 6 entries or more.
+// Jumps unless the roster holds the roster capacity less 6 entries or more.
 RVA(0x00035140, 0x4c)
 void OpJumpUnlessRosterFull(i16 invert) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
     i16 count = CountRosterEntries(1);
-    i16 limit = GetFieldCount() - 6;
+    i16 limit = GetRosterCapacity() - 6;
     if ((count >= limit && !invert) || (count < limit && invert)) {
         jump = 1;
     }
@@ -888,7 +888,7 @@ void OpTakeDropSlot(void) {
     ClearDropSlot(slot);
     remapped = RemapItem(item);
     if (remapped) {
-        amount = RollItemAmount(item, amount, 1);
+        amount = RollDropAmount(item, amount);
     } else {
         remapped = item;
     }
@@ -1158,9 +1158,7 @@ RVA(0x00036160, 0x50)
 void AddScriptCharacterToRoster(Character* character, i16 unused) {
     if (AddToRoster(character) < 0) {
         g_rosterPendingMember = character;
-        g_rosterReturnState = GetGameState();
-        g_rosterReturnPhase = GetGamePhase();
-        g_rosterReturnStep = GetGameStep();
+        SaveRosterReturnState();
         SetGameState(0x28);
         SetGamePhase(0);
     }

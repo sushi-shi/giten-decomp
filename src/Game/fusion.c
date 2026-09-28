@@ -157,9 +157,9 @@ i16 ResolveFusionDemonPair(i16 first, i16 second) {
 
 RVA(0x00026770, 0x4b)
 i16 GetFusionLevel(i16 first, i16 second) {
-    i16 level = GetDemonLevel(GetRosterId(first));
+    i16 level = GetFusionSlotLevel(first);
     u8 result;
-    level += GetDemonLevel(GetRosterId(second));
+    level += GetFusionSlotLevel(second);
     result = ClampLevel(level / 2 + 5);
     return result;
 }
@@ -197,11 +197,11 @@ i16 ResolveSpecialRaceFusion(i16 first, i16 second) {
     if (GetFusionSpecialRace(first)) {
         side = 0;
         demon = GetRosterId(first);
-        race = GetDemonRace(GetRosterId(second));
+        race = GetFusionSlotRace(second);
     } else if (GetFusionSpecialRace(second)) {
         side = 1;
         demon = GetRosterId(second);
-        race = GetDemonRace(GetRosterId(first));
+        race = GetFusionSlotRace(first);
     }
     if (side < 0) {
         return 0;
@@ -232,8 +232,8 @@ i16 ApplyFusionRankChange(i16 demon, i16 kind) {
 
 RVA(0x00026940, 0xbb)
 i16 ResolveSameRaceFusion(i16 first, i16 second) {
-    i16 race = GetDemonRace(GetRosterId(first));
-    i16 otherRace = GetDemonRace(GetRosterId(second));
+    i16 race = GetFusionSlotRace(first);
+    i16 otherRace = GetFusionSlotRace(second);
     i16 level;
     i16 demon;
     if (race != otherRace) {
@@ -336,7 +336,7 @@ i16 ResolveSameClassFusion(i16 first, i16 second) {
     if (CompareRosterFusionClasses(first, second)) {
         return 0;
     }
-    cls = GetDemonClass(GetRosterId(first));
+    cls = GetFusionSlotClass(first);
     level = GetFusionLevel(first, second);
     demon = FindStrongestOfClass(level, cls);
     if (demon >= 1) {
@@ -371,8 +371,8 @@ i16 GetFusionGrowthBonus(i16 first, i16 second) {
     i16 growth = GetRosterCharacter(first)->level;
     u8 result;
     growth += GetRosterCharacter(second)->level;
-    growth -= GetDemonLevel(GetRosterId(first));
-    growth -= GetDemonLevel(GetRosterId(second));
+    growth -= GetFusionSlotLevel(first);
+    growth -= GetFusionSlotLevel(second);
     result = ClampLevel(growth / 2);
     return result;
 }
@@ -520,6 +520,14 @@ static __inline void ClassifyFusionSlot(
     }
 }
 
+#define StageTripleFusionCharacter(result, first, second, third, pairMode, thirdMode)              \
+    do {                                                                                           \
+        (result) = StagePairFusionCharacter((first), (second), (pairMode));                        \
+        if ((result) >= 32) {                                                                      \
+            (result) = StagePairFusionCharacter(0, (third), (thirdMode));                          \
+        }                                                                                          \
+    } while (0)
+
 RVA(0x00027180, 0x1c0)
 i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
     i16 primary[3];
@@ -584,10 +592,7 @@ i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
             }
         }
     } else {
-        result = StagePairFusionCharacter(first, second, 1);
-        if (result >= 32) {
-            result = StagePairFusionCharacter(0, third, 1);
-        }
+        StageTripleFusionCharacter(result, first, second, third, 1, 1);
     }
     RestoreFusionCharacter();
     return result;
@@ -600,15 +605,9 @@ i16 ResolveTwoSpecialRaceFusion(i16 first, i16 second, i16 third) {
     MoveSpecialRaceFusionSlot(&second, &third);
     MoveSpecialRaceFusionSlot(&first, &second);
     if (MatchFusionPair(second, third) == 1) {
-        result = StagePairFusionCharacter(second, third, 0);
-        if (result >= 32) {
-            result = StagePairFusionCharacter(0, first, 1);
-        }
+        StageTripleFusionCharacter(result, second, third, first, 0, 1);
     } else {
-        result = StagePairFusionCharacter(second, third, 1);
-        if (result >= 32) {
-            result = StagePairFusionCharacter(0, first, 0);
-        }
+        StageTripleFusionCharacter(result, second, third, first, 1, 0);
     }
     RestoreFusionCharacter();
     return result;
@@ -620,10 +619,7 @@ i16 ResolveOneSpecialRaceFusion(i16 first, i16 second, i16 third) {
     MoveSpecialRaceFusionSlot(&first, &second);
     MoveSpecialRaceFusionSlot(&second, &third);
     MoveSpecialRaceFusionSlot(&first, &second);
-    result = StagePairFusionCharacter(first, second, 1);
-    if (result >= 32) {
-        result = StagePairFusionCharacter(0, third, 0);
-    }
+    StageTripleFusionCharacter(result, first, second, third, 1, 0);
     RestoreFusionCharacter();
     return result;
 }
@@ -661,10 +657,7 @@ RVA(0x00027510, 0x79)
 i16 ResolveThreeUnrankedFusion(i16 first, i16 second, i16 third) {
     i16 result;
     SortThreeFusionSlots(&first, &second, &third);
-    result = StagePairFusionCharacter(first, second, 0);
-    if (result >= 32) {
-        result = StagePairFusionCharacter(0, third, 0);
-    }
+    StageTripleFusionCharacter(result, first, second, third, 0, 0);
     s_fusionLevelAllowance = 10;
     RestoreFusionCharacter();
     return result;
@@ -676,10 +669,7 @@ i16 ResolveTwoUnrankedFusion(i16 first, i16 second, i16 third) {
     MoveUnrankedFusionSlot(&first, &second);
     MoveUnrankedFusionSlot(&second, &third);
     MoveUnrankedFusionSlot(&first, &second);
-    result = StagePairFusionCharacter(second, third, 1);
-    if (result >= 32) {
-        result = StagePairFusionCharacter(0, first, 0);
-    }
+    StageTripleFusionCharacter(result, second, third, first, 1, 0);
     RestoreFusionCharacter();
     return result;
 }
@@ -720,10 +710,7 @@ i16 ResolveSameClassTripleFusion(i16 first, i16 second, i16 third) {
         return -1;
     }
     SortThreeFusionSlots(&first, &second, &third);
-    result = StagePairFusionCharacter(first, second, 0);
-    if (result >= 32) {
-        result = StagePairFusionCharacter(0, third, 1);
-    }
+    StageTripleFusionCharacter(result, first, second, third, 0, 1);
     RestoreFusionCharacter();
     return result;
 }
@@ -755,10 +742,10 @@ i16 GetTripleFusionLevelBonus(i16 first, i16 second, i16 third) {
 
 RVA(0x000278d0, 0x6c)
 i16 GetTripleFusionLevel(i16 first, i16 second, i16 third) {
-    i16 level = GetDemonLevel(GetRosterId(first));
+    i16 level = GetFusionSlotLevel(first);
     u8 result;
-    level += GetDemonLevel(GetRosterId(second));
-    level += GetDemonLevel(GetRosterId(third));
+    level += GetFusionSlotLevel(second);
+    level += GetFusionSlotLevel(third);
     level /= 3;
     level += 5;
     result = ClampLevel(level);
@@ -772,14 +759,11 @@ i16 ResolveGeneralTripleFusion(i16 first, i16 second, i16 third) {
     i16 race;
     i16 level;
     SortThreeFusionSlots(&first, &second, &third);
-    GetDemonClass(GetRosterId(first));
-    GetDemonClass(GetRosterId(second));
-    GetDemonClass(GetRosterId(third));
+    GetFusionSlotClass(first);
+    GetFusionSlotClass(second);
+    GetFusionSlotClass(third);
     if (CompareRosterFusionClasses(first, second) == 0) {
-        result = StagePairFusionCharacter(first, second, 1);
-        if (result >= 32) {
-            result = StagePairFusionCharacter(0, third, 1);
-        }
+        StageTripleFusionCharacter(result, first, second, third, 1, 1);
         RestoreFusionCharacter();
         if (GetDemonFlagLow(GetRosterId(third)) == -1) {
             s_fusionLevelAllowance = 8;
@@ -922,14 +906,14 @@ void FreeFusionTables(void) {
 // cl clears eax. Narrow helper and caller result forms do not recover it.
 RVA(0x00027f40, 0xb3)
 i16 GetFusionRacePair(i16 first, i16 second) {
-    first = GetDemonRace(GetRosterId(first));
-    second = GetDemonRace(GetRosterId(second));
+    first = GetFusionSlotRace(first);
+    second = GetFusionSlotRace(second);
     ReturnFusionWordPair(s_fusionRaceMatrix, first, second);
 }
 
 RVA(0x00028000, 0x51)
 i16 GetSameRaceFusionRace(i16 slot) {
-    i16 race = GetDemonRace(GetRosterId(slot));
+    i16 race = GetFusionSlotRace(slot);
     FusionRaceChange* changes = HandleReadPtr(s_fusionSameRaceChanges);
     while (changes->source) {
         if (changes->source == race) {
@@ -999,7 +983,7 @@ i16 FindFusionFallbackIndex(i16 demon) {
 
 RVA(0x00028230, 0x2b)
 i16 GetFusionSpecialRace(i16 slot) {
-    i16 race = GetDemonRace(GetRosterId(slot));
+    i16 race = GetFusionSlotRace(slot);
     i16 special = s_fusionSpecialRace;
     return race != special ? 0 : s_fusionSpecialRace;
 }
@@ -1021,14 +1005,14 @@ i16 GetRosterFusionRestrictedClass(i16 slot) {
 // branch. Compound and staged index updates retain that extra copy.
 RVA(0x000282b0, 0xc4)
 i16 GetFusionClassPair(i16 first, i16 second) {
-    first = GetDemonClass(GetRosterId(first));
-    second = GetDemonClass(GetRosterId(second));
+    first = GetFusionSlotClass(first);
+    second = GetFusionSlotClass(second);
     ReturnFusionBytePair(s_fusionClassMatrix, first, second);
 }
 
 RVA(0x00028380, 0x78)
 i16 GetFusionRaceEntry(i16 index, i16 slot) {
-    i16 race = GetDemonRace(GetRosterId(slot));
+    i16 race = GetFusionSlotRace(slot);
     FusionRaceRows* table = HandleReadPtr(s_fusionRaceRows);
     i16 count = table->count;
     i16 row;

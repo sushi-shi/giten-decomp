@@ -4601,8 +4601,7 @@ class LabelGraphDependencyControls(unittest.TestCase):
                                   return_value=False), \
                 mock.patch.object(emit, "write_comparator_id",
                                   return_value=False), \
-                mock.patch.object(emit, "Scanner", return_value=OneHeader()), \
-                mock.patch.object(emit, "era_rc_available", return_value=False):
+                mock.patch.object(emit, "Scanner", return_value=OneHeader()):
             out = Path(td) / "build.ninja"
             emit.emit(out)
             graph_text = out.read_text()
@@ -4638,7 +4637,7 @@ class LinkVerbTargetControls(unittest.TestCase):
                     mock.patch.object(verbs, "REPO", Path("/")):
                 got = verbs.manifest_targets()
         self.assertEqual(got, {"a/b.obj", "one", "two"})
-        self.assertNotIn("build/gen/giten.res", got)
+        self.assertNotIn(verbs.graph.RESOURCE_RES, got)
 
     def test_a_missing_manifest_is_an_empty_set_not_a_traceback(self):
         from giten.graph import verbs
@@ -4672,11 +4671,25 @@ class LinkVerbTargetControls(unittest.TestCase):
                 with contextlib.redirect_stderr(io.StringIO()) as err:
                     verbs.link_main(["--dry-run"])
             self.assertEqual(asked[-1], ["base"])
-            self.assertIn("no build/gen/giten.res edge", err.getvalue())
+            self.assertIn(f"no {graph.RESOURCE_RES} edge", err.getvalue())
             with mock.patch.object(verbs, "manifest_targets",
                                    lambda: {"base", graph.RESOURCE_RES}):
                 verbs.link_main(["--dry-run"])
             self.assertEqual(asked[-1], ["base", graph.RESOURCE_RES])
+
+    def test_direct_link_uses_generated_retail_resources_by_default(self):
+        from giten import graph
+        from giten.graph import verbs
+        forwarded = []
+        with mock.patch.object(verbs, "configure_if_needed"), \
+                mock.patch.object(verbs, "manifest_targets",
+                                  return_value={"base", graph.RESOURCE_RES}), \
+                mock.patch.object(verbs, "ninja", return_value=0), \
+                mock.patch("giten.graph.link.main",
+                           side_effect=lambda: forwarded.extend(verbs.sys.argv) or 0):
+            self.assertEqual(verbs.link_main(["--dry-run"]), 0)
+        self.assertEqual(forwarded[:4],
+                         ["giten link", "--res", graph.RESOURCE_RES, "--dry-run"])
 
     def test_a_resourceless_candidate_says_so(self):
         """A candidate with no .rsrc has no MFC dialogs; the only note used to

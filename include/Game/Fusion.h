@@ -4,8 +4,16 @@
 #include <rva.h>
 
 #include <Game/Character.h>
+#include <Game/DemonTable.h>
+#include <Game/Party.h>
 #include <Ints.h>
 #include <Mem/Handle.h>
+
+#define GetFusionSlotClass(slot) GetDemonClass(GetRosterId(slot))
+
+#define GetFusionSlotRace(slot) GetDemonRace(GetRosterId(slot))
+
+#define GetFusionSlotLevel(slot) GetDemonLevel(GetRosterId(slot))
 
 typedef union FusionSummary {
     i16 value;

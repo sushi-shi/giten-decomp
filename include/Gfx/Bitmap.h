@@ -27,6 +27,14 @@ typedef struct BmpFile {
     RGBQUAD colors[];
 } BmpFile;
 
+#define GetBitmapRect(rect, bmp)                                                                   \
+    do {                                                                                           \
+        (rect).left = 0;                                                                           \
+        (rect).top = 0;                                                                            \
+        (rect).right = (bmp)->info.biWidth;                                                        \
+        (rect).bottom = (bmp)->info.biHeight;                                                      \
+    } while (0)
+
 // Byte-forced: the BMP file header stores the pixel payload offset.
 #ifdef __cplusplus
 #define GetBitmapPixels(bmp) (reinterpret_cast<u8*>(bmp) + (bmp)->file.bfOffBits)

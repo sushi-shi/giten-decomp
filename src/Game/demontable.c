@@ -263,6 +263,13 @@ i16 ScaleLevelGap(i16 a, i16 b) {
     return gap;
 }
 
+static __inline void RecalcObjectStats(FieldObject* object) {
+    ClearStatModifiers(&object->stats);
+    RecalcEquippedStatTotals(&object->stats, GetFieldObjectEquipment(object));
+    RecalcDerivedStats((Character*)&object->kind);
+    ResetBattleStatsToBase(object);
+}
+
 // Builds object `object` from its record: identity, pools, stats, item slots
 // (an empty gun clears its ammunition, else the ammunition count is the gun's
 // magazine size) and skills; kind 0x117 then mirrors the first party member.
@@ -353,11 +360,7 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->battleStats[6] = 0;
     object->battleStats[12] = 0;
     object->battleStats[18] = 0;
-    ClearStatModifiers(&object->stats);
-    ApplyItemStatBonuses(&object->stats, GetFieldObjectEquipment(object));
-    RecalcStatTotals(&object->stats);
-    RecalcDerivedStats((Character*)&object->kind);
-    ResetBattleStatsToBase(object);
+    RecalcObjectStats(object);
     InitCurMax(&object->pools.hp, record->hp);
     InitCurMax(&object->pools.mp, record->mp);
     if (object->kind == 0x117) {
@@ -375,11 +378,7 @@ void CopyLeaderIntoObject(FieldObject* object) {
     object->memberClass = object->byte083 = leader->byte069;
     object->stats = leader->stats;
     GetFieldObjectActionWait(object)->remaining = GetCharacterActionWait(leader)->remaining;
-    ClearStatModifiers(&object->stats);
-    ApplyItemStatBonuses(&object->stats, GetFieldObjectEquipment(object));
-    RecalcStatTotals(&object->stats);
-    RecalcDerivedStats((Character*)&object->kind);
-    ResetBattleStatsToBase(object);
+    RecalcObjectStats(object);
     InitCurMax(&object->pools.hp, leader->pools.hp.max);
     InitCurMax(&object->pools.mp, leader->pools.mp.max);
 }

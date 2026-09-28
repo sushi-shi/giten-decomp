@@ -35,8 +35,7 @@ static char s_emptyCharacterName[1];
 
 RVA(0x0003c8b0, 0xa6)
 void RecalcCharacterStats(Character* character) {
-    ApplyItemStatBonuses(&character->stats, GetCharacterEquipment(character));
-    RecalcStatTotals(&character->stats);
+    RecalcEquippedStatTotals(&character->stats, GetCharacterEquipment(character));
     ApplyEquipmentEffects(character, EQUIP_EFFECT_STAT_UPDATE);
     character->pools.hp.max = CalcMaxHp(character);
     character->pools.mp.max = CalcMaxMp(character);
@@ -189,8 +188,7 @@ void ResetRosterStatModifiers(void) {
         character = GetRosterCharacter(slot);
         if (character) {
             ClearStatModifiers(&character->stats);
-            ApplyItemStatBonuses(&character->stats, GetCharacterEquipment(character));
-            RecalcStatTotals(&character->stats);
+            RecalcEquippedStatTotals(&character->stats, GetCharacterEquipment(character));
             ApplyEquipmentEffects(character, EQUIP_EFFECT_STAT_UPDATE);
             if (HasCondition(GetCharacterConditions(character), CONDITION_ZOMBIE)) {
                 UpdateStatTotals(&character->stats);

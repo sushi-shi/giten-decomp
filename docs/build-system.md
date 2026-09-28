@@ -584,10 +584,13 @@ ADVAPI32, DDRAW, DSOUND, DINPUT, WINMM), `dxguid` last.
 hints, re-verified against the produced archive). For DDS.EXE the toolchain has
 all eight, so it builds nothing.
 
-The current tree has no resource script or resource assets. `giten link` links
-without a `.res` input, so the candidate has no `.rsrc`. Its EXE and map are
-code and link-layout artifacts, not a complete game image. The retail image's
-`.rsrc` remains outside the reconstructed source tree.
+The link carries a real **`.rsrc`** built locally from the original EXE named
+by `GITEN_RETAIL_EXE`. The graph converts its resource directory to an ignored
+`build/gen/retail.res`; VC5 `link.exe` places the payloads at the candidate's
+own resource RVA. The source tree contains no resource payloads or resource
+download links. No RC.EXE or reconstructed resource script is needed for this
+path. `giten link` depends on the supplied EXE, so changing it rebuilds the
+generated `.res` and candidate.
 
 The `.map` is the deliverable that feeds
 [`https://github.com/sushi-shi/gruntz-decomp/blob/b27b05deb249e4cacbb29f55f17b469ecfe56f26/docs/link-order-investigation.md`](https://github.com/sushi-shi/gruntz-decomp/blob/b27b05deb249e4cacbb29f55f17b469ecfe56f26/docs/link-order-investigation.md): each

@@ -116,7 +116,7 @@ i16 MoveUnrankedFusionSlot(i16* first, i16* second) {
 
 RVA(0x0002a720, 0x36)
 i16 CompareRosterFusionClasses(i16 first, i16 second) {
-    i16 cls = GetDemonClass(GetRosterId(first));
-    cls -= GetDemonClass(GetRosterId(second));
+    i16 cls = GetFusionSlotClass(first);
+    cls -= GetFusionSlotClass(second);
     return cls;
 }

@@ -35,9 +35,9 @@ typedef struct FieldState {
 // A saved word: a 14-bit signed value (32 on a new game) and the system
 // menu's display choices for auto-mapping and auto-navigation (set for
 // "fixed display", clear for "free display").
-// @identity-TODO: the role of `count` is unrecovered.
+// The companion limit is this roster capacity less six party slots.
 typedef struct FieldStatus {
-    i16 count : 14;
+    i16 rosterCapacity : 14;
     i16 automapFixed : 1;
     i16 navigationFixed : 1;
 } FieldStatus;

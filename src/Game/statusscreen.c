@@ -98,9 +98,7 @@ i16 ReplaceRosterMember(void) {
             if (AddToRoster(g_rosterPendingMember) < 0) {
                 SetGamePhase(0);
             }
-            SetGameState(g_rosterReturnState);
-            SetGamePhase(g_rosterReturnPhase);
-            SetGameStep(g_rosterReturnStep);
+            RestoreRosterReturnState();
             break;
     }
     return 0;

@@ -63,8 +63,8 @@ extern i16 g_hoveredObjectId;
 extern i16 g_selectedObjectId;
 
 static __inline void ClearMouseSelection(void) {
-    g_selectedObjectId = -1;
     g_hoveredObjectId = -1;
+    g_selectedObjectId = -1;
 }
 
 void LatchMouseClicks(void);

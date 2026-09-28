@@ -280,6 +280,14 @@ extern Picture g_spritePicture;
     ((vertices)[0].specular = (vertices)[1].specular = (vertices)[2].specular =                    \
          (vertices)[3].specular = (value))
 
+#define MakeBillboardCameraRelative(offsetX, offsetZ)                                              \
+    do {                                                                                           \
+        (offsetX) -= static_cast<int>(g_cameraAt.x);                                               \
+        (offsetZ) -= static_cast<int>(g_cameraAt.z);                                               \
+    } while (0)
+
+#define GetBillboardDistance(x, z) sqrt(static_cast<double>((x) * (x) + (z) * (z)))
+
 #define TranslateBillboard(vertices, offsetX, offsetZ)                                             \
     do {                                                                                           \
         (vertices)[0].x += (offsetX);                                                              \

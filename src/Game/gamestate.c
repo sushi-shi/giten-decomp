@@ -48,7 +48,7 @@ i16 GetMapValue(i16 which) {
 RVA(0x0003c6f0, 0xb8)
 void InitNewGame(void) {
     i16 i;
-    g_fieldStatus.count = 32;
+    g_fieldStatus.rosterCapacity = 32;
     g_field.pos.area = 0x82;
     g_field.pos.level = 8;
     g_field.pos.x = 2;
@@ -83,8 +83,8 @@ MapPosition* GetMapPosition(void) {
 }
 
 RVA(0x0003c7e0, 0xf)
-i16 GetFieldCount(void) {
-    return g_fieldStatus.count;
+i16 GetRosterCapacity(void) {
+    return g_fieldStatus.rosterCapacity;
 }
 
 RVA(0x0003c7f0, 0x6)

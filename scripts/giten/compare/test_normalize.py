@@ -91,6 +91,27 @@ def targets(payload: bytes) -> dict[tuple[int, int], tuple[str, int]]:
 
 
 class RelaxDataRelocationsTest(unittest.TestCase):
+    def test_x87_float_pool_padding_pairs_with_unpadded_float(self):
+        symbols = [("_Func", 0, 1, 0x20, 2), ("$T123", 0, 2, 0, 3)]
+        f32 = struct.pack("<f", 160.0)
+        instruction = b"\xd8\x0d" + bytes(4) + b"\xc3"
+        unpadded = coff(instruction, [(2, 1, DIR32)], f32, [], symbols)
+        padded = coff(instruction, [(2, 1, DIR32)], f32 + bytes(4), [], symbols)
+        names = [
+            next(row.canonical_name for row in canon.canonicalize_coff(payload).rows
+                 if row.original_name == "$T123")
+            for payload in (unpadded, padded)
+        ]
+        self.assertEqual(names, ["$anon_f32_43200000_0"] * 2)
+
+        # The same zero tail with an x87 m64 instruction does not prove f32.
+        wide = coff(b"\xdc\x0d" + bytes(4) + b"\xc3",
+                    [(2, 1, DIR32)], f32 + bytes(4), [], symbols)
+        wide_name = next(row.canonical_name
+                         for row in canon.canonicalize_coff(wide).rows
+                         if row.original_name == "$T123")
+        self.assertNotEqual(wide_name, names[0])
+
     def test_only_data_targets_are_retargeted_and_zeroed(self):
         payload = fixture()
         out, relaxed = normalize.relax_data_relocations(payload)

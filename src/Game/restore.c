@@ -251,8 +251,7 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
     }
     if (!HasCondition(conditions, CONDITION_ZOMBIE) && wasZombie
         && !GetFatalCondition(conditions)) {
-        ApplyItemStatBonuses(&target->stats, GetCharacterEquipment(target));
-        RecalcStatTotals(&target->stats);
+        RecalcEquippedStatTotals(&target->stats, GetCharacterEquipment(target));
         ApplyEquipmentEffects(target, EQUIP_EFFECT_STAT_UPDATE);
         RecalcDerivedStats(target);
         ResetBattleStatsToBase(target);
@@ -267,7 +266,8 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
     if (GetFatalCondition(conditions)) {
         hpPool->cur = 0;
         mpPool->cur = oldMp;
-        g_mpChange = g_hpChange = 0;
+        g_mpChange = 0;
+        g_hpChange = 0;
         target->lastChange = 0;
         return revival == 1 ? 6 : 2;
     }

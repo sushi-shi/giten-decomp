@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <Game/Character.h>
+#include <Game/StateStack.h>
 #include <Ints.h>
 #include <Ui/MenuBox.h>
 
@@ -63,6 +64,19 @@ extern Character* g_rosterPendingMember;
 extern i16 g_rosterReturnState;
 extern u16 g_rosterReturnPhase;
 extern u16 g_rosterReturnStep;
+
+static __inline void SaveRosterReturnState(void) {
+    g_rosterReturnState = GetGameState();
+    g_rosterReturnPhase = GetGamePhase();
+    g_rosterReturnStep = GetGameStep();
+}
+
+static __inline void RestoreRosterReturnState(void) {
+    SetGameState(g_rosterReturnState);
+    SetGamePhase(g_rosterReturnPhase);
+    SetGameStep(g_rosterReturnStep);
+}
+
 i16 ReplaceRosterMember(void);
 
 void EnterStatusScreen(i16 nested);

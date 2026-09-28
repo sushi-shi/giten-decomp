@@ -74,6 +74,19 @@ typedef struct AttachPage {
     i16 redraw;
 } AttachPage;
 
+typedef struct EquipItemPage {
+    MenuBox* menu;
+    i16 plane;
+    i16 pick;
+    struct ItemStackList* list;
+} EquipItemPage;
+
+typedef struct EquipSkillPage {
+    MenuBox* menu;
+    i16 plane;
+    i16 pick;
+} EquipSkillPage;
+
 // The status screen's item page: lists the bag (with `*` on entries holding a
 // gem item) and opens the picked item's description (sub-state 0 opens
 // it, 1 closes it, 2 picks, 3..4 show the description until a click); returns

@@ -199,7 +199,7 @@ void PrepareSkillAction(void) {
     g_statusCondition = GetSkillInflictedCondition(skill);
     g_actionResult = GetSkillEffectCode(skill);
     g_drainAmount = 0;
-    g_hpChange = skill->parameters.valueB;
+    g_hpChange = GetSkillValueB(skill);
     g_mpChange = 0;
 }
 
