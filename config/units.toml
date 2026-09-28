@@ -30,11 +30,6 @@ source = "src/Util/range.c"
 flags = "c"
 
 [[unit]]
-unit = "compare"
-source = "src/Util/compare.c"
-flags = "c"
-
-[[unit]]
 unit = "nibble"
 source = "src/Util/nibble.c"
 flags = "c"
@@ -67,11 +62,6 @@ flags = "c"
 [[unit]]
 unit = "fieldview"
 source = "src/Game/fieldview.c"
-flags = "c"
-
-[[unit]]
-unit = "scriptflow"
-source = "src/Script/scriptflow.c"
 flags = "c"
 
 [[unit]]
@@ -220,11 +210,6 @@ source = "src/Game/savegame.c"
 flags = "c"
 
 [[unit]]
-unit = "texttoken"
-source = "src/Script/texttoken.c"
-flags = "c"
-
-[[unit]]
 unit = "hotspot"
 source = "src/Ui/hotspot.c"
 flags = "c"
@@ -337,11 +322,6 @@ flags = "c"
 [[unit]]
 unit = "equipeffect"
 source = "src/Game/equipeffect.c"
-flags = "c"
-
-[[unit]]
-unit = "clockops"
-source = "src/Script/clockops.c"
 flags = "c"
 
 [[unit]]
