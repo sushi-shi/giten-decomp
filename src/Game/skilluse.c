@@ -34,7 +34,6 @@
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
-#include <Game/Pool.h>
 #include <Game/Skill.h>
 #include <Game/SkillUse.h>
 #include <Game/StateStack.h>
