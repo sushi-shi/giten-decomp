@@ -345,11 +345,6 @@ source = "src/Game/fieldmain.c"
 flags = "c"
 
 [[unit]]
-unit = "analyze"
-source = "src/Game/analyze.c"
-flags = "c"
-
-[[unit]]
 unit = "picture"
 source = "src/Gfx/picture.c"
 flags = "c"
@@ -405,11 +400,6 @@ source = "src/Game/maxstats.c"
 flags = "c"
 
 [[unit]]
-unit = "panelinput"
-source = "src/Ui/panelinput.c"
-flags = "c"
-
-[[unit]]
 unit = "equipeffect"
 source = "src/Game/equipeffect.c"
 flags = "c"
@@ -425,11 +415,6 @@ source = "src/Game/fieldskill.c"
 flags = "c"
 
 [[unit]]
-unit = "automapbits"
-source = "src/Game/automapbits.c"
-flags = "c"
-
-[[unit]]
 unit = "statusmenu"
 source = "src/Game/statusmenu.c"
 flags = "c"
@@ -440,11 +425,6 @@ source = "src/Game/restore.c"
 flags = "c"
 
 [[unit]]
-unit = "worldevents"
-source = "src/Game/worldevents.c"
-flags = "c"
-
-[[unit]]
 unit = "worldplaces"
 source = "src/Game/worldplaces.c"
 flags = "c"
@@ -452,16 +432,6 @@ flags = "c"
 [[unit]]
 unit = "list"
 source = "src/Util/list.c"
-flags = "c"
-
-[[unit]]
-unit = "areanpc"
-source = "src/Game/areanpc.c"
-flags = "c"
-
-[[unit]]
-unit = "training"
-source = "src/Game/training.c"
 flags = "c"
 
 [[unit]]
@@ -482,16 +452,6 @@ flags = "c"
 [[unit]]
 unit = "scriptpanel"
 source = "src/Script/scriptpanel.c"
-flags = "c"
-
-[[unit]]
-unit = "itemmenu"
-source = "src/Game/itemmenu.c"
-flags = "c"
-
-[[unit]]
-unit = "infobar"
-source = "src/Game/infobar.c"
 flags = "c"
 
 [[unit]]
@@ -537,16 +497,6 @@ flags = "c"
 [[unit]]
 unit = "waitstate"
 source = "src/Game/waitstate.c"
-flags = "c"
-
-[[unit]]
-unit = "partyreorder"
-source = "src/Game/partyreorder.c"
-flags = "c"
-
-[[unit]]
-unit = "celltrap"
-source = "src/Game/celltrap.c"
 flags = "c"
 
 [[unit]]
@@ -643,11 +593,6 @@ flags = "c"
 unit = "effectdraw"
 source = "src/Gfx/effectdraw.cpp"
 flags = "cpp-noeh"
-
-[[unit]]
-unit = "treasurestate"
-source = "src/Game/treasurestate.c"
-flags = "c"
 
 [[unit]]
 unit = "devicesettings"
