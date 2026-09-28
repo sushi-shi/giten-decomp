@@ -39,7 +39,7 @@ bitmapio	2	2
 bitset	5	5
 blit	18	15
 bmpseek	3	2
-character	170	161
+character	171	162
 clickwait	1	1
 clock	74	70
 d3dapp	41	36
@@ -50,14 +50,14 @@ displayconfig	2	2
 effectdraw	3	1
 equipeffect	2	2
 eventflags	28	28
-fieldmain	59	57
-fieldobj	141	135
-fieldscreen	103	102
+fieldmain	59	56
+fieldobj	141	134
+fieldscreen	103	103
 fieldview	38	36
 font	150	143
 fusion	114	111
 gameloop	7	7
-gamestate	8	7
+gamestate	7	6
 handle	33	32
 hotspot	6	6
 hotspotclick	1	0
@@ -101,14 +101,14 @@ skilluse	53	50
 sprite	7	6
 statestack	127	123
 statusmenu	9	9
-statuspanel	49	46
+statuspanel	49	47
 surfacecopy	1	1
 textapi	5	5
 textchar	1	0
 textstate	21	20
 texture	1	0
 texturebitmap	1	1
-treasurebox	147	138
+treasurebox	147	137
 vec3	10	8
 videostate	5	5
 vram	44	40
@@ -186,11 +186,11 @@ character	_AttachEquipItem	100.0000	99.4828	2	29991f88d029	0x40590	100.0000
 character	_BuildStatusSlots	100.0000	100.0000	2	5432bba1200a	0x40f40	100.0000	
 character	_CalcGunAccuracyStat	100.0000	100.0000	3	67bdc428b06f	0x3d2c0	100.0000	
 character	_CalcGunEvasionStat	100.0000	100.0000	3	39915b3c5fcb	0x3d340	100.0000	
-character	_CalcMagicAccuracyStat	100.0000	100.0000	3	833b1b3c5cde	0x3d4d0	100.0000	
-character	_CalcMagicDefenseStat	100.0000	99.8461	4	6df12c7428d4	0x3d530	100.0000	
-character	_CalcMagicEvasionStat	100.0000	99.8182	3	5dec2476bff6	0x3d510	100.0000	
+character	_CalcMagicAccuracyStat	100.0000	99.8182	3	833b1b3c5cde	0x3d4d0	100.0000	
+character	_CalcMagicDefenseStat	100.0000	100.0000	4	6df12c7428d4	0x3d530	100.0000	
+character	_CalcMagicEvasionStat	100.0000	100.0000	3	5dec2476bff6	0x3d510	100.0000	
 character	_CalcMagicPowerStat	100.0000	100.0000	3	f5c725b233b2	0x3d4f0	100.0000	
-character	_CalcMaxHp	100.0000	100.0000	1	3d565d96e5f7	0x3cec0	100.0000	
+character	_CalcMaxHp	100.0000	99.9583	1	3d565d96e5f7	0x3cec0	100.0000	
 character	_CalcMaxMp	100.0000	99.9487	5	63a32e7117aa	0x3cf70	100.0000	
 character	_CalcPhysicalDefenseStat	100.0000	100.0000	3	e138d9ed0d1e	0x3d240	100.0000	
 character	_CalcWeaponAccuracyStat	100.0000	100.0000	3	de42b2daba86	0x3d390	100.0000	
@@ -212,6 +212,7 @@ character	_ClearPartySlotSelection	100.0000	100.0000	1	60909298c86b	0x3e660	100.
 character	_ClearRosterConditions	100.0000	100.0000	2	b98c91f3cdaf	0x3fb80	100.0000	
 character	_ClearStatModifiers	100.0000	100.0000	1	aef896c5b6be	0x3dcb0	100.0000	
 character	_CompareMacca	100.0000	100.0000	1	cb9ffa683278	0x40950	100.0000	
+character	_ComputeActionSpeed	100.0000	100.0000	5	9e66efca9373	0x3c810	100.0000	
 character	_CopyCharacter	100.0000	100.0000	3	a7818230193b	0x3fbc0	100.0000	
 character	_CopyCharacterCore	100.0000	100.0000	4	427c81e7906f	0x3c990	100.0000	
 character	_CountFallenHumans	100.0000	100.0000	4	7bbcc3c990ae	0x3fc30	100.0000	
@@ -225,7 +226,7 @@ character	_DrawPartyStatusSlot	100.0000	100.0000	4	58f8426a6268	0x3e1f0	100.0000
 character	_EaseCondition	100.0000	100.0000	3	2a4af4fe3878	0x3f220	100.0000	
 character	_EaseSleep	100.0000	100.0000	3	79314546ffe4	0x3f290	100.0000	
 character	_EmptyPoolMask	100.0000	100.0000	3	23db49781a75	0x3d050	100.0000	
-character	_EquipItem	100.0000	99.9468	4	1b374253dfd1	0x40710	100.0000	
+character	_EquipItem	99.8936	99.8936	5	12292ef14d8e	0x40710	100.0000	
 character	_EquipPartOfItem	100.0000	100.0000	5	2d00d489be30	0x40290	100.0000	
 character	_EscalateCondition	100.0000	100.0000	3	d663eff844ed	0x3f1c0	100.0000	
 character	_ExchangePartySlot	100.0000	100.0000	1	44a1e645c44c	0x3f910	100.0000	
@@ -297,7 +298,7 @@ character	_NormalizeItemSlot	100.0000	100.0000	4	a5b916bd5345	0x408b0	100.0000
 character	_PartyAlignmentClass	100.0000	100.0000	3	738fd3bf3440	0x3e100	100.0000	
 character	_PayStepUpkeep	100.0000	100.0000	5	99985a6d99de	0x40fa0	100.0000	
 character	_PollPartySlotSelection	100.0000	100.0000	2	1aec1e85b36a	0x3e590	100.0000	
-character	_PollTextPartySlotSelection	99.4558	96.2585	3	ae8caaf37efc	0x3e3c0	99.4558	
+character	_PollTextPartySlotSelection	99.4558	99.4558	3	ae8caaf37efc	0x3e3c0	99.4558	
 character	_PoolState	100.0000	100.0000	1	f11518e8ea29	0x3d030	100.0000	
 character	_ProcessPartyCasualties	100.0000	100.0000	3	febd638b3eae	0x3fce0	100.0000	
 character	_RecalcCharacterStats	100.0000	100.0000	8	a3aa03a51175	0x3c8b0	100.0000	
@@ -523,7 +524,7 @@ fieldmain	_FreeFieldImageCache	100.0000	100.0000	1	0e63a9312817	0x14410	100.0000
 fieldmain	_GetFieldBusy	100.0000	100.0000	1	a04a775f5e06	0x12860	100.0000	
 fieldmain	_GetFieldExplorationActive	100.0000	100.0000	2	68e6462b15c4	0x12b20	100.0000	
 fieldmain	_GetReturnPoint	100.0000	100.0000	1	ceff65fa5453	0x12930	100.0000	
-fieldmain	_GetViewVisibility	100.0000	100.0000	3	2a3832a817cf	0x14340	100.0000	
+fieldmain	_GetViewVisibility	100.0000	99.8305	3	2a3832a817cf	0x14340	100.0000	
 fieldmain	_GrowAutoMoves	100.0000	100.0000	1	a739a2e0e12c	0x12720	100.0000	
 fieldmain	_HasAutoMoves	100.0000	100.0000	2	51792e2fbbe7	0x127a0	100.0000	
 fieldmain	_HasQueuedObjectEvents	100.0000	100.0000	1	bfba1224c61d	0x13c00	100.0000	
@@ -576,7 +577,7 @@ fieldobj	_AddFamiliarity	100.0000	100.0000	1	00581cb3b89f	0x10d30	100.0000
 fieldobj	_AddFamiliarityCount	100.0000	100.0000	1	b04d85dbfdb6	0x10bd0	100.0000	
 fieldobj	_AddLevelGap	100.0000	100.0000	1	0795a7a1ca52	0x10ca0	100.0000	
 fieldobj	_AdvanceObjectAnims	100.0000	100.0000	1	3356896f9e9f	0xe6b0	100.0000	
-fieldobj	_AlignmentConflicts	84.6364	84.4545	3	17b6457589ce	0x10db0	84.6364	
+fieldobj	_AlignmentConflicts	84.6364	84.6364	3	17b6457589ce	0x10db0	84.6364	
 fieldobj	_AnyObjectInReach	100.0000	100.0000	2	9a32e4b47d55	0x11620	100.0000	
 fieldobj	_ApplyObjectConditions	100.0000	100.0000	3	314c8302441b	0xe4e0	100.0000	
 fieldobj	_AssignWorldEncounterGroups	100.0000	100.0000	2	bce8d3f42846	0x11440	100.0000	
@@ -679,7 +680,7 @@ fieldobj	_ReadRecordIfWanted	100.0000	100.0000	1	79596145254e	0x10b00	100.0000
 fieldobj	_RefreshFamiliarity	100.0000	100.0000	5	6a902f845b25	0x10bf0	100.0000	
 fieldobj	_RefreshIfTurned	100.0000	100.0000	2	479a6e40ed0c	0xf220	100.0000	
 fieldobj	_RefreshObjectDraw	100.0000	100.0000	1	3203e64188db	0xea50	100.0000	
-fieldobj	_RelativeFacing	100.0000	100.0000	1	ca74240a4a16	0xdf30	100.0000	
+fieldobj	_RelativeFacing	100.0000	79.6667	1	ca74240a4a16	0xdf30	100.0000	
 fieldobj	_RemoveFieldObject	100.0000	100.0000	6	084be65539dc	0xd7f0	100.0000	
 fieldobj	_ResetFieldLayer	100.0000	100.0000	2	ae08649d0c9c	0xe7e0	100.0000	
 fieldobj	_ResetFieldObjects	100.0000	100.0000	2	5c6411f5099f	0xd940	100.0000	
@@ -763,7 +764,7 @@ fieldscreen	_GetWorldMapViewOrigin	100.0000	100.0000	3	d13ef714b20d	0x164f0	100.
 fieldscreen	_GetWorldViewBlockDelta	100.0000	100.0000	2	8a136f8afb2e	0x16650	100.0000	
 fieldscreen	_GetWorldViewOrigin	100.0000	100.0000	1	10b2feba6d7c	0x166f0	100.0000	
 fieldscreen	_GunCommand	100.0000	100.0000	2	2ad4751c4ea1	0x151d0	100.0000	
-fieldscreen	_HitTestPanelRow	100.0000	63.7500	1	d5ac7c4a31f4	0x15a70	100.0000	
+fieldscreen	_HitTestPanelRow	100.0000	100.0000	2	038923deaa72	0x15a70	100.0000	
 fieldscreen	_InitWorldPanel	100.0000	100.0000	3	cd4db10c1861	0x16960	100.0000	
 fieldscreen	_IsFieldPanelRowChecked	100.0000	100.0000	4	b3b6fd9077d5	0x14f00	100.0000	
 fieldscreen	_ItemCommand	100.0000	100.0000	2	6e1170e125d6	0x152a0	100.0000	
@@ -1125,7 +1126,6 @@ gameloop	_SetLongFrame	100.0000	100.0000	1	dfcf4d7a5e84	0x1960	100.0000
 gameloop	_StartGame	100.0000	100.0000	3	061e3c88b5e7	0x19a0	100.0000	
 gameloop	_StepGame	100.0000	100.0000	2	a01ef3591778	0x19d0	100.0000	
 gameloop	_TickGameTasks	100.0000	100.0000	2	441aea90dc22	0x1980	100.0000	
-gamestate	_ComputeActionSpeed	100.0000	100.0000	5	9e66efca9373	0x3c810	100.0000	
 gamestate	_GetMapArea	100.0000	100.0000	1	9a0f04df6309	0x3c7f0	100.0000	
 gamestate	_GetMapCoord	100.0000	100.0000	1	8a6a5e3b1cbf	0x3c7b0	100.0000	
 gamestate	_GetMapLevel	100.0000	100.0000	1	87fd454c9bd8	0x3c800	100.0000	
@@ -2006,7 +2006,7 @@ scriptvars	_OpGetWindowScrollStep	100.0000	100.0000	1	48ac088a7b57	0x3ae60	100.0
 scriptvars	_OpGetWindowScrollTop	100.0000	100.0000	1	932f8ac9e278	0x3adc0	100.0000	
 scriptvars	_OpHideSprite	100.0000	100.0000	2	845ac7cac4df	0x3a350	100.0000	
 scriptvars	_OpMaskScreenCells	100.0000	100.0000	1	b284394aecde	0x3a5b0	100.0000	
-scriptvars	_OpNextChoice	88.7216	83.8247	3	76f729e436b7	0x3a870	88.7216	
+scriptvars	_OpNextChoice	88.7216	88.7216	3	76f729e436b7	0x3a870	88.7216	
 scriptvars	_OpPauseTickCounter	100.0000	100.0000	1	826aca9a69a5	0x3bb40	100.0000	
 scriptvars	_OpPeekPokeScratch	100.0000	100.0000	2	76eff52e9447	0x3bd40	100.0000	
 scriptvars	_OpPlayAnimation	100.0000	100.0000	1	3ce560d0129e	0x3a6e0	100.0000	
@@ -2302,7 +2302,7 @@ statuspanel	_DrawEquipLines	100.0000	100.0000	4	f8e48c8191d6	0x44940	100.0000
 statuspanel	_DrawEquipPanel	100.0000	100.0000	4	2c63785578aa	0x43820	100.0000	
 statuspanel	_DrawEquipPickRow	100.0000	100.0000	2	f8d190bc7726	0x45130	100.0000	
 statuspanel	_DrawStatBar	100.0000	100.0000	2	a2ebb38f0efd	0x42520	100.0000	
-statuspanel	_DrawStatBarSegment	99.5312	99.5312	3	f25b88cf811a	0x425c0	100.0000	
+statuspanel	_DrawStatBarSegment	100.0000	100.0000	3	f25b88cf811a	0x425c0	100.0000	
 statuspanel	_DrawStatColumn	100.0000	100.0000	1	04465775c174	0x43930	100.0000	
 statuspanel	_DrawStatCompare	100.0000	100.0000	3	114d0c62b111	0x43a20	100.0000	
 statuspanel	_DrawStatLine	100.0000	100.0000	5	92c01e0d41fc	0x42830	100.0000	
@@ -2326,7 +2326,7 @@ statuspanel	_OpenEquipMenu	100.0000	100.0000	1	af87ac9b23a8	0x43530	100.0000
 statuspanel	_OpenItemInfoPlane	100.0000	100.0000	2	7d8e20604d0f	0x44bb0	100.0000	
 statuspanel	_OpenStatListWindow	100.0000	100.0000	1	252fbc3687b6	0x42670	100.0000	
 statuspanel	_PollEquipPart	93.9683	93.9683	6	a110d9a50322	0x44fb0	93.9683	
-statuspanel	_PreviewEquipChange	100.0000	100.0000	12	b5f9229feafe	0x43ac0	100.0000	
+statuspanel	_PreviewEquipChange	100.0000	100.0000	13	c06639823dc9	0x43ac0	100.0000	
 statuspanel	_ResumeStatusPage	100.0000	100.0000	2	dc1b562cdc7e	0x423e0	100.0000	
 statuspanel	_RunAlignmentPage	100.0000	100.0000	3	95cd041ec127	0x42b00	100.0000	
 statuspanel	_RunAttachScreen	100.0000	100.0000	6	b48d0d6bc02f	0x43d10	100.0000	
@@ -2461,7 +2461,7 @@ treasurebox	_MarkRegionList	100.0000	99.6923	3	14ca732094a9	0x1ec10	100.0000
 treasurebox	_MarkRoomRegions	100.0000	100.0000	1	99db59ebe46b	0x1ed20	100.0000	
 treasurebox	_MarkWorldMapEventSpot	100.0000	100.0000	2	b3dce3b77d3f	0x1b3e0	100.0000	
 treasurebox	_NextNpcSlot	100.0000	100.0000	1	e4293f3a61cc	0x1f250	100.0000	
-treasurebox	_NormalizeAffiliations	100.0000	84.5588	2	f118670abb71	0x1c830	100.0000	
+treasurebox	_NormalizeAffiliations	100.0000	82.0441	2	f118670abb71	0x1c830	100.0000	
 treasurebox	_NotifyEncounterEnd	100.0000	100.0000	1	73fdb9352997	0x1f530	100.0000	
 treasurebox	_NotifyEncounterStart	100.0000	100.0000	1	f0391215057f	0x1f520	100.0000	
 treasurebox	_OpenScriptItemMenu	100.0000	100.0000	3	475bcf67c4a6	0x1c010	100.0000	
@@ -2469,7 +2469,7 @@ treasurebox	_PickGrowthStats	100.0000	100.0000	5	a571197212bf	0x1c460	100.0000
 treasurebox	_PickReorderSlot	100.0000	100.0000	1	e73bdb5d59f7	0x1ad00	100.0000	
 treasurebox	_PollPanel	100.0000	100.0000	1	b4ea72d76c6f	0x1cd30	100.0000	
 treasurebox	_PollScriptItemMenu	100.0000	100.0000	1	5732b6697319	0x1c0e0	100.0000	
-treasurebox	_PrepareViewedTreasureBox	100.0000	100.0000	2	9af3fafafd6a	0x1aaa0	100.0000	
+treasurebox	_PrepareViewedTreasureBox	100.0000	100.0000	3	61a4166dac57	0x1aaa0	100.0000	
 treasurebox	_RaiseAffiliationLevels	100.0000	100.0000	2	59c8738643db	0x1c8d0	100.0000	
 treasurebox	_RaiseTargetFlag23	100.0000	100.0000	4	54b36a8b02bb	0x1fc70	100.0000	
 treasurebox	_RaiseTargetFlag25	100.0000	100.0000	4	1d6f3adf5395	0x1fce0	100.0000	
@@ -2509,7 +2509,7 @@ treasurebox	_StoreAutomapLevel	100.0000	100.0000	7	646d85ac94c0	0x1cfc0	100.0000
 treasurebox	_TakeLearnableSkill	100.0000	100.0000	3	1291de355438	0x1c330	100.0000	
 treasurebox	_TrainingThreshold	100.0000	100.0000	1	466d0a0b0508	0x1c650	100.0000	
 treasurebox	_TransformAutomapPoint	100.0000	100.0000	1	2aff8df87c47	0x1d380	100.0000	
-treasurebox	_UpdateAutomapScrollPanel	100.0000	100.0000	3	cd918d158742	0x1d890	100.0000	
+treasurebox	_UpdateAutomapScrollPanel	100.0000	96.9930	3	cd918d158742	0x1d890	100.0000	
 treasurebox	_UpdateCurrentRoom	100.0000	100.0000	1	3609960c78ec	0x1f070	100.0000	
 treasurebox	_UpdateInfoBar	100.0000	100.0000	3	0e067f87e574	0x1ea50	100.0000	
 treasurebox	_WriteAutomapAreas	100.0000	100.0000	6	ae28c9fa6d0d	0x1e3c0	100.0000	
