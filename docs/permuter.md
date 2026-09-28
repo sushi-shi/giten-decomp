@@ -89,6 +89,11 @@ functions. Objects use the normal build's canonicalization and per-candidate
 alias proof. Source bytes are restored and checked; `state` also checks source
 fingerprints. SDK targets use explicit `RVA_COMPGEN` claims and reject `include`
 and `mixed` probes because the body lives outside the authored TU.
+Parallel variant batches score in manifest order while later TUs compile.
+On exit, queued compiles are cancelled and running compiles finish removing
+their disposable sources before scratch storage is removed. Alias checks reuse
+parsed baseline objects only while their full contents remain identical;
+candidate objects are always parsed and proved afresh.
 
 Only scored mutations count as executed states. All-failed runs are inconclusive;
 a flat successful sweep bounds that experiment, not the compiler's possibilities.
