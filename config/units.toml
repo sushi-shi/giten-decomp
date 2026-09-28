@@ -410,11 +410,6 @@ source = "src/Script/clockops.c"
 flags = "c"
 
 [[unit]]
-unit = "fieldskill"
-source = "src/Game/fieldskill.c"
-flags = "c"
-
-[[unit]]
 unit = "statusmenu"
 source = "src/Game/statusmenu.c"
 flags = "c"
