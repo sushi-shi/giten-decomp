@@ -312,6 +312,47 @@ static __inline void ApplyReflectedDamage(Character* actor) {
         }                                                                                          \
     } while (0)
 
+static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
+    i16 kind;
+    if (IsSkillAction(attacker)) {
+        kind = GetSkillKind(attacker->pickTarget);
+        switch (kind) {
+            case 6:
+                if (target->shield == 0) {
+                    ChangePool(&target->pools.mp, -attacker->lastChange);
+                }
+                g_mpChange = attacker->lastChange;
+                return;
+            case 5:
+                ChangePool(&attacker->pools.hp, attacker->lastChange);
+                g_actionResult |= 0x50;
+                break;
+            case 7:
+                ChangePool(&attacker->pools.mp, attacker->lastChange);
+                ChangePool(&target->pools.mp, -attacker->lastChange);
+                g_actionResult |= 0x70;
+                g_mpChange = attacker->lastChange;
+                return;
+            case 8:
+                attacker->lastChange = min(target->experience, attacker->lastChange);
+                target->experience -= attacker->lastChange;
+                attacker->experience += attacker->lastChange;
+                g_actionResult |= 0x80;
+                g_drainAmount = attacker->lastChange;
+                return;
+        }
+    }
+    ApplyShieldedDamage(target, attacker->lastChange);
+    if (attacker->pickRole == 1 && GetCharacterEquipment(attacker)[5].item >= 1) {
+        kind = GetItemPassiveEffectCode(GetLoadedRecord(GetCharacterEquipment(attacker)[5].item));
+        if (kind == 0x86) {
+            ChangePool(&attacker->pools.hp, attacker->lastChange);
+        } else if (kind == 0x87) {
+            ChangePool(&attacker->pools.mp, attacker->lastChange);
+        }
+    }
+}
+
 // Resolves the actor's picked action (weapon, gun, item or skill) on its
 // target: rolls it, pays its cost, plays the hit sound, applies the change by
 // the action's result code (the draining skills move HP, MP or experience),
@@ -430,49 +471,10 @@ i16 ResolveCombatAction(void) {
         } else if (attacker->result == -2) {
             ChangePool(targetHp, attacker->lastChange);
         } else {
-            if (IsSkillAction(attacker)) {
-                kind = GetSkillKind(attacker->pickTarget);
-                switch (kind) {
-                    case 6:
-                        if (target->shield == 0) {
-                            ChangePool(&target->pools.mp, -attacker->lastChange);
-                        }
-                        g_mpChange = attacker->lastChange;
-                        goto done;
-                    case 5:
-                        ChangePool(&attacker->pools.hp, attacker->lastChange);
-                        g_actionResult |= 0x50;
-                        break;
-                    case 7:
-                        ChangePool(&attacker->pools.mp, attacker->lastChange);
-                        ChangePool(&target->pools.mp, -attacker->lastChange);
-                        g_actionResult |= 0x70;
-                        g_mpChange = attacker->lastChange;
-                        goto done;
-                    case 8:
-                        attacker->lastChange = min(target->experience, attacker->lastChange);
-                        target->experience -= attacker->lastChange;
-                        attacker->experience += attacker->lastChange;
-                        g_actionResult |= 0x80;
-                        g_drainAmount = attacker->lastChange;
-                        goto done;
-                }
-            }
-            ApplyShieldedDamage(target, attacker->lastChange);
-            if (attacker->pickRole == 1 && GetCharacterEquipment(attacker)[5].item >= 1) {
-                kind = GetItemPassiveEffectCode(
-                    GetLoadedRecord(GetCharacterEquipment(attacker)[5].item)
-                );
-                if (kind == 0x86) {
-                    ChangePool(&attacker->pools.hp, attacker->lastChange);
-                } else if (kind == 0x87) {
-                    ChangePool(&attacker->pools.mp, attacker->lastChange);
-                }
-            }
+            ApplyCombatDamage(attacker, target);
         }
     }
 
-done:
     attacker->pickNoEffect = 0;
     if (HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE) && g_actionResult == 5) {
         AddCondition(GetCharacterConditions(target), CONDITION_DYING);
@@ -540,7 +542,8 @@ void ResolveKnockout(i16 previousHp, i16 id) {
         }
         SetAnalyzed(combatant->id, 1);
         if (id < 0) {
-            goto removeTarget;
+            RemoveCombatTarget(id);
+            return;
         }
         g_rewardMacca += combatant->macca;
         g_rewardMagnetite += combatant->magnetite;
@@ -550,13 +553,13 @@ void ResolveKnockout(i16 previousHp, i16 id) {
         }
     } else {
         if (id < 0) {
-            goto removeTarget;
+            RemoveCombatTarget(id);
+            return;
         }
         ClearCharacterFlag(combatant, 63);
     }
     ResetObjectAnim(id);
     RunFieldIdle();
-removeTarget:
     RemoveCombatTarget(id);
 }
 
@@ -628,6 +631,8 @@ static __inline void RefreshAfterDeferredRemoval(void) {
 // function (zero stores and the NULL tests use it); cl here materialises it
 // per phase, and the scratch registers rotate one place from there; the
 // permuter found one compiler island.
+// Codegen constraint: keep next-target success outside the phase switch;
+// an in-loop return or a post-loop sentinel test changes the shared tail.
 RVA(0x0002b6a0, 0x9b0)
 i16 RunBattleAction(void) {
     Character* actor;

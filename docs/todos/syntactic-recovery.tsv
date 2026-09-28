@@ -2,16 +2,12 @@ rva	unit	function	lost_max	cur
 0x021470	areamap	_DecodeAreaMap	76.4360	75.0698
 0x046060	d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	94.3374	93.9325
 0x058e40	effectdraw	_DrawScreenEffectSprite	98.0000	92.4667
-0x0553d0	font	?LayerAtPoint@@YAHII@Z	100.0000	96.2255
-0x055580	font	?PadButtonAtPoint@@YAHII@Z	100.0000	90.7065
 0x01a400	itemuse	_RunItemUse	97.4486	97.3596
 0x005b80	partyaction	_GetMemberPanelState	100.0000	88.9610
 0x009620	partypick	_RunPartyCommandInput	92.0986	85.7913
-0x056f30	resourceblit	_CopyResourceBitmap16	100.0000	99.8571
 0x03abc0	scriptvars	_ResizeScriptEntry	100.0000	98.0000
 0x00aa20	skillattack	_RollSkillHit	98.7027	98.6216
 0x001aa0	textchar	_ReadTextChar	100.0000	99.5918
 0x04cb30	winmain	?RenderEnemy@@YAXHHH@Z	84.7533	82.4373
 0x04c3c0	winmain	?RenderNPC@@YAXH@Z	92.8216	87.8994
 0x04bdd0	winmain	?RenderTBox@@YAXXZ	94.7506	92.3799
-0x04ae30	winmain	?ShadeMesh@@YAXPAUMesh@@@Z	100.0000	98.4359
