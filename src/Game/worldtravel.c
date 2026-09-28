@@ -52,12 +52,6 @@ const u8 g_worldTravelTerrainFlags[16] = {0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0,
 DATA(0x00068630)
 static i16 s_travelHistoryLimit = 64;
 
-DATA(0x00068a48)
-i16 g_worldMapX = 286;
-
-DATA(0x00068a4c)
-i16 g_worldMapY = 192;
-
 static __inline void SetWorldTravelDestination(MapCoord destination) {
     g_destinationX = destination.x;
     g_destinationY = destination.y;

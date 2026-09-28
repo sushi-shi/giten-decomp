@@ -31,6 +31,13 @@
 #include <Ui/Hotspot.h>
 #include <Ui/Message.h>
 
+// The party's world-map position (initially 286, 192).
+DATA(0x00068a48)
+i16 g_worldMapX = 286;
+
+DATA(0x00068a4c)
+i16 g_worldMapY = 192;
+
 // Pending transition request: negative exits, positive marks the entry spot.
 DATA(0x0007be38)
 i16 g_worldMapRequest = 0;
