@@ -153,71 +153,91 @@ i16 g_targetCount;
 DATA(0x000919f6)
 i16 g_actorId;
 
-DATA(0x00080a98)
-static SkillHeader s_effectSkill;
+// The member (by id) using a skill on the field; -1 asks the picker.
+DATA(0x00080a90)
+static i16 s_skillUser = 0;
 
-DATA(0x00080cf4)
-static i32 s_effectSkillId;
+// The skill picked from the member's list.
+DATA(0x00080a94)
+static i16 s_skillPicked = 0;
+
+DATA(0x00080a98)
+static SkillHeader s_effectSkill = {0};
 
 // Which objects the action marked (and whose stuns and conditions it clears
 // and applies).
 DATA(0x00080ab0)
-static i16 s_objectMarks[16];
+static i16 s_objectMarks[16] = {0};
 
 DATA(0x00080ad0)
-static i16 s_targetList[270];
+static i16 s_targetList[270] = {0};
+
+// The selected skill's attack range, passed to the target window.
+DATA(0x00080cec)
+static u8 s_pickRange = 0;
+
+// The user's party position.
+DATA(0x00080cf0)
+static i16 s_userPosition = 0;
+
+DATA(0x00080cf4)
+static i32 s_effectSkillId = 0;
 
 // The number of combatants left on the action's target list.
 DATA(0x00080cfc)
-static i16 s_targetListCount;
+static i16 s_targetListCount = 0;
 
 // Set while PushPromptState's prompt is pending.
 DATA(0x00080d00)
-static b16 s_promptPending;
+static b16 s_promptPending = false;
 
 // The picked role of the action being played (PlayActionEffect reads it).
 DATA(0x00080d04)
-static i16 s_actionRole;
+static i16 s_actionRole = 0;
 
 // Set while effects are skipped (SetWorldMapActive): no shots, no redraw.
 DATA(0x00080d08)
-static i16 s_skipEffects;
+static i16 s_skipEffects = 0;
 
 // The object-removal deferral saved over the action.
 DATA(0x00080d0c)
-static i16 s_savedRemovalDeferred;
+static i16 s_savedRemovalDeferred = 0;
 
 // @identity-TODO: when set, a hidden object's removal waits (0x42bd09 then
 // calls 0x414750).
 DATA(0x00080d10)
-static b16 s_removalDeferred;
+static b16 s_removalDeferred = false;
 
 // Which hit sound the resolved action plays (0, 1 or 2 pick sounds 0x10,
 // 0x36 and 0x24): set by the effect code (0x42ce57, 0x42d02a).
 // @identity-TODO: what the three outcomes are is unrecovered.
 DATA(0x00080d14)
-static i16 s_actionOutcome;
+static i16 s_actionOutcome = 0;
 
 // The actor's and the target's HP before the action.
 DATA(0x00080d18)
-static i16 s_actorHpBefore;
+static i16 s_actorHpBefore = 0;
 
 DATA(0x00080d1c)
-static i16 s_targetHpBefore;
+static i16 s_targetHpBefore = 0;
 
 // The action's actor and target, and the actor's role and pick, kept until
 // the action ends.
 DATA(0x00080d20)
-static Character* s_actionActor;
+static Character* s_actionActor = 0;
 
 DATA(0x00080d24)
-static Character* s_actionTarget;
+static Character* s_actionTarget = 0;
 
 DATA(0x00080d28)
-static i16 s_actionRoleKept;
+static i16 s_actionRoleKept = 0;
 
 DATA(0x00080d2c)
-static i16 s_actionPickKept;
+static i16 s_actionPickKept = 0;
+
+// The picker or skill list menu.
+DATA(0x00080d30)
+static MenuBox* s_fieldMenu = 0;
 
 DATA(0x00080d34)
 char g_emptySkillMenuLabel[4] = {0};
@@ -1761,26 +1781,6 @@ void UseInertSkill(Character* user, Character* target) {
 // @identity-TODO: PrepareSkillAction only clears this word; no reader survives.
 DATA(0x00091980)
 i16 g_skillActionResetValue;
-
-// The member (by id) using a skill on the field; -1 asks the picker.
-DATA(0x00080a90)
-static i16 s_skillUser;
-
-// The skill picked from the member's list.
-DATA(0x00080a94)
-static i16 s_skillPicked;
-
-// The selected skill's attack range, passed to the target window.
-DATA(0x00080cec)
-static u8 s_pickRange;
-
-// The user's party position.
-DATA(0x00080cf0)
-static i16 s_userPosition;
-
-// The picker or skill list menu.
-DATA(0x00080d30)
-static MenuBox* s_fieldMenu;
 
 RVA(0x0002d7a0, 0x20)
 i16 CancelFieldTargetMenu(i16 command) {
