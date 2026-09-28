@@ -19,8 +19,8 @@ DATA(0x000716fc)
 static i16 s_patternState;
 
 RVA(0x000028a0, 0x4)
-i16 SaveDrawState(void) {
-    return 0;
+b16 SaveDrawState(void) {
+    return false;
 }
 
 RVA(0x000028b0, 0x1)
@@ -67,21 +67,21 @@ void InitCheckerPatterns(void) {
 }
 
 RVA(0x000029a0, 0x4)
-i16 SaveScreenState(void) {
-    return 0;
+b16 SaveScreenState(void) {
+    return false;
 }
 
 // @identity-TODO: this unused screen-state result's original role is unknown.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000029b0, 0x4)
-i16 GetLegacyScreenStateToken(void) {
-    return 0;
+b16 GetLegacyScreenStateToken(void) {
+    return false;
 }
 
 RVA(0x000029c0, 0x4)
-i16 SaveCellState(void) {
-    return 0;
+b16 SaveCellState(void) {
+    return false;
 }
 
 RVA(0x000029d0, 0x1)

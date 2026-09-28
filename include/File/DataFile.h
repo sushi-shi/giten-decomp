@@ -14,7 +14,7 @@ void* ReadCryptRecord(FILE* fp, void* out);
 void SkipBytes(FILE* fp, u16 count);
 void ReadRawBlock(FILE* fp, void* buf);
 FILE* OpenDataFile(i16 id, i32 kind, i16 variant);
-i32 CloseDataFile(FILE* fp);
+b32 CloseDataFile(FILE* fp);
 
 // Reads a little-endian encrypted word.
 u16 ReadCryptWord(FILE* fp);

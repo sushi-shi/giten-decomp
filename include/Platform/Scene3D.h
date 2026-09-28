@@ -327,12 +327,12 @@ extern Picture g_spritePicture;
     } while (0)
 
 // Creates the pictures, meshes and textures of the display; FALSE on failure.
-BOOL LoadGraphics(void);
+b32 LoadGraphics(void);
 
 // The layer code (layer.cpp): creating, freeing and repainting the layers,
 // hit-testing them and the navigation pad, the character panel's commands
 // and the dragging of the panel layers.
-i32 CreateScreenLayer(i32 slot);
+b32 CreateScreenLayer(i32 slot);
 void FreeScreenLayers(void);
 void UpdateLayerPanels(void);
 i32 LayerAtPoint(u32 x, u32 y);
@@ -462,13 +462,13 @@ extern u16 g_textPlaneImages[40];
 // The move commands (RunMoveCommand's table): each starts its move, first
 // advancing the game phase when `nextPhase` is set, and returns whether the
 // move started.
-BOOL MoveForwardCommand(i16 nextPhase);
-BOOL MoveRightCommand(i16 nextPhase);
-BOOL MoveBackCommand(i16 nextPhase);
-BOOL MoveLeftCommand(i16 nextPhase);
-BOOL TurnRightCommand(i16 nextPhase);
-BOOL TurnAroundCommand(i16 nextPhase);
-BOOL TurnLeftCommand(i16 nextPhase);
+b32 MoveForwardCommand(i16 nextPhase);
+b32 MoveRightCommand(i16 nextPhase);
+b32 MoveBackCommand(i16 nextPhase);
+b32 MoveLeftCommand(i16 nextPhase);
+b32 TurnRightCommand(i16 nextPhase);
+b32 TurnAroundCommand(i16 nextPhase);
+b32 TurnLeftCommand(i16 nextPhase);
 
 // How RenderEnemy spreads the objects sharing a cell: a pair to either side,
 // more in slots of three (centre, right, left).

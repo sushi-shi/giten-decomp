@@ -97,8 +97,8 @@ i16 AddHundredths(Character* character, i16 amount) {
 // member's MP and HP; a member drained of HP dies (and a demon leaves the
 // party slot `position`). Returns 1 when the member died.
 RVA(0x00041180, 0x118)
-i16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position) {
-    i16 died = 0;
+b16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position) {
+    b16 died = false;
     if (hero->magnetite >= cost) {
         hero->magnetite -= cost;
         cost = 0;
@@ -107,20 +107,20 @@ i16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position) {
         hero->magnetite = 0;
     }
     if (cost < 1) {
-        return 0;
+        return false;
     }
     PayPoolCost(&hero->pools.mp, cost);
     if (cost < 1) {
-        return 0;
+        return false;
     }
     PayPoolCost(&member->pools.mp, cost);
     if (cost < 1) {
-        return 0;
+        return false;
     }
     if (member->pools.hp.cur > (u16)cost) {
         member->pools.hp.cur -= cost;
     } else {
-        died = 1;
+        died = true;
         member->pools.hp.cur = 0;
         AddCondition(GetCharacterConditions(member), CONDITION_DYING);
         if (!IsHumanCharacter(member)) {
@@ -149,36 +149,34 @@ i16 TickPartyTimers(u16 minutes) {
     for (i = 0; i < 6; i++) {
         if (PartySlotAt(i) != -1 && (character = RosterMemberAt(PartySlotAt(i))) != NULL
             && character->id == 2) {
-            goto found;
+            if (TestModeFlags(MODE_WORLD_MAP)) {
+                s_timerMinutes += minutes;
+                count = s_timerMinutes / 240;
+                s_timerMinutes %= 240;
+            } else {
+                s_timerMinutes += minutes;
+                count = s_timerMinutes / 60;
+                s_timerMinutes %= 60;
+            }
+            if (count == 0) {
+                return 0;
+            }
+            if (GetFatalCondition(GetCharacterConditions(character))) {
+                return 0;
+            }
+            ChangePool(&character->pools.mp, -count);
+            ChangePool(&character->pools.hp, -count);
+            ApplyEmptyPools(character);
+            RequestStatusRedraw();
+            if (g_clock.moonPhase <= 14) {
+                ClearCondition(GetCharacterConditions(character), 3);
+            } else {
+                AddCondition(GetCharacterConditions(character), 3);
+            }
+            return 1;
         }
     }
     return -1;
-found:
-    if (TestModeFlags(MODE_WORLD_MAP)) {
-        s_timerMinutes += minutes;
-        count = s_timerMinutes / 240;
-        s_timerMinutes %= 240;
-    } else {
-        s_timerMinutes += minutes;
-        count = s_timerMinutes / 60;
-        s_timerMinutes %= 60;
-    }
-    if (count == 0) {
-        return 0;
-    }
-    if (GetFatalCondition(GetCharacterConditions(character))) {
-        return 0;
-    }
-    ChangePool(&character->pools.mp, -count);
-    ChangePool(&character->pools.hp, -count);
-    ApplyEmptyPools(character);
-    RequestStatusRedraw();
-    if (g_clock.moonPhase <= 14) {
-        ClearCondition(GetCharacterConditions(character), 3);
-    } else {
-        AddCondition(GetCharacterConditions(character), 3);
-    }
-    return 1;
 }
 
 // Clears the character's moon-driven personal flags as the moon moves on

@@ -235,9 +235,9 @@ i16 RemoveCombatTarget(i16 id) {
 }
 
 RVA(0x0002ab40, 0x60)
-i16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
+b16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     if (s_promptPending) {
-        return 1;
+        return true;
     }
     PushGameState(0x18);
     s_promptX = x;
@@ -246,7 +246,7 @@ i16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     s_promptMode = mode;
     s_promptSub = sub;
     s_promptPending = 1;
-    return 0;
+    return false;
 }
 
 RVA(0x0002aba0, 0x40)
@@ -274,13 +274,13 @@ Character* GetCombatant(i16 id) {
 }
 
 RVA(0x0002ac20, 0x29)
-i16 FlashHitObject(i16 object, i32 change) {
+b16 FlashHitObject(i16 object, i32 change) {
     if (change != 0) {
         GetFieldObject(object)->redraw = 2;
         RedrawFieldView();
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002ac50, 0x40)
@@ -310,6 +310,49 @@ static __inline void ApplyReflectedDamage(Character* actor) {
             ChangePool(&(target)->pools.hp, -(amount));                                            \
         }                                                                                          \
     } while (0)
+
+static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
+    i16 kind;
+    if (IsSkillAction(attacker)) {
+        kind = GetSkillKind(attacker->pickTarget);
+        switch (kind) {
+            case 6:
+                if (target->shield == 0) {
+                    ChangePool(&target->pools.mp, -attacker->lastChange);
+                }
+                g_mpChange = attacker->lastChange;
+                return;
+            case 5:
+                ChangePool(&attacker->pools.hp, attacker->lastChange);
+                g_actionResult |= 0x50;
+                break;
+            case 7:
+                ChangePool(&attacker->pools.mp, attacker->lastChange);
+                ChangePool(&target->pools.mp, -attacker->lastChange);
+                g_actionResult |= 0x70;
+                g_mpChange = attacker->lastChange;
+                return;
+            case 8:
+                if (target->experience < attacker->lastChange) {
+                    attacker->lastChange = target->experience;
+                }
+                target->experience -= attacker->lastChange;
+                attacker->experience += attacker->lastChange;
+                g_actionResult |= 0x80;
+                g_drainAmount = attacker->lastChange;
+                return;
+        }
+    }
+    ApplyShieldedDamage(target, attacker->lastChange);
+    if (attacker->pickRole == 1 && GetCharacterEquipment(attacker)[5].item >= 1) {
+        kind = GetItemPassiveEffectCode(GetLoadedRecord(GetCharacterEquipment(attacker)[5].item));
+        if (kind == 0x86) {
+            ChangePool(&attacker->pools.hp, attacker->lastChange);
+        } else if (kind == 0x87) {
+            ChangePool(&attacker->pools.mp, attacker->lastChange);
+        }
+    }
+}
 
 // Resolves the actor's picked action (weapon, gun, item or skill) on its
 // target: rolls it, pays its cost, plays the hit sound, applies the change by
@@ -431,51 +474,10 @@ i16 ResolveCombatAction(void) {
         } else if (attacker->result == -2) {
             ChangePool(targetHp, attacker->lastChange);
         } else {
-            if (IsSkillAction(attacker)) {
-                kind = GetSkillKind(attacker->pickTarget);
-                switch (kind) {
-                    case 6:
-                        if (target->shield == 0) {
-                            ChangePool(&target->pools.mp, -attacker->lastChange);
-                        }
-                        g_mpChange = attacker->lastChange;
-                        goto done;
-                    case 5:
-                        ChangePool(&attacker->pools.hp, attacker->lastChange);
-                        g_actionResult |= 0x50;
-                        break;
-                    case 7:
-                        ChangePool(&attacker->pools.mp, attacker->lastChange);
-                        ChangePool(&target->pools.mp, -attacker->lastChange);
-                        g_actionResult |= 0x70;
-                        g_mpChange = attacker->lastChange;
-                        goto done;
-                    case 8:
-                        if (target->experience < attacker->lastChange) {
-                            attacker->lastChange = target->experience;
-                        }
-                        target->experience -= attacker->lastChange;
-                        attacker->experience += attacker->lastChange;
-                        g_actionResult |= 0x80;
-                        g_drainAmount = attacker->lastChange;
-                        goto done;
-                }
-            }
-            ApplyShieldedDamage(target, attacker->lastChange);
-            if (attacker->pickRole == 1 && GetCharacterEquipment(attacker)[5].item >= 1) {
-                kind = GetItemPassiveEffectCode(
-                    GetLoadedRecord(GetCharacterEquipment(attacker)[5].item)
-                );
-                if (kind == 0x86) {
-                    ChangePool(&attacker->pools.hp, attacker->lastChange);
-                } else if (kind == 0x87) {
-                    ChangePool(&attacker->pools.mp, attacker->lastChange);
-                }
-            }
+            ApplyCombatDamage(attacker, target);
         }
     }
 
-done:
     attacker->pickNoEffect = 0;
     if (HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE) && g_actionResult == 5) {
         AddCondition(GetCharacterConditions(target), CONDITION_DYING);
@@ -543,7 +545,8 @@ void ResolveKnockout(i16 previousHp, i16 id) {
         }
         SetAnalyzed(combatant->id, 1);
         if (id < 0) {
-            goto removeTarget;
+            RemoveCombatTarget(id);
+            return;
         }
         g_rewardMacca += combatant->macca;
         g_rewardMagnetite += combatant->magnetite;
@@ -553,13 +556,13 @@ void ResolveKnockout(i16 previousHp, i16 id) {
         }
     } else {
         if (id < 0) {
-            goto removeTarget;
+            RemoveCombatTarget(id);
+            return;
         }
         ClearCharacterFlag(combatant, 63);
     }
     ResetObjectAnim(id);
     RunFieldIdle();
-removeTarget:
     RemoveCombatTarget(id);
 }
 
@@ -631,8 +634,10 @@ static __inline void RefreshAfterDeferredRemoval(void) {
 // function (zero stores and the NULL tests use it); cl here materialises it
 // per phase, and the scratch registers rotate one place from there; the
 // permuter found one compiler island.
+// Codegen constraint: keep next-target success outside the phase switch;
+// an in-loop return or a post-loop sentinel test changes the shared tail.
 RVA(0x0002b6a0, 0x9b0)
-i16 RunBattleAction(void) {
+b16 RunBattleAction(void) {
     Character* actor;
     ItemRecord* record;
     SkillHeader* skill;
@@ -652,7 +657,7 @@ i16 RunBattleAction(void) {
             s_reportedTally = -1;
             if (actor == NULL) {
                 CancelPendingAction();
-                return 0;
+                return false;
             }
             if (actor->pickRole == 8) {
                 TickFieldCount(g_actorId, 0);
@@ -660,7 +665,7 @@ i16 RunBattleAction(void) {
                 ReturnFromGameState();
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 RestoreSwappedMember();
-                return 0;
+                return false;
             }
             if (actor->pickRole == 7 && g_actorId < 0) {
                 TickFieldCount(g_actorId, 0);
@@ -670,12 +675,12 @@ i16 RunBattleAction(void) {
                 RequestFieldRefresh();
                 CancelPendingAction();
                 PlaySoundEffect(0x55);
-                return 0;
+                return false;
             }
             if (GetCombatant(actor->pickObject) == NULL) {
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 CancelPendingAction();
-                return 0;
+                return false;
             }
             s_actionActor = actor;
             s_actionTarget = GetCombatant(actor->pickObject);
@@ -904,7 +909,7 @@ i16 RunBattleAction(void) {
     }
 done:
     if (s_skipEffects) {
-        return 0;
+        return false;
     }
     return UpdateFieldScreen(0);
 
@@ -1024,7 +1029,7 @@ void SetActionOutcome(i16 outcome) {
 
 // Nonzero when `character` cannot pay the skill's HP or MP cost.
 RVA(0x0002c2c0, 0x22)
-i32 CannotPaySkill(Character* character, SkillParameters* skill) {
+b32 CannotPaySkill(Character* character, SkillParameters* skill) {
     return HpMpLeftAfterCost(GetSkillParameterCost(skill), character) < 0;
 }
 
@@ -1033,38 +1038,38 @@ i32 CannotPaySkill(Character* character, SkillParameters* skill) {
 // Nonzero when a condition or the member's lock keeps it from using `skill`;
 // skills with a mode are never blocked here.
 RVA(0x0002c2f0, 0x5d)
-i32 IsSkillBlocked(Character* character, SkillParameters* skill) {
+b32 IsSkillBlocked(Character* character, SkillParameters* skill) {
     if (GetPickBlockingCondition(GetCharacterConditions(character))) {
-        return 1;
+        return true;
     }
     if (!skill->mode) {
         if (GetCharacterBattleTallies(character)[0]) {
-            return 1;
+            return true;
         }
         if (LastConditionIn(GetCharacterConditions(character), s_skillBlockingConditions)) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 // The same check by skill id; skill 0x7a is also blocked while the first
 // roster member's byte +0x30 is clear.
 RVA(0x0002c350, 0x69)
-i32 IsSkillIdBlocked(Character* character, i16 id) {
+b32 IsSkillIdBlocked(Character* character, i16 id) {
     if (GetSkillMode(id)) {
-        return 0;
+        return false;
     }
     if (GetCharacterBattleTallies(character)[0]) {
-        return 1;
+        return true;
     }
     if (LastConditionIn(GetCharacterConditions(character), s_skillIdBlockingConditions)) {
-        return 1;
+        return true;
     }
     if (id == 0x7a && !GetRosterCharacter(0)->markPosition.area) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // Takes the skill's cost from `who`: MP for a positive cost, HP for a

@@ -322,7 +322,7 @@ ItemStackList* CreateItemMenuEntries(i16* items, i16 count) {
 }
 
 RVA(0x0001be10, 0x60)
-i16 RunItemBuyMenu(void) {
+b16 RunItemBuyMenu(void) {
     i16 step;
     i16 result;
     switch (GetGamePhase()) {
@@ -341,7 +341,7 @@ i16 RunItemBuyMenu(void) {
             ReturnFromGameState();
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0001be70, 0x110)
@@ -386,7 +386,7 @@ i16 StepItemSellMenu(i16* step) {
 }
 
 RVA(0x0001bf80, 0x54)
-i16 RunItemSellMenu(void) {
+b16 RunItemSellMenu(void) {
     i16 step;
     i16 result;
     switch (GetGamePhase()) {
@@ -405,7 +405,7 @@ i16 RunItemSellMenu(void) {
             ReturnFromGameState();
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0001bfe0, 0x2a)

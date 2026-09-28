@@ -233,15 +233,12 @@ void CopySkillList(Character* from, WordList* to) {
 }
 
 RVA(0x0002dfb0, 0x42)
-i16 RollSkillLearning(Character* character, i16 skill) {
+b16 RollSkillLearning(Character* character, i16 skill) {
     i16 chance = character->level;
     chance = (chance - GetSkillLevel(skill)) * 10 + GetStatTotal(character, STAT_INTELLIGENCE);
     return chance > RandomAverage(10, 60, 2);
 }
 
-// @early-stop register scheduling: retail saves ebp after the empty-handle
-// return; this build saves it at entry. Count scope, accessor receivers and
-// valid C compiler-state controls retain the early save.
 RVA(0x0002e000, 0x108)
 i16 LearnLevelSkill(Character* character) {
     i16 skill = -1;
@@ -266,21 +263,21 @@ i16 LearnLevelSkill(Character* character) {
     }
     if (i < count) {
         i16 index;
-        for (index = i; index < count; index++) {
+        for (index = i;; index++) {
+            if (index >= count) {
+                skill = 0;
+                break;
+            }
             ranks = HandleReadPtr(handle);
             skill = GetSkillRank(ranks, index)->skill;
             if (!ContainsWord(skills, skill) && RollSkillLearning(character, skill)) {
-                goto learned;
+                if (IsSkillListFull(skills)) {
+                    RemoveLowestAffiliatedSkill(character);
+                }
+                AddSkill(skills, skill);
+                break;
             }
         }
-        skill = 0;
-        FreeHandle(handle);
-        return skill;
-    learned:
-        if (IsSkillListFull(skills)) {
-            RemoveLowestAffiliatedSkill(character);
-        }
-        AddSkill(skills, skill);
     } else {
         skill = 0;
     }

@@ -376,7 +376,7 @@ i16 ClearStatModifiers(StatBlock* stats) {
 // each slot's item to the bonus array and those of each slot's indexed gem
 // item to the equipment array.
 RVA(0x0003dce0, 0x1c0)
-i16 ApplyItemStatBonuses(StatBlock* stats, ItemSlot* slots) {
+b16 ApplyItemStatBonuses(StatBlock* stats, ItemSlot* slots) {
     i16 i;
 
     for (i = 0; i < 11; i++) {
@@ -399,7 +399,7 @@ i16 ApplyItemStatBonuses(StatBlock* stats, ItemSlot* slots) {
     AddItemStatPoints(GemItemId(slots[5].attachment), stats->equipment);
     AddItemStatPoints(GemItemId(slots[6].attachment), stats->equipment);
     AddItemStatPoints(GemItemId(slots[7].attachment), stats->equipment);
-    return 0;
+    return false;
 }
 
 RVA(0x0003dea0, 0x20)

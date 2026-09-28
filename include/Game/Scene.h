@@ -8,11 +8,11 @@
 
 // @identity-TODO: the Windows video-state stubs do not prove its saved extent.
 extern u8 g_sceneVideoState[];
-i16 RunCellScene(void);
-i16 RunFieldTextScene(void);
-i16 RunFrozenFieldScene(void);
-i16 RunPictureTransition(void);
-i16 RunBackgroundScene(void);
+b16 RunCellScene(void);
+b16 RunFieldTextScene(void);
+b16 RunFrozenFieldScene(void);
+b16 RunPictureTransition(void);
+b16 RunBackgroundScene(void);
 void FreeSceneSprites(void);
 void LoadSceneSprites(void);
 void PlaceSceneSprites(void);

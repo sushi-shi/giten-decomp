@@ -25,6 +25,7 @@
                                      fingerprints
     giten lsp <verb>                clangd-backed refs / hover / rename (the
                                      type-aware bulk member renamer)
+    giten codecs --disc <DDSWIN.BIN> retail/candidate/Rust resource execution
     giten init                      local setup (the build wine prefix; the
                                      dev-shell hook runs this at entry)
 
@@ -149,6 +150,9 @@ def _dispatch(argv: list[str]) -> int:
         from giten.graph.emit import main as configure
         sys.argv = ["giten configure", *rest]
         return configure()
+    if cmd == "codecs":
+        from giten.codecs.run import main as codecs_main
+        return codecs_main(rest)
     if cmd == "init":
         from giten.tool import ToolError
         from giten.tool.wine import init_prefix, verify_prefix

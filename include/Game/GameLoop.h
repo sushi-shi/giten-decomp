@@ -9,9 +9,9 @@
 // one mode handler (TestFeatureMask). What its bits enable is not recovered.
 extern i16 g_featureMask;
 
-i16 InitGameData(void);
+b16 InitGameData(void);
 void ResetGameSession(void);
-i16 StartGame(void);
+b16 StartGame(void);
 
 void ClearScriptVars(void);
 i16 SetLongFrame(i16 longFrame);
@@ -20,7 +20,7 @@ i16 SetLongFrame(i16 longFrame);
 // dispatcher's -1 and the system menu's quit confirmation set it.
 extern i16 g_quitRequest;
 
-i16 TickGameTasks(void);
+b16 TickGameTasks(void);
 i16 StepGame(void);
 
 #endif // GITEN_GAME_GAMELOOP_H

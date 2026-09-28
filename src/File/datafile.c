@@ -158,111 +158,112 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
     retried = 0;
     sprintf(name, "fc\\fc%.4x.bmp", id);
     fp = fopen(name, "rb");
-retry:
-    fallback = -1;
-    switch (kind) {
-        case 15:
-            sprintf(name, "fc\\fc%.4x%01d.bin", id, variant);
-            fp = fopen(name, "rb");
-            if (fp == NULL) {
-                sprintf(name, "fc\\fc%.4x%01d.bin", 0x2262, 0);
+    for (;;) {
+        fallback = -1;
+        switch (kind) {
+            case 15:
+                sprintf(name, "fc\\fc%.4x%01d.bin", id, variant);
                 fp = fopen(name, "rb");
-            }
-            break;
-        case 0:
-            if (id >= 0x2000 && id <= 0x3fff) {
-                fallback = (id & 0xf) + 0x2000;
-            } else if (id >= 0x4000 && id <= 0x4fff) {
-                fallback = 0x4000;
-            } else if (id >= 0x5000 && id <= 0x5fff) {
-                fallback = 0x5000;
-            } else if (id >= 0x6000 && id <= 0x6fff) {
-                fallback = 0x6050;
-            }
-            sprintf(name, "fc\\fc%.4x.bin", id);
-            fp = fopen(name, "rb");
-            if (fp == NULL) {
-                sprintf(name, "fc\\fc%.4x.bin", id & 0xfff0);
+                if (fp == NULL) {
+                    sprintf(name, "fc\\fc%.4x%01d.bin", 0x2262, 0);
+                    fp = fopen(name, "rb");
+                }
+                break;
+            case 0:
+                if (id >= 0x2000 && id <= 0x3fff) {
+                    fallback = (id & 0xf) + 0x2000;
+                } else if (id >= 0x4000 && id <= 0x4fff) {
+                    fallback = 0x4000;
+                } else if (id >= 0x5000 && id <= 0x5fff) {
+                    fallback = 0x5000;
+                } else if (id >= 0x6000 && id <= 0x6fff) {
+                    fallback = 0x6050;
+                }
+                sprintf(name, "fc\\fc%.4x.bin", id);
                 fp = fopen(name, "rb");
-            }
-            break;
-        case 1:
-            sprintf(name, "fc\\fch%.4x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 2:
-            if (id >= 0x2000 && id <= 0x3fff) {
-                fallback = 0x2000;
-            }
-            sprintf(name, "et\\ca%.4x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 3:
-            fallback = 0;
-            sprintf(name, "m\\m%.4x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 4:
-            sprintf(name, "et\\a%.4x.bin", id);
-            fp = fopen(name, "rb");
-            s_prevDataFile = s_dataFile;
-            s_dataFile = fp;
-            return fp;
-        case 5:
-            fallback = 1;
-            sprintf(name, "s\\sm%.3x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 6:
-            fallback = 1;
-            sprintf(name, "s\\sb%.3x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 7:
-            sprintf(name, "s\\st%.3x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 8:
-            sprintf(name, "s\\se%.3x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 9:
-            if (id >= 0 && id <= 0xdf) {
+                if (fp == NULL) {
+                    sprintf(name, "fc\\fc%.4x.bin", id & 0xfff0);
+                    fp = fopen(name, "rb");
+                }
+                break;
+            case 1:
+                sprintf(name, "fc\\fch%.4x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 2:
+                if (id >= 0x2000 && id <= 0x3fff) {
+                    fallback = 0x2000;
+                }
+                sprintf(name, "et\\ca%.4x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 3:
+                fallback = 0;
+                sprintf(name, "m\\m%.4x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 4:
+                sprintf(name, "et\\a%.4x.bin", id);
+                fp = fopen(name, "rb");
+                s_prevDataFile = s_dataFile;
+                s_dataFile = fp;
+                return fp;
+            case 5:
                 fallback = 1;
-            }
-            sprintf(name, "m\\ms%.4x.bin", id);
-            fp = fopen(name, "rb");
+                sprintf(name, "s\\sm%.3x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 6:
+                fallback = 1;
+                sprintf(name, "s\\sb%.3x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 7:
+                sprintf(name, "s\\st%.3x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 8:
+                sprintf(name, "s\\se%.3x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 9:
+                if (id >= 0 && id <= 0xdf) {
+                    fallback = 1;
+                }
+                sprintf(name, "m\\ms%.4x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 10:
+                if (id >= 0x2000 && id <= 0x3fff) {
+                    fallback = 0x2020;
+                }
+                sprintf(name, "p\\p%.4x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 11:
+                sprintf(name, "et\\et%.4x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 12:
+                sprintf(name, "et\\et%.4x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 13:
+                sprintf(name, "gd%.4x.bin", id);
+                fp = fopen(name, "rb");
+                break;
+            case 14:
+                sprintf(name, "et\\id%.4x.bin", id);
+                fp = fopen(name, "rb");
+                s_prevDataFile = s_dataFile;
+                s_dataFile = fp;
+                return fp;
+        }
+        if (fp != NULL || retried == 1 || fallback == -1) {
             break;
-        case 10:
-            if (id >= 0x2000 && id <= 0x3fff) {
-                fallback = 0x2020;
-            }
-            sprintf(name, "p\\p%.4x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 11:
-            sprintf(name, "et\\et%.4x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 12:
-            sprintf(name, "et\\et%.4x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 13:
-            sprintf(name, "gd%.4x.bin", id);
-            fp = fopen(name, "rb");
-            break;
-        case 14:
-            sprintf(name, "et\\id%.4x.bin", id);
-            fp = fopen(name, "rb");
-            s_prevDataFile = s_dataFile;
-            s_dataFile = fp;
-            return fp;
-    }
-    if (fp == NULL && retried != 1 && fallback != -1) {
+        }
         id = fallback;
         retried = 1;
-        goto retry;
     }
     prev = s_dataFile;
     s_dataFile = fp;
@@ -279,13 +280,13 @@ retry:
 }
 
 RVA(0x00002250, 0x28)
-i32 CloseDataFile(FILE* fp) {
+b32 CloseDataFile(FILE* fp) {
     if (fp != NULL) {
         fclose(fp);
     }
     s_dataFile = s_prevDataFile;
     s_prevDataFile = NULL;
-    return 0;
+    return false;
 }
 
 // @identity-TODO: these uncalled data-file results have no recoverable API
@@ -293,46 +294,46 @@ i32 CloseDataFile(FILE* fp) {
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00002280, 0x3)
-i32 GetLegacyDataFileOpenResult(void) {
-    return 0;
+b32 GetLegacyDataFileOpenResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00002290, 0x3)
-i32 GetLegacyDataFileReadResult(void) {
-    return 0;
+b32 GetLegacyDataFileReadResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022a0, 0x3)
-i32 GetLegacyDataFileSeekResult(void) {
-    return 0;
+b32 GetLegacyDataFileSeekResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022b0, 0x3)
-i32 GetLegacyDataFileStatus(void) {
-    return 0;
+b32 GetLegacyDataFileStatus(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022c0, 0x3)
-i32 GetLegacyDataFileLength(void) {
-    return 0;
+b32 GetLegacyDataFileLength(void) {
+    return false;
 }
 
 // @identity-TODO: the one-valued legacy data-file result's role is unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022d0, 0x5)
-i16 IsLegacyDataFileReady(void) {
-    return 1;
+b16 IsLegacyDataFileReady(void) {
+    return true;
 }

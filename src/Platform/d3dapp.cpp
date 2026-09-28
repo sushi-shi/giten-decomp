@@ -837,7 +837,7 @@ void ReleaseDirectX(void) {
 // (with its back buffer as the render target on the HAL device); derives the
 // display's channel masks, shifts and losses.
 RVA(0x000479a0, 0x252)
-BOOL InitDirectDraw(void) {
+b32 InitDirectDraw(void) {
     DDSCAPS caps;
     DDSURFACEDESC desc;
     DWORD red;
@@ -848,11 +848,11 @@ BOOL InitDirectDraw(void) {
     u8 blueShift;
 
     if (DirectDrawCreate(&g_displayConfig.driver, &g_ddraw, NULL) != DD_OK) {
-        return FALSE;
+        return false;
     }
     // API-forced: QueryInterface hands the interface back through a void**.
     if (g_ddraw->QueryInterface(IID_IDirectDraw2, reinterpret_cast<void**>(&g_ddraw2)) != DD_OK) {
-        return FALSE;
+        return false;
     }
     if (g_deviceSettings.caps.hardwareOnly == TRUE) {
         g_deviceType = D3D_DEVICE_HAL;
@@ -861,10 +861,10 @@ BOOL InitDirectDraw(void) {
         g_deviceType = D3D_DEVICE_RAMP;
     }
     if (g_ddraw->SetCooperativeLevel(g_mainWindow, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN) != DD_OK) {
-        return FALSE;
+        return false;
     }
     if (g_ddraw->SetDisplayMode(g_windowRect.right, g_windowRect.bottom, PIXEL_BITS_16) != DD_OK) {
-        return FALSE;
+        return false;
     }
     memset(&desc, 0, sizeof(desc));
     desc.dwSize = sizeof(desc);
@@ -873,12 +873,12 @@ BOOL InitDirectDraw(void) {
         DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX | DDSCAPS_3DDEVICE;
     desc.dwBackBufferCount = 1;
     if (g_ddraw->CreateSurface(&desc, &g_primarySurface, NULL) != DD_OK) {
-        return FALSE;
+        return false;
     }
     if (g_deviceType == D3D_DEVICE_HAL) {
         caps.dwCaps = DDSCAPS_BACKBUFFER;
         if (g_primarySurface->GetAttachedSurface(&caps, &g_renderTarget) != DD_OK) {
-            return FALSE;
+            return false;
         }
     }
     memset(&desc, 0, sizeof(desc));
@@ -916,7 +916,7 @@ BOOL InitDirectDraw(void) {
             g_blueLoss = blue == CHANNEL_MASK_5BIT ? 3 : 2;
         }
     }
-    return TRUE;
+    return true;
 }
 
 // Asks DirectDraw and Direct3D what the HAL, MMX and ramp devices support and
@@ -981,21 +981,21 @@ DWORD __fastcall ZBufferDepth(D3DDEVICEDESC* desc) {
 // Restores the primary surface, render target and z-buffer if lost; returns
 // FALSE when a restore fails.
 RVA(0x00047de0, 0x87)
-BOOL RestoreSurfaces(BOOL restore) {
-    BOOL ok = TRUE;
+b32 RestoreSurfaces(BOOL restore) {
+    b32 ok = true;
 
     if (restore) {
         if (g_primarySurface != NULL && g_primarySurface->IsLost() == DDERR_SURFACELOST
             && g_primarySurface->Restore() != DD_OK) {
-            ok = FALSE;
+            ok = false;
         }
         if (g_renderTarget != NULL && g_renderTarget->IsLost() == DDERR_SURFACELOST
             && g_renderTarget->Restore() != DD_OK) {
-            ok = FALSE;
+            ok = false;
         }
         if (g_zBuffer != NULL && g_zBuffer->IsLost() == DDERR_SURFACELOST
             && g_zBuffer->Restore() != DD_OK) {
-            ok = FALSE;
+            ok = false;
         }
     }
     return ok;
@@ -1025,7 +1025,7 @@ u16 ReadSurfaceWord(LPDIRECTDRAWSURFACE surface, i32 x, i32 pitch, i32 y) {
 // The surface descriptions are "cleared" with memset's size and fill swapped,
 // which clears nothing; the retail code keeps the dead setup of those calls.
 RVA(0x00047ef0, 0x9a8)
-BOOL InitDirect3D(void) {
+b32 InitDirect3D(void) {
     LPDIRECT3DMATERIAL2 material;
     LPDIRECT3DMATERIAL2 lighting;
     D3DVIEWPORT2 viewport;
@@ -1040,7 +1040,7 @@ BOOL InitDirect3D(void) {
 
     // API-forced: QueryInterface hands the interface back through a void**.
     if (g_ddraw->QueryInterface(IID_IDirect3D2, reinterpret_cast<void**>(&g_d3d)) != DD_OK) {
-        return FALSE;
+        return false;
     }
     if (g_deviceType == D3D_DEVICE_HAL) {
         memset(&desc, sizeof(desc), 0);
@@ -1052,7 +1052,7 @@ BOOL InitDirect3D(void) {
         desc.dwZBufferBitDepth = 16;
         if (g_ddraw->CreateSurface(&desc, &g_zBuffer, NULL) != DD_OK
             || g_renderTarget->AddAttachedSurface(g_zBuffer) != DD_OK) {
-            return FALSE;
+            return false;
         }
     }
     if (g_deviceType == D3D_DEVICE_HAL) {
@@ -1078,21 +1078,21 @@ BOOL InitDirect3D(void) {
         desc.dwHeight = g_viewClearRect.y2;
         desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY | DDSCAPS_3DDEVICE;
         if (g_ddraw->CreateSurface(&desc, &g_renderTarget, NULL) != DD_OK) {
-            return FALSE;
+            return false;
         }
         memset(&desc, sizeof(desc), 0);
         desc.dwSize = sizeof(desc);
         if (g_renderTarget->GetSurfaceDesc(&desc) != DD_OK) {
-            return FALSE;
+            return false;
         }
         desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_ZBUFFERBITDEPTH;
         desc.ddsCaps.dwCaps = DDSCAPS_ZBUFFER | DDSCAPS_SYSTEMMEMORY;
         desc.dwZBufferBitDepth = 16;
         if (g_ddraw->CreateSurface(&desc, &g_zBuffer, NULL) != DD_OK) {
-            return FALSE;
+            return false;
         }
         if (g_renderTarget->AddAttachedSurface(g_zBuffer) != DD_OK) {
-            return FALSE;
+            return false;
         }
         result = !D3D_OK;
         if (g_deviceType == D3D_DEVICE_MMX) {
@@ -1105,29 +1105,29 @@ BOOL InitDirect3D(void) {
         if (result != D3D_OK
             && g_d3d->CreateDevice(IID_IDirect3DRampDevice, g_renderTarget, &g_d3dDevice)
                    != D3D_OK) {
-            return FALSE;
+            return false;
         }
     }
     g_bilinearFiltering = g_deviceSettings.caps.bilinearFiltering[static_cast<i32>(g_deviceType)];
     if (g_deviceType == D3D_DEVICE_HAL) {
         if (g_d3d->CreateDevice(IID_IDirect3DHALDevice, g_renderTarget, &g_screenDevice)
             != D3D_OK) {
-            return FALSE;
+            return false;
         }
     } else if (g_deviceType == D3D_DEVICE_MMX) {
         if (g_d3d->CreateDevice(IID_IDirect3DMMXDevice, g_renderTarget, &g_screenDevice)
             != D3D_OK) {
-            return FALSE;
+            return false;
         }
     } else if (g_d3d->CreateDevice(IID_IDirect3DRGBDevice, g_renderTarget, &g_screenDevice)
                != D3D_OK) {
-        return FALSE;
+        return false;
     }
     if (g_d3d->CreateViewport(&g_viewport, NULL) != D3D_OK) {
-        return FALSE;
+        return false;
     }
     if (g_d3dDevice->AddViewport(g_viewport) != D3D_OK) {
-        return FALSE;
+        return false;
     }
     memset(&viewport, 0, sizeof(viewport));
     viewport.dvMinZ = 0.0f;
@@ -1140,16 +1140,16 @@ BOOL InitDirect3D(void) {
     viewport.dvClipHeight = 1.025f;
     viewport.dvMaxZ = 1.0f;
     if (g_viewport->SetViewport2(&viewport) != D3D_OK) {
-        return FALSE;
+        return false;
     }
     if (g_d3dDevice->SetCurrentViewport(g_viewport) != D3D_OK) {
-        return FALSE;
+        return false;
     }
     if (g_d3d->CreateViewport(&g_screenViewport, NULL) != D3D_OK) {
-        return FALSE;
+        return false;
     }
     if (g_screenDevice->AddViewport(g_screenViewport) != D3D_OK) {
-        return FALSE;
+        return false;
     }
     memset(&viewport, 0, sizeof(viewport));
     viewport.dwSize = sizeof(viewport);
@@ -1162,10 +1162,10 @@ BOOL InitDirect3D(void) {
     viewport.dvClipWidth = 2.0f / 3.0f;
     viewport.dvClipY = viewport.dvClipHeight / 6.0f;
     if (g_screenViewport->SetViewport2(&viewport) != D3D_OK) {
-        return FALSE;
+        return false;
     }
     if (g_screenDevice->SetCurrentViewport(g_screenViewport) != D3D_OK) {
-        return FALSE;
+        return false;
     }
     g_d3d->CreateMaterial(&material, NULL);
     memset(&materialDesc, 0, sizeof(materialDesc));
@@ -1258,22 +1258,22 @@ BOOL InitDirect3D(void) {
     }
     memset(&g_textureFormat, 0, sizeof(g_textureFormat));
     g_d3dDevice->EnumTextureFormats(ChooseTextureFormat, &g_textureFormat);
-    return TRUE;
+    return true;
 }
 
 // Opens DirectSound and its two effect buffers (a short one and one of nine
 // seconds); 22 kHz 16-bit mono.
 RVA(0x000488a0, 0x143)
-BOOL InitDirectSound(void) {
+b32 InitDirectSound(void) {
     WAVEFORMATEX format;
     DSBUFFERDESC desc;
 
     if (DirectSoundCreate(NULL, &g_directSound, NULL) != DS_OK) {
-        return FALSE;
+        return false;
     }
     if (g_directSound->SetCooperativeLevel(g_mainWindow, DSSCL_NORMAL) != DS_OK) {
         g_directSound->Release();
-        return FALSE;
+        return false;
     }
     memset(&format, 0, sizeof(format));
     format.cbSize = 0;
@@ -1289,15 +1289,15 @@ BOOL InitDirectSound(void) {
     s_shortBufferSize = desc.dwBufferBytes = 0x204cc;
     desc.lpwfxFormat = &format;
     if (g_directSound->CreateSoundBuffer(&desc, &g_shortSoundBuffer, NULL) != DS_OK) {
-        return FALSE;
+        return false;
     }
     s_longBufferSize = desc.dwBufferBytes = format.nAvgBytesPerSec * 9;
     if (g_directSound->CreateSoundBuffer(&desc, &g_longSoundBuffer, NULL) != DS_OK) {
-        return FALSE;
+        return false;
     }
     g_shortSoundBuffer->SetVolume(-300);
     g_longSoundBuffer->SetVolume(-300);
-    return TRUE;
+    return true;
 }
 
 // Plays sound effect `sound` (a WAVE resource) through the buffer it fits;
@@ -1460,25 +1460,25 @@ i16 MapSoundEffectId(i16 id) {
 // Opens DirectInput with the system mouse and keyboard, non-exclusive in the
 // foreground.
 RVA(0x00048ce0, 0xc1)
-BOOL InitDirectInput(void) {
+b32 InitDirectInput(void) {
     if (DirectInputCreate(g_instance, DIRECTINPUT_VERSION, &g_directInput, NULL) < 0) {
-        return FALSE;
+        return false;
     }
     if (g_directInput->CreateDevice(GUID_SysMouse, &g_mouseDevice, NULL) < 0) {
-        return FALSE;
+        return false;
     }
     if (g_mouseDevice->SetDataFormat(&c_dfDIMouse) < 0) {
-        return FALSE;
+        return false;
     }
     if (g_mouseDevice->SetCooperativeLevel(g_mainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND)
         < 0) {
-        return FALSE;
+        return false;
     }
     if (g_directInput->CreateDevice(GUID_SysKeyboard, &g_keyboardDevice, NULL) < 0) {
-        return FALSE;
+        return false;
     }
     if (g_keyboardDevice->SetDataFormat(&c_dfDIKeyboard) < 0) {
-        return FALSE;
+        return false;
     }
     return g_keyboardDevice->SetCooperativeLevel(
                g_mainWindow,

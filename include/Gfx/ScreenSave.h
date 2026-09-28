@@ -16,10 +16,10 @@ void SetTextCursorOffset(i16* offset, i16 column, i16 row);
 // (inside a draw-state pair) and free. Their argument types are not
 // recovered, so they are declared without a prototype.
 void ApplyTextCursor();
-i32 AllocScreenSave();
-i32 FreeScreenSave();
-i32 CaptureScreenSave();
-i32 RestoreScreenSave();
+b32 AllocScreenSave();
+b32 FreeScreenSave();
+b32 CaptureScreenSave();
+b32 RestoreScreenSave();
 
 static __inline void CaptureScreenSaveWithState(void* save) {
     i16 state = SaveDrawState();
@@ -37,6 +37,6 @@ void RequestRefresh(void);
 
 // @identity-TODO: The second argument is never read (callers push 0 or 1); confirm whether it
 // is a PC-98 leftover parameter when the unit is matched.
-i16 RedrawScreen(i16 drawView, i16 unused);
+b16 RedrawScreen(i16 drawView, i16 unused);
 
 #endif // GITEN_GFX_SCREENSAVE_H

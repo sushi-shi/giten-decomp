@@ -15,6 +15,8 @@
 #include <Sound/Sound.h>
 #include <Util/Range.h>
 
+// Codegen constraint: the default joins the signed division with damage
+// still zero; an early zero return changes the shared return path.
 RVA(0x0001c920, 0xcc)
 i32 GetCellTrapDamage(ExitCell* cell, i16 maxHp) {
     i32 damage = 0;

@@ -22,6 +22,6 @@ i16 SumArmorDefenseBonus(Character* character);
 
 i16 RecalcStatTotals(StatBlock* stats);
 
-i16 ApplyItemStatBonuses(StatBlock* stats, ItemSlot* slots);
+b16 ApplyItemStatBonuses(StatBlock* stats, ItemSlot* slots);
 
 #endif // GITEN_GAME_STATS_H

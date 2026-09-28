@@ -23,7 +23,7 @@ b32 CopyResourceBitmap16(BitmapResource* bmp, IDirectDrawSurface** surface, i32 
     desc.dwSize = sizeof(desc);
     if ((*surface)->Lock(NULL, &desc, DDLOCK_WAIT | DDLOCK_WRITEONLY | DDLOCK_NOSYSLOCK, NULL)
         != DD_OK) {
-        return FALSE;
+        return false;
     }
     memset(colors, 0, sizeof(colors));
     palette = bmp->colors;
@@ -48,7 +48,7 @@ b32 CopyResourceBitmap16(BitmapResource* bmp, IDirectDrawSurface** surface, i32 
     (*surface)->Unlock(NULL);
     memset(&key, 0, sizeof(key));
     (*surface)->SetColorKey(DDCKEY_SRCBLT, &key);
-    return TRUE;
+    return true;
 }
 
 // @dead-code
@@ -71,16 +71,16 @@ b32 CopyResourceBitmap8(
     // API-forced: RGBQUAD and PALETTEENTRY have different packed channel byte orders.
     ConvertBitmapPalette(reinterpret_cast<DWORD*>(bmp->colors), reinterpret_cast<DWORD*>(entries));
     if (g_ddraw->CreatePalette(DDPCAPS_8BIT | DDPCAPS_ALLOW256, entries, palette, NULL) != DD_OK) {
-        return FALSE;
+        return false;
     }
     result = (*surface)->SetPalette(*palette);
     if (result != DD_OK) {
-        return FALSE;
+        return false;
     }
     desc.dwSize = sizeof(desc);
     if ((*surface)->Lock(NULL, &desc, DDLOCK_WAIT | DDLOCK_WRITEONLY | DDLOCK_NOSYSLOCK, NULL)
         != DD_OK) {
-        return FALSE;
+        return false;
     }
     src = GetResourceBitmapLastRow(bmp);
     dst = static_cast<u8*>(desc.lpSurface) + desc.lPitch * y + x;
@@ -92,7 +92,7 @@ b32 CopyResourceBitmap8(
     (*surface)->Unlock(NULL);
     memset(&key, 0, sizeof(key));
     (*surface)->SetColorKey(DDCKEY_SRCBLT, &key);
-    return TRUE;
+    return true;
 }
 
 RVA(0x00057290, 0x4c)
@@ -100,12 +100,12 @@ b32 BlitImage(LPDIRECTDRAWSURFACE surface, u16 image, i32 x, i32 y) {
     HRSRC resource = FindResource(NULL, MAKEINTRESOURCE(image), RT_BITMAP);
     BitmapResource* bmp;
     if (resource == NULL) {
-        return FALSE;
+        return false;
     }
     bmp = static_cast<BitmapResource*>(LockResource(LoadResource(NULL, resource)));
     if (bmp == NULL) {
-        return FALSE;
+        return false;
     }
     CopyResourceBitmap16(bmp, &surface, x, y);
-    return TRUE;
+    return true;
 }

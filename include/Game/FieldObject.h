@@ -139,13 +139,13 @@ static __inline u8* GetFieldObjectFlags(FieldObject* object) {
     return object->personalFlags;
 }
 
-static __inline i32 TestFieldObjectFlag(FieldObject* object, i16 index) {
+static __inline b32 TestFieldObjectFlag(FieldObject* object, i16 index) {
     return TestBit(GetFieldObjectFlags(object), index);
 }
 
-i16 InitFieldObjects(void);
+b16 InitFieldObjects(void);
 void RemoveFieldObject(i16 index, i16 announce);
-i16 ResetFieldObjects(void);
+b16 ResetFieldObjects(void);
 i16 ExchangeObjectsFrozen(i16 frozen);
 i16 FindObjectOnLayer(i16 layer);
 void SetObjectEventFlag(i16 index, u8 bank, u8 flag);
@@ -166,7 +166,7 @@ void ResetObjectAnims(void);
 void ResetObjectAnim(i16 index);
 FieldObject* GetFieldObject(i16 index);
 Character* GetFieldActor(i16 index);
-i16 IsFieldActor(const void* actor);
+b16 IsFieldActor(const void* actor);
 void MarkObjectsOnMap(void);
 MapCoord GetObjectCoord(i16 index);
 
@@ -177,7 +177,7 @@ i16 FlushObjectRedraws(void);
 i16 GetObjectLifeState(FieldObject* object);
 i16 RelativeFacing(i16 from, i16 to);
 
-i16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 drawn);
+b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 drawn);
 MapCoord GetApproachOffset(i16 scale, i16 step);
 
 void DrawFieldObjects(void);
@@ -218,7 +218,7 @@ typedef struct FieldSkillCandidate {
 
 #define InitFieldSkillCandidate(candidate) SetFieldSkillCandidate(candidate, -1, 0x7fff)
 
-i16 RunObjectStep(FieldObject* object, i16 index);
+b16 RunObjectStep(FieldObject* object, i16 index);
 
 void SaveFieldLayer(i16 layer);
 void RestoreFieldLayer(i16 layer);

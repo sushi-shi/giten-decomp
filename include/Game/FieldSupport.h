@@ -36,9 +36,9 @@ i16 GetEncounterPending(void);
 // old bit.
 // @identity-TODO: that the list is the field command menu (drawn by 0x15940)
 // is inferred; what the two bits mean is unrecovered.
-i16 SetFieldStatusBit11(i16 on);
+b16 SetFieldStatusBit11(i16 on);
 
-i16 SetFieldStatusBit0(i16 on);
+b16 SetFieldStatusBit0(i16 on);
 
 RVA_DECL(0x00049cb0)
 void SetFieldRenderMode(void);
@@ -57,7 +57,7 @@ RVA_DECL(0x00054390)
 void HideScreenLayer(i16 layer);
 
 // Rolls an event from the nearest field object's distance; > 0 when it fires.
-i16 RollProximityEvent(void);
+b16 RollProximityEvent(void);
 
 // @identity-TODO: event hooks the field-object code triggers when an object
 // with an event id is removed (the queue lives at 0x47b7d0; 0x413b20 sets bit
@@ -81,7 +81,7 @@ void MarkMapCell(i16 kind, i16 x, i16 y);
 void DeferObjectRemoval(void);
 
 // @identity-TODO: a stub that drops a layer image (returns 0).
-u32 DropLayerImage(u32 image);
+ub32 DropLayerImage(u32 image);
 
 // @identity-TODO: requests a redraw of the area of object `index`.
 RVA_DECL(0x00049fe0)

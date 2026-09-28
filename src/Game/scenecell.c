@@ -300,7 +300,7 @@ void DrawSceneFrame(i16 image, i16 slot, i16 frame, i16 x, i16 y, i16 mode) {
 }
 
 RVA(0x00017ef0, 0x218)
-i16 RunCellScene(void) {
+b16 RunCellScene(void) {
     switch (GetGamePhase()) {
         case 0:
             SetSceneRenderMode();
@@ -321,7 +321,7 @@ i16 RunCellScene(void) {
             LockStatusRedraw(1);
             RedrawScreen(1, 0);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
-            return 1;
+            return true;
         case 1:
             NextGamePhase();
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
@@ -359,7 +359,7 @@ i16 RunCellScene(void) {
     if (g_fieldRedrawRequest) {
         RedrawScreen(0, 0);
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00018110, 0x15)
@@ -415,7 +415,7 @@ void SetSceneScriptByIndex(i16 scriptIndex, i16 entryIndex) {
 }
 
 RVA(0x00018230, 0x10e)
-i16 RunFieldTextScene(void) {
+b16 RunFieldTextScene(void) {
     switch (GetGamePhase()) {
         case 1:
             s_sceneDirty = 0;
@@ -445,11 +445,11 @@ i16 RunFieldTextScene(void) {
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00018340, 0x157)
-i16 RunFrozenFieldScene(void) {
+b16 RunFrozenFieldScene(void) {
     switch (GetGamePhase()) {
         case 1:
             s_sceneDirty = 0;
@@ -486,7 +486,7 @@ i16 RunFrozenFieldScene(void) {
 
 // @identity-TODO: the role of the fixed scene script is unrecovered.
 RVA(0x000184a0, 0xe8)
-i16 RunPictureTransition(void) {
+b16 RunPictureTransition(void) {
     switch (GetGamePhase()) {
         case 0:
             NextGamePhase();
@@ -513,11 +513,11 @@ i16 RunPictureTransition(void) {
             s_sceneHold = 0;
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00018590, 0x19c)
-i16 RunBackgroundScene(void) {
+b16 RunBackgroundScene(void) {
     switch (GetGamePhase()) {
         case 0:
             ClearSceneSurfaces();
@@ -534,7 +534,7 @@ i16 RunBackgroundScene(void) {
             SetInfoBarLayout(0);
             RedrawScreen(0, 1);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
-            return 1;
+            return true;
         case 1:
             NextGamePhase();
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
@@ -559,5 +559,5 @@ i16 RunBackgroundScene(void) {
             RestoreScreenState(s_sceneScreenState);
             break;
     }
-    return 0;
+    return false;
 }

@@ -175,12 +175,12 @@ void SetTextCapture(i16 on) {
 }
 
 RVA(0x0002f500, 0x5d)
-i16 CaptureTextChar(u16 ch) {
+b16 CaptureTextChar(u16 ch) {
     if (!g_textCaptureOn) {
-        return 0;
+        return false;
     }
     AppendTextChar(g_capturedText, ch);
-    return 1;
+    return true;
 }
 
 RVA(0x0002f560, 0x1d)
@@ -502,7 +502,7 @@ void PopScriptWindow(void) {
 }
 
 RVA(0x0002fc70, 0x73)
-i16 OpStepListMenu(void) {
+b16 OpStepListMenu(void) {
     i16 mode = ReadScriptValue();
     i16 stepVar = ReadLongVarIndex();
     i16 step = GetScriptLongVar(stepVar);
@@ -518,7 +518,7 @@ i16 OpStepListMenu(void) {
     }
     SetScriptLongVar(stepVar, step);
     SetScriptLongVar(resultVar, result);
-    return 0;
+    return false;
 }
 
 RVA(0x0002fcf0, 0xf)

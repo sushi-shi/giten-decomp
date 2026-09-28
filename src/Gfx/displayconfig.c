@@ -12,7 +12,7 @@ i32 LoadDisplayConfig(DisplayConfig* config) {
     DWORD type = REG_BINARY;
     DWORD size = 2;
     HKEY key;
-    i32 failed = 1;
+    b32 failed = true;
     if (RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\ASCII\\GITEN_DDS", 0, KEY_QUERY_VALUE, &key)
         == ERROR_SUCCESS) {
         size = 1;
@@ -24,7 +24,7 @@ i32 LoadDisplayConfig(DisplayConfig* config) {
                 size = 1;
                 if (RegQueryValueExA(key, "AutoSelect", NULL, &type, &config->autoSelect, &size)
                     == ERROR_SUCCESS) {
-                    failed = 0;
+                    failed = false;
                 }
             }
         }

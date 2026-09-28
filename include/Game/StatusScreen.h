@@ -10,8 +10,8 @@
 // The roster slot the status screen shows.
 extern i16 g_statusMember;
 extern i16 g_statusFixedMember;
-i16 RunStatusScreen(void);
-i16 RunDismissMenuState(void);
+b16 RunStatusScreen(void);
+b16 RunDismissMenuState(void);
 i16 RunStatusCommands(void);
 i16 GetStatusAnalyzeMode(void);
 
@@ -63,7 +63,7 @@ extern Character* g_rosterPendingMember;
 extern i16 g_rosterReturnState;
 extern u16 g_rosterReturnPhase;
 extern u16 g_rosterReturnStep;
-i16 ReplaceRosterMember(void);
+b16 ReplaceRosterMember(void);
 
 void EnterStatusScreen(i16 nested);
 

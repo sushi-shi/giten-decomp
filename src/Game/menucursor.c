@@ -131,7 +131,7 @@ i16 GetStatusAnalyzeMode(void) {
 }
 
 RVA(0x00016e70, 0x144)
-i16 RunStatusScreen(void) {
+b16 RunStatusScreen(void) {
     i16 result;
     switch (GetGamePhase()) {
         case 0:
@@ -178,5 +178,5 @@ i16 RunStatusScreen(void) {
             }
             break;
     }
-    return 0;
+    return false;
 }
