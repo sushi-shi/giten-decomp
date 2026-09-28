@@ -15,5 +15,6 @@ Short observations, not a wall database. [Scope and admission rules](README.md).
 - [Call products](call-product-statement-boundary.md) — assigning a product before comparing can change allocation across the function.
 - [Translation-unit context](tu-state-probe-family-decides-reachability.md) — unchanged function text can emit different code.
 - [C globals and COMMONs](c-bss-globals-and-commons.md) — a C global inside an object's `.bss` run was zero-initialized; bare ones are linked after all `.bss`.
+- [Object boundaries from data](object-membership-from-data-layout.md) — interleaved statics, data order and literal runs show which units form one object.
 - [Signed remainder](signed-modulo-pow2-abs-restore.md) — sign correction around a power-of-two mask.
 - [Extraction and consumer widths](wide-extraction-narrow-consumer.md) — a wide mask can feed a narrow index without a runtime copy.
