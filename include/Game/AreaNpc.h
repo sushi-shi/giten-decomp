@@ -22,14 +22,14 @@ typedef struct AreaNpc {
     i16 textureSlot;
 } AreaNpc;
 
-// An NPC picture's texture (and a second word).
+// An NPC picture's texture, after a word the table starts as 0xffff.
 // @identity-TODO: what `other` holds is unrecovered.
 typedef struct NpcTexture {
-    u32 texture;
     u32 other;
+    u32 texture;
 } NpcTexture;
 
-// @identity-TODO: five adjacent identical records may extend this allocation;
+// @identity-TODO: six adjacent identical records may extend this allocation;
 // only six texture slots are used by the recovered readers and loader.
 extern NpcTexture g_npcTextures[6];
 

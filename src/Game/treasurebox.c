@@ -106,14 +106,14 @@ static AutomapIcon s_mapIcons[] = {
     {0xbf, 24, AUTOMAP_DETAIL_BASIC}, {0xff, 24, AUTOMAP_DETAIL_BASIC},
 };
 
-DATA(0x00068b8c)
+DATA(0x00068b88)
 NpcTexture g_npcTextures[6] = {
-    {0, 0xffff},
-    {0, 0xffff},
-    {0, 0xffff},
-    {0, 0xffff},
-    {0, 0xffff},
-    {0, 0xffff},
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
 };
 
 // The five attitude names, indexed by Character.attitude.
