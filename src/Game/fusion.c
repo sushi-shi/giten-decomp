@@ -93,24 +93,6 @@ static i32 s_fusionFlagRestrictions;
 DATA(0x00080a68)
 static i32 s_fusionFallbackHandle;
 
-DATA(0x00080110)
-static i32 s_animationImageSize;
-
-DATA(0x000809a4)
-static struct BmpFile* s_animationImage;
-
-DATA(0x00080a28)
-static u8* s_animationScript;
-
-DATA(0x00080a2c)
-static i16 s_animationResource;
-
-DATA(0x00080a30)
-static i16 s_animationX;
-
-DATA(0x00080a34)
-static i16 s_animationY;
-
 DATA(0x00068f88)
 static i16 s_fusionInfoPlane = -1;
 
@@ -1282,6 +1264,24 @@ i16 IsFusionDemonRestricted(i16 demon) {
     }
     return restricted;
 }
+
+DATA(0x00080110)
+static i32 s_animationImageSize;
+
+DATA(0x000809a4)
+static struct BmpFile* s_animationImage;
+
+DATA(0x00080a28)
+static u8* s_animationScript;
+
+DATA(0x00080a2c)
+static i16 s_animationResource;
+
+DATA(0x00080a30)
+static i16 s_animationX;
+
+DATA(0x00080a34)
+static i16 s_animationY;
 
 RVA(0x000286a0, 0x6)
 struct BmpFile* GetScreenEffectImage(void) {
