@@ -29,7 +29,8 @@ typedef struct BmpFile {
 
 #define GetBitmapRect(rect, bmp)                                                                   \
     do {                                                                                           \
-        (rect).left = (rect).top = 0;                                                              \
+        (rect).left = 0;                                                                           \
+        (rect).top = 0;                                                                            \
         (rect).right = (bmp)->info.biWidth;                                                        \
         (rect).bottom = (bmp)->info.biHeight;                                                      \
     } while (0)
