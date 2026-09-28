@@ -1,4 +1,4 @@
-"""C string literals in ordinary COFF data sections."""
+"""C string literals and band gaps in ordinary COFF data sections."""
 
 from __future__ import annotations
 
@@ -148,6 +148,53 @@ class CStringOracleTest(unittest.TestCase):
             rows, withheld = data_manifest.c_string_rows()
         self.assertEqual({r["object"]: r["rva"] for r in rows},
                          {"one.c": 0x1020, "two.c": 0x1010})
+        self.assertEqual(withheld, [])
+
+
+class _GapRetail:
+    """A retail image whose bytes are all zero and carry no relocations."""
+
+    def payload(self, _rva, n):
+        return bytes(n)
+
+    def relocs_in(self, _lo, _hi):
+        return []
+
+
+class BandGapTest(unittest.TestCase):
+    SECTION = {"index": 3, "alignment": 8}
+
+    def _gaps(self, rows):
+        with mock.patch.object(data_manifest, "retail", return_value=_GapRetail()), \
+             mock.patch.object(data_manifest, "_classify",
+                               return_value="data-initialized"), \
+             mock.patch.object(data_manifest, "declared_types", return_value={}):
+            return data_manifest.gap_rows(rows, [])
+
+    def _row(self, name, rva, size, offset=None):
+        row = {"name": name, "object": "page.c", "rva": rva, "size": size,
+               "storage": "data"}
+        if offset is not None:
+            row["section"] = self.SECTION
+            row["section_offset"] = offset
+        return row
+
+    def test_padding_the_candidate_section_reproduces_is_not_a_datum(self):
+        # A 12-byte record, then an 8-byte one on the section's latched
+        # eight-byte boundary: cl's own section holds the same 4-byte hole.
+        rows, withheld = self._gaps([self._row("_item", 0x6a238, 0xc, 0x140),
+                                     self._row("_skill", 0x6a248, 0x8, 0x150)])
+        self.assertEqual(rows, [])
+        self.assertEqual([(rva, why.split("(")[0].strip())
+                          for rva, _name, why in withheld],
+                         [(0x6a244, "band gap reproduced by the candidate "
+                                    "section's own layout")])
+
+    def test_zero_hole_the_candidate_section_lacks_is_carved(self):
+        rows, withheld = self._gaps([self._row("_item", 0x6a238, 0xc, 0x140),
+                                     self._row("_skill", 0x6a248, 0x8, 0x14c)])
+        self.assertEqual([(r["rva"], r["size"], r["provenance"]) for r in rows],
+                         [(0x6a244, 4, "provisional-band-gap-zero")])
         self.assertEqual(withheld, [])
 
 

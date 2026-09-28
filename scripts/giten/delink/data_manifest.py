@@ -1325,6 +1325,22 @@ def section_rows(rows, base_dir=BASE_DIR):
     return secs, withheld
 
 
+def _candidate_reproduces_gap(before, after, n):
+    """True when one candidate section holds a definition ending at the gap
+    and one starting after it, `n` bytes apart: the hole is cl's own padding
+    (e.g. an aggregate aligned to the section's latched eight), already part
+    of the placed section's shape, never a datum src/ left unmodelled."""
+    for p in before:
+        for q in after:
+            if "section" not in p or "section" not in q \
+                    or p["object"] != q["object"] \
+                    or p["section"]["index"] != q["section"]["index"]:
+                continue
+            if q["section_offset"] - (p["section_offset"] + p["size"]) == n:
+                return True
+    return False
+
+
 def gap_rows(enrolled, secs):
     """Band-completion rows: retail bytes strictly between two claims of ONE
     unit, carved with no base counterpart so a datum src/ never models becomes
@@ -1379,9 +1395,16 @@ def gap_rows(enrolled, secs):
         unit = next(iter(both))
         is_bss = STORAGE[cls1] == "bss"
         pay = b"" if is_bss else img.payload(b1, n)
+        if not any(pay) and _candidate_reproduces_gap(
+                ends.get(b1, ()), starts.get(a2, ()), n):
+            withheld.append((b1, name, "band gap reproduced by the candidate "
+                             f"section's own layout (padding; 0x{n:x} B, "
+                             f"unit {unit})"))
+            continue
         next_align = max((w.get("alignment")
                           or _alignment(w["rva"], w["size"],
-                                        w.get("storage", "data"))[0]
+                                        _object_kind(w["name"], w["rva"],
+                                                     w["size"]))[0]
                           for w in starts.get(a2, ())), default=0)
         if not is_bss and not any(pay):
             # A hole strictly smaller than the next claim's alignment exists
