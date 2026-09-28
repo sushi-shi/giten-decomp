@@ -6,7 +6,8 @@
 # dword outside decoded code with such a value (text-table: jump/pointer tables
 # in .text; rdata-ptr; data-ptr). The IAT and import directory are excluded.
 # /Zp1 structures also hold pointers at 2-byte offsets the aligned scan skips
-# (the panel row handlers); those data-ptr sites are added here by hand.
+# (the panel row handlers, the system menu entries); those data-ptr sites are
+# added here by hand.
 # Validated at admission: all DIR32 fixups of the 199 uniquely matched VS97 SP3
 # LIBC.LIB bodies reproduced, none extra inside them. `giten build` appends these
 # as a .reloc section to the build copy build/exe/DDS.EXE (delink/reloc_image.py).
@@ -12542,8 +12543,12 @@ site	target	origin
 0x06802c	0x061cb0	data-ptr
 0x068038	0x05d6f0	data-ptr
 0x068044	0x061cd0	data-ptr
+0x06831a	0x06834c	data-ptr
 0x068320	0x068360	data-ptr
+0x068326	0x068378	data-ptr
+0x068332	0x068384	data-ptr
 0x068338	0x068390	data-ptr
+0x068342	0x06839c	data-ptr
 0x068348	0x0683a8	data-ptr
 0x068430	0x006500	data-ptr
 0x068434	0x0065b0	data-ptr
