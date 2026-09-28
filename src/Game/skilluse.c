@@ -1560,6 +1560,14 @@ void UseBattleTallySkill(Character* user, Character* target) {
     SetActionOutcome(2);
 }
 
+static __inline void PrepareBattleStatSkill(Character* user) {
+    user->pickNoEffect = 1;
+    g_statusCondition = 0;
+    g_hpChange = 0;
+    g_actionResult = 0;
+    SetCharacterResult(user, 0, 0);
+}
+
 RVA(0x0002d060, 0x2e0)
 void UseBattleStatSkill(Character* user, Character* target) {
     double power = sqrt(GetStatTotal(user, STAT_MAGIC)) + GetSkillValueB(&s_effectSkill);
@@ -1568,11 +1576,7 @@ void UseBattleStatSkill(Character* user, Character* target) {
     if (GetSkillEffectCode(&s_effectSkill) & 0x80) {
         amount = -amount;
     }
-    user->pickNoEffect = 1;
-    g_statusCondition = 0;
-    g_hpChange = 0;
-    g_actionResult = 0;
-    SetCharacterResult(user, 0, 0);
+    PrepareBattleStatSkill(user);
     if (amount < 0) {
         if (RollSkillHit(user, target, 0) <= 0) {
             return;
@@ -1655,11 +1659,7 @@ void UseClearBattleTallySkill(Character* user, Character* target) {
 
 RVA(0x0002d400, 0x80)
 void UseResetBattleStatsSkill(Character* user, Character* target) {
-    user->pickNoEffect = 1;
-    g_statusCondition = 0;
-    g_hpChange = 0;
-    g_actionResult = 0;
-    SetCharacterResult(user, 0, 0);
+    PrepareBattleStatSkill(user);
     SetFlaggedActionResult(user, 3);
     RecalcDerivedStats(target);
     ResetBattleStatsToBase(target);
