@@ -893,7 +893,7 @@ fieldobj	_MarkObjectsOnMap	100.0000	100.0000	1	db1e9d95b388	0xdde0	100.0000
 fieldobj	_RandomNearOffset	100.0000	100.0000	1	3dc1983f57a8	0xedf0	100.0000	
 fieldobj	_RefreshIfTurned	100.0000	100.0000	1	2781d721c828	0xf220	100.0000	
 fieldobj	_RefreshObjectDraw	100.0000	100.0000	1	3203e64188db	0xea50	100.0000	
-fieldobj	_RelativeFacing	79.6667	79.6667	1	ca74240a4a16	0xdf30	79.6667	
+fieldobj	_RelativeFacing	100.0000	79.6667	1	ca74240a4a16	0xdf30	100.0000	
 fieldobj	_RemoveFieldObject	100.0000	100.0000	5	d54487ec5ced	0xd7f0	100.0000	
 fieldobj	_ResetFieldLayer	100.0000	100.0000	2	ae08649d0c9c	0xe7e0	100.0000	
 fieldobj	_ResetFieldObjects	100.0000	100.0000	1	841d4e0824fd	0xd940	100.0000	
