@@ -5,9 +5,6 @@
 
 #include <Gfx/DisplayConfig.h>
 
-DATA(0x00066328)
-const GUID g_defaultDriverGuid = {0};
-
 // Reads the display settings; any missing value (or another version) falls
 // back to the defaults.
 RVA(0x00045bb0, 0xe6)
@@ -40,7 +37,7 @@ i32 LoadDisplayConfig(DisplayConfig* config) {
 
 RVA(0x00045ca0, 0x32)
 void SetDefaultDisplayConfig(DisplayConfig* config) {
-    config->driver = g_defaultDriverGuid;
+    config->driver = GUID_NULL;
     config->autoSelect = 1;
     config->version = 4;
 }

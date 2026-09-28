@@ -5,6 +5,7 @@ rva	size	name	unit	note
 0x05a470	0x18	_c_dfDIMouse	library_data	DINPUT.LIB dilib1.obj; complete 0x88-byte section matches with all 4 DIR32 targets resolved against DXGUID.LIB and its object-format array
 0x065908	0x10	_GUID_SysMouse	library_data	DXGUID.LIB dxguid.obj; unique exact 16-byte GUID, passed to IDirectInput::CreateDevice
 0x065918	0x10	_GUID_SysKeyboard	library_data	DXGUID.LIB dxguid.obj; unique exact 16-byte GUID, passed to IDirectInput::CreateDevice
+0x066328	0x10	_GUID_NULL	library_data	UUID.LIB cguid_i_guid0.obj; its lone 0x10-byte .rdata sits between DXGUID.LIB and LIBC crt0 .rdata, copied whole by SetDefaultDisplayConfig into the DirectDrawCreate driver GUID
 0x070e78	0x18	_DoubleFormat	library_data	LIBC intrncvt.obj static DoubleFormat; unique exact 24-byte object, referenced by _ld12tod
 0x070e90	0x18	_FloatFormat	library_data	LIBC intrncvt.obj static FloatFormat; unique exact 24-byte object, referenced by _ld12tof
 0x090c10	0x101	__mbctype	library_data	LIBC masked-coff:mbctype.obj; game code reads _mbctype+1 through the _ismbblead macro
