@@ -467,23 +467,20 @@ RVA(0x00006460, 0x9e)
 i16 RunActorCommandMenu(i16 id) {
     Character* actor = GetCharacterById(id);
     i16 result;
-    if (!actor || GetPickBlockingCondition(GetCharacterConditions(actor))) {
-        goto cancel;
+    if (actor && !GetPickBlockingCondition(GetCharacterConditions(actor))) {
+        if (!s_commandMenu) {
+            s_commandMenu = OpenActorCommandMenu(id);
+        }
+        result = PollActorCommandMenu(s_commandMenu);
+        if (result == -1) {
+            return result;
+        }
+        if (result != -2) {
+            CloseActorCommandMenu();
+            actor->pickRole = g_selectedObjectId;
+            return g_selectedObjectId;
+        }
     }
-    if (!s_commandMenu) {
-        s_commandMenu = OpenActorCommandMenu(id);
-    }
-    result = PollActorCommandMenu(s_commandMenu);
-    if (result == -1) {
-        return result;
-    }
-    if (result == -2) {
-        goto cancel;
-    }
-    CloseActorCommandMenu();
-    actor->pickRole = g_selectedObjectId;
-    return g_selectedObjectId;
-cancel:
     CloseActorCommandMenu();
     return -2;
 }

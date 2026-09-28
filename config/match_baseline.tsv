@@ -117,7 +117,7 @@ picture	7	7
 playtime	4	4
 pool	6	6
 range	25	24
-recordcache	43	40
+recordcache	43	41
 resourcebitmap	5	5
 resourceblit	3	2
 restore	3	3
@@ -444,7 +444,7 @@ charsave	_LoadCharacter	100.0000	100.0000	4	8dfb739721d6	0x41750	100.0000
 charsave	_LoadCharacters	100.0000	100.0000	2	ddf16369ce75	0x41890	100.0000	
 charsave	_LoadFieldState	100.0000	100.0000	1	bccdd2df5f71	0x41660	100.0000	
 charsave	_PayStepUpkeep	100.0000	100.0000	5	99985a6d99de	0x40fa0	100.0000	
-charsave	_TickPartyTimers	100.0000	100.0000	9	f36e44a520a4	0x412a0	100.0000	
+charsave	_TickPartyTimers	100.0000	100.0000	10	f22a561e5dc2	0x412a0	100.0000	
 charsave	_WriteCharacter	100.0000	100.0000	5	df64f363e2ca	0x415b0	100.0000	
 charsave	_WriteCharacters	100.0000	100.0000	1	31d861e3f411	0x41610	100.0000	
 charsave	_WriteFieldState	100.0000	100.0000	1	cc334fbae606	0x414b0	100.0000	
@@ -609,7 +609,7 @@ datafile	_GetLegacyDataFileReadResult	100.0000	100.0000	2	730f5f3f20d5	0x2290	10
 datafile	_GetLegacyDataFileSeekResult	100.0000	100.0000	2	6dbb57eee0dd	0x22a0	100.0000	
 datafile	_GetLegacyDataFileStatus	100.0000	100.0000	2	5c4b24cfa604	0x22b0	100.0000	
 datafile	_IsLegacyDataFileReady	100.0000	100.0000	2	143df98278fa	0x22d0	100.0000	
-datafile	_OpenDataFile	100.0000	100.0000	1	9cc0e3c8d566	0x1dd0	100.0000	
+datafile	_OpenDataFile	100.0000	100.0000	2	3bf5915f6d51	0x1dd0	100.0000	
 datafile	_ReadCryptByte	100.0000	100.0000	1	bc353a77ddd4	0x1b40	100.0000	
 datafile	_ReadCryptBytes	100.0000	100.0000	1	f57d0367d7f3	0x1ba0	100.0000	
 datafile	_ReadCryptHandle	100.0000	100.0000	1	1bf4aada3531	0x1c30	100.0000	
@@ -681,7 +681,7 @@ equipscreen	_DrawEquipPanel	100.0000	100.0000	3	ad577620e2a4	0x43820	100.0000
 equipscreen	_DrawEquipPickRow	100.0000	100.0000	2	f8d190bc7726	0x45130	100.0000	
 equipscreen	_DrawStatColumn	100.0000	100.0000	1	04465775c174	0x43930	100.0000	
 equipscreen	_DrawStatCompare	100.0000	100.0000	2	8c1bce7510c2	0x43a20	100.0000	
-equipscreen	_EquipMenuHandler	100.0000	100.0000	7	8acbee9976ea	0x435a0	100.0000	
+equipscreen	_EquipMenuHandler	100.0000	100.0000	8	c47d4a593fea	0x435a0	100.0000	
 equipscreen	_ItemListHandler	100.0000	100.0000	7	a342994fe617	0x44830	100.0000	
 equipscreen	_ListAttachEntries	100.0000	100.0000	2	318f1c14966e	0x44440	100.0000	
 equipscreen	_ListEquipCandidates	100.0000	100.0000	4	4a9510056192	0x42cd0	100.0000	
@@ -766,7 +766,7 @@ field	_SetFieldPair	100.0000	100.0000	1	64df3b99bc2a	0x7170	100.0000
 field	_SetFieldParams	100.0000	100.0000	1	b220adef6a39	0x7100	100.0000	
 field	_SpawnSecondGroupActor	100.0000	100.0000	3	80d062095daf	0x7300	100.0000	
 field	_TickFieldCount	100.0000	100.0000	1	dc8de72305e6	0x7230	100.0000	
-field	_TickPartyConditionActions	100.0000	100.0000	8	963614e405ea	0x8200	100.0000	
+field	_TickPartyConditionActions	100.0000	100.0000	9	92991255da69	0x8200	100.0000	
 field	_UpdatePartyActionWaits	100.0000	100.0000	1	69cbcdcdd3c7	0x8050	100.0000	
 fieldmain	_AdvancePartyMove	100.0000	100.0000	4	79bfed02cdbf	0x12280	100.0000	
 fieldmain	_BuildViewOcclusion	97.8235	97.8235	3	1adb804355b0	0x13f10	97.8235	
@@ -843,7 +843,7 @@ fieldobj	_BeginPartyTargetSkill	100.0000	100.0000	5	5e082fcf3d07	0xfea0	100.0000
 fieldobj	_BuildSightGrid	100.0000	100.0000	1	f80fb841c5eb	0xf070	100.0000	
 fieldobj	_CheckAllObjects	100.0000	100.0000	1	310cb045c3cb	0xe720	100.0000	
 fieldobj	_CheckObjectState	100.0000	100.0000	1	806743df956e	0xe1e0	100.0000	
-fieldobj	_ChooseObjectTarget	100.0000	100.0000	8	f206acccf2bd	0xfd20	100.0000	
+fieldobj	_ChooseObjectTarget	100.0000	100.0000	9	5913458c9714	0xfd20	100.0000	
 fieldobj	_ClearObjectStuns	100.0000	100.0000	5	ae23fe655465	0xe470	100.0000	
 fieldobj	_CountActiveObjects	100.0000	100.0000	1	9d6f99e5a784	0xe680	100.0000	
 fieldobj	_CountObjectsAt	100.0000	100.0000	1	7434dcd7d84d	0xe380	100.0000	
@@ -1797,8 +1797,8 @@ partyaction	_PrepareMemberPickTarget	100.0000	100.0000	2	a274320fdb65	0x6840	100
 partyaction	_ReadActionResultFlags	100.0000	100.0000	1	e522e33f26e4	0x5c60	100.0000	
 partyaction	_ResetActionWaits	100.0000	100.0000	4	f0a2fc9ee388	0x6060	100.0000	
 partyaction	_ResetPartyTurnState	100.0000	100.0000	4	83e234082f85	0x6a00	100.0000	
-partyaction	_RunActorCommandMenu	94.6038	94.6038	3	25d9cf958c45	0x6460	94.6038	
-partyaction	_ScaleActionValue	100.0000	89.3750	1	d4b757752929	0x6a40	100.0000	
+partyaction	_RunActorCommandMenu	94.6038	94.6038	4	d1f98d643d5c	0x6460	94.6038	
+partyaction	_ScaleActionValue	100.0000	82.1875	1	d4b757752929	0x6a40	100.0000	
 partyaction	_SwapPartyRows	100.0000	100.0000	2	b77d0d2f5041	0x6140	100.0000	
 partypick	_CheckPickTarget	100.0000	100.0000	3	a59095b38abd	0x9420	100.0000	
 partypick	_CloseFieldWindows	100.0000	100.0000	2	e257e4ef1946	0x93e0	100.0000	
@@ -1813,10 +1813,10 @@ partypick	_PickPartySlotTarget	100.0000	100.0000	2	70e9ca70f1fc	0xa0b0	100.0000
 partypick	_QueryPickMode	100.0000	100.0000	1	1be31b282b9f	0x9cf0	100.0000	
 partypick	_RestoreSwappedMember	100.0000	100.0000	1	1d1590f8a48b	0x9dc0	100.0000	
 partypick	_RunMemberPickMenu	100.0000	100.0000	2	fdd11366aedb	0x94d0	100.0000	
-partypick	_RunPartyCommandInput	85.7913	85.7913	16	ac6464615edf	0x9620	92.0986	
-partypick	_RunPickTargetWindow	100.0000	100.0000	3	73af80fdc842	0x9e30	100.0000	
+partypick	_RunPartyCommandInput	85.7913	85.7913	17	6feb831ee8e2	0x9620	92.0986	
+partypick	_RunPickTargetWindow	100.0000	100.0000	4	e2c7548914d7	0x9e30	100.0000	
 partypick	_SetMemberPickRole	100.0000	100.0000	1	d65f1923aaa8	0x95f0	100.0000	
-partypick	_SwapInForPick	100.0000	100.0000	2	c96fe37a8241	0x9d10	100.0000	
+partypick	_SwapInForPick	100.0000	100.0000	3	69b4c17ff566	0x9d10	100.0000	
 partypicker	_ClosePickerMenu	100.0000	100.0000	1	e4d8a5c8b4a2	0x19e80	100.0000	
 partypicker	_GetPickerSelection	100.0000	100.0000	1	dc61dfb700e7	0x19e40	100.0000	
 partypicker	_OpenPartyPicker	100.0000	100.0000	3	c93eb8568c27	0x19f50	100.0000	
@@ -1898,7 +1898,7 @@ recordcache	_HighestAffiliatedSkillLevel	100.0000	100.0000	4	b7a924e9054b	0x2e1e
 recordcache	_HpMpLeftAfterCost	100.0000	100.0000	4	7395dc1828e8	0x2e5d0	100.0000	
 recordcache	_InitWordList	100.0000	100.0000	2	b504194fc8f7	0x2dbf0	100.0000	
 recordcache	_KeepFirstSixWords	100.0000	100.0000	3	a5c0e88a6438	0x2dee0	100.0000	
-recordcache	_LearnLevelSkill	93.2778	93.2778	7	9f8b2312b536	0x2e000	93.2778	
+recordcache	_LearnLevelSkill	100.0000	100.0000	8	4c1680fb28be	0x2e000	100.0000	
 recordcache	_LoadSkillFiles	100.0000	100.0000	1	82be74112064	0x2e3a0	100.0000	
 recordcache	_MoveWord	91.0364	91.0364	2	ebb667ac449c	0x2dd80	91.0364	
 recordcache	_RemoveLowestAffiliatedSkill	100.0000	100.0000	4	7556d539572d	0x2e110	100.0000	
@@ -2302,7 +2302,7 @@ scriptvars	_ReadScriptEntry	100.0000	100.0000	1	f4d3dbf54236	0x3ab10	100.0000
 scriptvars	_ReleaseScriptFiles	100.0000	100.0000	2	0c7264e86d57	0x3b810	100.0000	
 scriptvars	_ResizeScriptEntry	98.0000	98.0000	3	f5be17a66e26	0x3abc0	100.0000	
 scriptvars	_RestoreSystemVars	100.0000	100.0000	1	22d64fae0e92	0x3bf30	100.0000	
-scriptvars	_RunActorScene	100.0000	100.0000	3	db0b5d39f491	0x3b450	100.0000	
+scriptvars	_RunActorScene	100.0000	100.0000	4	e9b918779354	0x3b450	100.0000	
 scriptvars	_RunMessageHook	100.0000	100.0000	1	1cea2890f4a3	0x3b5e0	100.0000	
 scriptvars	_RunScriptScene	100.0000	100.0000	6	f057f6c557e0	0x3afe0	100.0000	
 scriptvars	_RunTextScript	100.0000	100.0000	1	d87844d05259	0x3b8c0	100.0000	
@@ -2379,8 +2379,8 @@ skilluse	_PlayActionEffect	100.0000	100.0000	5	69ab1ea1b824	0x2c050	100.0000
 skilluse	_PushPromptState	100.0000	100.0000	1	9c36853ef043	0x2ab40	100.0000	
 skilluse	_RemoveCombatTarget	100.0000	100.0000	2	019b41001958	0x2aae0	100.0000	
 skilluse	_ReportBattleTally	100.0000	100.0000	2	a1184d4eb7bb	0x2b5f0	100.0000	
-skilluse	_ResolveCombatAction	93.2619	93.2619	19	0d9d9b177e99	0x2ac90	93.2619	
-skilluse	_ResolveKnockout	99.6667	99.6667	8	0878de1b8a92	0x2b490	99.6667	
+skilluse	_ResolveCombatAction	93.2619	93.2619	20	76c5a777cc8a	0x2ac90	93.2619	
+skilluse	_ResolveKnockout	99.6667	99.6667	9	5157a224c938	0x2b490	99.6667	
 skilluse	_RunBattleAction	96.4543	96.4543	20	d580033de04a	0x2b6a0	96.4543	
 skilluse	_SetActionOutcome	100.0000	100.0000	1	69ab7be48b5b	0x2c2b0	100.0000	
 skilluse	_SetWorldMapActive	100.0000	100.0000	1	da2e7e2ed80d	0x2aa20	100.0000	
@@ -2669,7 +2669,7 @@ winmain	?DrawStairs@@YAXXZ	100.0000	100.0000	10	8d144836c05e	0x4da30	100.0000
 winmain	?Enable@CIme@@QAEHPAXH@Z	100.0000	100.0000	1	cpp:6513158aaf51	0x51210	100.0000	
 winmain	?FreeMesh@@YAXPAUMesh@@@Z	100.0000	100.0000	1	469ee8015621	0x4f3b0	100.0000	
 winmain	?GetFrameCount@@YAFXZ	100.0000	100.0000	1	5abad0cad2d7	0x49820	100.0000	
-winmain	?HandleInput@@YAXE@Z	100.0000	100.0000	5	751089cafa5c	0x50540	100.0000	
+winmain	?HandleInput@@YAXE@Z	100.0000	100.0000	6	cda26d4adacb	0x50540	100.0000	
 winmain	?InitDirectX@@YAHXZ	100.0000	100.0000	1	596a22316234	0x4a4f0	100.0000	
 winmain	?LoadGraphics@@YAHXZ	100.0000	100.0000	5	79bdcd5d0fb5	0x50ac0	100.0000	
 winmain	?MainWindowProc@@YGJPAXIIJ@Z	100.0000	100.0000	1	ce30e7b6b7b9	0x4fe90	100.0000	
