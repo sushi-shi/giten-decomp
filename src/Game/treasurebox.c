@@ -187,11 +187,129 @@ static i16 s_itemMenuMember = -1;
 DATA(0x00068c50)
 i16 g_itemMenuAmmoType = -1;
 
+// The per-area level tables (256 handles).
+DATA(0x0007bee0)
+static i32 s_areaStore[256] = {0};
+
+DATA(0x0007c2e0)
+static i16 s_mapPlane = 0;
+
+DATA(0x0007c2e8)
+static MapPosition s_mapPosition = {0};
+
+// The unpacked bitmap of the current level.
+DATA(0x0007c2f8)
+static AutomapBitmap s_levelBuffer = {0};
+
+// The current area's NPCs (s_npcCount of them placed).
+DATA(0x0007d300)
+static AreaNpc s_npcs[16] = {0};
+
 DATA(0x0007d5b2)
-static TreasureBoxCell s_boxCell;
+static TreasureBoxCell s_boxCell = {0};
 
 DATA(0x0007d5b4)
-static MapPosition s_boxPosition;
+static MapPosition s_boxPosition = {0};
+
+DATA(0x0007d5c0)
+static ItemStackList* s_itemMenuLimits = 0;
+
+DATA(0x0007d5c8)
+static i32 s_events = 0;
+
+// The yes/no menu of the "analyze in detail?" prompt.
+DATA(0x0007d5cc)
+static MenuBox* s_menu = 0;
+
+DATA(0x0007d5d0)
+static Character* s_target = 0;
+
+// The window's step; -1 closes it.
+DATA(0x0007d5d4)
+static i16 s_step = 0;
+
+// Roster entry 15 while the detailed analysis borrows it.
+DATA(0x0007d5d8)
+static Character* s_savedRosterEntry = 0;
+
+DATA(0x0007d5dc)
+static i16 s_npcCount = 0;
+
+DATA(0x0007d5e0)
+static i32* s_areas = 0;
+
+DATA(0x0007d5e4)
+static i16 s_mapDirection = 0;
+
+DATA(0x0007d5e8)
+static i16 s_mapOriginX = 0;
+
+DATA(0x0007d5ec)
+static i16 s_mapOriginY = 0;
+
+DATA(0x0007d5f0)
+static i16 s_mapWidth = 0;
+
+DATA(0x0007d5f4)
+static i16 s_mapHeight = 0;
+
+DATA(0x0007d5f8)
+static i16 s_mapScreenX = 0;
+
+DATA(0x0007d5fc)
+static i16 s_mapScreenY = 0;
+
+DATA(0x0007d600)
+static b16 s_mapActive = false;
+
+DATA(0x0007d604)
+static GZ_ENUM_STORAGE(AutomapDetail, i16) s_mapDetail = 0;
+
+DATA(0x0007d608)
+static Panel* s_mapPanel = 0;
+
+DATA(0x0007d60c)
+static AutomapBitmap* s_levelBitmap = 0;
+
+// The panel being polled (NULL outside a poll).
+DATA(0x0007d610)
+static Panel* s_activePanel = 0;
+
+// While set, a row click plays no sound.
+DATA(0x0007d614)
+static i16 s_panelSilent = 0;
+
+DATA(0x0007d618)
+static i32 s_learnableSkillTable = 0;
+
+DATA(0x0007d61c)
+static i32 s_learnableSkillRequirements = 0;
+
+DATA(0x0007d620)
+static i32 s_itemMenuStock = 0;
+
+DATA(0x0007d624)
+static MenuBox* s_itemMenu = 0;
+
+DATA(0x0007d628)
+static b16 s_hideItemMenuTotal = false;
+
+// The room-region grids (a byte per cell of a 64x64 map in a memory handle):
+// the current regions and the copy RoomRegionsChanged compares against.
+DATA(0x0007d62c)
+static i32 s_roomRegions = 0;
+
+DATA(0x0007d630)
+static i32 s_prevRegions = 0;
+
+DATA(0x0007d634)
+static i16 s_reorderFirst = 0;
+
+DATA(0x0007d638)
+static i16 s_reorderSecond = 0;
+
+DATA(0x0007d63c)
+static char s_emptyItemLine[1] = "";
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
@@ -219,12 +337,6 @@ b32 IsHotspotTreasureOpen(i32 index) {
     }
     return false;
 }
-
-DATA(0x0007d634)
-static i16 s_reorderFirst;
-
-DATA(0x0007d638)
-static i16 s_reorderSecond;
 
 RVA(0x0001ab90, 0x168)
 b16 RunPartyReorder(void) {
@@ -295,21 +407,6 @@ i16 PickReorderSlot(void) {
     ResetTextPlaneHighlight(g_infoPlane);
     return g_selectedObjectId;
 }
-
-// The yes/no menu of the "analyze in detail?" prompt.
-DATA(0x0007d5cc)
-static MenuBox* s_menu;
-
-DATA(0x0007d5d0)
-static Character* s_target;
-
-// The window's step; -1 closes it.
-DATA(0x0007d5d4)
-static i16 s_step;
-
-// Roster entry 15 while the detailed analysis borrows it.
-DATA(0x0007d5d8)
-static Character* s_savedRosterEntry;
 
 static void AnalyzeMenuHandler(MenuBox* menu, i16 index, i16 event);
 
@@ -519,9 +616,6 @@ static void AnalyzeMenuHandler(MenuBox* menu, i16 index, i16 event) {
     }
 }
 
-DATA(0x0007d5c8)
-static i32 s_events;
-
 RVA(0x0001b390, 0x14)
 void FreeWorldMapEvents(void) {
     s_events = FreeHandle(s_events);
@@ -593,21 +687,6 @@ b16 CheckWorldMapEvent(i16 x, i16 y) {
     }
     return false;
 }
-
-DATA(0x0007d5c0)
-static ItemStackList* s_itemMenuLimits;
-
-DATA(0x0007d620)
-static i32 s_itemMenuStock;
-
-DATA(0x0007d624)
-static MenuBox* s_itemMenu;
-
-DATA(0x0007d628)
-static b16 s_hideItemMenuTotal;
-
-DATA(0x0007d63c)
-static char s_emptyItemLine[1];
 
 #define InitItemMenuContext(menu, divisor, modeValue, totalVariable)                               \
     do {                                                                                           \
@@ -1066,12 +1145,6 @@ i16* AllocItemMenuStock(i16 index, i16* count) {
     return items;
 }
 
-DATA(0x0007d618)
-static i32 s_learnableSkillTable;
-
-DATA(0x0007d61c)
-static i32 s_learnableSkillRequirements;
-
 RVA(0x0001c250, 0x51)
 void LoadLearnableSkillTables(void) {
     FILE* fp = OpenDataFile(48, 12, 0);
@@ -1410,14 +1483,6 @@ i16 g_panelClickY;
 DATA(0x000919f8)
 i16 g_panelClickX;
 
-// The panel being polled (NULL outside a poll).
-DATA(0x0007d610)
-static Panel* s_activePanel;
-
-// While set, a row click plays no sound.
-DATA(0x0007d614)
-static i16 s_panelSilent;
-
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x0001cae0, 0xc)
@@ -1564,56 +1629,6 @@ i16 ApplyRowCheck(PanelRow* row, i16 value, i16 op) {
     }
     return result;
 }
-
-// The per-area level tables (256 handles).
-DATA(0x0007bee0)
-static i32 s_areaStore[256];
-
-// The unpacked bitmap of the current level.
-DATA(0x0007c2f8)
-static AutomapBitmap s_levelBuffer;
-
-DATA(0x0007d5e0)
-static i32* s_areas;
-
-DATA(0x0007d5e4)
-static i16 s_mapDirection;
-
-DATA(0x0007d5e8)
-static i16 s_mapOriginX;
-
-DATA(0x0007d5ec)
-static i16 s_mapOriginY;
-
-DATA(0x0007d5f0)
-static i16 s_mapWidth;
-
-DATA(0x0007d5f4)
-static i16 s_mapHeight;
-
-DATA(0x0007d5f8)
-static i16 s_mapScreenX;
-
-DATA(0x0007d5fc)
-static i16 s_mapScreenY;
-
-DATA(0x0007d600)
-static b16 s_mapActive;
-
-DATA(0x0007c2e0)
-static i16 s_mapPlane;
-
-DATA(0x0007c2e8)
-static MapPosition s_mapPosition;
-
-DATA(0x0007d608)
-static Panel* s_mapPanel;
-
-DATA(0x0007d604)
-static GZ_ENUM_STORAGE(AutomapDetail, i16) s_mapDetail;
-
-DATA(0x0007d60c)
-static AutomapBitmap* s_levelBitmap;
 
 static __inline i32 GetAutomapAreaHandle(i16 area) {
     return s_areas[area];
@@ -2556,14 +2571,6 @@ b16 UpdateInfoBar(void) {
     return false;
 }
 
-// The room-region grids (a byte per cell of a 64x64 map in a memory handle):
-// the current regions and the copy RoomRegionsChanged compares against.
-DATA(0x0007d62c)
-static i32 s_roomRegions;
-
-DATA(0x0007d630)
-static i32 s_prevRegions;
-
 static __inline void EnsureGridByteStorage(i32* grid) {
     if (!*grid) {
         *grid = AllocHandle(0x1000);
@@ -2877,13 +2884,6 @@ void FinishDoorStep(void) {
         SpawnMapObjects(code);
     }
 }
-
-// The current area's NPCs and how many are placed.
-DATA(0x0007d300)
-static AreaNpc s_npcs[16];
-
-DATA(0x0007d5dc)
-static i16 s_npcCount;
 
 // Which of the two objects of the cell at x/y is object `id`: 0 or 1, else -1
 // (also when the cell holds no objects).
