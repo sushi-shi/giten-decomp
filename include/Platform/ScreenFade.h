@@ -14,6 +14,8 @@ GZ_ENUM_BEGIN(ScreenFadeMode)
 GZ_ENUM_END(ScreenFadeMode);
 // clang-format on
 
+#define IsScreenFadeIn(mode) ((mode) & 1)
+
 #ifdef __cplusplus
 extern "C" {
 #endif

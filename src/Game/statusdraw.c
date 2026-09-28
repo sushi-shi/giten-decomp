@@ -133,7 +133,7 @@ i16 PollTextPartySlotSelection(i16 mode) {
     i16 column;
     i16 lineStep;
     i16 slot;
-    SetTextPlaneHighlightMode(0, 1);
+    SetTextPlaneHighlightMode(0, TEXT_HIGHLIGHT_OUTER);
     if (g_mouseLeftClick) {
         CommitPartySlotSelection();
         ClearMouseClicks();

@@ -1158,9 +1158,7 @@ RVA(0x00036160, 0x50)
 void AddScriptCharacterToRoster(Character* character, i16 unused) {
     if (AddToRoster(character) < 0) {
         g_rosterPendingMember = character;
-        g_rosterReturnState = GetGameState();
-        g_rosterReturnPhase = GetGamePhase();
-        g_rosterReturnStep = GetGameStep();
+        SaveRosterReturnState();
         SetGameState(0x28);
         SetGamePhase(0);
     }

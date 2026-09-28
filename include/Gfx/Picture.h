@@ -34,6 +34,9 @@ typedef struct Picture {
 } Picture;
 // clang-format on
 
+#define GetPictureSurfaceWidth(picture) ((picture)->surfaceWidth)
+#define GetPictureSurfaceHeight(picture) ((picture)->surfaceHeight)
+
 // The status screen's picture (640x440, blitted at y 40).
 extern Picture g_statusPicture;
 

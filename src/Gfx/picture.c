@@ -43,11 +43,8 @@ RVA(0x00057b90, 0x59)
 void LoadScenePicture(BmpFile* bmp, u16 id) {
     if (bmp != NULL) {
         LoadBitmapToSurface16(bmp, &g_scenePicture.surface, NULL);
-        g_scenePicture.rect.left = 0;
         g_scenePicture.id = id;
-        g_scenePicture.rect.top = 0;
-        g_scenePicture.rect.right = bmp->info.biWidth;
-        g_scenePicture.rect.bottom = bmp->info.biHeight;
+        GetBitmapRect(g_scenePicture.rect, bmp);
         g_scenePicture.visible = TRUE;
     }
 }

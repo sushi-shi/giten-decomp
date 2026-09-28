@@ -1206,11 +1206,9 @@ BOOL InitDirect3D(void) {
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
     if (g_deviceSettings.caps.blendMode[static_cast<i32>(g_deviceType)] == BLEND_MODE_ALPHA) {
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, TRUE);
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, FALSE);
+        SetDeviceAlphaBlend(g_d3dDevice, TRUE);
     } else {
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, TRUE);
+        SetDeviceAlphaBlend(g_d3dDevice, FALSE);
     }
     if (g_deviceType != D3D_DEVICE_MMX) {
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
@@ -1243,11 +1241,9 @@ BOOL InitDirect3D(void) {
         g_screenDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
         if (g_deviceSettings.caps.blendMode[static_cast<i32>(g_deviceType)] == BLEND_MODE_ALPHA) {
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, TRUE);
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, FALSE);
+            SetDeviceAlphaBlend(g_screenDevice, TRUE);
         } else {
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, TRUE);
+            SetDeviceAlphaBlend(g_screenDevice, FALSE);
         }
     } else {
         g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);
