@@ -17,6 +17,8 @@ function_rva	target_rva	site_rva	owner	addend	occurrences	provenance
 0x0004bdd0	0x0008fd88	0x0004c114	_?s_box@?1??RenderTBox@@YAXXZ@4PAU_D3DLVERTEX@@A$S	0x00000088	1	box-quad loop end at z member
 0x0004c3c0	0x00087fe8	0x0004ca66	_g_hotspots	0xffffffd8	1	hotspot index minus one
 0x0004c3c0	0x00087fe8	0x0004ca6d	_g_hotspots	0xffffffd8	1	hotspot index minus one
+0x0004cb30	0x0006bbd0	0x0004cfa7	_s_enemySizes$S	0xfffffff8	1	enemy-size frame indexed from one
+0x0004cb30	0x0006bbd4	0x0004cfae	_s_enemySizes$S	0xfffffffc	1	enemy-size frame indexed from one, height member
 0x0004dcd0	0x0008f5c8	0x0004e06b	_g_spriteOrder	0x00000040	1	sprite-order loop one-past limit
 0x0004f260	0x0006bdc4	0x0004f2f8	_s_quadIndices$S	0x0000000c	1	index loop one-past limit
 0x0004f260	0x0006bdbc	0x0004f379	_s_quadUV$S	0x000000c4	1	quad UV loop end at second coordinate
