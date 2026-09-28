@@ -194,10 +194,10 @@ static i16 s_fieldImageMode;
 
 // Each wall contributes a 16-byte mask within these 48-byte work areas.
 DATA(0x00091260)
-static u8 s_leftViewOcclusion[48];
+u8 g_leftViewOcclusion[48];
 
 DATA(0x000912a0)
-static u8 s_rightViewOcclusion[48];
+u8 g_rightViewOcclusion[48];
 
 // The field event table (data file 10).
 DATA(0x0007b7c8)
@@ -1373,14 +1373,14 @@ void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
         for (across = -3; across <= 0; across++) {
             opposite = -across;
             index = opposite - along * 4;
-            if (across != 0 && s_leftViewOcclusion[index] != 0xff) {
+            if (across != 0 && g_leftViewOcclusion[index] != 0xff) {
                 cellX = x;
                 cellY = y;
                 OffsetMapCoord(&cellX, &cellY, direction, across, along);
                 cellY = cellY * width + cellX;
                 MarkDrawCell(cellY);
             }
-            if (across != 0 && s_rightViewOcclusion[index] != 0xff) {
+            if (across != 0 && g_rightViewOcclusion[index] != 0xff) {
                 cellX = x;
                 cellY = y;
                 OffsetMapCoord(&cellX, &cellY, direction, -across, along);
@@ -1388,7 +1388,7 @@ void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
                 MarkDrawCell(cellY);
             }
             if (across == 0
-                && (s_leftViewOcclusion[index] != 0xff || s_rightViewOcclusion[index] != 0xff)) {
+                && (g_leftViewOcclusion[index] != 0xff || g_rightViewOcclusion[index] != 0xff)) {
                 cellX = x;
                 cellY = y;
                 OffsetMapCoord(&cellX, &cellY, direction, 0, along);
@@ -1411,25 +1411,25 @@ void BuildViewOcclusion(i16 x, i16 y, i16 direction, i16 mode) {
     i16 opposite;
     i16 index;
     u16 wall;
-    memset(s_leftViewOcclusion, 0, sizeof(s_leftViewOcclusion));
-    memset(s_rightViewOcclusion, 0, sizeof(s_rightViewOcclusion));
+    memset(g_leftViewOcclusion, 0, sizeof(g_leftViewOcclusion));
+    memset(g_rightViewOcclusion, 0, sizeof(g_rightViewOcclusion));
     for (along = 0; along >= -3; along--) {
         opposite = 0;
         for (across = 0; across <= 3; opposite--, across++) {
             index = across - along * 4;
             wall = GetWallAtOffset(x, y, direction, across, along);
             if (GetCellWallStop(direction, 0, wall)) {
-                MergeViewOcclusionEntry(s_rightViewOcclusion, index + 16);
+                MergeViewOcclusionEntry(g_rightViewOcclusion, index + 16);
             }
             if (GetCellWallStop(direction, 1, wall)) {
-                MergeViewOcclusionEntry(s_rightViewOcclusion, index);
+                MergeViewOcclusionEntry(g_rightViewOcclusion, index);
             }
             wall = GetWallAtOffset(x, y, direction, opposite, along);
             if (GetCellWallStop(direction, 0, wall)) {
-                MergeViewOcclusionEntry(s_leftViewOcclusion, index + 16);
+                MergeViewOcclusionEntry(g_leftViewOcclusion, index + 16);
             }
             if (GetCellWallStop(direction, 3, wall)) {
-                MergeViewOcclusionEntry(s_leftViewOcclusion, index);
+                MergeViewOcclusionEntry(g_leftViewOcclusion, index);
             }
         }
     }
@@ -1505,24 +1505,24 @@ i16 GetViewVisibility(i16 across, i16 along, i16 side) {
     }
     if (across < 0) {
         if (side == 0) {
-            return (s_leftViewOcclusion[index] & 0xf0) - 0xf0;
+            return (g_leftViewOcclusion[index] & 0xf0) - 0xf0;
         }
-        return (s_leftViewOcclusion[index] & 0x0f) - 0x0f;
+        return (g_leftViewOcclusion[index] & 0x0f) - 0x0f;
     }
     if (across > 0) {
         if (side == 0) {
-            return (s_rightViewOcclusion[index] & 0xf0) - 0xf0;
+            return (g_rightViewOcclusion[index] & 0xf0) - 0xf0;
         }
-        return (s_rightViewOcclusion[index] & 0x0f) - 0x0f;
+        return (g_rightViewOcclusion[index] & 0x0f) - 0x0f;
     }
     if (side < 0) {
-        return (s_leftViewOcclusion[index] & 0x0f) - 0x0f;
+        return (g_leftViewOcclusion[index] & 0x0f) - 0x0f;
     }
     if (side > 0) {
-        return (s_rightViewOcclusion[index] & 0x0f) - 0x0f;
+        return (g_rightViewOcclusion[index] & 0x0f) - 0x0f;
     }
-    return ((s_leftViewOcclusion[index] & 0xf0) - 0xf0)
-           | ((s_rightViewOcclusion[index] & 0xf0) - 0xf0);
+    return ((g_leftViewOcclusion[index] & 0xf0) - 0xf0)
+           | ((g_rightViewOcclusion[index] & 0xf0) - 0xf0);
 }
 
 RVA(0x00014410, 0x4b)
@@ -1587,7 +1587,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
         depth = -depth;
     }
     index = width + depth * 4;
-    if (across <= 0 && (s_leftViewOcclusion[index] & 0x0f) != 0x0f) {
+    if (across <= 0 && (g_leftViewOcclusion[index] & 0x0f) != 0x0f) {
         stop = GetCellWallStop(direction, 3, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
         if (stop == 1) {
@@ -1596,7 +1596,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
             GetCellWallStop(direction, 3, cell);
         }
     }
-    if (across >= 0 && (s_rightViewOcclusion[index] & 0x0f) != 0x0f) {
+    if (across >= 0 && (g_rightViewOcclusion[index] & 0x0f) != 0x0f) {
         stop = GetCellWallStop(direction, 1, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
         if (stop == 1) {
@@ -1605,7 +1605,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
             GetCellWallStop(direction, 1, cell);
         }
     }
-    if (across < 0 && (s_leftViewOcclusion[index] & 0xf0) != 0xf0) {
+    if (across < 0 && (g_leftViewOcclusion[index] & 0xf0) != 0xf0) {
         stop = GetCellWallStop(direction, 0, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
         if (stop == 1) {
@@ -1614,7 +1614,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
             GetCellWallStop(direction, 0, cell);
         }
     }
-    if (across > 0 && (s_rightViewOcclusion[index] & 0xf0) != 0xf0) {
+    if (across > 0 && (g_rightViewOcclusion[index] & 0xf0) != 0xf0) {
         stop = GetCellWallStop(direction, 0, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
         if (stop == 1) {

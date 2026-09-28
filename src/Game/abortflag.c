@@ -31,10 +31,10 @@ i16 g_viewDepth;
 
 // @identity-TODO: only the empty legacy blitters read these origin words.
 DATA(0x00091248)
-static i16 s_spriteOriginX;
+i16 g_spriteOriginX;
 
 DATA(0x0009124a)
-static i16 s_spriteOriginY;
+i16 g_spriteOriginY;
 
 DATA(0x000912d0)
 i16 g_viewCellX;
@@ -48,16 +48,16 @@ i16 g_viewFacing;
 // @identity-TODO: the Windows port never initializes these clipping words;
 // only their argument order at the legacy blitter calls is known.
 DATA(0x000912d6)
-static i16 s_spriteClipRight;
+i16 g_spriteClipRight;
 
 DATA(0x000912d8)
-static i16 s_spriteClipBottom;
+i16 g_spriteClipBottom;
 
 DATA(0x000912da)
-static i16 s_spriteClipLeft;
+i16 g_spriteClipLeft;
 
 DATA(0x000912dc)
-static i16 s_spriteClipTop;
+i16 g_spriteClipTop;
 
 // @identity-TODO: a pending-abort flag: the next query of the list count
 // (0x45680) returns -1 instead and clears it; callers set it around nested
@@ -252,12 +252,12 @@ i16 DrawSceneSprite(i16 mode, SceneSprite* sprite, FieldObject* object, i16 kind
                 sprite->imageHandle,
                 x,
                 y,
-                s_spriteOriginX,
-                s_spriteOriginY,
-                s_spriteClipLeft,
-                s_spriteClipTop,
-                s_spriteClipRight,
-                s_spriteClipBottom,
+                g_spriteOriginX,
+                g_spriteOriginY,
+                g_spriteClipLeft,
+                g_spriteClipTop,
+                g_spriteClipRight,
+                g_spriteClipBottom,
                 sprite->flags,
                 sprite->offsetX,
                 sprite->offsetY
@@ -291,12 +291,12 @@ i16 DrawSceneSprite(i16 mode, SceneSprite* sprite, FieldObject* object, i16 kind
                 sprite->imageHandle,
                 x,
                 y,
-                s_spriteOriginX,
-                s_spriteOriginY,
-                s_spriteClipLeft,
-                s_spriteClipTop,
-                s_spriteClipRight,
-                s_spriteClipBottom,
+                g_spriteOriginX,
+                g_spriteOriginY,
+                g_spriteClipLeft,
+                g_spriteClipTop,
+                g_spriteClipRight,
+                g_spriteClipBottom,
                 sprite->flags
             );
         }

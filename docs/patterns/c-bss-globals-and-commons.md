@@ -8,8 +8,10 @@ initializer (`int g = 0;`, `T g[4] = {0};`) is emitted in the object's own
 `.bss`, like a `static`. Uninitialized C++ globals are not COMMONs either.
 
 Signature: a C global whose retail address lies inside a run of one object's
-`.bss` statics. Spell it with a zero initializer. A C global in the trailing
-COMMON block stays uninitialized.
+`.bss` statics. Spell it with a zero initializer. A datum in the trailing
+COMMON block is an uninitialized C global with external linkage, never a
+`static`; COMMONs there pack to their own size (two-byte ones sit two bytes
+apart), while each object's `.bss` members are four-byte aligned.
 
 Evidence: compile `int a; int b = 0; static int c;` with the `c` profile and
 read the COFF symbol table (`b` and `c` are in `.bss`, `a` has section 0);

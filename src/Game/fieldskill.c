@@ -27,7 +27,7 @@
 
 // @identity-TODO: PrepareSkillAction only clears this word; no reader survives.
 DATA(0x00091980)
-static i16 s_skillActionResetValue;
+i16 g_skillActionResetValue;
 
 // The member (by id) using a skill on the field; -1 asks the picker.
 DATA(0x00080a90)
@@ -194,7 +194,7 @@ void SetSkillPick(i16 position) {
 RVA(0x0002db90, 0x4e)
 void PrepareSkillAction(void) {
     SkillHeader* skill;
-    s_skillActionResetValue = 0;
+    g_skillActionResetValue = 0;
     skill = GetCachedSkill(g_actionId);
     g_statusCondition = GetSkillInflictedCondition(skill);
     g_actionResult = GetSkillEffectCode(skill);

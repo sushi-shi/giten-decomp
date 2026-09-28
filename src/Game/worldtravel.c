@@ -13,10 +13,10 @@
 #include <stdlib.h>
 
 DATA(0x000912fc)
-static i16 s_destinationY;
+i16 g_destinationY;
 
 DATA(0x000912fe)
-static i16 s_destinationX;
+i16 g_destinationX;
 
 DATA(0x0007b720)
 static i16 s_travelHistoryCount;
@@ -59,8 +59,8 @@ DATA(0x00068a4c)
 i16 g_worldMapY = 192;
 
 static __inline void SetWorldTravelDestination(MapCoord destination) {
-    s_destinationX = destination.x;
-    s_destinationY = destination.y;
+    g_destinationX = destination.x;
+    g_destinationY = destination.y;
     s_travelHistoryCount = 0;
 }
 
@@ -104,8 +104,8 @@ i16 StepWorldMapTravel(i16 layer, i16 speed) {
         layer,
         g_worldMapX,
         g_worldMapY,
-        s_destinationX,
-        s_destinationY,
+        g_destinationX,
+        g_destinationY,
         speed
     );
     g_worldMapX += step.x;
