@@ -6,7 +6,7 @@ function_rva	target_rva	site_rva	owner	addend	occurrences	provenance
 0x0000bed0	0x000684e6	0x0000bf94	_s_viewFloodMask$S	0xfffffffe	1	west-neighbor array address
 0x00011b30	0x0007b4fb	0x00011ba7	_s_travelScores$S	0xfffffffb	1	travel-score preceding-row index
 0x00011b30	0x0007b4fb	0x00011c19	_s_travelScores$S	0xfffffffb	1	travel-score preceding-row index
-0x00043ac0	0x0006498a	0x00043bd9	_g_equipCountSlots	0xffffffea	1	equipment-kind table index minus weapon kind
+0x00043ac0	0x0006498a	0x00043bd9	_s_equipCountSlots$S	0xffffffea	1	equipment-kind table index minus weapon kind
 0x0004a100	0x0008d224	0x0004a13b	_g_spriteImages	0x00004814	1	sprite-picture loop end at surface member
 0x0004a100	0x0008778c	0x0004a1d4	_g_enemyTextures	0x00002a6c	1	enemy-texture loop one-past limit
 0x0004a100	0x0008fc74	0x0004a36c	?g_enemyPictures@@3PAUPicture@@A	0x000000ec	1	enemy-picture loop end at surface member

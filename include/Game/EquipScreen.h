@@ -50,9 +50,6 @@ extern char g_emptyBattleSkillLabel[];
 // The zero-initialized empty picker label.
 extern char g_emptyEquipPickLabel[];
 
-// Count slots for equipment kinds 11 through 19; ammunition is handled separately.
-extern const i16 g_equipCountSlots[9];
-
 // The equipment part under the cursor, or -1 when none is picked. Reset
 // forgets the selection; clear restores its normal appearance before forgetting it.
 i16 PollEquipPart(i16 member, i16 mode);

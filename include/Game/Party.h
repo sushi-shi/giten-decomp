@@ -63,10 +63,6 @@ ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, i16* result);
 // in the character's `ammoCounts` entry.
 ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index);
 
-// The index into Character `ammoCounts` that equipping ammunition writes:
-// a read-only -1 in retail, so the store never runs.
-extern const i16 g_ammoCountIndex;
-
 // Sets equipment part `part` of roster member `slot`. When `check` is set,
 // changing the gun unequips ammunition that no longer fits it.
 i16 SetEquipSlot(i16 slot, i16 part, ItemSlot item, i16 check);

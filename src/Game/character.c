@@ -4,7 +4,8 @@
 // statics open and close one .bss run (0x4816a8..0x483b4f) with the status
 // draw, party, status line and save statics between them, each read only by
 // its own part's code; the .rdata tables interleave (condition, character,
-// status line); and the code is contiguous in .text.
+// status line); the action speed's floating-point constants lead the
+// object's constant run; and the code is contiguous in .text.
 
 #include <rva.h>
 
@@ -246,9 +247,10 @@ static const ConditionName s_conditionNames[] = {
     {34, "\212O\217\235"},                         // 外傷
 };
 
-// Only the first word of this retail read-only span is referenced by code.
-DATA(0x000648fc)
-const i16 g_ammoCountIndex = -1;
+// The Character `ammoCounts` entry of equipment kinds 11 through 19 (-1 for
+// ammunition). statuspanel has an identical copy of its own (s_equipCountSlots).
+DATA(0x000648f8)
+static const i16 s_itemCountSlots[9] = {0, 1, -1, 4, 3, 4, 5, 6, 7};
 
 // "CNL" / "DNL": the letters for alignment classes -1/0/1 on the two axes.
 DATA(0x00064910)
@@ -313,6 +315,27 @@ static u32 s_timerMinutes = 0;
 
 DATA(0x00083b4c)
 static char s_emptyCharacterName[1] = "";
+
+// Action speed from agility, reduced by armor defense scaled by vitality;
+// never below 1.
+RVA(0x0003c810, 0x97)
+i16 ComputeActionSpeed(Character* character) {
+    double base = sqrt(GetStatTotal(character, STAT_AGILITY)) * 4.0;
+    double burden = (u16)SumArmorDefenseBonus(character);
+    double root = sqrt(GetStatTotal(character, STAT_VITALITY));
+    u16 speed;
+    if (root < 1.0) {
+        root = 1.0;
+    }
+    burden /= root;
+    burden *= 0.25;
+    base -= burden;
+    speed = RoundToShort(base);
+    if (speed < 1) {
+        speed = 1;
+    }
+    return speed;
+}
 
 RVA(0x0003c8b0, 0xa6)
 void RecalcCharacterStats(Character* character) {
@@ -2691,8 +2714,8 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
                 }
             } else {
                 TakeBagItems(item.item, item.quantity);
-                if (character && g_ammoCountIndex >= 0) {
-                    i16 at = g_ammoCountIndex;
+                if (character && s_itemCountSlots[ITEM_KIND_AMMO - ITEM_KIND_WEAPON] >= 0) {
+                    i16 at = s_itemCountSlots[ITEM_KIND_AMMO - ITEM_KIND_WEAPON];
                     character->ammoCounts[at] = (u8)count;
                 }
             }

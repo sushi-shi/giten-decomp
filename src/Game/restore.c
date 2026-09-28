@@ -48,6 +48,9 @@ static const i16 s_generalRecoveryConditions[] = {2,  3,  4,  5,  6,  10, 11, 12
 DATA(0x00064600)
 static const i16 s_specialRecoveryConditions[] = {0, 1, 8, 9, 31, 14, 18, 19, 27, 28, 29, -1};
 
+DATA(0x00064618)
+const i16 g_affiliationGrowthStats[4][2] = {{5, 7}, {8, 0}, {2, 1}, {3, 9}};
+
 RVA(0x0001fdc0, 0xc1)
 i16 ComputeRestoreAmount(i16 code, Character* user, u16 max) {
     double amount;

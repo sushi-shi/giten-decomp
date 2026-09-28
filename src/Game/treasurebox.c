@@ -70,7 +70,6 @@
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
 #include <Script/ScriptVars.h>
-#include <Script/TextToken.h>
 #include <Sound/Sound.h>
 #include <Text/Font.h>
 #include <Text/TextPlane.h>
@@ -88,9 +87,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-DATA(0x00064618)
-const i16 g_affiliationGrowthStats[4][2] = {{5, 7}, {8, 0}, {2, 1}, {3, 9}};
 
 DATA(0x00068b30)
 static AutomapIcon s_mapIcons[] = {
@@ -204,11 +200,17 @@ static AutomapBitmap s_levelBuffer = {0};
 DATA(0x0007d300)
 static AreaNpc s_npcs[16] = {0};
 
-DATA(0x0007d5b2)
-static TreasureBoxCell s_boxCell = {0};
+// The treasure box in view: its cell, and the party's map position with x/y
+// set to the view's lateral and depth position.
+// @identity-TODO: the leading word is unreferenced.
+typedef struct ViewedTreasureBox {
+    u8 pad00[2];
+    TreasureBoxCell cell;
+    MapPosition position;
+} ViewedTreasureBox;
 
-DATA(0x0007d5b4)
-static MapPosition s_boxPosition = {0};
+DATA(0x0007d5b0)
+static ViewedTreasureBox s_viewedBox = {0};
 
 DATA(0x0007d5c0)
 static ItemStackList* s_itemMenuLimits = 0;
@@ -318,10 +320,10 @@ void PrepareViewedTreasureBox(void) {
     if (box) {
         IsTreasureBoxOpen(box);
         GetApproachOffset(g_viewLateral, g_viewDepth);
-        s_boxPosition = g_field.pos;
-        s_boxPosition.x = g_viewLateral;
-        s_boxPosition.y = g_viewDepth;
-        memcpy(&s_boxCell, &box->head, sizeof(s_boxCell));
+        s_viewedBox.position = g_field.pos;
+        s_viewedBox.position.x = g_viewLateral;
+        s_viewedBox.position.y = g_viewDepth;
+        memcpy(&s_viewedBox.cell, &box->head, sizeof(s_viewedBox.cell));
     }
 }
 

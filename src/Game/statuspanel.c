@@ -654,8 +654,10 @@ i16 AlignmentChartCell(i16 value) {
     return 23 - (i16)(((value - -128.0) / 256.0) * 24.0);
 }
 
+// The Character `ammoCounts` entry of equipment kinds 11 through 19 (-1 for
+// ammunition). character has an identical copy of its own (s_itemCountSlots).
 DATA(0x000649a0)
-const i16 g_equipCountSlots[9] = {0, 1, -1, 4, 3, 4, 5, 6, 7};
+static const i16 s_equipCountSlots[9] = {0, 1, -1, 4, 3, 4, 5, 6, 7};
 
 // The equipment page's state: the menu of bag items to equip, the equipment
 // panel, the picked item's name and description, the picked bag entry or
@@ -689,42 +691,43 @@ static EquipItemPage s_itemPage = {NULL, -1, -1, NULL};
 DATA(0x0006a248)
 static EquipSkillPage s_skillPage = {NULL, -1, -1};
 
-// The bag entries the equipment menu lists, and its two header lines.
+// The bag entries the equipment menu lists and the attach page lists.
 DATA(0x00083b50)
-static i16 s_equipEntries[48];
+static i16 s_equipEntries[48] = {0};
 
-DATA(0x00083c78)
-static char s_equipHeaderA[4];
-
-DATA(0x00083c7c)
-static char s_equipHeaderB[4];
-
-// The bag entries the attach page lists, and its two header lines.
 DATA(0x00083bb0)
-static AttachEntry s_attachEntries[48];
-
-DATA(0x00083c80)
-static char s_attachHeaderA[4];
-
-DATA(0x00083c84)
-static char s_attachHeaderB[4];
-
-// The label of an empty equipment part.
-DATA(0x00083c88)
-static char s_emptyPartLabel[4];
-
-// The skill page's second header line and the label of an empty skill.
-DATA(0x00083c8c)
-static char s_skillHeaderLine[4];
-
-DATA(0x00083c90)
-static char s_emptySkillLabel[4];
+static AttachEntry s_attachEntries[48] = {0};
 
 DATA(0x00083c70)
 i16 g_previousStatusStep = 0;
 
 DATA(0x00083c74)
 char g_emptyBattleSkillLabel[4] = {0};
+
+// The equipment menu's two header lines.
+DATA(0x00083c78)
+static char s_equipHeaderA[4] = {0};
+
+DATA(0x00083c7c)
+static char s_equipHeaderB[4] = {0};
+
+// The attach page's two header lines.
+DATA(0x00083c80)
+static char s_attachHeaderA[4] = {0};
+
+DATA(0x00083c84)
+static char s_attachHeaderB[4] = {0};
+
+// The label of an empty equipment part.
+DATA(0x00083c88)
+static char s_emptyPartLabel[4] = {0};
+
+// The skill page's second header line and the label of an empty skill.
+DATA(0x00083c8c)
+static char s_skillHeaderLine[4] = {0};
+
+DATA(0x00083c90)
+static char s_emptySkillLabel[4] = {0};
 
 DATA(0x00083c94)
 char g_emptyEquipPickLabel[4] = {0};
@@ -1137,7 +1140,7 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
         } else {
             // Kind 19 selects index 7, overwriting returnPosition.area in
             // the saved preview copy; retain this original store.
-            saved->ammoCounts[g_equipCountSlots[kind - ITEM_KIND_WEAPON]] = count;
+            saved->ammoCounts[s_equipCountSlots[kind - ITEM_KIND_WEAPON]] = count;
             slot.quantity = 1;
         }
         if (kind == ITEM_KIND_GUN) {

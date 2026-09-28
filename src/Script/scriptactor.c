@@ -96,30 +96,6 @@ static i16 s_hoveredChoice = -1;
 DATA(0x00069138)
 static char* s_bloodTypes[4] = {"\202`", "\202a", "\202`\202a", "\202n"};
 
-DATA(0x00069148)
-static char* s_signNames[12] = {
-    g_shortNames[0],
-    g_shortNames[1],
-    g_shortNames[2],
-    g_shortNames[3],
-    g_shortNames[4],
-    g_shortNames[5],
-    g_shortNames[6],
-    g_shortNames[7],
-    g_shortNames[8],
-    g_shortNames[9],
-    g_shortNames[10],
-    g_shortNames[11],
-};
-
-DATA(0x00069178)
-static char* s_affiliationNames[4] = {
-    g_shortNames[12],
-    g_shortNames[13],
-    g_shortNames[14],
-    g_shortNames[15],
-};
-
 // The expansion of the last text token.
 DATA(0x00081230)
 static char s_tokenText[0x100] = {0};
@@ -159,8 +135,79 @@ static i16 s_longVarIndex = 0;
 DATA(0x00081358)
 static i16 s_spoilAdjustment = 0;
 
+// @identity-TODO: the empty names the sign and affiliation tables point at;
+// each is its own 4-byte .bss item, and no code writes them.
 DATA(0x0008135c)
-char g_shortNames[16][4] = {0};
+static char s_signName0[4] = "";
+
+DATA(0x00081360)
+static char s_signName1[4] = "";
+
+DATA(0x00081364)
+static char s_signName2[4] = "";
+
+DATA(0x00081368)
+static char s_signName3[4] = "";
+
+DATA(0x0008136c)
+static char s_signName4[4] = "";
+
+DATA(0x00081370)
+static char s_signName5[4] = "";
+
+DATA(0x00081374)
+static char s_signName6[4] = "";
+
+DATA(0x00081378)
+static char s_signName7[4] = "";
+
+DATA(0x0008137c)
+static char s_signName8[4] = "";
+
+DATA(0x00081380)
+static char s_signName9[4] = "";
+
+DATA(0x00081384)
+static char s_signName10[4] = "";
+
+DATA(0x00081388)
+static char s_signName11[4] = "";
+
+DATA(0x0008138c)
+static char s_affiliationName0[4] = "";
+
+DATA(0x00081390)
+static char s_affiliationName1[4] = "";
+
+DATA(0x00081394)
+static char s_affiliationName2[4] = "";
+
+DATA(0x00081398)
+static char s_affiliationName3[4] = "";
+
+DATA(0x00069148)
+static char* s_signNames[12] = {
+    s_signName0,
+    s_signName1,
+    s_signName2,
+    s_signName3,
+    s_signName4,
+    s_signName5,
+    s_signName6,
+    s_signName7,
+    s_signName8,
+    s_signName9,
+    s_signName10,
+    s_signName11,
+};
+
+DATA(0x00069178)
+static char* s_affiliationNames[4] = {
+    s_affiliationName0,
+    s_affiliationName1,
+    s_affiliationName2,
+    s_affiliationName3,
+};
 
 RVA(0x00032cf0, 0x1b)
 void DespawnScriptActor(void) {
