@@ -41,6 +41,8 @@ candidates requiring review, never automatic source edits or MAX banking.
 The campaign JSON separates generation failures, compilation failures, scored
 states, elapsed time and retained sources. Only the existing full relocation
 audit can certify an exact candidate.
+Exactness and size ranking compare objdiff instruction extents on both sides;
+the separately recorded CodeView window can include trailing alignment bytes.
 
 ```sh
 giten permute candidates --output /tmp/candidates.json

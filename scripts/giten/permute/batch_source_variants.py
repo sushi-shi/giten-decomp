@@ -62,6 +62,7 @@ from giten.permute.tu_state_noise import (
     object_metrics,
     objdiff_scores,
     project_root,
+    retail_function_size,
     resolve_target,
     target_state_identity,
     temporary_source,
@@ -568,6 +569,7 @@ def main(argv=None) -> int:
     retail_target = retail_metrics.get(target.symbol)
     if retail_target is None:
         parser.error(f"target symbol absent from retail object: {target.symbol}")
+    retail_size = retail_function_size(target_obj, target.symbol)
     retail_topology = function_topology(target_obj, target.symbol)
 
     results = []
@@ -707,7 +709,7 @@ def main(argv=None) -> int:
                 identity_metrics["objdiff_size"] = candidate_size
                 state_id = target_state_identity(identity_metrics)
                 rejections = exact_closure_rejections(
-                    score, candidate_size, target.retail_size, candidate_target, retail_target
+                    score, candidate_size, retail_size, candidate_target, retail_target
                 )
                 sibling_regressions = []
                 for symbol, baseline_symbol_score in baseline_scores.items():
@@ -733,7 +735,7 @@ def main(argv=None) -> int:
                     "score": score,
                     "score_delta": score - baseline_score,
                     "candidate_size": candidate_size,
-                    "retail_size": target.retail_size,
+                    "retail_size": retail_size,
                     "candidate_relocs": candidate_target["relocs"],
                     "retail_relocs": retail_target["relocs"],
                     "text_sha": candidate_target["text_sha"],
@@ -761,7 +763,7 @@ def main(argv=None) -> int:
                 state["observation_count"] += 1
                 if score not in state["scores"]:
                     state["scores"].append(score)
-                rank = result_rank(row, target.retail_size, retail_target["relocs"])
+                rank = result_rank(row, retail_size, retail_target["relocs"])
                 retain_frontier_candidate(
                     frontier_by_state, args.frontier, state_id, rank, row,
                     candidate, candidate_obj, scratch,
@@ -856,7 +858,7 @@ def main(argv=None) -> int:
 
     ranked = sorted(
         (row for row in results if row.get("score") is not None),
-        key=lambda row: result_rank(row, target.retail_size, retail_target["relocs"]),
+        key=lambda row: result_rank(row, retail_size, retail_target["relocs"]),
     )
     topology_ranked = sorted(
         (row for row in results if row.get("score") is not None),
@@ -875,6 +877,8 @@ def main(argv=None) -> int:
         "unit": target.unit,
         "rva": f"0x{target.rva:x}",
         "symbol": target.symbol,
+        "codeview_size": target.retail_size,
+        "retail_size": retail_size,
         "variant_count": combinations,
         "attempted_variant_count": len(results),
         "executed_variant_count": len(ranked),
