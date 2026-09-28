@@ -979,12 +979,18 @@ def fp_pool_rows(model: Model, base_dir=BASE_DIR):
                 if pool[member][3] >= size and pool[member][2][:size] == want:
                     pairs[rva].append(member)
         claims = Counter(m for ms in pairs.values() for m in ms)
+        pin_size = dict(pins.get(stem, ()))
         for rva, ms in sorted(pairs.items()):
             if len(ms) != 1 or claims[ms[0]] != 1:
                 withheld.append((rva, ms[0] if ms else "$T?",
                                  f"DATA_COMPGEN pin matches {len(ms)} pool members"))
                 continue
             storage, _off, want, size = pool[ms[0]]
+            # A float slot padded to the next double's alignment: the pin's
+            # literal size is the datum, the zero tail is cl's padding.
+            if not any(want[pin_size[rva]:]):
+                size = pin_size[rva]
+                want = want[:size]
             emit(ms[0], rva, storage, size, want, "src-DATA_COMPGEN-fp-pool")
         for member in stranded:
             if not claims.get(member):

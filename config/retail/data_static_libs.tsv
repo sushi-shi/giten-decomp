@@ -32,3 +32,60 @@ rva	size	name	unit	note
 0x064e38	0x10	_IID_IDirect3DRGBDevice	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirect3D2::CreateDevice
 0x064e48	0x10	_IID_IDirect3DHALDevice	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirect3D2::CreateDevice
 0x064e58	0x10	_IID_IDirect3DMMXDevice	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirect3D2::CreateDevice
+0x066348	0x59	___lookuptable	library_data	LIBC output.obj .rdata state table; masked bytes match, sole referent of _output's class lookup
+0x068034	0x4	___xp_a	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XPA; _doexit's first _initterm pushes it (crt0dat.obj DIR32 at +0x6d)
+0x06803c	0x4	___xp_z	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XPZ; _doexit's first _initterm pushes it (crt0dat.obj DIR32 at +0x68)
+0x068040	0x4	___xt_a	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XTA; _doexit's second _initterm pushes it (crt0dat.obj DIR32 at +0x7f)
+0x068048	0x4	___xt_z	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XTZ; _doexit's second _initterm pushes it (crt0dat.obj DIR32 at +0x7a)
+0x06e2f8	0x8	___rgctypeflag	library_data	LIBC mbctype.obj static __rgctypeflag; masked bytes match, referenced by _setmbcp
+0x06e404	0x4	_holdrand	library_data	LIBC rand.obj static holdrand; masked bytes match, read and written by srand and rand
+0x06e6e4	0x4	___nullstring	library_data	LIBC output.obj named .data pointer; masked bytes and its DIR32 match, read by _output
+0x06e6e8	0x4	___wnullstring	library_data	LIBC output.obj named .data pointer; masked bytes and its DIR32 match, read by _output
+0x06e970	0x8	___badioinfo	library_data	LIBC ioinit.obj named .data object; masked bytes match, referenced by _initstdio, _flsbuf and _filbuf
+0x06e990	0x4	__pctype	library_data	LIBC ctype.obj named .data pointer; its DIR32 into _ctype matches, read by the is* and tolower bodies
+0x070bc8	0x4	___sbh_p_starting_region	library_data	LIBC sbheap.obj static __sbh_p_starting_region; its DIR32 into __small_block_heap matches
+0x070bcc	0x4	___sbh_threshold	library_data	LIBC sbheap.obj named .data DWORD; masked bytes match, referenced by sbheap.obj code
+0x070c60	0x4	__First_FPE_Indx	library_data	LIBC winxfltr.obj named .data DWORD; masked bytes match, referenced by winxfltr.obj code
+0x070c64	0x4	__Num_FPE	library_data	LIBC winxfltr.obj named .data DWORD; masked bytes match, referenced by winxfltr.obj code
+0x070c68	0x4	__XcptActTabCount	library_data	LIBC winxfltr.obj named .data DWORD; masked bytes match, referenced by winxfltr.obj code
+0x070c6c	0x4	__fpecode	library_data	LIBC winxfltr.obj named .data DWORD; masked bytes match, referenced by winxfltr.obj code
+0x070e68	0x4	___mb_cur_max	library_data	LIBC nlsdata1.obj named .data DWORD; masked bytes match, read by _tolower, _isctype and the float conversions
+0x070e6c	0x4	___decimal_point	library_data	LIBC nlsdata1.obj named .data object; masked bytes match, read by _cftoe and _forcdecpt
+0x090d18	0x100	__mbcasemap	library_data	LIBC mbctype.obj named .bss object; the DIR32 in setSBUpLow resolves here
+0x090e18	0x4	___mbcodepage	library_data	LIBC mbctype.obj named .bss object; the DIR32 in ismbcprint and mbbtombc resolves here
+0x090e1c	0x4	___mblcid	library_data	LIBC mbctype.obj named .bss object; the DIR32 in ismbcprint and setmbcp resolves here
+0x090e2c	0x4	_fSystemSet	library_data	LIBC mbctype.obj static .bss object; the DIR32 in setmbcp and getSystemCP resolves here
+0x090e38	0x4	_errno	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in chsize and close resolves here
+0x090e3c	0x4	__doserrno	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in chsize and close resolves here
+0x090e40	0x4	__umaskval	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in sopen resolves here
+0x090e44	0x4	__osver	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in WinMainCRTStartup resolves here
+0x090e48	0x4	__winver	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in WinMainCRTStartup resolves here
+0x090e4c	0x4	__winmajor	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in WinMainCRTStartup resolves here
+0x090e50	0x4	__winminor	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in WinMainCRTStartup resolves here
+0x090e54	0x4	___argc	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in setargv resolves here
+0x090e58	0x4	___argv	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in setargv resolves here
+0x090e60	0x4	__environ	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in setenvp resolves here
+0x090e70	0x4	__pgmptr	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in setargv resolves here
+0x090e7c	0x4	__C_Termination_Done	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in doexit resolves here
+0x090e80	0x4	__C_Exit_Done	library_data	LIBC crt0dat.obj named .bss object; the DIR32 in doexit resolves here
+0x090e84	0x4	__aenvptr	library_data	LIBC crt0.obj named .bss object; the DIR32 in setenvp resolves here
+0x090ea8	0x4	___lc_codepage	library_data	LIBC nlsdata2.obj named .bss object; the DIR32 in crtGetStringTypeA and crtLCMapStringA resolves here
+0x090ebc	0x4	__cflush	library_data	LIBC _file.obj named .bss object; the DIR32 in getbuf and openfile resolves here
+0x090ec0	0x4	_g_pflt	library_data	LIBC cvt.obj static .bss object; the DIR32 in cftoe and cftof resolves here
+0x090ec4	0x4	_g_fmt	library_data	LIBC cvt.obj static .bss object; the DIR32 in cftoe and cftoe_g resolves here
+0x090ec8	0x4	_g_magnitude	library_data	LIBC cvt.obj static .bss object; the DIR32 in cftof and cftog resolves here
+0x090ecc	0x1	_g_round_expansion	library_data	LIBC cvt.obj static .bss object; the DIR32 in cftog resolves here
+0x090ed0	0x4	?_pnhHeap@@3P6AHI@ZA	library_data	LIBC handler.obj named .bss object; the DIR32 in callnewh resolves here
+0x090ed8	0x4	___sbh_decommitable_pages	library_data	LIBC sbheap.obj static .bss object; the DIR32 in sbh_decommit_pages and sbh_free_block resolves here
+0x090edc	0x4	?_pCurrentException@@3PAUEHExceptionRecord@@A	library_data	LIBC frame.obj named .bss object; the DIR32 in CallCatchBlock and FindHandler resolves here
+0x090ee0	0x4	?_pCurrentExContext@@3PAU_CONTEXT@@A	library_data	LIBC frame.obj named .bss object; the DIR32 in CallCatchBlock and FindHandler resolves here
+0x090ee4	0x4	?__pSETranslator@@3P6AXIPAU_EXCEPTION_POINTERS@@@ZA	library_data	LIBC hooks.obj named .bss object; the DIR32 in FindHandlerForForeignException and _CallSETranslator resolves here
+0x090eec	0x4	__pxcptinfoptrs	library_data	LIBC winxfltr.obj named .bss object; the DIR32 in XcptFilter and raise resolves here
+0x090ffc	0x4	__adbgmsg	library_data	LIBC crt0msg.obj named .bss object; the DIR32 in FF_MSGBANNER resolves here
+0x091000	0x4	__commode	library_data	LIBC ncommode.obj named .bss object; the DIR32 in openfile resolves here
+0x091048	0x4	__fmode	library_data	LIBC txtmode.obj named .bss object; the DIR32 in sopen resolves here
+0x09104c	0x4	_ctrlc_action	library_data	LIBC winsig.obj static .bss object; the DIR32 in raise resolves here
+0x091050	0x4	_ctrlbreak_action	library_data	LIBC winsig.obj static .bss object; the DIR32 in raise resolves here
+0x091054	0x4	_abort_action	library_data	LIBC winsig.obj static .bss object; the DIR32 in raise resolves here
+0x091058	0x4	_term_action	library_data	LIBC winsig.obj static .bss object; the DIR32 in raise resolves here
+0x06e6e0	0x4	___app_type	library_data	LIBC wincrt0.obj named .data DWORD at +4 after __aexit_rtn; value 2 (_GUI_APP), read by _FF_MSGBANNER, _NMSG_WRITE and _free_osfhnd
