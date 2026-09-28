@@ -34,16 +34,16 @@
 
 #include <stddef.h>
 
-// @identity-TODO: the party position the picker last targeted (-1: none).
-DATA(0x00068408)
-static i16 s_pickedIndex = -1;
-
 // The temporary swap: the party position and the roster slot it held.
 DATA(0x00068400)
 i16 g_guestIndex = -1;
 
 DATA(0x00068404)
 static i16 s_swapSaved = -1;
+
+// @identity-TODO: the party position the picker last targeted (-1: none).
+DATA(0x00068408)
+static i16 s_pickedIndex = -1;
 
 DATA(0x000784c8)
 i16 g_commandPosition = 0;
