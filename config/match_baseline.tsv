@@ -34,7 +34,6 @@
 # [data_matching]	true
 # [units]	unit	n_functions	matched
 abortflag	16	15
-alignchart	1	1
 automap	1	1
 bitmapio	2	2
 bitset	5	5
@@ -50,17 +49,13 @@ devicesettings	2	2
 displayconfig	2	2
 effectdraw	3	1
 equipeffect	2	2
-equipscreen	25	23
 eventflags	28	28
 fieldmain	59	57
 fieldobj	141	133
 fieldscreen	103	102
 fieldview	38	36
 font	150	144
-fusion	58	56
-fusioncompare	8	8
-fusionmenu	3	3
-fusionscreen	38	38
+fusion	114	111
 gameloop	7	7
 gamestate	8	7
 handle	33	32
@@ -90,7 +85,6 @@ resourcebitmap	5	5
 resourceblit	3	2
 restore	3	3
 savegame	10	10
-screeneffect	7	7
 screensave	9	9
 scriptactor	202	198
 scriptctx	35	35
@@ -108,7 +102,7 @@ skilluse	53	48
 sprite	7	6
 statestack	127	123
 statusmenu	9	9
-statuspanel	23	23
+statuspanel	49	46
 surfacecopy	1	1
 textapi	5	5
 textchar	1	0
@@ -146,7 +140,6 @@ abortflag	_IsAbortPending	100.0000	100.0000	1	c73b1959cc5b	0x45550	100.0000
 abortflag	_PickSceneHotspot	100.0000	100.0000	3	f8c207d6015f	0x456e0	100.0000	
 abortflag	_PollScenePointer	100.0000	100.0000	2	ecf1217615a2	0x45b30	100.0000	
 abortflag	_SetAbortPending	100.0000	100.0000	1	f6e2fbe05b94	0x45560	100.0000	
-alignchart	_AlignmentChartCell	100.0000	100.0000	1	9096764c3f2a	0x42ca0	100.0000	
 automap	_ScreenToAutomapCell	100.0000	100.0000	1	f9ff95d2ab3a	0x58500	100.0000	
 bitmapio	_FreeBitmap	100.0000	100.0000	1	e2ab5bf88c4d	0x56ae0	100.0000	
 bitmapio	_ReadBitmapFile	100.0000	100.0000	1	fc37c43f3b7a	0x56a70	100.0000	
@@ -493,31 +486,6 @@ effectdraw	_DrawProjectedEffectSprite	94.6055	94.6055	12	848e541ed05e	0x589e0	94
 effectdraw	_DrawScreenEffectSprite	92.4556	92.4556	12	2d82e84ba745	0x58e40	92.4667	
 equipeffect	_ApplyEquipmentEffects	100.0000	100.0000	3	997aac703cb3	0x26470	100.0000	
 equipeffect	_ApplyItemCurse	100.0000	100.0000	7	d5bccfe5f7bd	0x26070	100.0000	
-equipscreen	_AttachEntryMenuHandler	100.0000	100.0000	2	694c639d0e74	0x444b0	100.0000	
-equipscreen	_AttachItemMenuHandler	100.0000	100.0000	3	9f283e7512b4	0x44340	100.0000	
-equipscreen	_AttachTextHook	100.0000	100.0000	1	e4700a2de530	0x44590	100.0000	
-equipscreen	_CreateAttachEntryMenu	100.0000	100.0000	1	ed8edaaf806a	0x443d0	100.0000	
-equipscreen	_CreateAttachItemMenu	100.0000	100.0000	2	007cce08d838	0x442f0	100.0000	
-equipscreen	_CreateSkillMenu	100.0000	100.0000	5	88334a3b8846	0x44df0	100.0000	
-equipscreen	_DrawEquipLine	100.0000	100.0000	3	784c014d28bc	0x44ad0	100.0000	
-equipscreen	_DrawEquipLines	100.0000	100.0000	4	f8e48c8191d6	0x44940	100.0000	
-equipscreen	_DrawEquipPanel	100.0000	100.0000	3	ad577620e2a4	0x43820	100.0000	
-equipscreen	_DrawEquipPickRow	100.0000	100.0000	2	f8d190bc7726	0x45130	100.0000	
-equipscreen	_DrawStatColumn	100.0000	100.0000	1	04465775c174	0x43930	100.0000	
-equipscreen	_DrawStatCompare	100.0000	100.0000	2	8c1bce7510c2	0x43a20	100.0000	
-equipscreen	_EquipMenuHandler	100.0000	100.0000	8	c47d4a593fea	0x435a0	100.0000	
-equipscreen	_ItemListHandler	100.0000	100.0000	8	ecb24000ee9c	0x44830	100.0000	
-equipscreen	_ListAttachEntries	100.0000	100.0000	2	318f1c14966e	0x44440	100.0000	
-equipscreen	_ListEquipCandidates	100.0000	100.0000	4	4a9510056192	0x42cd0	100.0000	
-equipscreen	_OpenEquipMenu	100.0000	100.0000	1	af87ac9b23a8	0x43530	100.0000	
-equipscreen	_OpenItemInfoPlane	100.0000	100.0000	2	7d8e20604d0f	0x44bb0	100.0000	
-equipscreen	_PollEquipPart	93.9683	93.9683	6	a110d9a50322	0x44fb0	93.9683	
-equipscreen	_PreviewEquipChange	100.0000	100.0000	12	b5f9229feafe	0x43ac0	100.0000	
-equipscreen	_RunAttachScreen	100.0000	100.0000	6	b48d0d6bc02f	0x43d10	100.0000	
-equipscreen	_RunEquipScreen	98.1173	98.1173	16	02c43f519457	0x42e60	98.1173	
-equipscreen	_RunItemPage	100.0000	100.0000	4	1cd6a40c3814	0x44650	100.0000	
-equipscreen	_RunSkillPage	100.0000	100.0000	3	82b2a198d50c	0x44c30	100.0000	
-equipscreen	_SkillListHandler	100.0000	100.0000	5	e856c5392425	0x44e50	100.0000	
 eventflags	_ChangeEventFlag	100.0000	100.0000	4	42db24f580e5	0x391f0	100.0000	
 eventflags	_CheckFlagWord	100.0000	100.0000	1	f0144581025d	0x39420	100.0000	
 eventflags	_ClearEventFlag	100.0000	100.0000	2	00b9e67377cc	0x39250	100.0000	
@@ -585,7 +553,7 @@ fieldmain	_ResetLevelEvents	100.0000	100.0000	1	1e89a6f847d4	0x13b00	100.0000
 fieldmain	_RestoreSavedPoint	100.0000	100.0000	1	977a1304737b	0x125d0	100.0000	
 fieldmain	_ReturnToCurrentCell	100.0000	100.0000	2	4094b3c135eb	0x13a80	100.0000	
 fieldmain	_RunCellEvent	100.0000	100.0000	6	d52d13736bac	0x13640	100.0000	
-fieldmain	_RunFieldExploration	98.5243	98.5243	11	8423b0352843	0x12d20	98.5243	
+fieldmain	_RunFieldExploration	98.5330	98.5330	12	c8df281de9bf	0x12d20	98.5330	
 fieldmain	_RunPendingTalk	100.0000	100.0000	1	26185bda5cf2	0x12be0	100.0000	
 fieldmain	_SampleViewWalls	100.0000	100.0000	3	e8db3b57e152	0x140d0	100.0000	
 fieldmain	_SaveFieldMemory	100.0000	100.0000	1	43accb657b79	0x13c40	100.0000	
@@ -1037,43 +1005,87 @@ font	_TextPlaneCellAt	100.0000	100.0000	4	4b2ad45d1849	0x53830	100.0000
 font	_TextPlaneRowToLine	100.0000	100.0000	3	5768f0b9b023	0x52b40	100.0000	
 font	_ToggleCurrentTextHighlight	100.0000	100.0000	2	c9ece8bf06e7	0x52f30	100.0000	
 font	_ToggleTextRunHighlight	85.4310	85.4310	6	c41f1deb7fc3	0x51ef0	85.4310	
+fusion	_AcquireFusionSelectionMode	100.0000	100.0000	2	cd6478c92bf6	0x28840	100.0000	
 fusion	_ApplyFusionRankChange	100.0000	100.0000	2	01dca8bd2bd1	0x26910	100.0000	
+fusion	_BuildPairFusionCandidates	100.0000	100.0000	2	f28c4f699466	0x296f0	100.0000	
+fusion	_BuildTripleFusionSummaries	100.0000	100.0000	4	ad903015e3b9	0x29870	100.0000	
 fusion	_CalculatePairFusion	100.0000	100.0000	2	b7f9f025e5f9	0x26580	100.0000	
 fusion	_CalculateTripleFusion	100.0000	100.0000	2	140c316416da	0x27b30	100.0000	
 fusion	_CheckFusionRestrictedPair	100.0000	100.0000	1	bc5a645d49d4	0x26680	100.0000	
+fusion	_CloseFusionPicker	100.0000	100.0000	1	eec1e0aa36da	0x29660	100.0000	
+fusion	_CloseFusionPreview	100.0000	100.0000	3	b86f01b8ea0d	0x2a060	100.0000	
+fusion	_CloseFusionPreviewOnClick	100.0000	100.0000	2	966d0c95ec51	0x299a0	100.0000	
+fusion	_CommitPairFusion	100.0000	100.0000	1	f6aaf0a964e3	0x2a1f0	100.0000	
+fusion	_CommitTripleFusion	100.0000	100.0000	2	f5f030f33089	0x2a250	100.0000	
+fusion	_CompareFusionCharacters	100.0000	100.0000	3	130807153bdc	0x2a480	100.0000	
+fusion	_CompareFusionValues	100.0000	100.0000	1	abd832c8a1ce	0x2a5b0	100.0000	
+fusion	_CompareRosterFusionClasses	100.0000	100.0000	2	1907d37697ef	0x2a720	100.0000	
 fusion	_CountFusionHighFlagOne	100.0000	100.0000	1	b890d1763c98	0x27810	100.0000	
 fusion	_CountFusionLowFlagOne	100.0000	100.0000	1	163d6c546b0f	0x277a0	100.0000	
 fusion	_CountSpecialRaceFusionSlots	100.0000	100.0000	1	e020ff2fae12	0x27460	100.0000	
 fusion	_CountUnrankedFusionSlots	100.0000	100.0000	1	9372d24da743	0x27600	100.0000	
+fusion	_CreateFusionInfoPlane	100.0000	100.0000	1	2f967fdb87fa	0x28e70	100.0000	
+fusion	_CreateFusionList	100.0000	100.0000	2	ec451ae10327	0x29120	100.0000	
+fusion	_CreateFusionPreviewCard	100.0000	100.0000	1	f42164d50bcf	0x29d90	100.0000	
+fusion	_CreatePairFusionCharacter	100.0000	100.0000	5	bb1541df0044	0x28950	100.0000	
+fusion	_DrawFusionCharacterDetails	100.0000	100.0000	4	940b4a72590d	0x293f0	100.0000	
+fusion	_DrawFusionPreviewCard	100.0000	100.0000	5	71a9a9161cd4	0x29bf0	100.0000	
+fusion	_DrawFusionStatGroup	100.0000	100.0000	2	26dae92559a5	0x29590	100.0000	
+fusion	_DrawFusionSummaryGrid	100.0000	100.0000	4	b4e195456a6b	0x28ed0	100.0000	
+fusion	_EndFusion	100.0000	100.0000	1	2e0ddb250e9e	0x2a1e0	100.0000	
 fusion	_FindFusionFallback	100.0000	100.0000	1	c1011b650fde	0x267c0	100.0000	
 fusion	_FindFusionFallbackIndex	100.0000	100.0000	1	53d594e7ae5d	0x281f0	100.0000	
 fusion	_FindPrimaryFusionComplement	100.0000	100.0000	2	cf48c919d23e	0x285a0	100.0000	
 fusion	_FindSecondaryFusionComplement	100.0000	100.0000	2	edada5b01b86	0x284f0	100.0000	
+fusion	_FinishFusionMenuSelection	100.0000	100.0000	2	44747e4ed033	0x2a9d0	100.0000	
 fusion	_FreeFusionTables	100.0000	100.0000	1	d86b6d64dd93	0x27e70	100.0000	
+fusion	_FusionListMenuHandler	100.0000	100.0000	4	f2a4b0c86d62	0x291b0	100.0000	
+fusion	_FusionSelectionTextHook	100.0000	100.0000	1	ab8e6e18c3ef	0x29350	100.0000	
+fusion	_GetFirstFusionSlot	100.0000	100.0000	1	1c1e90934a80	0x288a0	100.0000	
 fusion	_GetFusionClassPair	97.3125	97.3125	4	e007b0979059	0x282b0	97.3125	
 fusion	_GetFusionDemonPair	100.0000	100.0000	2	fb44ec66b61f	0x28060	100.0000	
 fusion	_GetFusionFallbackEntry	100.0000	100.0000	1	0c3bb9cc8ed7	0x281a0	100.0000	
 fusion	_GetFusionGrowthBonus	100.0000	100.0000	2	9f9dbbaac047	0x26da0	100.0000	
 fusion	_GetFusionLevel	100.0000	100.0000	2	6996830c28d5	0x26770	100.0000	
 fusion	_GetFusionPairSide	100.0000	100.0000	1	353bd29dad3e	0x28400	100.0000	
-fusion	_GetFusionRaceEntry	100.0000	100.0000	2	2ccb6aa46678	0x28380	100.0000	
+fusion	_GetFusionPairSummaryCell	100.0000	100.0000	1	0b862ccf005a	0x290f0	100.0000	
+fusion	_GetFusionRaceEntry	100.0000	88.3674	2	2ccb6aa46678	0x28380	100.0000	
 fusion	_GetFusionRacePair	100.0000	100.0000	3	f88bd48d4e3c	0x27f40	100.0000	
 fusion	_GetFusionRestrictedClass	100.0000	100.0000	1	c8ea422d88f7	0x28260	100.0000	
 fusion	_GetFusionResult	100.0000	100.0000	2	d3f503eaa012	0x27090	100.0000	
+fusion	_GetFusionResultKind	100.0000	100.0000	3	f6fe651a90e4	0x288d0	100.0000	
 fusion	_GetFusionSpecialRace	100.0000	100.0000	2	2d0c77e084d6	0x28230	100.0000	
 fusion	_GetFusionSpecialRaceChange	100.0000	100.0000	1	b82907cdf3a5	0x28110	100.0000	
 fusion	_GetPairFusionSummary	100.0000	100.0000	4	c09e0d092e32	0x26e10	100.0000	
 fusion	_GetRosterFusionRestrictedClass	100.0000	100.0000	1	d7a82a88b6d9	0x28290	100.0000	
 fusion	_GetSameRaceFusionRace	100.0000	100.0000	2	21e7a1074594	0x28000	100.0000	
+fusion	_GetScreenEffectImage	100.0000	100.0000	2	d57f1466be7b	0x286a0	100.0000	
+fusion	_GetScreenEffectImageSize	100.0000	100.0000	1	795a1d1d5871	0x286b0	100.0000	
+fusion	_GetScriptAnimationPosition	100.0000	100.0000	1	94da90c6dffc	0x28810	100.0000	
+fusion	_GetSecondFusionSlot	100.0000	100.0000	1	1b26a442cc55	0x288b0	100.0000	
+fusion	_GetThirdFusionSlot	100.0000	100.0000	1	b0cd19aad02b	0x288c0	100.0000	
 fusion	_GetTripleFusionLevel	100.0000	100.0000	2	38b7b7daae10	0x278d0	100.0000	
 fusion	_GetTripleFusionLevelBonus	100.0000	100.0000	1	000e56cfc238	0x27880	100.0000	
 fusion	_GetTripleFusionSummary	100.0000	100.0000	4	7cfb1a71f791	0x27c30	100.0000	
 fusion	_InheritFusionStat	100.0000	100.0000	2	6e48c7dcf95d	0x27130	100.0000	
 fusion	_InheritFusionStats	100.0000	100.0000	1	a4d2f1fbcd8b	0x270b0	100.0000	
 fusion	_IsFusionDemonRestricted	100.0000	100.0000	1	5943df55268a	0x28650	100.0000	
+fusion	_LoadFusionResultCharacter	100.0000	100.0000	1	99e56d1f40fa	0x2a0b0	100.0000	
 fusion	_LoadFusionTables	100.0000	100.0000	1	94638543f2e4	0x27d60	100.0000	
+fusion	_LoadScriptAnimation	100.0000	100.0000	1	c39607458d61	0x28790	100.0000	
+fusion	_LoadScriptAnimationImage	100.0000	100.0000	1	780a4b205d57	0x287d0	100.0000	
 fusion	_MarkRandomFusion	100.0000	100.0000	2	fe1967f74d40	0x27c20	100.0000	
 fusion	_MatchFusionPair	100.0000	100.0000	2	527f11fe5798	0x28470	100.0000	
+fusion	_MoveSpecialFusionCharacters	100.0000	100.0000	2	8c15b87f4d3d	0x2a670	100.0000	
+fusion	_MoveSpecialFusionSlot	100.0000	100.0000	2	a75b3f784773	0x2a620	100.0000	
+fusion	_MoveSpecialRaceFusionSlot	100.0000	100.0000	2	dc56081cf625	0x2a6a0	100.0000	
+fusion	_MoveUnrankedFusionSlot	100.0000	100.0000	2	02fee06f1956	0x2a6e0	100.0000	
+fusion	_OpenFusionPreviewOnClick	100.0000	100.0000	3	2166dfd4e5b9	0x29a10	100.0000	
+fusion	_PreviewFusionCharacter	100.0000	100.0000	3	19108d350754	0x29fe0	100.0000	
+fusion	_PushFusionMenu	100.0000	100.0000	1	7e142bbf5931	0x2a760	100.0000	
+fusion	_PushScriptAnimation	100.0000	100.0000	1	c5ac35bdd561	0x286c0	100.0000	
+fusion	_ReleaseFusionSelectionResources	100.0000	100.0000	2	1c80a59b20b4	0x28860	100.0000	
+fusion	_ResetThirdFusionSlot	100.0000	100.0000	1	8562f007f66b	0x28890	100.0000	
 fusion	_ResolveFusionDemonPair	100.0000	100.0000	1	71f752f199ed	0x266e0	100.0000	
 fusion	_ResolveFusionFallbackPair	100.0000	100.0000	1	8846685f0d1d	0x26a00	100.0000	
 fusion	_ResolveFusionRacePair	100.0000	100.0000	1	957da0124dce	0x26d20	100.0000	
@@ -1093,57 +1105,20 @@ fusion	_ResolveThreeUnrankedFusion	100.0000	100.0000	3	2a232e484909	0x27510	100.
 fusion	_ResolveTwoSpecialRaceFusion	100.0000	100.0000	2	92b2dab0b45e	0x27340	100.0000	
 fusion	_ResolveTwoUnrankedFusion	100.0000	100.0000	2	ee9e3ea14cbb	0x27590	100.0000	
 fusion	_ResolveUnrankedTripleFusion	100.0000	100.0000	1	150d822ce129	0x27670	100.0000	
+fusion	_RestoreFusionCharacter	100.0000	100.0000	2	b4faef0ec91c	0x2a440	100.0000	
+fusion	_RunFirstFusionPicker	100.0000	100.0000	3	216ee9ffcc17	0x28be0	100.0000	
+fusion	_RunFusionMenuState	100.0000	100.0000	4	6ccacb3d7e48	0x2a790	100.0000	
+fusion	_RunPairFusion	100.0000	100.0000	3	5d0867c63d37	0x2a0d0	100.0000	
+fusion	_RunScriptAnimationState	100.0000	100.0000	2	1839aa1cf45d	0x286f0	100.0000	
+fusion	_RunSecondFusionPicker	100.0000	100.0000	3	bcd2ec06f9af	0x29de0	100.0000	
+fusion	_RunThirdFusionPicker	100.0000	100.0000	2	0f7319b644bb	0x29f00	100.0000	
+fusion	_RunTripleFusion	100.0000	100.0000	2	bca2bc3a9348	0x2a150	100.0000	
 fusion	_SelectRandomFusionDemon	100.0000	100.0000	1	3c7ffa716d84	0x26f90	100.0000	
 fusion	_SetFusionResult	100.0000	100.0000	2	90a0b9bd5d64	0x26550	100.0000	
-fusioncompare	_CompareFusionCharacters	100.0000	100.0000	3	130807153bdc	0x2a480	100.0000	
-fusioncompare	_CompareFusionValues	100.0000	100.0000	1	abd832c8a1ce	0x2a5b0	100.0000	
-fusioncompare	_CompareRosterFusionClasses	100.0000	100.0000	2	1907d37697ef	0x2a720	100.0000	
-fusioncompare	_MoveSpecialFusionCharacters	100.0000	100.0000	2	8c15b87f4d3d	0x2a670	100.0000	
-fusioncompare	_MoveSpecialFusionSlot	100.0000	100.0000	2	a75b3f784773	0x2a620	100.0000	
-fusioncompare	_MoveSpecialRaceFusionSlot	100.0000	100.0000	2	dc56081cf625	0x2a6a0	100.0000	
-fusioncompare	_MoveUnrankedFusionSlot	100.0000	100.0000	2	02fee06f1956	0x2a6e0	100.0000	
-fusioncompare	_SortFusionSlots	100.0000	100.0000	2	1b0fc3eabcd8	0x2a5d0	100.0000	
-fusionmenu	_FinishFusionMenuSelection	100.0000	100.0000	2	44747e4ed033	0x2a9d0	100.0000	
-fusionmenu	_PushFusionMenu	100.0000	100.0000	1	7e142bbf5931	0x2a760	100.0000	
-fusionmenu	_RunFusionMenuState	100.0000	100.0000	4	6ccacb3d7e48	0x2a790	100.0000	
-fusionscreen	_AcquireFusionSelectionMode	100.0000	100.0000	2	cd6478c92bf6	0x28840	100.0000	
-fusionscreen	_BuildPairFusionCandidates	100.0000	100.0000	2	f28c4f699466	0x296f0	100.0000	
-fusionscreen	_BuildTripleFusionSummaries	100.0000	100.0000	4	ad903015e3b9	0x29870	100.0000	
-fusionscreen	_CloseFusionPicker	100.0000	100.0000	1	eec1e0aa36da	0x29660	100.0000	
-fusionscreen	_CloseFusionPreview	100.0000	100.0000	3	b86f01b8ea0d	0x2a060	100.0000	
-fusionscreen	_CloseFusionPreviewOnClick	100.0000	100.0000	2	966d0c95ec51	0x299a0	100.0000	
-fusionscreen	_CommitPairFusion	100.0000	100.0000	1	f6aaf0a964e3	0x2a1f0	100.0000	
-fusionscreen	_CommitTripleFusion	100.0000	100.0000	2	f5f030f33089	0x2a250	100.0000	
-fusionscreen	_CreateFusionInfoPlane	100.0000	100.0000	1	2f967fdb87fa	0x28e70	100.0000	
-fusionscreen	_CreateFusionList	100.0000	100.0000	2	ec451ae10327	0x29120	100.0000	
-fusionscreen	_CreateFusionPreviewCard	100.0000	100.0000	1	f42164d50bcf	0x29d90	100.0000	
-fusionscreen	_CreatePairFusionCharacter	100.0000	100.0000	5	bb1541df0044	0x28950	100.0000	
-fusionscreen	_DrawFusionCharacterDetails	100.0000	100.0000	4	940b4a72590d	0x293f0	100.0000	
-fusionscreen	_DrawFusionPreviewCard	100.0000	100.0000	5	71a9a9161cd4	0x29bf0	100.0000	
-fusionscreen	_DrawFusionStatGroup	100.0000	100.0000	2	26dae92559a5	0x29590	100.0000	
-fusionscreen	_DrawFusionSummaryGrid	100.0000	100.0000	4	b4e195456a6b	0x28ed0	100.0000	
-fusionscreen	_EndFusion	100.0000	100.0000	1	2e0ddb250e9e	0x2a1e0	100.0000	
-fusionscreen	_FusionListMenuHandler	100.0000	100.0000	4	f2a4b0c86d62	0x291b0	100.0000	
-fusionscreen	_FusionSelectionTextHook	100.0000	100.0000	1	ab8e6e18c3ef	0x29350	100.0000	
-fusionscreen	_GetFirstFusionSlot	100.0000	100.0000	1	1c1e90934a80	0x288a0	100.0000	
-fusionscreen	_GetFusionPairSummaryCell	100.0000	100.0000	1	0b862ccf005a	0x290f0	100.0000	
-fusionscreen	_GetFusionResultKind	100.0000	100.0000	3	f6fe651a90e4	0x288d0	100.0000	
-fusionscreen	_GetSecondFusionSlot	100.0000	100.0000	1	1b26a442cc55	0x288b0	100.0000	
-fusionscreen	_GetThirdFusionSlot	100.0000	100.0000	1	b0cd19aad02b	0x288c0	100.0000	
-fusionscreen	_LoadFusionResultCharacter	100.0000	100.0000	1	99e56d1f40fa	0x2a0b0	100.0000	
-fusionscreen	_OpenFusionPreviewOnClick	100.0000	100.0000	3	2166dfd4e5b9	0x29a10	100.0000	
-fusionscreen	_PreviewFusionCharacter	100.0000	100.0000	3	19108d350754	0x29fe0	100.0000	
-fusionscreen	_ReleaseFusionSelectionResources	100.0000	100.0000	2	1c80a59b20b4	0x28860	100.0000	
-fusionscreen	_ResetThirdFusionSlot	100.0000	100.0000	1	8562f007f66b	0x28890	100.0000	
-fusionscreen	_RestoreFusionCharacter	100.0000	100.0000	2	b4faef0ec91c	0x2a440	100.0000	
-fusionscreen	_RunFirstFusionPicker	100.0000	100.0000	3	216ee9ffcc17	0x28be0	100.0000	
-fusionscreen	_RunPairFusion	100.0000	100.0000	3	5d0867c63d37	0x2a0d0	100.0000	
-fusionscreen	_RunSecondFusionPicker	100.0000	100.0000	3	bcd2ec06f9af	0x29de0	100.0000	
-fusionscreen	_RunThirdFusionPicker	100.0000	100.0000	2	0f7319b644bb	0x29f00	100.0000	
-fusionscreen	_RunTripleFusion	100.0000	100.0000	2	bca2bc3a9348	0x2a150	100.0000	
-fusionscreen	_StageFusionCharacter	100.0000	100.0000	3	da4f6abefda1	0x2a330	100.0000	
-fusionscreen	_StagePairFusionCharacter	100.0000	100.0000	2	a15024a1929d	0x2a380	100.0000	
-fusionscreen	_StoreFusionPairSummary	100.0000	100.0000	1	2e68f475e48a	0x29830	100.0000	
+fusion	_SortFusionSlots	100.0000	100.0000	2	1b0fc3eabcd8	0x2a5d0	100.0000	
+fusion	_StageFusionCharacter	100.0000	100.0000	3	da4f6abefda1	0x2a330	100.0000	
+fusion	_StagePairFusionCharacter	100.0000	100.0000	2	a15024a1929d	0x2a380	100.0000	
+fusion	_StoreFusionPairSummary	100.0000	100.0000	1	2e68f475e48a	0x29830	100.0000	
 gameloop	_ClearScriptVars	100.0000	100.0000	1	492982b43e5b	0x1920	100.0000	
 gameloop	_InitGameData	100.0000	100.0000	2	56a14756a8d6	0x1870	100.0000	
 gameloop	_ResetGameSession	100.0000	100.0000	1	30be1a6a571b	0x1940	100.0000	
@@ -1658,13 +1633,6 @@ savegame	_RunSystemMenu	100.0000	100.0000	2	68c8983cd04a	0x3e50	100.0000
 savegame	_SaveGame	100.0000	100.0000	2	47efad95448d	0x3a00	100.0000	
 savegame	_SystemMenuHandler	100.0000	100.0000	3	ccb13921a138	0x3f70	100.0000	
 savegame	_WriteSaveHeader	100.0000	100.0000	2	cc9819cb922a	0x3ae0	100.0000	
-screeneffect	_GetScreenEffectImage	100.0000	100.0000	2	d57f1466be7b	0x286a0	100.0000	
-screeneffect	_GetScreenEffectImageSize	100.0000	100.0000	1	795a1d1d5871	0x286b0	100.0000	
-screeneffect	_GetScriptAnimationPosition	100.0000	100.0000	1	94da90c6dffc	0x28810	100.0000	
-screeneffect	_LoadScriptAnimation	100.0000	100.0000	1	c39607458d61	0x28790	100.0000	
-screeneffect	_LoadScriptAnimationImage	100.0000	100.0000	1	780a4b205d57	0x287d0	100.0000	
-screeneffect	_PushScriptAnimation	100.0000	100.0000	1	c5ac35bdd561	0x286c0	100.0000	
-screeneffect	_RunScriptAnimationState	100.0000	100.0000	2	1839aa1cf45d	0x286f0	100.0000	
 screensave	_AllocScreenSave	100.0000	100.0000	2	bd357a2bc50a	0x3930	100.0000	
 screensave	_ApplyTextCursor	100.0000	100.0000	1	5ceffe4f3ba9	0x3920	100.0000	
 screensave	_CaptureScreenSave	100.0000	100.0000	2	74c925d3ebcb	0x3950	100.0000	
@@ -2320,13 +2288,26 @@ statusmenu	_ResetStatusMenu	100.0000	100.0000	2	1ccda97e5ce9	0x419e0	100.0000
 statusmenu	_SetStatusMenuItemFlag	100.0000	100.0000	1	09c18c699cc4	0x419c0	100.0000	
 statusmenu	_SetStatusMenuItemsHidden	100.0000	100.0000	3	a84de2a50b69	0x41a70	100.0000	
 statusmenu	_StatusMenuRowHandler	100.0000	100.0000	1	9afab967744e	0x41960	100.0000	
-statuspanel	_DrawAlignmentMarker	100.0000	100.0000	2	149fed208572	0x42c10	100.0000	
+statuspanel	_AlignmentChartCell	100.0000	100.0000	1	9096764c3f2a	0x42ca0	100.0000	
+statuspanel	_AttachEntryMenuHandler	100.0000	100.0000	2	694c639d0e74	0x444b0	100.0000	
+statuspanel	_AttachItemMenuHandler	100.0000	100.0000	3	9f283e7512b4	0x44340	100.0000	
+statuspanel	_AttachTextHook	100.0000	100.0000	1	e4700a2de530	0x44590	100.0000	
+statuspanel	_CreateAttachEntryMenu	100.0000	100.0000	1	ed8edaaf806a	0x443d0	100.0000	
+statuspanel	_CreateAttachItemMenu	100.0000	100.0000	2	007cce08d838	0x442f0	100.0000	
+statuspanel	_CreateSkillMenu	100.0000	100.0000	5	88334a3b8846	0x44df0	100.0000	
+statuspanel	_DrawAlignmentMarker	100.0000	100.0000	3	f4551a9a2442	0x42c10	100.0000	
 statuspanel	_DrawBattleStatColumn	100.0000	100.0000	1	49e17f763d77	0x42920	100.0000	
 statuspanel	_DrawBattleStatsPanel	100.0000	100.0000	6	1b613ebc6678	0x42a00	100.0000	
+statuspanel	_DrawEquipLine	100.0000	100.0000	3	784c014d28bc	0x44ad0	100.0000	
+statuspanel	_DrawEquipLines	100.0000	100.0000	4	f8e48c8191d6	0x44940	100.0000	
+statuspanel	_DrawEquipPanel	100.0000	100.0000	4	2c63785578aa	0x43820	100.0000	
+statuspanel	_DrawEquipPickRow	100.0000	100.0000	2	f8d190bc7726	0x45130	100.0000	
 statuspanel	_DrawStatBar	100.0000	100.0000	2	a2ebb38f0efd	0x42520	100.0000	
-statuspanel	_DrawStatBarSegment	100.0000	100.0000	2	be26fe74e9c8	0x425c0	100.0000	
+statuspanel	_DrawStatBarSegment	99.5312	99.5312	3	f25b88cf811a	0x425c0	100.0000	
+statuspanel	_DrawStatColumn	100.0000	100.0000	1	04465775c174	0x43930	100.0000	
+statuspanel	_DrawStatCompare	100.0000	100.0000	3	114d0c62b111	0x43a20	100.0000	
 statuspanel	_DrawStatLine	100.0000	100.0000	5	92c01e0d41fc	0x42830	100.0000	
-statuspanel	_DrawStatList	100.0000	100.0000	5	792baf415af5	0x42450	100.0000	
+statuspanel	_DrawStatList	100.0000	100.0000	6	a9206037338a	0x42450	100.0000	
 statuspanel	_DrawStatTotals	100.0000	100.0000	2	50fce968537d	0x42780	100.0000	
 statuspanel	_DrawStatusCapacity	100.0000	100.0000	4	342146361cc5	0x41ee0	100.0000	
 statuspanel	_DrawStatusConditions	100.0000	100.0000	2	b39045d169e0	0x41d50	100.0000	
@@ -2338,11 +2319,24 @@ statuspanel	_DrawStatusNumber	100.0000	100.0000	1	209e0052713b	0x429c0	100.0000
 statuspanel	_DrawStatusPools	100.0000	100.0000	2	a646008498c6	0x41ba0	100.0000	
 statuspanel	_DrawStatusScreen	100.0000	100.0000	3	a68dde9fa6ae	0x42090	100.0000	
 statuspanel	_DrawStatusVitals	100.0000	100.0000	1	c14da7b19cb2	0x41cf0	100.0000	
+statuspanel	_EquipMenuHandler	100.0000	100.0000	8	c47d4a593fea	0x435a0	100.0000	
+statuspanel	_ItemListHandler	100.0000	100.0000	8	ecb24000ee9c	0x44830	100.0000	
+statuspanel	_ListAttachEntries	100.0000	100.0000	2	318f1c14966e	0x44440	100.0000	
+statuspanel	_ListEquipCandidates	100.0000	100.0000	4	4a9510056192	0x42cd0	100.0000	
+statuspanel	_OpenEquipMenu	100.0000	100.0000	1	af87ac9b23a8	0x43530	100.0000	
+statuspanel	_OpenItemInfoPlane	100.0000	100.0000	2	7d8e20604d0f	0x44bb0	100.0000	
 statuspanel	_OpenStatListWindow	100.0000	100.0000	1	252fbc3687b6	0x42670	100.0000	
+statuspanel	_PollEquipPart	93.9683	93.9683	6	a110d9a50322	0x44fb0	93.9683	
+statuspanel	_PreviewEquipChange	100.0000	100.0000	12	b5f9229feafe	0x43ac0	100.0000	
 statuspanel	_ResumeStatusPage	100.0000	100.0000	2	dc1b562cdc7e	0x423e0	100.0000	
-statuspanel	_RunAlignmentPage	100.0000	100.0000	2	ccb11ade72d4	0x42b00	100.0000	
-statuspanel	_RunStatPage	100.0000	100.0000	2	96eb87143e6d	0x426a0	100.0000	
+statuspanel	_RunAlignmentPage	100.0000	100.0000	3	95cd041ec127	0x42b00	100.0000	
+statuspanel	_RunAttachScreen	100.0000	100.0000	6	b48d0d6bc02f	0x43d10	100.0000	
+statuspanel	_RunEquipScreen	98.1996	98.1996	17	12bf3c5606c2	0x42e60	98.1996	
+statuspanel	_RunItemPage	100.0000	100.0000	4	1cd6a40c3814	0x44650	100.0000	
+statuspanel	_RunSkillPage	100.0000	100.0000	3	82b2a198d50c	0x44c30	100.0000	
+statuspanel	_RunStatPage	100.0000	100.0000	3	924eecff05c4	0x426a0	100.0000	
 statuspanel	_RunStatusCommands	100.0000	100.0000	2	1ca845efd4a3	0x42200	100.0000	
+statuspanel	_SkillListHandler	100.0000	100.0000	5	e856c5392425	0x44e50	100.0000	
 surfacecopy	_CopySurfaceSquare	100.0000	100.0000	2	c6b52e26a688	0x590a0	100.0000	
 textapi	_CallTextPlaneHook	100.0000	100.0000	1	9b0b587b3994	0x45300	100.0000	
 textapi	_PaintTextRun	100.0000	100.0000	2	29901dc7a92a	0x452c0	100.0000	
