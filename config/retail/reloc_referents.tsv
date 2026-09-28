@@ -34,3 +34,4 @@ function_rva	target_rva	site_rva	owner	addend	occurrences	provenance
 0x00055760	0x00090be8	0x000557fb	_s_panelCommandIds$S	0x00000010	1	panel-command loop one-past limit
 0x00058040	0x0008fc74	0x000580f5	?g_enemyPictures@@3PAUPicture@@A	0x000000ec	1	enemy-picture loop end at surface member
 0x00058190	0x0008f1d4	0x000581a7	_g_objectTextures	0x00001974	1	object-texture loop one-past limit
+0x000586d0	0x0008d82a	0x000586ef	_g_spriteSlots	0x00000102	1	sprite-slot loop end at frame member
