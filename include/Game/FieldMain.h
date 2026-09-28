@@ -26,11 +26,6 @@ void MovePartyTo(i16 x, i16 y, i16 direction);
 i16 ExchangeSceneHold(i16 hold);
 void MarkSceneDirty(void);
 
-void GrowRoute(i16 more);
-void FreeRoute(void);
-void PushRoutePoint(MapCoord point);
-MapCoord PopRoutePoint(void);
-i16 IsRouteActive(void);
 i16 AdvancePartyMove(i16 command);
 void ResetLevelEvents(void);
 b32 TestLevelEvent(i16 level);
