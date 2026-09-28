@@ -351,7 +351,7 @@ automapbits	_RotateAutomapRegion	100.0000	100.0000	2	ab3938b51a6e	0x1d210	100.00
 automapbits	_RunAutomapState	100.0000	100.0000	5	bd2b50b45862	0x1d530	100.0000	
 automapbits	_StoreAutomapLevel	100.0000	100.0000	7	646d85ac94c0	0x1cfc0	100.0000	
 automapbits	_TransformAutomapPoint	100.0000	100.0000	1	2aff8df87c47	0x1d380	100.0000	
-automapbits	_UpdateAutomapScrollPanel	98.1469	98.1469	3	cd918d158742	0x1d890	98.1469	
+automapbits	_UpdateAutomapScrollPanel	100.0000	98.1469	3	cd918d158742	0x1d890	100.0000	
 automapbits	_WriteAutomapAreas	100.0000	100.0000	6	ae28c9fa6d0d	0x1e3c0	100.0000	
 bitmapio	_FreeBitmap	100.0000	100.0000	1	e2ab5bf88c4d	0x56ae0	100.0000	
 bitmapio	_ReadBitmapFile	100.0000	100.0000	1	fc37c43f3b7a	0x56a70	100.0000	
@@ -1216,7 +1216,7 @@ fusion	_GetRosterFusionRestrictedClass	100.0000	100.0000	1	d7a82a88b6d9	0x28290	
 fusion	_GetSameRaceFusionRace	100.0000	100.0000	2	21e7a1074594	0x28000	100.0000	
 fusion	_GetTripleFusionLevel	100.0000	100.0000	2	38b7b7daae10	0x278d0	100.0000	
 fusion	_GetTripleFusionLevelBonus	100.0000	100.0000	1	000e56cfc238	0x27880	100.0000	
-fusion	_GetTripleFusionSummary	96.7188	96.7188	4	7cfb1a71f791	0x27c30	96.7188	
+fusion	_GetTripleFusionSummary	100.0000	96.7188	4	7cfb1a71f791	0x27c30	100.0000	
 fusion	_InheritFusionStat	100.0000	100.0000	2	6e48c7dcf95d	0x27130	100.0000	
 fusion	_InheritFusionStats	100.0000	100.0000	1	a4d2f1fbcd8b	0x270b0	100.0000	
 fusion	_IsFusionDemonRestricted	100.0000	100.0000	1	5943df55268a	0x28650	100.0000	
@@ -1613,7 +1613,7 @@ midistream	?Stop@CMidiStream@@QAEHXZ	100.0000	100.0000	1	10c0987f4a47	0x55bb0	10
 midistream	?StreamProc@CMidiStream@@KGXPAXIKKK@Z	100.0000	100.0000	1	11d9bca841a6	0x56760	100.0000	
 modeflags	_ClearModeFlags	100.0000	100.0000	1	2657fedb7b60	0x43b0	100.0000	
 modeflags	_SetModeFlags	100.0000	100.0000	1	5e1a67a98b30	0x4390	100.0000	
-modeflags	_TestFeatureMask	70.0000	70.0000	1	0b66dcc0d826	0x4370	70.0000	
+modeflags	_TestFeatureMask	100.0000	70.0000	1	0b66dcc0d826	0x4370	100.0000	
 modeflags	_TestModeFlags	100.0000	70.0000	1	bfd8c032b3f1	0x4380	100.0000	
 motion	_AcquireEffectImageSet	100.0000	100.0000	1	c24261034f58	0x4fb0	100.0000	
 motion	_AcquireEffectRecord	100.0000	100.0000	1	db860d784313	0x5240	100.0000	

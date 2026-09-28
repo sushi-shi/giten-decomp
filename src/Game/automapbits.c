@@ -467,7 +467,7 @@ i16 RunAutomapState(void) {
     return 0;
 }
 
-RVA(0x0001d890, 0x1f0)
+RVA(0x0001d890, 0x1ec)
 void UpdateAutomapScrollPanel(void) {
     i16 width;
     i16 height;
