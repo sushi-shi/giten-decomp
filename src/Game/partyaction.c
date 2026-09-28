@@ -2656,7 +2656,7 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
     if (kind & 4) {
         if (id && (!character || GetPickBlockingCondition(GetCharacterConditions(character)))) {
             RunStatusListPicker(1);
-            ClearMouseSelection();
+            g_hoveredObjectId = g_selectedObjectId = -1;
             if (s_pickScreenSaved) {
                 RestoreScreenSaveWithState(g_pickScreenSave);
                 FreeScreenSave(g_pickScreenSave);
@@ -2693,7 +2693,7 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
         || TakeMouseCancelSound()) {
         ClearPartySlotSelection();
         RunStatusListPicker(1);
-        ClearMouseSelection();
+        g_hoveredObjectId = g_selectedObjectId = -1;
         return -1;
     }
     if (kind & 1) {
