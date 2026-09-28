@@ -57,7 +57,7 @@ void DdsCommand(void);
 void StatusCommand(void);
 i16 WorldRowHandler(PanelRow* row, i16 value, i16 op);
 
-ub32 LoadMenuImage(i16 id);
+u32 LoadMenuImage(i16 id);
 
 // The Windows port reports no saved screen area for a panel.
 MapCoord GetPanelSize(Panel* panel);

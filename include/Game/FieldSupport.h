@@ -81,7 +81,7 @@ void MarkMapCell(i16 kind, i16 x, i16 y);
 void DeferObjectRemoval(void);
 
 // @identity-TODO: a stub that drops a layer image (returns 0).
-ub32 DropLayerImage(u32 image);
+u32 DropLayerImage(u32 image);
 
 // @identity-TODO: requests a redraw of the area of object `index`.
 RVA_DECL(0x00049fe0)

@@ -911,8 +911,8 @@ i16 CommandRowHandler(PanelRow* row, i16 value, i16 op) {
 }
 
 RVA(0x00015900, 0x3)
-ub32 LoadMenuImage(i16 id) {
-    return false;
+u32 LoadMenuImage(i16 id) {
+    return 0;
 }
 
 RVA(0x00015910, 0x9)

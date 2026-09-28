@@ -349,8 +349,8 @@ b32 GetLegacyImagePaletteResult(void) {
 // @identity-TODO: callers drop a cached image with it (resetting the cache
 // key to -1) and store the NULL result back.
 RVA(0x00003120, 0x3)
-ub32 FreeImageHandle(u32 handle) {
-    return false;
+u32 FreeImageHandle(u32 handle) {
+    return 0;
 }
 
 // Reload a caller-owned size after the allocation.

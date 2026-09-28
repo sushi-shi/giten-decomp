@@ -3,6 +3,6 @@
 
 #include <Ints.h>
 
-ub32 FreeImageHandle(u32 handle);
+u32 FreeImageHandle(u32 handle);
 
 #endif // GITEN_GFX_IMAGEHANDLE_H

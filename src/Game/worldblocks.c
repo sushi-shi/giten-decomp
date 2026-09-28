@@ -322,8 +322,8 @@ u32 AllocLayerImage(void) {
 
 // @identity-TODO: stubs of the layer-image interface in this build.
 RVA(0x00016910, 0x3)
-ub32 DropLayerImage(u32 image) {
-    return false;
+u32 DropLayerImage(u32 image) {
+    return 0;
 }
 
 // @dead-code
@@ -344,8 +344,8 @@ i16 GetLayerImageBand(i16 value) {
 }
 
 RVA(0x00016950, 0x3)
-ub32 GetLayerFrame(u32 image, i16 a, i16 z) {
-    return false;
+u32 GetLayerFrame(u32 image, i16 a, i16 z) {
+    return 0;
 }
 
 RVA(0x00016960, 0x25)
