@@ -310,11 +310,6 @@ source = "src/Gfx/shot.c"
 flags = "c"
 
 [[unit]]
-unit = "field"
-source = "src/Game/field.c"
-flags = "c"
-
-[[unit]]
 unit = "d3dapp"
 source = "src/Platform/d3dapp.cpp"
 flags = "cpp-noeh"
@@ -377,11 +372,6 @@ flags = "c"
 [[unit]]
 unit = "fieldobj"
 source = "src/Game/fieldobj.c"
-flags = "c"
-
-[[unit]]
-unit = "partypick"
-source = "src/Game/partypick.c"
 flags = "c"
 
 [[unit]]
@@ -572,11 +562,6 @@ flags = "c"
 [[unit]]
 unit = "scriptfield"
 source = "src/Script/scriptfield.c"
-flags = "c"
-
-[[unit]]
-unit = "attack"
-source = "src/Game/attack.c"
 flags = "c"
 
 [[unit]]
