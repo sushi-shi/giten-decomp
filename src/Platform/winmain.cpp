@@ -39,6 +39,53 @@ HWND g_mainWindow;
 DATA(0x0008fcf0)
 RECT g_windowRect;
 
+DATA(0x0006b4e0)
+i32 g_selectedHotspot = -1;
+
+DATA(0x00084800)
+Texture g_roomTexture;
+
+DATA(0x00084d20)
+Texture g_enemyTextures[2][5];
+
+DATA(0x00088010)
+Hotspot g_hotspots[64];
+
+DATA(0x00088a10)
+Picture g_spriteImages[SPRITE_GROUP_COUNT][SPRITE_FRAME_COUNT];
+
+DATA(0x0008d700)
+Picture g_scenePicture;
+
+DATA(0x0008d728)
+SpriteSlot g_spriteSlots[SPRITE_SLOT_COUNT];
+
+DATA(0x0008d860)
+Texture g_objectTextures[6];
+
+// The layers from the topmost down.
+DATA(0x0008f290)
+ScreenLayer* g_layerStack[SCREEN_LAYER_COUNT];
+
+DATA(0x0008f588)
+i16 g_spriteOrder[SPRITE_SLOT_COUNT];
+
+// Where the dragged layer was grabbed, from its top left (the drop position
+// is g_dragRect's top left).
+DATA(0x0008faf8)
+POINT g_dragOffset;
+
+DATA(0x0008fb04)
+u32 g_hotspotCount;
+
+// @identity-TODO: the layer table is filled by the layer constructor (0x551c0)
+// in font.cpp.
+DATA(0x0008fb10)
+ScreenLayer* g_screenLayers[SCREEN_LAYER_COUNT];
+
+DATA(0x0008fda8)
+TextPlane g_textPlanes[TEXT_PLANE_COUNT];
+
 // The camera's eye and the point it looks at (the party's position); the view
 // matrix is rebuilt from them.
 // @identity-TODO: the eye/at roles are read from the ViewMatrix-style call at

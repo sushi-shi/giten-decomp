@@ -11,9 +11,6 @@
 
 #include <string.h>
 
-DATA(0x0008d700)
-Picture g_scenePicture = {0};
-
 DATA(0x0006dc10)
 static WorldMapBlitRegion s_worldMapRegions[6] = {
     {0, 0, 112, 36, 176, 164},

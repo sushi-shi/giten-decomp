@@ -18,21 +18,9 @@
 #include <stdio.h>
 #include <string.h>
 
-// @identity-TODO: the layer table is filled by the layer constructor (0x551c0)
-// in this TU.
-DATA(0x0008fb10)
-ScreenLayer* g_screenLayers[SCREEN_LAYER_COUNT];
-
-DATA(0x0008fda8)
-TextPlane g_textPlanes[TEXT_PLANE_COUNT];
-
 // The memory DC holding the text font.
 DATA(0x00090bd0)
 HDC g_fontDC;
-
-// The layers from the topmost down.
-DATA(0x0008f290)
-ScreenLayer* g_layerStack[SCREEN_LAYER_COUNT];
 
 // The built-in 8x16 half-width glyphs for codes 0x20-0xdf, one byte per row.
 DATA(0x0006c230)
@@ -5782,11 +5770,6 @@ static i32 s_pressedPadButton;
 // The party panels' last drawn states.
 DATA(0x00090af8)
 static i32 s_panelStates[PARTY_PANEL_COUNT];
-
-// Where the dragged layer was grabbed, from its top left (the drop position
-// is g_dragRect's top left).
-DATA(0x0008faf8)
-POINT g_dragOffset;
 
 // Frees every layer: its surfaces and the record.
 RVA(0x00054fd0, 0x4e)
