@@ -316,7 +316,7 @@ extern Picture g_spritePicture;
 
 #define InitEffectBlitFx(effect, imageCode)                                                        \
     do {                                                                                           \
-        memset(&(effect), 0, sizeof((effect)));                                                    \
+        ZeroMemory(&(effect), sizeof((effect)));                                                   \
         (effect).dwSize = sizeof((effect));                                                        \
         if ((imageCode).mirrorHorizontal) {                                                        \
             (effect).dwDDFX |= DDBLTFX_MIRRORLEFTRIGHT;                                            \

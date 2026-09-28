@@ -24,11 +24,9 @@ void InitJoystick(void) {
     i32 i;
 
     s_joystickCount = joyGetNumDevs();
-    if (s_joystickCount > 1) {
-        s_joystickCount = 1;
-    }
+    s_joystickCount = min(1, s_joystickCount);
     for (i = 0; i < s_joystickCount; i++) {
-        memset(&caps, 0, sizeof(caps));
+        ZeroMemory(&caps, sizeof(caps));
         joyGetDevCaps(i, &caps, sizeof(caps));
         s_joystickRanges[i].xHalf = (caps.wXmax - caps.wXmin) / 2;
         s_joystickRanges[i].xCenter = caps.wXmin + s_joystickRanges[i].xHalf;

@@ -12,8 +12,10 @@ Retail DDS.EXE supports MSVC 5.0 / Visual Studio 97 SP3:
 
 The investigation's `research/toolchain-attribution.md` and `tools/libmatch.py`
 hold the measurements under `~/Projects/giten/investigation`.
-DirectMusic GUIDs support a DirectX 6.1 SDK dependency; confirm the local
-package's headers before using them as layout evidence.
+Some DirectMusic GUIDs match the pinned SDK, but its `IID_IDirectMusic` and
+`IID_IDirectMusicPerformance` definitions are absent from retail. The GUID
+subset does not establish an exact SDK release or runtime DirectMusic use;
+see [retail libraries and SDK helpers](vendor-libraries.md#sdk-revision-and-unused-guids).
 
 Use [local setup](../README.md#quickstart) and the [compiler profiles](compiler-flags.md).
 Toolchain identification does not establish per-object flags or source boundaries.

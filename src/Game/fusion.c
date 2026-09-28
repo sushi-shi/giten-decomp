@@ -793,9 +793,7 @@ i16 ResolveGeneralTripleFusion(i16 first, i16 second, i16 third) {
         RestoreFusionCharacter();
         return result;
     }
-    if (index > 26) {
-        index = 26;
-    }
+    index = min(26, index);
     race = GetFusionRaceEntry(index, third);
     if (race >= 100) {
         race = 5;

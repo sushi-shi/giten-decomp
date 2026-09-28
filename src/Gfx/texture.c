@@ -36,7 +36,7 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
         return false;
     }
     header = &bmp->info;
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
     desc.dwWidth = TEXTURE_MAX_WIDTH;
@@ -66,7 +66,7 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
         &IID_IDirect3DTexture2,
         (void**)source
     );
-    texture->width = header->biWidth > TEXTURE_MAX_WIDTH ? TEXTURE_MAX_WIDTH : header->biWidth;
+    texture->width = min(TEXTURE_MAX_WIDTH, header->biWidth);
     if (desc.ddpfPixelFormat.dwRGBBitCount < TEXTURE_BITS_16) {
         if (!LoadBitmapToSurface8(
                 bmp,

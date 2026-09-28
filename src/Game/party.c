@@ -31,6 +31,7 @@
 #include <Util/Range.h>
 
 #include <stddef.h>
+#include <stdlib.h>
 
 // Per character group, the 40-bit set of items the group can equip.
 DATA(0x00083b38)
@@ -171,9 +172,7 @@ i16 TickPartyConditions(void) {
 
 static __inline i32 PoolPercentAmount(const CurMax* pool, i16 percent) {
     i32 amount = pool->max * percent / 100;
-    if (amount < 1) {
-        amount = 1;
-    }
+    amount = max(1, amount);
     return amount;
 }
 
