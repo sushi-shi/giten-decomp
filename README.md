@@ -112,10 +112,17 @@ giten link
 
 To launch it, use an installed game directory containing the external `et/`,
 `fc/`, and other game files. The original game's `DevConfig` binary value must
-also be present under `HKCU\\Software\\ASCII\\GITEN_DDS` in the Wine prefix;
-without it `WinMain` exits before creating a window. Run from that directory:
+also contain valid device settings under `HKCU\Software\ASCII\GITEN_DDS`
+in the runtime environment; without it `WinMain` exits before creating a
+window. Use the original installation and configuration process; an arbitrary
+binary value only bypasses the presence check. Run from that directory:
 
 ```sh
 cd /path/to/game-directory
 wine "$GITEN_DIR/build/exe/DDS.candidate.EXE"
 ```
+
+Correct rendering and gameplay have not been validated. Both the original
+and candidate show display problems in the current Wine setup. See
+[runtime prerequisites and validation](docs/runtime-validation.md) before
+treating a successful launch or matching screenshots as a working game.
