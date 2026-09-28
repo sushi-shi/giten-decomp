@@ -46,6 +46,17 @@ def search_route(row, candidate):
     return 'random' if Path(row['source']).suffix.lower() == '.c' else 'variants'
 
 
+def route_population(rows, candidates):
+    # Ledger and inventory format the same address with different zero padding.
+    by_rva = {int(row['rva'], 0): row for row in candidates}
+    for row in rows:
+        candidate = by_rva.get(int(row['rva'], 0))
+        row['classification'] = candidate['classification'] if candidate else 'unavailable'
+        row['route'] = search_route(row, candidate)
+        if row['route'] not in ('random', 'variants'):
+            row['state'] = 'needs-review'
+
+
 def collect_run(directory, route):
     path = directory / ('campaign.json' if route == 'random' else 'results.json')
     if not path.is_file():
@@ -164,13 +175,7 @@ def main(argv=None):
         rvas = {int(row['rva'], 0) for row in document['targets']}
         candidates = classified_candidates(rvas=rvas) if rvas else []
         write_checkpoint(output / 'candidates.json', candidates)
-        by_rva = {row['rva']: row for row in candidates}
-        for row in document['targets']:
-            candidate = by_rva.get(row['rva'])
-            row['classification'] = candidate['classification'] if candidate else 'unavailable'
-            row['route'] = search_route(row, candidate)
-            if row['route'] not in ('random', 'variants'):
-                row['state'] = 'needs-review'
+        route_population(document['targets'], candidates)
         document['phase'] = 'ready'
         save()
     if args.plan_only:

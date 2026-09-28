@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from giten.permute.mine import collect_run, population, search_route
+from giten.permute.mine import collect_run, population, route_population, search_route
 from giten.permute.upstream import restore_campaign, write_checkpoint
 
 
@@ -36,6 +36,12 @@ class MiningTests(unittest.TestCase):
             result = collect_run(path, 'variants')
             self.assertEqual(result['unique_scored_mutations'], 1)
             self.assertEqual(result['distinct_target_states'], 2)
+
+    def test_population_joins_addresses_by_identity(self):
+        rows = [{'rva': '0x1', 'hist': 99.5, 'source': 'src/unit.c', 'state': 'pending'}]
+        route_population(rows, [{'rva': '0x000001', 'classification': 'regalloc'}])
+        self.assertEqual(rows[0]['route'], 'random')
+        self.assertEqual(rows[0]['state'], 'pending')
 
     def test_resume_keeps_deduplication_and_refuses_changed_source(self):
         with tempfile.TemporaryDirectory() as directory:
