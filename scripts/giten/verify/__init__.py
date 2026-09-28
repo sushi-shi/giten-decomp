@@ -98,9 +98,8 @@ _QUERY_ONLY = ("layout", "library-data-refs", "vtable-scan")
 _STANDALONE = ("constants", "enum-reuse")
 
 #: tier label -> verb, where the two spellings differ. giten.verify.tiers
-#: labels the bans row `vtable-bans` (so do docs/tooling-map.md and every
-#: printed tier line), while the module and the verb are `bans`; without this
-#: the label names no runnable command.
+#: labels the bans row `vtable-bans`, while the module and verb are `bans`.
+#: Without this mapping the label names no runnable command.
 _ALIASES = {"vtable-bans": "bans"}
 
 

@@ -7,8 +7,7 @@
   matching is relaxed, 100% can hide a wrong data target or member addend even
   when the instruction bytes match. `giten verify data-identity` checks paired
   sites, but does not cover every relocation layout; audit ordered data
-  referents before treating an exact score as a full referent match. The mouse
-  click latch exposed this gap when its apparent 100% used the wrong fields.
+  referents before treating an exact score as a full referent match.
 
 ## Rule exceptions
 

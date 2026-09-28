@@ -1,40 +1,18 @@
-# Comment markers — the blessed vocabulary
+# Source markers
 
-Every ADDRESS/SYMBOL binding is a macro from `include/rva.h` (`RVA`, `RVA_DECL`, `DATA`,
-`RVA_COMPGEN`, `DATA_COMPGEN`, `DATA_MESSAGE_MAP`, `RVA_DYNINIT`) — no label ever lives in a
-comment. (`VTBL_ABSENT` is RETIRED: a class whose vtable retail never emitted
-simply has no `data_vtables.tsv` row.) Bindings with no source site to sit on
-are TRACKED TABLES instead, never a comment and never a new macro:
-`config/retail/functions_zlib.tsv` + `data_zlib.tsv` (vendored C TUs keep
-pristine source) and `config/retail/data_compgen.tsv` (a COFF COMMON emitted
-from a header-inline's local static has no owning TU, and a per-TU header-static
-copy's owner is positional — see `docs/build-system.md` § "Compiler-generated
-DATA pins"). Comments carry exactly one
-other kind of machine-visible content: **state markers**, a `// @name` leading a
-comment line. The vocabulary is CLOSED and gated (`giten verify label-style`,
-FATAL in the build tail): a comment line leading with any other `@name` fails the
-build — ad-hoc markers rot into pseudo-conventions no tool reads (the 2026-07-22
-sweep retired `@orphan`, `@flag`, `@fold-TODO`, `@identity-recovered`,
-`@emission-TODO`, `@reloc-TODO`, `@name-conflict`, `@undefined-data` into plain
-prose). Mid-line `@name` mentions are prose and stay free.
+Address and symbol bindings use [include/rva.h](../include/rva.h) macros or
+[retail provider tables](../config/README.md), never comments.
+`giten verify label-style` checks the closed vocabulary of line-leading markers:
 
-| Marker | Read by | Meaning |
-|---|---|---|
-| `// @early-stop` | `giten walls stale-markers`; the final-sweep worklist is `rg '@early-stop' src` | A COMPLETE reconstruction parked below 100% match. Re-derive the current residue from disassembly; causal wall prose and percentages become stale. |
-| `// @identity-TODO` | doctrine in `AGENTS.md` | An unproven class/owner identity — leave it, never fabricate. State what was tried / what would prove it. |
-| `// @interleaver <sym> …` | none (structured record) | A linker-pooled out-of-line member emitted INSIDE another unit's contribution range (see `docs/` interleaver notes). Records the placement proof at the site. |
-| `// @dead-code` | `giten verify dead-code`; `giten verify board` (identity metric) | A PROVEN-zero-ref function — no effective rel32 caller, no data-slot, no `.text` address-taking anywhere in the image (verify with `giten sema xref --tree`, which follows incremental-link thunks and their relocated references). Retail kept it (no `/OPT:REF`) but nothing reaches it; an unreferenced linker thunk does not make its final body live. This is reachability evidence, never permission to omit, stub, or stop reconstructing the body: dead functions have the same structural and byte-matching objective as every other function. The identity metric blanks the marked function, excluding an evidence-bounded placeholder name like a library carve-out. MUST state the zero-ref proof — an unproven `@dead-code` is a lie. |
+| Marker | Meaning |
+| --- | --- |
+| `// @early-stop` | Complete reconstruction with an evidence-bounded remaining mismatch; re-derive the live residue. |
+| `// @identity-TODO` | Unproven identity; state what evidence would establish it. |
+| `// @interleaver <sym>` | Proven linker-pooled member within another unit's contribution; record placement evidence. |
+| `// @dead-code` | Proven zero-reference function; still requires full reconstruction. |
 
-Rules of use:
-
-- A marker LEADS its comment line (`^\s*// @name`); everything after it on the
-  line is free prose.
-- `@early-stop` and `@identity-TODO` are the FUNCTION-STATE markers
-  (`AGENTS.md`): a reconstructed method is either ~100% (unmarked) or
-  `@early-stop`; an unproven identity is `@identity-TODO`. (`@stub`, with its
-  `@confidence:`/`@source:` tags, died with its campaign — zero `@stub` sites
-  remain in `src/`.)
-- Anything else you are tempted to tag — a TODO, a recovered identity, an
-  orphan note, a naming conflict — is PROSE. Write the fact in words. The
-  vocabulary is meant to stay this size: 99 times out of 100 the answer to the
-  gate firing is "delete the @, write prose", not a new entry here.
+A marker starts its comment line; trailing text is prose. Other TODOs and
+observations use plain prose, not new `@` names. Mid-line mentions are prose.
+For `@dead-code`, verify no effective caller, data-slot reference or `.text`
+address-taking with `giten sema xref --tree`; include the zero-reference proof.
+An unreferenced thunk does not establish that the final body is dead.

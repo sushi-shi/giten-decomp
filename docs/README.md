@@ -1,30 +1,15 @@
-# Project documentation
+# Documentation
 
-Start with the root [README](../README.md) for setup and the build loop.
+[Quickstart](../README.md#quickstart) · [Contributor rules](../AGENTS.md)
 
-- [Build system](build-system.md) and [tooling map](tooling-map.md): commands and pipeline ownership.
-- [Compiler profiles](compiler-flags.md), [linking](linker-flags.md), [toolchain setup](toolchain-vc50-sp3.md), [compiler identification](compiler-detection.md), and [relocations](relocations.md).
-- [Match tracking](match-status.md), [permuter](permuter.md), and the small [compiler-pattern reference](patterns/INDEX.md).
-- [Data attribution](data-attribution.md), [linked-image comparison](image-diff.md), [cleanliness](cleanliness-metrics.md), and [source markers](comment-markers.md).
-- [clangd](clangd.md).
+- [Build and comparison](build-system.md): pipeline, banking, data-matching modes, gates.
+- [Compiler profiles](compiler-flags.md) and [toolchain evidence](compiler-detection.md).
+- [Relocations](relocations.md) and [data attribution](data-attribution.md).
+- [Candidate linking](linker-flags.md) and [clangd](clangd.md).
+- [Permutation experiments](permuter.md) and [compiler patterns](patterns/INDEX.md).
+- [Source markers](comment-markers.md), [todo ledgers](todos/README.md), and [configuration](../config/README.md).
 
-## Source of truth and storage
-
-Tool inputs belong in `config/`; generated reports belong in ignored `build/`.
-Documentation is neither a runtime input nor a maintained copy of generated state.
-The retail labels in [config/retail](../config/retail/) were admitted once from
-the investigation (`~/Projects/giten/investigation`: the Ghidra census, the
-LIBC.LIB matches, the relocation synthesis) and are hand-managed since.
-
-Generate the optional layout map with `python3 -m giten.sema.exe_map` inside
-`nix develop`; output goes to `build/exe-map/`. It is a heuristic view of
-current model attribution, not proof of original TU ownership.
-
-## Provenance
-
-The pipeline, gates, skills and most of these docs come from gruntz main at
-`26bb3e9da` ([sushi-shi/gruntz-decomp](https://github.com/sushi-shi/gruntz-decomp)).
-Links pinned to its commit `b27b05deb` are that project's historical evidence
-for a mechanism (usually a VC5 codegen observation that holds here too), not
-Giten evidence and not maintained instructions.
-Keep new docs about ongoing usage and contracts; do not add another PR diary.
+Keep command options in `--help`, schemas beside their implementation, inputs
+in `config/`, and generated reports in `build/`. Git holds retired experiments.
+Commit-pinned Gruntz links in the pattern references are historical compiler
+evidence, not Giten source evidence or current instructions.

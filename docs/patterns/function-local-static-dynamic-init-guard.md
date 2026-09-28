@@ -12,7 +12,6 @@ int Next() {
 
 The [recorded VC5 examples](https://github.com/sushi-shi/gruntz-decomp/blob/b27b05deb249e4cacbb29f55f17b469ecfe56f26/docs/patterns/function-local-static-dynamic-init-guard.md)
 include multiple local statics using distinct bits of a shared guard.
-The [game RNG](../../include/Giten/GameRand.h) is a concrete source example.
 
 Follow control flow and references to the initialized object. A read/OR/store
 without the conditional initialization path can simply update ordinary flags.
