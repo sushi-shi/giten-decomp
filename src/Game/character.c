@@ -274,13 +274,45 @@ static i16 s_recoveryChance[35] = {
 };
 
 DATA(0x000816a8)
-static FieldObject s_characterLoadObject;
+static FieldObject s_characterLoadObject = {0};
 
 DATA(0x000818e8)
 Character g_characters[16] = {0};
 
+// The roster slots the status screen lists and how many there are.
+DATA(0x00083ad8)
+i16 g_statusSlots[32] = {0};
+
+// @identity-TODO: while set, the party-status redraw requests are ignored.
+DATA(0x00083b18)
+static i16 s_statusRedrawLocked = 0;
+
+DATA(0x00083b1c)
+static b16 s_statusRedrawPending = false;
+
+DATA(0x00083b20)
+Character* g_panelMembers[6] = {0};
+
+// Per character group, the 40-bit set of items the group can equip.
+DATA(0x00083b38)
+static i32 s_equipTable = 0;
+
+DATA(0x00083b3c)
+static MenuBox* s_statusListMenu = 0;
+
+// Which of the five status-line columns the character status line shows.
+DATA(0x00083b40)
+static i16 s_statusColumn = 0;
+
+DATA(0x00083b44)
+i16 g_statusSlotCount = 0;
+
+// The minutes toward the next party-timer tick.
+DATA(0x00083b48)
+static u32 s_timerMinutes = 0;
+
 DATA(0x00083b4c)
-static char s_emptyCharacterName[1];
+static char s_emptyCharacterName[1] = "";
 
 RVA(0x0003c8b0, 0xa6)
 void RecalcCharacterStats(Character* character) {
@@ -1002,16 +1034,6 @@ i16 PartyAlignmentClass(i16 axis) {
     }
     return 0;
 }
-
-DATA(0x00083b20)
-Character* g_panelMembers[6] = {0};
-
-// @identity-TODO: while set, the party-status redraw requests are ignored.
-DATA(0x00083b18)
-static i16 s_statusRedrawLocked;
-
-DATA(0x00083b1c)
-static b16 s_statusRedrawPending;
 
 static __inline i32 GetSelectedPartySlot(void) {
     i16 slot;
@@ -1901,10 +1923,6 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
     return -1;
 }
 
-// Per character group, the 40-bit set of items the group can equip.
-DATA(0x00083b38)
-static i32 s_equipTable;
-
 // Returns `slot` when it is in the party and `mode` bit 0 is set, or when it is
 // not and bit 1 is set; -1 otherwise.
 RVA(0x0003f780, 0x38)
@@ -2745,20 +2763,6 @@ i16 CompareMacca(i16 who, i32 amount) {
     return macca != amount;
 }
 
-DATA(0x00083b3c)
-static MenuBox* s_statusListMenu;
-
-// Which of the five status-line columns the character status line shows.
-DATA(0x00083b40)
-static i16 s_statusColumn;
-
-// The roster slots the status screen lists and how many there are.
-DATA(0x00083ad8)
-i16 g_statusSlots[32] = {0};
-
-DATA(0x00083b44)
-i16 g_statusSlotCount = 0;
-
 RVA(0x00040980, 0x12)
 i16 SetStatusColumn(i16 column) {
     i16 prev = s_statusColumn;
@@ -3024,10 +3028,6 @@ b16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position) {
     }
     return died;
 }
-
-// The minutes toward the next party-timer tick.
-DATA(0x00083b48)
-static u32 s_timerMinutes;
 
 // Advances the party timers by `minutes` for the party's roster-2 member:
 // each whole period (240 minutes in mode 2, else 60) costs it 1 MP and 1 HP,
