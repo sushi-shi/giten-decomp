@@ -50,10 +50,10 @@ static i32 s_gunDistribution;
 
 RVA(0x00008450, 0x2f)
 i16 GetCombatantSideRelation(void) {
-    if (g_actorId < 0 && g_targetId < 0) {
+    if (g_targetId < 0 && g_actorId < 0) {
         return -1;
     }
-    if (g_actorId >= 0 && g_targetId >= 0) {
+    if (g_targetId >= 0 && g_actorId >= 0) {
         return 1;
     }
     return 0;

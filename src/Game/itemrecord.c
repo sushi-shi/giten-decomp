@@ -71,7 +71,7 @@ static TimedItemFlag s_timedItemFlags[8] = {
 
 // The familiarity each gem item adds when given.
 DATA(0x00064650)
-static i16 s_giftFamiliarity[16] = {2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60};
+static const i16 s_giftFamiliarity[16] = {2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60};
 
 // The record of the item whose effect is being applied.
 DATA(0x000800a0)
