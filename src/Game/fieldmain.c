@@ -465,7 +465,7 @@ void PushAutoMove(u8 move) {
 }
 
 RVA(0x000127a0, 0x14)
-i16 HasAutoMoves(void) {
+b16 HasAutoMoves(void) {
     return s_autoMoveRead < s_autoMoveCount;
 }
 
@@ -698,17 +698,17 @@ i16 RunPendingTalk(void) {
 // of damage; nonzero when it did.
 // @identity-TODO: what the damage and the flag stand for is unrecovered.
 RVA(0x00012ca0, 0x4f)
-i16 TickStepDamage(void) {
+b16 TickStepDamage(void) {
     if (IsEventFlagSet(1, 0x2b)) {
         s_damageSteps = 0;
-        return 0;
+        return false;
     }
     if (++s_damageSteps >= 3) {
         s_damageSteps = 0;
         DamageParty(-1, 1);
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // Every third step runs the party's step effects.
@@ -733,7 +733,7 @@ i16 TickFieldSteps(void) {
 // phases; push 0 in phase 3). Calls, branches and every other instruction
 // match; a 32-island permute campaign is flat.
 RVA(0x00012d20, 0x88c)
-i16 RunFieldExploration(void) {
+b16 RunFieldExploration(void) {
     i16 count;
 
     if (GetGamePhase() != 0) {
@@ -753,13 +753,13 @@ i16 RunFieldExploration(void) {
                     HideScreenLayer(7);
                 }
                 SetGamePhase(10);
-                return 0;
+                return false;
             }
             SetViewRenderMode();
             if (g_worldMapRequest < 0) {
                 SetGamePhase(9);
                 g_worldMapRequest = 0;
-                return 0;
+                return false;
             }
             NextGamePhase();
             g_worldMapRequest = 0;
@@ -814,7 +814,7 @@ i16 RunFieldExploration(void) {
             if (g_worldMapRequest) {
                 SetGamePhase(0);
                 s_eventRunning = 0;
-                return 0;
+                return false;
             }
             if (HasTurnElapsed() && TickPartyConditions()) {
                 RequestFieldRefresh();
@@ -828,7 +828,7 @@ i16 RunFieldExploration(void) {
                 FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
                 ShowMessage(g_scratchBuffer, 0x3c);
                 s_eventRunning = 0;
-                return 0;
+                return false;
             }
             s_actorVanishing = 0;
             if (ProcessPartyCasualties()) {
@@ -838,7 +838,7 @@ i16 RunFieldExploration(void) {
                 CloseMessageWindow();
                 PushFieldTextScene(0x1a, 6);
                 s_eventRunning = 0;
-                return 0;
+                return false;
             }
             if (FindAbleHumanMember() == -1) {
                 if (g_field.pos.area == 1) {
@@ -846,7 +846,7 @@ i16 RunFieldExploration(void) {
                     PushFieldTextScene(0x59, 6);
                     ClearRosterConditions();
                     s_eventRunning = 0;
-                    return 0;
+                    return false;
                 }
                 if (g_field.pos.area == 0x82
                     && (g_field.pos.level == 0xc || g_field.pos.level == 0xd
@@ -855,12 +855,12 @@ i16 RunFieldExploration(void) {
                     PushFieldTextScene(0x16, 0xd);
                     ClearRosterConditions();
                     s_eventRunning = 0;
-                    return 0;
+                    return false;
                 }
                 CloseMessageWindow();
                 PushFieldTextScene(0x2a, 0);
                 s_eventRunning = 0;
-                return 0;
+                return false;
             }
             if (s_leaveToReturnPoint) {
                 SetGamePhase(8);
@@ -873,7 +873,7 @@ i16 RunFieldExploration(void) {
                     RespawnAreaActors();
                     RequestFieldRefresh();
                     s_eventRunning = 0;
-                    return 0;
+                    return false;
                 }
                 UpdateCurrentRoom();
                 RequestFieldRefresh();
@@ -999,7 +999,7 @@ i16 RunFieldExploration(void) {
             UnloadAreaMap();
             SetGameState(0x16);
             ClearModeFlags(MODE_FIELD);
-            return 0;
+            return false;
     }
     return FlushFieldScreen();
 }
@@ -1217,7 +1217,7 @@ void MarkLevelEvent(i16 level) {
 // Whether level `level`'s event bit is set (the loaded states stop being
 // kept).
 RVA(0x00013b40, 0x1c)
-i32 TestLevelEvent(i16 level) {
+b32 TestLevelEvent(i16 level) {
     s_keepEvents = 0;
     return TestBit(s_levelEvents, level);
 }
@@ -1225,7 +1225,7 @@ i32 TestLevelEvent(i16 level) {
 // Raises object event `event` (out of range: 0) to state 1, or 3 when
 // `queued`; 0 when it was already done (state 2).
 RVA(0x00013b60, 0x55)
-i16 RaiseObjectEvent(i16 event, i16 queued) {
+b16 RaiseObjectEvent(i16 event, i16 queued) {
     u8* state;
     if (!s_eventStates) {
         ResetFieldMemory();
@@ -1235,14 +1235,14 @@ i16 RaiseObjectEvent(i16 event, i16 queued) {
     }
     state = (u8*)HandleWritePtr(s_eventStates) + event;
     if (*state == 2) {
-        return 0;
+        return false;
     }
     if (queued) {
         *state = 3;
     } else {
         *state = 1;
     }
-    return 1;
+    return true;
 }
 
 // Marks queued object event `event` done (state 3 to 2).

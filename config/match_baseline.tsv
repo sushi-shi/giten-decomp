@@ -41,7 +41,7 @@ areamap	42	36
 areanpc	60	56
 attack	21	18
 automap	1	1
-automapbits	23	20
+automapbits	23	21
 bitmapio	2	2
 bitset	5	5
 blit	18	16
@@ -49,14 +49,14 @@ bmpseek	3	2
 celltrap	2	1
 character	12	12
 charinfo	13	12
-charpool	29	28
+charpool	29	27
 charsave	11	10
 clickwait	1	1
 clock	9	7
 clockops	6	6
-compare	74	72
+compare	74	71
 condition	23	22
-d3dapp	41	35
+d3dapp	41	36
 datafile	19	19
 ddsmenu	7	7
 debugmenu	3	3
@@ -68,11 +68,11 @@ equipeffect	2	2
 equipscreen	25	23
 eventflags	28	28
 familiarity	19	18
-field	27	26
-fieldmain	64	61
+field	27	27
+fieldmain	64	60
 fieldmark	5	5
 fieldobj	79	73
-fieldscreen	77	76
+fieldscreen	77	74
 fieldskill	5	5
 fieldview	38	36
 font	150	142
@@ -82,7 +82,7 @@ fusionmenu	3	3
 fusionscreen	38	38
 gameloop	7	7
 gamestate	8	7
-handle	33	32
+handle	33	31
 hotspot	6	6
 hotspotclick	1	0
 infobar	7	7
@@ -101,15 +101,15 @@ menucursor	12	12
 menuresult	2	2
 message	15	15
 midistream	35	33
-modeflags	4	2
+modeflags	4	4
 motion	43	43
 mouse	10	9
-nibble	4	4
+nibble	4	2
 objecttexture	2	2
 panel	23	23
 panelinput	10	10
 party	55	55
-partyaction	38	34
+partyaction	38	35
 partypick	17	16
 partypicker	7	7
 partyreorder	2	2
@@ -117,7 +117,7 @@ picture	7	7
 playtime	4	4
 pool	6	6
 range	25	24
-recordcache	43	41
+recordcache	43	40
 resourcebitmap	5	5
 resourceblit	3	2
 restore	3	3
@@ -135,12 +135,12 @@ scriptoperand	8	8
 scriptpanel	20	19
 scriptsprite	2	2
 scriptswitch	10	10
-scripttext	39	36
-scriptvars	108	106
+scripttext	39	37
+scriptvars	108	105
 scriptvm	2	2
 shot	15	14
 skillattack	5	3
-skilluse	48	44
+skilluse	48	45
 sprite	7	6
 statedispatch	1	1
 statestack	21	21
@@ -148,7 +148,7 @@ stattotal	1	1
 statusdraw	9	8
 statusline	8	8
 statusmenu	9	9
-statuspanel	23	23
+statuspanel	23	22
 statusscreen	4	3
 subscreen	3	3
 surfacecopy	1	1
@@ -163,22 +163,22 @@ treasurebox	1	1
 treasurestate	1	0
 vec3	10	8
 videostate	5	5
-vram	44	40
-vramaccess	12	12
+vram	44	39
+vramaccess	12	11
 vramcell	14	14
 waitstate	7	7
 walltexture	1	1
 weaponattack	5	4
 windowcolor	13	13
 windowtext	2	1
-winmain	128	120
+winmain	128	119
 worldblocks	26	26
 worldencounter	14	14
 worldevents	4	4
 worldmap	4	4
 worldmapgfx	4	4
 worldplaces	7	7
-worldtravel	12	12
+worldtravel	12	11
 # [functions]	unit	function	best_pct	cur_pct	tries	src_hash	rva	hist_pct	state
 abortflag	_AddSceneHotspot	100.0000	100.0000	1	a771bd5cb270	0x455b0	100.0000	
 abortflag	_BeginBoxScene	100.0000	100.0000	1	61ea6e5726f6	0x45820	100.0000	
@@ -193,8 +193,8 @@ abortflag	_GetHotspotScript	100.0000	100.0000	3	1b8fa4627133	0x45850	100.0000
 abortflag	_GetHotspotSprite	100.0000	100.0000	1	ece27b8007b6	0x45b10	100.0000	
 abortflag	_GetNpcScript	100.0000	100.0000	1	53cbb37ea3ca	0x45800	100.0000	
 abortflag	_IsAbortPending	100.0000	100.0000	1	c73b1959cc5b	0x45550	100.0000	
-abortflag	_PickSceneHotspot	100.0000	100.0000	2	295ed0a58f44	0x456e0	100.0000	
-abortflag	_PollScenePointer	100.0000	100.0000	1	995de4d6b375	0x45b30	100.0000	
+abortflag	_PickSceneHotspot	100.0000	100.0000	3	f8c207d6015f	0x456e0	100.0000	
+abortflag	_PollScenePointer	100.0000	100.0000	2	ecf1217615a2	0x45b30	100.0000	
 abortflag	_SetAbortPending	100.0000	100.0000	1	f6e2fbe05b94	0x45560	100.0000	
 affinity	_AlignmentClass	100.0000	100.0000	1	0e3064d94895	0x3e080	100.0000	
 affinity	_GetAlignmentAffinity	100.0000	100.0000	2	2b2ee72dbdec	0x3df20	100.0000	
@@ -212,7 +212,7 @@ areamap	_CheckCellEvent	99.3541	99.3541	6	eb522036a9f4	0x21880	99.3541
 areamap	_ClampMapCoord	100.0000	100.0000	1	d8d50387fabb	0x222c0	100.0000	
 areamap	_ClampMapPosition	100.0000	100.0000	1	9bfed5219665	0x223a0	100.0000	
 areamap	_CopyExitAt	100.0000	100.0000	1	94f755f82b3e	0x22600	100.0000	
-areamap	_DecodeAreaMap	75.0698	75.0698	9	90f8bb8b908e	0x21470	76.4360	
+areamap	_DecodeAreaMap	75.0698	74.2326	9	90f8bb8b908e	0x21470	76.4360	
 areamap	_FindCellKind	100.0000	100.0000	1	6568aa3013f9	0x21850	100.0000	
 areamap	_FindTreasureBoxAt	100.0000	100.0000	1	208096c0a6ca	0x22560	100.0000	
 areamap	_GetAreaLevelCount	100.0000	100.0000	1	074500fa1285	0x21710	100.0000	
@@ -227,13 +227,13 @@ areamap	_GetMapSize	100.0000	100.0000	1	44b1c7242cd8	0x21790	100.0000
 areamap	_GetMapTreasureBoxes	100.0000	100.0000	1	88c4ab1c7949	0x225c0	100.0000	
 areamap	_GetWallMap	100.0000	100.0000	1	eb58b9d24626	0x217d0	100.0000	
 areamap	_GetWarpCodeAtOffset	100.0000	100.0000	2	c556e5575953	0x22400	100.0000	
-areamap	_IsCellAt	100.0000	100.0000	1	1b64bc5ddf1a	0x217e0	100.0000	
+areamap	_IsCellAt	100.0000	100.0000	2	6fe4a8f00fe7	0x217e0	100.0000	
 areamap	_IsCellBlocked	99.5862	99.5862	4	84dc02394e85	0x21ed0	99.5862	
-areamap	_IsCellCommandBlocked	100.0000	100.0000	1	71adb5395c81	0x21e30	100.0000	
-areamap	_IsCellFlagSet	100.0000	100.0000	1	8150ea63a3d7	0x21810	100.0000	
-areamap	_IsDarkCell	100.0000	100.0000	1	f7a9efa1402d	0x21dc0	100.0000	
-areamap	_IsLevelMapRevealed	100.0000	100.0000	2	c65bd1ed75c7	0x225d0	100.0000	
-areamap	_IsRoomCell	100.0000	100.0000	1	cc1b46a3654f	0x21ea0	100.0000	
+areamap	_IsCellCommandBlocked	100.0000	100.0000	2	497cb80dccc1	0x21e30	100.0000	
+areamap	_IsCellFlagSet	100.0000	100.0000	2	2334bfdacddf	0x21810	100.0000	
+areamap	_IsDarkCell	100.0000	100.0000	2	858fbc5177c8	0x21dc0	100.0000	
+areamap	_IsLevelMapRevealed	100.0000	100.0000	3	5215a34c22b3	0x225d0	100.0000	
+areamap	_IsRoomCell	100.0000	100.0000	2	6f9194d8b526	0x21ea0	100.0000	
 areamap	_IsSpawnEnabled	100.0000	91.2963	2	ed420803658a	0x21160	100.0000	
 areamap	_IsStepBarred	100.0000	100.0000	2	3892aa52829e	0x221f0	100.0000	
 areamap	_LatchCellDestination	100.0000	100.0000	2	e54212a59ac5	0x21d20	100.0000	
@@ -274,10 +274,10 @@ areanpc	_GetPartyCellCode	100.0000	100.0000	1	3e5fa42fa489	0x1eec0	100.0000
 areanpc	_GetPrevRegion	100.0000	100.0000	1	c871a7072748	0x1ee50	100.0000	
 areanpc	_GetRoomData	100.0000	100.0000	1	1a5c354f9aea	0x1ef90	100.0000	
 areanpc	_GetRoomRegion	100.0000	100.0000	1	86ab3b612ceb	0x1eb80	100.0000	
-areanpc	_IsAreaNpcGone	100.0000	100.0000	1	e93a06de77ff	0x1f430	100.0000	
+areanpc	_IsAreaNpcGone	100.0000	100.0000	2	c74244fd9078	0x1f430	100.0000	
 areanpc	_IsObjectCell	100.0000	100.0000	1	f9dbe0b17170	0x1eee0	100.0000	
-areanpc	_IsRegionFlagOn	100.0000	99.5000	1	cbec71e2d8aa	0x1ebe0	100.0000	
-areanpc	_IsReservedObjectCell	100.0000	100.0000	1	b8b013afd61c	0x1f350	100.0000	
+areanpc	_IsRegionFlagOn	100.0000	99.5000	2	ed5b2a21b841	0x1ebe0	100.0000	
+areanpc	_IsReservedObjectCell	100.0000	100.0000	2	3e123498400c	0x1f350	100.0000	
 areanpc	_KnockBack	100.0000	100.0000	4	5726bf2df28a	0x1f7d0	100.0000	
 areanpc	_KnockBackActor	100.0000	100.0000	1	c39f5a7844b7	0x1fae0	100.0000	
 areanpc	_LoadAreaNpcImages	100.0000	100.0000	1	46f6e0ddb2a7	0x1f660	100.0000	
@@ -295,11 +295,11 @@ areanpc	_RaiseTargetFlag25	100.0000	100.0000	4	1d6f3adf5395	0x1fce0	100.0000
 areanpc	_RaiseTargetFlag26	100.0000	100.0000	4	bb8291fc1721	0x1fd50	100.0000	
 areanpc	_ReleaseNpcTextures	100.0000	100.0000	1	59f9ff5479eb	0x1f540	100.0000	
 areanpc	_ResetFieldScene	100.0000	100.0000	1	c97f57cd7790	0x1ef30	100.0000	
-areanpc	_ReturnToLeaderMark	100.0000	100.0000	3	00cc1cbaf404	0x1fa70	100.0000	
-areanpc	_ReturnToLeaderWarp	100.0000	100.0000	2	7e5c13a092c4	0x1fa30	100.0000	
+areanpc	_ReturnToLeaderMark	100.0000	100.0000	4	74901ea6b1cc	0x1fa70	100.0000	
+areanpc	_ReturnToLeaderWarp	100.0000	100.0000	3	fda3584008d9	0x1fa30	100.0000	
 areanpc	_RoomRegionsChanged	96.9367	96.9367	4	bbe3537e51cf	0x1ed70	96.9367	
 areanpc	_RunFieldEffect	100.0000	100.0000	1	676b46c8c5f3	0x1f700	100.0000	
-areanpc	_ScatterObjects	100.0000	100.0000	2	ef26902c6439	0x1f9c0	100.0000	
+areanpc	_ScatterObjects	100.0000	100.0000	3	a8d4a776ba0a	0x1f9c0	100.0000	
 areanpc	_SealTarget	100.0000	100.0000	5	7286b95ec497	0x1fb80	100.0000	
 areanpc	_SetGridByte	100.0000	100.0000	4	dcf9f449844c	0x1eaf0	100.0000	
 areanpc	_SetPrevRegion	100.0000	100.0000	1	014dcfa3a57b	0x1ee30	100.0000	
@@ -323,10 +323,10 @@ attack	_GetGunBurstRounds	100.0000	100.0000	4	5e1b6fead023	0x9050	100.0000
 attack	_GetGunRequirementPenalty	100.0000	100.0000	1	9d271a629c5c	0x91b0	100.0000	
 attack	_LoadGunDistributionTable	100.0000	100.0000	1	2282d9a67f6b	0x8fe0	100.0000	
 attack	_PrepareGunBurst	100.0000	100.0000	8	d3a0e7e88d30	0x90c0	100.0000	
-attack	_ResolveGunAttack	100.0000	100.0000	6	e5f934fc7e93	0x8e60	100.0000	
-attack	_RollExceptionalAttack	100.0000	99.4314	5	cec84366749b	0x8700	100.0000	
-attack	_RollGunCondition	100.0000	100.0000	9	db417547c5a3	0x8d30	100.0000	
-attack	_RollGunHit	100.0000	100.0000	8	49f2594ef957	0x8910	100.0000	
+attack	_ResolveGunAttack	100.0000	100.0000	7	15d57fbaa75e	0x8e60	100.0000	
+attack	_RollExceptionalAttack	100.0000	99.4183	5	cec84366749b	0x8700	100.0000	
+attack	_RollGunCondition	100.0000	100.0000	10	c992f81ace81	0x8d30	100.0000	
+attack	_RollGunHit	100.0000	100.0000	9	4dde76569003	0x8910	100.0000	
 attack	_SpendAllGunRounds	100.0000	100.0000	1	285b0f0f8efa	0x93b0	100.0000	
 attack	_SpendGunRounds	100.0000	100.0000	4	42414b7aa855	0x9320	100.0000	
 automap	_ScreenToAutomapCell	100.0000	100.0000	1	f9ff95d2ab3a	0x58500	100.0000	
@@ -335,37 +335,37 @@ automapbits	_DrawAutomapCellIcon	100.0000	100.0000	2	b371d653333f	0x1e350	100.00
 automapbits	_DrawAutomapMark	100.0000	100.0000	2	06bce1f9f19d	0x1d2f0	100.0000	
 automapbits	_DrawAutomapRegion	100.0000	100.0000	3	bf8976eb0355	0x1da80	100.0000	
 automapbits	_DrawAutomapTile	100.0000	100.0000	2	d137f4b475cf	0x1db90	100.0000	
-automapbits	_DrawAutomapViewport	100.0000	100.0000	2	9662de51a57a	0x1dc60	100.0000	
+automapbits	_DrawAutomapViewport	100.0000	100.0000	3	d8dabeb544e5	0x1dc60	100.0000	
 automapbits	_DrawFieldView	100.0000	100.0000	1	8ea59d93d54d	0x1e6f0	100.0000	
 automapbits	_DrawMapOverlay	99.4306	99.4306	4	08d6d96fd340	0x1de40	99.4306	
 automapbits	_DrawMapOverlayTile	100.0000	100.0000	2	4751eebe6847	0x1e210	100.0000	
 automapbits	_FreeAutomap	100.0000	100.0000	4	818f89c2f90d	0x1cf40	100.0000	
 automapbits	_InitAutomap	100.0000	100.0000	2	f73124ea39b2	0x1cde0	100.0000	
 automapbits	_IsAutomapCellHidden	100.0000	100.0000	5	f524621e3930	0x1d120	100.0000	
-automapbits	_IsCellInView	100.0000	100.0000	1	9e30028f7193	0x1e300	100.0000	
+automapbits	_IsCellInView	100.0000	100.0000	2	0dfc10ec21d9	0x1e300	100.0000	
 automapbits	_LoadAutomapAreas	89.3357	89.3357	6	997c04781e12	0x1e520	89.3357	
 automapbits	_LoadAutomapLevel	100.0000	100.0000	5	54604b2fbd6a	0x1d050	100.0000	
 automapbits	_MarkAutomapCell	100.0000	100.0000	2	04c1b3a72795	0x1d0e0	100.0000	
 automapbits	_MarkMapCell	100.0000	100.0000	2	7683c3513efa	0x1d440	100.0000	
 automapbits	_RotateAutomapRegion	100.0000	100.0000	2	ab3938b51a6e	0x1d210	100.0000	
-automapbits	_RunAutomapState	100.0000	100.0000	4	a29440b3c071	0x1d530	100.0000	
+automapbits	_RunAutomapState	100.0000	100.0000	5	f4eeca025f42	0x1d530	100.0000	
 automapbits	_StoreAutomapLevel	100.0000	100.0000	6	47ee8eb9479f	0x1cfc0	100.0000	
 automapbits	_TransformAutomapPoint	100.0000	100.0000	1	2aff8df87c47	0x1d380	100.0000	
-automapbits	_UpdateAutomapScrollPanel	100.0000	96.9930	3	cd918d158742	0x1d890	100.0000	
+automapbits	_UpdateAutomapScrollPanel	100.0000	100.0000	3	cd918d158742	0x1d890	100.0000	
 automapbits	_WriteAutomapAreas	100.0000	100.0000	5	9f8e6ff6e4fe	0x1e3c0	100.0000	
 bitmapio	_FreeBitmap	100.0000	100.0000	1	e2ab5bf88c4d	0x56ae0	100.0000	
 bitmapio	_ReadBitmapFile	100.0000	100.0000	1	fc37c43f3b7a	0x56a70	100.0000	
-bitset	_ChangeBit	100.0000	100.0000	1	2fdc1efdc529	0xb7c0	100.0000	
-bitset	_ClearBit	100.0000	100.0000	2	1799244ef4f7	0xb740	100.0000	
-bitset	_SetBit	100.0000	100.0000	2	76c534170b1d	0xb700	100.0000	
-bitset	_TestBit	100.0000	100.0000	2	00af6d0ae1df	0xb6d0	100.0000	
-bitset	_ToggleBit	100.0000	100.0000	2	fd477f77e6c4	0xb780	100.0000	
+bitset	_ChangeBit	100.0000	100.0000	2	1a634c130aac	0xb7c0	100.0000	
+bitset	_ClearBit	100.0000	100.0000	3	cd99571d96a9	0xb740	100.0000	
+bitset	_SetBit	100.0000	100.0000	3	c1c112b5da93	0xb700	100.0000	
+bitset	_TestBit	100.0000	100.0000	3	2b36559472d5	0xb6d0	100.0000	
+bitset	_ToggleBit	100.0000	100.0000	3	df9648693422	0xb780	100.0000	
 blit	_BlitObjectSprite	100.0000	100.0000	3	ac7a733d6f0f	0x17b0	100.0000	
 blit	_BlitSceneSprite	100.0000	100.0000	2	0e53fd6766e4	0x1760	100.0000	
 blit	_BlitScriptImage	100.0000	100.0000	5	4574fa1014b3	0x1860	100.0000	
-blit	_DrawImageFrame	100.0000	100.0000	3	fcc3de359c8a	0x17d0	100.0000	
-blit	_GetLegacyImageDrawResult	100.0000	100.0000	2	9dcc433c493c	0x1830	100.0000	
-blit	_GetLegacySpriteTestResult	100.0000	100.0000	2	1e329acb8552	0x1820	100.0000	
+blit	_DrawImageFrame	100.0000	100.0000	4	2a52f7ef12e1	0x17d0	100.0000	
+blit	_GetLegacyImageDrawResult	100.0000	100.0000	3	74b4c9272fa9	0x1830	100.0000	
+blit	_GetLegacySpriteTestResult	100.0000	100.0000	3	52b1c09701dd	0x1820	100.0000	
 blit	_GetSpriteAlignedX	100.0000	100.0000	1	c1f431523fde	0x17e0	100.0000	
 blit	_GetSpriteAlignedY	100.0000	100.0000	1	d3614da7b095	0x1800	100.0000	
 blit	_PrepareFullSceneSprite	100.0000	100.0000	1	33b3d9edcca2	0x1640	100.0000	
@@ -377,9 +377,9 @@ blit	_SkipLegacyImageTransfer	100.0000	100.0000	1	1f75e426add7	0x1840	100.0000
 blit	_SkipLegacyScriptBlit	100.0000	100.0000	1	4ad4aeb0b11d	0x1850	100.0000	
 blit	_SkipOffsetSceneSprite	100.0000	100.0000	1	9fb1518ceaeb	0x16d0	100.0000	
 blit	_SkipViewportSceneSprite	100.0000	100.0000	1	116c8f7a81da	0x16e0	100.0000	
-blit	_TestSceneSpritePixel	100.0000	100.0000	3	9dbf51c44bb0	0x17c0	100.0000	
-bmpseek	_LoadBitmapToSurface16	100.0000	99.7688	9	65b873ed1cc7	0x56bd0	100.0000	
-bmpseek	_LoadBitmapToSurface8	100.0000	100.0000	7	ed9a52845111	0x56de0	100.0000	
+blit	_TestSceneSpritePixel	100.0000	100.0000	4	0a85626a5e3b	0x17c0	100.0000	
+bmpseek	_LoadBitmapToSurface16	100.0000	99.6416	10	32398d0b014e	0x56bd0	100.0000	
+bmpseek	_LoadBitmapToSurface8	100.0000	100.0000	8	97123fc57f0a	0x56de0	100.0000	
 bmpseek	_SeekBitmap	100.0000	100.0000	3	79cc1e98cdd6	0x56b00	100.0000	
 celltrap	_GetCellTrapDamage	100.0000	100.0000	4	873bac125595	0x1c920	100.0000	
 celltrap	_RunCellTrap	99.9024	99.9024	4	5a10f8b6df26	0x1c9f0	99.9024	
@@ -408,13 +408,13 @@ charinfo	_GetRosterCharacterById	100.0000	100.0000	1	af5ccb47b92d	0x3f430	100.00
 charinfo	_ListPickableMembers	100.0000	100.0000	8	6e4bb15955ef	0x3f640	100.0000	
 charinfo	_TickActionWait	100.0000	100.0000	2	9ed9b840a01e	0x3f510	100.0000	
 charinfo	_TickPartyActionWaits	100.0000	100.0000	3	4d3c0dbc312c	0x3f570	100.0000	
-charpool	_ApplyItemStatBonuses	100.0000	100.0000	3	9c6f4228c2b9	0x3dce0	100.0000	
+charpool	_ApplyItemStatBonuses	100.0000	100.0000	4	5e2bdae0307d	0x3dce0	100.0000	
 charpool	_ApplyStatFlags	100.0000	100.0000	5	7d6c201952a8	0x3da90	100.0000	
 charpool	_CalcGunAccuracyStat	100.0000	100.0000	3	67bdc428b06f	0x3d2c0	100.0000	
 charpool	_CalcGunEvasionStat	100.0000	100.0000	3	39915b3c5fcb	0x3d340	100.0000	
 charpool	_CalcMagicAccuracyStat	100.0000	100.0000	3	833b1b3c5cde	0x3d4d0	100.0000	
-charpool	_CalcMagicDefenseStat	100.0000	100.0000	4	6df12c7428d4	0x3d530	100.0000	
-charpool	_CalcMagicEvasionStat	100.0000	100.0000	3	5dec2476bff6	0x3d510	100.0000	
+charpool	_CalcMagicDefenseStat	100.0000	99.8461	4	6df12c7428d4	0x3d530	100.0000	
+charpool	_CalcMagicEvasionStat	100.0000	99.8182	3	5dec2476bff6	0x3d510	100.0000	
 charpool	_CalcMagicPowerStat	100.0000	100.0000	3	f5c725b233b2	0x3d4f0	100.0000	
 charpool	_CalcPhysicalDefenseStat	100.0000	100.0000	3	e138d9ed0d1e	0x3d240	100.0000	
 charpool	_CalcWeaponAccuracyStat	100.0000	100.0000	3	de42b2daba86	0x3d390	100.0000	
@@ -433,13 +433,13 @@ charpool	_LowPoolMask	100.0000	100.0000	3	35ba35499dd9	0x3d000	100.0000
 charpool	_PoolState	100.0000	100.0000	1	f11518e8ea29	0x3d030	100.0000	
 charpool	_RecalcDerivedStats	100.0000	100.0000	7	dc85b8350e39	0x3d560	100.0000	
 charpool	_RecalcStatTotals	100.0000	100.0000	1	0b25d5aa14a9	0x3dc60	100.0000	
-charpool	_ScalePercent999	100.0000	99.8461	1	a900d6b6d210	0x3dbe0	100.0000	
+charpool	_ScalePercent999	100.0000	100.0000	1	a900d6b6d210	0x3dbe0	100.0000	
 charpool	_StatBlend57	100.0000	100.0000	3	90c9338facc7	0x3d1f0	100.0000	
 charpool	_StatBlend80	100.0000	100.0000	3	4d5ebe1bf93b	0x3d190	100.0000	
 charpool	_SumArmorDefenseBonus	100.0000	100.0000	5	d52b0e71b774	0x3d940	100.0000	
 charsave	_AddHundredths	100.0000	100.0000	1	f70e0abe6370	0x41130	100.0000	
 charsave	_ApplyMoonPhase	97.2603	97.2603	4	afe01c15c500	0x413f0	97.2603	
-charsave	_DrainUpkeep	100.0000	100.0000	6	305d62ced6c1	0x41180	100.0000	
+charsave	_DrainUpkeep	100.0000	100.0000	7	4cfceab60d61	0x41180	100.0000	
 charsave	_LoadCharacter	100.0000	100.0000	4	8dfb739721d6	0x41750	100.0000	
 charsave	_LoadCharacters	100.0000	100.0000	2	ddf16369ce75	0x41890	100.0000	
 charsave	_LoadFieldState	100.0000	100.0000	1	bccdd2df5f71	0x41660	100.0000	
@@ -465,7 +465,7 @@ clockops	_OpGetTicksUntilMoonPhase	100.0000	100.0000	1	962812bb2d64	0x36680	100.
 clockops	_OpGetTimeOfDay	100.0000	100.0000	2	fe71ec08faa2	0x366d0	100.0000	
 clockops	_OpSwitchOnMoonPhase	100.0000	100.0000	1	1f20651327a0	0x36610	100.0000	
 compare	_AddScriptCharacterToRoster	100.0000	100.0000	1	efb3277be1f3	0x36160	100.0000	
-compare	_CompareByOp	100.0000	100.0000	2	65e036f730cb	0x346b0	100.0000	
+compare	_CompareByOp	100.0000	100.0000	3	836a3453aa62	0x346b0	100.0000	
 compare	_CompareInt	100.0000	100.0000	1	c9a93d07254a	0x34690	100.0000	
 compare	_OpAddMacca	100.0000	100.0000	1	7aac3c52a108	0x35cc0	100.0000	
 compare	_OpAddMagnetite	100.0000	100.0000	1	57309bb63c29	0x35c90	100.0000	
@@ -473,7 +473,7 @@ compare	_OpAddMemberSkill	100.0000	100.0000	2	f495e8579253	0x365e0	100.0000
 compare	_OpAddRoutePoint	100.0000	100.0000	1	e1509a43b6b0	0x35e20	100.0000	
 compare	_OpAddToRoster	100.0000	100.0000	2	3b5ad89ba497	0x36080	100.0000	
 compare	_OpAdjustItemCount	100.0000	100.0000	2	5d212c8949a7	0x358b0	100.0000	
-compare	_OpApplyEventFlag	100.0000	100.0000	2	74c7b2645598	0x34780	100.0000	
+compare	_OpApplyEventFlag	100.0000	100.0000	3	3b86d3c1bab6	0x34780	100.0000	
 compare	_OpCallSubScene	100.0000	100.0000	1	b2c7b0e4c1a1	0x35b20	100.0000	
 compare	_OpChangeMap	100.0000	100.0000	1	f81b483f008c	0x35db0	100.0000	
 compare	_OpClearBagEntry	100.0000	100.0000	2	b330ef15cc38	0x35a70	100.0000	
@@ -481,7 +481,7 @@ compare	_OpCloseItemListWindow	100.0000	100.0000	1	464c46842543	0x35750	100.0000
 compare	_OpCopyItemRecord	100.0000	100.0000	1	911e491839d7	0x35b30	100.0000	
 compare	_OpCountActiveParty	100.0000	100.0000	1	5cdc706d5ff4	0x36410	100.0000	
 compare	_OpEndFusion	100.0000	100.0000	1	a24a52d90538	0x35bd0	100.0000	
-compare	_OpEndPartySlotSelect	100.0000	100.0000	1	460a17adad9d	0x36400	100.0000	
+compare	_OpEndPartySlotSelect	100.0000	100.0000	2	590878af846d	0x36400	100.0000	
 compare	_OpGetBagEntry	100.0000	100.0000	2	c7ec6898d1e5	0x35a40	100.0000	
 compare	_OpGetCombatantId	100.0000	100.0000	2	8d8e65b858b6	0x36440	100.0000	
 compare	_OpGetFusionResult	100.0000	100.0000	1	cd5324b32ab2	0x35c70	100.0000	
@@ -501,7 +501,7 @@ compare	_OpIfPoolHasItems	100.0000	100.0000	2	5d8723455987	0x35780	100.0000
 compare	_OpIfReturnFacing	100.0000	100.0000	1	f94f785bf4ac	0x354f0	100.0000	
 compare	_OpJoinActiveParty	100.0000	100.0000	1	8c328692556b	0x36250	100.0000	
 compare	_OpJumpIf	100.0000	100.0000	1	5080bdd7adc3	0x35be0	100.0000	
-compare	_OpJumpUnlessActorVisible	100.0000	100.0000	1	de0388ca90a5	0x35070	100.0000	
+compare	_OpJumpUnlessActorVisible	100.0000	100.0000	2	fb10165ec51e	0x35070	100.0000	
 compare	_OpJumpUnlessAlignmentMatch	100.0000	100.0000	2	d95ea0c9ab93	0x35190	100.0000	
 compare	_OpJumpUnlessCanAfford	100.0000	100.0000	1	f59029d6efc0	0x351e0	100.0000	
 compare	_OpJumpUnlessCompanionHealthy	98.6000	98.6000	6	336a63d12ab6	0x35340	98.6000	
@@ -525,12 +525,12 @@ compare	_OpListBagByCategory	100.0000	100.0000	2	5035a2ffe939	0x35920	100.0000
 compare	_OpOpenFusionScreen	100.0000	100.0000	1	4e72db4edba3	0x35b90	100.0000	
 compare	_OpOpenItemListWindow	100.0000	100.0000	2	3a1e989e8ae7	0x356f0	100.0000	
 compare	_OpQueueAutoMoves	100.0000	100.0000	1	696d5d9a9f89	0x35cf0	100.0000	
-compare	_OpRebalanceMemberStats	100.0000	100.0000	5	24226e0d10a3	0x36560	100.0000	
+compare	_OpRebalanceMemberStats	100.0000	99.7826	5	24226e0d10a3	0x36560	100.0000	
 compare	_OpRedrawItemListTotal	100.0000	100.0000	1	1cf00660ce34	0x35770	100.0000	
 compare	_OpRemoveFromRoster	100.0000	100.0000	2	66eb72a60a55	0x361b0	100.0000	
 compare	_OpRunFusion	100.0000	100.0000	1	1b951b1f9476	0x35bb0	100.0000	
 compare	_OpScreenTransition	100.0000	100.0000	1	81464884b97f	0x36030	100.0000	
-compare	_OpSelectPartySlot	100.0000	100.0000	1	df32fa369e0f	0x363d0	100.0000	
+compare	_OpSelectPartySlot	100.0000	100.0000	2	a7e97c4bccdd	0x363d0	100.0000	
 compare	_OpSetPlayerPosition	100.0000	100.0000	1	379f75d429db	0x35ef0	100.0000	
 compare	_OpSetWorldMapSpot	100.0000	100.0000	1	a1ded61174f2	0x35df0	100.0000	
 compare	_OpSkipJumpTarget	100.0000	100.0000	1	fc465647df6b	0x35c00	100.0000	
@@ -539,7 +539,7 @@ compare	_OpTakeDropSlot	99.0625	99.0625	3	9670a6d75367	0x35a90	99.0625
 compare	_OpTakeItem	100.0000	100.0000	1	11891eb1b1cf	0x356d0	100.0000	
 compare	_PlayScreenTransition	100.0000	100.0000	1	a8697aea9b43	0x36010	100.0000	
 condition	_AddCondition	99.9419	99.9419	5	5275d8f9857f	0x3e6d0	99.9419	
-condition	_AgeCondition	100.0000	100.0000	4	29577e1910e8	0x3efa0	100.0000	
+condition	_AgeCondition	100.0000	100.0000	5	6bdd236b49ce	0x3efa0	100.0000	
 condition	_AgeConditions	100.0000	100.0000	2	ade7fe44a58d	0x3ef60	100.0000	
 condition	_ApplyEmptyPools	100.0000	100.0000	5	f793c56d10c0	0x3f0f0	100.0000	
 condition	_ClearAllConditions	100.0000	100.0000	2	843625b04e11	0x3ef40	100.0000	
@@ -555,11 +555,11 @@ condition	_GetFatalCondition	100.0000	100.0000	2	e8053ce419da	0x3edd0	100.0000
 condition	_GetFirstConditionIndex	100.0000	100.0000	3	f4742e79185a	0x3f380	100.0000	
 condition	_GetFirstConditionName	100.0000	100.0000	2	5a96fef5c23e	0x3f2b0	100.0000	
 condition	_GetPickBlockingCondition	100.0000	100.0000	2	ca0b7fd91e07	0x3ee80	100.0000	
-condition	_HasCondition	100.0000	100.0000	2	7c2dbe1e3995	0x3e6b0	100.0000	
-condition	_IsFieldConditionRestricted	100.0000	100.0000	2	2f3106d05cf7	0x3eea0	100.0000	
+condition	_HasCondition	100.0000	100.0000	3	bd6979339531	0x3e6b0	100.0000	
+condition	_IsFieldConditionRestricted	100.0000	100.0000	3	fc930f478647	0x3eea0	100.0000	
 condition	_LastConditionIn	100.0000	100.0000	2	ef552ef23acd	0x3edf0	100.0000	
 condition	_NextConditionName	100.0000	100.0000	2	48804823b09a	0x3f2f0	100.0000	
-condition	_RecoverCondition	100.0000	100.0000	6	bec8ec408c52	0x3f030	100.0000	
+condition	_RecoverCondition	100.0000	100.0000	7	7899bbe4e4b8	0x3f030	100.0000	
 condition	_RecoverConditions	100.0000	100.0000	1	da4fa0871cc8	0x3f000	100.0000	
 d3dapp	??0_D3DMATRIX@@QAE@MMMMMMMMMMMMMMMM@Z	100.0000	100.0000	1	header:26738ecbd03a	0x48f90	100.0000	
 d3dapp	??0_D3DVECTOR@@QAE@MMM@Z	100.0000	100.0000	1	header:7cdde230c63f	0x49030	100.0000	
@@ -570,23 +570,23 @@ d3dapp	??R_D3DMATRIX@@QAEAAMHH@Z	100.0000	100.0000	1	header:ca71b6f5a005	0x49010
 d3dapp	?AcquireInput@@YAXH@Z	100.0000	100.0000	2	b2b9222c487b	0x48e20	100.0000	
 d3dapp	?ChooseTextureFormat@@YGJPAU_DDSURFACEDESC@@PAX@Z	100.0000	100.0000	1	51f7cd6fa33d	0x466a0	100.0000	
 d3dapp	?ClearScreenSurfaces@@YAXXZ	100.0000	100.0000	3	404c739e401d	0x48f20	100.0000	
-d3dapp	?CrossProduct@@YA?AU_D3DVECTOR@@ABU1@0@Z	100.0000	97.4455	1	header:c10460422f3d	0x49170	100.0000	
-d3dapp	?DotProduct@@YAMABU_D3DVECTOR@@0@Z	100.0000	99.8667	1	header:eda9abb1977f	0x49140	100.0000	
-d3dapp	?InitDirect3D@@YAHXZ	99.5439	99.5439	8	8d4a63d2890f	0x47ef0	99.5439	
-d3dapp	?InitDirectDraw@@YAHXZ	100.0000	100.0000	3	74684b1f685a	0x479a0	100.0000	
-d3dapp	?InitDirectInput@@YAHXZ	100.0000	100.0000	3	5c924173181b	0x48ce0	100.0000	
-d3dapp	?InitDirectSound@@YAHXZ	100.0000	100.0000	3	8686e712515a	0x488a0	100.0000	
+d3dapp	?CrossProduct@@YA?AU_D3DVECTOR@@ABU1@0@Z	100.0000	100.0000	1	header:c10460422f3d	0x49170	100.0000	
+d3dapp	?DotProduct@@YAMABU_D3DVECTOR@@0@Z	100.0000	92.4000	1	header:eda9abb1977f	0x49140	100.0000	
+d3dapp	?InitDirect3D@@YAHXZ	99.5439	99.5439	9	6f1407a8bef7	0x47ef0	99.5439	
+d3dapp	?InitDirectDraw@@YAHXZ	100.0000	100.0000	4	ce02c34b07a0	0x479a0	100.0000	
+d3dapp	?InitDirectInput@@YAHXZ	100.0000	100.0000	4	2621b516f66f	0x48ce0	100.0000	
+d3dapp	?InitDirectSound@@YAHXZ	100.0000	100.0000	4	969b4a39dd80	0x488a0	100.0000	
 d3dapp	?KeepDeviceDesc@@YGJPAU_GUID@@PAD1PAU_D3DDeviceDesc@@2PAX@Z	100.0000	100.0000	1	18286bd4ce87	0x477e0	100.0000	
 d3dapp	?Magnitude@@YAMABU_D3DVECTOR@@@Z	100.0000	100.0000	1	header:96c4b6ace3bd	0x490f0	100.0000	
-d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	100.0000	98.9268	1	86daea2860ef	0x46230	100.0000	
+d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	100.0000	98.9024	1	86daea2860ef	0x46230	100.0000	
 d3dapp	?Normalize@@YA?AU_D3DVECTOR@@ABU1@@Z	100.0000	100.0000	1	header:9f72dd33a7f5	0x49090	100.0000	
 d3dapp	?PollMouseButtons@@YAEXZ	88.8028	88.8028	6	f52c6ff1cf0f	0x48e60	88.8028	
-d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	93.9325	93.9325	4	cba51180c80d	0x46060	94.3374	
+d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	93.9325	93.8344	4	cba51180c80d	0x46060	94.3374	
 d3dapp	?QueryD3DDevices@@YAXXZ	100.0000	100.0000	4	44d942462a32	0x47c00	100.0000	
 d3dapp	?ReadSurfaceWord@@YAGPAUIDirectDrawSurface@@HHH@Z	100.0000	100.0000	2	790df696d752	0x47e70	100.0000	
 d3dapp	?ReleaseDirectInput@@YAXXZ	100.0000	100.0000	3	de724fbf4fca	0x48db0	100.0000	
 d3dapp	?ReleaseDirectX@@YAXXZ	100.0000	100.0000	2	7819bec8885f	0x47870	100.0000	
-d3dapp	?RestoreSurfaces@@YAHH@Z	100.0000	100.0000	1	39726e535252	0x47de0	100.0000	
+d3dapp	?RestoreSurfaces@@YAHH@Z	100.0000	100.0000	2	47a3b189acaa	0x47de0	100.0000	
 d3dapp	?SetProjectionMatrix@@YAXAAU_D3DMATRIX@@MMM@Z	100.0000	100.0000	1	a480ff0711ed	0x46540	100.0000	
 d3dapp	?SetRotateXMatrix@@YAXAAU_D3DMATRIX@@M@Z	100.0000	100.0000	2	bfd5c1a41619	0x45eb0	100.0000	
 d3dapp	?SetRotateYMatrix@@YAXAAU_D3DMATRIX@@M@Z	100.0000	100.0000	2	e3e7865f1d31	0x45f40	100.0000	
@@ -602,13 +602,13 @@ d3dapp	?ZBufferDepth@@YIKPAU_D3DDeviceDesc@@@Z	100.0000	100.0000	1	d34ab8e484aa	
 d3dapp	_MapEffectSoundId	100.0000	100.0000	1	7a4b7b415313	0x48b80	100.0000	
 d3dapp	_MapSoundEffectId	100.0000	100.0000	1	221ebaf5ee01	0x48c30	100.0000	
 d3dapp	_PlaySoundEffect	100.0000	100.0000	2	9cc073b32ee7	0x489f0	100.0000	
-datafile	_CloseDataFile	100.0000	100.0000	1	07d84b47f753	0x2250	100.0000	
-datafile	_GetLegacyDataFileLength	100.0000	100.0000	2	acb9b18858c6	0x22c0	100.0000	
-datafile	_GetLegacyDataFileOpenResult	100.0000	100.0000	2	80889d31b99a	0x2280	100.0000	
-datafile	_GetLegacyDataFileReadResult	100.0000	100.0000	2	730f5f3f20d5	0x2290	100.0000	
-datafile	_GetLegacyDataFileSeekResult	100.0000	100.0000	2	6dbb57eee0dd	0x22a0	100.0000	
-datafile	_GetLegacyDataFileStatus	100.0000	100.0000	2	5c4b24cfa604	0x22b0	100.0000	
-datafile	_IsLegacyDataFileReady	100.0000	100.0000	2	143df98278fa	0x22d0	100.0000	
+datafile	_CloseDataFile	100.0000	100.0000	2	a23f97f5a6e5	0x2250	100.0000	
+datafile	_GetLegacyDataFileLength	100.0000	100.0000	3	1b51c9bfa761	0x22c0	100.0000	
+datafile	_GetLegacyDataFileOpenResult	100.0000	100.0000	3	d7155601f35d	0x2280	100.0000	
+datafile	_GetLegacyDataFileReadResult	100.0000	100.0000	3	c5a87e5e0e40	0x2290	100.0000	
+datafile	_GetLegacyDataFileSeekResult	100.0000	100.0000	3	14a283a69234	0x22a0	100.0000	
+datafile	_GetLegacyDataFileStatus	100.0000	100.0000	3	c8f1c938ce66	0x22b0	100.0000	
+datafile	_IsLegacyDataFileReady	100.0000	100.0000	3	d8be42d225f2	0x22d0	100.0000	
 datafile	_OpenDataFile	100.0000	100.0000	2	3bf5915f6d51	0x1dd0	100.0000	
 datafile	_ReadCryptByte	100.0000	100.0000	1	bc353a77ddd4	0x1b40	100.0000	
 datafile	_ReadCryptBytes	100.0000	100.0000	1	f57d0367d7f3	0x1ba0	100.0000	
@@ -626,11 +626,11 @@ ddsmenu	_PickDdsPurgeMember	100.0000	100.0000	1	253404f883d1	0x17900	100.0000
 ddsmenu	_PickDdsRosterMember	100.0000	100.0000	1	5263d94c15c0	0x176f0	100.0000	
 ddsmenu	_PickDdsSummon	100.0000	100.0000	6	4c73cc1546c8	0x17520	100.0000	
 ddsmenu	_ReturnDdsMember	100.0000	100.0000	3	e1990e3c0513	0x17870	100.0000	
-ddsmenu	_RunDdsMenu	100.0000	100.0000	1	0a5a7b265292	0x17330	100.0000	
-ddsmenu	_RunDdsSummon	100.0000	100.0000	1	c55c3c2325d3	0x174b0	100.0000	
+ddsmenu	_RunDdsMenu	100.0000	100.0000	2	fc0c1429c91a	0x17330	100.0000	
+ddsmenu	_RunDdsSummon	100.0000	100.0000	2	46831843a62d	0x174b0	100.0000	
 debugmenu	_DebugMenuHandler	100.0000	100.0000	3	fee887e0bc0a	0x1410	100.0000	
 debugmenu	_MagicMenuHandler	100.0000	100.0000	2	9f250f40fa1b	0x14d0	100.0000	
-debugmenu	_RunDebugMenu	100.0000	100.0000	3	42fe369e0529	0x1000	100.0000	
+debugmenu	_RunDebugMenu	100.0000	100.0000	4	156240dae85d	0x1000	100.0000	
 demontable	_CopyLeaderIntoObject	100.0000	100.0000	8	b969ea070773	0x10930	100.0000	
 demontable	_CopyObjectRecordName	100.0000	100.0000	1	bea74b6faf9d	0x101b0	100.0000	
 demontable	_FindDemonOfRace	100.0000	100.0000	1	74e00185b0d2	0x10250	100.0000	
@@ -661,8 +661,8 @@ demontable	_ReadObjectRecordField	100.0000	100.0000	1	e0d3a48d9956	0x10b20	100.0
 demontable	_ReadRecordIfWanted	100.0000	100.0000	1	79596145254e	0x10b00	100.0000	
 demontable	_ScaleLevelGap	100.0000	100.0000	1	9d005c95cd62	0x10420	100.0000	
 devicesettings	?GetDeviceSettingsValueName@@YIXPAD@Z	100.0000	100.0000	1	776d041bceed	0x45d60	100.0000	
-devicesettings	?LoadDeviceSettings@@YAHPAUDeviceSettings@@@Z	100.0000	100.0000	1	8c98f34611d5	0x45ce0	100.0000	
-displayconfig	_LoadDisplayConfig	100.0000	100.0000	1	b0a381e5d86b	0x45bb0	100.0000	
+devicesettings	?LoadDeviceSettings@@YAHPAUDeviceSettings@@@Z	100.0000	100.0000	2	0ca62da03264	0x45ce0	100.0000	
+displayconfig	_LoadDisplayConfig	100.0000	100.0000	2	791f31d2fbd5	0x45bb0	100.0000	
 displayconfig	_SetDefaultDisplayConfig	100.0000	100.0000	1	477d046d4b18	0x45ca0	100.0000	
 effectdraw	_ClearEffectLayer	100.0000	100.0000	3	0f8fe514d847	0x58990	100.0000	
 effectdraw	_DrawProjectedEffectSprite	96.0887	94.6086	11	2a09baf97712	0x589e0	96.0887	
@@ -694,42 +694,42 @@ equipscreen	_RunEquipScreen	98.1996	98.1996	15	9cf0342715d6	0x42e60	98.1996
 equipscreen	_RunItemPage	100.0000	100.0000	3	783bf7fdd102	0x44650	100.0000	
 equipscreen	_RunSkillPage	100.0000	100.0000	2	d2b775ef8dfc	0x44c30	100.0000	
 equipscreen	_SkillListHandler	100.0000	100.0000	5	e856c5392425	0x44e50	100.0000	
-eventflags	_ChangeEventFlag	100.0000	100.0000	3	df16abb6c469	0x391f0	100.0000	
+eventflags	_ChangeEventFlag	100.0000	100.0000	4	42db24f580e5	0x391f0	100.0000	
 eventflags	_CheckFlagWord	100.0000	100.0000	1	f0144581025d	0x39420	100.0000	
-eventflags	_ClearEventFlag	100.0000	100.0000	1	d3258e34aa9d	0x39250	100.0000	
+eventflags	_ClearEventFlag	100.0000	100.0000	2	00b9e67377cc	0x39250	100.0000	
 eventflags	_ClearFlagBank	100.0000	100.0000	1	0de231e8624b	0x391d0	100.0000	
 eventflags	_GetFlagSettings	100.0000	100.0000	1	d4e5c10f6848	0x39390	100.0000	
-eventflags	_IsEventFlagSet	100.0000	100.0000	1	6322921992c8	0x39310	100.0000	
-eventflags	_MatchEventFlag	100.0000	100.0000	1	095b14399a67	0x394e0	100.0000	
-eventflags	_MatchFlagWord	100.0000	100.0000	1	8064d5c5de44	0x39480	100.0000	
-eventflags	_ModifyEventFlag	100.0000	100.0000	1	e260ff2e0cdd	0x39330	100.0000	
+eventflags	_IsEventFlagSet	100.0000	100.0000	2	443fe0c099f2	0x39310	100.0000	
+eventflags	_MatchEventFlag	100.0000	100.0000	2	876010aad9d4	0x394e0	100.0000	
+eventflags	_MatchFlagWord	100.0000	100.0000	2	bff4c24e0d82	0x39480	100.0000	
+eventflags	_ModifyEventFlag	100.0000	100.0000	2	b05219b067df	0x39330	100.0000	
 eventflags	_OpLoadScriptVar	100.0000	100.0000	1	d5adda08c126	0x395f0	100.0000	
 eventflags	_OpModifyEventFlag	100.0000	100.0000	3	88c33612c5c6	0x39620	100.0000	
 eventflags	_OpModifyEventFlagByValue	100.0000	100.0000	2	e26a5c1c6252	0x39560	100.0000	
 eventflags	_OpStoreScriptVar	100.0000	100.0000	1	d64e4ed572ec	0x395d0	100.0000	
 eventflags	_OpTestEventFlag	100.0000	100.0000	3	7d6265546d70	0x39680	100.0000	
 eventflags	_OpTestEventFlagByValue	100.0000	100.0000	2	379f37b224ed	0x39590	100.0000	
-eventflags	_ReadAndMatchEventFlag	100.0000	100.0000	1	05acdf0e394a	0x39520	100.0000	
+eventflags	_ReadAndMatchEventFlag	100.0000	100.0000	2	793a65fd8f70	0x39520	100.0000	
 eventflags	_ReadEventFlags	100.0000	100.0000	1	9b01b093e71d	0x39720	100.0000	
 eventflags	_ReadFlagOperand	100.0000	100.0000	1	2c472409644b	0x393e0	100.0000	
 eventflags	_ReadScriptVars	100.0000	100.0000	1	a516366ee7ad	0x39780	100.0000	
 eventflags	_ResetEventFlags	100.0000	100.0000	1	6a01b3fb0192	0x39270	100.0000	
-eventflags	_SetEventFlag	100.0000	100.0000	1	dfd2076c6b4d	0x39350	100.0000	
+eventflags	_SetEventFlag	100.0000	100.0000	2	8cd21cc4cbc8	0x39350	100.0000	
 eventflags	_SetFlagBank	100.0000	100.0000	1	7268db8d48d0	0x391b0	100.0000	
 eventflags	_SetFlagSettings	100.0000	100.0000	2	70c0bea5bf10	0x393a0	100.0000	
 eventflags	_SetFlagTag	100.0000	100.0000	1	317434682fb6	0x393c0	100.0000	
-eventflags	_TestEventFlag	100.0000	100.0000	3	0ad4b84ddaea	0x392b0	100.0000	
-eventflags	_ToggleEventFlag	100.0000	100.0000	1	736f9833e992	0x39370	100.0000	
+eventflags	_TestEventFlag	100.0000	100.0000	4	952155e293aa	0x392b0	100.0000	
+eventflags	_ToggleEventFlag	100.0000	100.0000	2	6e22e2345c53	0x39370	100.0000	
 eventflags	_WriteEventFlags	100.0000	100.0000	1	e1e39d3c4a1c	0x396f0	100.0000	
 eventflags	_WriteScriptVars	100.0000	100.0000	1	c0076fe73edb	0x39750	100.0000	
 familiarity	_AddFamiliarity	100.0000	100.0000	1	00581cb3b89f	0x10d30	100.0000	
 familiarity	_AddFamiliarityCount	100.0000	100.0000	1	b04d85dbfdb6	0x10bd0	100.0000	
 familiarity	_AddLevelGap	100.0000	100.0000	1	0795a7a1ca52	0x10ca0	100.0000	
-familiarity	_AlignmentConflicts	84.6364	84.6364	3	17b6457589ce	0x10db0	84.6364	
-familiarity	_ClearAnalyzed	100.0000	100.0000	1	0e0fae494c17	0x10e40	100.0000	
+familiarity	_AlignmentConflicts	84.6364	84.4545	3	17b6457589ce	0x10db0	84.6364	
+familiarity	_ClearAnalyzed	100.0000	100.0000	2	72fb8b6614ad	0x10e40	100.0000	
 familiarity	_GetFamiliarity	100.0000	100.0000	1	bac605b95847	0x10cd0	100.0000	
 familiarity	_GetFamiliarityCount	100.0000	100.0000	1	95f9549ab2b8	0x10bc0	100.0000	
-familiarity	_HasAnalyzeData	100.0000	100.0000	1	1d17cfd9c11a	0x10e90	100.0000	
+familiarity	_HasAnalyzeData	100.0000	100.0000	2	4aea30c3b899	0x10e90	100.0000	
 familiarity	_LoadAnalyzed	100.0000	100.0000	1	8af62865607f	0x10f40	100.0000	
 familiarity	_LoadFamiliarityCounts	100.0000	100.0000	1	13b8b09e4602	0x10ee0	100.0000	
 familiarity	_RefreshFamiliarity	100.0000	100.0000	5	6a902f845b25	0x10bf0	100.0000	
@@ -749,16 +749,16 @@ field	_GetFacingWall	100.0000	100.0000	1	90b8f85f1f42	0x7340	100.0000
 field	_GetFieldEntryState	100.0000	100.0000	1	94293bf1772e	0x7200	100.0000	
 field	_GetFieldMap	100.0000	100.0000	1	802dcd5f06f5	0x71f0	100.0000	
 field	_GetFieldMarker	100.0000	100.0000	1	ab0764191ae9	0x7160	100.0000	
-field	_HasObjectInReach	100.0000	100.0000	1	ea8a78b4fbac	0x8060	100.0000	
-field	_IsFieldModeAtLeast	100.0000	100.0000	1	912378e04943	0x7130	100.0000	
+field	_HasObjectInReach	100.0000	100.0000	2	cb122e143a09	0x8060	100.0000	
+field	_IsFieldModeAtLeast	100.0000	100.0000	2	a9a2d1ede05a	0x7130	100.0000	
 field	_IsPartyAt	100.0000	100.0000	1	66a3b93d3609	0x8140	100.0000	
 field	_LeaveFieldMap	100.0000	100.0000	2	48909ee5825b	0x7a40	100.0000	
 field	_MarkActorActionReady	100.0000	100.0000	4	64d2ccb88762	0x82c0	100.0000	
 field	_MarkFieldRefresh	100.0000	100.0000	1	d5ce7e6f9820	0x70d0	100.0000	
 field	_ResetRosterFieldMarks	100.0000	100.0000	3	68e8cd44f176	0x7a70	100.0000	
-field	_RollProximityEvent	100.0000	100.0000	3	256f62b7a69b	0x7f80	100.0000	
-field	_RunFieldEncounter	100.0000	99.9787	7	5051eb4a0ac2	0x7390	100.0000	
-field	_RunFieldState	100.0000	100.0000	8	72224a6e55b0	0x7aa0	100.0000	
+field	_RollProximityEvent	100.0000	100.0000	4	38338b9f0c8c	0x7f80	100.0000	
+field	_RunFieldEncounter	100.0000	100.0000	8	41b9b21464ec	0x7390	100.0000	
+field	_RunFieldState	100.0000	100.0000	9	740620dd7a27	0x7aa0	100.0000	
 field	_RunPartyTurn	100.0000	100.0000	9	64b7e4bb6107	0x8330	100.0000	
 field	_ScaleByFieldRate	100.0000	100.0000	1	bb6409d2d95a	0x72a0	100.0000	
 field	_SetFieldCounts	100.0000	100.0000	1	a727e1ee0931	0x7210	100.0000	
@@ -782,12 +782,12 @@ fieldmain	_GetReturnPoint	100.0000	100.0000	1	ceff65fa5453	0x12930	100.0000
 fieldmain	_GetViewVisibility	100.0000	100.0000	2	0fd7eaeaa642	0x14340	100.0000	
 fieldmain	_GrowAutoMoves	100.0000	100.0000	1	a739a2e0e12c	0x12720	100.0000	
 fieldmain	_GrowRoute	100.0000	100.0000	1	7d58866bf4a8	0x11ed0	100.0000	
-fieldmain	_HasAutoMoves	100.0000	100.0000	1	d070dd419d3e	0x127a0	100.0000	
+fieldmain	_HasAutoMoves	100.0000	100.0000	2	51792e2fbbe7	0x127a0	100.0000	
 fieldmain	_HasQueuedObjectEvents	100.0000	100.0000	1	bfba1224c61d	0x13c00	100.0000	
 fieldmain	_IsRouteActive	100.0000	100.0000	1	a486d4271fbc	0x12010	100.0000	
 fieldmain	_LoadFieldEventTable	100.0000	100.0000	1	25ba1d1ca953	0x13d10	100.0000	
 fieldmain	_LoadFieldImage	100.0000	100.0000	2	caffed40de0c	0x144c0	100.0000	
-fieldmain	_LoadFieldMemory	100.0000	100.0000	2	5df7d0d13c11	0x13ca0	100.0000	
+fieldmain	_LoadFieldMemory	100.0000	87.0270	2	5df7d0d13c11	0x13ca0	100.0000	
 fieldmain	_MarkFieldViewCells	100.0000	100.0000	1	2544b75863e1	0x13d70	100.0000	
 fieldmain	_MarkLevelEvent	100.0000	100.0000	1	93bdb7a82f49	0x13b20	100.0000	
 fieldmain	_MarkVisibleFieldCells	99.2951	99.2951	2	61f26b6c1332	0x13d90	99.2951	
@@ -801,7 +801,7 @@ fieldmain	_PopRoutePoint	100.0000	100.0000	1	c5b788baa850	0x11f90	100.0000
 fieldmain	_PushAutoMove	100.0000	100.0000	2	4b6ff8fbb436	0x12760	100.0000	
 fieldmain	_PushRoutePoint	100.0000	100.0000	1	d39e6daf1b45	0x11f50	100.0000	
 fieldmain	_QueueObjectEvent	100.0000	100.0000	1	8cf0a3fd7275	0x13bc0	100.0000	
-fieldmain	_RaiseObjectEvent	100.0000	100.0000	2	f6565c214fc9	0x13b60	100.0000	
+fieldmain	_RaiseObjectEvent	100.0000	100.0000	3	9ebc993c40a6	0x13b60	100.0000	
 fieldmain	_RecordWarpInLeader	100.0000	100.0000	2	706ca4f3b3fc	0x12980	100.0000	
 fieldmain	_RedrawFieldAt	100.0000	100.0000	1	747decd01af7	0x140a0	100.0000	
 fieldmain	_ReleaseFieldImage	100.0000	100.0000	1	5f1b2388c4e6	0x144a0	100.0000	
@@ -812,7 +812,7 @@ fieldmain	_ResetLevelEvents	100.0000	100.0000	1	1e89a6f847d4	0x13b00	100.0000
 fieldmain	_RestoreSavedPoint	100.0000	100.0000	1	977a1304737b	0x125d0	100.0000	
 fieldmain	_ReturnToCurrentCell	100.0000	100.0000	2	4094b3c135eb	0x13a80	100.0000	
 fieldmain	_RunCellEvent	100.0000	100.0000	5	fbeb63117e27	0x13640	100.0000	
-fieldmain	_RunFieldExploration	98.5330	98.5330	10	f2afd74bf10d	0x12d20	98.5330	
+fieldmain	_RunFieldExploration	98.5330	98.5330	11	a5e02b3070c5	0x12d20	98.5330	
 fieldmain	_RunPendingTalk	100.0000	100.0000	1	26185bda5cf2	0x12be0	100.0000	
 fieldmain	_SampleViewWalls	100.0000	100.0000	3	e8db3b57e152	0x140d0	100.0000	
 fieldmain	_SaveFieldMemory	100.0000	100.0000	1	43accb657b79	0x13c40	100.0000	
@@ -828,9 +828,9 @@ fieldmain	_SetSavedPoint	100.0000	100.0000	1	2fc8989dd335	0x124c0	100.0000
 fieldmain	_StartBoxScene	100.0000	100.0000	2	cb3455293e52	0x12b30	100.0000	
 fieldmain	_StartNpcScene	100.0000	100.0000	2	3176cedd8c6a	0x12b90	100.0000	
 fieldmain	_StepParty	100.0000	100.0000	2	d7d9bae92fb2	0x12600	100.0000	
-fieldmain	_TestLevelEvent	100.0000	100.0000	1	ea283c9ce996	0x13b40	100.0000	
+fieldmain	_TestLevelEvent	100.0000	100.0000	2	1605ede99867	0x13b40	100.0000	
 fieldmain	_TickFieldSteps	100.0000	100.0000	1	19ba01f7b41d	0x12cf0	100.0000	
-fieldmain	_TickStepDamage	100.0000	100.0000	1	39581474c942	0x12ca0	100.0000	
+fieldmain	_TickStepDamage	100.0000	100.0000	2	0d7ea06603e8	0x12ca0	100.0000	
 fieldmain	_VisitVisibleCellWalls	100.0000	100.0000	2	dd0c6ca826f6	0x14530	100.0000	
 fieldmark	_GetCurrentRoomCode	100.0000	100.0000	1	ffff5f064da7	0x1a180	100.0000	
 fieldmark	_IsOnCellMark	100.0000	100.0000	2	51042f7d05b6	0x1a110	100.0000	
@@ -839,17 +839,17 @@ fieldmark	_SetCellMark	100.0000	100.0000	1	f7d8b30f4fdc	0x1a090	100.0000
 fieldmark	_SetCurrentRoomCode	100.0000	100.0000	1	9ba4e3fe600d	0x1a190	100.0000	
 fieldobj	_AdvanceObjectAnims	100.0000	100.0000	1	3356896f9e9f	0xe6b0	100.0000	
 fieldobj	_ApplyObjectConditions	100.0000	100.0000	3	314c8302441b	0xe4e0	100.0000	
-fieldobj	_BeginPartyTargetSkill	100.0000	100.0000	5	5e082fcf3d07	0xfea0	100.0000	
+fieldobj	_BeginPartyTargetSkill	100.0000	100.0000	6	d7ef57376490	0xfea0	100.0000	
 fieldobj	_BuildSightGrid	100.0000	100.0000	1	f80fb841c5eb	0xf070	100.0000	
 fieldobj	_CheckAllObjects	100.0000	100.0000	1	310cb045c3cb	0xe720	100.0000	
 fieldobj	_CheckObjectState	100.0000	100.0000	1	806743df956e	0xe1e0	100.0000	
-fieldobj	_ChooseObjectTarget	100.0000	100.0000	9	5913458c9714	0xfd20	100.0000	
+fieldobj	_ChooseObjectTarget	100.0000	100.0000	10	a4739f347bb1	0xfd20	100.0000	
 fieldobj	_ClearObjectStuns	100.0000	100.0000	5	ae23fe655465	0xe470	100.0000	
 fieldobj	_CountActiveObjects	100.0000	100.0000	1	9d6f99e5a784	0xe680	100.0000	
 fieldobj	_CountObjectsAt	100.0000	100.0000	1	7434dcd7d84d	0xe380	100.0000	
 fieldobj	_DirectionToParty	100.0000	100.0000	1	511c8effb7dd	0xf150	100.0000	
 fieldobj	_DistanceToParty	100.0000	100.0000	1	c3b187a5b449	0xf550	100.0000	
-fieldobj	_DrawFieldObject	100.0000	100.0000	2	f4f5d18aaf25	0xdfb0	100.0000	
+fieldobj	_DrawFieldObject	100.0000	100.0000	3	e467c1f244c8	0xdfb0	100.0000	
 fieldobj	_DrawFieldObjects	100.0000	100.0000	1	9377e424bc4f	0xe160	100.0000	
 fieldobj	_ExchangeObjectCheckBypass	100.0000	100.0000	1	472c93b4eb8f	0xde80	100.0000	
 fieldobj	_ExchangeObjectRemovalDeferred	100.0000	100.0000	1	ab5a20af080a	0xe450	100.0000	
@@ -881,29 +881,29 @@ fieldobj	_GetObjectSlot	100.0000	100.0000	1	58d235c9d9e4	0xe570	100.0000
 fieldobj	_GetObjectsFrozen	100.0000	100.0000	1	b93a729a4447	0xe520	100.0000	
 fieldobj	_GetPartySide	100.0000	100.0000	1	c2840a317049	0xf240	100.0000	
 fieldobj	_GetSightCell	100.0000	100.0000	1	f498b35984d8	0xf0c0	100.0000	
-fieldobj	_InitFieldObjects	100.0000	100.0000	1	ef2b82a759b9	0xd790	100.0000	
-fieldobj	_IsFieldActor	100.0000	100.0000	1	bf5478d17e9a	0xd980	100.0000	
+fieldobj	_InitFieldObjects	100.0000	100.0000	2	1193d7b17cd8	0xd790	100.0000	
+fieldobj	_IsFieldActor	100.0000	100.0000	2	ecd87ace417f	0xd980	100.0000	
 fieldobj	_IsPartyInSight	100.0000	100.0000	1	c03c64e92c2c	0xf120	100.0000	
-fieldobj	_IsWithinRange	99.9074	99.9074	4	fb78721eeca9	0xf590	99.9074	
+fieldobj	_IsWithinRange	99.9074	99.9074	5	51a37647af50	0xf590	99.9074	
 fieldobj	_LoadEncounterWeights	100.0000	100.0000	1	f8944971463a	0xf1a0	100.0000	
 fieldobj	_LoadEnemyGroupSlot	100.0000	100.0000	3	4aaaeceaf4c4	0xe820	100.0000	
 fieldobj	_LoadLayerScriptSet	100.0000	100.0000	3	cde55e2bec84	0xeb70	100.0000	
 fieldobj	_LoadLayerScripts	100.0000	100.0000	3	50c5b55c9880	0xeb00	100.0000	
 fieldobj	_MarkObjectsOnMap	100.0000	100.0000	1	db1e9d95b388	0xdde0	100.0000	
 fieldobj	_RandomNearOffset	100.0000	100.0000	1	3dc1983f57a8	0xedf0	100.0000	
-fieldobj	_RefreshIfTurned	100.0000	100.0000	1	2781d721c828	0xf220	100.0000	
+fieldobj	_RefreshIfTurned	100.0000	100.0000	2	479a6e40ed0c	0xf220	100.0000	
 fieldobj	_RefreshObjectDraw	100.0000	100.0000	1	3203e64188db	0xea50	100.0000	
 fieldobj	_RelativeFacing	100.0000	79.6667	1	ca74240a4a16	0xdf30	100.0000	
-fieldobj	_RemoveFieldObject	100.0000	100.0000	5	d54487ec5ced	0xd7f0	100.0000	
+fieldobj	_RemoveFieldObject	100.0000	100.0000	6	084be65539dc	0xd7f0	100.0000	
 fieldobj	_ResetFieldLayer	100.0000	100.0000	2	ae08649d0c9c	0xe7e0	100.0000	
-fieldobj	_ResetFieldObjects	100.0000	100.0000	1	841d4e0824fd	0xd940	100.0000	
+fieldobj	_ResetFieldObjects	100.0000	100.0000	2	5c6411f5099f	0xd940	100.0000	
 fieldobj	_ResetObjectAnim	100.0000	100.0000	1	78444efbc465	0xdd80	100.0000	
 fieldobj	_ResetObjectAnims	100.0000	100.0000	1	17f9a2de2b34	0xdd60	100.0000	
 fieldobj	_RespawnFieldObject	100.0000	100.0000	1	6e4d567fa610	0xdcc0	100.0000	
 fieldobj	_RestoreFieldLayer	100.0000	100.0000	1	12760c61138f	0xe7a0	100.0000	
 fieldobj	_RollEncounterSlot	100.0000	100.0000	1	c7d5b21d6b16	0xf1e0	100.0000	
 fieldobj	_RunFieldIdle	100.0000	100.0000	2	3aa04a2ecc27	0xe250	100.0000	
-fieldobj	_RunObjectStep	100.0000	100.0000	11	25be3334fcf6	0xf890	100.0000	
+fieldobj	_RunObjectStep	100.0000	100.0000	12	4957d470a24b	0xf890	100.0000	
 fieldobj	_SaveFieldLayer	100.0000	100.0000	1	87653e26da1d	0xe760	100.0000	
 fieldobj	_ScanSightRow	100.0000	100.0000	2	941a13915bbc	0xeef0	100.0000	
 fieldobj	_SetObjectEventFlag	100.0000	100.0000	1	0f62f2f5293d	0xda00	100.0000	
@@ -911,27 +911,27 @@ fieldobj	_SetSpawnInterval	100.0000	100.0000	1	778064565281	0xec60	100.0000
 fieldobj	_SpawnFieldObject	100.0000	100.0000	7	27e7493dac0f	0xda40	100.0000	
 fieldobj	_SpawnMapObject	100.0000	100.0000	2	27e121c61a93	0xdbf0	100.0000	
 fieldobj	_SpawnRandomEnemy	100.0000	100.0000	1	5446db3de254	0xeca0	100.0000	
-fieldobj	_StepObjectTowardParty	81.7016	81.7016	6	12bf8a2a9441	0xf290	81.7016	
+fieldobj	_StepObjectTowardParty	81.7016	81.7016	7	3e42ceb2e6d8	0xf290	81.7016	
 fieldobj	_TickEnemySpawnTimer	100.0000	100.0000	2	8f559d47d283	0xee20	100.0000	
 fieldobj	_TraceSight	94.9800	94.9800	2	16a51e4af01d	0xee70	94.9800	
 fieldobj	_UpdateFieldObjects	100.0000	100.0000	1	62f41f6a320d	0xe400	100.0000	
 fieldobj	_UseObjectSkill	98.4444	98.4444	11	198bcbffc5aa	0xf620	98.4444	
 fieldscreen	_AreObjectsHidden	100.0000	100.0000	2	967e2fe56608	0x15cb0	100.0000	
-fieldscreen	_CanCharacterOpenAutomap	100.0000	100.0000	2	069c25e9ea8f	0x15530	100.0000	
-fieldscreen	_CanHumanMemberAct	100.0000	100.0000	3	5b8f9484c174	0x14b50	100.0000	
-fieldscreen	_CanMemberAct	100.0000	100.0000	3	e580c3be6ffc	0x15350	100.0000	
-fieldscreen	_CanOpenAutomap	100.0000	100.0000	2	68c1e1ffd2f3	0x14960	100.0000	
-fieldscreen	_CanRevealAutomapNorth	100.0000	100.0000	3	6bbe0b901238	0x157b0	100.0000	
-fieldscreen	_CanRevealAutomapSouth	100.0000	100.0000	3	e949c2bf6f07	0x15730	100.0000	
+fieldscreen	_CanCharacterOpenAutomap	100.0000	100.0000	3	04b2b0686677	0x15530	100.0000	
+fieldscreen	_CanHumanMemberAct	100.0000	100.0000	4	091284bb7d3c	0x14b50	100.0000	
+fieldscreen	_CanMemberAct	100.0000	100.0000	4	3a41320e330c	0x15350	100.0000	
+fieldscreen	_CanOpenAutomap	100.0000	100.0000	3	5e762fede822	0x14960	100.0000	
+fieldscreen	_CanRevealAutomapNorth	100.0000	100.0000	4	7a1f9f9b3153	0x157b0	100.0000	
+fieldscreen	_CanRevealAutomapSouth	100.0000	100.0000	4	32d9a70ac8a3	0x15730	100.0000	
 fieldscreen	_ClearEncounterPending	100.0000	100.0000	1	227228f579ca	0x154b0	100.0000	
-fieldscreen	_ClearPanel	100.0000	100.0000	4	2db25cd2f54e	0x159e0	100.0000	
+fieldscreen	_ClearPanel	100.0000	99.8750	4	2db25cd2f54e	0x159e0	100.0000	
 fieldscreen	_ClearPanelRow	100.0000	100.0000	4	ae3a8aeb3147	0x15a40	100.0000	
 fieldscreen	_CommandRowHandler	100.0000	100.0000	1	6930d4e748ea	0x158e0	100.0000	
 fieldscreen	_DdsCommand	100.0000	100.0000	1	b95a45d9b823	0x15430	100.0000	
 fieldscreen	_DdsRowHandler	100.0000	100.0000	2	316c89d69e44	0x14b90	100.0000	
 fieldscreen	_DefenceCommand	100.0000	100.0000	2	8a52603fbeff	0x153b0	100.0000	
-fieldscreen	_DrawFieldMessage	100.0000	100.0000	5	131c21f3114e	0x160c0	100.0000	
-fieldscreen	_DrawPanel	100.0000	100.0000	4	fe062e1c7fed	0x15940	100.0000	
+fieldscreen	_DrawFieldMessage	100.0000	100.0000	6	a06b3ef17b31	0x160c0	100.0000	
+fieldscreen	_DrawPanel	100.0000	99.8947	4	fe062e1c7fed	0x15940	100.0000	
 fieldscreen	_DrawPanelRow	100.0000	100.0000	4	f252d56046af	0x159a0	100.0000	
 fieldscreen	_ExchangeObjectsHidden	100.0000	100.0000	1	858194495c33	0x15a90	100.0000	
 fieldscreen	_ExchangeViewHold	100.0000	100.0000	1	757dbf531074	0x14730	100.0000	
@@ -951,20 +951,20 @@ fieldscreen	_GetPanelRowId	100.0000	100.0000	2	765d92537460	0x15910	100.0000
 fieldscreen	_GetPanelSize	100.0000	100.0000	2	99eb524d01af	0x15920	100.0000	
 fieldscreen	_GunCommand	100.0000	100.0000	2	2ad4751c4ea1	0x151d0	100.0000	
 fieldscreen	_HitTestPanelRow	100.0000	63.7500	1	d5ac7c4a31f4	0x15a70	100.0000	
-fieldscreen	_IsFieldPanelRowChecked	100.0000	100.0000	3	f908d1872ffe	0x14f00	100.0000	
+fieldscreen	_IsFieldPanelRowChecked	100.0000	100.0000	4	b3b6fd9077d5	0x14f00	100.0000	
 fieldscreen	_ItemCommand	100.0000	100.0000	2	6e1170e125d6	0x152a0	100.0000	
 fieldscreen	_ItemRowHandler	100.0000	100.0000	2	5c1f5f1e1f71	0x14ac0	100.0000	
 fieldscreen	_LoadCommandMenuImage	100.0000	100.0000	2	cb13dcd6f393	0x15840	100.0000	
 fieldscreen	_LoadFieldMessages	100.0000	100.0000	1	62b235f6643a	0x15d10	100.0000	
-fieldscreen	_LoadMenuImage	100.0000	100.0000	1	126811f470de	0x15900	100.0000	
+fieldscreen	_LoadMenuImage	100.0000	100.0000	2	31d3bbcac641	0x15900	100.0000	
 fieldscreen	_MappingRowHandler	100.0000	100.0000	2	ffac29252e68	0x14d90	100.0000	
 fieldscreen	_MarkAutomapRowSpan	100.0000	100.0000	3	3cdb5a2f6f09	0x15640	100.0000	
 fieldscreen	_MenuRowHandler	100.0000	100.0000	1	c282ef52caf4	0x14e20	100.0000	
 fieldscreen	_OpenAutomap	100.0000	100.0000	1	f7b61d0a1849	0x154f0	100.0000	
 fieldscreen	_OpenFieldMenu	100.0000	100.0000	1	b7becf542404	0x154d0	100.0000	
 fieldscreen	_PlayWallEffect	100.0000	100.0000	1	d453d5098924	0x15cc0	100.0000	
-fieldscreen	_PrepareFieldRedraw	100.0000	100.0000	2	78018941ed16	0x14770	100.0000	
-fieldscreen	_RebuildFieldView	100.0000	100.0000	1	8dbbfd785fb3	0x15b90	100.0000	
+fieldscreen	_PrepareFieldRedraw	100.0000	100.0000	3	f6c85f53705e	0x14770	100.0000	
+fieldscreen	_RebuildFieldView	100.0000	100.0000	2	f32991788ffb	0x15b90	100.0000	
 fieldscreen	_RedrawFieldViewAt	100.0000	100.0000	2	6b9fb8bc111c	0x15be0	100.0000	
 fieldscreen	_RefreshFieldScene	100.0000	100.0000	1	4984a926d321	0x14760	100.0000	
 fieldscreen	_ReorderRowHandler	100.0000	100.0000	2	5950a0166eb0	0x14a00	100.0000	
@@ -974,14 +974,14 @@ fieldscreen	_ResetWorldCursorCell	100.0000	100.0000	1	a01a5d825244	0x14840	100.0
 fieldscreen	_ReturnCommand	100.0000	100.0000	2	94ae2a515d93	0x15410	100.0000	
 fieldscreen	_RevealAutomapCells	100.0000	100.0000	1	953aad6f642f	0x155d0	100.0000	
 fieldscreen	_RevealAutomapRoom	100.0000	100.0000	1	aa77283e04e3	0x155a0	100.0000	
-fieldscreen	_RunFieldPanelRow	100.0000	100.0000	3	fbabc0aa79fd	0x14e70	100.0000	
+fieldscreen	_RunFieldPanelRow	100.0000	100.0000	4	42c4be01fa50	0x14e70	100.0000	
 fieldscreen	_SelectEffectImages	100.0000	100.0000	2	aaf07c0b6557	0x15c60	100.0000	
 fieldscreen	_SetEncounterPending	100.0000	100.0000	1	ad932c86f484	0x15490	100.0000	
 fieldscreen	_SetFieldMenuMode	100.0000	100.0000	2	31575bb582cc	0x14f20	100.0000	
 fieldscreen	_SetFieldPanelImage	100.0000	100.0000	2	d1d738be0938	0x14e60	100.0000	
-fieldscreen	_SetFieldPanelRowChecked	100.0000	100.0000	2	3e8aaa3da970	0x14ed0	100.0000	
-fieldscreen	_SetFieldStatusBit0	100.0000	100.0000	3	2100aaf516ce	0x158b0	100.0000	
-fieldscreen	_SetFieldStatusBit11	100.0000	100.0000	2	9072082ef230	0x15870	100.0000	
+fieldscreen	_SetFieldPanelRowChecked	100.0000	100.0000	3	3a6d2ae1fc5d	0x14ed0	100.0000	
+fieldscreen	_SetFieldStatusBit0	100.0000	100.0000	4	4794e2b84ad1	0x158b0	100.0000	
+fieldscreen	_SetFieldStatusBit11	100.0000	100.0000	3	9b5d4a6327bc	0x15870	100.0000	
 fieldscreen	_SkillCommand	100.0000	100.0000	2	60cf8cf7dbb2	0x15230	100.0000	
 fieldscreen	_SkillRowHandler	100.0000	100.0000	1	a581d726c010	0x14a80	100.0000	
 fieldscreen	_StatusCommand	100.0000	100.0000	1	23de221324d9	0x15470	100.0000	
@@ -991,14 +991,14 @@ fieldscreen	_TalkRowHandler	100.0000	100.0000	2	6bd7aab0e7c9	0x14cb0	100.0000
 fieldscreen	_TrackWorldMapCursor	100.0000	100.0000	3	c85c0f3da4ab	0x14870	100.0000	
 fieldscreen	_UpdateAreaPalette	100.0000	100.0000	1	fca27b01d540	0x15ac0	100.0000	
 fieldscreen	_UpdateFieldHud	100.0000	100.0000	4	4c7987b9a9d5	0x15d40	100.0000	
-fieldscreen	_UpdateFieldScreen	100.0000	100.0000	1	80d555a1cc42	0x14800	100.0000	
+fieldscreen	_UpdateFieldScreen	100.0000	100.0000	2	09cd3ea12763	0x14800	100.0000	
 fieldscreen	_UpdateViewPalette	100.0000	100.0000	1	ab66a7afccbd	0x15b10	100.0000	
 fieldskill	_CancelFieldTargetMenu	100.0000	100.0000	1	c2b2a6603e86	0x2d7a0	100.0000	
 fieldskill	_PrepareSkillAction	100.0000	100.0000	4	5d98f068546f	0x2db90	100.0000	
-fieldskill	_RunFieldSkillUse	100.0000	100.0000	8	a24bb46465f3	0x2d7c0	100.0000	
+fieldskill	_RunFieldSkillUse	100.0000	100.0000	9	84bdc9b7c3d8	0x2d7c0	100.0000	
 fieldskill	_SetFieldSkillUser	100.0000	100.0000	1	fdc34af15db6	0x2dbe0	100.0000	
 fieldskill	_SetSkillPick	100.0000	100.0000	1	abd4d9463444	0x2db30	100.0000	
-fieldview	_CanFloodViewCell	100.0000	100.0000	1	1d2d0b08269c	0xbed0	100.0000	
+fieldview	_CanFloodViewCell	100.0000	100.0000	2	36c2997ff1c4	0xbed0	100.0000	
 fieldview	_ClearDrawTable	100.0000	100.0000	1	c3350704601c	0xbdd0	100.0000	
 fieldview	_DistanceFromParty	100.0000	100.0000	1	50dd4cb4e417	0xbe50	100.0000	
 fieldview	_FloodViewCells	100.0000	100.0000	2	3b36da8fd824	0xc120	100.0000	
@@ -1008,7 +1008,7 @@ fieldview	_GetFacingBit	98.7500	98.7500	1	8893e6765e97	0xd2a0	98.7500
 fieldview	_GetLayerOrigin	100.0000	100.0000	1	5a3e02fde962	0xcc60	100.0000	
 fieldview	_GetMapWallKind	100.0000	100.0000	2	9b20d280452d	0xd180	100.0000	
 fieldview	_GetMouseWorldCell	84.8913	84.8913	3	b62278f322c4	0xcdc0	85.2174	
-fieldview	_GetPartyView	100.0000	100.0000	1	4ba3dd90f752	0xbe20	100.0000	
+fieldview	_GetPartyView	100.0000	100.0000	2	cbe70747e4fd	0xbe20	100.0000	
 fieldview	_GetRotatedWallAtOffset	100.0000	100.0000	1	e33edfeec372	0xd150	100.0000	
 fieldview	_GetWallAt	100.0000	100.0000	1	ba3778150491	0xc090	100.0000	
 fieldview	_GetWallAtOffset	100.0000	100.0000	1	232969dc2cb5	0xd000	100.0000	
@@ -1019,8 +1019,8 @@ fieldview	_GetWorldBlockX	100.0000	100.0000	1	53b1b1590eeb	0xcd30	100.0000
 fieldview	_GetWorldBlockY	100.0000	100.0000	1	82864322adfe	0xcd50	100.0000	
 fieldview	_GetWorldCellAt	100.0000	100.0000	2	e042c00de7b0	0xcd70	100.0000	
 fieldview	_GetWorldMapBlock	100.0000	100.0000	1	ee5db9730614	0xccf0	100.0000	
-fieldview	_IsCellInViewCone	100.0000	100.0000	2	4fc52d6cd973	0xcba0	100.0000	
-fieldview	_IsWorldCellInMap	100.0000	100.0000	1	24e7828607f7	0xce50	100.0000	
+fieldview	_IsCellInViewCone	100.0000	100.0000	3	218869bc9303	0xcba0	100.0000	
+fieldview	_IsWorldCellInMap	100.0000	100.0000	2	eb9ef4983f79	0xce50	100.0000	
 fieldview	_MarkDrawCell	100.0000	100.0000	2	406d0c59da39	0xbdf0	100.0000	
 fieldview	_MoveMapCoord	100.0000	100.0000	3	ea3ae5a819f4	0xce90	100.0000	
 fieldview	_OffsetCoordClamped	100.0000	100.0000	3	10716ce94df9	0xcf20	100.0000	
@@ -1037,15 +1037,15 @@ fieldview	_ViewCellToMapCell	100.0000	100.0000	1	ed0d2fb896ac	0xbfc0	100.0000
 fieldview	_WallStops	100.0000	100.0000	1	3f3c1af075b3	0xd1f0	100.0000	
 fieldview	_WallStopsToward	100.0000	100.0000	2	1f4f24e053db	0xd3b0	100.0000	
 font	?ChooseMenuLine@@YAFF@Z	100.0000	100.0000	3	793a74e607c2	0x537a0	100.0000	
-font	?ClickPanelCommand@@YAHI@Z	100.0000	100.0000	2	fea5ac3b9dbc	0x556d0	100.0000	
-font	?CreateScreenLayer@@YAHH@Z	100.0000	100.0000	4	8d244a416267	0x551c0	100.0000	
-font	?DrawPadButton@@YAHPAUIDirectDrawSurface@@HH@Z	100.0000	100.0000	2	78a82b3a8dca	0x55020	100.0000	
+font	?ClickPanelCommand@@YAHI@Z	100.0000	100.0000	3	ac5cb39d0129	0x556d0	100.0000	
+font	?CreateScreenLayer@@YAHH@Z	100.0000	100.0000	5	e2c1a84d850d	0x551c0	100.0000	
+font	?DrawPadButton@@YAHPAUIDirectDrawSurface@@HH@Z	100.0000	100.0000	3	fcd73c6c27ad	0x55020	100.0000	
 font	?FindPartyPanel@@YAFFF@Z	100.0000	100.0000	1	2075d924f450	0x54b30	100.0000	
 font	?FreeScreenLayers@@YAXXZ	100.0000	100.0000	2	d9d7006e081d	0x54fd0	100.0000	
 font	?LayerAtPoint@@YAHII@Z	100.0000	96.2255	2	cfa5a6265e3a	0x553d0	100.0000	
 font	?LayerIndexAtPoint@@YAHII@Z	100.0000	100.0000	1	1187ab0ecbd4	0x55520	100.0000	
-font	?PadButtonAtPoint@@YAHII@Z	100.0000	90.7065	2	4700aac3d240	0x55580	100.0000	
-font	?PaintLayer@@YAHHPAUScreenLayer@@@Z	100.0000	100.0000	3	bdc83f79d92e	0x55060	100.0000	
+font	?PadButtonAtPoint@@YAHII@Z	100.0000	90.7065	3	3aed21698f51	0x55580	100.0000	
+font	?PaintLayer@@YAHHPAUScreenLayer@@@Z	100.0000	100.0000	4	31b016236b8c	0x55060	100.0000	
 font	?PlaceDraggedLayer@@YAXH@Z	100.0000	100.0000	1	e993720fc0f5	0x558e0	100.0000	
 font	?ReleasePartyPanel@@YAXHH@Z	100.0000	100.0000	3	c589de396cfc	0x55760	100.0000	
 font	?UpdateLayerPanels@@YAXXZ	100.0000	100.0000	2	5aa7764247df	0x559a0	100.0000	
@@ -1063,9 +1063,9 @@ font	_ClearTextPlaneLine	100.0000	100.0000	4	da3217857512	0x53080	100.0000
 font	_ClearTextPlaneRight	100.0000	100.0000	3	e94c0a9653b0	0x54930	100.0000	
 font	_ClearTextPlaneText	100.0000	100.0000	3	641b9c3f365f	0x53dc0	100.0000	
 font	_CloseTextWindow	100.0000	100.0000	3	426e1485b17d	0x52510	100.0000	
-font	_CreateGlyphSurface	100.0000	100.0000	2	2368e2c9a168	0x51540	100.0000	
+font	_CreateGlyphSurface	100.0000	100.0000	3	915503f168d3	0x51540	100.0000	
 font	_CreateTextPlane	98.5170	98.5170	9	d5b71ef1ee04	0x520b0	98.5170	
-font	_DrawBandText	100.0000	100.0000	6	6f1cb723546d	0x51950	100.0000	
+font	_DrawBandText	100.0000	100.0000	7	7f16609cc2f8	0x51950	100.0000	
 font	_DrawIconLayerImage	100.0000	100.0000	1	42108c24a2af	0x54c80	100.0000	
 font	_DrawLayerGauge	100.0000	100.0000	2	41c1b2cc60e3	0x549a0	100.0000	
 font	_DrawLayerText	100.0000	100.0000	4	07afc8ad6df8	0x51650	100.0000	
@@ -1112,7 +1112,7 @@ font	_GetTextPlaneLineStepIf	100.0000	100.0000	2	d1f05653bbf4	0x52b10	100.0000
 font	_GetTextPlaneNormalAttr	100.0000	100.0000	2	2c2ab780fa1d	0x52750	100.0000	
 font	_GetTextPlaneOrigin	100.0000	100.0000	2	084efa9c15e5	0x53ac0	100.0000	
 font	_GetTextPlaneOrigin2	100.0000	100.0000	2	8d137f467fc0	0x53b10	100.0000	
-font	_GetTextPlanePageLines	100.0000	100.0000	3	cfff7939dbb8	0x53010	100.0000	
+font	_GetTextPlanePageLines	100.0000	99.1667	3	cfff7939dbb8	0x53010	100.0000	
 font	_GetTextPlaneRowText	100.0000	100.0000	3	0ed7d40536e7	0x53b60	100.0000	
 font	_GetTextPlaneSize	100.0000	100.0000	2	c3d1af31a0d5	0x53f10	100.0000	
 font	_HideScreenLayer	100.0000	100.0000	5	33c64a627ff2	0x54390	100.0000	
@@ -1143,7 +1143,7 @@ font	_ResetTextPlaneNormalAttr	100.0000	100.0000	3	05d127d83b14	0x525a0	100.0000
 font	_ResetTextPlanes	100.0000	100.0000	3	088f05187842	0x52400	100.0000	
 font	_RestoreTextPlaneAttr	100.0000	100.0000	2	d1b6dc0a6a40	0x52660	100.0000	
 font	_RestoreTextPlaneIndentMode	100.0000	100.0000	3	7934fdfcbaca	0x52c70	100.0000	
-font	_ReturnZero	100.0000	100.0000	1	920695bf5bb1	0x51b10	100.0000	
+font	_ReturnZero	100.0000	100.0000	2	e38aad6b4a8c	0x51b10	100.0000	
 font	_ReverseTextPlaneAttr	100.0000	100.0000	2	d6d546b3853b	0x52800	100.0000	
 font	_ReverseTextRun	100.0000	100.0000	3	365e603cb09b	0x52000	100.0000	
 font	_SaveAndResetTextPlaneAttrs	100.0000	100.0000	4	96a4bbd163c2	0x52610	100.0000	
@@ -1182,7 +1182,7 @@ font	_SetWindowHalfWidth	100.0000	100.0000	4	bfc266b9c5f7	0x52930	100.0000
 font	_SetWindowOpaqueBg	100.0000	100.0000	3	ce6a40059341	0x528b0	100.0000	
 font	_ShowScreenLayer	100.0000	100.0000	3	7f03ebd878cc	0x54360	100.0000	
 font	_TakeWindowDeferredChar	100.0000	100.0000	2	29396fa2d472	0x53bc0	100.0000	
-font	_TextPlaneCellAt	100.0000	99.8809	4	4b2ad45d1849	0x53830	100.0000	
+font	_TextPlaneCellAt	100.0000	100.0000	4	4b2ad45d1849	0x53830	100.0000	
 font	_TextPlaneRowToLine	100.0000	100.0000	3	5768f0b9b023	0x52b40	100.0000	
 font	_ToggleCurrentTextHighlight	100.0000	100.0000	2	c9ece8bf06e7	0x52f30	100.0000	
 font	_ToggleTextRunHighlight	85.4310	85.4310	6	c41f1deb7fc3	0x51ef0	85.4310	
@@ -1248,18 +1248,18 @@ fusioncompare	_CompareFusionCharacters	100.0000	100.0000	3	130807153bdc	0x2a480	
 fusioncompare	_CompareFusionValues	100.0000	100.0000	1	abd832c8a1ce	0x2a5b0	100.0000	
 fusioncompare	_CompareRosterFusionClasses	100.0000	100.0000	1	dd2a722507c8	0x2a720	100.0000	
 fusioncompare	_MoveSpecialFusionCharacters	100.0000	100.0000	2	8c15b87f4d3d	0x2a670	100.0000	
-fusioncompare	_MoveSpecialFusionSlot	100.0000	100.0000	1	5e9b17d9f16c	0x2a620	100.0000	
-fusioncompare	_MoveSpecialRaceFusionSlot	100.0000	100.0000	1	e7351f20e9bd	0x2a6a0	100.0000	
-fusioncompare	_MoveUnrankedFusionSlot	100.0000	100.0000	1	69b6a061ee11	0x2a6e0	100.0000	
+fusioncompare	_MoveSpecialFusionSlot	100.0000	100.0000	2	a75b3f784773	0x2a620	100.0000	
+fusioncompare	_MoveSpecialRaceFusionSlot	100.0000	100.0000	2	dc56081cf625	0x2a6a0	100.0000	
+fusioncompare	_MoveUnrankedFusionSlot	100.0000	100.0000	2	02fee06f1956	0x2a6e0	100.0000	
 fusioncompare	_SortFusionSlots	100.0000	100.0000	2	1b0fc3eabcd8	0x2a5d0	100.0000	
 fusionmenu	_FinishFusionMenuSelection	100.0000	100.0000	1	a17eaec1758a	0x2a9d0	100.0000	
 fusionmenu	_PushFusionMenu	100.0000	100.0000	1	7e142bbf5931	0x2a760	100.0000	
-fusionmenu	_RunFusionMenuState	100.0000	100.0000	3	0862ecb4cbeb	0x2a790	100.0000	
+fusionmenu	_RunFusionMenuState	100.0000	100.0000	4	798a678c4e77	0x2a790	100.0000	
 fusionscreen	_AcquireFusionSelectionMode	100.0000	100.0000	2	cd6478c92bf6	0x28840	100.0000	
 fusionscreen	_BuildPairFusionCandidates	100.0000	100.0000	2	f28c4f699466	0x296f0	100.0000	
 fusionscreen	_BuildTripleFusionSummaries	100.0000	100.0000	4	ad903015e3b9	0x29870	100.0000	
 fusionscreen	_CloseFusionPicker	100.0000	100.0000	1	eec1e0aa36da	0x29660	100.0000	
-fusionscreen	_CloseFusionPreview	100.0000	100.0000	2	340832ba9a38	0x2a060	100.0000	
+fusionscreen	_CloseFusionPreview	100.0000	100.0000	3	b86f01b8ea0d	0x2a060	100.0000	
 fusionscreen	_CloseFusionPreviewOnClick	100.0000	100.0000	2	966d0c95ec51	0x299a0	100.0000	
 fusionscreen	_CommitPairFusion	100.0000	100.0000	1	f6aaf0a964e3	0x2a1f0	100.0000	
 fusionscreen	_CommitTripleFusion	100.0000	100.0000	2	f5f030f33089	0x2a250	100.0000	
@@ -1281,25 +1281,25 @@ fusionscreen	_GetSecondFusionSlot	100.0000	100.0000	1	1b26a442cc55	0x288b0	100.0
 fusionscreen	_GetThirdFusionSlot	100.0000	100.0000	1	b0cd19aad02b	0x288c0	100.0000	
 fusionscreen	_LoadFusionResultCharacter	100.0000	100.0000	1	99e56d1f40fa	0x2a0b0	100.0000	
 fusionscreen	_OpenFusionPreviewOnClick	100.0000	100.0000	3	2166dfd4e5b9	0x29a10	100.0000	
-fusionscreen	_PreviewFusionCharacter	100.0000	100.0000	2	0ed3c358243a	0x29fe0	100.0000	
+fusionscreen	_PreviewFusionCharacter	100.0000	100.0000	3	19108d350754	0x29fe0	100.0000	
 fusionscreen	_ReleaseFusionSelectionResources	100.0000	100.0000	2	1c80a59b20b4	0x28860	100.0000	
 fusionscreen	_ResetThirdFusionSlot	100.0000	100.0000	1	8562f007f66b	0x28890	100.0000	
-fusionscreen	_RestoreFusionCharacter	100.0000	100.0000	1	f66478e6baef	0x2a440	100.0000	
+fusionscreen	_RestoreFusionCharacter	100.0000	100.0000	2	b4faef0ec91c	0x2a440	100.0000	
 fusionscreen	_RunFirstFusionPicker	100.0000	100.0000	2	68aa6500018e	0x28be0	100.0000	
 fusionscreen	_RunPairFusion	100.0000	100.0000	3	5d0867c63d37	0x2a0d0	100.0000	
 fusionscreen	_RunSecondFusionPicker	100.0000	100.0000	3	bcd2ec06f9af	0x29de0	100.0000	
 fusionscreen	_RunThirdFusionPicker	100.0000	100.0000	2	0f7319b644bb	0x29f00	100.0000	
 fusionscreen	_RunTripleFusion	100.0000	100.0000	2	bca2bc3a9348	0x2a150	100.0000	
-fusionscreen	_StageFusionCharacter	100.0000	100.0000	2	bbf5c24c6839	0x2a330	100.0000	
+fusionscreen	_StageFusionCharacter	100.0000	100.0000	3	da4f6abefda1	0x2a330	100.0000	
 fusionscreen	_StagePairFusionCharacter	100.0000	100.0000	2	a15024a1929d	0x2a380	100.0000	
 fusionscreen	_StoreFusionPairSummary	100.0000	100.0000	1	2e68f475e48a	0x29830	100.0000	
 gameloop	_ClearScriptVars	100.0000	100.0000	1	492982b43e5b	0x1920	100.0000	
-gameloop	_InitGameData	100.0000	100.0000	1	61778a80b795	0x1870	100.0000	
+gameloop	_InitGameData	100.0000	100.0000	2	56a14756a8d6	0x1870	100.0000	
 gameloop	_ResetGameSession	100.0000	100.0000	1	30be1a6a571b	0x1940	100.0000	
 gameloop	_SetLongFrame	100.0000	100.0000	1	dfcf4d7a5e84	0x1960	100.0000	
-gameloop	_StartGame	100.0000	100.0000	1	708386a3184d	0x19a0	100.0000	
+gameloop	_StartGame	100.0000	100.0000	2	9301aa58c234	0x19a0	100.0000	
 gameloop	_StepGame	100.0000	100.0000	1	5b7ec334f522	0x19d0	100.0000	
-gameloop	_TickGameTasks	100.0000	100.0000	1	eaee4dc84838	0x1980	100.0000	
+gameloop	_TickGameTasks	100.0000	100.0000	2	441aea90dc22	0x1980	100.0000	
 gamestate	_ComputeActionSpeed	100.0000	100.0000	5	9e66efca9373	0x3c810	100.0000	
 gamestate	_GetFieldCount	100.0000	100.0000	1	e02edec36650	0x3c7e0	100.0000	
 gamestate	_GetMapArea	100.0000	100.0000	1	9a0f04df6309	0x3c7f0	100.0000	
@@ -1311,10 +1311,10 @@ gamestate	_InitNewGame	58.2083	58.2083	2	6f15c0de45a1	0x3c6f0	58.2083
 handle	_AllocArrayHandle	100.0000	100.0000	1	067aa710f9ed	0x44c0	100.0000	
 handle	_AllocHandle	100.0000	100.0000	1	30e5ae1be97b	0x4450	100.0000	
 handle	_AppendList	100.0000	100.0000	1	1d52f7fe313f	0x46b0	100.0000	
-handle	_ClearHandle	100.0000	100.0000	1	639b40c1556d	0x4650	100.0000	
+handle	_ClearHandle	100.0000	100.0000	2	1a05d07a99b1	0x4650	100.0000	
 handle	_ClearHandleTable	100.0000	100.0000	1	f7dd5feade0f	0x43d0	100.0000	
 handle	_CreateArrayHandle	100.0000	100.0000	1	051fc854b9f8	0x4520	100.0000	
-handle	_FreeHandle	100.0000	100.0000	1	ca69ad37ddbe	0x4620	100.0000	
+handle	_FreeHandle	100.0000	100.0000	2	a140c94d9f88	0x4620	100.0000	
 handle	_GetHandleSize	47.5000	47.5000	2	bea02eb37180	0x4430	47.5000	
 handle	_GetListTail	100.0000	100.0000	1	f06a23243c04	0x46a0	100.0000	
 handle	_HandleAccessPtr	100.0000	100.0000	1	6c1f18c3996c	0x4690	100.0000	
@@ -1333,7 +1333,7 @@ handle	_HandleReadPtr	100.0000	100.0000	1	40874df265fb	0x4680	100.0000
 handle	_HandleSize	100.0000	100.0000	1	c340ef234804	0x4420	100.0000	
 handle	_HandleWritePtr	100.0000	100.0000	1	7f4a5dd23148	0x4670	100.0000	
 handle	_IsHandleUsed	100.0000	100.0000	3	973d09a95e7b	0x44b0	100.0000	
-handle	_NewArrayHandle	100.0000	100.0000	1	04b6e41d7b97	0x44f0	100.0000	
+handle	_NewArrayHandle	100.0000	99.8182	1	04b6e41d7b97	0x44f0	100.0000	
 handle	_NewBlockHandle	100.0000	100.0000	1	86e4dd80441f	0x4540	100.0000	
 handle	_NewHandle	100.0000	100.0000	2	2b5a05fb109a	0x4470	100.0000	
 handle	_NewStringHandle	100.0000	100.0000	1	a77ec677e179	0x4560	100.0000	
@@ -1345,20 +1345,20 @@ hotspot	_ClearSelectedHotspot	100.0000	100.0000	1	2ec5299de595	0x58580	100.0000
 hotspot	_CountFieldObjects	100.0000	100.0000	2	5abc31196105	0x58640	100.0000	
 hotspot	_GetSelectedHotspotObject	100.0000	100.0000	2	376f64f4fad9	0x585c0	100.0000	
 hotspot	_GetSelectedHotspotValue	100.0000	100.0000	2	093b803cfa23	0x585a0	100.0000	
-hotspot	_HasHotspotTo	100.0000	100.0000	2	df3e12596666	0x585f0	100.0000	
+hotspot	_HasHotspotTo	100.0000	100.0000	3	a39dfd28d54f	0x585f0	100.0000	
 hotspot	_SetSelectedHotspot	100.0000	100.0000	1	6705892db754	0x58590	100.0000	
-hotspotclick	_ClickHotspotAt	95.3194	95.3194	8	969f1e08bbd3	0x59180	95.3194	
+hotspotclick	_ClickHotspotAt	95.3194	95.3194	9	21279ab9c0fb	0x59180	95.3194	
 infobar	_DrawAreaInfo	100.0000	100.0000	5	2c60d4e5b8aa	0x1e8f0	100.0000	
-infobar	_DrawInfoBar	100.0000	100.0000	3	7326a7f05228	0x1e860	100.0000	
+infobar	_DrawInfoBar	100.0000	100.0000	4	cb76e6f3937b	0x1e860	100.0000	
 infobar	_DrawMoneyCounter	100.0000	100.0000	2	ecfe67238c1a	0x1e790	100.0000	
 infobar	_DrawMoneyCounters	100.0000	100.0000	2	926b1a6fe248	0x1e740	100.0000	
-infobar	_RefreshInfoBar	100.0000	100.0000	3	9e2e89950185	0x1e9f0	100.0000	
+infobar	_RefreshInfoBar	100.0000	100.0000	4	687a525b01fe	0x1e9f0	100.0000	
 infobar	_SetInfoBarLayout	100.0000	100.0000	1	28ecac3de54b	0x1e720	100.0000	
-infobar	_UpdateInfoBar	100.0000	100.0000	2	bb09ddda1daa	0x1ea50	100.0000	
+infobar	_UpdateInfoBar	100.0000	100.0000	3	0e067f87e574	0x1ea50	100.0000	
 itemattack	_ComputeItemDamage	100.0000	100.0000	9	7e73a48865f3	0xb320	100.0000	
-itemattack	_ResolveItemAttack	98.7027	98.7027	6	8478596e2173	0xb0f0	98.7027	
-itemattack	_RollItemCondition	100.0000	100.0000	7	4bbdc66fd7d9	0xb4d0	100.0000	
-itemattack	_RunItemAttack	100.0000	100.0000	2	c726273fb784	0xb620	100.0000	
+itemattack	_ResolveItemAttack	98.7027	98.7027	7	85fffcf3d02f	0xb0f0	98.7027	
+itemattack	_RollItemCondition	100.0000	100.0000	8	a4eb6413d547	0xb4d0	100.0000	
+itemattack	_RunItemAttack	100.0000	100.0000	3	6d050b825c25	0xb620	100.0000	
 itemmenu	_AdjustItemMenuCount	100.0000	100.0000	6	bced367ebe7c	0x1bca0	100.0000	
 itemmenu	_AllocItemMenuStock	100.0000	100.0000	1	039923802d2f	0x1c210	100.0000	
 itemmenu	_CloseItemMenu	100.0000	100.0000	1	ce4efe81c37d	0x1c100	100.0000	
@@ -1376,8 +1376,8 @@ itemmenu	_LoadItemMenuStock	100.0000	100.0000	1	af665b79790f	0x1c160	100.0000
 itemmenu	_OpenScriptItemMenu	100.0000	100.0000	2	484c8b570c5a	0x1c010	100.0000	
 itemmenu	_PollScriptItemMenu	100.0000	100.0000	1	5732b6697319	0x1c0e0	100.0000	
 itemmenu	_RefreshScriptItemMenuTotal	100.0000	100.0000	1	a19d51fc58b7	0x1bfe0	100.0000	
-itemmenu	_RunItemBuyMenu	100.0000	100.0000	1	43db14412f5e	0x1be10	100.0000	
-itemmenu	_RunItemSellMenu	100.0000	100.0000	1	0fff47d35719	0x1bf80	100.0000	
+itemmenu	_RunItemBuyMenu	100.0000	100.0000	2	391f52cb9f5a	0x1be10	100.0000	
+itemmenu	_RunItemSellMenu	100.0000	100.0000	2	6c6f525bb5d8	0x1bf80	100.0000	
 itemmenu	_ScaleItemPrice	100.0000	100.0000	1	78a6251991c4	0x1bb40	100.0000	
 itemmenu	_SetItemMenuCharacter	100.0000	100.0000	2	c89118611c82	0x1b5c0	100.0000	
 itemmenu	_StepItemBuyMenu	100.0000	100.0000	2	4f491c1111df	0x1b660	100.0000	
@@ -1443,14 +1443,14 @@ itemrecord	_GetLoadedRecordName	100.0000	100.0000	2	addef98b00f8	0x233a0	100.000
 itemrecord	_GetPoolEntries	100.0000	100.0000	1	0a4d50c442f3	0x237c0	100.0000	
 itemrecord	_GiftMenuHandler	100.0000	100.0000	3	f42dcafde335	0x25fb0	100.0000	
 itemrecord	_GivePooledItems	97.6786	97.6786	4	49ed4e4c89e2	0x23990	97.6786	
-itemrecord	_InflictCondition	100.0000	100.0000	4	1a609d288ce4	0x25840	100.0000	
+itemrecord	_InflictCondition	100.0000	100.0000	5	a358ad5c9b89	0x25840	100.0000	
 itemrecord	_IsConditionResisted	100.0000	100.0000	2	d53fa6477ef0	0x258c0	100.0000	
-itemrecord	_IsEquipCurseActive	100.0000	100.0000	2	a5d777130944	0x235a0	100.0000	
-itemrecord	_IsItemGuardingElement	100.0000	100.0000	2	a5a4a85918d6	0x25350	100.0000	
+itemrecord	_IsEquipCurseActive	100.0000	100.0000	3	c2ce19065d5e	0x235a0	100.0000	
+itemrecord	_IsItemGuardingElement	100.0000	100.0000	3	e6cce3f5912e	0x25350	100.0000	
 itemrecord	_IsSpecialItemExpired	100.0000	100.0000	1	c23054192fb3	0x25c30	100.0000	
-itemrecord	_ItemResistsCondition	100.0000	100.0000	3	5c07e75339c7	0x259d0	100.0000	
+itemrecord	_ItemResistsCondition	100.0000	100.0000	4	e988372540cc	0x259d0	100.0000	
 itemrecord	_LoadItemFiles	100.0000	100.0000	4	4abec75c09b9	0x232c0	100.0000	
-itemrecord	_PooledItemsFit	100.0000	100.0000	4	234bd0078937	0x23b40	100.0000	
+itemrecord	_PooledItemsFit	100.0000	100.0000	5	40e0cee31d7f	0x23b40	100.0000	
 itemrecord	_ReadBag	100.0000	100.0000	1	fe42d3c27df4	0x24550	100.0000	
 itemrecord	_ReadBagEntry	100.0000	100.0000	5	5b3e3d6f57e8	0x243f0	100.0000	
 itemrecord	_ReadGemItems	100.0000	100.0000	3	9997e8b361a2	0x24860	100.0000	
@@ -1466,7 +1466,7 @@ itemrecord	_RestoreBagEntries	100.0000	100.0000	2	c29ed7502fc7	0x23b10	100.0000
 itemrecord	_RestoreGemItems	100.0000	100.0000	3	394465d7781b	0x24800	100.0000	
 itemrecord	_RollItemAmount	100.0000	100.0000	1	e312d7e6251e	0x23540	100.0000	
 itemrecord	_RunBagDiscardMenu	100.0000	100.0000	3	0d99c10d3252	0x25cb0	100.0000	
-itemrecord	_RunGemItemGift	100.0000	100.0000	2	deb655b80a24	0x25e70	100.0000	
+itemrecord	_RunGemItemGift	100.0000	100.0000	3	8ef1f5ceeb0f	0x25e70	100.0000	
 itemrecord	_SaveGemItems	100.0000	100.0000	4	d78e5d76e83c	0x247c0	100.0000	
 itemrecord	_SaveOrRestoreBag	100.0000	100.0000	1	bca2233b8646	0x242b0	100.0000	
 itemrecord	_ScaleDamageByEquipment	100.0000	100.0000	2	f017bb5c4f84	0x251c0	100.0000	
@@ -1495,16 +1495,16 @@ itemuse	_CancelItemTargetMenu	100.0000	100.0000	1	4f8ae6167c59	0x1a830	100.0000
 itemuse	_FindFirstAbleMemberPosition	100.0000	100.0000	3	9c99136eb1bc	0x1a7e0	100.0000	
 itemuse	_ItemListMenuHandler	96.2817	96.2817	12	c7d5cd438049	0x1a240	96.2817	
 itemuse	_OpenItemListMenu	100.0000	100.0000	2	ee56e29e8260	0x1a200	100.0000	
-itemuse	_RunItemUse	97.3596	97.3596	10	f7516a7483c5	0x1a400	97.4486	
+itemuse	_RunItemUse	97.3596	97.3596	11	2f60c699bcec	0x1a400	97.4486	
 itemuse	_SetUseMemberId	100.0000	100.0000	1	16323c10a7a2	0x1a860	100.0000	
 joystick	?InitJoystick@@YAXXZ	100.0000	100.0000	2	ccd0205df322	0x492b0	100.0000	
 joystick	?ReadJoystick@@YAIPAUJoystickState@@@Z	100.0000	100.0000	1	14adfaf3684e	0x49370	100.0000	
-layertexture	_DecodeLayerImage	100.0000	100.0000	4	10267812214a	0x57f20	100.0000	
+layertexture	_DecodeLayerImage	100.0000	100.0000	5	1cd5fc8dbd96	0x57f20	100.0000	
 layertexture	_DecodeLayerImageAlt	100.0000	100.0000	2	27db2171c989	0x58040	100.0000	
 level	_ClampLevel	100.0000	100.0000	2	4f188c36308e	0x3dec0	100.0000	
 levelup	_AddExperience	100.0000	100.0000	2	9aa4ceddab4b	0x187e0	100.0000	
 levelup	_AppendLearnableSkills	100.0000	100.0000	1	31b27336fbe6	0x194c0	100.0000	
-levelup	_ApplyLevelStatGrowth	100.0000	100.0000	4	7df15bc239fa	0x18980	100.0000	
+levelup	_ApplyLevelStatGrowth	100.0000	100.0000	5	5666beb02f20	0x18980	100.0000	
 levelup	_BuildStatWeightRanges	95.3906	95.3906	3	b20e080692a3	0x193d0	95.3906	
 levelup	_CollectLearnableSkills	100.0000	100.0000	1	1b9fa56d9419	0x19470	100.0000	
 levelup	_CountPartyPendingLevels	100.0000	100.0000	1	7bee55ad20ce	0x18910	100.0000	
@@ -1524,7 +1524,7 @@ levelup	_PollRewardClick	100.0000	100.0000	6	50cf11568bde	0x18740	100.0000
 levelup	_RaiseExperienceToLevel	100.0000	100.0000	1	106b6575a885	0x18aa0	100.0000	
 levelup	_ResolveRaisableStat	100.0000	100.0000	1	ceb0d1c8cbc4	0x18a30	100.0000	
 levelup	_RollWeightedStat	100.0000	100.0000	1	7789c56f69eb	0x19370	100.0000	
-levelup	_RunLevelUp	100.0000	100.0000	12	866889fdc6b2	0x18b60	100.0000	
+levelup	_RunLevelUp	100.0000	100.0000	13	e9c092424a63	0x18b60	100.0000	
 levelup	_ShareExperience	100.0000	100.0000	1	08c0c1e684af	0x18840	100.0000	
 levelup	_ShowStatPointPrompt	100.0000	100.0000	2	fadd2e05651e	0x192e0	100.0000	
 list	_ListAppend	100.0000	100.0000	1	5a96405aed5d	0xbd30	100.0000	
@@ -1540,7 +1540,7 @@ menubox	_CloseListMenu	100.0000	100.0000	1	808f7d30c30a	0x20af0	100.0000
 menubox	_CreateMenuBox	100.0000	100.0000	3	f4586983b586	0x20750	100.0000	
 menubox	_DestroyMenuBox	100.0000	100.0000	2	eb51d9872bc4	0x206e0	100.0000	
 menubox	_DispatchMenuEvent	100.0000	100.0000	1	8908d6890dca	0x20730	100.0000	
-menubox	_HandleMenuControl	100.0000	100.0000	4	d480f69747d7	0x209e0	100.0000	
+menubox	_HandleMenuControl	100.0000	100.0000	5	37b7c49752e7	0x209e0	100.0000	
 menubox	_MoveMenuBox	100.0000	100.0000	1	d07a92e53c67	0x207d0	100.0000	
 menubox	_PaintMenuBox	100.0000	100.0000	2	0bd4da82ae02	0x208f0	100.0000	
 menubox	_PollMenuBox	100.0000	100.0000	1	4071cf5c01f8	0x20990	100.0000	
@@ -1553,7 +1553,7 @@ menucursor	_GetStatusAnalyzeMode	100.0000	100.0000	1	ddff88cd17fd	0x16e60	100.00
 menucursor	_NextCursorLevel0	100.0000	100.0000	1	648914cc3ef6	0x16cd0	100.0000	
 menucursor	_PickStatusMember	100.0000	100.0000	2	23f143a817cc	0x16d30	100.0000	
 menucursor	_PrevCursorLevel0	100.0000	100.0000	1	beea0a5e4939	0x16cf0	100.0000	
-menucursor	_RunStatusScreen	100.0000	100.0000	2	a5a9a5a23835	0x16e70	100.0000	
+menucursor	_RunStatusScreen	100.0000	100.0000	3	5ec32ca7826f	0x16e70	100.0000	
 menucursor	_SetCursorLevel0	100.0000	100.0000	1	3bbdf0077671	0x16cb0	100.0000	
 menucursor	_SetCursorLevel1	100.0000	100.0000	1	83dfe5cdfcd7	0x16c80	100.0000	
 menucursor	_SetCursorLevel2	100.0000	100.0000	1	26aa028204d6	0x16c50	100.0000	
@@ -1562,7 +1562,7 @@ menucursor	_SetStatusAnalyzeMode	100.0000	100.0000	1	c56cdcafa515	0x16e50	100.00
 menuresult	_SetHoveredObject	100.0000	100.0000	1	1f91df72e286	0x45320	100.0000	
 menuresult	_SetSelectedObject	100.0000	100.0000	1	031860159bb8	0x45330	100.0000	
 message	_CloseMessageWindow	100.0000	100.0000	2	eee560a82fd1	0x2720	100.0000	
-message	_FinishMessageScene	100.0000	100.0000	1	65b065e1ca5f	0x27d0	100.0000	
+message	_FinishMessageScene	100.0000	100.0000	2	b953235448e1	0x27d0	100.0000	
 message	_OpenMessageText	100.0000	100.0000	1	151fc14be6f6	0x2600	100.0000	
 message	_OpenMessageWindow	100.0000	100.0000	1	e194b479d8f2	0x25c0	100.0000	
 message	_PushTextWindowState	100.0000	100.0000	1	fe552e31fa8a	0x2500	100.0000	
@@ -1570,7 +1570,7 @@ message	_RefreshMessageWindow	100.0000	100.0000	1	974d1cd08992	0x2690	100.0000
 message	_RunMessageScene	100.0000	100.0000	1	5f1babc55d9e	0x2780	100.0000	
 message	_RunMessageScript	100.0000	100.0000	1	9af952d111a9	0x2800	100.0000	
 message	_RunMessageTextScript	100.0000	100.0000	1	d165f3acba3b	0x2850	100.0000	
-message	_RunTextWindowState	100.0000	100.0000	1	142b1334f447	0x2550	100.0000	
+message	_RunTextWindowState	100.0000	100.0000	2	2f3aff636642	0x2550	100.0000	
 message	_SetMessageHold	100.0000	100.0000	1	715d162bb750	0x2650	100.0000	
 message	_SetMessageLifetime	100.0000	100.0000	1	3b94fa4ea40c	0x2630	100.0000	
 message	_ShowMessage	100.0000	100.0000	1	91703ba22046	0x26f0	100.0000	
@@ -1587,34 +1587,34 @@ midistream	??0CMidiStream@@QAE@XZ	100.0000	100.0000	2	ca4a947ec128	0x55a00	100.0
 midistream	??1CMidiStream@@UAE@XZ	100.0000	100.0000	1	472463e0253c	0x55b10	100.0000	
 midistream	??_GCMidiStream@@UAEPAXI@Z	100.0000	100.0000	1	cpp:3324492bb851	0x56860	100.0000	
 midistream	?Ascend@CMMIO@@QAEIAAVCMMChunk@@I@Z	100.0000	100.0000	1	cpp:3324492bb851	0x569b0	100.0000	
-midistream	?CloseStream@CMidiStream@@IAEHXZ	100.0000	100.0000	4	f473a5a5471c	0x55b30	100.0000	
-midistream	?ConvertBuffer@CMidiStream@@IAEHPAUmidihdr_tag@@0@Z	99.7670	99.7670	2	d00441c868de	0x55d50	99.7670	
+midistream	?CloseStream@CMidiStream@@IAEHXZ	100.0000	100.0000	5	6a068f5dbcc5	0x55b30	100.0000	
+midistream	?ConvertBuffer@CMidiStream@@IAEHPAUmidihdr_tag@@0@Z	99.7670	99.7670	3	68e4ff3ff079	0x55d50	99.7670	
 midistream	?Descend@CMMIO@@QAEIAAVCMMChunk@@0I@Z	100.0000	100.0000	1	cpp:3324492bb851	0x569f0	100.0000	
 midistream	?Descend@CMMIO@@QAEIAAVCMMChunk@@I@Z	100.0000	100.0000	1	cpp:3324492bb851	0x569d0	100.0000	
 midistream	?FreeBuffers@CMidiStream@@IAEXXZ	100.0000	100.0000	2	dac9039efbbe	0x55c10	100.0000	
 midistream	?HasBuffers@CMidiStream@@IAEHXZ	100.0000	100.0000	1	cpp:3324492bb851	0x56a10	100.0000	
-midistream	?LoadFile@CMidiStream@@IAEHPBDH@Z	100.0000	100.0000	1	6e9af0ad0322	0x560c0	100.0000	
+midistream	?LoadFile@CMidiStream@@IAEHPBDH@Z	100.0000	100.0000	2	661d189766f7	0x560c0	100.0000	
 midistream	?OnMessage@CMidiStream@@IAEXPAXIKK@Z	100.0000	100.0000	2	f2cc9dbc2261	0x56790	100.0000	
 midistream	?Open@CMMIO@@QAEXAAVCMMMemoryIOInfo@@@Z	100.0000	100.0000	1	550c0fa24c5c	0x56a50	100.0000	
 midistream	?Open@CMMIO@@QAEXPADK@Z	100.0000	100.0000	1	550c0fa24c5c	0x56a30	100.0000	
-midistream	?Open@CMidiStream@@QAEHPBD0@Z	100.0000	100.0000	2	9166c6e5e272	0x561d0	100.0000	
-midistream	?OpenStream@CMidiStream@@IAEHXZ	100.0000	100.0000	1	b44a781d8703	0x56220	100.0000	
-midistream	?Pause@CMidiStream@@QAEHXZ	100.0000	100.0000	2	f94dc0ee44c9	0x56730	100.0000	
-midistream	?Play@CMidiStream@@QAEHPBD0HKPAK@Z	100.0000	100.0000	1	ae4d82399f01	0x56480	100.0000	
-midistream	?Prepare@CMidiStream@@IAEHXZ	100.0000	100.0000	1	8132f75949f1	0x56340	100.0000	
-midistream	?QueueBuffers@CMidiStream@@IAEHXZ	100.0000	100.0000	4	4e1d554a22f2	0x562b0	100.0000	
+midistream	?Open@CMidiStream@@QAEHPBD0@Z	100.0000	100.0000	3	cc41699a27b9	0x561d0	100.0000	
+midistream	?OpenStream@CMidiStream@@IAEHXZ	100.0000	100.0000	2	9481ea3ba424	0x56220	100.0000	
+midistream	?Pause@CMidiStream@@QAEHXZ	100.0000	100.0000	3	df73b7db80b0	0x56730	100.0000	
+midistream	?Play@CMidiStream@@QAEHPBD0HKPAK@Z	100.0000	100.0000	2	9fdabafb4c97	0x56480	100.0000	
+midistream	?Prepare@CMidiStream@@IAEHXZ	100.0000	100.0000	2	4871bda48b9e	0x56340	100.0000	
+midistream	?QueueBuffers@CMidiStream@@IAEHXZ	100.0000	100.0000	5	9aafb5c73a72	0x562b0	100.0000	
 midistream	?Read@CMMIO@@QAEJPAXJ@Z	100.0000	100.0000	1	cpp:3324492bb851	0x56990	100.0000	
-midistream	?ReadBuffers@CMidiStream@@IAEHPAXKH@Z	100.0000	100.0000	3	8d9dc5a91149	0x55e50	100.0000	
-midistream	?ReadFormat@CMidiStream@@IAEHPAXKH@Z	100.0000	100.0000	1	bc584e5cc231	0x55c90	100.0000	
-midistream	?Replay@CMidiStream@@QAEHHKPAK@Z	100.0000	100.0000	1	8578e93f8436	0x565b0	100.0000	
-midistream	?Restore@CMidiStream@@QAEHXZ	100.0000	100.0000	2	6a5441c5379c	0x56640	100.0000	
-midistream	?SetVolume@CMidiStream@@QAEHKPAK@Z	99.6104	99.6104	3	9e9620044c84	0x563b0	99.6104	
-midistream	?Stop@CMidiStream@@QAEHXZ	100.0000	100.0000	1	10c0987f4a47	0x55bb0	100.0000	
+midistream	?ReadBuffers@CMidiStream@@IAEHPAXKH@Z	100.0000	100.0000	4	fd58a59162ef	0x55e50	100.0000	
+midistream	?ReadFormat@CMidiStream@@IAEHPAXKH@Z	100.0000	100.0000	2	a5b58049357e	0x55c90	100.0000	
+midistream	?Replay@CMidiStream@@QAEHHKPAK@Z	100.0000	100.0000	2	4a78ef2381ba	0x565b0	100.0000	
+midistream	?Restore@CMidiStream@@QAEHXZ	100.0000	100.0000	3	797a5902c46a	0x56640	100.0000	
+midistream	?SetVolume@CMidiStream@@QAEHKPAK@Z	99.6104	99.6104	4	49bad468e26c	0x563b0	99.6104	
+midistream	?Stop@CMidiStream@@QAEHXZ	100.0000	100.0000	2	7c166cd339ac	0x55bb0	100.0000	
 midistream	?StreamProc@CMidiStream@@KGXPAXIKKK@Z	100.0000	100.0000	1	11d9bca841a6	0x56760	100.0000	
 modeflags	_ClearModeFlags	100.0000	100.0000	1	2657fedb7b60	0x43b0	100.0000	
 modeflags	_SetModeFlags	100.0000	100.0000	1	5e1a67a98b30	0x4390	100.0000	
-modeflags	_TestFeatureMask	100.0000	70.0000	1	0b66dcc0d826	0x4370	100.0000	
-modeflags	_TestModeFlags	100.0000	70.0000	1	bfd8c032b3f1	0x4380	100.0000	
+modeflags	_TestFeatureMask	100.0000	100.0000	1	0b66dcc0d826	0x4370	100.0000	
+modeflags	_TestModeFlags	100.0000	100.0000	1	bfd8c032b3f1	0x4380	100.0000	
 motion	_AcquireEffectImageSet	100.0000	100.0000	1	c24261034f58	0x4fb0	100.0000	
 motion	_AcquireEffectRecord	100.0000	100.0000	1	db860d784313	0x5240	100.0000	
 motion	_ClampEffectCount	100.0000	100.0000	1	1390a30d9a8c	0x4bb0	100.0000	
@@ -1638,7 +1638,7 @@ motion	_LoadEffectPalettes	100.0000	100.0000	2	9b1364c17866	0x5390	100.0000
 motion	_LoadEffectRecord	100.0000	100.0000	1	ba93f14bfabb	0x51c0	100.0000	
 motion	_LoadMotionTable	100.0000	100.0000	1	d0a6254c6d95	0x4a00	100.0000	
 motion	_MotionPoint	100.0000	100.0000	2	e587adb58d87	0x4b30	100.0000	
-motion	_PollIdle	100.0000	100.0000	1	843d38a368de	0x4990	100.0000	
+motion	_PollIdle	100.0000	100.0000	2	bd68646246cf	0x4990	100.0000	
 motion	_ProjectEffectFrame	100.0000	100.0000	1	cc6d8cacdba2	0x5060	100.0000	
 motion	_ReleaseEffectPalette	100.0000	100.0000	1	197f345184ca	0x53e0	100.0000	
 motion	_ReleaseEffectPalettes	100.0000	100.0000	1	23d9d7efa281	0x5460	100.0000	
@@ -1654,7 +1654,7 @@ motion	_StartEffect	100.0000	100.0000	1	0d57890862e9	0x52d0	100.0000
 motion	_StartEffectScript	100.0000	100.0000	2	05dc41c75842	0x4bd0	100.0000	
 motion	_StartMotion	100.0000	100.0000	1	b7872c88fe49	0x4a70	100.0000	
 motion	_StepEffectScript	100.0000	100.0000	1	64dca806d2af	0x4c00	100.0000	
-motion	_StepMotion	100.0000	100.0000	2	e821372dcdf7	0x4ab0	100.0000	
+motion	_StepMotion	100.0000	100.0000	3	6407e400a2cf	0x4ab0	100.0000	
 motion	_StepScreenEffectScript	100.0000	100.0000	2	942028d04ca0	0x4d70	100.0000	
 motion	_StopEffectScript	100.0000	100.0000	1	bc038248804f	0x4d50	100.0000	
 motion	_WaitPaletteRefresh	100.0000	100.0000	3	6a683f74fb20	0x49c0	100.0000	
@@ -1669,8 +1669,8 @@ mouse	_TakeMouseCancel	100.0000	100.0000	2	0fd3a218ec54	0x2a70	100.0000
 mouse	_TakeMouseCancelSound	100.0000	100.0000	1	0d458945019b	0x2ab0	100.0000	
 mouse	_TakeMouseLeftClick	100.0000	100.0000	1	d97b193cc8eb	0x2ae0	100.0000	
 nibble	_SpreadLowNibble	100.0000	100.0000	1	465e3c608b92	0x451d0	100.0000	
-nibble	_SwapLowNibbles	100.0000	100.0000	2	0c26d0acf526	0x45260	100.0000	
-nibble	_SwapMiddleNibbles	100.0000	100.0000	4	9b3b66fb4c56	0x45230	100.0000	
+nibble	_SwapLowNibbles	100.0000	44.4545	2	0c26d0acf526	0x45260	100.0000	
+nibble	_SwapMiddleNibbles	100.0000	38.6364	4	9b3b66fb4c56	0x45230	100.0000	
 nibble	_SwapOuterNibbles	100.0000	100.0000	2	5095aabbb197	0x45200	100.0000	
 objecttexture	_LoadObjectTexture	100.0000	100.0000	1	a04c9ca9b80c	0x58110	100.0000	
 objecttexture	_ReleaseObjectTextures	100.0000	100.0000	1	7e424cec95bb	0x58190	100.0000	
@@ -1682,7 +1682,7 @@ panel	_CreateImagePanel	100.0000	100.0000	4	c83daeecac79	0x226d0	100.0000
 panel	_CreateKindPanel	100.0000	100.0000	4	76910d04845a	0x227c0	100.0000	
 panel	_CreatePositionedPanel	100.0000	100.0000	2	6c149d53b41e	0x22910	100.0000	
 panel	_CreateSequentialPanel	100.0000	100.0000	4	3bbd1abe9162	0x22870	100.0000	
-panel	_IsPanelRowChecked	100.0000	100.0000	2	0afb5399ac11	0x22b80	100.0000	
+panel	_IsPanelRowChecked	100.0000	100.0000	3	85c2ad27dc6b	0x22b80	100.0000	
 panel	_PaintPanel	100.0000	100.0000	1	005c5866204a	0x229f0	100.0000	
 panel	_PanelRowHandlerDefault	100.0000	100.0000	1	d6025391d57f	0x22790	100.0000	
 panel	_ReleasePanel	100.0000	100.0000	1	5454763fdaa7	0x22980	100.0000	
@@ -1694,16 +1694,16 @@ panel	_SetPanelFlags	100.0000	100.0000	1	aea3ec00e0ba	0x22ce0	100.0000
 panel	_SetPanelImage	100.0000	100.0000	1	acb031936d42	0x226c0	100.0000	
 panel	_SetPanelRowFlags	100.0000	100.0000	2	793c4c1162f5	0x22b30	100.0000	
 panel	_SetPanelRowState	100.0000	100.0000	3	78a13025e9bc	0x229c0	100.0000	
-panel	_TestFlagBits	100.0000	100.0000	1	2ace1dfc2f50	0x22ae0	100.0000	
-panel	_TestPanelRowFlags	100.0000	100.0000	2	ed7090759860	0x22b00	100.0000	
+panel	_TestFlagBits	100.0000	100.0000	2	5f7c5ae5a98b	0x22ae0	100.0000	
+panel	_TestPanelRowFlags	100.0000	100.0000	3	3195a958c122	0x22b00	100.0000	
 panel	_ToggleFlagBits	100.0000	100.0000	1	57cad184d577	0x22ac0	100.0000	
 panelinput	_ApplyRowCheck	100.0000	100.0000	3	3afe0565bd65	0x1cd80	100.0000	
-panelinput	_CheckPanelLeftClick	100.0000	100.0000	5	357ab06fce70	0x1cb10	100.0000	
-panelinput	_CheckPanelRightClick	100.0000	100.0000	5	c1ac252a4d41	0x1cb80	100.0000	
+panelinput	_CheckPanelLeftClick	100.0000	100.0000	6	f3b038262848	0x1cb10	100.0000	
+panelinput	_CheckPanelRightClick	100.0000	100.0000	6	8bda07c96c31	0x1cb80	100.0000	
 panelinput	_ClickPanel	100.0000	100.0000	1	a1eacc97edcd	0x1ccc0	100.0000	
 panelinput	_ExchangeActivePanel	100.0000	100.0000	1	528485218854	0x1cb00	100.0000	
 panelinput	_FindPanelRowAt	100.0000	100.0000	7	60040418cba4	0x1cc00	100.0000	
-panelinput	_IsPanelActive	100.0000	100.0000	2	cb88fb6ae388	0x1caf0	100.0000	
+panelinput	_IsPanelActive	100.0000	100.0000	3	f7257e655b47	0x1caf0	100.0000	
 panelinput	_PollPanel	100.0000	100.0000	1	b4ea72d76c6f	0x1cd30	100.0000	
 panelinput	_RunPanelRow	100.0000	100.0000	3	f0f3048b8750	0x1cc80	100.0000	
 panelinput	_SetPanelSilent	100.0000	100.0000	1	07fc985ef7eb	0x1cae0	100.0000	
@@ -1714,12 +1714,12 @@ party	_AddToRoster	100.0000	100.0000	3	8ff155a5ce2c	0x3f7c0	100.0000
 party	_AsCharacter	100.0000	100.0000	1	c6d9da10f69d	0x3fe30	100.0000	
 party	_AttachEquipItem	100.0000	100.0000	2	29991f88d029	0x40590	100.0000	
 party	_CanEquipItem	100.0000	100.0000	4	4d2049c8bf69	0x40620	100.0000	
-party	_CanGroupEquip	100.0000	100.0000	1	a9d97dd99ef6	0x40250	100.0000	
+party	_CanGroupEquip	100.0000	100.0000	2	b363f5de4cf2	0x40250	100.0000	
 party	_ClearPartyPosition	100.0000	100.0000	1	526b92373db9	0x3f940	100.0000	
 party	_ClearRosterConditions	100.0000	100.0000	2	b98c91f3cdaf	0x3fb80	100.0000	
 party	_CompareMacca	100.0000	100.0000	1	cb9ffa683278	0x40950	100.0000	
 party	_CopyCharacter	100.0000	100.0000	3	a7818230193b	0x3fbc0	100.0000	
-party	_CountFallenHumans	100.0000	100.0000	3	d75f5d92d068	0x3fc30	100.0000	
+party	_CountFallenHumans	100.0000	100.0000	4	7bbcc3c990ae	0x3fc30	100.0000	
 party	_CountPartyMembers	100.0000	100.0000	2	8b969a457539	0x3f970	100.0000	
 party	_DamageParty	100.0000	100.0000	4	d2ce77cec31a	0x3f9f0	100.0000	
 party	_EquipItem	100.0000	100.0000	4	1b374253dfd1	0x40710	100.0000	
@@ -1756,7 +1756,7 @@ party	_RosterSlotOfId	100.0000	100.0000	1	6af79354b383	0x40020	100.0000
 party	_SetEquipSlot	100.0000	100.0000	4	4b0bd6b57948	0x403e0	100.0000	
 party	_SetPartySlot	100.0000	100.0000	3	9b516ac9f26f	0x3ff60	100.0000	
 party	_SetRosterEntry	100.0000	100.0000	1	b40c666b17bc	0x3fed0	100.0000	
-party	_SortRoster	100.0000	100.0000	1	ef24fc1cd130	0x40090	100.0000	
+party	_SortRoster	100.0000	100.0000	2	281b136a2a5c	0x40090	100.0000	
 party	_SwapEquipSlot	100.0000	100.0000	1	10d882ad5a80	0x406b0	100.0000	
 party	_SwapPartySlots	100.0000	100.0000	2	8aab162146b7	0x40180	100.0000	
 party	_TickPartyConditions	100.0000	100.0000	2	61eb170fc36f	0x3f9b0	100.0000	
@@ -1767,26 +1767,26 @@ partyaction	_AdjustActorAction	100.0000	100.0000	1	6e6475850761	0x6180	100.0000
 partyaction	_ApplyResistanceOutcome	100.0000	100.0000	4	885d1861714d	0x6f20	100.0000	
 partyaction	_CheckBattleProtection	100.0000	100.0000	2	7e5f9688b0ed	0x6a80	100.0000	
 partyaction	_CountPickablePartyMembers	100.0000	100.0000	1	523264082a5b	0x5b50	100.0000	
-partyaction	_DelayActionSide	100.0000	100.0000	4	558ab538f615	0x5ff0	100.0000	
+partyaction	_DelayActionSide	100.0000	100.0000	5	36bb9de35ca5	0x5ff0	100.0000	
 partyaction	_FillCharacterCommands	100.0000	100.0000	1	17771e5df18b	0x6900	100.0000	
 partyaction	_FindPickablePartyMember	100.0000	100.0000	1	aedaa148a85c	0x5b10	100.0000	
-partyaction	_FormatAttackCommand	100.0000	100.0000	2	1b0411a06fab	0x6500	100.0000	
-partyaction	_FormatCompCommand	100.0000	100.0000	1	6ac8b09aa7a6	0x6720	100.0000	
-partyaction	_FormatDefenceCommand	100.0000	100.0000	1	86ec4b8e06bf	0x6810	100.0000	
-partyaction	_FormatExtraCommand	100.0000	100.0000	4	da37efdcd3ca	0x6750	100.0000	
-partyaction	_FormatGunCommand	100.0000	100.0000	2	59777c0cc755	0x65b0	100.0000	
-partyaction	_FormatItemCommand	100.0000	100.0000	2	d33696fc76b1	0x66e0	100.0000	
-partyaction	_FormatMagicCommand	100.0000	100.0000	4	1b328b0fe4a8	0x6660	100.0000	
-partyaction	_FormatReturnCommand	100.0000	100.0000	3	109e58a3bead	0x67d0	100.0000	
+partyaction	_FormatAttackCommand	100.0000	100.0000	3	3aaf179be42d	0x6500	100.0000	
+partyaction	_FormatCompCommand	100.0000	100.0000	2	a569e547f374	0x6720	100.0000	
+partyaction	_FormatDefenceCommand	100.0000	100.0000	2	9a1e87243a1d	0x6810	100.0000	
+partyaction	_FormatExtraCommand	100.0000	100.0000	5	01ce703ae6b2	0x6750	100.0000	
+partyaction	_FormatGunCommand	100.0000	100.0000	3	b9b14dd7d33d	0x65b0	100.0000	
+partyaction	_FormatItemCommand	100.0000	100.0000	3	e3056380b6de	0x66e0	100.0000	
+partyaction	_FormatMagicCommand	100.0000	100.0000	5	d8b020154246	0x6660	100.0000	
+partyaction	_FormatReturnCommand	100.0000	100.0000	4	b26e28c3dba6	0x67d0	100.0000	
 partyaction	_GetActionCondition	100.0000	100.0000	2	1330bc0653e7	0x5cb0	100.0000	
-partyaction	_GetActionResistance	100.0000	99.8809	3	b173d9afdba4	0x6ca0	100.0000	
+partyaction	_GetActionResistance	100.0000	100.0000	3	b173d9afdba4	0x6ca0	100.0000	
 partyaction	_GetItemResistance	100.0000	100.0000	1	888c31715c58	0x6dc0	100.0000	
 partyaction	_GetMemberPanelState	88.9610	88.9610	9	e663b4cfae52	0x5b80	100.0000	
 partyaction	_GetPickedAttackAttribute	100.0000	100.0000	5	2d503f5d2f1c	0x6e00	100.0000	
 partyaction	_GetSkillResistance	100.0000	100.0000	4	d43c436831c3	0x6d70	100.0000	
 partyaction	_OpenActorCommandMenu	100.0000	100.0000	2	f90af8b9b790	0x6340	100.0000	
 partyaction	_PickActorAction	100.0000	100.0000	5	5171452ba31c	0x5cd0	100.0000	
-partyaction	_PickActorDialogue	100.0000	100.0000	1	31b0b61f1e9f	0x5fc0	100.0000	
+partyaction	_PickActorDialogue	100.0000	100.0000	2	2a8916ccc08a	0x5fc0	100.0000	
 partyaction	_PickPartyMember	100.0000	100.0000	10	a5d83c5603ad	0x5a80	100.0000	
 partyaction	_PickRandomAllyAttack	100.0000	100.0000	2	27a480ad3e8e	0x5f30	100.0000	
 partyaction	_PickRandomAttack	100.0000	100.0000	2	c49b7adcbf96	0x60c0	100.0000	
@@ -1795,11 +1795,11 @@ partyaction	_PickRandomOpponentAttack	100.0000	100.0000	2	e56b5392c2d8	0x5dc0	10
 partyaction	_PollActorCommandMenu	100.0000	100.0000	1	eeba145c01f8	0x6440	100.0000	
 partyaction	_PrepareMemberPickTarget	100.0000	100.0000	2	a274320fdb65	0x6840	100.0000	
 partyaction	_ReadActionResultFlags	100.0000	100.0000	1	e522e33f26e4	0x5c60	100.0000	
-partyaction	_ResetActionWaits	100.0000	100.0000	4	f0a2fc9ee388	0x6060	100.0000	
-partyaction	_ResetPartyTurnState	100.0000	100.0000	4	83e234082f85	0x6a00	100.0000	
+partyaction	_ResetActionWaits	100.0000	100.0000	5	a40c56bb5399	0x6060	100.0000	
+partyaction	_ResetPartyTurnState	100.0000	100.0000	5	a0dc4aba07eb	0x6a00	100.0000	
 partyaction	_RunActorCommandMenu	94.6038	94.6038	4	d1f98d643d5c	0x6460	94.6038	
-partyaction	_ScaleActionValue	100.0000	82.1875	1	d4b757752929	0x6a40	100.0000	
-partyaction	_SwapPartyRows	100.0000	100.0000	2	b77d0d2f5041	0x6140	100.0000	
+partyaction	_ScaleActionValue	100.0000	89.3750	1	d4b757752929	0x6a40	100.0000	
+partyaction	_SwapPartyRows	100.0000	100.0000	3	0d37d50163d5	0x6140	100.0000	
 partypick	_CheckPickTarget	100.0000	100.0000	3	a59095b38abd	0x9420	100.0000	
 partypick	_CloseFieldWindows	100.0000	100.0000	2	e257e4ef1946	0x93e0	100.0000	
 partypick	_GetMemberPickRange	100.0000	100.0000	7	87d780750965	0x9c20	100.0000	
@@ -1808,12 +1808,12 @@ partypick	_GetSwappedMember	100.0000	100.0000	1	38fa66d913cc	0x9df0	100.0000
 partypick	_GetTickElapsed	100.0000	100.0000	1	344206208f39	0x9d00	100.0000	
 partypick	_IsGuestIndex	100.0000	100.0000	1	75f4a66b9ca7	0x9e10	100.0000	
 partypick	_MarkPickDone	100.0000	100.0000	1	1d520779edd2	0x94b0	100.0000	
-partypick	_PickFieldObjectTarget	100.0000	100.0000	1	1e52953c5888	0xa050	100.0000	
+partypick	_PickFieldObjectTarget	100.0000	100.0000	2	464331b611a6	0xa050	100.0000	
 partypick	_PickPartySlotTarget	100.0000	100.0000	2	70e9ca70f1fc	0xa0b0	100.0000	
 partypick	_QueryPickMode	100.0000	100.0000	1	1be31b282b9f	0x9cf0	100.0000	
 partypick	_RestoreSwappedMember	100.0000	100.0000	1	1d1590f8a48b	0x9dc0	100.0000	
 partypick	_RunMemberPickMenu	100.0000	100.0000	2	fdd11366aedb	0x94d0	100.0000	
-partypick	_RunPartyCommandInput	85.7913	85.7913	17	6feb831ee8e2	0x9620	92.0986	
+partypick	_RunPartyCommandInput	85.7913	85.7913	18	09f89d0238ee	0x9620	92.0986	
 partypick	_RunPickTargetWindow	100.0000	100.0000	4	e2c7548914d7	0x9e30	100.0000	
 partypick	_SetMemberPickRole	100.0000	100.0000	1	d65f1923aaa8	0x95f0	100.0000	
 partypick	_SwapInForPick	100.0000	100.0000	3	69b4c17ff566	0x9d10	100.0000	
@@ -1825,7 +1825,7 @@ partypicker	_RunPartyPicker	100.0000	100.0000	2	7924a963a700	0x19ea0	100.0000
 partypicker	_RunPickerMenu	100.0000	100.0000	1	b402da452484	0x19e60	100.0000	
 partypicker	_SetPartyPickerMode	100.0000	100.0000	1	7034c68693d2	0x19f40	100.0000	
 partyreorder	_PickReorderSlot	100.0000	100.0000	1	e73bdb5d59f7	0x1ad00	100.0000	
-partyreorder	_RunPartyReorder	100.0000	100.0000	2	9d1ac850602d	0x1ab90	100.0000	
+partyreorder	_RunPartyReorder	100.0000	100.0000	3	65cc19612d5e	0x1ab90	100.0000	
 picture	_ClearScenePicture	100.0000	100.0000	4	b265a69dea3e	0x57c40	100.0000	
 picture	_ClearSceneSurfaces	100.0000	100.0000	5	3a8e44e031ed	0x57bf0	100.0000	
 picture	_LoadScenePicture	100.0000	100.0000	2	37942fe5e5e0	0x57b90	100.0000	
@@ -1839,8 +1839,8 @@ playtime	_ResetPlayTime	100.0000	100.0000	1	d7a06f8cb557	0x35b0	100.0000
 playtime	_SavePlayTime	100.0000	100.0000	1	fa6198eba70a	0x36b0	100.0000	
 pool	_AllocatePool	100.0000	100.0000	2	8bacea4f272e	0x3440	100.0000	
 pool	_CreatePools	100.0000	100.0000	1	dee43b454197	0x3520	100.0000	
-pool	_FreePools	100.0000	100.0000	1	1324aad78cd0	0x3560	100.0000	
-pool	_GetLegacyPoolResetResult	100.0000	100.0000	2	0a17cb08e5d3	0x3550	100.0000	
+pool	_FreePools	100.0000	100.0000	2	a58a3f21042e	0x3560	100.0000	
+pool	_GetLegacyPoolResetResult	100.0000	100.0000	3	3857dce78dd2	0x3550	100.0000	
 pool	_GetPoolChunk	100.0000	100.0000	2	287015a006d3	0x3570	100.0000	
 pool	_ResetPool	100.0000	100.0000	1	c37b151dd4f7	0x34e0	100.0000	
 range	_AddCapped	100.0000	100.0000	1	bdc1ee07ef51	0xba50	100.0000	
@@ -1873,7 +1873,7 @@ recordcache	_BuildLearnableSkillRanks	100.0000	100.0000	5	25c8986d76e3	0x2e240	1
 recordcache	_CacheSkill	100.0000	100.0000	2	a0b54d85fa6a	0x2e840	100.0000	
 recordcache	_CanUseSkill	100.0000	100.0000	3	81736b079f2d	0x2e630	100.0000	
 recordcache	_CheckSkillArea	100.0000	100.0000	1	57eea8d9a1ad	0x2e580	100.0000	
-recordcache	_CompareSkillRanks	100.0000	100.0000	1	51b340706bd8	0x2e380	100.0000	
+recordcache	_CompareSkillRanks	100.0000	95.5000	1	51b340706bd8	0x2e380	100.0000	
 recordcache	_CopySkillHeader	100.0000	100.0000	1	605eb6af0e52	0x2e540	100.0000	
 recordcache	_CopySkillList	100.0000	100.0000	5	a6ff805257cb	0x2df60	100.0000	
 recordcache	_CopyWordArray	100.0000	100.0000	2	d1261a8a179f	0x2dc60	100.0000	
@@ -1906,19 +1906,19 @@ recordcache	_RemoveWord	100.0000	100.0000	3	8f16537e0dc6	0x2de10	100.0000
 recordcache	_ResetRecordCache	100.0000	100.0000	1	4e9679d530da	0x2e820	100.0000	
 recordcache	_ResetWordList	100.0000	100.0000	1	5501a46688ab	0x2dc40	100.0000	
 recordcache	_RestoreScriptState	100.0000	100.0000	1	663f30159ecb	0x2ea30	100.0000	
-recordcache	_RollSkillLearning	100.0000	100.0000	3	063be090faee	0x2dfb0	100.0000	
+recordcache	_RollSkillLearning	100.0000	100.0000	4	645a95049ce3	0x2dfb0	100.0000	
 recordcache	_SaveScriptState	100.0000	100.0000	1	6ba68caf5b47	0x2e9d0	100.0000	
 recordcache	_StripZeroWords	100.0000	100.0000	2	b3f00a7170f3	0x2dea0	100.0000	
 recordcache	_WearCachedSkill	24.8000	24.8000	1	84ccd2ced580	0x2e8a0	24.8000	
 recordcache	_WearSkillValue	100.0000	100.0000	3	6d76d76f7940	0x2e960	100.0000	
-resourcebitmap	_CreatePicture	100.0000	100.0000	3	a59cd9dc3a93	0x57380	100.0000	
-resourcebitmap	_DrawResourceBitmap	100.0000	100.0000	3	5f46eb3de065	0x572e0	100.0000	
-resourcebitmap	_LoadPictureFile	100.0000	100.0000	1	c68d81bb9ebf	0x57520	100.0000	
+resourcebitmap	_CreatePicture	100.0000	100.0000	4	674327c8b7fe	0x57380	100.0000	
+resourcebitmap	_DrawResourceBitmap	100.0000	100.0000	4	3cc185ba23e9	0x572e0	100.0000	
+resourcebitmap	_LoadPictureFile	100.0000	100.0000	2	0b958e4657a9	0x57520	100.0000	
 resourcebitmap	_ReleaseTexture	100.0000	100.0000	3	ad2cadccb436	0x576d0	100.0000	
 resourcebitmap	_ShadeTexture	100.0000	100.0000	4	eb1d29e2b7bc	0x57590	100.0000	
-resourceblit	_BlitImage	100.0000	100.0000	1	f911230f7de1	0x57290	100.0000	
-resourceblit	_CopyResourceBitmap16	100.0000	99.8571	6	90efcb3bea87	0x56f30	100.0000	
-resourceblit	_CopyResourceBitmap8	100.0000	100.0000	7	2779814d1e99	0x57120	100.0000	
+resourceblit	_BlitImage	100.0000	100.0000	2	c3e84fc06546	0x57290	100.0000	
+resourceblit	_CopyResourceBitmap16	100.0000	99.5909	7	44c451fd87d9	0x56f30	100.0000	
+resourceblit	_CopyResourceBitmap8	100.0000	100.0000	8	aa9f9567e742	0x57120	100.0000	
 restore	_ApplyRestoreEffect	100.0000	100.0000	10	9b6ea1b3e5dc	0x1fe90	100.0000	
 restore	_ComputeRestoreAmount	100.0000	100.0000	4	a4dd284d8beb	0x1fdc0	100.0000	
 restore	_ConditionKindApplies	100.0000	100.0000	2	26f90cec6702	0x20580	100.0000	
@@ -1926,9 +1926,9 @@ savegame	_LoadGame	100.0000	100.0000	2	3851aa76fb32	0x3c30	100.0000
 savegame	_ReadSaveHeader	100.0000	100.0000	1	f8212f21da25	0x3da0	100.0000	
 savegame	_ReadSaveSummary	100.0000	100.0000	2	f00c237be82c	0x4230	100.0000	
 savegame	_RecordMarkInLeader	100.0000	100.0000	2	be30945195ab	0x3bf0	100.0000	
-savegame	_RunDisplayChoice	100.0000	100.0000	1	74954d5c315b	0x4070	100.0000	
-savegame	_RunQuitConfirm	100.0000	100.0000	1	8e5a04f12cae	0x4170	100.0000	
-savegame	_RunSystemMenu	100.0000	100.0000	1	0393bcd2706b	0x3e50	100.0000	
+savegame	_RunDisplayChoice	100.0000	100.0000	2	63692271f4f3	0x4070	100.0000	
+savegame	_RunQuitConfirm	100.0000	100.0000	2	07af6505c75c	0x4170	100.0000	
+savegame	_RunSystemMenu	100.0000	100.0000	2	68c8983cd04a	0x3e50	100.0000	
 savegame	_SaveGame	100.0000	100.0000	2	47efad95448d	0x3a00	100.0000	
 savegame	_SystemMenuHandler	100.0000	100.0000	3	ccb13921a138	0x3f70	100.0000	
 savegame	_WriteSaveHeader	100.0000	100.0000	2	cc9819cb922a	0x3ae0	100.0000	
@@ -1950,11 +1950,11 @@ scenecell	_PlaceSceneSprites	100.0000	100.0000	1	2931ffa7e9a5	0x18170	100.0000
 scenecell	_RestoreBackground	100.0000	100.0000	1	121f70b2dd48	0x17ba0	100.0000	
 scenecell	_RestoreBackgroundParameter	100.0000	100.0000	1	8685d8b93f9e	0x17cb0	100.0000	
 scenecell	_RestoreSceneFrame	100.0000	100.0000	1	b9b6116750a8	0x17d40	100.0000	
-scenecell	_RunBackgroundScene	100.0000	100.0000	5	598108b6ce29	0x18590	100.0000	
-scenecell	_RunCellScene	100.0000	100.0000	5	87f3192a476d	0x17ef0	100.0000	
-scenecell	_RunFieldTextScene	100.0000	100.0000	1	c899129e48ef	0x18230	100.0000	
-scenecell	_RunFrozenFieldScene	100.0000	100.0000	6	4251816f712b	0x18340	100.0000	
-scenecell	_RunPictureTransition	100.0000	100.0000	5	6e6f20f66854	0x184a0	100.0000	
+scenecell	_RunBackgroundScene	100.0000	100.0000	6	ad5ec988236f	0x18590	100.0000	
+scenecell	_RunCellScene	100.0000	100.0000	6	a37c7158f84f	0x17ef0	100.0000	
+scenecell	_RunFieldTextScene	100.0000	100.0000	2	2bb1f7f4bc62	0x18230	100.0000	
+scenecell	_RunFrozenFieldScene	100.0000	100.0000	7	6ac0e33f5708	0x18340	100.0000	
+scenecell	_RunPictureTransition	100.0000	100.0000	6	e59e0b7d1f97	0x184a0	100.0000	
 scenecell	_ScaleByMoonValue	100.0000	85.4545	3	75f2e6af8b3d	0x17a40	100.0000	
 scenecell	_SceneNop	100.0000	100.0000	1	7678c6b3da35	0x17b90	100.0000	
 scenecell	_SetCellScript	100.0000	100.0000	1	ffc80ffb8d9c	0x17d30	100.0000	
@@ -1970,15 +1970,15 @@ screeneffect	_GetScriptAnimationPosition	100.0000	100.0000	1	94da90c6dffc	0x2881
 screeneffect	_LoadScriptAnimation	100.0000	100.0000	1	c39607458d61	0x28790	100.0000	
 screeneffect	_LoadScriptAnimationImage	100.0000	100.0000	1	780a4b205d57	0x287d0	100.0000	
 screeneffect	_PushScriptAnimation	100.0000	100.0000	1	c5ac35bdd561	0x286c0	100.0000	
-screeneffect	_RunScriptAnimationState	100.0000	100.0000	1	8566223ea1a2	0x286f0	100.0000	
-screensave	_AllocScreenSave	100.0000	100.0000	1	0e90b11556b3	0x3930	100.0000	
+screeneffect	_RunScriptAnimationState	100.0000	100.0000	2	1839aa1cf45d	0x286f0	100.0000	
+screensave	_AllocScreenSave	100.0000	100.0000	2	bd357a2bc50a	0x3930	100.0000	
 screensave	_ApplyTextCursor	100.0000	100.0000	1	5ceffe4f3ba9	0x3920	100.0000	
-screensave	_CaptureScreenSave	100.0000	100.0000	1	c4d91771f26d	0x3950	100.0000	
-screensave	_FreeScreenSave	100.0000	100.0000	1	92afe583c2ba	0x3940	100.0000	
-screensave	_RedrawScreen	100.0000	100.0000	2	ca1fed94c086	0x3980	100.0000	
+screensave	_CaptureScreenSave	100.0000	100.0000	2	74c925d3ebcb	0x3950	100.0000	
+screensave	_FreeScreenSave	100.0000	100.0000	2	47f558714bff	0x3940	100.0000	
+screensave	_RedrawScreen	100.0000	100.0000	3	742ca3d2b056	0x3980	100.0000	
 screensave	_RequestRefresh	100.0000	100.0000	1	bd678299da70	0x3970	100.0000	
 screensave	_RestoreSavedCursor	100.0000	100.0000	1	782f528a807a	0x3900	100.0000	
-screensave	_RestoreScreenSave	100.0000	100.0000	1	e95ff17f7179	0x3960	100.0000	
+screensave	_RestoreScreenSave	100.0000	100.0000	2	41d257937510	0x3960	100.0000	
 screensave	_SetTextCursorOffset	100.0000	100.0000	1	96dd073cdae0	0x38e0	100.0000	
 scriptactor	_DespawnScriptActor	100.0000	100.0000	1	2e9451b7313b	0x32cf0	100.0000	
 scriptactor	_DismissTalkTarget	100.0000	100.0000	1	0b233dcb10c6	0x33340	100.0000	
@@ -2017,7 +2017,7 @@ scriptcmd	_OpFindMemberByAlignmentB	100.0000	100.0000	2	df428d9e0c0e	0x37bc0	100
 scriptcmd	_OpFindMemberByPoolState	100.0000	100.0000	2	b00f9ea75ea2	0x37950	100.0000	
 scriptcmd	_OpFindMemberWithCondition	100.0000	100.0000	3	18f4d0ab2a6b	0x379f0	100.0000	
 scriptcmd	_OpIfMemberHasCondition	100.0000	100.0000	3	3ad269557959	0x37e10	100.0000	
-scriptcmd	_OpLevelUpMember	100.0000	100.0000	1	e17da4427bab	0x38030	100.0000	
+scriptcmd	_OpLevelUpMember	100.0000	100.0000	2	aa33dbebd444	0x38030	100.0000	
 scriptcmd	_OpMaskRosterByKind	100.0000	100.0000	2	d78d4e5586ea	0x38230	100.0000	
 scriptcmd	_OpRecoverRosterPool	95.6098	95.6098	4	1a781d77e273	0x382b0	95.6098	
 scriptcmd	_OpRemovePendingItem	100.0000	100.0000	1	dcd4bf87bac2	0x381f0	100.0000	
@@ -2032,7 +2032,7 @@ scriptcmd	_OpShiftPlayerAlignmentB	100.0000	100.0000	1	f3c6f353edd7	0x37fb0	100.
 scriptcmd	_PollScriptChoiceMenu	100.0000	100.0000	3	15f2f676d62b	0x384f0	100.0000	
 scriptcmd	_PrintScriptChoice	100.0000	100.0000	2	6498e429a89d	0x383c0	100.0000	
 scriptcmd	_PushScriptChoiceMenu	100.0000	100.0000	2	02b9fa6e035d	0x38460	100.0000	
-scriptcmd	_RunScriptChoiceState	100.0000	100.0000	2	4f50a55b8d26	0x38790	100.0000	
+scriptcmd	_RunScriptChoiceState	100.0000	100.0000	3	526043f00629	0x38790	100.0000	
 scriptcmd	_StepForMode	100.0000	100.0000	1	063413f72502	0x37f80	100.0000	
 scriptctx	_EndScript	100.0000	100.0000	1	5c2cea804adc	0x38dd0	100.0000	
 scriptctx	_FreeScriptContext	100.0000	100.0000	2	21a57df27e77	0x38e20	100.0000	
@@ -2079,10 +2079,10 @@ scriptfield	_OpIfStatusPositive	97.7500	97.7500	1	97a5b93530a8	0x32660	97.7500
 scriptfield	_OpSetFieldOption	100.0000	100.0000	1	53040150bafc	0x32700	100.0000	
 scriptfield	_OpSetFieldParams	100.0000	100.0000	1	089b149bc8bd	0x32710	100.0000	
 scriptflow	_CallScript	100.0000	100.0000	1	cc441db8ab4e	0x33e40	100.0000	
-scriptflow	_ClearCallStack	100.0000	100.0000	1	d2e2aa3d5cae	0x33f90	100.0000	
-scriptflow	_DropCallFrame	100.0000	100.0000	1	cd16117dd332	0x33f50	100.0000	
+scriptflow	_ClearCallStack	100.0000	100.0000	2	7267dde9b7a9	0x33f90	100.0000	
+scriptflow	_DropCallFrame	100.0000	100.0000	2	264ec4e6aedd	0x33f50	100.0000	
 scriptflow	_GotoScript	100.0000	100.0000	2	071ee3613ae0	0x33d70	100.0000	
-scriptflow	_LoadFrameLocals	100.0000	100.0000	1	2a6027fd9a46	0x33b50	100.0000	
+scriptflow	_LoadFrameLocals	100.0000	100.0000	2	f3ea45cfdfe1	0x33b50	100.0000	
 scriptflow	_LoadLongOperands	100.0000	100.0000	1	f9904c783135	0x335e0	100.0000	
 scriptflow	_LoadLongVar	100.0000	100.0000	1	9691476df30b	0x33890	100.0000	
 scriptflow	_OpAddLongVar	100.0000	100.0000	1	8a5d98eab805	0x336a0	100.0000	
@@ -2106,7 +2106,7 @@ scriptflow	_OpNegLongVar	100.0000	100.0000	1	188b78188ac4	0x339c0	100.0000
 scriptflow	_OpNotLongVar	100.0000	100.0000	1	3e998570e26f	0x339e0	100.0000	
 scriptflow	_OpOrLongVar	100.0000	100.0000	1	fc3ac83e8cfd	0x33730	100.0000	
 scriptflow	_OpPercentLongVar	100.0000	100.0000	1	50a456fbafc5	0x337f0	100.0000	
-scriptflow	_OpPushReturnTarget	100.0000	100.0000	1	4f2f085b43ee	0x33f10	100.0000	
+scriptflow	_OpPushReturnTarget	100.0000	100.0000	2	5dc4afe57300	0x33f10	100.0000	
 scriptflow	_OpRandLongVar	100.0000	100.0000	1	a3ec47242f78	0x33b00	100.0000	
 scriptflow	_OpRollLongVar	100.0000	100.0000	1	ea5134f5814b	0x33ac0	100.0000	
 scriptflow	_OpSarLongVar	100.0000	100.0000	1	3e509cb3a019	0x337c0	100.0000	
@@ -2128,16 +2128,16 @@ scriptflow	_ResolveScriptEntry	100.0000	100.0000	1	7008c38c76c1	0x33ca0	100.0000
 scriptflow	_RestartScript	100.0000	100.0000	1	2f7e256a1f4c	0x33fe0	100.0000	
 scriptflow	_ReturnFromCall	100.0000	100.0000	1	6040bd3180f5	0x33fb0	100.0000	
 scriptflow	_ScriptJump	100.0000	100.0000	1	b701599515cb	0x33c40	100.0000	
-scriptflow	_ScriptJumpTo	100.0000	100.0000	1	c18681f92439	0x33c50	100.0000	
+scriptflow	_ScriptJumpTo	100.0000	100.0000	2	70e075000011	0x33c50	100.0000	
 scriptflow	_ScriptJumpUnless	100.0000	100.0000	1	a895712d403f	0x33ef0	100.0000	
-scriptflow	_ScriptJumpWithArgs	100.0000	100.0000	1	5f799674e554	0x33c70	100.0000	
-scriptflow	_StoreFrameLocals	100.0000	100.0000	1	ef3e75472eb2	0x33b20	100.0000	
+scriptflow	_ScriptJumpWithArgs	100.0000	100.0000	2	9ce2dac47017	0x33c70	100.0000	
+scriptflow	_StoreFrameLocals	100.0000	100.0000	2	a2d67fa371d1	0x33b20	100.0000	
 scriptflow	_StoreLongResult	100.0000	100.0000	1	a11541c2257f	0x33610	100.0000	
 scriptflow	_StoreLongVar	100.0000	100.0000	1	243911e31865	0x338b0	100.0000	
-scriptflow	_SwapCallFrames	100.0000	100.0000	1	99c072e2a261	0x33f70	100.0000	
-scriptflow	_SwapFrameLocals	100.0000	100.0000	1	4ac764673164	0x33b80	100.0000	
+scriptflow	_SwapCallFrames	100.0000	100.0000	2	2bef7b01cad9	0x33f70	100.0000	
+scriptflow	_SwapFrameLocals	100.0000	100.0000	2	f50b6e7be19e	0x33b80	100.0000	
 scriptop	_OpIfFlags	100.0000	100.0000	1	383bb95ccda7	0x2feb0	100.0000	
-scriptop	_OpSaveDataCommand	100.0000	100.0000	2	cc8b339bbdd3	0x2fd00	100.0000	
+scriptop	_OpSaveDataCommand	100.0000	100.0000	3	cdf66d85c61f	0x2fd00	100.0000	
 scriptop	_SetActorMode	100.0000	100.0000	2	24a9a822f800	0x2fe80	100.0000	
 scriptoperand	_GetActionValue	100.0000	100.0000	2	c58335227628	0x37440	100.0000	
 scriptoperand	_GetBattleResultValue	100.0000	100.0000	3	2e3d4daa7ad2	0x373e0	100.0000	
@@ -2150,11 +2150,11 @@ scriptoperand	_ReadScriptValue	100.0000	100.0000	1	68885d663303	0x37490	100.0000
 scriptpanel	_CloseAllScriptPanels	100.0000	100.0000	1	124a9d7e0017	0x2ef90	100.0000	
 scriptpanel	_CloseLastScriptPanel	100.0000	100.0000	1	6295cdc8e4f7	0x2ed80	100.0000	
 scriptpanel	_CloseScriptInterface	100.0000	100.0000	1	3805984ea244	0x2ede0	100.0000	
-scriptpanel	_CloseScriptPanelByImage	100.0000	100.0000	1	ff1520925265	0x2ef00	100.0000	
+scriptpanel	_CloseScriptPanelByImage	100.0000	100.0000	2	85554030c647	0x2ef00	100.0000	
 scriptpanel	_CreateScriptPanel	100.0000	100.0000	4	c5a5a8db8dd7	0x2edf0	100.0000	
 scriptpanel	_DestroyScriptPanel	100.0000	100.0000	1	ce2bcd0d6b08	0x2ed20	100.0000	
 scriptpanel	_DrawScriptPanel	100.0000	100.0000	1	0fe46f1bd00f	0x2eeb0	100.0000	
-scriptpanel	_DrawScriptPanelByImage	100.0000	100.0000	1	e1dda748212d	0x2f150	100.0000	
+scriptpanel	_DrawScriptPanelByImage	100.0000	100.0000	2	7fb30899130a	0x2f150	100.0000	
 scriptpanel	_DrawScriptPanels	100.0000	100.0000	1	b4229ec59b8e	0x2efe0	100.0000	
 scriptpanel	_ErasePanelPictures	100.0000	100.0000	3	408dde194950	0x2ece0	100.0000	
 scriptpanel	_FreeScriptPanels	100.0000	100.0000	1	ba7c6f67007d	0x2edb0	100.0000	
@@ -2167,8 +2167,8 @@ scriptpanel	_OpSkipPanelOperands	100.0000	100.0000	1	0c7c862bcedf	0x2f000	100.00
 scriptpanel	_PollScriptPanels	99.1379	99.1379	4	85e93a0d9a6c	0x2f070	99.1379	
 scriptpanel	_ResetScriptPanels	100.0000	100.0000	1	6fe1564ad95a	0x2edd0	100.0000	
 scriptpanel	_SetLastPanelRowState	100.0000	100.0000	2	42e03ead5239	0x2f020	100.0000	
-scriptsprite	_OpLoadSprite	100.0000	100.0000	1	21c3355216e9	0x397b0	100.0000	
-scriptsprite	_OpPlaceSprite	100.0000	100.0000	3	f7c23e05f412	0x3a250	100.0000	
+scriptsprite	_OpLoadSprite	100.0000	100.0000	2	405deb9a6f08	0x397b0	100.0000	
+scriptsprite	_OpPlaceSprite	100.0000	100.0000	4	2fb730dc920e	0x3a250	100.0000	
 scriptswitch	_OpSwitchOnActorAttrA	100.0000	100.0000	1	8a680e23d7f5	0x32980	100.0000	
 scriptswitch	_OpSwitchOnActorAttrB	100.0000	100.0000	1	ca320f1fc2c4	0x329a0	100.0000	
 scriptswitch	_OpSwitchOnAlignmentA	100.0000	100.0000	2	bc12a5454273	0x32900	100.0000	
@@ -2179,7 +2179,7 @@ scriptswitch	_OpSwitchOnSelection	100.0000	100.0000	1	1592e55ea761	0x328e0	100.0
 scriptswitch	_OpSwitchOnValue	100.0000	100.0000	1	27101fefa267	0x329c0	100.0000	
 scriptswitch	_ReadScriptSwitch	100.0000	100.0000	2	b6e5dbfd4c4c	0x327c0	100.0000	
 scriptswitch	_SwitchOnValue	100.0000	100.0000	2	a8b5782b0297	0x32740	100.0000	
-scripttext	_CaptureTextChar	100.0000	100.0000	2	a14542a4116e	0x2f500	100.0000	
+scripttext	_CaptureTextChar	100.0000	100.0000	3	6ba15bc8628f	0x2f500	100.0000	
 scripttext	_ClearCapturedText	100.0000	100.0000	1	0e1aae34fe86	0x2f580	100.0000	
 scripttext	_ClearTextBuffers	100.0000	100.0000	1	e1761dd5eb9d	0x2f560	100.0000	
 scripttext	_CloseScriptWindows	100.0000	100.0000	1	5e7383ec743f	0x2fb60	100.0000	
@@ -2192,7 +2192,7 @@ scripttext	_OpClearMenuHighlight	100.0000	100.0000	1	73a9a7669775	0x2f460	100.00
 scripttext	_OpCreateScriptMenu	100.0000	100.0000	4	318ef8b6bb91	0x2f1c0	100.0000	
 scripttext	_OpDestroyScriptMenu	100.0000	100.0000	1	df68775945e1	0x2f370	100.0000	
 scripttext	_OpFormatCapturedText	100.0000	96.2264	1	5b435190bd20	0x2f640	100.0000	
-scripttext	_OpFormatNumber	100.0000	96.4912	1	47cb0503de5f	0x2f5a0	100.0000	
+scripttext	_OpFormatNumber	100.0000	100.0000	1	47cb0503de5f	0x2f5a0	100.0000	
 scripttext	_OpFreeDataFile	100.0000	100.0000	1	eba6eb84ac76	0x2f870	100.0000	
 scripttext	_OpFreeLongArray	100.0000	100.0000	1	070c70c95109	0x2f740	100.0000	
 scripttext	_OpGetLongArrayItem	100.0000	100.0000	1	9103eb63d3d1	0x2f770	100.0000	
@@ -2210,7 +2210,7 @@ scripttext	_OpSetMenuCharacter	100.0000	100.0000	1	eb42a731c484	0x2fcf0	100.0000
 scripttext	_OpSetMenuLineColor	100.0000	100.0000	3	ac7c1be2c821	0x2f400	100.0000	
 scripttext	_OpSetMenuScroll	100.0000	100.0000	2	184f8d255993	0x2f4b0	100.0000	
 scripttext	_OpStackMessageWindow	100.0000	100.0000	1	db8a3bda592e	0x2fbc0	100.0000	
-scripttext	_OpStepListMenu	100.0000	100.0000	1	29868f1b18be	0x2fc70	100.0000	
+scripttext	_OpStepListMenu	100.0000	100.0000	2	443f19de7320	0x2fc70	100.0000	
 scripttext	_OpenScriptWindow	100.0000	100.0000	2	445948724378	0x2fb20	100.0000	
 scripttext	_PopScriptWindow	100.0000	100.0000	1	b38b51dabae4	0x2fc30	100.0000	
 scripttext	_RunScriptMenuHandler	100.0000	100.0000	3	9f419e5b8050	0x2f2d0	100.0000	
@@ -2234,9 +2234,9 @@ scriptvars	_CopyScriptLongVar	100.0000	100.0000	1	c787c19d75bf	0x3c040	100.0000
 scriptvars	_DrawDownCountdown	100.0000	100.0000	1	d1e2fe233f4a	0x3bbe0	100.0000	
 scriptvars	_FindCachedScriptEntry	100.0000	100.0000	3	0ed6b39b47ab	0x3b720	100.0000	
 scriptvars	_FindFavouredMember	100.0000	100.0000	3	f1b49bbecb92	0x3bc70	100.0000	
-scriptvars	_FinishScriptChoice	100.0000	100.0000	1	052cb203cd7b	0x3a800	100.0000	
-scriptvars	_FireCountdownEvent	100.0000	100.0000	2	e8746b95b39f	0x3bc10	100.0000	
-scriptvars	_FreeCallFrame	100.0000	100.0000	1	f881c5f91162	0x3c1e0	100.0000	
+scriptvars	_FinishScriptChoice	100.0000	100.0000	2	7346e588c960	0x3a800	100.0000	
+scriptvars	_FireCountdownEvent	100.0000	100.0000	3	616219e9b4dc	0x3bc10	100.0000	
+scriptvars	_FreeCallFrame	100.0000	100.0000	2	377d3c5ecd7f	0x3c1e0	100.0000	
 scriptvars	_FreeCallFrames	100.0000	100.0000	1	c1990c5abd05	0x3c190	100.0000	
 scriptvars	_FreeScriptBlock	100.0000	100.0000	1	474f418170fc	0x3ad60	100.0000	
 scriptvars	_GetScriptLongVar	100.0000	100.0000	1	cea5eb3446f6	0x3bfa0	100.0000	
@@ -2246,10 +2246,10 @@ scriptvars	_LoadScriptBlock	100.0000	100.0000	1	687a52a9dcac	0x3ad20	100.0000
 scriptvars	_MakeScriptEntry	100.0000	100.0000	1	dc15f645a550	0x3bd10	100.0000	
 scriptvars	_NewCallFrame	100.0000	100.0000	1	b0e7d8337726	0x3c160	100.0000	
 scriptvars	_NewScriptBlock	100.0000	100.0000	3	b71e23ba3ee0	0x3aa30	100.0000	
-scriptvars	_OpBeginChoices	100.0000	100.0000	1	dd81e5e4e414	0x3a750	100.0000	
+scriptvars	_OpBeginChoices	100.0000	100.0000	2	5fcabbd3274d	0x3a750	100.0000	
 scriptvars	_OpDrawImage	100.0000	100.0000	1	e1613d1f235d	0x3a4b0	100.0000	
 scriptvars	_OpEnableBackground	100.0000	100.0000	1	29da8a28bfd2	0x3a640	100.0000	
-scriptvars	_OpEndChoices	100.0000	100.0000	1	9ef38e2f0248	0x3a9a0	100.0000	
+scriptvars	_OpEndChoices	100.0000	100.0000	2	33ca64ce7add	0x3a9a0	100.0000	
 scriptvars	_OpFadeIn	100.0000	100.0000	3	447ef35e79a4	0x3a370	100.0000	
 scriptvars	_OpFadeOut	100.0000	100.0000	3	a0d118292bd3	0x3a3b0	100.0000	
 scriptvars	_OpFadeOutAndClear	100.0000	100.0000	4	0a509ce4b930	0x3a440	100.0000	
@@ -2261,9 +2261,9 @@ scriptvars	_OpGetWindowCursor	100.0000	100.0000	1	b490724781f1	0x3aeb0	100.0000
 scriptvars	_OpGetWindowIndent	100.0000	100.0000	1	cad423ccb6f7	0x3ae10	100.0000	
 scriptvars	_OpGetWindowScrollStep	100.0000	100.0000	1	48ac088a7b57	0x3ae60	100.0000	
 scriptvars	_OpGetWindowScrollTop	100.0000	100.0000	1	932f8ac9e278	0x3adc0	100.0000	
-scriptvars	_OpHideSprite	100.0000	100.0000	1	dd041efa3df8	0x3a350	100.0000	
+scriptvars	_OpHideSprite	100.0000	100.0000	2	845ac7cac4df	0x3a350	100.0000	
 scriptvars	_OpMaskScreenCells	100.0000	100.0000	1	b284394aecde	0x3a5b0	100.0000	
-scriptvars	_OpNextChoice	88.7216	88.7216	2	c020644c923e	0x3a870	88.7216	
+scriptvars	_OpNextChoice	88.7216	83.8247	3	76f729e436b7	0x3a870	88.7216	
 scriptvars	_OpPauseTickCounter	100.0000	100.0000	1	826aca9a69a5	0x3bb40	100.0000	
 scriptvars	_OpPeekPokeScratch	100.0000	100.0000	2	76eff52e9447	0x3bd40	100.0000	
 scriptvars	_OpPlayAnimation	100.0000	100.0000	1	3ce560d0129e	0x3a6e0	100.0000	
@@ -2275,7 +2275,7 @@ scriptvars	_OpPushGameState	100.0000	100.0000	1	874821f67846	0x3c150	100.0000
 scriptvars	_OpRefreshFieldScreen	100.0000	100.0000	2	70ee3bc9bf1e	0x3a3f0	100.0000	
 scriptvars	_OpResetMask	100.0000	100.0000	1	4213cad1519e	0x3a4a0	100.0000	
 scriptvars	_OpRestoreBackground	100.0000	100.0000	3	62a66f5a6106	0x3c450	100.0000	
-scriptvars	_OpRunChoiceMenu	100.0000	100.0000	1	742de8e7c3cd	0x3a9c0	100.0000	
+scriptvars	_OpRunChoiceMenu	100.0000	100.0000	2	6aeac1c0edb9	0x3a9c0	100.0000	
 scriptvars	_OpSaveRestoreScreen	100.0000	100.0000	1	61307a2d692f	0x3c5a0	100.0000	
 scriptvars	_OpScrollWindow	100.0000	100.0000	1	a50c4fe21560	0x3ad90	100.0000	
 scriptvars	_OpSetMessageHook	100.0000	100.0000	2	2705ee0130a4	0x3b590	100.0000	
@@ -2298,13 +2298,13 @@ scriptvars	_PreloadScriptFiles	100.0000	100.0000	1	8530907fd1ca	0x3b6c0	100.0000
 scriptvars	_PurgeScriptFiles	100.0000	100.0000	2	f3d8e574a318	0x3b840	100.0000	
 scriptvars	_PushCallFrame	100.0000	100.0000	1	ddcb6fc79a21	0x3c1f0	100.0000	
 scriptvars	_ReadScriptBlock	100.0000	100.0000	1	7e5f9134017e	0x3aa90	100.0000	
-scriptvars	_ReadScriptEntry	100.0000	100.0000	1	f4d3dbf54236	0x3ab10	100.0000	
+scriptvars	_ReadScriptEntry	100.0000	99.8551	1	f4d3dbf54236	0x3ab10	100.0000	
 scriptvars	_ReleaseScriptFiles	100.0000	100.0000	2	0c7264e86d57	0x3b810	100.0000	
 scriptvars	_ResizeScriptEntry	98.0000	98.0000	3	f5be17a66e26	0x3abc0	100.0000	
 scriptvars	_RestoreSystemVars	100.0000	100.0000	1	22d64fae0e92	0x3bf30	100.0000	
-scriptvars	_RunActorScene	100.0000	100.0000	4	e9b918779354	0x3b450	100.0000	
+scriptvars	_RunActorScene	100.0000	100.0000	5	26f560f73275	0x3b450	100.0000	
 scriptvars	_RunMessageHook	100.0000	100.0000	1	1cea2890f4a3	0x3b5e0	100.0000	
-scriptvars	_RunScriptScene	100.0000	100.0000	6	f057f6c557e0	0x3afe0	100.0000	
+scriptvars	_RunScriptScene	100.0000	100.0000	7	863e5d100c37	0x3afe0	100.0000	
 scriptvars	_RunTextScript	100.0000	100.0000	1	d87844d05259	0x3b8c0	100.0000	
 scriptvars	_SaveSystemVars	100.0000	100.0000	1	4db93163f469	0x3bf00	100.0000	
 scriptvars	_ScriptEntryPc	100.0000	100.0000	4	d841158f9daa	0x3bcf0	100.0000	
@@ -2317,7 +2317,7 @@ scriptvars	_SetWindowOption	100.0000	100.0000	1	5eee492de1c1	0x3a740	100.0000
 scriptvars	_ShiftScriptEntries	100.0000	100.0000	3	15a33aa0ca34	0x3ac90	100.0000	
 scriptvars	_StartActorScene	100.0000	100.0000	4	a1b241551bf5	0x3b340	100.0000	
 scriptvars	_StartDebugScene	100.0000	100.0000	1	43e0bede29c8	0x3af40	100.0000	
-scriptvars	_StepOnTextPeriod	100.0000	100.0000	3	a893399802c5	0x3b240	100.0000	
+scriptvars	_StepOnTextPeriod	100.0000	100.0000	4	2830ab2c8777	0x3b240	100.0000	
 scriptvars	_SwapScriptLongVars	100.0000	100.0000	2	c5e58ff6a743	0x3bfc0	100.0000	
 scriptvars	_SwapTopCallFrames	100.0000	100.0000	1	6508159b51b9	0x3c310	100.0000	
 scriptvars	_ThawObjectsForScript	100.0000	100.0000	1	f456c20402dc	0x3af20	100.0000	
@@ -2334,27 +2334,27 @@ shot	_GetShotScaledPosition	100.0000	100.0000	1	2527e804babc	0x5810	100.0000
 shot	_LaunchShot	100.0000	100.0000	1	7ca51f9d213c	0x5980	100.0000	
 shot	_LoadEffectTables	100.0000	100.0000	1	020dfc042541	0x5930	100.0000	
 shot	_LoadShotTable	100.0000	100.0000	2	2d8047dcaea6	0x5480	100.0000	
-shot	_RunClosingEffectState	100.0000	100.0000	1	9d087789fb89	0x5a30	100.0000	
-shot	_RunShotState	100.0000	100.0000	1	deb7df7abcb0	0x59d0	100.0000	
+shot	_RunClosingEffectState	100.0000	100.0000	2	55779c7371d0	0x5a30	100.0000	
+shot	_RunShotState	100.0000	100.0000	2	91e4422c5f15	0x59d0	100.0000	
 shot	_SetShotPath	100.0000	100.0000	1	e0e40651b0ab	0x54f0	100.0000	
 shot	_SetShotPosition	100.0000	100.0000	1	5d47141a5196	0x58d0	100.0000	
 shot	_SetShotPower	100.0000	100.0000	1	5b0b36881851	0x5900	100.0000	
 shot	_ShotRelativePoint	100.0000	100.0000	1	e278fd21aefe	0x57c0	100.0000	
 shot	_StartShot	100.0000	100.0000	3	0762ead00fee	0x5620	100.0000	
-shot	_StepShot	82.6923	75.9539	1	653dffe37a31	0x56e0	82.6923	
+shot	_StepShot	100.0000	89.6462	2	3a51a63fe14c	0x56e0	100.0000	
 shot	_StopShot	100.0000	100.0000	1	eb752c1ebfec	0x5800	100.0000	
 skillattack	_ApplySkillResistanceOutcome	100.0000	100.0000	1	1909e14736cc	0xaf70	100.0000	
 skillattack	_ComputeSkillDamage	100.0000	98.4266	6	f1a1a20e346d	0xac50	100.0000	
-skillattack	_ResolveSkillAttack	100.0000	100.0000	4	4758c7a873b2	0xafb0	100.0000	
-skillattack	_RollSkillCondition	100.0000	100.0000	7	fb08725853b2	0xae20	100.0000	
-skillattack	_RollSkillHit	98.6216	98.6216	8	f2670fb3f384	0xaa20	98.7027	
+skillattack	_ResolveSkillAttack	100.0000	100.0000	5	2d1d82fd3b44	0xafb0	100.0000	
+skillattack	_RollSkillCondition	100.0000	100.0000	8	adf72489b805	0xae20	100.0000	
+skillattack	_RollSkillHit	98.6216	98.6216	9	5411280029a2	0xaa20	98.7027	
 skilluse	_AddCombatTarget	100.0000	100.0000	2	c2fc496e8a58	0x2aa50	100.0000	
 skilluse	_AddObjectTargetsAtCell	100.0000	100.0000	1	1460f0b364cd	0x2caa0	100.0000	
 skilluse	_AddPartyTargetsAtCell	100.0000	100.0000	2	cebb7606f2e9	0x2cb00	100.0000	
 skilluse	_AddRelatedCombatTargets	100.0000	100.0000	3	494fc9498460	0x2c9e0	100.0000	
 skilluse	_AlertActor	100.0000	100.0000	3	51724b05764e	0x2ac50	100.0000	
 skilluse	_ApplySkillEffect	100.0000	100.0000	2	6f21de2631d4	0x2d480	100.0000	
-skilluse	_CannotPaySkill	100.0000	100.0000	3	4dd8ed05369c	0x2c2c0	100.0000	
+skilluse	_CannotPaySkill	100.0000	100.0000	4	c4bb0fae897e	0x2c2c0	100.0000	
 skilluse	_ChangeBattleStat	100.0000	100.0000	1	1ea700acabea	0x2d340	100.0000	
 skilluse	_ClearBattleTally	100.0000	100.0000	4	9b4144121d3b	0x2b680	100.0000	
 skilluse	_CollectTargets	100.0000	100.0000	1	d302a45a4653	0x2c740	100.0000	
@@ -2365,23 +2365,23 @@ skilluse	_CountCombatTargets	100.0000	100.0000	1	b80d149d849d	0x2aa40	100.0000
 skilluse	_CountUsableMemberSkills	100.0000	100.0000	9	bcde36ccdecc	0x2c6c0	100.0000	
 skilluse	_DeferObjectRemoval	100.0000	100.0000	1	aec605d81b5f	0x2c2a0	100.0000	
 skilluse	_DropFlaggedMember	100.0000	100.0000	5	3c0d399460c6	0x2c250	100.0000	
-skilluse	_FlashHitObject	100.0000	100.0000	1	6b5634731a28	0x2ac20	100.0000	
+skilluse	_FlashHitObject	100.0000	100.0000	2	560b50cb1b12	0x2ac20	100.0000	
 skilluse	_GetCombatant	100.0000	100.0000	2	f88b426a0e5c	0x2abe0	100.0000	
 skilluse	_GetCombatantCoord	100.0000	100.0000	1	6304702aca77	0x2aba0	100.0000	
-skilluse	_IsSkillBlocked	100.0000	100.0000	5	32aeda8fe23c	0x2c2f0	100.0000	
-skilluse	_IsSkillIdBlocked	100.0000	100.0000	6	86add35f991c	0x2c350	100.0000	
+skilluse	_IsSkillBlocked	100.0000	100.0000	6	7d59dfa9916d	0x2c2f0	100.0000	
+skilluse	_IsSkillIdBlocked	100.0000	100.0000	7	2ab846a1961d	0x2c350	100.0000	
 skilluse	_IsSkillUsableNow	100.0000	100.0000	4	92f1bcb44ab9	0x2c440	100.0000	
 skilluse	_MemberSkillMenuHandler	100.0000	100.0000	8	b40371dfe4bc	0x2c500	100.0000	
 skilluse	_NextTarget	100.0000	100.0000	1	241e34e5a258	0x2aaa0	100.0000	
 skilluse	_OpenMemberSkillMenu	100.0000	100.0000	5	8f06e86daede	0x2c4a0	100.0000	
 skilluse	_PaySkillCost	100.0000	100.0000	2	8849e576dd44	0x2c3c0	100.0000	
 skilluse	_PlayActionEffect	100.0000	100.0000	5	69ab1ea1b824	0x2c050	100.0000	
-skilluse	_PushPromptState	100.0000	100.0000	1	9c36853ef043	0x2ab40	100.0000	
+skilluse	_PushPromptState	100.0000	100.0000	2	6ad0c63fffd0	0x2ab40	100.0000	
 skilluse	_RemoveCombatTarget	100.0000	100.0000	2	019b41001958	0x2aae0	100.0000	
 skilluse	_ReportBattleTally	100.0000	100.0000	2	a1184d4eb7bb	0x2b5f0	100.0000	
 skilluse	_ResolveCombatAction	94.6230	94.6230	21	9aa8f1a93881	0x2ac90	94.6230	
 skilluse	_ResolveKnockout	99.6667	99.6667	9	5157a224c938	0x2b490	99.6667	
-skilluse	_RunBattleAction	96.4543	96.4543	20	d580033de04a	0x2b6a0	96.4543	
+skilluse	_RunBattleAction	100.0000	100.0000	26	08c7a0fc49b0	0x2b6a0	100.0000	
 skilluse	_SetActionOutcome	100.0000	100.0000	1	69ab7be48b5b	0x2c2b0	100.0000	
 skilluse	_SetWorldMapActive	100.0000	100.0000	1	da2e7e2ed80d	0x2aa20	100.0000	
 skilluse	_ShowKnockoutMessage	100.0000	100.0000	2	0ebefd906d5d	0x2c210	100.0000	
@@ -2397,8 +2397,8 @@ skilluse	_UseKind14Skill	100.0000	100.0000	6	50254d3d8754	0x2d6a0	100.0000
 skilluse	_UseResetBattleStatsSkill	100.0000	100.0000	5	198b391fb3f6	0x2d400	100.0000	
 skilluse	_UseRestoreSkill	100.0000	100.0000	6	3227bf722c6e	0x2ceb0	100.0000	
 sprite	_FreeSpriteImages	100.0000	100.0000	3	67391d8e7b90	0x58820	100.0000	
-sprite	_IsSpriteFrameLoaded	100.0000	100.0000	4	2431484388bb	0x58870	100.0000	
-sprite	_IsSpritePlaced	100.0000	100.0000	3	7f2b74600142	0x58800	100.0000	
+sprite	_IsSpriteFrameLoaded	100.0000	100.0000	5	ca3289abefdf	0x58870	100.0000	
+sprite	_IsSpritePlaced	100.0000	100.0000	4	bcdc4894d016	0x58800	100.0000	
 sprite	_LoadSpriteFrames	100.0000	100.0000	4	709a605b455b	0x588c0	100.0000	
 sprite	_PlaceSprite	100.0000	100.0000	3	35b7f235e02a	0x58780	100.0000	
 sprite	_UnplaceAllSprites	77.0833	77.0833	3	8bed1c83197c	0x586d0	77.0833	
@@ -2431,7 +2431,7 @@ statusdraw	_DrawPartyStatusSlot	100.0000	100.0000	4	58f8426a6268	0x3e1f0	100.000
 statusdraw	_FlushStatusRedraw	100.0000	100.0000	2	95b1a76f0f59	0x3e360	100.0000	
 statusdraw	_LockStatusRedraw	100.0000	100.0000	1	2a461141c2da	0x3e680	100.0000	
 statusdraw	_PollPartySlotSelection	100.0000	100.0000	2	1aec1e85b36a	0x3e590	100.0000	
-statusdraw	_PollTextPartySlotSelection	99.4558	99.4558	2	2f2a2f8ded95	0x3e3c0	99.4558	
+statusdraw	_PollTextPartySlotSelection	99.4558	96.2585	2	2f2a2f8ded95	0x3e3c0	99.4558	
 statusdraw	_RedrawPartyStatus	100.0000	100.0000	2	ecc41c9e75c2	0x3e160	100.0000	
 statusdraw	_RefreshStatusPanel	100.0000	100.0000	2	7a92bb25b117	0x3e390	100.0000	
 statusdraw	_RequestStatusRedraw	100.0000	100.0000	1	444485f37281	0x3e6a0	100.0000	
@@ -2457,7 +2457,7 @@ statuspanel	_DrawBattleStatColumn	100.0000	100.0000	1	49e17f763d77	0x42920	100.0
 statuspanel	_DrawBattleStatsPanel	100.0000	100.0000	6	1b613ebc6678	0x42a00	100.0000	
 statuspanel	_DrawStatBar	100.0000	100.0000	2	a2ebb38f0efd	0x42520	100.0000	
 statuspanel	_DrawStatBarSegment	100.0000	100.0000	2	be26fe74e9c8	0x425c0	100.0000	
-statuspanel	_DrawStatLine	100.0000	100.0000	5	92c01e0d41fc	0x42830	100.0000	
+statuspanel	_DrawStatLine	100.0000	99.9420	5	92c01e0d41fc	0x42830	100.0000	
 statuspanel	_DrawStatList	100.0000	100.0000	5	792baf415af5	0x42450	100.0000	
 statuspanel	_DrawStatTotals	100.0000	100.0000	2	50fce968537d	0x42780	100.0000	
 statuspanel	_DrawStatusCapacity	100.0000	100.0000	3	47cb93049c4a	0x41ee0	100.0000	
@@ -2471,14 +2471,14 @@ statuspanel	_DrawStatusPools	100.0000	100.0000	2	a646008498c6	0x41ba0	100.0000
 statuspanel	_DrawStatusScreen	100.0000	100.0000	3	a68dde9fa6ae	0x42090	100.0000	
 statuspanel	_DrawStatusVitals	100.0000	100.0000	1	c14da7b19cb2	0x41cf0	100.0000	
 statuspanel	_OpenStatListWindow	100.0000	100.0000	1	252fbc3687b6	0x42670	100.0000	
-statuspanel	_ResumeStatusPage	100.0000	100.0000	1	18ab69c3eaa2	0x423e0	100.0000	
+statuspanel	_ResumeStatusPage	100.0000	100.0000	2	dc1b562cdc7e	0x423e0	100.0000	
 statuspanel	_RunAlignmentPage	100.0000	100.0000	2	ccb11ade72d4	0x42b00	100.0000	
 statuspanel	_RunStatPage	100.0000	100.0000	2	96eb87143e6d	0x426a0	100.0000	
 statuspanel	_RunStatusCommands	100.0000	100.0000	1	6945047e3007	0x42200	100.0000	
 statusscreen	_EnterStatusScreen	100.0000	100.0000	2	e0a3d85a3653	0x16fc0	100.0000	
 statusscreen	_LeaveStatusScreen	100.0000	100.0000	2	ae33b705870f	0x16ff0	100.0000	
-statusscreen	_ReplaceRosterMember	99.8361	99.8361	1	6c2a5d015f53	0x17090	99.8361	
-statusscreen	_RunDismissMenuState	100.0000	100.0000	1	4bdd4ba858cf	0x17030	100.0000	
+statusscreen	_ReplaceRosterMember	99.8361	99.8361	2	156cc152ac76	0x17090	99.8361	
+statusscreen	_RunDismissMenuState	100.0000	100.0000	2	4efa1f87e4eb	0x17030	100.0000	
 subscreen	_InitFieldPanels	100.0000	100.0000	1	2a73ffa45f50	0x1a1b0	100.0000	
 subscreen	_ResetSubscreen	100.0000	100.0000	1	11fe1e025852	0x1a1d0	100.0000	
 subscreen	_SetSubscreenActive	100.0000	100.0000	1	6a7915c0ac24	0x1a1e0	100.0000	
@@ -2512,7 +2512,7 @@ textstate	_TickTextDelay	100.0000	100.0000	2	7dbc2a0ffc07	0x329e0	100.0000
 textstate	_TickTextPeriod	100.0000	100.0000	1	4f52f0f797ba	0x32cc0	100.0000	
 texttoken	_GetTextToken	100.0000	100.0000	5	f33dc559e558	0x36700	100.0000	
 texttoken	_ReadTextToken	100.0000	100.0000	3	7380a792cc50	0x36920	100.0000	
-texture	_LoadTexture	96.5598	96.5598	7	1898515a9b77	0x577a0	96.5598	
+texture	_LoadTexture	96.5598	96.5598	8	98019527779d	0x577a0	96.5598	
 texturebitmap	_OpenTextureBitmap	100.0000	100.0000	7	ada19514827b	0x57a70	100.0000	
 training	_AddTrainingPoints	100.0000	100.0000	1	84845b3963f4	0x1c6c0	100.0000	
 training	_AddTrainingPointsRaw	100.0000	100.0000	2	5bc28d5ee5e8	0x1c690	100.0000	
@@ -2526,33 +2526,33 @@ training	_RaiseAffiliationLevels	100.0000	100.0000	2	59c8738643db	0x1c8d0	100.00
 training	_TakeLearnableSkill	100.0000	100.0000	3	1291de355438	0x1c330	100.0000	
 training	_TrainingThreshold	100.0000	100.0000	1	466d0a0b0508	0x1c650	100.0000	
 treasurebox	_PrepareViewedTreasureBox	100.0000	100.0000	2	9af3fafafd6a	0x1aaa0	100.0000	
-treasurestate	_IsHotspotTreasureOpen	87.2917	87.2917	2	ab9ab4d9c9ec	0x1ab40	87.2917	
+treasurestate	_IsHotspotTreasureOpen	87.2917	87.2917	3	b9191fac9a7e	0x1ab40	87.2917	
 vec3	_CellToField	100.0000	54.2121	1	8a7a574c2567	0xd650	100.0000	
 vec3	_CheckFieldBounds	100.0000	100.0000	1	8f0dd771c861	0xd580	100.0000	
 vec3	_ClampToField	100.0000	100.0000	1	43c52033bff9	0xd5f0	100.0000	
 vec3	_ClearBody	100.0000	100.0000	1	7598f6466405	0xd5d0	100.0000	
-vec3	_MoveBySubVelocity	100.0000	100.0000	1	1bcccf9ef456	0xd460	100.0000	
+vec3	_MoveBySubVelocity	100.0000	100.0000	2	9145529f6e86	0xd460	100.0000	
 vec3	_ProjectFloorPoint	100.0000	100.0000	1	73833ce309fa	0xd440	100.0000	
 vec3	_ProjectPoint	100.0000	100.0000	1	f843c6316e68	0xd3f0	100.0000	
 vec3	_RotateOffset	100.0000	100.0000	1	a135c53e1cc5	0xd700	100.0000	
 vec3	_StepBody	100.0000	100.0000	1	111c12cf82d1	0xd510	100.0000	
 vec3	_UnprojectPoint	100.0000	51.5000	2	475908778903	0xd6b0	100.0000	
-videostate	_ClipViewportRect	100.0000	100.0000	1	b9f9c6d7c02c	0x45b80	100.0000	
+videostate	_ClipViewportRect	100.0000	100.0000	2	6a677ef2ef93	0x45b80	100.0000	
 videostate	_GetPlaneData	100.0000	100.0000	2	44758c6f927b	0x45b40	100.0000	
 videostate	_GetPlaneHeader	100.0000	100.0000	2	bf6f54faaf9a	0x45b60	100.0000	
 videostate	_RestoreVideoState	100.0000	100.0000	1	5ac645b9d98c	0x45ba0	100.0000	
 videostate	_SaveVideoState	100.0000	100.0000	1	5a25ea57e86c	0x45b90	100.0000	
 vram	_ClearMaskSeam	100.0000	98.8889	1	e60937b3e763	0x2c70	100.0000	
 vram	_ClearMaskView	100.0000	100.0000	1	0eb19b9bbd26	0x2c60	100.0000	
-vram	_CopySpriteBitmap	100.0000	100.0000	1	f3247b31fbad	0x33f0	100.0000	
+vram	_CopySpriteBitmap	100.0000	99.9231	1	f3247b31fbad	0x33f0	100.0000	
 vram	_FindPaletteEntry	100.0000	100.0000	1	89ed5ff0f9ae	0x2f10	100.0000	
 vram	_FreeImageFile	100.0000	100.0000	1	4e43f19536dd	0x3330	100.0000	
-vram	_FreeImageHandle	100.0000	100.0000	1	ef835d19b405	0x3120	100.0000	
+vram	_FreeImageHandle	100.0000	100.0000	2	4221502dbd34	0x3120	100.0000	
 vram	_GetAreaPaletteMode	100.0000	100.0000	1	e768d61ee263	0x3040	100.0000	
-vram	_GetLegacyImageBlockResult	100.0000	100.0000	2	bea9adc8458d	0x3350	100.0000	
-vram	_GetLegacyImageHandleResult	100.0000	100.0000	2	ba56156e7b60	0x3340	100.0000	
-vram	_GetLegacyImagePaletteResult	100.0000	100.0000	2	e6c1f1d2b820	0x3110	100.0000	
-vram	_GetLegacySpriteCopyResult	100.0000	100.0000	2	9817cb0df697	0x3360	100.0000	
+vram	_GetLegacyImageBlockResult	100.0000	100.0000	3	fd6e47ba8b4f	0x3350	100.0000	
+vram	_GetLegacyImageHandleResult	100.0000	100.0000	3	53f3a6d858ca	0x3340	100.0000	
+vram	_GetLegacyImagePaletteResult	100.0000	100.0000	3	bdef0ee473c9	0x3110	100.0000	
+vram	_GetLegacySpriteCopyResult	100.0000	100.0000	3	c54b3cf29e5d	0x3360	100.0000	
 vram	_GetMaskByte	100.0000	100.0000	3	5cca7be7dd0e	0x2d60	100.0000	
 vram	_GetMaskColumn	100.0000	100.0000	3	f1072875d9a1	0x2ce0	100.0000	
 vram	_GetViewPaletteMode	100.0000	100.0000	1	bdaf27c2feac	0x3060	100.0000	
@@ -2576,7 +2576,7 @@ vram	_RestorePaletteState	100.0000	100.0000	2	d95d954f5697	0x2f00	100.0000
 vram	_RetainPaletteEntry	100.0000	100.0000	1	4e675d47be27	0x2f20	100.0000	
 vram	_SavePaletteState	100.0000	100.0000	2	11516123a575	0x2ef0	100.0000	
 vram	_SetAreaPaletteMode	100.0000	100.0000	1	631640ab2abe	0x3020	100.0000	
-vram	_SetPaletteColor	100.0000	100.0000	1	14a7b783502e	0x2f40	100.0000	
+vram	_SetPaletteColor	100.0000	100.0000	2	8f23774660c1	0x2f40	100.0000	
 vram	_SetPaletteEntry	100.0000	100.0000	1	434aecf2a100	0x2f80	100.0000	
 vram	_SetViewPaletteMode	100.0000	100.0000	1	19ff22885c4b	0x3050	100.0000	
 vram	_SkipImagePaletteCleanup	100.0000	100.0000	1	ec349599a6ba	0x3100	100.0000	
@@ -2590,23 +2590,23 @@ vramaccess	@RestoreDrawState@4	100.0000	100.0000	1	cpp:c6d5f20b7d46	0x28b0	100.0
 vramaccess	@RestoreScreenState@4	100.0000	100.0000	1	cpp:c6d5f20b7d46	0x29d0	100.0000	
 vramaccess	_AllocRegionScreenSave	100.0000	100.0000	2	8910a362b885	0x2930	100.0000	
 vramaccess	_AllocScreenSaveBuffer	100.0000	100.0000	3	9553556c8f8f	0x2900	100.0000	
-vramaccess	_AllocScreenSaveHandle	100.0000	100.0000	3	061a1eed26cf	0x28c0	100.0000	
-vramaccess	_GetLegacyScreenStateToken	100.0000	100.0000	2	4eaebdc530c9	0x29b0	100.0000	
+vramaccess	_AllocScreenSaveHandle	100.0000	99.4783	3	061a1eed26cf	0x28c0	100.0000	
+vramaccess	_GetLegacyScreenStateToken	100.0000	100.0000	3	6e8b142dc054	0x29b0	100.0000	
 vramaccess	_InitCheckerPatterns	100.0000	100.0000	1	9374a9e5866e	0x2970	100.0000	
-vramaccess	_SaveCellState	100.0000	100.0000	1	4de05dcd8382	0x29c0	100.0000	
-vramaccess	_SaveDrawState	100.0000	100.0000	1	9511577350a1	0x28a0	100.0000	
-vramaccess	_SaveScreenState	100.0000	100.0000	1	c115c795f672	0x29a0	100.0000	
+vramaccess	_SaveCellState	100.0000	100.0000	2	c88b6b3382a6	0x29c0	100.0000	
+vramaccess	_SaveDrawState	100.0000	100.0000	2	016377c609b9	0x28a0	100.0000	
+vramaccess	_SaveScreenState	100.0000	100.0000	2	360c0e4c7727	0x29a0	100.0000	
 vramaccess	_SkipLegacyCellRestore	100.0000	100.0000	1	62a0fde884cb	0x29f0	100.0000	
 vramaccess	_SkipLegacyScreenRestore	100.0000	100.0000	1	8d894399978c	0x29e0	100.0000	
 vramcell	_AndCellMask	100.0000	100.0000	1	4faba26ef368	0x2320	100.0000	
 vramcell	_BuildCellMask	100.0000	100.0000	1	a001bbfd8519	0x22e0	100.0000	
 vramcell	_FillCell	100.0000	100.0000	1	1522a4e31a72	0x2360	100.0000	
-vramcell	_GetLegacyCellHeightResult	100.0000	100.0000	2	8acae28aee9d	0x24d0	100.0000	
-vramcell	_GetLegacyCellMaskResult	100.0000	100.0000	2	d657320b7eba	0x24b0	100.0000	
-vramcell	_GetLegacyCellPackResult	100.0000	100.0000	2	2d16a4a49aa3	0x24a0	100.0000	
-vramcell	_GetLegacyCellPixelResult	100.0000	100.0000	2	f40a531c4896	0x24e0	100.0000	
-vramcell	_GetLegacyCellPlaneResult	100.0000	100.0000	2	bd3f487f1885	0x24f0	100.0000	
-vramcell	_GetLegacyCellWidthResult	100.0000	100.0000	2	2f22107a8cab	0x24c0	100.0000	
+vramcell	_GetLegacyCellHeightResult	100.0000	100.0000	3	5f16acea0bc6	0x24d0	100.0000	
+vramcell	_GetLegacyCellMaskResult	100.0000	100.0000	3	5ec675c2c645	0x24b0	100.0000	
+vramcell	_GetLegacyCellPackResult	100.0000	100.0000	3	63352ccdc165	0x24a0	100.0000	
+vramcell	_GetLegacyCellPixelResult	100.0000	100.0000	3	c1091be765bd	0x24e0	100.0000	
+vramcell	_GetLegacyCellPlaneResult	100.0000	100.0000	3	9cc778bc509c	0x24f0	100.0000	
+vramcell	_GetLegacyCellWidthResult	100.0000	100.0000	3	ad02377a561d	0x24c0	100.0000	
 vramcell	_PackCell	100.0000	100.0000	2	8dd55f136be4	0x2370	100.0000	
 vramcell	_PackCell1	100.0000	100.0000	2	a0115bdb5ee3	0x2450	100.0000	
 vramcell	_PackCell2	100.0000	100.0000	2	8d26ae5ceafe	0x2400	100.0000	
@@ -2616,15 +2616,15 @@ waitstate	_FadeScreenAndWait	100.0000	100.0000	2	94284f7d797c	0x1a9c0	100.0000
 waitstate	_PushMessageBox	100.0000	100.0000	1	2cf300591606	0x1a9f0	100.0000	
 waitstate	_PushScreenFade	100.0000	100.0000	2	6e5af05ad3d2	0x1a990	100.0000	
 waitstate	_PushWaitState	100.0000	100.0000	2	fdf8bcbd44a4	0x1a930	100.0000	
-waitstate	_RunMessageBoxState	100.0000	100.0000	2	3de6f2a5a93a	0x1aa40	100.0000	
-waitstate	_RunScreenFadeState	100.0000	100.0000	1	8c38a5993417	0x1a960	100.0000	
-waitstate	_StepWaitState	100.0000	100.0000	3	4b11dc60400b	0x1a870	100.0000	
+waitstate	_RunMessageBoxState	100.0000	100.0000	3	df6f74c303a1	0x1aa40	100.0000	
+waitstate	_RunScreenFadeState	100.0000	100.0000	2	5ffcc67ad3a3	0x1a960	100.0000	
+waitstate	_StepWaitState	100.0000	100.0000	4	b51a9a891a00	0x1a870	100.0000	
 walltexture	_LoadWallTextures	100.0000	100.0000	1	ddc4b33bcce4	0x57e80	100.0000	
 weaponattack	_ComputeWeaponDamage	100.0000	100.0000	6	c0f7ae411313	0xa270	100.0000	
-weaponattack	_ResolveWeaponAttack	100.0000	100.0000	4	2b2ab1a2f5b9	0xa8a0	100.0000	
-weaponattack	_RollExceptionalWeaponAttack	100.0000	99.4444	5	980b28feb8d3	0xa690	100.0000	
-weaponattack	_RollWeaponCondition	100.0000	100.0000	8	4a95cca4b7f0	0xa120	100.0000	
-weaponattack	_RollWeaponHit	100.0000	100.0000	8	603537d7b73b	0xa490	100.0000	
+weaponattack	_ResolveWeaponAttack	100.0000	100.0000	5	8c25c39ff345	0xa8a0	100.0000	
+weaponattack	_RollExceptionalWeaponAttack	100.0000	99.4183	5	980b28feb8d3	0xa690	100.0000	
+weaponattack	_RollWeaponCondition	100.0000	100.0000	9	73cf252191be	0xa120	100.0000	
+weaponattack	_RollWeaponHit	100.0000	100.0000	9	676bae9febb3	0xa490	100.0000	
 windowcolor	_BeginWindowAltText	100.0000	100.0000	1	ad7b58476188	0x2ebc0	100.0000	
 windowcolor	_BeginWindowInstantText	100.0000	100.0000	1	467786c94865	0x2ec10	100.0000	
 windowcolor	_EndWindowAltText	100.0000	100.0000	1	2780f8ebf1ee	0x2ebf0	100.0000	
@@ -2647,7 +2647,7 @@ winmain	??1CIme@@QAE@XZ	100.0000	100.0000	1	cpp:cb01e3a51116	0x51150	100.0000
 winmain	??_H@YGXPAXIHP6EX0@Z@Z	100.0000	100.0000	1	cpp:f39adae43872	0x511e0	100.0000	
 winmain	?AllocWallMesh@@YAXPAUMesh@@@Z	100.0000	100.0000	2	b262e11bf191	0x4f660	100.0000	
 winmain	?AnimateDoor@@YAHPAUMesh@@@Z	100.0000	100.0000	2	c983dafc3ac8	0x4b010	100.0000	
-winmain	?AnimateMove@@YAHXZ	100.0000	100.0000	1	ce825e74d3d4	0x4ad60	100.0000	
+winmain	?AnimateMove@@YAHXZ	100.0000	100.0000	2	ecdcfd14ff6b	0x4ad60	100.0000	
 winmain	?BlitFieldBackground@@YAXXZ	100.0000	100.0000	2	e335677bfd40	0x4d9b0	100.0000	
 winmain	?BlitScreenLayers@@YAXHHI@Z	100.0000	100.0000	2	7c78e9a4cc6d	0x4e1d0	100.0000	
 winmain	?BlitTextPlanes@@YAHHHI@Z	100.0000	100.0000	6	2bb6e8da6774	0x4e2d0	100.0000	
@@ -2656,7 +2656,7 @@ winmain	?BuildRoomGeometry@@YAXXZ	100.0000	100.0000	10	22c388df77c8	0x4f780	100.
 winmain	?BuildRoomMesh@@YAXPAUMesh@@HH@Z	100.0000	100.0000	5	383547ba97a3	0x4f3f0	100.0000	
 winmain	?ClickMenuBar@@YAHII@Z	100.0000	100.0000	3	664466109f56	0x4fcd0	100.0000	
 winmain	?ConfineCursor@@YAXXZ	100.0000	100.0000	2	12f93c37f57d	0x49840	100.0000	
-winmain	?CreateMainWindow@@YAHPAX@Z	100.0000	100.0000	3	6a8b0e695a80	0x50110	100.0000	
+winmain	?CreateMainWindow@@YAHPAX@Z	100.0000	100.0000	4	ba2ab62ad4ed	0x50110	100.0000	
 winmain	?DrawDebugText@@YAXPBDHH@Z	100.0000	100.0000	1	7eea3e140f7a	0x499e0	100.0000	
 winmain	?DrawDragOutline@@YAXXZ	100.0000	100.0000	5	998970b36171	0x4ba70	100.0000	
 winmain	?DrawHotspotMarks@@YAXXZ	100.0000	100.0000	4	7f4c0946daf9	0x4d630	100.0000	
@@ -2670,15 +2670,15 @@ winmain	?Enable@CIme@@QAEHPAXH@Z	100.0000	100.0000	1	cpp:6513158aaf51	0x51210	10
 winmain	?FreeMesh@@YAXPAUMesh@@@Z	100.0000	100.0000	1	469ee8015621	0x4f3b0	100.0000	
 winmain	?GetFrameCount@@YAFXZ	100.0000	100.0000	1	5abad0cad2d7	0x49820	100.0000	
 winmain	?HandleInput@@YAXE@Z	100.0000	100.0000	6	cda26d4adacb	0x50540	100.0000	
-winmain	?InitDirectX@@YAHXZ	100.0000	100.0000	1	596a22316234	0x4a4f0	100.0000	
-winmain	?LoadGraphics@@YAHXZ	100.0000	100.0000	5	79bdcd5d0fb5	0x50ac0	100.0000	
+winmain	?InitDirectX@@YAHXZ	100.0000	100.0000	2	f82c7cd886df	0x4a4f0	100.0000	
+winmain	?LoadGraphics@@YAHXZ	100.0000	100.0000	6	62a5f9158665	0x50ac0	100.0000	
 winmain	?MainWindowProc@@YGJPAXIIJ@Z	100.0000	100.0000	1	ce30e7b6b7b9	0x4fe90	100.0000	
-winmain	?MoveBackCommand@@YAHF@Z	100.0000	100.0000	1	e5e7bdeca6b6	0x502d0	100.0000	
-winmain	?MoveForwardCommand@@YAHF@Z	100.0000	100.0000	1	67e028b18538	0x50220	100.0000	
-winmain	?MoveLeftCommand@@YAHF@Z	100.0000	100.0000	1	7054aa94028d	0x50390	100.0000	
-winmain	?MoveRightCommand@@YAHF@Z	100.0000	100.0000	1	ae6b9d163620	0x50450	100.0000	
-winmain	?NoMoveCommand@@YAHF@Z	100.0000	100.0000	1	702dc80ee493	0x49f40	100.0000	
-winmain	?NoMoveStep@@YAHPAM@Z	100.0000	100.0000	1	7e4aede1fb09	0x4ad30	100.0000	
+winmain	?MoveBackCommand@@YAHF@Z	100.0000	100.0000	2	7a80499d3775	0x502d0	100.0000	
+winmain	?MoveForwardCommand@@YAHF@Z	100.0000	100.0000	2	db6b15173416	0x50220	100.0000	
+winmain	?MoveLeftCommand@@YAHF@Z	100.0000	100.0000	2	2c3b3c22767f	0x50390	100.0000	
+winmain	?MoveRightCommand@@YAHF@Z	100.0000	100.0000	2	6f179a118363	0x50450	100.0000	
+winmain	?NoMoveCommand@@YAHF@Z	100.0000	100.0000	2	eab8ad7793c8	0x49f40	100.0000	
+winmain	?NoMoveStep@@YAHPAM@Z	100.0000	100.0000	2	e4f408a0a40d	0x4ad30	100.0000	
 winmain	?PollInput@@YAEXZ	100.0000	100.0000	2	426348505706	0x501e0	100.0000	
 winmain	?PollJoystick@@YAXXZ	100.0000	100.0000	1	bda610032818	0x4a0c0	100.0000	
 winmain	?PressPadButton@@YAXHH@Z	100.0000	100.0000	1	c0091faf1fcb	0x4ad40	100.0000	
@@ -2697,28 +2697,28 @@ winmain	?RenderPictureMode@@YAXH@Z	100.0000	100.0000	4	a0444bd0eff1	0x4ece0	100.
 winmain	?RenderSceneMode@@YAXH@Z	100.0000	100.0000	4	b8db0d39babd	0x4ea10	100.0000	
 winmain	?RenderStatusMode@@YAXH@Z	100.0000	100.0000	3	084af13f2f37	0x4f0b0	100.0000	
 winmain	?RenderTBox@@YAXXZ	92.6545	92.6545	19	c6041106f69d	0x4bdd0	94.7506	
-winmain	?RenderViewMode@@YAXH@Z	100.0000	100.0000	9	5bfe0f19d3d5	0x4e3d0	100.0000	
+winmain	?RenderViewMode@@YAXH@Z	100.0000	100.0000	10	8c579bd62fb0	0x4e3d0	100.0000	
 winmain	?RepeatPadMove@@YAXH@Z	100.0000	100.0000	2	380c7fa8dd37	0x4fc00	100.0000	
 winmain	?ResetCamera@@YAXXZ	100.0000	100.0000	2	aeb40630f29b	0x4f6e0	100.0000	
 winmain	?ResetDisplayGlobals@@YAXXZ	100.0000	100.0000	2	0f50942553b8	0x50090	100.0000	
 winmain	?ResetFrameCount@@YAXXZ	100.0000	100.0000	1	08b855a84948	0x49830	100.0000	
 winmain	?RestoreCursorClip@@YAXPAUtagRECT@@@Z	100.0000	100.0000	1	0045c57d91cc	0x498b0	100.0000	
 winmain	?RestoreTextures@@YAXXZ	100.0000	100.0000	2	c0868f7ce98c	0x4fdf0	100.0000	
-winmain	?RunJoystickMove@@YAHXZ	100.0000	100.0000	1	225b3870c139	0x504c0	100.0000	
+winmain	?RunJoystickMove@@YAHXZ	100.0000	100.0000	2	6a2823d7caa0	0x504c0	100.0000	
 winmain	?ShadeMesh@@YAXPAUMesh@@@Z	100.0000	98.4359	2	b7879f142c93	0x4ae30	100.0000	
-winmain	?SlideBack@@YAHPAM@Z	100.0000	100.0000	1	23530e635421	0x4a640	100.0000	
-winmain	?SlideForward@@YAHPAM@Z	100.0000	100.0000	1	1c19f8d375cd	0x4a530	100.0000	
-winmain	?SlideLeft@@YAHPAM@Z	100.0000	100.0000	1	782ce138c45c	0x4a750	100.0000	
-winmain	?SlideRight@@YAHPAM@Z	100.0000	100.0000	1	da53891fc865	0x4a860	100.0000	
+winmain	?SlideBack@@YAHPAM@Z	100.0000	100.0000	2	0d5ab2e473e3	0x4a640	100.0000	
+winmain	?SlideForward@@YAHPAM@Z	100.0000	100.0000	2	560f9a0d7afa	0x4a530	100.0000	
+winmain	?SlideLeft@@YAHPAM@Z	100.0000	100.0000	2	0482dc4dd745	0x4a750	100.0000	
+winmain	?SlideRight@@YAHPAM@Z	100.0000	100.0000	2	0f0e58602c2c	0x4a860	100.0000	
 winmain	?TickFrameCount@@YAXXZ	100.0000	100.0000	1	ce8b6629ec05	0x49810	100.0000	
-winmain	?TurnAroundCommand@@YAHF@Z	100.0000	100.0000	1	b353837b3d11	0x50280	100.0000	
-winmain	?TurnAroundStep@@YAHPAM@Z	100.0000	100.0000	2	0486fc3cafa0	0x4abd0	100.0000	
-winmain	?TurnLeftCommand@@YAHF@Z	100.0000	100.0000	1	919883d0448f	0x50340	100.0000	
-winmain	?TurnLeftStep@@YAHPAM@Z	100.0000	100.0000	2	5817a30979ac	0x4a970	100.0000	
-winmain	?TurnRightCommand@@YAHF@Z	100.0000	100.0000	1	25a22ded2e6b	0x50400	100.0000	
-winmain	?TurnRightStep@@YAHPAM@Z	100.0000	100.0000	2	44578dc5c7d4	0x4aaa0	100.0000	
+winmain	?TurnAroundCommand@@YAHF@Z	100.0000	100.0000	2	09e4a2b60556	0x50280	100.0000	
+winmain	?TurnAroundStep@@YAHPAM@Z	100.0000	100.0000	3	35b04b5ff889	0x4abd0	100.0000	
+winmain	?TurnLeftCommand@@YAHF@Z	100.0000	100.0000	2	38c720a4d471	0x50340	100.0000	
+winmain	?TurnLeftStep@@YAHPAM@Z	100.0000	100.0000	3	f967854c288d	0x4a970	100.0000	
+winmain	?TurnRightCommand@@YAHF@Z	100.0000	100.0000	2	fa3724162c6f	0x50400	100.0000	
+winmain	?TurnRightStep@@YAHPAM@Z	100.0000	100.0000	3	6fd0a1e2cc26	0x4aaa0	100.0000	
 winmain	?WaitMilliseconds@@YAXK@Z	100.0000	100.0000	1	879f190ccfe5	0x497a0	100.0000	
-winmain	_AllocCleared	100.0000	100.0000	1	ab0bc181e6b8	0x49640	100.0000	
+winmain	_AllocCleared	100.0000	99.9200	1	ab0bc181e6b8	0x49640	100.0000	
 winmain	_AllocClearedLong	100.0000	92.7826	1	8d58e0218be5	0x49680	100.0000	
 winmain	_AllowImmediateInput	100.0000	100.0000	1	39bfcb4ec908	0x49b80	100.0000	
 winmain	_CancelLayerDrag	100.0000	100.0000	1	22b1edd65936	0x49780	100.0000	
@@ -2773,10 +2773,10 @@ worldblocks	_ClearFieldPanelSelection	100.0000	100.0000	2	b183832f790f	0x169c0	1
 worldblocks	_ClearWorldMapBlock	100.0000	100.0000	1	a5d8fc14e6a1	0x163c0	100.0000	
 worldblocks	_DiscardWorldMapScreenSave	100.0000	100.0000	1	cd07839b3469	0x167d0	100.0000	
 worldblocks	_DrawWorldMapBlock	100.0000	100.0000	1	9a351fb76fdc	0x16460	100.0000	
-worldblocks	_DropLayerImage	100.0000	100.0000	1	b92485aff4f6	0x16910	100.0000	
+worldblocks	_DropLayerImage	100.0000	100.0000	2	5767d2344109	0x16910	100.0000	
 worldblocks	_FreeWorldMapScreenSave	100.0000	100.0000	1	ea16f2c5a676	0x167b0	100.0000	
 worldblocks	_GetCenteredWorldMapViewOrigin	100.0000	100.0000	2	4cd7b9c0da43	0x164a0	100.0000	
-worldblocks	_GetLayerFrame	100.0000	100.0000	1	008f7229e751	0x16950	100.0000	
+worldblocks	_GetLayerFrame	100.0000	100.0000	2	1712eb2955fe	0x16950	100.0000	
 worldblocks	_GetLayerImageBand	100.0000	100.0000	1	65dab66e78d6	0x16920	100.0000	
 worldblocks	_GetWorldBlock	100.0000	100.0000	2	3ef0f1a43b7e	0x168c0	100.0000	
 worldblocks	_GetWorldMapCellCode	100.0000	100.0000	2	0b69c2fd7034	0x16710	100.0000	
@@ -2794,7 +2794,7 @@ worldblocks	_RotateWorldMapBlocks	100.0000	100.0000	1	f0ead6c2c53b	0x16560	100.0
 worldblocks	_ScrollWorldMapView	100.0000	100.0000	1	bd22c14b5ff8	0x16470	100.0000	
 worldblocks	_SwapWorldMapBlocks	100.0000	100.0000	1	668ffec51c89	0x16410	100.0000	
 worldblocks	_WorldRowHandler	100.0000	100.0000	1	c16cc78cf94e	0x16990	100.0000	
-worldencounter	_AnyObjectInReach	100.0000	100.0000	1	cffcc4aa885e	0x11620	100.0000	
+worldencounter	_AnyObjectInReach	100.0000	100.0000	2	9a32e4b47d55	0x11620	100.0000	
 worldencounter	_AssignWorldEncounterGroups	100.0000	100.0000	2	bce8d3f42846	0x11440	100.0000	
 worldencounter	_CheckWorldEncounterInterval	100.0000	100.0000	2	958ed0461927	0x11130	100.0000	
 worldencounter	_FreeEncounterTables	100.0000	100.0000	1	b32f2f71b878	0x10f70	100.0000	
@@ -2807,18 +2807,18 @@ worldencounter	_PickWorldEncounterGroup	100.0000	100.0000	3	23cd72afa51a	0x113a0
 worldencounter	_PrepareFieldRandom	100.0000	100.0000	4	dcedfa6367c6	0x11510	100.0000	
 worldencounter	_PrepareWorldEncounter	100.0000	100.0000	2	d8d5cfd6a465	0x11280	100.0000	
 worldencounter	_RollWorldMapEncounter	100.0000	100.0000	6	b0ba9cf78f4d	0x11030	100.0000	
-worldencounter	_TestWorldEncounterChance	100.0000	100.0000	3	e743a5eb650d	0x11220	100.0000	
-worldevents	_CheckWorldMapEvent	100.0000	100.0000	6	d6edb9f4f718	0x1b430	100.0000	
+worldencounter	_TestWorldEncounterChance	100.0000	100.0000	4	c4599ebfbf7f	0x11220	100.0000	
+worldevents	_CheckWorldMapEvent	100.0000	100.0000	7	da07a76e5493	0x1b430	100.0000	
 worldevents	_FreeWorldMapEvents	100.0000	100.0000	1	e999aaefc86a	0x1b390	100.0000	
 worldevents	_LoadWorldMapEvents	100.0000	100.0000	1	58de8e902ecc	0x1b3b0	100.0000	
 worldevents	_MarkWorldMapEventSpot	100.0000	100.0000	2	b3dce3b77d3f	0x1b3e0	100.0000	
 worldmap	_IsOddMapLayer	100.0000	100.0000	1	9dd2f2ed1f6d	0x197a0	100.0000	
-worldmap	_RunWorldMap	100.0000	100.0000	8	6d851bd09f69	0x197f0	100.0000	
+worldmap	_RunWorldMap	100.0000	100.0000	9	854b5830b377	0x197f0	100.0000	
 worldmap	_SetWorldMapSpot	100.0000	100.0000	1	d3ebc0af0ed2	0x197b0	100.0000	
 worldmap	_TickStepCounter	100.0000	100.0000	1	c4df666337ad	0x19e10	100.0000	
 worldmapgfx	_DrawWorldMapCursor	100.0000	100.0000	2	1a2259009483	0x583f0	100.0000	
 worldmapgfx	_HitTestWorldMap	100.0000	100.0000	2	170763bd2a03	0x581b0	100.0000	
-worldmapgfx	_IsWorldMapMarkerNearEdge	100.0000	100.0000	2	128d36e55b93	0x582c0	100.0000	
+worldmapgfx	_IsWorldMapMarkerNearEdge	100.0000	100.0000	3	fdb7cb90b52e	0x582c0	100.0000	
 worldmapgfx	_ReadWorldMapTileCode	100.0000	100.0000	3	29799839d03c	0x58330	100.0000	
 worldplaces	_DrawWorldMapPlaceName	100.0000	100.0000	3	5a4d009c22e5	0x121e0	100.0000	
 worldplaces	_FormatWorldMapLocation	100.0000	100.0000	1	10bb3f513bfa	0x12240	100.0000	
@@ -2831,11 +2831,11 @@ worldtravel	_ComputeWorldTravelStep	100.0000	100.0000	1	732c4e1f3d27	0x11880	100
 worldtravel	_ExcludeWorldTravelStep	100.0000	100.0000	2	f7f83512efa8	0x11e50	100.0000	
 worldtravel	_FindWorldTravelStep	100.0000	100.0000	2	4cc33f749aee	0x118b0	100.0000	
 worldtravel	_GetBestWorldTravelStep	100.0000	100.0000	2	44d04128257a	0x11d80	100.0000	
-worldtravel	_GetWorldTravelDirection	100.0000	100.0000	1	227dddd0c922	0x11980	100.0000	
+worldtravel	_GetWorldTravelDirection	100.0000	99.0303	1	227dddd0c922	0x11980	100.0000	
 worldtravel	_GetWorldTravelLateralDelta	100.0000	100.0000	1	61f500547a88	0x119d0	100.0000	
 worldtravel	_LoadWorldTravelCandidates	100.0000	100.0000	1	bdb26edfe1c9	0x11a10	100.0000	
 worldtravel	_MarkReachableWorldTravelCells	100.0000	100.0000	1	017379f2fa6e	0x11b30	100.0000	
-worldtravel	_PickWorldMapDestination	100.0000	100.0000	2	1d58256ba45f	0x11660	100.0000	
+worldtravel	_PickWorldMapDestination	100.0000	100.0000	3	a8bb6d2df411	0x11660	100.0000	
 worldtravel	_PreferWorldTravelDestination	100.0000	100.0000	2	1ef3c11401dc	0x11cf0	100.0000	
 worldtravel	_StepWorldMapTravel	100.0000	100.0000	3	0d09928e44a2	0x11750	100.0000	
 worldtravel	_WeightWorldTravelCandidates	100.0000	100.0000	3	30dd04cf6128	0x11c40	100.0000	

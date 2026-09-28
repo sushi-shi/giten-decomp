@@ -67,8 +67,8 @@ DATA(0x00076054)
 static MenuBox* s_systemMenu;
 
 static void SystemMenuHandler(MenuBox* menu, i16 index, i16 event);
-static i16 RunDisplayChoice(void);
-static i16 RunQuitConfirm(void);
+static b16 RunDisplayChoice(void);
+static b16 RunQuitConfirm(void);
 
 // Opens the system menu's box listing `count` rows of `entries`.
 static __inline void OpenSystemMenu(SystemMenuEntry* entries, i32 count) {
@@ -214,7 +214,7 @@ i16 ReadSaveHeader(FILE* fp) {
 // runs it; 3 and 4 pick the auto-mapping and auto-navigation display, 5
 // confirms quitting and 6 runs the debug menu.
 RVA(0x00003e50, 0x120)
-i16 RunSystemMenu(void) {
+b16 RunSystemMenu(void) {
     i16 pick;
 
     switch (GetGamePhase()) {
@@ -222,11 +222,11 @@ i16 RunSystemMenu(void) {
             NextGamePhase();
             NextGamePhase();
             OpenSystemMenu(s_systemEntries, s_systemEntryCount);
-            return 0;
+            return false;
         case 1:
             ReturnFromGameState();
             s_systemMenu = DestroyMenuBox(s_systemMenu);
-            return 0;
+            return false;
         case 2:
             pick = RunMenu(s_systemMenu);
             if (pick == -1) {
@@ -235,7 +235,7 @@ i16 RunSystemMenu(void) {
             if (pick > 0) {
                 SetGamePhase(g_selectedObjectId + 3);
                 s_systemMenu = DestroyMenuBox(s_systemMenu);
-                return 0;
+                return false;
             }
             break;
         case 3:
@@ -249,7 +249,7 @@ i16 RunSystemMenu(void) {
             }
             break;
     }
-    return 0;
+    return false;
 }
 
 // Heads the menu with "<SYSTEM>" and the picked row's label, and lists the
@@ -285,7 +285,7 @@ static void SystemMenuHandler(MenuBox* menu, i16 index, i16 event) {
 // Picks free or fixed display for auto-mapping (phase 3) or auto-navigation
 // (phase 4), then asks for a field redraw and closes the system menu.
 RVA(0x00004070, 0x100)
-static i16 RunDisplayChoice(void) {
+static b16 RunDisplayChoice(void) {
     i16 pick;
 
     switch (GetGameStep()) {
@@ -310,14 +310,14 @@ static i16 RunDisplayChoice(void) {
                 SetGamePhase(1);
             }
             s_systemMenu = DestroyMenuBox(s_systemMenu);
-            return 0;
+            return false;
     }
-    return 0;
+    return false;
 }
 
 // Asks whether to quit; "quit" requests the game's end and a field redraw.
 RVA(0x00004170, 0xc0)
-static i16 RunQuitConfirm(void) {
+static b16 RunQuitConfirm(void) {
     i16 pick;
 
     switch (GetGameStep()) {
@@ -340,9 +340,9 @@ static i16 RunQuitConfirm(void) {
                 SetGamePhase(1);
             }
             s_systemMenu = DestroyMenuBox(s_systemMenu);
-            return 0;
+            return false;
     }
-    return 0;
+    return false;
 }
 
 // Reads slot `slot`'s header up to `field` into g_scratchBuffer for the save

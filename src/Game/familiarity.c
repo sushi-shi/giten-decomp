@@ -135,9 +135,9 @@ i16 AlignmentConflicts(Character* character) {
 }
 
 RVA(0x00010e40, 0x14)
-i16 ClearAnalyzed(void) {
+b16 ClearAnalyzed(void) {
     memset(s_analyzed, 0, sizeof(s_analyzed));
-    return 0;
+    return false;
 }
 
 RVA(0x00010e60, 0x2e)
@@ -150,7 +150,7 @@ void SetAnalyzed(i16 id, i16 on) {
 }
 
 RVA(0x00010e90, 0x13)
-i16 HasAnalyzeData(i16 id) {
+b16 HasAnalyzeData(i16 id) {
     return TestBit(s_analyzed, id);
 }
 

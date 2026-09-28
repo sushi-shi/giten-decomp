@@ -44,7 +44,7 @@ static __inline i32 GetExceptionalAttackBase(Character* actor) {
         }                                                                                          \
     } while (0)
 
-i16 RollWeaponCondition(
+b16 RollWeaponCondition(
     Character* attacker,
     Character* target,
     i16 resistance,
@@ -52,7 +52,7 @@ i16 RollWeaponCondition(
     i16 mode
 );
 i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result);
-i16 RollWeaponHit(Character* attacker, Character* target, i16 resistance);
+b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance);
 i16 RollExceptionalWeaponAttack(Character* attacker, Character* target, i16 mode, i16 resistance);
 
 i16 GetEquipmentHitModifier(Character* attacker, Character* target);
@@ -61,10 +61,10 @@ i16 GetCombatantDistance(i16 first, i16 second);
 i16 GetCombatantAttackRange(i16 id);
 i16 GetAttackRangeExcess(i16 first, i16 second);
 i16 RollExceptionalAttack(Character* attacker, Character* target, i16 mode, i16 resistance);
-i16 RollGunHit(Character* attacker, Character* target, i16 resistance);
+b16 RollGunHit(Character* attacker, Character* target, i16 resistance);
 i16 GetGunAttackPower(Character* attacker);
 i32 ComputeGunDamage(Character* attacker, Character* target, i16 result);
-i16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
+b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
 
 // The field battle's attack rolls; each sets the attacker's `lastChange` and
 // `result` and the action globals of Game/BattleEffect.h.
@@ -72,16 +72,16 @@ i16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16
 // 0) changes is unrecovered.
 
 // An attack with the weapon (equipment slot 5).
-i16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode);
+b16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode);
 
 // An attack with the gun (slot 6) and its ammunition (slot 7).
-i16 ResolveGunAttack(Character* attacker, Character* target, i16 mode);
+b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode);
 
-i16 RollSkillHit(Character* attacker, Character* target, i16 sameSide);
+b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide);
 i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit);
-i16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
+b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
 i16 ApplySkillResistanceOutcome(Character* attacker, i32 amount);
-i16 ResolveSkillAttack(Character* attacker, Character* target);
+b16 ResolveSkillAttack(Character* attacker, Character* target);
 
 // Spends the rounds a party member's gun attack used.
 void SpendGunRounds(Character* attacker);

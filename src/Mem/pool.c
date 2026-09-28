@@ -72,14 +72,14 @@ ElementPool* CreatePools(void) {
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00003550, 0x3)
-i32 GetLegacyPoolResetResult(void) {
-    return 0;
+b32 GetLegacyPoolResetResult(void) {
+    return false;
 }
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00003560, 0xe)
-i32 FreePools(i32 pools) {
+b32 FreePools(i32 pools) {
     return FreeHandle(pools);
 }
 

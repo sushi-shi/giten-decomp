@@ -45,7 +45,7 @@ typedef struct SceneHotspot {
 i16 AddSceneHotspot(void* object, i16 kind, SceneSprite* sprite);
 
 i16 PickSceneHotspot(i16 x, i16 y);
-i16 PollScenePointer(i16 x, i16 y, i16* pointX, i16* pointY);
+b16 PollScenePointer(i16 x, i16 y, i16* pointX, i16* pointY);
 i16 GetHotspotKind(i16 index);
 i16 GetHotspotObjectSlot(i16 index);
 SceneSprite* GetHotspotSprite(i16 index);

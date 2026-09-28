@@ -68,7 +68,7 @@ DATA(0x00091548)
 i16 g_infoPlane;
 
 RVA(0x00001870, 0xa1)
-i16 InitGameData(void) {
+b16 InitGameData(void) {
     ClearScriptVars();
     ResetSceneInput();
     PlayMusic(5, 1);
@@ -95,7 +95,7 @@ i16 InitGameData(void) {
     InitClock();
     ResetEventFlags();
     ClearDropSlots();
-    return 0;
+    return false;
 }
 
 RVA(0x00001920, 0x11)
@@ -120,20 +120,20 @@ i16 SetLongFrame(i16 longFrame) {
 }
 
 RVA(0x00001980, 0x13)
-i16 TickGameTasks(void) {
+b16 TickGameTasks(void) {
     TickMessageWindow();
     RunMessageHook();
     TickCounter();
-    return 0;
+    return false;
 }
 
 RVA(0x000019a0, 0x26)
-i16 StartGame(void) {
+b16 StartGame(void) {
     InitGameData();
     ResetGameSession();
     g_mouseLeftClick = g_mouseRightClick = 0;
     SetGameState(0x27);
-    return 0;
+    return false;
 }
 
 RVA(0x000019d0, 0xc8)

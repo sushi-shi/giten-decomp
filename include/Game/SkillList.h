@@ -27,11 +27,11 @@ static __inline SkillRank* GetSkillRank(SkillRankList* list, i16 index) {
 i32 BuildLearnableSkillRanks(Character* character);
 int CompareSkillRanks(const void* left, const void* right);
 
-i16 RollSkillLearning(Character* character, i16 skill);
+b16 RollSkillLearning(Character* character, i16 skill);
 
 i16 AddSkill(WordList* list, i16 skill);
 
-static __inline i32 IsSkillListFull(WordList* list) {
+static __inline b32 IsSkillListFull(WordList* list) {
     return GetWordCount(list) >= 30;
 }
 

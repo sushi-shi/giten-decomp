@@ -83,6 +83,8 @@ static __inline u8 GetSkillTargetFlags(i16 id) {
     return GetCachedSkill(id)->parameters.targetFlags;
 }
 
+#define GetSkillShotId(id) (GetCachedSkill(id)->parameters.effect)
+
 static __inline u8 GetSkillAttackAttribute(SkillHeader* record) {
     return record->parameters.attackAttribute;
 }

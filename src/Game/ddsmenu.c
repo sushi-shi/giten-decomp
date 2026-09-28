@@ -45,7 +45,7 @@ DATA(0x0007be50)
 static i16 s_ddsPartySlot;
 
 RVA(0x00017330, 0x178)
-i16 RunDdsMenu(void) {
+b16 RunDdsMenu(void) {
     i16 result;
     switch (GetGamePhase()) {
         case 0:
@@ -92,11 +92,11 @@ i16 RunDdsMenu(void) {
             }
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x000174b0, 0x70)
-i16 RunDdsSummon(void) {
+b16 RunDdsSummon(void) {
     i16 result;
     switch (GetGameStep()) {
         case 2:
@@ -117,7 +117,7 @@ i16 RunDdsSummon(void) {
             NextGameStep();
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00017520, 0x1cc)

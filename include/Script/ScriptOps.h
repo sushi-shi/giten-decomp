@@ -79,10 +79,10 @@ void OpCaptureRecordString(void);
 
 void OpCallTextScript(void);
 
-i16 OpStepListMenu(void);
+b16 OpStepListMenu(void);
 void OpSetMenuCharacter(void);
 
-i16 OpSaveDataCommand(void);
+b16 OpSaveDataCommand(void);
 
 void OpIfFlags(i16 all);
 
@@ -197,13 +197,13 @@ i16 OpSetActorAlert(i16 level);
 RVA_DECL(0x00033510)
 void OpJumpUnlessPlayerInLine(i16 invert);
 
-i16 OpPushReturnTarget(void);
+b16 OpPushReturnTarget(void);
 
-i16 DropCallFrame(void);
+b16 DropCallFrame(void);
 
-i16 SwapCallFrames(void);
+b16 SwapCallFrames(void);
 
-i16 ClearCallStack(void);
+b16 ClearCallStack(void);
 
 i16 ReturnFromCall(void);
 
@@ -237,7 +237,7 @@ RVA_DECL(0x00034740)
 void OpJumpUnlessCompare(ComparisonOperator op, i32 withRhs);
 
 RVA_DECL(0x00034780)
-i32 OpApplyEventFlag(ScriptFlagAction action, i32 expect);
+b32 OpApplyEventFlag(ScriptFlagAction action, i32 expect);
 
 RVA_DECL(0x00034850)
 void OpJumpUnlessEventFlag(ScriptFlagAction action, i32 expect);
@@ -420,10 +420,10 @@ RVA_DECL(0x00036330)
 i16 OpLeaveActiveParty(void);
 
 RVA_DECL(0x000363d0)
-i16 OpSelectPartySlot(void);
+b16 OpSelectPartySlot(void);
 
 RVA_DECL(0x00036400)
-i16 OpEndPartySlotSelect(void);
+b16 OpEndPartySlotSelect(void);
 
 RVA_DECL(0x00036410)
 i16 OpCountActiveParty(void);
@@ -492,10 +492,10 @@ void OpCountItemOwned(void);
 // @identity-TODO: The dispatcher passes 0 (case 369) and 1 (case 371) but the body never reads
 // the argument; what the two opcodes were meant to differ in is unrecovered.
 RVA_DECL(0x0003a250)
-i16 OpPlaceSprite(i16 variant);
+b16 OpPlaceSprite(i16 variant);
 
 RVA_DECL(0x0003a350)
-i16 OpHideSprite(void);
+b16 OpHideSprite(void);
 
 // @identity-TODO: Fade direction of 0x49d60 modes 1/5 vs 2/6 is inferred only from
 // OpFadeOutAndClear (mode 2 then colour-fill); the fade renderer would confirm.

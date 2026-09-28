@@ -15,7 +15,7 @@ i16 WriteSaveHeader(FILE* fp);
 i16 ReadSaveSummary(i16 slot, i16 field);
 
 // The system menu's game state (auto-mapping, auto-navigation, quit).
-i16 RunSystemMenu(void);
+b16 RunSystemMenu(void);
 
 // @identity-TODO: set until the first save is loaded (the party then turns
 // around and steps out); placeholder extern.

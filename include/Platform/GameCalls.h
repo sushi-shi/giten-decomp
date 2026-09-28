@@ -40,7 +40,7 @@ void FinishDoorStep(void);
 i16 GetAreaNpcCount(void);
 
 // Whether `npc` has left (its event flag is set).
-i32 IsAreaNpcGone(i16 npc);
+b32 IsAreaNpcGone(i16 npc);
 
 // The cell (x, y) of `npc`.
 i16* GetAreaNpcCell(i16 npc);

@@ -24,17 +24,17 @@ typedef union FlagBank {
 extern FlagBank g_eventFlags[16];
 
 i16 CheckFlagWord(u16* condition);
-i16 MatchFlagWord(u16* condition);
+b16 MatchFlagWord(u16* condition);
 
 void SetFlagBank(i16 bank);
 void ClearFlagBank(i16 bank);
-i32 ChangeEventFlag(u16 bank, u16 index, i16 op);
-i32 ClearEventFlag(u16 bank, u16 index);
-i32 SetEventFlag(u16 bank, u16 index);
-i32 ToggleEventFlag(u16 bank, u16 index);
-i32 IsEventFlagSet(u16 bank, u16 index);
-i32 ModifyEventFlag(u16 bank, u16 index, i16 op);
-i32 TestEventFlag(u16 bank, u16 index);
+b32 ChangeEventFlag(u16 bank, u16 index, i16 op);
+b32 ClearEventFlag(u16 bank, u16 index);
+b32 SetEventFlag(u16 bank, u16 index);
+b32 ToggleEventFlag(u16 bank, u16 index);
+b32 IsEventFlagSet(u16 bank, u16 index);
+b32 ModifyEventFlag(u16 bank, u16 index, i16 op);
+b32 TestEventFlag(u16 bank, u16 index);
 u32 GetFlagSettings(void);
 void SetFlagSettings(u32 packed);
 
@@ -61,8 +61,8 @@ i16 ReadScriptVars(FILE* fp);
 i16 WriteScriptVars(FILE* fp);
 
 // Whether event flag bank/index matches (a script block entry's condition).
-i16 MatchEventFlag(u16 bank, u16 index);
-i16 ReadAndMatchEventFlag(void);
+b16 MatchEventFlag(u16 bank, u16 index);
+b16 ReadAndMatchEventFlag(void);
 i16 ReadFlagOperand(u16* bank, u16* index);
 
 void ResetEventFlags(void);

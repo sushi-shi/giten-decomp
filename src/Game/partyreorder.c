@@ -20,7 +20,7 @@ DATA(0x0007d638)
 static i16 s_reorderSecond;
 
 RVA(0x0001ab90, 0x168)
-i16 RunPartyReorder(void) {
+b16 RunPartyReorder(void) {
     i16 slot;
     switch (GetGamePhase()) {
         case 0:
@@ -62,7 +62,7 @@ i16 RunPartyReorder(void) {
             SetGamePhase(1);
             for (s_reorderFirst = 0; s_reorderFirst < 3; s_reorderFirst++) {
                 if (GetPartySlot(s_reorderFirst) >= 0) {
-                    return 0;
+                    return false;
                 }
             }
             for (slot = 3; slot < 6; slot++) {
@@ -74,7 +74,7 @@ i16 RunPartyReorder(void) {
             }
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0001ad00, 0x39)

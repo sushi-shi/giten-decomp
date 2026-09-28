@@ -33,7 +33,7 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
 
     bmp = OpenTextureBitmap(texture, name, fromFile);
     if (bmp == NULL) {
-        return FALSE;
+        return false;
     }
     header = &bmp->info;
     ZeroMemory(&desc, sizeof(desc));
@@ -59,7 +59,7 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
         if (fromFile == TRUE) {
             FreeBitmap(&bmp);
         }
-        return FALSE;
+        return false;
     }
     IDirectDrawSurface_QueryInterface(
         texture->sourceSurface,
@@ -74,26 +74,26 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
                 texture->palette,
                 &texture->ddPalette
             )) {
-            return FALSE;
+            return false;
         }
         texture->colorKey = BMP_TRANSPARENT_INDEX;
     } else if (!LoadBitmapToSurface16(bmp, &texture->sourceSurface, &texture->colorKey)) {
-        return FALSE;
+        return false;
     }
     result = IDirectDraw_CreateSurface(g_ddraw, &desc, &texture->surface, NULL);
     if (result != DD_OK) {
         if (fromFile != TRUE) {
-            return FALSE;
+            return false;
         }
         FreeBitmap(&bmp);
-        return FALSE;
+        return false;
     }
     if (desc.ddpfPixelFormat.dwRGBBitCount < TEXTURE_BITS_16
         && IDirectDrawSurface_SetPalette(texture->surface, texture->ddPalette) != DD_OK) {
         if (fromFile == TRUE) {
             FreeBitmap(&bmp);
         }
-        return FALSE;
+        return false;
     }
     if (fromFile == TRUE) {
         FreeBitmap(&bmp);
@@ -104,15 +104,15 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
             (void**)&texture->texture
         )
         != DD_OK) {
-        return FALSE;
+        return false;
     }
     if (IDirect3DTexture2_Load(texture->texture, texture->source) != D3D_OK) {
-        return FALSE;
+        return false;
     }
     if (IDirect3DTexture2_GetHandle(texture->texture, g_d3dDevice, &texture->handle) != D3D_OK) {
-        return FALSE;
+        return false;
     }
     ShadeTexture(texture, TEXTURE_SHADE_NORMAL);
     ShadeTexture(texture, TEXTURE_SHADE_LIT);
-    return TRUE;
+    return true;
 }

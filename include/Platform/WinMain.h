@@ -16,6 +16,6 @@ LRESULT CALLBACK MainWindowProc(HWND window, UINT message, WPARAM wparam, LPARAM
 // clear-blit parameters) and seeds rand.
 void ResetDisplayGlobals(void);
 
-BOOL CreateMainWindow(HINSTANCE instance);
+b32 CreateMainWindow(HINSTANCE instance);
 
 #endif // GITEN_PLATFORM_WINMAIN_H

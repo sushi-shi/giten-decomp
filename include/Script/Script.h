@@ -62,13 +62,13 @@ ScriptContext* GetCurrentScript(void);
 
 void ScriptJump(i16 pc);
 i32 ScriptJumpUnless(i16 pc, i32 condition);
-i16 ScriptJumpTo(u32 codeBase, i16 pc);
+b16 ScriptJumpTo(u32 codeBase, i16 pc);
 i32 PushCallFrame(ScriptContext* script, i16 keepVars);
 i32 TopCallFrame(ScriptContext* script);
 void PopCallFrame(ScriptContext* script, i16 discard);
 void UnwindCallFrames(ScriptContext* script);
 void SwapTopCallFrames(ScriptContext* script);
-i16 ScriptJumpWithArgs(u32 codeBase, i16 pc, i16 argA, i16 argB);
+b16 ScriptJumpWithArgs(u32 codeBase, i16 pc, i16 argA, i16 argB);
 i16 ScriptEntryPc(u32 code, i16 entry);
 
 void StartScript(i16 file, i16 entry, ScriptContext* script);

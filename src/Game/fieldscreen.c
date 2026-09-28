@@ -164,34 +164,34 @@ void RefreshFieldScene(void) {
 // rebuilds the view or, while the view is held, keeps the current position
 // as the drawn one. Without either, only the info bar is refreshed.
 RVA(0x00014770, 0x82)
-i16 PrepareFieldRedraw(i16 force) {
+b16 PrepareFieldRedraw(i16 force) {
     if (!g_fieldRedrawRequest && !force) {
         UpdateInfoBar();
-        return 0;
+        return false;
     }
     g_fieldRedrawRequest = 1;
     ClearMaskView();
     ResetMask(1);
     if (!s_viewHold) {
         RebuildFieldView();
-        return 1;
+        return true;
     }
     FlushPlaneUpdates();
     g_viewX = g_field.pos.x;
     g_viewY = g_field.pos.y;
     g_viewFacing = g_field.pos.direction;
     g_viewReset = 0;
-    return 1;
+    return true;
 }
 
 RVA(0x00014800, 0x37)
-i16 UpdateFieldScreen(i16 force) {
+b16 UpdateFieldScreen(i16 force) {
     if (PrepareFieldRedraw(force)) {
         SetInfoBarLayout(0);
         RefreshStatusPanel(1);
         return RedrawScreen(1, 0);
     }
-    return 0;
+    return false;
 }
 
 // @dead-code
@@ -250,24 +250,24 @@ MapCoord GetMouseTravelCell(void) {
 // Whether a party member who can act (the leader or member 10/11, without a
 // blocking condition) is present on a cell that allows it.
 RVA(0x00014960, 0x93)
-i16 CanOpenAutomap(void) {
+b16 CanOpenAutomap(void) {
     Character* character;
     if (IsCellCommandBlocked(g_field.pos.x, g_field.pos.y) == 1) {
-        return 0;
+        return false;
     }
     character = GetCharacterById(0);
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
-        return 1;
+        return true;
     }
     character = GetCharacterById(10);
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
-        return 1;
+        return true;
     }
     character = GetCharacterById(11);
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // Opens the party-order selection state.
@@ -333,17 +333,17 @@ i16 ItemRowHandler(PanelRow* row, i16 value, i16 op) {
 // Whether one of the six party members is human (id below 0x20) and free of
 // blocking conditions.
 RVA(0x00014b50, 0x3b)
-i16 CanHumanMemberAct(void) {
+b16 CanHumanMemberAct(void) {
     i16 i;
     Character* character;
     for (i = 0; i < 6; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && IsHumanCharacter(character)
             && !GetPickBlockingCondition(GetCharacterConditions(character))) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 // Row 4 (id 4): the DDS screen (game state 0x1e), once the DDS is carried.
@@ -468,8 +468,8 @@ void SetFieldPanelImage(u32 image) {
 // Runs field panel row `row` (checking it for op 1), then clears `clear` and
 // sets `set` in its flags; returns whether it was checked before.
 RVA(0x00014e70, 0x5e)
-i32 RunFieldPanelRow(i16 row, i32 op, u16 clear, u16 set) {
-    i32 checked = TestFlagBits(&GetPanelRow(&s_fieldPanel.panel, row)->flags, PANEL_ROW_CHECKED);
+b32 RunFieldPanelRow(i16 row, i32 op, u16 clear, u16 set) {
+    b32 checked = TestFlagBits(&GetPanelRow(&s_fieldPanel.panel, row)->flags, PANEL_ROW_CHECKED);
     RunPanelRow(&s_fieldPanel.panel, row, op == 1);
     ClearFlagBits(&GetPanelRow(&s_fieldPanel.panel, row)->flags, clear);
     SetFlagBits(&GetPanelRow(&s_fieldPanel.panel, row)->flags, set);
@@ -478,8 +478,8 @@ i32 RunFieldPanelRow(i16 row, i32 op, u16 clear, u16 set) {
 
 // Sets or clears field panel row `row`'s check; returns whether it was set.
 RVA(0x00014ed0, 0x30)
-i32 SetFieldPanelRowChecked(i16 row, i16 on) {
-    i32 checked = IsPanelRowChecked(&s_fieldPanel.panel, row);
+b32 SetFieldPanelRowChecked(i16 row, i16 on) {
+    b32 checked = IsPanelRowChecked(&s_fieldPanel.panel, row);
     SetPanelRowFlags(&s_fieldPanel.panel, row, PANEL_ROW_CHECKED, on);
     return checked;
 }
@@ -487,7 +487,7 @@ i32 SetFieldPanelRowChecked(i16 row, i16 on) {
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00014f00, 0x1b)
-i32 IsFieldPanelRowChecked(i16 row) {
+b32 IsFieldPanelRowChecked(i16 row) {
     return TestFlagBits(&GetPanelRow(&s_fieldPanel.panel, row)->flags, PANEL_ROW_CHECKED);
 }
 
@@ -645,21 +645,21 @@ void ItemCommand(i16 id) {
 // Whether party member `id` is present, human (id below 0x20) and free of
 // blocking conditions.
 RVA(0x00015350, 0x51)
-i16 CanMemberAct(i16 id) {
+b16 CanMemberAct(i16 id) {
     i16 i;
     Character* character;
     for (i = 0; i < 6; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && character->id == id) {
             if (!IsHumanCharacter(character)) {
-                return 0;
+                return false;
             }
             if (!GetPickBlockingCondition(GetCharacterConditions(character))) {
-                return 1;
+                return true;
             }
         }
     }
-    return 0;
+    return false;
 }
 
 RVA(0x000153b0, 0x58)
@@ -754,13 +754,13 @@ void OpenAutomap(void) {
 
 // Whether this character can use the automap command on the current cell.
 RVA(0x00015530, 0x56)
-i16 CanCharacterOpenAutomap(Character* character) {
+b16 CanCharacterOpenAutomap(Character* character) {
     if (IsCellCommandBlocked(g_field.pos.x, g_field.pos.y) != 1 && character != NULL
         && (character->id == 0 || character->id == 10 || character->id == 11)
         && !GetPickBlockingCondition(GetCharacterConditions(character))) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00015590, 0x7)
@@ -775,8 +775,8 @@ void RevealAutomapRoom(i16 x, i16 y) {
 }
 
 static i16 MarkAutomapRowSpan(i16* x, i16 y);
-static i16 CanRevealAutomapSouth(i16 x, i16 y);
-static i16 CanRevealAutomapNorth(i16 x, i16 y);
+static b16 CanRevealAutomapSouth(i16 x, i16 y);
+static b16 CanRevealAutomapNorth(i16 x, i16 y);
 
 RVA(0x000155d0, 0x6a)
 void RevealAutomapCells(i16 x, i16 y) {
@@ -829,33 +829,33 @@ static i16 MarkAutomapRowSpan(i16* x, i16 y) {
 }
 
 RVA(0x00015730, 0x73)
-static i16 CanRevealAutomapSouth(i16 x, i16 y) {
+static b16 CanRevealAutomapSouth(i16 x, i16 y) {
     i16 wall = GetMapWallKind(x, y, 2);
     if (WallStops(wall, WALL_STOP_MOVEMENT)) {
-        return 0;
+        return false;
     }
     ++y;
     if (y >= s_roomSize.y) {
-        return 0;
+        return false;
     }
     if (!IsRoomCell(x, y)) {
-        return 0;
+        return false;
     }
     return IsAutomapCellHidden(x, y, g_field.pos.area, g_field.pos.level) != 0;
 }
 
 RVA(0x000157b0, 0x6f)
-static i16 CanRevealAutomapNorth(i16 x, i16 y) {
+static b16 CanRevealAutomapNorth(i16 x, i16 y) {
     i16 wall = GetMapWallKind(x, y, 0);
     if (WallStops(wall, WALL_STOP_MOVEMENT)) {
-        return 0;
+        return false;
     }
     --y;
     if (y < 0) {
-        return 0;
+        return false;
     }
     if (!IsRoomCell(x, y)) {
-        return 0;
+        return false;
     }
     return IsAutomapCellHidden(x, y, g_field.pos.area, g_field.pos.level) != 0;
 }
@@ -881,15 +881,15 @@ void FreeCommandMenuImage(void) {
 }
 
 RVA(0x00015870, 0x35)
-i16 SetFieldStatusBit11(i16 on) {
-    i16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, 0x800);
+b16 SetFieldStatusBit11(i16 on) {
+    b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, 0x800);
     SetPanelRowFlags(&s_commandPanel.panel, 1, 0x800, on);
     return old;
 }
 
 RVA(0x000158b0, 0x2f)
-i16 SetFieldStatusBit0(i16 on) {
-    i16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, PANEL_ROW_CHECKED);
+b16 SetFieldStatusBit0(i16 on) {
+    b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, PANEL_ROW_CHECKED);
     SetPanelRowFlags(&s_commandPanel.panel, 1, PANEL_ROW_CHECKED, on);
     return old;
 }
@@ -902,8 +902,8 @@ i16 CommandRowHandler(PanelRow* row, i16 value, i16 op) {
 }
 
 RVA(0x00015900, 0x3)
-u32 LoadMenuImage(i16 id) {
-    return 0;
+ub32 LoadMenuImage(i16 id) {
+    return false;
 }
 
 RVA(0x00015910, 0x9)
@@ -1021,13 +1021,13 @@ void RedrawFieldViewAt(VideoPlane* header, i16 unused);
 
 // Rebuilds the field view at the party's position.
 RVA(0x00015b90, 0x44)
-i16 RebuildFieldView(void) {
+b16 RebuildFieldView(void) {
     RevealAreaMapAt(g_field.pos.x, g_field.pos.y);
     ClearDrawTable();
     FlushPlaneUpdates();
     RedrawFieldViewAt(GetPlaneHeader(0), 0);
     s_objectsHidden = 0;
-    return 1;
+    return true;
 }
 
 // @identity-TODO: both arguments are unused.
@@ -1204,13 +1204,13 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
 }
 
 RVA(0x000160c0, 0x163)
-i16 DrawFieldMessage(i16 code, i16 band, i16 marked) {
+b16 DrawFieldMessage(i16 code, i16 band, i16 marked) {
     FieldMessage* message = GetFieldMessage(code);
     char* text = message->text;
     i16 x;
     i16 y;
     if (strlen(text) == 0) {
-        return 0;
+        return false;
     }
     x = 0;
     y = 0;
@@ -1239,7 +1239,7 @@ i16 DrawFieldMessage(i16 code, i16 band, i16 marked) {
             break;
     }
     DrawBandText(x, y, g_scratchBuffer, 0x2650, band);
-    return 1;
+    return true;
 }
 
 RVA(0x00016230, 0x3c)

@@ -193,7 +193,7 @@ i16 RunDebugMenu(void) {
                     to = MoveMapCoord(from, g_field.pos.direction, 0, -s_shotRise);
                     PushGameState(0xc);
                     LaunchShot(
-                        GetCachedSkill(s_testSkill)->parameters.effect,
+                        GetSkillShotId(s_testSkill),
                         0,
                         s_shotRise,
                         from.x,

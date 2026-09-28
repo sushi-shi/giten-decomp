@@ -9,7 +9,7 @@ struct BmpFile;
 struct BmpFile* GetScreenEffectImage(void);
 i32 GetScreenEffectImageSize(void);
 void PushScriptAnimation(i16 animation, i16 x, i16 y);
-i16 RunScriptAnimationState(void);
+b16 RunScriptAnimationState(void);
 void LoadScriptAnimation(i16 resource);
 void LoadScriptAnimationImage(i16 resource);
 void GetScriptAnimationPosition(i16 x, i16 y, i16* screenX, i16* screenY);

@@ -149,9 +149,9 @@ DATA(0x0008169c)
 static i32 s_textScript;
 
 RVA(0x0003a350, 0x12)
-i16 OpHideSprite(void) {
+b16 OpHideSprite(void) {
     UnplaceSprite(ReadScriptValue());
-    return 0;
+    return false;
 }
 
 RVA(0x0003a370, 0x36)
@@ -324,7 +324,7 @@ void SetWindowOption(i16 option) {
 }
 
 RVA(0x0003a750, 0xa1)
-i16 OpBeginChoices(i16 window) {
+b16 OpBeginChoices(i16 window) {
     i16 width;
     TextPoint size;
     PushTextDelay(0);
@@ -341,11 +341,11 @@ i16 OpBeginChoices(i16 window) {
     }
     s_choiceColumnWidth = size.x / s_choiceColumns;
     s_choices = FreeScriptChoices(s_choices);
-    return 0;
+    return false;
 }
 
 RVA(0x0003a800, 0x6f)
-i16 FinishScriptChoice(i16 window) {
+b16 FinishScriptChoice(i16 window) {
     if (s_choiceIndex >= 0) {
         ScriptChoice* choice = AppendScriptChoice(&s_choices);
         choice->x = s_choiceX;
@@ -355,11 +355,11 @@ i16 FinishScriptChoice(i16 window) {
         choice->disabled = s_choiceDisabled;
     }
     s_choiceIndex++;
-    return 0;
+    return false;
 }
 
 RVA(0x0003a870, 0x12e)
-i16 OpNextChoice(i16 window) {
+b16 OpNextChoice(i16 window) {
     i16 x, y;
     ScriptChoice* choice = s_choices;
     TextPoint size = GetTextPlaneSize(window);
@@ -384,21 +384,21 @@ i16 OpNextChoice(i16 window) {
     s_choiceX = GetTextPlaneCursorX(window);
     s_choiceY = GetTextPlaneCursorY(window);
     s_choiceDisabled = 0;
-    return 0;
+    return false;
 }
 
 RVA(0x0003a9a0, 0x1f)
-i16 OpEndChoices(i16 window) {
+b16 OpEndChoices(i16 window) {
     FinishScriptChoice(window);
     PopTextDelay();
     g_inChoices = 0;
-    return 0;
+    return false;
 }
 
 RVA(0x0003a9c0, 0x26)
-i16 OpRunChoiceMenu(i16 window) {
+b16 OpRunChoiceMenu(i16 window) {
     s_choices = PushScriptChoiceMenu(s_choices, window, 0, g_windowOption);
-    return 0;
+    return false;
 }
 
 // @identity-TODO: 0x919ee is copied from 0x919e0 by 0xa050 when that id's record level lies in
@@ -645,7 +645,7 @@ void ClearMessageWindow(i16 window) {
 }
 
 RVA(0x0003afe0, 0x258)
-i16 RunScriptScene(void) {
+b16 RunScriptScene(void) {
     i16 window = GetGamePhase();
     switch (GetGameStep()) {
         case 1:
@@ -718,18 +718,18 @@ i16 RunScriptScene(void) {
             break;
         }
     }
-    return 0;
+    return false;
 }
 
 // In scrolling mode, schedules a line scroll while the text period has
 // not expired. Returns 1 when scheduled.
 RVA(0x0003b240, 0x26)
-i16 StepOnTextPeriod(i16 window) {
+b16 StepOnTextPeriod(i16 window) {
     if (g_textState.scrollEnabled && !TickTextPeriod()) {
         SetGameStep(5);
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0003b270, 0x9f)
@@ -791,7 +791,7 @@ void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor) {
 }
 
 RVA(0x0003b450, 0x134)
-i16 RunActorScene(void) {
+b16 RunActorScene(void) {
     i16 window = GetGamePhase();
     for (;;) {
         switch (GetGameStep()) {
@@ -834,7 +834,7 @@ i16 RunActorScene(void) {
                 ReturnFromGameState();
                 break;
         }
-        return 0;
+        return false;
     }
 }
 
@@ -1148,18 +1148,18 @@ void DrawDownCountdown(u16 amount) {
 // When the countdown has run out, closes the message window and runs the
 // saved script entry as a scene (game state 0x15); 1 when it fired.
 RVA(0x0003bc10, 0x5e)
-i16 FireCountdownEvent(void) {
+b16 FireCountdownEvent(void) {
     if (g_countdown != 0) {
-        return 0;
+        return false;
     }
     if (!s_countdownFile || !s_countdownEntry) {
-        return 0;
+        return false;
     }
     CloseMessageWindow();
     PushFieldTextScene(s_countdownFile, s_countdownEntry);
     s_countdownEntry = 0;
     s_countdownFile = 0;
-    return 1;
+    return true;
 }
 
 // The party position of the class-2 human member with the highest
@@ -1426,7 +1426,7 @@ i32 FreeCallFrames(i32 stack) {
 }
 
 RVA(0x0003c1e0, 0xe)
-i32 FreeCallFrame(i32 frame) {
+b32 FreeCallFrame(i32 frame) {
     return FreeHandle(frame);
 }
 

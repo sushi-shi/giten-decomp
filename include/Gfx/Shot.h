@@ -48,7 +48,7 @@ i16 GetShotPower(void);
 void LaunchShot(i16 effect, i16 mode, i16 rise, i16 fromX, i16 fromY, i16 toX, i16 toY);
 
 void LoadEffectTables(void);
-i16 RunShotState(void);
-i16 RunClosingEffectState(void);
+b16 RunShotState(void);
+b16 RunClosingEffectState(void);
 
 #endif // GITEN_GFX_SHOT_H
