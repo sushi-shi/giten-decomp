@@ -40,21 +40,52 @@
 #include <stdio.h>
 #include <string.h>
 
-// The gem gift menu and the item id its rows start from.
-DATA(0x00080104)
-static i16 s_giftItemBase;
-DATA(0x00080108)
-static MenuBox* s_giftMenu;
+DATA(0x0007fe60)
+ItemStack g_gemItems[16] = {0};
+
+DATA(0x0007fea0)
+ItemStack g_itemPool[64] = {0};
+
+DATA(0x0007ffa0)
+ItemStack g_bagItems[64] = {0};
+
+// The record of the item whose effect is being applied.
+DATA(0x000800a0)
+static ItemRecord s_usedItem = {0};
+
+// The loaded item records, auxiliary index, and item remapping table.
+DATA(0x000800e8)
+static i32 s_itemDataHandle = 0;
+
+DATA(0x000800ec)
+static i32 s_itemIndexHandle = 0;
+
+DATA(0x000800f0)
+i32 g_itemRemapHandle = 0;
+
+// Shared text buffers for the decoded item name and description.
+DATA(0x000800f4)
+char* g_itemNameText = 0;
+
+DATA(0x000800f8)
+char* g_itemDescriptionText = 0;
 
 // Nonzero while bag stores are quiet (see SetBagQuiet).
 DATA(0x000800fc)
-static i16 s_bagQuiet;
+static i16 s_bagQuiet = 0;
 
 // The first id of the sixteen gem items (g_gemItems): ResetGemItems
 // sets it, GemItemIndex maps a gem id back to its index by subtracting
 // it; an item slot's 5-bit `attachment` hold such an index.
 DATA(0x00080100)
-static i16 s_gemItemBase;
+static i16 s_gemItemBase = 0;
+
+// The gem gift menu and the item id its rows start from.
+DATA(0x00080104)
+static i16 s_giftItemBase = 0;
+
+DATA(0x00080108)
+static MenuBox* s_giftMenu = 0;
 
 // The event flag each timed item clears when it expires.
 DATA(0x00068f38)
@@ -73,38 +104,8 @@ static TimedItemFlag s_timedItemFlags[8] = {
 DATA(0x00064650)
 static const i16 s_giftFamiliarity[16] = {2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60};
 
-// The record of the item whose effect is being applied.
-DATA(0x000800a0)
-static ItemRecord s_usedItem;
-
-DATA(0x0007fe60)
-ItemStack g_gemItems[16] = {0};
-
-DATA(0x0007fea0)
-ItemStack g_itemPool[64] = {0};
-
-DATA(0x0007ffa0)
-ItemStack g_bagItems[64] = {0};
-
 DATA(0x000919a0)
 DropSlot g_dropSlots[16];
-
-// The loaded item records, auxiliary index, and item remapping table.
-DATA(0x000800e8)
-static i32 s_itemDataHandle;
-
-DATA(0x000800ec)
-static i32 s_itemIndexHandle;
-
-DATA(0x000800f0)
-i32 g_itemRemapHandle = 0;
-
-// Shared text buffers for the decoded item name and description.
-DATA(0x000800f4)
-char* g_itemNameText = 0;
-
-DATA(0x000800f8)
-char* g_itemDescriptionText = 0;
 
 DATA(0x000911c0)
 ItemRecord g_loadedItem;
