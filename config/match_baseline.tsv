@@ -2501,7 +2501,7 @@ textstate	_OpReplaceTextCharDelay	100.0000	100.0000	2	d00d495f262b	0x32ae0	100.0
 textstate	_OpSetTextCharDelay	100.0000	100.0000	2	e39206cfe721	0x32a70	100.0000	
 textstate	_OpSetTextWaitFrames	100.0000	100.0000	2	5dc3525666b5	0x32bc0	100.0000	
 textstate	_PopTextDelay	100.0000	100.0000	1	2894d8707f66	0x32c50	100.0000	
-textstate	_PushTextDelay	90.9231	90.9231	1	81486af1f4a7	0x32c20	90.9231	
+textstate	_PushTextDelay	100.0000	90.9231	1	81486af1f4a7	0x32c20	100.0000	
 textstate	_ReloadTextPeriod	100.0000	100.0000	1	2ebd479d94a0	0x32c90	100.0000	
 textstate	_ResetTextStateDelayed	100.0000	100.0000	2	43ef11457ba6	0x32ba0	100.0000	
 textstate	_ResetTextStateInstant	100.0000	100.0000	2	3328d2b7178b	0x32b80	100.0000	
@@ -2536,7 +2536,7 @@ vec3	_ProjectFloorPoint	100.0000	100.0000	1	73833ce309fa	0xd440	100.0000
 vec3	_ProjectPoint	100.0000	100.0000	1	f843c6316e68	0xd3f0	100.0000	
 vec3	_RotateOffset	100.0000	100.0000	1	a135c53e1cc5	0xd700	100.0000	
 vec3	_StepBody	100.0000	100.0000	1	111c12cf82d1	0xd510	100.0000	
-vec3	_UnprojectPoint	51.5000	51.5000	2	475908778903	0xd6b0	51.5000	
+vec3	_UnprojectPoint	100.0000	51.5000	2	475908778903	0xd6b0	100.0000	
 videostate	_ClipViewportRect	100.0000	100.0000	1	b9f9c6d7c02c	0x45b80	100.0000	
 videostate	_GetPlaneData	100.0000	100.0000	2	44758c6f927b	0x45b40	100.0000	
 videostate	_GetPlaneHeader	100.0000	100.0000	2	bf6f54faaf9a	0x45b60	100.0000	
