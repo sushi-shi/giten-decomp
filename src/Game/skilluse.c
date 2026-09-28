@@ -437,8 +437,7 @@ i16 ResolveCombatAction(void) {
         SetActionResult(attacker, 1);
         g_statusCondition = 0;
         attacker->lastChange = 0;
-        g_hpChange = 0;
-        g_mpChange = 0;
+        ResetPoolChanges();
         if (s_targetHpBefore < 1) {
             s_targetHpBefore = 1;
         }
@@ -648,10 +647,14 @@ static __inline i16 CollectCurrentSkillTargets(const SkillParameters* skill) {
     );
 }
 
-static __inline void ClearPendingAction(void) {
-    s_promptPending = 0;
+static __inline void ClearActionActors(void) {
     s_actionActor = NULL;
     s_actionTarget = NULL;
+}
+
+static __inline void ClearPendingAction(void) {
+    s_promptPending = 0;
+    ClearActionActors();
 }
 
 static __inline void CancelPendingAction(void) {
@@ -932,8 +935,7 @@ i16 RunBattleAction(void) {
                     }
                     RequestFieldRefresh();
                 }
-                s_actionActor = NULL;
-                s_actionTarget = NULL;
+                ClearActionActors();
                 s_actionRoleKept = 0;
                 s_actionPickKept = 0;
                 actor->pickFlags &= ~PICK_ITEM_SKILL;
@@ -1477,8 +1479,7 @@ i16 CollectTargetsInView(i16 area, i16 flags, i16 range, i16 target, i16 actor) 
 RVA(0x0002cd80, 0x130)
 void UseAttackSkill(Character* user, Character* target) {
     ResetActionOutcome();
-    g_hpChange = 0;
-    g_mpChange = 0;
+    ResetPoolChanges();
     user->lastChange = 0;
     if (GetSkillValueB(&s_effectSkill)) {
         ResolveSkillAttack(user, target);
