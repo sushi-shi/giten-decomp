@@ -42,7 +42,7 @@ void PushTextWindowState(const char* text) {
 }
 
 RVA(0x00002550, 0x70)
-i16 RunTextWindowState(void) {
+b16 RunTextWindowState(void) {
     i16 plane;
     switch (GetGameSub()) {
         case 0:
@@ -60,7 +60,7 @@ i16 RunTextWindowState(void) {
         s_textStateRefreshPending = 0;
         return UpdateFieldScreen(1);
     }
-    return 0;
+    return false;
 }
 
 RVA(0x000025c0, 0x40)
@@ -162,11 +162,11 @@ void RunMessageScene(i16 scene, i16 entry, i16 ticks) {
 }
 
 RVA(0x000027d0, 0x30)
-i16 FinishMessageScene(void) {
+b16 FinishMessageScene(void) {
     SetMessageHold(0);
     SetMessageLifetime(GetGamePhase());
     ReturnFromGameState();
-    return 0;
+    return false;
 }
 
 RVA(0x00002800, 0x50)

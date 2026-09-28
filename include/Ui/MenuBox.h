@@ -111,6 +111,6 @@ void DispatchMenuEvent(MenuBox* menu, i16 index, i16 event);
 void BuildMenuPage(MenuBox* menu);
 void PaintMenuBox(MenuBox* menu);
 i16 PollMenuBox(MenuBox* menu);
-i16 HandleMenuControl(MenuBox* menu, i16 control);
+b16 HandleMenuControl(MenuBox* menu, i16 control);
 
 #endif // GITEN_UI_MENUBOX_H

@@ -229,7 +229,7 @@ void DrawSceneObjects(i16 x, i16 y, i16 across, i16 along) {
     DrawAreaNpcs();
 }
 
-static __inline i32 IsSceneObjectVisible(FieldObject* object, i16 kind) {
+static __inline b32 IsSceneObjectVisible(FieldObject* object, i16 kind) {
     return (kind != SCENE_HOTSPOT_OBJECT || TestFieldObjectFlag(object, 33) != 1)
            && !GetObjectsHidden();
 }
@@ -319,6 +319,6 @@ SceneSprite* GetHotspotSprite(i16 index) {
 // @identity-TODO: the two input words are unread on Windows; this legacy
 // pointer query returns zero and leaves its output coordinates unchanged.
 RVA(0x00045b30, 0x4)
-i16 PollScenePointer(i16 x, i16 y, i16* pointX, i16* pointY) {
-    return 0;
+b16 PollScenePointer(i16 x, i16 y, i16* pointX, i16* pointY) {
+    return false;
 }

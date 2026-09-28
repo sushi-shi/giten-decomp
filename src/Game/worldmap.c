@@ -78,7 +78,7 @@ void SetWorldMapSpot(i16 layer, i16 x, i16 y) {
 // and checking events and encounters), 7-8 leave it, 9 leaves for an event or
 // an encounter's state, 10 re-enters after one.
 RVA(0x000197f0, 0x620)
-i16 RunWorldMap(void) {
+b16 RunWorldMap(void) {
     MapCoord origin;
     i16 steps;
     i16 state;
@@ -114,7 +114,7 @@ i16 RunWorldMap(void) {
             SetWorldMapActive(1);
             if (g_worldMapRequest < 0) {
                 SetGamePhase(8);
-                return 0;
+                return false;
             }
             if (g_worldMapRequest > 0) {
                 g_worldMapX = s_savedSpotX;
@@ -132,11 +132,11 @@ i16 RunWorldMap(void) {
             RedrawScreen(0, 1);
             FlushStatusRedraw(1);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
-            return 1;
+            return true;
         case 3:
             NextGamePhase();
             LoadWorldMapBlocks(GetWorldMapBlock(g_worldMapX, g_worldMapY));
-            return 0;
+            return false;
         case 4:
             NextGamePhase();
             origin = GetWorldMapViewOrigin(g_worldMapX, g_worldMapY);
@@ -145,22 +145,22 @@ i16 RunWorldMap(void) {
             RefreshInfoBar(1);
             ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 1);
             DiscardWorldMapScreenSave();
-            return 0;
+            return false;
         case 5:
             AllowImmediateInput();
             if (g_worldMapRequest < 0) {
                 SetGamePhase(7);
-                return 0;
+                return false;
             }
             if (g_fieldRedrawRequest) {
                 g_fieldRedrawRequest = 0;
                 SetGamePhase(2);
-                return 0;
+                return false;
             }
             if (FindAbleHumanMember() == -1) {
                 CloseMessageWindow();
                 PushFieldTextScene(0x2a, 0);
-                return 0;
+                return false;
             }
             TrackWorldMapCursor(s_mapLayer);
             if (ProcessPartyCasualties()) {
@@ -174,7 +174,7 @@ i16 RunWorldMap(void) {
                     DrawInfoBar(1, 1);
                 }
                 ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
-                return 0;
+                return false;
             }
             if (PickWorldMapDestination(s_mapLayer)) {
                 s_traveling = 1;
@@ -183,14 +183,14 @@ i16 RunWorldMap(void) {
                     DrawInfoBar(1, 1);
                 }
                 ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
-                return 0;
+                return false;
             }
             if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
                 DrawInfoBar(1, 1);
             }
             ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
             FireCountdownEvent();
-            return 0;
+            return false;
         case 6:
             AllowImmediateInput();
             steps = StepWorldMapTravel(s_mapLayer, 2);
@@ -212,7 +212,7 @@ i16 RunWorldMap(void) {
             if (FindAbleHumanMember() == -1) {
                 CloseMessageWindow();
                 PushFieldTextScene(0x2a, 0);
-                return 0;
+                return false;
             }
             if (CheckWorldMapEvent(g_worldMapX, g_worldMapY)) {
                 CloseMessageWindow();
@@ -220,7 +220,7 @@ i16 RunWorldMap(void) {
                 s_traveling = 0;
                 SetGameStep(0x17);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
-                return 0;
+                return false;
             }
             if (RollWorldMapEncounter(g_worldMapX, g_worldMapY) > 0) {
                 CloseMessageWindow();
@@ -230,13 +230,13 @@ i16 RunWorldMap(void) {
                 SetGamePhase(9);
                 SetGameStep(0x22);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
-                return 0;
+                return false;
             }
             break;
         case 7:
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
-            return 0;
+            return false;
         case 8:
             SetWorldMapActive(0);
             FreeWorldMapScreenSave();
@@ -250,7 +250,7 @@ i16 RunWorldMap(void) {
             ClearModeFlags(MODE_WORLD_MAP);
             SetFieldMenuMode(0);
             RecordWarpInLeader();
-            return 0;
+            return false;
         case 9:
             ClearLayerSurface(6);
             CancelLayerDrag();
@@ -260,7 +260,7 @@ i16 RunWorldMap(void) {
             FreeWorldMapScreenSave();
             ResetWorldMapBlocks(1);
             PushGameState(state);
-            return 0;
+            return false;
         case 10:
             LoadWorldMapEvents();
             LoadEncounterTables();
@@ -269,7 +269,7 @@ i16 RunWorldMap(void) {
             ClearSelectedHotspot();
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00019e10, 0x26)

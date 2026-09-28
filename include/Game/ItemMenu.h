@@ -41,8 +41,8 @@ ItemStackList* CopyItemMenuEntries(ItemStack* entries, i16 count);
 // Step 0 opens, 1 handles input, 2 closes; no other step is valid.
 i16 StepItemBuyMenu(i16* step);
 i16 StepItemSellMenu(i16* step);
-i16 RunItemBuyMenu(void);
-i16 RunItemSellMenu(void);
+b16 RunItemBuyMenu(void);
+b16 RunItemSellMenu(void);
 
 void RefreshScriptItemMenuTotal(void);
 void OpenScriptItemMenu(i16 totalVar, i16 selling);

@@ -21,10 +21,10 @@ void DrawAreaInfo(void);
 
 // Draws the moon phase and the leader's magnetite and macca counters.
 RVA_DECL(0x0001e860)
-i16 DrawInfoBar(i16 layout, i16 partial);
+b16 DrawInfoBar(i16 layout, i16 partial);
 
-i16 RefreshInfoBar(i16 force);
+b16 RefreshInfoBar(i16 force);
 
-i16 UpdateInfoBar(void);
+b16 UpdateInfoBar(void);
 
 #endif // GITEN_GAME_INFOBAR_H

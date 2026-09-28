@@ -12,7 +12,7 @@
 // cleared when the field is entered; its owner TU is unclaimed.
 extern i32 g_rewardMacca;
 
-i16 RunFieldExploration(void);
+b16 RunFieldExploration(void);
 
 // Sets the return point the field leaves to (and resets the field objects
 // and the selected hotspot).
@@ -33,8 +33,8 @@ MapCoord PopRoutePoint(void);
 i16 IsRouteActive(void);
 i16 AdvancePartyMove(i16 command);
 void ResetLevelEvents(void);
-i32 TestLevelEvent(i16 level);
-i16 RaiseObjectEvent(i16 event, i16 queued);
+b32 TestLevelEvent(i16 level);
+b16 RaiseObjectEvent(i16 event, i16 queued);
 i16 SaveFieldMemory(FILE* fp);
 void LoadFieldEventTable(void);
 
@@ -90,14 +90,14 @@ void FreeAutoMoves(void);
 void ResetAutoMoves(void);
 void GrowAutoMoves(i16 more);
 void PushAutoMove(u8 move);
-i16 HasAutoMoves(void);
+b16 HasAutoMoves(void);
 u8 PopAutoMove(void);
 i16 NextAutoMove(void);
 i16 GetFieldExplorationActive(void);
 i16 SetPendingSound(i16 sound);
 void SetRebuildRoom(i16 rebuild);
 i16 GetReturnPoint(i16* out);
-i16 TickStepDamage(void);
+b16 TickStepDamage(void);
 i16 TickFieldSteps(void);
 
 // The party's per-step effects, run on every third step.
@@ -110,6 +110,6 @@ i16 TickPartySteps(void);
 // pays through.
 i16 PayStepUpkeep(void);
 i16 AddHundredths(Character* character, i16 amount);
-i16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position);
+b16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position);
 
 #endif // GITEN_GAME_FIELDMAIN_H

@@ -513,7 +513,7 @@ i16 FindPartyPositionOfId(i16 id) {
 // Codegen constraint: the search for the insertion point leaves through
 // `goto next`; as a for loop cl rotates it and the layout differs.
 RVA(0x00040090, 0xcd)
-i16 SortRoster(void) {
+b16 SortRoster(void) {
     i16 ids[6];
     i16 i;
     i16 j;
@@ -549,7 +549,7 @@ i16 SortRoster(void) {
             SetPartySlot(i, FindRosterSlotById(ids[i]));
         }
     }
-    return 0;
+    return false;
 }
 
 // The id of the character at party position `index` (unchecked).
@@ -589,10 +589,10 @@ void LoadEquipTable(void) {
 
 // Nonzero when characters of `group` can equip item `item`.
 RVA(0x00040250, 0x39)
-i16 CanGroupEquip(i16 group, i16 item) {
+b16 CanGroupEquip(i16 group, i16 item) {
     u8* table;
     if (item < 0) {
-        return 0;
+        return false;
     }
     table = HandleReadPtr(s_equipTable);
     return TestBit(table + group * 5, item) != 0;

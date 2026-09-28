@@ -18,11 +18,11 @@ b32 DrawResourceBitmap(IDirectDrawSurface* surface, u16 bitmap) {
     BitmapResource* bmp;
     HDC dc;
     if (!resource) {
-        return FALSE;
+        return false;
     }
     bmp = static_cast<BitmapResource*>(LockResource(LoadResource(NULL, resource)));
     if (!bmp) {
-        return FALSE;
+        return false;
     }
     surface->GetDC(&dc);
     SetStretchBltMode(dc, COLORONCOLOR);
@@ -42,7 +42,7 @@ b32 DrawResourceBitmap(IDirectDrawSurface* surface, u16 bitmap) {
         SRCCOPY
     );
     surface->ReleaseDC(dc);
-    return TRUE;
+    return true;
 }
 
 RVA(0x00057380, 0x191)
@@ -59,12 +59,12 @@ b32 CreatePicture(
     DDCOLORKEY key;
     HRESULT result;
     if (picture->surface != NULL) {
-        return TRUE;
+        return true;
     }
     primaryDesc.dwSize = sizeof(primaryDesc);
     primaryDesc.dwFlags = DDSD_ALL;
     if (g_primarySurface->GetSurfaceDesc(&primaryDesc) != DD_OK) {
-        return FALSE;
+        return false;
     }
     memset(picture, 0, sizeof(*picture));
     memset(&desc, 0, sizeof(desc));
@@ -75,7 +75,7 @@ b32 CreatePicture(
     desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
     desc.ddpfPixelFormat = primaryDesc.ddpfPixelFormat;
     if (g_ddraw->CreateSurface(&desc, &picture->surface, NULL) != DD_OK) {
-        return FALSE;
+        return false;
     }
     picture->rect.right = width;
     picture->rect.bottom = height;
@@ -98,14 +98,14 @@ b32 CreatePicture(
     } else {
         OutputDebugString("GetSurfaceDesc() returns UNKNOWN");
     }
-    return TRUE;
+    return true;
 }
 
 RVA(0x00057520, 0x62)
 b32 LoadPictureFile(Picture* picture, const char* path) {
     BmpFile* bmp = ReadBitmapFile(path);
     if (bmp == NULL) {
-        return FALSE;
+        return false;
     }
     LoadBitmapToSurface16(bmp, &picture->surface, NULL);
     picture->rect.left = 0;
@@ -113,7 +113,7 @@ b32 LoadPictureFile(Picture* picture, const char* path) {
     picture->surfaceWidth = picture->rect.right = bmp->info.biWidth;
     picture->surfaceHeight = picture->rect.bottom = bmp->info.biHeight;
     FreeBitmap(&bmp);
-    return TRUE;
+    return true;
 }
 
 DATA(0x0006dbe8)

@@ -65,7 +65,7 @@ void DrawMoneyCounter(i16 mode, i16 row, i32 value, i16 currency) {
 }
 
 RVA(0x0001e860, 0x81)
-i16 DrawInfoBar(i16 layout, i16 partial) {
+b16 DrawInfoBar(i16 layout, i16 partial) {
     DrawIconLayerImage(g_clock.moonPhase);
     sprintf(g_scratchBuffer, "%2d", g_clock.moonPhase + 1);
     DrawLayerText(SCREEN_LAYER_MOON_PHASE, 8, 8, g_scratchBuffer, 0xb400);
@@ -74,7 +74,7 @@ i16 DrawInfoBar(i16 layout, i16 partial) {
     if (!partial || TestModeFlags(MODE_WORLD_MAP)) {
         DrawAreaInfo();
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0001e8f0, 0xf5)
@@ -105,7 +105,7 @@ void DrawAreaInfo(void) {
 }
 
 RVA(0x0001e9f0, 0x60)
-i16 RefreshInfoBar(i16 force) {
+b16 RefreshInfoBar(i16 force) {
     if (force) {
         DrawInfoBar(s_nextLayout, 1);
     } else if (s_shownMoonPhase != g_clock.moonPhase
@@ -114,17 +114,17 @@ i16 RefreshInfoBar(i16 force) {
         DrawInfoBar(s_nextLayout, 1);
     }
     s_nextLayout = 1;
-    return 0;
+    return false;
 }
 
 RVA(0x0001ea50, 0x34)
-i16 UpdateInfoBar(void) {
+b16 UpdateInfoBar(void) {
     if (g_fieldRedrawRequest) {
         DrawInfoBar(0, 0);
-        return 0;
+        return false;
     }
     if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
         DrawInfoBar(1, 0);
     }
-    return 0;
+    return false;
 }

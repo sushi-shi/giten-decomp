@@ -21,7 +21,7 @@ DATA(0x00091180)
 i16 g_scriptRegs[16];
 
 RVA(0x0002fd00, 0x174)
-i16 OpSaveDataCommand(void) {
+b16 OpSaveDataCommand(void) {
     i16 savedPoint[5];
     i16 point[5];
     i16 operation = ReadScriptValue();
@@ -68,7 +68,7 @@ i16 OpSaveDataCommand(void) {
             break;
     }
     SetScriptLongVar(variable, result);
-    return 0;
+    return false;
 }
 
 RVA(0x0002fe80, 0x24)

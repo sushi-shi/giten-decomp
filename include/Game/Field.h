@@ -17,7 +17,7 @@ extern i16 g_fieldBattleActive;
 void MarkFieldRefresh(void);
 i16 ExchangeFieldOption(i16 option);
 i16 SetFieldParams(i16 first, i16 second, i16 third);
-i16 IsFieldModeAtLeast(i16 anyMode);
+b16 IsFieldModeAtLeast(i16 anyMode);
 i16 GetFieldMarker(void);
 void SetFieldPair(i16 first, i16 second);
 void EnterFieldMap(i16 map, i16 countA, i16 rateA, i16 countB, i16 rateB, i16 mode);
@@ -26,18 +26,18 @@ i16 GetFieldEntryState(void);
 void SetFieldCounts(i16 countA, i16 countB);
 i16 TickFieldCount(i16 side, i16 hold);
 i32 ScaleByFieldRate(i16 first, i16 second, i32 value);
-i16 RunFieldEncounter(void);
+b16 RunFieldEncounter(void);
 void LeaveFieldMap(i16 result);
 
 void ResetRosterFieldMarks(void);
 
-i16 RunFieldState(void);
+b16 RunFieldState(void);
 
 // @identity-TODO: +0x17e as the ready-to-act flag and +0x17f as the action wait are inferred
 // from 0x3f5f0 (first member with +0x17e set) and OpSetActorAlert's +0x17f clamps; name those
 // Character fields to settle it.
 RVA_DECL(0x00006a00)
-i16 ResetPartyTurnState(void);
+b16 ResetPartyTurnState(void);
 
 // @identity-TODO: that kind 0/1 of 0xda40 are the two enemy groups (graphics slots of 0xe820)
 // is inferred from the caller spawning s_fieldMap as kind 0 and s_fieldParamSecond as kind 1.

@@ -42,9 +42,9 @@ void OpRandLongVar(void);
 
 // The frame-local opcodes: store, load or exchange the system variables with
 // the newest call frame; 0 when there is no frame.
-i16 StoreFrameLocals(void);
-i16 LoadFrameLocals(void);
-i16 SwapFrameLocals(void);
+b16 StoreFrameLocals(void);
+b16 LoadFrameLocals(void);
+b16 SwapFrameLocals(void);
 
 void ReadScriptBytePair(i16* first, i16* second);
 

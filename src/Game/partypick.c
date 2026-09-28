@@ -546,7 +546,7 @@ picked:
 }
 
 RVA(0x0000a050, 0x53)
-i16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
+b16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
     i16 distance;
     void* actor;
     g_hoveredObjectId = GetSelectedHotspotValue();
@@ -557,11 +557,11 @@ i16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
         if (distance >= minimumRange && distance <= maximumRange) {
             g_selectedObjectId = g_hoveredObjectId;
             ClearMouseClicks();
-            return 1;
+            return true;
         }
         ClearMouseClicks();
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0000a0b0, 0x69)

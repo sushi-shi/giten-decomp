@@ -32,7 +32,7 @@ static __inline void ClearCondition(ConditionSet* conditions, i16 condition) {
 extern i16 g_statusCondition;
 
 const char* GetConditionName(i16 bit);
-i16 HasCondition(ConditionSet* conditions, i16 condition);
+b16 HasCondition(ConditionSet* conditions, i16 condition);
 i16 ConditionKindApplies(i16 kind, ConditionSet* conditions);
 
 // The physical ailments selected by restoration kind 57.

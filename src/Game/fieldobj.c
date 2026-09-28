@@ -109,7 +109,7 @@ DATA(0x0007b0b8)
 static i16 s_objectsFrozen;
 
 RVA(0x0000d790, 0x52)
-i16 InitFieldObjects(void) {
+b16 InitFieldObjects(void) {
     i16 i;
     for (i = 0; i < 16; i++) {
         s_objects[i].layer = -1;
@@ -119,7 +119,7 @@ i16 InitFieldObjects(void) {
         InitWordList(&s_objects[i].list, 0);
     }
     ModifyEventFlag(8, 0, 1);
-    return 0;
+    return false;
 }
 
 // Frees slot `index`. When `announce` is set, a live object also clears its
@@ -162,27 +162,27 @@ void RemoveFieldObject(i16 index, i16 announce) {
 }
 
 RVA(0x0000d940, 0x31)
-i16 ResetFieldObjects(void) {
+b16 ResetFieldObjects(void) {
     i16 i;
     for (i = 0; i < 16; i++) {
         RemoveFieldObject(i, 0);
     }
     ModifyEventFlag(8, 0, 1);
     s_objectsFrozen = 0;
-    return 0;
+    return false;
 }
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x0000d980, 0x30)
-i16 IsFieldActor(const void* actor) {
+b16 IsFieldActor(const void* actor) {
     i16 i;
     for (i = 0; i < 16; i++) {
         if (&s_objects[i].kind == actor) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0000d9b0, 0x12)
@@ -445,7 +445,7 @@ MapCoord GetApproachOffset(i16 scale, i16 step) {
 // Draws one object at slot `drawn` of `total` in the view; 0 when it is not
 // in play.
 RVA(0x0000dfb0, 0x1a9)
-i16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 drawn) {
+b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 drawn) {
     Vec3 cell;
     ScreenPoint point;
     i16 facing;
@@ -453,7 +453,7 @@ i16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 dr
     u32 frame;
     i16 redraw;
     if (!GetObjectLifeState(object)) {
-        return 0;
+        return false;
     }
     if (total > 9) {
         total = 9;
@@ -481,7 +481,7 @@ i16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 dr
     }
     RefreshObjectDraw(sprite, point.x, point.y, g_viewDepth, redraw, object, frame, index);
     object->redraw = 0;
-    return 1;
+    return true;
 }
 
 RVA(0x0000e160, 0x7a)
@@ -1161,12 +1161,12 @@ i16 RollEncounterSlot(i16 row) {
 }
 
 RVA(0x0000f220, 0x1e)
-i16 RefreshIfTurned(i16 visible, i16 turned) {
+b16 RefreshIfTurned(i16 visible, i16 turned) {
     if (visible != 0 && turned != 0) {
         RequestFieldRefresh();
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // The side (1 or 3) the party is on seen from x/y facing `direction`; a
@@ -1194,7 +1194,7 @@ i16 GetPartySide(i16 x, i16 y, i16 direction) {
 // retail keeps them separate. Shared loop breaks retain that merge, while
 // routing the successful move through the same exit merges all three sites.
 RVA(0x0000f290, 0x24d)
-i16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
+b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
     i16 x;
     i16 y;
     i16 visible;
@@ -1204,7 +1204,7 @@ i16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
     i16 direction;
     retried = 0;
     if (TestFieldObjectFlag(object, 0x20)) {
-        return 0;
+        return false;
     }
     code = GetMapCellCode(object->pos.x, object->pos.y);
     visible = GetPartyView(object->pos.x, object->pos.y);
@@ -1270,7 +1270,7 @@ i16 DistanceToParty(FieldActor* actor) {
 // @early-stop instruction width: retail shifts the packed minimum in al;
 // this build uses eax before the same low-nibble mask. Calls and CFG agree.
 RVA(0x0000f590, 0x8c)
-i16 IsWithinRange(i16 range) {
+b16 IsWithinRange(i16 range) {
     i8 packed = range;
     i32 nearDistance;
     i16 low;
@@ -1285,7 +1285,7 @@ i16 IsWithinRange(i16 range) {
     b = GetFieldTargetCoord(g_targetId);
     distance = GridDistance(a.x, a.y, b.x, b.y);
     if (distance < low) {
-        return 0;
+        return false;
     }
     return distance <= range;
 }
@@ -1294,7 +1294,7 @@ i16 IsWithinRange(i16 range) {
 // than through their headers (FieldSight.h, and before RunObjectStep
 // Actor.h, ConditionAge.h, Script.h, FieldMap.h): included at the top of this
 // file they perturb RelativeFacing/RollEncounterSlot (TU state).
-i32 IsSkillIdBlocked(Character* character, i16 id);
+b32 IsSkillIdBlocked(Character* character, i16 id);
 
 // @identity-TODO: the enemy action flow's helpers: the action wait (0x43f510,
 // on the actor's field mark), the action pick (0x405cd0) and its adjustment
@@ -1388,13 +1388,13 @@ struct ScriptContext* NewScriptContext(i16 mode, Character* actor);
 void FreeScriptContext(struct ScriptContext* script);
 i16 RunScriptStep(i16 window);
 u16 RetakeDeferredChar(i16 window, i16 result, const char* caller);
-i16 ChooseObjectTarget(FieldObject* object);
+b16 ChooseObjectTarget(FieldObject* object);
 
 // One step of a field object's action flow: ticks its conditions and action
 // wait, runs its object script, then acts by its mode (1 attack or skill,
 // 2/4/5/6/7/9 move, 11 talk). Returns 0 when it did not act.
 RVA(0x0000f890, 0x490)
-i16 RunObjectStep(FieldObject* object, i16 index) {
+b16 RunObjectStep(FieldObject* object, i16 index) {
     i16 scenes[5];
     Character* actor;
     i16 action;
@@ -1404,18 +1404,18 @@ i16 RunObjectStep(FieldObject* object, i16 index) {
     i16 attitude;
     i16 scene;
     if (g_tickElapsed == 0) {
-        return 0;
+        return false;
     }
     if (HasTurnElapsed()) {
         AgeConditions(GetFieldObjectConditions(object), 1);
         RecoverConditions((Character*)&object->kind);
     }
     if (TickActionWait(GetFieldObjectActionWait(object), object->actionSpeed)) {
-        return 0;
+        return false;
     }
     ResetActionWaitDelay(GetFieldObjectActionWait(object));
     if (GetPickBlockingCondition(GetFieldObjectConditions(object))) {
-        return 0;
+        return false;
     }
     SetFieldBusy(1);
     actor = (Character*)&object->kind;
@@ -1534,17 +1534,17 @@ i16 RunObjectStep(FieldObject* object, i16 index) {
             break;
     }
     RequestObjectRedraw(object->slot, object->pos.x, object->pos.y);
-    return 1;
+    return true;
 }
 
 // Picks the party member an object acts on: its party-target skill prompt,
 // or a random member able to act (else any member alive); 0 when there is
 // none. The pick goes to script object B and the actor's pick target.
-i16 BeginPartyTargetSkill(Character* character);
+b16 BeginPartyTargetSkill(Character* character);
 i16 FindPartyPositionOfId(i16 id);
 
 RVA(0x0000fd20, 0x171)
-i16 ChooseObjectTarget(FieldObject* object) {
+b16 ChooseObjectTarget(FieldObject* object) {
     Character* member;
     i16 candidates[6];
     i16 count;
@@ -1560,7 +1560,7 @@ i16 ChooseObjectTarget(FieldObject* object) {
         }
     }
     if (GetPickBlockingCondition(GetFieldObjectConditions(object))) {
-        return 0;
+        return false;
     }
     if (BeginPartyTargetSkill((Character*)&object->kind)) {
         goto done;
@@ -1581,7 +1581,7 @@ i16 ChooseObjectTarget(FieldObject* object) {
             }
         }
         if (count == 0) {
-            return 0;
+            return false;
         }
     }
     target = candidates[RandomUpTo(--count)];
@@ -1591,24 +1591,24 @@ i16 ChooseObjectTarget(FieldObject* object) {
         ((Character*)&object->kind)->pickObject = g_targetId;
     }
 done:
-    return 1;
+    return true;
 }
 
 // For a member using a party-target skill: opens the target prompt, or
 // targets script object A at once. 0 for other picks.
 RVA(0x0000fea0, 0x88)
-i16 BeginPartyTargetSkill(Character* character) {
+b16 BeginPartyTargetSkill(Character* character) {
     i16 flags;
     if (character->pickRole != 4) {
-        return 0;
+        return false;
     }
     flags = GetSkillTargetFlags(character->pickTarget);
     if (!TargetFlagsSelectActorGroup(flags) && !(flags & (TARGET_ACTOR_SIDE | TARGET_SELF))) {
-        return 0;
+        return false;
     }
     if (!PushPromptState(0, 0, 200, 450, 0)) {
         g_targetId = g_actorId;
         character->pickObject = g_targetId;
     }
-    return 1;
+    return true;
 }

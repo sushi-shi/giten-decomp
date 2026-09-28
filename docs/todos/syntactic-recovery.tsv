@@ -5,6 +5,7 @@ rva	unit	function	lost_max	cur
 0x01a400	itemuse	_RunItemUse	97.4486	97.3596
 0x005b80	partyaction	_GetMemberPanelState	100.0000	88.9610
 0x009620	partypick	_RunPartyCommandInput	92.0986	85.7913
+0x03a870	scriptvars	_OpNextChoice	88.7216	83.8247
 0x03abc0	scriptvars	_ResizeScriptEntry	100.0000	98.0000
 0x00aa20	skillattack	_RollSkillHit	98.7027	98.6216
 0x02cf90	skilluse	_UseBattleTallySkill	100.0000	99.7826

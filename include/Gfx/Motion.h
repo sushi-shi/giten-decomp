@@ -151,7 +151,7 @@ typedef struct EffectPalette {
 void SetSceneFlags(i32 bits);
 i16 GetSceneFlags(void);
 void StartMotion(i16 index, i16 delay, i16 scale);
-i16 StepMotion(i16 immediate);
+b16 StepMotion(i16 immediate);
 void MotionPoint(i16 x, i16 y, Vec3* out);
 i32 ClampEffectCount(i16 count);
 void StartEffectScript(u8* base, u16 offset);

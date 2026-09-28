@@ -10,8 +10,8 @@ DATA(0x00084d20)
 Texture g_enemyTextures[2][5];
 
 RVA(0x00057f20, 0x112)
-i16 DecodeLayerImage(BmpFile* data, i16 layer, i32 size) {
-    b32 loaded = TRUE;
+b16 DecodeLayerImage(BmpFile* data, i16 layer, i32 size) {
+    b32 loaded = true;
     BmpFile* bmp = data;
     i32 frame;
     u32 consumed;
@@ -34,7 +34,7 @@ i16 DecodeLayerImage(BmpFile* data, i16 layer, i32 size) {
                 reinterpret_cast<const char*>(bmp),
                 FALSE
             )) { // API-forced: borrowed BMP input.
-            loaded = FALSE;
+            loaded = false;
         }
         // Byte-forced: packed complete BMP files advance by bfSize.
         bmp = reinterpret_cast<BmpFile*>(

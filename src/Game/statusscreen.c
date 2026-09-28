@@ -56,7 +56,7 @@ void LeaveStatusScreen(i16 nested) {
 }
 
 RVA(0x00017030, 0x60)
-i16 RunDismissMenuState(void) {
+b16 RunDismissMenuState(void) {
     switch (GetGamePhase()) {
         case 0:
             NextGamePhase();
@@ -71,14 +71,14 @@ i16 RunDismissMenuState(void) {
             ReturnFromGameState();
             break;
     }
-    return 0;
+    return false;
 }
 
 // @early-stop load width: retail loads the saved state and step into ecx
 // with dword reads for fastcall arguments; this build uses cx. Their sole
 // writer stores words, so widening the saved globals would misstate storage.
 RVA(0x00017090, 0xc1)
-i16 ReplaceRosterMember(void) {
+b16 ReplaceRosterMember(void) {
     i16 selected;
     switch (GetGamePhase()) {
         case 0:
@@ -103,5 +103,5 @@ i16 ReplaceRosterMember(void) {
             SetGameStep(g_rosterReturnStep);
             break;
     }
-    return 0;
+    return false;
 }

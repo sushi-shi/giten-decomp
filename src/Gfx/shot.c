@@ -209,7 +209,7 @@ void LaunchShot(i16 effect, i16 mode, i16 rise, i16 fromX, i16 fromY, i16 toX, i
 }
 
 RVA(0x000059d0, 0x60)
-i16 RunShotState(void) {
+b16 RunShotState(void) {
     i16 result;
     if (GetGamePhase() == 0) {
         ExchangeEffectSkipping(0);
@@ -219,7 +219,7 @@ i16 RunShotState(void) {
     if (result == 0) {
         CloseEffect();
         ReturnFromGameState();
-        return 0;
+        return false;
     }
     StepEffectScript();
     if (GetEffectScript() == NULL || result < 0) {
@@ -227,21 +227,21 @@ i16 RunShotState(void) {
         StopEffectScript();
         ReleaseEffectPalettes();
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00005a30, 0x50)
-i16 RunClosingEffectState(void) {
+b16 RunClosingEffectState(void) {
     if (GetEffectScript() != NULL) {
         ExchangeEffectSkipping(1);
         StepEffectScript();
         if (GetEffectScript() != NULL) {
-            return 0;
+            return false;
         }
     }
     FreeEffectImageSet(0);
     FreeEffectRecord(0);
     ReturnFromGameState();
     ReleaseEffectPalettes();
-    return 0;
+    return false;
 }

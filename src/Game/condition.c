@@ -193,7 +193,7 @@ static const ConditionName s_conditionNames[] = {
 };
 
 RVA(0x0003e6b0, 0x13)
-i16 HasCondition(ConditionSet* conditions, i16 condition) {
+b16 HasCondition(ConditionSet* conditions, i16 condition) {
     return TestBit(conditions->bits, condition);
 }
 
@@ -514,14 +514,14 @@ i16 GetPickBlockingCondition(ConditionSet* conditions) {
 }
 
 RVA(0x0003eea0, 0x36)
-i16 IsFieldConditionRestricted(i16 condition) {
+b16 IsFieldConditionRestricted(i16 condition) {
     i16 i;
     for (i = 0; s_fieldRestrictedConditions[i] != -1; i++) {
         if (s_fieldRestrictedConditions[i] == condition) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0003eee0, 0x13)
@@ -561,19 +561,19 @@ i16 AgeConditions(ConditionSet* conditions, i16 amount) {
 // Ages `condition` by `amount` (kept in 0..255) when it is held and can wear
 // off; 1 when aged.
 RVA(0x0003efa0, 0x57)
-i16 AgeCondition(i16 amount, ConditionSet* conditions, i16 condition) {
+b16 AgeCondition(i16 amount, ConditionSet* conditions, i16 condition) {
     if (!HasCondition(conditions, condition)) {
-        return 0;
+        return false;
     }
     if (s_recoveryChance[condition] == 0) {
-        return 0;
+        return false;
     }
     SetConditionAge(
         conditions,
         condition,
         ClampUShort(GetConditionAge(conditions, condition) + amount, 0, 0xff)
     );
-    return 1;
+    return true;
 }
 
 // Rolls every held condition of `character` for recovery; nonzero when any
@@ -592,13 +592,13 @@ i16 RecoverConditions(Character* character) {
 // 0..255. A condition that stays can hurt: dancing (19) drains 1..5 HP,
 // suffocation (11) 1..33.
 RVA(0x0003f030, 0xb6)
-i16 RecoverCondition(Character* character, i16 condition) {
+b16 RecoverCondition(Character* character, i16 condition) {
     i16 chance;
     if (!HasCondition(GetCharacterConditions(character), condition)) {
-        return 0;
+        return false;
     }
     if (s_recoveryChance[condition] == 0) {
-        return 0;
+        return false;
     }
     chance = (GetConditionAge(GetCharacterConditions(character), condition) >> 3)
              + s_recoveryChance[condition];
@@ -608,10 +608,10 @@ i16 RecoverCondition(Character* character, i16 condition) {
         } else if (condition == 11) {
             DrainPool(&character->pools.hp, RandomUpTo(0x20) + 1);
         }
-        return 0;
+        return false;
     }
     ClearCondition(GetCharacterConditions(character), condition);
-    return 1;
+    return true;
 }
 
 // Applies the conditions an empty HP or MP pool causes: 1 when HP ran out

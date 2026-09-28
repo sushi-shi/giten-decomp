@@ -30,7 +30,7 @@ void PushFusionMenu(i16 kind, i16 resultVariable) {
 }
 
 RVA(0x0002a790, 0x23d)
-i16 RunFusionMenuState(void) {
+b16 RunFusionMenuState(void) {
     i16 result;
     switch (GetGamePhase()) {
         case 0:
@@ -114,7 +114,7 @@ i16 RunFusionMenuState(void) {
             }
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002a9d0, 0x44)

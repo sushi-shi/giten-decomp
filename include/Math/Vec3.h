@@ -40,7 +40,7 @@ static __inline i16 UnprojectAxis(i16 value, i16 depth) {
 
 ScreenPoint ProjectPoint(i16 x, i16 y, i16 z);
 ScreenPoint ProjectFloorPoint(i16 x, i16 z);
-i16 MoveBySubVelocity(Vec3* pos, const Vec3* velocity);
+b16 MoveBySubVelocity(Vec3* pos, const Vec3* velocity);
 void StepBody(Body* body);
 i16 CheckFieldBounds(i16 x, i16 y, i16 z);
 void ClearBody(Body* body);

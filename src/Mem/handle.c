@@ -120,18 +120,18 @@ i32 SetHandlePtr(i32 handle, void* ptr, u16 size) {
 }
 
 RVA(0x00004620, 0x2a)
-i32 FreeHandle(i32 handle) {
+b32 FreeHandle(i32 handle) {
     if (handle == 0) {
-        return 0;
+        return false;
     }
     FreeBlock(HandlePtr(handle));
     return ClearHandle(handle);
 }
 
 RVA(0x00004650, 0x16)
-i32 ClearHandle(i32 handle) {
+b32 ClearHandle(i32 handle) {
     SetHandleEntry(handle, 0, 0, 0);
-    return 0;
+    return false;
 }
 
 RVA(0x00004670, 0xe)

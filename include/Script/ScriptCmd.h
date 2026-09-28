@@ -33,7 +33,7 @@ ScriptChoice* PushScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, 
 void InitScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode);
 i16 FindScriptChoiceAtMouse(void);
 i16 PollScriptChoiceMenu(void);
-i16 RunScriptChoiceState(void);
+b16 RunScriptChoiceState(void);
 
 // eventflags' copy into bank 15's tag. Codegen constraint: declared here; in
 // <Script/EventFlags.h> it perturbs field.c and fieldobj.c (TU state).
@@ -52,7 +52,7 @@ i32 GetObjectAlignmentLevelA(i16 ref);
 i16 StepForMode(i16 mode);
 void OpShiftPlayerAlignmentB(void);
 void OpShiftPlayerAlignmentA(void);
-i16 OpLevelUpMember(void);
+b16 OpLevelUpMember(void);
 void OpAddFamiliarityCount(i16 negate);
 void OpAddActorFamiliarity(i16 negate);
 void OpAddActorLevelGap(i16 negate);
