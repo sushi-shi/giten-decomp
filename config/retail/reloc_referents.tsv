@@ -14,6 +14,7 @@ function_rva	target_rva	site_rva	owner	addend	occurrences	provenance
 0x0004a100	0x0008778c	0x0004a1d4	_g_enemyTextures	0x00002a6c	1	enemy-texture loop one-past limit
 0x0004a100	0x0008fc74	0x0004a36c	?g_enemyPictures@@3PAUPicture@@A	0x000000ec	1	enemy-picture loop end at surface member
 0x0004bc20	0x0008f3f8	0x0004bd01	_?s_quad@?1??DrawScreenFade@@YAXXZ@4PAU_D3DTLVERTEX@@A$S	0x00000090	1	fade-quad loop end at color member
+0x0004bdd0	0x0008fd88	0x0004c114	_?s_box@?1??RenderTBox@@YAXXZ@4PAU_D3DLVERTEX@@A$S	0x00000088	1	box-quad loop end at z member
 0x0004dcd0	0x0008f5c8	0x0004e06b	_g_spriteOrder	0x00000040	1	sprite-order loop one-past limit
 0x0004f260	0x0006bdc4	0x0004f2f8	_s_quadIndices$S	0x0000000c	1	index loop one-past limit
 0x0004f260	0x0006bdbc	0x0004f379	_s_quadUV$S	0x000000c4	1	quad UV loop end at second coordinate
