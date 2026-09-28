@@ -102,8 +102,7 @@ class Layout:
         self.reparsed = reparsed
 
     def node(self, ref) -> dict | None:
-        """A type by id, or an INLINE node (what a synthetic/injected layout
-        carries - the selftest builds trees the cache never saw)."""
+        """A type by id or an inline node."""
         if isinstance(ref, dict):
             return ref
         return self.types[ref] if isinstance(ref, int) \

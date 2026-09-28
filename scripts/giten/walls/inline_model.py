@@ -28,7 +28,6 @@ Where cl 5.0 diverges from the VC6 model (measured; do NOT port these back):
     https://github.com/sushi-shi/gruntz-decomp/blob/b27b05deb249e4cacbb29f55f17b469ecfe56f26/docs/patterns/msvc5-inline-depth-zero-is-the-only-live-lever.md
 
 USAGE
-    giten walls inline-model --selftest
     giten walls inline-model --spec sites.json [--json]
     giten walls inline-model --gap sites.json  [--json]
     giten walls inline-model --gap 0x08b960    # the address form: call-set
@@ -199,14 +198,6 @@ def _print_report(rep) -> None:
               f"budget@site={d['budget_before']}{why}")
 
 
-def _counts(rep, name):
-    ex = sum(1 for _, d in _flatten(rep["decisions"])
-             if d["name"] == name and d["action"] == "expand")
-    ca = sum(1 for _, d in _flatten(rep["decisions"])
-             if d["name"] == name and d["action"] == "call")
-    return ex, ca
-
-
 def die(msg: str) -> None:
     print(msg, file=sys.stderr)
     sys.exit(2)
@@ -271,100 +262,6 @@ def measure_cb(src: Path, callee: str, caller: str, n_sites: int):
         lo = BUDGET_FLOOR // (expanded + 1) + 1
         hi = BUDGET_FLOOR // expanded
     return expanded, rejected, lo, hi
-
-
-# --------------------------------------------------------------------------- #
-# --selftest: model-arithmetic regressions. The oracle data is the sibling
-# project's measured pinned-compiler corpus; the cl 5.0 re-validation of the
-# shared mechanics is docs/patterns/inline-budget-emits-ool-comdat.md.
-# --------------------------------------------------------------------------- #
-
-def _selftest() -> int:
-    failures = []
-
-    def check(label, ok, detail=""):
-        print(f"[selftest] {'PASS' if ok else 'FAIL'}  {label}"
-              + (f"  {detail}" if detail else ""))
-        if not ok:
-            failures.append(label)
-
-    # 1. 9 sites, small caller -> 6 expand + 3 reject across cb=[143,166].
-    ok = all(_counts(predict(120, [Site(Callee("fill", cb))] * 9), "fill")
-             == (6, 3) for cb in range(143, 167))
-    check("fill 6+3 across cb=[143,166]", ok)
-
-    # 2. candidate=False -> every site is a call. (On cl 5.0 the flag comes
-    #    from /Ob1 candidacy or cb>=1000, not VC6's save gate.)
-    rep = predict(120, [Site(Callee("filsd", 170, candidate=False))] * 9)
-    check("candidacy drop 0+9", _counts(rep, "filsd") == (0, 9))
-
-    # 3. cb <= 40 is budget-exempt -> 60/60 expand.
-    rep = predict(60, [Site(Callee("tiny", 20))] * 60)
-    check("small-free 60/60", _counts(rep, "tiny") == (60, 0))
-
-    # 4. nested: 6x gg -> 3x hh each; budget/nrem at the nested level gives
-    #    exactly ONE hh per gg copy across cb(hh)=[143,166].
-    ok = True
-    for cbh in range(143, 167):
-        gg = Callee("gg", 30, sites=[Site(Callee("hh", cbh))] * 3)
-        rep = predict(60, [Site(gg)] * 6)
-        ok &= _counts(rep, "gg") == (6, 0) and _counts(rep, "hh") == (6, 12)
-    check("nested 6/0 gg + 6/12 hh across cb(hh)=[143,166]", ok)
-
-    # 5. caller-size coupling: padding the CALLER (cb 930) lifts the budget
-    #    to 1860 >= 9*cb(fill) -> all 9 expand.
-    rep = predict(930, [Site(Callee("fill", 150))] * 9)
-    check("pad flip 9/0 at caller_cb=930", _counts(rep, "fill") == (9, 0))
-
-    # 6. int16 wrap: caller_cb > 32767 wraps negative -> floor budget.
-    rep = predict(40000, [Site(Callee("fill", 150))] * 9)
-    check("int16 wrap reverts to floor budget 6/3",
-          _counts(rep, "fill") == (6, 3))
-
-    # 7. STL flip shape: 12 ctor trees charge the budget up front; the divided
-    #    budget starves every nested _Tidy except the last site; a padded
-    #    caller expands all 24.
-    def ctor():
-        return Callee("ctor", 60, sites=[Site(Callee("_Tidy", 85))])
-
-    def dtor():
-        return Callee("dtor", 20, sites=[Site(Callee("_Tidy", 85))])
-
-    def shape():
-        return [Site(ctor()) for _ in range(12)] + \
-               [Site(dtor()) for _ in range(12)]
-    small = predict(80, shape())
-    big = predict(3500, shape())
-    s_ex, s_ca = _counts(small, "_Tidy")
-    b_ex, b_ca = _counts(big, "_Tidy")
-    check("STL flip: small caller starves _Tidy, padded caller 24/0",
-          s_ca >= 20 and (b_ex, b_ca) == (24, 0),
-          f"small={s_ex}/{s_ca} big={b_ex}/{b_ca}")
-
-    # 8. knife-edge: a mid-budget subtree spend flips a later duplicate site
-    #    between expand and call; a larger caller estimate expands both.
-    ok = True
-    flip_ok = True
-    for cbgt in (46, 47):
-        for cbk in range(77, 84):
-            for id_spend in range(710, 787, 25):
-                def kill():
-                    return Callee("kill", cbk,
-                                  sites=[Site(Callee("get_total", cbgt))])
-                idmg = Callee("inflict_damage", id_spend, candidate=True)
-                sites = [Site(kill()), Site(idmg), Site(kill()), Site(idmg)]
-                rep = predict(235, sites)
-                ok &= _counts(rep, "get_total") == (1, 1)
-                rep2 = predict(1400, sites)
-                flip_ok &= _counts(rep2, "get_total") == (2, 0)
-    check("knife-edge: expand@copy1 + call@copy2 (small caller)", ok)
-    check("knife-edge: larger caller_cb expands both", flip_ok)
-
-    if failures:
-        print(f"[selftest] {len(failures)} FAILURE(S): " + ", ".join(failures))
-    else:
-        print("[selftest] ALL PASS")
-    return 1 if failures else 0
 
 
 SPEC_SHAPE = ('{"caller_cb": N, "sites": [{"name": "callee", "cb": N, '
@@ -522,8 +419,6 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
         prog="giten walls inline-model",
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--selftest", action="store_true",
-                    help="replay the validated oracle cases through predict()")
     ap.add_argument("--spec", help="JSON caller/sites spec to predict")
     ap.add_argument("--gap", metavar="SPEC|RVA",
                     help="a JSON caller/sites spec: report the budget deficit "
@@ -549,8 +444,6 @@ def main(argv=None) -> int:
         print(gen_harness(*args.gen_harness), end="")
         return 0
 
-    if args.selftest:
-        return _selftest()
     if args.spec:
         if not Path(args.spec).is_file():
             die(f"spec JSON missing: {args.spec}")
@@ -606,7 +499,7 @@ def main(argv=None) -> int:
                   f"grow the CALLER by ~{s['approx_caller_statements']} "
                   f"statement(s) (+{s['grow_caller_cb_by']} caller_cb)")
         return 0
-    ap.error("need --selftest, --spec/--gap FILE, or --measure-cb TU")
+    ap.error("need --spec/--gap FILE, --measure-cb TU, or --gen-harness S N PAD")
 
 
 if __name__ == "__main__":

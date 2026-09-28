@@ -71,13 +71,9 @@ giten verify library-data-refs
 
 Consult each command's help and [gate registration](../scripts/giten/verify/tiers.py)
 for its current scope. Final placement and linked references additionally need
-the [candidate-image checks](image-diff.md).
+the [candidate-image checks](linker-flags.md#checks).
 
 Do not infer original .data/.bss membership from delinked section percentages.
 Retail's file-alignment tail can leave storage classification ambiguous.
 Do not fill final-image gaps with fake arrays, infer extents from adjacency
 without qualification, or split one object into overlapping definitions.
-
-Historical experiments and score tables were removed from this document.
-Use `git show b27b05deb:docs/data-attribution.md` for provenance, not current
-tool instructions.

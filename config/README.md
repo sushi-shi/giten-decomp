@@ -1,109 +1,35 @@
-# config/ — tracked configuration and recovered evidence
+# Configuration
 
-Configuration is grouped by the thing it describes. NEVER resolve a merge
-conflict here with a blanket `--ours`/`--theirs` (that broke main twice) — use
-the owning tool's merge/update rule.
+Tracked inputs and reviewed retail evidence live here; generated state belongs
+in ignored `build/`. Merge rows by identity and remeasure the merged tree rather
+than accepting either side wholesale.
 
-## Root build, matching, and audit contracts
+| Input | Owner / purpose |
+| --- | --- |
+| `units.toml` | `giten.manifest`: unit/source mapping and complete [compiler profiles](../docs/compiler-flags.md) |
+| `compare.toml` | [Data-matching mode](../docs/build-system.md#data-matching) |
+| `match_baseline.tsv` | CUR/MAX/HIST ledger; written by `giten verify bank` |
+| `cleanliness/` | Audit floors and reviewed exceptions; use each owning gate's update command |
+| `reviews/` | Reviewed findings consumed by the corresponding audit; recheck when source changes |
 
-- **`units.toml`** — THE per-TU manifest: unit → source path + compile-flags
-  profile (`[flags]`: `c` the game's C /O2 /ML, `cpp` the platform layer's C++
-  /O2 /ML /GX, `cpp-noeh` C++ without EH — recovered from the retail bytes,
-  not chosen). Read by everything via
-  `giten.core.manifest`. Add a TU = add an `[[unit]]` block.
-- **`match_baseline.tsv`** — per-function best-fuzzy% regression baseline
-  (`giten.match.status`). Bless reviewed dips/losses via
-  `status update --accept-regressions`.
+## Retail evidence
 
-## `cleanliness/` tracked metrics
+`retail/functions.tsv` and `retail/data.tsv` describe admitted starts and kinds.
+Provider tables supply names and ownership; source macros supply reconstructed
+claims. [The model](../scripts/giten/model.py) resolves precedence, extents and
+violations. Table headers and their consuming modules define the schemas.
 
-These files belong to source-quality audits. Baselines are tool-rolled and
-merged per row; remeasure the merged tree rather than taking one side wholesale.
+| Table in `retail/` | Purpose |
+| --- | --- |
+| `functions_static_libs.tsv` | Proven library function identities; low-confidence rows are leads |
+| `data_static_libs.tsv` | Library data, SDK constants and GUIDs |
+| `data_vtables.tsv` | Vtable identities |
+| `data_compgen.tsv` | Header COMMONs and per-TU static copies; see [data attribution](../docs/data-attribution.md) |
+| `functions_zlib.tsv`, `data_zlib.tsv` | Provider channels for pristine vendored source |
+| `reloc_sites.tsv` | [Absolute relocation sites](../docs/relocations.md) absent from the retail PE |
+| `reloc_referents.tsv` | Proven site-specific owner/addend expressions |
+| `link_order.tsv`, `link_bands.tsv` | Reviewed contribution order and coarse image bands |
 
-- **`cleanliness-text-baseline.tsv`** — fast source-text scoreboard floors
-  (`giten.cleanliness.board`), measured on normal builds.
-- **`cleanliness-semantic-baseline.tsv`** — build/IR-derived scoreboard floors,
-  measured only by the periodic full build. Ratcheted rows in either file are
-  DOWN-ONLY; bless a lower floor via `board --update` (`--semantic` includes
-  the semantic collectors).
-- **`bare-constants-baseline.tsv`**, **`data-tu-order-baseline.tsv`**,
-  **`single-view-baseline.tsv`**, and **`tu-order-baseline.tsv`** — focused
-  audit ratchets and frozen backlogs.
-- **`kept-comdat-exiles.tsv`** — the tu-order gate's reviewed exemptions:
-  interleaves retail genuinely produced (a COMDAT kept inside a foreign
-  unit's contribution). Gate policy, not retail labeling.
-- **`data-integrity-ratchet.tsv`** — maxima for the data-integrity audit.
-
-## `retail/` executable labels — the channel model
-
-One BASE census per address space, structural only (starts + kinds, no sizes,
-no names), and PROVIDER tables layered on it. A row's extent is DERIVED to the
-next base row; the exact CODE/data size of a byte-matched body lives on its
-CLAIM (`RVA(rva, size)` in src/, `functions_zlib.tsv`, clang `sizeof` for
-`DATA()` globals). `giten.audit.channels` gates the invariant: every provider
-rva is an admitted base row of the matching kind.
-
-Bases:
-
-- **`functions.tsv`** — the admitted `.text` partition: one row per function
-  start, kind ∈ (empty=body | thunk | eh | helper | pad). Hand-owned;
-  boundary corrections are edited here, the build never regenerates it.
-- **`data.tsv`** — the admitted data census: one row per datum start in
-  `.rdata`/`.data`/`.bss`, kind ∈ (empty=datum | string | fppool | vtable |
-  rtti | ehtable | guard | common | copy | pad).
-  `giten.audit.data_denominator --check` re-proves kinds and tiling against
-  the image + the current enrolment every build.
-- **`reloc_sites.tsv`** — the base-relocation set DDS.EXE does not carry
-  (a `/FIXED` link): `site target origin` per DIR32 address operand,
-  synthesized and validated against the LIBC.LIB bodies' own fixups; the
-  `reloc_image` edge appends it to `build/exe/DDS.EXE` as a real `.reloc`.
-  Hand-owned: fix a false or missed site here (docs/relocations.md).
-- **`link_bands.tsv`** — the image's coarse link-layout bands ([lo, hi) over
-  `.text` and the data sections) for reporting and the hard band↔kind
-  invariants. DERIVED like link_order (bytes + link_order transitions), so
-  tracked-but-never-hand-edited; the rebuild grows its regenerator/check.
-
-Function providers:
-
-- **`functions_static_libs.tsv`** — LIBC.LIB carve-outs (rva, name,
-  lib, confidence, source): RVAs proven NOT reconstructable game C++, excluded
-  from the match denominator. LOW rows are diagnostic leads, never claims. An
-  rva may carry several alias/provenance rows. HAND-OWNED (the FID
-  regeneration pipeline is retired); merge per ROW.
-- **`functions_zlib.tsv`** — vendored-library function labels (none: DDS.EXE links no vendored code)
-  (rva, name, unit, size). The vendored sources are pristine, so this table is
-  their claim channel; `size` is the exact matched extent.
-
-Data providers:
-
-- **`data_vtables.tsv`** — game/engine `??_7` tables (rva, size, name, kind,
-  note); kind separates primary, MI-secondary, and template tables.
-  `data_manifest.vtable_rows()` enrolls each once per emitting base obj.
-- **`data_static_libs.tsv`** — CRT tables, DirectX GUIDs,
-  SDK GUIDs, and library constants game code names (rva, size, name, unit,
-  note). A unit + size ENROL the row; `library_data` is the deliberate
-  holding unit objdiff never opens.
-- **`data_zlib.tsv`** — vendored-library data labels (rva, name, unit, size).
-- **`data_compgen.tsv`** — compiler-generated data with no reachable source
-  spelling (rva, size, name, owner, class): `class=common` COFF COMMONs from
-  header-inline local statics + their `??_B` guards
-  (`giten.audit.compgen_data` re-proves them against the base objs), and
-  `class=copy` per-TU copies of header statics.
-
-Retail-derived evidence:
-
-- **`link_order.tsv`** — DERIVED retail link order: one row per unit's
-  contiguous contribution band (ascending band start = arrival order).
-- **`reloc_referents.tsv`** — per-site retail relocation referents whose exact
-  spelling (symbol + addend) containment inference cannot reach.
-- **`rsrc/`** — the retail resources (extracted payloads + manifest).
-
-Everything under retail/ states a fact about the retail image. Gate policy
-lives in cleanliness/; loss detection (the old giten_functions.tsv census
-floor) is match_baseline.tsv's LOST reporting.
-
-Retired configs (caller-audit ledgers, match-queue.md, `library_labels.csv` +
-`zlib_labels.csv` + `vtables_*.csv` + `compiler-generated-data.tsv` +
-`static_data_copies.tsv` + `compiler-helper-functions.tsv` +
-`data-coverage-partition.tsv`, all dissolved into the channel model above) are
-gone — see `docs/data-attribution.md` and `giten.audit.channels`.
+Correct a false or missing retail fact at its owning table; do not compensate
+with fabricated source. A table row is not a source definition or independent
+proof of a whole-object match.

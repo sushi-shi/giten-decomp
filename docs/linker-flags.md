@@ -17,9 +17,24 @@ and options for a particular build.
 
 Compile matching and final-image matching are different checks. A function's
 normalized COFF match does not establish final RVA placement, import binding,
-or startup correctness. See [image comparison](image-diff.md).
+or startup correctness. Use the checks below.
 
 Do not infer original source ownership from proximity alone, fabricate padding
 to force addresses, or equate identical COMDAT selection with arbitrary
 identical-code folding. Retail instructions, relocations, and independently
 identified contributions constrain those decisions.
+
+## Checks
+
+After `giten link`, run `giten verify link-tier` (or `--census` for section
+sizes). It reads the candidate EXE/map under `build/exe/`, checks symbol closure
+and section sizes, and compares linked bytes of exact functions with relocation
+masking. A masked pointer still needs referent evidence; see [data attribution](data-attribution.md).
+
+`giten link` builds `.rsrc` from the original executable supplied through
+`GITEN_RETAIL_EXE`; the generated `.res` stays under ignored `build/`.
+See [resource linking](build-system.md#candidate-linking-and-resources) and
+[runtime validation](runtime-validation.md). External game files and valid
+runtime settings are still required, and correct gameplay is not yet verified.
+Do not use `/FORCE` or fabricated padding to hide
+unresolved symbols, duplicate definitions, or placement differences.
