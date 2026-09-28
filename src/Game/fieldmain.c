@@ -58,90 +58,123 @@ u8 g_rightFrontWalls[4][3];
 
 // The level event bits (one per level, MarkLevelEvent).
 DATA(0x0007b740)
-static u8 s_levelEvents[0x20];
+static u8 s_levelEvents[0x20] = {0};
 
 // The direction the party faces after returning to the field (-1: find the
 // exit it came through).
 DATA(0x0007b760)
-static i16 s_returnDirection;
+static i16 s_returnDirection = 0;
 
 // The return point: the field position restored when the field is re-entered.
 DATA(0x0007b764)
-static i16 s_returnLevel;
+static i16 s_returnLevel = 0;
 
 DATA(0x0007b768)
-static i16 s_returnArea;
+static i16 s_returnArea = 0;
 
 DATA(0x0007b76c)
-static i16 s_returnY;
+static i16 s_returnY = 0;
 
 DATA(0x0007b770)
-static i16 s_returnX;
+static i16 s_returnX = 0;
 
 DATA(0x0007b774)
 i16 g_pendingTalk = 0;
 
 // Set to leave through the return point instead of re-entering the area.
 DATA(0x0007b778)
-static b16 s_leaveToReturnPoint;
+static b16 s_leaveToReturnPoint = false;
 
 // Set when the room map must be rebuilt.
 DATA(0x0007b77c)
-static i16 s_rebuildRoom;
+static i16 s_rebuildRoom = 0;
 
 // @identity-TODO: when clear on return, the party takes one step out of the
 // exit it came through; a cell event sets it.
 DATA(0x0007b780)
-static b16 s_stayOnExit;
+static b16 s_stayOnExit = false;
 
 // A sound effect to play once the field is shown.
 DATA(0x0007b784)
-static i16 s_pendingSound;
+static i16 s_pendingSound = 0;
 
 // Step counters: every third step the party takes step damage
 // (TickStepDamage) and runs its step effects (TickFieldSteps).
 DATA(0x0007b788)
-static i16 s_damageSteps;
+static i16 s_damageSteps = 0;
 
 DATA(0x0007b78c)
-static i16 s_fieldSteps;
+static i16 s_fieldSteps = 0;
 
 // @identity-TODO: set while a cell event runs; the field state clears it on
 // every frame and hands its complement to script register 0 after a battle.
 DATA(0x0007b790)
-static b16 s_eventRunning;
+static b16 s_eventRunning = false;
 
 // A sound effect to play when a cell event ends.
 DATA(0x0007b794)
-static i16 s_eventSound;
+static i16 s_eventSound = 0;
 
 // Set by a complete LoadFieldMemory: the loaded event states and level bits
 // survive the next reset (TestLevelEvent drops it).
 DATA(0x0007b798)
-static b16 s_keepEvents;
+static b16 s_keepEvents = false;
+
+// @identity-TODO: retained from the load request, with no known reader.
+DATA(0x0007b79c)
+static i16 s_fieldImageMode = 0;
 
 // @identity-TODO: whether an actor is vanishing this frame (commands wait).
 DATA(0x0007b7a0)
-static i16 s_actorVanishing;
+static i16 s_actorVanishing = 0;
 
 // The queue of automatic moves (a byte per move in a memory handle): its
 // capacity, read and write positions.
 DATA(0x0007b7a4)
-static i16 s_autoMoveCapacity;
+static i16 s_autoMoveCapacity = 0;
 
 DATA(0x0007b7a8)
-static i16 s_autoMoveRead;
+static i16 s_autoMoveRead = 0;
 
 DATA(0x0007b7ac)
-static i16 s_autoMoveCount;
+static i16 s_autoMoveCount = 0;
 
 // The saved point (with g_savedDirection) the party is put back on after a
 // scene.
 DATA(0x0007b7b0)
-static i16 s_savedX;
+static i16 s_savedX = 0;
 
 DATA(0x0007b7b4)
-static i16 s_savedY;
+static i16 s_savedY = 0;
+
+// @identity-TODO: the three cache slots have no loader in this build.
+DATA(0x0007b7b8)
+static u32 s_fieldImageCacheA = 0;
+
+DATA(0x0007b7bc)
+static u32 s_fieldImageCacheB = 0;
+
+DATA(0x0007b7c0)
+static u32 s_fieldImageCacheC = 0;
+
+DATA(0x0007b7c4)
+static u32 s_fieldImage = 0;
+
+// The field event table (data file 10).
+DATA(0x0007b7c8)
+static i32 s_eventTable = 0;
+
+DATA(0x0007b7cc)
+static i32 s_autoMoves = 0;
+
+// The object event states (a byte per event: 0 none, 1 raised, 3 queued,
+// 2 done).
+DATA(0x0007b7d0)
+static i32 s_eventStates = 0;
+
+// Counts frames so the enemies act on every fourth.
+DATA(0x0007b7d4)
+static i16 s_enemyTick = 0;
 
 DATA(0x00091220)
 u8 g_centerFrontWalls[5];
@@ -158,45 +191,12 @@ static i16 s_fieldImageCacheKey = -1;
 DATA(0x00068650)
 static i16 s_fieldImageCacheVariant = -1;
 
-// @identity-TODO: the three cache slots have no loader in this build.
-DATA(0x0007b7b8)
-static u32 s_fieldImageCacheA;
-
-DATA(0x0007b7bc)
-static u32 s_fieldImageCacheB;
-
-DATA(0x0007b7c0)
-static u32 s_fieldImageCacheC;
-
-DATA(0x0007b7c4)
-static u32 s_fieldImage;
-
-// @identity-TODO: retained from the load request, with no known reader.
-DATA(0x0007b79c)
-static i16 s_fieldImageMode;
-
 // Each wall contributes a 16-byte mask within these 48-byte work areas.
 DATA(0x00091260)
 u8 g_leftViewOcclusion[48];
 
 DATA(0x000912a0)
 u8 g_rightViewOcclusion[48];
-
-// The field event table (data file 10).
-DATA(0x0007b7c8)
-static i32 s_eventTable;
-
-DATA(0x0007b7cc)
-static i32 s_autoMoves;
-
-// The object event states (a byte per event: 0 none, 1 raised, 3 queued,
-// 2 done).
-DATA(0x0007b7d0)
-static i32 s_eventStates;
-
-// Counts frames so the enemies act on every fourth.
-DATA(0x0007b7d4)
-static i16 s_enemyTick;
 
 // Saves the party's cell as the saved point (its direction goes to
 // g_savedDirection separately).
