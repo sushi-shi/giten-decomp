@@ -2,7 +2,7 @@ rva	unit	function	lost_max	cur
 0x021470	areamap	_DecodeAreaMap	76.4360	75.0698
 0x046060	d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	94.3374	93.9325
 0x0589e0	effectdraw	_DrawProjectedEffectSprite	96.0887	94.6086
-0x058e40	effectdraw	_DrawScreenEffectSprite	98.0000	92.4667
+0x058e40	effectdraw	_DrawScreenEffectSprite	98.0000	92.4556
 0x01a400	itemuse	_RunItemUse	97.4486	97.3596
 0x005b80	partyaction	_GetMemberPanelState	100.0000	88.9610
 0x009620	partypick	_RunPartyCommandInput	92.0986	85.7913
