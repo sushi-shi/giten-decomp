@@ -72,7 +72,7 @@ def source_context(root: Path, source: Path, rva: int, ast_util):
         options=ci.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
     )
     fn = target_function(tu, source, blob, rva)
-    errors = [str(d) for d in tu.diagnostics if d.severity >= ci.Diagnostic.Error]
+    errors = declaration_context_errors(tu, keep_function=fn)
     if errors:
         raise ValueError("cannot derive type context:\n" + "\n".join(errors[:10]))
     start, end = fn.extent.start.offset, fn.extent.end.offset
@@ -126,8 +126,7 @@ def source_context(root: Path, source: Path, rva: int, ast_util):
         str(context_path), args=parse_args,
         unsaved_files=[(str(context_path), preprocessed)],
     )
-    context_errors = [str(d) for d in context_tu.diagnostics
-                      if d.severity >= ci.Diagnostic.Error]
+    context_errors = declaration_context_errors(context_tu)
     if context_errors:
         raise ValueError("cannot parse declaration context:\n" + "\n".join(context_errors[:10]))
     bodies = []
@@ -147,6 +146,35 @@ def source_context(root: Path, source: Path, rva: int, ast_util):
     authored_fn, _ = ast_util.extract_fn(authored_ast, fn.spelling)
     signature = ast_util.to_c_raw(authored_fn.decl)
     return blob, start, end, fn.spelling, original, prelude, signature, parser_body.decode()
+
+
+def declaration_context_errors(tu, *, keep_function=None):
+    """Keep type diagnostics except legacy pointer conversions in discarded bodies.
+
+    MSVC accepts these C conversions. A sibling's implementation is removed
+    from the upstream prelude; target, declaration and fatal errors still block.
+    """
+    discarded = []
+    for cursor in tu.cursor.walk_preorder():
+        if (cursor.kind != ci.CursorKind.FUNCTION_DECL or not cursor.is_definition()
+                or cursor == keep_function):
+            continue
+        for child in cursor.get_children():
+            if child.kind == ci.CursorKind.COMPOUND_STMT:
+                discarded.append((str(child.extent.start.file), child.extent.start.offset,
+                                  child.extent.end.offset))
+    errors = []
+    for diagnostic in tu.diagnostics:
+        if diagnostic.severity < ci.Diagnostic.Error:
+            continue
+        if (diagnostic.severity < ci.Diagnostic.Fatal
+                and diagnostic.option == '-Wincompatible-pointer-types'
+                and any(str(diagnostic.location.file) == filename
+                        and start <= diagnostic.location.offset < end
+                        for filename, start, end in discarded)):
+            continue
+        errors.append(str(diagnostic))
+    return errors
 
 
 def generate_options(ast_util, randomizer, weights, prelude, name, signature,

@@ -71,6 +71,30 @@ class UpstreamTests(unittest.TestCase):
         self.assertEqual(len(options), 17)
         self.assertEqual(errors, [])
 
+    def test_sibling_pointer_conversion_does_not_block_declaration_context(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / 'unit.c'
+            original = (b'#define RVA(a,b)\nstruct Cell { int value; };\n'
+                        b'void sibling(void) { struct Cell *cell; char *raw; cell = raw; }\n'
+                        b'RVA(0x00001234, 0x10)\nint f(int x) { return x; }\n')
+            source.write_bytes(original)
+            context = upstream.source_context(root, source, 0x1234, self.ast)
+            self.assertEqual(context[-1], 'int f(int x) { return x; }')
+            self.assertNotIn('cell = raw', context[5])
+            self.assertEqual(source.read_bytes(), original)
+
+    def test_target_and_global_pointer_conversion_errors_still_block(self):
+        for invalid in ('int f(int x) { struct Cell *cell; char *raw; cell = raw; return x; }',
+                        'int f(int x) { return x; }\nstruct Cell *cell = (char *)0;'):
+            with self.subTest(invalid=invalid), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                source = root / 'unit.c'
+                source.write_text('#define RVA(a,b)\nstruct Cell { int value; };\n'
+                                  'RVA(0x00001234, 0x10)\n' + invalid + '\n')
+                with self.assertRaisesRegex(ValueError, 'cannot derive type context'):
+                    upstream.source_context(root, source, 0x1234, self.ast)
+
     def test_enum_annotations_follow_the_definition_at_each_use(self):
         for expansion in ['storage', 'name']:
             with self.subTest(expansion=expansion), tempfile.TemporaryDirectory() as directory:
