@@ -15,7 +15,7 @@ typedef struct ScriptWindowNode {
 struct MenuBox;
 void RunScriptMenuHandler(struct MenuBox* menu, i16 index, i16 event);
 
-i16 CaptureTextChar(u16 ch);
+b16 CaptureTextChar(u16 ch);
 void SetCapturedText(const char* text);
 
 // scriptvars' runner for a text script.

@@ -105,8 +105,8 @@ u8 GetGridByte(i32* grid, i16 x, i16 y) {
 // clear for a pair whose bank byte (at offset + 2) is nonzero.
 // @identity-TODO: the meaning of the nonzero byte is unrecovered.
 RVA(0x0001ebe0, 0x2e)
-i16 IsRegionFlagOn(u8* list, i16 offset) {
-    i16 invert = list[offset + 2] != 0;
+b16 IsRegionFlagOn(u8* list, i16 offset) {
+    b16 invert = list[offset + 2] != 0;
     return (IsCellFlagSet((CellHead*)list, offset) != 0) ^ invert;
 }
 
@@ -426,11 +426,11 @@ void AddAreaNpc(const u8* record) {
 }
 
 RVA(0x0001f350, 0x18)
-i16 IsReservedObjectCell(const CellHead* cell) {
+b16 IsReservedObjectCell(const CellHead* cell) {
     if (cell->code >= 0x48 && cell->code <= 0x4e) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // Draws the NPCs still present on the view cell being drawn (with the
@@ -457,7 +457,7 @@ i16 GetAreaNpcCount(void) {
 }
 
 RVA(0x0001f430, 0x2a)
-i32 IsAreaNpcGone(i16 npc) {
+b32 IsAreaNpcGone(i16 npc) {
     return IsEventFlagSet(s_npcs[npc].flagBank, s_npcs[npc].flagIndex);
 }
 
@@ -689,7 +689,7 @@ i16 SetTargetFlag21(void) {
 // Sets the leader's flag 0x22 and clears flag 10 of every live object out of
 // reach.
 RVA(0x0001f9c0, 0x67)
-i16 ScatterObjects(void) {
+b16 ScatterObjects(void) {
     i16 i;
     u8* flags = GetCharacterFlags(GetRosterCharacter(0));
     SetBit(flags, 0x22);
@@ -700,12 +700,12 @@ i16 ScatterObjects(void) {
             ClearBit(flags, 10);
         }
     }
-    return 1;
+    return true;
 }
 
 // Sends the party to the return point recorded in the roster leader.
 RVA(0x0001fa30, 0x35)
-i16 ReturnToLeaderWarp(void) {
+b16 ReturnToLeaderWarp(void) {
     Character* leader = GetRosterCharacter(0);
     SetReturnPoint(
         leader->returnPosition.area,
@@ -714,12 +714,12 @@ i16 ReturnToLeaderWarp(void) {
         leader->returnPosition.y,
         leader->returnPosition.direction
     );
-    return 1;
+    return true;
 }
 
 // Sends the party to the cell in front of the leader's marked position.
 RVA(0x0001fa70, 0x6d)
-i16 ReturnToLeaderMark(void) {
+b16 ReturnToLeaderMark(void) {
     Character* leader = GetRosterCharacter(0);
     i16 area = leader->markPosition.area;
     i16 level = leader->markPosition.level;
@@ -728,7 +728,7 @@ i16 ReturnToLeaderMark(void) {
     i16 direction = OppositeDirection(leader->markPosition.direction);
     OffsetMapCoordFacing(&x, &y, direction, 0, -1);
     SetReturnPoint(area, level, x, y, direction);
-    return 1;
+    return true;
 }
 
 // Knocks the acting object back; when nothing is left within reach, raises

@@ -236,7 +236,7 @@ static __inline u8* GetCharacterBattleTallies(Character* character) {
         }                                                                                          \
     } while (0)
 
-static __inline i32 IsSkillAction(const Character* character) {
+static __inline b32 IsSkillAction(const Character* character) {
     return character->pickRole == 4 || character->pickRole == 6;
 }
 

@@ -355,10 +355,10 @@ void OpShiftPlayerAlignmentA(void) {
 }
 
 RVA(0x00038030, 0x25)
-i16 OpLevelUpMember(void) {
+b16 OpLevelUpMember(void) {
     i16 slot = ReadScriptValue();
     GainLevels(GetRosterCharacter(slot), ReadScriptValue());
-    return 0;
+    return false;
 }
 
 static __inline i16 ReadScriptDelta(i16 negate) {
@@ -668,7 +668,7 @@ i16 FindScriptChoiceAtMouse(void) {
 }
 
 RVA(0x00038790, 0x53)
-i16 RunScriptChoiceState(void) {
+b16 RunScriptChoiceState(void) {
     switch (GetGameSub()) {
         case 0:
             NextGameSub();
@@ -679,5 +679,5 @@ i16 RunScriptChoiceState(void) {
             }
             break;
     }
-    return 0;
+    return false;
 }

@@ -17,7 +17,7 @@ static __inline i32 TargetFlagsSelectSelf(i16 flags) {
     return flags & TARGET_SELF;
 }
 
-static __inline i32 TargetFlagsSelectActorGroup(i16 flags) {
+static __inline b32 TargetFlagsSelectActorGroup(i16 flags) {
     return (flags & (TARGET_ACTOR_SIDE | TARGET_EXPAND_GROUP))
            == (TARGET_ACTOR_SIDE | TARGET_EXPAND_GROUP);
 }

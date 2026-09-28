@@ -684,8 +684,8 @@ void RunFrame(void) {
 
 // The eighth move command: nothing to do.
 RVA(0x00049f40, 0x6)
-static BOOL NoMoveCommand(i16 nextPhase) {
-    return TRUE;
+static b32 NoMoveCommand(i16 nextPhase) {
+    return true;
 }
 
 // The move commands by command number.
@@ -882,20 +882,20 @@ void ReleaseGraphics(void) {
 // Releases the graphics and brings DirectDraw, Direct3D, input and sound
 // (back) up; FALSE when DirectDraw or Direct3D fails.
 RVA(0x0004a4f0, 0x3d)
-BOOL InitDirectX(void) {
+b32 InitDirectX(void) {
     ReleaseGraphics();
     if (!InitDirectDraw()) {
-        return FALSE;
+        return false;
     }
     if (!InitDirect3D()) {
-        return FALSE;
+        return false;
     }
     ClearScreenSurfaces();
     InitDirectInput();
     InitJoystick();
     g_soundEnabled = InitDirectSound();
     s_directXReady = TRUE;
-    return TRUE;
+    return true;
 }
 
 // Set while the door ahead opens (AnimateDoor runs instead of the step).
@@ -913,14 +913,14 @@ static i32 s_doorFrame;
 // Slides the camera one frame of a forward step; past a whole cell the party
 // moves into it and the camera jumps back. Returns whether the step ended.
 RVA(0x0004a530, 0x104)
-static BOOL SlideForward(D3DVALUE* progress) {
+static b32 SlideForward(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = FALSE;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
         step = -CELL_UNITS;
-        done = TRUE;
+        done = true;
         CommitPartyStep();
         BuildRoomGeometry();
     }
@@ -947,14 +947,14 @@ static BOOL SlideForward(D3DVALUE* progress) {
 
 // SlideForward for a step back.
 RVA(0x0004a640, 0x104)
-static BOOL SlideBack(D3DVALUE* progress) {
+static b32 SlideBack(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = FALSE;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
         step = -CELL_UNITS;
-        done = TRUE;
+        done = true;
         CommitPartyStep();
         BuildRoomGeometry();
     }
@@ -981,14 +981,14 @@ static BOOL SlideBack(D3DVALUE* progress) {
 
 // SlideForward for a step to the left.
 RVA(0x0004a750, 0x104)
-static BOOL SlideLeft(D3DVALUE* progress) {
+static b32 SlideLeft(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = FALSE;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
         step = -CELL_UNITS;
-        done = TRUE;
+        done = true;
         CommitPartyStep();
         BuildRoomGeometry();
     }
@@ -1015,14 +1015,14 @@ static BOOL SlideLeft(D3DVALUE* progress) {
 
 // SlideForward for a step to the right.
 RVA(0x0004a860, 0x104)
-static BOOL SlideRight(D3DVALUE* progress) {
+static b32 SlideRight(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = FALSE;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
         step = -CELL_UNITS;
-        done = TRUE;
+        done = true;
         CommitPartyStep();
         BuildRoomGeometry();
     }
@@ -1074,7 +1074,7 @@ static BOOL s_halfTurned;
 // Turns the camera one frame of a quarter turn left; at its end the party
 // faces the new way. Returns whether the turn ended.
 RVA(0x0004a970, 0x130)
-static BOOL TurnLeftStep(D3DVALUE* progress) {
+static b32 TurnLeftStep(D3DVALUE* progress) {
     D3DVALUE dx;
     D3DVALUE dz;
     i32 step;
@@ -1113,14 +1113,14 @@ static BOOL TurnLeftStep(D3DVALUE* progress) {
             32,
             32
         );
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 // TurnLeftStep for a quarter turn right.
 RVA(0x0004aaa0, 0x130)
-static BOOL TurnRightStep(D3DVALUE* progress) {
+static b32 TurnRightStep(D3DVALUE* progress) {
     D3DVALUE dx;
     D3DVALUE dz;
     i32 step;
@@ -1159,14 +1159,14 @@ static BOOL TurnRightStep(D3DVALUE* progress) {
             32,
             32
         );
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 // Two quarter turns right; the party's facing is set once, at the end.
 RVA(0x0004abd0, 0x154)
-static BOOL TurnAroundStep(D3DVALUE* progress) {
+static b32 TurnAroundStep(D3DVALUE* progress) {
     D3DVALUE dx;
     D3DVALUE dz;
     i32 step;
@@ -1207,18 +1207,18 @@ static BOOL TurnAroundStep(D3DVALUE* progress) {
                 32
             );
             SetPartyDirection(g_viewDirection);
-            return TRUE;
+            return true;
         }
         *progress = 0.0f;
         s_halfTurned = TRUE;
     }
-    return FALSE;
+    return false;
 }
 
 // The step of move state 0 and 8..15: nothing moves.
 RVA(0x0004ad30, 0x6)
-static BOOL NoMoveStep(D3DVALUE* progress) {
-    return TRUE;
+static b32 NoMoveStep(D3DVALUE* progress) {
+    return true;
 }
 
 RVA(0x0004ad40, 0x1d)
@@ -1264,8 +1264,8 @@ static i32 s_movePadButtons[8] = {
 // then re-aims the camera; at the move's end the pad button comes up and the
 // view is redrawn at the party's new cell. Returns whether a move ran.
 RVA(0x0004ad60, 0xcb)
-BOOL AnimateMove(void) {
-    BOOL moving = FALSE;
+b32 AnimateMove(void) {
+    b32 moving = false;
 
     if (g_moveState & MOVE_STATE_KIND) {
         if (s_lastMoveState != g_moveState) {
@@ -1288,7 +1288,7 @@ BOOL AnimateMove(void) {
         }
         SetViewMatrix(g_viewMatrix, g_cameraFrom, g_cameraAt);
         g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &g_viewMatrix);
-        moving = TRUE;
+        moving = true;
     }
     s_lastMoveState = g_moveState;
     return moving;
@@ -2859,13 +2859,13 @@ static BOOL s_fogEnabled;
 // Without `draw` only the door keeps opening.
 RVA(0x0004e3d0, 0x53e)
 void RenderViewMode(BOOL draw) {
-    BOOL moved = FALSE;
+    b32 moved = false;
     Texture* texture;
     HRESULT result;
     MapPosition* position;
 
     if (AnimateMove()) {
-        moved = TRUE;
+        moved = true;
     }
     if (g_scenePicture.visible) {
         g_renderTarget->BltFast(0, 0, g_scenePicture.surface, &g_scenePicture.rect, DDBLTFAST_WAIT);
@@ -4132,7 +4132,7 @@ void ResetDisplayGlobals(void) {
 
 // Registers the window class and creates the game window.
 RVA(0x00050110, 0xd0)
-BOOL CreateMainWindow(HINSTANCE instance) {
+b32 CreateMainWindow(HINSTANCE instance) {
     WNDCLASS windowClass;
     LONG width;
     LONG height;
@@ -4149,7 +4149,7 @@ BOOL CreateMainWindow(HINSTANCE instance) {
     windowClass.lpszMenuName = NULL;
     windowClass.lpszClassName = "CLASSSDDSWIN";
     if (!RegisterClass(&windowClass)) {
-        return FALSE;
+        return false;
     }
     width = g_windowRect.right;
     height = g_windowRect.bottom;
@@ -4168,10 +4168,10 @@ BOOL CreateMainWindow(HINSTANCE instance) {
         NULL
     );
     if (g_mainWindow == NULL) {
-        return FALSE;
+        return false;
     }
     g_ime.Enable(g_mainWindow, FALSE);
-    return TRUE;
+    return true;
 }
 
 // The cursor's screen position, read every frame.
@@ -4200,8 +4200,8 @@ u8 PollInput(void) {
 // (a door step opens the door first); a turn only when no object stands in
 // the party's cell.
 RVA(0x00050220, 0x5d)
-BOOL MoveForwardCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 MoveForwardCommand(i16 nextPhase) {
+    b32 moved = false;
     i16 step = StepParty(STEP_FORWARD);
 
     if (step) {
@@ -4212,22 +4212,22 @@ BOOL MoveForwardCommand(i16 nextPhase) {
         }
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_STEP : MOVE_STATE_DOOR_AHEAD;
-        moved = TRUE;
+        moved = true;
         PressPadButton(PAD_FORWARD, TRUE);
     }
     return moved;
 }
 
 RVA(0x00050280, 0x45)
-BOOL TurnAroundCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 TurnAroundCommand(i16 nextPhase) {
+    b32 moved = false;
 
     if (FindObjectAtParty() < 0) {
         if (nextPhase) {
             NextGamePhase();
         }
         g_viewDirection = GetMapPosition()->direction;
-        moved = TRUE;
+        moved = true;
         g_moveState = MOVE_STATE_TURN_AROUND;
         PressPadButton(PAD_BACK, TRUE);
     }
@@ -4235,8 +4235,8 @@ BOOL TurnAroundCommand(i16 nextPhase) {
 }
 
 RVA(0x000502d0, 0x61)
-BOOL MoveBackCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 MoveBackCommand(i16 nextPhase) {
+    b32 moved = false;
     i16 step = StepParty(STEP_BACK);
 
     if (step) {
@@ -4247,22 +4247,22 @@ BOOL MoveBackCommand(i16 nextPhase) {
         }
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_BACK : MOVE_STATE_DOOR_BACK;
-        moved = TRUE;
+        moved = true;
         PressPadButton(PAD_BACK, TRUE);
     }
     return moved;
 }
 
 RVA(0x00050340, 0x45)
-BOOL TurnLeftCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 TurnLeftCommand(i16 nextPhase) {
+    b32 moved = false;
 
     if (FindObjectAtParty() < 0) {
         if (nextPhase) {
             NextGamePhase();
         }
         g_viewDirection = GetMapPosition()->direction;
-        moved = TRUE;
+        moved = true;
         g_moveState = MOVE_STATE_TURN_LEFT;
         PressPadButton(PAD_LEFT, TRUE);
     }
@@ -4270,8 +4270,8 @@ BOOL TurnLeftCommand(i16 nextPhase) {
 }
 
 RVA(0x00050390, 0x61)
-BOOL MoveLeftCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 MoveLeftCommand(i16 nextPhase) {
+    b32 moved = false;
     i16 step = StepParty(STEP_LEFT);
 
     if (step) {
@@ -4282,22 +4282,22 @@ BOOL MoveLeftCommand(i16 nextPhase) {
         }
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_LEFT : MOVE_STATE_DOOR_LEFT;
-        moved = TRUE;
+        moved = true;
         PressPadButton(PAD_LEFT, TRUE);
     }
     return moved;
 }
 
 RVA(0x00050400, 0x45)
-BOOL TurnRightCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 TurnRightCommand(i16 nextPhase) {
+    b32 moved = false;
 
     if (FindObjectAtParty() < 0) {
         if (nextPhase) {
             NextGamePhase();
         }
         g_viewDirection = GetMapPosition()->direction;
-        moved = TRUE;
+        moved = true;
         g_moveState = MOVE_STATE_TURN_RIGHT;
         PressPadButton(PAD_RIGHT, TRUE);
     }
@@ -4305,8 +4305,8 @@ BOOL TurnRightCommand(i16 nextPhase) {
 }
 
 RVA(0x00050450, 0x61)
-BOOL MoveRightCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 MoveRightCommand(i16 nextPhase) {
+    b32 moved = false;
     i16 step = StepParty(STEP_RIGHT);
 
     if (step) {
@@ -4317,7 +4317,7 @@ BOOL MoveRightCommand(i16 nextPhase) {
         }
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_RIGHT : MOVE_STATE_DOOR_RIGHT;
-        moved = TRUE;
+        moved = true;
         PressPadButton(PAD_RIGHT, TRUE);
     }
     return moved;
@@ -4326,7 +4326,7 @@ BOOL MoveRightCommand(i16 nextPhase) {
 // Starts the joystick's move: up steps forward; down, left and right step
 // with its third button held, else turn. Returns whether a move started.
 RVA(0x000504c0, 0x71)
-BOOL RunJoystickMove(void) {
+b32 RunJoystickMove(void) {
     BOOL moved;
 
     if (!s_screenSaved) {
@@ -4351,13 +4351,13 @@ BOOL RunJoystickMove(void) {
                 moved = TurnRightCommand(TRUE);
             }
         } else {
-            return FALSE;
+            return false;
         }
         if (moved) {
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
 }
 
 // The frames the input waits once TickFrameCount starts counting (unless
@@ -4664,7 +4664,7 @@ Texture g_textBoxTexture;
 // Creates the display's pictures, meshes, textures and layers: FALSE when
 // the game setup, the glyph surface or a layer fails.
 RVA(0x00050ac0, 0x48e)
-BOOL LoadGraphics(void) {
+b32 LoadGraphics(void) {
     i32 i;
     i32 layer;
     b32 failed;
@@ -4672,10 +4672,10 @@ BOOL LoadGraphics(void) {
     ClearHandleTable();
     CreatePicture(&g_scenePicture, 640, 480, 640, 480, TRUE);
     if (StartGame()) {
-        return FALSE;
+        return false;
     }
     if (!CreateGlyphSurface()) {
-        return FALSE;
+        return false;
     }
     BuildRoomMesh(&g_roomMesh, ROOM_SPAN, ROOM_SPAN);
     AllocWallMesh(&g_wallMesh);
@@ -4726,10 +4726,10 @@ BOOL LoadGraphics(void) {
         failed |= CreateScreenLayer(layer);
     }
     if (failed) {
-        return FALSE;
+        return false;
     }
     DrawLayerText(3, 24, 8, "\201^28" /* ／28 */, 0x3400);
-    return TRUE;
+    return true;
 }
 
 // The captions of WinMain's failure boxes: empty.

@@ -200,16 +200,16 @@ i16 FindLevelUpSlot(void) {
 // Raises fortune by one on every second level of a human and every third
 // level of a demon; 1 when it grew.
 RVA(0x00018980, 0x4b)
-i16 ApplyLevelStatGrowth(Character* character) {
+b16 ApplyLevelStatGrowth(Character* character) {
     if (IsHumanCharacter(character)) {
         if (character->level & 1) {
-            return 0;
+            return false;
         }
     } else if (character->level % 3) {
-        return 0;
+        return false;
     }
     character->stats.base[STAT_FORTUNE] = ClampTo100(GetBaseStat(character, STAT_FORTUNE) + 1);
-    return 1;
+    return true;
 }
 
 // Nonzero when one more point would take `stat` past its cap.
@@ -302,7 +302,7 @@ static __inline void ShowRaisedStat(Character* member, i16 highlighted) {
 // teaches new skills, 5 does the same without a choice (demons), 6 redraws the
 // raised stat, and 1 closes the screen.
 RVA(0x00018b60, 0x780)
-i16 RunLevelUp(void) {
+b16 RunLevelUp(void) {
     Character* member;
     i16 key;
     i16 skill;
@@ -315,7 +315,7 @@ i16 RunLevelUp(void) {
             SetGamePhase(2);
             AllocScreenSave(s_screenSave);
             CaptureScreenSaveWithState(s_screenSave);
-            return 0;
+            return false;
         case 1:
             switch (GetGameStep()) {
                 case 0:
@@ -325,7 +325,7 @@ i16 RunLevelUp(void) {
                     PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
                     s_statWindow = CloseTextWindow(s_statWindow);
                     DrawStatusVitals(s_levelUpSlot);
-                    return 0;
+                    return false;
                 case 1:
                     ReturnFromGameState();
                     g_rewardExperience = 0;
@@ -336,7 +336,7 @@ i16 RunLevelUp(void) {
                     RestoreScreenSave(s_screenSave);
                     FreeScreenSave(s_screenSave);
                     PlayMusic(s_savedMusic, 1);
-                    return 0;
+                    return false;
             }
             break;
         case 2:
@@ -353,40 +353,40 @@ i16 RunLevelUp(void) {
                 NextGamePhase();
             }
             FadeScreenAndWait(SCREEN_FADE_FROM_BLACK, 1);
-            return 0;
+            return false;
         case 3:
             NextGamePhase();
-            return 0;
+            return false;
         case 4:
             member = GetRosterCharacter(s_levelUpSlot);
             switch (GetGameStep()) {
                 case 0:
                     NextGameStep();
                     s_remaining = CountPendingLevels(s_levelUpSlot);
-                    return 0;
+                    return false;
                 case 1:
                     NextGameStep();
                     if (s_remaining == 0 || !CountRaisableStats(member)) {
                         NextGameStep();
-                        return 0;
+                        return false;
                     }
                     PickGrowthStats(member, s_statPicks, member->level + s_remaining);
                     DropTopStatPicks(member, s_statPicks);
                     s_remaining--;
-                    return 0;
+                    return false;
                 case 2:
                     if (GetGameSub() >= 3) {
                         PrevGameStep();
-                        return 0;
+                        return false;
                     }
                     s_raisedStat = ResolveRaisableStat(member, s_statPicks[GetGameSub()]);
                     NextGameSub();
                     if (s_raisedStat < 0) {
                         PrevGameStep();
-                        return 0;
+                        return false;
                     }
                     ApplyPickedStatGain(member);
-                    return 0;
+                    return false;
                 case 3:
                     NextGameStep();
                     ResetTextPlaneMenu(s_statWindow, 0, 0);
@@ -395,10 +395,10 @@ i16 RunLevelUp(void) {
                     memset(s_statPicks, 0, sizeof(s_statPicks));
                     if (!CountRaisableStats(member)) {
                         NextGameStep();
-                        return 0;
+                        return false;
                     }
                     ShowStatPointPrompt(s_remaining);
-                    return 0;
+                    return false;
                 case 4:
                     key = PollMenuInput(s_statWindow);
                     if (key == 0) {
@@ -428,7 +428,7 @@ i16 RunLevelUp(void) {
                     s_raisedStat = g_selectedObjectId;
                     SaveGameState();
                     SetGamePhase(6);
-                    return 0;
+                    return false;
                 case 5:
                     while (CountPendingLevels(s_levelUpSlot)) {
                         member->level++;
@@ -441,14 +441,14 @@ i16 RunLevelUp(void) {
                     NextGameStep();
                     if (!CollectLearnableSkills(member, -1)) {
                         ReturnFromGameState();
-                        return 0;
+                        return false;
                     }
                     break;
                 case 6:
                     skill = TakeLearnableSkill(member, s_learnableSkills);
                     if (skill == -1) {
                         ReturnFromGameState();
-                        return 0;
+                        return false;
                     }
                     AddSkill(GetCharacterSkills(member), skill);
                     sprintf(
@@ -457,7 +457,7 @@ i16 RunLevelUp(void) {
                         GetSkillName(skill)
                     ); // %sを会得した！
                     PushMessageBox(0x19, g_scratchBuffer);
-                    return 0;
+                    return false;
             }
             break;
         case 5:
@@ -466,23 +466,23 @@ i16 RunLevelUp(void) {
                 case 0:
                     if (!CountPendingLevels(s_levelUpSlot)) {
                         ReturnFromGameState();
-                        return 0;
+                        return false;
                     }
                     NextGameStep();
-                    return 0;
+                    return false;
                 case 1:
                     if (GetGameSub() >= 4) {
                         NextGameStep();
-                        return 0;
+                        return false;
                     }
                     NextGameSub();
                     s_raisedStat = RollWeightedStat(member);
                     if (s_raisedStat == -1) {
                         NextGameStep();
-                        return 0;
+                        return false;
                     }
                     ApplyPickedStatGain(member);
-                    return 0;
+                    return false;
                 case 2:
                     SetGameStep(0);
                     member->levelBonus += 2;
@@ -497,7 +497,7 @@ i16 RunLevelUp(void) {
                             GetSkillName(skill)
                         ); // %sを会得した！
                         PushMessageBox(0x19, g_scratchBuffer);
-                        return 0;
+                        return false;
                     }
                     break;
             }
@@ -515,11 +515,11 @@ i16 RunLevelUp(void) {
                     break;
                 case 2:
                     ReturnFromGameState();
-                    return 0;
+                    return false;
             }
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x000192e0, 0x8c)

@@ -280,13 +280,13 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
 }
 
 RVA(0x00002250, 0x28)
-i32 CloseDataFile(FILE* fp) {
+b32 CloseDataFile(FILE* fp) {
     if (fp != NULL) {
         fclose(fp);
     }
     s_dataFile = s_prevDataFile;
     s_prevDataFile = NULL;
-    return 0;
+    return false;
 }
 
 // @identity-TODO: these uncalled data-file results have no recoverable API
@@ -294,46 +294,46 @@ i32 CloseDataFile(FILE* fp) {
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00002280, 0x3)
-i32 GetLegacyDataFileOpenResult(void) {
-    return 0;
+b32 GetLegacyDataFileOpenResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00002290, 0x3)
-i32 GetLegacyDataFileReadResult(void) {
-    return 0;
+b32 GetLegacyDataFileReadResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022a0, 0x3)
-i32 GetLegacyDataFileSeekResult(void) {
-    return 0;
+b32 GetLegacyDataFileSeekResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022b0, 0x3)
-i32 GetLegacyDataFileStatus(void) {
-    return 0;
+b32 GetLegacyDataFileStatus(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022c0, 0x3)
-i32 GetLegacyDataFileLength(void) {
-    return 0;
+b32 GetLegacyDataFileLength(void) {
+    return false;
 }
 
 // @identity-TODO: the one-valued legacy data-file result's role is unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022d0, 0x5)
-i16 IsLegacyDataFileReady(void) {
-    return 1;
+b16 IsLegacyDataFileReady(void) {
+    return true;
 }

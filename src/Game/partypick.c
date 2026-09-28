@@ -188,7 +188,7 @@ i16 RunPartyCommandInput(void) {
     i16 result;
     i16 kind;
     i16 range;
-    i16 reach = 0;
+    b16 reach = false;
     i16 flags = -1;
     switch (s_pickMode) {
         case 0:
@@ -250,7 +250,7 @@ i16 RunPartyCommandInput(void) {
                 } else if (TargetFlagsSelectActorGroup(flags)) {
                     return PickCurrentMemberAsTarget(character);
                 } else if (flags & TARGET_ACTOR_SIDE) {
-                    reach = 1;
+                    reach = true;
                 }
             } else if (character->pickRole == 5) {
                 flags = GetItemTargetFlags(GetLoadedRecord(character->pickTarget));
@@ -261,11 +261,11 @@ i16 RunPartyCommandInput(void) {
                     flags = TARGET_ACTOR_SIDE;
                 }
                 if (flags & TARGET_ACTOR_SIDE) {
-                    reach = 1;
+                    reach = true;
                 }
             }
             if (flags == 0x10 || flags == 0x11 || flags == 0x30) {
-                reach = 1;
+                reach = true;
             }
             if (reach == 0 && HasObjectInReach(0, -1, 0)) {
                 character->pickObject = FindObjectAtParty();
@@ -552,7 +552,7 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
 }
 
 RVA(0x0000a050, 0x53)
-i16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
+b16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
     i16 distance;
     void* actor;
     g_hoveredObjectId = GetSelectedHotspotValue();
@@ -563,11 +563,11 @@ i16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
         if (distance >= minimumRange && distance <= maximumRange) {
             g_selectedObjectId = g_hoveredObjectId;
             ClearMouseClicks();
-            return 1;
+            return true;
         }
         ClearMouseClicks();
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0000a0b0, 0x69)

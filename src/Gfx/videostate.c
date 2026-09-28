@@ -38,8 +38,8 @@ VideoPlane* GetPlaneHeader(i16 plane) {
 // Zero-ref: no retail call, jump or relocated pointer reaches this helper.
 // The legacy viewport clipping is disabled in the Windows build.
 RVA(0x00045b80, 0x4)
-i16 ClipViewportRect(VideoViewport* viewport, i16* left, i16* right, i16* top, i16* bottom) {
-    return 0;
+b16 ClipViewportRect(VideoViewport* viewport, i16* left, i16* right, i16* top, i16* bottom) {
+    return false;
 }
 
 RVA(0x00045b90, 0x1)

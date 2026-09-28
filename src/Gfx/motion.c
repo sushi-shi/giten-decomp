@@ -124,8 +124,8 @@ RVA(0x00004980, 0x1)
 void SkipLegacySceneInputHook(void) {}
 
 RVA(0x00004990, 0x10)
-i16 PollIdle(i16 mode, i16 frames) {
-    return 0;
+b16 PollIdle(i16 mode, i16 frames) {
+    return false;
 }
 
 // @dead-code
@@ -188,17 +188,17 @@ static __inline void AdvanceMotionStep(void) {
 
 // Returns 1 when the motion advanced a step.
 RVA(0x00004ab0, 0x7d)
-i16 StepMotion(i16 immediate) {
+b16 StepMotion(i16 immediate) {
     if (s_motionDelay == 0 && immediate == 0) {
         AdvanceMotionStep();
-        return 1;
+        return true;
     }
     if (--s_motionCountdown <= 0) {
         s_motionCountdown = s_motionDelay;
         AdvanceMotionStep();
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // The shot-relative point at motion depth 731, offset by the current motion

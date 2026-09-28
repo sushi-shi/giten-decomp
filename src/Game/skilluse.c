@@ -235,9 +235,9 @@ i16 RemoveCombatTarget(i16 id) {
 }
 
 RVA(0x0002ab40, 0x60)
-i16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
+b16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     if (s_promptPending) {
-        return 1;
+        return true;
     }
     PushGameState(0x18);
     s_promptX = x;
@@ -246,7 +246,7 @@ i16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     s_promptMode = mode;
     s_promptSub = sub;
     s_promptPending = 1;
-    return 0;
+    return false;
 }
 
 RVA(0x0002aba0, 0x40)
@@ -274,13 +274,13 @@ Character* GetCombatant(i16 id) {
 }
 
 RVA(0x0002ac20, 0x29)
-i16 FlashHitObject(i16 object, i32 change) {
+b16 FlashHitObject(i16 object, i32 change) {
     if (change != 0) {
         GetFieldObject(object)->redraw = 2;
         RedrawFieldView();
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002ac50, 0x40)
@@ -637,7 +637,7 @@ static __inline void RefreshAfterDeferredRemoval(void) {
 // Codegen constraint: keep next-target success outside the phase switch;
 // an in-loop return or a post-loop sentinel test changes the shared tail.
 RVA(0x0002b6a0, 0x9b0)
-i16 RunBattleAction(void) {
+b16 RunBattleAction(void) {
     Character* actor;
     ItemRecord* record;
     SkillHeader* skill;
@@ -657,7 +657,7 @@ i16 RunBattleAction(void) {
             s_reportedTally = -1;
             if (actor == NULL) {
                 CancelPendingAction();
-                return 0;
+                return false;
             }
             if (actor->pickRole == 8) {
                 TickFieldCount(g_actorId, 0);
@@ -665,7 +665,7 @@ i16 RunBattleAction(void) {
                 ReturnFromGameState();
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 RestoreSwappedMember();
-                return 0;
+                return false;
             }
             if (actor->pickRole == 7 && g_actorId < 0) {
                 TickFieldCount(g_actorId, 0);
@@ -675,12 +675,12 @@ i16 RunBattleAction(void) {
                 RequestFieldRefresh();
                 CancelPendingAction();
                 PlaySoundEffect(0x55);
-                return 0;
+                return false;
             }
             if (GetCombatant(actor->pickObject) == NULL) {
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 CancelPendingAction();
-                return 0;
+                return false;
             }
             s_actionActor = actor;
             s_actionTarget = GetCombatant(actor->pickObject);
@@ -909,7 +909,7 @@ i16 RunBattleAction(void) {
     }
 done:
     if (s_skipEffects) {
-        return 0;
+        return false;
     }
     return UpdateFieldScreen(0);
 
@@ -1029,7 +1029,7 @@ void SetActionOutcome(i16 outcome) {
 
 // Nonzero when `character` cannot pay the skill's HP or MP cost.
 RVA(0x0002c2c0, 0x22)
-i32 CannotPaySkill(Character* character, SkillParameters* skill) {
+b32 CannotPaySkill(Character* character, SkillParameters* skill) {
     return HpMpLeftAfterCost(GetSkillParameterCost(skill), character) < 0;
 }
 
@@ -1038,38 +1038,38 @@ i32 CannotPaySkill(Character* character, SkillParameters* skill) {
 // Nonzero when a condition or the member's lock keeps it from using `skill`;
 // skills with a mode are never blocked here.
 RVA(0x0002c2f0, 0x5d)
-i32 IsSkillBlocked(Character* character, SkillParameters* skill) {
+b32 IsSkillBlocked(Character* character, SkillParameters* skill) {
     if (GetPickBlockingCondition(GetCharacterConditions(character))) {
-        return 1;
+        return true;
     }
     if (!skill->mode) {
         if (GetCharacterBattleTallies(character)[0]) {
-            return 1;
+            return true;
         }
         if (LastConditionIn(GetCharacterConditions(character), s_skillBlockingConditions)) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 // The same check by skill id; skill 0x7a is also blocked while the first
 // roster member's byte +0x30 is clear.
 RVA(0x0002c350, 0x69)
-i32 IsSkillIdBlocked(Character* character, i16 id) {
+b32 IsSkillIdBlocked(Character* character, i16 id) {
     if (GetSkillMode(id)) {
-        return 0;
+        return false;
     }
     if (GetCharacterBattleTallies(character)[0]) {
-        return 1;
+        return true;
     }
     if (LastConditionIn(GetCharacterConditions(character), s_skillIdBlockingConditions)) {
-        return 1;
+        return true;
     }
     if (id == 0x7a && !GetRosterCharacter(0)->markPosition.area) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // Takes the skill's cost from `who`: MP for a positive cost, HP for a

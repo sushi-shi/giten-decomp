@@ -87,46 +87,46 @@ void PackCell1(CellRow1* cell, const u8 (*planes)[4], const u8* mask) {
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000024a0, 0x3)
-i32 GetLegacyCellPackResult(void) {
-    return 0;
+b32 GetLegacyCellPackResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000024b0, 0x3)
-i32 GetLegacyCellMaskResult(void) {
-    return 0;
+b32 GetLegacyCellMaskResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000024c0, 0x4)
-i16 GetLegacyCellWidthResult(void) {
-    return 0;
+b16 GetLegacyCellWidthResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000024d0, 0x4)
-i16 GetLegacyCellHeightResult(void) {
-    return 0;
+b16 GetLegacyCellHeightResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000024e0, 0x3)
-u8 GetLegacyCellPixelResult(void) {
-    return 0;
+ub8 GetLegacyCellPixelResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000024f0, 0x4)
-i16 GetLegacyCellPlaneResult(void) {
-    return 0;
+b16 GetLegacyCellPlaneResult(void) {
+    return false;
 }

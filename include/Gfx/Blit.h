@@ -64,7 +64,7 @@ void BlitObjectSprite(
 
 // @identity-TODO: the Windows renderer leaves this legacy sprite hit test
 // disabled and returns zero; placement comes from the scene sprite record.
-i16 TestSceneSpritePixel(
+b16 TestSceneSpritePixel(
     i32 imageHandle,
     SpriteBitmap* image,
     i16 x,
@@ -91,7 +91,7 @@ void BlitScriptImage(
 
 // @identity-TODO: returns zero on Windows; the placement and mode words
 // after frame are unrecovered.
-i32 DrawImageFrame(
+b32 DrawImageFrame(
     VideoViewport* dest,
     u32 image,
     i16 frame,

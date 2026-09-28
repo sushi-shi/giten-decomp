@@ -51,7 +51,7 @@ void MarkWorldMapEventSpot(i16 x, i16 y) {
 }
 
 RVA(0x0001b430, 0x189)
-i16 CheckWorldMapEvent(i16 x, i16 y) {
+b16 CheckWorldMapEvent(i16 x, i16 y) {
     i16 block = GetWorldMapBlock(x, y);
     i16 left;
     i16 top;
@@ -83,12 +83,12 @@ i16 CheckWorldMapEvent(i16 x, i16 y) {
                 SetMarkedWorldMapEvent(block, events[index].x, events[index].y);
                 SetSceneCell(&events[index]);
                 SetSceneScriptByIndex(7, 8);
-                return 1;
+                return true;
             }
         }
     }
     if (!marked) {
         SetMarkedWorldMapEvent(-1, -1, -1);
     }
-    return 0;
+    return false;
 }

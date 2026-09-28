@@ -72,7 +72,7 @@ b32 LoadBitmapToSurface16(BmpFile* bmp, IDirectDrawSurface** surface, DWORD* col
             NULL
         )
         != DD_OK) {
-        return FALSE;
+        return false;
     }
     dst = desc.lpSurface;
     src = GetBitmapPixels(bmp) + (bmp->info.biHeight - 1) * bmp->info.biWidth;
@@ -102,7 +102,7 @@ b32 LoadBitmapToSurface16(BmpFile* bmp, IDirectDrawSurface** surface, DWORD* col
     if (colorKey != NULL) {
         *colorKey = value;
     }
-    return TRUE;
+    return true;
 }
 
 // Loads the 8-bit bitmap into the surface with its own palette; colour 1 is
@@ -123,11 +123,11 @@ b32 LoadBitmapToSurface8(
     ConvertBitmapPalette((DWORD*)bmp->colors, (DWORD*)entries);
     if (IDirectDraw_CreatePalette(g_ddraw, DDPCAPS_8BIT | DDPCAPS_ALLOW256, entries, palette, NULL)
         != DD_OK) {
-        return FALSE;
+        return false;
     }
     result = IDirectDrawSurface_SetPalette(*surface, *palette);
     if (result != DD_OK) {
-        return FALSE;
+        return false;
     }
     desc.dwSize = sizeof(desc);
     if (IDirectDrawSurface_Lock(
@@ -138,7 +138,7 @@ b32 LoadBitmapToSurface8(
             NULL
         )
         != DD_OK) {
-        return FALSE;
+        return false;
     }
     dst = desc.lpSurface;
     src = GetBitmapPixels(bmp) + (desc.dwHeight - 1) * desc.dwWidth;
@@ -150,5 +150,5 @@ b32 LoadBitmapToSurface8(
     IDirectDrawSurface_Unlock(*surface, NULL);
     key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = BMP_TRANSPARENT_INDEX;
     IDirectDrawSurface_SetColorKey(*surface, DDCKEY_SRCBLT, &key);
-    return TRUE;
+    return true;
 }

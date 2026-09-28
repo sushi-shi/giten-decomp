@@ -11,11 +11,11 @@
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).
 RVA(0x0001ab40, 0x46)
-i32 IsHotspotTreasureOpen(i32 index) {
+b32 IsHotspotTreasureOpen(i32 index) {
     SceneSprite* sprite = GetHotspotSprite(index);
     TreasureBox* box = FindTreasureBoxAt(sprite->cellX, sprite->cellY, 0);
     if (box) {
         return IsTreasureBoxOpen(box);
     }
-    return 0;
+    return false;
 }

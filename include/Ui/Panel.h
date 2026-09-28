@@ -109,10 +109,10 @@ static __inline void ClearPanelRowCheck(PanelRow* row) {
 }
 
 i16 ToggleFlagBits(u16* flags, u16 mask);
-i32 TestFlagBits(u16* flags, u16 mask);
-i32 TestPanelRowFlags(Panel* panel, i16 row, u16 mask);
+b32 TestFlagBits(u16* flags, u16 mask);
+b32 TestPanelRowFlags(Panel* panel, i16 row, u16 mask);
 void SetPanelRowFlags(Panel* panel, i16 row, u16 mask, i16 on);
-i32 IsPanelRowChecked(Panel* panel, i16 row);
+b32 IsPanelRowChecked(Panel* panel, i16 row);
 void ClearPanelChecks(Panel* panel);
 void ClearPanelChecksAgain(Panel* panel);
 void SavePanelChecks(Panel* panel);
@@ -140,10 +140,10 @@ i16 HitTestPanelRow(Panel* panel, i16 id, i16 x, i16 y, u8 flags);
 // The panel input layer (Ui/panelinput.c).
 void SetPanelSilent(i16 silent);
 // @identity-TODO: the sole caller passes a row value that this Windows body ignores.
-i16 IsPanelActive(i16 value);
+b16 IsPanelActive(i16 value);
 Panel* ExchangeActivePanel(Panel* panel);
-i16 CheckPanelLeftClick(Panel* panel);
-i16 CheckPanelRightClick(Panel* panel);
+b16 CheckPanelLeftClick(Panel* panel);
+b16 CheckPanelRightClick(Panel* panel);
 i16 FindPanelRowAt(Panel* panel, i16 x, i16 y);
 i16 RunPanelRow(Panel* panel, i16 row, i16 op);
 i16 ClickPanel(Panel* panel);
