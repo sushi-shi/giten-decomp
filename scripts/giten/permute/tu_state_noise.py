@@ -895,6 +895,15 @@ def objdiff_scores(
     return scores, sizes, counts, result.stderr
 
 
+def retail_function_size(path: Path, symbol: str) -> int:
+    """Use objdiff's extent on both sides; CodeView windows may include padding."""
+    scores, sizes, counts, log = objdiff_scores(path, path, symbol)
+    size = sizes.get(symbol)
+    if scores.get(symbol) != 100.0 or counts.get(symbol) != 1 or size is None:
+        raise ValueError(f"cannot establish retail function extent for {symbol}: {log}")
+    return size
+
+
 def object_metrics(path: Path) -> dict[str, dict]:
     _object_sha, rows = read_coff(path)
     return {
@@ -1420,6 +1429,8 @@ def main(argv: list[str] | None = None) -> int:
     baseline_target["objdiff_size"] = baseline_sizes.get(target.symbol)
     retail_target = retail_metrics.get(target.symbol, {})
     retail_target["codeview_size"] = target.retail_size
+    retail_size = retail_function_size(target_obj, target.symbol)
+    retail_target["objdiff_size"] = retail_size
     baseline_score = baseline_scores[target.symbol]
     retail_topology = function_topology(target_obj, target.symbol)
     baseline_topology = compare_topology(
@@ -1580,8 +1591,8 @@ def main(argv: list[str] | None = None) -> int:
                         baseline_size = baseline_target.get("objdiff_size")
                         if candidate_size is None or baseline_size is None:
                             trial["rejections"].append("objdiff function size unavailable")
-                        elif abs(candidate_size - target.retail_size) > abs(
-                            baseline_size - target.retail_size
+                        elif abs(candidate_size - retail_size) > abs(
+                            baseline_size - retail_size
                         ):
                             trial["rejections"].append("target size distance from retail worsened")
                         retail_relocs = retail_target.get("relocs")
@@ -1595,7 +1606,7 @@ def main(argv: list[str] | None = None) -> int:
                         trial["exact_closure_rejections"] = exact_closure_rejections(
                             score,
                             candidate_size,
-                            target.retail_size,
+                            retail_size,
                             target_metrics,
                             retail_target,
                         )

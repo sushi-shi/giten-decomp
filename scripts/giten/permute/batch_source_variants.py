@@ -62,6 +62,7 @@ from giten.permute.tu_state_noise import (
     object_metrics,
     objdiff_scores,
     project_root,
+    retail_function_size,
     resolve_target,
     target_state_identity,
     temporary_source,
@@ -69,6 +70,8 @@ from giten.permute.tu_state_noise import (
 from giten.permute.topology import (
     compare_topology, function_topology, topology_rank,
 )
+from giten.permute.tu_state_metrics import read_coff
+from giten.tool.objdump import disassemble
 
 
 @dataclass(frozen=True)
@@ -116,6 +119,21 @@ def result_rank(row: dict, retail_size: int, retail_relocs: int):
 
 def topology_result_rank(row: dict):
     return (*topology_rank(row["topology"], row["score"]), row["trial"])
+
+
+def target_disassembly(path: Path, symbol: str) -> str:
+    """Decode the scored extent, including code after internal COFF labels."""
+    _digest, rows = read_coff(path)
+    row = next((row for row in rows if row["function"] == symbol), None)
+    if row is None:
+        raise ValueError(f"{path}: function not found: {symbol}")
+    assembly = disassemble(row["bytes"])
+    # Raw decoding cannot annotate COFF operands. Keep the full ordered
+    # relocation stream beside it, with the same function-relative offsets.
+    relocations = "\n".join(row["reloc_stream"])
+    return (f"{symbol}: {row['size']} bytes; offsets relative to function start\n"
+            f"{assembly}\nRelocations (offset:type:identity:addend bytes):\n"
+            f"{relocations}\n")
 
 
 def retain_frontier_candidate(
@@ -551,6 +569,7 @@ def main(argv=None) -> int:
     retail_target = retail_metrics.get(target.symbol)
     if retail_target is None:
         parser.error(f"target symbol absent from retail object: {target.symbol}")
+    retail_size = retail_function_size(target_obj, target.symbol)
     retail_topology = function_topology(target_obj, target.symbol)
 
     results = []
@@ -690,7 +709,7 @@ def main(argv=None) -> int:
                 identity_metrics["objdiff_size"] = candidate_size
                 state_id = target_state_identity(identity_metrics)
                 rejections = exact_closure_rejections(
-                    score, candidate_size, target.retail_size, candidate_target, retail_target
+                    score, candidate_size, retail_size, candidate_target, retail_target
                 )
                 sibling_regressions = []
                 for symbol, baseline_symbol_score in baseline_scores.items():
@@ -716,7 +735,7 @@ def main(argv=None) -> int:
                     "score": score,
                     "score_delta": score - baseline_score,
                     "candidate_size": candidate_size,
-                    "retail_size": target.retail_size,
+                    "retail_size": retail_size,
                     "candidate_relocs": candidate_target["relocs"],
                     "retail_relocs": retail_target["relocs"],
                     "text_sha": candidate_target["text_sha"],
@@ -744,7 +763,7 @@ def main(argv=None) -> int:
                 state["observation_count"] += 1
                 if score not in state["scores"]:
                     state["scores"].append(score)
-                rank = result_rank(row, target.retail_size, retail_target["relocs"])
+                rank = result_rank(row, retail_size, retail_target["relocs"])
                 retain_frontier_candidate(
                     frontier_by_state, args.frontier, state_id, rank, row,
                     candidate, candidate_obj, scratch,
@@ -777,34 +796,18 @@ def main(argv=None) -> int:
                 if exact_source is not None and not args.continue_after_exact:
                     break
             if args.show_best_disasm and best_object_rank is not None:
-                command = [
-                    "llvm-objdump", "-dr", f"--disassemble-symbols={target.symbol}",
-                    str(scratch / "best.obj"),
-                ]
-                disassembly = subprocess.run(command, capture_output=True, text=True)
-                best_disasm = disassembly.stdout + disassembly.stderr
+                best_disasm = target_disassembly(scratch / "best.obj", target.symbol)
                 if best_topology_object_rank is not None:
-                    command[-1] = str(scratch / "best-topology.obj")
-                    topology_disassembly = subprocess.run(
-                        command, capture_output=True, text=True
-                    )
-                    best_topology_disasm = (
-                        topology_disassembly.stdout + topology_disassembly.stderr
+                    best_topology_disasm = target_disassembly(
+                        scratch / "best-topology.obj", target.symbol
                     )
             retained_frontier = sorted(
                 frontier_by_state.values(), key=lambda item: item["rank"]
             )
             frontier_dir = output / "frontier"
             frontier_dir.mkdir()
-            retail_command = [
-                "llvm-objdump", "-dr", f"--disassemble-symbols={target.symbol}",
-                str(target_obj),
-            ]
-            retail_disassembly = subprocess.run(
-                retail_command, capture_output=True, text=True
-            )
             (frontier_dir / "retail.asm").write_text(
-                retail_disassembly.stdout + retail_disassembly.stderr
+                target_disassembly(target_obj, target.symbol)
             )
             frontier_summary = []
             for frontier_index, record in enumerate(retained_frontier, 1):
@@ -816,13 +819,8 @@ def main(argv=None) -> int:
                 source_suffix = ("-disposable" if state_bearing else "") + source.suffix
                 (frontier_dir / f"{stem}{source_suffix}").write_bytes(record["source"])
                 shutil.copyfile(record["object"], frontier_dir / f"{stem}.obj")
-                command = [
-                    "llvm-objdump", "-dr", f"--disassemble-symbols={target.symbol}",
-                    str(record["object"]),
-                ]
-                disassembly = subprocess.run(command, capture_output=True, text=True)
                 (frontier_dir / f"{stem}.asm").write_text(
-                    disassembly.stdout + disassembly.stderr
+                    target_disassembly(record["object"], target.symbol)
                 )
                 frontier_summary.append({
                     "rank": frontier_index,
@@ -860,7 +858,7 @@ def main(argv=None) -> int:
 
     ranked = sorted(
         (row for row in results if row.get("score") is not None),
-        key=lambda row: result_rank(row, target.retail_size, retail_target["relocs"]),
+        key=lambda row: result_rank(row, retail_size, retail_target["relocs"]),
     )
     topology_ranked = sorted(
         (row for row in results if row.get("score") is not None),
@@ -879,6 +877,8 @@ def main(argv=None) -> int:
         "unit": target.unit,
         "rva": f"0x{target.rva:x}",
         "symbol": target.symbol,
+        "codeview_size": target.retail_size,
+        "retail_size": retail_size,
         "variant_count": combinations,
         "attempted_variant_count": len(results),
         "executed_variant_count": len(ranked),
