@@ -35,10 +35,9 @@
 # [units]	unit	n_functions	matched
 abortflag	16	15
 automap	1	1
-bitmapio	2	2
+bitmapio	22	20
 bitset	5	5
 blit	18	15
-bmpseek	3	2
 character	171	162
 clickwait	1	1
 clock	74	70
@@ -76,13 +75,10 @@ mouse	10	9
 nibble	4	3
 objecttexture	2	2
 partyaction	103	99
-picture	7	7
 playtime	4	4
 pool	6	6
 range	25	25
 recordcache	43	40
-resourcebitmap	5	5
-resourceblit	3	2
 restore	3	3
 savegame	10	10
 screensave	9	9
@@ -106,8 +102,6 @@ surfacecopy	1	1
 textapi	5	5
 textchar	1	0
 textstate	21	20
-texture	1	0
-texturebitmap	1	1
 treasurebox	147	137
 vec3	10	8
 videostate	5	5
@@ -140,8 +134,28 @@ abortflag	_PickSceneHotspot	100.0000	100.0000	3	f8c207d6015f	0x456e0	100.0000
 abortflag	_PollScenePointer	100.0000	100.0000	2	ecf1217615a2	0x45b30	100.0000	
 abortflag	_SetAbortPending	100.0000	100.0000	1	f6e2fbe05b94	0x45560	100.0000	
 automap	_ScreenToAutomapCell	100.0000	100.0000	1	f9ff95d2ab3a	0x58500	100.0000	
+bitmapio	_BlitImage	100.0000	100.0000	2	c3e84fc06546	0x57290	100.0000	
+bitmapio	_ClearScenePicture	100.0000	100.0000	4	b265a69dea3e	0x57c40	100.0000	
+bitmapio	_ClearSceneSurfaces	100.0000	100.0000	5	3a8e44e031ed	0x57bf0	100.0000	
+bitmapio	_CopyResourceBitmap16	99.6558	99.5325	6	44c451fd87d9	0x56f30	100.0000	
+bitmapio	_CopyResourceBitmap8	100.0000	100.0000	7	aa9f9567e742	0x57120	100.0000	
+bitmapio	_CreatePicture	100.0000	100.0000	5	adc9011ef101	0x57380	100.0000	
+bitmapio	_DrawResourceBitmap	100.0000	100.0000	4	3cc185ba23e9	0x572e0	100.0000	
 bitmapio	_FreeBitmap	100.0000	100.0000	1	e2ab5bf88c4d	0x56ae0	100.0000	
+bitmapio	_LoadBitmapToSurface16	99.8728	99.8728	11	be5062d3ed2b	0x56bd0	100.0000	
+bitmapio	_LoadBitmapToSurface8	100.0000	100.0000	9	c04638f551a1	0x56de0	100.0000	
+bitmapio	_LoadPictureFile	100.0000	100.0000	2	0b958e4657a9	0x57520	100.0000	
+bitmapio	_LoadScenePicture	100.0000	100.0000	3	9ad636e017b5	0x57b90	100.0000	
+bitmapio	_LoadTexture	100.0000	100.0000	9	8ff424257a41	0x577a0	100.0000	
+bitmapio	_LoadWorldMapOverlay	100.0000	100.0000	4	3190f91a5ff1	0x57d80	100.0000	
+bitmapio	_LoadWorldMapTile	100.0000	100.0000	4	118cac5f0ece	0x57c70	100.0000	
+bitmapio	_OpenTextureBitmap	100.0000	100.0000	7	ada19514827b	0x57a70	100.0000	
 bitmapio	_ReadBitmapFile	100.0000	100.0000	1	fc37c43f3b7a	0x56a70	100.0000	
+bitmapio	_ReleaseTexture	100.0000	100.0000	3	ad2cadccb436	0x576d0	100.0000	
+bitmapio	_RestoreTexture	100.0000	100.0000	1	51d43995c468	0x57b30	100.0000	
+bitmapio	_SeekBitmap	100.0000	100.0000	4	daf414abe6bf	0x56b00	100.0000	
+bitmapio	_ShadeTexture	100.0000	100.0000	4	eb1d29e2b7bc	0x57590	100.0000	
+bitmapio	_ShowScenePicture	100.0000	100.0000	1	8c78f2ebbbba	0x57b80	100.0000	
 bitset	_ChangeBit	100.0000	100.0000	2	1a634c130aac	0xb7c0	100.0000	
 bitset	_ClearBit	100.0000	100.0000	3	cd99571d96a9	0xb740	100.0000	
 bitset	_SetBit	100.0000	100.0000	3	c1c112b5da93	0xb700	100.0000	
@@ -165,9 +179,6 @@ blit	_SkipLegacyScriptBlit	100.0000	100.0000	1	4ad4aeb0b11d	0x1850	100.0000
 blit	_SkipOffsetSceneSprite	100.0000	100.0000	1	9fb1518ceaeb	0x16d0	100.0000	
 blit	_SkipViewportSceneSprite	100.0000	100.0000	1	116c8f7a81da	0x16e0	100.0000	
 blit	_TestSceneSpritePixel	100.0000	100.0000	4	0a85626a5e3b	0x17c0	100.0000	
-bmpseek	_LoadBitmapToSurface16	99.7110	99.7110	10	32398d0b014e	0x56bd0	100.0000	
-bmpseek	_LoadBitmapToSurface8	100.0000	100.0000	8	97123fc57f0a	0x56de0	100.0000	
-bmpseek	_SeekBitmap	100.0000	100.0000	3	79cc1e98cdd6	0x56b00	100.0000	
 character	_AddCondition	99.9419	99.9273	6	b335e08da1d3	0x3e6d0	99.9419	
 character	_AddHundredths	100.0000	100.0000	1	f70e0abe6370	0x41130	100.0000	
 character	_AddMacca	100.0000	100.0000	1	9f099ceb1802	0x408f0	100.0000	
@@ -1526,13 +1537,6 @@ partyaction	_SwapPartyRows	100.0000	100.0000	3	0d37d50163d5	0x6140	100.0000
 partyaction	_TickFieldCount	100.0000	100.0000	1	dc8de72305e6	0x7230	100.0000	
 partyaction	_TickPartyConditionActions	100.0000	100.0000	9	92991255da69	0x8200	100.0000	
 partyaction	_UpdatePartyActionWaits	100.0000	100.0000	1	69cbcdcdd3c7	0x8050	100.0000	
-picture	_ClearScenePicture	100.0000	100.0000	4	b265a69dea3e	0x57c40	100.0000	
-picture	_ClearSceneSurfaces	100.0000	100.0000	5	3a8e44e031ed	0x57bf0	100.0000	
-picture	_LoadScenePicture	100.0000	100.0000	3	9ad636e017b5	0x57b90	100.0000	
-picture	_LoadWorldMapOverlay	100.0000	100.0000	4	3190f91a5ff1	0x57d80	100.0000	
-picture	_LoadWorldMapTile	100.0000	100.0000	4	118cac5f0ece	0x57c70	100.0000	
-picture	_RestoreTexture	100.0000	100.0000	1	51d43995c468	0x57b30	100.0000	
-picture	_ShowScenePicture	100.0000	100.0000	1	8c78f2ebbbba	0x57b80	100.0000	
 playtime	_AdvancePlayTime	100.0000	100.0000	1	55307f0e0423	0x35e0	100.0000	
 playtime	_LoadPlayTime	100.0000	100.0000	1	52ec196f8144	0x37c0	100.0000	
 playtime	_ResetPlayTime	100.0000	100.0000	1	d7a06f8cb557	0x35b0	100.0000	
@@ -1611,14 +1615,6 @@ recordcache	_SaveScriptState	100.0000	100.0000	1	6ba68caf5b47	0x2e9d0	100.0000
 recordcache	_StripZeroWords	100.0000	100.0000	2	b3f00a7170f3	0x2dea0	100.0000	
 recordcache	_WearCachedSkill	24.8000	24.8000	2	38a98f6f9069	0x2e8a0	24.8000	
 recordcache	_WearSkillValue	100.0000	100.0000	4	d783a1aa12ac	0x2e960	100.0000	
-resourcebitmap	_CreatePicture	100.0000	100.0000	5	adc9011ef101	0x57380	100.0000	
-resourcebitmap	_DrawResourceBitmap	100.0000	100.0000	4	3cc185ba23e9	0x572e0	100.0000	
-resourcebitmap	_LoadPictureFile	100.0000	100.0000	2	0b958e4657a9	0x57520	100.0000	
-resourcebitmap	_ReleaseTexture	100.0000	100.0000	3	ad2cadccb436	0x576d0	100.0000	
-resourcebitmap	_ShadeTexture	100.0000	100.0000	4	eb1d29e2b7bc	0x57590	100.0000	
-resourceblit	_BlitImage	100.0000	100.0000	2	c3e84fc06546	0x57290	100.0000	
-resourceblit	_CopyResourceBitmap16	99.6558	99.6558	6	44c451fd87d9	0x56f30	100.0000	
-resourceblit	_CopyResourceBitmap8	100.0000	100.0000	7	aa9f9567e742	0x57120	100.0000	
 restore	_ApplyRestoreEffect	100.0000	100.0000	12	6e32c9aa9376	0x1fe90	100.0000	
 restore	_ComputeRestoreAmount	100.0000	100.0000	4	a4dd284d8beb	0x1fdc0	100.0000	
 restore	_ConditionKindApplies	100.0000	100.0000	2	26f90cec6702	0x20580	100.0000	
@@ -2364,8 +2360,6 @@ textstate	_SetTextScrollMode	100.0000	100.0000	2	4909d6741863	0x32c00	100.0000
 textstate	_SetTextTimedWait	100.0000	100.0000	2	70520e59de32	0x32bd0	100.0000	
 textstate	_TickTextDelay	100.0000	100.0000	2	7dbc2a0ffc07	0x329e0	100.0000	
 textstate	_TickTextPeriod	100.0000	100.0000	1	4f52f0f797ba	0x32cc0	100.0000	
-texture	_LoadTexture	96.5598	96.5598	8	89e41a375e32	0x577a0	96.5598	
-texturebitmap	_OpenTextureBitmap	100.0000	100.0000	7	ada19514827b	0x57a70	100.0000	
 treasurebox	_AddAreaNpc	100.0000	100.0000	3	c47876e54424	0x1f2b0	100.0000	
 treasurebox	_AddTrainingPoints	100.0000	100.0000	1	84845b3963f4	0x1c6c0	100.0000	
 treasurebox	_AddTrainingPointsRaw	100.0000	100.0000	2	5bc28d5ee5e8	0x1c690	100.0000	
