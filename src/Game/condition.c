@@ -197,6 +197,12 @@ i16 HasCondition(ConditionSet* conditions, i16 condition) {
     return TestBit(conditions->bits, condition);
 }
 
+#define AccumulateCollapseOrPetrification(blocked, conditions)                                     \
+    do {                                                                                           \
+        (blocked) |= HasCondition((conditions), 3);                                                \
+        (blocked) |= HasCondition((conditions), 4);                                                \
+    } while (0)
+
 // The last condition of `list` that is set, or 0.
 // Adds `condition` to a condition set under the conditions' precedence rules:
 // returns 1 when added (its byte reset), -1 when already held, 0 when a
@@ -248,8 +254,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 3);
-                blocked |= HasCondition(conditions, 4);
+                AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, 10);
                 blocked |= HasCondition(conditions, CONDITION_SLEEP);
                 if (blocked) {
@@ -264,8 +269,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 3);
-                blocked |= HasCondition(conditions, 4);
+                AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, 30);
                 if (blocked) {
                     return 0;
@@ -334,8 +338,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 3);
-                blocked |= HasCondition(conditions, 4);
+                AccumulateCollapseOrPetrification(blocked, conditions);
                 if (blocked) {
                     return 0;
                 }
@@ -344,8 +347,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 3);
-                blocked |= HasCondition(conditions, 4);
+                AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, 5);
                 blocked |= HasCondition(conditions, 7);
                 blocked |= HasCondition(conditions, CONDITION_ZOMBIE);
@@ -360,8 +362,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 3);
-                blocked |= HasCondition(conditions, 4);
+                AccumulateCollapseOrPetrification(blocked, conditions);
                 if (blocked) {
                     return 0;
                 }
@@ -371,8 +372,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 3);
-                blocked |= HasCondition(conditions, 4);
+                AccumulateCollapseOrPetrification(blocked, conditions);
                 if (blocked) {
                     return 0;
                 }
@@ -416,8 +416,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 3);
-                blocked |= HasCondition(conditions, 4);
+                AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, 26);
                 if (blocked) {
                     return 0;
@@ -429,8 +428,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 3);
-                blocked |= HasCondition(conditions, 4);
+                AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, 10);
                 blocked |= HasCondition(conditions, 26);
                 if (blocked) {
@@ -445,8 +443,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 3);
-                blocked |= HasCondition(conditions, 4);
+                AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, 26);
                 if (blocked) {
                     return 0;
