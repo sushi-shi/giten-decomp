@@ -258,7 +258,7 @@ areanpc	_EnterRoom	100.0000	100.0000	2	cc0ed6fb509c	0x1efd0	100.0000
 areanpc	_FillEmptyRegions	100.0000	100.0000	1	8b0581955c2c	0x1eb30	100.0000	
 areanpc	_FillRegionRect	100.0000	100.0000	1	1fc9899d4f69	0x1ea90	100.0000	
 areanpc	_FindCellObject	100.0000	100.0000	2	91126080368e	0x1f1d0	100.0000	
-areanpc	_FindRegionData	99.5833	99.5833	1	e9eabe193cee	0x1ecc0	99.5833	
+areanpc	_FindRegionData	100.0000	99.5833	1	e9eabe193cee	0x1ecc0	100.0000	
 areanpc	_FinishDoorStep	100.0000	100.0000	1	13d8b7a3ac0b	0x1f130	100.0000	
 areanpc	_GetAreaNpc	100.0000	100.0000	2	4a8cb1a35d6d	0x1f4a0	100.0000	
 areanpc	_GetAreaNpcCell	100.0000	100.0000	1	18efe37f2c2c	0x1f460	100.0000	
@@ -276,7 +276,7 @@ areanpc	_GetRoomData	100.0000	100.0000	1	1a5c354f9aea	0x1ef90	100.0000
 areanpc	_GetRoomRegion	100.0000	100.0000	1	86ab3b612ceb	0x1eb80	100.0000	
 areanpc	_IsAreaNpcGone	100.0000	100.0000	1	e93a06de77ff	0x1f430	100.0000	
 areanpc	_IsObjectCell	100.0000	100.0000	1	f9dbe0b17170	0x1eee0	100.0000	
-areanpc	_IsRegionFlagOn	99.5000	99.5000	1	cbec71e2d8aa	0x1ebe0	99.5000	
+areanpc	_IsRegionFlagOn	100.0000	99.5000	1	cbec71e2d8aa	0x1ebe0	100.0000	
 areanpc	_IsReservedObjectCell	100.0000	100.0000	1	b8b013afd61c	0x1f350	100.0000	
 areanpc	_KnockBack	100.0000	100.0000	4	5726bf2df28a	0x1f7d0	100.0000	
 areanpc	_KnockBackActor	100.0000	100.0000	1	c39f5a7844b7	0x1fae0	100.0000	
@@ -285,7 +285,7 @@ areanpc	_LoadNpcPalette	100.0000	100.0000	1	f3d33ed6f661	0x1f620	100.0000
 areanpc	_LoadNpcTexture	100.0000	100.0000	1	394ece5312b7	0x1f550	100.0000	
 areanpc	_LookupCellObject	100.0000	100.0000	2	5f07f93b5477	0x1ef60	100.0000	
 areanpc	_MarkAreaNpcs	100.0000	100.0000	1	310eb5091d06	0x1f4c0	100.0000	
-areanpc	_MarkRegionList	99.6923	99.6923	3	14ca732094a9	0x1ec10	99.6923	
+areanpc	_MarkRegionList	100.0000	99.6923	3	14ca732094a9	0x1ec10	100.0000	
 areanpc	_MarkRoomRegions	100.0000	100.0000	1	99db59ebe46b	0x1ed20	100.0000	
 areanpc	_NextNpcSlot	100.0000	100.0000	1	e4293f3a61cc	0x1f250	100.0000	
 areanpc	_NotifyEncounterEnd	100.0000	100.0000	1	73fdb9352997	0x1f530	100.0000	
@@ -433,7 +433,7 @@ charpool	_LowPoolMask	100.0000	100.0000	3	35ba35499dd9	0x3d000	100.0000
 charpool	_PoolState	100.0000	100.0000	1	f11518e8ea29	0x3d030	100.0000	
 charpool	_RecalcDerivedStats	100.0000	100.0000	7	dc85b8350e39	0x3d560	100.0000	
 charpool	_RecalcStatTotals	100.0000	100.0000	1	0b25d5aa14a9	0x3dc60	100.0000	
-charpool	_ScalePercent999	99.8461	99.8461	1	a900d6b6d210	0x3dbe0	99.8461	
+charpool	_ScalePercent999	100.0000	99.8461	1	a900d6b6d210	0x3dbe0	100.0000	
 charpool	_StatBlend57	100.0000	100.0000	3	90c9338facc7	0x3d1f0	100.0000	
 charpool	_StatBlend80	100.0000	100.0000	3	4d5ebe1bf93b	0x3d190	100.0000	
 charpool	_SumArmorDefenseBonus	100.0000	100.0000	5	d52b0e71b774	0x3d940	100.0000	
@@ -651,7 +651,7 @@ demontable	_GetHumanTitleName	100.0000	100.0000	4	8941eabb1756	0x10180	100.0000
 demontable	_GetObjectRecordName	100.0000	100.0000	1	dccc9357f909	0x10a80	100.0000	
 demontable	_GetObjectRecordPicture	100.0000	100.0000	3	9cbc2a998edf	0x10aa0	100.0000	
 demontable	_GetObjectRecordScriptSet	100.0000	100.0000	2	4c8a8955d95b	0x10a60	100.0000	
-demontable	_GetRaceClass	98.5714	98.5714	2	e53f7bf3c736	0x10080	98.5714	
+demontable	_GetRaceClass	100.0000	98.5714	2	e53f7bf3c736	0x10080	100.0000	
 demontable	_InitObjectFromRecord	93.6483	93.6483	21	7c2359028999	0x10470	93.6483	
 demontable	_LoadDemonTables	100.0000	100.0000	2	79bfc48f9d7a	0xff30	100.0000	
 demontable	_LoadLayerRecord	100.0000	100.0000	2	91ff5cd55fdb	0x10ad0	100.0000	
