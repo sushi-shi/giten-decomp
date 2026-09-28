@@ -277,8 +277,7 @@ i16 DelayActionSide(i16 id) {
         for (i = 0; i < 6; i++) {
             member = GetPartyCharacter(i);
             if (member) {
-                GetCharacterActionWait(member)->remaining =
-                    50 + GetCharacterActionWait(member)->remaining;
+                DelayActionWait(GetCharacterActionWait(member), 50);
             }
         }
         MarkPickDone();
@@ -288,8 +287,7 @@ i16 DelayActionSide(i16 id) {
         object = GetLiveObject(i);
         if (object >= 0) {
             fieldObject = GetFieldObject(object);
-            GetFieldObjectActionWait(fieldObject)->remaining =
-                50 + GetFieldObjectActionWait(fieldObject)->remaining;
+            DelayActionWait(GetFieldObjectActionWait(fieldObject), 50);
         }
     }
     return 1;
