@@ -133,16 +133,14 @@ b32 CMidiStream::ReadFormat(void* data, DWORD size, int part) {
     return true;
 }
 
-// @early-stop register residue: retail loads src's fields before dst's and
-// swaps the two spill homes around the memcpy; CFG and every operation
-// match. Declaration-order and permuter sweeps are flat.
 RVA(0x00055d50, 0xfe)
 b32 CMidiStream::ConvertBuffer(MIDIHDR* dst, MIDIHDR* src) {
     // The pun: stream events are DWORD-granular.
-    DWORD* out = reinterpret_cast<DWORD*>(dst->lpData);
-    DWORD outLeft = dst->dwBufferLength;
     DWORD* in = reinterpret_cast<DWORD*>(src->lpData);
+    DWORD* out = reinterpret_cast<DWORD*>(dst->lpData);
     DWORD inLeft = src->dwBytesRecorded;
+    DWORD outLeft;
+    outLeft = dst->dwBufferLength;
 
     if (inLeft & 3) {
         return false;

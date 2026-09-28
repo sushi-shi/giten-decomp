@@ -52,7 +52,7 @@ charinfo	13	12
 charpool	29	27
 charsave	11	10
 clickwait	1	1
-clock	9	7
+clock	9	8
 clockops	6	6
 compare	74	71
 condition	23	22
@@ -71,7 +71,7 @@ familiarity	19	18
 field	27	27
 fieldmain	64	60
 fieldmark	5	5
-fieldobj	79	73
+fieldobj	79	74
 fieldscreen	77	74
 fieldskill	5	5
 fieldview	38	36
@@ -100,7 +100,7 @@ menubox	12	12
 menucursor	12	12
 menuresult	2	2
 message	15	15
-midistream	35	33
+midistream	35	34
 modeflags	4	4
 motion	43	43
 mouse	10	9
@@ -315,12 +315,12 @@ attack	_FilterGunTargets	100.0000	100.0000	1	8b7533ff67a1	0x9010	100.0000
 attack	_GetAttackRangeExcess	100.0000	100.0000	1	5e1e26d46e43	0x86d0	100.0000	
 attack	_GetCombatantAttackRange	100.0000	100.0000	4	140f96962980	0x8670	100.0000	
 attack	_GetCombatantDistance	100.0000	100.0000	2	14bb0bdb9153	0x8610	100.0000	
-attack	_GetCombatantFacingDifference	99.7436	99.7436	3	279f947d9b39	0x85a0	99.7436	
+attack	_GetCombatantFacingDifference	100.0000	100.0000	4	8b7f40decc62	0x85a0	100.0000	
 attack	_GetCombatantSideRelation	100.0000	100.0000	2	1245e0f51480	0x8450	100.0000	
 attack	_GetEquipmentHitModifier	100.0000	100.0000	4	7571f7679ade	0x8480	100.0000	
 attack	_GetGunAttackPower	100.0000	100.0000	3	1aba1c1775cc	0x8b20	100.0000	
 attack	_GetGunBurstRounds	100.0000	100.0000	4	5e1b6fead023	0x9050	100.0000	
-attack	_GetGunRequirementPenalty	100.0000	100.0000	1	9d271a629c5c	0x91b0	100.0000	
+attack	_GetGunRequirementPenalty	100.0000	91.5625	1	9d271a629c5c	0x91b0	100.0000	
 attack	_LoadGunDistributionTable	100.0000	100.0000	1	2282d9a67f6b	0x8fe0	100.0000	
 attack	_PrepareGunBurst	100.0000	100.0000	8	d3a0e7e88d30	0x90c0	100.0000	
 attack	_ResolveGunAttack	100.0000	100.0000	7	15d57fbaa75e	0x8e60	100.0000	
@@ -456,7 +456,7 @@ clock	_HasTurnElapsed	100.0000	100.0000	1	d7ecacf43f65	0x20f20	100.0000
 clock	_InitClock	100.0000	100.0000	2	cd83bceb0657	0x20b00	100.0000	
 clock	_LoadClock	100.0000	100.0000	1	517a076cb2f2	0x20f60	100.0000	
 clock	_SaveClock	100.0000	100.0000	1	be821d4729fb	0x20f30	100.0000	
-clock	_TickClock	99.6709	99.6709	2	603e3326a079	0x20bf0	99.6709	
+clock	_TickClock	100.0000	100.0000	3	eedfd446444e	0x20bf0	100.0000	
 clock	_TickGameClock	100.0000	100.0000	2	c9cf1694e76d	0x20e90	100.0000	
 clockops	_OpAdvanceClock	100.0000	100.0000	1	46d605c8a60a	0x36670	100.0000	
 clockops	_OpGetActorMoonValue	100.0000	100.0000	1	f0a41a892c6d	0x36630	100.0000	
@@ -884,7 +884,7 @@ fieldobj	_GetSightCell	100.0000	100.0000	1	f498b35984d8	0xf0c0	100.0000
 fieldobj	_InitFieldObjects	100.0000	100.0000	2	1193d7b17cd8	0xd790	100.0000	
 fieldobj	_IsFieldActor	100.0000	100.0000	2	ecd87ace417f	0xd980	100.0000	
 fieldobj	_IsPartyInSight	100.0000	100.0000	1	c03c64e92c2c	0xf120	100.0000	
-fieldobj	_IsWithinRange	99.9074	99.9074	5	51a37647af50	0xf590	99.9074	
+fieldobj	_IsWithinRange	100.0000	100.0000	6	5fe0b6c1417d	0xf590	100.0000	
 fieldobj	_LoadEncounterWeights	100.0000	100.0000	1	f8944971463a	0xf1a0	100.0000	
 fieldobj	_LoadEnemyGroupSlot	100.0000	100.0000	3	4aaaeceaf4c4	0xe820	100.0000	
 fieldobj	_LoadLayerScriptSet	100.0000	100.0000	3	cde55e2bec84	0xeb70	100.0000	
@@ -1588,7 +1588,7 @@ midistream	??1CMidiStream@@UAE@XZ	100.0000	100.0000	1	472463e0253c	0x55b10	100.0
 midistream	??_GCMidiStream@@UAEPAXI@Z	100.0000	100.0000	1	cpp:3324492bb851	0x56860	100.0000	
 midistream	?Ascend@CMMIO@@QAEIAAVCMMChunk@@I@Z	100.0000	100.0000	1	cpp:3324492bb851	0x569b0	100.0000	
 midistream	?CloseStream@CMidiStream@@IAEHXZ	100.0000	100.0000	5	6a068f5dbcc5	0x55b30	100.0000	
-midistream	?ConvertBuffer@CMidiStream@@IAEHPAUmidihdr_tag@@0@Z	99.7670	99.7670	3	68e4ff3ff079	0x55d50	99.7670	
+midistream	?ConvertBuffer@CMidiStream@@IAEHPAUmidihdr_tag@@0@Z	100.0000	100.0000	4	8f77f8d5d9ba	0x55d50	100.0000	
 midistream	?Descend@CMMIO@@QAEIAAVCMMChunk@@0I@Z	100.0000	100.0000	1	cpp:3324492bb851	0x569f0	100.0000	
 midistream	?Descend@CMMIO@@QAEIAAVCMMChunk@@I@Z	100.0000	100.0000	1	cpp:3324492bb851	0x569d0	100.0000	
 midistream	?FreeBuffers@CMidiStream@@IAEXXZ	100.0000	100.0000	2	dac9039efbbe	0x55c10	100.0000	

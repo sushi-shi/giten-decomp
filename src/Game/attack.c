@@ -88,16 +88,16 @@ static __inline i16 GetCombatantFacing(i16 id) {
     return GetFieldActor(id)->facing;
 }
 
-// @early-stop instruction width: retail subtracts the half-turn in al at
-// both return sites; this build uses eax before the same low-two-bit mask.
 RVA(0x000085a0, 0x65)
 i16 GetCombatantFacingDifference(i16 first, i16 second) {
     i16 direction;
+    i16 difference;
     if (first < 0 && second < 0) {
         return 0;
     }
     direction = GetCombatantFacing(first);
-    return OppositeDirection(GetCombatantFacing(second) - direction);
+    difference = GetCombatantFacing(second) - direction - 2;
+    return difference & 3;
 }
 
 RVA(0x00008610, 0x59)

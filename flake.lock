@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "decomp-permuter-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788821533,
+        "narHash": "sha256-Eed8H2d0lr+nTE3P49fwM6IpyJZjsJrsY4Bzn0t4zy4=",
+        "owner": "simonlindholm",
+        "repo": "decomp-permuter",
+        "rev": "059609d4aec73eb0650726772954e1ad575825f8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "simonlindholm",
+        "repo": "decomp-permuter",
+        "rev": "059609d4aec73eb0650726772954e1ad575825f8",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1779560665,
@@ -35,6 +52,7 @@
     },
     "root": {
       "inputs": {
+        "decomp-permuter-src": "decomp-permuter-src",
         "nixpkgs": "nixpkgs",
         "objdiff-src": "objdiff-src",
         "rust-overlay": "rust-overlay",
