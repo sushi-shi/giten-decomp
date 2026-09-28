@@ -311,6 +311,22 @@ void OpFreeDataFile(void) {
     SetScriptLongVar(index, FreeHandle(GetScriptLongVar(index)));
 }
 
+static __inline i32 ReadSizedDataInt(const u8* data, i16 offset, i16 size, i16 sign) {
+    i32 value;
+    value = 0;
+    while (size) {
+        size--;
+        value = (value << 8) + data[offset + size];
+        if (sign < 0) {
+            sign = 1;
+            if (data[offset + size] >= 0x80) {
+                value -= 0x100;
+            }
+        }
+    }
+    return value;
+}
+
 // Reads a little-endian integer of `size` bytes (sign-extended when `size`
 // is negative) at `offset` into record `record` of a loaded data file (a
 // table of word offsets first).
@@ -330,17 +346,7 @@ void OpReadRecordInt(void) {
     }
     data = HandleReadPtr(GetScriptLongVar(array));
     offset += ((i16*)data)[record];
-    value = 0;
-    while (size) {
-        size--;
-        value = (value << 8) + data[offset + size];
-        if (sign < 0) {
-            sign = 1;
-            if (data[offset + size] >= 0x80) {
-                value -= 0x100;
-            }
-        }
-    }
+    value = ReadSizedDataInt(data, offset, size, sign);
     SetScriptLongVar(index, value);
 }
 
@@ -362,17 +368,7 @@ void OpReadDataInt(void) {
         size = -size;
     }
     data = HandleReadPtr(GetScriptLongVar(array));
-    value = 0;
-    while (size) {
-        size--;
-        value = (value << 8) + data[offset + size];
-        if (sign < 0) {
-            sign = 1;
-            if (data[offset + size] >= 0x80) {
-                value -= 0x100;
-            }
-        }
-    }
+    value = ReadSizedDataInt(data, offset, size, sign);
     SetScriptLongVar(index, value);
 }
 
