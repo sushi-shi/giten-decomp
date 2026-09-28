@@ -1130,7 +1130,6 @@ b32 InitDirect3D(void) {
         return false;
     }
     ZeroMemory(&viewport, sizeof(viewport));
-    viewport.dvMinZ = 0.0f;
     viewport.dwSize = sizeof(viewport);
     viewport.dwWidth = 640;
     viewport.dwHeight = 328;
@@ -1138,6 +1137,7 @@ b32 InitDirect3D(void) {
     viewport.dvClipWidth = 2.0f;
     viewport.dvClipY = 0.5125f;
     viewport.dvClipHeight = 1.025f;
+    viewport.dvMinZ = 0.0f;
     viewport.dvMaxZ = 1.0f;
     if (g_viewport->SetViewport2(&viewport) != D3D_OK) {
         return false;
@@ -1155,12 +1155,12 @@ b32 InitDirect3D(void) {
     viewport.dwSize = sizeof(viewport);
     viewport.dwWidth = g_viewClearRect.x2;
     viewport.dwHeight = g_viewClearRect.y2;
+    viewport.dvClipX = DATA_COMPGEN(0x00064a0c, -1.0f / 3.0f);
+    viewport.dvClipWidth = DATA_COMPGEN(0x00064a10, 2.0f / 3.0f);
     viewport.dvMinZ = 0.0f;
     viewport.dvMaxZ = 1.0f;
     viewport.dvClipHeight =
         g_viewClearRect.x2 * 2.0 / g_viewClearRect.y2 * DATA_COMPGEN(0x00064a20, 1.0 / 3.0);
-    viewport.dvClipX = DATA_COMPGEN(0x00064a0c, -1.0f / 3.0f);
-    viewport.dvClipWidth = DATA_COMPGEN(0x00064a10, 2.0f / 3.0f);
     viewport.dvClipY = viewport.dvClipHeight * DATA_COMPGEN(0x00064a28, 1.0f / 6.0f);
     if (g_screenViewport->SetViewport2(&viewport) != D3D_OK) {
         return false;
