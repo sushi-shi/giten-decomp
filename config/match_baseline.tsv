@@ -41,7 +41,7 @@ areamap	42	36
 areanpc	60	56
 attack	21	18
 automap	1	1
-automapbits	23	21
+automapbits	23	22
 bitmapio	2	2
 bitset	5	5
 blit	18	16
@@ -69,7 +69,7 @@ equipscreen	25	23
 eventflags	28	28
 familiarity	19	18
 field	27	27
-fieldmain	64	60
+fieldmain	64	61
 fieldmark	5	5
 fieldobj	79	74
 fieldscreen	77	74
@@ -337,7 +337,7 @@ automapbits	_DrawAutomapRegion	100.0000	100.0000	3	bf8976eb0355	0x1da80	100.0000
 automapbits	_DrawAutomapTile	100.0000	100.0000	2	d137f4b475cf	0x1db90	100.0000	
 automapbits	_DrawAutomapViewport	100.0000	100.0000	3	d8dabeb544e5	0x1dc60	100.0000	
 automapbits	_DrawFieldView	100.0000	100.0000	1	8ea59d93d54d	0x1e6f0	100.0000	
-automapbits	_DrawMapOverlay	99.4306	99.4306	4	08d6d96fd340	0x1de40	99.4306	
+automapbits	_DrawMapOverlay	100.0000	100.0000	5	fa9594940919	0x1de40	100.0000	
 automapbits	_DrawMapOverlayTile	100.0000	100.0000	2	4751eebe6847	0x1e210	100.0000	
 automapbits	_FreeAutomap	100.0000	100.0000	4	818f89c2f90d	0x1cf40	100.0000	
 automapbits	_InitAutomap	100.0000	100.0000	2	f73124ea39b2	0x1cde0	100.0000	
@@ -790,7 +790,7 @@ fieldmain	_LoadFieldImage	100.0000	100.0000	2	caffed40de0c	0x144c0	100.0000
 fieldmain	_LoadFieldMemory	100.0000	87.0270	2	5df7d0d13c11	0x13ca0	100.0000	
 fieldmain	_MarkFieldViewCells	100.0000	100.0000	1	2544b75863e1	0x13d70	100.0000	
 fieldmain	_MarkLevelEvent	100.0000	100.0000	1	93bdb7a82f49	0x13b20	100.0000	
-fieldmain	_MarkVisibleFieldCells	99.2951	99.2951	2	61f26b6c1332	0x13d90	99.2951	
+fieldmain	_MarkVisibleFieldCells	100.0000	100.0000	3	0871e457aad7	0x13d90	100.0000	
 fieldmain	_MergeViewOcclusionMask	100.0000	100.0000	2	1ffee8594eec	0x13d40	100.0000	
 fieldmain	_MovePartyTo	100.0000	100.0000	1	8a87763e9d86	0x128f0	100.0000	
 fieldmain	_NextAutoMove	100.0000	100.0000	1	2cf236dca6e3	0x12b00	100.0000	

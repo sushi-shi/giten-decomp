@@ -1348,10 +1348,9 @@ void MarkFieldViewCells(i16 unused, i16 x, i16 y, i16 direction) {
     MarkVisibleFieldCells(0, x, y, direction);
 }
 
-// @early-stop: across/opposite exchange esi/edi and cell-index products commute
-// their operands. Product order and TU states are flat; a marking helper adds spills.
 RVA(0x00013d90, 0x180)
 void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
+    i16 cellY;
     i16 width;
     i16 height;
     i16 along;
@@ -1359,7 +1358,6 @@ void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
     i16 opposite;
     i16 index;
     i16 cellX;
-    i16 cellY;
     GetMapSize(&width, &height);
     BuildViewOcclusion(x, y, direction, 0);
     for (along = -3; along <= 0; along++) {
@@ -1376,7 +1374,7 @@ void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
             if (across != 0 && s_rightViewOcclusion[index] != 0xff) {
                 cellX = x;
                 cellY = y;
-                OffsetMapCoord(&cellX, &cellY, direction, opposite, along);
+                OffsetMapCoord(&cellX, &cellY, direction, -across, along);
                 cellY = cellY * width + cellX;
                 MarkDrawCell(cellY);
             }

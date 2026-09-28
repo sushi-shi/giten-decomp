@@ -690,7 +690,6 @@ void DrawMapOverlay(MapPosition position) {
     if (IsDarkCell(g_field.pos.x, g_field.pos.y)) {
         return;
     }
-    screenX = 1;
     GetMapSize(&width, &height);
     x = position.x;
     y = position.y;
@@ -700,6 +699,7 @@ void DrawMapOverlay(MapPosition position) {
         viewWidth = width;
         screenX = 8 - width;
     } else {
+        screenX = 1;
         viewWidth = 7;
         if (-left * 2 > 7) {
             left = -3;
