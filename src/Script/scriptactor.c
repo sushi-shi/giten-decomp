@@ -120,8 +120,47 @@ static char* s_affiliationNames[4] = {
     g_shortNames[15],
 };
 
+// The expansion of the last text token.
+DATA(0x00081230)
+static char s_tokenText[0x100] = {0};
+
+DATA(0x00081330)
+static i16 s_choiceWindow = 0;
+
+DATA(0x00081334)
+static i16 s_keepChoices = 0;
+
+DATA(0x00081338)
+static i16 s_choiceCancelMode = 0;
+
+DATA(0x0008133c)
+static ScriptChoice* s_highlightedChoice = 0;
+
+DATA(0x00081340)
+static ScriptChoice* s_choiceMenu = 0;
+
+DATA(0x00081344)
+static ScriptChoice* s_hitChoice = 0;
+
+// The slot ReadScriptOperand returns.
+DATA(0x00081348)
+static i32 s_operand = 0;
+
+// The long-variable accumulator, the second operand and the variable index.
+DATA(0x0008134c)
+static i32 s_longAcc = 0;
+
+DATA(0x00081350)
+static i32 s_longOperand = 0;
+
+DATA(0x00081354)
+static i16 s_longVarIndex = 0;
+
 DATA(0x00081358)
-static i16 s_spoilAdjustment;
+static i16 s_spoilAdjustment = 0;
+
+DATA(0x0008135c)
+char g_shortNames[16][4] = {0};
 
 RVA(0x00032cf0, 0x1b)
 void DespawnScriptActor(void) {
@@ -478,16 +517,6 @@ i16 g_scriptArgA;
 
 DATA(0x000911b2)
 i16 g_scriptArgB;
-
-// The long-variable accumulator, the second operand and the variable index.
-DATA(0x0008134c)
-static i32 s_longAcc;
-
-DATA(0x00081350)
-static i32 s_longOperand;
-
-DATA(0x00081354)
-static i16 s_longVarIndex;
 
 // The byte before the index is a kind byte the long ops ignore.
 RVA(0x000335a0, 0x15)
@@ -2590,13 +2619,6 @@ void OpGetTimeOfDay(void) {
     SetScriptLongVar(index, minutes);
 }
 
-// The expansion of the last text token.
-DATA(0x00081230)
-static char s_tokenText[0x100];
-
-DATA(0x0008135c)
-char g_shortNames[16][4] = {0};
-
 // @identity-TODO: the token kinds are named from what they read; which script
 // escape selects each is unrecovered. `byId` makes kinds 1/2 take `id` as a
 // character id instead of a script object id.
@@ -2794,10 +2816,6 @@ char* ReadTextToken(void) {
     ExchangeObjectCheckBypass(bypass);
     return text;
 }
-
-// The slot ReadScriptOperand returns.
-DATA(0x00081348)
-static i32 s_operand;
 
 DATA(0x000911b4)
 i32 g_rolledMacca;
@@ -3455,19 +3473,6 @@ void OpSetObjectField(void) {
             return;
     }
 }
-
-DATA(0x00081330)
-static i16 s_choiceWindow;
-DATA(0x00081334)
-static i16 s_keepChoices;
-DATA(0x00081338)
-static i16 s_choiceCancelMode;
-DATA(0x0008133c)
-static ScriptChoice* s_highlightedChoice;
-DATA(0x00081340)
-static ScriptChoice* s_choiceMenu;
-DATA(0x00081344)
-static ScriptChoice* s_hitChoice;
 
 RVA(0x00037950, 0x9f)
 void OpFindMemberByPoolState(i16 all, i16 pools) {
