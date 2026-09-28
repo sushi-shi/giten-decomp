@@ -32,3 +32,22 @@ rva	size	name	unit	note
 0x064e38	0x10	_IID_IDirect3DRGBDevice	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirect3D2::CreateDevice
 0x064e48	0x10	_IID_IDirect3DHALDevice	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirect3D2::CreateDevice
 0x064e58	0x10	_IID_IDirect3DMMXDevice	library_data	DXGUID.LIB obj/i386/dxguid.obj; unique exact 16-byte GUID, passed to IDirect3D2::CreateDevice
+0x066348	0x59	___lookuptable	library_data	LIBC output.obj .rdata state table; masked bytes match, sole referent of _output's class lookup
+0x068034	0x4	___xp_a	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XPA; _doexit's first _initterm pushes it (crt0dat.obj DIR32 at +0x6d)
+0x06803c	0x4	___xp_z	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XPZ; _doexit's first _initterm pushes it (crt0dat.obj DIR32 at +0x68)
+0x068040	0x4	___xt_a	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XTA; _doexit's second _initterm pushes it (crt0dat.obj DIR32 at +0x7f)
+0x068048	0x4	___xt_z	library_data	LIBC crt0init.obj named zero DWORD in .CRT$XTZ; _doexit's second _initterm pushes it (crt0dat.obj DIR32 at +0x7a)
+0x06e2f8	0x8	___rgctypeflag	library_data	LIBC mbctype.obj static __rgctypeflag; masked bytes match, referenced by _setmbcp
+0x06e404	0x4	_holdrand	library_data	LIBC rand.obj static holdrand; masked bytes match, read and written by srand and rand
+0x06e6e4	0x4	___nullstring	library_data	LIBC output.obj named .data pointer; masked bytes and its DIR32 match, read by _output
+0x06e6e8	0x4	___wnullstring	library_data	LIBC output.obj named .data pointer; masked bytes and its DIR32 match, read by _output
+0x06e970	0x8	___badioinfo	library_data	LIBC ioinit.obj named .data object; masked bytes match, referenced by _initstdio, _flsbuf and _filbuf
+0x06e990	0x4	__pctype	library_data	LIBC ctype.obj named .data pointer; its DIR32 into _ctype matches, read by the is* and tolower bodies
+0x070bc8	0x4	___sbh_p_starting_region	library_data	LIBC sbheap.obj static __sbh_p_starting_region; its DIR32 into __small_block_heap matches
+0x070bcc	0x4	___sbh_threshold	library_data	LIBC sbheap.obj named .data DWORD; masked bytes match, referenced by sbheap.obj code
+0x070c60	0x4	__First_FPE_Indx	library_data	LIBC winxfltr.obj named .data DWORD; masked bytes match, referenced by winxfltr.obj code
+0x070c64	0x4	__Num_FPE	library_data	LIBC winxfltr.obj named .data DWORD; masked bytes match, referenced by winxfltr.obj code
+0x070c68	0x4	__XcptActTabCount	library_data	LIBC winxfltr.obj named .data DWORD; masked bytes match, referenced by winxfltr.obj code
+0x070c6c	0x4	__fpecode	library_data	LIBC winxfltr.obj named .data DWORD; masked bytes match, referenced by winxfltr.obj code
+0x070e68	0x4	___mb_cur_max	library_data	LIBC nlsdata1.obj named .data DWORD; masked bytes match, read by _tolower, _isctype and the float conversions
+0x070e6c	0x4	___decimal_point	library_data	LIBC nlsdata1.obj named .data object; masked bytes match, read by _cftoe and _forcdecpt
