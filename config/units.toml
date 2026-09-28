@@ -145,11 +145,6 @@ source = "src/Game/gamestate.c"
 flags = "c"
 
 [[unit]]
-unit = "alignchart"
-source = "src/Game/alignchart.c"
-flags = "c"
-
-[[unit]]
 unit = "abortflag"
 source = "src/Game/abortflag.c"
 flags = "c"
@@ -297,11 +292,6 @@ flags = "c"
 [[unit]]
 unit = "videostate"
 source = "src/Gfx/videostate.c"
-flags = "c"
-
-[[unit]]
-unit = "equipscreen"
-source = "src/Game/equipscreen.c"
 flags = "c"
 
 [[unit]]
