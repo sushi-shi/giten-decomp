@@ -92,6 +92,18 @@ typedef struct EquipSkillPage {
     i16 pick;
 } EquipSkillPage;
 
+// The equipment page's state: the menu of bag items to equip, the equipment
+// panel, the picked item's name and description, the picked bag entry or
+// equipment part (-1 none, -2 cancelled), and whether the equipment changed,
+// so the status screen is redrawn on leaving.
+typedef struct EquipPage {
+    MenuBox* menu;
+    i16 panelPlane;
+    i16 infoPlane;
+    i16 pick;
+    b16 changed;
+} EquipPage;
+
 // The status screen's item page: lists the bag (with `*` on entries holding a
 // gem item) and opens the picked item's description (sub-state 0 opens
 // it, 1 closes it, 2 picks, 3..4 show the description until a click); returns

@@ -117,25 +117,10 @@ static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16
 DATA(0x000649a0)
 const i16 g_equipCountSlots[9] = {0, 1, -1, 4, 3, 4, 5, 6, 7};
 
-// The menu of bag items to equip.
+// One object: the fields sit two bytes apart, where separate variables take
+// four-byte slots.
 DATA(0x0006a208)
-static MenuBox* s_equipMenu = NULL;
-
-// The equipment panel.
-DATA(0x0006a20c)
-static i16 s_panelPlane = -1;
-
-// The picked item's name and description.
-DATA(0x0006a20e)
-static i16 s_infoPlane = -1;
-
-// The picked bag entry or equipment part; -1 none, -2 cancelled.
-DATA(0x0006a210)
-static i16 s_pick = -1;
-
-// Set when the equipment changed, so the status screen is redrawn on leaving.
-DATA(0x0006a212)
-static b16 s_changed = false;
+static EquipPage s_equipPage = {NULL, -1, -1, -1, false};
 
 // One object: retail reads `itemBase` and `item` with dword moves that run
 // into the next field.
@@ -804,16 +789,16 @@ i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
 }
 
 static __inline void ClearEquipPreview(void) {
-    s_infoPlane = CloseTextWindow(s_infoPlane);
+    s_equipPage.infoPlane = CloseTextWindow(s_equipPage.infoPlane);
     DrawEquipPanel(GetRosterCharacter(g_statusMember), NULL);
     DrawStatTotals(3, 0x19, GetRosterCharacter(g_statusMember), NULL);
 }
 
 static __inline i16 FinishEquipChange(void) {
     RecalcCharacterStats(GetRosterCharacter(g_statusMember));
-    s_changed = true;
+    s_equipPage.changed = true;
     SetGameSub(1);
-    s_pick = -1;
+    s_equipPage.pick = -1;
     return -1;
 }
 
@@ -834,34 +819,34 @@ i16 RunEquipScreen(i16 key) {
 
     if (key != -1 && key != -2) {
         SetGameSub(1);
-        s_pick = -2;
+        s_equipPage.pick = -2;
         if (key != 8) {
-            s_pick = key;
+            s_equipPage.pick = key;
         }
     }
     switch (GetGameSub()) {
         case 0:
             SetGameSub(2);
             SetStatusMenuItemFlag(8, PANEL_ROW_CHECKED, 1);
-            s_equipMenu = OpenEquipMenu(g_statusMember, s_equipMenu);
-            s_panelPlane = CreateTextPlane(0x12, 0);
-            ResetTextPlaneLineStep(s_panelPlane, 3);
+            s_equipPage.menu = OpenEquipMenu(g_statusMember, s_equipPage.menu);
+            s_equipPage.panelPlane = CreateTextPlane(0x12, 0);
+            ResetTextPlaneLineStep(s_equipPage.panelPlane, 3);
             DrawEquipPanel(GetRosterCharacter(g_statusMember), NULL);
             PollEquipPart(g_statusMember, EQUIP_PICK_RESET);
             return -1;
 
         case 1:
-            s_infoPlane = CloseTextWindow(s_infoPlane);
-            s_panelPlane = CloseTextWindow(s_panelPlane);
-            s_equipMenu = DestroyMenuBox(s_equipMenu);
-            if (s_changed) {
+            s_equipPage.infoPlane = CloseTextWindow(s_equipPage.infoPlane);
+            s_equipPage.panelPlane = CloseTextWindow(s_equipPage.panelPlane);
+            s_equipPage.menu = DestroyMenuBox(s_equipPage.menu);
+            if (s_equipPage.changed) {
                 DrawStatusScreen(g_statusMember);
-                s_changed = false;
+                s_equipPage.changed = false;
             }
             SetStatusMenuItemFlag(8, PANEL_ROW_CHECKED, 0);
             PollEquipPart(g_statusMember, EQUIP_PICK_CLEAR);
-            if (s_pick != -1) {
-                return s_pick;
+            if (s_equipPage.pick != -1) {
+                return s_equipPage.pick;
             }
             PrevGameSub();
             return -1;
@@ -869,31 +854,31 @@ i16 RunEquipScreen(i16 key) {
         case 2:
             if (key == -2) {
                 PrevGameSub();
-                s_pick = key;
+                s_equipPage.pick = key;
                 return -1;
             }
-            if (RunListMenu(s_equipMenu) == -1) {
+            if (RunListMenu(s_equipPage.menu) == -1) {
                 part = PollEquipPart(g_statusMember, EQUIP_PICK_PART);
                 if (part == -2) {
                     PrevGameSub();
-                    s_pick = -2;
+                    s_equipPage.pick = -2;
                     return -1;
                 }
                 if (part == -1) {
                     return -1;
                 }
-                s_pick = part;
+                s_equipPage.pick = part;
                 SetGameSub(5);
                 return -1;
             }
             NextGameSub();
-            s_pick = g_selectedObjectId;
+            s_equipPage.pick = g_selectedObjectId;
             return -1;
 
         case 3:
             NextGameSub();
-            PreviewEquipChange(s_pick, 0);
-            s_infoPlane = OpenItemInfoPlane(GetBagItem(s_pick));
+            PreviewEquipChange(s_equipPage.pick, 0);
+            s_equipPage.infoPlane = OpenItemInfoPlane(GetBagItem(s_equipPage.pick));
             return -1;
 
         case 4:
@@ -905,7 +890,7 @@ i16 RunEquipScreen(i16 key) {
             if (TakeClickUnlessCancel(key) <= 0) {
                 return -1;
             }
-            ReadBagEntry(s_pick, &slot, &count);
+            ReadBagEntry(s_equipPage.pick, &slot, &count);
             if (GetItemKind(slot.item) == ITEM_KIND_AMMO) {
                 slot.quantity = GetGunMagazineSize(
                     GetLoadedRecord(GetRosterEquipSlot(g_statusMember, EQUIP_PART_GUN).item)
@@ -926,14 +911,14 @@ i16 RunEquipScreen(i16 key) {
             } else {
                 slot.quantity = 1;
             }
-            EquipItem(g_statusMember, slot, count, s_pick);
+            EquipItem(g_statusMember, slot, count, s_equipPage.pick);
             return FinishEquipChange();
 
         case 5:
             NextGameSub();
-            PreviewEquipChange(s_pick, 1);
-            slot = GetRosterEquipSlot(g_statusMember, s_pick);
-            s_infoPlane = OpenItemInfoPlane(slot.item);
+            PreviewEquipChange(s_equipPage.pick, 1);
+            slot = GetRosterEquipSlot(g_statusMember, s_equipPage.pick);
+            s_equipPage.infoPlane = OpenItemInfoPlane(slot.item);
             return -1;
 
         case 6:
@@ -946,24 +931,24 @@ i16 RunEquipScreen(i16 key) {
             if (TakeClickUnlessCancel(key) <= 0) {
                 return -1;
             }
-            if (s_pick != EQUIP_PART_AMMO) {
-                slot = GetRosterEquipSlot(g_statusMember, s_pick);
+            if (s_equipPage.pick != EQUIP_PART_AMMO) {
+                slot = GetRosterEquipSlot(g_statusMember, s_equipPage.pick);
                 if (slot.quantity < 1) {
                     slot.quantity = 1;
                 }
                 StoreBagItem(slot.item, slot.quantity, slot.attachment);
                 ClearItemSlot(&slot);
-                SetEquipSlot(g_statusMember, s_pick, slot, 0);
-                if (s_pick == EQUIP_PART_GUN) {
-                    s_pick = 2;
+                SetEquipSlot(g_statusMember, s_equipPage.pick, slot, 0);
+                if (s_equipPage.pick == EQUIP_PART_GUN) {
+                    s_equipPage.pick = 2;
                 }
             }
-            if (s_pick == EQUIP_PART_AMMO) {
+            if (s_equipPage.pick == EQUIP_PART_AMMO) {
                 slot = GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO);
                 if (slot.item >= 1) {
                     StoreBagItem(slot.item, slot.quantity, slot.attachment);
                     ClearItemSlot(&slot);
-                    SetEquipSlot(g_statusMember, s_pick, slot, 0);
+                    SetEquipSlot(g_statusMember, s_equipPage.pick, slot, 0);
                 }
             }
             return FinishEquipChange();
@@ -1055,7 +1040,7 @@ void DrawEquipPanel(Character* member, Character* preview) {
 
     y = 0x28;
     for (i = 0; i < 4; i++) {
-        DrawPlaneText(s_panelPlane, 8, y, g_statusBattleLabels[i + 1], 0x400);
+        DrawPlaneText(s_equipPage.panelPlane, 8, y, g_statusBattleLabels[i + 1], 0x400);
         y += 0x18;
     }
     if (preview == NULL) {
@@ -1067,9 +1052,9 @@ void DrawEquipPanel(Character* member, Character* preview) {
         x = DrawStatColumn(x, 5, GetBattleStatGroup(member, 1), GetBattleStatGroup(preview, 1));
         DrawStatColumn(x, 5, GetBattleStatGroup(member, 2), GetBattleStatGroup(preview, 2));
     }
-    DrawPlaneImage(s_panelPlane, 7, 1, 0);
-    DrawPlaneImage(s_panelPlane, 0x10, 1, 1);
-    DrawPlaneImage(s_panelPlane, 0x19, 1, 8);
+    DrawPlaneImage(s_equipPage.panelPlane, 7, 1, 0);
+    DrawPlaneImage(s_equipPage.panelPlane, 0x10, 1, 1);
+    DrawPlaneImage(s_equipPage.panelPlane, 0x19, 1, 8);
 }
 
 static u16 DrawStatCompare(i16 x, i16 y, i16 value, i16 newValue);
@@ -1104,7 +1089,7 @@ static u16 DrawStatCompare(i16 x, i16 y, i16 value, i16 newValue) {
             attr = 0x500;
         }
     }
-    DrawPlaneText(s_panelPlane, x * 8, y * 8, g_scratchBuffer, attr);
+    DrawPlaneText(s_equipPage.panelPlane, x * 8, y * 8, g_scratchBuffer, attr);
     return attr;
 }
 
