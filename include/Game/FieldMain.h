@@ -8,8 +8,7 @@
 
 #include <stdio.h>
 
-// The macca a battle awards (GrantBattleRewards pays it out), cleared when
-// the field is entered.
+// The macca a battle awards (GrantBattleRewards pays it out).
 extern i32 g_rewardMacca;
 
 b16 RunFieldExploration(void);

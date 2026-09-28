@@ -702,7 +702,7 @@ b16 RunFieldExploration(void) {
             SaveReturnPoint();
         case 1:
             s_eventRunning = false;
-            g_rewardMacca = 0;
+            g_rewardMagnetite = 0;
             if (s_leaveToReturnPoint) {
                 SetGamePhase(9);
                 return FlushFieldScreen();
