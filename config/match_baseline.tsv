@@ -75,7 +75,7 @@ fieldobj	79	75
 fieldscreen	77	74
 fieldskill	5	5
 fieldview	38	36
-font	150	144
+font	150	143
 fusion	58	56
 fusioncompare	8	8
 fusionmenu	3	3
@@ -149,7 +149,7 @@ statusdraw	9	8
 statusline	8	8
 statusmenu	9	9
 statuspanel	23	21
-statusscreen	4	3
+statusscreen	4	4
 subscreen	3	3
 surfacecopy	1	1
 textapi	5	5
@@ -184,7 +184,7 @@ abortflag	_AddSceneHotspot	100.0000	100.0000	1	a771bd5cb270	0x455b0	100.0000
 abortflag	_BeginBoxScene	100.0000	100.0000	1	61ea6e5726f6	0x45820	100.0000	
 abortflag	_CountHotspotsOfKind	100.0000	100.0000	2	cb7a84b6d64b	0x45680	100.0000	
 abortflag	_DrawSceneObjects	100.0000	100.0000	1	32ab2f50ad26	0x458d0	100.0000	
-abortflag	_DrawSceneSprite	98.3882	98.3882	5	1b58490742f8	0x45930	98.3882	
+abortflag	_DrawSceneSprite	98.3882	98.3882	6	1289669a370f	0x45930	98.3882	
 abortflag	_ExchangeAbortPending	100.0000	100.0000	1	fab7f507c512	0x45660	100.0000	
 abortflag	_FlushPlaneUpdates	100.0000	100.0000	1	deff8474bad6	0x45570	100.0000	
 abortflag	_GetHotspotKind	100.0000	100.0000	1	c42f9b0611e3	0x457e0	100.0000	
@@ -578,7 +578,7 @@ d3dapp	?InitDirectInput@@YAHXZ	100.0000	100.0000	3	2621b516f66f	0x48ce0	100.0000
 d3dapp	?InitDirectSound@@YAHXZ	100.0000	100.0000	3	969b4a39dd80	0x488a0	100.0000	
 d3dapp	?KeepDeviceDesc@@YGJPAU_GUID@@PAD1PAU_D3DDeviceDesc@@2PAX@Z	100.0000	100.0000	1	18286bd4ce87	0x477e0	100.0000	
 d3dapp	?Magnitude@@YAMABU_D3DVECTOR@@@Z	100.0000	100.0000	1	header:96c4b6ace3bd	0x490f0	100.0000	
-d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	100.0000	98.9268	1	86daea2860ef	0x46230	100.0000	
+d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	100.0000	98.9024	1	86daea2860ef	0x46230	100.0000	
 d3dapp	?Normalize@@YA?AU_D3DVECTOR@@ABU1@@Z	100.0000	100.0000	1	header:9f72dd33a7f5	0x49090	100.0000	
 d3dapp	?PollMouseButtons@@YAEXZ	88.8028	88.8028	6	f52c6ff1cf0f	0x48e60	88.8028	
 d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	93.9325	93.9325	4	cba51180c80d	0x46060	93.9325	
@@ -663,7 +663,7 @@ demontable	_ScaleLevelGap	100.0000	100.0000	1	9d005c95cd62	0x10420	100.0000
 devicesettings	?GetDeviceSettingsValueName@@YIXPAD@Z	100.0000	100.0000	1	776d041bceed	0x45d60	100.0000	
 devicesettings	?LoadDeviceSettings@@YAHPAUDeviceSettings@@@Z	100.0000	100.0000	2	0ca62da03264	0x45ce0	100.0000	
 displayconfig	_LoadDisplayConfig	100.0000	100.0000	2	791f31d2fbd5	0x45bb0	100.0000	
-displayconfig	_SetDefaultDisplayConfig	100.0000	100.0000	1	477d046d4b18	0x45ca0	100.0000	
+displayconfig	_SetDefaultDisplayConfig	100.0000	100.0000	2	9ec3ea0a3279	0x45ca0	100.0000	
 effectdraw	_ClearEffectLayer	100.0000	100.0000	3	0f8fe514d847	0x58990	100.0000	
 effectdraw	_DrawProjectedEffectSprite	94.6055	94.6055	12	848e541ed05e	0x589e0	94.6086	
 effectdraw	_DrawScreenEffectSprite	92.4556	92.4556	12	2d82e84ba745	0x58e40	92.4667	
@@ -769,7 +769,7 @@ field	_TickFieldCount	100.0000	100.0000	1	dc8de72305e6	0x7230	100.0000
 field	_TickPartyConditionActions	100.0000	100.0000	9	92991255da69	0x8200	100.0000	
 field	_UpdatePartyActionWaits	100.0000	100.0000	1	69cbcdcdd3c7	0x8050	100.0000	
 fieldmain	_AdvancePartyMove	100.0000	100.0000	4	79bfed02cdbf	0x12280	100.0000	
-fieldmain	_BuildViewOcclusion	97.8235	97.8235	3	1adb804355b0	0x13f10	97.8235	
+fieldmain	_BuildViewOcclusion	97.8235	97.8235	4	6aa4ca378731	0x13f10	97.8235	
 fieldmain	_CancelFieldMap	100.0000	100.0000	2	ad3623547fe3	0x13600	100.0000	
 fieldmain	_CommitPartyStep	100.0000	100.0000	2	492da773bc50	0x12510	100.0000	
 fieldmain	_FindExitDirection	100.0000	100.0000	1	c4a4f0dd88ee	0x12a20	100.0000	
@@ -779,7 +779,7 @@ fieldmain	_FreeRoute	100.0000	100.0000	1	ed34e24cbf64	0x11f20	100.0000
 fieldmain	_GetFieldBusy	100.0000	100.0000	1	a04a775f5e06	0x12860	100.0000	
 fieldmain	_GetFieldExplorationActive	100.0000	100.0000	2	68e6462b15c4	0x12b20	100.0000	
 fieldmain	_GetReturnPoint	100.0000	100.0000	1	ceff65fa5453	0x12930	100.0000	
-fieldmain	_GetViewVisibility	100.0000	100.0000	2	0fd7eaeaa642	0x14340	100.0000	
+fieldmain	_GetViewVisibility	100.0000	100.0000	3	2a3832a817cf	0x14340	100.0000	
 fieldmain	_GrowAutoMoves	100.0000	100.0000	1	a739a2e0e12c	0x12720	100.0000	
 fieldmain	_GrowRoute	100.0000	100.0000	2	0320dc4c1ea6	0x11ed0	100.0000	
 fieldmain	_HasAutoMoves	100.0000	100.0000	2	51792e2fbbe7	0x127a0	100.0000	
@@ -790,7 +790,7 @@ fieldmain	_LoadFieldImage	100.0000	100.0000	2	caffed40de0c	0x144c0	100.0000
 fieldmain	_LoadFieldMemory	100.0000	100.0000	2	5df7d0d13c11	0x13ca0	100.0000	
 fieldmain	_MarkFieldViewCells	100.0000	100.0000	1	2544b75863e1	0x13d70	100.0000	
 fieldmain	_MarkLevelEvent	100.0000	100.0000	1	93bdb7a82f49	0x13b20	100.0000	
-fieldmain	_MarkVisibleFieldCells	100.0000	100.0000	3	0871e457aad7	0x13d90	100.0000	
+fieldmain	_MarkVisibleFieldCells	100.0000	100.0000	4	87866416cea3	0x13d90	100.0000	
 fieldmain	_MergeViewOcclusionMask	100.0000	100.0000	2	1ffee8594eec	0x13d40	100.0000	
 fieldmain	_MovePartyTo	100.0000	100.0000	1	8a87763e9d86	0x128f0	100.0000	
 fieldmain	_NextAutoMove	100.0000	100.0000	1	2cf236dca6e3	0x12b00	100.0000	
@@ -831,7 +831,7 @@ fieldmain	_StepParty	100.0000	100.0000	2	d7d9bae92fb2	0x12600	100.0000
 fieldmain	_TestLevelEvent	100.0000	100.0000	2	6225e8cd0115	0x13b40	100.0000	
 fieldmain	_TickFieldSteps	100.0000	100.0000	1	19ba01f7b41d	0x12cf0	100.0000	
 fieldmain	_TickStepDamage	100.0000	100.0000	2	0d7ea06603e8	0x12ca0	100.0000	
-fieldmain	_VisitVisibleCellWalls	100.0000	100.0000	2	dd0c6ca826f6	0x14530	100.0000	
+fieldmain	_VisitVisibleCellWalls	100.0000	100.0000	3	75a1b7302564	0x14530	100.0000	
 fieldmark	_GetCurrentRoomCode	100.0000	100.0000	1	ffff5f064da7	0x1a180	100.0000	
 fieldmark	_IsOnCellMark	100.0000	100.0000	2	51042f7d05b6	0x1a110	100.0000	
 fieldmark	_SaveFieldPosition	100.0000	100.0000	2	2837a037aa9f	0x1a0d0	100.0000	
@@ -994,7 +994,7 @@ fieldscreen	_UpdateFieldHud	100.0000	100.0000	4	4c7987b9a9d5	0x15d40	100.0000
 fieldscreen	_UpdateFieldScreen	100.0000	100.0000	2	09cd3ea12763	0x14800	100.0000	
 fieldscreen	_UpdateViewPalette	100.0000	100.0000	1	ab66a7afccbd	0x15b10	100.0000	
 fieldskill	_CancelFieldTargetMenu	100.0000	100.0000	1	c2b2a6603e86	0x2d7a0	100.0000	
-fieldskill	_PrepareSkillAction	100.0000	100.0000	5	0885ffb42c73	0x2db90	100.0000	
+fieldskill	_PrepareSkillAction	100.0000	100.0000	6	1dc2ba6fb54c	0x2db90	100.0000	
 fieldskill	_RunFieldSkillUse	100.0000	100.0000	9	84bdc9b7c3d8	0x2d7c0	100.0000	
 fieldskill	_SetFieldSkillUser	100.0000	100.0000	1	fdc34af15db6	0x2dbe0	100.0000	
 fieldskill	_SetSkillPick	100.0000	100.0000	1	abd4d9463444	0x2db30	100.0000	
@@ -1112,7 +1112,7 @@ font	_GetTextPlaneLineStepIf	100.0000	100.0000	2	d1f05653bbf4	0x52b10	100.0000
 font	_GetTextPlaneNormalAttr	100.0000	100.0000	2	2c2ab780fa1d	0x52750	100.0000	
 font	_GetTextPlaneOrigin	100.0000	100.0000	2	084efa9c15e5	0x53ac0	100.0000	
 font	_GetTextPlaneOrigin2	100.0000	100.0000	2	8d137f467fc0	0x53b10	100.0000	
-font	_GetTextPlanePageLines	100.0000	100.0000	3	cfff7939dbb8	0x53010	100.0000	
+font	_GetTextPlanePageLines	100.0000	99.1667	3	cfff7939dbb8	0x53010	100.0000	
 font	_GetTextPlaneRowText	100.0000	100.0000	3	0ed7d40536e7	0x53b60	100.0000	
 font	_GetTextPlaneSize	100.0000	100.0000	2	c3d1af31a0d5	0x53f10	100.0000	
 font	_HideScreenLayer	100.0000	100.0000	5	33c64a627ff2	0x54390	100.0000	
@@ -1187,7 +1187,7 @@ font	_TextPlaneRowToLine	100.0000	100.0000	3	5768f0b9b023	0x52b40	100.0000
 font	_ToggleCurrentTextHighlight	100.0000	100.0000	2	c9ece8bf06e7	0x52f30	100.0000	
 font	_ToggleTextRunHighlight	85.4310	85.4310	6	c41f1deb7fc3	0x51ef0	85.4310	
 fusion	_ApplyFusionRankChange	100.0000	100.0000	2	01dca8bd2bd1	0x26910	100.0000	
-fusion	_CalculatePairFusion	100.0000	100.0000	1	0559dd848825	0x26580	100.0000	
+fusion	_CalculatePairFusion	100.0000	100.0000	2	b7f9f025e5f9	0x26580	100.0000	
 fusion	_CalculateTripleFusion	100.0000	100.0000	2	140c316416da	0x27b30	100.0000	
 fusion	_CheckFusionRestrictedPair	100.0000	100.0000	1	bc5a645d49d4	0x26680	100.0000	
 fusion	_CountFusionHighFlagOne	100.0000	100.0000	1	b890d1763c98	0x27810	100.0000	
@@ -1208,10 +1208,10 @@ fusion	_GetFusionPairSide	100.0000	100.0000	1	353bd29dad3e	0x28400	100.0000
 fusion	_GetFusionRaceEntry	100.0000	100.0000	2	2ccb6aa46678	0x28380	100.0000	
 fusion	_GetFusionRacePair	100.0000	100.0000	3	f88bd48d4e3c	0x27f40	100.0000	
 fusion	_GetFusionRestrictedClass	100.0000	100.0000	1	c8ea422d88f7	0x28260	100.0000	
-fusion	_GetFusionResult	100.0000	100.0000	1	fef13a8e75cd	0x27090	100.0000	
+fusion	_GetFusionResult	100.0000	100.0000	2	d3f503eaa012	0x27090	100.0000	
 fusion	_GetFusionSpecialRace	100.0000	100.0000	2	2d0c77e084d6	0x28230	100.0000	
 fusion	_GetFusionSpecialRaceChange	100.0000	100.0000	1	b82907cdf3a5	0x28110	100.0000	
-fusion	_GetPairFusionSummary	100.0000	100.0000	3	06ad4051e3ec	0x26e10	100.0000	
+fusion	_GetPairFusionSummary	100.0000	100.0000	4	c09e0d092e32	0x26e10	100.0000	
 fusion	_GetRosterFusionRestrictedClass	100.0000	100.0000	1	d7a82a88b6d9	0x28290	100.0000	
 fusion	_GetSameRaceFusionRace	100.0000	100.0000	2	21e7a1074594	0x28000	100.0000	
 fusion	_GetTripleFusionLevel	100.0000	100.0000	2	38b7b7daae10	0x278d0	100.0000	
@@ -1230,7 +1230,7 @@ fusion	_ResolveFusionRankPair	100.0000	100.0000	1	d72454a0eb93	0x26a60	100.0000
 fusion	_ResolveGeneralTripleFusion	100.0000	100.0000	4	ab818e449713	0x27940	100.0000	
 fusion	_ResolveMixedRankFusion	100.0000	100.0000	2	7c57fd124121	0x26b20	100.0000	
 fusion	_ResolveOneSpecialRaceFusion	100.0000	100.0000	2	97af3fc5207e	0x273f0	100.0000	
-fusion	_ResolvePairFusion	100.0000	100.0000	1	de3d6367e6aa	0x27010	100.0000	
+fusion	_ResolvePairFusion	100.0000	100.0000	2	66bc59fdc7cc	0x27010	100.0000	
 fusion	_ResolveRandomFusion	100.0000	100.0000	1	3da4d2bb6c13	0x26f30	100.0000	
 fusion	_ResolveSameClassFusion	100.0000	100.0000	2	6079ca9022be	0x26ca0	100.0000	
 fusion	_ResolveSameClassTripleFusion	100.0000	100.0000	3	164b8b06d606	0x276c0	100.0000	
@@ -1243,7 +1243,7 @@ fusion	_ResolveTwoSpecialRaceFusion	100.0000	100.0000	2	92b2dab0b45e	0x27340	100
 fusion	_ResolveTwoUnrankedFusion	100.0000	100.0000	2	ee9e3ea14cbb	0x27590	100.0000	
 fusion	_ResolveUnrankedTripleFusion	100.0000	100.0000	1	150d822ce129	0x27670	100.0000	
 fusion	_SelectRandomFusionDemon	100.0000	100.0000	1	3c7ffa716d84	0x26f90	100.0000	
-fusion	_SetFusionResult	100.0000	100.0000	1	ed5291395c75	0x26550	100.0000	
+fusion	_SetFusionResult	100.0000	100.0000	2	90a0b9bd5d64	0x26550	100.0000	
 fusioncompare	_CompareFusionCharacters	100.0000	100.0000	3	130807153bdc	0x2a480	100.0000	
 fusioncompare	_CompareFusionValues	100.0000	100.0000	1	abd832c8a1ce	0x2a5b0	100.0000	
 fusioncompare	_CompareRosterFusionClasses	100.0000	100.0000	2	1907d37697ef	0x2a720	100.0000	
@@ -1498,7 +1498,7 @@ itemuse	_OpenItemListMenu	100.0000	100.0000	2	ee56e29e8260	0x1a200	100.0000
 itemuse	_RunItemUse	97.3596	97.3596	12	ab4ab98d7d16	0x1a400	97.3596	
 itemuse	_SetUseMemberId	100.0000	100.0000	1	16323c10a7a2	0x1a860	100.0000	
 joystick	?InitJoystick@@YAXXZ	100.0000	100.0000	2	ccd0205df322	0x492b0	100.0000	
-joystick	?ReadJoystick@@YAIPAUJoystickState@@@Z	100.0000	100.0000	1	14adfaf3684e	0x49370	100.0000	
+joystick	?ReadJoystick@@YAIPAUJoystickState@@@Z	100.0000	100.0000	2	cf84792a4804	0x49370	100.0000	
 layertexture	_DecodeLayerImage	100.0000	100.0000	5	1cd5fc8dbd96	0x57f20	100.0000	
 layertexture	_DecodeLayerImageAlt	100.0000	100.0000	2	27db2171c989	0x58040	100.0000	
 level	_ClampLevel	100.0000	100.0000	2	4f188c36308e	0x3dec0	100.0000	
@@ -2474,10 +2474,10 @@ statuspanel	_OpenStatListWindow	100.0000	100.0000	1	252fbc3687b6	0x42670	100.000
 statuspanel	_ResumeStatusPage	100.0000	100.0000	2	dc1b562cdc7e	0x423e0	100.0000	
 statuspanel	_RunAlignmentPage	100.0000	100.0000	2	ccb11ade72d4	0x42b00	100.0000	
 statuspanel	_RunStatPage	100.0000	100.0000	2	96eb87143e6d	0x426a0	100.0000	
-statuspanel	_RunStatusCommands	100.0000	100.0000	1	6945047e3007	0x42200	100.0000	
+statuspanel	_RunStatusCommands	100.0000	100.0000	2	1ca845efd4a3	0x42200	100.0000	
 statusscreen	_EnterStatusScreen	100.0000	100.0000	2	e0a3d85a3653	0x16fc0	100.0000	
 statusscreen	_LeaveStatusScreen	100.0000	100.0000	2	ae33b705870f	0x16ff0	100.0000	
-statusscreen	_ReplaceRosterMember	99.8361	99.8361	3	7bfd0aa7830c	0x17090	99.8361	
+statusscreen	_ReplaceRosterMember	100.0000	100.0000	3	7bfd0aa7830c	0x17090	100.0000	
 statusscreen	_RunDismissMenuState	100.0000	100.0000	2	4efa1f87e4eb	0x17030	100.0000	
 subscreen	_InitFieldPanels	100.0000	100.0000	1	2a73ffa45f50	0x1a1b0	100.0000	
 subscreen	_ResetSubscreen	100.0000	100.0000	1	11fe1e025852	0x1a1d0	100.0000	
@@ -2538,8 +2538,8 @@ vec3	_RotateOffset	100.0000	100.0000	1	a135c53e1cc5	0xd700	100.0000
 vec3	_StepBody	100.0000	100.0000	1	111c12cf82d1	0xd510	100.0000	
 vec3	_UnprojectPoint	100.0000	51.5000	2	475908778903	0xd6b0	100.0000	
 videostate	_ClipViewportRect	100.0000	100.0000	2	6a677ef2ef93	0x45b80	100.0000	
-videostate	_GetPlaneData	100.0000	100.0000	2	44758c6f927b	0x45b40	100.0000	
-videostate	_GetPlaneHeader	100.0000	100.0000	2	bf6f54faaf9a	0x45b60	100.0000	
+videostate	_GetPlaneData	100.0000	100.0000	3	e5f39f82f57a	0x45b40	100.0000	
+videostate	_GetPlaneHeader	100.0000	100.0000	3	6ea25e16dfad	0x45b60	100.0000	
 videostate	_RestoreVideoState	100.0000	100.0000	1	5ac645b9d98c	0x45ba0	100.0000	
 videostate	_SaveVideoState	100.0000	100.0000	1	5a25ea57e86c	0x45b90	100.0000	
 vram	_ClearMaskSeam	100.0000	98.8889	1	e60937b3e763	0x2c70	100.0000	
@@ -2592,7 +2592,7 @@ vramaccess	_AllocRegionScreenSave	100.0000	100.0000	2	8910a362b885	0x2930	100.00
 vramaccess	_AllocScreenSaveBuffer	100.0000	100.0000	3	9553556c8f8f	0x2900	100.0000	
 vramaccess	_AllocScreenSaveHandle	100.0000	99.4783	3	061a1eed26cf	0x28c0	100.0000	
 vramaccess	_GetLegacyScreenStateToken	100.0000	100.0000	3	6e8b142dc054	0x29b0	100.0000	
-vramaccess	_InitCheckerPatterns	100.0000	100.0000	1	9374a9e5866e	0x2970	100.0000	
+vramaccess	_InitCheckerPatterns	100.0000	100.0000	2	bc261ca66767	0x2970	100.0000	
 vramaccess	_SaveCellState	100.0000	100.0000	2	c88b6b3382a6	0x29c0	100.0000	
 vramaccess	_SaveDrawState	100.0000	100.0000	2	016377c609b9	0x28a0	100.0000	
 vramaccess	_SaveScreenState	100.0000	100.0000	2	360c0e4c7727	0x29a0	100.0000	
@@ -2837,5 +2837,5 @@ worldtravel	_LoadWorldTravelCandidates	100.0000	100.0000	1	bdb26edfe1c9	0x11a10	
 worldtravel	_MarkReachableWorldTravelCells	100.0000	100.0000	1	017379f2fa6e	0x11b30	100.0000	
 worldtravel	_PickWorldMapDestination	100.0000	100.0000	3	a8bb6d2df411	0x11660	100.0000	
 worldtravel	_PreferWorldTravelDestination	100.0000	100.0000	2	1ef3c11401dc	0x11cf0	100.0000	
-worldtravel	_StepWorldMapTravel	100.0000	100.0000	3	0d09928e44a2	0x11750	100.0000	
+worldtravel	_StepWorldMapTravel	100.0000	100.0000	4	c841b100993b	0x11750	100.0000	
 worldtravel	_WeightWorldTravelCandidates	100.0000	79.1667	3	30dd04cf6128	0x11c40	100.0000	
