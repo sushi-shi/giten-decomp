@@ -18,6 +18,8 @@ extern PaletteState* g_fusionPaletteState;
 extern i16 g_fusionFirstSlot;
 extern i16 g_fusionSecondSlot;
 extern i16 g_fusionThirdSlot;
+// The current fusion result's demon (initially -1).
+extern i16 g_fusionResult;
 
 void AcquireFusionSelectionMode(void);
 void ReleaseFusionSelectionResources(void);

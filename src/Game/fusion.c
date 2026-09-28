@@ -27,8 +27,6 @@ static b16 s_randomFusion;
 DATA(0x00080a3c)
 static i16 s_fusionLevelAllowance;
 
-DATA(0x00068fd8)
-static i16 s_fusionResult = -1;
 DATA(0x00080a40)
 static i16 s_fusionResultKind;
 
@@ -71,12 +69,12 @@ static i32 s_fusionFallbackHandle;
 
 RVA(0x00026550, 0x27)
 i16 SetFusionResult(i16 demon, i16 kind) {
-    s_fusionResult = demon;
+    g_fusionResult = demon;
     if (demon == -1) {
         kind = 0;
     }
     s_fusionResultKind = kind;
-    return s_fusionResult;
+    return g_fusionResult;
 }
 
 RVA(0x00026580, 0xfa)
@@ -114,7 +112,7 @@ i16 CalculatePairFusion(i16 first, i16 second) {
             }
         }
     }
-    if (s_fusionResult >= 32 && IsFusionDemonRestricted(s_fusionResult)) {
+    if (g_fusionResult >= 32 && IsFusionDemonRestricted(g_fusionResult)) {
         return SetFusionResult(-1, 0);
     }
     return result;
@@ -389,19 +387,19 @@ FusionSummary GetPairFusionSummary(i16 first, i16 second) {
     i16 resultLevel;
     u8 clampedLevel;
     InitFusionSummary(&summary);
-    if (!s_fusionResult) {
+    if (!g_fusionResult) {
         return summary;
     }
-    if (s_fusionResult == -1) {
+    if (g_fusionResult == -1) {
         summary.fields.kind = -1;
         return summary;
     }
-    resultLevel = GetDemonLevel(s_fusionResult);
+    resultLevel = GetDemonLevel(g_fusionResult);
     resultLevel += GetFusionGrowthBonus(first, second);
     clampedLevel = ClampLevel(resultLevel);
     resultLevel = clampedLevel;
-    result->fields.highFlag = GetDemonFlagHigh(s_fusionResult);
-    result->fields.lowFlag = GetDemonFlagLow(s_fusionResult);
+    result->fields.highFlag = GetDemonFlagHigh(g_fusionResult);
+    result->fields.lowFlag = GetDemonFlagLow(g_fusionResult);
     SetFusionSummaryKind(&summary, s_fusionResultKind, resultLevel, sourceLevel);
     if (GetRosterCharacter(0)->level + 3 <= resultLevel) {
         summary.fields.overLevel = 1;
@@ -469,13 +467,13 @@ i16 ResolvePairFusion(i16 first, i16 second, i16 rankChanges) {
             result = FindNextOfRace(result, 0);
         }
     }
-    s_fusionResult = result;
+    g_fusionResult = result;
     return result;
 }
 
 RVA(0x00027090, 0x1c)
 void GetFusionResult(i16* demon, i16* kind) {
-    *demon = s_fusionResult;
+    *demon = g_fusionResult;
     *kind = s_fusionResultKind;
 }
 

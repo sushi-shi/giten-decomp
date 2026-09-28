@@ -74,6 +74,9 @@ static i16 s_pendingFusionResultId = -1;
 DATA(0x00068fd4)
 static i16 s_fusionPreviewPlane = -1;
 
+DATA(0x00068fd8)
+i16 g_fusionResult = -1;
+
 DATA(0x00068fe0)
 static i16 s_fusionSummaryIcons[14] = {14, 13, 3, 4, 5, 6, 7, 8, 9, 11, 12, 0, 1, 2};
 
