@@ -18,10 +18,16 @@
 #include <Util/BitSet.h>
 
 DATA(0x00083ca0)
-static SceneHotspot s_hotspots[32];
+static SceneHotspot s_hotspots[32] = {0};
 
 DATA(0x000840e0)
-static i16 s_hotspotCount;
+static i16 s_hotspotCount = 0;
+
+// @identity-TODO: a pending-abort flag: the next query of the list count
+// (0x45680) returns -1 instead and clears it; callers set it around nested
+// work.
+DATA(0x000840e4)
+static i16 s_abortPending = 0;
 
 DATA(0x00091240)
 i16 g_viewLateral;
@@ -58,12 +64,6 @@ i16 g_spriteClipLeft;
 
 DATA(0x000912dc)
 i16 g_spriteClipTop;
-
-// @identity-TODO: a pending-abort flag: the next query of the list count
-// (0x45680) returns -1 instead and clears it; callers set it around nested
-// work.
-DATA(0x000840e4)
-static i16 s_abortPending;
 
 RVA(0x00045550, 0x7)
 i16 IsAbortPending(void) {

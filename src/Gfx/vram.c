@@ -24,39 +24,39 @@ const u8 g_pixelMasks[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
 
 // Storage for the mask as loaded from its data file and for the working copy.
 DATA(0x00071700)
-static MaskGrid s_savedMaskData;
+static MaskGrid s_savedMaskData = {0};
 
 DATA(0x00073b00)
-static MaskGrid s_maskData;
+static MaskGrid s_maskData = {0};
 
 // The mask as loaded from its data file, and the working copy drawn against.
 DATA(0x00075f00)
-static MaskGrid* s_savedMask;
+static MaskGrid* s_savedMask = 0;
 
 DATA(0x00075f04)
-static MaskGrid* s_mask;
+static MaskGrid* s_mask = 0;
 
 // The 16 analog palette entries (0xGRB) and how many users hold each one.
 // The colours are read by the upload side, so stores are never combined.
 DATA(0x00075f38)
-static volatile i16 s_paletteColors[16];
+static volatile i16 s_paletteColors[16] = {0};
 
 DATA(0x00075f58)
-static i16 s_paletteRefs[16];
+static i16 s_paletteRefs[16] = {0};
 
 // Bit 0x40: a palette entry or mode changed; bit 0x80: a change awaits
 // upload. Shared with the upload side, so every access goes to memory.
 DATA(0x00075f7c)
-static volatile GZ_ENUM_STORAGE(PaletteUpdateFlags, u8) s_paletteFlags;
+static volatile GZ_ENUM_STORAGE(PaletteUpdateFlags, u8) s_paletteFlags = 0;
 
 // @identity-TODO: palette modes chosen from map-area tests (the area one at
 // the party's square, the view one at a derived position); the renderer picks
 // its alternate material set when either is set. Their game meaning is open.
 DATA(0x00075f80)
-static i16 s_areaPaletteMode;
+static i16 s_areaPaletteMode = 0;
 
 DATA(0x00075f84)
-static i16 s_viewPaletteMode;
+static i16 s_viewPaletteMode = 0;
 
 static __inline void StorePaletteColor(i16 index, i16 color) {
     s_paletteColors[index] = color;

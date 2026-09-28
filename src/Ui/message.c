@@ -21,13 +21,13 @@ DATA(0x00068300)
 static i16 s_messageWindow = -1;
 
 DATA(0x000716f0)
-static i16 s_textStateRefreshPending;
+static i16 s_textStateRefreshPending = 0;
 
 DATA(0x000716f4)
-static i16 s_messageLifetime;
+static i16 s_messageLifetime = 0;
 
 DATA(0x000716f8)
-static i16 s_messageHold;
+static i16 s_messageHold = 0;
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
