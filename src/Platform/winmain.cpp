@@ -39,9 +39,6 @@ HWND g_mainWindow;
 DATA(0x0008fcf0)
 RECT g_windowRect;
 
-DATA(0x000840e8)
-DisplayConfig g_displayConfig;
-
 // The camera's eye and the point it looks at (the party's position); the view
 // matrix is rebuilt from them.
 // @identity-TODO: the eye/at roles are read from the ViewMatrix-style call at

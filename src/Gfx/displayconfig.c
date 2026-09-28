@@ -5,6 +5,11 @@
 
 #include <Gfx/DisplayConfig.h>
 
+// Zero-initialized: cl emits an uninitialized C global as a COMMON, which link
+// places after every object's .bss, not in this object's own run.
+DATA(0x000840e8)
+DisplayConfig g_displayConfig = {0};
+
 // Reads the display settings; any missing value (or another version) falls
 // back to the defaults.
 RVA(0x00045bb0, 0xe6)
