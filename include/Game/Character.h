@@ -218,6 +218,11 @@ typedef struct Character {
     u8 unusedBytes[2];
 } Character;
 
+static __inline void SetCharacterPickTarget(Character* actor, i16 target) {
+    actor->pickTarget = target;
+    actor->pickTargetHigh = 0;
+}
+
 #define GetCharacterEquipment(character) ((character)->slots)
 
 #define GetCharacterAffiliation(character, index) ((character)->affiliation[(index)])

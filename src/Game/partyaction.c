@@ -187,8 +187,7 @@ i16 PickActorAction(Character* actor) {
 static __inline void SetBasicAttackPick(Character* actor, i16 target) {
     actor->mode = 1;
     actor->pickRole = 1;
-    actor->pickTarget = GetCharacterEquipment(actor)[5].item;
-    actor->pickTargetHigh = 0;
+    SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[5].item);
     actor->pickObject = target;
 }
 
@@ -598,12 +597,10 @@ i16 PrepareMemberPickTarget(i16 id) {
     if (actor) {
         switch (actor->pickRole) {
             case 1:
-                actor->pickTarget = GetCharacterEquipment(actor)[5].item;
-                actor->pickTargetHigh = 0;
+                SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[5].item);
                 return 1;
             case 2:
-                actor->pickTarget = GetCharacterEquipment(actor)[6].item;
-                actor->pickTargetHigh = 0;
+                SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[6].item);
                 return 1;
             case 4:
             case 6:
@@ -615,8 +612,7 @@ i16 PrepareMemberPickTarget(i16 id) {
                 return 0;
             case 7:
             case 8:
-                actor->pickTarget = 0;
-                actor->pickTargetHigh = 0;
+                SetCharacterPickTarget(actor, 0);
                 return 4;
         }
     }

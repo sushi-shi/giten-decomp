@@ -109,7 +109,7 @@ objecttexture	2	2
 panel	23	22
 panelinput	10	10
 party	55	55
-partyaction	38	35
+partyaction	38	37
 partypick	17	15
 partypicker	7	7
 partyreorder	2	2
@@ -903,7 +903,7 @@ fieldobj	_RespawnFieldObject	100.0000	100.0000	1	6e4d567fa610	0xdcc0	100.0000
 fieldobj	_RestoreFieldLayer	100.0000	100.0000	1	12760c61138f	0xe7a0	100.0000	
 fieldobj	_RollEncounterSlot	100.0000	100.0000	1	c7d5b21d6b16	0xf1e0	100.0000	
 fieldobj	_RunFieldIdle	100.0000	100.0000	2	3aa04a2ecc27	0xe250	100.0000	
-fieldobj	_RunObjectStep	100.0000	100.0000	11	25be3334fcf6	0xf890	100.0000	
+fieldobj	_RunObjectStep	100.0000	100.0000	12	801ee17e2e63	0xf890	100.0000	
 fieldobj	_SaveFieldLayer	100.0000	100.0000	1	87653e26da1d	0xe760	100.0000	
 fieldobj	_ScanSightRow	100.0000	100.0000	3	98ba03207892	0xeef0	100.0000	
 fieldobj	_SetObjectEventFlag	100.0000	100.0000	1	0f62f2f5293d	0xda00	100.0000	
@@ -1767,7 +1767,7 @@ partyaction	_AdjustActorAction	100.0000	100.0000	1	6e6475850761	0x6180	100.0000
 partyaction	_ApplyResistanceOutcome	100.0000	100.0000	4	885d1861714d	0x6f20	100.0000	
 partyaction	_CheckBattleProtection	100.0000	100.0000	2	7e5f9688b0ed	0x6a80	100.0000	
 partyaction	_CountPickablePartyMembers	100.0000	100.0000	1	523264082a5b	0x5b50	100.0000	
-partyaction	_DelayActionSide	100.0000	100.0000	4	558ab538f615	0x5ff0	100.0000	
+partyaction	_DelayActionSide	100.0000	100.0000	5	acd1490fb6af	0x5ff0	100.0000	
 partyaction	_FillCharacterCommands	100.0000	100.0000	1	17771e5df18b	0x6900	100.0000	
 partyaction	_FindPickablePartyMember	100.0000	100.0000	1	aedaa148a85c	0x5b10	100.0000	
 partyaction	_FormatAttackCommand	100.0000	100.0000	2	1b0411a06fab	0x6500	100.0000	
@@ -1781,7 +1781,7 @@ partyaction	_FormatReturnCommand	100.0000	100.0000	3	109e58a3bead	0x67d0	100.000
 partyaction	_GetActionCondition	100.0000	100.0000	2	1330bc0653e7	0x5cb0	100.0000	
 partyaction	_GetActionResistance	100.0000	100.0000	3	b173d9afdba4	0x6ca0	100.0000	
 partyaction	_GetItemResistance	100.0000	100.0000	1	888c31715c58	0x6dc0	100.0000	
-partyaction	_GetMemberPanelState	88.9610	88.9610	10	df7156abf656	0x5b80	88.9610	
+partyaction	_GetMemberPanelState	100.0000	100.0000	10	df7156abf656	0x5b80	100.0000	
 partyaction	_GetPickedAttackAttribute	100.0000	100.0000	6	dfbeec8e86da	0x6e00	100.0000	
 partyaction	_GetSkillResistance	100.0000	100.0000	4	d43c436831c3	0x6d70	100.0000	
 partyaction	_OpenActorCommandMenu	100.0000	100.0000	2	f90af8b9b790	0x6340	100.0000	
@@ -1793,12 +1793,12 @@ partyaction	_PickRandomAttack	100.0000	100.0000	3	0c27f611e562	0x60c0	100.0000
 partyaction	_PickRandomCombatant	100.0000	100.0000	5	6b412f678a0f	0x5e50	100.0000	
 partyaction	_PickRandomOpponentAttack	100.0000	100.0000	3	b2242aab5e34	0x5dc0	100.0000	
 partyaction	_PollActorCommandMenu	100.0000	100.0000	1	eeba145c01f8	0x6440	100.0000	
-partyaction	_PrepareMemberPickTarget	100.0000	100.0000	2	a274320fdb65	0x6840	100.0000	
+partyaction	_PrepareMemberPickTarget	100.0000	100.0000	3	64d0913e5d9e	0x6840	100.0000	
 partyaction	_ReadActionResultFlags	100.0000	100.0000	1	e522e33f26e4	0x5c60	100.0000	
 partyaction	_ResetActionWaits	100.0000	100.0000	4	f0a2fc9ee388	0x6060	100.0000	
 partyaction	_ResetPartyTurnState	100.0000	100.0000	4	83e234082f85	0x6a00	100.0000	
 partyaction	_RunActorCommandMenu	94.6038	94.6038	3	25d9cf958c45	0x6460	94.6038	
-partyaction	_ScaleActionValue	89.3750	89.3750	1	d4b757752929	0x6a40	89.3750	
+partyaction	_ScaleActionValue	100.0000	100.0000	1	d4b757752929	0x6a40	100.0000	
 partyaction	_SwapPartyRows	100.0000	100.0000	2	b77d0d2f5041	0x6140	100.0000	
 partypick	_CheckPickTarget	100.0000	100.0000	3	a59095b38abd	0x9420	100.0000	
 partypick	_CloseFieldWindows	100.0000	100.0000	2	e257e4ef1946	0x93e0	100.0000	
@@ -2200,8 +2200,8 @@ scripttext	_OpGetMenuCursor	100.0000	100.0000	1	16d0c77c3972	0x2f480	100.0000
 scripttext	_OpGetMenuTag	100.0000	100.0000	2	3c32306583c7	0x2f3e0	100.0000	
 scripttext	_OpLoadDataFile	100.0000	100.0000	1	24b9397d309e	0x2f7f0	100.0000	
 scripttext	_OpPushScriptWindow	100.0000	100.0000	1	c90f43b87c4c	0x2fc00	100.0000	
-scripttext	_OpReadDataInt	96.2281	96.2281	1	ad7a01f84ba7	0x2f950	96.2281	
-scripttext	_OpReadRecordInt	100.0000	100.0000	1	ba3c52db3153	0x2f8a0	100.0000	
+scripttext	_OpReadDataInt	96.2281	96.2281	2	f4975f1d06ea	0x2f950	96.2281	
+scripttext	_OpReadRecordInt	100.0000	100.0000	2	9fa403a5e00e	0x2f8a0	100.0000	
 scripttext	_OpRedrawScriptMenu	100.0000	100.0000	1	aa20cffe99e1	0x2f4a0	100.0000	
 scripttext	_OpRunScriptMenu	100.0000	100.0000	1	858773488625	0x2f340	100.0000	
 scripttext	_OpSaveSceneCell	100.0000	100.0000	1	febf72affcdf	0x2f9f0	100.0000	

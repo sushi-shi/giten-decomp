@@ -1450,8 +1450,7 @@ i16 RunObjectStep(FieldObject* object, i16 index) {
             g_actorId = index;
             object->mode = 10;
             object->pickRole = 1;
-            object->pickTarget = GetFieldObjectEquipment(object)[5].item;
-            object->pickTargetHigh = 0;
+            SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
             g_actionId = 1;
             tries = 0;
             for (;;) {
@@ -1468,8 +1467,7 @@ i16 RunObjectStep(FieldObject* object, i16 index) {
                         }
                         g_actionId = 1;
                         object->pickRole = 1;
-                        object->pickTarget = GetFieldObjectEquipment(object)[5].item;
-                        object->pickTargetHigh = 0;
+                        SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
                     } else if (result != 0) {
                         action = 2;
                         goto attack;
@@ -1477,8 +1475,7 @@ i16 RunObjectStep(FieldObject* object, i16 index) {
                 } else {
                     object->mode = 10;
                     object->pickRole = 1;
-                    object->pickTarget = GetFieldObjectEquipment(object)[5].item;
-                    object->pickTargetHigh = 0;
+                    SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
                     g_actionId = 1;
                 }
                 if (GetFieldMarker() || IsWithinRange(GetSkillAttackRange(g_actionId))) {
