@@ -38,18 +38,20 @@ visual agreement is not evidence of correct rendering. The panel failure
 has no established cause. Device configuration and graphics compatibility
 remain open areas to investigate.
 
-The text path uses ANSI font APIs and depends on the runtime's code page and
-selected font. Under Wine, verify the actual Windows ANSI code page; setting
-a Japanese locale variable is insufficient if the host lacks that locale.
-Japanese code-page selection alone is not a verified fix.
+The text path uses ANSI font APIs, so it depends on the runtime's code page
+and selected font. Wine derives the ANSI code page from the Unix locale, which
+must be installed: a `ja_JP` variable naming a locale the host lacks leaves
+code page 1252.
 
-`RenderGlyph` calls `GetGlyphOutline` without checking its return value, then
-uses `metrics.gmptGlyphOrigin.y` to index a 24-element row-offset table. The
-Japanese-locale Wine failure reaches this lookup in the original executable.
-Whether the cause is a failed glyph query, unexpected metrics, or another
-condition still needs to be established. The font is selected through
-`CreateFontA` with `DEFAULT_CHARSET` and no explicit face name. A font
-substitution workaround has not been validated.
+`RenderGlyph` ignores `GetGlyphOutline`'s result. For an empty glyph (U+3000)
+or one taller than the 64 bytes it declares, GDI returns `GDI_ERROR` and leaves
+`GLYPHMETRICS` untouched. Wine's own tests record the same behavior for
+Windows. `metrics.gmptGlyphOrigin.y` then indexes the 24-element row-offset
+table with stack garbage, and the original executable faults at `0x4512fa`.
+The font comes from `CreateFontA` with `DEFAULT_CHARSET` and no face name.
+The Japanese-locale Wine fallback, Microsoft YaHei, has JIS glyphs taller than
+16 rows. `giten play` builds the fix under `GITEN_BUGFIX` and uses an
+MS Gothic stand-in; see [Playing](play.md).
 
 Relevant source: [device settings](../src/Platform/devicesettings.cpp),
 [record layout](../include/Platform/DeviceSettings.h),
