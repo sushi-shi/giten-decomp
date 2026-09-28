@@ -796,48 +796,49 @@ void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor) {
 RVA(0x0003b450, 0x134)
 i16 RunActorScene(void) {
     i16 window = GetGamePhase();
-dispatch:
-    switch (GetGameStep()) {
-        case 0:
-            NextGameStep();
-            NextGameStep();
-            ClearFlagBank(12);
-        case 2: {
-            i16 result;
-            PollScriptPanels();
-            result = TickScript(window);
-            if (result == -1) {
+    for (;;) {
+        switch (GetGameStep()) {
+            case 0:
                 NextGameStep();
-            } else if (result < 0 && result != -3) {
-                if (!StepOnTextPeriod(window)) {
-                    PrevGameStep();
-                    WaitForScriptText(window);
+                NextGameStep();
+                ClearFlagBank(12);
+            case 2: {
+                i16 result;
+                PollScriptPanels();
+                result = TickScript(window);
+                if (result == -1) {
+                    NextGameStep();
+                } else if (result < 0 && result != -3) {
+                    if (!StepOnTextPeriod(window)) {
+                        PrevGameStep();
+                        WaitForScriptText(window);
+                    }
+                } else {
+                    return UpdateFieldScreen(0);
                 }
-            } else {
-                return UpdateFieldScreen(0);
+                break;
             }
-            break;
+            case 1:
+                NextGameStep();
+                AdvanceScriptTextWindow(window);
+                continue;
+            case 5: {
+                i16 top = GetScriptWindowOrDefault(window);
+                ScrollTextWindowLine(top);
+                SetGameStep(2);
+                break;
+            }
+            case 3:
+                s_messageHookFile = s_messageHookEntry = -1;
+                SetCurrentScript(FreeScriptContext(GetCurrentScript()));
+                PurgeScriptFiles();
+                CloseTextWindow(window);
+                CloseScriptInterface();
+                ReturnFromGameState();
+                break;
         }
-        case 1:
-            NextGameStep();
-            AdvanceScriptTextWindow(window);
-            goto dispatch;
-        case 5: {
-            i16 top = GetScriptWindowOrDefault(window);
-            ScrollTextWindowLine(top);
-            SetGameStep(2);
-            break;
-        }
-        case 3:
-            s_messageHookFile = s_messageHookEntry = -1;
-            SetCurrentScript(FreeScriptContext(GetCurrentScript()));
-            PurgeScriptFiles();
-            CloseTextWindow(window);
-            CloseScriptInterface();
-            ReturnFromGameState();
-            break;
+        return 0;
     }
-    return 0;
 }
 
 RVA(0x0003b590, 0x48)
