@@ -12,7 +12,6 @@
 
 // The actor and target of the action being resolved (script objects -20 and
 // -21): a field object index, or -1 - party position.
-// @identity-TODO: their owner TU is unclaimed. Placeholder externs.
 extern i16 g_actorId;
 extern i16 g_targetId;
 

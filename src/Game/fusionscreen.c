@@ -119,6 +119,12 @@ static i16 s_fusionCandidateCount;
 DATA(0x00080a0c)
 static Character* s_savedFusionCharacter;
 
+DATA(0x00080a10)
+u8 g_fusionPreviewSave[16];
+
+DATA(0x00080118)
+char g_fusionNameBuffer[128];
+
 DATA(0x00080a20)
 PaletteState* g_fusionPaletteState;
 
@@ -129,6 +135,12 @@ static FusionSummary* s_fusionSummaryTable;
 // Zero-ref: no retail call, jump, or relocated pointer reaches this helper.
 DATA(0x00080a84)
 static b16 s_fusionPageActionPending;
+
+DATA(0x00080a88)
+char g_fusionMissingName[4];
+
+DATA(0x00080a8c)
+char g_fusionMissingRace[4];
 
 RVA(0x00028840, 0x16)
 void AcquireFusionSelectionMode(void) {

@@ -26,6 +26,9 @@
 DATA(0x00081230)
 static char s_tokenText[0x100];
 
+DATA(0x0008135c)
+char g_shortNames[16][4];
+
 // "Ａ", "Ｂ", "ＡＢ", "Ｏ".
 DATA(0x00069138)
 static char* s_bloodTypes[4] = {"\202`", "\202a", "\202`\202a", "\202n"};

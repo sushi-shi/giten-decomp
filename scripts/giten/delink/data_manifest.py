@@ -1,6 +1,6 @@
 """giten.delink.data_manifest - vostok's `--data-manifest` + section manifest.
 
-The reviewed-data-topology delinker emits each claimed global and each `??_C@`
+The reviewed-data-topology delinker emits each claimed global and each proven
 string literal as a real named definition in its owning target object (right
 storage class + alignment, interior base relocations converted to COFF
 relocations, references to it becoming EXTERNALS). The companion SECTION
@@ -20,8 +20,8 @@ are per-object and must be CONTIGUOUS FROM ONE.
 Inputs (the Model replaces the old tree's symbol_names.csv):
   * Model.data claimed bindings - names, units, model-resolved extents; the
     retail PE classifies each row's storage;
-  * the base objs (build/objdiff/base) - cl's own string/vtable/RTTI COMDATs,
-    section topology, FP pools;
+  * the base objs (build/objdiff/base) - cl's C++ string/vtable/RTTI COMDATs,
+    C `$SG` literals, section topology, FP pools;
   * the Model's data_vtables/data_static_libs bindings (winners AND aliases)
     - the reviewed ??_7 name -> (rva, slots) authority.
 
@@ -36,7 +36,9 @@ from __future__ import annotations
 
 import bisect
 import re
+import struct
 from collections import Counter, defaultdict
+from functools import lru_cache
 from pathlib import Path
 
 from giten.core import msvc_names
@@ -76,6 +78,7 @@ ORDINARY_STORAGE = {".data": "data", ".rdata": "rdata"}
 
 #: cl's floating-point literal pool member spelling.
 FP_POOL_NAME = re.compile(r"^\$T[0-9]+$")
+SG_LITERAL_NAME = re.compile(r"^\$SG[0-9]+$")
 
 #: The value c2's per-section alignment ratchet starts at (see _alignment).
 UNLATCHED_RATCHET = 4
@@ -376,9 +379,9 @@ def claim_rows(model: Model, tail_oracle) -> tuple[list, list, Counter]:
 
 
 def string_rows(base_dir=BASE_DIR):
-    """Enrollable `??_C@` string-literal definitions + the withheld ones.
+    """Enrollable C++ and C string-literal definitions + withheld ones.
 
-    Both facts are PROVEN: the retail RVA comes from content-matching each
+    For C++ COMDATs both facts are PROVEN: the retail RVA comes from matching each
     relocation-target datum's bytes against the candidate objs' `??_C@` pools
     (cl's own spelling for those exact bytes); the owner is the candidate obj
     that defines the literal. A payload emitted by SEVERAL units enrolls once
@@ -422,6 +425,182 @@ def string_rows(base_dir=BASE_DIR):
             for r in group:
                 withheld.append((r["rva"], name,
                                  f"identical payload at {len(addrs)} retail RVAs"))
+    c_rows, c_withheld = c_string_rows(base_dir)
+    return rows + c_rows, withheld + c_withheld
+
+
+@lru_cache(maxsize=2)
+def _literal_site_rvas(base_dir):
+    """Retail addresses reached by literal operands in byte-matched functions.
+
+    An entire function's bytes must agree after masking its COFF relocation
+    fields. That makes a relocation's source site an independent address
+    witness even when several ordinary C strings have the same payload.
+    """
+    from giten.compare.canonicalize import RELOCATION_WIDTHS
+    from giten.model import resolve
+
+    bindings = {(b.unit, b.name): b for b in resolve().functions
+                if b.unit and b.name and b.size}
+    img = retail()
+    sites = defaultdict(set)
+    for stem, c in coffx.objects(base_dir):
+        for idx, value, secnum in c.iter_symbols():
+            if secnum < 1 or not c.section_table[secnum - 1]["characteristics"] \
+                    & MEM_EXECUTE:
+                continue
+            entry = c.symptr + idx * 18
+            typ = struct.unpack_from("<H", c.buf, entry + 14)[0]
+            storage = c.buf[entry + 16]
+            if storage not in (2, 3) or (typ >> 4) & 3 != 2:
+                continue
+            binding = bindings.get((stem, c.sym_name(idx)))
+            if binding is None:
+                continue
+            code = c.section_payload(secnum)
+            candidate = bytearray(code[value:value + binding.size])
+            if len(candidate) != binding.size:
+                continue
+            original = bytearray(img.payload(binding.rva, binding.size))
+            relocs = [(off, name, kind)
+                      for off, (name, kind) in c.typed_relocations(secnum).items()
+                      if value <= off < value + binding.size]
+            for off, _name, kind in relocs:
+                width = RELOCATION_WIDTHS.get(kind, 4)
+                candidate[off - value:off - value + width] = bytes(width)
+                original[off - value:off - value + width] = bytes(width)
+            if candidate != original:
+                continue
+            for off, name, kind in relocs:
+                if not (SG_LITERAL_NAME.fullmatch(name)
+                        or FP_POOL_NAME.fullmatch(name)) or kind not in (6, 7):
+                    continue
+                word = img.u32(binding.rva + off - value)
+                if word is None:
+                    continue
+                addend = struct.unpack_from("<I", code, off)[0]
+                address = (word - (img.image_base if kind == 6 else 0)
+                           - addend) & 0xFFFFFFFF
+                sites[(stem, name)].add(address)
+    return sites
+
+
+def c_string_rows(base_dir=BASE_DIR):
+    """C `$SG` literals paired by content, exact sites, or anchored spacing.
+
+    Unlike `??_C@` COMDATs, C literals are ordinary separate definitions.
+    Repeated text needs byte-matched code operands, an all-but-one assignment
+    from those operands, or neighboring unique literals to prove the ordinary
+    section's placement. Ambiguous copies stay fenced.
+    """
+    by_payload = defaultdict(list)
+    by_name = defaultdict(list)
+    for stem, c in coffx.objects(base_dir):
+        for idx, value, secnum in c.iter_symbols():
+            name = c.sym_name(idx)
+            if not SG_LITERAL_NAME.fullmatch(name) or secnum < 1:
+                continue
+            section = c.section_table[secnum - 1]["name"]
+            if section not in ORDINARY_STORAGE:
+                continue
+            payload = c.cstring(secnum, value)
+            if payload is None:
+                continue
+            symbol = (stem, name, section, value)
+            by_payload[payload].append(symbol)
+            by_name[name].append(symbol)
+
+    img = retail()
+    retail_rvas = defaultdict(list)
+    for rva in _reloc_data_rvas():
+        payload = img.cstring(rva)
+        if payload in by_payload:
+            retail_rvas[payload].append(rva)
+
+    site_rvas = _literal_site_rvas(base_dir)
+    section_anchors = defaultdict(list)
+    for payload, candidates in by_payload.items():
+        addresses = retail_rvas.get(payload, ())
+        if len(candidates) == len(addresses) == 1:
+            stem, _name, section, offset = candidates[0]
+            section_anchors[(stem, section)].append((offset, addresses[0]))
+    rows, withheld = [], []
+    for payload, candidates in by_payload.items():
+        addresses = retail_rvas.get(payload, ())
+        if not addresses:
+            continue
+        ordered = {}
+        if len(candidates) == len(addresses) > 1 and \
+                len({(stem, section) for stem, _name, section, _off
+                     in candidates}) == 1:
+            by_offset = sorted(candidates, key=lambda c: c[3])
+            stem, _name, section, _off = by_offset[0]
+            lo, hi = by_offset[0][3], by_offset[-1][3]
+            before = [(off, rva) for off, rva
+                      in section_anchors[(stem, section)] if off < lo]
+            after = [(off, rva) for off, rva
+                     in section_anchors[(stem, section)] if off > hi]
+            if before and after:
+                left = max(before)
+                right = min(after)
+                bias = left[1] - left[0]
+                expected = {off + bias for _stem, _name, _section, off
+                            in by_offset}
+                if right[1] - right[0] == bias and \
+                        len(expected) == len(addresses) and \
+                        expected == set(addresses) and \
+                        all(not site_rvas.get((stem, name)) or
+                            site_rvas[(stem, name)] == {off + bias}
+                            for stem, name, _section, off in by_offset):
+                    ordered = {(stem, name): off + bias
+                               for stem, name, _section, off in by_offset}
+        if not ordered and len(candidates) == len(addresses) > 1:
+            exact = {(stem, name): next(iter(site_rvas[(stem, name)]))
+                     for stem, name, _section, _off in candidates
+                     if len(site_rvas.get((stem, name), ())) == 1}
+            remaining = set(addresses) - set(exact.values())
+            unknown = [(stem, name) for stem, name, _section, _off
+                       in candidates if (stem, name) not in exact]
+            if len(exact) == len(candidates) - 1 and \
+                    len(set(exact.values())) == len(exact) and \
+                    set(exact.values()) <= set(addresses) and \
+                    len(remaining) == len(unknown) == 1 and \
+                    not site_rvas.get(unknown[0]):
+                ordered[unknown[0]] = next(iter(remaining))
+        assigned = set()
+        for stem, name, section, _off in candidates:
+            anchors = site_rvas.get((stem, name), ())
+            if len(anchors) == 1:
+                rva = next(iter(anchors))
+            elif (stem, name) in ordered:
+                rva = ordered[(stem, name)]
+            elif len(candidates) == len(addresses) == 1:
+                rva = addresses[0]
+            else:
+                continue
+            if rva not in addresses or rva in assigned:
+                continue
+            size = len(payload) + 1
+            start, end = _classify(rva), _classify(rva + size - 1)
+            if start != end or STORAGE.get(start) != ORDINARY_STORAGE[section]:
+                withheld.append((rva, name,
+                                 "C literal name or retail storage is ambiguous"))
+                continue
+            # `$SG` ordinals are TU-local: two objects may emit the same name
+            # for different bytes. The manifest needs one name per retail RVA,
+            # while ordinary_sections still identifies the original member.
+            manifest_name = f"$SG{rva}" if len(by_name[name]) > 1 else name
+            row = {"name": manifest_name, "object": f"{stem}.c", "rva": rva,
+                   "size": size, "storage": ORDINARY_STORAGE[section],
+                   "provenance": "candidate-COFF-C-string"}
+            if manifest_name != name:
+                row["member"] = name
+            rows.append(row)
+            assigned.add(rva)
+        for rva in addresses:
+            if rva not in assigned:
+                withheld.append((rva, candidates[0][1],
+                                 "ambiguous C literal payload"))
     return rows, withheld
 
 
@@ -662,7 +841,8 @@ def fp_pool_rows(model: Model, base_dir=BASE_DIR):
     inside each claimed function pair positionally with the base obj's COFF
     relocations; the pairing PROVES ITSELF (every known symbol's rva must
     equal the address retail wrote, plus the addend in our own bytes), and
-    only then is a `$T` site read off and byte-re-proven. The manifest name is
+    only then is a `$T` site read off and byte-re-proven. A byte-matched whole
+    function supplies a second site witness. The manifest name is
     `$T<decimal rva>` (cl's counter is volatile and N of our units may share
     one retail slot); each row carries `member`, cl's real per-object symbol,
     for ordinary_sections' name matching. A `$T<rva>` pin - a DATA_COMPGEN use
@@ -692,6 +872,7 @@ def fp_pool_rows(model: Model, base_dir=BASE_DIR):
             pins[b.unit].append((b.rva, b.size))
 
     rows, withheld = [], []
+    exact_sites = _literal_site_rvas(base_dir)
     for stem, c in coffx.objects(base_dir):
         pool = {}                       # member -> (storage, off, payload, size)
         for sec in c.section_table:
@@ -772,7 +953,8 @@ def fp_pool_rows(model: Model, base_dir=BASE_DIR):
         stranded = []
         for member in sorted(pool):
             storage, _off, want, size = pool[member]
-            seen = votes.get(member) or set()
+            seen = set(votes.get(member) or ())
+            seen.update(exact_sites.get((stem, member), ()))
             if len(seen) == 1:
                 emit(member, next(iter(seen)), storage, size, want,
                      "retail-reloc-fp-pool")

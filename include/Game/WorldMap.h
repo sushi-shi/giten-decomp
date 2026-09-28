@@ -111,9 +111,9 @@ static __inline void GetWorldTravelGridOffset(i16 x, i16 y, i16 direction, i16* 
 
 void PreferWorldTravelDestination(i16 x, i16 y, i16 direction);
 // Initial reachability flags indexed by the four-bit map terrain code.
-extern u8 g_worldTravelTerrainFlags[16];
+extern const u8 g_worldTravelTerrainFlags[16];
 
-// @identity-TODO: the history buffer's full allocated extent is unrecovered.
+// The 128-cell travel history buffer.
 extern MapCoord g_worldTravelHistory[];
 MapCoord GetBestWorldTravelStep(i16 direction);
 void ExcludeWorldTravelStep(i16 x, i16 y, i16 direction);

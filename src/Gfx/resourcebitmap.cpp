@@ -9,6 +9,7 @@
 #include <Platform/Com.h>
 #include <Platform/D3DApp.h>
 #include <Platform/GameApi.h>
+#include <Gfx/DDraw.h>
 
 #include <string.h>
 
@@ -85,18 +86,18 @@ b32 CreatePicture(
     picture->id = 0;
     result = picture->surface->GetSurfaceDesc(&desc);
     if (result == DD_OK) {
-        if (desc.ddpfPixelFormat.dwRGBBitCount < 16) {
+        if (IsPalettizedSurface(desc)) {
             key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = colorKey;
         } else {
             ZeroMemory(&key, sizeof(key));
         }
         picture->surface->SetColorKey(DDCKEY_SRCBLT, &key);
     } else if (result == DDERR_INVALIDOBJECT) {
-        OutputDebugString("GetSurfaceDesc() returns DDERR_INVALIDOBJECT");
+        OutputDebugString("GetSurfaceDesc() returns DDERR_INVALIDOBJECT\n");
     } else if (result == DDERR_INVALIDPARAMS) {
-        OutputDebugString("GetSurfaceDesc() returns DDERR_INVALIDPARAMS");
+        OutputDebugString("GetSurfaceDesc() returns DDERR_INVALIDPARAMS\n");
     } else {
-        OutputDebugString("GetSurfaceDesc() returns UNKNOWN");
+        OutputDebugString("GetSurfaceDesc() returns UNKNOWN\n");
     }
     return true;
 }

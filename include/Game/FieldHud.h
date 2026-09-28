@@ -80,7 +80,7 @@ i16 RequestTalk(void);
 
 // The status panel redraw (`force` redraws even without a pending request).
 // @identity-TODO: the map position and word the held view keeps; the word
-// is cleared with them and read nowhere else. Placeholder externs.
+// is cleared with them and read nowhere else.
 void RefreshStatusPanel(i16 force);
 
 extern i16 g_viewX;

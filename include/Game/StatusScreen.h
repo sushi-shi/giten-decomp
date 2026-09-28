@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <Game/Character.h>
+#include <Game/StateStack.h>
 #include <Ints.h>
 #include <Ui/MenuBox.h>
 
@@ -32,7 +33,7 @@ void SetStatusMenuItemsHidden(i16 on);
 // Eleven stat names followed by the null terminator.
 extern char* g_statusStatNames[12];
 extern char* g_statusBattleLabels[7];
-// @identity-TODO: label storage extents are unproven.
+// The zero-initialized empty skill label.
 extern char g_emptyBattleSkillLabel[];
 // Full-width decimal labels, indexed by the displayed number.
 extern char* g_statusNumberLabels[40];
@@ -63,6 +64,19 @@ extern Character* g_rosterPendingMember;
 extern i16 g_rosterReturnState;
 extern u16 g_rosterReturnPhase;
 extern u16 g_rosterReturnStep;
+
+static __inline void SaveRosterReturnState(void) {
+    g_rosterReturnState = GetGameState();
+    g_rosterReturnPhase = GetGamePhase();
+    g_rosterReturnStep = GetGameStep();
+}
+
+static __inline void RestoreRosterReturnState(void) {
+    SetGameState(g_rosterReturnState);
+    SetGamePhase(g_rosterReturnPhase);
+    SetGameStep(g_rosterReturnStep);
+}
+
 b16 ReplaceRosterMember(void);
 
 void EnterStatusScreen(i16 nested);

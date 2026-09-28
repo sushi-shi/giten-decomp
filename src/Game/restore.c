@@ -14,6 +14,9 @@
 #include <math.h>
 #include <string.h>
 
+DATA(0x000919fc)
+i16 g_effectCondition;
+
 // The condition groups selected by restoration kinds 53..59, 62 and 64.
 DATA(0x00064558)
 static const i16 s_mentalRecoveryConditions[] = {14, 18, 19, 27, 28, 29, -1};
@@ -248,8 +251,7 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
     }
     if (!HasCondition(conditions, CONDITION_ZOMBIE) && wasZombie
         && !GetFatalCondition(conditions)) {
-        ApplyItemStatBonuses(&target->stats, GetCharacterEquipment(target));
-        RecalcStatTotals(&target->stats);
+        RecalcEquippedStatTotals(&target->stats, GetCharacterEquipment(target));
         ApplyEquipmentEffects(target, EQUIP_EFFECT_STAT_UPDATE);
         RecalcDerivedStats(target);
         ResetBattleStatsToBase(target);
@@ -264,7 +266,8 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
     if (GetFatalCondition(conditions)) {
         hpPool->cur = 0;
         mpPool->cur = oldMp;
-        g_mpChange = g_hpChange = 0;
+        g_mpChange = 0;
+        g_hpChange = 0;
         target->lastChange = 0;
         return revival == 1 ? 6 : 2;
     }

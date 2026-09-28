@@ -5600,7 +5600,7 @@ i16 PartyPanelAtPoint(i16 x, i16 y) {
 
 // The layers' visibility and positions as a save file keeps them.
 DATA(0x00090b18)
-static SavedLayer s_savedLayers[SCREEN_LAYER_COUNT];
+static SavedLayer s_savedScreenLayers[SCREEN_LAYER_COUNT];
 
 // Writes the layers' visibility and positions to `file`; 0 on success.
 RVA(0x00054bb0, 0x51)
@@ -5608,11 +5608,11 @@ i16 SaveScreenLayers(FILE* file) {
     i32 i;
 
     for (i = 0; i < SCREEN_LAYER_COUNT; i++) {
-        s_savedLayers[i].visible = g_screenLayers[i]->visible;
-        s_savedLayers[i].x = g_screenLayers[i]->x;
-        s_savedLayers[i].y = g_screenLayers[i]->y;
+        s_savedScreenLayers[i].visible = g_screenLayers[i]->visible;
+        s_savedScreenLayers[i].x = g_screenLayers[i]->x;
+        s_savedScreenLayers[i].y = g_screenLayers[i]->y;
     }
-    return 1 - fwrite(s_savedLayers, sizeof(s_savedLayers), 1, file);
+    return 1 - fwrite(s_savedScreenLayers, sizeof(s_savedScreenLayers), 1, file);
 }
 
 // Reads the layers' visibility and positions from `file` (the character
@@ -5622,11 +5622,11 @@ i16 LoadScreenLayers(FILE* file) {
     i16 result;
     i32 i;
 
-    result = 1 - fread(s_savedLayers, sizeof(s_savedLayers), 1, file);
+    result = 1 - fread(s_savedScreenLayers, sizeof(s_savedScreenLayers), 1, file);
     for (i = 0; i < SCREEN_LAYER_COUNT; i++) {
-        g_screenLayers[i]->visible = s_savedLayers[i].visible;
-        g_screenLayers[i]->x = s_savedLayers[i].x;
-        g_screenLayers[i]->y = s_savedLayers[i].y;
+        g_screenLayers[i]->visible = s_savedScreenLayers[i].visible;
+        g_screenLayers[i]->x = s_savedScreenLayers[i].x;
+        g_screenLayers[i]->y = s_savedScreenLayers[i].y;
     }
     g_screenLayers[SCREEN_LAYER_PANEL]->visible = FALSE;
     return result;

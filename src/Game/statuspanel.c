@@ -38,6 +38,9 @@ static i16 s_statusCommandHotspots[11] = {-1, -1, -1, 55, 56, 57, -1, -1, 60, 61
 DATA(0x00083c70)
 static i16 s_previousStatusStep;
 
+DATA(0x00083c74)
+char g_emptyBattleSkillLabel[4];
+
 DATA(0x0006499c)
 static const i8 s_battleStatIcons[4] = {0, 1, 8, 9};
 
@@ -211,7 +214,7 @@ static i16 DrawStatusCapacity(i16 x, i16 y, Character* member) {
             g_scratchBuffer,
             "\222\207\226\202 %5d\201\136%2d",
             CountRosterEntries(0),
-            GetFieldCount() - 6
+            GetRosterCapacity() - 6
         );
     } else {
         sprintf(g_scratchBuffer, "CP %11d", member->levelBonus);

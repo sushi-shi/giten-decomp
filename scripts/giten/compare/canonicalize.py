@@ -596,6 +596,7 @@ def _compiler_private_definition_aliases(
 #: The widest alignment gap either allocator leaves after a data definition.
 MAX_ALIGNMENT_PADDING = 7
 ALIGNMENT_PADDING_PROOF = "physical-span-less-alignment-padding"
+X87_M32_PADDING_PROOF = "x87-m32-zero-tail-padding"
 
 
 def _identity_span(kind: str, physical_size: int, meaningful_size: int,
@@ -603,7 +604,7 @@ def _identity_span(kind: str, physical_size: int, meaningful_size: int,
     # TEXT COMDATs and packed target text align the same helper differently.
     # Padding is not part of a function's identity. Data allocation spans remain
     # significant beyond the alignment gap, which neither side proves.
-    if kind == "text" or proof == ALIGNMENT_PADDING_PROOF:
+    if kind == "text" or proof in (ALIGNMENT_PADDING_PROOF, X87_M32_PADDING_PROOF):
         return meaningful_size
     return physical_size
 
@@ -637,6 +638,36 @@ def _float_width(payload: bytes):
     if len(payload) == 8 and any(payload[4:]):
         return 8, "extent-8-nonzero-upper-dword"
     return None, "ambiguous-content-width"
+
+
+def _x87_m32_references(coff: CoffObject, symbol_index: int) -> bool:
+    """Prove a private constant's 4-byte width from direct x87 uses.
+
+    A delinked 4-byte float followed by alignment zeros can occupy an 8-byte
+    physical span, indistinguishable from an 8-byte value by content alone.
+    The D8 /r memory arithmetic encoding consumes a 32-bit real operand;
+    reject any reference we cannot classify, or one using the DC /r 64-bit
+    real form.
+    """
+    found = False
+    for relocation in coff.relocations:
+        if relocation.symbol_index != symbol_index:
+            continue
+        if relocation.typ != DIR32:
+            return False
+        section = coff.sections[relocation.section - 1]
+        if not section.characteristics & MEM_EXECUTE:
+            return False
+        code = coff.section_bytes(section)
+        if relocation.site < 2 or relocation.site + 4 > len(code):
+            return False
+        opcode, modrm = code[relocation.site - 2:relocation.site]
+        if opcode != 0xD8 or modrm & 0xC7 != 0x05:
+            return False
+        if struct.unpack_from("<I", code, relocation.site)[0] != 0:
+            return False
+        found = True
+    return found
 
 
 def _is_string(payload: bytes, relocations: list[Relocation]) -> int | None:
@@ -1302,6 +1333,9 @@ def canonicalize_coff(payload: bytes) -> CanonicalizedObject:
                 kind, meaningful, proof = "string", raw[:string_size], "nul-terminated"
         elif family and family[0] == "t":
             width, proof = _float_width(raw)
+            if (width is None and len(raw) == 8 and raw[4:] == bytes(4)
+                    and _x87_m32_references(coff, definition.symbol.index)):
+                width, proof = 4, X87_M32_PADDING_PROOF
             if width == 4:
                 kind, meaningful = "f32", raw[:4]
             elif width == 8:

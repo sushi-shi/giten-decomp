@@ -8,7 +8,6 @@
 struct Character;
 
 // Set during field battles; gates party turns, rewards and the FIGHT banner.
-// @identity-TODO: its owner TU is not claimed yet.
 extern i16 g_fieldBattleActive;
 
 // @identity-TODO: the field-map state entered through game state 0xb. Two

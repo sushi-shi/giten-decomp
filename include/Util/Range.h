@@ -34,7 +34,7 @@ void SortShortPair(i16* lo, i16* hi);
 // is clear, and is skipped when it is set.
 char* FilterTextMarks(const char* text, i16 keepMarks);
 
-// @identity-TODO: the filter buffer's full extent is unrecovered.
-extern char g_filteredText[];
+// The 256-byte filter buffer.
+extern char g_filteredText[256];
 
 #endif // GITEN_UTIL_RANGE_H

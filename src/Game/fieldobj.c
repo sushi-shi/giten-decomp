@@ -949,6 +949,10 @@ static u8* s_encounterWeights;
 
 MapCoord RandomNearOffset(void);
 
+static __inline void RestartEnemySpawnTimer(void) {
+    s_spawnTimer = s_spawnInterval * 60;
+}
+
 // Sets the spawn interval (0 picks 40..60 seconds) and restarts the timer.
 RVA(0x0000ec60, 0x31)
 void SetSpawnInterval(i16 seconds) {
@@ -956,7 +960,7 @@ void SetSpawnInterval(i16 seconds) {
         seconds = RandomAverage(0x28, 0x3c, 0);
     }
     s_spawnInterval = seconds;
-    s_spawnTimer = s_spawnInterval * 60;
+    RestartEnemySpawnTimer();
 }
 
 // Spawns a random enemy of either loaded layer on a free cell of the party's
@@ -1021,7 +1025,7 @@ i16 TickEnemySpawnTimer(void) {
         s_spawnTimer = timer;
     }
     if (timer == 0) {
-        s_spawnTimer = s_spawnInterval * 60;
+        RestartEnemySpawnTimer();
         if (!IsEventFlagSet(8, 0)) {
             return SpawnRandomEnemy();
         }
@@ -1054,6 +1058,15 @@ void TraceSight(i16 x, i16 y, i16 direction) {
     }
 }
 
+#define MarkSightCell(x0, y0, x, y)                                                                \
+    do {                                                                                           \
+        (x) += 3 - (x0);                                                                           \
+        (y) += 3 - (y0);                                                                           \
+        if ((y) >= 0 && (x) >= 0) {                                                                \
+            s_sight[(y)][(x)] = 1;                                                                 \
+        }                                                                                          \
+    } while (0)
+
 // Marks the cells of sight row `step` seen from x/y facing `direction`, out
 // to the left and right bounds; a blocking cell narrows its bound.
 RVA(0x0000eef0, 0x179)
@@ -1069,11 +1082,7 @@ void ScanSightRow(i16 x, i16 y, i16 step, i16 direction, i16* left, i16* right) 
         cellY = y;
         OffsetMapCoord(&cellX, &cellY, direction, i, step);
         blocked = GetMapWallKind(cellX, cellY, side);
-        cellX += 3 - x;
-        cellY += 3 - y;
-        if (cellY >= 0 && cellX >= 0) {
-            s_sight[cellY][cellX] = 1;
-        }
+        MarkSightCell(x, y, cellX, cellY);
         if (blocked) {
             *left = i;
             break;
@@ -1085,11 +1094,7 @@ void ScanSightRow(i16 x, i16 y, i16 step, i16 direction, i16* left, i16* right) 
         cellY = y;
         OffsetMapCoord(&cellX, &cellY, direction, i, step);
         blocked = GetMapWallKind(cellX, cellY, side);
-        cellX += 3 - x;
-        cellY += 3 - y;
-        if (cellY >= 0 && cellX >= 0) {
-            s_sight[cellY][cellX] = 1;
-        }
+        MarkSightCell(x, y, cellX, cellY);
         if (blocked) {
             *right = i;
             break;
@@ -1319,7 +1324,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
         for (i = 0; i < 16; i++) {
             InitFieldSkillCandidate(&candidates[i]);
         }
-        if (GetCachedSkill(skill)->parameters.valueB) {
+        if (GetSkillValueB(GetCachedSkill(skill))) {
             for (i = 0; i < 16; i++) {
                 if (GetLiveObject(i) >= 0) {
                     target = GetFieldObject(i);

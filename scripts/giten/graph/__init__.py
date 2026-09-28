@@ -62,11 +62,10 @@ NORMALIZE_STAMP = "build/objdiff/.normalize.stamp"
 OBJDIFF_JSON = f"{COMPARE_DIR}/objdiff.json"
 REPORT_JSON = f"{COMPARE_DIR}/report.json"
 
-#: Phase 2 (opt-in): the candidate image for the link-order study.
+#: Phase 2 (opt-in): the candidate image and ignored local resource transfer.
 CANDIDATE_EXE = "build/exe/DDS.candidate.EXE"
 CANDIDATE_MAP = "build/exe/DDS.candidate.map"
-RESOURCE_SCRIPT = "src/Giten/Giten.rc"
-RESOURCE_RES = "build/gen/giten.res"
+RESOURCE_RES = "build/gen/retail.res"
 
 #: `wine cl` parallelism. Wine serialises far more than it looks under a
 #: shared wineserver, and past ~8 concurrent cl.exe the server thrashes and

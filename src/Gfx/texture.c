@@ -14,9 +14,6 @@
 #define TEXTURE_MAX_WIDTH 512
 #define TEXTURE_MAX_HEIGHT 256
 
-// The pixel depth below which a texture is palettized.
-#define TEXTURE_BITS_16 16
-
 // Loads texture `texture` from bitmap `name`: a system-memory surface gets the
 // bitmap (8-bit through a palette, else 16-bit with its colour key), a device
 // surface of the same shape loads it, and the ramp device gets its shades.
@@ -67,7 +64,7 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
         (void**)source
     );
     texture->width = min(TEXTURE_MAX_WIDTH, header->biWidth);
-    if (desc.ddpfPixelFormat.dwRGBBitCount < TEXTURE_BITS_16) {
+    if (IsPalettizedSurface(desc)) {
         if (!LoadBitmapToSurface8(
                 bmp,
                 &texture->sourceSurface,
@@ -88,7 +85,7 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
         FreeBitmap(&bmp);
         return false;
     }
-    if (desc.ddpfPixelFormat.dwRGBBitCount < TEXTURE_BITS_16
+    if (IsPalettizedSurface(desc)
         && IDirectDrawSurface_SetPalette(texture->surface, texture->ddPalette) != DD_OK) {
         if (fromFile == TRUE) {
             FreeBitmap(&bmp);

@@ -58,6 +58,10 @@ static i16 s_areaPaletteMode;
 DATA(0x00075f84)
 static i16 s_viewPaletteMode;
 
+static __inline void StorePaletteColor(i16 index, i16 color) {
+    s_paletteColors[index] = color;
+}
+
 RVA(0x00002b70, 0x71)
 void ResetMask(i16 copySaved) {
     u16 size;
@@ -184,7 +188,7 @@ void ResetUpperPalette(void) {
     i16 i;
     memset(&s_paletteRefs[8], 0, 8 * sizeof(s_paletteRefs[0]));
     for (i = 8; i < 16; i++) {
-        s_paletteColors[i] = 0;
+        StorePaletteColor(i, 0);
     }
 }
 
@@ -218,7 +222,7 @@ void RetainPaletteEntry(u8 index) {
 RVA(0x00002f40, 0x28)
 b16 SetPaletteColor(u8 index, i16 color) {
     if (index < 16) {
-        s_paletteColors[index] = color;
+        StorePaletteColor(index, color);
         MarkPaletteDirty();
         return true;
     }

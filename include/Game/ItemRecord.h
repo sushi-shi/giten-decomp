@@ -128,6 +128,19 @@ static __inline u8 GetGunTargetLimits(const ItemRecord* record) {
     return record->params[0x2a];
 }
 
+static __inline u8 GetEquipmentInflictedCondition(const ItemRecord* record) {
+    return record->params[0x24];
+}
+
+static __inline u8 GetEquipmentAttribute(const ItemRecord* record) {
+    return record->params[0x21];
+}
+
+static __inline i16 GetItemRecordPhysicalAccuracyBonus(const ItemRecord* record) {
+    i8 bonus = record->params[0x1b];
+    return bonus;
+}
+
 static __inline i16 GetItemRecordPhysicalEvasionBonus(const ItemRecord* record) {
     i8 bonus = record->params[0x2c];
     return bonus;

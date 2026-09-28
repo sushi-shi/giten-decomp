@@ -8,8 +8,8 @@
 
 #include <stdio.h>
 
-// @identity-TODO: the macca a battle awards (GrantBattleRewards pays it out),
-// cleared when the field is entered; its owner TU is unclaimed.
+// The macca a battle awards (GrantBattleRewards pays it out), cleared when
+// the field is entered.
 extern i32 g_rewardMacca;
 
 b16 RunFieldExploration(void);
@@ -44,10 +44,10 @@ void BuildViewOcclusion(i16 x, i16 y, i16 direction, i16 mode);
 void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction);
 void MarkFieldViewCells(i16 unused, i16 x, i16 y, i16 direction);
 i16 GetViewVisibility(i16 across, i16 along, i16 side);
-// @identity-TODO: sampling clears four rows, but the HUD may read a fifth.
-// Recover the allocation boundaries before defining these arrays.
-extern u8 g_leftFrontWalls[][3];
-extern u8 g_rightFrontWalls[][3];
+// Sampling fills four rows. The HUD's final scan can read one row past these
+// allocations; that row is not part of either array.
+extern u8 g_leftFrontWalls[4][3];
+extern u8 g_rightFrontWalls[4][3];
 extern u8 g_centerFrontWalls[5];
 extern u8 g_leftSideWalls[5][3];
 extern u8 g_rightSideWalls[5][3];

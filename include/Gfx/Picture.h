@@ -19,13 +19,12 @@ GZ_ENUM_BEGIN(EventCursorPicture)
     EVENT_CURSOR_ACTIVE_ALT_END = 0x5090,
     EVENT_CURSOR_ACTIVE_SINGLE = 0x50f6
 GZ_ENUM_END(EventCursorPicture)
-   // clang-format on
 
-   // A picture: an offscreen surface with the source rectangle blitted from it.
-   // CreatePicture (0x457380) zeroes the 0x24-byte record, sizes the surface and
-   // sets the rectangle's right and bottom; LoadScenePicture fills it from a
-   // bitmap.
-   typedef struct Picture {
+// A picture: an offscreen surface with the source rectangle blitted from it.
+// CreatePicture (0x457380) zeroes the 0x24-byte record, sizes the surface and
+// sets the rectangle's right and bottom; LoadScenePicture fills it from a
+// bitmap.
+typedef struct Picture {
     b32 visible;
     RECT rect;
     LPDIRECTDRAWSURFACE surface;
@@ -33,6 +32,10 @@ GZ_ENUM_END(EventCursorPicture)
     i32 surfaceWidth;
     i32 surfaceHeight;
 } Picture;
+// clang-format on
+
+#define GetPictureSurfaceWidth(picture) ((picture)->surfaceWidth)
+#define GetPictureSurfaceHeight(picture) ((picture)->surfaceHeight)
 
 // The status screen's picture (640x440, blitted at y 40).
 extern Picture g_statusPicture;

@@ -15,6 +15,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+DATA(0x00064618)
+const i16 g_affiliationGrowthStats[4][2] = {{5, 7}, {8, 0}, {2, 1}, {3, 9}};
+
 DATA(0x0007d618)
 static i32 s_learnableSkillTable;
 

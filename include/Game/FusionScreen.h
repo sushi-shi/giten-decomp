@@ -8,10 +8,10 @@
 #include <Gfx/Palette.h>
 #include <Ui/MenuBox.h>
 
-// @identity-TODO: the Windows screen-save stubs do not reveal its extent.
+// The sixteen-byte screen-save area used by the fusion preview.
 extern u8 g_fusionPreviewSave[];
-// @identity-TODO: extents are unproven; only text producers/consumers reach these buffers.
-extern char g_fusionNameBuffer[];
+// Text buffers used by the fusion screen.
+extern char g_fusionNameBuffer[128];
 extern char g_fusionMissingRace[];
 extern char g_fusionMissingName[];
 extern PaletteState* g_fusionPaletteState;

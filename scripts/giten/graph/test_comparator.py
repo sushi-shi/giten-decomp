@@ -48,8 +48,7 @@ class ComparatorDependencyTests(unittest.TestCase):
                 mock.patch.object(emit, "prune_orphan_artifacts", return_value=0), \
                 mock.patch.object(emit, "write_toolchain_id"), \
                 mock.patch.object(emit, "write_comparator_id"), \
-                mock.patch.object(emit, "Scanner", return_value=Scan()), \
-                mock.patch.object(emit, "era_rc_available", return_value=False):
+                mock.patch.object(emit, "Scanner", return_value=Scan()):
             path = Path(td) / "build.ninja"
             emit.emit(path)
             lines = path.read_text().replace("$\n", "").splitlines()

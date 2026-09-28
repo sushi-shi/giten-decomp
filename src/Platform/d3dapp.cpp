@@ -1157,10 +1157,11 @@ b32 InitDirect3D(void) {
     viewport.dwHeight = g_viewClearRect.y2;
     viewport.dvMinZ = 0.0f;
     viewport.dvMaxZ = 1.0f;
-    viewport.dvClipHeight = g_viewClearRect.x2 * 2.0 / g_viewClearRect.y2 / 3.0;
-    viewport.dvClipX = -1.0f / 3.0f;
-    viewport.dvClipWidth = 2.0f / 3.0f;
-    viewport.dvClipY = viewport.dvClipHeight / 6.0f;
+    viewport.dvClipHeight =
+        g_viewClearRect.x2 * 2.0 / g_viewClearRect.y2 * DATA_COMPGEN(0x00064a20, 1.0 / 3.0);
+    viewport.dvClipX = DATA_COMPGEN(0x00064a0c, -1.0f / 3.0f);
+    viewport.dvClipWidth = DATA_COMPGEN(0x00064a10, 2.0f / 3.0f);
+    viewport.dvClipY = viewport.dvClipHeight * DATA_COMPGEN(0x00064a28, 1.0f / 6.0f);
     if (g_screenViewport->SetViewport2(&viewport) != D3D_OK) {
         return false;
     }
@@ -1205,11 +1206,9 @@ b32 InitDirect3D(void) {
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
     if (g_deviceSettings.caps.blendMode[static_cast<i32>(g_deviceType)] == BLEND_MODE_ALPHA) {
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, TRUE);
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, FALSE);
+        SetDeviceAlphaBlend(g_d3dDevice, TRUE);
     } else {
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, TRUE);
+        SetDeviceAlphaBlend(g_d3dDevice, FALSE);
     }
     if (g_deviceType != D3D_DEVICE_MMX) {
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
@@ -1242,11 +1241,9 @@ b32 InitDirect3D(void) {
         g_screenDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
         if (g_deviceSettings.caps.blendMode[static_cast<i32>(g_deviceType)] == BLEND_MODE_ALPHA) {
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, TRUE);
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, FALSE);
+            SetDeviceAlphaBlend(g_screenDevice, TRUE);
         } else {
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, TRUE);
+            SetDeviceAlphaBlend(g_screenDevice, FALSE);
         }
     } else {
         g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);

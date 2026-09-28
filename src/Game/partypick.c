@@ -45,6 +45,9 @@ i16 g_guestIndex = -1;
 DATA(0x00068404)
 static i16 s_swapSaved = -1;
 
+DATA(0x000784c8)
+i16 g_commandPosition;
+
 DATA(0x000784cc)
 static b16 s_pickScreenSaved;
 
@@ -57,6 +60,9 @@ static b16 s_pickDone;
 // The list menu a picked member acts through (NULL: none open).
 DATA(0x00078520)
 static MenuBox* s_pickMenu;
+
+DATA(0x00078528)
+u8 g_pickScreenSave[16];
 
 static __inline void ResetPartyCommandPick(void) {
     s_pickMode = 0;
@@ -157,10 +163,8 @@ void SetMemberPickRole(i16 id, i8 role) {
     }
 }
 
-static __inline i16 PickCurrentMemberAsTarget(Character* character) {
-    character->pickObject = PartyCombatantId(FindPartyPositionOfId(s_pickedIndex));
-    s_pickMode++;
-    return g_tickElapsed;
+static __inline i16 CurrentMemberCombatantId(void) {
+    return PartyCombatantId(FindPartyPositionOfId(s_pickedIndex));
 }
 
 static __inline i16 PickMemberActionTarget(Character* character, i16 flags, i16 range) {
@@ -246,16 +250,19 @@ i16 RunPartyCommandInput(void) {
             if (character->pickRole == 4) {
                 flags = GetSkillTargetFlags(character->pickTarget);
                 if (TargetFlagsSelectSelf(flags)) {
-                    return PickCurrentMemberAsTarget(character);
+                    result = CurrentMemberCombatantId();
+                    goto target_selected;
                 } else if (TargetFlagsSelectActorGroup(flags)) {
-                    return PickCurrentMemberAsTarget(character);
+                    result = CurrentMemberCombatantId();
+                    goto target_selected;
                 } else if (flags & TARGET_ACTOR_SIDE) {
                     reach = true;
                 }
             } else if (character->pickRole == 5) {
                 flags = GetItemTargetFlags(GetLoadedRecord(character->pickTarget));
                 if ((TargetFlagsSelectSelf(flags)) || TargetFlagsSelectActorGroup(flags)) {
-                    return PickCurrentMemberAsTarget(character);
+                    result = CurrentMemberCombatantId();
+                    goto target_selected;
                 }
                 if (character->pickTarget == 0x71) {
                     flags = TARGET_ACTOR_SIDE;
@@ -268,7 +275,9 @@ i16 RunPartyCommandInput(void) {
                 reach = true;
             }
             if (reach == 0 && HasObjectInReach(0, -1, 0)) {
-                character->pickObject = FindObjectAtParty();
+                result = FindObjectAtParty();
+            target_selected:
+                character->pickObject = result;
                 s_pickMode++;
                 return g_tickElapsed;
             }
@@ -345,7 +354,7 @@ i16 RunPartyCommandInput(void) {
             if (result < 1) {
                 break;
             }
-            g_pickHoveredObject = g_hoveredObjectId;
+            g_commandPosition = g_hoveredObjectId;
             if (!GetPickBlockingCondition(GetCharacterConditions(character))) {
                 QueueActionWait(GetCharacterActionWait(character));
             }

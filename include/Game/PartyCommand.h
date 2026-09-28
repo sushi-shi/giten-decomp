@@ -9,10 +9,6 @@
 // their TUs are claimed. Kept out of the field headers: field.c's codegen is
 // sensitive to their declaration count.
 
-// @identity-TODO: the object the cursor hovered when the last pick target was
-// confirmed (read back by 0x42b6a0). Placeholder extern.
-extern i16 g_pickHoveredObject;
-
 // Sets member `id`'s pick target from its role (the equipped weapon or item
 // for roles 1/2); returns how many command-input steps that settles.
 i16 PrepareMemberPickTarget(i16 id);
@@ -31,7 +27,7 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id);
 b16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange);
 i16 PickPartySlotTarget(i16 minimumRange, i16 mode);
 
-// @identity-TODO: screen-save storage extent and representation are unproven.
+// The sixteen-byte screen-save area used while picking a target.
 extern u8 g_pickScreenSave[];
 
 i16 RunPartyCommandInput(void);

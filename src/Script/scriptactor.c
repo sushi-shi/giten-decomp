@@ -27,7 +27,7 @@
 #include <stddef.h>
 
 DATA(0x000646c8)
-static i16 s_rewardLevelThresholds[16] =
+static const i16 s_rewardLevelThresholds[16] =
     {20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140};
 
 DATA(0x00081358)

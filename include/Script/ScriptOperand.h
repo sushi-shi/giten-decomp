@@ -13,7 +13,7 @@ extern i32 g_rolledMagnetite;
 // The unit OpPrintNumber appends to a printed value ("マッカ" or "ＭＡＧ"
 // after the script read a macca or magnetite amount).
 // @identity-TODO: its owner TU is unclaimed.
-extern char g_numberUnit[];
+extern char g_numberUnit[64];
 
 // Reads one typed operand from the script and returns its value's slot.
 i32* ReadScriptOperand(void);

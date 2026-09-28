@@ -6,6 +6,7 @@ import tempfile
 import io
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest import mock
 
 from giten.core.tsv import read as read_tsv
@@ -37,6 +38,20 @@ def fences():
 
 
 class FenceSpellingTest(unittest.TestCase):
+    def test_resolved_iat_slot_in_rdata_is_not_a_data_fence(self):
+        bounds = {".rdata": (0x1000, 0x2000), ".data": (0x2000, 0x3000)}
+        with mock.patch.object(pdb_synth, "retail",
+                               return_value=SimpleNamespace(image_base=0x400000)), \
+             mock.patch.object(pdb_synth, "sections_of", return_value=bounds), \
+             mock.patch.object(pdb_synth, "game_site_test",
+                               return_value=lambda _site: True), \
+             mock.patch.object(pdb_synth, "reloc_target_refs",
+                               return_value={0x1000: [0x5000], 0x1004: [0x5004]}):
+            rdata, data = pdb_synth.reloc_data_symbols(
+                None, [(0x1000, "__imp__Known@0")])
+        self.assertEqual(rdata, [(0x1004, "UNPROVISIONED_00401004")])
+        self.assertEqual(data, [])
+
     def test_strict_keeps_the_refused_spelling(self):
         rdata, data = fences()
         self.assertEqual(pdb_synth.relax_fences(rdata, data, True), 0)
@@ -79,6 +94,23 @@ class DataDebtTest(unittest.TestCase):
     def test_an_empty_worklist_is_still_written(self):
         _banner, header, rows = self._write([], False)
         self.assertEqual((header[0], rows), ("rva", []))
+
+
+class InteriorLiteralTest(unittest.TestCase):
+    def test_short_table_element_is_not_rebranded_as_a_string(self):
+        model = SimpleNamespace(data=[SimpleNamespace(
+            rva=0x2000, size=8, channel="src", name="_table")])
+        with mock.patch.object(pdb_synth, "reloc_data_symbols", return_value=(
+            [], [(0x2000, "_table"), (0x2002, "UNPROVISIONED_00402002")])), \
+             mock.patch.object(pdb_synth, "apply_named_data", return_value=0), \
+             mock.patch.object(pdb_synth.coffx, "build_string_map",
+                               return_value={b"\x01": "$SG1"}), \
+             mock.patch.object(pdb_synth, "retail",
+                               return_value=SimpleNamespace(cstring=lambda _rva: b"\x01")), \
+             mock.patch("giten.delink.data_manifest.c_string_rows",
+                        return_value=([], [])):
+            _rdata, data = pdb_synth.data_symbols(model, {}, base_dir=Path("."))
+        self.assertEqual(data, [(0x2000, "_table")])
 
 
 if __name__ == "__main__":

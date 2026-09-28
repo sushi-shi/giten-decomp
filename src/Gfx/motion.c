@@ -21,6 +21,12 @@
 
 #include <stddef.h>
 
+DATA(0x00078078)
+MotionFile g_motionFile;
+
+DATA(0x00078098)
+MotionTable g_loadedMotionTable;
+
 // @identity-TODO: this build only clears these three scene-input words.
 DATA(0x00078060)
 static i16 s_sceneInputFirst;

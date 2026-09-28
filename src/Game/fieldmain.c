@@ -50,6 +50,12 @@
 #include <Util/Range.h>
 #include <Util/Scratch.h>
 
+DATA(0x00091210)
+u8 g_leftFrontWalls[4][3];
+
+DATA(0x000912f0)
+u8 g_rightFrontWalls[4][3];
+
 // The world-map route queue (MapCoord points in a memory handle): its
 // capacity, read and write positions, and whether a route is being walked.
 DATA(0x0007b72c)
@@ -556,11 +562,14 @@ i16 GetReturnPoint(i16* out) {
 RVA(0x00012980, 0x38)
 void RecordWarpInLeader(void) {
     Character* leader = GetRosterCharacter(0);
-    leader->returnPosition.area = s_returnArea;
-    leader->returnPosition.level = s_returnLevel;
-    leader->returnPosition.x = s_returnX;
-    leader->returnPosition.y = s_returnY;
-    leader->returnPosition.direction = s_returnDirection;
+    SetSavedMapPosition(
+        &leader->returnPosition,
+        s_returnArea,
+        s_returnLevel,
+        s_returnX,
+        s_returnY,
+        s_returnDirection
+    );
 }
 
 // Saves the cell one step out of the exit the party stands on (and that

@@ -131,7 +131,8 @@ RVA(0x000019a0, 0x26)
 b16 StartGame(void) {
     InitGameData();
     ResetGameSession();
-    g_mouseLeftClick = g_mouseRightClick = 0;
+    g_mouseLeftClick = 0;
+    g_mouseRightClick = 0;
     SetGameState(0x27);
     return false;
 }
@@ -148,7 +149,8 @@ i16 StepGame(void) {
     TickGameTasks();
     state |= s_longFrame;
     s_longFrame = 0;
-    g_mouseLeftClick = g_mouseRightClick = 0;
+    g_mouseLeftClick = 0;
+    g_mouseRightClick = 0;
     AdvancePlayTime(state ? 31 : 24);
     if (g_field.pos.area == s_quitArea && g_field.pos.level == s_quitLevel
         && g_field.pos.x == s_quitX && g_field.pos.y == s_quitY

@@ -85,6 +85,15 @@ static struct {
 DATA(0x0007b7f0)
 static i16 s_viewHold;
 
+DATA(0x00091244)
+i16 g_viewX;
+
+DATA(0x00091246)
+i16 g_viewY;
+
+DATA(0x00091290)
+i16 g_viewReset;
+
 // Set when an encounter was requested (sound 1), cleared once handled.
 DATA(0x0007b7e0)
 static b16 s_encounterPending;

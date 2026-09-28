@@ -70,27 +70,12 @@ static AttachPage s_attach = {NULL, NULL, NULL, 0, -1, -1, 0, 0, 0, 0};
 // The item page: its menu, its info window, the sub-state to resume (and then
 // the item picked), and the copy of the bag it lists.
 DATA(0x0006a238)
-static MenuBox* s_itemMenu = NULL;
-
-DATA(0x0006a23c)
-static i16 s_itemPlane = -1;
-
-DATA(0x0006a23e)
-static i16 s_itemPick = -1;
-
-DATA(0x0006a240)
-static ItemStackList* s_itemList = NULL;
+static EquipItemPage s_itemPage = {NULL, -1, -1, NULL};
 
 // The skill page: its menu, its description window, and the sub-state to
 // resume (and then the skill picked).
 DATA(0x0006a248)
-static MenuBox* s_skillMenu = NULL;
-
-DATA(0x0006a24c)
-static i16 s_skillPlane = -1;
-
-DATA(0x0006a24e)
-static i16 s_skillPick = -1;
+static EquipSkillPage s_skillPage = {NULL, -1, -1};
 
 // The bag entries the attach page lists, and its two header lines.
 // The bag entries the equipment menu lists, and its two header lines.
@@ -122,6 +107,9 @@ static char s_skillHeaderLine[4];
 
 DATA(0x00083c90)
 static char s_emptySkillLabel[4];
+
+DATA(0x00083c94)
+char g_emptyEquipPickLabel[4];
 
 DATA(0x000649b8)
 static const i16 s_equipPickCategories[8] = {
@@ -823,9 +811,9 @@ RVA(0x00044650, 0x1e0)
 i16 RunItemPage(i16 sub) {
     if (sub != -1 && sub != -2) {
         SetGameSub(1);
-        s_itemPick = -2;
+        s_itemPage.pick = -2;
         if (sub != 3) {
-            s_itemPick = sub;
+            s_itemPage.pick = sub;
         }
     }
     switch (GetGameSub()) {
@@ -833,28 +821,34 @@ i16 RunItemPage(i16 sub) {
             SetGameSub(2);
             CompactBag();
             SetStatusMenuItemFlag(3, PANEL_ROW_CHECKED, 1);
-            s_itemMenu = CreateMenuBox(s_itemMenu, 0x19, 2);
-            MoveMenuBox(s_itemMenu, -8, -0x16);
-            s_itemList = CopyBagEntries(0, 64, NULL);
-            SetMenuItems(s_itemMenu, 8, s_itemList, GetItemListCount(s_itemList), ItemListHandler);
-            SetTextPlaneFirstSelectableRow(s_itemMenu->plane, 1, 1);
+            s_itemPage.menu = CreateMenuBox(s_itemPage.menu, 0x19, 2);
+            MoveMenuBox(s_itemPage.menu, -8, -0x16);
+            s_itemPage.list = CopyBagEntries(0, 64, NULL);
+            SetMenuItems(
+                s_itemPage.menu,
+                8,
+                s_itemPage.list,
+                GetItemListCount(s_itemPage.list),
+                ItemListHandler
+            );
+            SetTextPlaneFirstSelectableRow(s_itemPage.menu->plane, 1, 1);
             return -1;
         case 1:
-            s_itemPlane = CloseTextWindow(s_itemPlane);
-            s_itemMenu = CloseListMenu(s_itemMenu);
+            s_itemPage.plane = CloseTextWindow(s_itemPage.plane);
+            s_itemPage.menu = CloseListMenu(s_itemPage.menu);
             SetStatusMenuItemFlag(3, PANEL_ROW_CHECKED, 0);
-            return s_itemPick;
+            return s_itemPage.pick;
         case 2:
             if (sub == -2) {
                 PrevGameSub();
-                s_itemPick = sub;
+                s_itemPage.pick = sub;
                 return -1;
             }
-            if (RunListMenu(s_itemMenu) == -1) {
+            if (RunListMenu(s_itemPage.menu) == -1) {
                 break;
             }
             NextGameSub();
-            s_itemPick = g_selectedObjectId;
+            s_itemPage.pick = g_selectedObjectId;
             return -1;
         case 3:
             if (sub == -2) {
@@ -862,13 +856,13 @@ i16 RunItemPage(i16 sub) {
                 return -1;
             }
             NextGameSub();
-            s_itemPlane = OpenItemInfoPlane(s_itemPick);
+            s_itemPage.plane = OpenItemInfoPlane(s_itemPage.pick);
             return -1;
         case 4:
             if (sub != -2 && !TakeMouseLeftClick()) {
                 break;
             }
-            s_itemPlane = CloseTextWindow(s_itemPlane);
+            s_itemPage.plane = CloseTextWindow(s_itemPage.plane);
             SetGameSub(2);
             break;
     }
@@ -883,7 +877,7 @@ static void ItemListHandler(MenuBox* menu, i16 index, i16 event) {
         case MENU_EVENT_DESTROY:
             menu->items.table = NULL;
             menu->itemCount = 0;
-            s_itemList = FreeBlock(s_itemList);
+            s_itemPage.list = FreeBlock(s_itemPage.list);
             break;
         case MENU_EVENT_BEGIN_PAGE:
             // "所持アイテム %1d/8" (items held, page %d of 8)
@@ -895,13 +889,13 @@ static void ItemListHandler(MenuBox* menu, i16 index, i16 event) {
             AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
             break;
         case MENU_EVENT_ADD_ROW:
-            item = GetItemStackItem(GetItemListEntry(s_itemList, index));
+            item = GetItemStackItem(GetItemListEntry(s_itemPage.list, index));
             sprintf(
                 g_scratchBuffer,
                 "%c %-30.30s%2d",
-                HasItemStackAttachment(GetItemListEntry(s_itemList, index)) ? '*' : ' ',
+                HasItemStackAttachment(GetItemListEntry(s_itemPage.list, index)) ? '*' : ' ',
                 GetLoadedRecordName(item),
-                GetItemStackCount(GetItemListEntry(s_itemList, index))
+                GetItemStackCount(GetItemListEntry(s_itemPage.list, index))
             );
             AddMenuLine(menu->plane, g_scratchBuffer, 0x460, item, 0);
             break;
@@ -1032,52 +1026,52 @@ RVA(0x00044c30, 0x1c0)
 i16 RunSkillPage(i16 sub) {
     if (sub != -1 && sub != -2) {
         SetGameSub(1);
-        s_skillPick = -2;
+        s_skillPage.pick = -2;
         if (sub != 4) {
-            s_skillPick = sub;
+            s_skillPage.pick = sub;
         }
     }
     switch (GetGameSub()) {
         case 0:
             SetGameSub(2);
             SetStatusMenuItemFlag(4, PANEL_ROW_CHECKED, 1);
-            s_skillMenu = CreateSkillMenu(g_statusMember, s_skillMenu);
+            s_skillPage.menu = CreateSkillMenu(g_statusMember, s_skillPage.menu);
             return -1;
         case 1:
-            s_skillPlane = CloseTextWindow(s_skillPlane);
-            s_skillMenu = DestroyMenuBox(s_skillMenu);
+            s_skillPage.plane = CloseTextWindow(s_skillPage.plane);
+            s_skillPage.menu = DestroyMenuBox(s_skillPage.menu);
             SetStatusMenuItemFlag(4, PANEL_ROW_CHECKED, 0);
-            return s_skillPick;
+            return s_skillPage.pick;
         case 2:
             if (sub == -2) {
                 PrevGameSub();
-                s_skillPick = sub;
+                s_skillPage.pick = sub;
                 return -1;
             }
-            if (RunListMenu(s_skillMenu) == -1) {
+            if (RunListMenu(s_skillPage.menu) == -1) {
                 break;
             }
             NextGameSub();
-            s_skillPick = g_selectedObjectId;
+            s_skillPage.pick = g_selectedObjectId;
             return -1;
         case 3:
             NextGameSub();
-            s_skillPlane = CreateTextPlane(0x20, 0);
-            ClearTextPlane(s_skillPlane);
+            s_skillPage.plane = CreateTextPlane(0x20, 0);
+            ClearTextPlane(s_skillPage.plane);
             PrintWindowText(
-                s_skillPlane,
-                FilterTextMarks(GetSkillDescription(s_skillPick), 1),
+                s_skillPage.plane,
+                FilterTextMarks(GetSkillDescription(s_skillPage.pick), 1),
                 0x400,
                 0,
                 1
             );
-            RepaintTextPlane(s_skillPlane, -2);
+            RepaintTextPlane(s_skillPage.plane, -2);
             return -1;
         case 4:
             if (!TakeClickUnlessCancel(sub)) {
                 break;
             }
-            s_skillPlane = CloseTextWindow(s_skillPlane);
+            s_skillPage.plane = CloseTextWindow(s_skillPage.plane);
             SetGameSub(2);
             break;
     }

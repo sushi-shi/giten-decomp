@@ -51,10 +51,10 @@ static i32 s_gunDistribution;
 
 RVA(0x00008450, 0x2f)
 i16 GetCombatantSideRelation(void) {
-    if (g_actorId < 0 && g_targetId < 0) {
+    if (g_targetId < 0 && g_actorId < 0) {
         return -1;
     }
-    if (g_actorId >= 0 && g_targetId >= 0) {
+    if (g_targetId >= 0 && g_actorId >= 0) {
         return 1;
     }
     return 0;
@@ -91,13 +91,13 @@ static __inline i16 GetCombatantFacing(i16 id) {
 RVA(0x000085a0, 0x65)
 i16 GetCombatantFacingDifference(i16 first, i16 second) {
     i16 direction;
-    i16 difference;
+    i16 facingDifference;
     if (first < 0 && second < 0) {
         return 0;
     }
     direction = GetCombatantFacing(first);
-    difference = GetCombatantFacing(second) - direction - 2;
-    return difference & 3;
+    facingDifference = OppositeDirection(GetCombatantFacing(second) - direction);
+    return facingDifference;
 }
 
 RVA(0x00008610, 0x59)

@@ -64,9 +64,8 @@ ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, i16* result);
 // in the character's `ammoCounts` entry.
 ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index);
 
-// The index into Character `ammoCounts` that equipping ammunition writes: a
-// read-only word, -1 in retail (0x4648fc, .rdata), so the store never runs.
-// Placeholder extern (only reader: EquipItem).
+// The index into Character `ammoCounts` that equipping ammunition writes:
+// a read-only -1 in retail, so the store never runs.
 extern const i16 g_ammoCountIndex;
 
 // Sets equipment part `part` of roster member `slot`. When `check` is set,

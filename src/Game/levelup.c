@@ -390,7 +390,7 @@ b16 RunLevelUp(void) {
                 case 3:
                     NextGameStep();
                     ResetTextPlaneMenu(s_statWindow, 0, 0);
-                    SetTextPlaneHighlightMode(s_statWindow, 1);
+                    SetTextPlaneHighlightMode(s_statWindow, TEXT_HIGHLIGHT_OUTER);
                     s_remaining = CountPendingLevels(s_levelUpSlot);
                     memset(s_statPicks, 0, sizeof(s_statPicks));
                     if (!CountRaisableStats(member)) {
