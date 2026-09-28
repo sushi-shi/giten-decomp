@@ -31,6 +31,7 @@ sizes). It reads the candidate EXE/map under `build/exe/`, checks symbol closure
 and section sizes, and compares linked bytes of exact functions with relocation
 masking. A masked pointer still needs referent evidence; see [data attribution](data-attribution.md).
 
-The candidate omits `.rsrc` until a resource script and assets are reconstructed.
+The candidate's `.rsrc` comes from `build/gen/retail.res`, converted from the
+local retail executable until a resource script is reconstructed.
 It is a link/layout artifact. Do not use `/FORCE` or fabricated padding to hide
 unresolved symbols, duplicate definitions, or placement differences.
