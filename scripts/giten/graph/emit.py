@@ -24,6 +24,8 @@ is the DEFAULT target; `verify_check` runs only for the `verify` target
                 opt-in (`giten build verify`)
     retail_res / link   PHASE 2, opt-in (`ninja candidate`): base objs + .res ->
                 the candidate image + .map for the link-order study
+    play        opt-in (`giten play`): every unit again with the bug-fix
+                defines -> build/play/obj, + the .res -> build/play/DDS.EXE
 
 Two edges declare a STAMP rather than their real outputs, because neither set
 can be enumerated at configure time: `delink` writes one object per unit that
@@ -336,6 +338,32 @@ def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str], retail: str) -
     w.newline()
 
 
+def emit_play_phase(w: ninja_syntax.Writer, cl_edges: list[tuple]) -> None:
+    """Opt-in (`giten play`): bug-fixed objects + retail .res -> build/play/DDS.EXE.
+
+    Every unit compiles again with its own profile plus graph.PLAY_DEFINES into
+    a separate object tree, so the matching objects never see the defines. The
+    .res edge is the candidate link's (emit_link_phase).
+    """
+    w.comment("=== play: bug-fixed objects + retail .res -> playable EXE (opt-in: `giten play`) ===")
+    play_objs = []
+    for _obj, src, headers, cflags, unit in cl_edges:
+        obj = f"{graph.PLAY_OBJ_DIR}/{unit}.obj"
+        play_objs.append(obj)
+        w.build(obj, "cl", inputs=src,
+                implicit=headers + CL_MODS + [graph.TOOLCHAIN_ID],
+                variables={"unit": unit,
+                           "cflags": " ".join([*cflags, *graph.PLAY_DEFINES])})
+    w.rule("play_link",
+           command=(f"$py -m giten.graph.link --out {graph.PLAY_EXE} "
+                    f"--objs-dir {graph.PLAY_OBJ_DIR} --res {graph.RESOURCE_RES}"),
+           description="link playable EXE")
+    w.build([graph.PLAY_EXE, graph.PLAY_MAP], "play_link", inputs=play_objs,
+            implicit=[graph.RESOURCE_RES, MANIFEST] + LINK_MODS)
+    w.build("play", "phony", inputs=[graph.PLAY_EXE])
+    w.newline()
+
+
 def emit(out: Path | None = None) -> tuple[int, int]:
     """Write build/build.ninja. Returns (units, pruned artifacts)."""
     manifest, units = load_units()
@@ -578,6 +606,7 @@ def emit(out: Path | None = None) -> tuple[int, int]:
         w.newline()
 
         emit_link_phase(w, base_objs, retail)
+        emit_play_phase(w, cl_edges)
 
     return len(units), pruned
 
