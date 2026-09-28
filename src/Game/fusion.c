@@ -47,51 +47,6 @@
 DATA(0x00064670)
 static const i16 s_fusionFlagLevelBonuses[4] = {0, 5, 7, 10};
 
-DATA(0x00080a38)
-static b16 s_randomFusion;
-DATA(0x00080a3c)
-static i16 s_fusionLevelAllowance;
-
-DATA(0x00080a40)
-static i16 s_fusionResultKind;
-
-// @identity-TODO: a two-byte configuration record loaded but never read.
-DATA(0x00080a60)
-static u16 s_fusionConfigValue;
-
-// @identity-TODO: the particular race/class selected by the loaded fusion
-// configuration remains unnamed.
-DATA(0x00080a64)
-static i32 s_fusionSpecialRace;
-DATA(0x00080a6c)
-static i32 s_fusionRestrictedClass;
-
-DATA(0x00080a50)
-static i32 s_fusionRaceMatrix;
-DATA(0x00080a54)
-static i32 s_fusionSameRaceChanges;
-DATA(0x00080a58)
-static i32 s_fusionDemonMatrix;
-
-DATA(0x00080a5c)
-static i32 s_fusionSpecialRaceChanges;
-
-DATA(0x00080a70)
-static i32 s_fusionClassMatrix;
-DATA(0x00080a74)
-static i32 s_fusionRaceRows;
-
-DATA(0x00080a78)
-static i32 s_fusionPairs;
-DATA(0x00080a7c)
-static i32 s_fusionPrimaryComplements;
-
-DATA(0x00080a80)
-static i32 s_fusionFlagRestrictions;
-
-DATA(0x00080a68)
-static i32 s_fusionFallbackHandle;
-
 DATA(0x00068f88)
 static i16 s_fusionInfoPlane = -1;
 
@@ -143,77 +98,146 @@ i16 g_fusionResult = -1;
 DATA(0x00068fe0)
 static i16 s_fusionSummaryIcons[14] = {14, 13, 3, 4, 5, 6, 7, 8, 9, 11, 12, 0, 1, 2};
 
-DATA(0x00080198)
-static i16 s_fusionPageAction;
-
-DATA(0x000801a0)
-static FusionSummary s_fusionPairSummaries[32 * 32];
-
-DATA(0x000809a0)
-static FusionSummary s_fusionSummary;
-
-DATA(0x000809a8)
-static i16 s_fusionSlots[32];
-
-DATA(0x000809e8)
-static u32 s_fusionSelectionImage;
-
-DATA(0x000809ec)
-static MenuBox* s_fusionMenu;
-
-DATA(0x000809f0)
-static TextPlaneHook s_previousFusionTextHook;
-
-DATA(0x000809f4)
-static i16 s_fusionColumnOffset;
-
-DATA(0x000809f8)
-static Panel* s_fusionPager;
-
-DATA(0x000809fc)
-static FusionSummary s_cachedFusionSummary;
-
-DATA(0x00080a00)
-static PaletteState* s_fusionSelectionPaletteState;
-
-DATA(0x00080a04)
-static i16 s_fusionResultId;
-
-DATA(0x00080a08)
-static i16 s_fusionCandidateCount;
-
-DATA(0x00080a0c)
-static Character* s_savedFusionCharacter;
-
-DATA(0x00080a10)
-u8 g_fusionPreviewSave[16] = {0};
+DATA(0x00080110)
+static i32 s_animationImageSize = 0;
 
 DATA(0x00080118)
 char g_fusionNameBuffer[128] = {0};
+
+DATA(0x00080198)
+static i16 s_fusionPageAction = 0;
+
+DATA(0x000801a0)
+static FusionSummary s_fusionPairSummaries[32 * 32] = {0};
+
+DATA(0x000809a0)
+static FusionSummary s_fusionSummary = {0};
+
+DATA(0x000809a4)
+static struct BmpFile* s_animationImage = 0;
+
+DATA(0x000809a8)
+static i16 s_fusionSlots[32] = {0};
+
+DATA(0x000809e8)
+static u32 s_fusionSelectionImage = 0;
+
+DATA(0x000809ec)
+static MenuBox* s_fusionMenu = 0;
+
+DATA(0x000809f0)
+static TextPlaneHook s_previousFusionTextHook = 0;
+
+DATA(0x000809f4)
+static i16 s_fusionColumnOffset = 0;
+
+DATA(0x000809f8)
+static Panel* s_fusionPager = 0;
+
+DATA(0x000809fc)
+static FusionSummary s_cachedFusionSummary = {0};
+
+DATA(0x00080a00)
+static PaletteState* s_fusionSelectionPaletteState = 0;
+
+DATA(0x00080a04)
+static i16 s_fusionResultId = 0;
+
+DATA(0x00080a08)
+static i16 s_fusionCandidateCount = 0;
+
+DATA(0x00080a0c)
+static Character* s_savedFusionCharacter = 0;
+
+DATA(0x00080a10)
+u8 g_fusionPreviewSave[16] = {0};
 
 DATA(0x00080a20)
 PaletteState* g_fusionPaletteState = 0;
 
 DATA(0x00080a24)
-static FusionSummary* s_fusionSummaryTable;
+static FusionSummary* s_fusionSummaryTable = 0;
+
+DATA(0x00080a28)
+static u8* s_animationScript = 0;
+
+DATA(0x00080a2c)
+static i16 s_animationResource = 0;
+
+DATA(0x00080a30)
+static i16 s_animationX = 0;
+
+DATA(0x00080a34)
+static i16 s_animationY = 0;
+
+DATA(0x00080a38)
+static b16 s_randomFusion = false;
+
+DATA(0x00080a3c)
+static i16 s_fusionLevelAllowance = 0;
+
+DATA(0x00080a40)
+static i16 s_fusionResultKind = 0;
+
+DATA(0x00080a44)
+static i16 s_initialFusionStep = 0;
+
+DATA(0x00080a48)
+static i16 s_fusionResultVariable = 0;
+
+DATA(0x00080a4c)
+static b16 s_restoreFusionRenderMode = false;
+
+DATA(0x00080a50)
+static i32 s_fusionRaceMatrix = 0;
+
+DATA(0x00080a54)
+static i32 s_fusionSameRaceChanges = 0;
+
+DATA(0x00080a58)
+static i32 s_fusionDemonMatrix = 0;
+
+DATA(0x00080a5c)
+static i32 s_fusionSpecialRaceChanges = 0;
+
+// @identity-TODO: a two-byte configuration record loaded but never read.
+DATA(0x00080a60)
+static u16 s_fusionConfigValue = 0;
+
+// @identity-TODO: the particular race (here) and class (s_fusionRestrictedClass)
+// selected by the loaded fusion configuration remain unnamed.
+DATA(0x00080a64)
+static i32 s_fusionSpecialRace = 0;
+
+DATA(0x00080a68)
+static i32 s_fusionFallbackHandle = 0;
+
+DATA(0x00080a6c)
+static i32 s_fusionRestrictedClass = 0;
+
+DATA(0x00080a70)
+static i32 s_fusionClassMatrix = 0;
+
+DATA(0x00080a74)
+static i32 s_fusionRaceRows = 0;
+
+DATA(0x00080a78)
+static i32 s_fusionPairs = 0;
+
+DATA(0x00080a7c)
+static i32 s_fusionPrimaryComplements = 0;
+
+DATA(0x00080a80)
+static i32 s_fusionFlagRestrictions = 0;
 
 DATA(0x00080a84)
-static b16 s_fusionPageActionPending;
+static b16 s_fusionPageActionPending = false;
 
 DATA(0x00080a88)
 char g_fusionMissingName[4] = {0};
 
 DATA(0x00080a8c)
 char g_fusionMissingRace[4] = {0};
-
-DATA(0x00080a44)
-static i16 s_initialFusionStep;
-
-DATA(0x00080a48)
-static i16 s_fusionResultVariable;
-
-DATA(0x00080a4c)
-static b16 s_restoreFusionRenderMode;
 
 RVA(0x00026550, 0x27)
 i16 SetFusionResult(i16 demon, i16 kind) {
@@ -1263,24 +1287,6 @@ i16 IsFusionDemonRestricted(i16 demon) {
     }
     return restricted;
 }
-
-DATA(0x00080110)
-static i32 s_animationImageSize;
-
-DATA(0x000809a4)
-static struct BmpFile* s_animationImage;
-
-DATA(0x00080a28)
-static u8* s_animationScript;
-
-DATA(0x00080a2c)
-static i16 s_animationResource;
-
-DATA(0x00080a30)
-static i16 s_animationX;
-
-DATA(0x00080a34)
-static i16 s_animationY;
 
 RVA(0x000286a0, 0x6)
 struct BmpFile* GetScreenEffectImage(void) {
