@@ -54,7 +54,7 @@ charsave	11	10
 clickwait	1	1
 clock	9	7
 clockops	6	6
-compare	74	72
+compare	74	71
 condition	23	22
 d3dapp	41	35
 datafile	19	19
@@ -163,7 +163,7 @@ treasurebox	1	1
 treasurestate	1	0
 vec3	10	8
 videostate	5	5
-vram	44	40
+vram	44	41
 vramaccess	12	12
 vramcell	14	14
 waitstate	7	7
@@ -171,7 +171,7 @@ walltexture	1	1
 weaponattack	5	4
 windowcolor	13	13
 windowtext	2	1
-winmain	128	120
+winmain	128	121
 worldblocks	26	26
 worldencounter	14	14
 worldevents	4	4
@@ -378,7 +378,7 @@ blit	_SkipLegacyScriptBlit	100.0000	100.0000	1	4ad4aeb0b11d	0x1850	100.0000
 blit	_SkipOffsetSceneSprite	100.0000	100.0000	1	9fb1518ceaeb	0x16d0	100.0000	
 blit	_SkipViewportSceneSprite	100.0000	100.0000	1	116c8f7a81da	0x16e0	100.0000	
 blit	_TestSceneSpritePixel	100.0000	100.0000	3	9dbf51c44bb0	0x17c0	100.0000	
-bmpseek	_LoadBitmapToSurface16	99.7110	99.7110	9	65b873ed1cc7	0x56bd0	99.7110	
+bmpseek	_LoadBitmapToSurface16	99.8728	99.8728	9	65b873ed1cc7	0x56bd0	99.8728	
 bmpseek	_LoadBitmapToSurface8	100.0000	100.0000	7	ed9a52845111	0x56de0	100.0000	
 bmpseek	_SeekBitmap	100.0000	100.0000	3	79cc1e98cdd6	0x56b00	100.0000	
 celltrap	_GetCellTrapDamage	100.0000	98.8571	4	873bac125595	0x1c920	100.0000	
@@ -525,7 +525,7 @@ compare	_OpListBagByCategory	100.0000	100.0000	2	5035a2ffe939	0x35920	100.0000
 compare	_OpOpenFusionScreen	100.0000	100.0000	1	4e72db4edba3	0x35b90	100.0000	
 compare	_OpOpenItemListWindow	100.0000	100.0000	2	3a1e989e8ae7	0x356f0	100.0000	
 compare	_OpQueueAutoMoves	100.0000	100.0000	1	696d5d9a9f89	0x35cf0	100.0000	
-compare	_OpRebalanceMemberStats	100.0000	100.0000	5	24226e0d10a3	0x36560	100.0000	
+compare	_OpRebalanceMemberStats	100.0000	99.7826	5	24226e0d10a3	0x36560	100.0000	
 compare	_OpRedrawItemListTotal	100.0000	100.0000	1	1cf00660ce34	0x35770	100.0000	
 compare	_OpRemoveFromRoster	100.0000	100.0000	2	66eb72a60a55	0x361b0	100.0000	
 compare	_OpRunFusion	100.0000	100.0000	1	1b951b1f9476	0x35bb0	100.0000	
@@ -1917,7 +1917,7 @@ resourcebitmap	_LoadPictureFile	100.0000	100.0000	1	c68d81bb9ebf	0x57520	100.000
 resourcebitmap	_ReleaseTexture	100.0000	100.0000	3	ad2cadccb436	0x576d0	100.0000	
 resourcebitmap	_ShadeTexture	100.0000	100.0000	3	ea2fca5c4cd1	0x57590	100.0000	
 resourceblit	_BlitImage	100.0000	100.0000	1	f911230f7de1	0x57290	100.0000	
-resourceblit	_CopyResourceBitmap16	99.7597	99.6299	5	426ff26e69fb	0x56f30	99.7597	
+resourceblit	_CopyResourceBitmap16	99.8052	99.8052	5	426ff26e69fb	0x56f30	99.8052	
 resourceblit	_CopyResourceBitmap8	100.0000	100.0000	6	cc15b2e119d3	0x57120	100.0000	
 restore	_ApplyRestoreEffect	100.0000	100.0000	12	6e32c9aa9376	0x1fe90	100.0000	
 restore	_ComputeRestoreAmount	100.0000	100.0000	4	a4dd284d8beb	0x1fdc0	100.0000	
@@ -2570,7 +2570,7 @@ vram	_ReadMaskColumn	100.0000	100.0000	1	1ee8fc525aed	0x2db0	100.0000
 vram	_ReleaseImageBlockHandle	100.0000	100.0000	1	449027966b29	0x33d0	100.0000	
 vram	_ReleaseImagePalette	100.0000	100.0000	1	13ee5242d335	0x30d0	100.0000	
 vram	_ReleasePaletteEntry	100.0000	100.0000	1	950683ad5512	0x2fe0	100.0000	
-vram	_ResetMask	100.0000	99.9487	1	edc9613600ae	0x2b70	100.0000	
+vram	_ResetMask	100.0000	100.0000	1	edc9613600ae	0x2b70	100.0000	
 vram	_ResetUpperPalette	76.5833	76.5833	2	c5e66b996516	0x2ec0	76.5833	
 vram	_RestorePaletteState	100.0000	100.0000	2	d95d954f5697	0x2f00	100.0000	
 vram	_RetainPaletteEntry	100.0000	100.0000	1	4e675d47be27	0x2f20	100.0000	
@@ -2705,7 +2705,7 @@ winmain	?ResetFrameCount@@YAXXZ	100.0000	100.0000	1	08b855a84948	0x49830	100.000
 winmain	?RestoreCursorClip@@YAXPAUtagRECT@@@Z	100.0000	100.0000	1	0045c57d91cc	0x498b0	100.0000	
 winmain	?RestoreTextures@@YAXXZ	100.0000	100.0000	2	c0868f7ce98c	0x4fdf0	100.0000	
 winmain	?RunJoystickMove@@YAHXZ	100.0000	100.0000	1	225b3870c139	0x504c0	100.0000	
-winmain	?ShadeMesh@@YAXPAUMesh@@@Z	98.4359	98.4359	1	da1c3f11bbba	0x4ae30	98.4359	
+winmain	?ShadeMesh@@YAXPAUMesh@@@Z	100.0000	100.0000	1	da1c3f11bbba	0x4ae30	100.0000	
 winmain	?SlideBack@@YAHPAM@Z	100.0000	100.0000	1	23530e635421	0x4a640	100.0000	
 winmain	?SlideForward@@YAHPAM@Z	100.0000	100.0000	1	1c19f8d375cd	0x4a530	100.0000	
 winmain	?SlideLeft@@YAHPAM@Z	100.0000	100.0000	1	782ce138c45c	0x4a750	100.0000	

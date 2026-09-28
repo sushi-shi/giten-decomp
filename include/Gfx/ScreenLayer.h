@@ -71,12 +71,6 @@ typedef struct ScreenLayer {
 
 extern ScreenLayer* g_screenLayers[SCREEN_LAYER_COUNT];
 
-// @identity-TODO: blits image `image` of the image set to (x, y) on
-// `surface`; the loader TU (0x57290) is not claimed yet.
-
-RVA_DECL(0x00057290)
-b32 BlitImage(LPDIRECTDRAWSURFACE surface, u16 image, i32 x, i32 y);
-
 i16 IsPanelLayerVisible(void);
 
 // The party member id shown by the visible command panel, else -1.

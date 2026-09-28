@@ -79,6 +79,7 @@ extern "C" {
 #endif
 
     b32 CopyResourceBitmap16(BitmapResource* bmp, IDirectDrawSurface** surface, i32 x, i32 y);
+    b32 BlitImage(LPDIRECTDRAWSURFACE surface, u16 image, i32 x, i32 y);
     b32 CopyResourceBitmap8(
         BitmapResource* bmp,
         IDirectDrawSurface** surface,

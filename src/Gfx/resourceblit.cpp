@@ -3,7 +3,7 @@
 #include <rva.h>
 
 #include <Gfx/Bitmap.h>
-#include <Platform/GameApi.h>
+#include <Gfx/DDraw.h>
 
 #include <string.h>
 
