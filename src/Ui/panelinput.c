@@ -31,7 +31,7 @@ void SetPanelSilent(i16 silent) {
 }
 
 RVA(0x0001caf0, 0xe)
-i16 IsPanelActive(i16 value) {
+b16 IsPanelActive(i16 value) {
     return s_activePanel != NULL;
 }
 
@@ -45,47 +45,47 @@ Panel* ExchangeActivePanel(Panel* panel) {
 // Latches a left click (or, when held-button input is enabled, the held button) and its
 // position; clears the right-click mark.
 RVA(0x0001cb10, 0x65)
-i16 CheckPanelLeftClick(Panel* panel) {
+b16 CheckPanelLeftClick(Panel* panel) {
     panel->input.rightClick = 0;
     g_panelClickX = g_mouseLeftClickX;
     g_panelClickY = g_mouseLeftClickY;
     if (!g_mouseLeftClick) {
         if (!(panel->flags & PANEL_HELD_BUTTON_INPUT)) {
-            return 0;
+            return false;
         }
         if (!(g_mousePosition.buttons & MOUSE_LEFT_DOWN)) {
-            return 0;
+            return false;
         }
         g_panelClickX = g_mousePosition.x;
         g_panelClickY = g_mousePosition.y;
     }
-    return 1;
+    return true;
 }
 
 // The same for the right button on panels that allow it;
 // marks the panel (bit 0).
 RVA(0x0001cb80, 0x7a)
-i16 CheckPanelRightClick(Panel* panel) {
+b16 CheckPanelRightClick(Panel* panel) {
     if (!(panel->flags & PANEL_ALLOW_RIGHT_CLICK)) {
-        return 0;
+        return false;
     }
     if (panel->flags & PANEL_IGNORE_RIGHT_CLICK) {
-        return 0;
+        return false;
     }
     g_panelClickX = g_mouseRightClickX;
     g_panelClickY = g_mouseRightClickY;
     if (!g_mouseRightClick) {
         if (!(panel->flags & PANEL_HELD_BUTTON_INPUT)) {
-            return 0;
+            return false;
         }
         if (!(g_mousePosition.buttons & MOUSE_RIGHT_DOWN)) {
-            return 0;
+            return false;
         }
         g_panelClickX = g_mousePosition.x;
         g_panelClickY = g_mousePosition.y;
     }
     panel->input.rightClick = 1;
-    return 1;
+    return true;
 }
 
 // The row whose hotspot x/y hits (skipping hidden or disabled rows, and on a

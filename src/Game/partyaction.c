@@ -258,16 +258,16 @@ i16 PickRandomAllyAttack(i16 id) {
 }
 
 RVA(0x00005fc0, 0x22)
-i16 PickActorDialogue(i16 id) {
+b16 PickActorDialogue(i16 id) {
     if (id < 0) {
-        return 0;
+        return false;
     }
     GetCombatant(id)->mode = 11;
-    return 1;
+    return true;
 }
 
 RVA(0x00005ff0, 0x6b)
-i16 DelayActionSide(i16 id) {
+b16 DelayActionSide(i16 id) {
     FieldObject* fieldObject;
     i16 i;
     i16 object;
@@ -280,7 +280,7 @@ i16 DelayActionSide(i16 id) {
             }
         }
         MarkPickDone();
-        return 1;
+        return true;
     }
     for (i = 0; i < 16; i++) {
         object = GetLiveObject(i);
@@ -289,11 +289,11 @@ i16 DelayActionSide(i16 id) {
             DelayActionWait(GetFieldObjectActionWait(fieldObject), 50);
         }
     }
-    return 1;
+    return true;
 }
 
 RVA(0x00006060, 0x57)
-i16 ResetActionWaits(void) {
+b16 ResetActionWaits(void) {
     i16 i;
     i16 object;
     Character* member;
@@ -310,7 +310,7 @@ i16 ResetActionWaits(void) {
         }
     }
     MarkPickDone();
-    return 1;
+    return true;
 }
 
 RVA(0x000060c0, 0x77)
@@ -325,7 +325,7 @@ i16 PickRandomAttack(i16 id) {
 }
 
 RVA(0x00006140, 0x34)
-i16 SwapPartyRows(void) {
+b16 SwapPartyRows(void) {
     i16 i;
     i16 member;
     for (i = 0; i < 3; i++) {
@@ -335,7 +335,7 @@ i16 SwapPartyRows(void) {
     }
     MarkPickDone();
     FlushStatusRedraw(1);
-    return 1;
+    return true;
 }
 
 RVA(0x00006180, 0x1bc)
@@ -486,106 +486,106 @@ i16 RunActorCommandMenu(i16 id) {
 }
 
 RVA(0x00006500, 0xaa)
-i16 FormatAttackCommand(Character* actor) {
+b16 FormatAttackCommand(Character* actor) {
     ItemRecord record;
     if (GetCharacterEquipment(actor)[5].item < 1) {
         strcpy(g_scratchBuffer, "ATTACK");
-        return 1;
+        return true;
     }
     DecodeItemRecord(&record, GetCharacterEquipment(actor)[5].item);
     if (!record.kind) {
         strcpy(g_scratchBuffer, "ATTACK");
-        return 1;
+        return true;
     }
     strcpy(g_scratchBuffer, "SWORD");
-    return 1;
+    return true;
 }
 
 RVA(0x000065b0, 0xb0)
-i16 FormatGunCommand(Character* actor) {
+b16 FormatGunCommand(Character* actor) {
     ItemRecord record;
     if (GetCharacterEquipment(actor)[6].item < 1) {
-        return 0;
+        return false;
     }
     if (HasObjectInReach(0, -1, 0)) {
-        return 0;
+        return false;
     }
     strcpy(g_scratchBuffer, "GUN");
     DecodeItemRecord(&record, GetCharacterEquipment(actor)[6].item);
     if (!record.kind) {
-        return 0;
+        return false;
     }
     if (GetCharacterEquipment(actor)[7].item < 1) {
-        return 0;
+        return false;
     }
     DecodeItemRecord(&record, GetCharacterEquipment(actor)[7].item);
     return record.kind != 0;
 }
 
 RVA(0x00006660, 0x77)
-i16 FormatMagicCommand(Character* actor) {
+b16 FormatMagicCommand(Character* actor) {
     i16 index;
     strcpy(g_scratchBuffer, "MAGIC");
     if (!GetWordCount(GetCharacterSkills(actor))) {
-        return 0;
+        return false;
     }
     for (index = 0; index < GetWordCount(GetCharacterSkills(actor)); index++) {
         if (GetSkillCost(GetWord(GetCharacterSkills(actor), index)) >= 0) {
             CanUseSkill(GetWord(GetCharacterSkills(actor), index), actor);
         }
     }
-    return 1;
+    return true;
 }
 
 RVA(0x000066e0, 0x39)
-i16 FormatItemCommand(Character* actor) {
+b16 FormatItemCommand(Character* actor) {
     strcpy(g_scratchBuffer, "ITEM");
     if (!actor) {
-        return 0;
+        return false;
     }
     if (!IsHumanCharacter(actor)) {
-        return 0;
+        return false;
     }
     return CountBagEntries() != 0;
 }
 
 RVA(0x00006720, 0x2a)
-i16 FormatCompCommand(Character* actor) {
+b16 FormatCompCommand(Character* actor) {
     strcpy(g_scratchBuffer, "COMP");
     return actor->compState == 1;
 }
 
 RVA(0x00006750, 0x76)
-i16 FormatExtraCommand(Character* actor) {
+b16 FormatExtraCommand(Character* actor) {
     i16 index;
     strcpy(g_scratchBuffer, "EXTRA");
     if (!GetWordCount(GetCharacterSkills(actor))) {
-        return 0;
+        return false;
     }
     for (index = 0; index < GetWordCount(GetCharacterSkills(actor)); index++) {
         if (GetSkillCost(GetWord(GetCharacterSkills(actor), index)) <= 0) {
             CanUseSkill(GetWord(GetCharacterSkills(actor), index), actor);
         }
     }
-    return 0;
+    return false;
 }
 
 RVA(0x000067d0, 0x40)
-i16 FormatReturnCommand(Character* actor) {
+b16 FormatReturnCommand(Character* actor) {
     if (!g_fieldBattleActive) {
-        return 0;
+        return false;
     }
     strcpy(g_scratchBuffer, "RETURN");
     return !IsHumanCharacter(actor);
 }
 
 RVA(0x00006810, 0x27)
-i16 FormatDefenceCommand(Character* actor) {
+b16 FormatDefenceCommand(Character* actor) {
     if (!actor) {
-        return 0;
+        return false;
     }
     strcpy(g_scratchBuffer, "DEFENCE");
-    return 1;
+    return true;
 }
 
 RVA(0x00006840, 0xb4)
@@ -651,7 +651,7 @@ void FillCharacterCommands(i16* list, i16 id) {
 }
 
 RVA(0x00006a00, 0x39)
-i16 ResetPartyTurnState(void) {
+b16 ResetPartyTurnState(void) {
     i16 index;
     Character* actor;
     for (index = 0; index < 6; index++) {
@@ -660,7 +660,7 @@ i16 ResetPartyTurnState(void) {
             ClearActionWait(GetCharacterActionWait(actor));
         }
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00006a40, 0x32)

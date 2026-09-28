@@ -14,7 +14,7 @@ typedef struct ElementPool {
 void AllocatePool(ElementPool* pools, i16 index, u16 count);
 void ResetPool(ElementPool* pools, i16 index);
 ElementPool* CreatePools(void);
-i32 FreePools(i32 pools);
+b32 FreePools(i32 pools);
 void* GetPoolChunk(i32 pools, i16 index, u32 id);
 
 #endif // GITEN_MEM_POOL_H

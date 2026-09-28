@@ -71,7 +71,7 @@ DATA(0x0007b738)
 static i16 s_routeCount;
 
 DATA(0x0007b73c)
-static i16 s_routeActive;
+static b16 s_routeActive;
 
 // The level event bits (one per level, MarkLevelEvent).
 DATA(0x0007b740)
@@ -100,7 +100,7 @@ i16 g_pendingTalk;
 
 // Set to leave through the return point instead of re-entering the area.
 DATA(0x0007b778)
-static i16 s_leaveToReturnPoint;
+static b16 s_leaveToReturnPoint;
 
 // Set when the room map must be rebuilt.
 DATA(0x0007b77c)
@@ -109,7 +109,7 @@ static i16 s_rebuildRoom;
 // @identity-TODO: when clear on return, the party takes one step out of the
 // exit it came through; a cell event sets it.
 DATA(0x0007b780)
-static i16 s_stayOnExit;
+static b16 s_stayOnExit;
 
 // A sound effect to play once the field is shown.
 DATA(0x0007b784)
@@ -126,7 +126,7 @@ static i16 s_fieldSteps;
 // @identity-TODO: set while a cell event runs; the field state clears it on
 // every frame and hands its complement to script register 0 after a battle.
 DATA(0x0007b790)
-static i16 s_eventRunning;
+static b16 s_eventRunning;
 
 // A sound effect to play when a cell event ends.
 DATA(0x0007b794)
@@ -135,7 +135,7 @@ static i16 s_eventSound;
 // Set by a complete LoadFieldMemory: the loaded event states and level bits
 // survive the next reset (TestLevelEvent drops it).
 DATA(0x0007b798)
-static i16 s_keepEvents;
+static b16 s_keepEvents;
 
 // @identity-TODO: whether an actor is vanishing this frame (commands wait).
 DATA(0x0007b7a0)
@@ -222,7 +222,7 @@ void GrowRoute(i16 more) {
     if (!s_route) {
         s_routeRead = 0;
         s_routeCount = 0;
-        s_routeActive = 1;
+        s_routeActive = true;
     }
     s_routeCapacity += more;
     s_route = ResizeHandle(s_route, s_routeCapacity * 4);
@@ -252,12 +252,12 @@ MapCoord PopRoutePoint(void) {
     point.x = -1;
     point.y = -1;
     if (!s_route) {
-        s_routeActive = 0;
+        s_routeActive = false;
         return point;
     }
     if (s_routeRead >= s_routeCount) {
         FreeRoute();
-        s_routeActive = 0;
+        s_routeActive = false;
         return point;
     }
     point = ((MapCoord*)HandleReadPtr(s_route))[s_routeRead++];
@@ -471,7 +471,7 @@ void PushAutoMove(u8 move) {
 }
 
 RVA(0x000127a0, 0x14)
-i16 HasAutoMoves(void) {
+b16 HasAutoMoves(void) {
     return s_autoMoveRead < s_autoMoveCount;
 }
 
@@ -527,7 +527,7 @@ void SetReturnPoint(i16 area, i16 level, i16 x, i16 y, i16 direction) {
     s_returnX = x;
     s_returnY = y;
     s_returnDirection = direction;
-    s_leaveToReturnPoint = 1;
+    s_leaveToReturnPoint = true;
     ResetFieldObjects();
     SetSelectedHotspot(-1);
 }
@@ -707,17 +707,17 @@ i16 RunPendingTalk(void) {
 // of damage; nonzero when it did.
 // @identity-TODO: what the damage and the flag stand for is unrecovered.
 RVA(0x00012ca0, 0x4f)
-i16 TickStepDamage(void) {
+b16 TickStepDamage(void) {
     if (IsEventFlagSet(1, 0x2b)) {
         s_damageSteps = 0;
-        return 0;
+        return false;
     }
     if (++s_damageSteps >= 3) {
         s_damageSteps = 0;
         DamageParty(-1, 1);
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // Every third step runs the party's step effects.
@@ -742,7 +742,7 @@ i16 TickFieldSteps(void) {
 // phases; push 0 in phase 3). Calls, branches and every other instruction
 // match; a 32-island permute campaign is flat.
 RVA(0x00012d20, 0x88c)
-i16 RunFieldExploration(void) {
+b16 RunFieldExploration(void) {
     i16 count;
 
     if (GetGamePhase() != 0) {
@@ -754,7 +754,7 @@ i16 RunFieldExploration(void) {
     }
     switch (GetGamePhase()) {
         case 0:
-            s_eventRunning = 0;
+            s_eventRunning = false;
             SetModeFlags(MODE_FIELD);
             ShowScreenLayer(7);
             if (g_worldMapRequest > 0) {
@@ -762,20 +762,20 @@ i16 RunFieldExploration(void) {
                     HideScreenLayer(7);
                 }
                 SetGamePhase(10);
-                return 0;
+                return false;
             }
             SetViewRenderMode();
             if (g_worldMapRequest < 0) {
                 SetGamePhase(9);
                 g_worldMapRequest = 0;
-                return 0;
+                return false;
             }
             NextGamePhase();
             g_worldMapRequest = 0;
             LoadAreaMap(g_field.pos.area, g_field.pos.level);
             SaveReturnPoint();
         case 1:
-            s_eventRunning = 0;
+            s_eventRunning = false;
             g_rewardMacca = 0;
             if (s_leaveToReturnPoint) {
                 SetGamePhase(9);
@@ -822,8 +822,8 @@ i16 RunFieldExploration(void) {
         case 2:
             if (g_worldMapRequest) {
                 SetGamePhase(0);
-                s_eventRunning = 0;
-                return 0;
+                s_eventRunning = false;
+                return false;
             }
             if (HasTurnElapsed() && TickPartyConditions()) {
                 RequestFieldRefresh();
@@ -836,8 +836,8 @@ i16 RunFieldExploration(void) {
                 MarkRewardsPending();
                 FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
                 ShowMessage(g_scratchBuffer, 0x3c);
-                s_eventRunning = 0;
-                return 0;
+                s_eventRunning = false;
+                return false;
             }
             s_actorVanishing = 0;
             if (ProcessPartyCasualties()) {
@@ -846,16 +846,16 @@ i16 RunFieldExploration(void) {
             if (CountFallenHumans() && !IsEventFlagSet(1, 0x4f) && !g_fieldBattleActive) {
                 CloseMessageWindow();
                 PushFieldTextScene(0x1a, 6);
-                s_eventRunning = 0;
-                return 0;
+                s_eventRunning = false;
+                return false;
             }
             if (FindAbleHumanMember() == -1) {
                 if (g_field.pos.area == 1) {
                     CloseMessageWindow();
                     PushFieldTextScene(0x59, 6);
                     ClearRosterConditions();
-                    s_eventRunning = 0;
-                    return 0;
+                    s_eventRunning = false;
+                    return false;
                 }
                 if (g_field.pos.area == 0x82
                     && (g_field.pos.level == 0xc || g_field.pos.level == 0xd
@@ -863,17 +863,17 @@ i16 RunFieldExploration(void) {
                     CloseMessageWindow();
                     PushFieldTextScene(0x16, 0xd);
                     ClearRosterConditions();
-                    s_eventRunning = 0;
-                    return 0;
+                    s_eventRunning = false;
+                    return false;
                 }
                 CloseMessageWindow();
                 PushFieldTextScene(0x2a, 0);
-                s_eventRunning = 0;
-                return 0;
+                s_eventRunning = false;
+                return false;
             }
             if (s_leaveToReturnPoint) {
                 SetGamePhase(8);
-                s_eventRunning = 0;
+                s_eventRunning = false;
                 return FlushFieldScreen();
             }
             if (s_rebuildRoom) {
@@ -881,22 +881,22 @@ i16 RunFieldExploration(void) {
                 if (BuildRoomMap(1)) {
                     RespawnAreaActors();
                     RequestFieldRefresh();
-                    s_eventRunning = 0;
-                    return 0;
+                    s_eventRunning = false;
+                    return false;
                 }
                 UpdateCurrentRoom();
                 RequestFieldRefresh();
             }
             if (g_pendingTalk) {
                 RunPendingTalk();
-                s_eventRunning = 0;
+                s_eventRunning = false;
                 return FlushFieldScreen();
             }
             if (g_fieldBattleActive) {
                 count = CountFieldObjects();
                 if (count <= 0) {
                     if (count < 0) {
-                        s_eventRunning = 1;
+                        s_eventRunning = true;
                     }
                     PlaySoundEffect(0x1b);
                     ResetRosterBattleState();
@@ -910,15 +910,15 @@ i16 RunFieldExploration(void) {
                     }
                     ResetRosterStatModifiers();
                     g_fieldBattleActive = 0;
-                    s_eventRunning = 0;
+                    s_eventRunning = false;
                     return FlushFieldScreen();
                 }
-                s_eventRunning = 0;
+                s_eventRunning = false;
                 if (RunPartyTurn(g_tickElapsed) > 0) {
                     break;
                 }
             }
-            s_eventRunning = 0;
+            s_eventRunning = false;
             s_actorVanishing = AdvanceObjectAnims();
             if (g_tickElapsed != 0) {
                 if ((s_enemyTick = (s_enemyTick + 1) & 3) == 0) {
@@ -938,10 +938,10 @@ i16 RunFieldExploration(void) {
                 RunCellEvent();
                 UpdateCurrentRoom();
             }
-            s_eventRunning = 1;
+            s_eventRunning = true;
             return FlushFieldScreen();
         case 6:
-            s_eventRunning = 0;
+            s_eventRunning = false;
             if (!RunAnalyzeWindow()) {
                 break;
             }
@@ -950,7 +950,7 @@ i16 RunFieldExploration(void) {
             SetGamePhase(2);
             return FlushFieldScreen();
         case 7:
-            s_eventRunning = 0;
+            s_eventRunning = false;
             NextGamePhase();
             if (s_eventSound) {
                 PlaySoundEffect(s_eventSound);
@@ -959,15 +959,15 @@ i16 RunFieldExploration(void) {
             RequestFieldRefresh();
             return FlushFieldScreen();
         case 8:
-            s_eventRunning = 0;
+            s_eventRunning = false;
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             g_savedDirection = -1;
             g_worldMapRequest = 0;
             return FlushFieldScreen();
         case 9:
-            s_eventRunning = 0;
-            s_leaveToReturnPoint = 0;
+            s_eventRunning = false;
+            s_leaveToReturnPoint = false;
             SetGamePhase(1);
             g_field.pos.x = s_returnX;
             g_field.pos.level = s_returnLevel;
@@ -984,7 +984,7 @@ i16 RunFieldExploration(void) {
                     StepMapCoord(&g_field.pos.x, &g_field.pos.y, g_field.pos.direction, 0);
                     RebuildViewScene();
                 }
-                s_stayOnExit = 0;
+                s_stayOnExit = false;
                 SaveReturnPoint();
             }
             g_field.pos.direction = (u8)s_returnDirection;
@@ -992,13 +992,13 @@ i16 RunFieldExploration(void) {
             RebuildViewScene();
             return FlushFieldScreen();
         case 10:
-            s_eventRunning = 0;
+            s_eventRunning = false;
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             return FlushFieldScreen();
         case 11:
             ClearLayerSurface(6);
-            s_eventRunning = 0;
+            s_eventRunning = false;
             CloseMessageWindow();
             ResetFieldObjects();
             ResetFieldScene();
@@ -1008,7 +1008,7 @@ i16 RunFieldExploration(void) {
             UnloadAreaMap();
             SetGameState(0x16);
             ClearModeFlags(MODE_FIELD);
-            return 0;
+            return false;
     }
     return FlushFieldScreen();
 }
@@ -1077,7 +1077,7 @@ void RunCellEvent(void) {
             ExchangeObjectsHidden(1);
             break;
         case CELL_EVENT_STAIRS:
-            s_stayOnExit = 0;
+            s_stayOnExit = false;
             if (HasAutoMoves()) {
                 SetGamePhase(7);
                 CancelFieldMap();
@@ -1091,7 +1091,7 @@ void RunCellEvent(void) {
             CancelFieldMap();
             break;
         case CELL_EVENT_MARKED_WARP:
-            s_stayOnExit = 1;
+            s_stayOnExit = true;
             SetGamePhase(7);
             CancelFieldMap();
             SetReturnPoint(
@@ -1116,7 +1116,7 @@ void RunCellEvent(void) {
             break;
         case CELL_EVENT_CHUTE:
             RunCellTrap(1, g_field.pos.x, g_field.pos.y);
-            s_stayOnExit = 1;
+            s_stayOnExit = true;
         case CELL_EVENT_WARP:
             SetGamePhase(7);
             CancelFieldMap();
@@ -1226,15 +1226,15 @@ void MarkLevelEvent(i16 level) {
 // Whether level `level`'s event bit is set (the loaded states stop being
 // kept).
 RVA(0x00013b40, 0x1c)
-i32 TestLevelEvent(i16 level) {
-    s_keepEvents = 0;
+b32 TestLevelEvent(i16 level) {
+    s_keepEvents = false;
     return TestBit(s_levelEvents, level);
 }
 
 // Raises object event `event` (out of range: 0) to state 1, or 3 when
 // `queued`; 0 when it was already done (state 2).
 RVA(0x00013b60, 0x55)
-i16 RaiseObjectEvent(i16 event, i16 queued) {
+b16 RaiseObjectEvent(i16 event, i16 queued) {
     u8* state;
     if (!s_eventStates) {
         ResetFieldMemory();
@@ -1244,14 +1244,14 @@ i16 RaiseObjectEvent(i16 event, i16 queued) {
     }
     state = (u8*)HandleWritePtr(s_eventStates) + event;
     if (*state == 2) {
-        return 0;
+        return false;
     }
     if (queued) {
         *state = 3;
     } else {
         *state = 1;
     }
-    return 1;
+    return true;
 }
 
 // Marks queued object event `event` done (state 3 to 2).
@@ -1357,10 +1357,9 @@ void MarkFieldViewCells(i16 unused, i16 x, i16 y, i16 direction) {
     MarkVisibleFieldCells(0, x, y, direction);
 }
 
-// @early-stop: across/opposite exchange esi/edi and cell-index products commute
-// their operands. Product order and TU states are flat; a marking helper adds spills.
 RVA(0x00013d90, 0x180)
 void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
+    i16 cellY;
     i16 width;
     i16 height;
     i16 along;
@@ -1368,7 +1367,6 @@ void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
     i16 opposite;
     i16 index;
     i16 cellX;
-    i16 cellY;
     GetMapSize(&width, &height);
     BuildViewOcclusion(x, y, direction, 0);
     for (along = -3; along <= 0; along++) {
@@ -1385,7 +1383,7 @@ void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
             if (across != 0 && s_rightViewOcclusion[index] != 0xff) {
                 cellX = x;
                 cellY = y;
-                OffsetMapCoord(&cellX, &cellY, direction, opposite, along);
+                OffsetMapCoord(&cellX, &cellY, direction, -across, along);
                 cellY = cellY * width + cellX;
                 MarkDrawCell(cellY);
             }

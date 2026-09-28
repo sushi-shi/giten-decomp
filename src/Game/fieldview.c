@@ -75,7 +75,7 @@ void MarkDrawCell(i16 index) {
 
 // Whether x/y is a drawn view cell seen from the party.
 RVA(0x0000be20, 0x28)
-i16 GetPartyView(i16 x, i16 y) {
+b16 GetPartyView(i16 x, i16 y) {
     MapCoord party = GetMapCoord();
     return IsCellInViewCone(party.x, party.y, x, y);
 }
@@ -114,30 +114,30 @@ i16 StepViewCell(i16 col, i16 row, i32 dir, i16 axis) {
 }
 
 RVA(0x0000bed0, 0xe4)
-i32 CanFloodViewCell(i16 col, i16 row, i32 direction) {
+b32 CanFloodViewCell(i16 col, i16 row, i32 direction) {
     switch (direction & 3) {
         case VIEW_NORTH:
             if (row - 1 >= 0 && s_viewFloodMask[row - 1][col]) {
-                return 1;
+                return true;
             }
             break;
         case VIEW_EAST:
             if (col + 1 < 7 && s_viewFloodMask[row][col + 1]) {
-                return 1;
+                return true;
             }
             break;
         case VIEW_SOUTH:
             if (row + 1 < 4 && s_viewFloodMask[row + 1][col]) {
-                return 1;
+                return true;
             }
             break;
         case VIEW_WEST:
             if (col - 1 >= 0 && s_viewFloodMask[row][col - 1]) {
-                return 1;
+                return true;
             }
             break;
     }
-    return 0;
+    return false;
 }
 
 // Turns view cell *col/*row (party at column 3, row 3) seen from x/y facing
@@ -511,7 +511,7 @@ static i16 s_sideWeights[4] = {27, 9, 3, 1};
 // Whether cell (cellX, cellY) is a drawn view cell seen from (x, y) facing
 // the view direction.
 RVA(0x0000cba0, 0xc0)
-i16 IsCellInViewCone(i16 x, i16 y, i16 cellX, i16 cellY) {
+b16 IsCellInViewCone(i16 x, i16 y, i16 cellX, i16 cellY) {
     i16 row;
     i16 col;
     switch (GetViewDirection()) {
@@ -533,7 +533,7 @@ i16 IsCellInViewCone(i16 x, i16 y, i16 cellX, i16 cellY) {
             break;
     }
     if (row > 3) {
-        return 0;
+        return false;
     }
     return g_viewCells[row][col] != 0;
 }
@@ -611,11 +611,11 @@ MapCoord GetMouseWorldCell(void) {
 
 // Whether a world cell lies inside the 0x900 x 0x898 map.
 RVA(0x0000ce50, 0x29)
-i16 IsWorldCellInMap(i16 x, i16 y) {
+b16 IsWorldCellInMap(i16 x, i16 y) {
     if (x >= 0 && x < 0x900 && y >= 0 && y < 0x898) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // `direction` turned by `turn` quarter turns.

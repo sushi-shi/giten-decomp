@@ -134,7 +134,7 @@ static FusionSummary* s_fusionSummaryTable;
 // @dead-code
 // Zero-ref: no retail call, jump, or relocated pointer reaches this helper.
 DATA(0x00080a84)
-static i16 s_fusionPageActionPending;
+static b16 s_fusionPageActionPending;
 
 DATA(0x00080a88)
 char g_fusionMissingName[4];
@@ -316,7 +316,7 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
                 result = RunPanelInput(s_fusionPager);
                 if (s_fusionPageActionPending == 1) {
                     result = s_fusionPageAction;
-                    s_fusionPageActionPending = 0;
+                    s_fusionPageActionPending = false;
                     s_fusionPageAction = -1;
                     oldOffset = s_fusionColumnOffset;
                     if (result == 0) {
@@ -336,7 +336,7 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
                     PaintPanel(s_fusionPager, s_fusionMenu->plane);
                 } else {
                     if (result >= 0) {
-                        s_fusionPageActionPending = 1;
+                        s_fusionPageActionPending = true;
                         s_fusionPageAction = result;
                     }
                     if (result == -1) {
@@ -854,7 +854,7 @@ i16 RunThirdFusionPicker(i16 step) {
 }
 
 RVA(0x00029fe0, 0x7e)
-i16 PreviewFusionCharacter(Character* character) {
+b16 PreviewFusionCharacter(Character* character) {
     Character* previous = SetRosterEntry(0, character);
     RaiseExperienceToLevel(character);
     AllocScreenSave(g_fusionPreviewSave);
@@ -863,17 +863,17 @@ i16 PreviewFusionCharacter(Character* character) {
     EnterStatusScreen(1);
     DrawStatusScreen(0);
     SetRosterEntry(0, previous);
-    return 0;
+    return false;
 }
 
 RVA(0x0002a060, 0x49)
-i16 CloseFusionPreview(void) {
+b16 CloseFusionPreview(void) {
     LeaveStatusScreen(1);
     RestoreDrawState(SaveDrawState());
     g_fusionPaletteState = RestorePaletteState(g_fusionPaletteState, 1);
     RestoreScreenSave(g_fusionPreviewSave);
     FreeScreenSave(g_fusionPreviewSave);
-    return 0;
+    return false;
 }
 
 RVA(0x0002a0b0, 0x16)
@@ -957,7 +957,7 @@ i16 CommitTripleFusion(void) {
 }
 
 RVA(0x0002a330, 0x50)
-i16 StageFusionCharacter(i16 id) {
+b16 StageFusionCharacter(i16 id) {
     Character* character = GetCharacter(13);
     FreeWordList(GetCharacterSkills(character));
     if (id >= 32) {
@@ -966,7 +966,7 @@ i16 StageFusionCharacter(i16 id) {
     if (s_savedFusionCharacter == NULL) {
         s_savedFusionCharacter = SetRosterEntry(0, character);
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002a380, 0xb3)
@@ -991,13 +991,13 @@ i16 StagePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
 }
 
 RVA(0x0002a440, 0x35)
-i32 RestoreFusionCharacter(void) {
+b32 RestoreFusionCharacter(void) {
     if (s_savedFusionCharacter != NULL) {
         if (s_savedFusionCharacter != GetCharacter(0)) {
-            return 0;
+            return false;
         }
         SetRosterEntry(0, s_savedFusionCharacter);
     }
     s_savedFusionCharacter = NULL;
-    return 0;
+    return false;
 }

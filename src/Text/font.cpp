@@ -12,6 +12,7 @@
 #include <Platform/Com.h>
 #include <Platform/GameApi.h>
 #include <Platform/Scene3D.h>
+#include <Platform/WindowsX.h>
 #include <Text/FontApi.h>
 
 #include <stdio.h>
@@ -3334,14 +3335,14 @@ RVA(0x00051540, 0xbd)
 b32 CreateGlyphSurface(void) {
     DDSURFACEDESC desc;
 
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
     desc.dwWidth = 1;
     desc.dwHeight = 1;
     desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
     if (g_ddraw->CreateSurface(&desc, &s_glyphSurface, NULL) != DD_OK) {
-        return FALSE;
+        return false;
     }
     s_glyphFont = CreateFontA(
         17,
@@ -3360,17 +3361,17 @@ b32 CreateGlyphSurface(void) {
         NULL
     );
     if (s_glyphSurface->GetDC(&g_fontDC) != DD_OK) {
-        return FALSE;
+        return false;
     }
-    SelectObject(g_fontDC, s_glyphFont);
-    return TRUE;
+    SelectFont(g_fontDC, s_glyphFont);
+    return true;
 }
 
 // Frees the text font and the glyph scratch surface.
 RVA(0x00051600, 0x41)
 void FreeGlyphSurface(void) {
     if (s_glyphSurface != NULL) {
-        DeleteObject(s_glyphFont);
+        DeleteFont(s_glyphFont);
         s_glyphSurface->ReleaseDC(g_fontDC);
         ReleaseComObject(s_glyphSurface);
     }
@@ -3470,7 +3471,7 @@ void DrawStatusText(i16 x, i16 y, const char* text, i32 attr) {
 // blits the band at pixel (x, y) of the render target, clipped at the right
 // screen edge for band 1. Returns 0.
 RVA(0x00051950, 0x1b2)
-i16 DrawBandText(i16 x, i16 y, const char* text, i32 attr, i16 band) {
+b16 DrawBandText(i16 x, i16 y, const char* text, i32 attr, i16 band) {
     Picture* picture;
     HDC dc;
     u8 glyph[32];
@@ -3513,21 +3514,19 @@ i16 DrawBandText(i16 x, i16 y, const char* text, i32 attr, i16 band) {
     picture->surface->ReleaseDC(dc);
     if (band == TEXT_BAND_RIGHT) {
         source = picture->rect;
-        if (SCREEN_WIDTH - x < source.right) {
-            source.right = SCREEN_WIDTH - x;
-        }
+        source.right = min(SCREEN_WIDTH - x, source.right);
         g_renderTarget->BltFast(x, y, picture->surface, &source, DDBLTFAST_SRCCOLORKEY);
-        return 0;
+        return false;
     }
     g_renderTarget->BltFast(x, y, picture->surface, &picture->rect, DDBLTFAST_SRCCOLORKEY);
-    return 0;
+    return false;
 }
 
 // @dead-code
 // Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it.
 RVA(0x00051b10, 0x4)
-i16 ReturnZero(void) {
-    return 0;
+b16 ReturnZero(void) {
+    return false;
 }
 
 // Repaints text plane `plane`'s newline cells, a row per line; every other
@@ -3781,7 +3780,7 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
     if (g_primarySurface->GetSurfaceDesc(&primary) != DD_OK) {
         return 0;
     }
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
     desc.dwWidth = s_planeLayouts[kind].width;
@@ -3804,7 +3803,7 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
         ReleaseComObject(p->surface);
         return -1;
     }
-    memset(&key, 0, sizeof(key));
+    ZeroMemory(&key, sizeof(key));
     p->glyphSurface->SetColorKey(DDCKEY_SRCBLT, &key);
     p->text = new u8*[TEXT_PLANE_MAX_ROWS];
     p->attrs = new TextAttr*[TEXT_PLANE_MAX_ROWS];
@@ -4130,14 +4129,10 @@ void SetTextPlaneCursor(i16 plane, i16 x, i16 y) {
     }
     p = GetTextPlane(plane);
     v = p->cols;
-    if (x < v) {
-        v = x;
-    }
+    v = min(x, v);
     p->cursorX = v;
     v = p->rows;
-    if (y < v) {
-        v = y;
-    }
+    v = min(y, v);
     p->cursorY = v;
 }
 
@@ -5420,7 +5415,7 @@ void DrawPlaneMapTileLit(i16 tile, i16 x, i16 y, i16 plane) {
     cell.right = px + MAP_CELL - 1;
     cell.bottom = py + MAP_CELL - 1;
     source.left = 0;
-    memset(&fx, 0, sizeof(fx));
+    ZeroMemory(&fx, sizeof(fx));
     fx.dwSize = sizeof(fx);
     fx.dwFillColor = (g_greenMask >> 1) & g_greenMask;
     GetTextPlane(plane)->glyphSurface->Blt(&cell, NULL, NULL, DDBLT_COLORFILL, &fx);
@@ -5450,7 +5445,7 @@ void DrawPlaneMapTile(i16 tile, i16 x, i16 y, i16 plane) {
     cell.top = static_cast<i16>((y + 1) * MAP_CELL);
     cell.right = static_cast<i16>((x + 1) * MAP_CELL) + MAP_CELL;
     cell.bottom = static_cast<i16>((y + 1) * MAP_CELL) + MAP_CELL;
-    memset(&fx, 0, sizeof(fx));
+    ZeroMemory(&fx, sizeof(fx));
     fx.dwSize = sizeof(fx);
     fx.dwFillColor = 0;
     GetTextPlane(plane)->glyphSurface->Blt(&cell, NULL, NULL, DDBLT_COLORFILL, &fx);
@@ -5549,10 +5544,10 @@ void DrawLayerGauge(i16 slot, u16 value, u16 max, i16 upper) {
         used.bottom = 55;
         full.bottom = 55;
     }
-    memset(&red, 0, sizeof(red));
+    ZeroMemory(&red, sizeof(red));
     red.dwSize = sizeof(red);
     red.dwFillColor = g_redMask;
-    memset(&green, 0, sizeof(green));
+    ZeroMemory(&green, sizeof(green));
     green.dwSize = sizeof(green);
     green.dwFillColor = g_greenMask;
     layer = g_screenLayers[slot];
@@ -5810,7 +5805,7 @@ void FreeScreenLayers(void) {
 RVA(0x00055020, 0x3f)
 b32 DrawPadButton(LPDIRECTDRAWSURFACE surface, i32 button, b32 pressed) {
     if (button < PAD_FORWARD || button > PAD_RIGHT) {
-        return FALSE;
+        return false;
     }
     return BlitImage(
         surface,
@@ -5830,7 +5825,7 @@ static b32 PaintLayer(i32 slot, ScreenLayer* layer) {
     switch (slot) {
         case SCREEN_LAYER_MENU_BAR:
             if (!BlitImage(layer->surface, g_layerImages[SCREEN_LAYER_MENU_BAR], 0, 0)) {
-                return FALSE;
+                return false;
             }
             for (i = 0; i < MENU_BUTTON_COUNT; i++) {
                 if (!BlitImage(
@@ -5839,13 +5834,13 @@ static b32 PaintLayer(i32 slot, ScreenLayer* layer) {
                         g_menuButtonX[i],
                         MENU_BAR_TOP
                     )) {
-                    return FALSE;
+                    return false;
                 }
             }
-            return TRUE;
+            return true;
         case SCREEN_LAYER_ICON:
             if (!BlitImage(layer->surface, g_iconLayerImages[0], 0, 0)) {
-                return FALSE;
+                return false;
             }
             break;
         case SCREEN_LAYER_MOON_PHASE:
@@ -5854,7 +5849,7 @@ static b32 PaintLayer(i32 slot, ScreenLayer* layer) {
         case SCREEN_LAYER_AUTOMAP:
         case SCREEN_LAYER_TEXT:
             if (!BlitImage(layer->surface, g_layerImages[slot], 0, 0)) {
-                return FALSE;
+                return false;
             }
             break;
         case SCREEN_LAYER_FIRST_PANEL:
@@ -5864,7 +5859,7 @@ static b32 PaintLayer(i32 slot, ScreenLayer* layer) {
         case SCREEN_LAYER_FIRST_PANEL + 4:
         case SCREEN_LAYER_FIRST_PANEL + 5:
             if (!BlitImage(layer->surface, g_panelImages[0], 0, 0)) {
-                return FALSE;
+                return false;
             }
             break;
         case SCREEN_LAYER_NAVIGATION:
@@ -5873,18 +5868,18 @@ static b32 PaintLayer(i32 slot, ScreenLayer* layer) {
             DrawPadButton(layer->surface, PAD_LEFT, FALSE);
             DrawPadButton(layer->surface, PAD_RIGHT, FALSE);
             if (!BlitImage(layer->surface, g_compassImages[VIEW_NORTH], 32, 32)) {
-                return FALSE;
+                return false;
             }
             break;
     }
-    return TRUE;
+    return true;
 }
 
 // Creates the layer of slot `slot`: a keyed system-memory surface of its size
 // in the primary's pixel format (and a second one for the slots that have a
 // work surface), painted for its slot; returns nonzero on failure.
 RVA(0x000551c0, 0x206)
-i32 CreateScreenLayer(i32 slot) {
+b32 CreateScreenLayer(i32 slot) {
     DDSURFACEDESC primary;
     DDSURFACEDESC desc;
     DDCOLORKEY key;
@@ -5892,14 +5887,14 @@ i32 CreateScreenLayer(i32 slot) {
 
     layer = new ScreenLayer;
     if (layer == NULL) {
-        return 1;
+        return true;
     }
     primary.dwSize = sizeof(primary);
     primary.dwFlags = DDSD_ALL;
     if (g_primarySurface->GetSurfaceDesc(&primary) != DD_OK) {
-        return 0;
+        return false;
     }
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
     desc.dwWidth = s_layerSize[slot].cx;
@@ -5908,20 +5903,20 @@ i32 CreateScreenLayer(i32 slot) {
     desc.ddpfPixelFormat = primary.ddpfPixelFormat;
     if (g_ddraw->CreateSurface(&desc, &layer->surface, NULL) != DD_OK) {
         delete layer;
-        return 1;
+        return true;
     }
-    memset(&key, 0, sizeof(key));
+    ZeroMemory(&key, sizeof(key));
     layer->surface->SetColorKey(DDCKEY_SRCBLT, &key);
     if (!PaintLayer(slot, layer)) {
         ReleaseComObject(layer->surface);
         delete layer;
-        return 1;
+        return true;
     }
     if (s_layerHasWorkSurface[slot]) {
         if (g_ddraw->CreateSurface(&desc, &layer->canvas, NULL) != DD_OK) {
             ReleaseComObject(layer->surface);
             delete layer;
-            return 1;
+            return true;
         }
         layer->canvas->SetColorKey(DDCKEY_SRCBLT, &key);
     } else {
@@ -5942,7 +5937,7 @@ i32 CreateScreenLayer(i32 slot) {
     layer->source.bottom = s_layerSize[slot].cy;
     g_layerStack[slot] = layer;
     g_screenLayers[slot] = layer;
-    return 0;
+    return false;
 }
 
 // Whether (x, y) falls on `layer`.
@@ -5971,7 +5966,7 @@ i32 LayerAtPoint(u32 x, u32 y) {
             }
             dx = x - layer->x;
             dy = y - layer->y;
-            memset(&desc, 0, sizeof(desc));
+            ZeroMemory(&desc, sizeof(desc));
             surface = layer->surface;
             desc.dwSize = sizeof(desc);
             desc.dwFlags = DDSD_CAPS;
@@ -6021,7 +6016,7 @@ b32 PadButtonAtPoint(u32 x, u32 y) {
     if (LAYER_HIT(layer, x, y) && layer->slot == SCREEN_LAYER_NAVIGATION) {
         dx = x - layer->x;
         dy = y - layer->y;
-        memset(&desc, 0, sizeof(desc));
+        ZeroMemory(&desc, sizeof(desc));
         surface = layer->surface;
         desc.dwSize = sizeof(desc);
         desc.dwFlags = DDSD_CAPS;
@@ -6034,7 +6029,7 @@ b32 PadButtonAtPoint(u32 x, u32 y) {
             return g_heldPadButton == s_pressedPadButton;
         }
     }
-    return FALSE;
+    return false;
 }
 
 // @dead-code
@@ -6063,7 +6058,7 @@ b32 ClickPanelCommand(u32 y) {
          line++, top += PANEL_LINE_HEIGHT) {
         if (y >= top && y < top + PANEL_LINE_HEIGHT) {
             if (s_panelCommandIds[line] < 0) {
-                return FALSE;
+                return false;
             }
             BlitImage(
                 g_screenLayers[SCREEN_LAYER_PANEL]->surface,
@@ -6072,10 +6067,10 @@ b32 ClickPanelCommand(u32 y) {
                 line * PANEL_LINE_HEIGHT
             );
             s_panelCommands[s_panelCommandIds[line]](s_shownCharacter);
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
 }
 
 // A party panel (slot `slot`) released: clicked in place (`dragged` clear) it

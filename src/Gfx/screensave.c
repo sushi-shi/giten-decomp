@@ -15,7 +15,7 @@
 
 // A refresh request transferred to the field redraw flag by RedrawScreen.
 DATA(0x00075fec)
-static i16 s_refreshRequested;
+static b16 s_refreshRequested;
 
 DATA(0x00091550)
 i16 g_fieldRedrawRequest;
@@ -40,32 +40,32 @@ RVA(0x00003920, 0x1)
 void ApplyTextCursor() {}
 
 RVA(0x00003930, 0x3)
-i32 AllocScreenSave() {
-    return 0;
+b32 AllocScreenSave() {
+    return false;
 }
 
 RVA(0x00003940, 0x3)
-i32 FreeScreenSave() {
-    return 0;
+b32 FreeScreenSave() {
+    return false;
 }
 
 RVA(0x00003950, 0x3)
-i32 CaptureScreenSave() {
-    return 0;
+b32 CaptureScreenSave() {
+    return false;
 }
 
 RVA(0x00003960, 0x3)
-i32 RestoreScreenSave() {
-    return 0;
+b32 RestoreScreenSave() {
+    return false;
 }
 
 RVA(0x00003970, 0xa)
 void RequestRefresh(void) {
-    s_refreshRequested = 1;
+    s_refreshRequested = true;
 }
 
 RVA(0x00003980, 0x77)
-i16 RedrawScreen(i16 drawView, i16 unused) {
+b16 RedrawScreen(i16 drawView, i16 unused) {
     FieldScreenNop(0);
     if (!TestModeFlags(MODE_WORLD_MAP)) {
         UpdateInfoBar();
@@ -76,6 +76,6 @@ i16 RedrawScreen(i16 drawView, i16 unused) {
         DrawMapOverlay(g_field.pos);
     }
     g_fieldRedrawRequest = s_refreshRequested;
-    s_refreshRequested = 0;
-    return 1;
+    s_refreshRequested = false;
+    return true;
 }

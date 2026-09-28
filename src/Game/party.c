@@ -31,6 +31,7 @@
 #include <Util/Range.h>
 
 #include <stddef.h>
+#include <stdlib.h>
 
 // Per character group, the 40-bit set of items the group can equip.
 DATA(0x00083b38)
@@ -171,9 +172,7 @@ i16 TickPartyConditions(void) {
 
 static __inline i32 PoolPercentAmount(const CurMax* pool, i16 percent) {
     i32 amount = pool->max * percent / 100;
-    if (amount < 1) {
-        amount = 1;
-    }
+    amount = max(1, amount);
     return amount;
 }
 
@@ -286,7 +285,7 @@ RVA(0x0003fc30, 0x74)
 i16 CountFallenHumans(void) {
     i16 shown = GetShownPanelCharacter();
     i16 fallen = 0;
-    i16 found = 0;
+    b16 found = false;
     i16 i;
     Character* character;
     for (i = 0; i < 6; i++) {
@@ -294,7 +293,7 @@ i16 CountFallenHumans(void) {
         if (character) {
             if (!GetFatalCondition(GetCharacterConditions(character))) {
                 if (character->id == shown) {
-                    found = 1;
+                    found = true;
                 }
             } else if (IsHumanCharacter(character)) {
                 fallen++;
@@ -513,7 +512,7 @@ i16 FindPartyPositionOfId(i16 id) {
 // Codegen constraint: the search for the insertion point leaves through
 // `goto next`; as a for loop cl rotates it and the layout differs.
 RVA(0x00040090, 0xcd)
-i16 SortRoster(void) {
+b16 SortRoster(void) {
     i16 ids[6];
     i16 i;
     i16 j;
@@ -549,7 +548,7 @@ i16 SortRoster(void) {
             SetPartySlot(i, FindRosterSlotById(ids[i]));
         }
     }
-    return 0;
+    return false;
 }
 
 // The id of the character at party position `index` (unchecked).
@@ -589,10 +588,10 @@ void LoadEquipTable(void) {
 
 // Nonzero when characters of `group` can equip item `item`.
 RVA(0x00040250, 0x39)
-i16 CanGroupEquip(i16 group, i16 item) {
+b16 CanGroupEquip(i16 group, i16 item) {
     u8* table;
     if (item < 0) {
-        return 0;
+        return false;
     }
     table = HandleReadPtr(s_equipTable);
     return TestBit(table + group * 5, item) != 0;

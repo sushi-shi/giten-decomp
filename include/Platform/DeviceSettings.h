@@ -29,7 +29,7 @@ struct DeviceSettings {
 extern DeviceSettings g_deviceSettings;
 
 RVA_DECL(0x00045ce0)
-BOOL LoadDeviceSettings(DeviceSettings* settings);
+b32 LoadDeviceSettings(DeviceSettings* settings);
 RVA_DECL(0x00045d60)
 void __fastcall GetDeviceSettingsValueName(char* name);
 

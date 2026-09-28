@@ -35,7 +35,7 @@ DATA(0x00083b18)
 static i16 s_statusRedrawLocked;
 
 DATA(0x00083b1c)
-static i16 s_statusRedrawPending;
+static b16 s_statusRedrawPending;
 
 static __inline i32 GetSelectedPartySlot(void) {
     i16 slot;
@@ -73,7 +73,7 @@ void RedrawPartyStatus(void) {
     }
     ResetTextPlaneHighlight(g_infoPlane);
     s_selectedPartySlot = -1;
-    s_statusRedrawPending = 0;
+    s_statusRedrawPending = false;
 }
 
 RVA(0x0003e1f0, 0x164)
@@ -106,7 +106,7 @@ static __inline void RefreshPartyStatusIfNeeded(i16 force) {
         if (force || s_statusRedrawPending) {
             RedrawPartyStatus();
         }
-        s_statusRedrawPending = 0;
+        s_statusRedrawPending = false;
     }
 }
 
@@ -201,5 +201,5 @@ i16 LockStatusRedraw(i16 lock) {
 
 RVA(0x0003e6a0, 0xa)
 void RequestStatusRedraw(void) {
-    s_statusRedrawPending = 1;
+    s_statusRedrawPending = true;
 }

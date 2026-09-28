@@ -30,10 +30,10 @@ b32 ClickHotspotAt(i32 x, i32 y) {
     i32 v;
 
     if (GetTextPlane(0)->visible) {
-        return FALSE;
+        return false;
     }
     if (y > HOTSPOT_VIEW_BOTTOM - 1) {
-        return FALSE;
+        return false;
     }
     hit = -1;
     direction = GetMapPosition()->direction;
@@ -45,7 +45,7 @@ b32 ClickHotspotAt(i32 x, i32 y) {
         texture = GetHotspot(i)->texture;
         pixels = GetBitmapPixels(texture->image);
         width = texture->width;
-        height = width > 256 ? 256 : width;
+        height = min(256, width);
         u = (x - GetHotspot(i)->rect.left) * width
             / (GetHotspot(i)->rect.right - GetHotspot(i)->rect.left);
         v = height
@@ -86,25 +86,25 @@ b32 ClickHotspotAt(i32 x, i32 y) {
         }
     }
     if (hit < 0) {
-        return FALSE;
+        return false;
     }
     hotspot = GetHotspot(hit);
     switch (hotspot->kind) {
         case HOTSPOT_BOX:
             StartBoxScene(static_cast<TreasureBox*>(hotspot->data));
-            return TRUE;
+            return true;
         case HOTSPOT_NPC:
             StartNpcScene(static_cast<AreaNpc*>(hotspot->data));
-            return TRUE;
+            return true;
         case HOTSPOT_TARGET:
             if (hit == g_selectedHotspot) {
                 TalkCommand();
-                return TRUE;
+                return true;
             }
             if (!AnyObjectInReach() || IsPartyAt(hotspot->targetX, hotspot->targetY)) {
                 g_selectedHotspot = hit;
             }
             break;
     }
-    return TRUE;
+    return true;
 }

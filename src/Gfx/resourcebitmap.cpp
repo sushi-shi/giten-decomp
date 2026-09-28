@@ -19,11 +19,11 @@ b32 DrawResourceBitmap(IDirectDrawSurface* surface, u16 bitmap) {
     BitmapResource* bmp;
     HDC dc;
     if (!resource) {
-        return FALSE;
+        return false;
     }
     bmp = static_cast<BitmapResource*>(LockResource(LoadResource(NULL, resource)));
     if (!bmp) {
-        return FALSE;
+        return false;
     }
     surface->GetDC(&dc);
     SetStretchBltMode(dc, COLORONCOLOR);
@@ -43,7 +43,7 @@ b32 DrawResourceBitmap(IDirectDrawSurface* surface, u16 bitmap) {
         SRCCOPY
     );
     surface->ReleaseDC(dc);
-    return TRUE;
+    return true;
 }
 
 RVA(0x00057380, 0x191)
@@ -60,15 +60,15 @@ b32 CreatePicture(
     DDCOLORKEY key;
     HRESULT result;
     if (picture->surface != NULL) {
-        return TRUE;
+        return true;
     }
     primaryDesc.dwSize = sizeof(primaryDesc);
     primaryDesc.dwFlags = DDSD_ALL;
     if (g_primarySurface->GetSurfaceDesc(&primaryDesc) != DD_OK) {
-        return FALSE;
+        return false;
     }
     memset(picture, 0, sizeof(*picture));
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
     desc.dwWidth = surfaceWidth;
@@ -76,7 +76,7 @@ b32 CreatePicture(
     desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
     desc.ddpfPixelFormat = primaryDesc.ddpfPixelFormat;
     if (g_ddraw->CreateSurface(&desc, &picture->surface, NULL) != DD_OK) {
-        return FALSE;
+        return false;
     }
     picture->rect.right = width;
     picture->rect.bottom = height;
@@ -89,7 +89,7 @@ b32 CreatePicture(
         if (IsPalettizedSurface(desc)) {
             key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = colorKey;
         } else {
-            memset(&key, 0, sizeof(key));
+            ZeroMemory(&key, sizeof(key));
         }
         picture->surface->SetColorKey(DDCKEY_SRCBLT, &key);
     } else if (result == DDERR_INVALIDOBJECT) {
@@ -99,14 +99,14 @@ b32 CreatePicture(
     } else {
         OutputDebugString("GetSurfaceDesc() returns UNKNOWN\n");
     }
-    return TRUE;
+    return true;
 }
 
 RVA(0x00057520, 0x62)
 b32 LoadPictureFile(Picture* picture, const char* path) {
     BmpFile* bmp = ReadBitmapFile(path);
     if (bmp == NULL) {
-        return FALSE;
+        return false;
     }
     LoadBitmapToSurface16(bmp, &picture->surface, NULL);
     picture->rect.left = 0;
@@ -114,7 +114,7 @@ b32 LoadPictureFile(Picture* picture, const char* path) {
     picture->surfaceWidth = picture->rect.right = bmp->info.biWidth;
     picture->surfaceHeight = picture->rect.bottom = bmp->info.biHeight;
     FreeBitmap(&bmp);
-    return TRUE;
+    return true;
 }
 
 DATA(0x0006dbe8)
@@ -142,7 +142,7 @@ void ShadeTexture(Texture* texture, TextureShade shade) {
     if (result != D3D_OK) {
         TraceD3DCallError("lpTS->material[col]->GetHandle() returns ", result);
     }
-    memset(&material, 0, sizeof(material));
+    ZeroMemory(&material, sizeof(material));
     material.dwSize = sizeof(material);
     material.dwRampSize = 16;
     material.diffuse.r = s_textureDiffuse[shade][0];

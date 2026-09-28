@@ -59,27 +59,27 @@ public:
     CMidiStream(LPCSTR intro, LPCSTR loop);
     virtual ~CMidiStream();
 
-    BOOL Open(LPCSTR intro, LPCSTR loop);
-    BOOL Play(LPCSTR intro, LPCSTR loop, BOOL looping, DWORD volume, DWORD* channelVolumes);
-    BOOL Replay(BOOL looping, DWORD volume, DWORD* channelVolumes);
-    BOOL Stop();
-    BOOL Pause();
-    BOOL Restore();
-    BOOL SetVolume(DWORD volume, DWORD* channelVolumes);
+    b32 Open(LPCSTR intro, LPCSTR loop);
+    b32 Play(LPCSTR intro, LPCSTR loop, BOOL looping, DWORD volume, DWORD* channelVolumes);
+    b32 Replay(BOOL looping, DWORD volume, DWORD* channelVolumes);
+    b32 Stop();
+    b32 Pause();
+    b32 Restore();
+    b32 SetVolume(DWORD volume, DWORD* channelVolumes);
 
 protected:
-    BOOL CloseStream();
+    b32 CloseStream();
     void FreeBuffers();
-    BOOL ReadFormat(void* data, DWORD size, int part);
-    BOOL ConvertBuffer(MIDIHDR* dst, MIDIHDR* src);
-    BOOL ReadBuffers(void* data, DWORD size, int part);
-    BOOL LoadFile(LPCSTR path, int part);
-    BOOL OpenStream();
-    BOOL QueueBuffers();
-    BOOL Prepare();
+    b32 ReadFormat(void* data, DWORD size, int part);
+    b32 ConvertBuffer(MIDIHDR* dst, MIDIHDR* src);
+    b32 ReadBuffers(void* data, DWORD size, int part);
+    b32 LoadFile(LPCSTR path, int part);
+    b32 OpenStream();
+    b32 QueueBuffers();
+    b32 Prepare();
 
     RVA(0x00056a10, 0x16)
-    BOOL HasBuffers() {
+    b32 HasBuffers() {
         return m_buffers[m_part] != NULL;
     }
 

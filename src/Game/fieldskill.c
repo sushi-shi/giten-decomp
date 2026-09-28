@@ -66,7 +66,7 @@ static __inline void LocateFieldSkillUser(void) {
 // set), pick a skill from its list, pick the skill's target, then hand the
 // member's pick to the action prompt. Returns 0.
 RVA(0x0002d7c0, 0x370)
-i16 RunFieldSkillUse(void) {
+b16 RunFieldSkillUse(void) {
     i16 flags;
     i16 picked;
 
@@ -75,16 +75,16 @@ i16 RunFieldSkillUse(void) {
             HideScreenLayer(1);
             if (s_skillUser < 0) {
                 SetGamePhase(8);
-                return 0;
+                return false;
             }
             LocateFieldSkillUser();
             SetGamePhase(3);
-            return 0;
+            return false;
 
         case 1:
             s_fieldMenu = ClosePickerMenu(s_fieldMenu);
             SetGamePhase(8);
-            return 0;
+            return false;
 
         case 2:
             s_skillUser = RunPickerMenu(s_fieldMenu);
@@ -97,18 +97,18 @@ i16 RunFieldSkillUse(void) {
             LocateFieldSkillUser();
             NextGamePhase();
             s_fieldMenu = ClosePickerMenu(s_fieldMenu);
-            return 0;
+            return false;
 
         case 3:
             NextGamePhase();
             NextGamePhase();
             s_fieldMenu = OpenMemberSkillMenu(s_skillUser);
-            return 0;
+            return false;
 
         case 4:
             SetGamePhase(8);
             s_fieldMenu = CloseListMenu(s_fieldMenu);
-            return 0;
+            return false;
 
         case 5:
             s_skillPicked = RunListMenu(s_fieldMenu);
@@ -121,19 +121,19 @@ i16 RunFieldSkillUse(void) {
             NextGamePhase();
             s_fieldMenu = CloseListMenu(s_fieldMenu);
             g_actionId = s_skillPicked;
-            return 0;
+            return false;
 
         case 6:
             flags = GetSkillTargetFlags(s_skillPicked);
             if (TargetFlagsSelectSelf(flags)) {
                 g_targetId = PartyCombatantId(s_userPosition);
                 NextGamePhase();
-                return 0;
+                return false;
             }
             if (TargetFlagsSelectActorGroup(flags)) {
                 g_targetId = PartyCombatantId(s_userPosition);
                 NextGamePhase();
-                return 0;
+                return false;
             }
             s_pickRange = GetSkillAttackRange(g_actionId);
             if (flags == 0x10) {
@@ -157,7 +157,7 @@ i16 RunFieldSkillUse(void) {
             }
             g_targetId = g_selectedObjectId;
             NextGamePhase();
-            return 0;
+            return false;
 
         case 7:
             NextGamePhase();
@@ -165,14 +165,14 @@ i16 RunFieldSkillUse(void) {
             SetSkillPick(s_userPosition);
             PrepareSkillAction();
             PushFieldUsePrompt();
-            return 0;
+            return false;
 
         case 8:
             RestoreSwappedMember();
             ReturnFromGameState();
             break;
     }
-    return 0;
+    return false;
 }
 
 // Makes party member `position`'s pick the chosen skill on the current target.

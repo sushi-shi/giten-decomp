@@ -5,6 +5,6 @@
 
 extern i8 g_shopKind;
 
-i16 OpLoadSprite(void);
+b16 OpLoadSprite(void);
 
 #endif // GITEN_SCRIPT_SCRIPTSPRITE_H

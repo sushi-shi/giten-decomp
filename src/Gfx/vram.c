@@ -220,13 +220,13 @@ void RetainPaletteEntry(u8 index) {
 }
 
 RVA(0x00002f40, 0x28)
-i16 SetPaletteColor(u8 index, i16 color) {
+b16 SetPaletteColor(u8 index, i16 color) {
     if (index < 16) {
         StorePaletteColor(index, color);
         MarkPaletteDirty();
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // @identity-TODO: this palette hook has no recovered API name or signature;
@@ -342,15 +342,15 @@ void SkipImagePaletteCleanup(void) {}
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00003110, 0x3)
-i32 GetLegacyImagePaletteResult(void) {
-    return 0;
+b32 GetLegacyImagePaletteResult(void) {
+    return false;
 }
 
 // @identity-TODO: callers drop a cached image with it (resetting the cache
 // key to -1) and store the NULL result back.
 RVA(0x00003120, 0x3)
-u32 FreeImageHandle(u32 handle) {
-    return 0;
+ub32 FreeImageHandle(u32 handle) {
+    return false;
 }
 
 // Reload a caller-owned size after the allocation.
@@ -439,24 +439,24 @@ void* FreeImageFile(void* data) {
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00003340, 0x3)
-i32 GetLegacyImageHandleResult(void) {
-    return 0;
+b32 GetLegacyImageHandleResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00003350, 0x3)
-i32 GetLegacyImageBlockResult(void) {
-    return 0;
+b32 GetLegacyImageBlockResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00003360, 0x3)
-i32 GetLegacySpriteCopyResult(void) {
-    return 0;
+b32 GetLegacySpriteCopyResult(void) {
+    return false;
 }
 
 // @dead-code

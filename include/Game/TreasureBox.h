@@ -22,12 +22,12 @@ typedef struct TreasureBoxCell {
     u8 y;
 } TreasureBoxCell;
 
-static __inline i32 IsTreasureBoxOpen(TreasureBox* box) {
+static __inline b32 IsTreasureBoxOpen(TreasureBox* box) {
     return IsEventFlagSet(box->flagBank, box->flagIndex) != 0;
 }
 
 void PrepareViewedTreasureBox(void);
-i32 IsHotspotTreasureOpen(i32 index);
+b32 IsHotspotTreasureOpen(i32 index);
 void OpenTreasureBox(TreasureBox* box);
 u16 RotateByDirection(u16 mask, i16 direction);
 

@@ -33,9 +33,9 @@ void LoadWallTextures(i16 wallSet, i16 variant) {
     u8 area;
     u8 level;
     ReleaseTexture(&g_roomTexture);
-    g_fixedLighting = FALSE;
+    g_fixedLighting = false;
     if ((wallSet & 0xf) == WALL_TEXTURE_UNLIT) {
-        g_fixedLighting = TRUE;
+        g_fixedLighting = true;
     }
     if (wallSet == WALL_TEXTURE_MAP_OVERRIDE) {
         area = GetMapArea();

@@ -85,7 +85,7 @@ DATA(0x000784f8)
 static i16 s_fieldEntryState;
 
 DATA(0x000784fc)
-static i16 s_fieldMarker;
+static b16 s_fieldMarker;
 
 DATA(0x00078500)
 static i16 s_fieldPairFirst;
@@ -98,10 +98,10 @@ static i16 s_fieldParamThird;
 
 // Set when the map was left by abort or a proximity event; feeds script register 0.
 DATA(0x0007850c)
-static i16 s_fieldLeftEarly;
+static b16 s_fieldLeftEarly;
 
 DATA(0x00078510)
-static i16 s_fieldRefresh;
+static b16 s_fieldRefresh;
 
 // The palette snapshot held while an encounter runs.
 DATA(0x00078518)
@@ -109,7 +109,7 @@ static PaletteState* s_fieldPaletteState;
 
 RVA(0x000070d0, 0xa)
 void MarkFieldRefresh(void) {
-    s_fieldRefresh = 1;
+    s_fieldRefresh = true;
 }
 
 RVA(0x000070e0, 0x12)
@@ -129,7 +129,7 @@ i16 SetFieldParams(i16 first, i16 second, i16 third) {
 }
 
 RVA(0x00007130, 0x23)
-i16 IsFieldModeAtLeast(i16 anyMode) {
+b16 IsFieldModeAtLeast(i16 anyMode) {
     if (anyMode == 0) {
         return s_fieldMode >= 1;
     }
@@ -252,7 +252,7 @@ i16 GetFacingWall(i16 map) {
 // @identity-TODO: named from its phases (enemy spawns, turns, rewards,
 // level-ups); the caller 0x417160 dispatches it as a game state.
 RVA(0x00007390, 0x6b0)
-i16 RunFieldEncounter(void) {
+b16 RunFieldEncounter(void) {
     i16 x;
     i16 y;
     i16 i;
@@ -270,7 +270,7 @@ i16 RunFieldEncounter(void) {
                     NextGameStep();
                     LockStatusRedraw(0);
                     SetFieldMenuMode(1);
-                    s_fieldMarker = 1;
+                    s_fieldMarker = true;
                     g_fieldBattleActive = 1;
                     ResetFieldObjects();
                     s_fieldPaletteState = SavePaletteState(s_fieldPaletteState, 3);
@@ -423,7 +423,7 @@ i16 RunFieldEncounter(void) {
                 MarkRewardsPending();
                 FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
                 ShowMessage(g_scratchBuffer, 0x3c);
-                return 0;
+                return false;
             }
             s_fieldPairFirst = 0;
             s_fieldPairSecond = 0;
@@ -450,7 +450,7 @@ i16 RunFieldEncounter(void) {
                 RespawnAreaActors();
             }
             RequestFieldRefresh();
-            s_fieldRefresh = 0;
+            s_fieldRefresh = false;
             ReturnFromGameState();
             s_fieldCountA = -1;
             s_fieldRateA = 100;
@@ -459,7 +459,7 @@ i16 RunFieldEncounter(void) {
             s_fieldMode = -1;
             ResetRosterBattleState();
             SetFieldMenuMode(0);
-            s_fieldMarker = 0;
+            s_fieldMarker = false;
             s_fieldOption = 20;
             s_fieldParamFirst = 1;
             s_fieldParamSecond = -1;
@@ -494,7 +494,7 @@ void ResetRosterFieldMarks(void) {
 
 // The field state's per-frame handler, one case per phase.
 RVA(0x00007aa0, 0x4d4)
-i16 RunFieldState(void) {
+b16 RunFieldState(void) {
     i16 key;
     SetFieldRenderMode();
     SetInfoBarLayout(0);
@@ -504,7 +504,7 @@ i16 RunFieldState(void) {
                 case 0:
                     ClearSceneSurfaces();
                     NextGameStep();
-                    s_fieldLeftEarly = 0;
+                    s_fieldLeftEarly = false;
                     SetFieldStatusBit0(0);
                     SetFieldStatusBit11(0);
                     SetFieldMenuMode(3);
@@ -537,7 +537,7 @@ i16 RunFieldState(void) {
                 if (key >= 0) {
                     break;
                 }
-                s_fieldLeftEarly = 1;
+                s_fieldLeftEarly = true;
                 return FlushFieldScreen();
             }
             if (FindFirstAblePartyMember() == -1) {
@@ -568,7 +568,7 @@ i16 RunFieldState(void) {
             HideScreenLayer(1);
             if (RollProximityEvent() > 0) {
                 LeaveFieldMap(0);
-                s_fieldLeftEarly = 1;
+                s_fieldLeftEarly = true;
                 RunMessageScene(0x7f04, 0x10, -1);
                 PlaySoundEffect(4);
                 ClearEncounterPending();
@@ -612,7 +612,7 @@ i16 RunFieldState(void) {
                 MarkRewardsPending();
                 FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
                 ShowMessage(g_scratchBuffer, 0x3c);
-                return 0;
+                return false;
             }
             s_fieldPairFirst = 0;
             s_fieldPairSecond = 0;
@@ -644,7 +644,7 @@ i16 RunFieldState(void) {
 }
 
 RVA(0x00007f80, 0xcf)
-i16 RollProximityEvent(void) {
+b16 RollProximityEvent(void) {
     i16 nearest = 0x7fff;
     i16 object = -1;
     i16 index;
@@ -661,7 +661,7 @@ i16 RollProximityEvent(void) {
         }
     }
     if (object < 0) {
-        return 1;
+        return true;
     }
     switch (nearest) {
         case 0:
@@ -689,7 +689,7 @@ void UpdatePartyActionWaits(void) {
 }
 
 RVA(0x00008060, 0xd5)
-i16 HasObjectInReach(i16 mode, i16 first, i16 second) {
+b16 HasObjectInReach(i16 mode, i16 first, i16 second) {
     MapCoord pos = GetMapCoord();
     FieldObject* object;
     switch (mode) {
@@ -697,15 +697,15 @@ i16 HasObjectInReach(i16 mode, i16 first, i16 second) {
             if (first >= 0) {
                 object = GetFieldObject(first);
                 if (pos.x != object->pos.x || pos.y == object->pos.y) {
-                    return 0;
+                    return false;
                 }
             } else if (!CountObjectsAt(pos.x, pos.y, 0, 0)) {
-                return 0;
+                return false;
             }
             break;
         case 1:
             if (first >= 0 && second >= 0) {
-                return 0;
+                return false;
             }
             if (first < 0 && second < 0) {
                 break;
@@ -716,13 +716,13 @@ i16 HasObjectInReach(i16 mode, i16 first, i16 second) {
                 object = GetFieldObject(second);
             }
             if (pos.x != object->pos.x || pos.y != object->pos.y) {
-                return 0;
+                return false;
             }
             break;
         default:
-            return 0;
+            return false;
     }
-    return 1;
+    return true;
 }
 
 RVA(0x00008140, 0x2b)

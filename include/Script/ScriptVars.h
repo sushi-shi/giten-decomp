@@ -49,14 +49,14 @@ void ClearScriptLongVars(void);
 void SaveSystemVars(u32* vars, u32* settings);
 void RestoreSystemVars(u32* vars, u32* settings);
 void ClearSystemVars(void);
-i32 FreeCallFrame(i32 frame);
+b32 FreeCallFrame(i32 frame);
 i16 AccessScriptReg(i16 write, i16 index, i16 value);
 i32 NewCallFrame(void);
 i32 FreeCallFrames(i32 stack);
 void TransferFrameVars(i32 frame, i16 load);
 
 // Set while a script builds a choice list.
-extern i16 g_inChoices;
+extern b16 g_inChoices;
 
 // The script engine's numbered variables (saved and loaded as one block).
 extern i32 g_scriptVars[256];
@@ -64,17 +64,17 @@ extern i32 g_scriptVars[256];
 void SetWindowOption(i16 option);
 i16 SetHold(i16 on);
 
-i16 OpBeginChoices(i16 window);
+b16 OpBeginChoices(i16 window);
 
-i16 OpNextChoice(i16 window);
+b16 OpNextChoice(i16 window);
 
 // Records the current choice's text bounds and advances its index.
-i16 FinishScriptChoice(i16 window);
+b16 FinishScriptChoice(i16 window);
 
 RVA_DECL(0x0003a9a0)
-i16 OpEndChoices(i16 window);
+b16 OpEndChoices(i16 window);
 
-i16 OpRunChoiceMenu(i16 window);
+b16 OpRunChoiceMenu(i16 window);
 
 void OpGetSelectedObjectId(void);
 
@@ -111,9 +111,9 @@ void RunMessageHook(void);
 
 void WaitForScriptText(i16 window);
 void AdvanceScriptTextWindow(i16 window);
-i16 RunActorScene(void);
-i16 RunScriptScene(void);
-i16 StepOnTextPeriod(i16 window);
+b16 RunActorScene(void);
+b16 RunScriptScene(void);
+b16 StepOnTextPeriod(i16 window);
 
 void OpPrintRosterName(void);
 

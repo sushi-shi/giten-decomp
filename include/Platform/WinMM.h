@@ -6,7 +6,8 @@
 
 #include <Win32.h>
 
+#include <Platform/WindowsX.h>
+
 #include <mmsystem.h>
-#include <windowsx.h>
 
 #endif // GITEN_PLATFORM_WINMM_H

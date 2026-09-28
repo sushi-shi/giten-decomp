@@ -84,7 +84,7 @@ DATA(0x0007d5fc)
 static i16 s_mapScreenY;
 
 DATA(0x0007d600)
-static i16 s_mapActive;
+static b16 s_mapActive;
 
 DATA(0x0007c2e0)
 static i16 s_mapPlane;
@@ -375,18 +375,18 @@ void MarkMapCell(i16 kind, i16 x, i16 y) {
 }
 
 RVA(0x0001d530, 0x360)
-i16 RunAutomapState(void) {
+b16 RunAutomapState(void) {
     i16 savedState;
     i16 input;
     if (TestModeFlags(MODE_WORLD_MAP)) {
         ReturnFromGameState();
-        return 0;
+        return false;
     }
     SetLayersRenderMode();
     switch (GetGamePhase()) {
         case 0:
             NextGamePhase();
-            s_mapActive = 1;
+            s_mapActive = true;
             RestoreDrawState(SaveDrawState());
             s_mapPosition = g_field.pos;
             s_mapPlane = CreateTextPlane(31, 0);
@@ -461,10 +461,10 @@ i16 RunAutomapState(void) {
             RequestFieldRefresh();
             RunFieldPanelRow(7, 0, 0, 0);
             ReturnFromGameState();
-            s_mapActive = 0;
+            s_mapActive = false;
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0001d890, 0x1ec)
@@ -584,7 +584,7 @@ void DrawAutomapTile(i16 tile, i16 x, i16 y) {
 }
 
 RVA(0x0001dc60, 0x1e0)
-i16 DrawAutomapViewport(MapPosition position) {
+b16 DrawAutomapViewport(MapPosition position) {
     i16 width;
     i16 height;
     i16 left;
@@ -666,7 +666,7 @@ i16 DrawAutomapViewport(MapPosition position) {
     s_mapOriginY = y;
     OffsetMapCoord(&s_mapOriginX, &s_mapOriginY, direction, left, top);
     DrawAutomapRegion(s_mapOriginX, s_mapOriginY, viewWidth, viewHeight, 0, 0);
-    return 0;
+    return false;
 }
 
 RVA(0x0001de40, 0x3d0)
@@ -704,7 +704,6 @@ void DrawMapOverlay(MapPosition position) {
     if (IsDarkCell(g_field.pos.x, g_field.pos.y)) {
         return;
     }
-    screenX = 1;
     GetMapSize(&width, &height);
     x = position.x;
     y = position.y;
@@ -714,6 +713,7 @@ void DrawMapOverlay(MapPosition position) {
         viewWidth = width;
         screenX = 8 - width;
     } else {
+        screenX = 1;
         viewWidth = 7;
         if (-left * 2 > 7) {
             left = -3;
@@ -830,12 +830,12 @@ void DrawMapOverlayTile(i16 tile, i16 x, i16 y) {
 }
 
 RVA(0x0001e300, 0x50)
-i16 IsCellInView(i16 x, i16 y) {
+b16 IsCellInView(i16 x, i16 y) {
     TransformAutomapPoint(&x, &y);
     if (x >= 0 && x < s_mapWidth && y >= 0 && y < s_mapHeight) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0001e350, 0x70)

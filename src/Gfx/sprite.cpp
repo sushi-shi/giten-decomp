@@ -72,7 +72,7 @@ void PlaceSprite(i16 id, i16 slot, i16 frame, i16 x, i16 y) {
 }
 
 RVA(0x00058800, 0x17)
-i16 IsSpritePlaced(i16 slot) {
+b16 IsSpritePlaced(i16 slot) {
     return GetSpriteSlotFrame(GetSpriteSlot(slot)) != SPRITE_UNPLACED;
 }
 
@@ -89,12 +89,12 @@ void FreeSpriteImages(i16 slot) {
 }
 
 RVA(0x00058870, 0x50)
-i16 IsSpriteFrameLoaded(i16 slot, i16 frame) {
+b16 IsSpriteFrameLoaded(i16 slot, i16 frame) {
     if (IsSpriteFrameIndexOutOfRange(slot, frame)) {
-        return FALSE;
+        return false;
     }
     if (GetSpriteFramePicture(slot, frame)->surface == NULL) {
-        return FALSE;
+        return false;
     }
     return GetSpriteFramePicture(slot, frame)->visible != FALSE;
 }

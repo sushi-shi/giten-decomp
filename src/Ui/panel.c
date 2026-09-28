@@ -176,12 +176,12 @@ i16 ToggleFlagBits(u16* flags, u16 mask) {
 }
 
 RVA(0x00022ae0, 0x15)
-i32 TestFlagBits(u16* flags, u16 mask) {
+b32 TestFlagBits(u16* flags, u16 mask) {
     return (*flags & mask) != 0;
 }
 
 RVA(0x00022b00, 0x21)
-i32 TestPanelRowFlags(Panel* panel, i16 row, u16 mask) {
+b32 TestPanelRowFlags(Panel* panel, i16 row, u16 mask) {
     return TestFlagBits(&GetPanelRow(panel, row)->flags, mask);
 }
 
@@ -195,7 +195,7 @@ void SetPanelRowFlags(Panel* panel, i16 row, u16 mask, i16 on) {
 }
 
 RVA(0x00022b80, 0x15)
-i32 IsPanelRowChecked(Panel* panel, i16 row) {
+b32 IsPanelRowChecked(Panel* panel, i16 row) {
     return TestPanelRowFlags(panel, row, PANEL_ROW_CHECKED);
 }
 

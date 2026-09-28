@@ -145,17 +145,17 @@ i16 LoadWorldEncounterBlock(i16 x, i16 y) {
 }
 
 RVA(0x00011220, 0x53)
-i16 TestWorldEncounterChance(i16 chance) {
+b16 TestWorldEncounterChance(i16 chance) {
     i16 totalChance = chance + s_encounterChanceBonus;
     if (totalChance < RandomAverage(1, 100, 2)) {
         s_encounterChanceBonus++;
         if (RosterContainsId(4)) {
             s_encounterChanceBonus++;
         }
-        return 0;
+        return false;
     }
     s_encounterChanceBonus = 0;
-    return 1;
+    return true;
 }
 
 RVA(0x00011280, 0x77)
@@ -301,13 +301,13 @@ void PrepareFieldRandom(void) {
 
 RVA(0x00011620, 0x37)
 b32 AnyObjectInReach(void) {
-    b32 found = 0;
+    b32 found = false;
     i16 i;
     i16 object;
     for (i = 0; i < 16; i++) {
         object = GetLiveObject(i);
         if (object >= 0 && HasObjectInReach(1, -1, object)) {
-            found = 1;
+            found = true;
         }
     }
     return found;

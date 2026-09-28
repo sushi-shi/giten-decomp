@@ -298,35 +298,35 @@ void OpRandLongVar(void) {
 
 // Saves the system variables into the newest call frame.
 RVA(0x00033b20, 0x26)
-i16 StoreFrameLocals(void) {
+b16 StoreFrameLocals(void) {
     i32 frame = TopCallFrame(g_curScript);
     if (!frame) {
-        return 0;
+        return false;
     }
     TransferFrameVars(frame, 0);
-    return 1;
+    return true;
 }
 
 // Restores the system variables from the newest call frame.
 RVA(0x00033b50, 0x26)
-i16 LoadFrameLocals(void) {
+b16 LoadFrameLocals(void) {
     i32 frame = TopCallFrame(g_curScript);
     if (!frame) {
-        return 0;
+        return false;
     }
     TransferFrameVars(frame, 1);
-    return 1;
+    return true;
 }
 
 // Exchanges the system variables with the newest call frame's, through two
 // scratch frames.
 RVA(0x00033b80, 0x86)
-i16 SwapFrameLocals(void) {
+b16 SwapFrameLocals(void) {
     i32 frame = TopCallFrame(g_curScript);
     i32 saved;
     i32 loaded;
     if (!frame) {
-        return 0;
+        return false;
     }
     saved = NewCallFrame();
     loaded = NewCallFrame();
@@ -338,7 +338,7 @@ i16 SwapFrameLocals(void) {
     TransferFrameVars(loaded, 1);
     FreeCallFrames(loaded);
     FreeCallFrames(saved);
-    return 1;
+    return true;
 }
 
 // Reads two byte operands into words.
@@ -355,15 +355,15 @@ void ScriptJump(i16 pc) {
 
 // Continues the script at `pc` of the code block `codeBase`.
 RVA(0x00033c50, 0x1e)
-i16 ScriptJumpTo(u32 codeBase, i16 pc) {
+b16 ScriptJumpTo(u32 codeBase, i16 pc) {
     g_curScript->codeBase = codeBase;
     ScriptJump(pc);
-    return 0;
+    return false;
 }
 
 // Continues the script at `pc` of `codeBase`, passing the two call arguments.
 RVA(0x00033c70, 0x2a)
-i16 ScriptJumpWithArgs(u32 codeBase, i16 pc, i16 argA, i16 argB) {
+b16 ScriptJumpWithArgs(u32 codeBase, i16 pc, i16 argA, i16 argB) {
     g_scriptArgA = argA;
     g_scriptArgB = argB;
     return ScriptJumpTo(codeBase, pc);
@@ -450,31 +450,31 @@ i32 ScriptJumpUnless(i16 pc, i32 condition) {
 // Pushes a call frame whose return position is the jump target read from the
 // script, and continues after the operand.
 RVA(0x00033f10, 0x38)
-i16 OpPushReturnTarget(void) {
+b16 OpPushReturnTarget(void) {
     i16 target = ReadJumpTarget();
     i16 next = g_curScript->pc;
     ScriptJump(target);
     PushCallFrame(g_curScript, 1);
     ScriptJump(next);
-    return 0;
+    return false;
 }
 
 RVA(0x00033f50, 0x14)
-i16 DropCallFrame(void) {
+b16 DropCallFrame(void) {
     PopCallFrame(g_curScript, 1);
-    return 0;
+    return false;
 }
 
 RVA(0x00033f70, 0x12)
-i16 SwapCallFrames(void) {
+b16 SwapCallFrames(void) {
     SwapTopCallFrames(g_curScript);
-    return 0;
+    return false;
 }
 
 RVA(0x00033f90, 0x12)
-i16 ClearCallStack(void) {
+b16 ClearCallStack(void) {
     UnwindCallFrames(g_curScript);
-    return 0;
+    return false;
 }
 
 // Returns from the current call; -1 when that ends the script.

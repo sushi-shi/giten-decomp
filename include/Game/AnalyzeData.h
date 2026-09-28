@@ -9,7 +9,7 @@
 // rather than with the analyze window.
 // @identity-TODO: what sets an id's bit (0x478878) is unrecovered.
 
-i16 HasAnalyzeData(i16 id);
+b16 HasAnalyzeData(i16 id);
 
 // @identity-TODO: the saved per-id byte count (0x47add8, set clamped to
 // 0..255 by 0x410ba0) whose eighth becomes Character.familiarity; what it

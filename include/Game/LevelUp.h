@@ -32,7 +32,7 @@ i16 CountPartyPendingLevels(void);
 i16 FindLevelUpSlot(void);
 
 // The level's stat growth and the stat-point picks.
-i16 ApplyLevelStatGrowth(struct Character* character);
+b16 ApplyLevelStatGrowth(struct Character* character);
 i16 IsStatCapped(struct Character* character, i16 stat);
 i16 CountRaisableStats(struct Character* character);
 i16 ResolveRaisableStat(struct Character* character, i16 stat);
@@ -48,6 +48,6 @@ void MarkRewardsPending(void);
 RVA_DECL(0x00019760)
 char* FormatLevelUpMessage(char* buf, i16 slot);
 
-i16 RunLevelUp(void);
+b16 RunLevelUp(void);
 
 #endif // GITEN_GAME_LEVELUP_H

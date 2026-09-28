@@ -18,7 +18,7 @@ void CopySurfaceSquare(IDirectDrawSurface* dest, IDirectDrawSurface* source, i32
     StretchBlt(destDC, 0, 0, size, size, sourceDC, 0, 0, size, size, SRCCOPY);
     dest->ReleaseDC(destDC);
     source->ReleaseDC(sourceDC);
-    memset(&desc, 0, sizeof(desc));
+    ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS;
     desc.ddsCaps.dwCaps = DDSCAPS_SYSTEMMEMORY;

@@ -456,21 +456,21 @@ u16* GetWallMap(void) {
 }
 
 RVA(0x000217e0, 0x24)
-i16 IsCellAt(i16 x, i16 y, const CellHead* cell) {
+b16 IsCellAt(i16 x, i16 y, const CellHead* cell) {
     if (x == cell->x && y == cell->y) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // Whether the event flag at `offset` in the cell is set; a zero pair is
 // never set.
 RVA(0x00021810, 0x31)
-i16 IsCellFlagSet(const CellHead* cell, i16 offset) {
+b16 IsCellFlagSet(const CellHead* cell, i16 offset) {
     const u8* bytes = &cell->x;
 
     if (bytes[offset] == 0 && bytes[offset + 1] == 0) {
-        return 0;
+        return false;
     }
     return IsEventFlagSet(bytes[offset], bytes[offset + 1]);
 }
@@ -649,42 +649,42 @@ void LatchCellDestination(const CellHead* cell, i16 x, i16 y, i16 direction, i16
 // 1 when x/y holds an enabled object of code 0x8d (and while no level is
 // loaded).
 RVA(0x00021dc0, 0x70)
-i16 IsDarkCell(i16 x, i16 y) {
+b16 IsDarkCell(i16 x, i16 y) {
     ObjectCell* cell;
     if (g_areaLevel == NULL) {
-        return 1;
+        return true;
     }
     for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
         if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(&cell->head, 3)
             && cell->head.code == 0x8d) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 // 1 when x/y holds an enabled object of code 0x8e (and while no level is
 // loaded).
 RVA(0x00021e30, 0x70)
-i16 IsCellCommandBlocked(i16 x, i16 y) {
+b16 IsCellCommandBlocked(i16 x, i16 y) {
     ObjectCell* cell;
     if (g_areaLevel == NULL) {
-        return 1;
+        return true;
     }
     for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
         if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(&cell->head, 3)
             && cell->head.code == 0x8e) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 // The bit of x/y in the level's room bitmap.
 RVA(0x00021ea0, 0x2b)
-i16 IsRoomCell(i16 x, i16 y) {
+b16 IsRoomCell(i16 x, i16 y) {
     if (g_areaLevel == NULL) {
-        return 0;
+        return false;
     }
     return TestBit(g_areaLevel->roomBits, g_areaLevel->width * y + x);
 }
@@ -692,8 +692,6 @@ i16 IsRoomCell(i16 x, i16 y) {
 // With `mode` set, whether x/y is blocked on `level`: a cell of any list
 // there, else its wall or room bit. With `mode` 0, draws each enabled cell's
 // automap icon instead and returns 0.
-// @early-stop register allocation: retail holds y in esi and x in edi; every
-// spelling here swaps them (declaration order, an index local or none).
 RVA(0x00021ed0, 0x1d3)
 i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
     WarpCell* warp;
@@ -743,11 +741,11 @@ i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
     if (mode == 0) {
         return 0;
     }
-    index = AreaLevelAt(g_areaMap, level)->width * y + x;
-    if (TestBit(AreaLevelAt(g_areaMap, level)->blockBits, index)) {
+    y = AreaLevelAt(g_areaMap, level)->width * y + x;
+    if (TestBit(AreaLevelAt(g_areaMap, level)->blockBits, y)) {
         return 1;
     }
-    return TestBit(AreaLevelAt(g_areaMap, level)->roomBits, index);
+    return TestBit(AreaLevelAt(g_areaMap, level)->roomBits, y);
 }
 
 // With `mode` set, 1 when the cell is at x/y. With `mode` 0, draws the cell's
@@ -968,9 +966,9 @@ TreasureBox* GetMapTreasureBoxes(void) {
 // Whether unexplored cells are shown on the current level's automap.
 // The reveal flag is active when clear; no selected level returns false.
 RVA(0x000225d0, 0x27)
-i16 IsLevelMapRevealed(void) {
+b16 IsLevelMapRevealed(void) {
     if (g_areaLevel == NULL) {
-        return 0;
+        return false;
     }
     return !IsEventFlagSet(g_areaLevel->revealFlagBank, g_areaLevel->revealFlagIndex);
 }

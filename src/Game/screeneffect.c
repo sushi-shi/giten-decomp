@@ -50,7 +50,7 @@ void PushScriptAnimation(i16 animation, i16 x, i16 y) {
 }
 
 RVA(0x000286f0, 0x9e)
-i16 RunScriptAnimationState(void) {
+b16 RunScriptAnimationState(void) {
     switch (GetGamePhase()) {
         case 0:
             NextGamePhase();
@@ -70,7 +70,7 @@ i16 RunScriptAnimationState(void) {
             ReturnFromGameState();
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00028790, 0x32)

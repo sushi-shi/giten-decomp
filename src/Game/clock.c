@@ -19,7 +19,7 @@
 // Set on the tick that ends a 24-tick round (HasTurnElapsed), and the round's
 // tick count.
 DATA(0x0007fe48)
-static i16 s_turnElapsed;
+static b16 s_turnElapsed;
 
 DATA(0x0007fe4c)
 static i16 s_roundTicks;
@@ -71,8 +71,6 @@ GZ_ENUM_STORAGE(ClockUpdate, i16) AdvanceClock(u16 minutes) {
 }
 
 // Adds `minutes`: 3, | 4 when an hour passed, | 8 a day, | 0x10 a moon phase.
-// @early-stop: retail sums the day count in edx and stores it after the moon
-// tick load; here it is eax and stored first.
 RVA(0x00020bf0, 0xfe)
 GZ_ENUM_STORAGE(ClockUpdate, i16) TickClock(u16 minutes) {
     GZ_ENUM_STORAGE(ClockUpdate, i16) changed = CLOCK_UPDATE_TICK | CLOCK_UPDATE_MINUTE;
@@ -89,7 +87,8 @@ GZ_ENUM_STORAGE(ClockUpdate, i16) TickClock(u16 minutes) {
         changed |= CLOCK_UPDATE_DAY;
     }
     g_clock.days += carry;
-    total = g_clock.moonTicks + minutes;
+    total = g_clock.moonTicks;
+    total = total + minutes;
     carry = total / 0x5f0;
     g_clock.moonTicks = total % 0x5f0;
     if (carry) {
@@ -173,14 +172,14 @@ void ClearMoonFlags(void) {
 // the clock a minute. Returns 1 on a tick, else 0 (or AdvanceClock's bits).
 RVA(0x00020e90, 0x90)
 GZ_ENUM_STORAGE(ClockUpdate, i16) TickGameClock(i16 paused) {
-    s_turnElapsed = 0;
+    s_turnElapsed = false;
     if (--g_clock.frames != 0) {
         return CLOCK_UPDATE_NONE;
     }
     g_clock.frames = g_clock.framesPerTick;
     if (++s_roundTicks >= 24) {
         s_roundTicks = 0;
-        s_turnElapsed = 1;
+        s_turnElapsed = true;
     }
     if (paused) {
         return CLOCK_UPDATE_TICK;

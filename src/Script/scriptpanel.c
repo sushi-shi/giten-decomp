@@ -106,16 +106,16 @@ void DrawScriptPanel(ScriptPanel* node) {
 }
 
 RVA(0x0002ef00, 0x3e)
-i16 CloseScriptPanelByImage(i16 image) {
+b16 CloseScriptPanelByImage(i16 image) {
     ScriptPanel* node;
     for (node = s_scriptPanels; node; node = node->next) {
         if (node->image == image) {
             ListUnlink(node);
             DestroyScriptPanel(node);
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002ef40, 0x3d)
@@ -225,15 +225,15 @@ i16 PollScriptPanels(void) {
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).
 RVA(0x0002f150, 0x30)
-i16 DrawScriptPanelByImage(i16 image) {
+b16 DrawScriptPanelByImage(i16 image) {
     ScriptPanel* node;
     for (node = s_scriptPanels; node; node = node->next) {
         if (node->image == image) {
             DrawScriptPanel(node);
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002f180, 0x3b)

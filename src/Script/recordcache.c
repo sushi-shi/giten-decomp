@@ -233,7 +233,7 @@ void CopySkillList(Character* from, WordList* to) {
 }
 
 RVA(0x0002dfb0, 0x42)
-i16 RollSkillLearning(Character* character, i16 skill) {
+b16 RollSkillLearning(Character* character, i16 skill) {
     i16 chance = character->level;
     chance = (chance - GetSkillLevel(skill)) * 10 + GetStatTotal(character, STAT_INTELLIGENCE);
     return chance > RandomAverage(10, 60, 2);

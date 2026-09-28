@@ -41,6 +41,6 @@ VideoViewport* GetPlaneData(i16 plane);
 
 VideoPlane* GetPlaneHeader(i16 plane);
 
-i16 ClipViewportRect(VideoViewport* viewport, i16* left, i16* right, i16* top, i16* bottom);
+b16 ClipViewportRect(VideoViewport* viewport, i16* left, i16* right, i16* top, i16* bottom);
 
 #endif // GITEN_GFX_VIDEOSTATE_H

@@ -284,7 +284,7 @@ void DrawStatusScreen(i16 slot) {
     }
 }
 
-static i16 ResumeStatusPage(i16 command);
+static b16 ResumeStatusPage(i16 command);
 
 RVA(0x00042200, 0x1d4)
 i16 RunStatusCommands(void) {
@@ -354,20 +354,20 @@ i16 RunStatusCommands(void) {
 }
 
 RVA(0x000423e0, 0x6c)
-static i16 ResumeStatusPage(i16 command) {
+static b16 ResumeStatusPage(i16 command) {
     u16 step;
 
     if (command == -1) {
-        return 1;
+        return true;
     }
     if (command == -2) {
         step = SetGameStep(1);
         HighlightHotspot(0, s_statusCommandHotspots[step], 0);
-        return 1;
+        return true;
     }
     HighlightHotspot(0, s_statusCommandHotspots[GetGameStep()], 0);
     SetGameStep(command);
-    return 0;
+    return false;
 }
 
 RVA(0x00042450, 0xc3)

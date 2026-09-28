@@ -11,15 +11,15 @@ static __inline void SwapFusionSlotValues(i16* first, i16* second) {
 }
 
 i16 SortFusionSlots(i16* first, i16* second);
-i16 MoveSpecialFusionSlot(i16* first, i16* second);
+b16 MoveSpecialFusionSlot(i16* first, i16* second);
 void MoveSpecialFusionCharacters(
     Character** firstCharacter,
     Character** secondCharacter,
     i16* first,
     i16* second
 );
-i16 MoveSpecialRaceFusionSlot(i16* first, i16* second);
-i16 MoveUnrankedFusionSlot(i16* first, i16* second);
+b16 MoveSpecialRaceFusionSlot(i16* first, i16* second);
+b16 MoveUnrankedFusionSlot(i16* first, i16* second);
 i16 CompareFusionValues(i16 first, i16 second);
 i16 CompareFusionCharacters(Character* first, Character* second);
 i16 CompareRosterFusionClasses(i16 first, i16 second);

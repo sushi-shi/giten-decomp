@@ -48,15 +48,15 @@ void InflictCondition(i16 code, Character* target);
 // Whether `target` resists inflict code `code` (1 when it gives no condition):
 // whether an equipped item's resistance code (0x77..0x85) covers it.
 i16 IsConditionResisted(Character* target, i16 code);
-i16 ItemResistsCondition(i16 item, i16 condition);
+b16 ItemResistsCondition(i16 item, i16 condition);
 
 // Rolls whether the item attack hits, recording resistance and action result.
-i16 ResolveItemAttack(Character* user, Character* target, i16 sameSide);
+b16 ResolveItemAttack(Character* user, Character* target, i16 sameSide);
 i32 ComputeItemDamage(Character* attacker, Character* target, i16 hit);
-i16 RollItemCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
+b16 RollItemCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
 
 // Resolves an attack item's damage and returns whether it inflicted a condition.
-i16 RunItemAttack(Character* user, Character* target);
+b16 RunItemAttack(Character* user, Character* target);
 
 // The equipment's per-element damage ratios: ApplyItemDamageRatio scales a
 // ratio (percent, ten elements) by an item's code 0x40..0x67 (element code/4,
@@ -68,7 +68,7 @@ i16 ScaleDamageByEquipment(Character* character, i16 damage, i16 element);
 
 // Whether item `item` guards element `element` (2..5, its record byte +0x28);
 // how many equipped items of `character` guard it.
-i16 IsItemGuardingElement(i16 item, i16 element);
+b16 IsItemGuardingElement(i16 item, i16 element);
 i16 CountElementGuards(Character* character, i16 element);
 
 // The HP and MP an item's regeneration code (0x70..0x74) adds per turn.
@@ -91,6 +91,6 @@ void RecalcDerivedStats(Character* character);
 // Whether field-mode attacks suppress this condition on field actors.
 // Codegen constraint: declared here; in <Game/Condition.h> it shifts
 // fieldobj's TU state (RelativeFacing).
-i16 IsFieldConditionRestricted(i16 condition);
+b16 IsFieldConditionRestricted(i16 condition);
 
 #endif // GITEN_GAME_ITEMEFFECT_H

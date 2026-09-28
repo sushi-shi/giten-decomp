@@ -60,7 +60,7 @@ static i16 s_pick = -1;
 
 // Set when the equipment changed, so the status screen is redrawn on leaving.
 DATA(0x0006a212)
-static i16 s_changed = 0;
+static b16 s_changed = false;
 
 // One object: retail reads `itemBase` and `item` with dword moves that run
 // into the next field.
@@ -189,7 +189,7 @@ static __inline void ClearEquipPreview(void) {
 
 static __inline i16 FinishEquipChange(void) {
     RecalcCharacterStats(GetRosterCharacter(g_statusMember));
-    s_changed = 1;
+    s_changed = true;
     SetGameSub(1);
     s_pick = -1;
     return -1;
@@ -234,7 +234,7 @@ i16 RunEquipScreen(i16 key) {
             s_equipMenu = DestroyMenuBox(s_equipMenu);
             if (s_changed) {
                 DrawStatusScreen(g_statusMember);
-                s_changed = 0;
+                s_changed = false;
             }
             SetStatusMenuItemFlag(8, PANEL_ROW_CHECKED, 0);
             PollEquipPart(g_statusMember, EQUIP_PICK_CLEAR);

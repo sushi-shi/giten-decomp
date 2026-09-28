@@ -55,15 +55,15 @@ i16 GetSelectedHotspotObject(void) {
 // Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x000585f0, 0x48)
-i16 HasHotspotTo(i16 x, i16 y) {
+b16 HasHotspotTo(i16 x, i16 y) {
     u32 i;
     for (i = 0; i < g_hotspotCount; i++) {
         if (GetHotspot(i)->kind == 1 && GetHotspot(i)->targetX == x
             && GetHotspot(i)->targetY == y) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00058640, 0x90)

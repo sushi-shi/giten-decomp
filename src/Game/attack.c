@@ -23,6 +23,7 @@
 #include <Util/Range.h>
 
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
 
 DATA(0x00078488)
@@ -162,7 +163,7 @@ i16 RollExceptionalAttack(Character* attacker, Character* target, i16 mode, i16 
 }
 
 RVA(0x00008910, 0x207)
-i16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
+b16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
     i32 accuracy;
     i32 evasion;
     i32 attack;
@@ -170,11 +171,11 @@ i16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
     i32 roll;
     if (GetPickBlockingCondition(GetCharacterConditions(target))) {
         SetActionResult(attacker, 3);
-        return 1;
+        return true;
     }
     if (GetCombatantFacingDifference(g_actorId, g_targetId) == 2) {
         SetActionResult(attacker, 3);
-        return 1;
+        return true;
     }
     accuracy = GetBattleStatShown(attacker, BATTLE_STAT_GUN_ACCURACY);
     ApplyAttackAccuracyConditions(attacker, accuracy);
@@ -200,23 +201,23 @@ i16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
         attack *= 8;
         if (attack >= roll) {
             SetActionResult(attacker, 3);
-            return 1;
+            return true;
         }
     } else {
         roll = defense * RandomAverage(0, 15, 0);
         attack *= 8;
         if (attack >= roll) {
             SetActionResult(attacker, 3);
-            return 1;
+            return true;
         }
     }
     roll = defense * RandomAverage(0, 7, 0);
     if (attack >= roll) {
         SetActionResult(attacker, 2);
-        return 1;
+        return true;
     }
     SetActionResult(attacker, 0);
-    return 0;
+    return false;
 }
 
 RVA(0x00008b20, 0x17)
@@ -287,45 +288,45 @@ i32 ComputeGunDamage(Character* attacker, Character* target, i16 result) {
 }
 
 RVA(0x00008d30, 0x124)
-i16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16 condition) {
+b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16 condition) {
     i16 luck;
     i16 roll;
     i16 defense;
     g_statusCondition = 0;
     if (!condition) {
-        return 0;
+        return false;
     }
     if (attacker->lastChange < GetConditionDamageThreshold(target)) {
-        return 0;
+        return false;
     }
     if (g_actionResult >= 7) {
-        return 0;
+        return false;
     }
     if (g_targetId >= 0 && IsFieldModeAtLeast(0) && IsFieldConditionRestricted(condition)) {
-        return 0;
+        return false;
     }
     roll = RandomAverage(0, 20, 0);
     luck = GetStatTotal(attacker, STAT_FORTUNE);
     luck += roll;
     if (luck <= GetStatTotal(target, STAT_FORTUNE)) {
-        return 0;
+        return false;
     }
     roll = RandomAverage(0, 40, 0);
     defense = GetBattleStatShown(target, 11);
     defense *= roll;
     if (ScaleActionValue(GetBattleStatShown(attacker, 9) * 10, resistance, 2) - defense <= 0) {
-        return 0;
+        return false;
     }
     if (IsConditionResisted(target, g_attackCondition)) {
-        return 0;
+        return false;
     }
     g_statusCondition = g_attackCondition;
     InflictCondition(g_attackCondition, target);
-    return 1;
+    return true;
 }
 
 RVA(0x00008e60, 0x176)
-i16 ResolveGunAttack(Character* attacker, Character* target, i16 mode) {
+b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode) {
     i16 result;
     i32 amount = 0;
     ResetActionOutcome();
@@ -485,9 +486,7 @@ i16 ComputeGunBurstPower(i16 rounds) {
     for (index = 0; index < rounds; index++) {
         total += power;
         power -= penalty;
-        if (power < 1) {
-            power = 1;
-        }
+        power = max(1, power);
     }
     return total + s_gunBasePower;
 }

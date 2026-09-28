@@ -15,9 +15,9 @@ static __inline void SetConditionAge(ConditionSet* conditions, i16 condition, u8
 // The condition set's per-condition ages: aging, recovery rolls and the
 // conditions an empty pool brings, plus easing and the name walk.
 i16 AgeConditions(ConditionSet* conditions, i16 amount);
-i16 AgeCondition(i16 amount, ConditionSet* conditions, i16 condition);
+b16 AgeCondition(i16 amount, ConditionSet* conditions, i16 condition);
 i16 RecoverConditions(Character* character);
-i16 RecoverCondition(Character* character, i16 condition);
+b16 RecoverCondition(Character* character, i16 condition);
 i16 ApplyEmptyPools(Character* character);
 i16 EaseCondition(ConditionSet* conditions, i16 mild, i16 severe);
 const char* NextConditionName(ConditionSet* conditions, i16* cursor);

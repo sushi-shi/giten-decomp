@@ -74,12 +74,12 @@ i16 SortFusionSlots(i16* first, i16* second) {
 }
 
 RVA(0x0002a620, 0x4b)
-i16 MoveSpecialFusionSlot(i16* first, i16* second) {
+b16 MoveSpecialFusionSlot(i16* first, i16* second) {
     if (GetFusionSpecialRace(*first) || FindFusionFallbackIndex(GetRosterId(*first)) >= 0) {
         SwapFusionSlotValues(first, second);
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002a670, 0x2a)
@@ -97,21 +97,21 @@ void MoveSpecialFusionCharacters(
 }
 
 RVA(0x0002a6a0, 0x31)
-i16 MoveSpecialRaceFusionSlot(i16* first, i16* second) {
+b16 MoveSpecialRaceFusionSlot(i16* first, i16* second) {
     if (GetFusionSpecialRace(*first)) {
         SwapFusionSlotValues(first, second);
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002a6e0, 0x3b)
-i16 MoveUnrankedFusionSlot(i16* first, i16* second) {
+b16 MoveUnrankedFusionSlot(i16* first, i16* second) {
     if (GetDemonFlagLow(GetRosterId(*first)) == -1) {
         SwapFusionSlotValues(first, second);
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002a720, 0x36)

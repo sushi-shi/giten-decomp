@@ -65,31 +65,31 @@ static __inline void SetWorldTravelDestination(MapCoord destination) {
 }
 
 RVA(0x00011660, 0xe2)
-i16 PickWorldMapDestination(i16 layer) {
+b16 PickWorldMapDestination(i16 layer) {
     MapCoord destination = PopRoutePoint();
     i16 hit;
     if (destination.x != -1 && destination.y != -1) {
         SetWorldTravelDestination(destination);
-        return 1;
+        return true;
     }
     if (!TakeMouseLeftClick()) {
-        return 0;
+        return false;
     }
     destination = GetMouseWorldCell();
     if (destination.x == -1 && destination.y == -1) {
-        return 0;
+        return false;
     }
     hit = HitTestWorldMap(g_mousePosition.x, g_mousePosition.y, layer);
     if (!hit) {
-        return 0;
+        return false;
     }
     if (hit == 2) {
         SetWorldTravelDestination(destination);
-        return 1;
+        return true;
     }
     destination = GetMouseTravelCell();
     SetWorldTravelDestination(destination);
-    return 1;
+    return true;
 }
 
 RVA(0x00011750, 0x122)

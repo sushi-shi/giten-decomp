@@ -51,6 +51,7 @@
 
 #include <math.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 RVA(0x00034690, 0x1c)
 i16 CompareInt(i32 a, i32 b) {
@@ -63,38 +64,38 @@ i16 CompareInt(i32 a, i32 b) {
 // Applies a comparison operator to CompareInt(a, b): 0 !=, 1 ==, 2 <=, 3 >=,
 // 4 <, 5 >; 1 when it holds, 0 otherwise (also for an unknown operator).
 RVA(0x000346b0, 0x8c)
-i32 CompareByOp(ComparisonOperator op, i32 a, i32 b) {
+b32 CompareByOp(ComparisonOperator op, i32 a, i32 b) {
     i16 order = CompareInt(a, b);
-    i32 holds = 0;
+    b32 holds = false;
     switch (op) {
         case COMPARE_EQUAL:
             if (order == 0) {
-                holds = 1;
+                holds = true;
             }
             break;
         case COMPARE_NOT_EQUAL:
             if (order != 0) {
-                holds = 1;
+                holds = true;
             }
             break;
         case COMPARE_LESS_EQUAL:
             if (order <= 0) {
-                holds = 1;
+                holds = true;
             }
             break;
         case COMPARE_GREATER_EQUAL:
             if (order >= 0) {
-                holds = 1;
+                holds = true;
             }
             break;
         case COMPARE_LESS:
             if (order < 0) {
-                holds = 1;
+                holds = true;
             }
             break;
         case COMPARE_GREATER:
             if (order > 0) {
-                holds = 1;
+                holds = true;
             }
             break;
     }
@@ -113,7 +114,7 @@ void OpJumpUnlessCompare(ComparisonOperator op, i32 withRhs) {
 }
 
 RVA(0x00034780, 0xc8)
-i32 OpApplyEventFlag(ScriptFlagAction action, i32 expect) {
+b32 OpApplyEventFlag(ScriptFlagAction action, i32 expect) {
     u16 bank;
     u16 index;
     i32 result;
@@ -438,7 +439,7 @@ void OpJumpUnlessActorVisible(i16 invert) {
     if (GetFieldMarker()) {
         jump = invert == 0;
     } else {
-        i16 view = GetPartyView(
+        b16 view = GetPartyView(
             ((FieldActor*)g_curScript->actor)->pos.x,
             ((FieldActor*)g_curScript->actor)->pos.y
         );
@@ -775,9 +776,7 @@ RVA(0x00035830, 0x7d)
 void OpStashItemLists(void) {
     i16 restore = ReadScriptValue();
     i16 var = ReadScriptValue();
-    if (var >= 0xb0) {
-        var = 0xb0;
-    }
+    var = min(var, 0xb0);
     if (!restore) {
         SaveGemItems((ItemStack*)&g_scriptVars[var]);
         ResetGemItems(GetGemItemBase());
@@ -1265,16 +1264,16 @@ i16 OpLeaveActiveParty(void) {
 }
 
 RVA(0x000363d0, 0x28)
-i16 OpSelectPartySlot(void) {
+b16 OpSelectPartySlot(void) {
     i16 index = ReadLongVarIndex();
     SetScriptLongVar(index, PollPartySlotSelection(ReadScriptValue()));
-    return 0;
+    return false;
 }
 
 RVA(0x00036400, 0x9)
-i16 OpEndPartySlotSelect(void) {
+b16 OpEndPartySlotSelect(void) {
     ClearPartySlotSelection();
-    return 0;
+    return false;
 }
 
 RVA(0x00036410, 0x2c)

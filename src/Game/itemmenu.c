@@ -48,7 +48,7 @@ DATA(0x0007d624)
 static MenuBox* s_itemMenu;
 
 DATA(0x0007d628)
-static i16 s_hideItemMenuTotal;
+static b16 s_hideItemMenuTotal;
 
 DATA(0x0007d63c)
 static char s_emptyItemLine[1];
@@ -274,7 +274,7 @@ void DrawItemMenuTotal(i16 plane, i32 total, i16 redraw, i16 line) {
             sprintf(g_scratchBuffer, "                \215\207\214\166 %10ld   ", total);
         } else {
             sprintf(g_scratchBuffer, "                \215\207\214\166 ");
-            s_hideItemMenuTotal = 0;
+            s_hideItemMenuTotal = false;
         }
         for (; line < 9; line++) {
             AddMenuLine(plane, s_emptyItemLine, 0x1400, -1, 1);
@@ -326,7 +326,7 @@ ItemStackList* CreateItemMenuEntries(i16* items, i16 count) {
 }
 
 RVA(0x0001be10, 0x60)
-i16 RunItemBuyMenu(void) {
+b16 RunItemBuyMenu(void) {
     i16 step;
     i16 result;
     switch (GetGamePhase()) {
@@ -345,7 +345,7 @@ i16 RunItemBuyMenu(void) {
             ReturnFromGameState();
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0001be70, 0x110)
@@ -390,7 +390,7 @@ i16 StepItemSellMenu(i16* step) {
 }
 
 RVA(0x0001bf80, 0x54)
-i16 RunItemSellMenu(void) {
+b16 RunItemSellMenu(void) {
     i16 step;
     i16 result;
     switch (GetGamePhase()) {
@@ -409,7 +409,7 @@ i16 RunItemSellMenu(void) {
             ReturnFromGameState();
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0001bfe0, 0x2a)
@@ -428,9 +428,9 @@ void OpenScriptItemMenu(i16 totalVar, i16 selling) {
     list = CopyItemMenuEntries(entries, count);
     s_itemMenu = CreateItemMenu(s_itemMenu, list, count);
     InitItemMenuContext(s_itemMenu, selling ? 4 : 1, 2, totalVar);
-    s_hideItemMenuTotal = 1;
+    s_hideItemMenuTotal = true;
     RunMenu(s_itemMenu);
-    s_hideItemMenuTotal = 0;
+    s_hideItemMenuTotal = false;
     RefreshScriptItemMenuTotal();
 }
 

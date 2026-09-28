@@ -53,6 +53,7 @@
 #include <math.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 DATA(0x00091542)
@@ -147,7 +148,7 @@ static i16 s_targetListCount;
 
 // Set while PushPromptState's prompt is pending.
 DATA(0x00080d00)
-static i16 s_promptPending;
+static b16 s_promptPending;
 
 // The picked role of the action being played (PlayActionEffect reads it).
 DATA(0x00080d04)
@@ -164,7 +165,7 @@ static i16 s_savedRemovalDeferred;
 // @identity-TODO: when set, a hidden object's removal waits (0x42bd09 then
 // calls 0x414750).
 DATA(0x00080d10)
-static i16 s_removalDeferred;
+static b16 s_removalDeferred;
 
 // Which hit sound the resolved action plays (0, 1 or 2 pick sounds 0x10,
 // 0x36 and 0x24): set by the effect code (0x42ce57, 0x42d02a).
@@ -280,9 +281,9 @@ i16 RemoveCombatTarget(i16 id) {
 }
 
 RVA(0x0002ab40, 0x60)
-i16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
+b16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     if (s_promptPending) {
-        return 1;
+        return true;
     }
     PushGameState(0x18);
     s_promptX = x;
@@ -290,8 +291,8 @@ i16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     s_promptZ = z;
     s_promptMode = mode;
     s_promptSub = sub;
-    s_promptPending = 1;
-    return 0;
+    s_promptPending = true;
+    return false;
 }
 
 RVA(0x0002aba0, 0x40)
@@ -319,13 +320,13 @@ Character* GetCombatant(i16 id) {
 }
 
 RVA(0x0002ac20, 0x29)
-i16 FlashHitObject(i16 object, i32 change) {
+b16 FlashHitObject(i16 object, i32 change) {
     if (change != 0) {
         GetFieldObject(object)->redraw = 2;
         RedrawFieldView();
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002ac50, 0x40)
@@ -378,9 +379,7 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
                 g_mpChange = attacker->lastChange;
                 return;
             case 8:
-                if (target->experience < attacker->lastChange) {
-                    attacker->lastChange = target->experience;
-                }
+                attacker->lastChange = min(target->experience, attacker->lastChange);
                 target->experience -= attacker->lastChange;
                 attacker->experience += attacker->lastChange;
                 g_actionResult |= 0x80;
@@ -481,9 +480,7 @@ i16 ResolveCombatAction(void) {
         g_statusCondition = 0;
         attacker->lastChange = 0;
         ResetPoolChanges();
-        if (s_targetHpBefore < 1) {
-            s_targetHpBefore = 1;
-        }
+        s_targetHpBefore = max(1, s_targetHpBefore);
     }
 
     if (IsSkillAction(attacker)) {
@@ -656,7 +653,7 @@ static __inline void ClearActionActors(void) {
 }
 
 static __inline void ClearPendingAction(void) {
-    s_promptPending = 0;
+    s_promptPending = false;
     ClearActionActors();
 }
 
@@ -682,14 +679,10 @@ static __inline void ResetReportedBattleTally(void) {
     s_reportedTally = -1;
 }
 
-// @early-stop register allocation: retail keeps 0 in edi for the whole
-// function (zero stores and the NULL tests use it); cl here materialises it
-// per phase, and the scratch registers rotate one place from there; the
-// permuter found one compiler island.
 // Codegen constraint: keep next-target success outside the phase switch;
 // an in-loop return or a post-loop sentinel test changes the shared tail.
 RVA(0x0002b6a0, 0x9b0)
-i16 RunBattleAction(void) {
+b16 RunBattleAction(void) {
     Character* actor;
     ItemRecord* record;
     SkillHeader* skill;
@@ -698,17 +691,21 @@ i16 RunBattleAction(void) {
     i16 count;
     i16 shot;
     i16 slot;
+    i16 skipEffects;
 
     actor = GetCombatant(g_actorId);
     if (actor != NULL) {
         g_actionId = actor->pickTarget;
     }
     switch (GetGamePhase()) {
+        default:
+            skipEffects = s_skipEffects;
+            goto complete;
         case 0:
             ResetReportedBattleTally();
             if (actor == NULL) {
                 CancelPendingAction();
-                return 0;
+                return false;
             }
             if (actor->pickRole == 8) {
                 TickFieldCount(g_actorId, 0);
@@ -716,7 +713,7 @@ i16 RunBattleAction(void) {
                 ReturnFromGameState();
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 RestoreSwappedMember();
-                return 0;
+                return false;
             }
             if (actor->pickRole == 7 && g_actorId < 0) {
                 TickFieldCount(g_actorId, 0);
@@ -726,12 +723,12 @@ i16 RunBattleAction(void) {
                 RequestFieldRefresh();
                 CancelPendingAction();
                 PlaySoundEffect(0x55);
-                return 0;
+                return false;
             }
             if (GetCombatant(actor->pickObject) == NULL) {
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 CancelPendingAction();
-                return 0;
+                return false;
             }
             s_actionActor = actor;
             s_actionTarget = GetCombatant(actor->pickObject);
@@ -777,8 +774,8 @@ i16 RunBattleAction(void) {
                     record = GetLoadedRecord(actor->pickTarget);
                     count = CollectTargets(
                         0xff,
-                        record->params[0x1d],
-                        record->params[0x1e],
+                        GetWeaponMinHits(record),
+                        GetWeaponMaxHits(record),
                         g_targetId,
                         g_actorId
                     );
@@ -821,13 +818,13 @@ i16 RunBattleAction(void) {
                 shot = GetItemShotId(record);
             } else if (actor->pickRole == 1) {
                 CacheSkill(1, GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY));
-                shot = GetCachedSkill(1)->parameters.effect;
+                shot = GetSkillShotId(1);
             } else {
                 CacheSkill(
                     actor->pickTarget,
                     GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY)
                 );
-                shot = GetCachedSkill(actor->pickTarget)->parameters.effect;
+                shot = GetSkillShotId(actor->pickTarget);
             }
             if (s_skipEffects) {
                 shot = 0;
@@ -849,7 +846,7 @@ i16 RunBattleAction(void) {
 
         case 2:
             NextGamePhase();
-            s_removalDeferred = 0;
+            s_removalDeferred = false;
             s_savedRemovalDeferred = ExchangeObjectRemovalDeferred(1);
             ResolveCombatAction();
             ClearObjectStuns(s_objectMarks);
@@ -887,7 +884,8 @@ i16 RunBattleAction(void) {
             }
             if (s_reportedTally != -1) {
                 if (g_actionResult >= 2) {
-                    ReportBattleTally(GetCombatant(g_targetId), s_reportedTally, -1);
+                    Character* target = GetCombatant(g_targetId);
+                    ReportBattleTally(target, s_reportedTally, -1);
                 }
                 if (s_tallyMessage != -1) {
                     RunMessageScript(0xdf, 3, -1);
@@ -901,7 +899,8 @@ i16 RunBattleAction(void) {
                 NextGamePhase();
                 while (NextTarget() != TARGET_LIST_END) {
                 }
-                break;
+                skipEffects = s_skipEffects;
+                goto complete;
             }
             for (slot = NextTarget(); slot != TARGET_LIST_END; slot = NextTarget()) {
                 if (slot >= 0) {
@@ -917,10 +916,11 @@ i16 RunBattleAction(void) {
                 actor->acting = 0;
                 RequestFieldRefresh();
             }
-            break;
+            skipEffects = s_skipEffects;
+            goto complete;
 
         case 8:
-            s_promptPending = 0;
+            s_promptPending = false;
             ResetRecordCache();
             RestoreSwappedMember();
             ReturnFromGameState();
@@ -957,15 +957,18 @@ i16 RunBattleAction(void) {
             break;
     }
 done:
-    if (s_skipEffects) {
-        return 0;
+    skipEffects = s_skipEffects;
+complete:
+    if (skipEffects) {
+        return false;
     }
     return UpdateFieldScreen(0);
 
 nextTarget:
     SetGamePhase(2);
     g_targetId = slot;
-    GetCombatant(g_actorId)->pickObject = slot;
+    actor = GetCombatant(g_actorId);
+    actor->pickObject = slot;
     goto done;
 }
 
@@ -1068,7 +1071,7 @@ void DropFlaggedMember(i16 id) {
 
 RVA(0x0002c2a0, 0xa)
 void DeferObjectRemoval(void) {
-    s_removalDeferred = 1;
+    s_removalDeferred = true;
 }
 
 RVA(0x0002c2b0, 0xc)
@@ -1078,7 +1081,7 @@ void SetActionOutcome(i16 outcome) {
 
 // Nonzero when `character` cannot pay the skill's HP or MP cost.
 RVA(0x0002c2c0, 0x22)
-i32 CannotPaySkill(Character* character, SkillParameters* skill) {
+b32 CannotPaySkill(Character* character, SkillParameters* skill) {
     return HpMpLeftAfterCost(GetSkillParameterCost(skill), character) < 0;
 }
 
@@ -1087,38 +1090,38 @@ i32 CannotPaySkill(Character* character, SkillParameters* skill) {
 // Nonzero when a condition or the member's lock keeps it from using `skill`;
 // skills with a mode are never blocked here.
 RVA(0x0002c2f0, 0x5d)
-i32 IsSkillBlocked(Character* character, SkillParameters* skill) {
+b32 IsSkillBlocked(Character* character, SkillParameters* skill) {
     if (GetPickBlockingCondition(GetCharacterConditions(character))) {
-        return 1;
+        return true;
     }
     if (!skill->mode) {
         if (GetCharacterBattleTallies(character)[0]) {
-            return 1;
+            return true;
         }
         if (LastConditionIn(GetCharacterConditions(character), s_skillBlockingConditions)) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 // The same check by skill id; skill 0x7a is also blocked while the first
 // roster member's byte +0x30 is clear.
 RVA(0x0002c350, 0x69)
-i32 IsSkillIdBlocked(Character* character, i16 id) {
+b32 IsSkillIdBlocked(Character* character, i16 id) {
     if (GetSkillMode(id)) {
-        return 0;
+        return false;
     }
     if (GetCharacterBattleTallies(character)[0]) {
-        return 1;
+        return true;
     }
     if (LastConditionIn(GetCharacterConditions(character), s_skillIdBlockingConditions)) {
-        return 1;
+        return true;
     }
     if (id == 0x7a && !GetRosterCharacter(0)->markPosition.area) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // Takes the skill's cost from `who`: MP for a positive cost, HP for a

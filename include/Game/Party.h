@@ -16,12 +16,12 @@ void RemoveFromParty(i16 slot);
 i16 CountPartyMembers(i16 skipDisabled);
 i16 FindRosterSlotById(i16 id);
 
-static __inline i32 RosterContainsId(i16 id) {
+static __inline b32 RosterContainsId(i16 id) {
     return FindRosterSlotById(id) != -1;
 }
 
 i16 RosterSlotOfId(i16 id);
-i16 SortRoster(void);
+b16 SortRoster(void);
 i16 FilterPartyMember(i16 slot, i16 mode);
 i16 DamageParty(i16 percent, i16 skipId13);
 i16 HealParty(i16 percent);
@@ -51,7 +51,7 @@ void ChangePool(CurMax* pool, i32 amount);
 // Copies `from`'s skill list into `to` (resized to fit).
 // @identity-TODO: label-only until its TU is claimed.
 void CopySkillList(Character* from, WordList* to);
-i16 CanGroupEquip(i16 group, i16 item);
+b16 CanGroupEquip(i16 group, i16 item);
 i16 GetGunAmmoType(Character* character);
 i16 CanEquipItem(Character* character, i16 item);
 void NormalizeEquipSlots(Character* character);

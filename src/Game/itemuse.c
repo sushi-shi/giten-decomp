@@ -122,7 +122,7 @@ static __inline void SelectItemUserAsTarget(void) {
 // cl here keeps source order (statement reorders score lower), and the
 // permuter found one compiler island.
 RVA(0x0001a400, 0x3e0)
-i16 RunItemUse(void) {
+b16 RunItemUse(void) {
     ItemRecord* record;
     Character* user;
     i16 flags;
@@ -137,14 +137,14 @@ i16 RunItemUse(void) {
             NextGamePhase();
             s_itemMenu = OpenItemListMenu();
             HideScreenLayer(1);
-            return 0;
+            return false;
 
         case 1:
             ReturnFromGameState();
             s_itemMenu = CloseListMenu(s_itemMenu);
             RestoreSwappedMember();
             s_useMemberId = -1;
-            return 0;
+            return false;
 
         case 2:
             picked = RunListMenu(s_itemMenu);
@@ -158,7 +158,7 @@ i16 RunItemUse(void) {
             DecodeItemRecord(&g_loadedItem, s_useItem);
             NextGamePhase();
             s_usePosition = FindFirstAbleMemberPosition();
-            return 0;
+            return false;
 
         case 3:
             record = GetLoadedRecord(s_useItem);
@@ -172,11 +172,11 @@ i16 RunItemUse(void) {
             }
             if (TargetFlagsSelectSelf(flags)) {
                 SelectItemUserAsTarget();
-                return 0;
+                return false;
             }
             if (TargetFlagsSelectActorGroup(flags)) {
                 SelectItemUserAsTarget();
-                return 0;
+                return false;
             }
             if (flags == 0x10) {
                 picked = RunPickTargetWindow(0, range, 5, GetPartyRosterId(s_usePosition));
@@ -190,7 +190,7 @@ i16 RunItemUse(void) {
             }
             if (picked == -1) {
                 PrevGamePhase();
-                return 0;
+                return false;
             }
             if (picked == 0) {
                 break;
@@ -200,12 +200,12 @@ i16 RunItemUse(void) {
                 g_selectedObjectId = SwapInForPick(s_usePosition, g_selectedObjectId);
             }
             g_targetId = g_selectedObjectId;
-            return 0;
+            return false;
 
         case 4:
             NextGamePhase();
             s_itemMenu = DestroyMenuBox(s_itemMenu);
-            return 0;
+            return false;
 
         case 5:
             NextGamePhase();
@@ -229,13 +229,13 @@ i16 RunItemUse(void) {
                 user->pickTarget = s_useItem;
             }
             PushFieldUsePrompt();
-            return 0;
+            return false;
 
         case 6:
             SetGamePhase(1);
             break;
     }
-    return 0;
+    return false;
 }
 
 // The party position of the first of the sixteen member ids in the party

@@ -8,18 +8,18 @@ from pathlib import Path
 from giten.permute.tu_state_metrics import read_coff
 
 
-def make_object() -> bytes:
+def make_object(padding: bytes = b"") -> bytes:
     """One .text function with one DIR32 relocation carrying addend 4."""
     header_size = 20
     section_size = 40
-    text = b"\xb8\x04\x00\x00\x00\xc3"
+    text = b"\xb8\x04\x00\x00\x00\xc3" + padding
     raw_pointer = header_size + section_size
     relocation_pointer = raw_pointer + len(text)
     symbol_pointer = relocation_pointer + 10
     names = b"?Probe@@YAHXZ\0_target\0"
     strings = struct.pack("<L", 4 + len(names)) + names
 
-    header = struct.pack("<HHLLLHH", 0x14C, 1, 0, symbol_pointer, 2, 0, 0)
+    header = struct.pack("<HHLLLHH", 0x14C, 1, 0, symbol_pointer, 2 + bool(padding), 0, 0)
     section = b".text\0\0\0" + struct.pack(
         "<LLLLLLHHL", 0, 0, len(text), raw_pointer, relocation_pointer,
         0, 1, 0, 0x60000020,
@@ -27,7 +27,8 @@ def make_object() -> bytes:
     relocation = struct.pack("<LLH", 1, 1, 0x0006)
     function = struct.pack("<LLLhHBB", 0, 4, 0, 1, 0x20, 2, 0)
     target = struct.pack("<LLLhHBB", 0, 4 + len(b"?Probe@@YAHXZ\0"), 0, 0, 0, 2, 0)
-    return header + section + text + relocation + function + target + strings
+    gap = b"_gap\0\0\0\0" + struct.pack("<LhHBB", 6, 1, 0, 2, 0) if padding else b""
+    return header + section + text + relocation + function + target + gap + strings
 
 
 class TuStateMetricsTests(unittest.TestCase):

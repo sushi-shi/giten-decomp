@@ -84,11 +84,11 @@ extern "C" {
 
     // Nonzero when the requested frame has a surface and initialized picture.
     RVA_DECL(0x00058870)
-    i16 IsSpriteFrameLoaded(i16 slot, i16 frame);
+    b16 IsSpriteFrameLoaded(i16 slot, i16 frame);
 
     // Nonzero while `slot` holds a placed picture.
     RVA_DECL(0x00058800)
-    i16 IsSpritePlaced(i16 slot);
+    b16 IsSpritePlaced(i16 slot);
 
 #ifdef __cplusplus
 }

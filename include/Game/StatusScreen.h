@@ -10,9 +10,9 @@
 
 // The roster slot the status screen shows.
 extern i16 g_statusMember;
-extern i16 g_statusFixedMember;
-i16 RunStatusScreen(void);
-i16 RunDismissMenuState(void);
+extern b16 g_statusFixedMember;
+b16 RunStatusScreen(void);
+b16 RunDismissMenuState(void);
 i16 RunStatusCommands(void);
 i16 GetStatusAnalyzeMode(void);
 
@@ -77,7 +77,7 @@ static __inline void RestoreRosterReturnState(void) {
     SetGameStep(g_rosterReturnStep);
 }
 
-i16 ReplaceRosterMember(void);
+b16 ReplaceRosterMember(void);
 
 void EnterStatusScreen(i16 nested);
 

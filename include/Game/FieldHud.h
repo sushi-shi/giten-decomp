@@ -14,7 +14,7 @@
 // @identity-TODO: whether a member who can act (the leader, member 10 or 11)
 // is present on a cell that allows it; the talk, DDS and mapping commands
 // and the automap check it.
-i16 CanOpenAutomap(void);
+b16 CanOpenAutomap(void);
 
 // Reveals connected cells around x/y in the current automap block.
 void RevealAutomapCells(i16 x, i16 y);
@@ -35,29 +35,29 @@ i16 ReorderRowHandler(PanelRow* row, i16 value, i16 op);
 i16 StatusRowHandler(PanelRow* row, i16 value, i16 op);
 i16 SkillRowHandler(PanelRow* row, i16 value, i16 op);
 i16 ItemRowHandler(PanelRow* row, i16 value, i16 op);
-i16 CanHumanMemberAct(void);
+b16 CanHumanMemberAct(void);
 i16 DdsRowHandler(PanelRow* row, i16 value, i16 op);
 i16 FightRowHandler(PanelRow* row, i16 value, i16 op);
 i16 TalkRowHandler(PanelRow* row, i16 value, i16 op);
 i16 MappingRowHandler(PanelRow* row, i16 value, i16 op);
 i16 MenuRowHandler(PanelRow* row, i16 value, i16 op);
 void SetFieldPanelImage(u32 image);
-i32 RunFieldPanelRow(i16 row, i32 op, u16 clear, u16 set);
-i32 SetFieldPanelRowChecked(i16 row, i16 on);
-i32 IsFieldPanelRowChecked(i16 row);
+b32 RunFieldPanelRow(i16 row, i32 op, u16 clear, u16 set);
+b32 SetFieldPanelRowChecked(i16 row, i16 on);
+b32 IsFieldPanelRowChecked(i16 row);
 void TalkCommand(void);
 void FightCommand(i16 id);
 void GunCommand(i16 id);
 void SkillCommand(i16 id);
 void ItemCommand(i16 id);
-i16 CanMemberAct(i16 id);
+b16 CanMemberAct(i16 id);
 void DefenceCommand(i16 id);
 void ReturnCommand(i16 id);
 void DdsCommand(void);
 void StatusCommand(void);
 i16 WorldRowHandler(PanelRow* row, i16 value, i16 op);
 
-u32 LoadMenuImage(i16 id);
+ub32 LoadMenuImage(i16 id);
 
 // The Windows port reports no saved screen area for a panel.
 MapCoord GetPanelSize(Panel* panel);
@@ -87,11 +87,11 @@ extern i16 g_viewX;
 extern i16 g_viewY;
 extern i16 g_viewReset;
 
-i16 PrepareFieldRedraw(i16 force);
+b16 PrepareFieldRedraw(i16 force);
 
 void ResetWorldCursorCell(void);
 void FreeFieldImage(void);
-i16 RebuildFieldView(void);
+b16 RebuildFieldView(void);
 
 void InitWorldPanel(void);
 

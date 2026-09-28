@@ -24,6 +24,6 @@ i16 SaveFamiliarityCounts(FILE* fp);
 i16 LoadAnalyzed(FILE* fp);
 i16 SaveAnalyzed(FILE* fp);
 
-i16 ClearAnalyzed(void);
+b16 ClearAnalyzed(void);
 
 #endif // GITEN_GAME_FAMILIARITY_H

@@ -16,7 +16,7 @@ Character* GetCombatant(i16 id);
 i16 CountUsableMemberSkills(Character* character, i16 checkCost);
 
 // Makes field object `object` flash when `change` is not 0; 1 when it did.
-i16 FlashHitObject(i16 object, i32 change);
+b16 FlashHitObject(i16 object, i32 change);
 
 // A combatant's map cell.
 MapCoord GetCombatantCoord(i16 id);
@@ -33,9 +33,9 @@ i16 AddCombatTarget(i16 id, i16 allowDuplicate);
 i16 CountCombatTargets(void);
 
 void SetActionOutcome(i16 outcome);
-i32 CannotPaySkill(Character* character, SkillParameters* skill);
-i32 IsSkillBlocked(Character* character, SkillParameters* skill);
-i32 IsSkillIdBlocked(Character* character, i16 id);
+b32 CannotPaySkill(Character* character, SkillParameters* skill);
+b32 IsSkillBlocked(Character* character, SkillParameters* skill);
+b32 IsSkillIdBlocked(Character* character, i16 id);
 void PaySkillCost(i16 who, i16 skill);
 
 // NextTarget's value once the target list is empty.
@@ -119,6 +119,6 @@ static __inline void ClearAllBattleTallies(Character* combatant) {
 // Shows the knocked-out combatant's message.
 void ShowKnockoutMessage(void);
 
-i16 RunBattleAction(void);
+b16 RunBattleAction(void);
 
 #endif // GITEN_GAME_SKILLUSE_H

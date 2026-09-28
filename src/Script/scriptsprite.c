@@ -19,7 +19,7 @@ i8 g_shopKind;
 // The traces are the developer's checks that a shopkeeper image is only loaded
 // at its own shop.
 RVA(0x000397b0, 0xaa0)
-i16 OpLoadSprite(void) {
+b16 OpLoadSprite(void) {
     i16 slot = ReadScriptValue();
     i16 image = ReadScriptValue();
     i16 arg = ReadScriptValue();
@@ -417,11 +417,11 @@ i16 OpLoadSprite(void) {
     }
 
     LoadSpriteImage(slot, image, arg);
-    return 0;
+    return false;
 }
 
 RVA(0x0003a250, 0xf8)
-i16 OpPlaceSprite(i16 variant) {
+b16 OpPlaceSprite(i16 variant) {
     i16 slot = ReadScriptValue();
     i16 frame = ReadScriptValue();
     i16 x = ReadScriptValue();
@@ -474,5 +474,5 @@ i16 OpPlaceSprite(i16 variant) {
             break;
     }
     PlaceSprite(image, slot, frame, x, y);
-    return 0;
+    return false;
 }

@@ -4,8 +4,8 @@
 #include <Ints.h>
 #include <Ui/MenuBox.h>
 
-i16 RunDdsMenu(void);
-i16 RunDdsSummon(void);
+b16 RunDdsMenu(void);
+b16 RunDdsSummon(void);
 i16 PickDdsSummon(void);
 i16 PickDdsRosterMember(i16 step);
 void DdsMenuHandler(MenuBox* menu, i16 index, i16 event);

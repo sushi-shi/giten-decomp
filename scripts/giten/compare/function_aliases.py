@@ -30,10 +30,24 @@ def _body(obj: canon.CoffObject, name: str, size: int) -> bytes | None:
     return hits[0] if len(hits) == 1 else None
 
 
-def prove(model, base_dir: Path, img, *, overrides=None) -> dict[str, tuple[str, int]]:
+def prove(model, base_dir: Path, img, *, overrides=None,
+          _base_objects=None) -> dict[str, tuple[str, int]]:
     """{alias: (Model primary name, RVA)}, only for verified source COMDATs."""
     aliases = {}
     objects = {}
+    override_paths = set((overrides or {}).values())
+
+    def object_at(path):
+        if path not in objects:
+            payload = path.read_bytes()
+            cached = (_base_objects or {}).get(path)
+            if path in override_paths or cached is None or cached.data != payload:
+                cached = canon.CoffObject(payload)
+            objects[path] = cached
+            if _base_objects is not None and path not in override_paths:
+                _base_objects[path] = cached
+        return objects[path]
+
     for binding in model.functions:
         if binding.channel not in ('src', 'src_compgen') or not binding.name:
             continue
@@ -49,15 +63,11 @@ def prove(model, base_dir: Path, img, *, overrides=None) -> dict[str, tuple[str,
             if claim.size != binding.size:
                 raise ValueError(f'folded function {claim.name} has a conflicting extent')
             path = (overrides or {}).get(claim.unit, base_dir / f'{claim.unit}.obj')
-            if path not in objects:
-                objects[path] = canon.CoffObject(path.read_bytes())
-            if _body(objects[path], claim.name, binding.size) != expected:
+            if _body(object_at(path), claim.name, binding.size) != expected:
                 raise ValueError(f'folded function {claim.name} in {claim.unit} '
                                  f'does not equal retail 0x{binding.rva:x}')
         for path in (overrides or {}).values():
-            if path not in objects:
-                objects[path] = canon.CoffObject(path.read_bytes())
-            obj = objects[path]
+            obj = object_at(path)
             defined = {s.name for s in obj.symbols.values() if s.section > 0}
             for claim in claims:
                 if claim.name in defined and _body(obj, claim.name, binding.size) != expected:
@@ -78,9 +88,11 @@ def prepare(base_dir: Path):
     from giten.model import resolve
     from giten.sema.image import retail
     model, img = resolve(), retail()
+    base_objects = {}
 
     def aliases(overrides=None):
-        return prove(model, base_dir, img, overrides=overrides)
+        return prove(model, base_dir, img, overrides=overrides,
+                     _base_objects=base_objects)
 
     return aliases
 

@@ -18,6 +18,6 @@ i16 GivePooledItems(void);
 void TakePooledItems(void);
 
 // Whether the pooled items fit in the bag.
-i32 PooledItemsFit(void);
+b32 PooledItemsFit(void);
 
 #endif // GITEN_GAME_ITEMPOOL_H
