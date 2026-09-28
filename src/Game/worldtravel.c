@@ -62,14 +62,36 @@ i16 g_destinationY;
 DATA(0x000912fe)
 i16 g_destinationX;
 
-DATA(0x0007b720)
-static i16 s_travelHistoryCount;
-
 DATA(0x0007b500)
-static u8 s_travelScores[5][5];
+static u8 s_travelScores[5][5] = {0};
 
 DATA(0x0007b520)
 MapCoord g_worldTravelHistory[128] = {0};
+
+DATA(0x0007b720)
+static i16 s_travelHistoryCount = 0;
+
+DATA(0x0007b724)
+static i32 s_placeGrid = 0;
+DATA(0x0007b728)
+static i32 s_placeNames = 0;
+
+// The world-map route queue (MapCoord points in a memory handle): its
+// capacity, read and write positions, and whether a route is being walked.
+DATA(0x0007b72c)
+static i32 s_route = 0;
+
+DATA(0x0007b730)
+static i16 s_routeCapacity = 0;
+
+DATA(0x0007b734)
+static i16 s_routeRead = 0;
+
+DATA(0x0007b738)
+static i16 s_routeCount = 0;
+
+DATA(0x0007b73c)
+static b16 s_routeActive = false;
 
 static __inline void SetWorldTravelDestination(MapCoord destination) {
     g_destinationX = destination.x;
@@ -339,23 +361,6 @@ void ExcludeWorldTravelStep(i16 x, i16 y, i16 direction) {
     }
 }
 
-// The world-map route queue (MapCoord points in a memory handle): its
-// capacity, read and write positions, and whether a route is being walked.
-DATA(0x0007b72c)
-static i32 s_route;
-
-DATA(0x0007b730)
-static i16 s_routeCapacity;
-
-DATA(0x0007b734)
-static i16 s_routeRead;
-
-DATA(0x0007b738)
-static i16 s_routeCount;
-
-DATA(0x0007b73c)
-static b16 s_routeActive;
-
 // Makes room for `more` points in the world-map route queue (starting it
 // active when it was empty).
 RVA(0x00011ed0, 0x48)
@@ -412,11 +417,6 @@ RVA(0x00012010, 0x7)
 i16 IsRouteActive(void) {
     return s_routeActive;
 }
-
-DATA(0x0007b724)
-static i32 s_placeGrid;
-DATA(0x0007b728)
-static i32 s_placeNames;
 
 RVA(0x00012020, 0x41)
 void LoadWorldMapPlaces(void) {
