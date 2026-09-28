@@ -491,6 +491,7 @@ const CellKind* FindCellKind(const CellHead* cell) {
 // record, and returns its kind (0 for none).
 RVA(0x00021880, 0x49d)
 i16 CheckCellEvent(i16 x, i16 y, i16 level) {
+    AreaMap* map;
     WarpCell* warp;
     BattleCell* battle;
     LinkCell* link;
@@ -501,7 +502,8 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
     const CellKind* kind;
     i16 layer;
 
-    for (warp = AreaLevelAt(g_areaMap, level)->warps; warp->head.x != 0xff; warp++) {
+    map = g_areaMap;
+    for (warp = AreaLevelAt(map, level)->warps; warp->head.x != 0xff; warp++) {
         if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(&warp->head, 6)) {
             LatchCellDestination(&warp->head, 3, 4, -1, 5, 8);
             SetSceneCell(&warp->head);
@@ -513,7 +515,8 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         }
     }
 
-    for (battle = AreaLevelAt(g_areaMap, level)->battles; battle->head.x != 0xff; battle++) {
+    map = g_areaMap;
+    for (battle = AreaLevelAt(map, level)->battles; battle->head.x != 0xff; battle++) {
         if (IsCellAt(x, y, &battle->head) && !IsCellFlagSet(&battle->head, 3)
             && !IsCellFlagSet(&battle->head, 7)) {
             SetFieldPair(battle->battleFlag[0], battle->battleFlag[1]);
@@ -523,7 +526,8 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         }
     }
 
-    for (link = AreaLevelAt(g_areaMap, level)->links; link->head.x != 0xff; link++) {
+    map = g_areaMap;
+    for (link = AreaLevelAt(map, level)->links; link->head.x != 0xff; link++) {
         if (!IsCellAt(x, y, &link->head) || IsCellFlagSet(&link->head, 3)) {
             continue;
         }
@@ -553,7 +557,8 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         return kind->kind;
     }
 
-    for (object = AreaLevelAt(g_areaMap, level)->objects; object->head.x != 0xff; object++) {
+    map = g_areaMap;
+    for (object = AreaLevelAt(map, level)->objects; object->head.x != 0xff; object++) {
         if (IsReservedObjectCell(&object->head)) {
             continue;
         }
@@ -571,7 +576,8 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         }
     }
 
-    for (exit = AreaLevelAt(g_areaMap, level)->exits; exit->head.x != 0xff; exit++) {
+    map = g_areaMap;
+    for (exit = AreaLevelAt(map, level)->exits; exit->head.x != 0xff; exit++) {
         if (!IsCellAt(x, y, &exit->head)) {
             continue;
         }
@@ -595,7 +601,8 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         return kind->kind;
     }
 
-    for (box = AreaLevelAt(g_areaMap, level)->boxes; box->head.x != 0xff; box++) {
+    map = g_areaMap;
+    for (box = AreaLevelAt(map, level)->boxes; box->head.x != 0xff; box++) {
         if (!IsCellAt(x, y, &box->head)) {
             continue;
         }
@@ -609,7 +616,8 @@ i16 CheckCellEvent(i16 x, i16 y, i16 level) {
         return kind->kind;
     }
 
-    for (script = AreaLevelAt(g_areaMap, level)->scripts; script->head.x != 0xff; script++) {
+    map = g_areaMap;
+    for (script = AreaLevelAt(map, level)->scripts; script->head.x != 0xff; script++) {
         if (!IsCellAt(x, y, &script->head) || IsCellFlagSet(&script->head, 3)) {
             continue;
         }

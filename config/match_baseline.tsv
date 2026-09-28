@@ -37,7 +37,7 @@ abortflag	16	15
 affinity	6	6
 alignchart	1	1
 analyze	3	3
-areamap	42	37
+areamap	42	38
 areanpc	60	56
 attack	21	18
 automap	1	1
@@ -208,7 +208,7 @@ analyze	_RunAnalyzeWindow	100.0000	100.0000	11	775a7e57d96f	0x1ad50	100.0000
 analyze	_SetAnalyzeTarget	100.0000	100.0000	1	163865b8161f	0x1ad40	100.0000	
 areamap	_BuildRoomMap	100.0000	100.0000	1	465439efbabb	0x211b0	100.0000	
 areamap	_CheckBlockingCell	100.0000	80.4865	1	83852b0c64be	0x220b0	100.0000	
-areamap	_CheckCellEvent	99.3541	99.3541	6	eb522036a9f4	0x21880	99.3541	
+areamap	_CheckCellEvent	100.0000	100.0000	7	b765c2b49c3e	0x21880	100.0000	
 areamap	_ClampMapCoord	100.0000	100.0000	1	d8d50387fabb	0x222c0	100.0000	
 areamap	_ClampMapPosition	100.0000	100.0000	1	9bfed5219665	0x223a0	100.0000	
 areamap	_CopyExitAt	100.0000	100.0000	1	94f755f82b3e	0x22600	100.0000	
