@@ -45,6 +45,30 @@ typedef struct ScreenLayer {
     LPDIRECTDRAWSURFACE canvas;
 } ScreenLayer;
 
+#define BlitScreenLayer(target, layer)                                                             \
+    do {                                                                                           \
+        if ((layer)->visible) {                                                                    \
+            IDirectDrawSurface_BltFast(                                                            \
+                (target),                                                                          \
+                (layer)->x,                                                                        \
+                (layer)->y,                                                                        \
+                (layer)->surface,                                                                  \
+                &(layer)->source,                                                                  \
+                (layer)->bltFlags                                                                  \
+            );                                                                                     \
+            if ((layer)->canvas != NULL) {                                                         \
+                IDirectDrawSurface_BltFast(                                                        \
+                    (target),                                                                      \
+                    (layer)->x,                                                                    \
+                    (layer)->y,                                                                    \
+                    (layer)->canvas,                                                               \
+                    &(layer)->source,                                                              \
+                    DDBLTFAST_SRCCOLORKEY                                                          \
+                );                                                                                 \
+            }                                                                                      \
+        }                                                                                          \
+    } while (0)
+
 extern ScreenLayer* g_screenLayers[SCREEN_LAYER_COUNT];
 
 // @identity-TODO: blits image `image` of the image set to (x, y) on

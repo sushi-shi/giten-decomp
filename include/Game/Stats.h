@@ -24,4 +24,9 @@ i16 RecalcStatTotals(StatBlock* stats);
 
 i16 ApplyItemStatBonuses(StatBlock* stats, ItemSlot* slots);
 
+static __inline void RecalcEquippedStatTotals(StatBlock* stats, ItemSlot* slots) {
+    ApplyItemStatBonuses(stats, slots);
+    RecalcStatTotals(stats);
+}
+
 #endif // GITEN_GAME_STATS_H

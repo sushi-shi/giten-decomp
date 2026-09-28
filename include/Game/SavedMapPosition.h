@@ -11,4 +11,13 @@ typedef struct SavedMapPosition {
     u8 direction;
 } SavedMapPosition;
 
+#define SetSavedMapPosition(position, areaValue, levelValue, xValue, yValue, directionValue)       \
+    do {                                                                                           \
+        (position)->area = (areaValue);                                                            \
+        (position)->level = (levelValue);                                                          \
+        (position)->x = (xValue);                                                                  \
+        (position)->y = (yValue);                                                                  \
+        (position)->direction = (directionValue);                                                  \
+    } while (0)
+
 #endif // GITEN_GAME_SAVEDMAPPOSITION_H

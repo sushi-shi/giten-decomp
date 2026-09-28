@@ -102,6 +102,10 @@ i16 CountPickablePartyMembers(void) {
     return count;
 }
 
+static __inline i16 GetReadyMemberPanelState(Character* member) {
+    return IsCharacterHpLow(member) ? 3 : 0;
+}
+
 RVA(0x00005b80, 0xdf)
 i16 GetMemberPanelState(i16 index) {
     Character* member = g_panelMembers[index];
@@ -116,10 +120,10 @@ i16 GetMemberPanelState(i16 index) {
     } else if (TickFieldCount(PartyCombatantId(index), 1) < 1) {
         state = 1;
     } else if (IsActionWaitPickable(GetCharacterActionWait(member))) {
-        state = IsCharacterHpLow(member) ? 3 : 0;
+        state = GetReadyMemberPanelState(member);
     }
     if (!GetFieldBattleActive() && state == 1) {
-        state = IsCharacterHpLow(member) ? 3 : 0;
+        state = GetReadyMemberPanelState(member);
     }
     return state;
 }
@@ -804,8 +808,10 @@ i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
         case 1:
             *condition = 0;
             if (GetCharacterEquipment(actor)[5].item != -1) {
-                *condition = GetLoadedRecord(GetCharacterEquipment(actor)[5].item)->params[0x24];
-                return GetLoadedRecord(GetCharacterEquipment(actor)[5].item)->params[0x21];
+                *condition = GetEquipmentInflictedCondition(
+                    GetLoadedRecord(GetCharacterEquipment(actor)[5].item)
+                );
+                return GetEquipmentAttribute(GetLoadedRecord(GetCharacterEquipment(actor)[5].item));
             }
             break;
         case 4:
@@ -813,8 +819,8 @@ i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
             return GetSkillAttackAttribute(GetCachedSkill(actor->pickTarget));
         case 2:
         case 5:
-            *condition = GetLoadedRecord(actor->pickTarget)->params[0x24];
-            return GetLoadedRecord(actor->pickTarget)->params[0x21];
+            *condition = GetEquipmentInflictedCondition(GetLoadedRecord(actor->pickTarget));
+            return GetEquipmentAttribute(GetLoadedRecord(actor->pickTarget));
     }
     return 0;
 }

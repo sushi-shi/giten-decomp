@@ -596,13 +596,13 @@ void StartScreenFade(i16 mode, i16 steps) {
     if (g_fadeMode != 0) {
         return;
     }
-    if (s_screenCovered && !(mode & 1)) {
+    if (s_screenCovered && !IsScreenFadeIn(mode)) {
         return;
     }
     g_fadeMode = mode;
     s_fadeSteps = steps;
     s_fadeCountdown = steps;
-    s_fadeAlpha = (mode & 1) ? 0xff : 0;
+    s_fadeAlpha = IsScreenFadeIn(mode) ? 0xff : 0;
     if (mode > 4) {
         g_fadeColor = RGBA_MAKE(0xff, 0xff, 0xff, s_fadeAlpha);
     } else {
@@ -633,7 +633,7 @@ void StepScreenFade(void) {
     }
     s_screenCovered = FALSE;
     s_fadeCountdown = s_fadeSteps;
-    if (g_fadeMode & 1) {
+    if (IsScreenFadeIn(g_fadeMode)) {
         if (s_fadeAlpha <= 0) {
             g_fadeMode = 0;
             return;
@@ -1758,9 +1758,8 @@ void RenderTBox(void) {
         }
         if (g_deviceType != D3D_DEVICE_RAMP) {
             if (!g_fixedLighting) {
-                dx -= static_cast<int>(g_cameraAt.x);
-                dz -= static_cast<int>(g_cameraAt.z);
-                distance = sqrt(static_cast<double>(dx * dx + dz * dz));
+                MakeBillboardCameraRelative(dx, dz);
+                distance = GetBillboardDistance(dx, dz);
                 SetDistanceLight(light, distance);
                 shade = static_cast<int>(light * 255.0f);
                 SetQuadColor(s_box, RGBA_MAKE(shade, shade, shade, 0xff));
@@ -1903,9 +1902,8 @@ void RenderNPC(BOOL ownCellOnly) {
         s_npc[2].z = s_npc[1].z = -g_billboardZ * 128.0;
         TranslateBillboard(s_npc, dx, dz);
         if (g_deviceType != D3D_DEVICE_RAMP && !g_fixedLighting) {
-            dx -= static_cast<int>(g_cameraAt.x);
-            dz -= static_cast<int>(g_cameraAt.z);
-            distance = sqrt(static_cast<double>(dx * dx + dz * dz));
+            MakeBillboardCameraRelative(dx, dz);
+            distance = GetBillboardDistance(dx, dz);
             SetDistanceLight(light, distance);
             shade = static_cast<int>(light * 255.0f);
             SetQuadColor(s_npc, RGBA_MAKE(shade, shade, shade, 0xff));
@@ -2193,10 +2191,9 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 s_enemy[0].y = s_enemy[1].y;
                 TranslateBillboard(s_enemy, dx, dz);
                 if (g_deviceType != D3D_DEVICE_RAMP && shade && !g_fixedLighting) {
-                    dx -= static_cast<int>(g_cameraAt.x);
-                    dz -= static_cast<int>(g_cameraAt.z);
+                    MakeBillboardCameraRelative(dx, dz);
                     if (byDistance) {
-                        distance = sqrt(static_cast<double>(dx * dx + dz * dz));
+                        distance = GetBillboardDistance(dx, dz);
                         SetDistanceLight(light, distance);
                     } else {
                         light = 1.0f;
@@ -2652,7 +2649,7 @@ i32 DrawSprites(void) {
                 }
             }
             if (GetSpriteSlot(slot)->y != 0
-                && GetSpriteFramePicture(group, frame)->surfaceWidth != SCREEN_WIDTH) {
+                && GetPictureSurfaceWidth(GetSpriteFramePicture(group, frame)) != SCREEN_WIDTH) {
                 top = GetSpriteSlot(slot)->y - rect.bottom / 2;
                 if (top > 28) {
                     top -= 28;
@@ -2662,7 +2659,7 @@ i32 DrawSprites(void) {
             } else {
                 top = 0;
             }
-            if (GetSpriteFramePicture(group, frame)->surfaceWidth != SCREEN_WIDTH) {
+            if (GetPictureSurfaceWidth(GetSpriteFramePicture(group, frame)) != SCREEN_WIDTH) {
                 i32 width = rect.right - rect.left;
                 i32 height = rect.bottom - rect.top;
                 dest.left = GetSpriteSlot(slot)->x - width * 3 / 8;
@@ -2736,12 +2733,12 @@ void DrawSceneSprites(void) {
         dest.top += y;
         source.left = 0;
         source.top = 0;
-        source.right =
+        source.right = GetPictureSurfaceWidth(
             GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-                ->surfaceWidth;
-        source.bottom =
+        );
+        source.bottom = GetPictureSurfaceHeight(
             GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-                ->surfaceHeight;
+        );
         dest.right += x;
         dest.bottom += y;
         g_renderTarget->Blt(&dest, surface, &source, DDBLT_KEYSRC, NULL);
@@ -2760,45 +2757,11 @@ void BlitScreenLayers(i32 first, i32 last, u32 flags) {
     if (flags & BLIT_LAYERS_ORDERED) {
         for (i = first; i < last; i++) {
             index = s_layerOrder[i];
-            if (g_screenLayers[index]->visible) {
-                g_renderTarget->BltFast(
-                    g_screenLayers[index]->x,
-                    g_screenLayers[index]->y,
-                    g_screenLayers[index]->surface,
-                    &g_screenLayers[index]->source,
-                    g_screenLayers[index]->bltFlags
-                );
-                if (g_screenLayers[index]->canvas != NULL) {
-                    g_renderTarget->BltFast(
-                        g_screenLayers[index]->x,
-                        g_screenLayers[index]->y,
-                        g_screenLayers[index]->canvas,
-                        &g_screenLayers[index]->source,
-                        DDBLTFAST_SRCCOLORKEY
-                    );
-                }
-            }
+            BlitScreenLayer(g_renderTarget, g_screenLayers[index]);
         }
     } else {
         for (i = last - 1; i >= first; i--) {
-            if (g_layerStack[i]->visible) {
-                g_renderTarget->BltFast(
-                    g_layerStack[i]->x,
-                    g_layerStack[i]->y,
-                    g_layerStack[i]->surface,
-                    &g_layerStack[i]->source,
-                    g_layerStack[i]->bltFlags
-                );
-                if (g_layerStack[i]->canvas != NULL) {
-                    g_renderTarget->BltFast(
-                        g_layerStack[i]->x,
-                        g_layerStack[i]->y,
-                        g_layerStack[i]->canvas,
-                        &g_layerStack[i]->source,
-                        DDBLTFAST_SRCCOLORKEY
-                    );
-                }
-            }
+            BlitScreenLayer(g_renderTarget, g_layerStack[i]);
         }
     }
 }

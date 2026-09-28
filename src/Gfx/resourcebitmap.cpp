@@ -9,6 +9,7 @@
 #include <Platform/Com.h>
 #include <Platform/D3DApp.h>
 #include <Platform/GameApi.h>
+#include <Gfx/DDraw.h>
 
 #include <string.h>
 
@@ -85,7 +86,7 @@ b32 CreatePicture(
     picture->id = 0;
     result = picture->surface->GetSurfaceDesc(&desc);
     if (result == DD_OK) {
-        if (desc.ddpfPixelFormat.dwRGBBitCount < 16) {
+        if (IsPalettizedSurface(desc)) {
             key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = colorKey;
         } else {
             memset(&key, 0, sizeof(key));

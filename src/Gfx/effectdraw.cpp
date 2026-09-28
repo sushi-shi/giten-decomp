@@ -2,6 +2,7 @@
 
 #include <Gfx/Bitmap.h>
 #include <Platform/GameApi.h>
+#include <Gfx/DDraw.h>
 #include <Platform/Scene3D.h>
 
 #include <string.h>
@@ -124,9 +125,7 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     }
     dest.top = top + s_effectHeightOffsets[GetShotPower()];
     dest.bottom = dest.top + bottom - top;
-    source.left = source.top = 0;
-    source.right = bmp->info.biWidth;
-    source.bottom = bmp->info.biHeight;
+    GetBitmapRect(source, bmp);
     scaleX = static_cast<float>(dest.right - dest.left) / bmp->info.biWidth;
     scaleY = static_cast<float>(dest.bottom - dest.top) / bmp->info.biHeight;
     if (dest.left < 0) {
@@ -156,8 +155,7 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_ALL;
-    if (g_backdropPicture.surface->GetSurfaceDesc(&desc) == DD_OK
-        && desc.ddpfPixelFormat.dwRGBBitCount < 16) {
+    if (g_backdropPicture.surface->GetSurfaceDesc(&desc) == DD_OK && IsPalettizedSurface(desc)) {
         key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = BMP_TRANSPARENT_INDEX;
     }
     g_backdropPicture.surface->SetColorKey(DDCKEY_SRCBLT, &key);
@@ -185,9 +183,7 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
     }
     CacheEffectFrame(bmp, code);
     GetScriptAnimationPosition(x, y, &screenX, &screenY);
-    source.left = source.top = 0;
-    source.right = bmp->info.biWidth;
-    source.bottom = bmp->info.biHeight;
+    GetBitmapRect(source, bmp);
     dest.left = screenX + GetEffectBitmapOffsetX(bmp) * 8;
     dest.top = (screenY + GetEffectBitmapOffsetY(bmp) - bmp->info.biHeight / 2) * 11 / 10;
     dest.right = dest.left + bmp->info.biWidth;
@@ -214,8 +210,7 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
     key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_ALL;
-    if (g_backdropPicture.surface->GetSurfaceDesc(&desc) == DD_OK
-        && desc.ddpfPixelFormat.dwRGBBitCount < 16) {
+    if (g_backdropPicture.surface->GetSurfaceDesc(&desc) == DD_OK && IsPalettizedSurface(desc)) {
         key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = BMP_TRANSPARENT_INDEX;
     }
     g_backdropPicture.surface->SetColorKey(DDCKEY_SRCBLT, &key);

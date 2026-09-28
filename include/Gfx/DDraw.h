@@ -3,6 +3,8 @@
 
 #include <Win32.h>
 
+#define IsPalettizedSurface(desc) ((desc).ddpfPixelFormat.dwRGBBitCount < 16)
+
 // The DirectDraw interface owned by the display device setup.
 extern IDirectDraw* g_ddraw;
 

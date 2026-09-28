@@ -35,11 +35,20 @@
 
 DATA(0x00068b30)
 static AutomapIcon s_mapIcons[] = {
-    {0x40, 6, 1},  {0x41, 7, 1},  {0x42, 8, 1},  {0x43, 9, 1},  {0x44, 10, 1}, {0x45, 10, 1},
-    {0x46, 10, 1}, {0x48, 11, 2}, {0x50, 12, 2}, {0x51, 13, 2}, {0x52, 14, 2}, {0x53, 15, 2},
-    {0x54, 16, 2}, {0x55, 17, 2}, {0x56, 18, 2}, {0x57, 19, 2}, {0x58, 20, 2}, {0x59, 21, 2},
-    {0x5b, 22, 2}, {0x7b, 23, 2}, {0x7d, 9, 2},  {0x85, 18, 2}, {0x86, 18, 2}, {0x87, 18, 2},
-    {0x90, 8, 1},  {0x91, 9, 1},  {0xbf, 24, 1}, {0xff, 24, 1},
+    {0x40, 6, AUTOMAP_DETAIL_BASIC},  {0x41, 7, AUTOMAP_DETAIL_BASIC},
+    {0x42, 8, AUTOMAP_DETAIL_BASIC},  {0x43, 9, AUTOMAP_DETAIL_BASIC},
+    {0x44, 10, AUTOMAP_DETAIL_BASIC}, {0x45, 10, AUTOMAP_DETAIL_BASIC},
+    {0x46, 10, AUTOMAP_DETAIL_BASIC}, {0x48, 11, AUTOMAP_DETAIL_NPCS},
+    {0x50, 12, AUTOMAP_DETAIL_NPCS},  {0x51, 13, AUTOMAP_DETAIL_NPCS},
+    {0x52, 14, AUTOMAP_DETAIL_NPCS},  {0x53, 15, AUTOMAP_DETAIL_NPCS},
+    {0x54, 16, AUTOMAP_DETAIL_NPCS},  {0x55, 17, AUTOMAP_DETAIL_NPCS},
+    {0x56, 18, AUTOMAP_DETAIL_NPCS},  {0x57, 19, AUTOMAP_DETAIL_NPCS},
+    {0x58, 20, AUTOMAP_DETAIL_NPCS},  {0x59, 21, AUTOMAP_DETAIL_NPCS},
+    {0x5b, 22, AUTOMAP_DETAIL_NPCS},  {0x7b, 23, AUTOMAP_DETAIL_NPCS},
+    {0x7d, 9, AUTOMAP_DETAIL_NPCS},   {0x85, 18, AUTOMAP_DETAIL_NPCS},
+    {0x86, 18, AUTOMAP_DETAIL_NPCS},  {0x87, 18, AUTOMAP_DETAIL_NPCS},
+    {0x90, 8, AUTOMAP_DETAIL_BASIC},  {0x91, 9, AUTOMAP_DETAIL_BASIC},
+    {0xbf, 24, AUTOMAP_DETAIL_BASIC}, {0xff, 24, AUTOMAP_DETAIL_BASIC},
 };
 
 // The per-area level tables (256 handles).
@@ -87,7 +96,7 @@ DATA(0x0007d608)
 static Panel* s_mapPanel;
 
 DATA(0x0007d604)
-static i16 s_mapDetail;
+static GZ_ENUM_STORAGE(AutomapDetail, i16) s_mapDetail;
 
 DATA(0x0007d60c)
 static AutomapBitmap* s_levelBitmap;
@@ -98,6 +107,10 @@ static i16 s_levelArea = -1;
 
 DATA(0x00068c44)
 static i16 s_levelIndex = -1;
+
+static __inline i32 GetAutomapAreaHandle(i16 area) {
+    return s_areas[area];
+}
 
 static __inline void EnsureAutomapStore(void) {
     if (s_areas == NULL) {
@@ -158,7 +171,7 @@ void FreeAutomap(void) {
         return;
     }
     for (i = 0; i < 256; i++) {
-        levels = s_areas[i];
+        levels = GetAutomapAreaHandle(i);
         if (levels != 0) {
             count = GetAutomapLevelCount(HandleReadPtr(levels));
             for (k = 0; k < count; k++) {
@@ -177,8 +190,9 @@ void StoreAutomapLevel(void) {
     AutomapBitmap* data;
     i32 bitmap;
     u16 size;
-    if (s_levelArea >= 0 && s_levelIndex >= 0 && s_areas != NULL && s_areas[s_levelArea] != 0) {
-        levels = HandleReadPtr(s_areas[s_levelArea]);
+    if (s_levelArea >= 0 && s_levelIndex >= 0 && s_areas != NULL
+        && GetAutomapAreaHandle(s_levelArea) != 0) {
+        levels = HandleReadPtr(GetAutomapAreaHandle(s_levelArea));
         if (GetAutomapLevelCount(levels) > s_levelIndex) {
             bitmap = GetAutomapLevelHandle(levels, s_levelIndex);
             if (bitmap != 0) {
@@ -200,10 +214,10 @@ void LoadAutomapLevel(i16 area, i16 level) {
         return;
     }
     StoreAutomapLevel();
-    if (s_areas == NULL || s_areas[area] == 0) {
+    if (s_areas == NULL || GetAutomapAreaHandle(area) == 0) {
         return;
     }
-    levels = HandleReadPtr(s_areas[area]);
+    levels = HandleReadPtr(GetAutomapAreaHandle(area));
     if (GetAutomapLevelCount(levels) <= level) {
         return;
     }
@@ -239,10 +253,10 @@ i16 IsAutomapCellHidden(i16 x, i16 y, i16 area, i16 level) {
         if (s_areas == NULL) {
             return 0x100;
         }
-        if (s_areas[area] == 0) {
+        if (GetAutomapAreaHandle(area) == 0) {
             return 0x100;
         }
-        levels = HandleReadPtr(s_areas[area]);
+        levels = HandleReadPtr(GetAutomapAreaHandle(area));
         if (GetAutomapLevelCount(levels) <= level) {
             return 0x100;
         }
@@ -380,11 +394,11 @@ i16 RunAutomapState(void) {
             if (g_fieldStatus.automapFixed) {
                 s_mapPosition.direction = 0;
             }
-            s_mapDetail = 0;
+            s_mapDetail = AUTOMAP_DETAIL_NONE;
             if (!IsEventFlagSet(2, 0x39)) {
-                s_mapDetail = 2;
+                s_mapDetail = AUTOMAP_DETAIL_NPCS;
             }
-            if (s_mapDetail < 1) {
+            if (s_mapDetail < AUTOMAP_DETAIL_BASIC) {
                 SetGamePhase(3);
             }
             break;
@@ -674,17 +688,17 @@ void DrawMapOverlay(MapPosition position) {
     if (g_fieldStatus.navigationFixed) {
         position.direction = 0;
     }
-    s_mapDetail = 0;
+    s_mapDetail = AUTOMAP_DETAIL_NONE;
     if (!IsEventFlagSet(2, 9)) {
-        s_mapDetail = 1;
+        s_mapDetail = AUTOMAP_DETAIL_BASIC;
     }
     if (!IsEventFlagSet(2, 15)) {
-        s_mapDetail = 2;
+        s_mapDetail = AUTOMAP_DETAIL_NPCS;
     }
     if (!IsEventFlagSet(2, 0x38)) {
-        s_mapDetail = 3;
+        s_mapDetail = AUTOMAP_DETAIL_OBJECTS;
     }
-    if (s_mapDetail < 1) {
+    if (s_mapDetail < AUTOMAP_DETAIL_BASIC) {
         return;
     }
     if (IsDarkCell(g_field.pos.x, g_field.pos.y)) {
@@ -784,10 +798,10 @@ void DrawMapOverlay(MapPosition position) {
         }
     }
     IsCellBlocked(g_field.pos.level, 0, 0, 0);
-    if (s_mapDetail >= 2) {
+    if (s_mapDetail >= AUTOMAP_DETAIL_NPCS) {
         MarkAreaNpcs();
     }
-    if (s_mapDetail >= 3) {
+    if (s_mapDetail >= AUTOMAP_DETAIL_OBJECTS) {
         MarkObjectsOnMap();
     }
     MarkMapCell(TurnDirection(g_field.pos.direction, -direction), g_field.pos.x, g_field.pos.y);
@@ -860,7 +874,7 @@ i16 WriteAutomapAreas(FILE* fp) {
     StoreAutomapLevel();
     errors = 256 - fwrite(s_areas, 4, 256, fp);
     for (area = 0; area < 256; area++) {
-        handle = s_areas[area];
+        handle = GetAutomapAreaHandle(area);
         if (handle) {
             levels = HandleReadPtr(handle);
             count = GetAutomapLevelCount(levels);
@@ -902,7 +916,7 @@ i16 LoadAutomapAreas(FILE* fp) {
         return errors;
     }
     for (area = 0; area < 256; area++) {
-        if (s_areas[area]) {
+        if (GetAutomapAreaHandle(area)) {
             errors += 1 - fread(&levelHeader, 4, 1, fp);
             count = levelHeader.count;
             handle = CreateArrayHandle(GetAutomapLevelTableSize(count), 1);

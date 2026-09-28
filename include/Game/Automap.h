@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/GameState.h>
 
 // Marks a cell explored in the bitmap saved for its area and level.
@@ -18,11 +19,21 @@ i16 DrawAutomapViewport(MapPosition position);
 void UpdateAutomapScrollPanel(void);
 i16 RunAutomapState(void);
 
+// Detail gates include NPC markers at level two and object markers at level three.
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(AutomapDetail, u8)
+    AUTOMAP_DETAIL_NONE = 0,
+    AUTOMAP_DETAIL_BASIC = 1,
+    AUTOMAP_DETAIL_NPCS = 2,
+    AUTOMAP_DETAIL_OBJECTS = 3,
+GZ_ENUM_END_SPLIT(AutomapDetail)
+
 typedef struct AutomapIcon {
     u8 code;
     u8 mark;
-    u8 detail;
+    GZ_ENUM_STORAGE(AutomapDetail, u8) detail;
 } AutomapIcon;
+// clang-format on
 
 // Draws the automap icon of cell `code` at x/y.
 void DrawAutomapCellIcon(u8 code, i16 x, i16 y);

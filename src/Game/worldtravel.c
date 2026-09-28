@@ -47,7 +47,7 @@ static const u8 s_travelWeights[3][5][5] = {
 };
 
 DATA(0x000644f8)
-u8 g_worldTravelTerrainFlags[16] = {0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+const u8 g_worldTravelTerrainFlags[16] = {0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
 
 DATA(0x00068630)
 static i16 s_travelHistoryLimit = 64;

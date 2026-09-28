@@ -214,7 +214,7 @@ static i16 DrawStatusCapacity(i16 x, i16 y, Character* member) {
             g_scratchBuffer,
             "\222\207\226\202 %5d\201\136%2d",
             CountRosterEntries(0),
-            GetFieldCount() - 6
+            GetRosterCapacity() - 6
         );
     } else {
         sprintf(g_scratchBuffer, "CP %11d", member->levelBonus);
