@@ -22,10 +22,10 @@
 #include <stddef.h>
 
 DATA(0x00078078)
-MotionFile g_motionFile;
+MotionFile g_motionFile = {0};
 
 DATA(0x00078098)
-MotionTable g_loadedMotionTable;
+MotionTable g_loadedMotionTable = {0};
 
 // @identity-TODO: this build only clears these three scene-input words.
 DATA(0x00078060)

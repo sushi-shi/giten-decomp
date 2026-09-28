@@ -109,13 +109,13 @@ DATA(0x00083c90)
 static char s_emptySkillLabel[4];
 
 DATA(0x00083c70)
-i16 g_previousStatusStep;
+i16 g_previousStatusStep = 0;
 
 DATA(0x00083c74)
-char g_emptyBattleSkillLabel[4];
+char g_emptyBattleSkillLabel[4] = {0};
 
 DATA(0x00083c94)
-char g_emptyEquipPickLabel[4];
+char g_emptyEquipPickLabel[4] = {0};
 
 DATA(0x000649b8)
 static const i16 s_equipPickCategories[8] = {

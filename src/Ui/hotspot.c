@@ -13,10 +13,10 @@
 #include <stdio.h>
 
 DATA(0x00088010)
-Hotspot g_hotspots[64];
+Hotspot g_hotspots[64] = {0};
 
 DATA(0x0008fb04)
-u32 g_hotspotCount;
+u32 g_hotspotCount = 0;
 
 DATA(0x0006b4e0)
 i32 g_selectedHotspot = -1;

@@ -62,10 +62,10 @@ DATA(0x00081004)
 static i16 s_valueB;
 
 DATA(0x00081008)
-i16 g_recordBaseValue;
+i16 g_recordBaseValue = 0;
 
 DATA(0x0008100c)
-i16 g_recordValue;
+i16 g_recordValue = 0;
 
 // How often the cached skill has been used.
 DATA(0x00081010)

@@ -70,11 +70,11 @@ DATA(0x0006982c)
 static i16 s_messageHookEntry = -1;
 
 DATA(0x000815a0)
-char g_formattedNumber[64];
+char g_formattedNumber[64] = {0};
 
 // The script's 32-bit variables (script operands address them 0..25).
 DATA(0x000815e0)
-u32 g_scriptLongVars[26];
+u32 g_scriptLongVars[26] = {0};
 
 DATA(0x00081648)
 static ScriptScratchValue s_scratchValue;
@@ -82,7 +82,7 @@ static ScriptScratchValue s_scratchValue;
 // @identity-TODO: a counter that advances once per call of its tick while
 // counting is on; a script opcode reads it into a variable.
 DATA(0x0008164c)
-u32 g_tickCounter;
+u32 g_tickCounter = 0;
 
 DATA(0x00081650)
 static i16 s_tickCountOn;
@@ -91,7 +91,7 @@ static i16 s_tickCountOn;
 // Set while a script builds a choice list; the text writer takes it with
 // every character.
 DATA(0x00081654)
-b16 g_inChoices;
+b16 g_inChoices = 0;
 
 DATA(0x00081658)
 static i16 s_pendingScene;
@@ -117,7 +117,7 @@ DATA(0x0008167c)
 static i16 s_choiceDisabled;
 
 DATA(0x00081680)
-i16 g_windowOption;
+i16 g_windowOption = 0;
 
 // Whether the field objects were frozen when a script thawed them.
 DATA(0x00081684)
@@ -125,12 +125,12 @@ static i16 s_objectsWereFrozen;
 
 // The loaded script files, oldest first.
 DATA(0x00081688)
-ScriptFileEntry* g_scriptFiles;
+ScriptFileEntry* g_scriptFiles = 0;
 
 // @identity-TODO: a script-set countdown that other code draws down; the
 // script fires its pending event once it reaches zero.
 DATA(0x0008168c)
-u32 g_countdown;
+u32 g_countdown = 0;
 
 // @identity-TODO: when set, the script's message opcode waits in a loop until
 // the wait is released.

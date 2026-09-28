@@ -33,7 +33,7 @@
 
 // Pending transition request: negative exits, positive marks the entry spot.
 DATA(0x0007be38)
-i16 g_worldMapRequest;
+i16 g_worldMapRequest = 0;
 
 // @identity-TODO: the video state saved while the world map is shown; the
 // Windows build's save/restore bodies are empty, so its layout is unknown.

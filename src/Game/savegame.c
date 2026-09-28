@@ -64,7 +64,7 @@ static SystemMenuEntry s_displayEntries[2] = {
 };
 
 DATA(0x00076050)
-i16 g_loadedBefore;
+i16 g_loadedBefore = 0;
 
 DATA(0x00076054)
 static MenuBox* s_systemMenu;

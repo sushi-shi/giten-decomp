@@ -36,22 +36,22 @@ DATA(0x000712a8)
 static i16 s_cellY;
 
 DATA(0x000712ac)
-u8 g_cellCode;
+u8 g_cellCode = 0;
 
 DATA(0x000712b0)
 static u8 s_cellDestDirection;
 
 DATA(0x000712b4)
-i16 g_cellDestX;
+i16 g_cellDestX = 0;
 
 DATA(0x000712b8)
-i16 g_cellDestY;
+i16 g_cellDestY = 0;
 
 DATA(0x000712bc)
-i16 g_cellDestLevel;
+i16 g_cellDestLevel = 0;
 
 DATA(0x000712c0)
-i16 g_cellDestArea;
+i16 g_cellDestArea = 0;
 
 // The kind of each special cell code.
 DATA(0x00068e50)
@@ -86,7 +86,7 @@ static CellKind s_cellKinds[] = {
 };
 
 DATA(0x0007fe54)
-AreaMap* g_areaMap;
+AreaMap* g_areaMap = 0;
 
 // The encrypted area-map record as read from the data file (decoded into
 // g_areaMap).
@@ -127,7 +127,7 @@ void UnloadAreaMap(void) {
 
 // The level of the area map the party is on (NULL without a map).
 DATA(0x0007fe58)
-AreaLevel* g_areaLevel;
+AreaLevel* g_areaLevel = 0;
 
 // The name returned without an area map.
 DATA(0x0007fe5c)

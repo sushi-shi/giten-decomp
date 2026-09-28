@@ -195,7 +195,7 @@ DATA(0x00080d2c)
 static i16 s_actionPickKept;
 
 DATA(0x00080d34)
-char g_emptySkillMenuLabel[4];
+char g_emptySkillMenuLabel[4] = {0};
 
 // The conditions that block a skill as they would a spell: severe poison and
 // sealed magic.

@@ -28,7 +28,7 @@ DATA(0x000816a8)
 static FieldObject s_characterLoadObject;
 
 DATA(0x000818e8)
-Character g_characters[16];
+Character g_characters[16] = {0};
 
 DATA(0x00083b4c)
 static char s_emptyCharacterName[1];

@@ -21,16 +21,16 @@ DATA(0x0007bea4)
 static PaletteState* s_statusPaletteState;
 
 DATA(0x0007bec8)
-Character* g_rosterPendingMember;
+Character* g_rosterPendingMember = 0;
 
 DATA(0x0007becc)
-i16 g_rosterReturnState;
+i16 g_rosterReturnState = 0;
 
 DATA(0x0007bed0)
-u16 g_rosterReturnPhase;
+u16 g_rosterReturnPhase = 0;
 
 DATA(0x0007bed4)
-u16 g_rosterReturnStep;
+u16 g_rosterReturnStep = 0;
 
 DATA(0x0007bed8)
 static i16 s_rosterSavedColumn;

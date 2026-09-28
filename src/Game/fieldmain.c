@@ -96,7 +96,7 @@ DATA(0x0007b770)
 static i16 s_returnX;
 
 DATA(0x0007b774)
-i16 g_pendingTalk;
+i16 g_pendingTalk = 0;
 
 // Set to leave through the return point instead of re-entering the area.
 DATA(0x0007b778)

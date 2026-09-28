@@ -12,7 +12,7 @@
 #include <string.h>
 
 DATA(0x0008d700)
-Picture g_scenePicture;
+Picture g_scenePicture = {0};
 
 DATA(0x0006dc10)
 static WorldMapBlitRegion s_worldMapRegions[6] = {

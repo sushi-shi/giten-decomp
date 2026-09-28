@@ -29,10 +29,10 @@ static i16 s_statusColumn;
 
 // The roster slots the status screen lists and how many there are.
 DATA(0x00083ad8)
-i16 g_statusSlots[32];
+i16 g_statusSlots[32] = {0};
 
 DATA(0x00083b44)
-i16 g_statusSlotCount;
+i16 g_statusSlotCount = 0;
 
 RVA(0x00040980, 0x12)
 i16 SetStatusColumn(i16 column) {

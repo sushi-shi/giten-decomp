@@ -43,7 +43,7 @@ DATA(0x000788b8)
 static i16 s_encounterGroups[2];
 
 DATA(0x000788c0)
-u8 g_worldEncounterGroupSlots[16];
+u8 g_worldEncounterGroupSlots[16] = {0};
 
 DATA(0x0007b0a8)
 static i16 s_encounterCount;

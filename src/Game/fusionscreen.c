@@ -123,13 +123,13 @@ DATA(0x00080a0c)
 static Character* s_savedFusionCharacter;
 
 DATA(0x00080a10)
-u8 g_fusionPreviewSave[16];
+u8 g_fusionPreviewSave[16] = {0};
 
 DATA(0x00080118)
-char g_fusionNameBuffer[128];
+char g_fusionNameBuffer[128] = {0};
 
 DATA(0x00080a20)
-PaletteState* g_fusionPaletteState;
+PaletteState* g_fusionPaletteState = 0;
 
 DATA(0x00080a24)
 static FusionSummary* s_fusionSummaryTable;
@@ -138,10 +138,10 @@ DATA(0x00080a84)
 static b16 s_fusionPageActionPending;
 
 DATA(0x00080a88)
-char g_fusionMissingName[4];
+char g_fusionMissingName[4] = {0};
 
 DATA(0x00080a8c)
-char g_fusionMissingRace[4];
+char g_fusionMissingRace[4] = {0};
 
 // @dead-code
 // Zero-ref: no retail call, jump, or relocated pointer reaches this helper.

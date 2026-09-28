@@ -115,10 +115,10 @@ DATA(0x0007be44)
 static i16 s_statusAnalyzeMode;
 
 DATA(0x0007be3c)
-i16 g_statusMember;
+i16 g_statusMember = 0;
 
 DATA(0x0007be40)
-b16 g_statusFixedMember;
+b16 g_statusFixedMember = 0;
 
 RVA(0x00016e50, 0xc)
 void SetStatusAnalyzeMode(i16 on) {

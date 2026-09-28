@@ -27,7 +27,7 @@ DATA(0x00081230)
 static char s_tokenText[0x100];
 
 DATA(0x0008135c)
-char g_shortNames[16][4];
+char g_shortNames[16][4] = {0};
 
 // "Ａ", "Ｂ", "ＡＢ", "Ｏ".
 DATA(0x00069138)

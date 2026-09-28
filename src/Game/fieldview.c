@@ -59,7 +59,7 @@ DATA(0x00078540)
 static u8 s_drawTable[0x200];
 
 DATA(0x00078740)
-i16 g_viewCells[4][7];
+i16 g_viewCells[4][7] = {0};
 
 // Clears the draw-cell bitmap.
 RVA(0x0000bdd0, 0x11)

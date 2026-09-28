@@ -46,7 +46,7 @@ DATA(0x00068404)
 static i16 s_swapSaved = -1;
 
 DATA(0x000784c8)
-i16 g_commandPosition;
+i16 g_commandPosition = 0;
 
 DATA(0x000784cc)
 static b16 s_pickScreenSaved;
@@ -62,7 +62,7 @@ DATA(0x00078520)
 static MenuBox* s_pickMenu;
 
 DATA(0x00078528)
-u8 g_pickScreenSave[16];
+u8 g_pickScreenSave[16] = {0};
 
 static __inline void ResetPartyCommandPick(void) {
     s_pickMode = 0;

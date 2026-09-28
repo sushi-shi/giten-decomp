@@ -13,7 +13,7 @@
 // placement opcode moves the shopkeeper for it and clears it.
 // @identity-TODO: the numbering of the shop kinds (1..9) is unrecovered.
 DATA(0x000816a0)
-i8 g_shopKind;
+i8 g_shopKind = 0;
 
 // Loads an image into a sprite slot: operands slot, image and a load argument.
 // The traces are the developer's checks that a shopkeeper image is only loaded

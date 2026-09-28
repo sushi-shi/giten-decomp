@@ -31,11 +31,11 @@ static i16 s_gunPower[16];
 DATA(0x000784a8)
 static i16 s_gunRounds[16];
 DATA(0x000784d8)
-i16 g_attackResistance;
+i16 g_attackResistance = 0;
 DATA(0x000784dc)
-i16 g_attackAttribute;
+i16 g_attackAttribute = 0;
 DATA(0x000784e0)
-i16 g_attackCondition;
+i16 g_attackCondition = 0;
 // @identity-TODO: the penalties use total stats 8 and 6 respectively;
 // the stat names are not yet recovered.
 DATA(0x000784e4)

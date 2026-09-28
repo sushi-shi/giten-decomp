@@ -55,16 +55,16 @@ DATA(0x0007bb50)
 static u8 s_sceneCell[16];
 
 DATA(0x0007b818)
-i16 g_sceneFramePositions[32][2];
+i16 g_sceneFramePositions[32][2] = {0};
 
 DATA(0x0007bb40)
-u8 g_sceneVideoState[16];
+u8 g_sceneVideoState[16] = {0};
 
 DATA(0x0007bbf8)
-u8 g_sceneFrameIds[32][2];
+u8 g_sceneFrameIds[32][2] = {0};
 
 DATA(0x0007bdb8)
-i32 g_sceneFrameSaves[32];
+i32 g_sceneFrameSaves[32] = {0};
 
 // @identity-TODO: legacy image handles; no loader writes them in this build.
 DATA(0x0007bd38)

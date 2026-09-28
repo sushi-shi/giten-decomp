@@ -5,8 +5,6 @@
 
 #include <Gfx/DisplayConfig.h>
 
-// Zero-initialized: cl emits an uninitialized C global as a COMMON, which link
-// places after every object's .bss, not in this object's own run.
 DATA(0x000840e8)
 DisplayConfig g_displayConfig = {0};
 

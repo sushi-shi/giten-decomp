@@ -59,7 +59,7 @@ DATA(0x00078514)
 static MenuBox* s_commandMenu;
 
 DATA(0x00078538)
-char g_unavailableCommandText[8];
+char g_unavailableCommandText[8] = {0};
 
 RVA(0x00005a80, 0x86)
 i16 PickPartyMember(i16 index) {

@@ -28,7 +28,7 @@ DATA(0x00069f00)
 static i16 s_selectedPartySlot = -1;
 
 DATA(0x00083b20)
-Character* g_panelMembers[6];
+Character* g_panelMembers[6] = {0};
 
 // @identity-TODO: while set, the party-status redraw requests are ignored.
 DATA(0x00083b18)

@@ -78,13 +78,13 @@ DATA(0x000800a0)
 static ItemRecord s_usedItem;
 
 DATA(0x0007fe60)
-ItemStack g_gemItems[16];
+ItemStack g_gemItems[16] = {0};
 
 DATA(0x0007fea0)
-ItemStack g_itemPool[64];
+ItemStack g_itemPool[64] = {0};
 
 DATA(0x0007ffa0)
-ItemStack g_bagItems[64];
+ItemStack g_bagItems[64] = {0};
 
 DATA(0x000919a0)
 DropSlot g_dropSlots[16];
@@ -97,14 +97,14 @@ DATA(0x000800ec)
 static i32 s_itemIndexHandle;
 
 DATA(0x000800f0)
-i32 g_itemRemapHandle;
+i32 g_itemRemapHandle = 0;
 
 // Shared text buffers for the decoded item name and description.
 DATA(0x000800f4)
-char* g_itemNameText;
+char* g_itemNameText = 0;
 
 DATA(0x000800f8)
-char* g_itemDescriptionText;
+char* g_itemDescriptionText = 0;
 
 DATA(0x000911c0)
 ItemRecord g_loadedItem;

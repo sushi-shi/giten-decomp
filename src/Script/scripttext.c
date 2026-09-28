@@ -37,14 +37,14 @@ static ScriptWindowNode* s_windowStack;
 // While set, printable script text is appended to the captured-text buffer
 // instead of being drawn.
 DATA(0x00081224)
-i16 g_textCaptureOn;
+i16 g_textCaptureOn = 0;
 
 DATA(0x00081120)
-char g_capturedText[0x100];
+char g_capturedText[0x100] = {0};
 
 // The formatted text line the script number/string opcodes write into.
 DATA(0x00081018)
-char g_textLine[0x100];
+char g_textLine[0x100] = {0};
 
 RVA(0x0002f1c0, 0x10b)
 void OpCreateScriptMenu(void) {
