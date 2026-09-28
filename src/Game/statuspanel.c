@@ -59,6 +59,14 @@ static i16 s_statusCommandHotspots[11] = {-1, -1, -1, 55, 56, 57, -1, -1, 60, 61
 DATA(0x0006499c)
 static const i8 s_battleStatIcons[4] = {0, 1, 8, 9};
 
+// A status sub-page's state: its text plane and the sub-state to resume (then
+// the command picked). One record: the two fields sit two bytes apart, where
+// separate variables take four-byte slots.
+typedef struct StatusPage {
+    i16 plane;
+    i16 resume;
+} StatusPage;
+
 DATA(0x0006a110)
 static StatusPage s_statPage = {-1, -1};
 
@@ -102,89 +110,6 @@ char* g_statusNumberLabels[40] = {
     "\202R\202O", "\202R\202P", "\202R\202Q", "\202R\202R", "\202R\202S", "\202R\202T",
     "\202R\202U", "\202R\202V", "\202R\202W", "\202R\202X",
 };
-
-static i16 DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, i16 band);
-static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16 mark, i16 band);
-
-// The item kind of ammunition, loaded into the gun's magazine.
-
-DATA(0x000649a0)
-const i16 g_equipCountSlots[9] = {0, 1, -1, 4, 3, 4, 5, 6, 7};
-
-// One object: the fields sit two bytes apart, where separate variables take
-// four-byte slots.
-DATA(0x0006a208)
-static EquipPage s_equipPage = {NULL, -1, -1, -1, false};
-
-// One object: retail reads `itemBase` and `item` with dword moves that run
-// into the next field.
-DATA(0x0006a218)
-static AttachPage s_attach = {NULL, NULL, NULL, 0, -1, -1, 0, 0, 0, 0};
-
-// The item page: its menu, its info window, the sub-state to resume (and then
-// the item picked), and the copy of the bag it lists.
-DATA(0x0006a238)
-static EquipItemPage s_itemPage = {NULL, -1, -1, NULL};
-
-// The skill page: its menu, its description window, and the sub-state to
-// resume (and then the skill picked).
-DATA(0x0006a248)
-static EquipSkillPage s_skillPage = {NULL, -1, -1};
-
-// The bag entries the attach page lists, and its two header lines.
-// The bag entries the equipment menu lists, and its two header lines.
-DATA(0x00083b50)
-static i16 s_equipEntries[48];
-
-DATA(0x00083c78)
-static char s_equipHeaderA[4];
-
-DATA(0x00083c7c)
-static char s_equipHeaderB[4];
-
-DATA(0x00083bb0)
-static AttachEntry s_attachEntries[48];
-
-DATA(0x00083c80)
-static char s_attachHeaderA[4];
-
-DATA(0x00083c84)
-static char s_attachHeaderB[4];
-
-// The label of an empty equipment part.
-DATA(0x00083c88)
-static char s_emptyPartLabel[4];
-
-// The skill page's second header line and the label of an empty skill.
-DATA(0x00083c8c)
-static char s_skillHeaderLine[4];
-
-DATA(0x00083c90)
-static char s_emptySkillLabel[4];
-
-DATA(0x00083c70)
-i16 g_previousStatusStep = 0;
-
-DATA(0x00083c74)
-char g_emptyBattleSkillLabel[4] = {0};
-
-DATA(0x00083c94)
-char g_emptyEquipPickLabel[4] = {0};
-
-DATA(0x000649b8)
-static const i16 s_equipPickCategories[8] = {
-    EQUIP_PART_WEAPON,
-    EQUIP_PART_GUN,
-    EQUIP_PART_AMMO,
-    EQUIP_PART_HEAD,
-    EQUIP_PART_BODY,
-    EQUIP_PART_ARMS,
-    EQUIP_PART_LEGS,
-    EQUIP_PART_ACCESSORY
-};
-
-DATA(0x0006a250)
-static i16 s_equipPickPart = -1;
 
 RVA(0x00041ad0, 0xc5)
 static i16 DrawStatusExperience(i16 x, i16 y, Character* member) {
@@ -459,6 +384,9 @@ static b16 ResumeStatusPage(i16 command) {
     return false;
 }
 
+static i16 DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, i16 band);
+static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16 mark, i16 band);
+
 RVA(0x00042450, 0xc3)
 static i16 DrawStatList(i16 plane, Character* member) {
     i16 stat;
@@ -726,6 +654,96 @@ RVA(0x00042ca0, 0x2f)
 i16 AlignmentChartCell(i16 value) {
     return 23 - (i16)(((value - -128.0) / 256.0) * 24.0);
 }
+
+DATA(0x000649a0)
+const i16 g_equipCountSlots[9] = {0, 1, -1, 4, 3, 4, 5, 6, 7};
+
+// The equipment page's state: the menu of bag items to equip, the equipment
+// panel, the picked item's name and description, the picked bag entry or
+// equipment part (-1 none, -2 cancelled), and whether the equipment changed,
+// so the status screen is redrawn on leaving.
+typedef struct EquipPage {
+    MenuBox* menu;
+    i16 panelPlane;
+    i16 infoPlane;
+    i16 pick;
+    b16 changed;
+} EquipPage;
+
+// One object: the fields sit two bytes apart, where separate variables take
+// four-byte slots.
+DATA(0x0006a208)
+static EquipPage s_equipPage = {NULL, -1, -1, -1, false};
+
+// One object: retail reads `itemBase` and `item` with dword moves that run
+// into the next field.
+DATA(0x0006a218)
+static AttachPage s_attach = {NULL, NULL, NULL, 0, -1, -1, 0, 0, 0, 0};
+
+// The item page: its menu, its info window, the sub-state to resume (and then
+// the item picked), and the copy of the bag it lists.
+DATA(0x0006a238)
+static EquipItemPage s_itemPage = {NULL, -1, -1, NULL};
+
+// The skill page: its menu, its description window, and the sub-state to
+// resume (and then the skill picked).
+DATA(0x0006a248)
+static EquipSkillPage s_skillPage = {NULL, -1, -1};
+
+// The bag entries the equipment menu lists, and its two header lines.
+DATA(0x00083b50)
+static i16 s_equipEntries[48];
+
+DATA(0x00083c78)
+static char s_equipHeaderA[4];
+
+DATA(0x00083c7c)
+static char s_equipHeaderB[4];
+
+// The bag entries the attach page lists, and its two header lines.
+DATA(0x00083bb0)
+static AttachEntry s_attachEntries[48];
+
+DATA(0x00083c80)
+static char s_attachHeaderA[4];
+
+DATA(0x00083c84)
+static char s_attachHeaderB[4];
+
+// The label of an empty equipment part.
+DATA(0x00083c88)
+static char s_emptyPartLabel[4];
+
+// The skill page's second header line and the label of an empty skill.
+DATA(0x00083c8c)
+static char s_skillHeaderLine[4];
+
+DATA(0x00083c90)
+static char s_emptySkillLabel[4];
+
+DATA(0x00083c70)
+i16 g_previousStatusStep = 0;
+
+DATA(0x00083c74)
+char g_emptyBattleSkillLabel[4] = {0};
+
+DATA(0x00083c94)
+char g_emptyEquipPickLabel[4] = {0};
+
+DATA(0x000649b8)
+static const i16 s_equipPickCategories[8] = {
+    EQUIP_PART_WEAPON,
+    EQUIP_PART_GUN,
+    EQUIP_PART_AMMO,
+    EQUIP_PART_HEAD,
+    EQUIP_PART_BODY,
+    EQUIP_PART_ARMS,
+    EQUIP_PART_LEGS,
+    EQUIP_PART_ACCESSORY
+};
+
+DATA(0x0006a250)
+static i16 s_equipPickPart = -1;
 
 RVA(0x00042cd0, 0x182)
 i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
