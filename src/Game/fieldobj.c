@@ -16,15 +16,19 @@
 #include <Game/AreaMap.h>
 #include <Game/BattleEffect.h>
 #include <Game/Character.h>
+#include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
+#include <Game/ConditionAge.h>
 #include <Game/DemonTable.h>
 #include <Game/DoorRegion.h>
 #include <Game/Familiarity.h>
+#include <Game/Field.h>
 #include <Game/FieldActor.h>
 #include <Game/FieldLayer.h>
 #include <Game/FieldMain.h>
+#include <Game/FieldMap.h>
 #include <Game/FieldObject.h>
 #include <Game/FieldScreen.h>
 #include <Game/FieldSight.h>
@@ -38,6 +42,8 @@
 #include <Game/PartyAction.h>
 #include <Game/PartyCommand.h>
 #include <Game/Skill.h>
+#include <Game/SkillUse.h>
+#include <Game/StateStack.h>
 #include <Game/Stats.h>
 #include <Game/StatUpdate.h>
 #include <Game/TargetFlags.h>
@@ -50,6 +56,8 @@
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
 #include <Script/EventFlags.h>
+#include <Script/Script.h>
+#include <Ui/Hotspot.h>
 #include <Util/BitSet.h>
 #include <Util/Range.h>
 #include <Util/WordList.h>
@@ -110,13 +118,6 @@ static i16 s_facingImageCodes[4] = {0, 1, 2, -1};
 
 DATA(0x00068610)
 static i16 s_encounterSpread[4] = {0, 0, 1, 2};
-
-// Game/StateStack.h, Ui/Hotspot.h and Game/Field.h are not included: their declaration counts
-// perturb this TU (RelativeFacing, RollEncounterSlot). These callees are
-// declared by hand instead.
-i16 GetGameState(void);
-void ClearSelectedHotspot(void);
-i16 GetFieldMarker(void);
 
 // One bit per id: whether it has been analyzed.
 DATA(0x00078878)
@@ -1374,18 +1375,6 @@ b16 IsWithinRange(i16 range) {
     return distance <= range;
 }
 
-// Callees of the object action flow (0x40f620, 0x40f890), declared here rather
-// than through their headers (FieldSight.h, and before RunObjectStep
-// Actor.h, ConditionAge.h, Script.h, FieldMap.h): included at the top of this
-// file they perturb RelativeFacing/RollEncounterSlot (TU state).
-b32 IsSkillIdBlocked(Character* character, i16 id);
-
-// @identity-TODO: the enemy action flow's helpers: the action wait (0x43f510,
-// on the actor's field mark), the action pick (0x405cd0) and its adjustment
-// (0x406180), and the scene start of a talking actor (0x43b340).
-RVA_DECL(0x0003f510)
-i16 TickActionWait(ActionWait* wait, i16 speed);
-
 // An object's use of skill `skill` in the field. A kind-2 skill first picks
 // its target among the objects in sight: with byte +0xa set, the ones while
 // the user is at three quarters of its HP or less, else the ones whose
@@ -1460,18 +1449,6 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     return picked != 0;
 }
 
-// Declared here, after the functions RelativeFacing and RollEncounterSlot sit
-// among: in FieldObject.h or FieldMap.h they perturb those (TU state).
-i16 HasTurnElapsed(void);
-i16 AgeConditions(ConditionSet* conditions, i16 amount);
-i16 RecoverConditions(Character* character);
-void AlertActor(Character* actor, i16 state);
-struct ScriptContext* GetCurrentScript(void);
-void StartScriptInCode(u32 code, i16 arg, i16 entry, struct ScriptContext* script);
-struct ScriptContext* NewScriptContext(i16 mode, Character* actor);
-void FreeScriptContext(struct ScriptContext* script);
-i16 RunScriptStep(i16 window);
-u16 RetakeDeferredChar(i16 window, i16 result, const char* caller);
 b16 ChooseObjectTarget(FieldObject* object);
 
 // One step of a field object's action flow: ticks its conditions and action
@@ -1625,7 +1602,6 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
 // or a random member able to act (else any member alive); 0 when there is
 // none. The pick goes to script object B and the actor's pick target.
 b16 BeginPartyTargetSkill(Character* character);
-i16 FindPartyPositionOfId(i16 id);
 
 RVA(0x0000fd20, 0x171)
 b16 ChooseObjectTarget(FieldObject* object) {
