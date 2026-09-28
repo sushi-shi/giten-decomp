@@ -1346,8 +1346,7 @@ void UseRestoreItem(Character* user, Character* target) {
 RVA(0x00024a50, 0xd0)
 void UseAttackItem(Character* user, Character* target) {
     user->result = 0;
-    g_statusCondition = 0;
-    g_actionResult = 0;
+    ResetActionOutcome();
     if (GetItemDamagePower(&s_usedItem) == 0) {
         user->lastChange = 0;
         if (g_targetId >= 0 && IsFieldModeAtLeast(0)) {
@@ -1370,8 +1369,7 @@ void UseAttackItem(Character* user, Character* target) {
 }
 
 static __inline void SetInertItemOutcome(Character* user, Character* target) {
-    g_statusCondition = 0;
-    g_actionResult = 0;
+    ResetActionOutcome();
     user->result = 0;
     user->pickNoEffect = 1;
     target->pickNoEffect = 1;

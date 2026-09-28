@@ -209,8 +209,7 @@ RVA(0x0000a8a0, 0x179)
 i16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode) {
     i16 result;
     i32 amount = 0;
-    g_statusCondition = 0;
-    g_actionResult = 0;
+    ResetActionOutcome();
     g_hpChange = 0;
     g_attackAttribute = GetPickedAttackAttribute(attacker, &g_attackCondition);
     g_attackResistance = GetActionResistance(target, g_attackAttribute, 1, 1, 0);

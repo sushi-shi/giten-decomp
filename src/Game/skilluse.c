@@ -395,8 +395,7 @@ i16 ResolveCombatAction(void) {
         SetFieldCounts(-2, -2);
     }
     ResetActionWait(GetCharacterActionWait(attacker));
-    g_statusCondition = 0;
-    g_actionResult = 0;
+    ResetActionOutcome();
     attacker->pickNoEffect = 0;
     if (attacker->pickFlags & PICK_ITEM_SKILL) {
         attacker->pickCostPaid = 1;
@@ -1477,8 +1476,7 @@ i16 CollectTargetsInView(i16 area, i16 flags, i16 range, i16 target, i16 actor) 
 
 RVA(0x0002cd80, 0x130)
 void UseAttackSkill(Character* user, Character* target) {
-    g_statusCondition = 0;
-    g_actionResult = 0;
+    ResetActionOutcome();
     g_hpChange = 0;
     g_mpChange = 0;
     user->lastChange = 0;

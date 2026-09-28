@@ -16,6 +16,11 @@ extern i16 g_effectCondition;
 extern i16 g_actionResult;
 extern i16 g_drainAmount;
 
+static __inline void ResetActionOutcome(void) {
+    g_statusCondition = 0;
+    g_actionResult = 0;
+}
+
 static __inline void SetResistanceResult(Character* actor, i16 result, i16 actionResult) {
     actor->result = result;
     g_actionResult = actionResult;
