@@ -28,7 +28,7 @@ impl<'a> Wave<'a> {
             samples: bytes(data, 44, u32_at(data, 40)? as usize)?,
         };
         let align = usize::from(u16_at(data, 32)?);
-        if wave.channels == 0 || align == 0 || wave.samples.len() % align != 0 {
+        if wave.channels == 0 || align == 0 || !wave.samples.len().is_multiple_of(align) {
             return Err(Error::Invalid);
         }
         Ok(wave)
