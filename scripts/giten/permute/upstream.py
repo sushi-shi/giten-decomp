@@ -66,7 +66,10 @@ def source_context(root: Path, source: Path, rva: int, ast_util):
     blob = source.read_bytes()
     configure_libclang()
     args = clang_args(root, source)
-    tu = ci.Index.create().parse(str(source), args=args)
+    tu = ci.Index.create().parse(
+        str(source), args=args,
+        options=ci.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
+    )
     fn = target_function(tu, source, blob, rva)
     errors = [str(d) for d in tu.diagnostics if d.severity >= ci.Diagnostic.Error]
     if errors:
@@ -74,12 +77,38 @@ def source_context(root: Path, source: Path, rva: int, ast_util):
     start, end = fn.extent.start.offset, fn.extent.end.offset
     original = blob[start:end].decode()
     parser_body = bytearray(blob[start:end])
-    for token in fn.get_tokens():
+    tokens = list(fn.get_tokens())
+    for token in tokens:
         if token.kind == ci.TokenKind.COMMENT:
             left, right = token.extent.start.offset - start, token.extent.end.offset - start
             if 0 <= left <= right <= len(parser_body):
                 parser_body[left:right] = bytes(10 if c == 10 else 32
                                                for c in parser_body[left:right])
+    # This annotation expands to a type, unlike accessor macros that must
+    # remain calls in the mutation AST. Follow its active definition, including
+    # strict-enum builds, rather than assuming which argument is the type.
+    for expansion in tu.cursor.get_children():
+        if (expansion.kind != ci.CursorKind.MACRO_INSTANTIATION
+                or expansion.spelling != "GZ_ENUM_STORAGE"
+                or str(expansion.location.file) != str(source)
+                or not start <= expansion.extent.start.offset < end):
+            continue
+        definition = expansion.get_definition()
+        spellings = [t.spelling for t in definition.get_tokens()] if definition else []
+        if (spellings[:6] != ["GZ_ENUM_STORAGE", "(", "name", ",", "storage", ")"]
+                or len(spellings) != 7 or spellings[6] not in {"name", "storage"}):
+            raise ValueError("unsupported GZ_ENUM_STORAGE definition in parser context")
+        argument = 2 if spellings[6] == "name" else 4
+        call = list(expansion.get_tokens())
+        if (len(call) != 6 or call[1].spelling != "("
+                or call[3].spelling != "," or call[5].spelling != ")"):
+            raise ValueError("unsupported GZ_ENUM_STORAGE arguments in target")
+        left = expansion.extent.start.offset - start
+        right = expansion.extent.end.offset - start
+        replacement = call[argument].spelling.encode()
+        if not 0 <= left < right <= len(parser_body):
+            raise ValueError("enum annotation lies outside authored target")
+        parser_body[left:right] = replacement + b" " * (right - left - len(replacement))
     # Parser-only portability spelling. The MSVC compile sees original headers.
     parse_args = [a for a in args if not a.startswith("-DGITEN_EMIT_META")]
     parse_args += ["-D__int64=long long", "-D__cdecl=", "-D__stdcall=",

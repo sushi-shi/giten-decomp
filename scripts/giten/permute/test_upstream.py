@@ -71,6 +71,34 @@ class UpstreamTests(unittest.TestCase):
         self.assertEqual(len(options), 17)
         self.assertEqual(errors, [])
 
+    def test_enum_annotations_follow_the_definition_at_each_use(self):
+        for expansion in ['storage', 'name']:
+            with self.subTest(expansion=expansion), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                source = root / 'unit.c'
+                original = (
+                    '#define RVA(a,b)\n#define VALUE(x) ((x)+1)\n'
+                    'typedef enum Domain { ZERO } Domain;\n'
+                    f'#define GZ_ENUM_STORAGE(name, storage) {expansion}\n'
+                    'RVA(0x00001234, 0x10)\n'
+                    'GZ_ENUM_STORAGE(Domain, short) f(int x) {\n'
+                    'GZ_ENUM_STORAGE(Domain, short) value = VALUE(x);\n'
+                    'return value;\n}\n'
+                    '#undef GZ_ENUM_STORAGE\n'
+                    '#define GZ_ENUM_STORAGE(name, storage) unsupported\n'
+                ).encode()
+                source.write_bytes(original)
+                context = upstream.source_context(root, source, 0x1234, self.ast)
+                blob, start, end, _, authored, prelude, signature, body = context
+                parsed = self.ast.parse_c(prelude + '\n' + body)
+                fn, _ = self.ast.extract_fn(parsed, 'f')
+                expected = 'short' if expansion == 'storage' else 'Domain'
+                self.assertEqual(self.ast.to_c_raw(fn.decl), f'{expected} f(int x)')
+                self.assertEqual(signature, self.ast.to_c_raw(fn.decl))
+                self.assertIn('VALUE(x)', body)
+                self.assertEqual(authored.encode(), blob[start:end])
+                self.assertEqual(source.read_bytes(), original)
+
     def test_frontier_rejects_changes_outside_emitted_region(self):
         original = b'prefix\nint f() { return 0; }\nsuffix\n'
         start = original.index(b'int f')

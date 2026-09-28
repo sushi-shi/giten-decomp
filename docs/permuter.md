@@ -24,6 +24,8 @@ rounds; retained parents are rechecked. `--seed` reproduces a campaign, and
 Generated inline helpers travel with their callers. Declaration context is
 parser-only: original headers, macros, sibling bodies and compiler flags remain
 in every actual compile.
+The parser resolves `GZ_ENUM_STORAGE` annotations from their active definitions;
+ordinary accessor macros remain calls in the mutation AST.
 `--scored` counts distinct successfully scored source mutations, excluding the
 authored baseline and repeated retained parents. The campaign stops when that
 target is reached; exhausting `--rounds` first returns nonzero. Distinct machine
