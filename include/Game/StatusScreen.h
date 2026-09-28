@@ -30,6 +30,14 @@ void ResetStatusMenu(void);
 void CheckStatusMenuItem(i16 item);
 void SetStatusMenuItemsHidden(i16 on);
 
+// A status sub-page's state: its text plane and the sub-state to resume (then
+// the command picked). One record: the two fields sit two bytes apart, where
+// separate variables take four-byte slots.
+typedef struct StatusPage {
+    i16 plane;
+    i16 resume;
+} StatusPage;
+
 // Eleven stat names followed by the null terminator.
 extern char* g_statusStatNames[12];
 extern char* g_statusBattleLabels[7];

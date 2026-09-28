@@ -59,6 +59,9 @@ static i16 s_statusCommandHotspots[11] = {-1, -1, -1, 55, 56, 57, -1, -1, 60, 61
 DATA(0x0006499c)
 static const i8 s_battleStatIcons[4] = {0, 1, 8, 9};
 
+DATA(0x0006a110)
+static StatusPage s_statPage = {-1, -1};
+
 DATA(0x0006a118)
 char* g_statusStatNames[12] = {
     "\222\274  \212\264",
@@ -75,17 +78,6 @@ char* g_statusStatNames[12] = {
     NULL,
 };
 
-DATA(0x0006a168)
-char* g_statusNumberLabels[40] = {
-    "\202O",      "\202P",      "\202Q",      "\202R",      "\202S",      "\202T",
-    "\202U",      "\202V",      "\202W",      "\202X",      "\202P\202O", "\202P\202P",
-    "\202P\202Q", "\202P\202R", "\202P\202S", "\202P\202T", "\202P\202U", "\202P\202V",
-    "\202P\202W", "\202P\202X", "\202Q\202O", "\202Q\202P", "\202Q\202Q", "\202Q\202R",
-    "\202Q\202S", "\202Q\202T", "\202Q\202U", "\202Q\202V", "\202Q\202W", "\202Q\202X",
-    "\202R\202O", "\202R\202P", "\202R\202Q", "\202R\202R", "\202R\202S", "\202R\202T",
-    "\202R\202U", "\202R\202V", "\202R\202W", "\202R\202X",
-};
-
 DATA(0x0006a148)
 char* g_statusBattleLabels[7] = {
     "\213\132\224\134",
@@ -98,16 +90,18 @@ char* g_statusBattleLabels[7] = {
 };
 
 DATA(0x0006a164)
-static i16 s_alignmentPlane = -1;
+static StatusPage s_alignmentPage = {-1, -1};
 
-DATA(0x0006a166)
-static i16 s_alignmentResume = -1;
-
-DATA(0x0006a110)
-static i16 s_statPlane = -1;
-
-DATA(0x0006a112)
-static i16 s_statResume = -1;
+DATA(0x0006a168)
+char* g_statusNumberLabels[40] = {
+    "\202O",      "\202P",      "\202Q",      "\202R",      "\202S",      "\202T",
+    "\202U",      "\202V",      "\202W",      "\202X",      "\202P\202O", "\202P\202P",
+    "\202P\202Q", "\202P\202R", "\202P\202S", "\202P\202T", "\202P\202U", "\202P\202V",
+    "\202P\202W", "\202P\202X", "\202Q\202O", "\202Q\202P", "\202Q\202Q", "\202Q\202R",
+    "\202Q\202S", "\202Q\202T", "\202Q\202U", "\202Q\202V", "\202Q\202W", "\202Q\202X",
+    "\202R\202O", "\202R\202P", "\202R\202Q", "\202R\202R", "\202R\202S", "\202R\202T",
+    "\202R\202U", "\202R\202V", "\202R\202W", "\202R\202X",
+};
 
 static i16 DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, i16 band);
 static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16 mark, i16 band);
@@ -479,7 +473,7 @@ static i16 DrawStatList(i16 plane, Character* member) {
         PrintWindowText(plane, g_scratchBuffer, 0x1400, 0, 1);
     }
     RepaintTextPlane(plane, -2);
-    s_statPlane = plane;
+    s_statPage.plane = plane;
     y = 1;
     for (stat = 0; stat < 10; stat++) {
         DrawStatBar(
@@ -521,7 +515,7 @@ static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16
         column = offset % 50;
         if (row < 2) {
             if (band == 0 || (band == -1 && row == 0) || (band == 1 && row == 1)) {
-                DrawStatBarMark(x + column, y, mark, s_statPlane);
+                DrawStatBarMark(x + column, y, mark, s_statPage.plane);
             }
         }
         offset++;
@@ -545,25 +539,25 @@ RVA(0x000426a0, 0xd4)
 i16 RunStatPage(i16 command) {
     if (command != -1 && command != -2) {
         SetGameSub(1);
-        s_statResume = -2;
+        s_statPage.resume = -2;
         if (command != 5) {
-            s_statResume = command;
+            s_statPage.resume = command;
         }
     }
     switch (GetGameSub()) {
         case 0:
             SetGameSub(2);
             SetStatusMenuItemFlag(5, PANEL_ROW_CHECKED, 1);
-            s_statPlane = OpenStatListWindow(GetRosterCharacter(g_statusMember));
+            s_statPage.plane = OpenStatListWindow(GetRosterCharacter(g_statusMember));
             break;
         case 1:
-            s_statPlane = CloseTextWindow(s_statPlane);
+            s_statPage.plane = CloseTextWindow(s_statPage.plane);
             SetStatusMenuItemFlag(5, PANEL_ROW_CHECKED, 0);
-            return s_statResume;
+            return s_statPage.resume;
         case 2:
             if (TakeClickUnlessCancel(command)) {
                 PrevGameSub();
-                s_statResume = -2;
+                s_statPage.resume = -2;
             }
             break;
     }
@@ -683,28 +677,28 @@ RVA(0x00042b00, 0x108)
 i16 RunAlignmentPage(i16 command) {
     if (command != -1 && command != -2) {
         SetGameSub(1);
-        s_alignmentResume = -2;
+        s_alignmentPage.resume = -2;
         if (command != 10) {
-            s_alignmentResume = command;
+            s_alignmentPage.resume = command;
         }
     }
     switch (GetGameSub()) {
         case 0:
             SetGameSub(2);
             SetStatusMenuItemFlag(10, PANEL_ROW_CHECKED, 1);
-            s_alignmentPlane = CreateTextPlane(6, 0);
-            ResetTextPlaneLineStep(s_alignmentPlane, 1);
+            s_alignmentPage.plane = CreateTextPlane(6, 0);
+            ResetTextPlaneLineStep(s_alignmentPage.plane, 1);
             DrawAlignmentMarker(g_statusMember, GetRosterCharacter(g_statusMember));
-            RepaintTextPlane(s_alignmentPlane, -2);
+            RepaintTextPlane(s_alignmentPage.plane, -2);
             break;
         case 1:
-            s_alignmentPlane = CloseTextWindow(s_alignmentPlane);
+            s_alignmentPage.plane = CloseTextWindow(s_alignmentPage.plane);
             SetStatusMenuItemFlag(10, PANEL_ROW_CHECKED, 0);
-            return s_alignmentResume;
+            return s_alignmentPage.resume;
         case 2:
             if (TakeClickUnlessCancel(command)) {
                 PrevGameSub();
-                s_alignmentResume = -2;
+                s_alignmentPage.resume = -2;
             }
             break;
     }
@@ -721,9 +715,9 @@ static void DrawAlignmentMarker(i16 slot, Character* member) {
     }
     x = AlignmentChartCell(member->alignmentLevelB);
     y = AlignmentChartCell(member->alignmentLevelA);
-    SetTextPlaneCursorLine(s_alignmentPlane, x, y);
+    SetTextPlaneCursorLine(s_alignmentPage.plane, x, y);
     sprintf(g_scratchBuffer, "%s", g_statusNumberLabels[slot + 1]);
-    DrawPlaneText(s_alignmentPlane, x * 8, y * 8, g_scratchBuffer, 0x700);
+    DrawPlaneText(s_alignmentPage.plane, x * 8, y * 8, g_scratchBuffer, 0x700);
 }
 
 // Maps a signed alignment byte (-128..127) onto the 24-cell alignment chart,
