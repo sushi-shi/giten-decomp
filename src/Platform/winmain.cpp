@@ -12,6 +12,7 @@
 #include <Platform/Joystick.h>
 #include <Platform/Mesh.h>
 #include <Platform/Scene3D.h>
+#include <Platform/WindowsX.h>
 #include <Platform/WinMain.h>
 #include <Platform/WinMM.h>
 #include <Sound/MidiStream.h>
