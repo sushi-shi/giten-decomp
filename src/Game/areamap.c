@@ -692,8 +692,6 @@ b16 IsRoomCell(i16 x, i16 y) {
 // With `mode` set, whether x/y is blocked on `level`: a cell of any list
 // there, else its wall or room bit. With `mode` 0, draws each enabled cell's
 // automap icon instead and returns 0.
-// @early-stop register allocation: retail holds y in esi and x in edi; every
-// spelling here swaps them (declaration order, an index local or none).
 RVA(0x00021ed0, 0x1d3)
 i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
     WarpCell* warp;
@@ -703,7 +701,6 @@ i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
     ExitCell* exit;
     TreasureBox* box;
     i16 hit;
-    i16 index;
     for (warp = AreaLevelAt(g_areaMap, level)->warps; warp->head.x != 0xff; warp++) {
         if ((hit = CheckBlockingCell(&warp->head, mode, 6, x, y)) > 0) {
             return hit;
@@ -743,11 +740,11 @@ i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
     if (mode == 0) {
         return 0;
     }
-    index = AreaLevelAt(g_areaMap, level)->width * y + x;
-    if (TestBit(AreaLevelAt(g_areaMap, level)->blockBits, index)) {
+    y = AreaLevelAt(g_areaMap, level)->width * y + x;
+    if (TestBit(AreaLevelAt(g_areaMap, level)->blockBits, y)) {
         return 1;
     }
-    return TestBit(AreaLevelAt(g_areaMap, level)->roomBits, index);
+    return TestBit(AreaLevelAt(g_areaMap, level)->roomBits, y);
 }
 
 // With `mode` set, 1 when the cell is at x/y. With `mode` 0, draws the cell's

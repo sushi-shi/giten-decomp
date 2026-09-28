@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import fcntl
 import hashlib
 import importlib
 import importlib.util
@@ -71,7 +72,7 @@ def source_context(root: Path, source: Path, rva: int, ast_util):
         options=ci.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
     )
     fn = target_function(tu, source, blob, rva)
-    errors = [str(d) for d in tu.diagnostics if d.severity >= ci.Diagnostic.Error]
+    errors = declaration_context_errors(tu, keep_function=fn)
     if errors:
         raise ValueError("cannot derive type context:\n" + "\n".join(errors[:10]))
     start, end = fn.extent.start.offset, fn.extent.end.offset
@@ -125,8 +126,7 @@ def source_context(root: Path, source: Path, rva: int, ast_util):
         str(context_path), args=parse_args,
         unsaved_files=[(str(context_path), preprocessed)],
     )
-    context_errors = [str(d) for d in context_tu.diagnostics
-                      if d.severity >= ci.Diagnostic.Error]
+    context_errors = declaration_context_errors(context_tu)
     if context_errors:
         raise ValueError("cannot parse declaration context:\n" + "\n".join(context_errors[:10]))
     bodies = []
@@ -146,6 +146,35 @@ def source_context(root: Path, source: Path, rva: int, ast_util):
     authored_fn, _ = ast_util.extract_fn(authored_ast, fn.spelling)
     signature = ast_util.to_c_raw(authored_fn.decl)
     return blob, start, end, fn.spelling, original, prelude, signature, parser_body.decode()
+
+
+def declaration_context_errors(tu, *, keep_function=None):
+    """Keep type diagnostics except legacy pointer conversions in discarded bodies.
+
+    MSVC accepts these C conversions. A sibling's implementation is removed
+    from the upstream prelude; target, declaration and fatal errors still block.
+    """
+    discarded = []
+    for cursor in tu.cursor.walk_preorder():
+        if (cursor.kind != ci.CursorKind.FUNCTION_DECL or not cursor.is_definition()
+                or cursor == keep_function):
+            continue
+        for child in cursor.get_children():
+            if child.kind == ci.CursorKind.COMPOUND_STMT:
+                discarded.append((str(child.extent.start.file), child.extent.start.offset,
+                                  child.extent.end.offset))
+    errors = []
+    for diagnostic in tu.diagnostics:
+        if diagnostic.severity < ci.Diagnostic.Error:
+            continue
+        if (diagnostic.severity < ci.Diagnostic.Fatal
+                and diagnostic.option == '-Wincompatible-pointer-types'
+                and any(str(diagnostic.location.file) == filename
+                        and start <= diagnostic.location.offset < end
+                        for filename, start, end in discarded)):
+            continue
+        errors.append(str(diagnostic))
+    return errors
 
 
 def generate_options(ast_util, randomizer, weights, prelude, name, signature,
@@ -229,6 +258,39 @@ def frontier_parents(directory: Path, original: bytes, start: int, end: int):
     return parents
 
 
+def write_checkpoint(path: Path, document: dict):
+    temporary = path.with_suffix('.tmp')
+    temporary.write_text(json.dumps(document, indent=2) + '\n')
+    temporary.replace(path)
+
+
+def restore_campaign(output, expected, blob, start, end, parser_body):
+    """Replay completed rounds only; reject changed source or search inputs."""
+    document = json.loads((output / 'campaign.json').read_text())
+    for key in ('source', 'rva', 'seed', 'revision', 'source_sha256', 'weights', 'search'):
+        if document.get(key) != expected.get(key):
+            raise ValueError(f'cannot resume: campaign {key} changed')
+    parents, seen, scored, states = [parser_body], set(), set(), set()
+    for number, row in enumerate(document['rounds'], 1):
+        if row['round'] != number:
+            raise ValueError('cannot resume: non-contiguous round checkpoint')
+        directory = output / f'round-{number:03d}.results'
+        summary = json.loads((directory / 'results.json').read_text())
+        if not summary.get('source_restored'):
+            raise ValueError('cannot resume: source restoration was not verified')
+        manifest = json.loads((directory / 'input.json').read_text())
+        for option in manifest['axes'][0]['options']:
+            if 'replace' in option:
+                seen.add(option['replace'])
+        for result in summary['results']:
+            if result.get('score') is not None:
+                scored.add(result['source_sha256'])
+                states.add(result['state_id'])
+        parents = frontier_parents(directory, blob, start, end)
+        parents[0] = parser_body
+    return document, parents, seen, scored, states
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
@@ -244,6 +306,8 @@ def main(argv=None):
     parser.add_argument("--seed", type=lambda value: int(value, 0), default=0x475254)
     parser.add_argument("--weights", type=Path, help="TOML [weights] overrides for upstream passes")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--resume", action="store_true", help="continue completed rounds from --output")
+    parser.add_argument("--stop-on-exact", action="store_true", help="stop after an audited exact round")
     args = parser.parse_args(argv)
     if not args.upstream:
         parser.error("--upstream or GITEN_DECOMP_PERMUTER is required (provided by nix develop)")
@@ -268,19 +332,40 @@ def main(argv=None):
         context = source_context(root, source, args.rva, ast_util)
         blob, start, end, name, original, prelude, signature, parser_body = context
         output = (root / args.output).resolve()
-        output.mkdir(parents=True, exist_ok=False)
+        output.mkdir(parents=True, exist_ok=args.resume)
+        lock = (output / '.lock').open('a')
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise ValueError('another process owns this campaign')
         revision = subprocess.run(["git", "-C", str(upstream), "rev-parse", "HEAD"],
                                   capture_output=True, text=True).stdout.strip()
         document = {"source": str(args.source), "rva": hex(args.rva), "seed": args.seed,
                     "upstream": str(upstream), "revision": revision,
                     "source_sha256": hashlib.sha256(blob).hexdigest(),
-                    "weights": weights, "scored_target": args.scored, "rounds": []}
+                    "weights": weights, "scored_target": args.scored, "rounds": [],
+                    "search": {"trials": args.trials, "chain_depth": args.chain_depth,
+                               "frontier": args.frontier}}
         parents = [parser_body]
         seen = set()
         scored_sources = set()
         target_states = set()
+        if args.resume and (output / 'campaign.json').is_file():
+            document, parents, seen, scored_sources, target_states = restore_campaign(
+                output, document, blob, start, end, parser_body,
+            )
+        elif args.resume and any(output.glob('round-*')):
+            raise ValueError('cannot resume output without its initial checkpoint')
+        document['scored_target'] = args.scored
+        write_checkpoint(output / 'campaign.json', document)
+        if args.stop_on_exact and document.get('exact'):
+            return 0
+        if (args.scored is not None
+                and len(scored_sources - {document['source_sha256']}) >= args.scored):
+            return 0
+        elapsed = document.get('totals', {}).get('elapsed_seconds', 0)
         campaign_started = time.perf_counter()
-        for number in range(args.rounds):
+        for number in range(len(document['rounds']), args.rounds):
             if source.read_bytes() != blob:
                 raise ValueError("authored source changed during campaign")
             print(f"[random] round {number + 1}/{args.rounds}: "
@@ -299,9 +384,17 @@ def main(argv=None):
                 "generation_attempts": attempts, "generation_failures": failures,
             }, indent=2) + "\n")
             results = output / f"round-{number + 1:03d}.results"
+            # An interrupted, uncheckpointed round can be regenerated with the
+            # same seed. Keep its diagnostics and never overwrite old artifacts.
+            if results.exists():
+                results.rename(output / f'{results.name}.interrupted-{time.time_ns()}')
             code = batch.main([str(manifest), "--jobs", str(args.jobs),
                                "--limit", str(len(options)), "--frontier", str(args.frontier),
                                "--continue-after-exact", "--top", "4", "--output", str(results)])
+            if not (results / 'results.json').is_file():
+                if code:
+                    return code
+                raise ValueError('batch returned without a results checkpoint')
             summary = json.loads((results / "results.json").read_text())
             document["rounds"].append({
                 "round": number + 1, "generation_attempts": attempts,
@@ -322,11 +415,17 @@ def main(argv=None):
                 "unique_scored_sources": len(scored_sources),
                 "unique_scored_mutations": len(scored_sources - {document["source_sha256"]}),
                 "distinct_target_states": len(target_states),
-                "elapsed_seconds": time.perf_counter() - campaign_started,
+                "elapsed_seconds": elapsed + time.perf_counter() - campaign_started,
             }
-            (output / "campaign.json").write_text(json.dumps(document, indent=2) + "\n")
+            if summary.get('exact_source'):
+                document['exact'] = {"round": number + 1,
+                                     "results": str(results / 'results.json'),
+                                     **summary['exact_source']}
+            write_checkpoint(output / 'campaign.json', document)
             if code:
                 return code
+            if args.stop_on_exact and document.get('exact'):
+                return 0
             if (args.scored is not None
                     and document["totals"]["unique_scored_mutations"] >= args.scored):
                 return 0

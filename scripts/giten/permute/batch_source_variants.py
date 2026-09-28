@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import contextlib
 import csv
 import hashlib
 import itertools
@@ -464,6 +465,7 @@ def compile_disposable_sibling(
         probe_source.unlink(missing_ok=True)
 
 
+@contextlib.contextmanager
 def precompile_variants(
     root: Path,
     source: Path,
@@ -472,7 +474,7 @@ def precompile_variants(
     flags: list[str],
     timeout: float,
     jobs: int,
-) -> dict[int, tuple[bool, str, bool]]:
+):
     compile_inputs = []
     compile_seen = {}
     for index, (candidate, _labels) in enumerate(variants):
@@ -488,11 +490,14 @@ def precompile_variants(
             root, source, scratch, index, candidate, flags, timeout
         )
 
-    precompiled = {}
-    with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
-        for trial_index, compile_result in pool.map(compile_one, compile_inputs):
-            precompiled[trial_index] = compile_result
-    return precompiled
+    pool = concurrent.futures.ThreadPoolExecutor(max_workers=jobs)
+    try:
+        # Score in manifest order while later whole-TU compiles are running.
+        yield {index: pool.submit(compile_one, (index, candidate))
+               for index, candidate in compile_inputs}
+    finally:
+        # Running compiles finish and remove their sources before scratch cleanup.
+        pool.shutdown(wait=True, cancel_futures=True)
 
 
 def main(argv=None) -> int:
@@ -594,7 +599,8 @@ def main(argv=None) -> int:
 
     signal.signal(signal.SIGTERM, interrupt)
     try:
-        with tempfile.TemporaryDirectory(prefix="source-variants-", dir=output) as scratch_name:
+        with tempfile.TemporaryDirectory(prefix="source-variants-", dir=output) as scratch_name, \
+                contextlib.ExitStack() as compile_stack:
             scratch = Path(scratch_name)
             baseline_obj = scratch / "baseline.obj"
             with temporary_source(source, original, original):
@@ -643,13 +649,13 @@ def main(argv=None) -> int:
                 f"running {combinations} variants",
                 flush=True,
             )
-            precompiled: dict[int, tuple[bool, str, bool]] = {}
+            precompiled = {}
             if args.jobs > 1:
-                precompiled = precompile_variants(
+                precompiled = compile_stack.enter_context(precompile_variants(
                     root, source, scratch,
                     iter_variants(original, axes, candidates),
                     flags, args.compile_timeout, args.jobs,
-                )
+                ))
             for index, (candidate, labels) in enumerate(iter_variants(original, axes, candidates)):
                 remaining_wall_time = args.wall_time_seconds - (time.perf_counter() - started)
                 if remaining_wall_time <= 0:
@@ -667,7 +673,7 @@ def main(argv=None) -> int:
                 seen[digest] = index
                 candidate_obj = scratch / f"trial-{index:04d}.obj"
                 if index in precompiled:
-                    ok, compile_log, timed_out = precompiled.pop(index)
+                    _index, (ok, compile_log, timed_out) = precompiled.pop(index).result()
                 else:
                     with temporary_source(source, original, candidate):
                         ok, compile_log, timed_out = compile_object(

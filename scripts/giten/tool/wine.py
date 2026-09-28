@@ -76,6 +76,9 @@ def winepath(p: Path | str) -> str:
     be the call that boots the persistent wine session, and a daemonised
     session inheriting our stderr holds the caller's pipe open forever."""
     exe = require("winepath")
+    fast = _default_drive_path(p)
+    if fast is not None:
+        return fast
     try:
         return subprocess.check_output([exe, "-w", str(p)],
                                        text=True,
@@ -84,6 +87,32 @@ def winepath(p: Path | str) -> str:
         raise ToolError(f"winepath -w {p} failed (rc={e.returncode}) - the "
                         "wine prefix may not be initialised; run "
                         "`giten init`") from e
+
+
+def _default_drive_path(p: Path | str) -> str | None:
+    """Avoid starting Wine for absolute paths under its default Z: mapping.
+
+    Custom drives, paths inside C:, and unusual path syntax stay with winepath.
+    Inspect mappings each time so a changed prefix cannot leave stale paths.
+    """
+    raw = str(p)
+    if (not raw.startswith('/') or raw.startswith('//') or '\\' in raw
+            or raw != raw.strip() or any(ord(c) < 32 for c in raw)):
+        return None
+    prefix = Path(os.environ.get('WINEPREFIX') or Path.home() / '.wine')
+    try:
+        devices = prefix / 'dosdevices'
+        drives = {d.name for d in devices.iterdir()
+                  if len(d.name) == 2 and d.name[1] == ':'}
+        if drives != {'c:', 'z:'} or (devices / 'z:').resolve(strict=True) != Path('/'):
+            return None
+        c_drive = (devices / 'c:').resolve(strict=True)
+        path = Path(os.path.abspath(raw))
+        if path.is_relative_to(c_drive) or path.resolve().is_relative_to(c_drive):
+            return None
+    except (OSError, RuntimeError, ValueError):
+        return None
+    return 'Z:' + str(path).replace('/', '\\')
 
 
 def ensure_wineserver() -> None:
