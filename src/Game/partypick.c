@@ -167,6 +167,22 @@ static __inline i16 CurrentMemberCombatantId(void) {
     return PartyCombatantId(FindPartyPositionOfId(s_pickedIndex));
 }
 
+static __inline i16 PickMemberActionTarget(Character* character, i16 flags, i16 range) {
+    if (character->pickRole == 4) {
+        if (character->pickTarget == 0x10e) {
+            return RunPickTargetWindow(0, range, 1, 0);
+        }
+        if (character->pickTarget == 0x57) {
+            return RunPickTargetWindow(0, range, 0x82, 0);
+        }
+    }
+    if (flags == 1) {
+        return RunPickTargetWindow(0, range, 0x12, 0);
+    } else {
+        return RunPickTargetWindow(0, range, 3, 0);
+    }
+}
+
 // @identity-TODO: the party command-input machine, one step per call (steps
 // in s_pickMode): wait for a picked member, settle its role, run its action
 // menu, pick the target, then confirm. Returns the tick flag.
@@ -273,22 +289,7 @@ i16 RunPartyCommandInput(void) {
             } else if (flags == 0x30) {
                 result = RunPickTargetWindow(0, range, 6, 0);
             } else {
-                if (character->pickRole == 4) {
-                    if (character->pickTarget == 0x10e) {
-                        result = RunPickTargetWindow(0, range, 1, 0);
-                        goto picked;
-                    }
-                    if (character->pickTarget == 0x57) {
-                        result = RunPickTargetWindow(0, range, 0x82, 0);
-                        goto picked;
-                    }
-                }
-                if (flags == 1) {
-                    result = RunPickTargetWindow(0, range, 0x12, 0);
-                } else {
-                    result = RunPickTargetWindow(0, range, 3, 0);
-                }
-            picked:
+                result = PickMemberActionTarget(character, flags, range);
                 flags = 0;
             }
             if (flags != 0) {
@@ -416,6 +417,30 @@ i16 GetTickElapsed(void) {
     return g_tickElapsed;
 }
 
+static __inline i16 FindPickReplacementSlot(i16 keep) {
+    i16 index;
+    index = FindEmptySlot(1);
+    if (index >= 0) {
+        return index;
+    }
+    for (index = 0; index < 6; index++) {
+        if (IsPartyMemberFallen(index)) {
+            return index;
+        }
+    }
+    for (index = 0; index < 6; index++) {
+        if (index != keep && GetPartyRosterId(index) >= 32) {
+            return index;
+        }
+    }
+    for (index = 0; index < 6; index++) {
+        if (index != keep) {
+            return index;
+        }
+    }
+    return index;
+}
+
 // Swaps roster slot `slot` into the party for a pick (unless it is already in
 // it) and returns -1 - the position it occupies. The position is the first
 // empty one, else the first fallen member, else the first non-human member
@@ -430,26 +455,7 @@ i16 SwapInForPick(i16 keep, i16 slot) {
     if (index >= 0) {
         return PartyCombatantId(index);
     }
-    index = FindEmptySlot(1);
-    if (index >= 0) {
-        goto found;
-    }
-    for (index = 0; index < 6; index++) {
-        if (IsPartyMemberFallen(index)) {
-            goto found;
-        }
-    }
-    for (index = 0; index < 6; index++) {
-        if (index != keep && GetPartyRosterId(index) >= 32) {
-            goto found;
-        }
-    }
-    for (index = 0; index < 6; index++) {
-        if (index != keep) {
-            goto found;
-        }
-    }
-found:
+    index = FindPickReplacementSlot(keep);
     g_guestIndex = index;
     s_swapSaved = GetPartySlot(index);
     ExchangePartySlot(index, slot);
@@ -534,7 +540,9 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
     if (kind & 1) {
         result = PickFieldObjectTarget(minimumRange, maximumRange);
         if (result) {
-            goto picked;
+            ClearPartySlotSelection();
+            PlaySoundEffect(1);
+            return result;
         }
     }
     if (kind & 2) {
@@ -544,14 +552,12 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
             result = PickPartySlotTarget(minimumRange, 0);
         }
         if (result) {
-            goto picked;
+            ClearPartySlotSelection();
+            PlaySoundEffect(1);
+            return result;
         }
     }
     return 0;
-picked:
-    ClearPartySlotSelection();
-    PlaySoundEffect(1);
-    return result;
 }
 
 RVA(0x0000a050, 0x53)

@@ -1398,6 +1398,9 @@ i16 ChooseObjectTarget(FieldObject* object);
 // One step of a field object's action flow: ticks its conditions and action
 // wait, runs its object script, then acts by its mode (1 attack or skill,
 // 2/4/5/6/7/9 move, 11 talk). Returns 0 when it did not act.
+// The attack tail exits both the retry loop and the mode switch. The retry
+// count cannot identify success: a final failed skill can still attack.
+// Inlining that tail at each exit prevents the retail tail merge.
 RVA(0x0000f890, 0x490)
 i16 RunObjectStep(FieldObject* object, i16 index) {
     i16 scenes[5];
@@ -1556,16 +1559,18 @@ i16 ChooseObjectTarget(FieldObject* object) {
         target = FindPartyPositionOfId(0x22);
         if (target != -1) {
             if (PushPromptState(0, 0, 200, 450, 0)) {
-                goto done;
+                return 1;
             }
-            goto picked;
+            g_targetId = PartyCombatantId(target);
+            object->pickObject = g_targetId;
+            return 1;
         }
     }
     if (GetPickBlockingCondition(GetFieldObjectConditions(object))) {
         return 0;
     }
     if (BeginPartyTargetSkill((Character*)&object->kind)) {
-        goto done;
+        return 1;
     }
     count = 0;
     for (i = 0; i < 6; i++) {
@@ -1588,11 +1593,9 @@ i16 ChooseObjectTarget(FieldObject* object) {
     }
     target = candidates[RandomUpTo(--count)];
     if (!PushPromptState(0, 0, 200, 450, 0)) {
-    picked:
         g_targetId = PartyCombatantId(target);
-        ((Character*)&object->kind)->pickObject = g_targetId;
+        object->pickObject = g_targetId;
     }
-done:
     return 1;
 }
 

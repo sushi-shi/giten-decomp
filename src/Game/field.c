@@ -775,22 +775,19 @@ void TickPartyConditionActions(void) {
                     g_actorId = PartyCombatantId(index);
                     action = PickActorAction(actor);
                     if (action >= 1) {
-                        goto performAction;
+                        if ((action & 15) == 4) {
+                            action = (action & 0xf0) | 1;
+                        }
+                        action = AdjustActorAction(PartyCombatantId(index), action);
+                        if (action != 0) {
+                            ChangeCharacterFlag(actor, 32, 1);
+                            MarkActorActionReady(actor);
+                        }
+                        return;
                     }
                 }
             }
         }
-    }
-    return;
-
-performAction:
-    if ((action & 15) == 4) {
-        action = (action & 0xf0) | 1;
-    }
-    action = AdjustActorAction(PartyCombatantId(index), action);
-    if (action != 0) {
-        ChangeCharacterFlag(actor, 32, 1);
-        MarkActorActionReady(actor);
     }
 }
 

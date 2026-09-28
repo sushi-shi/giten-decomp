@@ -4420,7 +4420,10 @@ void HandleInput(u8 buttons) {
             return;
         case MOUSE_CLICK:
             if (GetFrameCount() >= INPUT_DELAY_FRAMES) {
-                goto quit;
+                ReleaseGraphics();
+                RestoreCursorClip(&g_savedClipRect);
+                PostQuitMessage(0);
+                return;
             }
             s_dragMoved = FALSE;
             s_layerDragging = FALSE;
@@ -4451,10 +4454,6 @@ void HandleInput(u8 buttons) {
                     g_screenLayers[SCREEN_LAYER_MOON_PHASE]->visible =
                         !g_screenLayers[SCREEN_LAYER_MOON_PHASE]->visible;
                     return;
-                case SCREEN_LAYER_LOCATION:
-                case SCREEN_LAYER_CURRENCY:
-                case SCREEN_LAYER_AUTOMAP:
-                    goto drag;
                 case SCREEN_LAYER_NAVIGATION:
                     s_dragMoved = FALSE;
                     s_layerDragging = FALSE;
@@ -4464,14 +4463,15 @@ void HandleInput(u8 buttons) {
                         return;
                     }
                     g_heldPadButton = 0;
-                    goto drag;
+                case SCREEN_LAYER_LOCATION:
+                case SCREEN_LAYER_CURRENCY:
+                case SCREEN_LAYER_AUTOMAP:
                 case SCREEN_LAYER_FIRST_PANEL:
                 case SCREEN_LAYER_FIRST_PANEL + 1:
                 case SCREEN_LAYER_FIRST_PANEL + 2:
                 case SCREEN_LAYER_FIRST_PANEL + 3:
                 case SCREEN_LAYER_FIRST_PANEL + 4:
                 case SCREEN_LAYER_FIRST_PANEL + 5:
-                drag:
                     for (i = 0; i < TEXT_PLANE_COUNT; i++) {
                         busy |= GetTextPlane(i)->visible;
                     }
@@ -4531,7 +4531,10 @@ void HandleInput(u8 buttons) {
             break;
         case MOUSE_HELD:
             if (GetFrameCount() >= INPUT_DELAY_FRAMES) {
-                goto quit;
+                ReleaseGraphics();
+                RestoreCursorClip(&g_savedClipRect);
+                PostQuitMessage(0);
+                return;
             }
             if (!s_dragMoved && s_rightPressedLayer == SCREEN_LAYER_NAVIGATION) {
                 s_padHeld = PadButtonAtPoint(g_cursorPos.x, g_cursorPos.y);
@@ -4563,11 +4566,6 @@ void HandleInput(u8 buttons) {
             break;
     }
     return;
-
-quit:
-    ReleaseGraphics();
-    RestoreCursorClip(&g_savedClipRect);
-    PostQuitMessage(0);
 }
 
 // The pictures LoadGraphics creates besides the scene, view and mode ones.

@@ -204,6 +204,8 @@ i16 GetFusionResultKind(void) {
     return s_fusionSummary.fields.kind;
 }
 
+// Codegen constraint: the explicit default-bound cases retain the retail
+// switch dispatch; grouping or omitting them changes its lowering.
 RVA(0x00028950, 0x28f)
 Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
     Character* firstCharacter = GetRosterEntry(first);

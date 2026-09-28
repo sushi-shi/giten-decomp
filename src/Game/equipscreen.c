@@ -390,7 +390,8 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, i16 event) {
             if (member != NULL) {
                 i16 category = GetItemCategory(item);
                 if (IsEquipCurseActive(member, category)) {
-                    goto blocked;
+                    AddMenuLine(menu->plane, g_scratchBuffer, 0x560, s_equipEntries[index], 1);
+                    return;
                 }
                 record = GetLoadedRecord(item);
                 if (record->kind == ITEM_KIND_FULL_BODY_ARMOR) {
@@ -399,7 +400,6 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, i16 event) {
                     cursed |= IsEquipCurseActive(member, EQUIP_PART_ARMS);
                     cursed |= IsEquipCurseActive(member, EQUIP_PART_LEGS);
                     if (cursed) {
-                    blocked:
                         AddMenuLine(menu->plane, g_scratchBuffer, 0x560, s_equipEntries[index], 1);
                         return;
                     }

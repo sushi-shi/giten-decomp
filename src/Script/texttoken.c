@@ -166,6 +166,8 @@ char* GetTextToken(i16 kind, i16 byId, i16 id) {
     return s_tokenText;
 }
 
+// Codegen constraint: keep the separate switch arms. Grouping these cases
+// changes the dispatch table and the shared ReadScriptValue tail.
 RVA(0x00036920, 0x17c)
 char* ReadTextToken(void) {
     i16 bypass = ExchangeObjectCheckBypass(1);
