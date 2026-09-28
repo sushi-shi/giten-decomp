@@ -24,7 +24,6 @@
 #include <Game/StateStack.h>
 #include <Game/TreasureBox.h>
 #include <Game/WorldMap.h>
-#include <Gfx/Background.h>
 #include <Gfx/Blit.h>
 #include <Gfx/Scene.h>
 #include <Gfx/ScreenLayer.h>
@@ -50,9 +49,56 @@
 #include <stddef.h>
 #include <string.h>
 
+DATA(0x0007b7d8)
+static i16 s_viewY = 0;
+
+// The size of the automap block of the current level (0x421720), which
+// bounds the reveal.
+DATA(0x0007b7dc)
+static MapCoord s_roomSize = {0};
+
+// Set when an encounter was requested (sound 1), cleared once handled.
+DATA(0x0007b7e0)
+static b16 s_encounterPending = false;
+
+DATA(0x0007b7e4)
+static i16 s_viewX = 0;
+
+// While set, field objects are drawn hidden.
+DATA(0x0007b7e8)
+static i16 s_objectsHidden = 0;
+
+// Set while the area palette is switched on (a dark cell).
+DATA(0x0007b7ec)
+static b16 s_areaPaletteOn = false;
+
 // @identity-TODO: a hold word the field view update (0x414770) reads.
 DATA(0x0007b7f0)
-static i16 s_viewHold;
+static i16 s_viewHold = 0;
+
+// @identity-TODO: an image handle only the dead FreeFieldImage touches.
+DATA(0x0007b7f4)
+static u32 s_fieldImage = 0;
+
+DATA(0x0007b7f8)
+static u32 s_backdropImage = 0;
+
+DATA(0x0007b7fc)
+static u32 s_effectFrames = 0;
+
+// @identity-TODO: the image is only freed in this build.
+DATA(0x0007b804)
+static u32 s_overlayImage = 0;
+
+DATA(0x0007b808)
+static void* s_backdropBlock = 0;
+
+DATA(0x0007b80c)
+static i32 s_fieldMessages = 0;
+
+// @identity-TODO: no capture writes this handle in the Windows build.
+DATA(0x0007b810)
+static i32 s_savedCursor = 0;
 
 DATA(0x00091244)
 i16 g_viewX;
@@ -63,15 +109,6 @@ i16 g_viewY;
 DATA(0x00091290)
 i16 g_viewReset;
 
-// Set when an encounter was requested (sound 1), cleared once handled.
-DATA(0x0007b7e0)
-static b16 s_encounterPending;
-
-// The size of the automap block of the current level (0x421720), which
-// bounds the reveal.
-DATA(0x0007b7dc)
-static MapCoord s_roomSize;
-
 // The world cell the cursor box was last drawn on.
 DATA(0x00068690)
 static i16 s_cursorCellX = -1;
@@ -79,38 +116,14 @@ static i16 s_cursorCellX = -1;
 DATA(0x00068694)
 static i16 s_cursorCellY = -1;
 
-// Set while the area palette is switched on (a dark cell).
-DATA(0x0007b7ec)
-static b16 s_areaPaletteOn;
-
 // Cached effect-frame image key (0x1400 + the frame-set id; -1: none).
 DATA(0x00068698)
 static i16 s_effectFramesKey = -1;
-
-// @identity-TODO: an image handle only the dead FreeFieldImage touches.
-DATA(0x0007b7f4)
-static u32 s_fieldImage;
-
-DATA(0x0007b7fc)
-static u32 s_effectFrames;
 
 // The effect backdrop: its key (0x1300 + id; -1 for none), image and block.
 // @identity-TODO: what the block holds is unrecovered.
 DATA(0x0006869c)
 static i16 s_effectBackdropKey = -1;
-
-DATA(0x0007b7f8)
-static u32 s_backdropImage;
-
-DATA(0x0007b808)
-static void* s_backdropBlock;
-
-// While set, field objects are drawn hidden.
-DATA(0x0007b7e8)
-static i16 s_objectsHidden;
-
-DATA(0x0007b80c)
-static i32 s_fieldMessages;
 
 // @identity-TODO: two words reset to -1 together.
 DATA(0x000686a0)
@@ -150,20 +163,6 @@ i16 g_worldMapOverlayFlags[89] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1,
     1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 };
-
-// @identity-TODO: the image is only freed in this build.
-DATA(0x0007b804)
-static u32 s_overlayImage;
-
-DATA(0x0007b7d8)
-static i16 s_viewY;
-
-DATA(0x0007b7e4)
-static i16 s_viewX;
-
-// @identity-TODO: no capture writes this handle in the Windows build.
-DATA(0x0007b810)
-static i32 s_savedCursor;
 
 // The field panel: nine command rows (their ids pick the command; flag
 // PANEL_INPUT_DISABLED, set by SetFieldMenuMode, disables a row). Its picture is set by

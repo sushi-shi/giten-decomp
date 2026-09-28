@@ -26,40 +26,40 @@ DATA(0x00069108)
 i16 g_cachedRecordId = -1;
 
 DATA(0x00080d38)
-static char s_skillViewName[0x100];
+static char s_skillViewName[0x100] = {0};
 
 DATA(0x00080e38)
-static SkillHeader s_cachedSkill;
+static SkillHeader s_cachedSkill = {0};
 
 DATA(0x00080e50)
-static i16 s_wordScratch[64];
+static i16 s_wordScratch[64] = {0};
 
 DATA(0x00080ed0)
-static SkillView s_skillView;
+static SkillView s_skillView = {0};
 
 DATA(0x00080ef0)
-static char s_skillViewDescription[0x100];
+static char s_skillViewDescription[0x100] = {0};
 
 // The stacked script states, newest first.
 DATA(0x00080ff0)
-static SavedScriptState* s_savedScripts;
+static SavedScriptState* s_savedScripts = 0;
 
 // The handle of the loaded skill file.
 DATA(0x00080ff4)
-static i32 s_skillTable;
+static i32 s_skillTable = 0;
 
 // One byte per map area; bit 0 allows skills 0x79..0x7b there.
 DATA(0x00080ff8)
-static u8* s_areaSkillFlags;
+static u8* s_areaSkillFlags = 0;
 
 DATA(0x00080ffc)
-static i16 s_skillCount;
+static i16 s_skillCount = 0;
 
 DATA(0x00081000)
-static i16 s_valueA;
+static i16 s_valueA = 0;
 
 DATA(0x00081004)
-static i16 s_valueB;
+static i16 s_valueB = 0;
 
 DATA(0x00081008)
 i16 g_recordBaseValue = 0;
@@ -69,7 +69,7 @@ i16 g_recordValue = 0;
 
 // How often the cached skill has been used.
 DATA(0x00081010)
-static i16 s_skillUses;
+static i16 s_skillUses = 0;
 
 static __inline void AllocWordArray(i16** words, i16 count) {
     if (count < 1) {

@@ -10,25 +10,25 @@
 // The play clock: a 1/10000 ms remainder, milliseconds, seconds, minutes,
 // hours, days (0..99) and hundreds of days. Saved field by field.
 DATA(0x00075fd0)
-static u16 s_playTimeFraction;
+static u16 s_playTimeFraction = 0;
 
 DATA(0x00075fd4)
-static u16 s_playTimeMilliseconds;
+static u16 s_playTimeMilliseconds = 0;
 
 DATA(0x00075fd8)
-static u8 s_playTimeSeconds;
+static u8 s_playTimeSeconds = 0;
 
 DATA(0x00075fdc)
-static u8 s_playTimeMinutes;
+static u8 s_playTimeMinutes = 0;
 
 DATA(0x00075fe0)
-static u8 s_playTimeHours;
+static u8 s_playTimeHours = 0;
 
 DATA(0x00075fe4)
-static u8 s_playTimeDays;
+static u8 s_playTimeDays = 0;
 
 DATA(0x00075fe8)
-static u16 s_playTimeHundredDays;
+static u16 s_playTimeHundredDays = 0;
 
 RVA(0x000035b0, 0x29)
 void ResetPlayTime(void) {

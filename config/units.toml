@@ -345,11 +345,6 @@ source = "src/Ui/menubox.c"
 flags = "c"
 
 [[unit]]
-unit = "scriptpanel"
-source = "src/Script/scriptpanel.c"
-flags = "c"
-
-[[unit]]
 unit = "partyaction"
 source = "src/Game/partyaction.c"
 flags = "c"

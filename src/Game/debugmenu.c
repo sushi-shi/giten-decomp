@@ -22,9 +22,20 @@
 #include <stddef.h>
 #include <stdio.h>
 
+// The open menu, the skill the magic test launches, and how many skills
+// there are.
+DATA(0x00071170)
+static MenuBox* s_debugMenu = 0;
+
+DATA(0x00071174)
+static i16 s_testSkill = 0;
+
+DATA(0x00071178)
+static i16 s_skillCount = 0;
+
 // The label of the debug menu's unnamed rows.
 DATA(0x0007117c)
-static char s_emptyLabels[4][4];
+static char s_emptyLabels[4][4] = {0};
 
 // The debug menu: each row starts scene 0xaf (0xd1 for the last) with its
 // value, except the magic test (row 2) and destroying every demon (row 4).
@@ -63,17 +74,6 @@ static const MenuEntry s_magicEntries[8] = {
 // The magic test's shot rise (0..3, the distance row cycles it).
 DATA(0x00068050)
 static i16 s_shotRise = 3;
-
-// The open menu, the skill the magic test launches, and how many skills
-// there are.
-DATA(0x00071170)
-static MenuBox* s_debugMenu;
-
-DATA(0x00071174)
-static i16 s_testSkill;
-
-DATA(0x00071178)
-static i16 s_skillCount;
 
 static void DebugMenuHandler(MenuBox* menu, i16 index, i16 event);
 static void MagicMenuHandler(MenuBox* menu, i16 index, i16 event);

@@ -86,7 +86,6 @@
 #include <Script/EventFlags.h>
 #include <Script/ScriptCmd.h>
 #include <Script/ScriptVars.h>
-#include <Script/TextToken.h>
 #include <Sound/Sound.h>
 #include <Text/Font.h>
 #include <Text/TextPlane.h>
@@ -164,14 +163,186 @@ static i16 s_pointPrompt = -1;
 DATA(0x00068a80)
 static char* s_ddsCommands[3] = {"CALL", "RETURN", "PURGE"};
 
+DATA(0x0007b818)
+i16 g_sceneFramePositions[32][2] = {0};
+
+DATA(0x0007b898)
+static u8* s_sceneSpriteStream = 0;
+
+// The script the cell event runs (NULL: none).
+DATA(0x0007b89c)
+static u8* s_cellScript = 0;
+
+// The points of each stat raised this level.
+DATA(0x0007b8a0)
+static i16 s_statPicks[10] = {0};
+
+// @identity-TODO: 28 bytes per row (one per moon phase), read from data file
+// 3 (kind 12); what the values are is unrecovered.
+DATA(0x0007b8b8)
+static u8 s_moonTableBuffer[0x280] = {0};
+
+DATA(0x0007bb38)
+static MenuCursor s_summonCursor = {0};
+
+DATA(0x0007bb40)
+u8 g_sceneVideoState[16] = {0};
+
+// The 16-byte record of the cell whose event runs.
+DATA(0x0007bb50)
+static u8 s_sceneCell[16] = {0};
+
+// @identity-TODO: the video state saved while the world map is shown; the
+// Windows build's save/restore bodies are empty, so its layout is unknown.
+DATA(0x0007bb60)
+static u8 s_videoState[16] = {0};
+
 DATA(0x0007bb70)
-static GameState s_gameState;
+static GameState s_gameState = {0};
+
+// The skills the member can learn now.
+DATA(0x0007bb78)
+static i16 s_learnableSkills[64] = {0};
+
+DATA(0x0007bbf8)
+u8 g_sceneFrameIds[32][2] = {0};
 
 DATA(0x0007bc38)
-static GameState s_stateStack[GAME_STATE_STACK_DEPTH];
+static GameState s_stateStack[GAME_STATE_STACK_DEPTH] = {0};
+
+// @identity-TODO: legacy image handles; no loader writes them in this build.
+DATA(0x0007bd38)
+static u32 s_sceneEntries[32] = {0};
+
+DATA(0x0007bdb8)
+i32 g_sceneFrameSaves[32] = {0};
+
+// Pending transition request: negative exits, positive marks the entry spot.
+DATA(0x0007be38)
+i16 g_worldMapRequest = 0;
+
+DATA(0x0007be3c)
+i16 g_statusMember = 0;
+
+DATA(0x0007be40)
+b16 g_statusFixedMember = 0;
+
+// @identity-TODO: the status screen's analyze mode flag.
+DATA(0x0007be44)
+static i16 s_statusAnalyzeMode = 0;
 
 DATA(0x0007be48)
-static i16 s_stateDepth;
+static i16 s_stateDepth = 0;
+
+DATA(0x0007be4c)
+static i16 s_ddsRosterSlot = 0;
+
+DATA(0x0007be50)
+static i16 s_ddsPartySlot = 0;
+
+// The party position of the first member able to use it.
+DATA(0x0007be54)
+static i16 s_usePosition = 0;
+
+// @identity-TODO: only the reset and exchange access this flag in this build.
+DATA(0x0007be58)
+static i16 s_subscreenActive = 0;
+
+DATA(0x0007be5c)
+static i16 s_partyPickerMode = 0;
+
+// The spot marked when the world map is entered with a request.
+DATA(0x0007be60)
+static i16 s_savedSpotX = 0;
+
+DATA(0x0007be64)
+static i16 s_savedSpotY = 0;
+
+// @identity-TODO: the map layer the travel routines work on.
+DATA(0x0007be68)
+static i16 s_mapLayer = 0;
+
+DATA(0x0007be6c)
+static MenuBox* s_partyPicker = 0;
+
+// Set while the party travels towards a picked destination.
+DATA(0x0007be70)
+static b16 s_traveling = false;
+
+// Travel ticks since the last party step effect, cleared while idle.
+DATA(0x0007be74)
+static i16 s_idleFlag = 0;
+
+DATA(0x0007be78)
+static i16 s_sceneScript = 0;
+
+DATA(0x0007be7c)
+static i16 s_sceneScriptEntry = 0;
+
+// @identity-TODO: a redraw flag and a hold word of the scene code.
+DATA(0x0007be80)
+static b16 s_sceneDirty = false;
+
+DATA(0x0007be84)
+static i16 s_sceneHold = 0;
+
+DATA(0x0007be88)
+static i16 s_sceneScreenState = 0;
+
+DATA(0x0007be8c)
+static i16 s_sceneObjectsFrozen = 0;
+
+// Set when a battle's rewards wait to be handed out.
+DATA(0x0007be90)
+static b16 s_rewardsPending = false;
+
+// The stat most recently raised.
+DATA(0x0007be94)
+static i16 s_raisedStat = 0;
+
+// The levels (then the stat points) still to hand out.
+DATA(0x0007be98)
+static i16 s_remaining = 0;
+
+// The music that played before the level-up screen.
+DATA(0x0007be9c)
+static i16 s_savedMusic = 0;
+
+DATA(0x0007bea0)
+static PaletteState* s_scenePaletteState = 0;
+
+DATA(0x0007bea4)
+static PaletteState* s_statusPaletteState = 0;
+
+// The item list menu.
+DATA(0x0007bea8)
+static MenuBox* s_itemMenu = 0;
+
+DATA(0x0007beac)
+static u8* s_moonTable = 0;
+
+DATA(0x0007beb0)
+static MenuBox* s_ddsMenu = 0;
+
+// @identity-TODO: the screen area kept while the level-up screen is open; its
+// layout is not recovered (the Windows build's save/restore bodies are empty).
+DATA(0x0007beb8)
+static u8 s_screenSave[16] = {0};
+
+DATA(0x0007bec8)
+Character* g_rosterPendingMember = 0;
+
+DATA(0x0007becc)
+i16 g_rosterReturnState = 0;
+
+DATA(0x0007bed0)
+u16 g_rosterReturnPhase = 0;
+
+DATA(0x0007bed4)
+u16 g_rosterReturnStep = 0;
+
+DATA(0x0007bed8)
+static i16 s_rosterSavedColumn = 0;
 
 RVA(0x000169e0, 0xa)
 void ClearGameStateStack(void) {
@@ -394,16 +565,6 @@ i16 PickStatusMember(void) {
     return -1;
 }
 
-// @identity-TODO: the status screen's analyze mode flag.
-DATA(0x0007be44)
-static i16 s_statusAnalyzeMode;
-
-DATA(0x0007be3c)
-i16 g_statusMember = 0;
-
-DATA(0x0007be40)
-b16 g_statusFixedMember = 0;
-
 RVA(0x00016e50, 0xc)
 void SetStatusAnalyzeMode(i16 on) {
     s_statusAnalyzeMode = on;
@@ -464,24 +625,6 @@ b16 RunStatusScreen(void) {
     }
     return false;
 }
-
-DATA(0x0007bea4)
-static PaletteState* s_statusPaletteState;
-
-DATA(0x0007bec8)
-Character* g_rosterPendingMember = 0;
-
-DATA(0x0007becc)
-i16 g_rosterReturnState = 0;
-
-DATA(0x0007bed0)
-u16 g_rosterReturnPhase = 0;
-
-DATA(0x0007bed4)
-u16 g_rosterReturnStep = 0;
-
-DATA(0x0007bed8)
-static i16 s_rosterSavedColumn;
 
 RVA(0x00016fc0, 0x2d)
 void EnterStatusScreen(i16 nested) {
@@ -674,18 +817,6 @@ i16 DispatchGameState(void) {
     // Retail leaves the result uninitialized for unhandled state numbers.
     return result;
 }
-
-DATA(0x0007beb0)
-static MenuBox* s_ddsMenu;
-
-DATA(0x0007bb38)
-static MenuCursor s_summonCursor;
-
-DATA(0x0007be4c)
-static i16 s_ddsRosterSlot;
-
-DATA(0x0007be50)
-static i16 s_ddsPartySlot;
 
 RVA(0x00017330, 0x178)
 b16 RunDdsMenu(void) {
@@ -938,63 +1069,6 @@ i16 PickDdsPurgeMember(void) {
     }
     return -1;
 }
-
-// @identity-TODO: 28 bytes per row (one per moon phase), read from data file
-// 3 (kind 12); what the values are is unrecovered.
-DATA(0x0007b8b8)
-static u8 s_moonTableBuffer[0x280];
-
-DATA(0x0007beac)
-static u8* s_moonTable;
-
-// The script the cell event runs (NULL: none).
-DATA(0x0007b89c)
-static u8* s_cellScript;
-
-// The 16-byte record of the cell whose event runs.
-DATA(0x0007bb50)
-static u8 s_sceneCell[16];
-
-DATA(0x0007b818)
-i16 g_sceneFramePositions[32][2] = {0};
-
-DATA(0x0007bb40)
-u8 g_sceneVideoState[16] = {0};
-
-DATA(0x0007bbf8)
-u8 g_sceneFrameIds[32][2] = {0};
-
-DATA(0x0007bdb8)
-i32 g_sceneFrameSaves[32] = {0};
-
-// @identity-TODO: legacy image handles; no loader writes them in this build.
-DATA(0x0007bd38)
-static u32 s_sceneEntries[32];
-
-// @identity-TODO: a redraw flag and a hold word of the scene code.
-DATA(0x0007be80)
-static b16 s_sceneDirty;
-
-DATA(0x0007be84)
-static i16 s_sceneHold;
-
-DATA(0x0007be78)
-static i16 s_sceneScript;
-
-DATA(0x0007be7c)
-static i16 s_sceneScriptEntry;
-
-DATA(0x0007b898)
-static u8* s_sceneSpriteStream;
-
-DATA(0x0007bea0)
-static PaletteState* s_scenePaletteState;
-
-DATA(0x0007be88)
-static i16 s_sceneScreenState;
-
-DATA(0x0007be8c)
-static i16 s_sceneObjectsFrozen;
 
 RVA(0x00017960, 0x2a)
 u16 TimeUntilMoonPhase(i16 phase) {
@@ -1474,35 +1548,6 @@ b16 RunBackgroundScene(void) {
     }
     return false;
 }
-
-// The points of each stat raised this level.
-DATA(0x0007b8a0)
-static i16 s_statPicks[10];
-
-// The skills the member can learn now.
-DATA(0x0007bb78)
-static i16 s_learnableSkills[64];
-
-// Set when a battle's rewards wait to be handed out.
-DATA(0x0007be90)
-static b16 s_rewardsPending;
-
-// The stat most recently raised.
-DATA(0x0007be94)
-static i16 s_raisedStat;
-
-// The levels (then the stat points) still to hand out.
-DATA(0x0007be98)
-static i16 s_remaining;
-
-// The music that played before the level-up screen.
-DATA(0x0007be9c)
-static i16 s_savedMusic;
-
-// @identity-TODO: the screen area kept while the level-up screen is open; its
-// layout is not recovered (the Windows build's save/restore bodies are empty).
-DATA(0x0007beb8)
-static u8 s_screenSave[16];
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).
@@ -2137,34 +2182,6 @@ char* FormatLevelUpMessage(char* buf, i16 slot) {
     return buf;
 }
 
-// Pending transition request: negative exits, positive marks the entry spot.
-DATA(0x0007be38)
-i16 g_worldMapRequest = 0;
-
-// @identity-TODO: the video state saved while the world map is shown; the
-// Windows build's save/restore bodies are empty, so its layout is unknown.
-DATA(0x0007bb60)
-static u8 s_videoState[16];
-
-// The spot marked when the world map is entered with a request.
-DATA(0x0007be60)
-static i16 s_savedSpotX;
-
-DATA(0x0007be64)
-static i16 s_savedSpotY;
-
-// @identity-TODO: the map layer the travel routines work on.
-DATA(0x0007be68)
-static i16 s_mapLayer;
-
-// Set while the party travels towards a picked destination.
-DATA(0x0007be70)
-static b16 s_traveling;
-
-// Travel ticks since the last party step effect, cleared while idle.
-DATA(0x0007be74)
-static i16 s_idleFlag;
-
 RVA(0x000197a0, 0x9)
 i16 IsOddMapLayer(void) {
     return s_mapLayer & 1;
@@ -2388,12 +2405,6 @@ i16 TickStepCounter(void) {
     return TickPartySteps();
 }
 
-DATA(0x0007be6c)
-static MenuBox* s_partyPicker;
-
-DATA(0x0007be5c)
-static i16 s_partyPickerMode;
-
 RVA(0x00019e40, 0x12)
 i16 GetPickerSelection(void) {
     if (!s_partyPicker) {
@@ -2543,10 +2554,6 @@ i16 SetCurrentRoomCode(i16 code) {
     return previous;
 }
 
-// @identity-TODO: only the reset and exchange access this flag in this build.
-DATA(0x0007be58)
-static i16 s_subscreenActive;
-
 RVA(0x0001a1b0, 0x1d)
 void InitFieldPanels(void) {
     u32 image = LoadMenuImage(1);
@@ -2565,14 +2572,6 @@ i16 SetSubscreenActive(i16 active) {
     s_subscreenActive = active;
     return old;
 }
-
-// The party position of the first member able to use it.
-DATA(0x0007be54)
-static i16 s_usePosition;
-
-// The item list menu.
-DATA(0x0007bea8)
-static MenuBox* s_itemMenu;
 
 RVA(0x0001a200, 0x40)
 MenuBox* OpenItemListMenu(void) {

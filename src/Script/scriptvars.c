@@ -77,7 +77,7 @@ DATA(0x000815e0)
 u32 g_scriptLongVars[26] = {0};
 
 DATA(0x00081648)
-static ScriptScratchValue s_scratchValue;
+static ScriptScratchValue s_scratchValue = {0};
 
 // @identity-TODO: a counter that advances once per call of its tick while
 // counting is on; a script opcode reads it into a variable.
@@ -85,7 +85,7 @@ DATA(0x0008164c)
 u32 g_tickCounter = 0;
 
 DATA(0x00081650)
-static i16 s_tickCountOn;
+static i16 s_tickCountOn = 0;
 
 // @identity-TODO: the option word the script's window-opening opcode passes on.
 // Set while a script builds a choice list; the text writer takes it with
@@ -94,34 +94,41 @@ DATA(0x00081654)
 b16 g_inChoices = 0;
 
 DATA(0x00081658)
-static i16 s_pendingScene;
+static i16 s_pendingScene = 0;
 
 DATA(0x0008165c)
-static i16 s_pendingSceneEntry;
+static i16 s_pendingSceneEntry = 0;
 
 DATA(0x00081660)
-static ScriptChoice* s_choices;
+static ScriptChoice* s_choices = 0;
+
 DATA(0x00081664)
-static i16 s_choiceIndex;
+static i16 s_choiceIndex = 0;
+
 DATA(0x00081668)
-static i16 s_choiceColumns;
+static i16 s_choiceColumns = 0;
+
 DATA(0x0008166c)
-static i16 s_choiceColumnWidth;
+static i16 s_choiceColumnWidth = 0;
+
 DATA(0x00081670)
-static i16 s_choiceTop;
+static i16 s_choiceTop = 0;
+
 DATA(0x00081674)
-static i16 s_choiceX;
+static i16 s_choiceX = 0;
+
 DATA(0x00081678)
-static i16 s_choiceY;
+static i16 s_choiceY = 0;
+
 DATA(0x0008167c)
-static i16 s_choiceDisabled;
+static i16 s_choiceDisabled = 0;
 
 DATA(0x00081680)
 i16 g_windowOption = 0;
 
 // Whether the field objects were frozen when a script thawed them.
 DATA(0x00081684)
-static i16 s_objectsWereFrozen;
+static i16 s_objectsWereFrozen = 0;
 
 // The loaded script files, oldest first.
 DATA(0x00081688)
@@ -136,17 +143,17 @@ u32 g_countdown = 0;
 // the wait is released.
 // The script file and entry the countdown fires.
 DATA(0x00081690)
-static i16 s_countdownFile;
+static i16 s_countdownFile = 0;
 
 DATA(0x00081694)
-static i16 s_countdownEntry;
+static i16 s_countdownEntry = 0;
 
 DATA(0x00081698)
-static i16 s_holdOn;
+static i16 s_holdOn = 0;
 
 // The handle of the block that holds generated script text.
 DATA(0x0008169c)
-static i32 s_textScript;
+static i32 s_textScript = 0;
 
 RVA(0x0003a350, 0x12)
 b16 OpHideSprite(void) {

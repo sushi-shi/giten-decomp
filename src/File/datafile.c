@@ -11,28 +11,28 @@
 // Running XOR key of the length-prefixed encrypted records: seeded from the
 // record length, then each ciphertext byte keys the next one.
 DATA(0x000712d0)
-static u8 s_cryptKey;
+static u8 s_cryptKey = 0;
 
 // The open data file and the one it displaced (OpenDataFile nests one level).
 // stdio buffers for the open data file and for one nested open.
 DATA(0x000712d8)
-static char s_fileBuffer[0x200];
+static char s_fileBuffer[0x200] = {0};
 
 DATA(0x000714d8)
-static char s_nestedFileBuffer[0x200];
+static char s_nestedFileBuffer[0x200] = {0};
 
 DATA(0x000716d8)
-static FILE* s_dataFile;
+static FILE* s_dataFile = 0;
 
 DATA(0x000716dc)
-static FILE* s_prevDataFile;
+static FILE* s_prevDataFile = 0;
 
 // The id last asked for, and the id actually opened (after any fallback).
 DATA(0x000716e0)
-static i16 s_requestedId;
+static i16 s_requestedId = 0;
 
 DATA(0x000716e4)
-static i16 s_openedId;
+static i16 s_openedId = 0;
 
 RVA(0x00001b20, 0x11)
 void SetCryptKey(u16 seed) {

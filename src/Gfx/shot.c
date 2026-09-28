@@ -10,33 +10,33 @@
 #include <Gfx/Shot.h>
 
 DATA(0x00078248)
-static ShotFile s_shotData;
+static ShotFile s_shotData = {0};
 
 DATA(0x00078348)
-static Vec3 s_shotPos;
+static Vec3 s_shotPos = {0};
 
 // Velocity (8.8 fixed point) and its per-step change.
 DATA(0x00078350)
-static Body s_shotMotion;
+static Body s_shotMotion = {0};
 
 DATA(0x00078360)
-static Vec3 s_shotStart;
+static Vec3 s_shotStart = {0};
 
 DATA(0x00078368)
-static Vec3 s_shotTarget;
+static Vec3 s_shotTarget = {0};
 
 DATA(0x00078370)
-static ShotTable s_shotTableData;
+static ShotTable s_shotTableData = {0};
 
 DATA(0x00078470)
-static ShotTable* s_shotTable;
+static ShotTable* s_shotTable = 0;
 
 // Sideways drift per unit of depth travelled.
 DATA(0x00078478)
-static double s_shotSlope;
+static double s_shotSlope = 0;
 
 DATA(0x00078480)
-static i16 s_shotPower;
+static i16 s_shotPower = 0;
 
 RVA(0x00005480, 0x69)
 void LoadShotTable(FILE* fp) {

@@ -118,6 +118,13 @@ extern MapCoord g_worldTravelHistory[];
 MapCoord GetBestWorldTravelStep(i16 direction);
 void ExcludeWorldTravelStep(i16 x, i16 y, i16 direction);
 
+// The world-map route queue: points walked one per travel step.
+void GrowRoute(i16 more);
+void FreeRoute(void);
+void PushRoutePoint(MapCoord point);
+MapCoord PopRoutePoint(void);
+i16 IsRouteActive(void);
+
 // The place-id grid for a map block, divided into 32-by-40-pixel cells.
 typedef struct WorldMapPlaceGrid {
     u8 places[5][9];

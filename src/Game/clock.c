@@ -90,18 +90,42 @@ static i16 s_panelImage = -1;
 DATA(0x00068f34)
 static i16 s_currentLevel = -1;
 
+// The encrypted area-map record as read from the data file (decoded into
+// g_areaMap).
+DATA(0x0007d640)
+static u8 s_areaRecord[0x2800] = {0};
+
+// One-shot preservation of event flags across the next area or level load.
+// SetAreaFlagPreservation accepts -1 to keep either mode unchanged.
+DATA(0x0007fe40)
+static i16 s_preserveAreaFlags = 0;
+
+DATA(0x0007fe44)
+static i16 s_preserveLevelFlags = 0;
+
 // Set on the tick that ends a 24-tick round (HasTurnElapsed), and the round's
 // tick count.
 DATA(0x0007fe48)
-static b16 s_turnElapsed;
+static b16 s_turnElapsed = false;
 
 DATA(0x0007fe4c)
-static i16 s_roundTicks;
+static i16 s_roundTicks = 0;
 
 // The (bank, index) pairs of the event flags cleared at the full moon, ended
 // by 0xff (data file 0x19).
 DATA(0x0007fe50)
-static i32 s_moonFlags;
+static i32 s_moonFlags = 0;
+
+DATA(0x0007fe54)
+AreaMap* g_areaMap = 0;
+
+// The level of the area map the party is on (NULL without a map).
+DATA(0x0007fe58)
+AreaLevel* g_areaLevel = 0;
+
+// The name returned without an area map.
+DATA(0x0007fe5c)
+static char s_noAreaName[4] = "";
 
 DATA(0x00091544)
 i16 g_tickElapsed;
@@ -289,22 +313,6 @@ i16 LoadClock(FILE* fp) {
     return errors;
 }
 
-DATA(0x0007fe54)
-AreaMap* g_areaMap = 0;
-
-// The encrypted area-map record as read from the data file (decoded into
-// g_areaMap).
-DATA(0x0007d640)
-static u8 s_areaRecord[0x2800];
-
-// One-shot preservation of event flags across the next area or level load.
-// SetAreaFlagPreservation accepts -1 to keep either mode unchanged.
-DATA(0x0007fe40)
-static i16 s_preserveAreaFlags;
-
-DATA(0x0007fe44)
-static i16 s_preserveLevelFlags;
-
 RVA(0x00020fc0, 0x23)
 void SetAreaFlagPreservation(i16 area, i16 level) {
     if (area != -1) {
@@ -324,14 +332,6 @@ void UnloadAreaMap(void) {
     }
     g_areaLevel = NULL;
 }
-
-// The level of the area map the party is on (NULL without a map).
-DATA(0x0007fe58)
-AreaLevel* g_areaLevel = 0;
-
-// The name returned without an area map.
-DATA(0x0007fe5c)
-static char s_noAreaName[4];
 
 // Spawns the level's map objects standing on cells of code `cellCode` (the
 // spawn interval is the code's rate): each 4-byte spawn entry (x | layer
@@ -1318,7 +1318,7 @@ i16 RunPanelInput(Panel* panel) {
     }
     ExchangeActivePanel(panel);
     if (!(panel->flags & 2) && TakeMouseCancelSound()) {
-        ClearMouseSelection();
+        g_hoveredObjectId = g_selectedObjectId = -1;
         ExchangeActivePanel(NULL);
         return -2;
     }
