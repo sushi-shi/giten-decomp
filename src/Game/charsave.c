@@ -149,36 +149,34 @@ i16 TickPartyTimers(u16 minutes) {
     for (i = 0; i < 6; i++) {
         if (PartySlotAt(i) != -1 && (character = RosterMemberAt(PartySlotAt(i))) != NULL
             && character->id == 2) {
-            goto found;
+            if (TestModeFlags(MODE_WORLD_MAP)) {
+                s_timerMinutes += minutes;
+                count = s_timerMinutes / 240;
+                s_timerMinutes %= 240;
+            } else {
+                s_timerMinutes += minutes;
+                count = s_timerMinutes / 60;
+                s_timerMinutes %= 60;
+            }
+            if (count == 0) {
+                return 0;
+            }
+            if (GetFatalCondition(GetCharacterConditions(character))) {
+                return 0;
+            }
+            ChangePool(&character->pools.mp, -count);
+            ChangePool(&character->pools.hp, -count);
+            ApplyEmptyPools(character);
+            RequestStatusRedraw();
+            if (g_clock.moonPhase <= 14) {
+                ClearCondition(GetCharacterConditions(character), 3);
+            } else {
+                AddCondition(GetCharacterConditions(character), 3);
+            }
+            return 1;
         }
     }
     return -1;
-found:
-    if (TestModeFlags(MODE_WORLD_MAP)) {
-        s_timerMinutes += minutes;
-        count = s_timerMinutes / 240;
-        s_timerMinutes %= 240;
-    } else {
-        s_timerMinutes += minutes;
-        count = s_timerMinutes / 60;
-        s_timerMinutes %= 60;
-    }
-    if (count == 0) {
-        return 0;
-    }
-    if (GetFatalCondition(GetCharacterConditions(character))) {
-        return 0;
-    }
-    ChangePool(&character->pools.mp, -count);
-    ChangePool(&character->pools.hp, -count);
-    ApplyEmptyPools(character);
-    RequestStatusRedraw();
-    if (g_clock.moonPhase <= 14) {
-        ClearCondition(GetCharacterConditions(character), 3);
-    } else {
-        AddCondition(GetCharacterConditions(character), 3);
-    }
-    return 1;
 }
 
 // Clears the character's moon-driven personal flags as the moon moves on
