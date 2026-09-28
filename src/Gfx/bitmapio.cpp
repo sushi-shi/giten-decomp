@@ -480,14 +480,8 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
     ZeroMemory(&desc, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-    desc.dwWidth = TEXTURE_MAX_WIDTH;
-    if (header->biWidth <= TEXTURE_MAX_WIDTH) {
-        desc.dwWidth = header->biWidth;
-    }
-    desc.dwHeight = TEXTURE_MAX_HEIGHT;
-    if (header->biHeight <= TEXTURE_MAX_HEIGHT) {
-        desc.dwHeight = header->biHeight;
-    }
+    desc.dwWidth = min(TEXTURE_MAX_WIDTH, header->biWidth);
+    desc.dwHeight = min(TEXTURE_MAX_HEIGHT, header->biHeight);
     desc.ddpfPixelFormat = g_textureFormat;
     desc.ddsCaps.dwCaps = g_deviceType != D3D_DEVICE_HAL
                               ? DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY | DDSCAPS_ALLOCONLOAD
@@ -523,10 +517,9 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
     }
     result = IDirectDraw_CreateSurface(g_ddraw, &desc, &texture->surface, NULL);
     if (result != DD_OK) {
-        if (fromFile != TRUE) {
-            return false;
+        if (fromFile == TRUE) {
+            FreeBitmap(&bmp);
         }
-        FreeBitmap(&bmp);
         return false;
     }
     if (IsPalettizedSurface(desc)
