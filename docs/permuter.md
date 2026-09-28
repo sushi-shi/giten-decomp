@@ -31,6 +31,30 @@ authored baseline and repeated retained parents. The campaign stops when that
 target is reached; exhausting `--rounds` first returns nonzero. Distinct machine
 code states are counted separately across all rounds.
 
+`random --resume` continues completed rounds in the same output directory,
+restoring retained parents, source deduplication and counters. It rejects changed
+source or search inputs. `--stop-on-exact` stops after a round produces an audited
+exact candidate. An interrupted unfinished round is replayed with its original
+seed; its previous artifacts are preserved separately.
+
+`giten permute mine --output build/permute-campaign/mine-99` runs a resumable
+queue in a clean isolated worktree. It builds fresh comparison objects and
+records every function with 99 <= MAX < 100, in descending MAX order. Historical
+exact matches and structural divergences are routed to review in `status.json`;
+register/schedule residues run upstream C campaigns or clang C++ variants.
+Defaults are three passes, 10,000 unique scored mutations per C pass, 96 rounds
+of 256 mutations, 16 compile workers and a four-state frontier. C++ matrices are
+bounded by the candidate limit and report their actual compiled counts. Each pass
+uses a distinct seed. Exact candidates stop further passes and await semantic
+review. The harness never edits authored functions or banks results.
+
+Run the same command and arguments to resume. `--status` reads the checkpoint;
+`--plan-only` builds and classifies without searching. Create `STOP` in the output
+directory to stop cleanly, then remove it before resuming. SIGTERM also stops the
+active child through its source-restoration handler. A killed C++ matrix is
+replayed; C campaigns resume at completed round boundaries. Separate logs,
+manifests, sources, assemblies and exact-audit results remain under the output.
+
 This adapter supports C; use the clang `variants` path for C++. It reuses
 upstream's mutation engine, not its architecture-specific assembly scorers or
 distributed service. Manual alternatives use the existing exact-span axes;

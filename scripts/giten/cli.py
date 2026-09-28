@@ -79,6 +79,7 @@ def _dispatch(argv: list[str]) -> int:
                   "giten permute state --source <tu.cpp> --rva <rva> [options]\n"
                   "giten permute variants <tu.cpp> <rva> [options]\n"
                   "giten permute random <tu.c> <rva> --output <dir> [options]\n"
+                  "giten permute mine --output <build/dir> [options]\n"
                   "  candidates: classify every live source-owned residual\n"
                   "  campaign: run N islands and retain M distinct best solutions\n"
                   "  state: classified, disposable compiler-state search\n"
@@ -88,6 +89,9 @@ def _dispatch(argv: list[str]) -> int:
         if rest[0] in ("candidates", "campaign"):
             from giten.permute.campaign import main as campaign_main
             return campaign_main(rest)
+        if rest[0] == "mine":
+            from giten.permute.mine import main as mine_main
+            return mine_main(rest[1:])
         if rest[0] not in ("state", "variants", "random"):
             print("giten permute: unknown verb " + repr(rest[0])
                   + " (have: candidates, campaign, state, variants, random)", file=sys.stderr)
