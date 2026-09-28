@@ -105,7 +105,7 @@ static i16 s_targetListCount;
 
 // Set while PushPromptState's prompt is pending.
 DATA(0x00080d00)
-static i16 s_promptPending;
+static b16 s_promptPending;
 
 // The picked role of the action being played (PlayActionEffect reads it).
 DATA(0x00080d04)
@@ -122,7 +122,7 @@ static i16 s_savedRemovalDeferred;
 // @identity-TODO: when set, a hidden object's removal waits (0x42bd09 then
 // calls 0x414750).
 DATA(0x00080d10)
-static i16 s_removalDeferred;
+static b16 s_removalDeferred;
 
 // Which hit sound the resolved action plays (0, 1 or 2 pick sounds 0x10,
 // 0x36 and 0x24): set by the effect code (0x42ce57, 0x42d02a).
@@ -245,7 +245,7 @@ b16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     s_promptZ = z;
     s_promptMode = mode;
     s_promptSub = sub;
-    s_promptPending = 1;
+    s_promptPending = true;
     return false;
 }
 
@@ -613,7 +613,7 @@ static __inline void ClearActionActors(void) {
 }
 
 static __inline void ClearPendingAction(void) {
-    s_promptPending = 0;
+    s_promptPending = false;
     ClearActionActors();
 }
 
@@ -802,7 +802,7 @@ b16 RunBattleAction(void) {
 
         case 2:
             NextGamePhase();
-            s_removalDeferred = 0;
+            s_removalDeferred = false;
             s_savedRemovalDeferred = ExchangeObjectRemovalDeferred(1);
             ResolveCombatAction();
             ClearObjectStuns(s_objectMarks);
@@ -877,7 +877,7 @@ b16 RunBattleAction(void) {
             goto complete;
 
         case 8:
-            s_promptPending = 0;
+            s_promptPending = false;
             ResetRecordCache();
             RestoreSwappedMember();
             ReturnFromGameState();
@@ -1028,7 +1028,7 @@ void DropFlaggedMember(i16 id) {
 
 RVA(0x0002c2a0, 0xa)
 void DeferObjectRemoval(void) {
-    s_removalDeferred = 1;
+    s_removalDeferred = true;
 }
 
 RVA(0x0002c2b0, 0xc)

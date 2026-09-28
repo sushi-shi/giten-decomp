@@ -46,13 +46,13 @@ DATA(0x00068404)
 static i16 s_swapSaved = -1;
 
 DATA(0x000784cc)
-static i16 s_pickScreenSaved;
+static b16 s_pickScreenSaved;
 
 DATA(0x000784d0)
 static i16 s_pickMode;
 
 DATA(0x000784d4)
-static i16 s_pickDone;
+static b16 s_pickDone;
 
 // The list menu a picked member acts through (NULL: none open).
 DATA(0x00078520)
@@ -69,7 +69,7 @@ void CloseFieldWindows(void) {
     CancelFieldTargetMenu(-1);
     CancelItemTargetMenu(-1);
     ResetPartyCommandPick();
-    s_pickDone = 0;
+    s_pickDone = false;
 }
 
 // @identity-TODO: whether party position `index` completes the pick; returns
@@ -90,10 +90,10 @@ i16 CheckPickTarget(i16 index) {
             }
             if (FindMenuLineByValue(selection, character->id)) {
                 if (GetPickBlockingCondition(GetCharacterConditions(character))) {
-                    s_pickDone = 1;
+                    s_pickDone = true;
                 }
             } else if (PickPartyMember(index) == 1) {
-                s_pickDone = 1;
+                s_pickDone = true;
             }
     }
     return s_pickDone;
@@ -101,7 +101,7 @@ i16 CheckPickTarget(i16 index) {
 
 RVA(0x000094b0, 0xa)
 void MarkPickDone(void) {
-    s_pickDone = 1;
+    s_pickDone = true;
 }
 
 RVA(0x000094c0, 0x7)
@@ -195,7 +195,7 @@ i16 RunPartyCommandInput(void) {
             if (IsPanelLayerVisible()) {
                 g_tickElapsed = 0;
             }
-            s_pickDone = 0;
+            s_pickDone = false;
             if (s_pickedIndex < 0) {
                 break;
             }
@@ -492,14 +492,14 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
             if (s_pickScreenSaved) {
                 RestoreScreenSaveWithState(g_pickScreenSave);
                 FreeScreenSave(g_pickScreenSave);
-                s_pickScreenSaved = 0;
+                s_pickScreenSaved = false;
             }
             return -1;
         }
         if (!s_pickScreenSaved) {
             AllocScreenSave(g_pickScreenSave);
             CaptureScreenSaveWithState(g_pickScreenSave);
-            s_pickScreenSaved = 1;
+            s_pickScreenSaved = true;
         }
         if (kind & 1) {
             SetStatusColumn(4);
@@ -517,7 +517,7 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
         if (s_pickScreenSaved) {
             RestoreScreenSaveWithState(g_pickScreenSave);
             FreeScreenSave(g_pickScreenSave);
-            s_pickScreenSaved = 0;
+            s_pickScreenSaved = false;
         }
         return result == -2 ? -1 : 1;
     }

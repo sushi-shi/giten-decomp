@@ -82,7 +82,7 @@ DATA(0x000784f8)
 static i16 s_fieldEntryState;
 
 DATA(0x000784fc)
-static i16 s_fieldMarker;
+static b16 s_fieldMarker;
 
 DATA(0x00078500)
 static i16 s_fieldPairFirst;
@@ -95,10 +95,10 @@ static i16 s_fieldParamThird;
 
 // Set when the map was left by abort or a proximity event; feeds script register 0.
 DATA(0x0007850c)
-static i16 s_fieldLeftEarly;
+static b16 s_fieldLeftEarly;
 
 DATA(0x00078510)
-static i16 s_fieldRefresh;
+static b16 s_fieldRefresh;
 
 // The palette snapshot held while an encounter runs.
 DATA(0x00078518)
@@ -106,7 +106,7 @@ static PaletteState* s_fieldPaletteState;
 
 RVA(0x000070d0, 0xa)
 void MarkFieldRefresh(void) {
-    s_fieldRefresh = 1;
+    s_fieldRefresh = true;
 }
 
 RVA(0x000070e0, 0x12)
@@ -267,7 +267,7 @@ b16 RunFieldEncounter(void) {
                     NextGameStep();
                     LockStatusRedraw(0);
                     SetFieldMenuMode(1);
-                    s_fieldMarker = 1;
+                    s_fieldMarker = true;
                     g_fieldBattleActive = 1;
                     ResetFieldObjects();
                     s_fieldPaletteState = SavePaletteState(s_fieldPaletteState, 3);
@@ -447,7 +447,7 @@ b16 RunFieldEncounter(void) {
                 RespawnAreaActors();
             }
             RequestFieldRefresh();
-            s_fieldRefresh = 0;
+            s_fieldRefresh = false;
             ReturnFromGameState();
             s_fieldCountA = -1;
             s_fieldRateA = 100;
@@ -456,7 +456,7 @@ b16 RunFieldEncounter(void) {
             s_fieldMode = -1;
             ResetRosterBattleState();
             SetFieldMenuMode(0);
-            s_fieldMarker = 0;
+            s_fieldMarker = false;
             s_fieldOption = 20;
             s_fieldParamFirst = 1;
             s_fieldParamSecond = -1;
@@ -501,7 +501,7 @@ b16 RunFieldState(void) {
                 case 0:
                     ClearSceneSurfaces();
                     NextGameStep();
-                    s_fieldLeftEarly = 0;
+                    s_fieldLeftEarly = false;
                     SetFieldStatusBit0(0);
                     SetFieldStatusBit11(0);
                     SetFieldMenuMode(3);
@@ -534,7 +534,7 @@ b16 RunFieldState(void) {
                 if (key >= 0) {
                     break;
                 }
-                s_fieldLeftEarly = 1;
+                s_fieldLeftEarly = true;
                 return FlushFieldScreen();
             }
             if (FindFirstAblePartyMember() == -1) {
@@ -565,7 +565,7 @@ b16 RunFieldState(void) {
             HideScreenLayer(1);
             if (RollProximityEvent() > 0) {
                 LeaveFieldMap(0);
-                s_fieldLeftEarly = 1;
+                s_fieldLeftEarly = true;
                 RunMessageScene(0x7f04, 0x10, -1);
                 PlaySoundEffect(4);
                 ClearEncounterPending();

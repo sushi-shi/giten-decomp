@@ -9,7 +9,7 @@
 
 // The roster slot the status screen shows.
 extern i16 g_statusMember;
-extern i16 g_statusFixedMember;
+extern b16 g_statusFixedMember;
 b16 RunStatusScreen(void);
 b16 RunDismissMenuState(void);
 i16 RunStatusCommands(void);

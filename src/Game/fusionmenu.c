@@ -20,7 +20,7 @@ DATA(0x00080a48)
 static i16 s_fusionResultVariable;
 
 DATA(0x00080a4c)
-static i16 s_restoreFusionRenderMode;
+static b16 s_restoreFusionRenderMode;
 
 RVA(0x0002a760, 0x21)
 void PushFusionMenu(i16 kind, i16 resultVariable) {
@@ -58,7 +58,7 @@ b16 RunFusionMenuState(void) {
                     if (s_restoreFusionRenderMode) {
                         SetSceneRenderMode();
                         SetBlankStep(0);
-                        s_restoreFusionRenderMode = 0;
+                        s_restoreFusionRenderMode = false;
                     }
                     break;
             }
@@ -124,7 +124,7 @@ void FinishFusionMenuSelection(i16 status, i16 selection) {
             SetScriptLongVar(s_fusionResultVariable, selection);
         }
         if (selection < 0 && s_fusionResultVariable == 1) {
-            s_restoreFusionRenderMode = 1;
+            s_restoreFusionRenderMode = true;
         }
         PrevGamePhase();
     }

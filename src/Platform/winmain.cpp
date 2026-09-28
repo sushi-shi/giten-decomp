@@ -88,11 +88,11 @@ DATA(0x000847ac)
 i32 g_viewDirection;
 
 DATA(0x000847b8)
-BOOL g_fixedLighting;
+b32 g_fixedLighting;
 
 // Set while a screen layer is being dragged (see g_dragRect).
 DATA(0x0008fb08)
-static BOOL s_layerDragging;
+static b32 s_layerDragging;
 
 DATA(0x00090abc)
 static i16 s_spriteMode;
@@ -113,21 +113,21 @@ DATA(0x0008f60c)
 CMidiStream* g_midiStream;
 
 DATA(0x0008fc60)
-static BOOL s_immediateInput;
+static b32 s_immediateInput;
 
 DATA(0x00090ab8)
-static BOOL s_cursorArmed;
+static b32 s_cursorArmed;
 
 DATA(0x00090ac4)
 static i32 s_busyFrame;
 
 DATA(0x00090ac8)
-static BOOL s_screenSaved;
+static b32 s_screenSaved;
 
 // The busy cursor animates while this is set; it starts set until the first
 // frame clears it.
 DATA(0x0006b968)
-static BOOL s_busyCursor = TRUE;
+static b32 s_busyCursor = true;
 
 // The music track PlayMusic last started (-1 = none).
 DATA(0x0006b96c)
@@ -184,13 +184,13 @@ void* FreeBlock(void* block) {
 RVA(0x000496e0, 0x1e)
 void ShowBusyCursor(void) {
     if (!GetFieldBattleActive() && !s_busyCursor) {
-        s_busyCursor = TRUE;
+        s_busyCursor = true;
     }
 }
 
 RVA(0x00049700, 0xb)
 void HideBusyCursor(void) {
-    s_busyCursor = FALSE;
+    s_busyCursor = false;
 }
 
 // Builds the path of save slot `slot` in the Windows directory.
@@ -211,7 +211,7 @@ void RebuildViewScene(void) {
 
 RVA(0x00049780, 0xb)
 void CancelLayerDrag(void) {
-    s_layerDragging = FALSE;
+    s_layerDragging = false;
 }
 
 RVA(0x00049790, 0x6)
@@ -322,7 +322,7 @@ void DrawMouseCursor(void) {
         source.bottom = 480 - position.y;
     }
     if (!s_cursorArmed) {
-        s_cursorArmed = TRUE;
+        s_cursorArmed = true;
         return;
     }
     if (!s_busyCursor) {
@@ -404,7 +404,7 @@ i16 CurrentMusicTrack(void) {
 
 RVA(0x00049b80, 0xb)
 void AllowImmediateInput(void) {
-    s_immediateInput = TRUE;
+    s_immediateInput = true;
 }
 
 RVA(0x00049b90, 0xe)
@@ -460,7 +460,7 @@ RVA(0x00049c50, 0x21)
 void SaveScreenMode(void) {
     s_savedRenderMode = g_renderMode;
     g_selectedHotspot = -1;
-    s_screenSaved = TRUE;
+    s_screenSaved = true;
 }
 
 RVA(0x00049c80, 0x2a)
@@ -468,7 +468,7 @@ void RestoreScreenMode(void) {
     g_renderMode = s_savedRenderMode;
     s_savedRenderMode = 0xffff;
     g_selectedHotspot = -1;
-    s_screenSaved = FALSE;
+    s_screenSaved = false;
 }
 
 RVA(0x00049cb0, 0xa)
@@ -515,7 +515,7 @@ i16 GetRenderMode(void) {
 }
 
 DATA(0x00084360)
-static BOOL s_viewDirty;
+static b32 s_viewDirty;
 
 DATA(0x000847bc)
 static i16 s_fadeCountdown;
@@ -524,13 +524,13 @@ DATA(0x00084c64)
 static i32 s_fadeAlpha;
 
 DATA(0x0008d290)
-BOOL g_boxOpening;
+b32 g_boxOpening;
 
 DATA(0x0008d830)
-static BOOL s_screenCovered;
+static b32 s_screenCovered;
 
 DATA(0x0008d834)
-static i16 s_pendingKey;
+static b16 s_pendingKey;
 
 // The running fade's mode (0 = none).
 DATA(0x0008f1d4)
@@ -620,7 +620,7 @@ void StepScreenFade(void) {
     if (--s_fadeCountdown != 0) {
         return;
     }
-    s_screenCovered = FALSE;
+    s_screenCovered = false;
     s_fadeCountdown = s_fadeSteps;
     if (g_fadeMode & 1) {
         if (s_fadeAlpha <= 0) {
@@ -631,7 +631,7 @@ void StepScreenFade(void) {
     } else {
         if (s_fadeAlpha >= 0xff) {
             g_fadeMode = 0;
-            s_screenCovered = TRUE;
+            s_screenCovered = true;
             SetScreenFadeAlpha(0xff);
             if (g_renderMode == RENDER_MODE_VIEW && g_scenePicture.visible) {
                 ClearScenePicture();
@@ -655,7 +655,7 @@ void FinishScreenFade(void) {
     while (g_fadeMode != 0) {
         RenderFrame();
     }
-    s_screenCovered = FALSE;
+    s_screenCovered = false;
     PollInput();
     ClearMouseClicks();
     SetMouseState(0, 0, 0);
@@ -714,7 +714,7 @@ BOOL RunMoveCommand(i16 command, i16 nextPhase) {
 RVA(0x00049fa0, 0x1e)
 void RedrawFieldView(void) {
     if (g_renderMode == RENDER_MODE_VIEW) {
-        s_viewDirty = TRUE;
+        s_viewDirty = true;
         s_viewChanged = TRUE;
         DrawFieldView();
     }
@@ -723,16 +723,16 @@ void RedrawFieldView(void) {
 // Opens `box`: its closed frame shows open until the view redraws.
 RVA(0x00049fc0, 0x1e)
 void OpenTreasureBox(TreasureBox* box) {
-    s_viewDirty = TRUE;
+    s_viewDirty = true;
     s_viewChanged = TRUE;
-    g_boxOpening = TRUE;
+    g_boxOpening = true;
     g_openingBox = box;
 }
 
 RVA(0x00049fe0, 0x51)
 void RequestObjectRedraw(i16 index, i16 a, i16 b) {
     if (g_renderMode == RENDER_MODE_VIEW) {
-        s_viewDirty = TRUE;
+        s_viewDirty = true;
         s_viewChanged = TRUE;
         if (g_hotspotObject == index && (g_hotspotCellX != a || g_hotspotCellY != b)) {
             g_selectedHotspot = -1;
@@ -767,7 +767,7 @@ i16 GetPendingKey(void) {
 
 RVA(0x0004a090, 0xa)
 void ClearPendingKey(void) {
-    s_pendingKey = 0;
+    s_pendingKey = false;
 }
 
 RVA(0x0004a0a0, 0x17)
@@ -798,7 +798,7 @@ void PollJoystick(void) {
 
 // Set once DirectX is up (RenderFrame draws only then).
 DATA(0x000847f4)
-static BOOL s_directXReady;
+static b32 s_directXReady;
 
 // Releases the display: the automap, the text planes, the sprite images, the
 // meshes and textures, every picture's surface, the layers and the glyph
@@ -876,7 +876,7 @@ void ReleaseGraphics(void) {
     ReleaseComObject(g_primarySurface);
     ReleaseComObject(g_ddraw2);
     ReleaseComObject(g_ddraw);
-    s_directXReady = FALSE;
+    s_directXReady = false;
 }
 
 // Releases the graphics and brings DirectDraw, Direct3D, input and sound
@@ -894,14 +894,14 @@ b32 InitDirectX(void) {
     InitDirectInput();
     InitJoystick();
     g_soundEnabled = InitDirectSound();
-    s_directXReady = TRUE;
+    s_directXReady = true;
     return true;
 }
 
 // Set while the door ahead opens (AnimateDoor runs instead of the step).
 // @identity-TODO: set by 0x44e3d0 with s_doorFrame; read from its uses.
 DATA(0x00090ad0)
-static BOOL s_doorOpening;
+static b32 s_doorOpening;
 
 DATA(0x00090ad4)
 static i32 s_doorFrame;
@@ -1069,7 +1069,7 @@ u16 g_compassImages[4] = {106, 108, 107, 109};
 
 // Set between the two quarter turns of a turn around.
 DATA(0x00090acc)
-static BOOL s_halfTurned;
+static b32 s_halfTurned;
 
 // Turns the camera one frame of a quarter turn left; at its end the party
 // faces the new way. Returns whether the turn ended.
@@ -1199,7 +1199,7 @@ static b32 TurnAroundStep(D3DVALUE* progress) {
     if (*progress == TURN_END) {
         g_viewDirection = (g_viewDirection + 1) & 3;
         if (s_halfTurned) {
-            s_halfTurned = FALSE;
+            s_halfTurned = false;
             BlitImage(
                 g_screenLayers[SCREEN_LAYER_NAVIGATION]->surface,
                 g_compassImages[g_viewDirection],
@@ -1210,7 +1210,7 @@ static b32 TurnAroundStep(D3DVALUE* progress) {
             return true;
         }
         *progress = 0.0f;
-        s_halfTurned = TRUE;
+        s_halfTurned = true;
     }
     return false;
 }
@@ -1275,7 +1275,7 @@ b32 AnimateMove(void) {
             PressPadButton(s_movePadButtons[g_moveState & 7], FALSE);
             DrawFieldView();
             g_moveState = 0;
-            s_doorOpening = FALSE;
+            s_doorOpening = false;
             g_selectedHotspot = -1;
             MapPosition* position = GetMapPosition();
             // the pun: this layer's own prototype of RedrawFieldAt takes int
@@ -1780,7 +1780,7 @@ void RenderTBox(void) {
             g_hotspotCount++;
         }
     }
-    g_boxOpening = FALSE;
+    g_boxOpening = false;
 }
 
 // The atexit callback of RenderTBox's vertex table (nothing to destroy).
@@ -2962,7 +2962,7 @@ void RenderViewMode(BOOL draw) {
         RenderEnemy(TRUE, FALSE, TRUE);
         if (!moved) {
             g_viewCachePicture.surface->BltFast(0, 0, g_renderTarget, &g_viewCachePicture.rect, 0);
-            s_viewDirty = FALSE;
+            s_viewDirty = false;
         }
     } else {
         g_renderTarget->BltFast(0, 0, g_viewCachePicture.surface, &g_viewCachePicture.rect, 0);
@@ -2987,8 +2987,8 @@ void RenderViewMode(BOOL draw) {
                 g_moveState = AnimateDoor(&g_doorMesh);
                 if (g_moveState == MOVE_STATE_STEP) {
                     s_doorFrame = 0;
-                    s_doorOpening = TRUE;
-                    s_viewDirty = TRUE;
+                    s_doorOpening = true;
+                    s_viewDirty = true;
                 }
             } else if (g_moveState == MOVE_STATE_DOOR_BACK) {
                 g_moveState = MOVE_STATE_BACK;
@@ -2996,15 +2996,15 @@ void RenderViewMode(BOOL draw) {
                 g_moveState = AnimateDoor(&g_doorMesh);
                 if (g_moveState == MOVE_STATE_LEFT) {
                     s_doorFrame = 0;
-                    s_doorOpening = TRUE;
-                    s_viewDirty = TRUE;
+                    s_doorOpening = true;
+                    s_viewDirty = true;
                 }
             } else if (g_moveState == MOVE_STATE_DOOR_RIGHT) {
                 g_moveState = AnimateDoor(&g_doorMesh);
                 if (g_moveState == MOVE_STATE_RIGHT) {
                     s_doorFrame = 0;
-                    s_doorOpening = TRUE;
-                    s_viewDirty = TRUE;
+                    s_doorOpening = true;
+                    s_viewDirty = true;
                 }
             }
             if (g_bilinearFiltering) {
@@ -3014,7 +3014,7 @@ void RenderViewMode(BOOL draw) {
             RenderNPC(TRUE);
         }
         if (moved) {
-            s_viewDirty = TRUE;
+            s_viewDirty = true;
         }
         BlitFieldBackground();
         DrawHotspotMarks();
@@ -3060,9 +3060,9 @@ void RenderEventMode(BOOL draw) {
         || g_scenePicture.id == EVENT_CURSOR_DELAY_SINGLE) {
         if (GetFrameCount() < 60) {
             TickFrameCount();
-            s_cursorArmed = FALSE;
+            s_cursorArmed = false;
         } else {
-            s_cursorArmed = TRUE;
+            s_cursorArmed = true;
         }
     } else {
         s_cursorArmed = (g_scenePicture.id > EVENT_CURSOR_ACTIVE_EXCLUSIVE_BEGIN
@@ -3072,10 +3072,10 @@ void RenderEventMode(BOOL draw) {
                         || g_scenePicture.id == EVENT_CURSOR_ACTIVE_SINGLE;
     }
     if (DrawSprites()) {
-        s_cursorArmed = TRUE;
+        s_cursorArmed = true;
     }
     if (BlitTextPlanes(0, TEXT_PLANE_COUNT, 0)) {
-        s_cursorArmed = TRUE;
+        s_cursorArmed = true;
     }
 }
 
@@ -3674,7 +3674,7 @@ void BuildRoomGeometry(void) {
     u32 k;
     MapPosition* position;
 
-    s_viewChanged = s_viewDirty = TRUE;
+    s_viewChanged = s_viewDirty = true;
     position = GetMapPosition();
     partyX = position->x;
     partyY = position->y;
@@ -4116,8 +4116,8 @@ LRESULT CALLBACK MainWindowProc(HWND window, UINT message, WPARAM wparam, LPARAM
 // clear rectangle to 640x480, the clear-blit parameters, and seeds rand.
 RVA(0x00050090, 0x72)
 void ResetDisplayGlobals(void) {
-    s_directXReady = FALSE;
-    s_viewDirty = FALSE;
+    s_directXReady = false;
+    s_viewDirty = false;
     g_windowRect.left = 0;
     g_windowRect.top = 0;
     g_viewClearRect.x1 = 0;
@@ -4421,7 +4421,7 @@ void HandleInput(u8 buttons) {
         case MOUSE_UP:
             if (s_layerDragging) {
                 s_pressedLayer = SCREEN_LAYER_COUNT;
-                s_layerDragging = FALSE;
+                s_layerDragging = false;
             }
             break;
         case MOUSE_HELD:
@@ -4429,7 +4429,7 @@ void HandleInput(u8 buttons) {
                 if (s_pressedLayer < SCREEN_LAYER_COUNT) {
                     if (g_dragRect.left != g_cursorPos.x - g_dragOffset.x
                         || g_dragRect.top != g_cursorPos.y - g_dragOffset.y) {
-                        s_dragMoved = TRUE;
+                        s_dragMoved = true;
                     }
                     g_dragRect.left = g_cursorPos.x - g_dragOffset.x;
                     g_dragRect.top = g_cursorPos.y - g_dragOffset.y;
@@ -4451,8 +4451,8 @@ void HandleInput(u8 buttons) {
                 PostQuitMessage(0);
                 return;
             }
-            s_dragMoved = FALSE;
-            s_layerDragging = FALSE;
+            s_dragMoved = false;
+            s_layerDragging = false;
             s_pressedLayer = LayerAtPoint(g_cursorPos.x, g_cursorPos.y);
             if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
                 if (s_pressedLayer == SCREEN_LAYER_PANEL) {
@@ -4481,11 +4481,11 @@ void HandleInput(u8 buttons) {
                         !g_screenLayers[SCREEN_LAYER_MOON_PHASE]->visible;
                     return;
                 case SCREEN_LAYER_NAVIGATION:
-                    s_dragMoved = FALSE;
-                    s_layerDragging = FALSE;
+                    s_dragMoved = false;
+                    s_layerDragging = false;
                     RepeatPadMove(TRUE);
                     if (g_heldPadButton != PAD_RELEASED) {
-                        s_padHeld = TRUE;
+                        s_padHeld = true;
                         return;
                     }
                     g_heldPadButton = 0;
@@ -4501,8 +4501,8 @@ void HandleInput(u8 buttons) {
                     for (i = 0; i < TEXT_PLANE_COUNT; i++) {
                         busy |= GetTextPlane(i)->visible;
                     }
-                    s_dragMoved = FALSE;
-                    s_layerDragging = FALSE;
+                    s_dragMoved = false;
+                    s_layerDragging = false;
                     if (busy) {
                         return;
                     }
@@ -4513,7 +4513,7 @@ void HandleInput(u8 buttons) {
                     g_dragRect.bottom = layer->source.bottom + layer->y;
                     g_dragOffset.x = g_cursorPos.x - layer->x;
                     g_dragOffset.y = g_cursorPos.y - layer->y;
-                    s_layerDragging = TRUE;
+                    s_layerDragging = true;
                     return;
                 default:
                     ClickHotspotAt(g_cursorPos.x, g_cursorPos.y);
@@ -4537,14 +4537,14 @@ void HandleInput(u8 buttons) {
                 }
             }
             s_pressedLayer = SCREEN_LAYER_COUNT;
-            s_padHeld = FALSE;
+            s_padHeld = false;
             return;
         default:
             return;
     }
     switch (buttons >> MOUSE_RIGHT_SHIFT) {
         case MOUSE_UP:
-            s_pendingKey = 0;
+            s_pendingKey = false;
             if (!g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
                 if (g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible) {
                     if (g_cursorPos.y > MENU_BAR_HIDE_Y) {
@@ -4574,10 +4574,10 @@ void HandleInput(u8 buttons) {
             if (s_rightPressedLayer == SCREEN_LAYER_NAVIGATION) {
                 RepeatPadMove(FALSE);
                 if (g_heldPadButton != PAD_RELEASED) {
-                    s_padHeld = TRUE;
+                    s_padHeld = true;
                 }
             } else {
-                s_pendingKey = 1;
+                s_pendingKey = true;
             }
             break;
         case MOUSE_LET_GO:
@@ -4587,7 +4587,7 @@ void HandleInput(u8 buttons) {
                     ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
             } else {
                 s_rightPressedLayer = SCREEN_LAYER_COUNT;
-                s_padHeld = FALSE;
+                s_padHeld = false;
             }
             break;
     }
@@ -4812,7 +4812,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
                     PostQuitMessage(0);
                 }
                 HandleInput(buttons);
-                s_immediateInput = FALSE;
+                s_immediateInput = false;
             }
             UpdateLayerPanels();
             RenderFrame();

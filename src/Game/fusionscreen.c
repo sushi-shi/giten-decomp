@@ -128,7 +128,7 @@ static FusionSummary* s_fusionSummaryTable;
 // @dead-code
 // Zero-ref: no retail call, jump, or relocated pointer reaches this helper.
 DATA(0x00080a84)
-static i16 s_fusionPageActionPending;
+static b16 s_fusionPageActionPending;
 
 RVA(0x00028840, 0x16)
 void AcquireFusionSelectionMode(void) {
@@ -304,7 +304,7 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
                 result = RunPanelInput(s_fusionPager);
                 if (s_fusionPageActionPending == 1) {
                     result = s_fusionPageAction;
-                    s_fusionPageActionPending = 0;
+                    s_fusionPageActionPending = false;
                     s_fusionPageAction = -1;
                     oldOffset = s_fusionColumnOffset;
                     if (result == 0) {
@@ -324,7 +324,7 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
                     PaintPanel(s_fusionPager, s_fusionMenu->plane);
                 } else {
                     if (result >= 0) {
-                        s_fusionPageActionPending = 1;
+                        s_fusionPageActionPending = true;
                         s_fusionPageAction = result;
                     }
                     if (result == -1) {

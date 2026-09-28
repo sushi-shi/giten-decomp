@@ -87,7 +87,7 @@ static i16 s_viewHold;
 
 // Set when an encounter was requested (sound 1), cleared once handled.
 DATA(0x0007b7e0)
-static i16 s_encounterPending;
+static b16 s_encounterPending;
 
 // The size of the automap block of the current level (0x421720), which
 // bounds the reveal.
@@ -110,7 +110,7 @@ static i16 s_cursorB = -1;
 
 // Set while the area palette is switched on (a dark cell).
 DATA(0x0007b7ec)
-static i16 s_areaPaletteOn;
+static b16 s_areaPaletteOn;
 
 // Cached effect-frame image key (0x1400 + the frame-set id; -1: none).
 DATA(0x00068698)
@@ -714,12 +714,12 @@ void StatusCommand(void) {
 RVA(0x00015490, 0x14)
 void SetEncounterPending(void) {
     PlaySoundEffect(1);
-    s_encounterPending = 1;
+    s_encounterPending = true;
 }
 
 RVA(0x000154b0, 0xa)
 void ClearEncounterPending(void) {
-    s_encounterPending = 0;
+    s_encounterPending = false;
 }
 
 RVA(0x000154c0, 0x7)
@@ -991,12 +991,12 @@ RVA(0x00015ac0, 0x4e)
 void UpdateAreaPalette(void) {
     if (IsDarkCell(g_field.pos.x, g_field.pos.y)) {
         SetAreaPaletteMode(1);
-        s_areaPaletteOn = 1;
+        s_areaPaletteOn = true;
         return;
     }
     if (s_areaPaletteOn) {
         SetAreaPaletteMode(0);
-        s_areaPaletteOn = 0;
+        s_areaPaletteOn = false;
     }
 }
 
