@@ -184,6 +184,14 @@ i16 PickActorAction(Character* actor) {
     return result;
 }
 
+static __inline void SetBasicAttackPick(Character* actor, i16 target) {
+    actor->mode = 1;
+    actor->pickRole = 1;
+    actor->pickTarget = GetCharacterEquipment(actor)[5].item;
+    actor->pickTargetHigh = 0;
+    actor->pickObject = target;
+}
+
 RVA(0x00005dc0, 0x83)
 i16 PickRandomOpponentAttack(i16 id) {
     Character* actor = GetCombatant(id);
@@ -196,11 +204,7 @@ i16 PickRandomOpponentAttack(i16 id) {
     if (target == -100) {
         return 0;
     }
-    actor->mode = 1;
-    actor->pickRole = 1;
-    actor->pickTarget = GetCharacterEquipment(actor)[5].item;
-    actor->pickTargetHigh = 0;
-    actor->pickObject = target;
+    SetBasicAttackPick(actor, target);
     return 2;
 }
 
@@ -250,11 +254,7 @@ i16 PickRandomAllyAttack(i16 id) {
     if (target == -100) {
         return 0;
     }
-    actor->mode = 1;
-    actor->pickRole = 1;
-    actor->pickTarget = GetCharacterEquipment(actor)[5].item;
-    actor->pickTargetHigh = 0;
-    actor->pickObject = target;
+    SetBasicAttackPick(actor, target);
     return 2;
 }
 
@@ -323,11 +323,7 @@ i16 PickRandomAttack(i16 id) {
     if (target == -100) {
         return 0;
     }
-    actor->mode = 1;
-    actor->pickRole = 1;
-    actor->pickTarget = GetCharacterEquipment(actor)[5].item;
-    actor->pickTargetHigh = 0;
-    actor->pickObject = target;
+    SetBasicAttackPick(actor, target);
     return 2;
 }
 
