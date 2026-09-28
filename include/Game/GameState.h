@@ -97,8 +97,6 @@ i16 GetPartyRosterId(i16 index);
 // An empty party position when `inParty`, else a free roster slot (-1: none).
 i16 FindEmptySlot(i16 inParty);
 
-Character* GetRosterCharacter(i16 slot);
-
 // Ages every member's conditions by one and rolls them for recovery; nonzero
 // when any wore off.
 i16 TickPartyConditions(void);
@@ -111,7 +109,6 @@ void ResetRosterStatModifiers(void);
 void ClearRosterConditions(void);
 
 i16 CountFallenHumans(void);
-void ResetRosterBattleState(void);
 
 // @identity-TODO: What 0x9420 does per fallen non-guest member (return/drop hook) and what
 // 0x3f0f0 changes (HP/MP-zero conditions) are only partly decoded.
