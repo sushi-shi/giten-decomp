@@ -251,8 +251,7 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
     }
     if (!HasCondition(conditions, CONDITION_ZOMBIE) && wasZombie
         && !GetFatalCondition(conditions)) {
-        ApplyItemStatBonuses(&target->stats, GetCharacterEquipment(target));
-        RecalcStatTotals(&target->stats);
+        RecalcEquippedStatTotals(&target->stats, GetCharacterEquipment(target));
         ApplyEquipmentEffects(target, EQUIP_EFFECT_STAT_UPDATE);
         RecalcDerivedStats(target);
         ResetBattleStatsToBase(target);

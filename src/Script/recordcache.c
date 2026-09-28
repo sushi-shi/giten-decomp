@@ -595,26 +595,29 @@ RVA(0x0002e840, 0x58)
 void CacheSkill(i16 id, i16 value) {
     ResetRecordCache();
     CopySkillHeader(id, &s_cachedSkill);
-    s_valueA = s_cachedSkill.parameters.valueA;
-    s_valueB = s_cachedSkill.parameters.valueB;
+    s_valueA = GetSkillValueA(&s_cachedSkill);
+    s_valueB = GetSkillValueB(&s_cachedSkill);
     g_cachedRecordId = id;
     g_recordBaseValue = value;
     g_recordValue = value;
     s_skillUses = 1;
 }
 
+static __inline i16 RollCachedSkillWearPercent(void) {
+    i16 wear = s_skillUses * s_cachedSkill.parameters.wear;
+    i16 percent = RandomPercent(wear, -20, 20);
+    return min(percent, 100);
+}
+
 // The legacy routine evaluates the worn values but discards the quotients.
 // Retail retains these divisions; their source spelling remains unresolved.
 RVA(0x0002e8a0, 0xad)
 void WearCachedSkill(void) {
-    i16 wear;
     i16 percent;
     if (g_cachedRecordId == -1) {
         return;
     }
-    wear = s_skillUses * s_cachedSkill.parameters.wear;
-    percent = RandomPercent(wear, -20, 20);
-    percent = min(percent, 100);
+    percent = RollCachedSkillWearPercent();
     (i16)((100 - percent) * s_valueA) / 100;
     (i16)((100 - percent) * s_valueB) / 100;
     (i16)((100 - percent) * g_recordBaseValue) / 100;
@@ -629,10 +632,8 @@ i16 GetRecordValue(void) {
 // `value` less the wear of the cached skill's uses, kept in 1..30000.
 RVA(0x0002e960, 0x66)
 i32 WearSkillValue(i16 value) {
-    i16 wear = s_skillUses * s_cachedSkill.parameters.wear;
-    i16 percent = RandomPercent(wear, -20, 20);
+    i16 percent = RollCachedSkillWearPercent();
     i32 result;
-    percent = min(percent, 100);
     result = (100 - percent) * value / 100;
     if (result < 0) {
         return 1;

@@ -109,6 +109,11 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, i16 event) {
     }
 }
 
+static __inline void SelectItemUserAsTarget(void) {
+    g_targetId = PartyCombatantId(s_usePosition);
+    NextGamePhase();
+}
+
 // Runs the field item-use flow one phase: open the item list, pick an item,
 // pick its target (a skill-bearing item, kind 11 or 19, targets as its skill),
 // then hand the user's pick to the action prompt. Returns 0.
@@ -166,13 +171,11 @@ i16 RunItemUse(void) {
                 range = GetItemAttackRange(record);
             }
             if (TargetFlagsSelectSelf(flags)) {
-                g_targetId = PartyCombatantId(s_usePosition);
-                NextGamePhase();
+                SelectItemUserAsTarget();
                 return 0;
             }
             if (TargetFlagsSelectActorGroup(flags)) {
-                g_targetId = PartyCombatantId(s_usePosition);
-                NextGamePhase();
+                SelectItemUserAsTarget();
                 return 0;
             }
             if (flags == 0x10) {

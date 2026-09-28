@@ -102,6 +102,10 @@ i16 CountPickablePartyMembers(void) {
     return count;
 }
 
+static __inline i16 GetReadyMemberPanelState(Character* member) {
+    return IsCharacterHpLow(member) ? 3 : 0;
+}
+
 RVA(0x00005b80, 0xdf)
 i16 GetMemberPanelState(i16 index) {
     Character* member = g_panelMembers[index];
@@ -116,10 +120,10 @@ i16 GetMemberPanelState(i16 index) {
     } else if (TickFieldCount(PartyCombatantId(index), 1) < 1) {
         state = 1;
     } else if (IsActionWaitPickable(GetCharacterActionWait(member))) {
-        state = IsCharacterHpLow(member) ? 3 : 0;
+        state = GetReadyMemberPanelState(member);
     }
     if (!GetFieldBattleActive() && state == 1) {
-        state = IsCharacterHpLow(member) ? 3 : 0;
+        state = GetReadyMemberPanelState(member);
     }
     return state;
 }

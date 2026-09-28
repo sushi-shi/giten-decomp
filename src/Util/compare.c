@@ -888,7 +888,7 @@ void OpTakeDropSlot(void) {
     ClearDropSlot(slot);
     remapped = RemapItem(item);
     if (remapped) {
-        amount = RollItemAmount(item, amount, 1);
+        amount = RollDropAmount(item, amount);
     } else {
         remapped = item;
     }

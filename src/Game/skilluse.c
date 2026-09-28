@@ -672,6 +672,11 @@ static __inline void RefreshAfterDeferredRemoval(void) {
 // target, 3..5 apply and settle the change, 6 reports a battle byte, 7 moves
 // to the next living target, 8 ends the action (the summoning skill swaps its
 // demon into the command position).
+static __inline void ResetReportedBattleTally(void) {
+    s_tallyMessage = -1;
+    s_reportedTally = -1;
+}
+
 // @early-stop register allocation: retail keeps 0 in edi for the whole
 // function (zero stores and the NULL tests use it); cl here materialises it
 // per phase, and the scratch registers rotate one place from there; the
@@ -693,8 +698,7 @@ i16 RunBattleAction(void) {
     }
     switch (GetGamePhase()) {
         case 0:
-            s_tallyMessage = -1;
-            s_reportedTally = -1;
+            ResetReportedBattleTally();
             if (actor == NULL) {
                 CancelPendingAction();
                 return 0;
@@ -882,8 +886,7 @@ i16 RunBattleAction(void) {
                     RunMessageScript(0xdf, 3, -1);
                 }
             }
-            s_tallyMessage = -1;
-            s_reportedTally = -1;
+            ResetReportedBattleTally();
             break;
 
         case 7:
@@ -1277,6 +1280,14 @@ i16 CollectTargets(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
     }
 }
 
+#define ReturnCombatTargetsOrDefault(count, target)                                                \
+    do {                                                                                           \
+        if (!(count)) {                                                                            \
+            (count) = AddCombatTarget((target), 0);                                                \
+        }                                                                                          \
+        return (count);                                                                            \
+    } while (0)
+
 RVA(0x0002c800, 0x1e0)
 i16 CollectTargetsAtCell(i16 area, i16 flags, i16 range, i16 target, i16 actor, i16 x, i16 y) {
     i16 targets[128];
@@ -1321,10 +1332,7 @@ i16 CollectTargetsAtCell(i16 area, i16 flags, i16 range, i16 target, i16 actor, 
             id = RandomUpTo(count - 1);
             result = AddCombatTarget(targets[id], 1);
         }
-        if (!result) {
-            result = AddCombatTarget(target, 0);
-        }
-        return result;
+        ReturnCombatTargetsOrDefault(result, target);
     }
     if (mode == 15 || selected > count) {
         selected = count;
@@ -1336,10 +1344,7 @@ i16 CollectTargetsAtCell(i16 area, i16 flags, i16 range, i16 target, i16 actor, 
             result = AddCombatTarget(targets[i], 1);
         }
     }
-    if (!result) {
-        result = AddCombatTarget(target, 0);
-    }
-    return result;
+    ReturnCombatTargetsOrDefault(result, target);
 }
 
 RVA(0x0002c9e0, 0xc0)
@@ -1477,7 +1482,7 @@ void UseAttackSkill(Character* user, Character* target) {
     g_hpChange = 0;
     g_mpChange = 0;
     user->lastChange = 0;
-    if (s_effectSkill.parameters.valueB) {
+    if (GetSkillValueB(&s_effectSkill)) {
         ResolveSkillAttack(user, target);
         return;
     }
@@ -1515,7 +1520,7 @@ void UseRestoreSkill(Character* user, Character* target) {
     i16 result;
     g_statusCondition = 0;
     hit = RollSkillHit(user, target, 1);
-    amount = ComputeRestoreAmount(s_effectSkill.parameters.valueB, user, target->pools.hp.max);
+    amount = ComputeRestoreAmount(GetSkillValueB(&s_effectSkill), user, target->pools.hp.max);
     user->lastChange = amount;
     result = ApplyRestoreEffect(GetSkillEffectCode(&s_effectSkill), amount, target, 0);
     user->lastChange = target->lastChange;
@@ -1547,7 +1552,7 @@ void UseBattleTallySkill(Character* user, Character* target) {
     if (tally < 0 || tally > 15) {
         tally = 13;
     }
-    GetCharacterBattleTallies(target)[tally] = s_effectSkill.parameters.valueA;
+    GetCharacterBattleTallies(target)[tally] = GetSkillValueA(&s_effectSkill);
     if (tally == 8) {
         GetCharacterBattleTallies(target)[9] = 0;
     } else if (tally == 9) {
@@ -1558,7 +1563,7 @@ void UseBattleTallySkill(Character* user, Character* target) {
 
 RVA(0x0002d060, 0x2e0)
 void UseBattleStatSkill(Character* user, Character* target) {
-    double power = sqrt(GetStatTotal(user, STAT_MAGIC)) + s_effectSkill.parameters.valueB;
+    double power = sqrt(GetStatTotal(user, STAT_MAGIC)) + GetSkillValueB(&s_effectSkill);
     i32 changed = 0;
     i16 amount = RoundToShort(RandomAverage(80, 120, 0) * power * 0.01);
     if (GetSkillEffectCode(&s_effectSkill) & 0x80) {

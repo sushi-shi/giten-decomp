@@ -126,6 +126,21 @@ u8* GetItemRecordData(i16 id) {
 #define ReadItemTargeting(record, src)                                                             \
     ((record)->params[4] = *(src)++, (record)->params[5] = *(src)++, (record)->params[6] = *(src)++)
 
+static __inline u8* ReadItemRestoreParameters(ItemRecord* record, u8* src) {
+    record->params[7] = *src++;
+    record->params[8] = *src++;
+    record->params[9] = *src++;
+    return src;
+}
+
+static __inline u8* ReadItemAttackParameters(ItemRecord* record, u8* src) {
+    record->params[0xc] = *src++;
+    record->params[0xd] = *src++;
+    record->params[0xe] = *src++;
+    record->params[0xf] = *src++;
+    return src;
+}
+
 // Decodes item `id`'s data-file entry into `record`: the price, the kind, the
 // kind's parameter bytes (in the order the entry stores them), then the name
 // and the description strings.
@@ -147,9 +162,7 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
         case ITEM_KIND_RESTORATIVE:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
-            record->params[7] = *src++;
-            record->params[8] = *src++;
-            record->params[9] = *src++;
+            src = ReadItemRestoreParameters(record, src);
             record->params[0x10] = *src;
             record->params[0xa] = *src++;
             record->params[0x32] = *src++;
@@ -168,10 +181,7 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
         case ITEM_KIND_ATTACK:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
-            record->params[0xc] = *src++;
-            record->params[0xd] = *src++;
-            record->params[0xe] = *src++;
-            record->params[0xf] = *src++;
+            src = ReadItemAttackParameters(record, src);
             record->params[0xa] = *src;
             record->params[0x10] = *src++;
             record->params[0x11] = *src++;
@@ -200,17 +210,12 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
             record->params[0xb] = *src++;
-            record->params[0xc] = *src++;
-            record->params[0xd] = *src++;
-            record->params[0xe] = *src++;
-            record->params[0xf] = *src++;
+            src = ReadItemAttackParameters(record, src);
             record->params[0xa] = *src;
             record->params[0x10] = *src++;
             record->params[0x31] = *src++;
             record->params[0x31] = *src++;
-            record->params[7] = *src++;
-            record->params[8] = *src++;
-            record->params[9] = *src++;
+            src = ReadItemRestoreParameters(record, src);
             record->params[0xa] = *src++;
             record->params[0x32] = *src++;
             src = ReadItemMessages(record, src, 1, 1);
@@ -788,7 +793,7 @@ i16 AddDropSlot(i16 item, i16 amount) {
     }
     remap = RemapItem(item);
     if (remap != 0) {
-        amount = RollItemAmount(item, amount, 1);
+        amount = RollDropAmount(item, amount);
         item = remap;
     }
     for (i = 0; i < 16; i++) {
