@@ -49,7 +49,6 @@
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
 #include <Game/PartyReorder.h>
-#include <Game/Pool.h>
 #include <Game/SaveGame.h>
 #include <Game/Scene.h>
 #include <Game/SceneHotspot.h>

@@ -57,7 +57,6 @@
 #include <Script/Script.h>
 #include <Script/ScriptVars.h>
 #include <Script/TextState.h>
-#include <Script/TextToken.h>
 #include <Sound/Sound.h>
 #include <Text/TextPlane.h>
 #include <Text/TextWindow.h>

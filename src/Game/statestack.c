@@ -86,7 +86,6 @@
 #include <Script/EventFlags.h>
 #include <Script/ScriptCmd.h>
 #include <Script/ScriptVars.h>
-#include <Script/TextToken.h>
 #include <Sound/Sound.h>
 #include <Text/Font.h>
 #include <Text/TextPlane.h>

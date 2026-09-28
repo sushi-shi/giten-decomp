@@ -24,7 +24,6 @@
 #include <Game/StateStack.h>
 #include <Game/TreasureBox.h>
 #include <Game/WorldMap.h>
-#include <Gfx/Background.h>
 #include <Gfx/Blit.h>
 #include <Gfx/Scene.h>
 #include <Gfx/ScreenLayer.h>

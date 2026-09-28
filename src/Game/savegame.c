@@ -4,7 +4,6 @@
 #include <rva.h>
 
 #include <Game/AreaMap.h>
-#include <Game/AreaNpc.h>
 #include <Game/BagItems.h>
 #include <Game/Character.h>
 #include <Game/CharInfo.h>

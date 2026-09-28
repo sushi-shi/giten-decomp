@@ -9,7 +9,6 @@
 #include <Game/FieldHud.h>
 #include <Game/FieldObject.h>
 #include <Game/FieldScreen.h>
-#include <Game/FieldSight.h>
 #include <Game/FieldView.h>
 #include <Game/Scene.h>
 #include <Game/SceneHotspot.h>

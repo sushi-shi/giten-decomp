@@ -7,7 +7,6 @@
 #include <Game/FieldScreen.h>
 #include <Game/InfoBar.h>
 #include <Game/ModeFlags.h>
-#include <Game/WorldMap.h>
 #include <Gfx/ScreenSave.h>
 #include <Gfx/VramAccess.h>
 
