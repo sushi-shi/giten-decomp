@@ -607,10 +607,14 @@ static __inline i16 CollectCurrentSkillTargets(const SkillParameters* skill) {
     );
 }
 
-static __inline void ClearPendingAction(void) {
-    s_promptPending = 0;
+static __inline void ClearActionActors(void) {
     s_actionActor = NULL;
     s_actionTarget = NULL;
+}
+
+static __inline void ClearPendingAction(void) {
+    s_promptPending = 0;
+    ClearActionActors();
 }
 
 static __inline void CancelPendingAction(void) {
@@ -630,10 +634,6 @@ static __inline void RefreshAfterDeferredRemoval(void) {
 // target, 3..5 apply and settle the change, 6 reports a battle byte, 7 moves
 // to the next living target, 8 ends the action (the summoning skill swaps its
 // demon into the command position).
-// @early-stop register allocation: retail keeps 0 in edi for the whole
-// function (zero stores and the NULL tests use it); cl here materialises it
-// per phase, and the scratch registers rotate one place from there; the
-// permuter found one compiler island.
 // Codegen constraint: keep next-target success outside the phase switch;
 // an in-loop return or a post-loop sentinel test changes the shared tail.
 RVA(0x0002b6a0, 0x9b0)
@@ -646,12 +646,16 @@ b16 RunBattleAction(void) {
     i16 count;
     i16 shot;
     i16 slot;
+    i16 skipEffects;
 
     actor = GetCombatant(g_actorId);
     if (actor != NULL) {
         g_actionId = actor->pickTarget;
     }
     switch (GetGamePhase()) {
+        default:
+            skipEffects = s_skipEffects;
+            goto complete;
         case 0:
             s_tallyMessage = -1;
             s_reportedTally = -1;
@@ -726,8 +730,8 @@ b16 RunBattleAction(void) {
                     record = GetLoadedRecord(actor->pickTarget);
                     count = CollectTargets(
                         0xff,
-                        record->params[0x1d],
-                        record->params[0x1e],
+                        GetWeaponMinHits(record),
+                        GetWeaponMaxHits(record),
                         g_targetId,
                         g_actorId
                     );
@@ -770,13 +774,13 @@ b16 RunBattleAction(void) {
                 shot = GetItemShotId(record);
             } else if (actor->pickRole == 1) {
                 CacheSkill(1, GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY));
-                shot = GetCachedSkill(1)->parameters.effect;
+                shot = GetSkillShotId(1);
             } else {
                 CacheSkill(
                     actor->pickTarget,
                     GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY)
                 );
-                shot = GetCachedSkill(actor->pickTarget)->parameters.effect;
+                shot = GetSkillShotId(actor->pickTarget);
             }
             if (s_skipEffects) {
                 shot = 0;
@@ -836,7 +840,8 @@ b16 RunBattleAction(void) {
             }
             if (s_reportedTally != -1) {
                 if (g_actionResult >= 2) {
-                    ReportBattleTally(GetCombatant(g_targetId), s_reportedTally, -1);
+                    Character* target = GetCombatant(g_targetId);
+                    ReportBattleTally(target, s_reportedTally, -1);
                 }
                 if (s_tallyMessage != -1) {
                     RunMessageScript(0xdf, 3, -1);
@@ -851,7 +856,8 @@ b16 RunBattleAction(void) {
                 NextGamePhase();
                 while (NextTarget() != TARGET_LIST_END) {
                 }
-                break;
+                skipEffects = s_skipEffects;
+                goto complete;
             }
             for (slot = NextTarget(); slot != TARGET_LIST_END; slot = NextTarget()) {
                 if (slot >= 0) {
@@ -867,7 +873,8 @@ b16 RunBattleAction(void) {
                 actor->acting = 0;
                 RequestFieldRefresh();
             }
-            break;
+            skipEffects = s_skipEffects;
+            goto complete;
 
         case 8:
             s_promptPending = 0;
@@ -890,8 +897,7 @@ b16 RunBattleAction(void) {
                     }
                     RequestFieldRefresh();
                 }
-                s_actionActor = NULL;
-                s_actionTarget = NULL;
+                ClearActionActors();
                 s_actionRoleKept = 0;
                 s_actionPickKept = 0;
                 actor->pickFlags &= ~PICK_ITEM_SKILL;
@@ -908,7 +914,9 @@ b16 RunBattleAction(void) {
             break;
     }
 done:
-    if (s_skipEffects) {
+    skipEffects = s_skipEffects;
+complete:
+    if (skipEffects) {
         return false;
     }
     return UpdateFieldScreen(0);
@@ -916,7 +924,8 @@ done:
 nextTarget:
     SetGamePhase(2);
     g_targetId = slot;
-    GetCombatant(g_actorId)->pickObject = slot;
+    actor = GetCombatant(g_actorId);
+    actor->pickObject = slot;
     goto done;
 }
 

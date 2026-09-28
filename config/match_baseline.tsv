@@ -140,7 +140,7 @@ scriptvars	108	106
 scriptvm	2	2
 shot	15	14
 skillattack	5	3
-skilluse	48	43
+skilluse	48	44
 sprite	7	6
 statedispatch	1	1
 statestack	21	21
@@ -324,7 +324,7 @@ attack	_GetGunRequirementPenalty	100.0000	100.0000	1	9d271a629c5c	0x91b0	100.000
 attack	_LoadGunDistributionTable	100.0000	100.0000	1	2282d9a67f6b	0x8fe0	100.0000	
 attack	_PrepareGunBurst	100.0000	100.0000	8	d3a0e7e88d30	0x90c0	100.0000	
 attack	_ResolveGunAttack	100.0000	100.0000	7	15d57fbaa75e	0x8e60	100.0000	
-attack	_RollExceptionalAttack	100.0000	99.4444	5	cec84366749b	0x8700	100.0000	
+attack	_RollExceptionalAttack	100.0000	99.4183	5	cec84366749b	0x8700	100.0000	
 attack	_RollGunCondition	100.0000	100.0000	10	c992f81ace81	0x8d30	100.0000	
 attack	_RollGunHit	100.0000	100.0000	9	4dde76569003	0x8910	100.0000	
 attack	_SpendAllGunRounds	100.0000	100.0000	1	285b0f0f8efa	0x93b0	100.0000	
@@ -630,7 +630,7 @@ ddsmenu	_RunDdsMenu	100.0000	100.0000	2	fc0c1429c91a	0x17330	100.0000
 ddsmenu	_RunDdsSummon	100.0000	100.0000	2	46831843a62d	0x174b0	100.0000	
 debugmenu	_DebugMenuHandler	100.0000	100.0000	3	fee887e0bc0a	0x1410	100.0000	
 debugmenu	_MagicMenuHandler	100.0000	100.0000	2	9f250f40fa1b	0x14d0	100.0000	
-debugmenu	_RunDebugMenu	100.0000	100.0000	3	42fe369e0529	0x1000	100.0000	
+debugmenu	_RunDebugMenu	100.0000	100.0000	4	156240dae85d	0x1000	100.0000	
 demontable	_CopyLeaderIntoObject	100.0000	100.0000	8	b969ea070773	0x10930	100.0000	
 demontable	_CopyObjectRecordName	100.0000	100.0000	1	bea74b6faf9d	0x101b0	100.0000	
 demontable	_FindDemonOfRace	100.0000	100.0000	1	74e00185b0d2	0x10250	100.0000	
@@ -2341,7 +2341,7 @@ shot	_SetShotPosition	100.0000	100.0000	1	5d47141a5196	0x58d0	100.0000
 shot	_SetShotPower	100.0000	100.0000	1	5b0b36881851	0x5900	100.0000	
 shot	_ShotRelativePoint	100.0000	100.0000	1	e278fd21aefe	0x57c0	100.0000	
 shot	_StartShot	100.0000	100.0000	3	0762ead00fee	0x5620	100.0000	
-shot	_StepShot	82.6923	75.4923	1	653dffe37a31	0x56e0	82.6923	
+shot	_StepShot	100.0000	89.6462	2	3a51a63fe14c	0x56e0	100.0000	
 shot	_StopShot	100.0000	100.0000	1	eb752c1ebfec	0x5800	100.0000	
 skillattack	_ApplySkillResistanceOutcome	100.0000	100.0000	1	1909e14736cc	0xaf70	100.0000	
 skillattack	_ComputeSkillDamage	100.0000	98.4266	6	f1a1a20e346d	0xac50	100.0000	
@@ -2381,7 +2381,7 @@ skilluse	_RemoveCombatTarget	100.0000	100.0000	2	019b41001958	0x2aae0	100.0000
 skilluse	_ReportBattleTally	100.0000	100.0000	2	a1184d4eb7bb	0x2b5f0	100.0000	
 skilluse	_ResolveCombatAction	93.2619	93.2619	20	76c5a777cc8a	0x2ac90	93.2619	
 skilluse	_ResolveKnockout	99.6667	99.6667	9	5157a224c938	0x2b490	99.6667	
-skilluse	_RunBattleAction	96.4543	96.4543	21	175ceed1210d	0x2b6a0	96.4543	
+skilluse	_RunBattleAction	100.0000	100.0000	26	08c7a0fc49b0	0x2b6a0	100.0000	
 skilluse	_SetActionOutcome	100.0000	100.0000	1	69ab7be48b5b	0x2c2b0	100.0000	
 skilluse	_SetWorldMapActive	100.0000	100.0000	1	da2e7e2ed80d	0x2aa20	100.0000	
 skilluse	_ShowKnockoutMessage	100.0000	100.0000	2	0ebefd906d5d	0x2c210	100.0000	
