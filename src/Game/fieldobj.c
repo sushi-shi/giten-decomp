@@ -1267,19 +1267,12 @@ i16 DistanceToParty(FieldActor* actor) {
 
 // Whether the two script objects are between the near (high nibble) and far
 // (low nibble) distances of `range`.
-// @early-stop instruction width: retail shifts the packed minimum in al;
-// this build uses eax before the same low-nibble mask. Calls and CFG agree.
 RVA(0x0000f590, 0x8c)
 i16 IsWithinRange(i16 range) {
-    i8 packed = range;
-    i32 nearDistance;
-    i16 low;
+    i16 low = (range >> 4) & 15;
     MapCoord a;
     MapCoord b;
     i16 distance;
-    packed >>= 4;
-    nearDistance = packed & 0xf;
-    low = nearDistance;
     range &= 0xf;
     a = GetFieldTargetCoord(g_actorId);
     b = GetFieldTargetCoord(g_targetId);

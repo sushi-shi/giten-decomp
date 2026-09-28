@@ -39,7 +39,7 @@ alignchart	1	1
 analyze	3	3
 areamap	42	36
 areanpc	60	56
-attack	21	18
+attack	21	17
 automap	1	1
 automapbits	23	20
 bitmapio	2	2
@@ -69,9 +69,9 @@ equipscreen	25	23
 eventflags	28	28
 familiarity	19	18
 field	27	26
-fieldmain	64	61
+fieldmain	64	60
 fieldmark	5	5
-fieldobj	79	73
+fieldobj	79	74
 fieldscreen	77	76
 fieldskill	5	5
 fieldview	38	36
@@ -109,7 +109,7 @@ objecttexture	2	2
 panel	23	23
 panelinput	10	10
 party	55	55
-partyaction	38	34
+partyaction	38	35
 partypick	17	16
 partypicker	7	7
 partyreorder	2	2
@@ -320,11 +320,11 @@ attack	_GetCombatantSideRelation	100.0000	100.0000	2	1245e0f51480	0x8450	100.000
 attack	_GetEquipmentHitModifier	100.0000	100.0000	4	7571f7679ade	0x8480	100.0000	
 attack	_GetGunAttackPower	100.0000	100.0000	3	1aba1c1775cc	0x8b20	100.0000	
 attack	_GetGunBurstRounds	100.0000	100.0000	4	5e1b6fead023	0x9050	100.0000	
-attack	_GetGunRequirementPenalty	100.0000	100.0000	1	9d271a629c5c	0x91b0	100.0000	
+attack	_GetGunRequirementPenalty	100.0000	91.5625	1	9d271a629c5c	0x91b0	100.0000	
 attack	_LoadGunDistributionTable	100.0000	100.0000	1	2282d9a67f6b	0x8fe0	100.0000	
 attack	_PrepareGunBurst	100.0000	100.0000	8	d3a0e7e88d30	0x90c0	100.0000	
 attack	_ResolveGunAttack	100.0000	100.0000	6	e5f934fc7e93	0x8e60	100.0000	
-attack	_RollExceptionalAttack	100.0000	99.4183	5	cec84366749b	0x8700	100.0000	
+attack	_RollExceptionalAttack	100.0000	99.4314	5	cec84366749b	0x8700	100.0000	
 attack	_RollGunCondition	100.0000	100.0000	9	db417547c5a3	0x8d30	100.0000	
 attack	_RollGunHit	100.0000	100.0000	8	49f2594ef957	0x8910	100.0000	
 attack	_SpendAllGunRounds	100.0000	100.0000	1	285b0f0f8efa	0x93b0	100.0000	
@@ -787,7 +787,7 @@ fieldmain	_HasQueuedObjectEvents	100.0000	100.0000	1	bfba1224c61d	0x13c00	100.00
 fieldmain	_IsRouteActive	100.0000	100.0000	1	a486d4271fbc	0x12010	100.0000	
 fieldmain	_LoadFieldEventTable	100.0000	100.0000	1	25ba1d1ca953	0x13d10	100.0000	
 fieldmain	_LoadFieldImage	100.0000	100.0000	2	caffed40de0c	0x144c0	100.0000	
-fieldmain	_LoadFieldMemory	100.0000	100.0000	2	5df7d0d13c11	0x13ca0	100.0000	
+fieldmain	_LoadFieldMemory	100.0000	87.0270	2	5df7d0d13c11	0x13ca0	100.0000	
 fieldmain	_MarkFieldViewCells	100.0000	100.0000	1	2544b75863e1	0x13d70	100.0000	
 fieldmain	_MarkLevelEvent	100.0000	100.0000	1	93bdb7a82f49	0x13b20	100.0000	
 fieldmain	_MarkVisibleFieldCells	99.2951	99.2951	2	61f26b6c1332	0x13d90	99.2951	
@@ -884,7 +884,7 @@ fieldobj	_GetSightCell	100.0000	100.0000	1	f498b35984d8	0xf0c0	100.0000
 fieldobj	_InitFieldObjects	100.0000	100.0000	1	ef2b82a759b9	0xd790	100.0000	
 fieldobj	_IsFieldActor	100.0000	100.0000	1	bf5478d17e9a	0xd980	100.0000	
 fieldobj	_IsPartyInSight	100.0000	100.0000	1	c03c64e92c2c	0xf120	100.0000	
-fieldobj	_IsWithinRange	99.9074	99.9074	4	fb78721eeca9	0xf590	99.9074	
+fieldobj	_IsWithinRange	100.0000	100.0000	5	7ee7bbac2622	0xf590	100.0000	
 fieldobj	_LoadEncounterWeights	100.0000	100.0000	1	f8944971463a	0xf1a0	100.0000	
 fieldobj	_LoadEnemyGroupSlot	100.0000	100.0000	3	4aaaeceaf4c4	0xe820	100.0000	
 fieldobj	_LoadLayerScriptSet	100.0000	100.0000	3	cde55e2bec84	0xeb70	100.0000	
@@ -1301,12 +1301,12 @@ gameloop	_StartGame	100.0000	100.0000	1	708386a3184d	0x19a0	100.0000
 gameloop	_StepGame	100.0000	100.0000	1	5b7ec334f522	0x19d0	100.0000	
 gameloop	_TickGameTasks	100.0000	100.0000	1	eaee4dc84838	0x1980	100.0000	
 gamestate	_ComputeActionSpeed	100.0000	100.0000	5	9e66efca9373	0x3c810	100.0000	
-gamestate	_GetFieldCount	100.0000	100.0000	1	e02edec36650	0x3c7e0	100.0000	
 gamestate	_GetMapArea	100.0000	100.0000	1	9a0f04df6309	0x3c7f0	100.0000	
 gamestate	_GetMapCoord	100.0000	100.0000	1	8a6a5e3b1cbf	0x3c7b0	100.0000	
 gamestate	_GetMapLevel	100.0000	100.0000	1	87fd454c9bd8	0x3c800	100.0000	
 gamestate	_GetMapPosition	100.0000	100.0000	1	9bb39f27f8d1	0x3c7d0	100.0000	
 gamestate	_GetMapValue	100.0000	100.0000	1	f73f649d933c	0x3c6a0	100.0000	
+gamestate	_GetRosterCapacity	100.0000	100.0000	1	e02edec36650	0x3c7e0	100.0000	
 gamestate	_InitNewGame	58.2083	58.2083	2	6f15c0de45a1	0x3c6f0	58.2083	
 handle	_AllocArrayHandle	100.0000	100.0000	1	067aa710f9ed	0x44c0	100.0000	
 handle	_AllocHandle	100.0000	100.0000	1	30e5ae1be97b	0x4450	100.0000	
@@ -1779,7 +1779,7 @@ partyaction	_FormatItemCommand	100.0000	100.0000	2	d33696fc76b1	0x66e0	100.0000
 partyaction	_FormatMagicCommand	100.0000	100.0000	4	1b328b0fe4a8	0x6660	100.0000	
 partyaction	_FormatReturnCommand	100.0000	100.0000	3	109e58a3bead	0x67d0	100.0000	
 partyaction	_GetActionCondition	100.0000	100.0000	2	1330bc0653e7	0x5cb0	100.0000	
-partyaction	_GetActionResistance	100.0000	99.8809	3	b173d9afdba4	0x6ca0	100.0000	
+partyaction	_GetActionResistance	100.0000	100.0000	3	b173d9afdba4	0x6ca0	100.0000	
 partyaction	_GetItemResistance	100.0000	100.0000	1	888c31715c58	0x6dc0	100.0000	
 partyaction	_GetMemberPanelState	88.9610	88.9610	9	e663b4cfae52	0x5b80	100.0000	
 partyaction	_GetPickedAttackAttribute	100.0000	100.0000	5	2d503f5d2f1c	0x6e00	100.0000	
@@ -1813,7 +1813,7 @@ partypick	_PickPartySlotTarget	100.0000	100.0000	2	70e9ca70f1fc	0xa0b0	100.0000
 partypick	_QueryPickMode	100.0000	100.0000	1	1be31b282b9f	0x9cf0	100.0000	
 partypick	_RestoreSwappedMember	100.0000	100.0000	1	1d1590f8a48b	0x9dc0	100.0000	
 partypick	_RunMemberPickMenu	100.0000	100.0000	2	fdd11366aedb	0x94d0	100.0000	
-partypick	_RunPartyCommandInput	85.7913	85.7913	16	ac6464615edf	0x9620	92.0986	
+partypick	_RunPartyCommandInput	91.0550	91.0550	16	ac6464615edf	0x9620	92.0986	
 partypick	_RunPickTargetWindow	100.0000	100.0000	3	73af80fdc842	0x9e30	100.0000	
 partypick	_SetMemberPickRole	100.0000	100.0000	1	d65f1923aaa8	0x95f0	100.0000	
 partypick	_SwapInForPick	100.0000	100.0000	2	c96fe37a8241	0x9d10	100.0000	
