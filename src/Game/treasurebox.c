@@ -233,6 +233,12 @@ static ViewedTreasureBox s_viewedBox = {0};
 DATA(0x0007d5c0)
 static ItemStackList* s_itemMenuLimits = 0;
 
+// @identity-TODO: no code in this image touches this datum; its
+// zero-initialized run keeps one four-byte slot for it, so its width and
+// role are unproven. A reader in the PC-98 build would name it.
+DATA(0x0007d5c4)
+static i32 s_unusedMenuState = 0;
+
 DATA(0x0007d5c8)
 static i32 s_events = 0;
 
