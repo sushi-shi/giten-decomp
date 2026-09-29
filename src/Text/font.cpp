@@ -3228,8 +3228,7 @@ u8* RenderGlyph(u16 code, u8* glyph) {
             // keeps the top within it; another font need not, and a top outside
             // the table reads a row offset from neighbouring memory that the rows
             // are then copied at.
-            const LONG tops =
-                static_cast<LONG>(sizeof(s_glyphRowOffset) / sizeof(s_glyphRowOffset[0]));
+            const LONG tops = sizeof(s_glyphRowOffset) / sizeof(s_glyphRowOffset[0]);
             if (metrics.gmptGlyphOrigin.y < 0) {
                 metrics.gmptGlyphOrigin.y = 0;
             } else if (metrics.gmptGlyphOrigin.y >= tops) {
