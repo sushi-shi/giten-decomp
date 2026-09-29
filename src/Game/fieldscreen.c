@@ -864,7 +864,7 @@ static i16 MarkAutomapRowSpan(i16* x, i16 y) {
         next = right + 1;
         while (right < s_roomSize.x) {
             MarkAutomapCell(g_party.field.pos.area, g_party.field.pos.level, right, y);
-            wall = GetMapWallKind(right, y, 1);
+            wall = GetMapWallKind(right, y, VIEW_EAST);
             if (WallStops(wall, WALL_STOP_MOVEMENT) || next >= s_roomSize.x
                 || !IsRoomCell(next, y)) {
                 break;
@@ -875,7 +875,7 @@ static i16 MarkAutomapRowSpan(i16* x, i16 y) {
     }
     while (*x >= 0) {
         MarkAutomapCell(g_party.field.pos.area, g_party.field.pos.level, *x, y);
-        wall = GetMapWallKind(*x, y, 3);
+        wall = GetMapWallKind(*x, y, VIEW_WEST);
         if (WallStops(wall, WALL_STOP_MOVEMENT)) {
             break;
         }
@@ -891,7 +891,7 @@ static i16 MarkAutomapRowSpan(i16* x, i16 y) {
 
 RVA(0x00015730, 0x73)
 static b16 CanRevealAutomapSouth(i16 x, i16 y) {
-    i16 wall = GetMapWallKind(x, y, 2);
+    i16 wall = GetMapWallKind(x, y, VIEW_SOUTH);
     if (WallStops(wall, WALL_STOP_MOVEMENT)) {
         return false;
     }
@@ -907,7 +907,7 @@ static b16 CanRevealAutomapSouth(i16 x, i16 y) {
 
 RVA(0x000157b0, 0x6f)
 static b16 CanRevealAutomapNorth(i16 x, i16 y) {
-    i16 wall = GetMapWallKind(x, y, 0);
+    i16 wall = GetMapWallKind(x, y, VIEW_NORTH);
     if (WallStops(wall, WALL_STOP_MOVEMENT)) {
         return false;
     }

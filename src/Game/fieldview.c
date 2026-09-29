@@ -116,7 +116,7 @@ i16 DistanceFromParty(i16 x, i16 y) {
 // The column (axis 0) or row of view cell col/row stepped one cell toward
 // side `dir` (east/west move the column, north/south the row).
 RVA(0x0000be80, 0x46)
-i16 StepViewCell(i16 col, i16 row, i32 dir, i16 axis) {
+i16 StepViewCell(i16 col, i16 row, GZ_ENUM_PARAM(ViewDirection, i32) dir, i16 axis) {
     if (axis == VIEW_CELL_COLUMN) {
         switch (dir) {
             case VIEW_EAST:
@@ -140,7 +140,7 @@ i16 StepViewCell(i16 col, i16 row, i32 dir, i16 axis) {
 }
 
 RVA(0x0000bed0, 0xe4)
-b32 CanFloodViewCell(i16 col, i16 row, i32 direction) {
+b32 CanFloodViewCell(i16 col, i16 row, GZ_ENUM_PARAM(ViewDirection, i32) direction) {
     switch (direction & 3) {
         case VIEW_NORTH:
             if (row - 1 >= 0 && s_viewFloodMask[row - 1][col]) {
@@ -169,23 +169,31 @@ b32 CanFloodViewCell(i16 col, i16 row, i32 direction) {
 // Turns view cell *col/*row (party at column 3, row 3) seen from x/y facing
 // `dir` into its map cell, -1 for a coordinate off the width x height map.
 RVA(0x0000bfc0, 0xc8)
-void ViewCellToMapCell(i16 x, i16 y, i32 dir, i16* col, i16* row, i16 width, i16 height) {
+void ViewCellToMapCell(
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i32) dir,
+    i16* col,
+    i16* row,
+    i16 width,
+    i16 height
+) {
     *col += -3;
     *row += -3;
     switch (dir) {
-        case 0:
+        case VIEW_NORTH:
             x += *col;
             y += *row;
             break;
-        case 1:
+        case VIEW_EAST:
             x -= *row;
             y += *col;
             break;
-        case 2:
+        case VIEW_SOUTH:
             x -= *col;
             y -= *row;
             break;
-        case 3:
+        case VIEW_WEST:
             x += *row;
             y -= *col;
             break;
@@ -213,7 +221,16 @@ i32 GetWallAt(i16 x, i16 y, i32 side, i16 width, i16 height) {
 // Whether the view cell (col, row) seen from (x, y) facing `dir` has a wall on
 // `side`; a cell off the map counts as walled.
 RVA(0x0000c0c0, 0x5d)
-i32 ViewCellHasWall(i16 x, i16 y, i32 dir, i16 col, i16 row, i32 side, i16 width, i16 height) {
+i32 ViewCellHasWall(
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i32) dir,
+    i16 col,
+    i16 row,
+    i32 side,
+    i16 width,
+    i16 height
+) {
     ViewCellToMapCell(x, y, dir, &col, &row, width, height);
     if (col == -1 || row == -1) {
         return 1;
@@ -646,14 +663,15 @@ b16 IsWorldCellInMap(i16 x, i16 y) {
 
 // `direction` turned by `turn` quarter turns.
 RVA(0x0000ce80, 0xe)
-i16 TurnDirection(i16 direction, i16 turn) {
+i16 TurnDirection(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn) {
     return (u8)(direction + turn) & 3;
 }
 
 // `pos` moved by `across`/`along` in the frame of `direction`, wrapped into
 // the level.
 RVA(0x0000ce90, 0x90)
-MapCoord MoveMapCoord(MapCoord pos, i16 direction, i16 across, i16 along) {
+MapCoord
+MoveMapCoord(MapCoord pos, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 across, i16 along) {
     ApplyFacingOffset(&pos.x, &pos.y, direction, across, along);
     WrapMapPosition(&pos.x, &pos.y);
     return pos;
@@ -661,7 +679,12 @@ MapCoord MoveMapCoord(MapCoord pos, i16 direction, i16 across, i16 along) {
 
 // The same, clamped into the level.
 RVA(0x0000cf20, 0x90)
-MapCoord OffsetCoordClamped(MapCoord pos, i16 direction, i16 across, i16 along) {
+MapCoord OffsetCoordClamped(
+    MapCoord pos,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16 across,
+    i16 along
+) {
     ApplyFacingOffset(&pos.x, &pos.y, direction, across, along);
     ClampMapPosition(&pos.x, &pos.y);
     return pos;
@@ -669,7 +692,7 @@ MapCoord OffsetCoordClamped(MapCoord pos, i16 direction, i16 across, i16 along) 
 
 // Moves x/y by `across`/`along` in the frame of `dir` (wrapped).
 RVA(0x0000cfb0, 0x4d)
-void OffsetMapCoord(i16* x, i16* y, i16 dir, i16 across, i16 along) {
+void OffsetMapCoord(i16* x, i16* y, GZ_ENUM_PARAM(ViewDirection, i16) dir, i16 across, i16 along) {
     MapCoord pos;
     pos.x = *x;
     pos.y = *y;
@@ -680,7 +703,7 @@ void OffsetMapCoord(i16* x, i16* y, i16 dir, i16 across, i16 along) {
 
 // The wall word of the cell `across`/`along` from x/y (wrapped).
 RVA(0x0000d000, 0x49)
-i16 GetWallAtOffset(i16 x, i16 y, i16 dir, i16 across, i16 along) {
+i16 GetWallAtOffset(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) dir, i16 across, i16 along) {
     MapCoord pos;
     pos.x = x;
     pos.y = y;
@@ -690,7 +713,13 @@ i16 GetWallAtOffset(i16 x, i16 y, i16 dir, i16 across, i16 along) {
 
 // Moves x/y by `across`/`along` in the frame of `direction` (clamped).
 RVA(0x0000d050, 0x4d)
-void StepMapCoordBy(i16* x, i16* y, i16 direction, i16 across, i16 along) {
+void StepMapCoordBy(
+    i16* x,
+    i16* y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16 across,
+    i16 along
+) {
     MapCoord pos;
     pos.x = *x;
     pos.y = *y;
@@ -701,7 +730,13 @@ void StepMapCoordBy(i16* x, i16* y, i16 direction, i16 across, i16 along) {
 
 // The wall word of the cell `across`/`along` from x/y (clamped).
 RVA(0x0000d0a0, 0x49)
-i16 GetWallAtOffsetClamped(i16 x, i16 y, i16 dir, i16 across, i16 along) {
+i16 GetWallAtOffsetClamped(
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) dir,
+    i16 across,
+    i16 along
+) {
     MapCoord pos;
     pos.x = x;
     pos.y = y;
@@ -712,7 +747,7 @@ i16 GetWallAtOffsetClamped(i16 x, i16 y, i16 dir, i16 across, i16 along) {
 // The wall kind on side `turn` (relative to `direction`) of a map cell word:
 // one nibble per side.
 RVA(0x0000d0f0, 0x60)
-i16 GetCellWall(i16 direction, i16 turn, u16 cell) {
+i16 GetCellWall(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn, u16 cell) {
     switch (TurnDirection(direction, turn)) {
         case 0:
             return cell & 0xf;
@@ -728,19 +763,25 @@ i16 GetCellWall(i16 direction, i16 turn, u16 cell) {
 
 // The wall word `across`/`along` from x/y, turned into the frame of `dir`.
 RVA(0x0000d150, 0x2c)
-u16 GetRotatedWallAtOffset(i16 x, i16 y, i16 dir, i16 across, i16 along) {
+u16 GetRotatedWallAtOffset(
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) dir,
+    i16 across,
+    i16 along
+) {
     return RotateByDirection(GetWallAtOffset(x, y, dir, across, along), dir);
 }
 
 // The raw wall kind on the map cell's `direction` side (zero means no wall).
 RVA(0x0000d180, 0x23)
-i16 GetMapWallKind(i16 x, i16 y, i16 direction) {
+i16 GetMapWallKind(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     return GetCellWall(direction, 0, RevealAreaMapAt(x, y));
 }
 
 // Steps x/y one cell toward `turn` of `dir` (wrapped); the direction taken.
 RVA(0x0000d1b0, 0x3f)
-i16 StepMapCoord(i16* x, i16* y, i16 dir, i16 turn) {
+i16 StepMapCoord(i16* x, i16* y, GZ_ENUM_PARAM(ViewDirection, i16) dir, i16 turn) {
     i16 facing = TurnDirection(dir, turn);
     OffsetMapCoord(x, y, facing, 0, -1);
     WrapMapPosition(x, y);
@@ -755,7 +796,7 @@ u8 WallStops(i16 wall, GZ_ENUM_PARAM(WallStopMode, i16) mode) {
 
 // The rendered geometry class on side `turn` of `direction` in a cell word.
 RVA(0x0000d210, 0x27)
-i16 GetCellWallStop(i16 direction, i16 turn, u16 cell) {
+i16 GetCellWallStop(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn, u16 cell) {
     i16 wall = GetCellWall(direction, turn, cell);
     return WallStops(wall, WALL_STOP_GEOMETRY);
 }
@@ -791,7 +832,8 @@ i32 GetFacingBit(void) {
 
 // x1/y1 relative to x0/y0 in the frame of `direction`.
 RVA(0x0000d2b0, 0x68)
-MapCoord RelativeOffset(i16 x0, i16 y0, i16 direction, i16 x1, i16 y1) {
+MapCoord
+RelativeOffset(i16 x0, i16 y0, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 x1, i16 y1) {
     i16 dx = x1 - x0;
     i16 dy = y1 - y0;
     MapCoord offset;
@@ -818,13 +860,19 @@ MapCoord RelativeOffset(i16 x0, i16 y0, i16 direction, i16 x1, i16 y1) {
 
 // Moves x/y by `across`/`along` in the frame of `direction` (unwrapped).
 RVA(0x0000d320, 0x88)
-void OffsetMapCoordFacing(i16* x, i16* y, i16 direction, i16 across, i16 along) {
+void OffsetMapCoordFacing(
+    i16* x,
+    i16* y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16 across,
+    i16 along
+) {
     ApplyFacingOffset(x, y, direction, across, along);
 }
 
 // The movement-blocking class from x/y toward `turn` of `direction`.
 RVA(0x0000d3b0, 0x35)
-i16 WallStopsToward(i16 x, i16 y, i16 direction, i16 turn) {
+i16 WallStopsToward(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn) {
     i16 wall = GetCellWall(direction, turn, RevealAreaMapAt(x, y));
     return WallStops(wall, WALL_STOP_MOVEMENT);
 }

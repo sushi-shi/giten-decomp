@@ -6,11 +6,20 @@
 #include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/GameState.h>
+#include <Game/ViewDirection.h>
 
 // Marks a cell explored in the bitmap saved for its area and level.
 void MarkAutomapCell(i16 area, i16 level, i16 x, i16 y);
 
-void RotateAutomapRegion(i16 x, i16 y, i16 direction, i16* left, i16* top, i16* width, i16* height);
+void RotateAutomapRegion(
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16* left,
+    i16* top,
+    i16* width,
+    i16* height
+);
 void TransformAutomapPoint(i16* x, i16* y);
 void DrawAutomapMark(i16 mark, i16 x, i16 y);
 void DrawAutomapTile(i16 tile, i16 x, i16 y);

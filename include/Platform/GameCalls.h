@@ -8,6 +8,7 @@
 #include <Game/GameLoop.h>
 #include <Game/GameStateId.h>
 #include <Game/PartyAction.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 // Game functions and data the platform layer uses that their owners' headers
@@ -57,7 +58,7 @@ struct AreaNpc* GetAreaNpc(i16 npc);
 i16 NextGamePhase(void);
 GZ_ENUM_RETURN(GameStateId, i16) GetGameState(void);
 u16 GetGamePhase(void);
-void RedrawFieldAt(i16 x, i16 y, i16 direction);
+void RedrawFieldAt(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 // The party's world-map marker: which of the six map screens shows it (-1
 // off the map) and its point on that screen.

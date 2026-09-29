@@ -527,12 +527,12 @@ i16 FindExitDirection(i16 x, i16 y) {
     i16 cell = RevealAreaMapAt(x, y);
     i16 side;
     for (side = 0; side < 4; side++) {
-        if (GetCellWall(0, side, cell) == 1) {
+        if (GetCellWall(VIEW_NORTH, side, cell) == 1) {
             return side;
         }
     }
     for (side = 0; side < 4; side++) {
-        if (GetCellWall(0, side, cell) == 0) {
+        if (GetCellWall(VIEW_NORTH, side, cell) == 0) {
             return side;
         }
     }
@@ -1389,7 +1389,7 @@ void BuildViewOcclusion(i16 x, i16 y, i16 direction, i16 mode) {
 }
 
 RVA(0x000140a0, 0x26)
-void RedrawFieldAt(i16 x, i16 y, i16 direction) {
+void RedrawFieldAt(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     SampleViewWalls(x, y, direction);
     UpdateViewCells(x, y);
 }

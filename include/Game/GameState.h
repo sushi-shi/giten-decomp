@@ -4,6 +4,7 @@
 #include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Game/MapCoord.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 // The party's place on the map; these ten bytes are also passed by value.
@@ -13,7 +14,7 @@
 typedef struct MapPosition {
     i16 x;
     i16 y;
-    i16 direction;
+    GZ_ENUM_STORAGE(ViewDirection, i16) direction;
     u8 pad06;
     u8 area;
     u8 level;

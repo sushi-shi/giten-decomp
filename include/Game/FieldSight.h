@@ -3,7 +3,9 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/GameState.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 #include <Math/Vec3.h>
 
@@ -27,9 +29,16 @@ static __inline void PushFieldUsePrompt(void) {
 
 // @identity-TODO: marks the cells a sight line from x/y reaches along
 // `direction` at `step` between the left/right bounds, narrowing them.
-void ScanSightRow(i16 x, i16 y, i16 step, i16 direction, i16* left, i16* right);
+void ScanSightRow(
+    i16 x,
+    i16 y,
+    i16 step,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16* left,
+    i16* right
+);
 
-void TraceSight(i16 x, i16 y, i16 direction);
+void TraceSight(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 // @identity-TODO: the view the field objects are drawn in: the facing and
 // the lateral/depth position of the view (depth 0..-4).
@@ -49,7 +58,7 @@ u32 GetLayerFrame(u32 image, i16 a, i16 z);
 typedef struct FieldActor {
     u8 character[0x1f9];
     MapCoord pos;
-    i16 direction;
+    GZ_ENUM_STORAGE(ViewDirection, i16) direction;
 } FieldActor;
 
 i16 DistanceToParty(FieldActor* actor);

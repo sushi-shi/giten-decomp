@@ -34,7 +34,7 @@ void InitNewGame(void) {
     g_party.field.pos.level = 8;
     g_party.field.pos.x = 2;
     g_party.field.pos.y = 1;
-    g_party.field.pos.direction = 0;
+    g_party.field.pos.direction = VIEW_NORTH;
     g_party.field.moveState = 0;
     g_party.field.turnsLeft = 0;
     g_party.field.moveCommand = 0;

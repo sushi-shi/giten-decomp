@@ -384,6 +384,33 @@ def _expected_semantic_context(cidx, literal, stack):
     return None
 
 
+def _case_subject_type(cidx, stack):
+    """The type of the switch subject when the literal is a case label."""
+    transparent = {cidx.CursorKind.PAREN_EXPR, cidx.CursorKind.UNEXPOSED_EXPR,
+                   cidx.CursorKind.UNARY_OPERATOR}
+    for pos in range(len(stack) - 1, -1, -1):
+        node = stack[pos]
+        if node.kind in transparent:
+            continue
+        if node.kind != cidx.CursorKind.CASE_STMT:
+            return None
+        switch = next((n for n in reversed(stack[:pos])
+                       if n.kind == cidx.CursorKind.SWITCH_STMT), None)
+        if switch is None:
+            return None
+        parts = list(switch.get_children())
+        if not parts:
+            return None
+        subject = parts[0]
+        while subject.kind in (cidx.CursorKind.UNEXPOSED_EXPR, cidx.CursorKind.PAREN_EXPR):
+            inner = list(subject.get_children())
+            if not inner:
+                break
+            subject = inner[0]
+        return subject.type
+    return None
+
+
 def _classify(cidx, literal, stack, value, enum_values, null_available):
     if _explicit_cast_ancestor(cidx, stack):
         return "numeric", "", "", "explicit conversion is an ingest boundary"
@@ -411,6 +438,13 @@ def _classify(cidx, literal, stack, value, enum_values, null_available):
         if len(names) > 1:
             return ("numeric", "", enum_type,
                     f"{enum_type} value has aliases: {', '.join(sorted(names))}")
+
+    case_type = _case_subject_type(cidx, stack)
+    if case_type is not None and value is not None:
+        typed = _typed_value_classification(
+            cidx, value, case_type, null_available, "switch subject", enum_values)
+        if typed is not None and typed[0] == "enum":
+            return typed
 
     expected = _expected_semantic_context(cidx, literal, stack)
     if expected is not None:

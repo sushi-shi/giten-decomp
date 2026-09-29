@@ -1862,7 +1862,7 @@ RVA(0x0001d210, 0xd4)
 void RotateAutomapRegion(
     i16 x,
     i16 y,
-    i16 direction,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
     i16* left,
     i16* top,
     i16* width,
@@ -1870,22 +1870,22 @@ void RotateAutomapRegion(
 ) {
     i16 oldWidth;
     switch (direction) {
-        case 0:
+        case VIEW_NORTH:
             *left = -x;
             *top = -y;
             break;
-        case 1:
+        case VIEW_EAST:
             *left = -y;
             *top = x - *width + 1;
             oldWidth = *width;
             *width = *height;
             *height = oldWidth;
             break;
-        case 2:
+        case VIEW_SOUTH:
             *left = x - *width + 1;
             *top = y - *height + 1;
             break;
-        case 3:
+        case VIEW_WEST:
             *left = y - *height + 1;
             *top = -x;
             oldWidth = *width;
@@ -1973,7 +1973,7 @@ b16 RunAutomapState(void) {
             s_mapPlane = CreateTextPlane(31, 0);
             s_mapPanel = CreateKindPanel(s_mapPanel, IDB_BITMAP61, 4, 31);
             if (g_party.status.automapFixed) {
-                s_mapPosition.direction = 0;
+                s_mapPosition.direction = VIEW_NORTH;
             }
             s_mapDetail = AUTOMAP_DETAIL_NONE;
             if (!IsEventFlagSet(2, 0x39)) {
@@ -2267,7 +2267,7 @@ void DrawMapOverlay(MapPosition position) {
     }
     ClearLayerSurface(SCREEN_LAYER_AUTOMAP);
     if (g_party.status.navigationFixed) {
-        position.direction = 0;
+        position.direction = VIEW_NORTH;
     }
     s_mapDetail = AUTOMAP_DETAIL_NONE;
     if (!IsEventFlagSet(2, 9)) {
@@ -2299,23 +2299,23 @@ void DrawMapOverlay(MapPosition position) {
         if (-left * 2 > 7) {
             left = -3;
             switch (position.direction) {
-                case 0:
+                case VIEW_NORTH:
                     if (position.x + 4 > width) {
                         left = width - x - 7;
                     }
                     break;
-                case 1:
+                case VIEW_EAST:
                     if (position.y + 4 > width) {
                         left = width - y - 7;
                     }
                     break;
-                case 2:
+                case VIEW_SOUTH:
                     edge = x - 3;
                     if (edge < 0) {
                         left = x - 6;
                     }
                     break;
-                case 3:
+                case VIEW_WEST:
                     edge = y - 3;
                     if (edge < 0) {
                         left = y - 6;
@@ -2334,24 +2334,24 @@ void DrawMapOverlay(MapPosition position) {
         if (edge > 7) {
             top = -3;
             switch (position.direction) {
-                case 0:
+                case VIEW_NORTH:
                     if (position.y + 4 > height) {
                         top = height - y - 7;
                     }
                     break;
-                case 1:
+                case VIEW_EAST:
                     edge = x - 3;
                     if (edge < 0) {
                         top = x - 6;
                     }
                     break;
-                case 2:
+                case VIEW_SOUTH:
                     edge = y - 3;
                     if (edge < 0) {
                         top = y - 6;
                     }
                     break;
-                case 3:
+                case VIEW_WEST:
                     if (position.x + 4 > height) {
                         top = height - x - 7;
                     }

@@ -1291,7 +1291,7 @@ i16 TickEnemySpawnTimer(void) {
 // Traces the sight lines from x/y along `direction` row by row (up to three
 // steps back) until a cell blocks it.
 RVA(0x0000ee70, 0x80)
-void TraceSight(i16 x, i16 y, i16 direction) {
+void TraceSight(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     i16 step;
     i16 right;
     i16 left;
@@ -1324,7 +1324,14 @@ void TraceSight(i16 x, i16 y, i16 direction) {
 // Marks the cells of sight row `step` seen from x/y facing `direction`, out
 // to the left and right bounds; a blocking cell narrows its bound.
 RVA(0x0000eef0, 0x179)
-void ScanSightRow(i16 x, i16 y, i16 step, i16 direction, i16* left, i16* right) {
+void ScanSightRow(
+    i16 x,
+    i16 y,
+    i16 step,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16* left,
+    i16* right
+) {
     i16 side;
     i16 i;
     i16 cellX;

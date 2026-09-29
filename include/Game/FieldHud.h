@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Game/GameState.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 #include <Ui/Panel.h>
 
@@ -69,7 +70,7 @@ MapCoord GetPanelSize(Panel* panel);
 
 void FlushPlaneUpdates(void);
 
-void RedrawFieldAt(i16 x, i16 y, i16 direction);
+void RedrawFieldAt(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 // @identity-TODO: callees of the field commands: the number of hotspots of `kind`
 // (0x445680; kind 2 with a pending abort and `consume` set gives -1 and

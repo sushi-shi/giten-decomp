@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 // The loaded area map (LoadAreaMap reads it into a 0x2c00-byte buffer) and the
@@ -285,7 +286,14 @@ const CellKind* FindCellKind(const CellHead* cell);
 
 // Latches the cell and the destination bytes at the given offsets (x, y, then
 // direction, level and area where the offset is not -1) for RunCellEvent.
-void LatchCellDestination(const CellHead* cell, i16 x, i16 y, i16 direction, i16 level, i16 area);
+void LatchCellDestination(
+    const CellHead* cell,
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16 level,
+    i16 area
+);
 
 // @identity-TODO: what the codes 0x48..0x4e are is unrecovered.
 b16 IsReservedObjectCell(const CellHead* cell);
@@ -309,7 +317,7 @@ i16 CheckBlockingCell(const CellHead* cell, i16 mode, i16 flagOffset, i16 x, i16
 i16 GetEventCellCode(i16 x, i16 y);
 // Returns the barring door's code (0: none) for a step from x/y facing
 // `direction`, move `turn`.
-i16 IsStepBarred(i16 x, i16 y, i16 direction, i16 turn);
+i16 IsStepBarred(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn);
 i16 WrapMapCoord(i16 value, i16 size);
 i16 ClampMapCoord(i16 value, i16 size);
 i16 RevealAreaMapAt(i16 x, i16 y);

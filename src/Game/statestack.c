@@ -2232,7 +2232,7 @@ b16 RunWorldMap(void) {
             g_party.field.pos.level = 0;
             g_party.field.pos.x = 3;
             g_party.field.pos.y = 3;
-            g_party.field.pos.direction = 0;
+            g_party.field.pos.direction = VIEW_NORTH;
             LoadAreaMap(0xff, 0);
             SetModeFlags(MODE_WORLD_MAP);
             if (g_worldMapRequest > 0) {
@@ -2365,7 +2365,7 @@ b16 RunWorldMap(void) {
                 CloseMessageWindow();
                 g_party.field.pos.x = 3;
                 g_party.field.pos.y = 3;
-                g_party.field.pos.direction = 0;
+                g_party.field.pos.direction = VIEW_NORTH;
                 SetGamePhase(WORLD_MAP_PHASE_LEAVE_FOR_STATE);
                 SetGameStep(GAME_STATE_FIELD);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
@@ -2540,7 +2540,7 @@ void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) 
 }
 
 RVA(0x0001a090, 0x3b)
-void SetCellMark(i16 area, i16 level, i16 x, i16 y, i16 direction) {
+void SetCellMark(i16 area, i16 level, i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     s_markedArea = area;
     s_markedLevel = level;
     s_markedX = x;

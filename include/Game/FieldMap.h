@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Game/AreaMap.h>
+#include <Game/ViewDirection.h>
 
 // Field-map events around an encounter.
 
@@ -25,7 +26,7 @@ void RespawnAreaActors(void);
 
 // Marks the cell (area, level, x, y, facing) the party must leave before a
 // cell event there runs again.
-void SetCellMark(i16 area, i16 level, i16 x, i16 y, i16 direction);
+void SetCellMark(i16 area, i16 level, i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 void SaveFieldPosition(void);
 

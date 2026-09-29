@@ -94,8 +94,8 @@ i16 AddSceneHotspot(void* object, GZ_ENUM_PARAM(SceneHotspotKind, i16) kind, Sce
     switch (kind) {
         case 0:
         case 1:
-        case 2:
-        case 3:
+        case SCENE_HOTSPOT_OBJECT:
+        case SCENE_HOTSPOT_BOX:
         case 4:
         case 5:
             s_hotspots[s_hotspotCount].sprite = *sprite;

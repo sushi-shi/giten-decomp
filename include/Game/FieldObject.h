@@ -3,10 +3,12 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/Character.h>
 #include <Game/FieldSupport.h>
 #include <Game/GameState.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 // Negative image codes request horizontal mirroring. Nonnegative codes
@@ -102,7 +104,7 @@ typedef struct FieldObject {
     u8 pad211;
     i8 moonRow;
     MapCoord pos;
-    i16 direction;
+    GZ_ENUM_STORAGE(ViewDirection, i16) direction;
     u8 pad219;
     u8 byte21a;
     u8 byte21b;

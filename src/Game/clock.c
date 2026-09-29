@@ -829,7 +829,14 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
 
 // Destination offsets address bytes in the cell's variable-format record.
 RVA(0x00021d20, 0x91)
-void LatchCellDestination(const CellHead* cell, i16 x, i16 y, i16 direction, i16 level, i16 area) {
+void LatchCellDestination(
+    const CellHead* cell,
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16 level,
+    i16 area
+) {
     const u8* bytes = &cell->x;
     g_cellX = cell->x;
     g_cellY = cell->y;
@@ -994,7 +1001,7 @@ i16 GetEventCellCode(i16 x, i16 y) {
 }
 
 RVA(0x000221f0, 0x99)
-i16 IsStepBarred(i16 x, i16 y, i16 direction, i16 turn) {
+i16 IsStepBarred(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn) {
     i16 facing;
     DoorCell* door;
     if (g_areaLevel == NULL) {

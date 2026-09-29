@@ -2287,7 +2287,7 @@ void OpQueueAutoMoves(void) {
     while (move != 0xff) {
         if (i == 0 && g_party.field.pos.area == 0x82 && g_party.field.pos.level == 5
             && g_party.field.pos.x == 4 && g_party.field.pos.y == 9
-            && g_party.field.pos.direction == 3 && move == 3) {
+            && g_party.field.pos.direction == VIEW_WEST && move == 3) {
             move = 1;
         }
         PushAutoMove(move);
