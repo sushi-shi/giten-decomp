@@ -618,3 +618,34 @@ src/Game/clock.c	GetCellAtOffset	*	*	*	@identity-TODO: an exception at Shinjuku 
 src/Game/clock.c	CopyExitAt	7	*	*	@identity-TODO: exit kind 7
 src/Game/clock.c	*Panel*	*	*	*	@identity-TODO: panel images 0x12, 0x110 (13 rows) and 0x112 with their special cases; -1 no image or no selection; the kind's low nibble
 src/Game/clock.c	TestFlagBits	0	*	*	no bit of the mask set
+src/Game/fieldscreen.c	PrepareFieldRedraw	*	*	*	@identity-TODO: the mask reset (1) and the view reset flag cleared
+src/Game/fieldscreen.c	UpdateFieldScreen	*	call-argument	*	@identity-TODO: the info-bar layout 0, the status refresh 1 and the full redraw (1, 0)
+src/Game/fieldscreen.c	*Cursor*	-1	*	*	no cursor cell
+src/Game/fieldscreen.c	TrackWorldMapCursor	*	*	*	the 640x328 view
+src/Game/fieldscreen.c	RunFieldPanelRow	1	call-argument	*	@identity-TODO: RunPanelRow's third argument 1
+src/Game/fieldscreen.c	SetFieldMenuMode	*	*	*	@identity-TODO: the field command panel's modes 0..3 (which of rows 2, 3, 5..7 are disabled); the rows are command icons with no recovered labels
+src/Game/fieldscreen.c	RevealAutomap*	*	*	*	automap reveal: one cell ahead; a hidden cell is 0
+src/Game/fieldscreen.c	CanRevealAutomap*	0	*	*	a hidden automap cell is 0
+src/Game/fieldscreen.c	LoadCommandMenuImage	0x11	*	*	@identity-TODO: menu image 0x11
+src/Game/fieldscreen.c	SetFieldStatusBit*	*	*	*	@identity-TODO: field panel row 1's status bits 0 and 11 (0x800)
+src/Game/fieldscreen.c	LoadMenuImage	0	*	*	no menu image
+src/Game/fieldscreen.c	*PanelRow	*	call-argument	*Hotspot(*	panel rows are hotspots of the first plane, unhighlighted (0), hit tests with the flag 1
+src/Game/fieldscreen.c	Update*Palette	*	call-argument	*	@identity-TODO: the palette modes 0 and 1 the view and area switch between; the cell one step ahead (0, -1)
+src/Game/fieldscreen.c	RebuildFieldView	0	*	*	@identity-TODO: video plane 0 redrawn and the objects shown
+src/Game/fieldscreen.c	FreeEffect*	-1	*	*	no effect frames or backdrop loaded
+src/Game/fieldscreen.c	SelectEffectImages	*	*	*	effect image files 0x1300 (backdrops) and 0x1400 (frames) plus the effect id
+src/Game/fieldscreen.c	PlayWallEffect	*	*	*	@identity-TODO: the wall effect: every party member (-1), five frames of plane 0 stepped by 2, drawn whole
+src/Game/fieldscreen.c	UpdateFieldHud	*	*	*	@identity-TODO: the HUD's wall messages: side and front walls on the near rows (along > -4), 1 marks a message wall, 2 once its message is shown
+src/Game/fieldscreen.c	DrawFieldMessage	*	*	*	field message layout: an empty message, 8-pixel columns, the 78-column line, the 40-column centre and rows 40 and 62, column 16
+src/Game/fieldscreen.c	GetFieldMessage	*	*	*	@identity-TODO: wall message codes 0x40..0x9f
+src/Game/fieldscreen.c	LoadWorldMapBlock*	*	*	*	@identity-TODO: world-map block images: file 0x7e00 + block, block 76's file 0x7e58, 88 blocks, variants; the six loaded block slots and their block numbers
+src/Game/fieldscreen.c	*WorldMapBlock*	*	*	*	@identity-TODO: an unused block slot (-1) and its reserved word
+src/Game/fieldscreen.c	*WorldMapViewOrigin	*	*	*	the view centre (320, 164) and the half-block row test (200 / 100)
+src/Game/fieldscreen.c	GetWorldViewBlockDelta	*	*	*	block columns and rows (8 per row); a zero delta
+src/Game/fieldscreen.c	GetWorldMapCellCode	0	*	*	outside the map: no code
+src/Game/fieldscreen.c	GetWorldMapMarker	*	*	*	-1 outside the map; the marker's 3-pixel offset
+src/Game/fieldscreen.c	GetWorldBlock	0	*	*	@identity-TODO: world block slot 0
+src/Game/fieldscreen.c	*LayerImage*	*	*	*	@identity-TODO: layer image bands (7), the band scale 281/225 and the last band 6; a new image's count 1
+src/Game/fieldscreen.c	GetLayerFrame	0	*	*	no frame
+src/Game/fieldscreen.c	InitWorldPanel	0x118	*	*	@identity-TODO: menu image 0x118
+src/Game/fieldscreen.c	ClearFieldPanelSelection	0	*	*	no movement under way (move state 0)

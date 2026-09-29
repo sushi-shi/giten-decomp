@@ -318,15 +318,15 @@ b16 CanOpenAutomap(void) {
     if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) == true) {
         return false;
     }
-    character = GetCharacterById(0);
+    character = GetCharacterById(HUMAN_KATSURAGI);
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
-    character = GetCharacterById(10);
+    character = GetCharacterById(HUMAN_YAMASE);
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
-    character = GetCharacterById(11);
+    character = GetCharacterById(HUMAN_KIRISHIMA);
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
@@ -1509,11 +1509,16 @@ u8 GetWorldMapCellCode(i16 layer, i16 x, i16 y) {
     if (!IsWorldCellInMap(x, y)) {
         return 0;
     }
-    column = x / 288;
-    row = y / 200;
-    block = column + row * 8;
+    column = x / WORLD_BLOCK_WIDTH;
+    row = y / WORLD_BLOCK_HEIGHT;
+    block = column + row * WORLD_BLOCK_COLUMNS;
     ResolveWorldMapBlockSlot(block);
-    return ReadWorldMapTileCode(x - column * 288, y - row * 200, block, layer);
+    return ReadWorldMapTileCode(
+        x - column * WORLD_BLOCK_WIDTH,
+        y - row * WORLD_BLOCK_HEIGHT,
+        block,
+        layer
+    );
 }
 
 RVA(0x000167b0, 0x14)
@@ -1548,11 +1553,11 @@ i16 GetWorldMapMarker(i16* x, i16* y) {
     if (!IsWorldCellInMap(g_worldMapX, g_worldMapY)) {
         return -1;
     }
-    column = g_worldMapX / 288;
-    row = g_worldMapY / 200;
-    block = column + row * 8;
-    *x = g_worldMapX - column * 288 - 3;
-    *y = g_worldMapY - row * 200 - 3;
+    column = g_worldMapX / WORLD_BLOCK_WIDTH;
+    row = g_worldMapY / WORLD_BLOCK_HEIGHT;
+    block = column + row * WORLD_BLOCK_COLUMNS;
+    *x = g_worldMapX - column * WORLD_BLOCK_WIDTH - 3;
+    *y = g_worldMapY - row * WORLD_BLOCK_HEIGHT - 3;
     ResolveWorldMapBlockSlot(block);
     return block;
 }
