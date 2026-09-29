@@ -1,11 +1,10 @@
 // @identity-TODO: the owning TU is unproven. One retail object: the .bss
 // statics of the treasure box, party reorder, analyze window, world-map
-// events, item-list menus, training, panel input, automap bitmaps and area
-// NPC code interleave in one run (0x47bee0..0x47d63f), each read only by its
-// own part's code; their initialized data, the info bar's included, forms
-// one .data run out of .text order (0x468b30..0x468c51) ahead of one run of
-// literals; and the code, from the treasure box through the area NPCs, is
-// contiguous in .text.
+// events, item-list menus, training, panel input, automap bitmaps and area NPC
+// code interleave in one run, each read only by its own part's code; their
+// initialized data, the info bar's included, forms one .data run out of .text
+// order ahead of one run of literals; and the code, from the treasure box
+// through the area NPCs, is contiguous in .text.
 
 #include <rva.h>
 
