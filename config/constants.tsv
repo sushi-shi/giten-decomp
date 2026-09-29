@@ -161,3 +161,6 @@ src/Platform/winmain.cpp	s_*Indices	*	data-or-extent	*	triangle vertex indices o
 src/Platform/winmain.cpp	g_menuButtonX	*	data-or-extent	*	menu bar button left edges in pixels
 src/Platform/winmain.cpp	s_layerOrder	*	data-or-extent	*	the party panel number after SCREEN_LAYER_FIRST_PANEL
 src/Platform/winmain.cpp	HandleInput	*	arithmetic	*SCREEN_LAYER_FIRST_PANEL	the party panel number after SCREEN_LAYER_FIRST_PANEL
+src/Script/scriptactor.c	OpLoadRecord	*	*	*	a shop script (file 0x7f) entry and its keeper sprite (slot 0x1f, image number and position) or map location, as the developer trace beside each names; files 0xe0..0xff are skipped
+src/Script/scriptactor.c	OpJumpUnlessStatContest	*	*	*switch on level	the contest level 0..3 (0 compares the target's own value, 1..3 roll wider ranges)
+src/Script/scriptactor.c	OpJumpUnlessStatContest	[01]	trivial-function-literal	[01] case	the contest level 0..3 (0 compares the target's own value, 1..3 roll wider ranges)

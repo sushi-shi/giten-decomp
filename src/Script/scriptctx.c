@@ -38,7 +38,7 @@ ScriptContext* g_curScript;
 // Negative script object ids -1, -2, ... name slots 0, 1, ...
 RVA(0x000387f0, 0xa)
 i16 ObjectSlotOfId(i16 id) {
-    id = -1 - id;
+    id = SCRIPT_REF_SLOT_BASE - id;
     return id;
 }
 
@@ -128,25 +128,25 @@ Character* GetScriptActor(void) {
 
 RVA(0x00038a50, 0x134)
 Character* ResolveScriptObject(i16 id) {
-    if (id == -16) {
+    if (id == SCRIPT_REF_FAVOURED_MEMBER) {
         return GetPartyCharacter(FindFavouredMember());
     }
-    if (id == -17) {
+    if (id == SCRIPT_REF_ACTOR) {
         return GetScriptActor();
     }
-    if (id == -18) {
+    if (id == SCRIPT_REF_ACTOR_BY_ID) {
         return GetCharacterById(GetScriptActorId());
     }
-    if (id == -19) {
+    if (id == SCRIPT_REF_ACTOR_ALIAS) {
         return GetScriptActor();
     }
-    if (id == -20) {
+    if (id == SCRIPT_REF_BATTLE_ACTOR) {
         return GetCombatant(g_actorId);
     }
-    if (id == -21) {
+    if (id == SCRIPT_REF_BATTLE_TARGET) {
         return GetCombatant(g_targetId);
     }
-    if (id == -22 || id == -23) {
+    if (id == SCRIPT_REF_FUSION_RESULT || id == SCRIPT_REF_FUSION_RESULT_ALIAS) {
         return LoadFusionResultCharacter(GetCharacter(-1));
     }
     if (id < 0) {

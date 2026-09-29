@@ -16,6 +16,7 @@
 #include <Game/BagItems.h>
 #include <Game/BattleEffect.h>
 #include <Game/Character.h>
+#include <Game/CharacterStat.h>
 #include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
@@ -64,6 +65,7 @@
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
 #include <Script/LongVar.h>
+#include <Script/ObjectRef.h>
 #include <Script/Script.h>
 #include <Script/ScriptBlock.h>
 #include <Script/ScriptCmd.h>
@@ -1484,16 +1486,16 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
     ReadContestValues(stat, &own, &other, swap);
     won = 0;
     switch (stat) {
-        case 0:
+        case STAT_INTUITION:
             RollFixedContestValue(other, level);
             break;
-        case 1:
+        case STAT_MENTAL_STRENGTH:
             RollFixedContestValue(other, level);
             break;
-        case 2:
+        case STAT_MAGIC:
             RollRelativeContestValue(other, level);
             break;
-        case 3:
+        case STAT_INTELLIGENCE:
             switch (level) {
                 case 0:
                     break;
@@ -1508,10 +1510,10 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
                     break;
             }
             break;
-        case 4:
+        case STAT_PROTECTION:
             RollFixedContestValue(other, level);
             break;
-        case 5:
+        case STAT_STRENGTH:
             switch (level) {
                 case 0:
                 case 1:
@@ -1521,22 +1523,22 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
                     break;
             }
             break;
-        case 6:
+        case STAT_VITALITY:
             RollRelativeContestValue(other, level);
             break;
-        case 7:
+        case STAT_AGILITY:
             RollRelativeContestValue(other, level);
             break;
-        case 8:
+        case STAT_DEXTERITY:
             RollFixedContestValue(other, level);
             break;
-        case 9:
+        case STAT_CHARM:
             RollFixedContestValue(other, level);
             break;
-        case 10:
+        case STAT_FORTUNE:
             RollFixedContestValue(other, level);
             break;
-        case 11:
+        case CONTEST_LEVEL:
             switch (level) {
                 case 0: {
                     i32 ownAgility;
@@ -1557,7 +1559,7 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
                     break;
             }
             break;
-        case 12:
+        case CONTEST_LEVEL_GAP:
             switch (level) {
                 case 0:
                     other = RandomAverage(0, 7, 0);
@@ -1573,7 +1575,7 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
                     break;
             }
             break;
-        case 13:
+        case CONTEST_FAMILIARITY:
             switch (level) {
                 case 0:
                     other = RandomAverage(0, 7, 0);
@@ -1589,7 +1591,7 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
                     break;
             }
             break;
-        case 14:
+        case CONTEST_FAMILIARITY_COUNT:
             switch (level) {
                 case 0:
                     other = RandomAverage(35, 70, 0);
@@ -2675,20 +2677,20 @@ void OpGetTimeOfDay(void) {
 // escape selects each is unrecovered. `byId` makes kinds 1/2 take `id` as a
 // character id instead of a script object id.
 RVA(0x00036700, 0x218)
-char* GetTextToken(i16 kind, i16 byId, i16 id) {
+char* GetTextToken(GZ_ENUM_PARAM(TextTokenKind, i16) kind, i16 byId, i16 id) {
     const char* text = NULL;
     Character* object;
     s_tokenText[0] = '\0';
     switch (kind) {
-        case 0:
+        case TEXT_TOKEN_FULL_NAME:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
             }
             FormatFullName(s_tokenText, object);
             return s_tokenText;
-        case 1:
-        case 2:
+        case TEXT_TOKEN_RACE_NAME:
+        case TEXT_TOKEN_RACE_NAME_ALIAS:
             if (byId != 1) {
                 object = ResolveScriptObject(id);
                 if (object != NULL) {
@@ -2697,7 +2699,7 @@ char* GetTextToken(i16 kind, i16 byId, i16 id) {
             }
             text = GetDemonRaceName(id);
             break;
-        case 3:
+        case TEXT_TOKEN_PANTHEON_NAME:
             if (byId != 1) {
                 object = ResolveScriptObject(id);
                 if (object != NULL) {
@@ -2706,17 +2708,17 @@ char* GetTextToken(i16 kind, i16 byId, i16 id) {
             }
             text = GetDemonPantheonName(id);
             break;
-        case 4:
+        case TEXT_TOKEN_RECORD_NAME:
             text = GetLoadedRecordName(id);
             break;
-        case 7:
+        case TEXT_TOKEN_NAME_PREFIX:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
             }
             text = object->namePrefix;
             break;
-        case 8:
+        case TEXT_TOKEN_NONHUMAN_NAME_PREFIX:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
@@ -2727,49 +2729,49 @@ char* GetTextToken(i16 kind, i16 byId, i16 id) {
                 text = object->name;
             }
             break;
-        case 9:
+        case TEXT_TOKEN_BLOOD_TYPE:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
             }
             text = s_bloodTypes[object->bloodType];
             break;
-        case 10:
+        case TEXT_TOKEN_SIGN:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
             }
             text = s_signNames[object->sign];
             break;
-        case 11:
+        case TEXT_TOKEN_AFFILIATION:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
             }
             text = s_affiliationNames[GetCharacterAffiliation(object, 0)];
             break;
-        case 12:
+        case TEXT_TOKEN_STATUS_CONDITION:
             text = GetConditionName(g_statusCondition);
             break;
-        case 15:
+        case TEXT_TOKEN_RECORD_NAME_ALIAS:
             text = GetLoadedRecordName(id);
             break;
-        case 16:
+        case TEXT_TOKEN_DEMON_CLASS:
             text = GetDemonClassName(id);
             break;
-        case 17:
+        case TEXT_TOKEN_SKILL_NAME:
             text = GetSkillName(id);
             break;
-        case 18:
+        case TEXT_TOKEN_CONDITION_NAME:
             text = GetConditionName(id);
             break;
-        case 19:
+        case TEXT_TOKEN_STATUS_CONDITION_ALIAS:
             text = GetConditionName(g_statusCondition);
             break;
-        case 5:
-        case 6:
-        case 13:
-        case 14:
+        case TEXT_TOKEN_EMPTY_5:
+        case TEXT_TOKEN_EMPTY_6:
+        case TEXT_TOKEN_EMPTY_13:
+        case TEXT_TOKEN_EMPTY_14:
             break;
         default:
             return s_tokenText;
@@ -2795,39 +2797,39 @@ char* ReadTextToken(void) {
     id = 0;
     byId = 0;
     switch (kind) {
-        case 0:
+        case TEXT_TOKEN_FULL_NAME:
             object = ReadScriptObject();
             if (object) {
                 FormatFullName(s_tokenText, object);
             }
             ExchangeObjectCheckBypass(bypass);
             return s_tokenText;
-        case 1:
+        case TEXT_TOKEN_RACE_NAME:
             goto readIndexedToken;
-        case 2:
+        case TEXT_TOKEN_RACE_NAME_ALIAS:
             goto readIndexedToken;
-        case 3:
+        case TEXT_TOKEN_PANTHEON_NAME:
             goto readIndexedToken;
-        case 7:
+        case TEXT_TOKEN_NAME_PREFIX:
             goto readIndexedToken;
-        case 8:
+        case TEXT_TOKEN_NONHUMAN_NAME_PREFIX:
             goto readIndexedToken;
-        case 9:
+        case TEXT_TOKEN_BLOOD_TYPE:
             goto readIndexedToken;
-        case 10:
+        case TEXT_TOKEN_SIGN:
             goto readIndexedToken;
-        case 11:
+        case TEXT_TOKEN_AFFILIATION:
         readIndexedToken:
             byId = ReadScriptByte();
             id = ReadScriptValue();
             break;
-        case 4:
+        case TEXT_TOKEN_RECORD_NAME:
             id = ReadScriptValue();
             if (id == 0) {
                 id = GetScriptLongVar(11);
             }
             break;
-        case 15:
+        case TEXT_TOKEN_RECORD_NAME_ALIAS:
             ReadScriptValue();
             id = g_actionId;
             object = GetCombatant(g_actorId);
@@ -2835,10 +2837,10 @@ char* ReadTextToken(void) {
                 id = object->pickItem;
             }
             break;
-        case 16:
+        case TEXT_TOKEN_DEMON_CLASS:
             id = ReadObjectId();
             break;
-        case 17:
+        case TEXT_TOKEN_SKILL_NAME:
             ReadScriptValue();
             id = g_actionId;
             object = GetCombatant(g_actorId);
@@ -2846,20 +2848,20 @@ char* ReadTextToken(void) {
                 id = object->pickItem;
             }
             break;
-        case 18:
+        case TEXT_TOKEN_CONDITION_NAME:
             id = GetFirstConditionIndex(ReadScriptObject());
             break;
-        case 5:
+        case TEXT_TOKEN_EMPTY_5:
             goto readTokenValue;
-        case 6:
+        case TEXT_TOKEN_EMPTY_6:
             goto readTokenValue;
-        case 12:
+        case TEXT_TOKEN_STATUS_CONDITION:
             goto readTokenValue;
-        case 13:
+        case TEXT_TOKEN_EMPTY_13:
             goto readTokenValue;
-        case 14:
+        case TEXT_TOKEN_EMPTY_14:
             goto readTokenValue;
-        case 19:
+        case TEXT_TOKEN_STATUS_CONDITION_ALIAS:
         readTokenValue:
             id = ReadScriptValue();
             break;
@@ -3317,31 +3319,31 @@ i32 ReadScriptValue(void) {
 // 12..14 the target's level gap, familiarity and familiarity count against -1;
 // `swap` exchanges the sides.
 RVA(0x000374a0, 0x110)
-void ReadContestValues(i16 stat, i32* own, i32* other, i16 swap) {
+void ReadContestValues(GZ_ENUM_PARAM(ContestStat, i16) stat, i32* own, i32* other, i16 swap) {
     Character* object;
     i32 kept;
 
     switch (stat) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-            *own = GetObjectStatTotal(-1, stat);
-            *other = GetObjectStatTotal(-17, stat);
+        case STAT_INTUITION:
+        case STAT_MENTAL_STRENGTH:
+        case STAT_MAGIC:
+        case STAT_INTELLIGENCE:
+        case STAT_PROTECTION:
+        case STAT_STRENGTH:
+        case STAT_VITALITY:
+        case STAT_AGILITY:
+        case STAT_DEXTERITY:
+        case STAT_CHARM:
+        case STAT_FORTUNE:
+            *own = GetObjectStatTotal(SCRIPT_REF_SLOT_BASE, stat);
+            *other = GetObjectStatTotal(SCRIPT_REF_ACTOR, stat);
             break;
-        case 11:
-            *own = GetObjectLevel(-1);
-            *other = GetObjectLevel(-17);
+        case CONTEST_LEVEL:
+            *own = GetObjectLevel(SCRIPT_REF_SLOT_BASE);
+            *other = GetObjectLevel(SCRIPT_REF_ACTOR);
             break;
-        case 12:
-            object = ResolveScriptObject(-17);
+        case CONTEST_LEVEL_GAP:
+            object = ResolveScriptObject(SCRIPT_REF_ACTOR);
             if (object == NULL) {
                 *own = 0;
             } else {
@@ -3349,8 +3351,8 @@ void ReadContestValues(i16 stat, i32* own, i32* other, i16 swap) {
             }
             *other = -1;
             break;
-        case 13:
-            object = ResolveScriptObject(-17);
+        case CONTEST_FAMILIARITY:
+            object = ResolveScriptObject(SCRIPT_REF_ACTOR);
             if (object == NULL) {
                 *own = 0;
             } else {
@@ -3358,8 +3360,8 @@ void ReadContestValues(i16 stat, i32* own, i32* other, i16 swap) {
             }
             *other = -1;
             break;
-        case 14:
-            object = ResolveScriptObject(-17);
+        case CONTEST_FAMILIARITY_COUNT:
+            object = ResolveScriptObject(SCRIPT_REF_ACTOR);
             if (object == NULL) {
                 *own = 0;
             } else {

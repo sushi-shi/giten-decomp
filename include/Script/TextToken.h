@@ -3,9 +3,34 @@
 
 #include <rva.h>
 
+#include <Enums.h>
 #include <Ints.h>
 
-char* GetTextToken(i16 kind, i16 byId, i16 id);
+// The texts GetTextToken puts in a script line, named after what each reads.
+GZ_ENUM_BEGIN(TextTokenKind)
+    TEXT_TOKEN_FULL_NAME = 0,
+    TEXT_TOKEN_RACE_NAME = 1,
+    TEXT_TOKEN_RACE_NAME_ALIAS = 2,
+    TEXT_TOKEN_PANTHEON_NAME = 3,
+    TEXT_TOKEN_RECORD_NAME = 4,
+    TEXT_TOKEN_EMPTY_5 = 5,
+    TEXT_TOKEN_EMPTY_6 = 6,
+    TEXT_TOKEN_NAME_PREFIX = 7,
+    TEXT_TOKEN_NONHUMAN_NAME_PREFIX = 8,
+    TEXT_TOKEN_BLOOD_TYPE = 9,
+    TEXT_TOKEN_SIGN = 10,
+    TEXT_TOKEN_AFFILIATION = 11,
+    TEXT_TOKEN_STATUS_CONDITION = 12,
+    TEXT_TOKEN_EMPTY_13 = 13,
+    TEXT_TOKEN_EMPTY_14 = 14,
+    TEXT_TOKEN_RECORD_NAME_ALIAS = 15,
+    TEXT_TOKEN_DEMON_CLASS = 16,
+    TEXT_TOKEN_SKILL_NAME = 17,
+    TEXT_TOKEN_CONDITION_NAME = 18,
+    TEXT_TOKEN_STATUS_CONDITION_ALIAS = 19
+GZ_ENUM_END(TextTokenKind)
+
+char* GetTextToken(GZ_ENUM_PARAM(TextTokenKind, i16) kind, i16 byId, i16 id);
 
 RVA_DECL(0x00036920)
 char* ReadTextToken(void);

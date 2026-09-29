@@ -113,7 +113,17 @@ GZ_ENUM_END(ScriptOperandKind)
 // Reads one typed operand from the script and returns its value's slot.
 i32* ReadScriptOperand(void);
 
-void ReadContestValues(i16 stat, i32* own, i32* other, i16 swap);
+// What a stat contest compares beyond the CharacterStat stats (0..10) of the
+// actor and the target: their levels, or the actor's level gap, familiarity
+// or familiarity count.
+GZ_ENUM_BEGIN(ContestStat)
+    CONTEST_LEVEL = 11,
+    CONTEST_LEVEL_GAP = 12,
+    CONTEST_FAMILIARITY = 13,
+    CONTEST_FAMILIARITY_COUNT = 14
+GZ_ENUM_END(ContestStat)
+
+void ReadContestValues(GZ_ENUM_PARAM(ContestStat, i16) stat, i32* own, i32* other, i16 swap);
 
 // Macca, magnetite, twice the experience per able member, or first drop.
 i32 GetBattleResultValue(i16 which);
