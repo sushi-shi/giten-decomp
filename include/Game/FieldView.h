@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <Enums.h>
 #include <Game/GameState.h>
 
 // The first-person view's cells: 4 rows ahead of the party (row 3 is the
@@ -111,10 +112,10 @@ u16 GetRotatedWallAtOffset(i16 x, i16 y, i16 dir, i16 across, i16 along);
 // Raw wall kind at x/y in an absolute direction; pass it to WallStops for a stop class.
 i16 GetMapWallKind(i16 x, i16 y, i16 direction);
 i16 StepMapCoord(i16* x, i16* y, i16 dir, i16 turn);
-typedef enum WallStopMode {
+GZ_ENUM_BEGIN(WallStopMode)
     WALL_STOP_GEOMETRY = 0,
     WALL_STOP_MOVEMENT = 1
-} WallStopMode;
+GZ_ENUM_END(WallStopMode)
 
 u8 WallStops(i16 wall, i16 mode);
 i16 GetCellWallStop(i16 direction, i16 turn, u16 cell);

@@ -3,6 +3,8 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+
 // Field-map events around an encounter.
 
 // @identity-TODO: the body is a bare ret; the name comes only from its single call site (battle
@@ -59,6 +61,6 @@ void PlayLevelMusic(void);
 // @identity-TODO: The meaning of each returned event kind (3 leads to SaveFieldPosition and
 // phase 1; 2, 0xb and record bytes are others) is unrecovered.
 RVA_DECL(0x00021880)
-i16 CheckCellEvent(i16 x, i16 y, i16 level);
+GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level);
 
 #endif // GITEN_GAME_FIELDMAP_H

@@ -3,6 +3,8 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Enums.h>
 #include <Ints.h>
 
 // The loaded area map (LoadAreaMap reads it into a 0x2c00-byte buffer) and the
@@ -11,12 +13,12 @@
 // bytes are addressed by offset: an event-flag pair (bank, index) that
 // disables the cell, and the destination bytes LatchCellDestination copies.
 
-typedef enum CellCode {
+GZ_ENUM_BEGIN(CellCode)
     CELL_EXIT = 0x41,
     CELL_STAIRS_UP = 0x42,
     CELL_STAIRS_DOWN = 0x43,
     CELL_CHUTE = 0x47
-} CellCode;
+GZ_ENUM_END(CellCode)
 
 typedef struct CellHead {
     u8 x;
@@ -26,7 +28,7 @@ typedef struct CellHead {
 
 #define IsCellListEnd(cell) ((cell)->x == 0xff)
 
-typedef enum CellEventKind {
+GZ_ENUM_BEGIN(CellEventKind)
     CELL_EVENT_NONE = 0,
     CELL_EVENT_WARP = 1,
     CELL_EVENT_BATTLE = 2,
@@ -39,11 +41,11 @@ typedef enum CellEventKind {
     CELL_EVENT_FORCED_MOVE = 9,
     CELL_EVENT_TRAP = 11,
     CELL_EVENT_MARKED_WARP = 14
-} CellEventKind;
+GZ_ENUM_END(CellEventKind)
 
-typedef enum CellKindFlags {
+GZ_ENUM_FLAGS_BEGIN(CellKindFlags, u8)
     CELL_KIND_CHECK_FACING = 1
-} CellKindFlags;
+GZ_ENUM_FLAGS_END(CellKindFlags)
 
 // A code's entry in the cell-kind table: `kind` is what CheckCellEvent returns
 // (RunCellEvent's case).
@@ -51,7 +53,7 @@ typedef enum CellKindFlags {
 typedef struct CellKind {
     u8 code;
     u8 kind;
-    u8 flags;
+    GZ_ENUM_STORAGE(CellKindFlags, u8) flags;
     u8 pad03;
 } CellKind;
 

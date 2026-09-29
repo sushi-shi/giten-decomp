@@ -123,7 +123,7 @@ typedef struct SavedLayer {
     i32 y;
 } SavedLayer;
 
-typedef enum HotspotImageGroup {
+GZ_ENUM_BEGIN(HotspotImageGroup)
     HOTSPOT_IMAGES_NONE = 0,
     HOTSPOT_IMAGES_ARROW_UP = 1,
     HOTSPOT_IMAGES_ARROW_DOWN = 2,
@@ -162,7 +162,7 @@ typedef enum HotspotImageGroup {
     HOTSPOT_IMAGES_KEYPAD_9 = 35,
     HOTSPOT_IMAGES_KEYPAD_CLEAR = 36,
     HOTSPOT_IMAGES_KEYPAD_OK = 37
-} HotspotImageGroup;
+GZ_ENUM_END(HotspotImageGroup)
 
 // A hotspot area: its screen rectangle and image pair (HighlightHotspot).
 typedef struct HotspotArea {

@@ -3,23 +3,24 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
 
 // Panel input policy; hidden, locked and disabled also apply to rows.
-typedef enum PanelFlags {
+GZ_ENUM_FLAGS_BEGIN(PanelFlags, u16)
     PANEL_ALLOW_RIGHT_CLICK = 0x0002,
     PANEL_IGNORE_RIGHT_CLICK = 0x0004,
     PANEL_HIDDEN = 0x1000,
     PANEL_HANDLER_LOCKED = 0x2000,
     PANEL_HELD_BUTTON_INPUT = 0x4000,
     PANEL_INPUT_DISABLED = 0x8000
-} PanelFlags;
+GZ_ENUM_FLAGS_END(PanelFlags)
 
-typedef enum PanelRowFlags {
+GZ_ENUM_FLAGS_BEGIN(PanelRowFlags, u16)
     PANEL_ROW_CHECKED = 0x0001,
     PANEL_ROW_SAVED_CHECK = 0x0010,
     PANEL_ROW_SAVED_INPUT_DISABLED = 0x0080
-} PanelRowFlags;
+GZ_ENUM_FLAGS_END(PanelRowFlags)
 
 // A menu panel: a flags word, a row count and a picture handle, then a table
 // of 10-byte rows. Each row has a flags word (bit 0 checked, bit 4 saved

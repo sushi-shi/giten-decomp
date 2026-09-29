@@ -997,7 +997,7 @@ void CancelFieldMap(void) {
 
 RVA(0x00013640, 0x440)
 void RunCellEvent(void) {
-    i16 kind;
+    GZ_ENUM_LOCAL(CellEventKind, i16) kind;
     i16 command;
     i16 map;
     u16 step;

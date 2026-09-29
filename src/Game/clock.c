@@ -690,7 +690,7 @@ const CellKind* FindCellKind(const CellHead* cell) {
 // Finds the event of cell x/y on `level`, latches its destination and scene
 // record, and returns its kind (0 for none).
 RVA(0x00021880, 0x49d)
-i16 CheckCellEvent(i16 x, i16 y, i16 level) {
+GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
     WarpCell* warp;
     BattleCell* battle;
     LinkCell* link;
