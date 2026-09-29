@@ -88,7 +88,7 @@ scriptop	3	3
 scriptsprite	2	2
 scriptswitch	10	10
 scripttext	59	57
-scriptvars	108	106
+scriptvars	108	107
 scriptvm	2	2
 shot	15	14
 skillattack	5	4
@@ -111,7 +111,7 @@ waitstate	7	7
 walltexture	1	1
 weaponattack	5	4
 windowcolor	13	13
-windowtext	2	2
+windowtext	2	1
 winmain	128	120
 worldmapgfx	4	4
 worldtravel	24	22
@@ -2038,7 +2038,7 @@ scriptvars	_PushCallFrame	100.0000	100.0000	1	ddcb6fc79a21	0x3c1f0	100.0000
 scriptvars	_ReadScriptBlock	100.0000	100.0000	1	7e5f9134017e	0x3aa90	100.0000	
 scriptvars	_ReadScriptEntry	100.0000	100.0000	1	f4d3dbf54236	0x3ab10	100.0000	
 scriptvars	_ReleaseScriptFiles	100.0000	100.0000	2	0c7264e86d57	0x3b810	100.0000	
-scriptvars	_ResizeScriptEntry	98.0000	98.0000	3	f5be17a66e26	0x3abc0	98.0000	
+scriptvars	_ResizeScriptEntry	100.0000	100.0000	3	f5be17a66e26	0x3abc0	100.0000	
 scriptvars	_RestoreSystemVars	100.0000	100.0000	1	22d64fae0e92	0x3bf30	100.0000	
 scriptvars	_RunActorScene	100.0000	100.0000	5	26f560f73275	0x3b450	100.0000	
 scriptvars	_RunMessageHook	100.0000	100.0000	1	1cea2890f4a3	0x3b5e0	100.0000	
@@ -2617,7 +2617,7 @@ windowcolor	_RestoreWindowAttr	100.0000	100.0000	2	4b64ccf22e99	0x2eb90	100.0000
 windowcolor	_SetWindowReverse	100.0000	100.0000	1	28f319f2440e	0x2ea80	100.0000	
 windowcolor	_StashWindowColor	100.0000	100.0000	1	39fcf2b9a35a	0x2eaf0	100.0000	
 windowcolor	_SwitchWindowAttr	100.0000	100.0000	2	f9697dae5b3e	0x2eb20	100.0000	
-windowtext	_PrintWindowText	100.0000	100.0000	5	d5e9f1bcde25	0x45340	100.0000	
+windowtext	_PrintWindowText	100.0000	93.2192	5	d5e9f1bcde25	0x45340	100.0000	
 windowtext	_PutTextChar	100.0000	100.0000	4	5ed9c2ac81fe	0x45410	100.0000	
 winmain	??0CIme@@QAE@XZ	100.0000	100.0000	1	cpp:cb01e3a51116	0x51100	100.0000	
 winmain	??0_D3DLVERTEX@@QAE@ABU_D3DVECTOR@@KKMM@Z	100.0000	100.0000	1	header:fa9afff5ee6c	0x511a0	100.0000	
