@@ -1821,7 +1821,9 @@ void RenderTBox(void) {
                 return;
             }
             Hotspot* hotspot = GetHotspot(g_hotspotCount);
-            ProjectBillboardRect(hotspot->rect, s_box);
+            D3DVECTOR corner;
+            D3DVECTOR screen;
+            ProjectBillboardRect(hotspot->rect, s_box, corner, screen);
             hotspot->kind = HOTSPOT_BOX;
             hotspot->texture = &g_textBoxTexture;
             hotspot->data = box;
@@ -1838,9 +1840,9 @@ RVA_DYNINIT(0x0004c3b0, 0x1, RenderTBox)
 // ones in view hotspots (kind 15 for the one in front of the party, 14 for one
 // on the party's cell); with `ownCellOnly` only an NPC on the party's cell is
 // drawn. The two nearest are ordered, then every NPC hotspot becomes kind 2.
-// @early-stop x87 schedule and allocation: the corner arithmetic is scheduled
-// differently, and retail keeps the cell pointer in ebx while spilling the
-// widened party coordinates; calls, texture selection and CFG match.
+// @early-stop x87 schedule: the billboard corner products and their stores
+// through float temporaries are scheduled differently; calls, texture
+// selection, CFG and the integer code match.
 RVA(0x0004c3c0, 0x754)
 void RenderNPC(BOOL ownCellOnly) {
     DATA(0x0008f210)
@@ -1970,7 +1972,9 @@ void RenderNPC(BOOL ownCellOnly) {
                 continue;
             }
             Hotspot* hotspot = GetHotspot(g_hotspotCount);
-            ProjectBillboardRect(hotspot->rect, s_npc);
+            D3DVECTOR corner;
+            D3DVECTOR screen;
+            ProjectBillboardRect(hotspot->rect, s_npc, corner, screen);
             hotspot->kind = kind;
             SelectNpcBillboardTexture(hotspot->texture, textureSlot);
             hotspot->data = GetAreaNpc(npc);
@@ -2309,7 +2313,9 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                         break;
                     }
                     Hotspot* hotspot = GetHotspot(g_hotspotCount);
-                    ProjectBillboardRect(hotspot->rect, s_enemy);
+                    D3DVECTOR corner;
+                    D3DVECTOR screen;
+                    ProjectBillboardRect(hotspot->rect, s_enemy, corner, screen);
                     hotspot->kind = HOTSPOT_TARGET;
                     hotspot->texture = &g_enemyTextures[layer][imageCode];
                     hotspot->value = GetObjectSlot(index);

@@ -300,22 +300,22 @@ extern Picture g_spritePicture;
         (vertices)[3].z += (offsetZ);                                                              \
     } while (0)
 
-#define ProjectBillboardRect(rect, vertices)                                                       \
+// Projects the billboard's top-left and bottom-right corners into `rect`
+// through the caller's `corner` and `screen` work vectors.
+#define ProjectBillboardRect(rect, vertices, corner, screen)                                       \
     do {                                                                                           \
-        D3DVECTOR corner;                                                                          \
-        D3DVECTOR screen;                                                                          \
-        corner.x = (vertices)[0].x;                                                                \
-        corner.y = (vertices)[0].y;                                                                \
-        corner.z = (vertices)[0].z;                                                                \
-        ProjectVector(&g_viewMatrix, &corner, &screen);                                            \
-        (rect).left = static_cast<LONG>(screen.x);                                                 \
-        (rect).top = static_cast<LONG>(screen.y);                                                  \
-        corner.x = (vertices)[2].x;                                                                \
-        corner.y = (vertices)[2].y;                                                                \
-        corner.z = (vertices)[2].z;                                                                \
-        ProjectVector(&g_viewMatrix, &corner, &screen);                                            \
-        (rect).right = static_cast<LONG>(screen.x);                                                \
-        (rect).bottom = static_cast<LONG>(screen.y);                                               \
+        (corner).x = (vertices)[0].x;                                                              \
+        (corner).y = (vertices)[0].y;                                                              \
+        (corner).z = (vertices)[0].z;                                                              \
+        ProjectVector(&g_viewMatrix, &(corner), &(screen));                                        \
+        (rect).left = static_cast<LONG>((screen).x);                                               \
+        (rect).top = static_cast<LONG>((screen).y);                                                \
+        (corner).x = (vertices)[2].x;                                                              \
+        (corner).y = (vertices)[2].y;                                                              \
+        (corner).z = (vertices)[2].z;                                                              \
+        ProjectVector(&g_viewMatrix, &(corner), &(screen));                                        \
+        (rect).right = static_cast<LONG>((screen).x);                                              \
+        (rect).bottom = static_cast<LONG>((screen).y);                                             \
     } while (0)
 
 // Effect bitmap metadata stores signed horizontal and vertical offsets.
