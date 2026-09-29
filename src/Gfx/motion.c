@@ -33,6 +33,12 @@ static i16 s_sceneInputSecond = 0;
 DATA(0x00078068)
 static volatile i16 s_sceneFlags = 0;
 
+// @identity-TODO: no code in this image touches this datum; its
+// zero-initialized run keeps one four-byte slot for it, so its width and
+// role are unproven. A reader in the PC-98 build would name it.
+DATA(0x0007806c)
+static i16 s_unusedSceneInput = 0;
+
 DATA(0x00078070)
 static i16 s_sceneInputPending = 0;
 
