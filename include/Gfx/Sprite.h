@@ -75,6 +75,12 @@ extern "C" {
     void ResetSprites(i16 mode);
     i16 GetSpriteMode(void);
 
+    // Marks every sprite slot unplaced.
+    // @identity-TODO: also clears the 16-entry table 0x48f588 to -1, whose role
+    // is unrecovered.
+    RVA_DECL(0x000586d0)
+    void UnplaceAllSprites(void);
+
     // Empties a placed slot.
     RVA_DECL(0x00058700)
     void UnplaceSprite(i16 slot);
