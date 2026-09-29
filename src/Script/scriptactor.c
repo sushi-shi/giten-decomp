@@ -2902,88 +2902,88 @@ void OpRollActorMacca(void) {
 // 75-79). Unknown kinds leave the slot unchanged.
 RVA(0x00036b00, 0x8e0)
 i32* ReadScriptOperand(void) {
-    i16 kind = ReadScriptByte();
+    GZ_ENUM_LOCAL(ScriptOperandKind, i16) kind = ReadScriptByte();
     Character* object;
     i8 byteValue;
     i16 wordValue;
 
     switch (kind) {
-        case 0:
+        case SCRIPT_OPERAND_BYTE:
             s_operand = ReadScriptByte();
             return &s_operand;
-        case 2:
+        case SCRIPT_OPERAND_LONG:
             s_operand = ReadScriptLong();
             return &s_operand;
-        case 3:
+        case SCRIPT_OPERAND_LONG_VAR:
             s_operand = GetScriptLongVar(ReadScriptByte());
             return &s_operand;
-        case 4:
+        case SCRIPT_OPERAND_SIGNED_BYTE:
             byteValue = ReadScriptByte();
             s_operand = byteValue;
             return &s_operand;
-        case 5:
+        case SCRIPT_OPERAND_SIGNED_WORD:
             wordValue = ReadScriptWord();
             s_operand = wordValue;
             return &s_operand;
-        case 6:
+        case SCRIPT_OPERAND_ITEM_PRICE:
             s_operand = GetItemPrice(ReadScriptValue());
             return &s_operand;
-        case 7:
+        case SCRIPT_OPERAND_ITEM_SELL_PRICE:
             s_operand = GetItemPrice(ReadScriptValue()) / 4;
             return &s_operand;
-        case 9:
+        case SCRIPT_OPERAND_ROLLED_MACCA:
             ReadScriptWord();
             s_operand = g_rolledMacca;
             return &s_operand;
-        case 10:
+        case SCRIPT_OPERAND_OBJECT_MACCA:
             s_operand = GetObjectMacca(ReadObjectRef());
             return &s_operand;
-        case 11:
+        case SCRIPT_OPERAND_ROLLED_MAGNETITE:
             ReadScriptWord();
             s_operand = g_rolledMagnetite;
             return &s_operand;
-        case 12:
+        case SCRIPT_OPERAND_OBJECT_MAGNETITE:
             s_operand = GetObjectMagnetite(ReadObjectRef());
             return &s_operand;
-        case 1:
-        case 13:
-        case 14:
-        case 15:
-        case 16:
-        case 17:
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 24:
+        case SCRIPT_OPERAND_WORD:
+        case SCRIPT_OPERAND_WORD_ALIAS_1:
+        case SCRIPT_OPERAND_WORD_ALIAS_2:
+        case SCRIPT_OPERAND_WORD_ALIAS_3:
+        case SCRIPT_OPERAND_WORD_ALIAS_4:
+        case SCRIPT_OPERAND_WORD_ALIAS_5:
+        case SCRIPT_OPERAND_WORD_ALIAS_6:
+        case SCRIPT_OPERAND_WORD_ALIAS_7:
+        case SCRIPT_OPERAND_WORD_ALIAS_8:
+        case SCRIPT_OPERAND_WORD_ALIAS_9:
+        case SCRIPT_OPERAND_WORD_ALIAS_10:
+        case SCRIPT_OPERAND_WORD_ALIAS_11:
+        case SCRIPT_OPERAND_WORD_ALIAS_12:
             s_operand = ReadScriptWord();
             return &s_operand;
-        case 25:
-        case 26:
-        case 27:
-        case 28:
-        case 29:
-        case 30:
-        case 31:
-        case 32:
-        case 33:
-        case 34:
-        case 35:
-            s_operand = GetObjectStatTotal(ReadObjectRef(), kind - 25);
+        case SCRIPT_OPERAND_OBJECT_STAT_0:
+        case SCRIPT_OPERAND_OBJECT_STAT_1:
+        case SCRIPT_OPERAND_OBJECT_STAT_2:
+        case SCRIPT_OPERAND_OBJECT_STAT_3:
+        case SCRIPT_OPERAND_OBJECT_STAT_4:
+        case SCRIPT_OPERAND_OBJECT_STAT_5:
+        case SCRIPT_OPERAND_OBJECT_STAT_6:
+        case SCRIPT_OPERAND_OBJECT_STAT_7:
+        case SCRIPT_OPERAND_OBJECT_STAT_8:
+        case SCRIPT_OPERAND_OBJECT_STAT_9:
+        case SCRIPT_OPERAND_OBJECT_STAT_10:
+            s_operand = GetObjectStatTotal(ReadObjectRef(), kind - SCRIPT_OPERAND_OBJECT_STAT_0);
             return &s_operand;
-        case 36:
+        case SCRIPT_OPERAND_OBJECT_LEVEL:
             s_operand = GetObjectLevel(ReadObjectRef());
             return &s_operand;
-        case 37:
+        case SCRIPT_OPERAND_OBJECT_LEVEL_GAP:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->levelGap;
             return &s_operand;
-        case 38:
+        case SCRIPT_OPERAND_OBJECT_FAMILIARITY:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
@@ -2994,279 +2994,279 @@ i32* ReadScriptOperand(void) {
             }
             s_operand += 2;
             return &s_operand;
-        case 39:
+        case SCRIPT_OPERAND_OBJECT_FAMILIARITY_COUNT:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetFamiliarityCount(object->id);
             return &s_operand;
-        case 40:
+        case SCRIPT_OPERAND_ROLLED_MACCA_WITH_UNIT:
             ReadScriptByte();
             s_operand = g_rolledMacca;
             strcpy(g_numberUnit, "\203}\203b\203J"); // マッカ
             return &s_operand;
-        case 41:
+        case SCRIPT_OPERAND_ROLLED_MAGNETITE_WITH_UNIT:
             ReadScriptByte();
             s_operand = g_rolledMagnetite;
             strcpy(g_numberUnit, "\202l\202`\202f"); // ＭＡＧ
             return &s_operand;
-        case 42:
+        case SCRIPT_OPERAND_IGNORED_WORD:
             ReadScriptWord();
             return &s_operand;
-        case 43:
+        case SCRIPT_OPERAND_OBJECT_HP:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->pools.hp.cur;
             return &s_operand;
-        case 44:
+        case SCRIPT_OPERAND_OBJECT_MP:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->pools.mp.cur;
             return &s_operand;
-        case 45:
+        case SCRIPT_OPERAND_OBJECT_MAX_HP:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->pools.hp.max;
             return &s_operand;
-        case 46:
+        case SCRIPT_OPERAND_OBJECT_MAX_MP:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->pools.mp.max;
             return &s_operand;
-        case 47:
+        case SCRIPT_OPERAND_OBJECT_ALIGNMENT_B:
             s_operand = GetObjectAlignmentLevelB(ReadObjectRef());
             return &s_operand;
-        case 48:
+        case SCRIPT_OPERAND_OBJECT_ALIGNMENT_A:
             s_operand = GetObjectAlignmentLevelA(ReadObjectRef());
             return &s_operand;
-        case 49:
+        case SCRIPT_OPERAND_STATUS_CONDITION:
             s_operand = g_statusCondition;
             return &s_operand;
-        case 56:
+        case SCRIPT_OPERAND_OBJECT_ID:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->id;
             return &s_operand;
-        case 57:
+        case SCRIPT_OPERAND_OBJECT_WEAPON_DEFENSE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetBattleStatShown(object, BATTLE_STAT_WEAPON_DEFENSE);
             return &s_operand;
-        case 58:
+        case SCRIPT_OPERAND_OBJECT_FOURTH_GROUP_BASE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetBattleStatBase(object, 18);
             return &s_operand;
-        case 59:
+        case SCRIPT_OPERAND_OBJECT_WEAPON:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].item;
             return &s_operand;
-        case 60:
+        case SCRIPT_OPERAND_OBJECT_GUN:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item;
             return &s_operand;
-        case 61:
+        case SCRIPT_OPERAND_OBJECT_AMMO:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].item;
             return &s_operand;
-        case 62:
+        case SCRIPT_OPERAND_OBJECT_RACE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetDemonRace(object->id);
             return &s_operand;
-        case 63:
+        case SCRIPT_OPERAND_OBJECT_WEAPON_GROUP_BASE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetBattleStatBase(object, 0);
             return &s_operand;
-        case 64:
+        case SCRIPT_OPERAND_OBJECT_GUN_GROUP_BASE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetBattleStatBase(object, 6);
             return &s_operand;
-        case 65:
+        case SCRIPT_OPERAND_OBJECT_MAGIC_GROUP_BASE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetBattleStatBase(object, 12);
             return &s_operand;
-        case 66:
+        case SCRIPT_OPERAND_OBJECT_HEAD:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].item;
             return &s_operand;
-        case 67:
+        case SCRIPT_OPERAND_OBJECT_BODY:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_BODY].item;
             return &s_operand;
-        case 68:
+        case SCRIPT_OPERAND_OBJECT_ARMS:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].item;
             return &s_operand;
-        case 69:
+        case SCRIPT_OPERAND_OBJECT_LEGS:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].item;
             return &s_operand;
-        case 70:
+        case SCRIPT_OPERAND_OBJECT_ACCESSORY:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].item;
             return &s_operand;
-        case 71:
-        case 72:
-        case 73:
-        case 74:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_0:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_1:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_2:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_3:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetTrainingPoints(object, kind - 71);
+            s_operand = GetTrainingPoints(object, kind - SCRIPT_OPERAND_OBJECT_TRAINING_0);
             return &s_operand;
-        case 75:
+        case SCRIPT_OPERAND_ACTION_VALUE:
             s_operand = GetActionValue(ReadScriptValue());
             return &s_operand;
-        case 76:
+        case SCRIPT_OPERAND_HP_CHANGE:
             ReadScriptValue();
             s_operand = g_hpChange;
             return &s_operand;
-        case 77:
+        case SCRIPT_OPERAND_MP_CHANGE:
             ReadScriptValue();
             s_operand = g_mpChange;
             return &s_operand;
-        case 78:
+        case SCRIPT_OPERAND_EFFECT_CONDITION:
             if (ReadScriptValue() == 0) {
                 s_operand = g_statusCondition;
                 return &s_operand;
             }
             s_operand = g_effectCondition;
             return &s_operand;
-        case 79:
+        case SCRIPT_OPERAND_BATTLE_RESULT_VALUE:
             s_operand = GetBattleResultValue(ReadScriptValue());
             return &s_operand;
-        case 80:
+        case SCRIPT_OPERAND_OBJECT_EXPERIENCE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->experience;
             return &s_operand;
-        case 81:
+        case SCRIPT_OPERAND_OBJECT_LEVEL_BONUS:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->levelBonus;
             return &s_operand;
-        case 82:
-        case 83:
-        case 84:
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_0:
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_1:
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_2:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterAffiliation(object, kind - 82);
+            s_operand = GetCharacterAffiliation(object, kind - SCRIPT_OPERAND_OBJECT_AFFILIATION_0);
             return &s_operand;
-        case 85:
+        case SCRIPT_OPERAND_OBJECT_TITLE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->title;
             return &s_operand;
-        case 86:
+        case SCRIPT_OPERAND_OBJECT_WEAPON_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].value;
             return &s_operand;
-        case 87:
+        case SCRIPT_OPERAND_OBJECT_GUN_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_GUN].value;
             return &s_operand;
-        case 88:
+        case SCRIPT_OPERAND_OBJECT_AMMO_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].value;
             return &s_operand;
-        case 89:
+        case SCRIPT_OPERAND_OBJECT_HEAD_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].value;
             return &s_operand;
-        case 90:
+        case SCRIPT_OPERAND_OBJECT_BODY_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_BODY].value;
             return &s_operand;
-        case 91:
+        case SCRIPT_OPERAND_OBJECT_ARMS_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].value;
             return &s_operand;
-        case 92:
+        case SCRIPT_OPERAND_OBJECT_LEGS_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].value;
             return &s_operand;
-        case 93:
+        case SCRIPT_OPERAND_OBJECT_ACCESSORY_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
@@ -3382,146 +3382,146 @@ void ReadContestValues(i16 stat, i32* own, i32* other, i16 swap) {
 RVA(0x000375b0, 0x3a0)
 void OpSetObjectField(void) {
     Character* object = ReadScriptObject();
-    i16 kind = ReadScriptByte();
+    GZ_ENUM_LOCAL(ScriptOperandKind, i16) kind = ReadScriptByte();
     i32 value = ReadScriptValue();
 
     if (object == NULL) {
         return;
     }
     switch (kind) {
-        case 10:
+        case SCRIPT_OPERAND_OBJECT_MACCA:
             object->macca = value;
             return;
-        case 12:
+        case SCRIPT_OPERAND_OBJECT_MAGNETITE:
             object->magnetite = value;
             return;
-        case 25:
-        case 26:
-        case 27:
-        case 28:
-        case 29:
-        case 30:
-        case 31:
-        case 32:
-        case 33:
-        case 34:
-        case 35:
-            SetStatTotal(object, kind - 25, value);
+        case SCRIPT_OPERAND_OBJECT_STAT_0:
+        case SCRIPT_OPERAND_OBJECT_STAT_1:
+        case SCRIPT_OPERAND_OBJECT_STAT_2:
+        case SCRIPT_OPERAND_OBJECT_STAT_3:
+        case SCRIPT_OPERAND_OBJECT_STAT_4:
+        case SCRIPT_OPERAND_OBJECT_STAT_5:
+        case SCRIPT_OPERAND_OBJECT_STAT_6:
+        case SCRIPT_OPERAND_OBJECT_STAT_7:
+        case SCRIPT_OPERAND_OBJECT_STAT_8:
+        case SCRIPT_OPERAND_OBJECT_STAT_9:
+        case SCRIPT_OPERAND_OBJECT_STAT_10:
+            SetStatTotal(object, kind - SCRIPT_OPERAND_OBJECT_STAT_0, value);
             return;
-        case 36:
+        case SCRIPT_OPERAND_OBJECT_LEVEL:
             object->level = value;
             return;
-        case 37:
+        case SCRIPT_OPERAND_OBJECT_LEVEL_GAP:
             object->levelGap = value;
             return;
-        case 38:
+        case SCRIPT_OPERAND_OBJECT_FAMILIARITY:
             object->familiarity = value;
             return;
-        case 43:
+        case SCRIPT_OPERAND_OBJECT_HP:
             object->pools.hp.cur = value;
             return;
-        case 44:
+        case SCRIPT_OPERAND_OBJECT_MP:
             object->pools.mp.cur = value;
             return;
-        case 45:
+        case SCRIPT_OPERAND_OBJECT_MAX_HP:
             object->pools.hp.max = value;
             return;
-        case 46:
+        case SCRIPT_OPERAND_OBJECT_MAX_MP:
             object->pools.mp.max = value;
             return;
-        case 47:
+        case SCRIPT_OPERAND_OBJECT_ALIGNMENT_B:
             object->alignmentLevelB = value;
             return;
-        case 48:
+        case SCRIPT_OPERAND_OBJECT_ALIGNMENT_A:
             object->alignmentLevelA = value;
             return;
-        case 56:
+        case SCRIPT_OPERAND_OBJECT_ID:
             object->id = value;
             return;
-        case 57:
+        case SCRIPT_OPERAND_OBJECT_WEAPON_DEFENSE:
             object->battleStatsShown[BATTLE_STAT_WEAPON_DEFENSE] = value;
             return;
-        case 58:
+        case SCRIPT_OPERAND_OBJECT_FOURTH_GROUP_BASE:
             object->battleStats[18] = value;
             return;
-        case 59:
+        case SCRIPT_OPERAND_OBJECT_WEAPON:
             GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].item = value;
             return;
-        case 60:
+        case SCRIPT_OPERAND_OBJECT_GUN:
             GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item = value;
             return;
-        case 61:
+        case SCRIPT_OPERAND_OBJECT_AMMO:
             GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].item = value;
             GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].quantity = GetGunMagazineSize(
                 GetLoadedRecord(GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item)
             );
             return;
-        case 63:
+        case SCRIPT_OPERAND_OBJECT_WEAPON_GROUP_BASE:
             object->battleStats[0] = value;
             return;
-        case 64:
+        case SCRIPT_OPERAND_OBJECT_GUN_GROUP_BASE:
             object->battleStats[6] = value;
             return;
-        case 65:
+        case SCRIPT_OPERAND_OBJECT_MAGIC_GROUP_BASE:
             object->battleStats[12] = value;
             return;
-        case 66:
+        case SCRIPT_OPERAND_OBJECT_HEAD:
             GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].item = value;
             return;
-        case 67:
+        case SCRIPT_OPERAND_OBJECT_BODY:
             GetCharacterEquipment(object)[EQUIP_SLOT_BODY].item = value;
             return;
-        case 68:
+        case SCRIPT_OPERAND_OBJECT_ARMS:
             GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].item = value;
             return;
-        case 69:
+        case SCRIPT_OPERAND_OBJECT_LEGS:
             GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].item = value;
             return;
-        case 70:
+        case SCRIPT_OPERAND_OBJECT_ACCESSORY:
             GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].item = value;
             return;
-        case 71:
-        case 72:
-        case 73:
-        case 74:
-            object->trainingPoints[kind - 71] = (i16)value;
+        case SCRIPT_OPERAND_OBJECT_TRAINING_0:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_1:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_2:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_3:
+            object->trainingPoints[kind - SCRIPT_OPERAND_OBJECT_TRAINING_0] = (i16)value;
             return;
-        case 82:
-        case 83:
-        case 84:
-            SetCharacterAffiliation(object, kind - 82, value);
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_0:
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_1:
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_2:
+            SetCharacterAffiliation(object, kind - SCRIPT_OPERAND_OBJECT_AFFILIATION_0, value);
             if (object->id == 0) {
                 RaiseAffiliationLevels(object);
                 if (value == 3) {
-                    LearnAllSkills(object, kind - 82);
+                    LearnAllSkills(object, kind - SCRIPT_OPERAND_OBJECT_AFFILIATION_0);
                 }
             }
             return;
-        case 85:
+        case SCRIPT_OPERAND_OBJECT_TITLE:
             object->title = value;
             return;
-        case 86:
+        case SCRIPT_OPERAND_OBJECT_WEAPON_VALUE:
             GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].value = value;
             return;
-        case 87:
+        case SCRIPT_OPERAND_OBJECT_GUN_VALUE:
             GetCharacterEquipment(object)[EQUIP_SLOT_GUN].value = value;
             return;
-        case 88:
+        case SCRIPT_OPERAND_OBJECT_AMMO_VALUE:
             GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].value = value;
             return;
-        case 89:
+        case SCRIPT_OPERAND_OBJECT_HEAD_VALUE:
             GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].value = value;
             return;
-        case 90:
+        case SCRIPT_OPERAND_OBJECT_BODY_VALUE:
             GetCharacterEquipment(object)[EQUIP_SLOT_BODY].value = value;
             return;
-        case 91:
+        case SCRIPT_OPERAND_OBJECT_ARMS_VALUE:
             GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].value = value;
             return;
-        case 92:
+        case SCRIPT_OPERAND_OBJECT_LEGS_VALUE:
             GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].value = value;
             return;
-        case 93:
+        case SCRIPT_OPERAND_OBJECT_ACCESSORY_VALUE:
             GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].value = value;
             return;
     }
