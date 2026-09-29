@@ -56,11 +56,12 @@ b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
     itemValue = GetLoadedRecord(attacker->pickTarget)->params[0xc];
     itemValue *= 100;
     value = WearSkillValue(itemValue + accuracy);
+    itemValue = value;
     if (accuracy >= defense) {
-        accuracy = ScaleActionValue(value + defense * 4, g_attackResistance, 4);
+        accuracy = ScaleActionValue(itemValue + defense * 4, g_attackResistance, 4);
         roll = defense * RandomAverage(0, 14, 1);
     } else {
-        accuracy = ScaleActionValue(value * 4, g_attackResistance, 4);
+        accuracy = ScaleActionValue(itemValue * 4, g_attackResistance, 4);
         roll = defense * RandomAverage(0, 15, 0);
     }
     if (accuracy > roll) {
