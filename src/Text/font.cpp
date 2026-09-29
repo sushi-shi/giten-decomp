@@ -3810,13 +3810,13 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
     p->lineStep = 1;
     p->savedAttr.value = TEXT_ATTR_DEFAULT;
     p->attr.value = TEXT_ATTR_DEFAULT;
-    p->firstSelectableRow = 1;
     p->headerRows = 0;
     p->normalAttr.value = TEXT_ATTR_NORMAL;
     p->accentAttr.value = TEXT_ATTR_ACCENT;
     p->flags.cancelEnabled = 0;
     p->flags.indentEnabled = 1;
     p->flags.savedIndentEnabled = 1;
+    p->firstSelectableRow = 1;
     p->highlightY = -1;
     p->highlightX = -1;
     if (kind == TEXT_PLANE_KIND_TWO_COLUMN_MENU) {
