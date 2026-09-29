@@ -104,17 +104,4 @@ void RefreshObjectDraw(
     i16 index
 );
 
-// Defined in the field-object TU after its only caller, DrawFieldObject.
-struct FieldObject;
-void RefreshObjectDraw(
-    i16 sprite,
-    i16 x,
-    i16 y,
-    i16 depth,
-    i16 force,
-    struct FieldObject* object,
-    u32 frame,
-    i16 index
-);
-
 #endif // GITEN_GAME_FIELDSIGHT_H

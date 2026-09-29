@@ -23,8 +23,13 @@ is the DEFAULT target; `verify_check` runs only for the `verify` target
     verify_readme report x ledger -> README's score block (write-if-changed)
     verify_check the MAX gate + the fast+normal tiers -> a stamp; FATAL;
                 opt-in (`giten build verify`)
-    retail_res / link   PHASE 2, opt-in (`ninja candidate`): base objs + .res ->
-                the candidate image + .map for the link-order study
+    rsrc_payloads / rc / link   PHASE 2, opt-in (`ninja candidate`): the
+                original's payload files + Giten.rc -> .res; base objs + .res
+                -> the candidate image + .map for the link-order study
+    play        opt-in (`giten play`): the units whose source or headers test
+                a play flag, again with the bug-fix defines -> build/play/obj;
+                those + every other unit's base obj + the .res ->
+                build/play/DDS.EXE
 
 Two edges declare a STAMP rather than their real outputs, because neither set
 can be enumerated at configure time: `delink` writes one object per unit that
@@ -59,6 +64,7 @@ possible failure, and a delinker swap gave `ninja: no work to do`.
 from __future__ import annotations
 
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -317,16 +323,26 @@ def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str], retail: str) -
     cross-TU = object link order). A normal build never links, so this stays
     out of the default target and behind `ninja candidate` / `giten link`.
 
-    The resource payloads come from the locally supplied retail image. The
-    ignored .res is rebuilt by the graph and passed to the era linker; nothing
-    from .rsrc enters the tracked source tree.
+    The .rsrc compiles from the tracked resource script with the era RC.EXE.
+    The payload files it names are written from the locally supplied original
+    into an ignored build directory; nothing from .rsrc enters the tracked
+    source tree. `giten rsrc check` compares the linked .rsrc with retail's.
     """
     w.comment("=== PHASE 2: link -> candidate .EXE + .map (opt-in: `ninja candidate`) ===")
-    w.rule("retail_res",
-           command="$py -m giten.rsrc.retail_res --exe $in --out $out",
-           description="copy local retail resources -> $out", restat=True)
-    w.build(graph.RESOURCE_RES, "retail_res", inputs=retail,
-            implicit=_mods("rsrc/retail_res.py", "core/pe.py", "core/paths.py"))
+    w.rule("rsrc_payloads",
+           command=(f"$py -m giten.rsrc.payloads --exe $in "
+                    f"--out {graph.RESOURCE_PAYLOADS} --stamp $out"),
+           description="write the original's resource payloads -> $out", restat=True)
+    w.build(graph.RESOURCE_PAYLOAD_LIST, "rsrc_payloads", inputs=retail,
+            implicit=_mods("rsrc/payloads.py", "rsrc/tree.py", "core/pe.py",
+                           "core/paths.py"))
+    w.rule("rc",
+           command=(f"$py -m giten.tool.rc --out $out --src $in "
+                    f"--include {graph.RESOURCE_PAYLOADS}"),
+           description="rc $out")
+    w.build(graph.RESOURCE_RES, "rc", inputs=graph.RESOURCE_SCRIPT,
+            implicit=[graph.RESOURCE_HEADER, graph.RESOURCE_PAYLOAD_LIST,
+                      graph.TOOLCHAIN_ID, *_mods("tool/rc.py"), *TOOL_MODS])
     w.rule("link",
            command=(f"$py -m giten.graph.link --out {graph.CANDIDATE_EXE} "
                     f"--objs-dir {graph.BASE_DIR} --res {graph.RESOURCE_RES}"),
@@ -335,6 +351,100 @@ def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str], retail: str) -
             inputs=base_objs,
             implicit=[graph.RESOURCE_RES, MANIFEST] + LINK_MODS)
     w.build("candidate", "phony", inputs=[graph.CANDIDATE_EXE, graph.CANDIDATE_MAP])
+    w.newline()
+
+
+#: A conditional directive (`#if`, `#ifdef`, `#ifndef`, `#elif`) and its
+#: condition, continuation lines included.
+_CONDITIONAL_RE = re.compile(
+    r"^[ \t]*#[ \t]*(?:if|ifdef|ifndef|elif)\b((?:[^\n]*\\\n)*[^\n]*)", re.M)
+_PLAY_FLAG_RE = re.compile(r"\bGITEN_(?:COMPAT|BUGFIX)\b")
+#: include/Ints.h's `GITEN_BUGFIX implies GITEN_COMPAT` conditional. Every unit
+#: reaches it and it changes nothing without a use elsewhere, so it alone does
+#: not make a unit play-specific. Any other spelling there counts as a use.
+_PLAY_FLAG_IMPLICATION = ("include/Ints.h",
+                          "defined(GITEN_BUGFIX) && !defined(GITEN_COMPAT)")
+
+
+def tests_play_flag(rel: str) -> bool:
+    """Whether repo file `rel` has a conditional naming a play-build flag."""
+    try:
+        text = (REPO / rel).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    for m in _CONDITIONAL_RE.finditer(text):
+        condition = " ".join(m.group(1).replace("\\\n", " ").split())
+        if (rel, condition) == _PLAY_FLAG_IMPLICATION:
+            continue
+        if _PLAY_FLAG_RE.search(condition):
+            return True
+    return False
+
+
+def play_units(cl_edges: list[tuple]) -> set[str]:
+    """The units whose source or scanned headers test a play-build flag.
+
+    Every other unit compiles to the same bytes with graph.PLAY_DEFINES as
+    without, so the play link reuses its matching object.
+    """
+    tested: dict[str, bool] = {}
+    out = set()
+    for _obj, src, headers, _cflags, unit in cl_edges:
+        for rel in [src, *headers]:
+            if rel not in tested:
+                tested[rel] = tests_play_flag(rel)
+            if tested[rel]:
+                out.add(unit)
+                break
+    return out
+
+
+def prune_play_objs(recompiled: set[str]) -> int:
+    """Delete play objects of units the play phase no longer recompiles.
+
+    No edge produces them any more (the unit left the manifest or stopped
+    testing a play flag), and build/play/obj holds the recompiled units only.
+    """
+    d = REPO / graph.PLAY_OBJ_DIR
+    if not d.is_dir():
+        return 0
+    n = 0
+    for p in d.glob("*.obj"):
+        if p.is_file() and p.stem not in recompiled:
+            p.unlink()
+            n += 1
+    return n
+
+
+def emit_play_phase(w: ninja_syntax.Writer, cl_edges: list[tuple],
+                    recompiled: set[str]) -> None:
+    """Opt-in (`giten play`): bug-fixed objects + retail .res -> build/play/DDS.EXE.
+
+    The `recompiled` units compile again with their own profile plus
+    graph.PLAY_DEFINES into a separate object tree, so the matching objects
+    never see the defines. The link takes every unit in the candidate link's
+    order (sorted object file names), each from that tree when recompiled and
+    from the base objects otherwise. The .res edge is the candidate link's
+    (emit_link_phase).
+    """
+    w.comment("=== play: bug-fixed objects + retail .res -> playable EXE (opt-in: `giten play`) ===")
+    link_objs = []
+    for obj, src, headers, cflags, unit in sorted(cl_edges, key=lambda e: f"{e[4]}.obj"):
+        if unit in recompiled:
+            obj = f"{graph.PLAY_OBJ_DIR}/{unit}.obj"
+            w.build(obj, "cl", inputs=src,
+                    implicit=headers + CL_MODS + [graph.TOOLCHAIN_ID],
+                    variables={"unit": unit,
+                               "cflags": " ".join([*cflags, *graph.PLAY_DEFINES])})
+        link_objs.append(obj)
+    w.rule("play_link",
+           command=(f"$py -m giten.graph.link --out {graph.PLAY_EXE} "
+                    f"--res {graph.RESOURCE_RES} $objs"),
+           description="link playable EXE")
+    w.build([graph.PLAY_EXE, graph.PLAY_MAP], "play_link", inputs=link_objs,
+            implicit=[graph.RESOURCE_RES, MANIFEST] + LINK_MODS,
+            variables={"objs": " ".join(f"--obj {o}" for o in link_objs)})
+    w.build("play", "phony", inputs=[graph.PLAY_EXE])
     w.newline()
 
 
@@ -357,6 +467,8 @@ def emit(out: Path | None = None) -> tuple[int, int]:
                  scan.headers(u["source"]), u["cflags"], u["unit"]) for u in units]
     base_objs = [e[0] for e in cl_edges]
     headers_by_unit = {e[4]: e[2] for e in cl_edges}
+    recompiled = play_units(cl_edges)
+    pruned += prune_play_objs(recompiled)
 
     with out.open("w", encoding="utf-8") as f:
         w = ninja_syntax.Writer(f)
@@ -588,6 +700,7 @@ def emit(out: Path | None = None) -> tuple[int, int]:
         w.newline()
 
         emit_link_phase(w, base_objs, retail)
+        emit_play_phase(w, cl_edges, recompiled)
 
     return len(units), pruned
 
@@ -606,8 +719,9 @@ def main(argv: list[str] | None = None) -> int:
               file=sys.stderr)
         return 1
     if pruned:
-        print(f"[configure] pruned {pruned} artifact(s) of unit(s) no longer "
-              "in config/units.toml", file=sys.stderr)
+        print(f"[configure] pruned {pruned} stale artifact(s): units no longer "
+              "in config/units.toml, play objects no longer recompiled",
+              file=sys.stderr)
     print(f"[configure] wrote {a.out or graph.NINJA} ({n} units)")
     return 0
 

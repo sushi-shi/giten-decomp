@@ -1831,8 +1831,9 @@ static __inline Character* GetResolvedPartyCharacter(i16 id) {
 
 // The same for the first of the companions -2, -3 and -7 in the roster.
 // @early-stop: with no companion and no invert, retail re-zeroes the jump
-// flag in its register before the call; every spelling here passes the
-// known-zero pointer instead.
+// flag in its register before a duplicated call. A single call after an
+// `else if (!companion) jump = 0;` arm is exact, but that assignment repeats
+// the initializer; the early return here passes the known-zero pointer.
 RVA(0x00035340, 0xb5)
 void OpJumpUnlessCompanionHealthy(i16 invert) {
     i16 conditions = 0;
@@ -2153,22 +2154,22 @@ void OpClearBagEntry(void) {
     entry->attachment = 0;
 }
 
-// @early-stop: the item and its remapped id swap registers (esi/edi); the
-// permuter's search is flat.
 RVA(0x00035a90, 0x88)
 void OpTakeDropSlot(void) {
     i16 slot = ReadScriptValue();
     i16 itemVar = ReadLongVarIndex();
     i16 amountVar = ReadLongVarIndex();
     i16 item = GetDropSlot(slot)->item;
-    i16 amount = GetDropSlot(slot)->amount;
+    i16 count = GetDropSlot(slot)->amount;
     i16 remapped;
+    i16 amount;
     ClearDropSlot(slot);
     remapped = RemapItem(item);
     if (remapped) {
-        amount = RollDropAmount(item, amount);
+        amount = RollDropAmount(item, count);
     } else {
         remapped = item;
+        amount = count;
     }
     SetScriptLongVar(itemVar, remapped);
     SetScriptLongVar(amountVar, amount);
@@ -3942,15 +3943,14 @@ void OpMaskRosterByKind(void) {
 
 // Fills pool `pool` (1: HP, else MP) by `amount` for each roster slot in the
 // mask.
-// @early-stop: retail loads the mask into a register before testing it
-// against the bit; no spelling of the test reproduces that (the permuter's
-// search is flat).
 RVA(0x000382b0, 0x67)
 void OpRecoverRosterPool(GZ_ENUM_PARAM(CharacterPoolMask, i16) pool) {
+    u32 mask;
     u32 bit = 1;
-    u32 mask = ReadScriptValue();
-    i16 amount = ReadScriptValue();
+    i16 amount;
     i16 i;
+    mask = ReadScriptValue();
+    amount = ReadScriptValue();
     for (i = 0; i < 32; i++) {
         if (RosterMemberAt(i) && (mask & bit)) {
             if (pool == POOL_MASK_HP) {
@@ -3964,13 +3964,14 @@ void OpRecoverRosterPool(GZ_ENUM_PARAM(CharacterPoolMask, i16) pool) {
 }
 
 // Clears condition `condition` from each roster slot in the mask that has it.
-// @early-stop: the same mask load as OpRecoverRosterPool.
 RVA(0x00038320, 0x5f)
 void OpCureRosterCondition(void) {
+    u32 mask;
     u32 bit = 1;
-    u32 mask = ReadScriptValue();
-    i16 condition = ReadScriptValue();
+    i16 condition;
     i16 i;
+    mask = ReadScriptValue();
+    condition = ReadScriptValue();
     for (i = 0; i < 32; i++) {
         if (mask & bit) {
             Character* character = GetRosterCharacter(i);

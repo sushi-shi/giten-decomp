@@ -635,11 +635,13 @@ i16 RunActorCommandMenu(i16 id) {
         if (result == -1) {
             return result;
         }
-        if (result != -2) {
+        if (result == -2) {
             CloseActorCommandMenu();
-            actor->pickRole = g_selectedObjectId;
-            return g_selectedObjectId;
+            return result;
         }
+        CloseActorCommandMenu();
+        actor->pickRole = g_selectedObjectId;
+        return g_selectedObjectId;
     }
     CloseActorCommandMenu();
     return -2;

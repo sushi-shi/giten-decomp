@@ -63,13 +63,24 @@ void FloodViewCells(
     i16 height
 );
 
+// ABI: the C++ platform layer's prototypes of UpdateViewCells and
+// IsCellInViewCone take int coordinates (its callers sign-extend every
+// argument); the game's C callers pass words.
+#ifdef __cplusplus
+void UpdateViewCells(i32 x, i32 y);
+#else
 void UpdateViewCells(i16 x, i16 y);
+#endif
 
 // The map geometry helpers: view-cone cells, world-map blocks, turning,
 // offsetting a coordinate in a direction's frame (wrapped, clamped or not),
 // the walls of a cell word and how they stop a step or a sight line.
 // Coordinate arguments occupy their low 16 bits; upper argument halves are unused.
+#ifdef __cplusplus
+b16 IsCellInViewCone(i32 x, i32 y, i32 cellX, i32 cellY);
+#else
 b16 IsCellInViewCone(i16 x, i16 y, i16 cellX, i16 cellY);
+#endif
 MapCoord GetLayerOrigin(i16 layer);
 MapCoord GetWorldBlockOffset(i16 x, i16 y);
 i16 GetWorldMapBlock(i16 x, i16 y);

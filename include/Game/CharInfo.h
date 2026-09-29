@@ -9,6 +9,7 @@ typedef struct PartyMemberList {
 } PartyMemberList;
 
 char* FormatFullName(char* buf, Character* character);
+i32 GetRankScore(Character* character);
 i16 CountRosterEntries(i16 all);
 Character* FreeCharacterRecord(Character* character);
 i16 FindRosterSlotIn(i16 id, i16 inParty);

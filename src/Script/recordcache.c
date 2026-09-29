@@ -144,30 +144,23 @@ i16 AddSkill(WordList* list, i16 skill) {
     return list->count;
 }
 
-// @early-stop register allocation: retail keeps the moving index in edi and
-// the counted-loop temporary in esi; this build swaps them. A separate index,
-// the word accessor and saved-value lifetime controls do not recover that
-// assignment; valid C compiler-state controls are flat.
 RVA(0x0002dd80, 0x82)
 void MoveWord(WordList* list, i16 from, i16 to) {
     i16 value = list->words[from];
+    i16 i;
     if (to == -1) {
         to = list->count - 1;
     }
     if (from <= to) {
-        if (from < to) {
-            while (from < to) {
-                SetWord(list, from, list->words[from + 1]);
-                from++;
-            }
+        for (i = from; i < to; i++) {
+            SetWord(list, i, list->words[i + 1]);
         }
     } else {
-        while (from > to) {
-            SetWord(list, from, list->words[from - 1]);
-            from--;
+        for (i = from; i > to; i--) {
+            SetWord(list, i, list->words[i - 1]);
         }
     }
-    SetWord(list, from, value);
+    SetWord(list, i, value);
 }
 
 RVA(0x0002de10, 0x90)

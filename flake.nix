@@ -258,6 +258,12 @@
         fi
       '';
 
+      # The locales `giten play` runs the game under (the full set is ~220 MB).
+      playLocales = pkgs.glibcLocales.override {
+        allLocales = false;
+        locales = [ "en_US.UTF-8/UTF-8" "ja_JP.UTF-8/UTF-8" ];
+      };
+
       # Tools common to both shells (analysis + diffing).
       commonTools = [
         giten-cli
@@ -266,7 +272,7 @@
         objdiff-cli
         vostok-delinker
       ] ++ (with pkgs; [
-        (python3.withPackages (ps: [ ps.pyghidra ps.libclang ]))   # pyghidra (Ghidra scripting) + libclang (clang.cindex: the permuter's precedence-correct AST mutations)
+        (python3.withPackages (ps: [ ps.pyghidra ps.libclang ps.fonttools ]))   # pyghidra (Ghidra scripting) + libclang (clang.cindex: the permuter's precedence-correct AST mutations) + fonttools (`giten play`'s MS Gothic stand-in)
         ghidra
         ninja
 
@@ -346,6 +352,12 @@
           # via jpype so the headless apply/export scripts run as CPython3.
           export GHIDRA_INSTALL_DIR="${pkgs.ghidra}/lib/ghidra"
           export JAVA_HOME="${pkgs.jdk21}/lib/openjdk"
+          # `giten play`: gamescope scales the game's 640x480 screen; Wine takes
+          # the ANSI code page (932) from a ja_JP locale; the Noto CJK font is cut
+          # into the MS Gothic stand-in.
+          export GITEN_PLAY_GAMESCOPE="${pkgs.gamescope}/bin/gamescope"
+          export GITEN_PLAY_LOCALE_ARCHIVE="${playLocales}/lib/locale/locale-archive"
+          export GITEN_PLAY_CJK_FONT="${pkgs.noto-fonts-cjk-sans}/share/fonts/opentype/noto-cjk/NotoSansMonoCJK-VF.otf.ttc"
 
           # Banner -> stderr so stdout stays clean for `nix develop --command`
           # piping (e.g. giten status ... --json | jq).

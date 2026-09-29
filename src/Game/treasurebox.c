@@ -345,15 +345,29 @@ void PrepareViewedTreasureBox(void) {
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).
-// No return without a box: retail returns FindTreasureBoxAt's NULL as it is.
-// Retail also stores the result into `index`'s slot before returning; assigning
-// the result to `index` (returned or not) does not keep that store.
+// @identity-TODO: PC-98 draws the hotspot's closed treasure-box frame after
+// computing it here; the Windows build keeps only the frame arithmetic, and
+// retail retains its first store.
 RVA(0x0001ab40, 0x46)
-b32 IsHotspotTreasureOpen(i32 index) {
+void IsHotspotTreasureOpen(i32 index) {
     SceneSprite* sprite = GetHotspotSprite(index);
     TreasureBox* box = FindTreasureBoxAt(sprite->cellX, sprite->cellY, 0);
-    if (box) {
-        return IsTreasureBoxOpen(box);
+    i16 frame;
+    if (box == NULL) {
+        return;
+    }
+    frame = IsTreasureBoxOpen(box);
+    if (frame == 1) {
+        return;
+    }
+    frame++;
+    switch (box->head.code) {
+        case 0x4f:
+            frame += 2;
+        case TREASURE_BOX_LOWER:
+            frame += 2;
+        case 0x89:
+            frame += 2;
     }
 }
 
@@ -844,28 +858,23 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
     }
 }
 
-// @early-stop load width: retail extracts the by-value entry's item with
-// a dword load and left shift followed by a word arithmetic right shift;
-// this build uses word operations throughout. The item/attachment container
-// remains a word, as the other packed-entry readers and writers require.
 RVA(0x0001b960, 0x1d5)
 i32 FormatItemMenuEntry(ItemStack entry, i32 numerator, i32 denominator) {
-    i16 item = GetItemStackItem(&entry);
     char marker = ' ';
-    ItemRecord* record = GetLoadedRecord(item);
+    ItemRecord* record = GetLoadedRecord(GetItemStackItem(&entry));
     i16 equipGroup = GetItemEquipCode(record);
     i32 price;
     if (EquipPartOfItem(record) >= 0 && s_itemMenuEquipGroup != -1) {
-        if (GetItemCategory(item) == EQUIP_PART_ACCESSORY) {
+        if (GetItemCategory(GetItemStackItem(&entry)) == EQUIP_PART_ACCESSORY) {
             Character* member = GetCharacterById(s_itemMenuMember);
-            if (member && CanEquipItem(member, item) > 0) {
+            if (member && CanEquipItem(member, GetItemStackItem(&entry)) > 0) {
                 marker = 'E';
             }
         } else if (CanGroupEquip(s_itemMenuEquipGroup, equipGroup)) {
             Character* member;
             marker = 'E';
             member = GetCharacterById(s_itemMenuMember);
-            record = GetLoadedRecord(item);
+            record = GetLoadedRecord(GetItemStackItem(&entry));
             if (record->kind == ITEM_KIND_GUN && GetBattleStatShown(member, 6) > 0) {
                 if (LacksItemRequiredStats(member, record, GetBattleStatShown(member, 6))) {
                     marker = 'e';
@@ -875,7 +884,7 @@ i32 FormatItemMenuEntry(ItemStack entry, i32 numerator, i32 denominator) {
             }
         }
     }
-    record = GetLoadedRecord(item);
+    record = GetLoadedRecord(GetItemStackItem(&entry));
     price = ScaleItemPrice(GetItemRecordPrice(record), numerator, denominator, 1);
     if (GetItemRecordPrice(record)) {
         if (!GetItemStackCount(&entry)) {
@@ -1464,26 +1473,23 @@ done:
     return damage / 100;
 }
 
-// @early-stop stack layout: retail reserves sixteen bytes while the local
-// ten-byte ExitCell needs twelve. All operations and register assignments
-// agree; the record stride and CopyExitAt forbid padding the cell type.
 RVA(0x0001c9f0, 0xee)
 void RunCellTrap(i16 mode, i16 x, i16 y) {
-    ExitCell cell;
+    MapCell cell;
     Character* member;
     i32 damage;
     i16 hp;
     u8 alignmentMask;
-    if (mode && CopyExitAt(x, y, &cell)) {
+    if (mode && CopyExitAt(x, y, &cell.exit)) {
         for (mode = 0; mode < 6; mode++) {
             member = GetPartyCharacter(mode);
             if (member) {
-                damage = GetCellTrapDamage(&cell, member->pools.hp.max);
+                damage = GetCellTrapDamage(&cell.exit, member->pools.hp.max);
                 hp = member->pools.hp.cur;
-                if (cell.head.code >= 0x68 && cell.head.code <= 0x6e) {
+                if (cell.exit.head.code >= 0x68 && cell.exit.head.code <= 0x6e) {
                     alignmentMask = 4;
                     alignmentMask >>= GetAlignmentClassB(member) + 1;
-                    if (!(cell.trap.alignmentMask & alignmentMask)) {
+                    if (!(cell.exit.trap.alignmentMask & alignmentMask)) {
                         continue;
                     }
                 }
@@ -1493,7 +1499,7 @@ void RunCellTrap(i16 mode, i16 x, i16 y) {
                 }
             }
         }
-        if (cell.head.code == CELL_CHUTE) {
+        if (cell.exit.head.code == CELL_CHUTE) {
             PlaySoundEffect(0x57);
         } else {
             PlaySoundEffect(0x60);

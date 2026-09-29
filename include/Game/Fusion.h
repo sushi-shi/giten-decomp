@@ -90,13 +90,12 @@ typedef struct FusionByteMatrix {
 
 #define ReturnFusionBytePair(matrixHandle, firstValue, secondValue)                                \
     do {                                                                                           \
+        i16 count;                                                                                 \
         i16 firstIndex;                                                                            \
         i16 secondIndex;                                                                           \
         FusionByteMatrix* table;                                                                   \
-        i16 count;                                                                                 \
         i16 index;                                                                                 \
-        firstIndex = -1;                                                                           \
-        secondIndex = -1;                                                                          \
+        firstIndex = secondIndex = -1;                                                             \
         table = HandleReadPtr((matrixHandle));                                                     \
         count = table->count;                                                                      \
         for (index = 0; index < count; index++) {                                                  \
@@ -109,10 +108,11 @@ typedef struct FusionByteMatrix {
         }                                                                                          \
         if (firstIndex >= 0 && secondIndex >= 0) {                                                 \
             if (firstIndex < secondIndex) {                                                        \
-                firstIndex = firstIndex * count + secondIndex + table->count;                      \
-                return table->entries[firstIndex];                                                 \
+                firstIndex = firstIndex * count + secondIndex;                                     \
+            } else {                                                                               \
+                firstIndex += secondIndex * count;                                                 \
             }                                                                                      \
-            firstIndex = secondIndex * count + firstIndex + table->count;                          \
+            firstIndex += count;                                                                   \
             return table->entries[firstIndex];                                                     \
         }                                                                                          \
         return 0;                                                                                  \

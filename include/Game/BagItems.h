@@ -131,7 +131,12 @@ i16 ReadBag(FILE* fp);
 
 // Lets the player pick a bag item to discard when the bag is full (among the
 // entries whose item has a price and is not a scenario item) and empties its entry.
+#ifdef GITEN_BUGFIX
+// False when there was none to pick and the player closed the menu.
+b32 RunBagDiscardMenu(void);
+#else
 void RunBagDiscardMenu(void);
+#endif
 
 // Clears the mouse clicks and runs one frame (a modal menu's wait).
 void WaitMenuFrame(void);

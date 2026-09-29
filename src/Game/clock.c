@@ -1098,26 +1098,23 @@ i16 GetWarpCodeAtOffset(i16 dx, i16 dy) {
 // answers with bit 3 set, and one fixed spot (area 9, level 6, at 2/5 looking
 // one cell west) answers 0x42.
 // @early-stop register allocation: retail keeps dy in esi and dx in memory,
-// forms the offset x in edx and spills the offset y into dy's slot, and reuses
-// the first loop's list pointer; x/y locals updated in place or dx/dy updated,
-// and a single list local, each keep dx/dy in ebp/ebx.
+// loads the party x as a dword and y as a word, forms the offset x in edx and
+// spills the offset y into dy's slot; the in-place dx/dy update (as in
+// GetWarpCodeAtOffset) keeps dx/dy in ebp/ebx, and x/y locals updated in
+// place or x/dx and dy/y mixes each lose more.
 RVA(0x00022460, 0xd4)
 i16 GetCellAtOffset(i16 dx, i16 dy) {
-    i16 x;
-    i16 y;
     if (g_areaLevel == NULL) {
         return 0;
     }
-    x = g_party.field.pos.x;
-    y = g_party.field.pos.y;
-    if (x == 2 && y == 5 && g_party.field.pos.area == 9 && g_party.field.pos.level == 6 && dx == -1
-        && dy == 0) {
+    if (g_party.field.pos.x == 2 && g_party.field.pos.y == 5 && g_party.field.pos.area == 9
+        && g_party.field.pos.level == 6 && dx == -1 && dy == 0) {
         return CELL_STAIRS_UP;
     }
-    ReturnWarpCodeAt(g_areaLevel->warps, x, y, 8);
-    x += dx;
-    y += dy;
-    ReturnWarpCodeAt(g_areaLevel->warps, x, y, 0);
+    ReturnWarpCodeAt(g_areaLevel->warps, g_party.field.pos.x, g_party.field.pos.y, 8);
+    dx += g_party.field.pos.x;
+    dy += g_party.field.pos.y;
+    ReturnWarpCodeAt(g_areaLevel->warps, dx, dy, 0);
     return 0;
 }
 

@@ -69,3 +69,14 @@ which come hundreds of lines earlier. The same three appended lines left every
 function of two C units (`scriptvars.c`, `treasurebox.c`) unchanged. When a C
 unit becomes C++ (a fold into a C++ object), its bodies therefore become
 sensitive to the whole TU, including code and declarations after them.
+
+## Header files, not macros
+
+Opening a header the unit has not opened before is itself a probe. In
+`d3dapp.cpp`, one `#include` of an empty header after the existing includes
+raised every later compiler-generated local name (`$S`, `$T`, `$SG`, `$L`) by
+one and swapped two stack slots and push operands in one function. Adding a
+`#define` at the same place, or repeating the `#include` of a guarded header
+the unit already opened, left the object byte-identical. Macro-only headers
+therefore cannot be introduced into a unit for free; which headers the
+original unit opened is part of its reconstruction.

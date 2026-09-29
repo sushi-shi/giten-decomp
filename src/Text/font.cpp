@@ -3194,7 +3194,27 @@ u8* RenderGlyph(u16 code, u8* glyph) {
             glyph[i * 2 + 1] = 0;
         }
     } else {
+#ifdef GITEN_COMPAT
+        // @bug Retail passes 64 of the buffer's 128 bytes and ignores the result. GDI
+        // fails for an empty glyph (U+3000) or a bitmap larger than the buffer
+        // (more than 16 rows; 32 with the whole buffer) and leaves `metrics` unset,
+        // so the row lookup below indexed with stack garbage. Cleared metrics
+        // render the cleared `bits` as a blank glyph and keep the underline.
+        if (GetGlyphOutline(
+                g_fontDC,
+                code,
+                GGO_BITMAP,
+                &metrics,
+                sizeof(bits),
+                bits,
+                &s_identityMatrix
+            )
+            == GDI_ERROR) {
+            memset(&metrics, 0, sizeof(metrics));
+        }
+#else
         GetGlyphOutline(g_fontDC, code, GGO_BITMAP, &metrics, 64, bits, &s_identityMatrix);
+#endif
         if (metrics.gmBlackBoxX <= 7) {
             for (i = 0; i < 64; i += 4) {
                 char carry = bits[i] & 0x0f;
@@ -3203,6 +3223,18 @@ u8* RenderGlyph(u16 code, u8* glyph) {
             }
         }
         if (code != SJIS_LOW_LINE) {
+#ifdef GITEN_COMPAT
+            // @bug Retail indexes the table with the glyph top unchecked. MS Gothic
+            // keeps the top within it; another font need not, and a top outside
+            // the table reads a row offset from neighbouring memory that the rows
+            // are then copied at.
+            const LONG tops = sizeof(s_glyphRowOffset) / sizeof(s_glyphRowOffset[0]);
+            if (metrics.gmptGlyphOrigin.y < 0) {
+                metrics.gmptGlyphOrigin.y = 0;
+            } else if (metrics.gmptGlyphOrigin.y >= tops) {
+                metrics.gmptGlyphOrigin.y = tops - 1;
+            }
+#endif
             for (i = s_glyphRowOffset[metrics.gmptGlyphOrigin.y], j = 0; i < 30; i += 2, j += 4) {
                 glyph[i + 2] = bits[j];
                 glyph[i + 3] = bits[j + 1];
@@ -3810,13 +3842,13 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
     p->lineStep = 1;
     p->savedAttr.value = TEXT_ATTR_DEFAULT;
     p->attr.value = TEXT_ATTR_DEFAULT;
-    p->firstSelectableRow = 1;
     p->headerRows = 0;
     p->normalAttr.value = TEXT_ATTR_NORMAL;
     p->accentAttr.value = TEXT_ATTR_ACCENT;
     p->flags.cancelEnabled = 0;
     p->flags.indentEnabled = 1;
     p->flags.savedIndentEnabled = 1;
+    p->firstSelectableRow = 1;
     p->highlightY = -1;
     p->highlightX = -1;
     if (kind == TEXT_PLANE_KIND_TWO_COLUMN_MENU) {

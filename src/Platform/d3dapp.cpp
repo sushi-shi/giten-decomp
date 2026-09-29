@@ -1514,18 +1514,16 @@ GZ_ENUM_RETURN(MouseButtonBits, u8) PollMouseButtons(void) {
     if (g_mouseDevice != NULL) {
         for (;;) {
             result = g_mouseDevice->GetDeviceState(sizeof(state), &state);
-            if (result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED) {
-                result = g_mouseDevice->Acquire();
-                if (FAILED(result)) {
-                    right = left = 0;
-                    break;
+            if (result != DIERR_INPUTLOST && result != DIERR_NOTACQUIRED
+                || SUCCEEDED(result = g_mouseDevice->Acquire())) {
+                if (result == DIERR_INPUTLOST) {
+                    continue;
                 }
+                left = state.rgbButtons[0];
+                right = state.rgbButtons[1];
+            } else {
+                right = left = 0;
             }
-            if (result == DIERR_INPUTLOST) {
-                continue;
-            }
-            left = state.rgbButtons[0];
-            right = state.rgbButtons[1];
             break;
         }
         if (FAILED(result)) {

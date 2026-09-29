@@ -100,7 +100,7 @@ static __inline u8 GetSkillAttackAttribute(SkillHeader* record) {
     return record->parameters.attackAttribute;
 }
 
-static __inline u8 GetSkillEffectCode(SkillHeader* record) {
+static __inline i16 GetSkillEffectCode(SkillHeader* record) {
     return record->parameters.effectCode;
 }
 

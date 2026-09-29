@@ -23,9 +23,8 @@ void DrawFieldView(void);
 
 i16 GetFieldBattleActive(void);
 
-// Marks every sprite slot unplaced.
-// @identity-TODO: also clears the 16-entry table 0x48f588 to -1, whose role
-// is unrecovered.
+// Codegen constraint: also declared in <Gfx/Sprite.h>, its owner; kept here
+// for the platform layer's TU state.
 RVA_DECL(0x000586d0)
 void UnplaceAllSprites(void);
 

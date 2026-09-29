@@ -151,11 +151,47 @@ Verification policy for matching and tooling is in [AGENTS.md](../AGENTS.md#test
 and a map with VC5 `link.exe`. Linking is opt-in and has no `/FORCE` fallback;
 unresolved or duplicate symbols are findings to fix in source.
 
-The resource edge (`giten.rsrc.retail_res`) reads the original EXE named by
-`GITEN_RETAIL_EXE` and writes ignored `build/gen/retail.res`. The linker places
-those payloads at the candidate's own resource RVA. This path needs no RC.EXE
-or reconstructed resource script. Changing the supplied EXE rebuilds the
-resource file and candidate; no resource payloads or download links are tracked.
+Resources split into code and payloads. The code is tracked source:
+`src/Giten/Giten.rc` declares every resource with its type, ID and language
+(`LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT`), in the order that reproduces the
+original's resource data, and `include/Giten/Resource.h` names the IDs. IDs
+whose role the code shows carry that name (the software cursor images, the
+world-map marker bitmaps, the analyze plate frame, and `IDR_SOUND_n` for the
+WAVE that sound effect n plays through `s_soundResources`); the rest use the
+resource editor's neutral scheme (`IDB_BITMAPn`, `IDC_CURSORn`, `IDI_ICONn`),
+numbered by ascending ID within their type. The C sources do not include the
+header yet: opening a new header changes a unit's code generation even when
+the header holds only macros ([TU context](patterns/tu-state-probe-family-decides-reachability.md#header-files-not-macros)),
+so resource IDs stay literal there until a unit's include set is evidence-backed.
+
+The payloads never enter Git. Three opt-in edges build the resource object:
+
+| Edge | Input | Output |
+| :-- | :-- | :-- |
+| `rsrc_payloads` (`giten.rsrc.payloads`) | `GITEN_RETAIL_EXE` | `build/gen/rsrc/*.bmp\|wav\|cur\|ico` and the `payloads.tsv` listing |
+| `rc` (`giten.tool.rc`) | `Giten.rc`, `Resource.h`, the listing | `build/gen/giten.res` |
+| `link` | base objects, `giten.res` | the candidate EXE and map |
+
+Payload files are the forms RC.EXE reads back to the original bytes: each
+`RT_BITMAP` with its `BITMAPFILEHEADER` restored, each WAVE as stored, and
+each `RT_GROUP_CURSOR`/`RT_GROUP_ICON` reassembled with its `RT_CURSOR`/
+`RT_ICON` images into a `.cur`/`.ico`. RC renumbers those images in script
+order (cursors 1 and 2, icon 3), which is why the script order matters beyond
+the data layout. `giten rsrc extract --disc IMAGE --out DIR` reads
+`DDSWIN/DDS.EXE` from a 2352- or 2048-byte-sector disc image instead.
+Resource memory flags are not stored in a PE image, so the script uses RC's
+defaults.
+
+`giten rsrc check` links the candidate and compares its `.rsrc` with the
+original's: the directory tree (types, names, languages, entry order and table
+headers), every payload's bytes, every data entry's code page, the offsets of
+tables, data entries and payloads within the section, and finally the whole
+section with each data entry's `OffsetToData` made section-relative. The
+compiled script reproduces the original exactly under that comparison. The
+one field outside the script's control is the section RVA, which follows from
+the sizes of the sections placed before `.rsrc`; until those match, every
+`OffsetToData` differs by the same delta, which the check reports. The link
+tier runs the same comparison.
 
 The candidate still needs the original installation's external game files and
 valid runtime settings. See [local build/run instructions](../README.md#local-candidate-and-resources).

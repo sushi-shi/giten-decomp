@@ -1172,9 +1172,6 @@ i16 GetRosterFusionRestrictedClass(i16 slot) {
     return GetFusionRestrictedClass(GetRosterId(slot));
 }
 
-// @early-stop register allocation: retail multiplies the selected index
-// in place; this build copies the count to a shared temporary before the
-// branch. Compound and staged index updates retain that extra copy.
 RVA(0x000282b0, 0xc4)
 i16 GetFusionClassPair(i16 first, i16 second) {
     first = GetFusionSlotClass(first);

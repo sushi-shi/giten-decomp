@@ -66,10 +66,26 @@ NORMALIZE_STAMP = "build/objdiff/.normalize.stamp"
 OBJDIFF_JSON = f"{COMPARE_DIR}/objdiff.json"
 REPORT_JSON = f"{COMPARE_DIR}/report.json"
 
-#: Phase 2 (opt-in): the candidate image and ignored local resource transfer.
+#: Phase 2 (opt-in): the candidate image. Its .rsrc compiles from the tracked
+#: resource script and ID header; the payload files that script names are
+#: written from the user's original into the ignored payload directory, and
+#: the listing is that edge's output.
 CANDIDATE_EXE = "build/exe/DDS.candidate.EXE"
 CANDIDATE_MAP = "build/exe/DDS.candidate.map"
-RESOURCE_RES = "build/gen/retail.res"
+RESOURCE_SCRIPT = "src/Giten/Giten.rc"
+RESOURCE_HEADER = "include/Giten/Resource.h"
+RESOURCE_PAYLOADS = "build/gen/rsrc"
+RESOURCE_PAYLOAD_LIST = f"{RESOURCE_PAYLOADS}/payloads.tsv"
+RESOURCE_RES = "build/gen/giten.res"
+
+#: The playable image (`giten play`): the units that test a play flag
+#: recompiled with the bug-fix defines into their own object tree, linked with
+#: every other unit's matching object and the retail resources.
+PLAY_DIR = "build/play"
+PLAY_OBJ_DIR = f"{PLAY_DIR}/obj"
+PLAY_EXE = f"{PLAY_DIR}/DDS.EXE"
+PLAY_MAP = f"{PLAY_DIR}/DDS.map"
+PLAY_DEFINES = ["/DGITEN_BUGFIX"]
 
 #: `wine cl` parallelism. Wine serialises far more than it looks under a
 #: shared wineserver, and past ~8 concurrent cl.exe the server thrashes and
