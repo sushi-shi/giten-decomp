@@ -26,6 +26,10 @@ typedef union ScriptScratchValue {
 
 // The script long variables.
 #define SCRIPT_LONG_VAR_COUNT 26
+// The system variables (the last eight): saved and restored as a block, and
+// where the game reports results to scripts.
+#define SCRIPT_SYSTEM_VAR_FIRST 18
+#define SCRIPT_SYSTEM_VAR_COUNT 8
 
 void ClearScriptLongVars(void);
 

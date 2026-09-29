@@ -650,3 +650,38 @@ src/Game/fieldscreen.c	GetLayerFrame	0	*	*	no frame
 src/Game/fieldscreen.c	InitWorldPanel	0x118	*	*	@identity-TODO: menu image 0x118
 src/Game/fieldscreen.c	ClearFieldPanelSelection	0	*	*	no movement under way (move state 0)
 src/Game/fieldview.c	*	*	*	*	the 3D view's geometry: the 4-row x 7-column cell grid around the party (column 3 ahead), the perspective wall slots 1..16 and their left/right wedges and edges, flood-fill steps, 2-bit directions and 4-bit wall nibbles per side of a cell word
+src/Script/scriptvars.c	OpRefreshFieldScreen	*	*	*	@identity-TODO: the refresh option bit 0x10, FieldScreenNop's 7 and the info bar's layout 1
+src/Script/scriptvars.c	OpFadeOutAndClear	*	*	*	@identity-TODO: the fade speed 1; the new game's start cell (level 8, 2, 1) and render mode 2 it tests
+src/Script/scriptvars.c	OpDrawImage	*	call-argument	*	@identity-TODO: the image's plane 0, its (40, 112) origin and flag 1
+src/Script/scriptvars.c	Op*ScreenCells	*	*	*	PC-98 screen cells: 8-pixel cells on the 80 x 400 byte screen, 8 rows each, a 4-bit colour
+src/Script/scriptvars.c	OpEnableBackground	7	*	*	@identity-TODO: scene flags 7
+src/Script/scriptvars.c	*Choice*	*	*	*	choices: no delay, no choice (-1), two columns of padding, at least one column, a choice enabled (0), the menu's first row 0
+src/Script/scriptvars.c	*ScriptBlock	*	*	*	script blocks: one 0x500-byte array (0x400 of code), an entry table starting at length 1, word-aligned sizes
+src/Script/scriptvars.c	*ScriptEntr*	*	*	*	script entries: the 3- or 7-byte header, 0xffff for an absent entry, a new entry's length 1 and 0x400-byte size, an empty count
+src/Script/scriptvars.c	ThawObjectsForScript	0	*	*	objects unfrozen
+src/Script/scriptvars.c	StartDebugScene	*	*	*	@identity-TODO: debug scene 0xe0 runs as an actor scene of object 0 (entry 1)
+src/Script/scriptvars.c	Run*Scene	*	*	*	@identity-TODO: a scene's steps 0..5 (start, run, text wait, end, period wait) and its text window's indent and scroll-top rows
+src/Script/scriptvars.c	*Scene	*	call-argument	*	@identity-TODO: a scene window's indent (0), scroll-top rows (0, 2) and NewScriptContext's 0
+src/Script/scriptvars.c	StepOnTextPeriod	5	*	*	@identity-TODO: the scene's period-wait step 5
+src/Script/scriptvars.c	WaitForScriptText	1	*	*	a wait of at least one frame
+src/Script/scriptvars.c	*MessageHook	*	*	*	no message hook (-1; 0xff in the operand); NewScriptContext's 0
+src/Script/scriptvars.c	ScriptFileListTail	1	*	*	loop until the list's end
+src/Script/scriptvars.c	PreloadScriptFiles	*	*	*	@identity-TODO: the bank script files 0x7f00..0x7f07 and the system script files 0xdb..0xdf kept loaded
+src/Script/scriptvars.c	*ScriptFiles	0	*	*	no holds
+src/Script/scriptvars.c	PurgeScriptFiles	0xdf	*	*	@identity-TODO: script file 0xdf is kept
+src/Script/scriptvars.c	*TextScript	0	*	*	no text script yet; the call frame's and jump's 0 offsets
+src/Script/scriptvars.c	RunTextScript	0x400	*	*	a 0x400-byte text script block
+src/Script/scriptvars.c	OpPrintNumber	*	*	*	the number buffer (32 bytes), no unit, two-byte characters above 0xff
+src/Script/scriptvars.c	SetTickCountOn	0	call-argument	*	the counter restarts at 0
+src/Script/scriptvars.c	FireCountdownEvent	0	*	*	the countdown has run out; its script is cleared
+src/Script/scriptvars.c	FindFavouredMember	-1	*	*	no member picked yet
+src/Script/scriptvars.c	OpPeekPokeScratch	*	*	*	@identity-TODO: peek (-1) and poke (-2) of 1-, 2-, 3- or 4-byte values
+src/Script/scriptvars.c	*ScriptLongVar*	0	*	*	a cleared variable reads 0
+src/Script/scriptvars.c	OpWaitMessage	*	*	*	@identity-TODO: wait kinds: frames from 0, input mask 0xffff or 2, PollIdle's (1, 0x18)
+src/Script/scriptvars.c	*CallFrame*	*	*	*	call frames: one element, unlinked (0), an empty stack, discard 0/1
+src/Script/scriptvars.c	OpShowBackground	*	*	*	@identity-TODO: background image 0x31 with arg 4 by default; images 0x4c and 7 unplace sprites 0x1f and 0
+src/Script/scriptvars.c	OpShow*Picture	*	*	*	@identity-TODO: event pictures 0x5000 + n: the ranges that wait, the 10-frame pause, and 0x505c/0x506e's special cases
+src/Script/scriptvars.c	OpSaveRestoreScreen	*	*	*	@identity-TODO: the save/restore flag bits 1 and 2 and the 80-byte rows
+src/Script/scriptvars.c	ClearSystemVars	0	*	*	a cleared variable reads 0
+src/Script/scriptvars.c	SetScriptLongVar	-1	*	*	no variable (ReadLongVarIndex's -1)
+src/Script/scriptvars.c	Call*Name	*	call-argument	GetTextToken(*	@identity-TODO: GetTextToken's second argument 0; the second member is slot 1's ref

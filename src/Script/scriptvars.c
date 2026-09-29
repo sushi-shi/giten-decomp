@@ -40,6 +40,7 @@
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
 #include <Script/LongVar.h>
+#include <Script/ObjectRef.h>
 #include <Script/Script.h>
 #include <Script/ScriptBlock.h>
 #include <Script/ScriptCmd.h>
@@ -47,6 +48,7 @@
 #include <Script/ScriptOps.h>
 #include <Script/ScriptPanel.h>
 #include <Script/ScriptState.h>
+#include <Script/ScriptStatus.h>
 #include <Script/ScriptText.h>
 #include <Script/ScriptVars.h>
 #include <Script/TextState.h>
@@ -85,8 +87,13 @@ static ScriptScratchValue s_scratchValue = {0};
 DATA(0x0008164c)
 u32 g_tickCounter = 0;
 
+// The tick counter's states.
+#define TICK_COUNT_STOPPED 0
+#define TICK_COUNT_RUNNING 1
+#define TICK_COUNT_PAUSED (-1)
+
 DATA(0x00081650)
-static i16 s_tickCountOn = 0;
+static i16 s_tickCountOn = TICK_COUNT_STOPPED;
 
 // @identity-TODO: the option word the script's window-opening opcode passes on.
 // Set while a script builds a choice list; the text writer takes it with
@@ -683,9 +690,9 @@ b16 RunScriptScene(void) {
             i16 result;
             PollScriptPanels();
             result = TickScript(window);
-            if (result == -1) {
+            if (result == SCRIPT_END) {
                 NextGameStep();
-            } else if (result < 0 && result != -3) {
+            } else if (result < 0 && result != SCRIPT_YIELD) {
                 if (!StepOnTextPeriod(window)) {
                     PrevGameStep();
                     WaitForScriptText(window);
@@ -808,9 +815,9 @@ b16 RunActorScene(void) {
                 i16 result;
                 PollScriptPanels();
                 result = TickScript(window);
-                if (result == -1) {
+                if (result == SCRIPT_END) {
                     NextGameStep();
-                } else if (result < 0 && result != -3) {
+                } else if (result < 0 && result != SCRIPT_YIELD) {
                     if (!StepOnTextPeriod(window)) {
                         PrevGameStep();
                         WaitForScriptText(window);
@@ -1019,7 +1026,7 @@ void CallTextScript(const char* text) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b940, 0x18)
 void CallFirstMemberName(void) {
-    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, -1));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, SCRIPT_REF_SLOT_BASE));
 }
 
 // @dead-code
@@ -1027,7 +1034,7 @@ void CallFirstMemberName(void) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b960, 0x18)
 void CallSecondMemberName(void) {
-    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, -2));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, SCRIPT_REF_SLOT_BASE - 1));
 }
 
 // @dead-code
@@ -1035,7 +1042,7 @@ void CallSecondMemberName(void) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b980, 0x18)
 void CallSelectedMemberName(void) {
-    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, -16));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, SCRIPT_REF_FAVOURED_MEMBER));
 }
 
 // @dead-code
@@ -1043,7 +1050,7 @@ void CallSelectedMemberName(void) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b9a0, 0x18)
 void CallActorName(void) {
-    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, -17));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, SCRIPT_REF_ACTOR));
 }
 
 RVA(0x0003b9c0, 0x5e)
@@ -1095,7 +1102,7 @@ RVA(0x0003baf0, 0x34)
 // Turning counting on from off restarts the counter at 0.
 i16 SetTickCountOn(i16 on) {
     i16 prev = s_tickCountOn;
-    if (on == true && s_tickCountOn == 0) {
+    if (on == TICK_COUNT_RUNNING && s_tickCountOn == TICK_COUNT_STOPPED) {
         SetTickCounter(0);
     }
     s_tickCountOn = on;
@@ -1104,17 +1111,17 @@ i16 SetTickCountOn(i16 on) {
 
 RVA(0x0003bb30, 0xb)
 void OpStartTickCounter(void) {
-    SetTickCountOn(1);
+    SetTickCountOn(TICK_COUNT_RUNNING);
 }
 
 RVA(0x0003bb40, 0xb)
 void OpPauseTickCounter(void) {
-    SetTickCountOn(-1);
+    SetTickCountOn(TICK_COUNT_PAUSED);
 }
 
 RVA(0x0003bb50, 0xb)
 void OpStopTickCounter(void) {
-    SetTickCountOn(0);
+    SetTickCountOn(TICK_COUNT_STOPPED);
 }
 
 RVA(0x0003bb60, 0x16)
@@ -1137,7 +1144,7 @@ void OpStartCountdown(void) {
 
 RVA(0x0003bbc0, 0x11)
 void TickCounter(void) {
-    if (s_tickCountOn > 0) {
+    if (s_tickCountOn > TICK_COUNT_STOPPED) {
         g_tickCounter++;
     }
 }
@@ -1270,16 +1277,16 @@ void ClearScriptLongVars(void) {
     i16 i;
     for (i = 0; i < SCRIPT_LONG_VAR_COUNT; i++) {
         g_scriptLongVars[i] = 0;
-        ClearEventFlag(15, i);
+        ClearEventFlag(EVENT_FLAG_BANK_SYSTEM, i);
     }
 }
 
 RVA(0x0003bea0, 0x2a)
 void ClearSystemVars(void) {
     i16 i;
-    for (i = 0; i < 8; i++) {
-        g_scriptLongVars[18 + i] = 0;
-        ClearEventFlag(15, i + 18);
+    for (i = 0; i < SCRIPT_SYSTEM_VAR_COUNT; i++) {
+        g_scriptLongVars[SCRIPT_SYSTEM_VAR_FIRST + i] = 0;
+        ClearEventFlag(EVENT_FLAG_BANK_SYSTEM, i + SCRIPT_SYSTEM_VAR_FIRST);
     }
 }
 
@@ -1287,17 +1294,17 @@ RVA(0x0003bed0, 0x29)
 void ClearScriptLongVar(i16 index) {
     if (index >= 0 && index < SCRIPT_LONG_VAR_COUNT) {
         g_scriptLongVars[index] = 0;
-        ClearEventFlag(15, index);
+        ClearEventFlag(EVENT_FLAG_BANK_SYSTEM, index);
     }
 }
 
-// Copies out script variables 18..25 and the bank-15 settings word.
+// Copies out the system variables and the system bank's settings word.
 RVA(0x0003bf00, 0x2c)
 void SaveSystemVars(u32* vars, u32* settings) {
     i16 i;
     i16 var;
-    for (i = 0; i < 8; i++) {
-        var = i + 18;
+    for (i = 0; i < SCRIPT_SYSTEM_VAR_COUNT; i++) {
+        var = i + SCRIPT_SYSTEM_VAR_FIRST;
         vars[i] = g_scriptLongVars[var];
     }
     *settings = GetFlagSettings();
@@ -1306,20 +1313,20 @@ void SaveSystemVars(u32* vars, u32* settings) {
 RVA(0x0003bf30, 0x2d)
 void RestoreSystemVars(u32* vars, u32* settings) {
     i16 i;
-    for (i = 0; i < 8; i++) {
-        g_scriptLongVars[18 + i] = vars[i];
+    for (i = 0; i < SCRIPT_SYSTEM_VAR_COUNT; i++) {
+        g_scriptLongVars[SCRIPT_SYSTEM_VAR_FIRST + i] = vars[i];
     }
     SetFlagSettings(*settings);
 }
 
-// Sets a variable and marks it set (bank 15); returns `value`.
+// Sets a variable and marks it set (in the system bank); returns `value`.
 RVA(0x0003bf60, 0x39)
 u32 SetScriptLongVar(i16 index, u32 value) {
-    if (index == -1 || index < 0 || index >= 26) {
+    if (index == -1 || index < 0 || index >= SCRIPT_LONG_VAR_COUNT) {
         return value;
     }
     g_scriptLongVars[index] = value;
-    SetEventFlag(15, index);
+    SetEventFlag(EVENT_FLAG_BANK_SYSTEM, index);
     return value;
 }
 
@@ -1343,11 +1350,11 @@ void SwapScriptLongVars(i16 a, i16 b) {
         value = g_scriptLongVars[a];
         g_scriptLongVars[a] = g_scriptLongVars[b];
         g_scriptLongVars[b] = value;
-        changed = TestEventFlag(15, a);
-        changed ^= TestEventFlag(15, b);
+        changed = TestEventFlag(EVENT_FLAG_BANK_SYSTEM, a);
+        changed ^= TestEventFlag(EVENT_FLAG_BANK_SYSTEM, b);
         if (changed) {
-            ToggleEventFlag(15, a);
-            ToggleEventFlag(15, b);
+            ToggleEventFlag(EVENT_FLAG_BANK_SYSTEM, a);
+            ToggleEventFlag(EVENT_FLAG_BANK_SYSTEM, b);
         }
     }
 }
@@ -1357,10 +1364,10 @@ RVA(0x0003c040, 0x59)
 void CopyScriptLongVar(i16 dst, i16 src) {
     if (dst >= 0 && dst < SCRIPT_LONG_VAR_COUNT && src >= 0 && src < SCRIPT_LONG_VAR_COUNT) {
         g_scriptLongVars[dst] = g_scriptLongVars[src];
-        if (!TestEventFlag(15, src)) {
-            ClearEventFlag(15, dst);
+        if (!TestEventFlag(EVENT_FLAG_BANK_SYSTEM, src)) {
+            ClearEventFlag(EVENT_FLAG_BANK_SYSTEM, dst);
         } else {
-            SetEventFlag(15, dst);
+            SetEventFlag(EVENT_FLAG_BANK_SYSTEM, dst);
         }
     }
 }
