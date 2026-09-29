@@ -24,6 +24,7 @@
 #include <Game/ObjectRecord.h>
 #include <Game/Party.h>
 #include <Game/Skill.h>
+#include <Game/StatBarRows.h>
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
 #include <Game/StatusScreen.h>
@@ -526,7 +527,7 @@ void DrawStatLine(Character* member, i16 stat, i16 highlight, i16 window) {
                 GetBaseStat(member, stat),
                 GetStatBonus(member, stat),
                 GetStatEquipment(member, stat),
-                -1
+                STAT_BAR_ROWS_FIRST
             );
         }
     } else {

@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <Game/Alignment.h>
+#include <Game/AlignmentSide.h>
 #include <Game/Condition.h>
 #include <Game/EquipEffect.h>
 #include <Game/ItemEffect.h>
@@ -240,7 +241,7 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
             revival = 1;
             break;
         case 63:
-            if (GetAlignmentClassB(target) > 0) {
+            if (GetAlignmentClassB(target) > ALIGNMENT_NEUTRAL) {
                 g_hpChange = hp;
                 FillPool(hpPool, target->pools.hp.max, POOL_FILL_TO_MAX);
             } else if (hpPool->cur > (target->pools.hp.max >> 3)) {
@@ -255,7 +256,7 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
             FillRestorePools(hpPool, mpPool, hp, mp);
             break;
         case 65:
-            if (GetAlignmentClassB(target) < 0) {
+            if (GetAlignmentClassB(target) < ALIGNMENT_NEUTRAL) {
                 g_hpChange = target->pools.hp.max - hpPool->cur;
                 FillPool(hpPool, target->pools.hp.max, POOL_FILL_TO_MAX);
             }

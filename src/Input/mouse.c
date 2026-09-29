@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <Input/Mouse.h>
+#include <Input/MouseClickState.h>
 #include <Sound/Sound.h>
 
 DATA(0x00091540)
@@ -67,8 +68,8 @@ void LatchMouseClicks(void) {
 
 RVA(0x00002a60, 0xf)
 void ClearMouseClicks(void) {
-    g_mouseLeftClick = 0;
-    g_mouseRightClick = 0;
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
+    g_mouseRightClick = MOUSE_CLICK_NONE;
 }
 
 // A pending right-click cancels: consume the clicks, optionally drop the

@@ -8,6 +8,7 @@
 #include <Game/FieldSight.h>
 #include <Game/FieldView.h>
 #include <Game/TreasureBox.h>
+#include <Game/ViewCellAxis.h>
 #include <Input/Mouse.h>
 #include <Platform/PlatformApi.h>
 #include <Util/PixelMask.h>
@@ -264,8 +265,8 @@ void FloodViewCells(
     }
     if (!GetWallAt(x, y, dir & 3, width, height) && CanFloodViewCell(col, row, VIEW_NORTH)) {
         FloodViewCells(
-            StepViewCell(x, y, dir, 0),
-            StepViewCell(x, y, dir, 1),
+            StepViewCell(x, y, dir, VIEW_CELL_COLUMN),
+            StepViewCell(x, y, dir, VIEW_CELL_ROW),
             dir,
             col,
             row - 1,

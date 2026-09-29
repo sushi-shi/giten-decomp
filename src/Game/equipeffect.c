@@ -7,6 +7,7 @@
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
 #include <Game/EquipEffect.h>
+#include <Game/ItemCurse.h>
 #include <Game/ItemRecord.h>
 #include <Game/Pool.h>
 #include <Game/Stats.h>
@@ -33,11 +34,11 @@ void ApplyItemCurse(
     record = GetLoadedRecord(item);
     curse = GetItemCurse(record);
     minLevel = GetItemCurseLevel(record);
-    if (curse == 0 || minLevel <= character->level) {
+    if (curse == ITEM_CURSE_NONE || minLevel <= character->level) {
         return;
     }
     switch (curse) {
-        case 1:
+        case ITEM_CURSE_HALVE_VITALITY:
             if (timing == EQUIP_EFFECT_STAT_UPDATE) {
                 SetStatTotal(
                     character,
@@ -46,7 +47,7 @@ void ApplyItemCurse(
                 );
             }
             return;
-        case 2:
+        case ITEM_CURSE_HALVE_PROTECTION:
             if (timing == EQUIP_EFFECT_STAT_UPDATE) {
                 SetStatTotal(
                     character,
@@ -55,7 +56,7 @@ void ApplyItemCurse(
                 );
             }
             return;
-        case 3:
+        case ITEM_CURSE_HALVE_AGILITY:
             if (timing == EQUIP_EFFECT_STAT_UPDATE) {
                 SetStatTotal(
                     character,
@@ -64,7 +65,7 @@ void ApplyItemCurse(
                 );
             }
             return;
-        case 4:
+        case ITEM_CURSE_HALVE_CHARM:
             if (timing == EQUIP_EFFECT_STAT_UPDATE) {
                 SetStatTotal(
                     character,
@@ -73,7 +74,7 @@ void ApplyItemCurse(
                 );
             }
             return;
-        case 5:
+        case ITEM_CURSE_HALVE_FORTUNE:
             if (timing == EQUIP_EFFECT_STAT_UPDATE) {
                 SetStatTotal(
                     character,
@@ -82,69 +83,69 @@ void ApplyItemCurse(
                 );
             }
             return;
-        case 6:
+        case ITEM_CURSE_DRAIN_HP:
             if (timing == EQUIP_EFFECT_STEP_TICK) {
                 ChangePool(&character->pools.hp, -1);
                 ApplyEmptyPools(character);
             }
             return;
-        case 7:
+        case ITEM_CURSE_DRAIN_HP_HEAVY:
             if (timing == EQUIP_EFFECT_STEP_TICK) {
                 ChangePool(&character->pools.hp, -3);
                 ApplyEmptyPools(character);
             }
             return;
-        case 8:
+        case ITEM_CURSE_DRAIN_MP:
             if (timing == EQUIP_EFFECT_STEP_TICK) {
                 ChangePool(&character->pools.mp, -1);
             }
             return;
-        case 16:
+        case ITEM_CURSE_BURNING:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x40) {
                 AddCondition(GetCharacterConditions(character), 0x16);
             }
             return;
-        case 17:
+        case ITEM_CURSE_MAGIC_SEALED:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x20) {
                 AddCondition(GetCharacterConditions(character), 0x18);
             }
             return;
-        case 18:
+        case ITEM_CURSE_PANIC:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x20) {
                 AddCondition(GetCharacterConditions(character), 0xe);
             }
             return;
-        case 19:
+        case ITEM_CURSE_CONFUSED:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x40) {
                 AddCondition(GetCharacterConditions(character), 0x12);
             }
             return;
-        case 20:
+        case ITEM_CURSE_CHARMED:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x20) {
                 AddCondition(GetCharacterConditions(character), 0x11);
             }
             return;
-        case 21:
+        case ITEM_CURSE_DANCING:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x40) {
                 AddCondition(GetCharacterConditions(character), 0x13);
             }
             return;
-        case 22:
+        case ITEM_CURSE_BOUND:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x20) {
                 AddCondition(GetCharacterConditions(character), 0xc);
             }
             return;
-        case 23:
+        case ITEM_CURSE_BERSERK:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x40) {
                 AddCondition(GetCharacterConditions(character), 0x1a);
             }
             return;
-        case 24:
+        case ITEM_CURSE_TIPSY:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x40) {
                 AddCondition(GetCharacterConditions(character), 0x1d);
             }
             return;
-        case 25:
+        case ITEM_CURSE_SLIME:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x20) {
                 AddCondition(GetCharacterConditions(character), 0x1f);
             }

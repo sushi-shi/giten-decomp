@@ -10,6 +10,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <Game/ActionMark.h>
 #include <Game/Actor.h>
 #include <Game/Alignment.h>
 #include <Game/AnalyzeData.h>
@@ -52,6 +53,7 @@
 #include <Gfx/ScreenSave.h>
 #include <Gfx/Vram.h>
 #include <Input/Mouse.h>
+#include <Math/FieldSubcell.h>
 #include <Math/Vec3.h>
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
@@ -69,7 +71,7 @@
 // @identity-TODO: the floor cell of the n-th of up to ten objects drawn
 // together, far rows and the near row.
 DATA(0x00064328)
-static const i16 s_farCells[10][9] = {
+static const GZ_ENUM_STORAGE(FieldSubcell, i16) s_farCells[10][9] = {
     {4, 4, 4, 4, 4, 4, 4, 4, 4},
     {4, 3, 5, 1, 2, 0, 7, 8, 6},
     {3, 5, 4, 1, 2, 0, 7, 8, 6},
@@ -83,7 +85,7 @@ static const i16 s_farCells[10][9] = {
 };
 
 DATA(0x000643e0)
-static const i16 s_nearCells[10][9] = {
+static const GZ_ENUM_STORAGE(FieldSubcell, i16) s_nearCells[10][9] = {
     {4, 4, 4, 4, 4, 4, 4, 4, 4},
     {4, 3, 5, 1, 2, 0, 0, 1, 2},
     {3, 5, 4, 1, 2, 0, 0, 1, 2},
@@ -587,7 +589,7 @@ b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 dr
     facing = RelativeFacing(g_viewFacing, object->direction);
     point = GetApproachOffset(g_viewLateral, g_viewDepth);
     sprite = s_facingSprite[facing];
-    CellToField(g_viewLateral, g_viewDepth, 4, &cell);
+    CellToField(g_viewLateral, g_viewDepth, FIELD_SUBCELL_CENTER, &cell);
     frame = GetLayerFrame(image, 0, cell.z);
     redraw = object->redraw != 0;
     if (g_viewDepth == 0) {
@@ -1549,7 +1551,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             break;
         attack:
             FaceObjectToParty(object, 0);
-            GetFieldObjectActionWait(object)->ready = 0;
+            GetFieldObjectActionWait(object)->ready = ACTION_UNMARKED;
             if (action < 2) {
                 ChooseObjectTarget(object);
                 break;
@@ -1935,7 +1937,7 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->stats.base[STAT_CHARM] = record->stats[STAT_CHARM];
     object->stats.base[STAT_FORTUNE] = record->stats[STAT_FORTUNE];
     object->actionSpeed = record->actionSpeed;
-    wait = 0xff - RandomAverage(0, 100, 0);
+    wait = ACTION_WAIT_RESET - RandomAverage(0, 100, 0);
     GetFieldObjectActionWait(object)->remaining = wait;
     memset(object->battleTally, 0, sizeof(object->battleTally));
     SetItemSlotItem(&GetFieldObjectEquipment(object)[0], record->items[0]);

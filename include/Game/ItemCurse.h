@@ -1,0 +1,30 @@
+#ifndef GITEN_GAME_ITEMCURSE_H
+#define GITEN_GAME_ITEMCURSE_H
+
+#include <EnumDomain.h>
+
+// An equipped item's curse, dispatched by ApplyItemCurse: a halved stat, a pool
+// drain, or an inflicted condition.
+GZ_ENUM_BEGIN_SPLIT(ItemCurse, u8)
+    ITEM_CURSE_NONE = 0,
+    ITEM_CURSE_HALVE_VITALITY = 1,
+    ITEM_CURSE_HALVE_PROTECTION = 2,
+    ITEM_CURSE_HALVE_AGILITY = 3,
+    ITEM_CURSE_HALVE_CHARM = 4,
+    ITEM_CURSE_HALVE_FORTUNE = 5,
+    ITEM_CURSE_DRAIN_HP = 6,
+    ITEM_CURSE_DRAIN_HP_HEAVY = 7,
+    ITEM_CURSE_DRAIN_MP = 8,
+    ITEM_CURSE_BURNING = 16,
+    ITEM_CURSE_MAGIC_SEALED = 17,
+    ITEM_CURSE_PANIC = 18,
+    ITEM_CURSE_CONFUSED = 19,
+    ITEM_CURSE_CHARMED = 20,
+    ITEM_CURSE_DANCING = 21,
+    ITEM_CURSE_BOUND = 22,
+    ITEM_CURSE_BERSERK = 23,
+    ITEM_CURSE_TIPSY = 24,
+    ITEM_CURSE_SLIME = 25
+GZ_ENUM_END_SPLIT(ItemCurse)
+
+#endif // GITEN_GAME_ITEMCURSE_H

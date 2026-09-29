@@ -5,12 +5,14 @@
 
 #include <File/DataFile.h>
 #include <Game/Alignment.h>
+#include <Game/AlignmentSide.h>
 #include <Game/BagItems.h>
 #include <Game/BattleEffect.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Game/DemonTable.h>
 #include <Game/DropTable.h>
+#include <Game/DropTableEncoding.h>
 #include <Game/EquipSlotIndex.h>
 #include <Game/Field.h>
 #include <Game/FieldSight.h>
@@ -19,6 +21,7 @@
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
 #include <Game/ItemEffect.h>
+#include <Game/ItemId.h>
 #include <Game/ItemPool.h>
 #include <Game/ItemRecord.h>
 #include <Game/Pool.h>
@@ -26,6 +29,7 @@
 #include <Game/StateStack.h>
 #include <Game/StatUpdate.h>
 #include <Input/Mouse.h>
+#include <Input/MouseClickState.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
 #include <Platform/PlatformApi.h>
@@ -35,6 +39,7 @@
 #include <Text/TextWindow.h>
 #include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
+#include <Util/BitChangeMode.h>
 #include <Util/Range.h>
 #include <Util/Scratch.h>
 
@@ -106,7 +111,7 @@ DATA(0x00064650)
 static const i16 s_giftFamiliarity[16] = {2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60};
 
 DATA(0x000919a0)
-DropSlot g_dropSlots[16];
+DropSlot g_dropSlots[DROP_SLOT_COUNT];
 
 DATA(0x000911c0)
 ItemRecord g_loadedItem;
@@ -612,7 +617,7 @@ i16 CountPoolEntries(void) {
     i16 i;
 
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(GetItemPoolEntry(i)) != -1) {
+        if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             count++;
         }
     }
@@ -624,7 +629,7 @@ void ClearPool(void) {
     i16 i;
 
     for (i = 0; i < 64; i++) {
-        GetItemPoolEntry(i)->item = -1;
+        GetItemPoolEntry(i)->item = ITEM_ID_EMPTY;
         GetItemPoolEntry(i)->count = 0;
     }
 }
@@ -646,7 +651,7 @@ void AddToPool(i16 item, i16 amount) {
         }
     }
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(GetItemPoolEntry(i)) == -1) {
+        if (GetItemStackItem(GetItemPoolEntry(i)) == ITEM_ID_EMPTY) {
             GetItemPoolEntry(i)->item = item;
             GetItemPoolEntry(i)->count = amount;
             return;
@@ -663,7 +668,7 @@ void TakeFromPool(i16 item, u8 amount) {
             GetItemPoolEntry(i)->count -= amount;
             if (GetItemStackCount(GetItemPoolEntry(i)) == 0) {
                 GetItemPoolEntry(i)->count = 0;
-                GetItemPoolEntry(i)->item = -1;
+                GetItemPoolEntry(i)->item = ITEM_ID_EMPTY;
             }
             return;
         }
@@ -681,7 +686,7 @@ i16 GivePooledItems(void) {
     i16 i;
 
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(GetItemPoolEntry(i)) != -1) {
+        if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             item = RemapItem(GetItemStackItem(GetItemPoolEntry(i)));
             amount = GetItemStackCount(GetItemPoolEntry(i));
             if (item != 0) {
@@ -704,7 +709,7 @@ void TakePooledItems(void) {
     i16 i;
 
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(GetItemPoolEntry(i)) != -1) {
+        if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             TakeBagItems(
                 GetItemStackItem(GetItemPoolEntry(i)),
                 GetItemStackCount(GetItemPoolEntry(i))
@@ -735,7 +740,7 @@ ItemStackList* CopyBagEntries(i16 first, i16 count, ItemStackList* list) {
         count = 64;
     }
     for (i = first; i < count; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1) {
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             *GetItemListEntry(list, copied++) = g_bagItems[i];
         }
     }
@@ -895,7 +900,7 @@ i16 SetBagEntryDetail(i16 index, i16 detail) {
 
 RVA(0x00023eb0, 0x70)
 i16 FillBagEntry(i16 index, i16 item, u16 amount, u16 limit, i16 attachment, i16 detail) {
-    if (GetItemStackItem(&g_bagItems[index]) == -1) {
+    if (GetItemStackItem(&g_bagItems[index]) == ITEM_ID_EMPTY) {
         SetBagEntry(index, item, attachment);
     } else if (GetItemStackItem(&g_bagItems[index]) != item) {
         return 0;
@@ -920,7 +925,7 @@ static void CompactBagCore(void) {
         ClearItemStack(&scenarioItems[i]);
     }
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY
             && GetItemKind(GetItemStackItem(&g_bagItems[i])) == ITEM_KIND_SCENARIO) {
             if (kept < 16) {
                 scenarioItems[kept++] = g_bagItems[i];
@@ -929,7 +934,7 @@ static void CompactBagCore(void) {
         }
     }
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) == -1) {
+        if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             continue;
         }
         limit = GetItemStackLimit(GetItemStackItem(&g_bagItems[i]));
@@ -942,11 +947,11 @@ static void CompactBagCore(void) {
         }
     }
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1) {
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             continue;
         }
         for (j = i + 1; j < 64; j++) {
-            if (GetItemStackItem(&g_bagItems[j]) != -1) {
+            if (GetItemStackItem(&g_bagItems[j]) != ITEM_ID_EMPTY) {
                 g_bagItems[i] = g_bagItems[j];
                 ClearItemStack(&g_bagItems[j]);
                 break;
@@ -954,11 +959,11 @@ static void CompactBagCore(void) {
         }
     }
     for (i = 48; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1) {
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             continue;
         }
         for (j = 0; j < 16; j++) {
-            if (GetItemStackItem(&scenarioItems[j]) != -1) {
+            if (GetItemStackItem(&scenarioItems[j]) != ITEM_ID_EMPTY) {
                 g_bagItems[i] = scenarioItems[j];
                 ClearItemStack(&scenarioItems[j]);
                 break;
@@ -1025,7 +1030,7 @@ i16 AddScenarioBagItems(i16 item, i16 count) {
     i16 i;
 
     for (i = 48; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) == -1) {
+        if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             SetBagEntry(i, item, -1);
             count -= AddToBagEntry(i, count, limit);
             if (count <= 0) {
@@ -1042,7 +1047,7 @@ i16 CountBagEntries(void) {
     i16 i;
 
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1) {
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             count++;
         }
     }
@@ -1075,13 +1080,13 @@ void CompactBag(void) {
 
     CompactBagCore();
     for (i = 0; i < 47; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) == -1) {
+        if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             next = i + 1;
             if (next >= 48) {
                 return;
             }
             while (next < 48) {
-                if (GetItemStackItem(&g_bagItems[next]) != -1) {
+                if (GetItemStackItem(&g_bagItems[next]) != ITEM_ID_EMPTY) {
                     g_bagItems[i] = g_bagItems[next];
                     SetBagEntry(next, -1, -1);
                     break;
@@ -1477,10 +1482,10 @@ void AddItemStatPoints(i16 item, i16* stats) {
 // and a duplicated body cross-jumps with the blocks in the other order.
 RVA(0x00024d50, 0x1f0)
 void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
-    if (indexed && item != -1) {
+    if (indexed && item != ITEM_ID_EMPTY) {
         item += GetGemItemBase();
     }
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1579,7 +1584,7 @@ i16 SumEquippedMagicDefenseBonus(Character* character, u8 groups) {
 
 RVA(0x00025040, 0x30)
 i16 GetItemMagicDefenseBonus(i16 item) {
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return 0;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1588,7 +1593,7 @@ i16 GetItemMagicDefenseBonus(i16 item) {
 
 RVA(0x00025070, 0x30)
 i16 GetItemMagicAccuracyBonus(i16 item) {
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordMagicAccuracyBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1596,7 +1601,7 @@ i16 GetItemMagicAccuracyBonus(i16 item) {
 
 RVA(0x000250a0, 0x30)
 i16 GetItemPhysicalEvasionBonus(i16 item) {
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordPhysicalEvasionBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1604,7 +1609,7 @@ i16 GetItemPhysicalEvasionBonus(i16 item) {
 
 RVA(0x000250d0, 0x30)
 i16 GetItemMagicPowerBonus(i16 item) {
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordMagicPowerBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1803,7 +1808,7 @@ i16 ResolveInflictedCondition(i16 code, Character* target) {
             condition = code;
             break;
         case 57:
-            if (GetAlignmentClassB(target) <= 0) {
+            if (GetAlignmentClassB(target) <= ALIGNMENT_NEUTRAL) {
                 condition = 0x11;
             }
             break;
@@ -1842,7 +1847,7 @@ i16 ResolveInflictedCondition(i16 code, Character* target) {
             }
             break;
         case 65:
-            if (GetAlignmentClassB(target) != -1) {
+            if (GetAlignmentClassB(target) != ALIGNMENT_NEGATIVE) {
                 condition = 0xe;
             }
             break;
@@ -1996,7 +2001,11 @@ i16 ExpireSpecialItem(i16 item) {
         if (s_timedItemFlags[item].bank < 0) {
             return item;
         }
-        ModifyEventFlag(s_timedItemFlags[item].bank, s_timedItemFlags[item].index, 0);
+        ModifyEventFlag(
+            s_timedItemFlags[item].bank,
+            s_timedItemFlags[item].index,
+            BIT_CHANGE_CLEAR
+        );
         return item;
     }
     return -1;
@@ -2037,7 +2046,8 @@ void RunBagDiscardMenu(void) {
 
     for (i = 0; i < 64; i++) {
         item = GetBagItem(i);
-        if (item != -1 && GetItemPrice(item) != 0 && GetItemKind(item) != ITEM_KIND_SCENARIO) {
+        if (item != ITEM_ID_EMPTY && GetItemPrice(item) != 0
+            && GetItemKind(item) != ITEM_KIND_SCENARIO) {
             entries[count++] = i;
         }
     }
@@ -2055,8 +2065,8 @@ void RunBagDiscardMenu(void) {
 
 RVA(0x00025d90, 0x20)
 void WaitMenuFrame(void) {
-    g_mouseLeftClick = 0;
-    g_mouseRightClick = 0;
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
+    g_mouseRightClick = MOUSE_CLICK_NONE;
     RunFrame();
 }
 

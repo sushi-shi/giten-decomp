@@ -6,6 +6,7 @@
 
 #include <rva.h>
 
+#include <Game/ActionOutcome.h>
 #include <Game/Actor.h>
 #include <Game/AreaNpc.h>
 #include <Game/Attack.h>
@@ -51,6 +52,7 @@
 #include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
 #include <Ui/MessageScript.h>
+#include <Util/BitChangeMode.h>
 #include <Util/BitSet.h>
 #include <Util/Range.h>
 #include <Util/Scratch.h>
@@ -521,11 +523,11 @@ i16 ResolveCombatAction(void) {
 
     if (CanAffectCombatant(g_targetId) && !attacker->pickNoEffect) {
         if (g_actionResult >= 2 && g_actionResult != 6) {
-            if (s_actionOutcome == 0) {
+            if (s_actionOutcome == ACTION_OUTCOME_DEFAULT) {
                 PlaySoundEffect(0x10);
-            } else if (s_actionOutcome == 1) {
+            } else if (s_actionOutcome == ACTION_OUTCOME_CONDITION) {
                 PlaySoundEffect(0x36);
-            } else if (s_actionOutcome == 2) {
+            } else if (s_actionOutcome == ACTION_OUTCOME_BATTLE_TALLY) {
                 PlaySoundEffect(0x24);
             }
         }
@@ -778,12 +780,12 @@ b16 RunBattleAction(void) {
                     g_actorId
                 );
                 if (actor->pickTarget == 0x71) {
-                    ModifyEventFlag(7, 0xfd, 1);
+                    ModifyEventFlag(7, 0xfd, BIT_CHANGE_SET);
                 }
                 if (actor->pickTarget == 0x21) {
-                    ModifyEventFlag(7, 0xff, 1);
+                    ModifyEventFlag(7, 0xff, BIT_CHANGE_SET);
                 } else if (actor->pickTarget == 0x24) {
-                    ModifyEventFlag(7, 0xfe, 1);
+                    ModifyEventFlag(7, 0xfe, BIT_CHANGE_SET);
                 } else if (GetItemValueHigh(actor->pickTarget)) {
                     TakeBagItems(actor->pickTarget, 1);
                 }
@@ -1539,11 +1541,11 @@ void UseAttackSkill(Character* user, Character* target) {
             g_statusCondition = 0;
             break;
         case -1:
-            SetActionOutcome(1);
+            SetActionOutcome(ACTION_OUTCOME_CONDITION);
             InflictCondition(GetSkillInflictedCondition(&s_effectSkill), user);
             break;
         default:
-            SetActionOutcome(1);
+            SetActionOutcome(ACTION_OUTCOME_CONDITION);
             InflictCondition(GetSkillInflictedCondition(&s_effectSkill), target);
             break;
     }
@@ -1594,7 +1596,7 @@ void UseBattleTallySkill(Character* user, Character* target) {
     } else if (tally == 9) {
         GetCharacterBattleTallies(target)[8] = 0;
     }
-    SetActionOutcome(2);
+    SetActionOutcome(ACTION_OUTCOME_BATTLE_TALLY);
 }
 
 static __inline void PrepareBattleStatSkill(Character* user) {

@@ -39,6 +39,7 @@
 #include <Game/GemItems.h>
 #include <Game/Growth.h>
 #include <Game/InfoBar.h>
+#include <Game/ItemId.h>
 #include <Game/ItemMenu.h>
 #include <Game/ItemRecord.h>
 #include <Game/ItemUse.h>
@@ -124,7 +125,7 @@ static i16 s_dismissMenuPlane = -1;
 
 // The item being used (-1 for none).
 DATA(0x00068a54)
-static i16 s_useItem = -1;
+static i16 s_useItem = ITEM_ID_EMPTY;
 
 // The id of the member using it (-1 for none).
 DATA(0x00068a58)
