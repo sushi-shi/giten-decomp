@@ -287,7 +287,7 @@ i16 CalculatePairFusion(i16 first, i16 second) {
             }
         }
     }
-    if (g_fusionResult >= 32 && IsFusionDemonRestricted(g_fusionResult)) {
+    if (g_fusionResult >= HUMAN_ID_LIMIT && IsFusionDemonRestricted(g_fusionResult)) {
         return SetFusionResult(-1, 0);
     }
     return result;
@@ -605,7 +605,7 @@ i16 SelectRandomFusionDemon(void) {
         for (index = 0; index < 3; index++) {
             sum += rand();
         }
-        demon = (sum / 3) * (count - 32) / 32768 + 32;
+        demon = (sum / 3) * (count - HUMAN_ID_LIMIT) / 32768 + HUMAN_ID_LIMIT;
         if (GetFusionRestrictedClass(demon)) {
             continue;
         }
@@ -752,7 +752,7 @@ i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
     );
     if (secondaryCount == 2) {
         result = StagePairFusionCharacter(secondary[0], secondary[1], 0);
-        if (result >= 32) {
+        if (result >= HUMAN_ID_LIMIT) {
             if (primaryCount) {
                 result = StagePairFusionCharacter(0, primary[0], 1);
             } else {
@@ -761,7 +761,7 @@ i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
         }
     } else if (primaryCount == 2) {
         result = StagePairFusionCharacter(primary[0], primary[1], 1);
-        if (result >= 32) {
+        if (result >= HUMAN_ID_LIMIT) {
             if (secondaryCount) {
                 result = StagePairFusionCharacter(0, secondary[0], 1);
             } else {
@@ -1649,7 +1649,7 @@ FusionSummary* GetFusionPairSummaryCell(i16 first, i16 second) {
     if (s_fusionSummaryTable == NULL) {
         s_fusionSummaryTable = s_fusionPairSummaries;
     }
-    first = first * 32 + second;
+    first = first * ROSTER_SIZE + second;
     return &s_fusionPairSummaries[first];
 }
 
@@ -1872,7 +1872,7 @@ i16 BuildPairFusionCandidates(i16 skipCalculation) {
     FusionSummary summary;
     s_fusionCandidateCount = 0;
     for (first = 0; first < ROSTER_SIZE; first++) {
-        if (GetRosterId(first) >= 32) {
+        if (GetRosterId(first) >= HUMAN_ID_LIMIT) {
             s_fusionSlots[s_fusionCandidateCount++] = first;
         }
         for (second = 0; second < ROSTER_SIZE; second++) {
@@ -1882,7 +1882,7 @@ i16 BuildPairFusionCandidates(i16 skipCalculation) {
             if (first == second) {
                 summary.fields.kind = -1;
                 StoreFusionPairSummary(first, second, &summary);
-            } else if (GetRosterId(second) < 32) {
+            } else if (GetRosterId(second) < HUMAN_ID_LIMIT) {
                 summary.fields.kind = -1;
                 StoreFusionPairSummary(first, second, &summary);
             } else if (!skipCalculation && CalculatePairFusion(first, second)) {
@@ -1894,8 +1894,8 @@ i16 BuildPairFusionCandidates(i16 skipCalculation) {
     summary.value = -128;
     for (first = 0; first < ROSTER_SIZE; first++) {
         demon = GetRosterId(first);
-        if (demon >= 32 && IsFusionDemonRestricted(demon)) {
-            for (second = 0; second < 32; second++) {
+        if (demon >= HUMAN_ID_LIMIT && IsFusionDemonRestricted(demon)) {
+            for (second = 0; second < ROSTER_SIZE; second++) {
                 StoreFusionPairSummary(first, second, &summary);
                 StoreFusionPairSummary(second, first, &summary);
             }
@@ -1909,7 +1909,7 @@ void StoreFusionPairSummary(i16 first, i16 second, const FusionSummary* summary)
     if (s_fusionSummaryTable == NULL) {
         s_fusionSummaryTable = s_fusionPairSummaries;
     }
-    first = first * 32 + second;
+    first = first * ROSTER_SIZE + second;
     s_fusionPairSummaries[first] = *summary;
 }
 
@@ -1926,10 +1926,10 @@ i16 BuildTripleFusionSummaries(i16 third) {
         }
     }
     for (first = 0; first < ROSTER_SIZE; first++) {
-        if (GetRosterId(first) >= 32) {
+        if (GetRosterId(first) >= HUMAN_ID_LIMIT) {
             for (second = 0; second < ROSTER_SIZE; second++) {
                 s_pendingFusionResultId = -1;
-                if (GetRosterId(second) < 32) {
+                if (GetRosterId(second) < HUMAN_ID_LIMIT) {
                     summary.fields.kind = -1;
                     StoreFusionPairSummary(first, second, &summary);
                 } else if (first != second && first != g_fusionThirdSlot
@@ -1947,8 +1947,8 @@ i16 BuildTripleFusionSummaries(i16 third) {
     summary.value = -128;
     for (first = 0; first < ROSTER_SIZE; first++) {
         demon = GetRosterId(first);
-        if (demon >= 32 && IsFusionDemonRestricted(demon)) {
-            for (second = 0; second < 32; second++) {
+        if (demon >= HUMAN_ID_LIMIT && IsFusionDemonRestricted(demon)) {
+            for (second = 0; second < ROSTER_SIZE; second++) {
                 StoreFusionPairSummary(first, second, &summary);
                 StoreFusionPairSummary(second, first, &summary);
             }

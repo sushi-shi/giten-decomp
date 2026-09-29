@@ -948,3 +948,44 @@ src/Script/scriptactor.c	OpSetLongVar	*	*	*	@identity-TODO: long variable 23 (a 
 src/Script/scriptactor.c	OpCureRosterCondition	1	*	*	the roster's first slot
 src/Script/scriptactor.c	OpRecoverRosterPool	1	*	*	the roster's first slot
 src/Script/scriptactor.c	OpZeroLongVar	0	call-argument	*	the variable is set to 0
+src/Game/fusion.c	GetFusionResultKind	*	*	*	@identity-TODO: fusion result kinds 0..12 (see SetFusionResult's row) and the script results -3 (over the level) and -2 (already in the roster)
+src/Game/fusion.c	s_fusionSummaryIcons	*	data-or-extent	*	@identity-TODO: the summary icon of each fusion result kind
+src/Game/fusion.c	s_fusionFlagLevelBonuses	*	data-or-extent	*	@identity-TODO: level bonuses by demon flag pair
+src/Game/fusion.c	Resolve*	*	*	*	@identity-TODO: fusion resolution: race/rank table lookups, sides (-1, 0, 1), the members' level parity (% 7, % 5, % 3), FindNextOfRace's wrap flag, rank steps, demon ids from 32, the result slot codes (1000), random picks (10, 14)
+src/Game/fusion.c	Calculate*Fusion	*	*	*	@identity-TODO: fusion calculation: the first and second slots, demon ids from 32, the triple's level step 5
+src/Game/fusion.c	*Fusion*Character	*	*	*	@identity-TODO: fusion staging: the scratch character slot 13, humans below 32, the staged character's derived stats and flags
+src/Game/fusion.c	SelectRandomFusionDemon	*	*	*	@identity-TODO: a random demon between the id floor and the count (32768 the roll's range), rank steps of 3 and 14
+src/Game/fusion.c	Build*Fusion*	*	*	*	@identity-TODO: the fusion summaries: flag words (-256, -128), no pair (-1)
+src/Game/fusion.c	*Fusion*Summary*	*	*	*	@identity-TODO: summary cells packed by roster slot (32 per row), no summary (-1), pair sides (0, 1, 3)
+src/Game/fusion.c	*FusionPicker	*	*	*	@identity-TODO: the fusion pickers' steps 0..10, no slot (-1), cancelled (-2), panel rows (6, 7, 8) and the preview plane
+src/Game/fusion.c	RunFusionMenuState	*	*	*	@identity-TODO: the fusion menu's phases and steps (0..3, 16..20) and its plane (54)
+src/Game/fusion.c	OpenFusionPreviewOnClick	*	*	*	@identity-TODO: the preview's hit test (272 x 24 origin, 54, 16 rows of 32 cells), the scratch slot 13, no preview (-1), its steps
+src/Game/fusion.c	CreateFusionInfoPlane	*	*	*	fusion info plane layout: the three planes at 25, 43 and 61 and their kinds
+src/Game/fusion.c	CreateFusionList	*	*	*	the fusion list's 15 rows; no list (-1)
+src/Game/fusion.c	DrawFusion*	*	*	*	fusion display layout: the detail columns (240, 384, 528), the stat group's 72, the summary grid's cells, rows and colours
+src/Game/fusion.c	Find*Fusion*	*	*	*	@identity-TODO: fallback and complement lookups: -1 when none; race and rank codes
+src/Game/fusion.c	FusionListMenuHandler	*	*	*	@identity-TODO: the fusion list's rows and events (0, 1, -1)
+src/Game/fusion.c	*ScriptAnimation*	*	*	*	@identity-TODO: script animations: image files 0x3000, variant 0, flags 2, 16 frames, 8-pixel steps; the state's steps 0..2
+src/Game/fusion.c	CompareFusion*	*	*	*	sort order: -1 before, 0 equal
+src/Game/fusion.c	Count*FusionSlots	*	*	*	no special race (0), unranked (-1)
+src/Game/fusion.c	CountFusion*FlagOne	1	*	*	flag value 1
+src/Game/fusion.c	MatchFusionPair	*	*	*	-1 no match, 1 a match
+src/Game/fusion.c	CheckFusionRestrictedPair	*	*	*	restricted (1) or not (0)
+src/Game/fusion.c	ClassifyFusionSlot	*	*	*	@identity-TODO: slot classes 0 and 1
+src/Game/fusion.c	CommitTripleFusion	*	*	*	@identity-TODO: the scratch slot 13; no third slot; commit flag 1
+src/Game/fusion.c	CommitPairFusion	0	*	*	@identity-TODO: the first slot and flag 0
+src/Game/fusion.c	RunTripleFusion	*	*	*	@identity-TODO: the scratch slot 13; no third slot
+src/Game/fusion.c	RunPairFusion	*	*	*	@identity-TODO: no third slot; flag 0
+src/Game/fusion.c	SortFusionSlots	0	*	*	the first slot
+src/Game/fusion.c	InheritFusionStat	4	*	*	@identity-TODO: a quarter of the parent stat
+src/Game/fusion.c	AcquireFusionSelectionMode	1	*	*	@identity-TODO: SavePaletteState's mode 1
+src/Game/fusion.c	ApplyFusionRankChange	*	*	*	@identity-TODO: rank-change kinds 3 and 4; FindNextOfRace's wrap flag 1
+src/Game/fusion.c	CloseFusionPreview	1	*	*	a nested status screen
+src/Game/fusion.c	FinishFusionMenuSelection	1	*	*	@identity-TODO: result variable 1
+src/Game/fusion.c	FusionSelectionTextHook	0	*	*	an empty text
+src/Game/fusion.c	GetFusion*	*	*	*	@identity-TODO: fusion lookups: level offsets (+2, +5), none (0), sides (-1, 0, 1), the special race table's entries from 1 ending at -1
+src/Game/fusion.c	GetSameRaceFusionRace	0	*	*	no race
+src/Game/fusion.c	GetTripleFusionLevel*	*	*	*	@identity-TODO: triple fusion levels (+3, +5) and the high-flag bonus (3 flags give 2)
+src/Game/fusion.c	MoveUnrankedFusionSlot	-1	*	*	an unranked demon (flag -1)
+src/Game/fusion.c	ResetThirdFusionSlot	-1	*	*	no third slot
+src/Game/fusion.c	SetFusionResult	*	*	*	no demon (-1); a new result's kind 0
