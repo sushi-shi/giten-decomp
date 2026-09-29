@@ -32,9 +32,10 @@ static i16 s_viewFloodMask[4][7] = {
 };
 
 // The view cells in the order the occlusion pass visits them (cell k at
-// k - 1): the far row left to right, then each nearer row.
+// k - 1): the far row left to right, then each nearer row. A seventeenth,
+// zero entry fills the table's last four bytes.
 DATA(0x00068590)
-static ViewCell s_viewCellOrder[16] = {
+static ViewCell s_viewCellOrder[17] = {
     {0, 0},
     {1, 0},
     {2, 0},
