@@ -181,7 +181,8 @@ i16 TestMaskPixel(i16 x, i16 line) {
 
 // @early-stop: retail keeps an 8-step word-store loop through base+offset;
 // with no asynchronous reader of the colours, cl merges the zero stores into
-// four dword stores. Index-width, pointer and fused-loop forms stay flat.
+// four dword stores. Pointer, int-index and fused-loop forms merge them too;
+// an int index passed through StorePaletteColor keeps a sign-extending loop.
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00002ec0, 0x2b)
