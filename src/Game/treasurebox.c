@@ -122,6 +122,12 @@ NpcTexture g_npcTextures[12] = {
     {0xffff, 0},
 };
 
+// @identity-TODO: no code in this image touches these eight words, which are
+// one datum (cl keeps no all-zero initialized item in .data). The PC-98
+// build keeps the same eight words; a reader there would name them.
+DATA(0x00068be8)
+static i16 s_unusedWordTable[8] = {0, 0, 2, 2, 0, 0, 0, 0};
+
 // The five attitude names, indexed by Character.attitude.
 DATA(0x00068bf8)
 static char* s_attitudeNames[5] = {
@@ -187,6 +193,12 @@ static i16 s_itemMenuMember = -1;
 // The ammunition kind used by the open item menu.
 DATA(0x00068c50)
 i16 g_itemMenuAmmoType = -1;
+
+// @identity-TODO: no code in this image touches this datum; the object's
+// last initialized item is a 0xffff word in a four-byte slot, so its width
+// and role are unproven. A reader in the PC-98 build would name it.
+DATA(0x00068c54)
+static i16 s_unusedItemMenuValue = -1;
 
 // The per-area level tables (256 handles).
 DATA(0x0007bee0)
