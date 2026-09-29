@@ -53,6 +53,7 @@
 #include <Game/SaveGame.h>
 #include <Game/Scene.h>
 #include <Game/Skill.h>
+#include <Game/SkillId.h>
 #include <Game/SkillList.h>
 #include <Game/SkillUse.h>
 #include <Game/StateStack.h>
@@ -494,7 +495,7 @@ void DismissTalkTarget(void) {
     if (g_targetId < 0) {
         return;
     }
-    if (g_actionId == 0x10e) {
+    if (g_actionId == SKILL_FUSION) {
         FlashHitObject(g_targetId, 0x37);
         ResetObjectAnim(g_targetId);
     } else {

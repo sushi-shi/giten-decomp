@@ -9,6 +9,7 @@
 #include <Game/GameState.h>
 #include <Game/ModeFlags.h>
 #include <Game/Skill.h>
+#include <Game/SkillId.h>
 #include <Game/StateStack.h>
 #include <Game/WorldMap.h>
 #include <Gfx/Shot.h>
@@ -102,7 +103,7 @@ i16 RunDebugMenu(void) {
 
     switch (GetGameStep()) {
         case MENU_STEP_OPEN:
-            s_testSkill = 0x10;
+            s_testSkill = SKILL_AGI;
             s_shotRise = 3;
             NextGameStep();
             NextGameStep();

@@ -9,6 +9,7 @@
 #include <Game/Field.h>
 #include <Game/GameState.h>
 #include <Game/Skill.h>
+#include <Game/SkillId.h>
 #include <Game/SkillList.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
@@ -49,7 +50,7 @@ static SavedScriptState* s_savedScripts = NULL;
 DATA(0x00080ff4)
 static i32 s_skillTable = 0;
 
-// One byte per map area; bit 0 allows skills 0x79..0x7b there.
+// One byte per map area; bit 0 allows Traesto, Traport and Trafuri there.
 DATA(0x00080ff8)
 static u8* s_areaSkillFlags = NULL;
 
@@ -472,11 +473,11 @@ SkillHeader* CopySkillHeader(i16 id, SkillHeader* dst) {
     return dst;
 }
 
-// Skills 0x79..0x7b work only where the area allows them (and never while the
+// Traesto, Traport and Trafuri work only where the area allows them (and never while the
 // field marker is set): 1 when usable here, -1 when the area forbids it.
 RVA(0x0002e580, 0x42)
 i16 CheckSkillArea(i16 id) {
-    if (id != 0x79 && id != 0x7a && id != 0x7b) {
+    if (id != SKILL_TRAESTO && id != SKILL_TRAPORT && id != SKILL_TRAFURI) {
         return 1;
     }
     if (GetFieldMarker()) {

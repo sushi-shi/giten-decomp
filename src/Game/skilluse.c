@@ -37,6 +37,7 @@
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
 #include <Game/Skill.h>
+#include <Game/SkillId.h>
 #include <Game/SkillUse.h>
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
@@ -468,7 +469,7 @@ i16 ResolveCombatAction(void) {
         SetFieldCounts(-2, -2);
     }
     if (target->id == 0x36 && attacker->pickRole == PICK_ROLE_ITEM
-        && attacker->pickTarget == 0x5d) {
+        && attacker->pickTarget == SKILL_NOELEM) {
         SetFieldCounts(-2, -2);
     }
     ResetActionWait(GetCharacterActionWait(attacker));
@@ -783,12 +784,12 @@ b16 RunBattleAction(void) {
                     g_targetId,
                     g_actorId
                 );
-                if (actor->pickTarget == 0x71) {
+                if (actor->pickTarget == SKILL_SAMARECARM) {
                     ModifyEventFlag(7, 0xfd, BIT_CHANGE_SET);
                 }
-                if (actor->pickTarget == 0x21) {
+                if (actor->pickTarget == SKILL_DAMUDORA) {
                     ModifyEventFlag(7, 0xff, BIT_CHANGE_SET);
-                } else if (actor->pickTarget == 0x24) {
+                } else if (actor->pickTarget == SKILL_ZIORA) {
                     ModifyEventFlag(7, 0xfe, BIT_CHANGE_SET);
                 } else if (GetItemValueHigh(actor->pickTarget)) {
                     TakeBagItems(actor->pickTarget, 1);
@@ -960,7 +961,7 @@ b16 RunBattleAction(void) {
             RestoreSwappedMember();
             ReturnFromGameState();
             if (actor != NULL) {
-                if (s_actionRoleKept == PICK_ROLE_MAGIC && s_actionPickKept == 0x7d) {
+                if (s_actionRoleKept == PICK_ROLE_MAGIC && s_actionPickKept == SKILL_SABBATMA) {
                     slot = ExchangePartySlot(
                         g_commandPosition,
                         FindRosterSlotById(s_actionTarget->id)
@@ -1071,7 +1072,7 @@ void PlayActionEffect(i16 stage) {
             RunMessageScript(before.script, before.entry, -1);
         }
     } else if (after.script) {
-        if (g_actionId >= 0x79 && g_actionId <= 0x7b) {
+        if (g_actionId >= SKILL_TRAESTO && g_actionId <= SKILL_TRAFURI) {
             RunMessageTextScript(after.script, after.entry, -1);
         } else {
             RunMessageScript(after.script, after.entry, -1);
@@ -1143,7 +1144,7 @@ b32 IsSkillBlocked(Character* character, SkillParameters* skill) {
     return false;
 }
 
-// The same check by skill id; skill 0x7a is also blocked while the first
+// The same check by skill id; Traport is also blocked while the first
 // roster member's byte +0x30 is clear.
 RVA(0x0002c350, 0x69)
 b32 IsSkillIdBlocked(Character* character, i16 id) {
@@ -1156,7 +1157,7 @@ b32 IsSkillIdBlocked(Character* character, i16 id) {
     if (LastConditionIn(GetCharacterConditions(character), s_skillIdBlockingConditions)) {
         return true;
     }
-    if (id == 0x7a && !GetRosterCharacter(ROSTER_LEADER)->markPosition.area) {
+    if (id == SKILL_TRAPORT && !GetRosterCharacter(ROSTER_LEADER)->markPosition.area) {
         return true;
     }
     return false;

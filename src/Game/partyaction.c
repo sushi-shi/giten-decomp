@@ -40,6 +40,7 @@
 #include <Game/PartyPick.h>
 #include <Game/PartyStatus.h>
 #include <Game/Skill.h>
+#include <Game/SkillId.h>
 #include <Game/SkillUse.h>
 #include <Game/StateStack.h>
 #include <Game/StatusDraw.h>
@@ -2394,10 +2395,10 @@ static __inline i16 CurrentMemberCombatantId(void) {
 
 static __inline i16 PickMemberActionTarget(Character* character, i16 flags, i16 range) {
     if (character->pickRole == PICK_ROLE_MAGIC) {
-        if (character->pickTarget == 0x10e) {
+        if (character->pickTarget == SKILL_FUSION) {
             return RunPickTargetWindow(0, range, 1, 0);
         }
-        if (character->pickTarget == 0x57) {
+        if (character->pickTarget == SKILL_MAHOROGI) {
             return RunPickTargetWindow(0, range, 0x82, 0);
         }
     }
@@ -2496,7 +2497,7 @@ i16 RunPartyCommandInput(void) {
                     character->pickObject = result;
                     goto target_selected;
                 }
-                if (character->pickTarget == 0x71) {
+                if (character->pickTarget == SKILL_SAMARECARM) {
                     flags = TARGET_ACTOR_SIDE;
                 }
                 if (flags & TARGET_ACTOR_SIDE) {
@@ -2563,7 +2564,8 @@ i16 RunPartyCommandInput(void) {
                 if (!GetPickBlockingCondition(GetCharacterConditions(character))) {
                     QueueActionWait(GetCharacterActionWait(character));
                 }
-                if (character->pickRole == PICK_ROLE_MAGIC && character->pickTarget == 0x7d) {
+                if (character->pickRole == PICK_ROLE_MAGIC
+                    && character->pickTarget == SKILL_SABBATMA) {
                     s_pickMode++;
                     g_tickElapsed = 0;
                     break;
