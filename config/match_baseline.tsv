@@ -40,7 +40,7 @@ bitset	5	5
 blit	18	15
 character	171	164
 clickwait	1	1
-clock	74	71
+clock	74	70
 d3dapp	41	36
 datafile	19	19
 debugmenu	3	3
@@ -53,7 +53,7 @@ fieldmain	59	57
 fieldobj	141	137
 fieldscreen	103	102
 fieldview	38	36
-font	150	144
+font	150	146
 fusion	114	111
 gameloop	7	7
 gamestate	7	7
@@ -394,7 +394,7 @@ clock	_IsPanelRowChecked	100.0000	100.0000	3	85c2ad27dc6b	0x22b80	100.0000
 clock	_IsRoomCell	100.0000	100.0000	2	6f9194d8b526	0x21ea0	100.0000	
 clock	_IsSpawnEnabled	100.0000	100.0000	2	ed420803658a	0x21160	100.0000	
 clock	_IsStepBarred	100.0000	100.0000	3	05a359ca36f7	0x221f0	100.0000	
-clock	_LatchCellDestination	100.0000	100.0000	3	58f4c4a0e491	0x21d20	100.0000	
+clock	_LatchCellDestination	100.0000	98.4375	3	58f4c4a0e491	0x21d20	100.0000	
 clock	_LoadAreaMap	100.0000	100.0000	4	96911704c21e	0x213a0	100.0000	
 clock	_LoadClock	100.0000	100.0000	1	517a076cb2f2	0x20f60	100.0000	
 clock	_PaintPanel	100.0000	100.0000	1	005c5866204a	0x229f0	100.0000	
@@ -871,9 +871,9 @@ font	?CreateScreenLayer@@YAHH@Z	100.0000	100.0000	4	e2c1a84d850d	0x551c0	100.000
 font	?DrawPadButton@@YAHPAUIDirectDrawSurface@@HH@Z	100.0000	100.0000	3	fcd73c6c27ad	0x55020	100.0000	
 font	?FindPartyPanel@@YAFFF@Z	100.0000	100.0000	1	2075d924f450	0x54b30	100.0000	
 font	?FreeScreenLayers@@YAXXZ	100.0000	100.0000	2	d9d7006e081d	0x54fd0	100.0000	
-font	?LayerAtPoint@@YAHII@Z	96.2255	96.2255	2	cfa5a6265e3a	0x553d0	100.0000	
+font	?LayerAtPoint@@YAHII@Z	100.0000	100.0000	2	cfa5a6265e3a	0x553d0	100.0000	
 font	?LayerIndexAtPoint@@YAHII@Z	100.0000	100.0000	1	1187ab0ecbd4	0x55520	100.0000	
-font	?PadButtonAtPoint@@YAHII@Z	90.7065	90.7065	2	3aed21698f51	0x55580	100.0000	
+font	?PadButtonAtPoint@@YAHII@Z	100.0000	100.0000	2	3aed21698f51	0x55580	100.0000	
 font	?PaintLayer@@YAHHPAUScreenLayer@@@Z	100.0000	100.0000	4	31b016236b8c	0x55060	100.0000	
 font	?PlaceDraggedLayer@@YAXH@Z	100.0000	100.0000	1	e993720fc0f5	0x558e0	100.0000	
 font	?ReleasePartyPanel@@YAXHH@Z	100.0000	100.0000	3	c589de396cfc	0x55760	100.0000	
