@@ -1,0 +1,7 @@
+# giten constants work list - numeric constants kept on purpose, one row each,
+# with the reason. Every other numeric spelling in src/ and include/ is open
+# until it is written as a name (enumerator, named macro, NULL, true/false).
+# `giten verify constants --list [FILTER]` prints the open ones; the floor
+# never rises (`--update-floor` lowers it). Columns (tab-separated; `*` matches
+# anything, `file` takes a glob): file owner spelling group detail reason.
+# group/detail are the census' review_group/review_context columns.

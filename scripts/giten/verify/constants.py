@@ -41,6 +41,8 @@ from giten.verify.srcscan import blank_comments
 CDB = BUILD / "clangd/compile_commands.json"
 REPORT = BUILD / "gen/bare_constants.tsv"
 _NUMBER = re.compile(rb"(?:0[xX][0-9A-Fa-f]+|[0-9]+)(?:[uUlL]*)(?![A-Za-z0-9_.])")
+_FLOAT = re.compile(rb"(?:[0-9]+\.[0-9]*|\.[0-9]+)(?:[eE][-+]?[0-9]+)?[fFlL]?"
+                    rb"|[0-9]+[eE][-+]?[0-9]+[fFlL]?")
 _SUFFIX = re.compile(r"[uUlL]+$")
 _BOOLEAN_TYPE_SPELLINGS = {"BOOL", "b32"}
 _LEGACY_BOOLEAN = re.compile(r"\b(?:FALSE|TRUE)\b")
@@ -96,12 +98,16 @@ def _source_path(entry: dict, repo: Path) -> Path:
     return path.resolve()
 
 
-def _raw_number(path: Path, offset: int, cache: dict[Path, bytes]):
+def _raw_number(path: Path, offset: int, cache: dict[Path, bytes],
+                floating: bool = False):
     raw = cache.setdefault(path, path.read_bytes())
     if offset < 0 or offset >= len(raw):
         return None
     if offset and (chr(raw[offset - 1]).isalnum() or raw[offset - 1] in b"_."):
         return None
+    if floating:
+        match = _FLOAT.match(raw, offset)
+        return (match.group().decode("ascii"), None) if match else None
     match = _NUMBER.match(raw, offset)
     if match is None:
         return None
@@ -128,11 +134,21 @@ def _scope(cidx, stack) -> tuple[str, str]:
     if any(node.kind == cidx.CursorKind.ENUM_DECL for node in stack):
         return "named-enum-definition", function.spelling if function else ""
     if function is not None:
-        return "function-body", function.displayname or function.spelling
-    if any(node.kind == cidx.CursorKind.VAR_DECL for node in stack):
-        return "data-initializer-or-extent", ""
+        parent = function.semantic_parent
+        if parent is not None and parent.kind in (cidx.CursorKind.CLASS_DECL,
+                                                  cidx.CursorKind.STRUCT_DECL):
+            return "function-body", f"{parent.spelling}::{function.spelling}"
+        return "function-body", function.spelling
+    variable = next((node for node in reversed(stack)
+                     if node.kind == cidx.CursorKind.VAR_DECL), None)
+    if variable is not None:
+        return "data-initializer-or-extent", variable.spelling
+    record = next((node for node in reversed(stack)
+                   if node.kind in (cidx.CursorKind.STRUCT_DECL,
+                                    cidx.CursorKind.UNION_DECL,
+                                    cidx.CursorKind.CLASS_DECL)), None)
     if any(node.kind == cidx.CursorKind.FIELD_DECL for node in stack):
-        return "field-or-class-extent", ""
+        return "field-or-class-extent", record.spelling if record is not None else ""
     return "other-declaration", ""
 
 
@@ -492,14 +508,18 @@ def _scan_entry(payload):
     sites: list[Site] = []
 
     def walk(node, stack=()):
-        if node.kind == cidx.CursorKind.INTEGER_LITERAL and node.location.file:
+        if (node.kind in (cidx.CursorKind.INTEGER_LITERAL,
+                          cidx.CursorKind.FLOATING_LITERAL)
+                and node.location.file):
             source = Path(node.location.file.name).resolve()
             try:
                 rel = source.relative_to(repo)
             except ValueError:
                 rel = None
             if rel is not None and rel.parts[0] in ("src", "include"):
-                raw = _raw_number(source, node.location.offset, cache)
+                raw = _raw_number(
+                    source, node.location.offset, cache,
+                    floating=node.kind == cidx.CursorKind.FLOATING_LITERAL)
                 if raw is not None:
                     spelling, value = raw
                     site_null_available = null_available
@@ -509,8 +529,8 @@ def _scan_entry(payload):
                     if stack and stack[-1].kind == cidx.CursorKind.UNARY_OPERATOR:
                         unary = "".join(tok.spelling
                                         for tok in stack[-1].get_tokens())
-                        if unary.startswith("-") and value is not None:
-                            value = -value
+                        if unary.startswith("-"):
+                            value = -value if value is not None else None
                             spelling = "-" + spelling
                     scope, function = _scope(cidx, stack)
                     cls, repl, context, reason = _classify(
@@ -632,6 +652,106 @@ def legacy_boolean_spellings(*, repo: Path = REPO) -> list[str]:
     return findings
 
 
+#: The work list: every numeric constant is open until it is spelled as a
+#: name (an enumerator, a named macro, NULL, true/false) or a row here keeps
+#: it numeric with the reason.
+WORKLIST = REPO / "config/constants.tsv"
+OPEN_REPORT = BUILD / "gen/constants_open.tsv"
+_WORKLIST_FIELDS = ("file", "owner", "spelling", "group", "detail", "reason")
+
+
+@dataclass(frozen=True)
+class Keep:
+    line: int
+    file: str
+    owner: str
+    spelling: str
+    group: str
+    detail: str
+    reason: str
+
+    def matches(self, site: Site) -> bool:
+        from fnmatch import fnmatchcase
+        return (fnmatchcase(site.file, self.file)
+                and (self.owner == "*" or self.owner == site.function)
+                and (self.spelling == "*" or self.spelling == site.spelling)
+                and (self.group == "*" or self.group == site.review_group)
+                and (self.detail == "*" or self.detail == site.review_context))
+
+
+def load_worklist(path: Path = WORKLIST) -> tuple[list[Keep], int | None, list[str]]:
+    """Kept rows, the committed floor of open constants, and format errors."""
+    keeps: list[Keep] = []
+    floor = None
+    errors: list[str] = []
+    if not path.is_file():
+        return keeps, floor, errors
+    for number, text in enumerate(path.read_text().splitlines(), 1):
+        if not text.strip():
+            continue
+        if text.startswith("#"):
+            parts = text[1:].split("\t")
+            if parts[0].strip() == "floor" and len(parts) == 2:
+                floor = int(parts[1])
+            continue
+        parts = text.split("\t")
+        if len(parts) != len(_WORKLIST_FIELDS):
+            errors.append(f"{path.name}:{number}: expected "
+                          f"{len(_WORKLIST_FIELDS)} tab-separated fields")
+            continue
+        keep = Keep(number, *parts)
+        if not keep.reason.strip() or keep.reason.strip() == "*":
+            errors.append(f"{path.name}:{number}: a kept constant needs a reason")
+            continue
+        keeps.append(keep)
+    return keeps, floor, errors
+
+
+def is_counted(site: Site) -> bool:
+    """Every numeric spelling counts except an enumerator's own value."""
+    return site.scope != "named-enum-definition"
+
+
+def open_sites(sites: list[Site], keeps: list[Keep]) -> tuple[list[Site], list[Keep]]:
+    """Counted sites no row keeps, and the rows that keep nothing (stale)."""
+    used: set[int] = set()
+    out: list[Site] = []
+    for site in sites:
+        if not is_counted(site):
+            continue
+        keep = next((k for k in keeps if k.matches(site)), None)
+        if keep is None:
+            out.append(site)
+        else:
+            used.add(keep.line)
+    return out, [k for k in keeps if k.line not in used]
+
+
+def write_open_report(path: Path, sites: list[Site]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = ["\t".join(("file", "line", "owner", "spelling", "group", "detail",
+                        "replacement"))]
+    for site in sites:
+        lines.append("\t".join((site.file, str(site.line), site.function,
+                                site.spelling, site.review_group,
+                                site.review_context, site.replacement)))
+    path.write_text("\n".join(lines) + "\n")
+
+
+def write_floor(path: Path, floor: int) -> None:
+    text = path.read_text() if path.is_file() else ""
+    lines = [line for line in text.splitlines() if not line.startswith("#floor")]
+    head = [line for line in lines if line.startswith("#")]
+    body = [line for line in lines if not line.startswith("#")]
+    path.write_text("\n".join(head + [f"#floor\t{floor}"] + body) + "\n")
+
+
+def open_summary(sites: list[Site]) -> str:
+    groups = Counter(site.review_group for site in sites)
+    detail = ", ".join(f"{name} {count}" for name, count in groups.most_common())
+    return f"{len(sites)} open constant(s): {detail}"
+
+
 def summary(sites: list[Site]) -> str:
     scopes = Counter(site.scope for site in sites)
     classes = Counter(site.classification for site in sites)
@@ -669,6 +789,11 @@ def main(argv=None) -> int:
                         help="apply every compiler-proven replacement")
     parser.add_argument("--no-report", action="store_true",
                         help="do not write build/gen/bare_constants.tsv")
+    parser.add_argument("--list", metavar="FILTER", nargs="?", const="",
+                        help="print the open constants whose file or owner "
+                             "contains FILTER (all when empty)")
+    parser.add_argument("--update-floor", action="store_true",
+                        help="lower the committed floor to the current open count")
     parser.add_argument("--jobs", type=int,
                         default=min(4, multiprocessing.cpu_count()),
                         help="parallel libclang workers (default: up to 4)")
@@ -693,8 +818,18 @@ def main(argv=None) -> int:
             return 2
         print(f"[constants] applied {applied} compiler-proven replacement(s)")
         return 0
+    keeps, floor, worklist_errors = load_worklist()
+    remaining, stale = open_sites(sites, keeps)
     if not args.no_report:
         write_report(REPORT, sites)
+        write_open_report(OPEN_REPORT, remaining)
+    if args.list is not None:
+        for site in remaining:
+            if args.list in site.file or args.list == site.function or not args.list:
+                note = f" -> {site.replacement}" if site.replacement else ""
+                print(f"{site.file}:{site.line}:{site.column}\t{site.function}\t"
+                      f"{site.spelling}\t{site.review_group}\t"
+                      f"{site.review_context}{note}")
     bad = findings(sites)
     legacy_booleans = legacy_boolean_spellings(repo=REPO)
     if args.verbose:
@@ -704,9 +839,31 @@ def main(argv=None) -> int:
     print(f"[constants] legacy TRUE/FALSE spelling(s): {len(legacy_booleans)}")
     if not args.no_report:
         print(f"[constants] report: {REPORT.relative_to(REPO)}")
-    if args.gate and (bad or legacy_booleans):
-        print(f"[constants] FAIL: {len(bad)} compiler-proven replacement(s), "
-              f"{len(legacy_booleans)} legacy boolean spelling(s) remain")
+    print(f"[constants] {open_summary(remaining)}; floor "
+          f"{floor if floor is not None else 'unset'} "
+          f"({WORKLIST.relative_to(REPO)}: {len(keeps)} kept row(s))")
+    if not args.no_report:
+        print(f"[constants] open list: {OPEN_REPORT.relative_to(REPO)}")
+    for error in worklist_errors:
+        print(f"   {error}")
+    for keep in stale:
+        print(f"   {WORKLIST.name}:{keep.line}: keeps no constant (stale row)")
+    if args.update_floor:
+        if floor is None or len(remaining) < floor:
+            write_floor(WORKLIST, len(remaining))
+            print(f"[constants] floor -> {len(remaining)}")
+        return 0
+    failed = []
+    if bad or legacy_booleans:
+        failed.append(f"{len(bad)} compiler-proven replacement(s), "
+                      f"{len(legacy_booleans)} legacy boolean spelling(s)")
+    if floor is not None and len(remaining) > floor:
+        failed.append(f"open constants rose {floor} -> {len(remaining)}")
+    if stale or worklist_errors:
+        failed.append(f"{len(stale)} stale and {len(worklist_errors)} malformed "
+                      f"work-list row(s)")
+    if args.gate and failed:
+        print(f"[constants] FAIL: {'; '.join(failed)}")
         return 1
     return 0
 

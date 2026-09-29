@@ -17,6 +17,10 @@ outrank fuzzy scores. Compiler profiles live in `config/units.toml`.
 `config/match_baseline.tsv` tracks CUR (latest bank), MAX (best for the current
 source hash), and HIST (all-time peak): `CUR <= MAX <= HIST`. Editing a function
 resets MAX to CUR; an unchanged function's CUR dip is not a regression.
+MSVC 5.0 codegen depends on TU state: a new `#include` (even an empty header),
+enumerator or defined symbol can shift unrelated functions. Such dips keep MAX;
+do not skip evidence-backed headers, enums, or names to keep other objects
+byte-identical.
 Aim for MAX = 100. `HIST > MAX` identifies a lost match to recover from Git.
 
 1. Pick ascending-HIST work with `giten walls inventory --todo --limit N`, or

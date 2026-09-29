@@ -41,7 +41,16 @@ cl 5.0's output depends on the declarations a unit reads. An added
 enumerator or `#include` renumbers them and can move unrelated functions,
 while macros and the storage annotations above do not
 ([measurement](patterns/tu-state-probe-family-decides-reachability.md#enumerators-and-includes-count-macros-do-not)).
-Rebuild and compare every object after adding a domain or an include. Name a
-domain only in the units whose objects stay identical when they read its
-header. Where an enum would lose exact matches, keep the domain's macros and
-record the deviation in `docs/todos/rule-exceptions.tsv`.
+Such a move in a function you did not edit keeps its MAX, so it never blocks
+a proven domain. Edited functions do reset MAX to CUR: when naming constants
+in bodies, rebank any function whose CUR was below MAX (a probe-banked or
+TU-dipped row) under its probe.
+
+## Constants work list
+
+`giten verify constants` lists every numeric constant in `src/` and
+`include/`; each is open until it is written as a name (an enumerator, a
+named macro, `NULL`, `true`/`false`) or `config/constants.tsv` keeps it
+numeric with a reason. `--list [FILTER]` prints the open ones for a file or
+owner, `build/gen/constants_open.tsv` holds them all, and the committed floor
+of open constants never rises.
