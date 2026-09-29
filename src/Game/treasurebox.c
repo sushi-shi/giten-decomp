@@ -107,7 +107,13 @@ static AutomapIcon s_mapIcons[] = {
 };
 
 DATA(0x00068b88)
-NpcTexture g_npcTextures[6] = {
+NpcTexture g_npcTextures[12] = {
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
     {0xffff, 0},
     {0xffff, 0},
     {0xffff, 0},
