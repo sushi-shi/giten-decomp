@@ -4,13 +4,13 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Enums.h>
 #include <Game/Character.h>
 #include <Game/GameState.h>
 #include <Game/Skill.h>
 #include <Ints.h>
 
 #include <string.h>
-#include <Enums.h>
 
 // The member (negative id: party slot -1 - id) or field object `id` stands
 // for; NULL for an object that is gone.

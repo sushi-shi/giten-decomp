@@ -4,11 +4,11 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Enums.h>
 #include <Game/Character.h>
 #include <Game/StateStack.h>
 #include <Ints.h>
 #include <Ui/MenuBox.h>
-#include <Enums.h>
 
 // The roster slot the status screen shows.
 extern i16 g_statusMember;

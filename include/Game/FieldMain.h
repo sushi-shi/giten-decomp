@@ -3,11 +3,11 @@
 
 #include <rva.h>
 
+#include <Enums.h>
 #include <Game/GameState.h>
 #include <Ints.h>
 
 #include <stdio.h>
-#include <Enums.h>
 
 // The macca a battle awards (GrantBattleRewards pays it out).
 extern i32 g_rewardMacca;

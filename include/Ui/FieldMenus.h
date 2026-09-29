@@ -4,10 +4,10 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Enums.h>
 #include <Game/PartyAction.h>
 #include <Ints.h>
 #include <Ui/Menu.h>
-#include <Enums.h>
 
 // The open party picker's text plane, or -1 when closed.
 i16 GetPickerSelection(void);

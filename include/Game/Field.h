@@ -3,8 +3,8 @@
 
 #include <rva.h>
 
-#include <Ints.h>
 #include <Enums.h>
+#include <Ints.h>
 
 struct Character;
 

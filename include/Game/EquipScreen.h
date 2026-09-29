@@ -4,9 +4,9 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Enums.h>
 #include <Game/Character.h>
 #include <Ints.h>
-#include <Enums.h>
 #include <Text/TextPlane.h>
 #include <Ui/MenuBox.h>
 
