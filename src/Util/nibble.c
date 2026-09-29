@@ -5,9 +5,6 @@
 
 #include <Text/TextAttr.h>
 
-// Codegen: the unit's TU state includes the CRT stdio header.
-#include <stdio.h>
-
 RVA(0x000451d0, 0x2d)
 void SpreadLowNibble(TextAttr* attr) {
     attr->fg = attr->bg;
