@@ -193,8 +193,10 @@ def unit_fingerprints(source: str) -> dict[str, str]:
     if entry is None or not path.is_file():
         return {}
     tu = cidx.Index.create().parse(str(path), args=_flags(entry))
-    if any(d.severity >= cidx.Diagnostic.Error for d in tu.diagnostics):
-        return {}
+    errors = [d for d in tu.diagnostics if d.severity >= cidx.Diagnostic.Error]
+    if errors:
+        raise RuntimeError(f"{source}: cannot fingerprint, the unit does not "
+                           f"parse: {errors[0]}")
     chunks: dict[str, list[str]] = {}
     for node in tu.cursor.walk_preorder():
         if node.kind.name not in _FUNCTION_KINDS or not node.is_definition():
