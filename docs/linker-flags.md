@@ -28,12 +28,15 @@ identified contributions constrain those decisions.
 
 After `giten link`, run `giten verify link-tier` (or `--census` for section
 sizes). It reads the candidate EXE/map under `build/exe/`, checks symbol closure
-and section sizes, and compares linked bytes of exact functions with relocation
-masking. A masked pointer still needs referent evidence; see [data attribution](data-attribution.md).
+and section sizes, compares linked bytes of exact functions with relocation
+masking, and compares `.rsrc` with the original's. A masked pointer still needs referent evidence; see [data attribution](data-attribution.md).
 
-`giten link` builds `.rsrc` from the original executable supplied through
-`GITEN_RETAIL_EXE`; the generated `.res` stays under ignored `build/`.
-See [resource linking](build-system.md#candidate-linking-and-resources). External game files and valid
+`giten link` compiles `.rsrc` from the recovered `src/Giten/Giten.rc`; the
+payload files it names come from the original executable supplied through
+`GITEN_RETAIL_EXE`, and the payloads and `.res` stay under ignored `build/`.
+The link tier also compares the linked `.rsrc` with the original's
+(`giten rsrc check` runs that comparison alone); only the section RVA may
+differ. See [resource linking](build-system.md#candidate-linking-and-resources). External game files and valid
 runtime settings are still required, and correct gameplay is not yet verified.
 Do not use `/FORCE` or fabricated padding to hide
 unresolved symbols, duplicate definitions, or placement differences.

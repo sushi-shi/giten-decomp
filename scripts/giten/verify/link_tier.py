@@ -1,7 +1,7 @@
 """giten.verify.link_tier - the candidate-EXE audits (link tier, opt-in).
 
-Needs `giten link`'s outputs (DDS.candidate.EXE + .map). Three ported
-checks folded into one tier module:
+Needs `giten link`'s outputs (DDS.candidate.EXE + .map). Four checks
+folded into one tier module:
 
   LINK DEFECTS   the link must be REAL: 0 unresolved externals (the linker's
                  own unresolved.txt), and a pre-link closure over the base
@@ -18,8 +18,11 @@ checks folded into one tier module:
                  masking (both sides' 4-byte fixup fields blanked via each
                  image's own .reloc table). The linked-image check is what
                  objdiff's per-obj scoring cannot see: final placement.
+  RESOURCES      the candidate's .rsrc (compiled from src/Giten/Giten.rc)
+                 against retail's: tree, payloads, code pages, layout and
+                 section-relative bytes (giten.rsrc.check).
 
-    giten verify link-tier             # the three checks, exit 1 on any
+    giten verify link-tier             # the four checks, exit 1 on any
     giten verify link-tier --census    # the section table only
 """
 
@@ -249,8 +252,21 @@ def image_diff_findings(limit: int = 25) -> list[str]:
     return out
 
 
+def resource_findings() -> list[str]:
+    if not CAND.is_file():
+        return []                       # link_defect_findings already said so
+    from giten.core.pe import image
+    from giten.rsrc.check import findings
+    from giten.rsrc.tree import read
+    try:
+        return [f"rsrc: {f}" for f in findings(read(image()), read(CAND))]
+    except (OSError, ValueError, KeyError) as error:
+        return [f"rsrc: {error}"]
+
+
 def gate_findings() -> list[str]:
-    return link_defect_findings() + census_findings() + image_diff_findings()
+    return (link_defect_findings() + census_findings() + image_diff_findings()
+            + resource_findings())
 
 
 def main(argv=None) -> int:
@@ -273,7 +289,8 @@ def main(argv=None) -> int:
         print(f"link-tier: FATAL - {len(bad)} finding(s)", file=sys.stderr)
         return 1
     print("link-tier: OK - link closes, sections present, every exact body "
-          "byte-identical in the linked image (reloc-masked)")
+          "byte-identical in the linked image (reloc-masked), .rsrc identical "
+          "to retail's (section-relative)")
     return 0
 
 

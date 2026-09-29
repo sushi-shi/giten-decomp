@@ -22,6 +22,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+// The battle input fixes read the game clock. The matching build must not
+// include another header: it perturbs MSVC 5's register allocation.
+#ifdef GITEN_BUGFIX
+extern "C" {
+#include <Game/Clock.h>
+}
+#endif
+
 // Billboard brightness remains full within two cells, then attenuates by distance.
 #define SetDistanceLight(light, distance)                                                                                                         \
     do {                                                                                                                                          \
@@ -730,8 +738,15 @@ void WaitFrames(i16 count) {
     }
 }
 
+#ifdef GITEN_COMPAT
+static void PumpMessages(void);
+#endif
+
 RVA(0x00049f30, 0xf)
 void RunFrame(void) {
+#ifdef GITEN_COMPAT
+    PumpMessages();
+#endif
     PollInput();
     LatchMouseClicks();
     RenderFrame();
@@ -3446,6 +3461,81 @@ static DWORD s_lastDrawTime;
 // The minimum time between drawn frames of an animated mode, in ms.
 #define FRAME_INTERVAL 50
 
+#ifdef GITEN_COMPAT
+// The display refresh the game was paced for, in passes of the main loop a second.
+#define REFRESH_RATE 60
+// One pass at REFRESH_RATE, in ms, rounded up.
+#define FRAME_PERIOD ((1000 + REFRESH_RATE - 1) / REFRESH_RATE)
+// A frame later than this restarts the clock instead of running to catch up.
+#define FRAME_MAX_LAG 100
+
+static BOOL s_frameClockStarted;
+static DWORD s_frameClockStart;
+static DWORD s_frameClockCount;
+
+// @bug Retail paces the main loop, one game step per pass, on the vertical blank
+// alone, so the game's speed follows the display's refresh rate: a 120 Hz
+// display runs it twice as fast, and under Wine, whose WaitForVerticalBlank
+// returns at once, it runs as fast as the host allows. Called before that
+// wait, so the frame is still shown on the vertical blank, this holds the loop
+// to REFRESH_RATE passes a second on its own clock. A deadline more than a
+// frame ahead or FRAME_MAX_LAG behind (the first call, a timeGetTime wrap, a
+// stall) restarts the clock at now.
+static void WaitForFrame(void) {
+    DWORD now;
+    LONG ahead;
+
+    if (!s_frameClockStarted) {
+        // Sleep otherwise rounds up to the system tick, about 15.6 ms.
+        timeBeginPeriod(1);
+        s_frameClockStarted = TRUE;
+    }
+    now = timeGetTime();
+    if (s_frameClockCount == REFRESH_RATE) {
+        s_frameClockStart += 1000;
+        s_frameClockCount = 0;
+    }
+    ahead = static_cast<LONG>(s_frameClockStart + s_frameClockCount * 1000 / REFRESH_RATE - now);
+    if (ahead > FRAME_PERIOD || ahead < -FRAME_MAX_LAG) {
+        s_frameClockStart = now;
+        s_frameClockCount = 0;
+    } else if (ahead > 0) {
+        Sleep(ahead);
+    }
+    s_frameClockCount++;
+}
+
+// @bug Retail removes window messages only in WinMain's loop. A nested modal
+// loop that runs frames itself (RunBagDiscardMenu's, through RunFrame) takes
+// none for as long as the player keeps it open: Windows NT marks the window
+// Not Responding and ghosts it, a missed WM_ACTIVATEAPP leaves the input
+// acquired and the cursor confined after switching away, and wrappers such as
+// DxWnd that work through the message queue stall. And while the application
+// is inactive, WinMain's loop spins without waiting, dispatching the last
+// message again on every pass.
+// This removes and dispatches the pending messages as WinMain's loop does and
+// exits on WM_QUIT as it does; while the application is inactive it waits for
+// the next message instead of spinning. Its callers run outside any window
+// procedure, so the dispatch does not re-enter one.
+static void PumpMessages(void) {
+    MSG message;
+
+    for (;;) {
+        if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) {
+            if (message.message == WM_QUIT) {
+                exit(0);
+            }
+            TranslateMessage(&message);
+            DispatchMessage(&message);
+        } else if (s_appActive) {
+            return;
+        } else {
+            WaitMessage();
+        }
+    }
+}
+#endif
+
 // One frame: restores lost surfaces, steps the fade and runs the render mode's
 // handler (drawing only if the mode is static, the view changed or the frame
 // interval passed), the fade and the cursor, then waits for the vertical blank
@@ -3472,6 +3562,9 @@ void RenderFrame(void) {
         }
         s_viewChanged = FALSE;
         DrawMouseCursor();
+#ifdef GITEN_COMPAT
+        WaitForFrame();
+#endif
         g_ddraw->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL);
         if (draw) {
             if (g_deviceType == D3D_DEVICE_HAL) {
@@ -4431,6 +4524,95 @@ static i32 s_clickedButton;
 DATA(0x0008f560)
 RECT g_dragRect;
 
+#ifdef GITEN_BUGFIX
+// The joystick's direction bits.
+#define JOY_DIRECTIONS (JOY_UP | JOY_DOWN | JOY_LEFT | JOY_RIGHT)
+
+// A left click released in place on a party panel in battle, held until a
+// pass on which a tick passes (SCREEN_LAYER_COUNT for none).
+static i32 s_heldPanelRelease = SCREEN_LAYER_COUNT;
+
+// Set when the left button went down while no command was being entered.
+static b32 s_pressedOutsidePick;
+
+// The joystick bits of a battle pass the move gate turned away (0 for none).
+static u32 s_heldJoystickBits;
+
+// Whether this pass's TickGameClock (StepGame, before HandleInput) passed a
+// tick: it reloads the frame countdown on one.
+static b32 ClockTickedThisPass(void) {
+    return g_clock.frames == g_clock.framesPerTick;
+}
+
+// Whether input held for a later tick pass may still stand: the battle goes on
+// in the 3D view, no command is being entered and the command panel is not
+// shown.
+static b32 CanHoldBattleInput(void) {
+    return GetFieldBattleActive() && GetPickMode() == 0 && g_renderMode == RENDER_MODE_VIEW
+           && !g_screenLayers[SCREEN_LAYER_PANEL]->visible;
+}
+
+// Whether a left press on a party panel would start its drag now: HandleInput
+// refuses one while the command panel or any text plane is shown.
+static b32 CanPressPartyPanel(void) {
+    i32 i;
+
+    if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
+        return false;
+    }
+    for (i = 0; i < TEXT_PLANE_COUNT; i++) {
+        if (GetTextPlane(i)->visible) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Opens the held party panel release's command panel on the first pass a tick
+// passes, through ReleasePartyPanel's gate as retail would have on that pass.
+// Drops it when a check that let it be held or its press through fails.
+static void ApplyHeldPanelRelease(void) {
+    i32 slot = s_heldPanelRelease;
+
+    if (slot == SCREEN_LAYER_COUNT) {
+        return;
+    }
+    if (!CanHoldBattleInput() || !CanPressPartyPanel()) {
+        s_heldPanelRelease = SCREEN_LAYER_COUNT;
+        return;
+    }
+    if (!ClockTickedThisPass()) {
+        return;
+    }
+    s_heldPanelRelease = SCREEN_LAYER_COUNT;
+    ReleasePartyPanel(slot, false);
+}
+
+// @bug In battle ReleasePartyPanel opens a member's command panel only when
+// GetTickElapsed is set, and StepGame sets it only on the one pass in
+// framesPerTick (5) on which the game clock ticks. The release is a one-pass
+// event, so about four clicks in five on a party panel do nothing. The gate
+// also refuses the click while the command machine has stopped the clock
+// (RunPartyCommandInput clears GetTickElapsed while it runs): removing it
+// lets a click that picks an ally as a target open that ally's panel in the
+// middle of the pick. Retail lets that through too on a tick pass after the
+// pick completes, since the pick is taken on the press and the machine is
+// idle again by the release.
+// A release in place in the battle view is kept only when neither its press
+// nor its release came while a command was being entered, and then waits for
+// the next pass on which a tick passes and goes through the retail gate there.
+static void ReleasePartyPanelOnTick(i32 slot, b32 dragged) {
+    if (dragged || !GetFieldBattleActive() || g_renderMode != RENDER_MODE_VIEW) {
+        ReleasePartyPanel(slot, dragged);
+        return;
+    }
+    if (s_pressedOutsidePick && GetPickMode() == 0) {
+        s_heldPanelRelease = slot;
+        ApplyHeldPanelRelease();
+    }
+}
+#endif
+
 // Handles this frame's mouse (PollInput's bits): the joystick's move when
 // no layer is in the way, the menu bar's auto-hide and the right button's
 // pad turns and cancel, and the left button's menu bar, character panel,
@@ -4445,6 +4627,35 @@ void HandleInput(u8 buttons) {
     if (!s_immediateInput && GetFrameCount() < INPUT_DELAY_FRAMES) {
         return;
     }
+#ifdef GITEN_BUGFIX
+    ApplyHeldPanelRelease();
+    // @bug In battle the stick (and the arrow keys standing in for it) moves
+    // only on a pass with GetTickElapsed set, one in framesPerTick (5), so a
+    // tap let go before the next tick is lost. A tap turned away on a pass
+    // without a tick, while no command is being entered, is held and stands in
+    // for the stick's bits on the next pass the gate lets through if the
+    // stick is let go by then. A tick pass the gate refuses, the end of the
+    // battle, command entry, the command panel and leaving the view drop it.
+    if (s_layerDragging || !CanHoldBattleInput()) {
+        s_heldJoystickBits = 0;
+    }
+    if (!s_layerDragging && g_renderMode == RENDER_MODE_VIEW
+        && !g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
+        if (!GetFieldBattleActive() || GetTickElapsed()) {
+            if (s_heldJoystickBits != 0 && !(s_joystickBits & JOY_DIRECTIONS)) {
+                s_joystickBits = s_heldJoystickBits;
+            }
+            s_heldJoystickBits = 0;
+            if (RunJoystickMove()) {
+                return;
+            }
+        } else if (ClockTickedThisPass()) {
+            s_heldJoystickBits = 0;
+        } else if (CanHoldBattleInput() && (s_joystickBits & JOY_DIRECTIONS)) {
+            s_heldJoystickBits = s_joystickBits;
+        }
+    }
+#else
     if (!s_layerDragging && g_renderMode == RENDER_MODE_VIEW
         && !g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
         if (!GetFieldBattleActive() || GetTickElapsed()) {
@@ -4453,6 +4664,7 @@ void HandleInput(u8 buttons) {
             }
         }
     }
+#endif
     busy = FALSE;
     switch (buttons & MOUSE_STATE_MASK) {
         case MOUSE_UP:
@@ -4488,6 +4700,10 @@ void HandleInput(u8 buttons) {
                 PostQuitMessage(0);
                 return;
             }
+#ifdef GITEN_BUGFIX
+            s_heldPanelRelease = SCREEN_LAYER_COUNT;
+            s_pressedOutsidePick = GetPickMode() == 0;
+#endif
             s_dragMoved = false;
             s_layerDragging = false;
             s_pressedLayer = LayerAtPoint(g_cursorPos.x, g_cursorPos.y);
@@ -4568,7 +4784,11 @@ void HandleInput(u8 buttons) {
                 }
             } else if (s_layerDragging && s_pressedLayer < SCREEN_LAYER_COUNT) {
                 if (s_pressedLayer > SCREEN_LAYER_NONPARTY_LAST) {
+#ifdef GITEN_BUGFIX
+                    ReleasePartyPanelOnTick(s_pressedLayer, s_dragMoved);
+#else
                     ReleasePartyPanel(s_pressedLayer, s_dragMoved);
+#endif
                 } else {
                     PlaceDraggedLayer(s_pressedLayer);
                 }
@@ -4832,6 +5052,9 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
     }
     nextTick = 0;
     for (;;) {
+#ifdef GITEN_COMPAT
+        PumpMessages();
+#else
         while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE) || !s_appActive) {
             if (message.message == WM_QUIT) {
                 exit(0);
@@ -4839,6 +5062,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
             TranslateMessage(&message);
             DispatchMessage(&message);
         }
+#endif
         if (timeGetTime() > nextTick) {
             nextTick = timeGetTime() + 1;
             if (g_moveState == 0 && g_fadeMode == 0) {
