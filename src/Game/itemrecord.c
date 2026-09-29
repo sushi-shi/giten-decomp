@@ -49,11 +49,12 @@
 #include <Util/Range.h>
 #include <Util/Scratch.h>
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
 DATA(0x0007fe60)
-ItemStack g_gemItems[16] = {0};
+ItemStack g_gemItems[GEM_ITEM_COUNT] = {0};
 
 DATA(0x0007fea0)
 ItemStack g_itemPool[ITEM_POOL_SIZE] = {0};
@@ -449,16 +450,16 @@ u16 GetItemStackLimit(i16 id) {
         case 6:
         case ITEM_KIND_SOFTWARE:
         case ITEM_KIND_KEYCARD:
-            return 99;
+            return ITEM_STACK_MAX;
         case ITEM_KIND_GEM:
-            return 99;
+            return ITEM_STACK_MAX;
         case ITEM_KIND_SCENARIO:
-            return 99;
+            return ITEM_STACK_MAX;
         case ITEM_KIND_WEAPON:
         case ITEM_KIND_GUN:
             return 1;
         case ITEM_KIND_AMMO:
-            return 99;
+            return ITEM_STACK_MAX;
         case ITEM_KIND_FULL_BODY_ARMOR:
         case ITEM_KIND_HEAD_ARMOR:
         case ITEM_KIND_BODY_ARMOR:
@@ -466,7 +467,7 @@ u16 GetItemStackLimit(i16 id) {
         case ITEM_KIND_LEG_ARMOR:
             return 1;
         case ITEM_KIND_ACCESSORY:
-            return 99;
+            return ITEM_STACK_MAX;
     }
     return 1;
 }
@@ -653,11 +654,11 @@ void AddToPool(i16 item, i16 amount) {
 
     for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) == item) {
-            if (GetItemStackCount(GetItemPoolEntry(i)) + amount <= 99) {
+            if (GetItemStackCount(GetItemPoolEntry(i)) + amount <= ITEM_STACK_MAX) {
                 GetItemPoolEntry(i)->count += amount;
                 return;
             }
-            room = 99 - GetItemStackCount(GetItemPoolEntry(i));
+            room = ITEM_STACK_MAX - GetItemStackCount(GetItemPoolEntry(i));
             GetItemPoolEntry(i)->count += room;
             amount -= room;
         }
@@ -749,8 +750,8 @@ ItemStackList* CopyBagEntries(i16 first, i16 count, ItemStackList* list) {
         list = AllocCleared(1, count * sizeof(ItemStack) + sizeof(list->count));
     }
     count += first;
-    if (count > 64) {
-        count = 64;
+    if (count > BAG_ENTRY_COUNT) {
+        count = BAG_ENTRY_COUNT;
     }
     for (i = first; i < count; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
@@ -777,7 +778,7 @@ i16 RestoreBagEntries(ItemStackList* list) {
 RVA(0x00023b40, 0xb1)
 b32 PooledItemsFit(void) {
     i16 previousQuiet = SetBagQuiet(1);
-    ItemStackList* savedBag = CopyBagEntries(0, 64, NULL);
+    ItemStackList* savedBag = CopyBagEntries(0, BAG_ENTRY_COUNT, NULL);
     ItemStack* savedGems = SaveGemItems(NULL);
     i16 left = GivePooledItems();
     i16 i;
@@ -831,14 +832,14 @@ i16 FindBagItem(i16 item, u8 groups) {
     i16 i;
 
     if (groups & 1) {
-        for (i = 47; i >= 0; i--) {
+        for (i = BAG_ORDINARY_ENTRY_COUNT - 1; i >= 0; i--) {
             if (GetItemStackItem(&g_bagItems[i]) == item) {
                 return i;
             }
         }
     }
     if (groups & 2) {
-        for (i = 63; i >= 48; i--) {
+        for (i = BAG_ENTRY_COUNT - 1; i >= BAG_ORDINARY_ENTRY_COUNT; i--) {
             if (GetItemStackItem(&g_bagItems[i]) == item) {
                 return i;
             }
@@ -925,14 +926,14 @@ i16 FillBagEntry(i16 index, i16 item, u16 amount, u16 limit, i16 attachment, i16
 RVA(0x00023f20, 0x1d0)
 static void CompactBagCore(void) {
 #ifdef GITEN_BUGFIX
-    // @bug Retail keeps the first 16 scenario entries it finds and clears the
+    // @bug Retail keeps the first BAG_SCENARIO_ENTRY_COUNT scenario entries it finds and clears the
     // rest, which AddScenarioBagItems's overflow into the normal entries would
     // lose on the next compaction. Every scenario entry is kept: the scenario
-    // range takes the first 16 again and the rest go to the free normal
+    // range takes the first BAG_SCENARIO_ENTRY_COUNT again and the rest go to the free normal
     // entries, which the other entries' compaction leaves at its end.
     ItemStack scenarioItems[64];
 #else
-    ItemStack scenarioItems[16];
+    ItemStack scenarioItems[BAG_SCENARIO_ENTRY_COUNT];
 #endif
     i16 kept = 0;
     i16 limit;
@@ -943,7 +944,7 @@ static void CompactBagCore(void) {
 #ifdef GITEN_BUGFIX
     for (i = 0; i < 64; i++) {
 #else
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < BAG_SCENARIO_ENTRY_COUNT; i++) {
 #endif
         ClearItemStack(&scenarioItems[i]);
     }
@@ -953,7 +954,7 @@ static void CompactBagCore(void) {
 #ifdef GITEN_BUGFIX
             scenarioItems[kept++] = g_bagItems[i];
 #else
-            if (kept < 16) {
+            if (kept < BAG_SCENARIO_ENTRY_COUNT) {
                 scenarioItems[kept++] = g_bagItems[i];
             }
 #endif
@@ -992,7 +993,7 @@ static void CompactBagCore(void) {
 #ifdef GITEN_BUGFIX
         for (j = 0; j < kept; j++) {
 #else
-        for (j = 0; j < 16; j++) {
+        for (j = 0; j < BAG_SCENARIO_ENTRY_COUNT; j++) {
 #endif
             if (GetItemStackItem(&scenarioItems[j]) != ITEM_ID_EMPTY) {
                 g_bagItems[i] = scenarioItems[j];
@@ -1021,7 +1022,7 @@ RVA(0x000240f0, 0x50)
 i16 TakeBagItemsFromEnd(i16 item, i16 amount) {
     i16 i;
 
-    for (i = 63; i >= 0; i--) {
+    for (i = BAG_ENTRY_COUNT - 1; i >= 0; i--) {
         if (GetItemStackItem(&g_bagItems[i]) == item) {
             amount -= TakeFromBagEntry(i, amount);
             if (amount <= 0) {
@@ -1139,10 +1140,10 @@ void CompactBag(void) {
     i16 next;
 
     CompactBagCore();
-    for (i = 0; i < 47; i++) {
+    for (i = 0; i < BAG_ORDINARY_ENTRY_COUNT - 1; i++) {
         if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             next = i + 1;
-            if (next >= 48) {
+            if (next >= BAG_ORDINARY_ENTRY_COUNT) {
                 return;
             }
             while (next < BAG_ORDINARY_ENTRY_COUNT) {
@@ -1153,7 +1154,7 @@ void CompactBag(void) {
                 }
                 next++;
             }
-            if (next >= 48) {
+            if (next >= BAG_ORDINARY_ENTRY_COUNT) {
                 return;
             }
         }
@@ -1216,12 +1217,12 @@ i16 AttachBagEntryItem(i16 index, i16 id) {
 
 RVA(0x00024520, 0x30)
 i16 WriteBag(FILE* fp) {
-    return 64 - fwrite(g_bagItems, sizeof(ItemStack), 64, fp);
+    return BAG_ENTRY_COUNT - fwrite(g_bagItems, sizeof(ItemStack), BAG_ENTRY_COUNT, fp);
 }
 
 RVA(0x00024550, 0x30)
 i16 ReadBag(FILE* fp) {
-    return 64 - fread(g_bagItems, sizeof(ItemStack), 64, fp);
+    return BAG_ENTRY_COUNT - fread(g_bagItems, sizeof(ItemStack), BAG_ENTRY_COUNT, fp);
 }
 
 RVA(0x00024580, 0x30)
@@ -1236,7 +1237,7 @@ RVA(0x000245b0, 0xb0)
 i16 AddGemItemsAt(i16 index, u16 amount) {
     u16 total;
 
-    if (index < 0 || index >= 16) {
+    if (index < 0 || index >= GEM_ITEM_COUNT) {
         return -1;
     }
     total = GetGemItemEntry(index)->count + amount;
@@ -1250,7 +1251,7 @@ i16 AddGemItemsAt(i16 index, u16 amount) {
 
 RVA(0x00024660, 0x50)
 i16 TakeGemItemsAt(i16 index, i16 amount) {
-    if (index < 0 || index >= 16) {
+    if (index < 0 || index >= GEM_ITEM_COUNT) {
         return -1;
     }
     if (amount > GetItemStackCount(GetGemItemEntry(index))) {
@@ -1265,7 +1266,7 @@ void ResetGemItems(i16 base) {
     i16 i;
 
     s_gemItemBase = base;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < GEM_ITEM_COUNT; i++) {
         GetGemItemEntry(i)->item = i + base;
         GetGemItemEntry(i)->count = 0;
     }
@@ -1274,7 +1275,7 @@ void ResetGemItems(i16 base) {
 RVA(0x000246f0, 0x30)
 i16 AddGemItems(i16 id, u16 amount) {
     i16 index = id - s_gemItemBase;
-    if (index >= 0 && index < 16) {
+    if (index >= 0 && index < GEM_ITEM_COUNT) {
         return AddGemItemsAt(index, amount);
     }
     return -1;
@@ -1283,7 +1284,7 @@ i16 AddGemItems(i16 id, u16 amount) {
 RVA(0x00024720, 0x30)
 i16 TakeGemItems(i16 id, i16 amount) {
     i16 index = id - s_gemItemBase;
-    if (index >= 0 && index < 16) {
+    if (index >= 0 && index < GEM_ITEM_COUNT) {
         return TakeGemItemsAt(index, amount);
     }
     return -1;
@@ -1291,7 +1292,7 @@ i16 TakeGemItems(i16 id, i16 amount) {
 
 RVA(0x00024750, 0x30)
 i16 CountGemItemsAt(i16 index) {
-    if (index >= 0 && index < 16) {
+    if (index >= 0 && index < GEM_ITEM_COUNT) {
         return GetItemStackCount(GetGemItemEntry(index));
     }
     return -1;
@@ -1300,7 +1301,7 @@ i16 CountGemItemsAt(i16 index) {
 RVA(0x00024780, 0x30)
 i16 CountGemItems(i16 id) {
     i16 index = id - s_gemItemBase;
-    if (index >= 0 && index < 16) {
+    if (index >= 0 && index < GEM_ITEM_COUNT) {
         return CountGemItemsAt(index);
     }
     return -1;
@@ -1318,7 +1319,7 @@ ItemStack* SaveGemItems(ItemStack* buffer) {
     if (buffer == NULL) {
         buffer = AllocCleared(1, sizeof(g_gemItems));
     }
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < GEM_ITEM_COUNT; i++) {
         buffer[i] = *GetGemItemEntry(i);
     }
     return buffer;
@@ -1329,7 +1330,7 @@ ItemStack* RestoreGemItems(ItemStack* buffer) {
     i16 i;
 
     if (buffer != NULL) {
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < GEM_ITEM_COUNT; i++) {
             *GetGemItemEntry(i) = buffer[i];
         }
     }
@@ -1338,12 +1339,12 @@ ItemStack* RestoreGemItems(ItemStack* buffer) {
 
 RVA(0x00024830, 0x30)
 i16 WriteGemItems(FILE* fp) {
-    return 16 - fwrite(g_gemItems, sizeof(ItemStack), 16, fp);
+    return GEM_ITEM_COUNT - fwrite(g_gemItems, sizeof(ItemStack), GEM_ITEM_COUNT, fp);
 }
 
 RVA(0x00024860, 0x30)
 i16 ReadGemItems(FILE* fp) {
-    return 16 - fread(g_gemItems, sizeof(ItemStack), 16, fp);
+    return GEM_ITEM_COUNT - fread(g_gemItems, sizeof(ItemStack), GEM_ITEM_COUNT, fp);
 }
 
 RVA(0x00024890, 0xc0)
@@ -1463,72 +1464,72 @@ void AddItemStatPoints(i16 item, i16* stats) {
     code = g_loadedItem.kind != ITEM_KIND_GEM ? GetItemPassiveEffectCode(&g_loadedItem)
                                               : g_loadedItem.params[0xb];
     switch (code) {
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
+        case ITEM_PASSIVE_INTUITION_POINT:
+        case ITEM_PASSIVE_MENTAL_STRENGTH_POINT:
+        case ITEM_PASSIVE_MAGIC_POINT:
+        case ITEM_PASSIVE_INTELLIGENCE_POINT:
+        case ITEM_PASSIVE_PROTECTION_POINT:
+        case ITEM_PASSIVE_STRENGTH_POINT:
+        case ITEM_PASSIVE_VITALITY_POINT:
+        case ITEM_PASSIVE_AGILITY_POINT:
+        case ITEM_PASSIVE_DEXTERITY_POINT:
+        case ITEM_PASSIVE_CHARM_POINT:
+        case ITEM_PASSIVE_FORTUNE_POINT:
             stats[g_loadedItem.params[0xb] - 1]++;
             break;
-        case 12:
+        case ITEM_PASSIVE_STRENGTH_CHARM_POINTS:
             stats[STAT_STRENGTH]++;
             stats[STAT_CHARM]++;
             break;
-        case 13:
+        case ITEM_PASSIVE_VITALITY_MENTAL_STRENGTH_POINTS:
             stats[STAT_VITALITY]++;
             stats[STAT_MENTAL_STRENGTH]++;
             break;
-        case 14:
+        case ITEM_PASSIVE_INTUITION_AGILITY_POINTS:
             stats[STAT_INTUITION]++;
             stats[STAT_AGILITY]++;
             break;
-        case 15:
+        case ITEM_PASSIVE_MAGIC_PROTECTION_POINTS:
             stats[STAT_MAGIC]++;
             stats[STAT_PROTECTION]++;
             break;
-        case 16:
+        case ITEM_PASSIVE_INTELLIGENCE_DEXTERITY_POINTS:
             stats[STAT_INTELLIGENCE]++;
             stats[STAT_DEXTERITY]++;
             break;
-        case 17:
+        case ITEM_PASSIVE_STRENGTH_VITALITY_MENTAL_STRENGTH_POINTS:
             stats[STAT_STRENGTH]++;
             stats[STAT_VITALITY]++;
             stats[STAT_MENTAL_STRENGTH]++;
             break;
-        case 32:
+        case ITEM_PASSIVE_MENTAL_STRENGTH_PLUS_4:
             stats[STAT_MENTAL_STRENGTH] += 4;
             break;
-        case 33:
+        case ITEM_PASSIVE_INTELLIGENCE_PLUS_3:
             stats[STAT_INTELLIGENCE] += 3;
             break;
-        case 34:
+        case ITEM_PASSIVE_PROTECTION_PLUS_1:
             stats[STAT_PROTECTION]++;
             break;
-        case 35:
+        case ITEM_PASSIVE_PROTECTION_PLUS_2:
             stats[STAT_PROTECTION] += 2;
             break;
-        case 36:
+        case ITEM_PASSIVE_AGILITY_MINUS_10:
             stats[STAT_AGILITY] -= 10;
             break;
-        case 37:
+        case ITEM_PASSIVE_CHARM_PLUS_2:
             stats[STAT_CHARM] += 2;
             break;
-        case 38:
+        case ITEM_PASSIVE_CHARM_PLUS_4:
             stats[STAT_CHARM] += 4;
             break;
-        case 39:
+        case ITEM_PASSIVE_CHARM_MINUS_3:
             stats[STAT_CHARM] -= 3;
             break;
-        case 40:
+        case ITEM_PASSIVE_INTUITION_PLUS_1:
             stats[STAT_INTUITION]++;
             break;
-        case 41:
+        case ITEM_PASSIVE_AGILITY_PLUS_3:
             stats[STAT_AGILITY] += 3;
             break;
     }
@@ -1696,10 +1697,10 @@ void ApplyItemDamageRatio(i16 item, i16* ratios) {
         step++;
     }
     value = (i16)(step * 50) * ratios[slot] / 100;
-    if (value < -0x8000) {
-        value = -0x8000;
-    } else if (value > 0x7fff) {
-        value = 0x7fff;
+    if (value < SHRT_MIN) {
+        value = SHRT_MIN;
+    } else if (value > SHRT_MAX) {
+        value = SHRT_MAX;
     }
     ratios[slot] = value;
 }
@@ -1728,10 +1729,10 @@ i16 ScaleDamageByEquipment(Character* character, i16 damage, i16 element) {
     ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, ratios);
     ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, ratios);
     value = ratios[element] * damage / 100;
-    if (value < -0x8000) {
-        value = -0x8000;
-    } else if (value > 0x7fff) {
-        value = 0x7fff;
+    if (value < SHRT_MIN) {
+        value = SHRT_MIN;
+    } else if (value > SHRT_MAX) {
+        value = SHRT_MAX;
     }
     return value;
 }
@@ -2102,7 +2103,7 @@ b32 RunBagDiscardMenu(void) {
 #else
 void RunBagDiscardMenu(void) {
 #endif
-    i16 entries[64];
+    i16 entries[BAG_ENTRY_COUNT];
     i16 count = 0;
     MenuBox* menu;
     i16 item;
@@ -2238,7 +2239,7 @@ RVA(0x00025f60, 0x50)
 static MenuBox* CreateGiftMenu(MenuBox* old) {
     MenuBox* menu = CreateMenuBox(old, 0x15, 2);
 
-    SetMenuItems(menu, 16, NULL, 16, GiftMenuHandler);
+    SetMenuItems(menu, 16, NULL, GEM_ITEM_COUNT, GiftMenuHandler);
     MoveMenuBox(menu, 0x2a, 0x50);
     SetTextPlaneFirstSelectableRow(menu->plane, 0, false);
     return menu;

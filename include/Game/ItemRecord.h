@@ -163,12 +163,41 @@ static __inline i16 GetItemRecordMagicDefenseBonus(const ItemRecord* record) {
     return bonus;
 }
 
-// An equipped item's passive effect (its params[0x25]): a battle-stat bonus
-// (AddItemStatBonuses; the number is the bonus), HP or MP regeneration per
+// An equipped item's passive effect (its params[0x25]; a gem's params[0xb]):
+// stat points (AddItemStatPoints: a point in the item's own stat, a set of
+// stats, or a fixed change), a battle-stat bonus (AddItemStatBonuses; the
+// number is the bonus), HP or MP regeneration per
 // turn (AddItemRegen), or resistance to conditions (ItemResistsCondition:
 // mental is confusion, happy and hallucination; intoxication is high,
 // berserk and tipsy; fire and ice is burn, freeze and ice).
 GZ_ENUM_BEGIN(ItemPassiveEffect)
+    ITEM_PASSIVE_INTUITION_POINT = 1,
+    ITEM_PASSIVE_MENTAL_STRENGTH_POINT = 2,
+    ITEM_PASSIVE_MAGIC_POINT = 3,
+    ITEM_PASSIVE_INTELLIGENCE_POINT = 4,
+    ITEM_PASSIVE_PROTECTION_POINT = 5,
+    ITEM_PASSIVE_STRENGTH_POINT = 6,
+    ITEM_PASSIVE_VITALITY_POINT = 7,
+    ITEM_PASSIVE_AGILITY_POINT = 8,
+    ITEM_PASSIVE_DEXTERITY_POINT = 9,
+    ITEM_PASSIVE_CHARM_POINT = 10,
+    ITEM_PASSIVE_FORTUNE_POINT = 11,
+    ITEM_PASSIVE_STRENGTH_CHARM_POINTS = 12,
+    ITEM_PASSIVE_VITALITY_MENTAL_STRENGTH_POINTS = 13,
+    ITEM_PASSIVE_INTUITION_AGILITY_POINTS = 14,
+    ITEM_PASSIVE_MAGIC_PROTECTION_POINTS = 15,
+    ITEM_PASSIVE_INTELLIGENCE_DEXTERITY_POINTS = 16,
+    ITEM_PASSIVE_STRENGTH_VITALITY_MENTAL_STRENGTH_POINTS = 17,
+    ITEM_PASSIVE_MENTAL_STRENGTH_PLUS_4 = 32,
+    ITEM_PASSIVE_INTELLIGENCE_PLUS_3 = 33,
+    ITEM_PASSIVE_PROTECTION_PLUS_1 = 34,
+    ITEM_PASSIVE_PROTECTION_PLUS_2 = 35,
+    ITEM_PASSIVE_AGILITY_MINUS_10 = 36,
+    ITEM_PASSIVE_CHARM_PLUS_2 = 37,
+    ITEM_PASSIVE_CHARM_PLUS_4 = 38,
+    ITEM_PASSIVE_CHARM_MINUS_3 = 39,
+    ITEM_PASSIVE_INTUITION_PLUS_1 = 40,
+    ITEM_PASSIVE_AGILITY_PLUS_3 = 41,
     ITEM_PASSIVE_WEAPON_POWER_5 = 0x30,
     ITEM_PASSIVE_WEAPON_POWER_10 = 0x31,
     ITEM_PASSIVE_WEAPON_POWER_20 = 0x32,

@@ -18,6 +18,9 @@
 // The bag: 48 ordinary entries, then the scenario items.
 #define BAG_ENTRY_COUNT 64
 #define BAG_ORDINARY_ENTRY_COUNT 48
+#define BAG_SCENARIO_ENTRY_COUNT (BAG_ENTRY_COUNT - BAG_ORDINARY_ENTRY_COUNT)
+// The most items a stack holds.
+#define ITEM_STACK_MAX 99
 
 extern ItemStack g_bagItems[BAG_ENTRY_COUNT];
 

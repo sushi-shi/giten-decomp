@@ -94,7 +94,7 @@
 #include <string.h>
 
 DATA(0x000646c8)
-static const i16 s_rewardLevelThresholds[16] =
+static const i16 s_rewardLevelThresholds[GEM_ITEM_COUNT] =
     {20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140};
 
 DATA(0x00069130)
@@ -317,7 +317,7 @@ void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind) {
                 if (g_curScript->actor != NULL) {
                     roll += g_curScript->actor->level;
                 }
-                for (kind = 0; kind < 16; kind++) {
+                for (kind = 0; kind < GEM_ITEM_COUNT; kind++) {
                     if (roll <= s_rewardLevelThresholds[kind]) {
                         reward = GetGemItemBase() + kind;
                         break;

@@ -318,7 +318,6 @@ src/Script/scriptvm.c	ExecScriptOpcode	0x7eff	call-argument	CallScript(*argument
 src/Script/*.c	*	0xdf	call-argument	*Script(*argument 1	the script file that the reward report, despawn and step-back paths enter; its contents are disc data and its identity is unrecovered
 src/Script/*.c	*	[0-2]	call-argument	*Script(*argument 2	an entry of script file 0xdf (unrecovered disc script)
 src/Script/scriptactor.c	GrantActorReward	0	existing-symbol	*	the loop reuses `kind` as the gem index
-src/Script/scriptactor.c	GrantActorReward	16	comparison-or-bound	*	the gem index bound (s_rewardLevelThresholds)
 src/Script/scriptactor.c	GrantActorReward	*	comparison-or-bound	operator <= roll	percent thresholds of the random reward tables
 src/Script/scriptactor.c	GrantActorReward	[1-3]	call-argument	GrantAdjustedActorSpoil(*argument 2	the spoil amount adjustment the random reward table applies
 src/Script/scriptactor.c	GrantActorReward	[89]	*	*	reward kinds 8 and 9 (reward is the actor's level) that only the reward script interprets; unrecovered
@@ -740,3 +739,43 @@ src/Game/skilluse.c	RunFieldSkillUse	*	*	*	@identity-TODO: target flags 0x10, 0x
 src/Game/skilluse.c	PrepareSkillAction	0	*	*	@identity-TODO: the skill action's reset value 0
 src/Game/skilluse.c	RunBattleAction	*	*	*	@identity-TODO: battle-action parameters: the outcome flags 0/1, the target collections (7, 0xa, 0xf1) and 0xff, one bag item used, the effect stages, the battle-message script 0xdf entry 3, the kept pick cleared
 src/Game/skilluse.c	PlayActionEffect	*	*	*	@identity-TODO: the action message scripts 0xdd/0xde and their entries (3, 4, 5, 0x44), the before/after message (0/1), weapons from 1
+src/Game/itemrecord.c	*	[56]	case-label	switch on kind	@identity-TODO: item kinds 5 and 6 have no recovered items (see ItemKind)
+src/Game/itemrecord.c	DecodeItemRecord	*	*	*	@identity-TODO: item record decoding: absent params (0xff), message pairs (1, 1)/(1, 0), params[] 11, the name copy after the leading byte
+src/Game/itemrecord.c	AddItemStatPoints	*	arithmetic	*	the points a fixed stat change adds or takes
+src/Game/itemrecord.c	AddItemStatPoints	0	*	*	no item
+src/Game/itemrecord.c	AddItemStatBonuses	*	*	*	the battle-stat bonus amounts ItemPassiveEffect names; no item
+src/Game/itemrecord.c	GetItemStackLimit	1	*	*	equipment does not stack
+src/Game/itemrecord.c	GetItemRecordData	1	*	*	@identity-TODO: record id 1
+src/Game/itemrecord.c	RemapItem	*	*	*	the remap table's (from, to) pairs end at 0xffff; 0 when none
+src/Game/itemrecord.c	*	1	trivial-function-literal	1 bound item	item ids start at 1 (0 is none)
+src/Game/itemrecord.c	*	-1	trivial-function-literal	-1 equality GemItemIndex()	not a gem item
+src/Game/itemrecord.c	GemItemIndex	-1	*	*	not a gem item
+src/Game/itemrecord.c	*Gem*	-1	*	*	not a gem item or out of range
+src/Game/itemrecord.c	StoreBagItem	*	*	*	@identity-TODO: nothing stored yet; the quiet flag; AddBagItems' fourth argument 0
+src/Game/itemrecord.c	*Pool*	*	*	*	@identity-TODO: an empty pool stack; RollItemAmount's third argument 0; StoreBagItem's -1; the bag copy's quiet flag and its 16 fit tests
+src/Game/itemrecord.c	RestoreBagEntries	0	*	*	nothing restored
+src/Game/itemrecord.c	AddDropSlot	*	*	*	-1 when the item is not dropped; no remap (0)
+src/Game/itemrecord.c	FindBagItem	*	*	*	@identity-TODO: the bag groups searched (bit 1 ordinary, bit 2 scenario); -1 when not found
+src/Game/itemrecord.c	*BagEntry*	*	*	*	@identity-TODO: bag-entry attachment and detail words: -1 for none, 0 cleared; a detached quantity of 1; SetBagEntry's (-1, -1) clears; the 0xff taken from a stack's count
+src/Game/itemrecord.c	CompactBagCore	3	call-argument	FindBagItem(*	both bag groups
+src/Game/itemrecord.c	AddBagItems	*	*	*	item ids from 1; 0 when nothing is added
+src/Game/itemrecord.c	AddScenarioBagItems	-1	call-argument	*	a cleared detail word
+src/Game/itemrecord.c	CompactBag	-1	call-argument	*	a cleared entry
+src/Game/itemrecord.c	UseRestoreItem	*	*	*	@identity-TODO: the restore item's params (7 and 8 the HP and MP amounts, 9 the restore effect); no pending condition
+src/Game/itemrecord.c	UseAttackItem	*	*	*	@identity-TODO: an attack item's result, params[0] and inflict code 0x21 and above
+src/Game/itemrecord.c	SetInertItemOutcome	0	*	*	@identity-TODO: result 0
+src/Game/itemrecord.c	SumEquippedMagicDefenseBonus	*	*	*	@identity-TODO: equipment groups bits 1 and 2
+src/Game/itemrecord.c	GetItem*Bonus	0	*	*	no item: no bonus
+src/Game/itemrecord.c	ApplyItemDamageRatio	*	*	*	@identity-TODO: item damage ratio codes from 0x40 (below 40 codes), four steps of 50 percent
+src/Game/itemrecord.c	ScaleDamageByEquipment	*	*	*	@identity-TODO: the ten element ratios (100 percent each), damage from 1
+src/Game/itemrecord.c	IsItemGuardingElement	*	*	*	@identity-TODO: elements 2..5 a guard covers; item ids from 1
+src/Game/itemrecord.c	CountElementGuards	*	*	*	@identity-TODO: the ten elements; no guards
+src/Game/itemrecord.c	*Regen	*	*	*	regeneration: none yet; item ids from 1; the regeneration amounts
+src/Game/itemrecord.c	ResolveInflictedCondition	*	*	*	@identity-TODO: the inflict codes' chances (50, 75 percent), demon class 8 and the roll's two outcomes
+src/Game/itemrecord.c	*Condition*	1	trivial-function-literal	1 bound condition	condition codes start at 1 (0 is none)
+src/Game/itemrecord.c	IsConditionResisted	1	*	*	resisted
+src/Game/itemrecord.c	*SpecialItem*	*	*	*	@identity-TODO: the eight timed special items from item 0xad, their event flags from 0xd0, a 42560-minute (four-week) lifetime; -1 when not one
+src/Game/itemrecord.c	RunBagDiscardMenu	*	*	*	@identity-TODO: priceless items (0); menu flags 0x1e; the cancel flag cleared; SetBagEntry's (-1, -1) clears
+src/Game/itemrecord.c	RunGemItemGift	*	call-argument	*	familiarity stays within 0..63; one gem given
+src/Game/itemrecord.c	GiftMenuHandler	0	*	*	the menu's origin (0, 0); no gems held
+src/Game/itemrecord.c	CreateGiftMenu	16	call-argument	SetMenuItems(*argument 2	the gift menu shows 16 rows a page
