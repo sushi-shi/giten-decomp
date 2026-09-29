@@ -28,6 +28,8 @@
     giten codecs --disc <DDSWIN.BIN> retail/candidate/Rust resource execution
     giten play [--disc DDSWIN.BIN]   build the bug-fixed image (GITEN_BUGFIX)
                                      and start the game under Wine/gamescope
+    giten branch <source|classic|port>  generate the readable-source branches
+                                     (docs/branches.md)
     giten init                      local setup (the build wine prefix; the
                                      dev-shell hook runs this at entry)
 
@@ -71,7 +73,7 @@ def _dispatch(argv: list[str]) -> int:
              "delink": "giten.delink.run", "compare": "giten.compare.run"}[cmd])
         sys.argv = [f"giten {cmd}", *rest]
         return mod.main()
-    if cmd in ("sema", "walls", "ghidra", "verify", "lsp"):
+    if cmd in ("sema", "walls", "ghidra", "verify", "lsp", "branch"):
         import importlib
         return importlib.import_module(f"giten.{cmd}").main(rest)
     if cmd == "permute":
