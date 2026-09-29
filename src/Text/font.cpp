@@ -9,6 +9,7 @@
 #include <rva.h>
 
 #include <Gfx/Texture.h>
+#include <Giten/Resource.h>
 #include <Platform/Com.h>
 #include <Platform/GameApi.h>
 #include <Platform/Scene3D.h>
@@ -5181,11 +5182,46 @@ static HotspotArea s_hotspotAreas[88] = {
 
 DATA(0x0006da88)
 static u16 s_hotspotImages[40][2] = {
-    {0, 0},     {119, 477}, {120, 478}, {181, 0},   {182, 0},   {482, 492}, {490, 500}, {488, 498},
-    {487, 497}, {485, 495}, {484, 494}, {489, 499}, {486, 496}, {483, 493}, {481, 491}, {371, 372},
-    {375, 376}, {377, 378}, {364, 366}, {379, 380}, {381, 382}, {369, 370}, {373, 374}, {367, 368},
-    {475, 479}, {476, 480}, {0, 706},   {0, 696},   {0, 697},   {0, 698},   {0, 699},   {0, 700},
-    {0, 701},   {0, 702},   {0, 703},   {0, 704},   {0, 705},   {0, 695},   {0, 0},     {0, 0},
+    {0, 0},
+    {IDB_BITMAP14, IDB_BITMAP148},
+    {IDB_BITMAP15, IDB_BITMAP149},
+    {IDB_BITMAP27, 0},
+    {IDB_BITMAP28, 0},
+    {IDB_BITMAP153, IDB_BITMAP163},
+    {IDB_BITMAP161, IDB_BITMAP171},
+    {IDB_BITMAP159, IDB_BITMAP169},
+    {IDB_BITMAP158, IDB_BITMAP168},
+    {IDB_BITMAP156, IDB_BITMAP166},
+    {IDB_BITMAP155, IDB_BITMAP165},
+    {IDB_BITMAP160, IDB_BITMAP170},
+    {IDB_BITMAP157, IDB_BITMAP167},
+    {IDB_BITMAP154, IDB_BITMAP164},
+    {IDB_BITMAP152, IDB_BITMAP162},
+    {IDB_BITMAP134, IDB_BITMAP135},
+    {IDB_BITMAP138, IDB_BITMAP139},
+    {IDB_BITMAP140, IDB_BITMAP141},
+    {IDB_BITMAP128, IDB_BITMAP129},
+    {IDB_BITMAP142, IDB_BITMAP143},
+    {IDB_BITMAP144, IDB_BITMAP145},
+    {IDB_BITMAP132, IDB_BITMAP133},
+    {IDB_BITMAP136, IDB_BITMAP137},
+    {IDB_BITMAP130, IDB_BITMAP131},
+    {IDB_BITMAP146, IDB_BITMAP150},
+    {IDB_BITMAP147, IDB_BITMAP151},
+    {0, IDB_BITMAP345},
+    {0, IDB_BITMAP335},
+    {0, IDB_BITMAP336},
+    {0, IDB_BITMAP337},
+    {0, IDB_BITMAP338},
+    {0, IDB_BITMAP339},
+    {0, IDB_BITMAP340},
+    {0, IDB_BITMAP341},
+    {0, IDB_BITMAP342},
+    {0, IDB_BITMAP343},
+    {0, IDB_BITMAP344},
+    {0, IDB_BITMAP334},
+    {0, 0},
+    {0, 0},
 };
 
 DATA(0x0006db28)

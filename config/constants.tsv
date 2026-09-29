@@ -8,3 +8,24 @@
 #floor	22765
 src/Game/character.c	CalcMaxHp	1	existing-symbol	boolean	TestBit result compared with true; the body is banked exact but the enum headers dip it to 99.96, so editing it would reset MAX - spell it true once the TU is restored
 src/Game/character.c	CalcMaxMp	1	existing-symbol	boolean	TestCharacterFlag result compared with true; the body is banked exact but the enum headers dip it to 99.95, so editing it would reset MAX - spell it true once the TU is restored
+src/Text/font.cpp	s_halfWidthGlyphs	*	data-or-extent	*	glyph bitmap rows: one byte of pixels per row of each 8x16 half-width glyph
+src/Text/font.cpp	s_planeLayouts	*	data-or-extent	*	text window geometry: screen position and size in pixels, text grid in cells
+src/Text/font.cpp	s_textPalette	*	data-or-extent	*	RGB colour components of the 16 text colours
+src/Text/font.cpp	s_layerOrigin	*	data-or-extent	*	screen-layer origins in pixels
+src/Text/font.cpp	s_layerSize	*	data-or-extent	*	screen-layer sizes in pixels and the second-surface flag per slot
+src/Platform/winmain.cpp	s_quadUV	*	data-or-extent	*	texture coordinates of the billboard quads
+src/Platform/winmain.cpp	s_hardwareAtlasUV	*	data-or-extent	*	texture coordinates of the room-texture quarters (hardware device)
+src/Platform/winmain.cpp	s_softwareAtlasUV	*	data-or-extent	*	texture coordinates of the room-texture quarters (software device)
+src/Platform/winmain.cpp	s_boxUV	*	data-or-extent	*	texture coordinates of the treasure-box frames
+src/Platform/winmain.cpp	s_doorCorners	*	data-or-extent	*	door-frame corner offsets in world units and texture u per animation step
+src/Platform/winmain.cpp	s_turnSine	*	data-or-extent	*	sine table: sin(3 * i degrees) per turn step
+src/Game/skilluse.c	s_targetCellDistance	*	data-or-extent	*	grid distance of each cell of the 7x7 target area from its centre
+src/Gfx/bitmapio.cpp	s_worldMapRegions	*	data-or-extent	*	world-map blit rectangles: source and destination pixel coordinates and sizes
+src/Platform/d3dapp.cpp	s_soundResources	0	data-or-extent	*	sound slot with no WAVE resource (0 = none)
+src/Platform/winmain.cpp	g_mapTileImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Platform/winmain.cpp	g_textPlaneImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Platform/winmain.cpp	g_mapMarkImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Platform/winmain.cpp	g_commandImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Platform/winmain.cpp	g_layerImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Platform/winmain.cpp	g_panelImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Text/font.cpp	s_hotspotImages	0	data-or-extent	*	hotspot with no bitmap resource (0 = none)

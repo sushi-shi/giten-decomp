@@ -5,6 +5,7 @@
 
 #include <Gfx/DisplayConfig.h>
 #include <Gfx/Texture.h>
+#include <Giten/Resource.h>
 #include <Platform/Com.h>
 #include <Platform/GameApi.h>
 #include <Platform/Ime.h>
@@ -1129,7 +1130,7 @@ static D3DVALUE s_turnSine[32] = {
 
 // The compass image for each facing.
 DATA(0x0006b598)
-u16 g_compassImages[4] = {106, 108, 107, 109};
+u16 g_compassImages[4] = {IDB_BITMAP5, IDB_BITMAP7, IDB_BITMAP6, IDB_BITMAP8};
 
 // A quarter turn is 30 steps of 3 degrees; the camera circles its target at
 // this distance.
@@ -3989,100 +3990,281 @@ void RepeatPadMove(BOOL turn) {
 // The image each layer slot is painted with (0 for the slots painted
 // otherwise).
 DATA(0x0006b4e8)
-u16 g_layerImages[16] = {292, 0, 0, 101, 102, 103, 104, 0, 0, 0, 0, 0, 0, 0, 112, 0};
+u16 g_layerImages[16] = {
+    IDB_BITMAP68,
+    0,
+    0,
+    IDB_BITMAP1,
+    IDB_BITMAP2,
+    IDB_BITMAP3,
+    IDB_BITMAP4,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    IDB_BITMAP11,
+    0
+};
 
 // The party panels' images by member state.
 DATA(0x0006b508)
-u16 g_panelImages[8] = {665, 666, 668, 667, 669, 0, 0, 0};
+u16 g_panelImages[8] =
+    {IDB_BITMAP326, IDB_BITMAP327, IDB_BITMAP329, IDB_BITMAP328, IDB_BITMAP330, 0, 0, 0};
 
 // The command images of the character panel (layer 1), up and pressed.
 DATA(0x0006b538)
 MenuButtonImages g_commandImages[10] = {
-    {223, 225},
-    {226, 227},
-    {230, 231},
-    {228, 229},
-    {221, 222},
-    {237, 238},
-    {219, 220},
-    {234, 235},
-    {280, 281},
+    {IDB_BITMAP33, IDB_BITMAP34},
+    {IDB_BITMAP35, IDB_BITMAP36},
+    {IDB_BITMAP39, IDB_BITMAP40},
+    {IDB_BITMAP37, IDB_BITMAP38},
+    {IDB_BITMAP31, IDB_BITMAP32},
+    {IDB_BITMAP43, IDB_BITMAP44},
+    {IDB_BITMAP29, IDB_BITMAP30},
+    {IDB_BITMAP41, IDB_BITMAP42},
+    {IDB_BITMAP56, IDB_BITMAP57},
     {0, 0},
 };
 
 // The icon layer's (slot 2) images.
 DATA(0x0006b560)
 u16 g_iconLayerImages[28] = {
-    110, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 650,
-    111, 652, 653, 654, 655, 656, 657, 658, 659, 660, 661, 662, 663, 637,
+    IDB_BITMAP9,   IDB_BITMAP301, IDB_BITMAP302, IDB_BITMAP303, IDB_BITMAP304, IDB_BITMAP305,
+    IDB_BITMAP306, IDB_BITMAP307, IDB_BITMAP308, IDB_BITMAP309, IDB_BITMAP310, IDB_BITMAP311,
+    IDB_BITMAP312, IDB_BITMAP313, IDB_BITMAP10,  IDB_BITMAP314, IDB_BITMAP315, IDB_BITMAP316,
+    IDB_BITMAP317, IDB_BITMAP318, IDB_BITMAP319, IDB_BITMAP320, IDB_BITMAP321, IDB_BITMAP322,
+    IDB_BITMAP323, IDB_BITMAP324, IDB_BITMAP325, IDB_BITMAP300,
 };
 
 // The navigation pad buttons' images (up, pressed).
 DATA(0x0006b5a0)
-u16 g_padImages[4][2] = {{170, 169}, {171, 172}, {175, 176}, {173, 174}};
+u16 g_padImages[4][2] = {
+    {IDB_BITMAP20, IDB_BITMAP19},
+    {IDB_BITMAP21, IDB_BITMAP22},
+    {IDB_BITMAP25, IDB_BITMAP26},
+    {IDB_BITMAP23, IDB_BITMAP24}
+};
 
 // @identity-TODO: the status image set roles remain unnamed.
 DATA(0x0006b600)
-u16 g_statusImages[10] = {0x123, 0x11e, 0x11a, 0x11f, 0x11b, 0x120, 0x11d, 0x122, 0x121, 0x11c};
+u16 g_statusImages[10] = {
+    IDB_BITMAP67,
+    IDB_BITMAP62,
+    IDB_BITMAP58,
+    IDB_BITMAP63,
+    IDB_BITMAP59,
+    IDB_BITMAP64,
+    IDB_BITMAP61,
+    IDB_BITMAP66,
+    IDB_BITMAP65,
+    IDB_BITMAP60
+};
 
 // The marks DrawStatBar uses for base, bonus, empty and equipment segments.
 DATA(0x0006b618)
-u16 g_statBarMarkImages[5] = {0xf3, 0xf2, 0xf1, 0xf5, 0xf4};
+u16 g_statBarMarkImages[5] = {IDB_BITMAP47, IDB_BITMAP46, IDB_BITMAP45, IDB_BITMAP49, IDB_BITMAP48};
 
 // The fusion summary grid: result icons and keyed level/growth overlays.
 DATA(0x0006b628)
 u16 g_fusionSummaryImages[17][3] = {
-    {0x137, 0x139, 0x138},
-    {0x13a, 0x13c, 0x13b},
-    {0x13d, 0x13f, 0x13e},
-    {0x140, 0x142, 0x141},
-    {0x143, 0x145, 0x144},
-    {0x146, 0x148, 0x147},
-    {0x149, 0x14b, 0x14a},
-    {0x14c, 0x14e, 0x14d},
-    {0x14f, 0x152, 0x150},
-    {0x153, 0x155, 0x154},
-    {0x156, 0x158, 0x157},
-    {0x159, 0x15b, 0x15a},
-    {0x15c, 0x15e, 0x15d},
-    {0x15f, 0x161, 0x160},
-    {0x162, 0x164, 0x163},
-    {0x165, 0x165, 0x165},
-    {0x166, 0x166, 0x166},
+    {IDB_BITMAP81, IDB_BITMAP83, IDB_BITMAP82},
+    {IDB_BITMAP84, IDB_BITMAP86, IDB_BITMAP85},
+    {IDB_BITMAP87, IDB_BITMAP89, IDB_BITMAP88},
+    {IDB_BITMAP90, IDB_BITMAP92, IDB_BITMAP91},
+    {IDB_BITMAP93, IDB_BITMAP95, IDB_BITMAP94},
+    {IDB_BITMAP96, IDB_BITMAP98, IDB_BITMAP97},
+    {IDB_BITMAP99, IDB_BITMAP101, IDB_BITMAP100},
+    {IDB_BITMAP102, IDB_BITMAP104, IDB_BITMAP103},
+    {IDB_BITMAP105, IDB_BITMAP107, IDB_BITMAP106},
+    {IDB_BITMAP108, IDB_BITMAP110, IDB_BITMAP109},
+    {IDB_BITMAP111, IDB_BITMAP113, IDB_BITMAP112},
+    {IDB_BITMAP114, IDB_BITMAP116, IDB_BITMAP115},
+    {IDB_BITMAP117, IDB_BITMAP119, IDB_BITMAP118},
+    {IDB_BITMAP120, IDB_BITMAP122, IDB_BITMAP121},
+    {IDB_BITMAP123, IDB_BITMAP125, IDB_BITMAP124},
+    {IDB_BITMAP126, IDB_BITMAP126, IDB_BITMAP126},
+    {IDB_BITMAP127, IDB_BITMAP127, IDB_BITMAP127},
 };
 
 // The text plane kinds' frame images (CreateTextPlane; 0 for none).
 DATA(0x0006b5b0)
-u16 g_textPlaneImages[40] = {113, 503, 504, 505, 506, 507, 508, 509, 509, 510, 511, 509, 711, 0,
-                             121, 122, 117, 515, 516, 517, 0,   518, 0,   0,   0,   519, 520, 0,
-                             521, 0,   123, 636, 524, 525, 526, 671, 527, 0,   0,   0};
+u16 g_textPlaneImages[40] = {
+    IDB_BITMAP12,
+    IDB_BITMAP172,
+    IDB_BITMAP173,
+    IDB_BITMAP174,
+    IDB_BITMAP175,
+    IDB_BITMAP176,
+    IDB_BITMAP177,
+    IDB_BITMAP178,
+    IDB_BITMAP178,
+    IDB_BITMAP179,
+    IDB_BITMAP180,
+    IDB_BITMAP178,
+    IDB_BITMAP346,
+    0,
+    IDB_BITMAP16,
+    IDB_BITMAP17,
+    IDB_BITMAP13,
+    IDB_BITMAP181,
+    IDB_BITMAP182,
+    IDB_BITMAP183,
+    0,
+    IDB_BITMAP184,
+    0,
+    0,
+    0,
+    IDB_BITMAP185,
+    IDB_BITMAP186,
+    0,
+    IDB_BITMAP187,
+    0,
+    IDB_BITMAP18,
+    IDB_BITMAP299,
+    IDB_BITMAP188,
+    IDB_BITMAP189,
+    IDB_BITMAP190,
+    IDB_BITMAP331,
+    IDB_BITMAP191,
+    0,
+    0,
+    0
+};
 
 // The automap's tile images (by tile) and mark images (by mark).
 DATA(0x0006b690)
 u16 g_mapTileImages[84] = {
-    608, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542, 543, 544,
-    545, 546, 547, 548, 549, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 560, 561,
-    562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 574, 575, 576, 577, 578,
-    579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 595,
-    596, 597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 528, 0,   0,   0,
+    IDB_BITMAP272,
+    IDB_BITMAP193,
+    IDB_BITMAP194,
+    IDB_BITMAP195,
+    IDB_BITMAP196,
+    IDB_BITMAP197,
+    IDB_BITMAP198,
+    IDB_BITMAP199,
+    IDB_BITMAP200,
+    IDB_BITMAP201,
+    IDB_BITMAP202,
+    IDB_BITMAP203,
+    IDB_BITMAP204,
+    IDB_BITMAP205,
+    IDB_BITMAP206,
+    IDB_BITMAP207,
+    IDB_BITMAP208,
+    IDB_BITMAP209,
+    IDB_BITMAP210,
+    IDB_BITMAP211,
+    IDB_BITMAP212,
+    IDB_BITMAP213,
+    IDB_BITMAP214,
+    IDB_BITMAP215,
+    IDB_BITMAP216,
+    IDB_BITMAP217,
+    IDB_BITMAP218,
+    IDB_BITMAP219,
+    IDB_BITMAP220,
+    IDB_BITMAP221,
+    IDB_BITMAP222,
+    IDB_BITMAP223,
+    IDB_BITMAP224,
+    IDB_BITMAP225,
+    IDB_BITMAP226,
+    IDB_BITMAP227,
+    IDB_BITMAP228,
+    IDB_BITMAP229,
+    IDB_BITMAP230,
+    IDB_BITMAP231,
+    IDB_BITMAP232,
+    IDB_BITMAP233,
+    IDB_BITMAP234,
+    IDB_BITMAP235,
+    IDB_BITMAP236,
+    IDB_BITMAP237,
+    IDB_BITMAP238,
+    IDB_BITMAP239,
+    IDB_BITMAP240,
+    IDB_BITMAP241,
+    IDB_BITMAP242,
+    IDB_BITMAP243,
+    IDB_BITMAP244,
+    IDB_BITMAP245,
+    IDB_BITMAP246,
+    IDB_BITMAP247,
+    IDB_BITMAP248,
+    IDB_BITMAP249,
+    IDB_BITMAP250,
+    IDB_BITMAP251,
+    IDB_BITMAP252,
+    IDB_BITMAP253,
+    IDB_BITMAP254,
+    IDB_BITMAP255,
+    IDB_BITMAP256,
+    IDB_BITMAP257,
+    IDB_BITMAP258,
+    IDB_BITMAP259,
+    IDB_BITMAP260,
+    IDB_BITMAP261,
+    IDB_BITMAP262,
+    IDB_BITMAP263,
+    IDB_BITMAP264,
+    IDB_BITMAP265,
+    IDB_BITMAP266,
+    IDB_BITMAP267,
+    IDB_BITMAP268,
+    IDB_BITMAP269,
+    IDB_BITMAP270,
+    IDB_BITMAP271,
+    IDB_BITMAP192,
+    0,
+    0,
+    0,
 };
 
 DATA(0x0006b738)
 u16 g_mapMarkImages[28] = {
-    633, 631, 632, 630, 621, 615, 624, 616, 628, 612, 614, 620, 611, 609,
-    617, 613, 619, 618, 625, 623, 629, 610, 627, 626, 608, 0,   0,   0,
+    IDB_BITMAP296,
+    IDB_BITMAP294,
+    IDB_BITMAP295,
+    IDB_BITMAP293,
+    IDB_BITMAP285,
+    IDB_BITMAP279,
+    IDB_BITMAP287,
+    IDB_BITMAP280,
+    IDB_BITMAP291,
+    IDB_BITMAP276,
+    IDB_BITMAP278,
+    IDB_BITMAP284,
+    IDB_BITMAP275,
+    IDB_BITMAP273,
+    IDB_BITMAP281,
+    IDB_BITMAP277,
+    IDB_BITMAP283,
+    IDB_BITMAP282,
+    IDB_BITMAP288,
+    IDB_BITMAP286,
+    IDB_BITMAP292,
+    IDB_BITMAP274,
+    IDB_BITMAP290,
+    IDB_BITMAP289,
+    IDB_BITMAP272,
+    0,
+    0,
+    0,
 };
 
 // The menu bar's buttons: their images up and pressed, and their left edges.
 DATA(0x0006b518)
 MenuButtonImages g_menuButtonImages[MENU_BUTTON_COUNT] = {
-    {302, 301},
-    {306, 305},
-    {304, 303},
-    {308, 307},
-    {310, 309},
-    {634, 635},
-    {300, 299},
+    {IDB_BITMAP72, IDB_BITMAP71},
+    {IDB_BITMAP76, IDB_BITMAP75},
+    {IDB_BITMAP74, IDB_BITMAP73},
+    {IDB_BITMAP78, IDB_BITMAP77},
+    {IDB_BITMAP80, IDB_BITMAP79},
+    {IDB_BITMAP297, IDB_BITMAP298},
+    {IDB_BITMAP70, IDB_BITMAP69},
 };
 
 DATA(0x0006b770)
