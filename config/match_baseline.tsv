@@ -40,7 +40,7 @@ bitset	5	5
 blit	18	15
 character	171	164
 clickwait	1	1
-clock	74	70
+clock	74	71
 d3dapp	41	36
 datafile	19	19
 debugmenu	3	3
@@ -101,7 +101,7 @@ surfacecopy	1	1
 textapi	5	5
 textchar	1	0
 textstate	21	20
-treasurebox	147	141
+treasurebox	147	138
 vec3	10	8
 videostate	5	5
 vram	44	39
@@ -394,7 +394,7 @@ clock	_IsPanelRowChecked	100.0000	100.0000	3	85c2ad27dc6b	0x22b80	100.0000
 clock	_IsRoomCell	100.0000	100.0000	2	6f9194d8b526	0x21ea0	100.0000	
 clock	_IsSpawnEnabled	100.0000	100.0000	2	ed420803658a	0x21160	100.0000	
 clock	_IsStepBarred	100.0000	100.0000	3	05a359ca36f7	0x221f0	100.0000	
-clock	_LatchCellDestination	99.0625	98.4375	3	58f4c4a0e491	0x21d20	100.0000	
+clock	_LatchCellDestination	100.0000	100.0000	3	58f4c4a0e491	0x21d20	100.0000	
 clock	_LoadAreaMap	100.0000	100.0000	4	96911704c21e	0x213a0	100.0000	
 clock	_LoadClock	100.0000	100.0000	1	517a076cb2f2	0x20f60	100.0000	
 clock	_PaintPanel	100.0000	100.0000	1	005c5866204a	0x229f0	100.0000	
@@ -2403,7 +2403,7 @@ treasurebox	_FillEmptyRegions	100.0000	100.0000	1	8b0581955c2c	0x1eb30	100.0000
 treasurebox	_FillRegionRect	100.0000	100.0000	1	1fc9899d4f69	0x1ea90	100.0000	
 treasurebox	_FindCellObject	100.0000	100.0000	2	91126080368e	0x1f1d0	100.0000	
 treasurebox	_FindPanelRowAt	100.0000	100.0000	7	60040418cba4	0x1cc00	100.0000	
-treasurebox	_FindRegionData	100.0000	100.0000	1	e9eabe193cee	0x1ecc0	100.0000	
+treasurebox	_FindRegionData	100.0000	99.5833	1	e9eabe193cee	0x1ecc0	100.0000	
 treasurebox	_FinishDoorStep	100.0000	100.0000	2	dbfce01ed5f0	0x1f130	100.0000	
 treasurebox	_FormatItemMenuEntry	100.0000	100.0000	9	d65d8f86cc80	0x1b960	100.0000	
 treasurebox	_FreeAutomap	100.0000	100.0000	5	a00d12096cd3	0x1cf40	100.0000	
@@ -2433,7 +2433,7 @@ treasurebox	_IsCellInView	100.0000	100.0000	2	0dfc10ec21d9	0x1e300	100.0000
 treasurebox	_IsHotspotTreasureOpen	95.8333	95.8333	4	22a5769e0037	0x1ab40	95.8333	
 treasurebox	_IsObjectCell	100.0000	100.0000	1	f9dbe0b17170	0x1eee0	100.0000	
 treasurebox	_IsPanelActive	100.0000	100.0000	3	f7257e655b47	0x1caf0	100.0000	
-treasurebox	_IsRegionFlagOn	100.0000	100.0000	2	ed5b2a21b841	0x1ebe0	100.0000	
+treasurebox	_IsRegionFlagOn	100.0000	99.5000	2	ed5b2a21b841	0x1ebe0	100.0000	
 treasurebox	_IsReservedObjectCell	100.0000	100.0000	2	3e123498400c	0x1f350	100.0000	
 treasurebox	_ItemMenuHandler	100.0000	100.0000	6	5bd375844051	0x1b7c0	100.0000	
 treasurebox	_KnockBack	100.0000	100.0000	5	48924f38b420	0x1f7d0	100.0000	
@@ -2450,7 +2450,7 @@ treasurebox	_LookupCellObject	100.0000	100.0000	2	5f07f93b5477	0x1ef60	100.0000
 treasurebox	_MarkAreaNpcs	100.0000	100.0000	1	310eb5091d06	0x1f4c0	100.0000	
 treasurebox	_MarkAutomapCell	100.0000	100.0000	2	04c1b3a72795	0x1d0e0	100.0000	
 treasurebox	_MarkMapCell	100.0000	100.0000	3	bd151e9abb2a	0x1d440	100.0000	
-treasurebox	_MarkRegionList	100.0000	100.0000	3	14ca732094a9	0x1ec10	100.0000	
+treasurebox	_MarkRegionList	100.0000	99.6923	3	14ca732094a9	0x1ec10	100.0000	
 treasurebox	_MarkRoomRegions	100.0000	100.0000	1	99db59ebe46b	0x1ed20	100.0000	
 treasurebox	_MarkWorldMapEventSpot	100.0000	100.0000	2	b3dce3b77d3f	0x1b3e0	100.0000	
 treasurebox	_NextNpcSlot	100.0000	100.0000	1	e4293f3a61cc	0x1f250	100.0000	
