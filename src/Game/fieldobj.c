@@ -1509,7 +1509,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             }
             g_actorId = index;
             object->mode = 10;
-            object->pickRole = 1;
+            object->pickRole = PICK_ROLE_ATTACK;
             SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
             g_actionId = 1;
             tries = 0;
@@ -1519,14 +1519,14 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                     g_actionId = object->skills[slot - 1];
                     object->pickTarget = g_actionId;
                     object->pickTargetHigh = 1;
-                    object->pickRole = 4;
+                    object->pickRole = PICK_ROLE_MAGIC;
                     result = UseObjectSkill(object, g_actionId);
                     if (result < 0) {
                         if (++tries < 4) {
                             continue;
                         }
                         g_actionId = 1;
-                        object->pickRole = 1;
+                        object->pickRole = PICK_ROLE_ATTACK;
                         SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
                     } else if (result != 0) {
                         action = 2;
@@ -1534,7 +1534,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                     }
                 } else {
                     object->mode = 10;
-                    object->pickRole = 1;
+                    object->pickRole = PICK_ROLE_ATTACK;
                     SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
                     g_actionId = 1;
                 }
@@ -1660,7 +1660,7 @@ b16 ChooseObjectTarget(FieldObject* object) {
 RVA(0x0000fea0, 0x88)
 b16 BeginPartyTargetSkill(Character* character) {
     i16 flags;
-    if (character->pickRole != 4) {
+    if (character->pickRole != PICK_ROLE_MAGIC) {
         return false;
     }
     flags = GetSkillTargetFlags(character->pickTarget);

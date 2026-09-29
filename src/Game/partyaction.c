@@ -340,7 +340,7 @@ i16 PickActorAction(Character* actor) {
 
 static __inline void SetBasicAttackPick(Character* actor, i16 target) {
     actor->mode = 1;
-    actor->pickRole = 1;
+    actor->pickRole = PICK_ROLE_ATTACK;
     SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[5].item);
     actor->pickObject = target;
 }
@@ -753,22 +753,22 @@ i16 PrepareMemberPickTarget(i16 id) {
     Character* actor = GetCharacterById(id);
     if (actor) {
         switch (actor->pickRole) {
-            case 1:
+            case PICK_ROLE_ATTACK:
                 SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[5].item);
                 return 1;
-            case 2:
+            case PICK_ROLE_GUN:
                 SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[6].item);
                 return 1;
-            case 4:
-            case 6:
+            case PICK_ROLE_MAGIC:
+            case PICK_ROLE_EXTRA:
                 actor->pickTargetHigh = -1;
                 return 0;
-            case 3:
-            case 5:
+            case PICK_ROLE_COMP:
+            case PICK_ROLE_ITEM:
                 actor->pickTargetHigh = 0;
                 return 0;
-            case 7:
-            case 8:
+            case PICK_ROLE_RETURN:
+            case PICK_ROLE_DEFENCE:
                 SetCharacterPickTarget(actor, 0);
                 return 4;
         }
@@ -952,7 +952,7 @@ i16 GetItemResistance(Character* actor, i16 item, i16 report, i16 sameSide, i16*
 RVA(0x00006e00, 0x114)
 i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
     switch (actor->pickRole) {
-        case 1:
+        case PICK_ROLE_ATTACK:
             *condition = 0;
             if (GetCharacterEquipment(actor)[5].item != -1) {
                 *condition = GetEquipmentInflictedCondition(
@@ -961,11 +961,11 @@ i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
                 return GetEquipmentAttribute(GetLoadedRecord(GetCharacterEquipment(actor)[5].item));
             }
             break;
-        case 4:
+        case PICK_ROLE_MAGIC:
             *condition = GetSkillInflictedCondition(GetCachedSkill(actor->pickTarget));
             return GetSkillAttackAttribute(GetCachedSkill(actor->pickTarget));
-        case 2:
-        case 5:
+        case PICK_ROLE_GUN:
+        case PICK_ROLE_ITEM:
             *condition = GetEquipmentInflictedCondition(GetLoadedRecord(actor->pickTarget));
             return GetEquipmentAttribute(GetLoadedRecord(actor->pickTarget));
     }
@@ -1711,7 +1711,7 @@ void MarkActorActionReady(Character* actor) {
             break;
         case 2:
             if (!IsHumanCharacter(actor)) {
-                actor->pickRole = 7;
+                actor->pickRole = PICK_ROLE_RETURN;
                 MarkPickDone();
                 break;
             }
@@ -1724,7 +1724,7 @@ void MarkActorActionReady(Character* actor) {
         case 9:
         case 10:
         case 11:
-            actor->pickRole = 8;
+            actor->pickRole = PICK_ROLE_DEFENCE;
             MarkPickDone();
             break;
     }
@@ -2305,13 +2305,13 @@ i16 RunMemberPickMenu(i16 id) {
     }
     if (s_pickMenu == NULL) {
         switch (character->pickRole) {
-            case 3:
+            case PICK_ROLE_COMP:
                 return 1;
-            case 4:
-            case 6:
+            case PICK_ROLE_MAGIC:
+            case PICK_ROLE_EXTRA:
                 s_pickMenu = OpenMemberSkillMenu(id);
                 break;
-            case 5:
+            case PICK_ROLE_ITEM:
                 s_pickMenu = OpenItemListMenu();
                 break;
             default:
@@ -2346,7 +2346,7 @@ static __inline i16 CurrentMemberCombatantId(void) {
 }
 
 static __inline i16 PickMemberActionTarget(Character* character, i16 flags, i16 range) {
-    if (character->pickRole == 4) {
+    if (character->pickRole == PICK_ROLE_MAGIC) {
         if (character->pickTarget == 0x10e) {
             return RunPickTargetWindow(0, range, 1, 0);
         }
@@ -2416,16 +2416,16 @@ i16 RunPartyCommandInput(void) {
                 ResetPartyCommandPick();
                 return g_tickElapsed;
             }
-            if (character->pickRole == 5) {
+            if (character->pickRole == PICK_ROLE_ITEM) {
                 kind = GetLoadedRecord(character->pickTarget)->kind;
                 if (kind == 0xb || kind == 0x13) {
                     character->pickFlags |= 4;
                     character->pickItem = character->pickTarget;
-                    character->pickRole = 4;
+                    character->pickRole = PICK_ROLE_MAGIC;
                     character->pickTarget = GetItemSkillId(GetLoadedRecord(character->pickTarget));
                 }
             }
-            if (character->pickRole == 4) {
+            if (character->pickRole == PICK_ROLE_MAGIC) {
                 flags = GetSkillTargetFlags(character->pickTarget);
                 if (TargetFlagsSelectSelf(flags)) {
                     result = CurrentMemberCombatantId();
@@ -2438,7 +2438,7 @@ i16 RunPartyCommandInput(void) {
                 } else if (flags & TARGET_ACTOR_SIDE) {
                     reach = true;
                 }
-            } else if (character->pickRole == 5) {
+            } else if (character->pickRole == PICK_ROLE_ITEM) {
                 flags = GetItemTargetFlags(GetLoadedRecord(character->pickTarget));
                 if (TargetFlagsSelectSelf(flags)) {
                     result = CurrentMemberCombatantId();
@@ -2486,11 +2486,11 @@ i16 RunPartyCommandInput(void) {
                     s_pickMode = 1;
                 }
                 if (character->pickFlags & 4) {
-                    character->pickRole = 5;
+                    character->pickRole = PICK_ROLE_ITEM;
                 }
             }
             if (result < 1) {
-                if (character->pickRole != 1) {
+                if (character->pickRole != PICK_ROLE_ATTACK) {
                     break;
                 }
                 ResetPartyCommandPick();
@@ -2516,7 +2516,7 @@ i16 RunPartyCommandInput(void) {
                 if (!GetPickBlockingCondition(GetCharacterConditions(character))) {
                     QueueActionWait(GetCharacterActionWait(character));
                 }
-                if (character->pickRole == 4 && character->pickTarget == 0x7d) {
+                if (character->pickRole == PICK_ROLE_MAGIC && character->pickTarget == 0x7d) {
                     s_pickMode++;
                     g_tickElapsed = 0;
                     break;
@@ -2532,7 +2532,7 @@ i16 RunPartyCommandInput(void) {
                 RestoreSwappedMember();
                 s_pickMode = 3;
                 if (character->pickFlags & 4) {
-                    character->pickRole = 5;
+                    character->pickRole = PICK_ROLE_ITEM;
                 }
             }
             if (result < 1) {

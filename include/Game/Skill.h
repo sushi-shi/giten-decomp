@@ -48,10 +48,15 @@ typedef struct SkillParameters {
     SkillMessage beforeMessage;
 } SkillParameters;
 
+// The cost byte's extremes spend the whole pool; an HP cost is negated first.
+#define SKILL_COST_WHOLE_MP 0x7f
+#define SKILL_COST_WHOLE_HP 0x80
+
 #define GetSkillParameterCost(parameters) ((parameters)->cost)
 
 #define SkillCostsFullPool(parameters)                                                             \
-    (GetSkillParameterCost(parameters) == -128 || GetSkillParameterCost(parameters) == 127)
+    (GetSkillParameterCost(parameters) == -SKILL_COST_WHOLE_HP                                     \
+     || GetSkillParameterCost(parameters) == SKILL_COST_WHOLE_MP)
 
 // A file record's name and description follow its twenty-byte header.
 typedef struct SkillHeader {

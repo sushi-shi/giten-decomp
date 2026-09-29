@@ -624,7 +624,7 @@ void FightCommand(i16 id) {
         ResetPartyTurnState();
     }
     g_fieldBattleActive = 1;
-    SetMemberPickRole(id, 1);
+    SetMemberPickRole(id, PICK_ROLE_ATTACK);
 }
 
 RVA(0x000151d0, 0x58)
@@ -643,7 +643,7 @@ void GunCommand(i16 id) {
         ResetPartyTurnState();
     }
     g_fieldBattleActive = 1;
-    SetMemberPickRole(id, 2);
+    SetMemberPickRole(id, PICK_ROLE_GUN);
 }
 
 // A skill: picked in an encounter, else from the field skill screen.
@@ -656,7 +656,7 @@ void SkillCommand(i16 id) {
         }
         g_fieldBattleActive = 1;
         PlaySoundEffect(1);
-        SetMemberPickRole(id, 4);
+        SetMemberPickRole(id, PICK_ROLE_MAGIC);
         return;
     }
     PlaySoundEffect(1);
@@ -675,7 +675,7 @@ void ItemCommand(i16 id) {
         }
         g_fieldBattleActive = 1;
         PlaySoundEffect(1);
-        SetMemberPickRole(id, 5);
+        SetMemberPickRole(id, PICK_ROLE_ITEM);
         return;
     }
     if (!CanMemberAct(id)) {
@@ -733,14 +733,14 @@ void DefenceCommand(i16 id) {
         ResetPartyTurnState();
     }
     g_fieldBattleActive = 1;
-    SetMemberPickRole(id, 8);
+    SetMemberPickRole(id, PICK_ROLE_DEFENCE);
 }
 
 // Returns the selected companion from the active party.
 RVA(0x00015410, 0x1a)
 void ReturnCommand(i16 id) {
     PlaySoundEffect(1);
-    SetMemberPickRole(id, 7);
+    SetMemberPickRole(id, PICK_ROLE_RETURN);
 }
 
 RVA(0x00015430, 0x3e)

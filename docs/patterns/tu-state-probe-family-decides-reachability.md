@@ -41,6 +41,24 @@ operand-order swap, not a finding).  The declarations in
 scope were the original TU's, which an incomplete TU does not reproduce, so
 the board counts declarations placed away from their definition.
 
+## Enumerators and includes count; macros do not
+
+Enum work measured the same input (units compiled with the target bodies
+fixed, compared after masking `$S`/`$SG`/`$T`/`$L` ordinals):
+
+- One added enumerator in `<Game/AreaMap.h>` changed eight units;
+  `RelativeFacing` fell to 79.67 and `LoadFieldMemory` to 87.03.
+- One added `#include` of a header whose only content is its guard changed
+  twelve units; adding `<EnumDomain.h>` to `<Mem/Handle.h>` changed only
+  `vramaccess.obj`, the one unit that had not already read it.
+- Three added `#define`s changed nothing, nor did macros added to a header
+  every affected unit already read.
+
+Spelling a macro-backed storage type (`GZ_ENUM_STORAGE`, `GZ_ENUM_PARAM`)
+or naming an existing constant at a literal is therefore object-neutral. A
+new enum, enumerator or include in a shared header renumbers every unit that
+reads it, and its exact matches have to be checked before it is kept.
+
 ## Declarations after the function
 
 In a C++ TU the context includes what follows the function. With

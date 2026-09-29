@@ -412,7 +412,7 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
         }
     }
     ApplyShieldedDamage(target, attacker->lastChange);
-    if (attacker->pickRole == 1 && GetCharacterEquipment(attacker)[5].item >= 1) {
+    if (attacker->pickRole == PICK_ROLE_ATTACK && GetCharacterEquipment(attacker)[5].item >= 1) {
         kind = GetItemPassiveEffectCode(GetLoadedRecord(GetCharacterEquipment(attacker)[5].item));
         if (kind == 0x86) {
             ChangePool(&attacker->pools.hp, attacker->lastChange);
@@ -457,7 +457,8 @@ i16 ResolveCombatAction(void) {
     if (attacker->id == 0x22 && target->id == 0xce) {
         SetFieldCounts(-2, -2);
     }
-    if (target->id == 0x36 && attacker->pickRole == 5 && attacker->pickTarget == 0x5d) {
+    if (target->id == 0x36 && attacker->pickRole == PICK_ROLE_ITEM
+        && attacker->pickTarget == 0x5d) {
         SetFieldCounts(-2, -2);
     }
     ResetActionWait(GetCharacterActionWait(attacker));
@@ -467,14 +468,14 @@ i16 ResolveCombatAction(void) {
         attacker->pickCostPaid = 1;
     }
 
-    if (attacker->pickRole == 1) {
+    if (attacker->pickRole == PICK_ROLE_ATTACK) {
         attacker->pickTarget = GetCharacterEquipment(attacker)[5].item;
         if (g_targetId >= 0) {
             ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(0));
         } else {
             ResolveWeaponAttack(attacker, target, 0);
         }
-    } else if (attacker->pickRole == 2) {
+    } else if (attacker->pickRole == PICK_ROLE_GUN) {
         attacker->pickTarget = GetCharacterEquipment(attacker)[7].item;
         if (g_targetId >= 0) {
             ResolveGunAttack(attacker, target, IsFieldModeAtLeast(0));
@@ -482,7 +483,7 @@ i16 ResolveCombatAction(void) {
             ResolveGunAttack(attacker, target, 0);
         }
         SpendGunRounds(attacker);
-    } else if (attacker->pickRole == 5) {
+    } else if (attacker->pickRole == PICK_ROLE_ITEM) {
         ApplyItemEffect(attacker->pickTarget, attacker, target);
     } else if (IsSkillAction(attacker)) {
         ApplySkillEffect(attacker->pickTarget, attacker, target);
@@ -562,7 +563,7 @@ i16 ResolveCombatAction(void) {
         GetFieldActor(g_targetId)->facing = OppositeDirection(g_party.field.pos.direction);
         AlertActor(target, 2);
         GetCharacterFlags(target)[1] |= 0x40;
-        if (attacker->pickRole == 4) {
+        if (attacker->pickRole == PICK_ROLE_MAGIC) {
             kind = GetCachedSkill(attacker->pickTarget)->parameters.type;
             if (kind == 2 || kind == 3 || kind == 4 || kind == 10 || kind == 11) {
                 return targetHp->cur;
@@ -731,7 +732,7 @@ b16 RunBattleAction(void) {
                 CancelPendingAction();
                 return false;
             }
-            if (actor->pickRole == 8) {
+            if (actor->pickRole == PICK_ROLE_DEFENCE) {
                 TickFieldCount(g_actorId, 0);
                 ClearPendingAction();
                 ReturnFromGameState();
@@ -739,7 +740,7 @@ b16 RunBattleAction(void) {
                 RestoreSwappedMember();
                 return false;
             }
-            if (actor->pickRole == 7 && g_actorId < 0) {
+            if (actor->pickRole == PICK_ROLE_RETURN && g_actorId < 0) {
                 TickFieldCount(g_actorId, 0);
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 CheckPickTarget(CombatantPartyPosition(g_actorId));
@@ -761,7 +762,7 @@ b16 RunBattleAction(void) {
             NextGamePhase();
             s_actionRole = actor->pickRole;
             actor->pickCostPaid = 0;
-            if (actor->pickRole == 5) {
+            if (actor->pickRole == PICK_ROLE_ITEM) {
                 g_battleOutcome = 0;
                 record = GetLoadedRecord(actor->pickTarget);
                 ClearCombatTargets();
@@ -782,13 +783,13 @@ b16 RunBattleAction(void) {
                 } else if (GetItemValueHigh(actor->pickTarget)) {
                     TakeBagItems(actor->pickTarget, 1);
                 }
-            } else if (actor->pickRole == 2) {
+            } else if (actor->pickRole == PICK_ROLE_GUN) {
                 g_battleOutcome = 0;
                 ClearCombatTargets();
                 count =
                     FilterGunTargets(actor, CollectTargets(7, 0xa, 0xf1, g_targetId, g_actorId));
                 s_targetListCount = count;
-            } else if (actor->pickRole == 1) {
+            } else if (actor->pickRole == PICK_ROLE_ATTACK) {
                 g_battleOutcome = 0;
                 ClearCombatTargets();
                 if (actor->pickTarget < 1) {
@@ -821,7 +822,7 @@ b16 RunBattleAction(void) {
             }
             g_targetCount = count;
             if (g_actorId >= 0
-                && (actor->pickRole != 4
+                && (actor->pickRole != PICK_ROLE_MAGIC
                     || GetCachedSkill(actor->pickTarget)->parameters.kind != 0x10)) {
                 actor->acting = 1;
                 RedrawFieldView();
@@ -832,15 +833,15 @@ b16 RunBattleAction(void) {
                 NextGamePhase();
                 break;
             }
-            if (actor->pickRole == 5) {
+            if (actor->pickRole == PICK_ROLE_ITEM) {
                 shot = GetItemShotId(GetLoadedRecord(actor->pickTarget));
-            } else if (actor->pickRole == 2) {
+            } else if (actor->pickRole == PICK_ROLE_GUN) {
                 record = GetLoadedRecord(GetCharacterEquipment(actor)[7].item);
                 if (GetItemShotId(record) == 0) {
                     record = GetLoadedRecord(GetCharacterEquipment(actor)[6].item);
                 }
                 shot = GetItemShotId(record);
-            } else if (actor->pickRole == 1) {
+            } else if (actor->pickRole == PICK_ROLE_ATTACK) {
                 CacheSkill(1, GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY));
                 shot = GetSkillShotId(1);
             } else {
@@ -949,7 +950,7 @@ b16 RunBattleAction(void) {
             RestoreSwappedMember();
             ReturnFromGameState();
             if (actor != NULL) {
-                if (s_actionRoleKept == 4 && s_actionPickKept == 0x7d) {
+                if (s_actionRoleKept == PICK_ROLE_MAGIC && s_actionPickKept == 0x7d) {
                     slot = ExchangePartySlot(
                         g_commandPosition,
                         FindRosterSlotById(s_actionTarget->id)
@@ -971,7 +972,7 @@ b16 RunBattleAction(void) {
                 if (g_actorId < 0) {
                     actor->pickItem = 0;
                 }
-                if (actor->pickRole == 2) {
+                if (actor->pickRole == PICK_ROLE_GUN) {
                     SpendAllGunRounds(actor);
                 }
             }
@@ -1004,18 +1005,18 @@ void PlayActionEffect(i16 stage) {
     SkillMessage* message;
     Character* user;
     i16 weapon;
-    if (s_actionRole == 5) {
+    if (s_actionRole == PICK_ROLE_ITEM) {
         item = GetLoadedRecord(g_actionId);
         before.script = item->beforeMessage.script;
         before.entry = item->beforeMessage.entry;
         after.script = item->afterMessage.script;
         after.entry = item->afterMessage.entry;
-    } else if (s_actionRole == 2) {
+    } else if (s_actionRole == PICK_ROLE_GUN) {
         before.script = 0xde;
         before.entry = 4;
         after.script = 0xdd;
         after.entry = 5;
-    } else if (s_actionRole == 1) {
+    } else if (s_actionRole == PICK_ROLE_ATTACK) {
         before.script = 0xde;
         after.script = 0xdd;
         weapon = GetCharacterEquipment(GetCombatant(g_actorId))[5].item;
@@ -1161,13 +1162,13 @@ void PaySkillCost(i16 who, i16 skill) {
     character = GetCombatant(who);
     cost = GetSkillCost(skill);
     if (cost >= 0) {
-        if (cost == 0x7f) {
+        if (cost == SKILL_COST_WHOLE_MP) {
             cost = character->pools.mp.cur;
         }
         DrainPool(&character->pools.mp, cost);
     } else {
         cost = -cost;
-        if (cost == 0x80) {
+        if (cost == SKILL_COST_WHOLE_HP) {
             cost = character->pools.hp.cur;
         }
         DrainPool(&character->pools.hp, cost);
@@ -1916,7 +1917,7 @@ void SetSkillPick(i16 position) {
 
     if (user != NULL) {
         user->pickObject = g_targetId;
-        user->pickRole = 4;
+        user->pickRole = PICK_ROLE_MAGIC;
         g_actionId = s_skillPicked;
         user->pickTarget = s_skillPicked;
     }

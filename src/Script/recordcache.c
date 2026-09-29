@@ -503,7 +503,7 @@ i16 HpMpLeftAfterCost(i16 cost, Character* character) {
         if (pool == 0) {
             return -1;
         }
-        if (cost == 0x80) {
+        if (cost == SKILL_COST_WHOLE_HP) {
             return 0;
         }
         return pool - cost - 1;
@@ -512,7 +512,7 @@ i16 HpMpLeftAfterCost(i16 cost, Character* character) {
     if (pool == 0) {
         return -1;
     }
-    if (cost == 0x7f) {
+    if (cost == SKILL_COST_WHOLE_MP) {
         return 0;
     }
     return pool - cost;
