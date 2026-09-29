@@ -108,8 +108,9 @@ def obj_align(kind: str, size: int, ratchet: int) -> int:
         return 8
     if kind == "scalar":
         return 4
-    # array / aggregate
-    if size > 8:
+    # array / aggregate: eight bytes or more take an eight-byte boundary even
+    # before the ratchet latches (docs/patterns/c-bss-globals-and-commons.md)
+    if size >= 8:
         return 8
     if size < 4:
         return 4
@@ -164,7 +165,7 @@ def _alignment(rva, size, kind):
     final retail RVA, so the modelled value is lowered to the largest usable
     divisor (not a source refutation - the linker places whole contributions).
     """
-    modelled = obj_align(kind or ("array" if size > 8 else "scalar"), size,
+    modelled = obj_align(kind or ("array" if size >= 8 else "scalar"), size,
                          UNLATCHED_RATCHET)
     a = modelled
     while rva % a:
