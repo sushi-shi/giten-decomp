@@ -36,6 +36,7 @@
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Sound/Sound.h>
 #include <Ui/Panel.h>
 #include <Util/BitSet.h>
@@ -161,8 +162,16 @@ void InitClock(void) {
 RVA(0x00020b80, 0x6c)
 GZ_ENUM_RETURN(ClockUpdate, i16) AdvanceClock(u16 minutes) {
     GZ_ENUM_STORAGE(ClockUpdate, i16) changed = TickClock(minutes);
-    ModifyEventFlag(0, 0x23, g_clock.moonPhase != MOON_PHASE_FULL);
-    ModifyEventFlag(0, 0x25, g_clock.moonPhase != MOON_PHASE_NEW);
+    ModifyEventFlag(
+        EVENT_FLAG_BANK_SCENARIO,
+        SCENARIO_FULL_MOON_1,
+        g_clock.moonPhase != MOON_PHASE_FULL
+    );
+    ModifyEventFlag(
+        EVENT_FLAG_BANK_SCENARIO,
+        SCENARIO_NEW_MOON_1,
+        g_clock.moonPhase != MOON_PHASE_NEW
+    );
     ApplyClockChanges(changed);
     DrawDownCountdown(minutes);
     ExpireSpecialItems();
@@ -236,10 +245,10 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
         }
     }
     if (g_clock.moonPhase == MOON_PHASE_FULL) {
-        ModifyEventFlag(0, 0x24, BIT_CHANGE_CLEAR);
+        ModifyEventFlag(EVENT_FLAG_BANK_SCENARIO, SCENARIO_FULL_MOON_2, BIT_CHANGE_CLEAR);
     }
     if (g_clock.moonPhase == MOON_PHASE_NEW) {
-        ModifyEventFlag(0, 0x26, BIT_CHANGE_CLEAR);
+        ModifyEventFlag(EVENT_FLAG_BANK_SCENARIO, SCENARIO_NEW_MOON_2, BIT_CHANGE_CLEAR);
     }
     if (g_clock.moonPhase == MOON_PHASE_FULL) {
         ModifyEventFlag(7, 0xff, BIT_CHANGE_CLEAR);

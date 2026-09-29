@@ -1292,7 +1292,7 @@ b16 RunFieldEncounter(void) {
                     RequestFieldRefresh();
                     for (i = 0; i < s_fieldParamThird + s_fieldParamFirst; i++) {
                         actor = GetFieldActor(i);
-                        AlertActor(actor, 2);
+                        AlertActor(actor, ATTITUDE_VERY_HOSTILE);
                     }
                     break;
                 case 1:

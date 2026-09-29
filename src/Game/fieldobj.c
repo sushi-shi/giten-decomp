@@ -14,9 +14,11 @@
 #include <File/DataTableId.h>
 #include <Game/ActionMark.h>
 #include <Game/Actor.h>
+#include <Game/ActorFlag.h>
 #include <Game/Alignment.h>
 #include <Game/AnalyzeData.h>
 #include <Game/AreaMap.h>
+#include <Game/Attitude.h>
 #include <Game/BattleEffect.h>
 #include <Game/CharInfo.h>
 #include <Game/Character.h>
@@ -39,6 +41,7 @@
 #include <Game/FieldSupport.h>
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
+#include <Game/HumanId.h>
 #include <Game/ItemRecord.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
@@ -61,6 +64,7 @@
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
 #include <Script/EventFlags.h>
+#include <Script/OwnedFlag.h>
 #include <Script/Script.h>
 #include <Ui/Hotspot.h>
 #include <Util/BitSet.h>
@@ -406,7 +410,7 @@ b16 InitFieldObjects(void) {
         s_objects[i].script = NULL;
         InitWordList(&s_objects[i].list, 0);
     }
-    ModifyEventFlag(8, 0, BIT_CHANGE_SET);
+    ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_SET);
     return false;
 }
 
@@ -443,7 +447,7 @@ void RemoveFieldObject(i16 index, i16 announce) {
             return;
         }
     }
-    ModifyEventFlag(8, 0, BIT_CHANGE_SET);
+    ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_SET);
     if (queued != false && !HasQueuedObjectEvents()) {
         MarkLevelEvent(g_party.field.pos.level);
     }
@@ -455,7 +459,7 @@ b16 ResetFieldObjects(void) {
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         RemoveFieldObject(i, 0);
     }
-    ModifyEventFlag(8, 0, BIT_CHANGE_SET);
+    ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_SET);
     s_objectsFrozen = false;
     return false;
 }
@@ -544,7 +548,7 @@ i16 SpawnFieldObject(
     s_objects[slot].script = ReadScriptBlock(s_objects[slot].script, file);
     s_objects[slot].script->id = 0xff;
     CloseDataFile(file);
-    SetBit(GetFieldObjectFlags(&s_objects[slot]), 10);
+    SetBit(GetFieldObjectFlags(&s_objects[slot]), ACTOR_FLAG_NOTICED);
     if (alternate != 0) {
         SetBit(GetFieldObjectFlags(&s_objects[slot]), 0x20);
     }
@@ -557,7 +561,7 @@ i16 SpawnFieldObject(
         s_objects[slot].experience = s_objects[slot].rank;
     }
     SetObjectEventFlag(slot, 0xff, 0xff);
-    ModifyEventFlag(8, 0, BIT_CHANGE_CLEAR);
+    ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_CLEAR);
     return slot;
 }
 
@@ -1281,7 +1285,7 @@ i16 TickEnemySpawnTimer(void) {
     }
     if (timer == 0) {
         RestartEnemySpawnTimer();
-        if (!IsEventFlagSet(8, 0)) {
+        if (!IsEventFlagSet(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES)) {
             return SpawnRandomEnemy();
         }
     }
@@ -1438,14 +1442,15 @@ b16 RefreshIfTurned(i16 visible, i16 turned) {
 // The side (1 or 3) the party is on seen from x/y facing `direction`; a
 // random side when straight ahead or behind.
 RVA(0x0000f240, 0x48)
-i16 GetPartySide(i16 x, i16 y, i16 direction) {
+GZ_ENUM_RETURN(MoveCommand, i16)
+GetPartySide(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     MapCoord offset;
-    i16 side;
+    GZ_ENUM_LOCAL(MoveCommand, i16) side;
     offset = RelativeOffset(x, y, direction, g_party.field.pos.x, g_party.field.pos.y);
     if (offset.x < 0) {
-        side = 3;
+        side = MOVE_LEFT;
     } else if (offset.x > 0) {
-        side = 1;
+        side = MOVE_RIGHT;
     } else {
         side = RandomUpTo(1) * 2 + 1;
     }
@@ -1460,7 +1465,7 @@ i16 GetPartySide(i16 x, i16 y, i16 direction) {
 // retail keeps them separate. Shared loop breaks retain that merge, while
 // routing the successful move through the same exit merges all three sites.
 RVA(0x0000f290, 0x24d)
-b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
+b16 StepObjectTowardParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) turn, i16 mode) {
     i16 x;
     i16 y;
     i16 visible;
@@ -1502,7 +1507,7 @@ b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
                 return RefreshIfTurned(visible, 1);
             }
         }
-        if (turn != 0 || retried != false) {
+        if (turn != MOVE_FORWARD || retried != false) {
             return RefreshIfTurned(visible, turned);
         }
         retried = 1;
@@ -1512,7 +1517,7 @@ b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
 
 // Faces the party plus `turn` quarter turns; refreshes when turned in view.
 RVA(0x0000f4e0, 0x66)
-void FaceObjectToParty(FieldObject* object, i16 turn) {
+void FaceObjectToParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) turn) {
     i16 x = object->pos.x;
     i16 y = object->pos.y;
     i16 turned = 0;
@@ -1633,13 +1638,13 @@ b16 ChooseObjectTarget(FieldObject* object);
 // Inlining that tail at each exit prevents the retail tail merge.
 RVA(0x0000f890, 0x490)
 b16 RunObjectStep(FieldObject* object, i16 index) {
-    i16 scenes[5];
+    i16 scenes[ATTITUDE_COUNT];
     Character* actor;
     i16 action;
     i16 tries;
     i16 slot;
     i16 result;
-    i16 attitude;
+    GZ_ENUM_LOCAL(Attitude, i16) attitude;
     i16 scene;
     if (g_tickElapsed == 0) {
         return false;
@@ -1658,7 +1663,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
     SetFieldBusy(1);
     actor = (Character*)&object->kind;
     if (!DistanceToParty((FieldActor*)actor)) {
-        AlertActor(actor, 2);
+        AlertActor(actor, ATTITUDE_VERY_HOSTILE);
     }
     StartScriptInCode(object->script->code, 0xff, 0, NewScriptContext(1, actor));
     do {
@@ -1724,13 +1729,13 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                     goto attack;
                 }
                 if (++tries >= 4) {
-                    StepObjectTowardParty(object, 0, 1);
+                    StepObjectTowardParty(object, MOVE_FORWARD, 1);
                     break;
                 }
             }
             break;
         attack:
-            FaceObjectToParty(object, 0);
+            FaceObjectToParty(object, MOVE_FORWARD);
             GetFieldObjectActionWait(object)->ready = ACTION_UNMARKED;
             if (action < 2) {
                 ChooseObjectTarget(object);
@@ -1741,14 +1746,14 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             }
             break;
         case ACTOR_MODE_FLEE:
-            StepObjectTowardParty(object, 2, 0);
+            StepObjectTowardParty(object, MOVE_BACK, 0);
             break;
         case ACTOR_MODE_CHARGE:
-            StepObjectTowardParty(object, 0, 0);
+            StepObjectTowardParty(object, MOVE_FORWARD, 0);
             break;
         case ACTOR_MODE_APPROACH:
         case ACTOR_MODE_PURSUE:
-            StepObjectTowardParty(object, 0, 1);
+            StepObjectTowardParty(object, MOVE_FORWARD, 1);
             break;
         case ACTOR_MODE_SIDESTEP:
             StepObjectTowardParty(object, RandomUpTo(1) * 2 + 1, 0);
@@ -1757,18 +1762,19 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             StepObjectTowardParty(object, RandomUpTo(3), 0);
             break;
         case ACTOR_MODE_TALK:
-            scenes[0] = 3;
-            scenes[1] = 1;
-            scenes[2] = -1;
-            scenes[3] = 2;
-            scenes[4] = -1;
-            if (IsEventFlagSet(2, 7) && IsEventFlagSet(2, 8)) {
+            scenes[ATTITUDE_PLEADING] = 3;
+            scenes[ATTITUDE_FRIENDLY] = 1;
+            scenes[ATTITUDE_VERY_HOSTILE] = -1;
+            scenes[ATTITUDE_HOSTILE] = 2;
+            scenes[ATTITUDE_NORMAL] = -1;
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_V1_0)
+                && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
                 object->mode = ACTOR_MODE_IDLE;
                 break;
             }
             attitude = object->attitude;
-            if (attitude < 0 || attitude > 4) {
-                attitude = 3;
+            if (attitude < ATTITUDE_PLEADING || attitude > ATTITUDE_NORMAL) {
+                attitude = ATTITUDE_HOSTILE;
             }
             scene = scenes[attitude];
             if (scene == -1) {
@@ -1967,7 +1973,7 @@ i16 FindStrongestOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race) {
     i16 bestLevel = -1;
     i16 best = -1;
     i16 level;
-    for (i = 32; i < count; i++) {
+    for (i = HUMAN_ID_LIMIT; i < count; i++) {
         if (GetDemonRace(i) == race) {
             level = GetDemonLevel(i);
             if (level <= maxLevel && bestLevel < level) {
@@ -1993,7 +1999,7 @@ i16 FindDemonOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race) {
     count = GetDemonCount();
     best = -1;
     bestLevel = 500;
-    for (i = 32; i < count; i++) {
+    for (i = HUMAN_ID_LIMIT; i < count; i++) {
         if (GetDemonRace(i) == race) {
             level = GetDemonLevel(i);
             if (bestLevel > level) {
@@ -2014,7 +2020,7 @@ i16 FindStrongestOfClass(i16 maxLevel, i16 cls) {
     i16 bestLevel = -1;
     i16 best = -1;
     i16 level;
-    for (i = 32; i < count; i++) {
+    for (i = HUMAN_ID_LIMIT; i < count; i++) {
         level = GetDemonLevel(i);
         if (level <= maxLevel && GetDemonFlagLow(i) != -1 && GetDemonClass(i) == cls
             && bestLevel < level) {
@@ -2036,7 +2042,7 @@ i16 FindNextOfRace(i16 id, i16 wrap) {
     i16 level = GetDemonLevel(id);
     i16 i;
     i16 other;
-    for (i = 32; i < count; i++) {
+    for (i = HUMAN_ID_LIMIT; i < count; i++) {
         other = GetDemonLevel(i);
         if (other > level && GetDemonRace(i) == race && bestLevel > other) {
             bestLevel = other;
@@ -2051,7 +2057,7 @@ i16 FindNextOfRace(i16 id, i16 wrap) {
     }
     bestLevel = 0x7fff;
     best = 0x7fff;
-    for (i = 32; i < count; i++) {
+    for (i = HUMAN_ID_LIMIT; i < count; i++) {
         other = GetDemonLevel(i);
         if (other > -1 && GetDemonRace(i) == race && bestLevel > other) {
             bestLevel = other;
@@ -2151,7 +2157,7 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->byte096 = 1;
     object->acting = false;
     object->word098 = 0x11;
-    object->attitude = 4;
+    object->attitude = ATTITUDE_NORMAL;
     object->triggerRange = (record->bits68 >> 2) & 7;
     object->mode = ACTOR_MODE_NONE;
     object->fieldState = 0;
@@ -2294,7 +2300,7 @@ RVA(0x00010bf0, 0x7b)
 void RefreshFamiliarity(Character* character) {
     i16 value;
     i16 leaderLevel;
-    if (TestCharacterFlag(character, 0)) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_POINTS_READY)) {
         return;
     }
     value = GetFamiliarityCount(character->id) / 8;
@@ -2302,7 +2308,7 @@ void RefreshFamiliarity(Character* character) {
     leaderLevel = GetRosterLeader()->level;
     value = leaderLevel - character->level;
     character->levelGap = ClampShort(value, 0, 0xff);
-    SetCharacterFlag(character, 0);
+    SetCharacterFlag(character, ACTOR_FLAG_POINTS_READY);
 }
 
 RVA(0x00010c70, 0x2a)
@@ -2323,7 +2329,7 @@ i16 GetFamiliarity(Character* character) {
     i16 familiarity;
     RefreshFamiliarity(character);
     familiarity = character->familiarity;
-    if (!IsEventFlagSet(2, 8)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
         familiarity += 2;
     }
     return familiarity;
@@ -2520,7 +2526,7 @@ b16 TestWorldEncounterChance(i16 chance) {
     i16 totalChance = chance + s_encounterChanceBonus;
     if (totalChance < RandomAverage(1, 100, 2)) {
         s_encounterChanceBonus++;
-        if (RosterContainsId(4)) {
+        if (RosterContainsId(HUMAN_ASUKA)) {
             s_encounterChanceBonus++;
         }
         return false;
@@ -2548,7 +2554,7 @@ i16 PrepareWorldEncounter(i16 weights, i16 choices, i16 maximum) {
 
 RVA(0x00011300, 0x2f)
 i16 GetWorldEncounterMaximum(i16 maximum) {
-    if (RosterContainsId(4)) {
+    if (RosterContainsId(HUMAN_ASUKA)) {
         maximum += 2;
     }
     maximum += GetPartyEncounterSizeBonus();
@@ -2589,7 +2595,7 @@ i16 PickWorldEncounterGroup(i16 weights, i16 choices) {
     i16 roll = RandomAverage(1, 100, 0);
     i16 total;
     i16 i;
-    if (RosterContainsId(4)) {
+    if (RosterContainsId(HUMAN_ASUKA)) {
         roll += 10;
     }
     total = 0;
@@ -2664,7 +2670,7 @@ void PrepareFieldRandom(void) {
             0
         );
         actor = GetFieldActor(i);
-        AlertActor(actor, 2);
+        AlertActor(actor, ATTITUDE_VERY_HOSTILE);
     }
     LoadEnemyGroupSlot(0, s_encounterGroups[0]);
     LoadEnemyGroupSlot(1, s_encounterGroups[1]);

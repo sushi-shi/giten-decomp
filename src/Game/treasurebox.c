@@ -16,6 +16,7 @@
 #include <Game/AreaLevel.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
+#include <Game/Attitude.h>
 #include <Game/Automap.h>
 #include <Game/AutomapData.h>
 #include <Game/BagItems.h>
@@ -71,6 +72,7 @@
 #include <Platform/GameCalls.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
+#include <Script/OwnedFlag.h>
 #include <Script/ScriptVars.h>
 #include <Sound/Sound.h>
 #include <Text/Font.h>
@@ -146,7 +148,7 @@ static i16 s_unusedWordTable[8] = {0, 0, 2, 2, 0, 0, 0, 0};
 
 // The five attitude names, indexed by Character.attitude.
 DATA(0x00068bf8)
-static char* s_attitudeNames[5] = {
+static char* s_attitudeNames[ATTITUDE_COUNT] = {
     "\210\243\212\350\223I",      // 哀願的
     "\227F\215D\223I",            // 友好的
     "\222\264\223G\221\316\223I", // 超敵対的
@@ -492,7 +494,9 @@ i16 RunAnalyzeWindow(void) {
             if (target == NULL) {
                 return SUBSTATE_FINISHED;
             }
-            if (IsEventFlagSet(2, 11) && IsEventFlagSet(2, 12) && IsEventFlagSet(2, 16)) {
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V1_0)
+                && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V1_1)
+                && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V2_0)) {
                 ShowMessage(
                     "\202c\202`\202r\202\252\203C\203\223\203X\203g\203D\201["
                     "\203\213\202\263\202\352\202\304\202\242\202\334\202\271\202\361",
@@ -516,7 +520,8 @@ i16 RunAnalyzeWindow(void) {
             return SUBSTATE_RUNNING;
 
         case 1:
-            if (IsEventFlagSet(2, 12) && IsEventFlagSet(2, 16)) {
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V1_1)
+                && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V2_0)) {
                 s_step++;
                 return SUBSTATE_RUNNING;
             }
@@ -586,7 +591,8 @@ i16 RunAnalyzeWindow(void) {
             break;
 
         case 3:
-            if (IsEventFlagSet(2, 16) || !HasAnalyzeData(target->id)) {
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V2_0)
+                || !HasAnalyzeData(target->id)) {
                 s_step = -1;
                 return SUBSTATE_RUNNING;
             }
@@ -2291,10 +2297,10 @@ void DrawMapOverlay(MapPosition position) {
         position.direction = VIEW_NORTH;
     }
     s_mapDetail = AUTOMAP_DETAIL_NONE;
-    if (!IsEventFlagSet(2, 9)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_AMS_V1_0)) {
         s_mapDetail = AUTOMAP_DETAIL_BASIC;
     }
-    if (!IsEventFlagSet(2, 15)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_AMS_V2_0)) {
         s_mapDetail = AUTOMAP_DETAIL_NPCS;
     }
     if (!IsEventFlagSet(2, 0x38)) {

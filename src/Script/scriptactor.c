@@ -70,6 +70,7 @@
 #include <Script/EventFlags.h>
 #include <Script/LongVar.h>
 #include <Script/ObjectRef.h>
+#include <Script/OwnedFlag.h>
 #include <Script/Script.h>
 #include <Script/ScriptBlock.h>
 #include <Script/ScriptCmd.h>
@@ -535,7 +536,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(i16 level) {
     ReadScriptValue();
     if (g_curScript->actor != NULL) {
         if (level != 2) {
-            AlertActor(g_curScript->actor, 2);
+            AlertActor(g_curScript->actor, ATTITUDE_VERY_HOSTILE);
         }
         if (level == 1) {
             if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining > 1) {
@@ -3015,7 +3016,7 @@ i32* ReadScriptOperand(void) {
                 break;
             }
             s_operand = object->familiarity;
-            if (IsEventFlagSet(2, 8)) {
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
                 break;
             }
             s_operand += 2;

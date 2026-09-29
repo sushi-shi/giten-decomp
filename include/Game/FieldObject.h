@@ -93,7 +93,7 @@ typedef struct FieldObject {
     ItemSlot slots[8];
     u8 levelGap;
     u8 familiarity;
-    u8 attitude;
+    GZ_ENUM_STORAGE(Attitude, u8) attitude;
     u8 fieldState;
     GZ_ENUM_STORAGE(ActorMode, u8) mode;
     u8 pad1e1;

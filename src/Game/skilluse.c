@@ -8,6 +8,7 @@
 
 #include <Game/ActionOutcome.h>
 #include <Game/Actor.h>
+#include <Game/ActorFlag.h>
 #include <Game/AreaNpc.h>
 #include <Game/Attack.h>
 #include <Game/Battle.h>
@@ -362,13 +363,13 @@ b16 FlashHitObject(i16 object, i32 change) {
 }
 
 RVA(0x0002ac50, 0x40)
-void AlertActor(Character* actor, i16 state) {
+void AlertActor(Character* actor, GZ_ENUM_PARAM(Attitude, i16) state) {
     if (actor) {
         if (state >= 0) {
             actor->attitude = state;
         }
-        SetCharacterFlag(actor, 8);
-        SetCharacterFlag(actor, 10);
+        SetCharacterFlag(actor, ACTOR_FLAG_BATTLE);
+        SetCharacterFlag(actor, ACTOR_FLAG_NOTICED);
         actor->mode = ACTOR_MODE_PURSUE;
     }
 }
@@ -572,7 +573,7 @@ i16 ResolveCombatAction(void) {
     }
     if (g_targetId >= 0) {
         GetFieldActor(g_targetId)->facing = OppositeDirection(g_party.field.pos.direction);
-        AlertActor(target, 2);
+        AlertActor(target, ATTITUDE_VERY_HOSTILE);
         GetCharacterFlags(target)[1] |= 0x40;
         if (attacker->pickRole == PICK_ROLE_MAGIC) {
             kind = GetCachedSkill(attacker->pickTarget)->parameters.type;

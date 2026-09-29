@@ -53,7 +53,7 @@ void ResetEventFlags(void) {
     for (bank = 0; bank < EVENT_FLAG_BANK_COUNT; bank++) {
         SetFlagBank(bank);
     }
-    ClearFlagBank(4);
+    ClearFlagBank(EVENT_FLAG_BANK_BOXES);
     ClearFlagBank(EVENT_FLAG_BANK_ACTOR);
     ClearFlagBank(EVENT_FLAG_BANK_SYSTEM);
     ClearEventFlag(0, 0);

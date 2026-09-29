@@ -40,6 +40,8 @@
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
 #include <Script/EventFlags.h>
+#include <Script/OwnedFlag.h>
+#include <Script/ScenarioFlag.h>
 #include <Sound/Sound.h>
 #include <Text/Font.h>
 #include <Text/TextBand.h>
@@ -414,7 +416,7 @@ RVA(0x00014b90, 0x81)
 i16 DdsRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         if (CanOpenAutomap()) {
-            if (IsEventFlagSet(2, 6)) {
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DDS_V1_0)) {
                 ClearPanelRowCheck(row);
                 // "[DDS] DDSを所持していません"
                 ShowMessage(
@@ -468,7 +470,8 @@ i16 TalkRowHandler(PanelRow* row, i16 value, i16 op) {
                     "[TALK] \211\357\230b\221\212\216\350\202\252\213\217\202\334\202\271\202\361",
                     -1
                 );
-            } else if (IsEventFlagSet(2, 7) && IsEventFlagSet(2, 8)) {
+            } else if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_V1_0)
+                       && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
                 ClearPanelRowCheck(row);
                 // "[TALK] DCSを所持していません"
                 ShowMessage(
@@ -602,7 +605,8 @@ void TalkCommand(void) {
     if (!CanOpenAutomap()) {
         return;
     }
-    if (IsEventFlagSet(2, 7) && IsEventFlagSet(2, 8)) {
+    if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_V1_0)
+        && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
         // "[TALK] DCSを所持していません"
         ShowMessage(
             "[TALK] DCS\202\360\217\212\216\235\202\265\202\304\202\242\202\334\202\271\202\361",
@@ -756,7 +760,7 @@ void DdsCommand(void) {
     if (!CanOpenAutomap()) {
         return;
     }
-    if (IsEventFlagSet(2, 6)) {
+    if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DDS_V1_0)) {
         // "[DDS] DDSを所持していません"
         ShowMessage(
             "[DDS] DDS\202\360\217\212\216\235\202\265\202\304\202\242\202\334\202\271\202\361",
@@ -1333,7 +1337,7 @@ void LoadWorldMapBlockImage(i16 block, i16 slot) {
         return;
     }
     request.file = block + 0x7e00;
-    if (block == 76 && !IsEventFlagSet(1, 13)) {
+    if (block == 76 && !IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_RAINBOW_BRIDGE)) {
         request.file = 0x7e58;
         variant = 88;
     }

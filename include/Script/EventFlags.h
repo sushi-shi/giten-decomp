@@ -27,11 +27,20 @@ typedef union FlagBank {
 #define EVENT_FLAG_BANK_COUNT 16
 #define EVENT_FLAG_BANK_WORDS 8
 #define EVENT_FLAG_BANK_ACTOR 14
+// The scenario flags (ScenarioFlag, ScenarioFlag2), the maps and programs the
+// player holds (OwnedFlag), and the opened treasure boxes.
+#define EVENT_FLAG_BANK_SCENARIO 0
+#define EVENT_FLAG_BANK_SCENARIO_2 1
+#define EVENT_FLAG_BANK_OWNED 2
+#define EVENT_FLAG_BANK_BOXES 4
 // A new level resets EVENT_FLAG_BANK_LEVEL (unless its flags are preserved) and
 // clears EVENT_FLAG_BANK_LEVEL_SCRATCH; a new area resets EVENT_FLAG_BANK_AREA
 // (unless preserved) and EVENT_FLAG_BANK_SCRATCH, which each scene or actor
 // script also clears before it runs.
 #define EVENT_FLAG_BANK_LEVEL 8
+// Level flag 0 is the developers' "敵無し" (no enemies); spawning an enemy
+// clears it.
+#define LEVEL_FLAG_NO_ENEMIES 0
 #define EVENT_FLAG_BANK_AREA 9
 #define EVENT_FLAG_BANK_SCRATCH 12
 #define EVENT_FLAG_BANK_LEVEL_SCRATCH 13

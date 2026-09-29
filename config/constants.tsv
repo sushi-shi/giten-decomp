@@ -163,10 +163,10 @@ src/Script/scriptactor.c	OpLoadRecord	*	*	*	a shop script (file 0x7f) entry and 
 src/Script/scriptactor.c	OpJumpUnlessStatContest	*	*	*switch on level	the contest level 0..3 (0 compares the target's own value, 1..3 roll wider ranges)
 src/Script/scriptactor.c	OpJumpUnlessStatContest	[01]	trivial-function-literal	[01] case	the contest level 0..3 (0 compares the target's own value, 1..3 roll wider ranges)
 *	*	*	call-argument	PlaySoundEffect(*argument 1	a sound effect number (sound n plays IDR_SOUND_n; the sounds have no names)
-*	*	*	call-argument	IsEventFlagSet(*argument 1	a scenario event-flag bank (the flags have no names)
-*	*	*	call-argument	IsEventFlagSet(*argument 2	a scenario event-flag index (the flags have no names)
-*	*	*	call-argument	ModifyEventFlag(*argument 1	a scenario event-flag bank (the flags have no names)
-*	*	*	call-argument	ModifyEventFlag(*argument 2	a scenario event-flag index (the flags have no names)
+*	*	*	call-argument	IsEventFlagSet(*argument 1	an event-flag bank of a flag the developers' flag-name table (ET0018) does not name
+*	*	*	call-argument	IsEventFlagSet(*argument 2	an event flag the developers' flag-name table (ET0018) does not name
+*	*	*	call-argument	ModifyEventFlag(*argument 1	an event-flag bank of a flag the developers' flag-name table (ET0018) does not name
+*	*	*	call-argument	ModifyEventFlag(*argument 2	an event flag the developers' flag-name table (ET0018) does not name
 *	*	*	call-argument	LoadSpriteImage(*argument 1	a sprite slot
 *	*	*	call-argument	LoadSpriteImage(*argument 2	a sprite image number in the image data files
 *	*	*	call-argument	LoadSpriteImage(*argument 3	the sprite load argument
@@ -536,7 +536,7 @@ src/Game/restore.c	ApplyRestoreEffect	0	*	*g_effectCondition	no condition to rep
 src/Game/restore.c	ApplyRestoreEffect	*	*	*	@identity-TODO: pool fractions (a quarter, an eighth) and the action-result codes 2, 3 and 6 the restore reports (see SetActionResult's row)
 src/Script/eventflags.c	SetFlagBank	0xffffffff	*	*	every flag of the word set
 src/Script/eventflags.c	ClearFlagBank	0	*	*	every flag of the word clear
-src/Script/eventflags.c	ResetEventFlags	*	call-argument	*	@identity-TODO: bank 4 and flag 0 of bank 0 start clear
+src/Script/eventflags.c	ResetEventFlags	*	call-argument	*	flag 0 of bank 0 is the flag that always reads clear (TestEventFlag), not the table's first scenario flag
 src/Script/eventflags.c	TestEventFlag	0	*	*	flag 0 of bank 0 always reads clear
 src/Script/eventflags.c	SetFlagSettings	0x3fc0ffff	*	*	@identity-TODO: the setting bits the system word keeps (the rest come from `packed`)
 src/Script/eventflags.c	SetFlagTag	5	*	*	the five tag bytes of the system bank

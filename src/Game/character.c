@@ -57,6 +57,7 @@
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Script/Script.h>
 #include <Text/Font.h>
 #include <Text/TextPlane.h>
@@ -3124,7 +3125,8 @@ i16 TickPartyTimers(u16 minutes) {
     Character* character;
     i16 i;
     i16 count;
-    if (IsEventFlagSet(1, 0xc) || GetGameState() == GAME_STATE_SCRIPT_SCENE) {
+    if (IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_HEROINE_REVIVAL_1)
+        || GetGameState() == GAME_STATE_SCRIPT_SCENE) {
         return -1;
     }
     for (i = 0; i < PARTY_SIZE; i++) {
