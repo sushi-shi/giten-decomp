@@ -1033,7 +1033,7 @@ i16 PartyAlignmentClass(i16 axis) {
     i16 count = 0;
     i16 i;
     Character* member;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         member = GetPartyEntry(i);
         if (member != NULL) {
             if (axis == 0) {
@@ -2024,7 +2024,7 @@ i16 RemoveFromRoster(i16 slot) {
         return ROSTER_SLOT_NONE;
     }
     index = FindPartySlot(slot);
-    SetPartySlot(index, -1);
+    SetPartySlot(index, PARTY_SLOT_EMPTY);
     if (!IsHumanCharacter(character)) {
         FreeWordList(GetCharacterSkills(character));
         FreeBlock(character);
@@ -2041,8 +2041,8 @@ i16 AddToParty(i16 slot) {
     if (index == -1) {
         i16 id = GetRosterId(slot);
         if (id >= 0 && id < HUMAN_ID_LIMIT) {
-            for (index = 0; index < 6; index++) {
-                if (GetPartyRosterId(index) >= 32) {
+            for (index = 0; index < PARTY_SIZE; index++) {
+                if (GetPartyRosterId(index) >= HUMAN_ID_LIMIT) {
                     break;
                 }
             }
@@ -2065,7 +2065,7 @@ i16 ExchangePartySlot(i16 index, i16 slot) {
 
 RVA(0x0003f940, 0x10)
 void ClearPartyPosition(i16 index) {
-    SetPartySlot(index, -1);
+    SetPartySlot(index, PARTY_SLOT_EMPTY);
 }
 
 // Takes roster slot `slot` out of the party.
@@ -2273,14 +2273,14 @@ i16 ProcessPartyCasualties(void) {
                 continue;
             }
             CheckPickTarget(i);
-            SetPartySlot(i, -1);
+            SetPartySlot(i, PARTY_SLOT_EMPTY);
         } else {
             if (!ApplyEmptyPools(character) || IsGuestIndex(i) >= 0) {
                 continue;
             }
             CheckPickTarget(i);
             if (!IsHumanCharacter(character)) {
-                SetPartySlot(i, -1);
+                SetPartySlot(i, PARTY_SLOT_EMPTY);
             }
         }
         count++;
@@ -2457,7 +2457,7 @@ b16 SortRoster(void) {
     i16 j;
     i16 id;
     i16 other;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         ids[i] = GetPartyRosterId(i);
     }
     for (i = 0; i < ROSTER_SIZE; i++) {
@@ -2480,9 +2480,9 @@ b16 SortRoster(void) {
         }
     next:;
     }
-    for (i = 0; i < 6; i++) {
-        if (ids[i] == -1) {
-            SetPartySlot(i, -1);
+    for (i = 0; i < PARTY_SIZE; i++) {
+        if (ids[i] == PARTY_SLOT_EMPTY) {
+            SetPartySlot(i, PARTY_SLOT_EMPTY);
         } else {
             SetPartySlot(i, FindRosterSlotById(ids[i]));
         }

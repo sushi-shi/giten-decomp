@@ -754,7 +754,7 @@ b16 RunBattleAction(void) {
                 TickFieldCount(g_actorId, false);
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 CheckPickTarget(CombatantPartyPosition(g_actorId));
-                SetPartySlot(CombatantPartyPosition(g_actorId), -1);
+                SetPartySlot(CombatantPartyPosition(g_actorId), PARTY_SLOT_EMPTY);
                 RequestFieldRefresh();
                 CancelPendingAction();
                 PlaySoundEffect(0x55);
@@ -1098,7 +1098,7 @@ void DropFlaggedMember(i16 id) {
         character = GetCombatant(id);
         if (character && TestCharacterFlag(character, 63)) {
             ClearCharacterFlag(character, 63);
-            SetPartySlot(CombatantPartyPosition(id), -1);
+            SetPartySlot(CombatantPartyPosition(id), PARTY_SLOT_EMPTY);
             RequestFieldRefresh();
         }
     }

@@ -494,7 +494,7 @@ i16 FindObjectOnLayer(i16 layer) {
 
 RVA(0x0000da00, 0x33)
 void SetObjectEventFlag(i16 index, u8 bank, u8 flag) {
-    if (index >= 0 && index < 16) {
+    if (index >= 0 && index < FIELD_OBJECT_COUNT) {
         s_objects[index].flagBank = bank;
         s_objects[index].flagIndex = flag;
     }

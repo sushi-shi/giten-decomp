@@ -212,7 +212,7 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
     ModifyEventFlag(7, 0xfd, 0);
     flags = GetCharacterFlags(GetRosterCharacter(0));
     ClearBit(flags, 0x22);
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         i16 object = GetLiveObject(i);
         if (object >= 0) {
             flags = GetCharacterFlags(GetCombatant(object));
@@ -225,7 +225,7 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
             RecalcCharacterStats(character);
         }
     }
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         i16 object = GetLiveObject(i);
         if (object >= 0) {
             character = GetCombatant(object);

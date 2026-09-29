@@ -45,7 +45,7 @@ void InitNewGame(void) {
     SetRosterEntry(0, GetCharacter(0));
     SetPartySlot(0, 0);
     for (i = 1; i < PARTY_SIZE; i++) {
-        SetPartySlot(i, -1);
+        SetPartySlot(i, PARTY_SLOT_EMPTY);
     }
     g_party.status.automapFixed = 0;
     g_party.status.navigationFixed = 0;

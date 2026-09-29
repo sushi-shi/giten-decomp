@@ -797,7 +797,7 @@ RVA(0x00023c00, 0x20)
 void ClearDropSlots(void) {
     i16 i;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < DROP_SLOT_COUNT; i++) {
         ClearDropSlot(i);
     }
 }
@@ -815,7 +815,7 @@ i16 AddDropSlot(i16 item, i16 amount) {
         amount = RollDropAmount(item, amount);
         item = remap;
     }
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < DROP_SLOT_COUNT; i++) {
         if (GetDropSlot(i)->item < 1 || GetDropSlot(i)->item == item) {
             GetDropSlot(i)->item = item;
             GetDropSlot(i)->amount += amount;
