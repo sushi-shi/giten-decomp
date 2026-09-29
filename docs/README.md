@@ -9,6 +9,7 @@
 - [Resource codec execution](codecs.md): retail/candidate/Rust comparisons on original resources.
 - [Candidate linking](linker-flags.md) and [clangd](clangd.md).
 - [Permutation experiments](permuter.md) and [compiler patterns](patterns/INDEX.md).
+- [Enum domains](enum-domains.md): declaring and typing proven value domains.
 - [Source markers](comment-markers.md), [todo ledgers](todos/README.md), and [configuration](../config/README.md).
 
 Keep command options in `--help`, schemas beside their implementation, inputs
