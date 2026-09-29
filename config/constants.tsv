@@ -326,3 +326,7 @@ src/Script/scriptactor.c	GrantActorReward	[89]	*	*	reward kinds 8 and 9 (reward 
 src/Script/scriptactor.c	GrantActorReward	1	trivial-function-literal	1 bound reward	an equipment reward below item 1 means none was picked
 src/Game/character.c	InitCharacters	*	call-argument	InitCharacterSlot(*argument 1	the g_characters slots, filled in order
 src/Game/character.c	InitCharacters	*	call-argument	CopyCharacterWithoutSkills(*	slots 13..15 start as copies of slot 0's record
+src/Game/treasurebox.c	RunFieldEffect	*	*	* case	skill field-effect codes (GetSkillEffectCode); the handlers are named from their bodies only, so the codes stay numeric until a handler's identity is recovered (@identity-TODO)
+src/Game/treasurebox.c	RunFieldEffect	*	case-label	switch on effect	skill field-effect codes (GetSkillEffectCode); the handlers are named from their bodies only, so the codes stay numeric until a handler's identity is recovered (@identity-TODO)
+src/Game/treasurebox.c	KnockBack	[01]	*	*at	x and y of the pushed position (`at` points at its x)
+src/Game/treasurebox.c	KnockBack	[01]	call-argument	*argument [12]	x and y of the pushed position (`at` points at its x)

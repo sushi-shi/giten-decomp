@@ -190,7 +190,12 @@ void OffsetMapCoordFacing(
     i16 across,
     i16 along
 );
-i16 WallStopsToward(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn);
+i16 WallStopsToward(
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+);
 
 // @identity-TODO: That 0x4f780 builds the 11x11 room geometry and 0x4f6e0 the camera/compass is
 // read from their bodies only.

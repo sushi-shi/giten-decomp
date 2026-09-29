@@ -957,7 +957,7 @@ i16 ResolveGeneralTripleFusion(i16 first, i16 second, i16 third) {
     index = min(26, index);
     race = GetFusionRaceEntry(index, third);
     if (race >= 100) {
-        race = 5;
+        race = RACE_DAITENSHI;
     }
     level = GetTripleFusionLevel(first, second, third);
     level += GetTripleFusionLevelBonus(first, second, third);

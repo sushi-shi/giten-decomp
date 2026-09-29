@@ -1873,7 +1873,7 @@ void LoadDemonTables(void) {
 }
 
 RVA(0x0000ffa0, 0x1a)
-i16 GetDemonRace(i16 id) {
+GZ_ENUM_RETURN(DemonRace, i16) GetDemonRace(i16 id) {
     return ReadDemonTable()->entries[id].race;
 }
 
@@ -1913,7 +1913,7 @@ i16 GetDemonCount(void) {
 }
 
 RVA(0x00010080, 0x19)
-i16 GetRaceClass(i16 race) {
+i16 GetRaceClass(GZ_ENUM_PARAM(DemonRace, i16) race) {
     u8* classes = HandleReadPtr(s_raceClasses);
     return classes[race];
 }
@@ -1961,7 +1961,7 @@ char* CopyObjectRecordName(i16 id, char* destination) {
 
 // The highest-level demon of `race` at or below `maxLevel` (-1: none).
 RVA(0x000101f0, 0x52)
-i16 FindStrongestOfRace(i16 maxLevel, i16 race) {
+i16 FindStrongestOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race) {
     i16 count = GetDemonCount();
     i16 i;
     i16 bestLevel = -1;
@@ -1981,7 +1981,7 @@ i16 FindStrongestOfRace(i16 maxLevel, i16 race) {
 
 // The strongest of `race` at or below `maxLevel`, else its weakest.
 RVA(0x00010250, 0x65)
-i16 FindDemonOfRace(i16 maxLevel, i16 race) {
+i16 FindDemonOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race) {
     i16 best = FindStrongestOfRace(maxLevel, race);
     i16 count;
     i16 i;

@@ -1,6 +1,8 @@
 #ifndef GITEN_GAME_AREANPC_H
 #define GITEN_GAME_AREANPC_H
 
+#include <EnumDomain.h>
+#include <Enums.h>
 #include <Ints.h>
 
 // A 42-byte record of an NPC placed in the current area: its cell, picture,
@@ -78,19 +80,26 @@ void LoadNpcTexture(i16 slot, i16 code, i16 mode);
 u16* LoadNpcPalette(u16* colors);
 void LoadAreaNpcImages(u8* record);
 
-i16 RunFieldEffect(i16 effect);
-i16 KnockBack(i16 who);
-i16 ShieldTarget(void);
-i16 SetTargetFlag21(void);
+// What a skill's field effect did: failed, had no effect, or was done.
+GZ_ENUM_BEGIN(FieldEffectResult)
+    FIELD_EFFECT_FAILED = -1,
+    FIELD_EFFECT_NONE = 0,
+    FIELD_EFFECT_DONE = 1
+GZ_ENUM_END(FieldEffectResult)
+
+GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(i16 effect);
+GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBack(i16 who);
+GZ_ENUM_RETURN(FieldEffectResult, i16) ShieldTarget(void);
+GZ_ENUM_RETURN(FieldEffectResult, i16) SetTargetFlag21(void);
 b16 ScatterObjects(void);
 b16 ReturnToLeaderWarp(void);
 b16 ReturnToLeaderMark(void);
-i16 KnockBackActor(void);
-i16 SpawnActorGroup(void);
-i16 SealTarget(void);
-i16 RaiseTargetFlag23(void);
-i16 RaiseTargetFlag25(void);
-i16 RaiseTargetFlag26(void);
+GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBackActor(void);
+GZ_ENUM_RETURN(FieldEffectResult, i16) SpawnActorGroup(void);
+GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void);
+GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag23(void);
+GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void);
+GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag26(void);
 
 // fieldscreen's scene refresh.
 void RefreshFieldScene(void);

@@ -3,13 +3,15 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Game/DemonRace.h>
 #include <Ints.h>
 
 // The demon (record) table loaded from data file 0 (kind 12): a count, then a
 // 4-byte record per id (from id 32 on, the demons); plus five sections of
 // strings and bytes indexed through those records.
 typedef struct DemonTableEntry {
-    u8 race;
+    GZ_ENUM_STORAGE(DemonRace, u8) race;
     u8 pantheon;
     u8 level;
     u8 flags; // @identity-TODO: the two flag-pair domains are unrecovered.
@@ -27,13 +29,13 @@ typedef struct DemonNameTable {
 } DemonNameTable;
 
 void LoadDemonTables(void);
-i16 GetDemonRace(i16 id);
+GZ_ENUM_RETURN(DemonRace, i16) GetDemonRace(i16 id);
 i16 GetDemonPantheon(i16 id);
 i16 GetDemonLevel(i16 id);
 i16 GetDemonFlagLow(i16 id);
 i16 GetDemonFlagHigh(i16 id);
 i16 GetDemonCount(void);
-i16 GetRaceClass(i16 race);
+i16 GetRaceClass(GZ_ENUM_PARAM(DemonRace, i16) race);
 i16 GetDemonClass(i16 id);
 
 // Names selected by the demon record; human titles are indexed directly.
@@ -43,8 +45,8 @@ char* GetDemonPantheonName(i16 id);
 char* GetHumanTitleName(i16 index);
 char* CopyObjectRecordName(i16 id, char* destination);
 
-i16 FindStrongestOfRace(i16 maxLevel, i16 race);
-i16 FindDemonOfRace(i16 maxLevel, i16 race);
+i16 FindStrongestOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race);
+i16 FindDemonOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race);
 i16 FindStrongestOfClass(i16 maxLevel, i16 cls);
 i16 FindNextOfRace(i16 id, i16 wrap);
 i16 ScaleLevelGap(i16 a, i16 b);

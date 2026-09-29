@@ -877,7 +877,12 @@ void OffsetMapCoordFacing(
 
 // The movement-blocking class from x/y toward `turn` of `direction`.
 RVA(0x0000d3b0, 0x35)
-i16 WallStopsToward(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn) {
+i16 WallStopsToward(
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+) {
     i16 wall = GetCellWall(direction, turn, RevealAreaMapAt(x, y));
     return WallStops(wall, WALL_STOP_MOVEMENT);
 }

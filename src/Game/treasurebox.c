@@ -3223,10 +3223,10 @@ u32 DrawNpcAt(i16 x, i16 y, i16 depth, AreaNpc* npc, i16 index) {
 // shields it, 0x11 and 0x14 set flags, 0x15/0x16 return to the leader's
 // recorded point or mark, 0x17 knocks the actor back, 0x19/0x1a spawn a second
 // group, 0x1b seals a demon, 0x20..0x22 set stat flags, 0x23 does nothing but
-// succeed. Returns the handler's result (1 done, 0 no effect, -1 failed).
+// succeed. Returns the handler's result.
 // @identity-TODO: the handlers are named from their bodies only.
 RVA(0x0001f700, 0xcc)
-i16 RunFieldEffect(i16 effect) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(i16 effect) {
     switch (effect) {
         case 0:
             break;
@@ -3256,16 +3256,16 @@ i16 RunFieldEffect(i16 effect) {
         case 0x22:
             return RaiseTargetFlag26();
         case 0x23:
-            return 1;
+            return FIELD_EFFECT_DONE;
     }
-    return 0;
+    return FIELD_EFFECT_NONE;
 }
 
 // Pushes `who` (a field object, or the party for a negative id) one cell
 // back (the party: behind itself; an object: away from the party), unless a
 // wall, a map-cell change or a blocked cell stops it; -1 then.
 RVA(0x0001f7d0, 0x152)
-i16 KnockBack(i16 who) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBack(i16 who) {
     i16* at;
     i16 direction;
     if (who < 0) {
@@ -3280,12 +3280,12 @@ i16 KnockBack(i16 who) {
         direction = OppositeDirection(g_party.field.pos.direction);
         object = GetLiveObject(who);
         if (object < 0) {
-            return -1;
+            return FIELD_EFFECT_FAILED;
         }
         actor = GetFieldActor(object);
         at = &((FieldActor*)GetFieldActor(object))->pos.x;
         if (TestCharacterFlag(actor, 0x20)) {
-            return -1;
+            return FIELD_EFFECT_FAILED;
         }
         code = GetMapCellCode(at[0], at[1]);
         x = at[0];
@@ -3293,44 +3293,44 @@ i16 KnockBack(i16 who) {
         StepMapCoord(&x, &y, direction, MOVE_BACK);
         WrapMapPosition(&x, &y);
         if (CellCodeDiffers(code, x, y)) {
-            return -1;
+            return FIELD_EFFECT_FAILED;
         }
         if (IsCellBlocked(g_party.field.pos.level, 1, x, y)) {
-            return -1;
+            return FIELD_EFFECT_FAILED;
         }
     }
-    if (WallStopsToward(at[0], at[1], direction, 2)) {
-        return -1;
+    if (WallStopsToward(at[0], at[1], direction, MOVE_BACK)) {
+        return FIELD_EFFECT_FAILED;
     }
     StepMapCoord(&at[0], &at[1], direction, MOVE_BACK);
     RefreshFieldScene();
-    return 1;
+    return FIELD_EFFECT_DONE;
 }
 
 // Gives the target a shield of a tenth of its maximum HP (a field object:
 // respawns it instead).
 RVA(0x0001f930, 0x56)
-i16 ShieldTarget(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) ShieldTarget(void) {
     Character* target;
     if (g_targetId < 0) {
         target = GetCombatant(g_targetId);
         if (!target) {
-            return -1;
+            return FIELD_EFFECT_FAILED;
         }
         target->shield = target->pools.hp.max / 10;
-        return 1;
+        return FIELD_EFFECT_DONE;
     }
     return RespawnFieldObject(g_targetId, 0, -1, 1);
 }
 
 RVA(0x0001f990, 0x2d)
-i16 SetTargetFlag21(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) SetTargetFlag21(void) {
     Character* target = GetCombatant(g_targetId);
     if (!target) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     SetCharacterFlag(target, 0x21);
-    return 1;
+    return FIELD_EFFECT_DONE;
 }
 
 // Sets the leader's flag 0x22 and clears flag 10 of every live object out of
@@ -3381,115 +3381,116 @@ b16 ReturnToLeaderMark(void) {
 // Knocks the acting object back; when nothing is left within reach, raises
 // the pending abort.
 RVA(0x0001fae0, 0x44)
-i16 KnockBackActor(void) {
-    i16 result;
+GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBackActor(void) {
+    GZ_ENUM_LOCAL(FieldEffectResult, i16) result;
     if (g_actorId >= 0) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     result = KnockBack(g_actorId);
     if (result < 0) {
         return result;
     }
     if (HasObjectInReach(0, -1, 0)) {
-        return 0;
+        return FIELD_EFFECT_NONE;
     }
     ExchangeAbortPending(1);
-    return 1;
+    return FIELD_EFFECT_DONE;
 }
 
 // Spawns a second enemy group at the acting object's cell.
 RVA(0x0001fb30, 0x42)
-i16 SpawnActorGroup(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) SpawnActorGroup(void) {
     i16 object = GetLiveObject(g_actorId);
     MapCoord* pos;
     if (object < 0) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     pos = &((FieldActor*)GetFieldActor(object))->pos;
     SpawnSecondGroupActor(pos->x, pos->y, -1);
 }
 
-// Seals the target (flag 0x3f, result 3) unless it is human or of races
-// 0x1a..0x22; while the field marker is set against an object the action
-// fails with result 6.
+// Seals the target (flag 0x3f, result 3) unless it is human or of a race from
+// RACE_MAJIN to RACE_INU; while the field marker is set against an object the
+// action fails with result 6.
 RVA(0x0001fb80, 0xe4)
-i16 SealTarget(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void) {
     Character* actor = GetCombatant(g_actorId);
     Character* target;
-    i16 race;
+    GZ_ENUM_LOCAL(DemonRace, i16) race;
     if (g_targetId >= 0 && GetFieldMarker()) {
         SetActionResult(actor, 6);
-        return 0;
+        return FIELD_EFFECT_NONE;
     }
     target = GetCombatant(g_targetId);
     if (!target) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     if (IsHumanCharacter(target)) {
-        return 0;
+        return FIELD_EFFECT_NONE;
     }
     race = GetDemonRace(target->id);
-    if (race == 0x1a || race == 0x1b || race == 0x1c || race == 0x1d || race == 0x1e || race == 0x1f
-        || race == 0x20 || race == 0x21 || race == 0x22) {
-        return 0;
+    if (race == RACE_MAJIN || race == RACE_DEMONOID || race == RACE_JUUJIN
+        || race == RACE_ISHTAR_BELIEVER || race == RACE_BAEL_BELIEVER || race == RACE_KYOUJIN
+        || race == RACE_HEISHI || race == RACE_HITO || race == RACE_INU) {
+        return FIELD_EFFECT_NONE;
     }
     SetActionResult(actor, 3);
     SetCharacterFlag(target, 0x3f);
-    return 1;
+    return FIELD_EFFECT_DONE;
 }
 
 // Sets the target's flag 0x23 (not with 0x23 or 0x24 already set) and
 // recalculates its stats.
 RVA(0x0001fc70, 0x6d)
-i16 RaiseTargetFlag23(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag23(void) {
     Character* target = GetCombatant(g_targetId);
     if (!target) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     if (TestCharacterFlag(target, 0x23) == true) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     if (TestCharacterFlag(target, 0x24) == true) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     SetCharacterFlag(target, 0x23);
     RecalcCharacterStats(target);
-    return 1;
+    return FIELD_EFFECT_DONE;
 }
 
 // The same with flag 0x25, only while the moon is not new.
 RVA(0x0001fce0, 0x67)
-i16 RaiseTargetFlag25(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void) {
     Character* target;
     if (!GetMoonPhase()) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     target = GetCombatant(g_targetId);
     if (!target) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     if (TestCharacterFlag(target, 0x25) == true) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     SetCharacterFlag(target, 0x25);
     RecalcCharacterStats(target);
-    return 1;
+    return FIELD_EFFECT_DONE;
 }
 
 RVA(0x0001fd50, 0x67)
-i16 RaiseTargetFlag26(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag26(void) {
     Character* target;
     if (!GetMoonPhase()) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     target = GetCombatant(g_targetId);
     if (!target) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     if (TestCharacterFlag(target, 0x26) == true) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     SetCharacterFlag(target, 0x26);
     RecalcCharacterStats(target);
-    return 1;
+    return FIELD_EFFECT_DONE;
 }
