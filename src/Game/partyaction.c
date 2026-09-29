@@ -121,7 +121,7 @@ DATA(0x000784f4)
 static i16 s_fieldMap = 0;
 
 DATA(0x000784f8)
-static i16 s_fieldEntryState = 0;
+static GZ_ENUM_STORAGE(FieldMapOutcome, i16) s_fieldEntryState = FIELD_MAP_ENDED;
 
 DATA(0x000784fc)
 static b16 s_fieldMarker = false;
@@ -1093,7 +1093,7 @@ void EnterFieldMap(i16 map, i16 countA, i16 rateA, i16 countB, i16 rateB, i16 mo
     s_fieldCountB = countB;
     s_fieldRateB = rateB;
     s_fieldMode = mode;
-    s_fieldEntryState = 0;
+    s_fieldEntryState = FIELD_MAP_ENDED;
     PushGameState(GAME_STATE_FIELD_ENCOUNTER);
 }
 
@@ -1302,23 +1302,23 @@ b16 RunFieldEncounter(void) {
                 allFallen &= GetFatalCondition(GetCharacterConditions(GetFieldActor(i)));
             }
             if (s_fieldMode >= 0 && CountFieldObjects() <= 0) {
-                LeaveFieldMap(1);
+                LeaveFieldMap(FIELD_MAP_WON);
                 break;
             }
             if (s_fieldMode == 1 && allFallen) {
-                LeaveFieldMap(1);
+                LeaveFieldMap(FIELD_MAP_WON);
                 break;
             }
             if (FindFirstAblePartyMember() == -1) {
-                LeaveFieldMap(-1);
+                LeaveFieldMap(FIELD_MAP_LOST);
                 break;
             }
             if (!TickFieldCount(-1, true)) {
-                LeaveFieldMap(0);
+                LeaveFieldMap(FIELD_MAP_ENDED);
                 break;
             }
             if (!TickFieldCount(1, true)) {
-                LeaveFieldMap(0);
+                LeaveFieldMap(FIELD_MAP_ENDED);
                 break;
             }
             if (!GetPickMode() && PickAnalyzeTarget() >= 0) {
@@ -1347,7 +1347,7 @@ b16 RunFieldEncounter(void) {
             PlaySoundEffect(0x1b);
             NextGamePhase();
             ResetRosterStatModifiers();
-            if (s_fieldEntryState <= 0) {
+            if (s_fieldEntryState <= FIELD_MAP_ENDED) {
                 break;
             }
             MarkRewardsPending();
@@ -1415,7 +1415,7 @@ b16 RunFieldEncounter(void) {
 
 // Records how the field map ended and advances the owning state two phases.
 RVA(0x00007a40, 0x23)
-void LeaveFieldMap(i16 result) {
+void LeaveFieldMap(GZ_ENUM_PARAM(FieldMapOutcome, i16) result) {
     g_fieldBattleActive = false;
     s_fieldEntryState = result;
     CloseFieldWindows();
@@ -1477,7 +1477,7 @@ b16 RunFieldState(void) {
             }
             key = CountFieldObjects();
             if (key <= 0) {
-                LeaveFieldMap(0);
+                LeaveFieldMap(FIELD_MAP_ENDED);
                 if (key >= 0) {
                     break;
                 }
@@ -1485,7 +1485,7 @@ b16 RunFieldState(void) {
                 return FlushFieldScreen();
             }
             if (FindFirstAblePartyMember() == -1) {
-                LeaveFieldMap(-1);
+                LeaveFieldMap(FIELD_MAP_LOST);
                 return FlushFieldScreen();
             }
             if (!GetPickMode()) {
@@ -1511,7 +1511,7 @@ b16 RunFieldState(void) {
             }
             HideScreenLayer(SCREEN_LAYER_PANEL);
             if (RollProximityEvent() > 0) {
-                LeaveFieldMap(0);
+                LeaveFieldMap(FIELD_MAP_ENDED);
                 s_fieldLeftEarly = true;
                 RunMessageScene(0x7f04, 0x10, -1);
                 PlaySoundEffect(4);
@@ -1534,7 +1534,7 @@ b16 RunFieldState(void) {
             PlaySoundEffect(0x1b);
             NextGamePhase();
             ResetRosterStatModifiers();
-            if (s_fieldEntryState < 0) {
+            if (s_fieldEntryState < FIELD_MAP_ENDED) {
                 break;
             }
             MarkRewardsPending();

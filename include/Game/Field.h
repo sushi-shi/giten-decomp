@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Ints.h>
 
@@ -40,7 +41,16 @@ GZ_ENUM_BEGIN(FieldEncounterPhase)
 GZ_ENUM_END(FieldEncounterPhase)
 
 b16 RunFieldEncounter(void);
-void LeaveFieldMap(i16 result);
+// How a field map ended (LeaveFieldMap): won (the encounter's enemies are
+// beaten), ended (time ran out or no objects remain), or lost (no party member
+// can fight).
+GZ_ENUM_BEGIN(FieldMapOutcome)
+    FIELD_MAP_LOST = -1,
+    FIELD_MAP_ENDED = 0,
+    FIELD_MAP_WON = 1
+GZ_ENUM_END(FieldMapOutcome)
+
+void LeaveFieldMap(GZ_ENUM_PARAM(FieldMapOutcome, i16) result);
 
 void ResetRosterFieldMarks(void);
 
