@@ -24,11 +24,9 @@ void InitJoystick(void) {
     i32 i;
 
     s_joystickCount = joyGetNumDevs();
-    if (s_joystickCount > 1) {
-        s_joystickCount = 1;
-    }
+    s_joystickCount = min(1, s_joystickCount);
     for (i = 0; i < s_joystickCount; i++) {
-        memset(&caps, 0, sizeof(caps));
+        ZeroMemory(&caps, sizeof(caps));
         joyGetDevCaps(i, &caps, sizeof(caps));
         s_joystickRanges[i].xHalf = (caps.wXmax - caps.wXmin) / 2;
         s_joystickRanges[i].xCenter = caps.wXmin + s_joystickRanges[i].xHalf;
@@ -40,18 +38,6 @@ void InitJoystick(void) {
         s_joystickRanges[i].rCenter = caps.wRmin + s_joystickRanges[i].rHalf;
     }
 }
-
-DATA(0x0006b7a8)
-static JoystickKey s_joystickKeys[8] = {
-    {JOY_UP, VK_UP},
-    {JOY_DOWN, VK_DOWN},
-    {JOY_LEFT, VK_LEFT},
-    {JOY_RIGHT, VK_RIGHT},
-    {1 << JOY_BUTTON_SHIFT, VK_RETURN},
-    {2 << JOY_BUTTON_SHIFT, VK_SPACE},
-    {4 << JOY_BUTTON_SHIFT, VK_SHIFT},
-    {0, 0},
-};
 
 // Returns the joystick bits: the arrow keys, Return, Space and Shift, then the
 // stick past a quarter of its travel and its buttons. `state` (optional) gets
@@ -71,7 +57,7 @@ u32 ReadJoystick(JoystickState* state) {
     if (s_joystickCount < 0) {
         return 0;
     }
-    for (key = s_joystickKeys; key->bit != 0; key++) {
+    for (key = g_joystickKeys; key->bit != 0; key++) {
         if (GetAsyncKeyState(key->key) & 0x8000) {
             buttons |= key->bit;
         }

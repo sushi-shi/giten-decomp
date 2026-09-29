@@ -5,6 +5,7 @@
 - [Build and comparison](build-system.md): pipeline, banking, data-matching modes, gates.
 - [Compiler profiles](compiler-flags.md) and [toolchain evidence](compiler-detection.md).
 - [Relocations](relocations.md) and [data attribution](data-attribution.md).
+- [Retail libraries and SDK helpers](vendor-libraries.md).
 - [Resource codec execution](codecs.md): retail/candidate/Rust comparisons on original resources.
 - [Candidate linking](linker-flags.md) and [clangd](clangd.md).
 - [Playing](play.md): the bug-fixed image and its Wine runtime.

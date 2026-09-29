@@ -3,7 +3,6 @@
 
 #include <rva.h>
 
-#include <Game/FieldSupport.h>
 #include <Game/StateStack.h>
 #include <Game/WaitLoop.h>
 #include <Game/WaitState.h>
@@ -14,7 +13,7 @@
 #include <Text/WindowText.h>
 
 RVA(0x0001a870, 0xc0)
-i16 StepWaitState(void) {
+b16 StepWaitState(void) {
     u16 inputMask;
     switch (GetGamePhase()) {
         case WAIT_FRAMES:
@@ -53,7 +52,7 @@ i16 StepWaitState(void) {
             }
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0001a930, 0x29)
@@ -65,12 +64,12 @@ void PushWaitState(GZ_ENUM_STORAGE(WaitMode, i16) mode, u16 inputMask, u16 frame
 }
 
 RVA(0x0001a960, 0x25)
-i16 RunScreenFadeState(void) {
+b16 RunScreenFadeState(void) {
     i16 kind = GetGamePhase();
     i16 speed = GetGameStep();
     ReturnFromGameState();
     StartScreenFade(kind, speed);
-    return 0;
+    return false;
 }
 
 RVA(0x0001a990, 0x30)
@@ -98,7 +97,7 @@ i16 PushMessageBox(i16 window, const char* text) {
 }
 
 RVA(0x0001aa40, 0x54)
-i16 RunMessageBoxState(void) {
+b16 RunMessageBoxState(void) {
     i16 plane = GetGamePhase();
     switch (GetGameStep()) {
         case 1:
@@ -111,5 +110,5 @@ i16 RunMessageBoxState(void) {
             PushWaitState(WAIT_INPUT, 10, 0xffff, plane);
             break;
     }
-    return 0;
+    return false;
 }

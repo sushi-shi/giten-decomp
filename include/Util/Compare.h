@@ -10,6 +10,6 @@ COMPARE_NOT_EQUAL = 0, COMPARE_EQUAL = 1, COMPARE_LESS_EQUAL = 2, COMPARE_GREATE
                        GZ_ENUM_END(ComparisonOperator)
 
                            i16 CompareInt(i32 a, i32 b);
-i32 CompareByOp(ComparisonOperator op, i32 a, i32 b);
+b32 CompareByOp(ComparisonOperator op, i32 a, i32 b);
 
 #endif // GITEN_UTIL_COMPARE_H

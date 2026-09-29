@@ -14,7 +14,8 @@ is the DEFAULT target; `verify_check` runs only for the `verify` target
                 flags extraction and the LSP consumers ride (giten.graph.compdb)
     labels      source + headers + base obj -> build/gen/claims/<unit>.tsv
     model       claims x censuses/providers -> build/gen/bindings.tsv
-    delink      bindings -> build/objdiff/target-new/<unit>.c.obj
+    dataid      base objs -> their data identity (the delink reads it)
+    delink      bindings + data identity -> build/objdiff/target-new/<unit>.c.obj
     normalize   base + target objs -> the comparison copies
     project     the delinked directory -> compare-new/objdiff.json
     report      comparison copies + pairing -> compare-new/report.json
@@ -34,8 +35,8 @@ leave ninja re-running the whole delink on every build), and `normalize`
 writes a variable pair of copies per unit. Both drivers are keyed on content
 upstream, so the stamp only moves when something real did.
 
-Restat is on `cl`, `compdb`, `labels`, `model` and `project` - the producers
-that write if-changed. That is the whole incrementality story: a pure code
+Restat is on `cl`, `compdb`, `labels`, `model`, `dataid` and `project` - the
+producers that write if-changed. That is the whole incrementality story: a pure code
 edit re-runs configure (every source is in the include scan's own dep set) +
 cl + labels, stops at an unchanged claim fragment, and reaches the report
 without re-delinking; a label edit carries on through model, delink and the
@@ -117,6 +118,7 @@ MODEL_MODS = _mods("model.py", "retail_labels/", "core/tsv.py", "core/paths.py",
 DELINK_MODS = _mods("delink/", "tool/delinker.py", "core/pe.py",
                     "core/coff.py", "core/msvc_names.py", "core/data_matching.py",
                     "model.py") + TOOL_MODS
+DATAID_MODS = _mods("graph/dataid.py", "delink/coffx.py")
 NORMALIZE_MODS = _mods("compare/normalize.py", "compare/canonicalize.py",
                        "delink/eh_band.py", "core/coff.py", "core/msvc_names.py",
                        "core/data_matching.py")
@@ -503,10 +505,18 @@ def emit(out: Path | None = None) -> tuple[int, int]:
         # reaches here. The declared output is a STAMP - units with no claim
         # produce no object, so declaring all of them would leave the edge
         # perpetually unbuilt and re-run the whole delink on every build.
-        # NOT declared, and known: giten.delink.{pdb_synth,data_manifest} also
-        # read build/objdiff/base/*.obj (cl's own string/vtable/RTTI COMDATs),
-        # so a code edit that moves those without moving a CLAIM does not
-        # re-delink; and vostok-delinker itself is environment, not a file.
+        # giten.delink.{pdb_synth,data_manifest} also read the base objects'
+        # data topology (COMMONs, .bss/.data members, string/vtable/RTTI
+        # COMDATs), which a compile can move without moving a claim - a
+        # storage-class change alone is one. The objects themselves would
+        # re-delink on every code edit, so the edge keys on their DATA_IDS
+        # rendering instead, written if-changed and restatted.
+        w.rule("dataid",
+               command=(f"$py -m giten.graph.dataid --base-dir {graph.BASE_DIR} "
+                        f"--out $out"),
+               description="base-object data identity -> $out", restat=True)
+        w.build(graph.DATA_IDS, "dataid", inputs=base_objs,
+                implicit=DATAID_MODS)
         w.rule("delink",
                command=(f"$py -m giten.delink.run --target-dir {graph.TARGET_DIR} "
                         f"--delink-dir {graph.DELINK_RAW} && touch $out"),
@@ -514,7 +524,7 @@ def emit(out: Path | None = None) -> tuple[int, int]:
         w.build(graph.DELINK_STAMP, "delink",
                 inputs=[graph.BINDINGS, RETAIL_EXE],
                 implicit=[RELOC_REFERENTS, COMPARE_CONFIG, *DELINK_MODS,
-                          graph.TOOLCHAIN_ID])
+                          graph.DATA_IDS, graph.TOOLCHAIN_ID])
         w.newline()
 
         w.comment("=== normalize: base + target -> content-addressed copies ===")

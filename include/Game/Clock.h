@@ -71,7 +71,7 @@ i32 ScaleByMoonValue(i32 value, i16 row, i16 percent);
 // @identity-TODO: What 0x181e0 (stores two words at 0x47be78/0x47be7c) plus PushGameState(0x15)
 // do with the script position OpStartCountdown saved at 0x81690/0x81694 is unproven; decoding
 // 0x181e0 and state 0x15 would confirm it runs the handler. It is scriptvars.c's function.
-i16 FireCountdownEvent(void);
+b16 FireCountdownEvent(void);
 
 // The clock's save-file section.
 i16 LoadClock(FILE* fp);

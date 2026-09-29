@@ -32,10 +32,10 @@ ScreenSaveHeader* AllocRegionScreenSave(ScreenSaveRegion* region);
 // @identity-TODO: bracket pairs around screen drawing. The begin side returns
 // a token the caller hands back to the end side in ECX; the Windows build
 // keeps them as empty bodies, so what state they saved is not recovered.
-i16 SaveDrawState(void);
+b16 SaveDrawState(void);
 void __fastcall RestoreDrawState(i16 token);
-i16 SaveScreenState(void);
-i16 SaveCellState(void);
+b16 SaveScreenState(void);
+b16 SaveCellState(void);
 void __fastcall RestoreScreenState(i16 token);
 
 void InitCheckerPatterns(void);

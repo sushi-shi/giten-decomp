@@ -7,15 +7,6 @@
 
 #include <string.h>
 
-DATA(0x00088a10)
-Picture g_spriteImages[SPRITE_GROUP_COUNT][SPRITE_FRAME_COUNT];
-
-DATA(0x0008d728)
-SpriteSlot g_spriteSlots[SPRITE_SLOT_COUNT];
-
-DATA(0x0008f588)
-i16 g_spriteOrder[SPRITE_SLOT_COUNT];
-
 // @early-stop register/scheduling residue: retail initializes the frame cursor
 // in edx before the order-table memset; this build uses eax after it. The
 // signed loop edge, stores and ordered referents match. Pointer lifetime,
@@ -72,7 +63,7 @@ void PlaceSprite(i16 id, i16 slot, i16 frame, i16 x, i16 y) {
 }
 
 RVA(0x00058800, 0x17)
-i16 IsSpritePlaced(i16 slot) {
+b16 IsSpritePlaced(i16 slot) {
     return GetSpriteSlotFrame(GetSpriteSlot(slot)) != SPRITE_UNPLACED;
 }
 
@@ -89,12 +80,12 @@ void FreeSpriteImages(i16 slot) {
 }
 
 RVA(0x00058870, 0x50)
-i16 IsSpriteFrameLoaded(i16 slot, i16 frame) {
+b16 IsSpriteFrameLoaded(i16 slot, i16 frame) {
     if (IsSpriteFrameIndexOutOfRange(slot, frame)) {
-        return FALSE;
+        return false;
     }
     if (GetSpriteFramePicture(slot, frame)->surface == NULL) {
-        return FALSE;
+        return false;
     }
     return GetSpriteFramePicture(slot, frame)->visible != FALSE;
 }

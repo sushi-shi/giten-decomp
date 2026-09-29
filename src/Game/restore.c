@@ -48,6 +48,20 @@ static const i16 s_generalRecoveryConditions[] = {2,  3,  4,  5,  6,  10, 11, 12
 DATA(0x00064600)
 static const i16 s_specialRecoveryConditions[] = {0, 1, 8, 9, 31, 14, 18, 19, 27, 28, 29, -1};
 
+DATA(0x00064618)
+const i16 g_affiliationGrowthStats[4][2] = {{5, 7}, {8, 0}, {2, 1}, {3, 9}};
+
+// @identity-TODO: no reader survives in this image; the four words hold the
+// order 0..3 with the middle pair swapped, and a reader would name them.
+DATA(0x00064628)
+static const i16 s_swappedPairOrder[4] = {0, 2, 1, 3};
+
+// @identity-TODO: no reader survives in this image; the PC-98 build keeps the
+// same seven words as one table (all four bits, each bit, then the two
+// alternating pairs), and a reader would name them.
+DATA(0x00064630)
+static const i16 s_fourBitMasks[7] = {15, 1, 2, 4, 8, 5, 10};
+
 RVA(0x0001fdc0, 0xc1)
 i16 ComputeRestoreAmount(i16 code, Character* user, u16 max) {
     double amount;

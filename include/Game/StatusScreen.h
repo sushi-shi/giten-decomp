@@ -10,9 +10,9 @@
 
 // The roster slot the status screen shows.
 extern i16 g_statusMember;
-extern i16 g_statusFixedMember;
-i16 RunStatusScreen(void);
-i16 RunDismissMenuState(void);
+extern b16 g_statusFixedMember;
+b16 RunStatusScreen(void);
+b16 RunDismissMenuState(void);
 i16 RunStatusCommands(void);
 i16 GetStatusAnalyzeMode(void);
 
@@ -33,8 +33,6 @@ void SetStatusMenuItemsHidden(i16 on);
 // Eleven stat names followed by the null terminator.
 extern char* g_statusStatNames[12];
 extern char* g_statusBattleLabels[7];
-// The zero-initialized empty skill label.
-extern char g_emptyBattleSkillLabel[];
 // Full-width decimal labels, indexed by the displayed number.
 extern char* g_statusNumberLabels[40];
 
@@ -77,7 +75,7 @@ static __inline void RestoreRosterReturnState(void) {
     SetGameStep(g_rosterReturnStep);
 }
 
-i16 ReplaceRosterMember(void);
+b16 ReplaceRosterMember(void);
 
 void EnterStatusScreen(i16 nested);
 

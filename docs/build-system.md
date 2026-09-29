@@ -26,11 +26,15 @@ its `[[unit]]` entry, shared declarations, source definitions and labels, then b
 | clang database | `giten.graph.compdb` | `clangd/compile_commands.json` |
 | Extract labels | `giten.retail_labels.source` | `gen/claims/<unit>.tsv` |
 | Resolve claims/providers | `giten.model` | `gen/bindings.tsv`, `gen/violations.tsv` |
+| Base-object data identity | `giten.graph.dataid` | `gen/data_ids.tsv` |
 | Synthetic PDB and delink | `giten.delink` | `pdb/`, `objdiff/target-new/` |
 | Normalize and compare | `giten.compare` | `objdiff/normalized/`, `objdiff/compare-new/report.json` |
 
 Producers write only changed content. A code edit with unchanged labels reuses
 the retail targets; a label change rebuilds the model and affected targets.
+The delink also reads the base objects' data topology, so a compile that moves
+only data identity (a COMMON becoming `.bss`, a string or vtable COMDAT)
+re-delinks through `gen/data_ids.tsv` without a label change.
 A comparator re-pin invalidates reports without recompiling. Use
 `giten build --force-delink` to force target regeneration.
 

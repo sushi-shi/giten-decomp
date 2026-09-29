@@ -34,6 +34,9 @@ Aim for MAX = 100. `HIST > MAX` identifies a lost match to recover from Git.
    the next lever. Prefer recovered helpers/macros over hand expansion.
    Use `@early-stop` only for a complete body with evidence-bounded residue.
 6. Before merging, run `giten build verify` (MAX gate plus fast/normal tiers).
+   Whenever preparing a PR for merge, regenerate the README score block with
+   `giten verify readme` after the final build and include the updated
+   `README.md` in the PR.
    Keep an exact match even if it violates a rule: add the gate's allow entry
    and a row in `docs/todos/rule-exceptions.tsv` in the same commit.
 

@@ -1,8 +1,6 @@
 #ifndef GITEN_GAME_GAMESTATE_H
 #define GITEN_GAME_GAMESTATE_H
 
-#include <rva.h>
-
 #include <Game/Character.h>
 #include <Game/MapCoord.h>
 #include <Ints.h>
@@ -42,24 +40,28 @@ typedef struct FieldStatus {
     i16 navigationFixed : 1;
 } FieldStatus;
 
-extern FieldState g_field;
+// The party: its place on the field, its six positions and its roster, saved
+// and restored member by member. One object: `slots` is two-aligned, which no
+// standalone twelve-byte COMMON is, and InitNewGame's roster clear follows the
+// field stores only when the roster and the field share an object.
+typedef struct Party {
+    FieldState field;
+    // @identity-TODO: the facing restored with a saved position (-1 when unset).
+    i16 savedDirection;
+    // The party's six roster indices (-1 = empty slot).
+    i16 slots[6];
+    FieldStatus status;
+    // The roster: characters the party can field; ids below 32 are human members.
+    Character* roster[32];
+} Party;
 
-// @identity-TODO: the facing restored with a saved position (-1 when unset).
-extern i16 g_savedDirection;
-
-extern FieldStatus g_fieldStatus;
-
-// The party's six roster indices (-1 = empty slot).
-extern i16 g_party[6];
+extern Party g_party;
 
 // Direct position access; the caller supplies a valid party index.
-#define PartySlotAt(index) (g_party[(index)])
-
-// The roster: characters the party can field; ids below 32 are human members.
-extern Character* g_roster[32];
+#define PartySlotAt(index) (g_party.slots[(index)])
 
 // Direct slot access; the caller supplies a valid roster index.
-#define RosterMemberAt(slot) (g_roster[(slot)])
+#define RosterMemberAt(slot) (g_party.roster[(slot)])
 
 void InitNewGame(void);
 
@@ -75,13 +77,11 @@ Character* GetRosterEntry(i16 slot);
 i16 GetPartySlot(i16 index);
 
 // Puts roster slot `slot` into party position `index`; returns the slot it held.
-// @identity-TODO: label-only until the party TU claims it.
 i16 ExchangePartySlot(i16 index, i16 slot);
 Character* GetPartyEntry(i16 index);
 Character* GetPartyCharacter(i16 index);
 Character* GetRosterLeader(void);
 
-// @identity-TODO: label-only until the party TU claims them.
 // The roster member whose id is `id` (NULL when none).
 Character* GetCharacterById(i16 id);
 
@@ -93,13 +93,10 @@ i16 GetPartyRosterId(i16 index);
 // An empty party position when `inParty`, else a free roster slot (-1: none).
 i16 FindEmptySlot(i16 inParty);
 
-Character* GetRosterCharacter(i16 slot);
-
 // Ages every member's conditions by one and rolls them for recovery; nonzero
 // when any wore off.
 i16 TickPartyConditions(void);
 
-RVA_DECL(0x0003fb30)
 void ResetRosterBattleState(void);
 
 void ResetRosterStatModifiers(void);
@@ -107,7 +104,6 @@ void ResetRosterStatModifiers(void);
 void ClearRosterConditions(void);
 
 i16 CountFallenHumans(void);
-void ResetRosterBattleState(void);
 
 // @identity-TODO: What 0x9420 does per fallen non-guest member (return/drop hook) and what
 // 0x3f0f0 changes (HP/MP-zero conditions) are only partly decoded.

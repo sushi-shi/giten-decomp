@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 DATA(0x00078778)
-char g_filteredText[256];
+char g_filteredText[256] = {0};
 
 RVA(0x0000b810, 0x18)
 i32 PowerOfTwo(i16 exponent) {

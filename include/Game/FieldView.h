@@ -29,13 +29,13 @@ void MarkDrawCell(i16 index);
 
 // Whether x/y is a drawn view cell seen from the party, and its grid distance
 // from the party.
-i16 GetPartyView(i16 x, i16 y);
+b16 GetPartyView(i16 x, i16 y);
 i16 DistanceFromParty(i16 x, i16 y);
 
 // A view cell's column (axis 0) or row stepped toward side `dir`, and the map
 // cell of a view cell.
 i16 StepViewCell(i16 col, i16 row, i32 dir, i16 axis);
-i32 CanFloodViewCell(i16 col, i16 row, i32 direction);
+b32 CanFloodViewCell(i16 col, i16 row, i32 direction);
 void ViewCellToMapCell(i16 x, i16 y, i32 dir, i16* col, i16* row, i16 width, i16 height);
 
 // The wall on `side` of map cell (x, y), 0 for none (kind 6 counts as none).
@@ -67,7 +67,7 @@ void UpdateViewCells(i16 x, i16 y);
 // offsetting a coordinate in a direction's frame (wrapped, clamped or not),
 // the walls of a cell word and how they stop a step or a sight line.
 // Coordinate arguments occupy their low 16 bits; upper argument halves are unused.
-i16 IsCellInViewCone(i16 x, i16 y, i16 cellX, i16 cellY);
+b16 IsCellInViewCone(i16 x, i16 y, i16 cellX, i16 cellY);
 MapCoord GetLayerOrigin(i16 layer);
 MapCoord GetWorldBlockOffset(i16 x, i16 y);
 i16 GetWorldMapBlock(i16 x, i16 y);
@@ -75,7 +75,7 @@ i16 GetWorldBlockX(i16 x);
 i16 GetWorldBlockY(i16 y);
 MapCoord GetWorldCellAt(i16 x, i16 y);
 MapCoord GetMouseWorldCell(void);
-i16 IsWorldCellInMap(i16 x, i16 y);
+b16 IsWorldCellInMap(i16 x, i16 y);
 #define OppositeDirection(direction) (((direction) - 2) & 3)
 
 i16 TurnDirection(i16 direction, i16 turn);

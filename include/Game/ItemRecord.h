@@ -56,6 +56,14 @@ static __inline u8 GetItemAttackPower(const ItemRecord* record) {
     return record->params[0x19];
 }
 
+static __inline u8 GetWeaponMinHits(const ItemRecord* record) {
+    return record->params[0x1d];
+}
+
+static __inline u8 GetWeaponMaxHits(const ItemRecord* record) {
+    return record->params[0x1e];
+}
+
 static __inline u8 GetItemDefensePower(const ItemRecord* record) {
     return record->params[0x1a];
 }

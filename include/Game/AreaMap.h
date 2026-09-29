@@ -261,18 +261,22 @@ static __inline u16 GetAreaLevelOffset(const AreaRecord* record, i16 level) {
 extern AreaMap* g_areaMap;
 extern AreaLevel* g_areaLevel;
 
-// The cell event's latch (LatchCellDestination): the cell's code, and the
-// destination's x, y, level and area RunCellEvent travels to.
+// The cell event's latch (LatchCellDestination): the cell's position and
+// code, and the destination's x, y, direction, level and area RunCellEvent
+// travels to (the position and direction are latched but never read).
 // @identity-TODO: what the codes 0x64, 0x67 and
 // 0x70..0x76 of a kind-9 cell are is unrecovered.
+extern i16 g_cellX;
+extern i16 g_cellY;
 extern u8 g_cellCode;
+extern u8 g_cellDestDirection;
 extern i16 g_cellDestX;
 extern i16 g_cellDestY;
 extern i16 g_cellDestLevel;
 extern i16 g_cellDestArea;
 
-i16 IsCellAt(i16 x, i16 y, const CellHead* cell);
-i16 IsCellFlagSet(const CellHead* cell, i16 offset);
+b16 IsCellAt(i16 x, i16 y, const CellHead* cell);
+b16 IsCellFlagSet(const CellHead* cell, i16 offset);
 const CellKind* FindCellKind(const CellHead* cell);
 
 // Latches the cell and the destination bytes at the given offsets (x, y, then
@@ -280,7 +284,7 @@ const CellKind* FindCellKind(const CellHead* cell);
 void LatchCellDestination(const CellHead* cell, i16 x, i16 y, i16 direction, i16 level, i16 area);
 
 // @identity-TODO: what the codes 0x48..0x4e are is unrecovered.
-i16 IsReservedObjectCell(const CellHead* cell);
+b16 IsReservedObjectCell(const CellHead* cell);
 
 // Decodes an area-map record into `map` (header, levels and their lists).
 void DecodeAreaMap(AreaMap* map, u8* record);
@@ -293,9 +297,9 @@ i16 GetLevelFloor(void);
 // the room-bitmap bit, blocking cells on a level (or their automap icons), the
 // event cell code, locked doors, the wall word, warp codes near the party, the
 // room lists, the level's own flag and the enabled exit at x/y.
-i16 IsDarkCell(i16 x, i16 y);
-i16 IsCellCommandBlocked(i16 x, i16 y);
-i16 IsRoomCell(i16 x, i16 y);
+b16 IsDarkCell(i16 x, i16 y);
+b16 IsCellCommandBlocked(i16 x, i16 y);
+b16 IsRoomCell(i16 x, i16 y);
 i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y);
 i16 CheckBlockingCell(const CellHead* cell, i16 mode, i16 flagOffset, i16 x, i16 y);
 i16 GetEventCellCode(i16 x, i16 y);
@@ -310,7 +314,7 @@ void ClampMapPosition(i16* x, i16* y);
 i16 GetWarpCodeAtOffset(i16 dx, i16 dy);
 i16 GetCellAtOffset(i16 dx, i16 dy);
 u8* GetLevelList(i16 which);
-i16 IsLevelMapRevealed(void);
+b16 IsLevelMapRevealed(void);
 ExitCell* CopyExitAt(i16 x, i16 y, ExitCell* out);
 
 // The level's treasure boxes (NULL without a level) and the box at x/y (with

@@ -22,16 +22,15 @@ typedef struct AreaNpc {
     i16 textureSlot;
 } AreaNpc;
 
-// An NPC picture's texture (and a second word).
+// An NPC picture's texture, after a word the table starts as 0xffff.
 // @identity-TODO: what `other` holds is unrecovered.
 typedef struct NpcTexture {
-    u32 texture;
     u32 other;
+    u32 texture;
 } NpcTexture;
 
-// @identity-TODO: five adjacent identical records may extend this allocation;
-// only six texture slots are used by the recovered readers and loader.
-extern NpcTexture g_npcTextures[6];
+// Twelve records; only the first six are used by the readers and loader.
+extern NpcTexture g_npcTextures[12];
 
 // The map cell the field view is drawing.
 extern i16 g_viewCellX;
@@ -59,17 +58,13 @@ void SetGridByte(i32* grid, i16 x, i16 y, u8 value);
 void FillEmptyRegions(i16 width, i16 height, u8 value);
 u8 GetRoomRegion(i16 x, i16 y);
 u8 GetGridByte(i32* grid, i16 x, i16 y);
-i16 IsRegionFlagOn(u8* list, i16 offset);
+b16 IsRegionFlagOn(u8* list, i16 offset);
 void MarkRegionList(u8* list, i16 stride, u8 code, i16 width, i16 height);
 u8* FindRegionData(u8* list, i16 stride, i16 index);
 void SetPrevRegion(i16 x, i16 y, u8 value);
 u8 GetPrevRegion(i16 x, i16 y);
 u8* GetRoomData(i16 code);
 void EnterRoom(i16 code);
-
-// The region code the field last entered (EnterRoom sets it).
-i16 GetCurrentRoomCode(void);
-i16 SetCurrentRoomCode(i16 code);
 
 i16 FindCellObject(i16 id, i16 x, i16 y);
 i16 NextNpcSlot(void);
@@ -87,9 +82,9 @@ i16 RunFieldEffect(i16 effect);
 i16 KnockBack(i16 who);
 i16 ShieldTarget(void);
 i16 SetTargetFlag21(void);
-i16 ScatterObjects(void);
-i16 ReturnToLeaderWarp(void);
-i16 ReturnToLeaderMark(void);
+b16 ScatterObjects(void);
+b16 ReturnToLeaderWarp(void);
+b16 ReturnToLeaderMark(void);
 i16 KnockBackActor(void);
 i16 SpawnActorGroup(void);
 i16 SealTarget(void);
@@ -104,7 +99,7 @@ void RefreshFieldScene(void);
 // retail's NPC palette loader pushes the GRB word unextended, so its
 // declaration of GrbToRgb took a 16-bit word while vram.c defines it on a
 // u32 (see docs/todos/rule-exceptions.tsv).
-i16 SetPaletteColor(u8 index, i16 color);
+b16 SetPaletteColor(u8 index, i16 color);
 u32 GrbToRgb(u16 grb);
 
 // The six object textures (g_objectTextures): load `image` into slot `slot`

@@ -90,8 +90,8 @@ void ToggleCurrentTextHighlight(i16 plane);
 // and an unreferenced stub.
 void DrawPlaneText(i16 plane, i16 x, i16 y, const char* text, i32 attr);
 void DrawStatusText(i16 x, i16 y, const char* text, i32 attr);
-i16 DrawBandText(i16 x, i16 y, const char* text, i32 attr, i16 band);
-i16 ReturnZero(void);
+b16 DrawBandText(i16 x, i16 y, const char* text, i32 attr, i16 band);
+b16 ReturnZero(void);
 void ClearTextPlaneText(i16 plane);
 void PrintMenuLines(i16 plane);
 i32 GetTextPlaneLineStepIf(i16 plane, i16 on);

@@ -16,18 +16,18 @@ void RemoveFromParty(i16 slot);
 i16 CountPartyMembers(i16 skipDisabled);
 i16 FindRosterSlotById(i16 id);
 
-static __inline i32 RosterContainsId(i16 id) {
+static __inline b32 RosterContainsId(i16 id) {
     return FindRosterSlotById(id) != -1;
 }
 
 i16 RosterSlotOfId(i16 id);
-i16 SortRoster(void);
+b16 SortRoster(void);
 i16 FilterPartyMember(i16 slot, i16 mode);
 i16 DamageParty(i16 percent, i16 skipId13);
 i16 HealParty(i16 percent);
-void ClearRosterConditions(void);
 Character* CopyCharacter(Character* src, Character* dst);
 i32 AddMacca(Character* character, i32 amount);
+// Adds `amount` magnetite to `character`, clamped to 0..9999999.
 i32 AddMagnetite(Character* character, i32 amount);
 i16 CompareMacca(i16 who, i32 amount);
 i16 GetPartyMemberId(i16 index);
@@ -51,7 +51,7 @@ void ChangePool(CurMax* pool, i32 amount);
 // Copies `from`'s skill list into `to` (resized to fit).
 // @identity-TODO: label-only until its TU is claimed.
 void CopySkillList(Character* from, WordList* to);
-i16 CanGroupEquip(i16 group, i16 item);
+b16 CanGroupEquip(i16 group, i16 item);
 i16 GetGunAmmoType(Character* character);
 i16 CanEquipItem(Character* character, i16 item);
 void NormalizeEquipSlots(Character* character);
@@ -64,18 +64,8 @@ ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, i16* result);
 // in the character's `ammoCounts` entry.
 ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index);
 
-// The index into Character `ammoCounts` that equipping ammunition writes:
-// a read-only -1 in retail, so the store never runs.
-extern const i16 g_ammoCountIndex;
-
 // Sets equipment part `part` of roster member `slot`. When `check` is set,
 // changing the gun unequips ammunition that no longer fits it.
 i16 SetEquipSlot(i16 slot, i16 part, ItemSlot item, i16 check);
-
-void SetPartySlot(i16 index, i16 slot);
-
-// Adds `amount` magnetite to `character`, clamped to 0..9999999.
-RVA_DECL(0x00040920)
-i32 AddMagnetite(Character* character, i32 amount);
 
 #endif // GITEN_GAME_PARTY_H

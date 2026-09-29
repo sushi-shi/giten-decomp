@@ -54,6 +54,10 @@ TOOLCHAIN_ID = "build/gen/toolchain.id"
 #: Comparison-tool identity is separate so a re-pin only invalidates reports.
 COMPARATOR_ID = "build/gen/comparator.id"
 
+#: The base objects' data identity (giten.graph.dataid): the delink reads
+#: their data topology, which a code-only edit leaves unchanged.
+DATA_IDS = "build/gen/data_ids.tsv"
+
 #: Stamps for the two edges whose real outputs are a directory the graph
 #: cannot enumerate at configure time.
 DELINK_STAMP = "build/objdiff/.delink.stamp"

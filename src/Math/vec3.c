@@ -22,23 +22,23 @@ ScreenPoint ProjectFloorPoint(i16 x, i16 z) {
 
 // Moves by the 8.8 fixed-point velocity; returns whether any axis moved.
 RVA(0x0000d460, 0xa2)
-i16 MoveBySubVelocity(Vec3* pos, const Vec3* velocity) {
-    i16 moved = 0;
+b16 MoveBySubVelocity(Vec3* pos, const Vec3* velocity) {
+    b16 moved = false;
     i16 before;
     before = pos->x;
     pos->x += ClampDelta(before, velocity->x >> 8, -32768, 32767);
     if (before != pos->x) {
-        moved = 1;
+        moved = true;
     }
     before = pos->y;
     pos->y += ClampDelta(before, velocity->y >> 8, -32768, 32767);
     if (before != pos->y) {
-        moved = 1;
+        moved = true;
     }
     before = pos->z;
     pos->z += ClampDelta(before, velocity->z >> 8, -32768, 32767);
     if (before != pos->z) {
-        moved = 1;
+        moved = true;
     }
     return moved;
 }

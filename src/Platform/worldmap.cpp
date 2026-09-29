@@ -47,19 +47,19 @@ i16 HitTestWorldMap(i16 x, i16 y, i16 layer) {
 
 // The incoming position is replaced with the current party marker.
 RVA(0x000582c0, 0x64)
-i16 IsWorldMapMarkerNearEdge(i16 x, i16 y) {
+b16 IsWorldMapMarkerNearEdge(i16 x, i16 y) {
     i16 slot = GetWorldMapMarker(&x, &y);
     if (slot >= 0 && slot < MAP_SCREEN_COUNT) {
         x += g_mapScreenOffsets[slot].x;
         y += g_mapScreenOffsets[slot].y;
         if (x < 16 || x > 624) {
-            return 1;
+            return true;
         }
         if (y < 16 || y > 312) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 // @identity-TODO: the returned map codes are known by their marker colours.

@@ -5,9 +5,6 @@
 #include <Platform/GameApi.h>
 #include <Platform/Scene3D.h>
 
-DATA(0x00084800)
-Texture g_roomTexture;
-
 DATA(0x0006ddc8)
 static const char* s_wallTextureNames[16][4] = {
     {"w\\wall00_0.bmp", "w\\wall00_1.bmp", "w\\wall00_2.bmp", "w\\wall00_3.bmp"},
@@ -33,9 +30,9 @@ void LoadWallTextures(i16 wallSet, i16 variant) {
     u8 area;
     u8 level;
     ReleaseTexture(&g_roomTexture);
-    g_fixedLighting = FALSE;
+    g_fixedLighting = false;
     if ((wallSet & 0xf) == WALL_TEXTURE_UNLIT) {
-        g_fixedLighting = TRUE;
+        g_fixedLighting = true;
     }
     if (wallSet == WALL_TEXTURE_MAP_OVERRIDE) {
         area = GetMapArea();

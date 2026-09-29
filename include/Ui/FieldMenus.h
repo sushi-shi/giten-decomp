@@ -19,13 +19,13 @@ void PartyPickerHandler(MenuBox* menu, i16 index, i16 event);
 i16 CancelItemTargetMenu(i16 command);
 
 // The field item-use flow (game state) and its user lookup.
-i16 RunItemUse(void);
+b16 RunItemUse(void);
 i16 FindFirstAbleMemberPosition(void);
 
 i16 CancelFieldTargetMenu(i16 command);
 
 // The field skill-use flow (game state), its pick and its preset member.
-i16 RunFieldSkillUse(void);
+b16 RunFieldSkillUse(void);
 void SetSkillPick(i16 position);
 void SetFieldSkillUser(i16 id);
 

@@ -54,6 +54,6 @@ i16 ReadGemItems(FILE* fp);
 // The game state that lets the player give a gem item to the script's
 // actor from a menu (phase 0 opens it, 2 runs it, 1 closes it); the item
 // raises the actor's familiarity.
-i16 RunGemItemGift(void);
+b16 RunGemItemGift(void);
 
 #endif // GITEN_GAME_GEMITEMS_H

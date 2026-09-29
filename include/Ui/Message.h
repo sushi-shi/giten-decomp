@@ -6,7 +6,7 @@
 #include <Ints.h>
 
 void PushTextWindowState(const char* text);
-i16 RunTextWindowState(void);
+b16 RunTextWindowState(void);
 
 void SetMessageLifetime(i16 ticks);
 i16 SetMessageHold(i16 hold);
@@ -14,7 +14,7 @@ i16 RefreshMessageWindow(void);
 i16 StartMessageTimer(i16 ticks, i16 hold);
 i16 OpenMessageText(void);
 void TickMessageWindow(void);
-i16 FinishMessageScene(void);
+b16 FinishMessageScene(void);
 
 // The message window, created on first use (a kind-15 text plane).
 RVA_DECL(0x000025c0)

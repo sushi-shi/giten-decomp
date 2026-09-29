@@ -42,11 +42,13 @@ i16 OpenItemInfoPlane(i16 item);
 
 i16 DrawEquipPickRow(i16 member, i16 part, i32 attr);
 
+// The game step the status screen last ran; RunStatusCommands redraws the
+// stat totals when it leaves step 8.
+extern i16 g_previousStatusStep;
+// The zero-initialized empty battle-skill label.
+extern char g_emptyBattleSkillLabel[];
 // The zero-initialized empty picker label.
 extern char g_emptyEquipPickLabel[];
-
-// Count slots for equipment kinds 11 through 19; ammunition is handled separately.
-extern const i16 g_equipCountSlots[9];
 
 // The equipment part under the cursor, or -1 when none is picked. Reset
 // forgets the selection; clear restores its normal appearance before forgetting it.

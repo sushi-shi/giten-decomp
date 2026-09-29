@@ -17,7 +17,7 @@ extern i16 g_targetId;
 
 // @identity-TODO: pushes game state 0x18 (a prompt/wait window) with five
 // parameters; returns 1 when one is already up.
-i16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode);
+b16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode);
 
 static __inline void PushFieldUsePrompt(void) {
     Vec3 position;
@@ -55,7 +55,7 @@ typedef struct FieldActor {
 i16 DistanceToParty(FieldActor* actor);
 
 // Whether map cell x/y lies inside the current automap viewport.
-i16 IsCellInView(i16 x, i16 y);
+b16 IsCellInView(i16 x, i16 y);
 
 i16 CellCodeDiffers(i16 code, i16 x, i16 y);
 
@@ -86,7 +86,7 @@ RVA_DECL(0x00058040)
 void DecodeLayerImageAlt(struct BmpFile* data, i16 layer, i32 size);
 
 RVA_DECL(0x00057f20)
-i16 DecodeLayerImage(struct BmpFile* data, i16 layer, i32 size);
+b16 DecodeLayerImage(struct BmpFile* data, i16 layer, i32 size);
 
 // @identity-TODO: a helper of the random spawn: the cell code under the party.
 i16 GetPartyCellCode(void);

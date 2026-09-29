@@ -139,7 +139,7 @@ i16 PollMenuBox(MenuBox* menu) {
 }
 
 RVA(0x000209e0, 0xa4)
-i16 HandleMenuControl(MenuBox* menu, i16 control) {
+b16 HandleMenuControl(MenuBox* menu, i16 control) {
     i16 cursor = menu->cursor;
     switch (control) {
         case MENU_CONTROL_PREVIOUS_PAGE:
@@ -170,7 +170,7 @@ i16 HandleMenuControl(MenuBox* menu, i16 control) {
     if (cursor != menu->cursor) {
         RequestMenuRedraw(menu);
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00020a90, 0x32)

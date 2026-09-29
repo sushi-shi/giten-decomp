@@ -51,7 +51,7 @@ from giten.tool.wine import era_tool, run, winepath
 #: is static GUID data, contributes no descriptor, so it rides at the end.
 LINK_LIBS = ["libc.lib",
              "kernel32.lib", "user32.lib", "gdi32.lib", "advapi32.lib",
-             "ddraw.lib", "dsound.lib", "dinput.lib", "winmm.lib", "dxguid.lib"]
+             "ddraw.lib", "dsound.lib", "dinput.lib", "winmm.lib", "dxguid.lib", "uuid.lib"]
 
 #: LIBC defines _WinMainCRTStartup; the game defines the _WinMain@16 it calls.
 ENTRY = "WinMainCRTStartup"

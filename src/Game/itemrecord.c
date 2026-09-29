@@ -40,21 +40,52 @@
 #include <stdio.h>
 #include <string.h>
 
-// The gem gift menu and the item id its rows start from.
-DATA(0x00080104)
-static i16 s_giftItemBase;
-DATA(0x00080108)
-static MenuBox* s_giftMenu;
+DATA(0x0007fe60)
+ItemStack g_gemItems[16] = {0};
+
+DATA(0x0007fea0)
+ItemStack g_itemPool[64] = {0};
+
+DATA(0x0007ffa0)
+ItemStack g_bagItems[64] = {0};
+
+// The record of the item whose effect is being applied.
+DATA(0x000800a0)
+static ItemRecord s_usedItem = {0};
+
+// The loaded item records, auxiliary index, and item remapping table.
+DATA(0x000800e8)
+static i32 s_itemDataHandle = 0;
+
+DATA(0x000800ec)
+static i32 s_itemIndexHandle = 0;
+
+DATA(0x000800f0)
+i32 g_itemRemapHandle = 0;
+
+// Shared text buffers for the decoded item name and description.
+DATA(0x000800f4)
+char* g_itemNameText = 0;
+
+DATA(0x000800f8)
+char* g_itemDescriptionText = 0;
 
 // Nonzero while bag stores are quiet (see SetBagQuiet).
 DATA(0x000800fc)
-static i16 s_bagQuiet;
+static i16 s_bagQuiet = 0;
 
 // The first id of the sixteen gem items (g_gemItems): ResetGemItems
 // sets it, GemItemIndex maps a gem id back to its index by subtracting
 // it; an item slot's 5-bit `attachment` hold such an index.
 DATA(0x00080100)
-static i16 s_gemItemBase;
+static i16 s_gemItemBase = 0;
+
+// The gem gift menu and the item id its rows start from.
+DATA(0x00080104)
+static i16 s_giftItemBase = 0;
+
+DATA(0x00080108)
+static MenuBox* s_giftMenu = 0;
 
 // The event flag each timed item clears when it expires.
 DATA(0x00068f38)
@@ -73,38 +104,8 @@ static TimedItemFlag s_timedItemFlags[8] = {
 DATA(0x00064650)
 static const i16 s_giftFamiliarity[16] = {2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60};
 
-// The record of the item whose effect is being applied.
-DATA(0x000800a0)
-static ItemRecord s_usedItem;
-
-DATA(0x0007fe60)
-ItemStack g_gemItems[16];
-
-DATA(0x0007fea0)
-ItemStack g_itemPool[64];
-
-DATA(0x0007ffa0)
-ItemStack g_bagItems[64];
-
 DATA(0x000919a0)
 DropSlot g_dropSlots[16];
-
-// The loaded item records, auxiliary index, and item remapping table.
-DATA(0x000800e8)
-static i32 s_itemDataHandle;
-
-DATA(0x000800ec)
-static i32 s_itemIndexHandle;
-
-DATA(0x000800f0)
-i32 g_itemRemapHandle;
-
-// Shared text buffers for the decoded item name and description.
-DATA(0x000800f4)
-char* g_itemNameText;
-
-DATA(0x000800f8)
-char* g_itemDescriptionText;
 
 DATA(0x000911c0)
 ItemRecord g_loadedItem;
@@ -490,16 +491,16 @@ i16 RollItemAmount(i16 item, i16 count, i16 random) {
 }
 
 RVA(0x000235a0, 0x50)
-i16 IsEquipCurseActive(Character* character, i16 part) {
+b16 IsEquipCurseActive(Character* character, i16 part) {
     ItemSlot slot = GetEquipSlot(character, part);
     ItemRecord* record;
 
     if (slot.item < 1) {
-        return 0;
+        return false;
     }
     record = GetLoadedRecord(slot.item);
     if (GetItemCurse(record) == 0) {
-        return 0;
+        return false;
     }
     return GetItemCurseLevel(record) > character->level;
 }
@@ -755,7 +756,7 @@ i16 RestoreBagEntries(ItemStackList* list) {
 }
 
 RVA(0x00023b40, 0xb1)
-i32 PooledItemsFit(void) {
+b32 PooledItemsFit(void) {
     i16 previousQuiet = SetBagQuiet(1);
     ItemStackList* savedBag = CopyBagEntries(0, 64, NULL);
     ItemStack* savedGems = SaveGemItems(NULL);
@@ -1672,18 +1673,18 @@ i16 ScaleDamageByEquipment(Character* character, i16 damage, i16 element) {
 }
 
 RVA(0x00025350, 0x48)
-i16 IsItemGuardingElement(i16 item, i16 element) {
+b16 IsItemGuardingElement(i16 item, i16 element) {
     if (item < 1) {
-        return 0;
+        return false;
     }
     DecodeItemRecord(&g_loadedItem, item);
     if (GetItemEquipCode(&g_loadedItem) < 0) {
-        return 0;
+        return false;
     }
     if (element >= 2 && element <= 5 && element == GetEquipmentAttribute(&g_loadedItem)) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x000253a0, 0x104)
@@ -1847,7 +1848,7 @@ i16 ResolveInflictedCondition(i16 code, Character* target) {
 
 RVA(0x00025840, 0x7c)
 void InflictCondition(i16 code, Character* target) {
-    i16 had = HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE);
+    b16 had = HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE);
     i16 condition = ResolveInflictedCondition(code, target);
 
     if (condition >= 1) {
@@ -1880,92 +1881,92 @@ i16 IsConditionResisted(Character* target, i16 code) {
 }
 
 RVA(0x000259d0, 0x1c4)
-i16 ItemResistsCondition(i16 item, i16 condition) {
+b16 ItemResistsCondition(i16 item, i16 condition) {
     if (item < 1) {
-        return 0;
+        return false;
     }
     DecodeItemRecord(&g_loadedItem, item);
     if (GetItemEquipCode(&g_loadedItem) < 0) {
-        return 0;
+        return false;
     }
     switch (GetItemPassiveEffectCode(&g_loadedItem)) {
         case 0x77:
             if (condition == 4) {
-                return 1;
+                return true;
             }
             break;
         case 0x78:
             if (condition == 5) {
-                return 1;
+                return true;
             }
             break;
         case 0x79:
             if (condition == 6 || condition == 0x15) {
-                return 1;
+                return true;
             }
             break;
         case 0x7a:
             if (condition == 0xc) {
-                return 1;
+                return true;
             }
             break;
         case 0x7b:
             if (condition == 0x19 || condition == 0xd) {
-                return 1;
+                return true;
             }
             break;
         case 0x7c:
             if (condition == 0x12 || condition == 0x1c || condition == 0x10) {
-                return 1;
+                return true;
             }
             break;
         case 0x7d:
             if (condition == 0x1c) {
-                return 1;
+                return true;
             }
             break;
         case 0x7e:
             if (condition == 0x10) {
-                return 1;
+                return true;
             }
             break;
         case 0x7f:
             if (condition == 0xe) {
-                return 1;
+                return true;
             }
             break;
         case 0x80:
             if (condition == 0xf || condition == 0x20) {
-                return 1;
+                return true;
             }
             break;
         case 0x81:
             if (condition == 0x14) {
-                return 1;
+                return true;
             }
             break;
         case 0x82:
             if (condition == 0x16) {
-                return 1;
+                return true;
             }
             break;
         case 0x83:
             if (condition == 0x18) {
-                return 1;
+                return true;
             }
             break;
         case 0x84:
             if (condition == 0x1b || condition == 0x1a || condition == 0x1d) {
-                return 1;
+                return true;
             }
             break;
         case 0x85:
             if (condition == 0x16 || condition == 6 || condition == 0x15) {
-                return 1;
+                return true;
             }
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00025ba0, 0x40)
@@ -2077,7 +2078,7 @@ static MenuBox* CreateGiftMenu(MenuBox* old);
 static void GiftMenuHandler(MenuBox* menu, i16 index, i16 event);
 
 RVA(0x00025e70, 0xf0)
-i16 RunGemItemGift(void) {
+b16 RunGemItemGift(void) {
     i16 pick;
     Character* actor;
 
@@ -2109,7 +2110,7 @@ i16 RunGemItemGift(void) {
             TakeBagItems(s_giftItemBase + g_selectedObjectId, 1);
             break;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00025f60, 0x50)

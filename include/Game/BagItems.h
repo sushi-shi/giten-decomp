@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 // The bag's storage and the item module's own bag helpers.
-// Codegen constraint: kept apart from <Game/ItemBag.h>, which equipscreen.c
+// Codegen constraint: kept apart from <Game/ItemBag.h>, which statuspanel.c
 // and skilluse.c include and whose declaration count their codegen follows.
 
 // The party's 64-entry item bag.
@@ -67,7 +67,7 @@ i16 SetBagQuiet(i16 quiet);
 
 // Whether the curse of the item equipped in `part` applies to `character`:
 // the item has a curse and the character's level is below its minimum.
-i16 IsEquipCurseActive(Character* character, i16 part);
+b16 IsEquipCurseActive(Character* character, i16 part);
 
 // The item category of `id`'s kind: 0..7 for kinds 11..19, -1 otherwise.
 // @identity-TODO: what the categories name is unrecovered.

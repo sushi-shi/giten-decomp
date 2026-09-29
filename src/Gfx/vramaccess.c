@@ -10,17 +10,17 @@
 // @identity-TODO: two 32-byte checkerboard tiles (and the inverse) plus a
 // cleared word, written at startup; no code in the image reads them.
 DATA(0x00091300)
-static u32 s_checkerPattern[8];
+u32 g_checkerPattern[8];
 
 DATA(0x00091320)
-static u32 s_checkerPatternInverse[8];
+u32 g_checkerPatternInverse[8];
 
 DATA(0x000716fc)
 static i16 s_patternState;
 
 RVA(0x000028a0, 0x4)
-i16 SaveDrawState(void) {
-    return 0;
+b16 SaveDrawState(void) {
+    return false;
 }
 
 RVA(0x000028b0, 0x1)
@@ -58,30 +58,30 @@ RVA(0x00002970, 0x2e)
 void InitCheckerPatterns(void) {
     i16 i;
     for (i = 0; i < 8; i++) {
-        s_checkerPattern[i] = 0x55aa55aa;
+        g_checkerPattern[i] = 0x55aa55aa;
     }
     for (i = 0; i < 8; i++) {
-        s_checkerPatternInverse[i] = 0xaa55aa55;
+        g_checkerPatternInverse[i] = 0xaa55aa55;
     }
     s_patternState = 0;
 }
 
 RVA(0x000029a0, 0x4)
-i16 SaveScreenState(void) {
-    return 0;
+b16 SaveScreenState(void) {
+    return false;
 }
 
 // @identity-TODO: this unused screen-state result's original role is unknown.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000029b0, 0x4)
-i16 GetLegacyScreenStateToken(void) {
-    return 0;
+b16 GetLegacyScreenStateToken(void) {
+    return false;
 }
 
 RVA(0x000029c0, 0x4)
-i16 SaveCellState(void) {
-    return 0;
+b16 SaveCellState(void) {
+    return false;
 }
 
 RVA(0x000029d0, 0x1)

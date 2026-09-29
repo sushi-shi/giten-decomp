@@ -2,6 +2,10 @@
   description = "Giten Megami Tensei: Tokyo Mokushiroku (Windows DDS.EXE, 1999) decompilation - Linux matching build environment";
 
   inputs = {
+    decomp-permuter-src = {
+      url = "github:simonlindholm/decomp-permuter/059609d4aec73eb0650726772954e1ad575825f8";
+      flake = false;
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/64c08a7ca051951c8eae34e3e3cb1e202fe36786";
 
     rust-overlay = {
@@ -32,7 +36,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, rust-overlay, vostok-delinker-src, objdiff-src }:
+  outputs = { self, nixpkgs, rust-overlay, vostok-delinker-src, objdiff-src, decomp-permuter-src }:
     let
       system = "x86_64-linux";
 
@@ -307,6 +311,7 @@
           # subdir (it walks up to find flake.nix; so must we). git toplevel is
           # worktree-aware, which is exactly right for the worker pool.
           export GITEN_DIR="$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")"
+          export GITEN_DECOMP_PERMUTER="${decomp-permuter-src}"
           # The pristine retail image, and the build copy every consumer reads:
           # build/exe/DDS.EXE = retail + the synthesized .reloc (reloc_image edge).
           export GITEN_RETAIL_EXE="''${GITEN_RETAIL_EXE:-$GITEN_DIR/build/local/DDS.EXE}"

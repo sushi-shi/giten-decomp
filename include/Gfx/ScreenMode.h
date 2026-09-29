@@ -21,7 +21,7 @@ void SaveScreenMode(void);
 RVA_DECL(0x00049c80)
 void RestoreScreenMode(void);
 
-// @identity-TODO: that 0x1de40 (called with g_field.pos by value via 0x1e6f0) draws the first-
+// @identity-TODO: that 0x1de40 (called with g_party.field.pos by value via 0x1e6f0) draws the first-
 // person view is inferred; decode 0x1de40.
 RVA_DECL(0x00049fa0)
 void RedrawFieldView(void);
