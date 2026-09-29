@@ -3,8 +3,8 @@
 
 #include <Enums.h>
 
-// The steps of a game state that runs a menu box (the debug, system and DDS
-// menus, by phase, step or sub-state): open it, close it, run it, and from
+// The steps of a game state that runs a menu box (the debug, system, DDS and
+// gift menus, by phase, step or sub-state): open it, close it, run it, and from
 // MENU_STEP_PICK_FIRST on, run row n of the menu at MENU_STEP_PICK_FIRST + n.
 GZ_ENUM_BEGIN(MenuStateStep)
     MENU_STEP_OPEN = 0,

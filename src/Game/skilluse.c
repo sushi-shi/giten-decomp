@@ -1863,7 +1863,7 @@ b16 RunFieldSkillUse(void) {
 
         case SKILL_USE_PHASE_PICK_SKILL:
             s_skillPicked = RunListMenu(s_fieldMenu);
-            if (s_skillPicked == -2) {
+            if (s_skillPicked == LIST_MENU_CANCELLED) {
                 PrevGamePhase();
             }
             if (s_skillPicked < 0) {

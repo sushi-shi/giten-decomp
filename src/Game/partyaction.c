@@ -1443,7 +1443,7 @@ b16 RunFieldState(void) {
     SetFieldRenderMode();
     SetInfoBarLayout(0);
     switch ((u16)GetGamePhase()) {
-        case 0:
+        case FIELD_ENCOUNTER_PHASE_ENTER:
             switch ((u16)GetGameStep()) {
                 case 0:
                     ClearSceneSurfaces();
@@ -1468,7 +1468,7 @@ b16 RunFieldState(void) {
                     break;
             }
             break;
-        case 1:
+        case FIELD_ENCOUNTER_PHASE_TURNS:
             if (HasTurnElapsed() && TickPartyConditions()) {
                 RequestFieldRefresh();
             }
@@ -1490,7 +1490,7 @@ b16 RunFieldState(void) {
             }
             if (!GetPickMode()) {
                 if (PickAnalyzeTarget() >= 0) {
-                    SetGamePhase(5);
+                    SetGamePhase(FIELD_ENCOUNTER_PHASE_ANALYZE);
                     return FlushFieldScreen();
                 }
                 if (g_pendingTalk) {
@@ -1524,13 +1524,13 @@ b16 RunFieldState(void) {
             PushWaitState(WAIT_FRAMES, 0x3c, 0x3c, 0);
             ClearEncounterPending();
             return UpdateFieldScreen(false);
-        case 2:
+        case FIELD_ENCOUNTER_PHASE_BACK_OUT:
             SetFieldStatusBit0(0);
             CloseMessageWindow();
             RestoreDrawState(SaveDrawState());
             PrevGamePhase();
             return UpdateFieldScreen(false);
-        case 3:
+        case FIELD_ENCOUNTER_PHASE_REWARDS:
             PlaySoundEffect(0x1b);
             NextGamePhase();
             ResetRosterStatModifiers();
@@ -1546,7 +1546,7 @@ b16 RunFieldState(void) {
             }
             ModifyEventFlag(s_fieldPairFirst, s_fieldPairSecond, 1);
             return FlushFieldScreen();
-        case 4:
+        case FIELD_ENCOUNTER_PHASE_LEVEL_UPS:
             if (GrantBattleRewards()) {
                 CloseMessageWindow();
                 PushScreenFade(SCREEN_FADE_FROM_BLACK, 1);
@@ -1560,15 +1560,15 @@ b16 RunFieldState(void) {
             }
             s_fieldPairFirst = 0;
             s_fieldPairSecond = 0;
-            SetGamePhase(6);
+            SetGamePhase(FIELD_ENCOUNTER_PHASE_TEAR_DOWN);
             return FlushFieldScreen();
-        case 5:
+        case FIELD_ENCOUNTER_PHASE_ANALYZE:
             if (RunAnalyzeWindow()) {
-                SetGamePhase(1);
+                SetGamePhase(FIELD_ENCOUNTER_PHASE_TURNS);
                 return FlushFieldScreen();
             }
             break;
-        case 6:
+        case FIELD_ENCOUNTER_PHASE_TEAR_DOWN:
             PlaySoundEffect(0x1b);
             CloseMessageWindow();
             ResetFieldObjects();
@@ -2355,12 +2355,12 @@ i16 RunMemberPickMenu(i16 id) {
         }
     }
     result = RunListMenu(s_pickMenu);
-    if (result == -1) {
+    if (result == LIST_MENU_OPEN) {
         return result;
     }
-    if (result == -2) {
+    if (result == LIST_MENU_CANCELLED) {
         s_pickMenu = CloseListMenu(s_pickMenu);
-        return -2;
+        return LIST_MENU_CANCELLED;
     }
     s_pickMenu = CloseListMenu(s_pickMenu);
     character->pickTarget = g_selectedObjectId;

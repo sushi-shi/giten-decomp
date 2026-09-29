@@ -694,7 +694,7 @@ b16 ReplaceRosterMember(void) {
             NextGamePhase();
         case 1:
             selected = RunStatusListPicker(false);
-            if (selected == -1 || selected == -2) {
+            if (selected == LIST_MENU_OPEN || selected == LIST_MENU_CANCELLED) {
                 break;
             }
             NextGamePhase();
@@ -2726,7 +2726,7 @@ b16 RunItemUse(void) {
 
         case ITEM_USE_PHASE_PICK_ITEM:
             picked = RunListMenu(s_itemMenu);
-            if (picked == -2) {
+            if (picked == LIST_MENU_CANCELLED) {
                 PrevGamePhase();
             }
             if (picked < 0) {

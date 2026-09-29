@@ -949,7 +949,7 @@ i16 RunEquipScreen(i16 key) {
                 s_equipPage.pick = key;
                 return STATUS_COMMAND_NONE;
             }
-            if (RunListMenu(s_equipPage.menu) == -1) {
+            if (RunListMenu(s_equipPage.menu) == LIST_MENU_OPEN) {
                 part = PollEquipPart(g_statusMember, EQUIP_PICK_PART);
                 if (part == -2) {
                     PrevGameSub();
@@ -1323,7 +1323,7 @@ i16 RunAttachScreen(i16 sub) {
                 s_attach.resume = -2;
                 return STATUS_COMMAND_NONE;
             }
-            if (RunListMenu(s_attach.itemMenu) == -1 || g_selectedObjectId < 0) {
+            if (RunListMenu(s_attach.itemMenu) == LIST_MENU_OPEN || g_selectedObjectId < 0) {
                 break;
             }
             NextGameSub();
@@ -1344,7 +1344,7 @@ i16 RunAttachScreen(i16 sub) {
                 s_attach.resume = -2;
                 return STATUS_COMMAND_NONE;
             }
-            if (RunListMenu(s_attach.entryMenu) == -1) {
+            if (RunListMenu(s_attach.entryMenu) == LIST_MENU_OPEN) {
                 sub = PollEquipPart(g_statusMember, EQUIP_PICK_ATTACH_TARGET);
                 if (sub == STATUS_COMMAND_CANCEL) {
                     SetGameSub(MENU_STEP_CLOSE);
@@ -1598,7 +1598,7 @@ i16 RunItemPage(i16 sub) {
                 s_itemPage.pick = sub;
                 return STATUS_COMMAND_NONE;
             }
-            if (RunListMenu(s_itemPage.menu) == -1) {
+            if (RunListMenu(s_itemPage.menu) == LIST_MENU_OPEN) {
                 break;
             }
             NextGameSub();
@@ -1818,7 +1818,7 @@ i16 RunSkillPage(i16 sub) {
                 s_skillPage.pick = sub;
                 return STATUS_COMMAND_NONE;
             }
-            if (RunListMenu(s_skillPage.menu) == -1) {
+            if (RunListMenu(s_skillPage.menu) == LIST_MENU_OPEN) {
                 break;
             }
             NextGameSub();

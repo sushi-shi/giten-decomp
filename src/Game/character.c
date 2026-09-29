@@ -2840,16 +2840,16 @@ i16 SetStatusColumn(i16 column) {
 
 RVA(0x000409a0, 0x74)
 i16 RunStatusListPicker(i16 close) {
-    i16 result = -2;
+    i16 result = LIST_MENU_CANCELLED;
     if (!close) {
         if (!s_statusListMenu) {
             s_statusListMenu = CreateStatusListMenu(NULL);
         }
         result = RunListMenu(s_statusListMenu);
-        if (result == -1) {
-            return -1;
+        if (result == LIST_MENU_OPEN) {
+            return LIST_MENU_OPEN;
         }
-        if (result != -2) {
+        if (result != LIST_MENU_CANCELLED) {
             result = g_selectedObjectId;
         }
     }

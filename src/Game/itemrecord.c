@@ -29,8 +29,8 @@
 #include <Game/ItemRecord.h>
 #include <Game/Pool.h>
 #include <Game/SpecialItems.h>
-#include <Game/StateStack.h>
 #include <Game/StatUpdate.h>
+#include <Game/StateStack.h>
 #include <Input/Mouse.h>
 #include <Input/MouseClickState.h>
 #include <Mem/Alloc.h>
@@ -44,6 +44,7 @@
 #include <Text/TextWindow.h>
 #include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
+#include <Ui/MenuStep.h>
 #include <Util/BitChangeMode.h>
 #include <Util/Range.h>
 #include <Util/Scratch.h>
@@ -2203,22 +2204,22 @@ b16 RunGemItemGift(void) {
     Character* actor;
 
     switch (GetGamePhase()) {
-        case 0:
-            SetGamePhase(2);
+        case MENU_STEP_OPEN:
+            SetGamePhase(MENU_STEP_RUN);
             s_giftItemBase = GetGemItemBase();
             s_giftMenu = CreateGiftMenu(s_giftMenu);
             break;
-        case 1:
+        case MENU_STEP_CLOSE:
             s_giftMenu = DestroyMenuBox(s_giftMenu);
             ReturnFromGameState();
             break;
-        case 2:
+        case MENU_STEP_RUN:
             pick = RunListMenu(s_giftMenu);
-            if (pick == -1) {
+            if (pick == LIST_MENU_OPEN) {
                 break;
             }
             PrevGamePhase();
-            if (pick == -2) {
+            if (pick == LIST_MENU_CANCELLED) {
                 break;
             }
             actor = GetScriptActor();
