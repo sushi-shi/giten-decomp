@@ -89,3 +89,49 @@ src/Game/fieldview.c	*	*	*	*array*[ ]s_view*	row and column of the 4x7 view-cell
 *	*	*	call-argument	ScaleActionValue(*argument 3	a multiplier
 *	*	*	call-argument	ResetTextPlaneLineStep(*argument 2	the text line step in rows
 *	*	*	call-argument	RunPickTargetWindow(*argument 1	the minimum target range
+src/Text/font.cpp	s_hotspotAreas	*	data-or-extent	*	hotspot rectangles in pixels and the text-plane kind each is drawn on; the areas' roles are unrecovered (@identity-TODO)
+src/Game/worldtravel.c	s_travelWeights	*	data-or-extent	*	world-travel weight table; what the values count is unrecovered
+src/Game/clock.c	s_kindFirstRow	*	data-or-extent	*	first image row of each cell kind (-1 none)
+src/Game/clock.c	s_imageFirstRow	*	data-or-extent	*	first image row of each cell image (-1 none)
+src/Game/statusmenu.c	s_statusMenu	*	data-or-extent	*	panel layout: position, row count, row ids and flags
+src/Game/fieldscreen.c	s_fieldPanel	*	data-or-extent	*	panel layout: position, row count, row ids and flags
+src/Game/fieldscreen.c	s_worldPanel	*	data-or-extent	*	panel layout: position, row count, row ids and flags
+src/Game/fieldscreen.c	s_commandPanel	*	data-or-extent	*	panel layout: position, row count, row ids and flags
+src/Game/character.c	s_recoveryChance	*	data-or-extent	*	per-condition chance (of 256) to wear off
+src/Game/fieldview.c	s_viewCellOrder	*	data-or-extent	*	row and column of each view cell in occlusion order
+src/Game/fieldview.c	s_viewFloodMask	*	data-or-extent	*	view-grid cells visibility may spread through
+src/Game/fieldview.c	s_viewCellNumbers	*	data-or-extent	*	view-grid cell numbers
+src/Game/fieldview.c	s_unusedViewCellLists	*	data-or-extent	*	view-cell number runs (unused; @identity-TODO)
+src/Text/font.cpp	s_hotspotPlaneKinds	*	data-or-extent	*	text-plane kind of each hotspot area
+src/Game/debugmenu.c	s_debugEntries	*	data-or-extent	*	debug menu rows: flags and the scene value each starts
+src/Game/debugmenu.c	s_magicEntries	*	data-or-extent	*	magic test rows: flags and the skill-number step
+src/Game/treasurebox.c	g_npcTextures	*	data-or-extent	*	NPC texture slots, 0xffff when unloaded
+src/Platform/winmain.cpp	s_quadY	*	data-or-extent	*	quad vertex screen y in pixels
+src/Platform/winmain.cpp	s_enemySizes	*	data-or-extent	*	billboard size of each enemy frame in pixels
+src/Platform/winmain.cpp	s_wallCorners	*	data-or-extent	*	wall quad corner offsets in world units
+src/Game/character.c	s_affinity	*	data-or-extent	*	alignment affinity scores
+src/Game/itemrecord.c	s_timedItemFlags	*	data-or-extent	*	event flag numbers the timed items clear (the flags are unnamed)
+src/Game/itemrecord.c	s_giftFamiliarity	*	data-or-extent	*	familiarity each gem gift adds
+src/Platform/winmain.cpp	s_doorWidths	*	data-or-extent	*	door opening half-width per animation step
+src/Platform/winmain.cpp	s_doorEdgeU	*	data-or-extent	*	door texture edge u per animation step
+src/Script/scriptactor.c	s_rewardLevelThresholds	*	data-or-extent	*	reward roll thresholds
+src/Platform/d3dapp.cpp	g_identityMatrix	*	data-or-extent	*	the identity matrix
+src/Text/font.cpp	s_glyphRowOffset	*	data-or-extent	*	glyph-buffer offset of a glyph's first row by origin y
+src/Game/fieldscreen.c	s_worldBlocks	*	data-or-extent	*	world-map block origins (-1 unset)
+src/Game/statuspanel.c	s_statusCommandHotspots	*	data-or-extent	*	hotspot of each status command (-1 none)
+src/Platform/winmain.cpp	g_mapScreenOffsets	*	data-or-extent	*	world-map screen offsets in pixels
+src/Game/character.c	s_itemCountSlots	*	data-or-extent	*	ammoCounts entry of each equipment kind (-1 ammunition)
+src/Game/statuspanel.c	s_equipCountSlots	*	data-or-extent	*	ammoCounts entry of each equipment kind (-1 ammunition)
+src/Gfx/bitmapio.cpp	s_textureDiffuse	*	data-or-extent	*	texture diffuse colour components
+src/Platform/winmain.cpp	s_cellCorner	*	data-or-extent	*	room cell corner offsets in world units
+src/Platform/winmain.cpp	s_cameraOffsets	*	data-or-extent	*	camera offset per facing in world units
+src/Platform/winmain.cpp	s_billboardAxes	*	data-or-extent	*	billboard axis per facing
+src/Game/statusmenu.c	s_switchedItems	*	data-or-extent	*	status menu items switched together (@identity-TODO)
+src/Game/treasurebox.c	s_unusedWordTable	*	data-or-extent	*	unread words (@identity-TODO)
+src/Gfx/vram.c	g_pixelMasks	*	data-or-extent	*	bit of each pixel in a byte, most significant first
+src/Platform/winmain.cpp	s_turnImageCodesRight	*	data-or-extent	*	image variant per turn step (negative mirrors)
+src/Platform/winmain.cpp	s_turnImageCodesLeft	*	data-or-extent	*	image variant per turn step (negative mirrors)
+src/Text/font.cpp	s_padPositions	*	data-or-extent	*	navigation pad button positions in pixels
+include/*	*	*	data-or-extent	*	array extent of a record field
+src/Game/worldtravel.c	g_worldTravelTerrainFlags	*	data-or-extent	*	the terrain bit (bit 0) each world-map cell code sets in its travel score
+src/Game/fieldscreen.c	g_worldMapOverlayFlags	89	data-or-extent	*	the table's length: one flag per world-map tile variant

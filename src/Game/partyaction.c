@@ -215,7 +215,19 @@ static i16 (*s_commandLabels[])(Character*) = {
 };
 
 DATA(0x00068450)
-static i16 s_actionConditions[] = {7, 17, 30, 14, 18, 16, 27, 28, 29, 26, -1};
+static i16 s_actionConditions[] = {
+    CONDITION_POSSESSION,
+    CONDITION_CHARM,
+    CONDITION_DRUNK,
+    CONDITION_PANIC,
+    CONDITION_CONFUSION,
+    CONDITION_HALLUCINATION,
+    CONDITION_HIGH,
+    CONDITION_HAPPY,
+    CONDITION_TIPSY,
+    CONDITION_BERSERK,
+    CONDITION_LIST_END
+};
 
 RVA(0x00005a80, 0x86)
 i16 PickPartyMember(i16 index) {

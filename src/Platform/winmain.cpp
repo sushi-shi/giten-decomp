@@ -2820,7 +2820,16 @@ void DrawSceneSprites(void) {
 
 // The order BlitScreenLayers walks the first layers in when asked to.
 DATA(0x0006bc38)
-static i32 s_layerOrder[8] = {14, 8, 9, 10, 11, 12, 13, 0};
+static i32 s_layerOrder[8] = {
+    SCREEN_LAYER_TEXT,
+    SCREEN_LAYER_FIRST_PANEL,
+    SCREEN_LAYER_FIRST_PANEL + 1,
+    SCREEN_LAYER_FIRST_PANEL + 2,
+    SCREEN_LAYER_FIRST_PANEL + 3,
+    SCREEN_LAYER_FIRST_PANEL + 4,
+    SCREEN_LAYER_FIRST_PANEL + 5,
+    SCREEN_LAYER_MENU_BAR
+};
 
 RVA(0x0004e1d0, 0xfd)
 void BlitScreenLayers(i32 first, i32 last, u32 flags) {

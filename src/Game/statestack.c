@@ -112,7 +112,20 @@
 
 // The conditions a level-up cures.
 DATA(0x00064540)
-static const i16 s_levelUpCures[] = {17, 26, 27, 28, 14, 18, 19, 29, 23, 16, 10, -1};
+static const i16 s_levelUpCures[] = {
+    CONDITION_CHARM,
+    CONDITION_BERSERK,
+    CONDITION_HIGH,
+    CONDITION_HAPPY,
+    CONDITION_PANIC,
+    CONDITION_CONFUSION,
+    CONDITION_DANCE,
+    CONDITION_TIPSY,
+    CONDITION_BLIND,
+    CONDITION_HALLUCINATION,
+    CONDITION_STUN,
+    CONDITION_LIST_END
+};
 
 // The party's world-map position (initially 286, 192).
 DATA(0x00068a48)

@@ -161,9 +161,13 @@ static WorldMapBlock s_worldBlocks[6] = {
 
 DATA(0x00068730)
 i16 g_worldMapOverlayFlags[89] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1,
-    1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    false, false, false, false, false, false, false, false, false, false, true,  false, false,
+    false, false, false, false, false, true,  true,  false, false, false, false, false, false,
+    false, true,  true,  false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, true,  true,  false, false, false, false, false, false,
+    true,  true,  false, false, false, false, false, true,  true,  false, false, false, false,
+    false, false, true,  true,  false, false, false, false, false, false, false, true,  true,
+    true,  false, false, false, false, false, false, false, false, false, true,
 };
 
 // The field panel: nine command rows (their ids pick the command; flag

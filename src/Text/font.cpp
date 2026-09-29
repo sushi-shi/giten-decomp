@@ -3142,7 +3142,7 @@ s_layerSize[SCREEN_LAYER_COUNT] = {
 
 DATA(0x0006cf20)
 static b32 s_layerHasWorkSurface[SCREEN_LAYER_COUNT] =
-    {0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0};
+    {false, false, true, true, true, true, true, false, true, true, true, true, true, true, false};
 
 DATA(0x0006cf60)
 static BITMAPINFO s_glyphInfo = {{sizeof(BITMAPINFOHEADER), 16, 16, 1, 24}};
