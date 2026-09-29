@@ -40,6 +40,7 @@
 #include <Game/InfoBar.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
+#include <Game/ItemId.h>
 #include <Game/ItemMenu.h>
 #include <Game/ItemPool.h>
 #include <Game/ItemRecord.h>
@@ -555,8 +556,8 @@ void OpJumpUnlessPlayerInLine(i16 invert) {
             g_party.field.pos.x,
             g_party.field.pos.y
         );
-        if ((offset.x == 0 && offset.y <= 0 && invert == 0)
-            || ((offset.x != 0 || offset.y > 0) && invert != 0)) {
+        if ((offset.x == 0 && offset.y <= 0 && invert == false)
+            || ((offset.x != 0 || offset.y > 0) && invert != false)) {
             matches = true;
         }
     }
@@ -1634,7 +1635,7 @@ void OpJumpUnlessPlayerInView(i16 invert) {
         ((FieldActor*)g_curScript->actor)->pos.x,
         ((FieldActor*)g_curScript->actor)->pos.y
     );
-    if ((seen == true && invert == 0) || (seen == false && invert == 1)) {
+    if ((seen == true && invert == false) || (seen == false && invert == true)) {
         jump = 1;
     }
     ScriptJumpUnless(target, jump);
@@ -1679,7 +1680,7 @@ void OpJumpUnlessPlayerNearFront(i16 invert) {
             coord.y
         )
         > 4) {
-        if (invert != 0) {
+        if (invert != false) {
             jump = 1;
         }
     } else {
@@ -1690,7 +1691,7 @@ void OpJumpUnlessPlayerNearFront(i16 invert) {
             coord.y,
             ((FieldActor*)g_curScript->actor)->direction
         );
-        if ((side == 0 && invert == 0) || (side != 0 && invert == 1)) {
+        if ((side == 0 && invert == false) || (side != 0 && invert == true)) {
             jump = 1;
         }
     }
@@ -1705,7 +1706,7 @@ void OpJumpUnlessPlayerAtRange(i16 invert) {
     i16 range = g_curScript->actor->triggerRange;
     i16 target = ReadBranchTarget();
     if (GetFieldMarker()) {
-        jump = invert == 0;
+        jump = invert == false;
     } else {
         i16 distance = DistanceToParty((FieldActor*)g_curScript->actor);
         if ((range != distance && invert) || (range == distance && !invert)) {
@@ -1720,13 +1721,13 @@ void OpJumpUnlessActorVisible(i16 invert) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
     if (GetFieldMarker()) {
-        jump = invert == 0;
+        jump = invert == false;
     } else {
         b16 view = GetPartyView(
             ((FieldActor*)g_curScript->actor)->pos.x,
             ((FieldActor*)g_curScript->actor)->pos.y
         );
-        if ((invert == 0 && view) || (invert == 1 && !view)) {
+        if ((invert == false && view) || (invert == true && !view)) {
             jump = 1;
         }
     }
@@ -1871,8 +1872,8 @@ void OpJumpUnlessHeroEquipped(i16 invert) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
     Character* player = ResolveScriptObject(-1);
-    if ((GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item != -1 && !invert)
-        || (GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item == -1 && invert)) {
+    if ((GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item != ITEM_ID_EMPTY && !invert)
+        || (GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item == ITEM_ID_EMPTY && invert)) {
         jump = 1;
     }
     ScriptJumpUnless(target, jump);
@@ -1968,7 +1969,7 @@ void OpIfHasAllItems(i16 negate) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
     i16 item;
-    for (item = ReadScriptValue(); item != -1; item = ReadScriptValue()) {
+    for (item = ReadScriptValue(); item != ITEM_ID_EMPTY; item = ReadScriptValue()) {
         i16 held = CountHeldItem(item) ? -1 : 0;
         all &= held;
         any |= held;
@@ -2154,7 +2155,7 @@ void OpClearBagEntry(void) {
     ItemStack* entry = GetBagEntry(ReadScriptValue());
     entry->count = 0;
     entry->hasAttachment = false;
-    entry->item = -1;
+    entry->item = ITEM_ID_EMPTY;
     entry->attachment = 0;
 }
 

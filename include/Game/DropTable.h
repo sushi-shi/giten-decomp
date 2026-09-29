@@ -1,6 +1,7 @@
 #ifndef GITEN_GAME_DROPTABLE_H
 #define GITEN_GAME_DROPTABLE_H
 
+#include <Game/ItemId.h>
 #include <Ints.h>
 
 // An item dropped for the party: the item id (-1 when empty) and the amount.
@@ -17,7 +18,7 @@ static __inline DropSlot* GetDropSlot(i16 slot) {
 }
 
 static __inline void ClearDropSlot(i16 slot) {
-    GetDropSlot(slot)->item = -1;
+    GetDropSlot(slot)->item = ITEM_ID_EMPTY;
     GetDropSlot(slot)->amount = 0;
 }
 

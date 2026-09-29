@@ -771,7 +771,7 @@ i16 GetWallStopCode(u16 cell, GZ_ENUM_PARAM(WallStopMode, i16) mode) {
         cell = RotateByDirection(cell, 3);
         stop = WallStops(cell, mode);
         if (stop == 2) {
-            stop = 1;
+            stop = true;
         }
         if (stop == 3) {
             stop = 2;

@@ -119,7 +119,7 @@ void PaintMenuBox(MenuBox* menu) {
     ClearPanelChecksAgain(menu->list);
     PaintPanel(menu->list, menu->plane);
     DispatchMenuEvent(menu, 0, MENU_EVENT_AFTER_PANEL);
-    menu->flagBits.redraw = 0;
+    menu->flagBits.redraw = false;
 }
 
 RVA(0x00020990, 0x46)

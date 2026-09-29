@@ -401,7 +401,7 @@ b16 InitFieldObjects(void) {
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         s_objects[i].layer = FIELD_LAYER_NONE;
-        s_objects[i].redraw = 0;
+        s_objects[i].redraw = false;
         s_objects[i].anim = 0;
         s_objects[i].script = NULL;
         InitWordList(&s_objects[i].list, 0);
@@ -432,7 +432,7 @@ void RemoveFieldObject(i16 index, i16 announce) {
         }
     }
     s_objects[index].layer = FIELD_LAYER_NONE;
-    s_objects[index].redraw = 0;
+    s_objects[index].redraw = false;
     s_objects[index].anim = 0;
     s_objects[index].script = FreeScriptBlock(s_objects[index].script);
     s_objects[index].hidden = false;
@@ -522,7 +522,7 @@ i16 SpawnFieldObject(
     LoadObjectRecord(kind, &s_objects[slot]);
     s_objects[slot].slot = slot;
     s_objects[slot].event = event;
-    s_objects[slot].redraw = 0;
+    s_objects[slot].redraw = false;
     s_objects[slot].anim = 0;
     s_objects[slot].layer = layer;
     s_objects[slot].byte21a = 0;
@@ -688,8 +688,8 @@ i16 FlushObjectRedraws(void) {
     i16 drawn = 0;
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
-        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].redraw != 0) {
-            s_objects[i].redraw = 0;
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].redraw != false) {
+            s_objects[i].redraw = false;
             RedrawFieldView();
             drawn |= 1;
         }
@@ -754,7 +754,7 @@ b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 dr
     sprite = s_facingSprite[facing];
     CellToField(g_viewLateral, g_viewDepth, FIELD_SUBCELL_CENTER, &cell);
     frame = GetLayerFrame(image, 0, cell.z);
-    redraw = object->redraw != 0;
+    redraw = object->redraw != false;
     if (g_viewDepth == 0) {
         CellToField(g_viewLateral, 0, s_nearCells[total][drawn], &cell);
     } else {
@@ -768,7 +768,7 @@ b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 dr
         point.y = cell.y;
     }
     RefreshObjectDraw(sprite, point.x, point.y, g_viewDepth, redraw, object, frame, index);
-    object->redraw = 0;
+    object->redraw = false;
     return true;
 }
 
@@ -945,7 +945,7 @@ RVA(0x0000e5b0, 0x4f)
 i16 GetObjectImageCode(i16 index) {
     FieldObject* object = &s_objects[index];
     i16 imageCode = 0;
-    if (object->redraw != 0) {
+    if (object->redraw != false) {
         imageCode = 4;
     } else if (object->anim != 0) {
         imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
@@ -962,7 +962,7 @@ i16 GetObjectFacingImageCode(i16 index) {
     FieldObject* object = &s_objects[index];
     i16 imageCode =
         s_facingImageCodes[RelativeFacing(g_party.field.pos.direction, object->direction)];
-    if (object->redraw != 0) {
+    if (object->redraw != false) {
         imageCode = 4;
     } else if (object->anim != 0) {
         imageCode = FIELD_OBJECT_IMAGE_LIT | 4;

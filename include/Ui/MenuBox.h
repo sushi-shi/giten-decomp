@@ -95,7 +95,7 @@ typedef struct MenuBox {
 } MenuBox;
 
 static __inline void RequestMenuRedraw(MenuBox* menu) {
-    menu->flagBits.redraw = 1;
+    menu->flagBits.redraw = true;
 }
 
 MenuBox* DestroyMenuBox(MenuBox* menu);

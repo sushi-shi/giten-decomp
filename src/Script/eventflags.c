@@ -129,11 +129,11 @@ RVA(0x00039420, 0x52)
 i16 CheckFlagWord(u16* cond) {
     i16 set;
     if ((*cond & 0x7f) == 0x7f && (*cond & 0xff00) == 0xff00) {
-        set = 1;
+        set = true;
     } else {
         set = TestEventFlag(*cond & 0x7f, *cond >> 8);
     }
-    if ((set == 0 && !(*cond & 0x80)) || (set != 0 && (*cond & 0x80))) {
+    if ((set == false && !(*cond & 0x80)) || (set != false && (*cond & 0x80))) {
         return 1;
     }
     return set;
@@ -143,14 +143,14 @@ RVA(0x00039480, 0x5d)
 b16 MatchFlagWord(u16* cond) {
     i16 set;
     if ((*cond & 0x7f) == 0x7f && (*cond & 0xff00) == 0xff00) {
-        set = 1;
+        set = true;
     } else {
         set = TestEventFlag(*cond & 0x7f, *cond >> 8);
     }
-    if (set == 0 && !(*cond & 0x80)) {
+    if (set == false && !(*cond & 0x80)) {
         return true;
     }
-    if (set != 0 && (*cond & 0x80)) {
+    if (set != false && (*cond & 0x80)) {
         return true;
     }
     return false;
@@ -238,7 +238,7 @@ void OpTestEventFlag(void) {
     i16 set;
     ReadFlagOperand(&bank, &index);
     dest = ReadLongVarIndex();
-    set = 0;
+    set = false;
     if (bank != 14) {
         set = TestEventFlag(bank, index);
     } else if (object != NULL) {

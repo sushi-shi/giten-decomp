@@ -1543,7 +1543,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
     if (across <= 0 && (g_leftViewOcclusion[index] & 0x0f) != 0x0f) {
         stop = GetCellWallStop(direction, 3, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
-        if (stop == 1) {
+        if (stop == true) {
             AreObjectsHidden(view, across, along, -1);
         } else {
             GetCellWallStop(direction, 3, cell);
@@ -1552,7 +1552,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
     if (across >= 0 && (g_rightViewOcclusion[index] & 0x0f) != 0x0f) {
         stop = GetCellWallStop(direction, 1, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
-        if (stop == 1) {
+        if (stop == true) {
             AreObjectsHidden(view, across, along, 1);
         } else {
             GetCellWallStop(direction, 1, cell);
@@ -1561,7 +1561,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
     if (across < 0 && (g_leftViewOcclusion[index] & 0xf0) != 0xf0) {
         stop = GetCellWallStop(direction, 0, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
-        if (stop == 1) {
+        if (stop == true) {
             AreObjectsHidden(view, across, along, 0);
         } else {
             GetCellWallStop(direction, 0, cell);
@@ -1570,7 +1570,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
     if (across > 0 && (g_rightViewOcclusion[index] & 0xf0) != 0xf0) {
         stop = GetCellWallStop(direction, 0, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
-        if (stop == 1) {
+        if (stop == true) {
             AreObjectsHidden(view, across, along, 0);
         } else {
             GetCellWallStop(direction, 0, cell);
@@ -1579,7 +1579,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
     if (across == 0) {
         stop = GetCellWallStop(direction, 0, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
-        if (stop == 1) {
+        if (stop == true) {
             AreObjectsHidden(view, 0, along, 0);
         } else {
             GetCellWallStop(direction, 0, cell);

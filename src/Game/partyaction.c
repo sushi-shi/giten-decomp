@@ -32,6 +32,7 @@
 #include <Game/Growth.h>
 #include <Game/Guest.h>
 #include <Game/ItemEffect.h>
+#include <Game/ItemId.h>
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
 #include <Game/PartyAction.h>
@@ -984,7 +985,7 @@ i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
     switch (actor->pickRole) {
         case PICK_ROLE_ATTACK:
             *condition = 0;
-            if (GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item != -1) {
+            if (GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item != ITEM_ID_EMPTY) {
                 *condition = GetEquipmentInflictedCondition(
                     GetLoadedRecord(GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item)
                 );
@@ -1813,7 +1814,7 @@ i16 GetCombatantSideRelation(void) {
 }
 
 static __inline void AddArmorSlotHitModifier(ItemSlot* slot, i16* modifier) {
-    if (slot->item != -1) {
+    if (slot->item != ITEM_ID_EMPTY) {
         *modifier += GetArmorHitModifier(GetLoadedRecord(slot->item));
     }
 }
@@ -2600,14 +2601,14 @@ i16 GetMemberPickRange(i16 id) {
     }
     if (role == 1) {
         item = GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item;
-        if (item == 0 || item == -1) {
+        if (item == 0 || item == ITEM_ID_EMPTY) {
             return 1;
         }
         return GetItemAttackRange(GetLoadedRecord(item));
     }
     if (role == 2) {
         item = GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item;
-        if (item == 0 || item == -1) {
+        if (item == 0 || item == ITEM_ID_EMPTY) {
             return 1;
         }
         return 3;

@@ -67,11 +67,11 @@ RVA(0x00041990, 0x26)
 i16 PollStatusMenu(void) {
     i16 item;
     if (TakeMouseCancelSound()) {
-        return -2;
+        return STATUS_COMMAND_CANCEL;
     }
     item = PollPanel(&s_statusMenu.panel);
-    if (item == -1) {
-        return -1;
+    if (item == STATUS_COMMAND_NONE) {
+        return STATUS_COMMAND_NONE;
     }
     return item;
 }

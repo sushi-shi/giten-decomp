@@ -1308,7 +1308,7 @@ i16 RunAttachScreen(i16 sub) {
             PollEquipPart(g_statusMember, EQUIP_PICK_CLEAR);
             if (s_attach.redraw) {
                 DrawStatusScreen(g_statusMember);
-                s_attach.redraw = 0;
+                s_attach.redraw = false;
             }
             SetStatusMenuItemFlag(9, PANEL_ROW_CHECKED, false);
             if (s_attach.resume == -1) {
@@ -1419,7 +1419,7 @@ i16 RunAttachScreen(i16 sub) {
             SetGameSub(MENU_STEP_CLOSE);
             s_attach.plane = CloseTextWindow(s_attach.plane);
             RecalcCharacterStats(GetRosterCharacter(g_statusMember));
-            s_attach.redraw = 1;
+            s_attach.redraw = true;
             s_attach.resume = -1;
             return STATUS_COMMAND_NONE;
     }

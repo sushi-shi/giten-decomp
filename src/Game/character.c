@@ -33,6 +33,7 @@
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
 #include <Game/ItemEffect.h>
+#include <Game/ItemId.h>
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
 #include <Game/ModeFlags.h>
@@ -2656,7 +2657,7 @@ void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part) {
     ClearItemSlot(&empty);
     item = GetRosterEquipSlot(slot, part);
     SetEquipSlot(slot, part, empty, 1);
-    if (item.item != -1 && item.item != 0) {
+    if (item.item != ITEM_ID_EMPTY && item.item != 0) {
         if (item.quantity < 1) {
             item.quantity = 1;
         }
@@ -2735,7 +2736,7 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
     ItemSlot old = SwapEquipSlot(slot, item, &result);
     if (result != -1) {
         Character* character = GetRosterCharacter(slot);
-        if (item.item != -1) {
+        if (item.item != ITEM_ID_EMPTY) {
             i16 kind = GetItemKind(item.item);
             if (kind != 13) {
                 TakeBagItemsAt(index, item.item, item.quantity);
@@ -2752,7 +2753,7 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
                 }
             }
         }
-        if (old.item != -1) {
+        if (old.item != ITEM_ID_EMPTY) {
             if (old.quantity < 1) {
                 old.quantity = 1;
             }
