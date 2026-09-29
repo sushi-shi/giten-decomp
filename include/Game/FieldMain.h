@@ -7,9 +7,29 @@
 #include <Ints.h>
 
 #include <stdio.h>
+#include <Enums.h>
 
 // The macca a battle awards (GrantBattleRewards pays it out).
 extern i32 g_rewardMacca;
+
+// The phases of the field exploration state (RunFieldExploration): load the
+// area, enter the party's cell, explore, run a cell event, resume exploring
+// or run the analyze window, end an event, fade out and return to the return
+// point, or fade out and leave for the world map.
+GZ_ENUM_BEGIN(FieldPhase)
+    FIELD_PHASE_LOAD_AREA = 0,
+    FIELD_PHASE_ENTER_CELL = 1,
+    FIELD_PHASE_EXPLORE = 2,
+    FIELD_PHASE_CELL_EVENT = 3,
+    FIELD_PHASE_RESUME = 4,
+    FIELD_PHASE_RESUME_ALIAS = 5,
+    FIELD_PHASE_ANALYZE = 6,
+    FIELD_PHASE_END_EVENT = 7,
+    FIELD_PHASE_FADE_TO_RETURN_POINT = 8,
+    FIELD_PHASE_RETURN_TO_RETURN_POINT = 9,
+    FIELD_PHASE_FADE_TO_WORLD_MAP = 10,
+    FIELD_PHASE_CLOSE = 11
+GZ_ENUM_END(FieldPhase)
 
 b16 RunFieldExploration(void);
 

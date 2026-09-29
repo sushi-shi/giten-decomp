@@ -1430,7 +1430,7 @@ b16 RunFieldTextScene(void) {
             g_fieldRedrawRequest = 1;
             if (g_worldMapRequest < 0) {
                 SetGameState(GAME_STATE_FIELD_EXPLORATION);
-                SetGamePhase(8);
+                SetGamePhase(FIELD_PHASE_FADE_TO_RETURN_POINT);
             } else if (g_worldMapRequest > 0) {
                 SetGameState(GAME_STATE_FIELD_EXPLORATION);
             }
