@@ -2154,22 +2154,22 @@ void OpClearBagEntry(void) {
     entry->attachment = 0;
 }
 
-// @early-stop: the item and its remapped id swap registers (esi/edi); the
-// permuter's search is flat.
 RVA(0x00035a90, 0x88)
 void OpTakeDropSlot(void) {
     i16 slot = ReadScriptValue();
     i16 itemVar = ReadLongVarIndex();
     i16 amountVar = ReadLongVarIndex();
     i16 item = GetDropSlot(slot)->item;
-    i16 amount = GetDropSlot(slot)->amount;
+    i16 count = GetDropSlot(slot)->amount;
     i16 remapped;
+    i16 amount;
     ClearDropSlot(slot);
     remapped = RemapItem(item);
     if (remapped) {
-        amount = RollDropAmount(item, amount);
+        amount = RollDropAmount(item, count);
     } else {
         remapped = item;
+        amount = count;
     }
     SetScriptLongVar(itemVar, remapped);
     SetScriptLongVar(amountVar, amount);
