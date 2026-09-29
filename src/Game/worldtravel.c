@@ -20,6 +20,7 @@
 #include <Input/Mouse.h>
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
+#include <Text/TextAttr.h>
 #include <Util/Range.h>
 #include <Util/Scratch.h>
 
@@ -477,7 +478,14 @@ void DrawWorldMapPlaceName(i16 place) {
         s_shownPlace = place;
         saved = SaveDrawState();
         ClearLocationCaption();
-        DrawLayerText(SCREEN_LAYER_LOCATION, 8, 8, g_scratchBuffer, 0x3400);
+        DrawLayerText(
+            SCREEN_LAYER_LOCATION,
+            8,
+            8,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1
+                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
         RestoreDrawState(saved);
     }
 }

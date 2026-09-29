@@ -590,7 +590,13 @@ void ActorCommandMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
             break;
         case MENU_EVENT_BEGIN_PAGE:
             FormatFullName(g_scratchBuffer, actor);
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x2460, -1, MENU_LINE_DISABLED);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                -1,
+                MENU_LINE_DISABLED
+            );
             break;
         case MENU_EVENT_ADD_ROW:
             if (index < 8) {
@@ -598,12 +604,20 @@ void ActorCommandMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     AddMenuLine(
                         menu->plane,
                         g_unavailableCommandText,
-                        0x2500,
+                        TEXT_ATTR_FLAG1
+                            | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
                         index + 1,
                         MENU_LINE_DISABLED
                     );
                 } else {
-                    AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, index + 1, 0);
+                    AddMenuLine(
+                        menu->plane,
+                        g_scratchBuffer,
+                        TEXT_ATTR_FLAG1
+                            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                        index + 1,
+                        0
+                    );
                 }
             }
             break;

@@ -39,6 +39,7 @@
 #include <Script/EventFlags.h>
 #include <Script/Script.h>
 #include <Script/ScriptVars.h>
+#include <Text/TextAttr.h>
 #include <Text/TextWindow.h>
 #include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
@@ -2156,7 +2157,7 @@ static void DiscardMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent
         case MENU_EVENT_BEGIN_PAGE:
             // "アイテム削除" (delete item)
             sprintf(g_scratchBuffer, "\203\101\203\103\203\145\203\200\215\355\217\234");
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, 1);
 #ifdef GITEN_BUGFIX
             if (menu->itemCount == 0) {
                 // "アイテムを持ちきれません" (the item cannot be carried)
@@ -2178,7 +2179,13 @@ static void DiscardMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent
                 GetLoadedRecordName(GetBagItem(entries[index])),
                 GetBagEntryCount(entries[index])
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, index, 0);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                index,
+                0
+            );
             break;
     }
 }
@@ -2251,9 +2258,21 @@ static void GiftMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                 count
             );
             if (count == 0) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x560, index, 2);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                    index,
+                    2
+                );
             } else {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x460, index, 0);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                    index,
+                    0
+                );
             }
             break;
     }

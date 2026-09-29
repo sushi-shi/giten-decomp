@@ -1101,15 +1101,42 @@ void DrawPartyStatusSlot(i16 slot, Character* character) {
     g_panelMembers[partySlot] = character;
     ShowScreenLayer(slot);
     sprintf(g_scratchBuffer, "%-16s", FormatFullName(name, character));
-    DrawLayerText(slot, 8, 8, g_scratchBuffer, 0x3450);
+    DrawLayerText(
+        slot,
+        8,
+        8,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%5d", character->pools.hp.cur);
-    DrawLayerText(slot, 144, 24, g_scratchBuffer, 0x9450);
+    DrawLayerText(
+        slot,
+        144,
+        24,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_HALF_WIDTH
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%5d", character->pools.mp.cur);
-    DrawLayerText(slot, 144, 40, g_scratchBuffer, 0x9450);
+    DrawLayerText(
+        slot,
+        144,
+        40,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_HALF_WIDTH
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK)
+    );
     DrawLayerGauge(slot, character->pools.hp.cur, character->pools.hp.max, 1);
     DrawLayerGauge(slot, character->pools.mp.cur, character->pools.mp.max, 0);
     sprintf(g_scratchBuffer, "%6s", GetFirstConditionName(GetCharacterConditions(character)));
-    DrawLayerText(slot, 8, 44, g_scratchBuffer, 0x1450);
+    DrawLayerText(
+        slot,
+        8,
+        44,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK)
+    );
 }
 
 static __inline void RefreshPartyStatusIfNeeded(i16 force) {
@@ -2838,11 +2865,29 @@ void StatusListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i1
         case MENU_EVENT_ADD_ROW:
             result = FormatStatusLine(slot, index);
             if (result == -1) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2500, slot, MENU_LINE_DISABLED);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+                    slot,
+                    MENU_LINE_DISABLED
+                );
             } else if (result >= 0) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, slot, 0);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                    slot,
+                    0
+                );
             } else {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2500, slot, MENU_LINE_DISABLED);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+                    slot,
+                    MENU_LINE_DISABLED
+                );
             }
             break;
     }

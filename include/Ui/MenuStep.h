@@ -1,7 +1,7 @@
 #ifndef GITEN_UI_MENUSTEP_H
 #define GITEN_UI_MENUSTEP_H
 
-#include <EnumDomain.h>
+#include <Enums.h>
 
 // The steps of a game state that runs a menu box (the debug, system and DDS
 // menus, by phase, step or sub-state): open it, close it, run it, and from

@@ -1615,7 +1615,7 @@ void DrawFusionSummaryGrid(void) {
             272 + (column - s_fusionColumnOffset) * 24,
             7,
             g_scratchBuffer,
-            0x1400
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
         );
         for (row = s_fusionMenu->cursor; row < s_fusionMenu->cursor + s_fusionMenu->pageRows;
              ++row) {
@@ -1705,12 +1705,18 @@ void FusionListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i1
                     || GetFusionPairSummaryCell(s_fusionSlots[index], g_fusionFirstSlot)
                                ->fields.kind
                            != -1)) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, s_fusionSlots[index], 0);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                    s_fusionSlots[index],
+                    0
+                );
             } else {
                 AddMenuLine(
                     menu->plane,
                     g_scratchBuffer,
-                    0x2500,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
                     s_fusionSlots[index],
                     MENU_LINE_DISABLED
                 );
@@ -1755,20 +1761,50 @@ RVA(0x000293f0, 0x192)
 void DrawFusionCharacterDetails(i16 plane, Character* character) {
     ClearTextPlane(plane);
     sprintf(g_scratchBuffer, "%4d  %4d", character->pools.hp.cur, character->pools.hp.max);
-    DrawPlaneText(plane, 56, 8, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        56,
+        8,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d  %3d", character->pools.mp.cur, character->pools.mp.max);
-    DrawPlaneText(plane, 56, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        56,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(
         g_scratchBuffer,
         " %s   %s",
         s_fusionAlignmentALabels[GetAlignmentClassA(character) + 1],
         s_fusionAlignmentBLabels[GetAlignmentClassB(character) + 1]
     );
-    DrawPlaneText(plane, 56, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        56,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", character->levelBonus);
-    DrawPlaneText(plane, 168, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        168,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", character->level);
-    DrawPlaneText(plane, 168, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        168,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     DrawFusionStatGroup(plane, 240, GetBattleStatGroup(character, 0));
     DrawFusionStatGroup(plane, 384, GetBattleStatGroup(character, 1));
     DrawFusionStatGroup(plane, 528, GetBattleStatGroup(character, 2));
@@ -1778,14 +1814,38 @@ RVA(0x00029590, 0xca)
 void DrawFusionStatGroup(i16 plane, i16 x, i16* stats) {
     i16 column = x;
     sprintf(g_scratchBuffer, "%3d", stats[3]);
-    DrawPlaneText(plane, column, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        column,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", stats[5]);
-    DrawPlaneText(plane, column, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        column,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", stats[2]);
     column += 72;
-    DrawPlaneText(plane, column, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        column,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", stats[4]);
-    DrawPlaneText(plane, column, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        column,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
 }
 
 RVA(0x00029660, 0x85)
@@ -1973,22 +2033,58 @@ void DrawFusionPreviewCard(i16 plane, Character* character) {
         GetDemonRaceName(character->id),
         g_fusionNameBuffer
     );
-    DrawPlaneText(plane, 16, 8, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        16,
+        8,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%4d  %4d", character->pools.hp.cur, character->pools.hp.max);
-    DrawPlaneText(plane, 56, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        56,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d  %3d", character->pools.mp.cur, character->pools.mp.max);
-    DrawPlaneText(plane, 56, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        56,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(
         g_scratchBuffer,
         " %s   %s",
         s_fusionAlignmentALabels[GetAlignmentClassA(character) + 1],
         s_fusionAlignmentBLabels[GetAlignmentClassB(character) + 1]
     );
-    DrawPlaneText(plane, 184, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        184,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", character->levelBonus);
-    DrawPlaneText(plane, 256, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        256,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", character->level);
-    DrawPlaneText(plane, 184, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        184,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
 }
 
 RVA(0x00029d90, 0x44)

@@ -495,7 +495,7 @@ i16 RunAnalyzeWindow(void) {
                 GetDemonRaceName(target->id),
                 target->namePrefix
             );
-            PrintWindowText(s_namePlane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_namePlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_namePlane, -2);
             s_step++;
             return 0;
@@ -510,7 +510,7 @@ i16 RunAnalyzeWindow(void) {
                     s_namePlane,
                     "\203A\203i\203\211\203C\203Y\203f\201[\203^"
                     "\202\252\202\240\202\350\202\334\202\271\202\361\n",
-                    0x400,
+                    TEXT_ATTR_DEFAULT,
                     1,
                     true
                 ); // アナライズデータがありません
@@ -527,35 +527,35 @@ i16 RunAnalyzeWindow(void) {
                 s_lightDarkLetters[GetAlignmentClassA(target) + 1],
                 s_lawChaosLetters[GetAlignmentClassB(target) + 1]
             );
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             sprintf(g_scratchBuffer, "\203\214\203x\203\213 L%2d\n", target->level); // レベル L%2d
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\202g\202o   %d/%d\n",
                 target->pools.hp.cur,
                 target->pools.hp.max
             ); // ＨＰ   %d/%d
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\202l\202o   %d/%d\n",
                 target->pools.mp.cur,
                 target->pools.mp.max
             ); // ＭＰ   %d/%d
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\221\324\223x   %s\n",
                 s_attitudeNames[target->attitude]
             ); // 態度   %s
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\217\363\221\324   %s\n",
                 GetFirstConditionName(GetCharacterConditions(target))
             ); // 状態   %s
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_dataPlane, -2);
             return 0;
 
@@ -579,7 +579,7 @@ i16 RunAnalyzeWindow(void) {
                 s_namePlane,
                 "\217\332\215\327\203A\203i\203\211\203C\203Y\202\265\202\334\202\267\202\251\201H"
                 "\n",
-                0x400,
+                TEXT_ATTR_DEFAULT,
                 1,
                 true
             ); // 詳細アナライズしますか？
@@ -646,7 +646,13 @@ static void AnalyzeMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent
             menu->itemCount = 0;
             break;
         case MENU_EVENT_ADD_ROW:
-            AddMenuLine(menu->plane, items[index], 0x1700, -index, 0);
+            AddMenuLine(
+                menu->plane,
+                items[index],
+                TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_YELLOW, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+                -index,
+                0
+            );
             break;
     }
 }
@@ -827,7 +833,8 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
                 AddMenuLine(
                     menu->plane,
                     g_scratchBuffer,
-                    0x3500,
+                    TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1
+                        | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
                     GetItemStackItem(entry),
                     MENU_LINE_DISABLED
                 );
@@ -948,13 +955,31 @@ void DrawItemMenuTotal(i16 plane, i32 total, i16 redraw, i16 line) {
             s_hideItemMenuTotal = false;
         }
         for (; line < 9; line++) {
-            AddMenuLine(plane, s_emptyItemLine, 0x1400, -1, MENU_LINE_DISABLED);
+            AddMenuLine(
+                plane,
+                s_emptyItemLine,
+                TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+                -1,
+                MENU_LINE_DISABLED
+            );
         }
-        AddMenuLine(plane, g_scratchBuffer, 0x1400, -1, MENU_LINE_DISABLED);
+        AddMenuLine(
+            plane,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+            -1,
+            MENU_LINE_DISABLED
+        );
     } else {
         sprintf(g_scratchBuffer, "\215\207\214\166 %10ld   ", total);
         SetTextPlaneCursorLine(plane, 16, 9);
-        PrintWindowText(plane, g_scratchBuffer, 0x1400, 1, true);
+        PrintWindowText(
+            plane,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+            1,
+            true
+        );
     }
 }
 
@@ -2526,7 +2551,14 @@ RVA(0x0001e790, 0xcf)
 void DrawMoneyCounter(i16 mode, i16 row, i32 value, i16 currency) {
     i32 attr = 0xffffb400;
     if (!currency) {
-        DrawLayerText(SCREEN_LAYER_CURRENCY, 8, 8, "       ", 0xb400);
+        DrawLayerText(
+            SCREEN_LAYER_CURRENCY,
+            8,
+            8,
+            "       ",
+            TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1 | TEXT_ATTR_HALF_WIDTH
+                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
         if (value < 1) {
             attr = 0xffffb500;
         }
@@ -2534,7 +2566,14 @@ void DrawMoneyCounter(i16 mode, i16 row, i32 value, i16 currency) {
         DrawLayerText(SCREEN_LAYER_CURRENCY, 8, 8, g_scratchBuffer, attr);
         DrawLayerText(SCREEN_LAYER_CURRENCY, 72, 8, "MAG", attr);
     } else {
-        DrawLayerText(SCREEN_LAYER_CURRENCY, 40, 32, "       ", 0xb400);
+        DrawLayerText(
+            SCREEN_LAYER_CURRENCY,
+            40,
+            32,
+            "       ",
+            TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1 | TEXT_ATTR_HALF_WIDTH
+                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
         if (value < 1) {
             attr = 0xffffb500;
         }
@@ -2548,7 +2587,14 @@ RVA(0x0001e860, 0x81)
 b16 DrawInfoBar(i16 layout, i16 partial) {
     DrawIconLayerImage(g_clock.moonPhase);
     sprintf(g_scratchBuffer, "%2d", g_clock.moonPhase + 1);
-    DrawLayerText(SCREEN_LAYER_MOON_PHASE, 8, 8, g_scratchBuffer, 0xb400);
+    DrawLayerText(
+        SCREEN_LAYER_MOON_PHASE,
+        8,
+        8,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1 | TEXT_ATTR_HALF_WIDTH
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     s_shownMoonPhase = g_clock.moonPhase;
     DrawMoneyCounters(layout);
     if (!partial || TestModeFlags(MODE_WORLD_MAP)) {
@@ -2567,9 +2613,23 @@ void DrawAreaInfo(void) {
     } else {
         FormatWorldMapLocation();
     }
-    DrawLayerText(SCREEN_LAYER_LOCATION, 8, 8, g_scratchBuffer, 0x3400);
+    DrawLayerText(
+        SCREEN_LAYER_LOCATION,
+        8,
+        8,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     floor = GetLevelFloor();
-    DrawLayerText(SCREEN_LAYER_LOCATION, 176, 8, "    ", 0xb400);
+    DrawLayerText(
+        SCREEN_LAYER_LOCATION,
+        176,
+        8,
+        "    ",
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1 | TEXT_ATTR_HALF_WIDTH
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     if (floor) {
         x = 176;
         if (floor < 0) {
@@ -2580,7 +2640,14 @@ void DrawAreaInfo(void) {
         } else {
             sprintf(g_scratchBuffer, " %2dF", floor);
         }
-        DrawLayerText(SCREEN_LAYER_LOCATION, x, 8, g_scratchBuffer, 0xb400);
+        DrawLayerText(
+            SCREEN_LAYER_LOCATION,
+            x,
+            8,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1 | TEXT_ATTR_HALF_WIDTH
+                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
     }
 }
 

@@ -3147,9 +3147,6 @@ static b32 s_layerHasWorkSurface[SCREEN_LAYER_COUNT] =
 DATA(0x0006cf60)
 static BITMAPINFO s_glyphInfo = {{sizeof(BITMAPINFOHEADER), 16, 16, 1, 24}};
 
-#define TEXT_COLOR_WHITE 4
-#define TEXT_COLOR_GREY 11
-
 DATA(0x0006cf90)
 static TextColor s_textPalette[16] = {
     {0x00, 0x00, 0x00},

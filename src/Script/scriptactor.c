@@ -4019,7 +4019,7 @@ PrintScriptChoice(i16 window, ScriptChoice** head, const char* text, i16 value, 
     choice->width = strlen(text);
     choice->value = value;
     choice->disabled = disabled;
-    PrintWindowText(window, text, 0x400, 0, true);
+    PrintWindowText(window, text, TEXT_ATTR_DEFAULT, 0, true);
     return choice;
 }
 

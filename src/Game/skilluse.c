@@ -47,6 +47,7 @@
 #include <Math/Vec3.h>
 #include <Script/EventFlags.h>
 #include <Sound/Sound.h>
+#include <Text/TextAttr.h>
 #include <Text/TextWindow.h>
 #include <Ui/FieldMenus.h>
 #include <Ui/Menu.h>
@@ -1269,7 +1270,13 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
             break;
         case MENU_EVENT_BEGIN_PAGE:
             FormatFullName(g_scratchBuffer, character);
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x2460, 0, 1);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                0,
+                1
+            );
             break;
         case MENU_EVENT_DESTROY:
             menu->items.character = NULL;

@@ -47,7 +47,7 @@ i16 DrawStatusLine(i16 x, i16 y, const char* text, i32 attr) {
 
 RVA(0x00041940, 0x1d)
 i16 DrawStatusLabel(i16 x, i16 y, const char* text) {
-    return DrawStatusLine(x, y, text, 0x400);
+    return DrawStatusLine(x, y, text, TEXT_ATTR_DEFAULT);
 }
 
 RVA(0x00041960, 0x1d)

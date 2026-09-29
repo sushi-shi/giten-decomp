@@ -27,6 +27,7 @@
 #include <Input/Mouse.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
+#include <Text/TextAttr.h>
 #include <Text/TextWindow.h>
 #include <Ui/MenuBox.h>
 #include <Ui/MenuStep.h>
@@ -282,13 +283,25 @@ static void SystemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent,
             } else {
                 sprintf(g_scratchBuffer, "<SYSTEM>");
             }
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, 1);
             break;
         case MENU_EVENT_ADD_ROW:
             if (TestModeFlags(MODE_WORLD_MAP) && entries[index].restricted) {
-                AddMenuLine(menu->plane, entries[index].label, 0x500, index, 1);
+                AddMenuLine(
+                    menu->plane,
+                    entries[index].label,
+                    TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+                    index,
+                    1
+                );
             } else {
-                AddMenuLine(menu->plane, entries[index].label, 0x2450, index, 0);
+                AddMenuLine(
+                    menu->plane,
+                    entries[index].label,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                    index,
+                    0
+                );
             }
             break;
     }

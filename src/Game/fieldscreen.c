@@ -1295,7 +1295,13 @@ b16 DrawFieldMessage(i16 code, i16 band, i16 marked) {
             y = 62;
             break;
     }
-    DrawBandText(x, y, g_scratchBuffer, 0x2650, band);
+    DrawBandText(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_GREEN, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+        band
+    );
     return true;
 }
 

@@ -117,7 +117,12 @@ static i16 DrawStatusExperience(i16 x, i16 y, Character* member) {
     i32 remaining;
 
     sprintf(g_scratchBuffer, "EXP %10ld", member->experience);
-    y = DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    y = DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     if (member->level >= 99) {
         strcpy(g_scratchBuffer, "\215\305\215\202\203\214\203\170\203\213\202\305\202\267");
     } else {
@@ -127,21 +132,41 @@ static i16 DrawStatusExperience(i16 x, i16 y, Character* member) {
         }
         sprintf(g_scratchBuffer, "NEXT %9ld", remaining);
     }
-    return DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    return DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
 }
 
 RVA(0x00041ba0, 0x89)
 static i16 DrawStatusPools(i16 x, i16 y, Character* member) {
     sprintf(g_scratchBuffer, "HP  %4d\201\136%4d", member->pools.hp.cur, member->pools.hp.max);
-    y = DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    y = DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "MP    %3d\201\136%3d", member->pools.mp.cur, member->pools.mp.max);
-    return DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    return DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
 }
 
 RVA(0x00041c30, 0xb3)
 static i16 DrawStatusLevel(i16 x, i16 y, Character* member) {
     sprintf(g_scratchBuffer, "LEVEL %8d", member->level);
-    y = DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    y = DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     if (IsHumanCharacter(member)) {
         strcpy(g_scratchBuffer, GetHumanTitleName(member->title));
     } else {
@@ -408,7 +433,13 @@ static i16 DrawStatList(i16 plane, Character* member) {
     for (stat = 0; stat < 10; stat++) {
         SetTextPlaneCursorLine(plane, 0, stat);
         sprintf(g_scratchBuffer, "%-6.6s %3d", g_statusStatNames[stat], GetStatTotal(member, stat));
-        PrintWindowText(plane, g_scratchBuffer, 0x1400, 0, true);
+        PrintWindowText(
+            plane,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+            0,
+            true
+        );
     }
     RepaintTextPlane(plane, -2);
     s_statPage.plane = plane;
@@ -526,7 +557,12 @@ i16 DrawStatTotals(i16 x, i16 y, Character* member, Character* compare) {
     for (stat = 0; stat < 10; stat++) {
         sprintf(g_scratchBuffer, "%-6.6s %7d", g_statusStatNames[stat], GetStatTotal(member, stat));
         if (!compare) {
-            y = DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+            y = DrawStatusLine(
+                x,
+                y,
+                g_scratchBuffer,
+                TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+            );
         } else {
             attr = 0x1400;
             if (GetStatTotal(member, stat) < GetStatTotal(compare, stat)) {
@@ -567,7 +603,13 @@ void DrawStatLine(Character* member, i16 stat, i16 highlight, i16 window) {
         );
         sprintf(g_scratchBuffer, "%-6.6s %3d", g_statusStatNames[stat], GetStatTotal(member, stat));
         SetTextPlaneCursorLine(window, 0, stat);
-        PrintWindowText(window, g_scratchBuffer, 0x1400, 0, true);
+        PrintWindowText(
+            window,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+            0,
+            true
+        );
     }
 }
 
@@ -596,7 +638,12 @@ static i16 DrawBattleStatColumn(i16 x, i16 y, i16* stats, i16 icon, i16 id) {
 RVA(0x000429c0, 0x35)
 static i16 DrawStatusNumber(i16 x, i16 y, i16 value) {
     sprintf(g_scratchBuffer, "%3d", value);
-    return DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    return DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
 }
 
 RVA(0x00042a00, 0xf3)
@@ -671,7 +718,7 @@ static void DrawAlignmentMarker(i16 slot, Character* member) {
     y = AlignmentChartCell(member->alignmentLevelA);
     SetTextPlaneCursorLine(s_alignmentPage.plane, x, y);
     sprintf(g_scratchBuffer, "%s", g_statusNumberLabels[slot + 1]);
-    DrawPlaneText(s_alignmentPage.plane, x * 8, y * 8, g_scratchBuffer, 0x700);
+    DrawPlaneText(s_alignmentPage.plane, x * 8, y * 8, g_scratchBuffer, TEXT_ATTR_NORMAL);
 }
 
 // Maps a signed alignment byte (-128..127) onto the 24-cell alignment chart,
@@ -1023,8 +1070,8 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
         case MENU_EVENT_DESTROY:
             break;
         case MENU_EVENT_BEGIN_PAGE:
-            AddMenuLine(menu->plane, s_equipHeaderA, 0x400, 0, MENU_LINE_DISABLED);
-            AddMenuLine(menu->plane, s_equipHeaderB, 0x400, 0, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_equipHeaderA, TEXT_ATTR_DEFAULT, 0, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_equipHeaderB, TEXT_ATTR_DEFAULT, 0, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             item = GetBagItem(s_equipEntries[index]);
@@ -1039,7 +1086,13 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
             if (member != NULL) {
                 GZ_ENUM_LOCAL(EquipPart, i16) category = GetItemCategory(item);
                 if (IsEquipCurseActive(member, category)) {
-                    AddMenuLine(menu->plane, g_scratchBuffer, 0x560, s_equipEntries[index], 1);
+                    AddMenuLine(
+                        menu->plane,
+                        g_scratchBuffer,
+                        TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                        s_equipEntries[index],
+                        1
+                    );
                     return;
                 }
                 record = GetLoadedRecord(item);
@@ -1052,7 +1105,7 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                         AddMenuLine(
                             menu->plane,
                             g_scratchBuffer,
-                            0x560,
+                            TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                             s_equipEntries[index],
                             MENU_LINE_DISABLED
                         );
@@ -1065,27 +1118,39 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                         AddMenuLine(
                             menu->plane,
                             g_scratchBuffer,
-                            0x760,
+                            TEXT_ATTR(TEXT_COLOR_YELLOW, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                             s_equipEntries[index],
                             MENU_LINE_DISABLED
                         );
                         return;
                     }
-                    AddMenuLine(menu->plane, g_scratchBuffer, 0x460, s_equipEntries[index], 0);
+                    AddMenuLine(
+                        menu->plane,
+                        g_scratchBuffer,
+                        TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                        s_equipEntries[index],
+                        0
+                    );
                     return;
                 }
                 if (LacksItemRequiredStats(member, record, 0)) {
                     AddMenuLine(
                         menu->plane,
                         g_scratchBuffer,
-                        0x760,
+                        TEXT_ATTR(TEXT_COLOR_YELLOW, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                         s_equipEntries[index],
                         MENU_LINE_DISABLED
                     );
                     return;
                 }
             }
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x460, s_equipEntries[index], 0);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                s_equipEntries[index],
+                0
+            );
             return;
     }
 }
@@ -1100,7 +1165,7 @@ void DrawEquipPanel(Character* member, Character* preview) {
 
     y = 0x28;
     for (i = 0; i < 4; i++) {
-        DrawPlaneText(s_equipPage.panelPlane, 8, y, g_statusBattleLabels[i + 1], 0x400);
+        DrawPlaneText(s_equipPage.panelPlane, 8, y, g_statusBattleLabels[i + 1], TEXT_ATTR_DEFAULT);
         y += 0x18;
     }
     if (preview == NULL) {
@@ -1299,7 +1364,7 @@ i16 RunAttachScreen(i16 sub) {
             NextGameSub();
             s_attach.plane = CreateTextPlane(0x12, 0);
             sprintf(g_scratchBuffer, "%s", GetLoadedRecordName(s_attach.item));
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             TakeBagItems(s_attach.item, 1);
             s_attach.item = AttachBagEntryItem(s_attach.target, s_attach.item);
             if (s_attach.item < 0) {
@@ -1314,7 +1379,7 @@ i16 RunAttachScreen(i16 sub) {
                     GetLoadedRecordName(s_attach.item)
                 );
             }
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_attach.plane, -2);
             PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
             return -1;
@@ -1327,7 +1392,7 @@ i16 RunAttachScreen(i16 sub) {
             NextGameSub();
             s_attach.plane = CreateTextPlane(0x12, 0);
             sprintf(g_scratchBuffer, "%s", GetLoadedRecordName(s_attach.item));
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             TakeBagItems(s_attach.item, 1);
             s_attach.item =
                 AttachEquipItem(g_statusMember, s_attach.target, s_attach.item - s_attach.itemBase);
@@ -1344,7 +1409,7 @@ i16 RunAttachScreen(i16 sub) {
                     GetLoadedRecordName(s_attach.item)
                 );
             }
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, true);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_attach.plane, -2);
             PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
             return -1;
@@ -1390,12 +1455,18 @@ static void AttachItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEv
                 AddMenuLine(
                     menu->plane,
                     g_scratchBuffer,
-                    0x560,
+                    TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                     index + s_attach.itemBase,
                     MENU_LINE_UNCHOOSABLE
                 );
             } else {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x460, index + s_attach.itemBase, 0);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                    index + s_attach.itemBase,
+                    0
+                );
             }
             break;
     }
@@ -1442,8 +1513,8 @@ static void AttachEntryMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuE
         case MENU_EVENT_DESTROY:
             break;
         case MENU_EVENT_BEGIN_PAGE:
-            AddMenuLine(menu->plane, s_attachHeaderA, 0x400, 0, MENU_LINE_DISABLED);
-            AddMenuLine(menu->plane, s_attachHeaderB, 0x400, 0, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_attachHeaderA, TEXT_ATTR_DEFAULT, 0, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_attachHeaderB, TEXT_ATTR_DEFAULT, 0, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             sprintf(
@@ -1453,7 +1524,13 @@ static void AttachEntryMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuE
                 GetLoadedRecordName(GetBagItem(s_attachEntries[index].entry)),
                 s_attachEntries[index].count
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x460, s_attachEntries[index].entry, 0);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                s_attachEntries[index].entry,
+                0
+            );
             break;
     }
 }
@@ -1473,7 +1550,7 @@ static void AttachTextHook(i16 plane, i16 event, i16 value) {
             break;
         case TEXT_EVENT_HIGHLIGHT:
             strcpy(g_scratchBuffer, GetItemDescription(value + s_attach.itemBase));
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, false);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, false);
             break;
     }
     RepaintTextPlane(s_attach.plane, -2);
@@ -1560,7 +1637,7 @@ static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                 "\217\212\216\235\203\101\203\103\203\145\203\200 %1d/8",
                 menu->cursor / 8 + 1
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, 1);
             break;
         case MENU_EVENT_ADD_ROW:
             item = GetItemStackItem(GetItemListEntry(s_itemPage.list, index));
@@ -1571,7 +1648,13 @@ static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                 GetLoadedRecordName(item),
                 GetItemStackCount(GetItemListEntry(s_itemPage.list, index))
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x460, item, 0);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                item,
+                0
+            );
             break;
     }
 }
@@ -1674,9 +1757,19 @@ DrawEquipLine(i16 part, i16 item, i16 attach, i16 x, i16 y, Character* character
         sprintf(g_scratchBuffer, "%c%-20.20s", ' ', s_emptyPartLabel);
     }
     if (item >= 1 && IsEquipCurseActive(character, GetItemCategory(item))) {
-        DrawStatusLine(x + 3, y + 1, g_scratchBuffer, 0x1500);
+        DrawStatusLine(
+            x + 3,
+            y + 1,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
     } else {
-        DrawStatusLine(x + 3, y + 1, g_scratchBuffer, 0x1400);
+        DrawStatusLine(
+            x + 3,
+            y + 1,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
     }
 }
 
@@ -1689,9 +1782,9 @@ i16 OpenItemInfoPlane(i16 item) {
 
     ClearTextPlane(plane);
     record = GetLoadedRecord(item);
-    PrintWindowText(plane, GetItemRecordName(record), 0x400, 0, true);
-    PrintWindowText(plane, "\n", 0x400, 0, true);
-    PrintWindowText(plane, record->description, 0x400, 0, true);
+    PrintWindowText(plane, GetItemRecordName(record), TEXT_ATTR_DEFAULT, 0, true);
+    PrintWindowText(plane, "\n", TEXT_ATTR_DEFAULT, 0, true);
+    PrintWindowText(plane, record->description, TEXT_ATTR_DEFAULT, 0, true);
     RepaintTextPlane(plane, -2);
     return plane;
 }
@@ -1735,7 +1828,7 @@ i16 RunSkillPage(i16 sub) {
             PrintWindowText(
                 s_skillPage.plane,
                 FilterTextMarks(GetSkillDescription(s_skillPage.pick), 1),
-                0x400,
+                TEXT_ATTR_DEFAULT,
                 0,
                 true
             );
@@ -1787,14 +1880,20 @@ static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                 "%-16.16s  MP  \214\370\211\312",
                 "\226\202\226\100\226\274\217\314"
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, MENU_LINE_DISABLED);
-            AddMenuLine(menu->plane, s_skillHeaderLine, 0x400, -1, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_skillHeaderLine, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             skill = skills[index];
             view = GetSkillView(skill);
             if (skill < 1) {
-                AddMenuLine(menu->plane, s_emptySkillLabel, 0x460, skill, MENU_LINE_DISABLED);
+                AddMenuLine(
+                    menu->plane,
+                    s_emptySkillLabel,
+                    TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                    skill,
+                    MENU_LINE_DISABLED
+                );
                 return;
             }
             if (SkillCostsFullPool(&view->parameters)) {
@@ -1817,7 +1916,13 @@ static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     FilterTextMarks(view->description, 0)
                 );
             }
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x460, skills[index], 0);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                skills[index],
+                0
+            );
             break;
     }
 }

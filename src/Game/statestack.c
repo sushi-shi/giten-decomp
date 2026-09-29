@@ -1018,7 +1018,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
             break;
         case MENU_EVENT_BEGIN_PAGE:
             sprintf(g_scratchBuffer, "<DDS>");
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_DESTROY:
             menu->items.text = NULL;
@@ -2002,12 +2002,12 @@ void ShowStatPointPrompt(i16 points) {
         "\203|"
         "\203C\203\223\203g\202\360\220U\202\350\225\252\202\257\202\304\202\255\202\276\202\263"
         "\202\242\n",
-        0x400,
+        TEXT_ATTR_DEFAULT,
         0,
         true
     );
     sprintf(g_scratchBuffer, "\214\343 %.1d \203|\203C\203\223\203g  \n", points);
-    PrintWindowText(s_pointPrompt, g_scratchBuffer, 0x400, 0, true);
+    PrintWindowText(s_pointPrompt, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
     RepaintTextPlane(s_pointPrompt, -2);
 }
 
@@ -2501,12 +2501,19 @@ void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) 
             }
             FormatFullName(g_scratchBuffer, character);
             if (enabled) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2460, entries->ids[index], 0);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1
+                        | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                    entries->ids[index],
+                    0
+                );
             } else {
                 AddMenuLine(
                     menu->plane,
                     g_scratchBuffer,
-                    0x2500,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
                     entries->ids[index],
                     MENU_LINE_DISABLED
                 );
@@ -2594,7 +2601,15 @@ MenuBox* OpenItemListMenu(void) {
 #define ItemUseInvokesSkill(kind) ((kind) == ITEM_KIND_WEAPON || (kind) == ITEM_KIND_ACCESSORY)
 
 static __inline void AddItemUseMenuLine(MenuBox* menu, i16 item, i16 disabled) {
-    AddMenuLine(menu->plane, g_scratchBuffer, disabled ? 0x2500 : 0x2470, item, disabled);
+    AddMenuLine(
+        menu->plane,
+        g_scratchBuffer,
+        disabled
+            ? TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+            : TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_YELLOW, TEXT_COLOR_BLACK),
+        item,
+        disabled
+    );
 }
 
 RVA(0x0001a240, 0x1bc)
@@ -2644,7 +2659,13 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
             AddItemUseMenuLine(menu, GetItemStackItem(GetItemListEntry(entries, index)), 0);
             return;
         case MENU_EVENT_BEGIN_PAGE:
-            AddMenuLine(menu->plane, "<\203A\203C\203e\203\200>", 0x2450, 0, MENU_LINE_DISABLED);
+            AddMenuLine(
+                menu->plane,
+                "<\203A\203C\203e\203\200>",
+                TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                0,
+                MENU_LINE_DISABLED
+            );
             return;
         case MENU_EVENT_DESTROY:
             menu->items.itemList = FreeBlock(entries);

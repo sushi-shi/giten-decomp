@@ -17,6 +17,7 @@
 #include <Platform/WinMain.h>
 #include <Platform/WinMM.h>
 #include <Sound/MidiStream.h>
+#include <Text/TextAttr.h>
 
 #include <math.h>
 #include <stdio.h>
@@ -5168,7 +5169,14 @@ b32 LoadGraphics(void) {
     if (failed) {
         return false;
     }
-    DrawLayerText(3, 24, 8, "\201^28" /* ／28 */, 0x3400);
+    DrawLayerText(
+        3,
+        24,
+        8,
+        "\201^28" /* ／28 */,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     return true;
 }
 
