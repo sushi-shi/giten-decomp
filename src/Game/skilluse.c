@@ -1894,19 +1894,34 @@ b16 RunFieldSkillUse(void) {
             }
             s_pickRange = GetSkillAttackRange(g_actionId);
             if (flags == 0x10) {
-                picked = RunPickTargetWindow(0, s_pickRange, 5, 0);
+                picked = RunPickTargetWindow(
+                    0,
+                    s_pickRange,
+                    TARGET_PICK_FIELD_OBJECT | TARGET_PICK_ROSTER_LIST,
+                    0
+                );
             } else if (flags == 0x11) {
-                picked = RunPickTargetWindow(0, s_pickRange, 4, 0);
+                picked = RunPickTargetWindow(0, s_pickRange, TARGET_PICK_ROSTER_LIST, 0);
             } else if (flags == 0x30) {
-                picked = RunPickTargetWindow(0, s_pickRange, 6, 0);
+                picked = RunPickTargetWindow(
+                    0,
+                    s_pickRange,
+                    TARGET_PICK_PARTY_SLOT | TARGET_PICK_ROSTER_LIST,
+                    0
+                );
             } else {
                 flags = 0;
-                picked = RunPickTargetWindow(0, s_pickRange, 3, 0);
+                picked = RunPickTargetWindow(
+                    0,
+                    s_pickRange,
+                    TARGET_PICK_FIELD_OBJECT | TARGET_PICK_PARTY_SLOT,
+                    0
+                );
             }
-            if (picked == -1) {
+            if (picked == TARGET_PICK_CANCELLED) {
                 SetGamePhase(SKILL_USE_PHASE_OPEN_SKILL_LIST);
             }
-            if (picked <= 0) {
+            if (picked <= TARGET_PICK_WAITING) {
                 break;
             }
             if (flags) {

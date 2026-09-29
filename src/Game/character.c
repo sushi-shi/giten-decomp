@@ -283,9 +283,9 @@ static i32 s_equipTable = 0;
 DATA(0x00083b3c)
 static MenuBox* s_statusListMenu = NULL;
 
-// Which of the five status-line columns the character status line shows.
+// Which roster filter the status list uses.
 DATA(0x00083b40)
-static i16 s_statusColumn = 0;
+static GZ_ENUM_STORAGE(StatusListColumn, i16) s_statusColumn = STATUS_LIST_ALL;
 
 DATA(0x00083b44)
 i16 g_statusSlotCount = 0;
@@ -1838,7 +1838,7 @@ Character* GetRosterCharacterById(i16 id, i16 inParty) {
 
 // An empty party position when `inParty`, else a free roster slot (-1: none).
 RVA(0x0003f450, 0x1c)
-i16 FindEmptySlot(i16 inParty) {
+i16 FindEmptySlot(b16 inParty) {
     if (inParty) {
         return FindPartySlot(-1);
     }
@@ -2014,7 +2014,7 @@ i16 AddToRoster(Character* character) {
     if (!IsHumanCharacter(character) && CountRosterEntries(false) >= 26) {
         return ROSTER_SLOT_NONE;
     }
-    slot = FindEmptySlot(0);
+    slot = FindEmptySlot(false);
     if (slot != -1) {
         SetRosterEntry(slot, character);
         if (IsHumanCharacter(character)) {
@@ -2052,7 +2052,7 @@ i16 RemoveFromRoster(i16 slot) {
 // full, a human member replaces the first non-human one.
 RVA(0x0003f8b0, 0x5a)
 i16 AddToParty(i16 slot) {
-    i16 index = FindEmptySlot(1);
+    i16 index = FindEmptySlot(true);
     if (index == -1) {
         i16 id = GetRosterId(slot);
         if (id >= 0 && id < HUMAN_ID_LIMIT) {
@@ -2834,8 +2834,8 @@ i16 CompareMacca(i16 who, i32 amount) {
 }
 
 RVA(0x00040980, 0x12)
-i16 SetStatusColumn(i16 column) {
-    i16 prev = s_statusColumn;
+GZ_ENUM_RETURN(StatusListColumn, i16) SetStatusColumn(GZ_ENUM_PARAM(StatusListColumn, i16) column) {
+    GZ_ENUM_LOCAL(StatusListColumn, i16) prev = s_statusColumn;
     s_statusColumn = column;
     return prev;
 }
@@ -2943,9 +2943,9 @@ i16 FormatStatusLine(i16 slot, i16 row) {
     sprintf(text, "%-6.6s", GetFirstConditionName(GetCharacterConditions(member)));
     strcat(g_scratchBuffer, text);
     switch (s_statusColumn) {
-        case 0:
+        case STATUS_LIST_ALL:
             break;
-        case 1:
+        case STATUS_LIST_SUMMONABLE:
             cost = GetSummonMagnetiteCost(member);
             sprintf(text, " %6ld", cost);
             strcat(g_scratchBuffer, text);
@@ -2959,7 +2959,7 @@ i16 FormatStatusLine(i16 slot, i16 row) {
                 return -2;
             }
             break;
-        case 2:
+        case STATUS_LIST_RESERVE_UNFLAGGED:
             if (FindPartySlot(slot) != PARTY_POSITION_NONE) {
                 return -1;
             }
@@ -2967,12 +2967,12 @@ i16 FormatStatusLine(i16 slot, i16 row) {
                 return -1;
             }
             break;
-        case 3:
+        case STATUS_LIST_UNFLAGGED:
             if (TestCharacterFlag(member, 0x40)) {
                 return -1;
             }
             break;
-        case 4:
+        case STATUS_LIST_RESERVE:
             if (FindPartySlot(slot) != PARTY_POSITION_NONE) {
                 return -1;
             }
@@ -3003,7 +3003,7 @@ i16 BuildStatusSlots(void) {
     Character* character;
     g_statusSlotCount = 0;
     for (slot = 0; slot < ROSTER_SIZE; slot++) {
-        if (s_statusColumn != 0) {
+        if (s_statusColumn != STATUS_LIST_ALL) {
             character = GetRosterCharacter(slot);
             if (character == NULL || IsHumanCharacter(character)) {
                 continue;

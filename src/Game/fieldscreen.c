@@ -561,34 +561,34 @@ b32 IsFieldPanelRowChecked(i16 row) {
 // in mode 0; rows 2, 3 and 5 in mode 1; 5, 6 and 7 in mode 2; 2, 3, 5 and 7
 // in mode 3. Rows 0, 1, 4 and 8 are always enabled.
 RVA(0x00014f20, 0x1f0)
-void SetFieldMenuMode(i16 mode) {
+void SetFieldMenuMode(GZ_ENUM_PARAM(FieldMenuMode, i16) mode) {
     SetPanelRowFlags(&s_fieldPanel.panel, 0, PANEL_INPUT_DISABLED, false);
     SetPanelRowFlags(&s_fieldPanel.panel, 1, PANEL_INPUT_DISABLED, false);
     SetPanelRowFlags(&s_fieldPanel.panel, 8, PANEL_INPUT_DISABLED, false);
     SetPanelRowFlags(&s_fieldPanel.panel, 4, PANEL_INPUT_DISABLED, false);
     switch (mode) {
-        case 0:
+        case FIELD_MENU_ALL:
             SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, false);
             SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, false);
             SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, false);
             SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, false);
             SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, false);
             break;
-        case 1:
+        case FIELD_MENU_NO_SKILL_ITEM_FIGHT:
             SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, true);
             SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, true);
             SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, true);
             SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, false);
             SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, false);
             break;
-        case 2:
+        case FIELD_MENU_NO_FIGHT_TALK_MAPPING:
             SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, false);
             SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, false);
             SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, true);
             SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, true);
             SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, true);
             break;
-        case 3:
+        case FIELD_MENU_NO_SKILL_ITEM_FIGHT_MAPPING:
             SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, true);
             SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, true);
             SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, true);
@@ -949,14 +949,14 @@ void FreeCommandMenuImage(void) {
 }
 
 RVA(0x00015870, 0x35)
-b16 SetFieldStatusBit11(i16 on) {
+b16 SetFieldStatusBit11(b16 on) {
     b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, 0x800);
     SetPanelRowFlags(&s_commandPanel.panel, 1, 0x800, on);
     return old;
 }
 
 RVA(0x000158b0, 0x2f)
-b16 SetFieldStatusBit0(i16 on) {
+b16 SetFieldStatusBit0(b16 on) {
     b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, PANEL_ROW_CHECKED);
     SetPanelRowFlags(&s_commandPanel.panel, 1, PANEL_ROW_CHECKED, on);
     return old;

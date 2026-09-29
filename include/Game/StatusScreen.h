@@ -86,7 +86,19 @@ i16 DrawStatTotals(i16 x, i16 y, Character* member, Character* compare);
 // buffer; returns the member's id, -1 when the row cannot be picked, -2 when
 // its cost cannot be paid.
 i16 FormatStatusLine(i16 slot, i16 row);
-i16 SetStatusColumn(i16 column);
+// The roster picker filter: all members, summonable reserve demons, reserve
+// demons without flag 0x40, all demons without that flag, reserve demons, or
+// any demon. Column 5 uses FormatStatusLine's default arm.
+GZ_ENUM_BEGIN_SPLIT(StatusListColumn, i16)
+    STATUS_LIST_ALL = 0,
+    STATUS_LIST_SUMMONABLE = 1,
+    STATUS_LIST_RESERVE_UNFLAGGED = 2,
+    STATUS_LIST_UNFLAGGED = 3,
+    STATUS_LIST_RESERVE = 4,
+    STATUS_LIST_DEMONS = 5
+GZ_ENUM_END_SPLIT(StatusListColumn)
+
+GZ_ENUM_RETURN(StatusListColumn, i16) SetStatusColumn(GZ_ENUM_PARAM(StatusListColumn, i16) column);
 i16 RunStatusListPicker(i16 close);
 i16 PickStatusMember(void);
 MenuBox* CreateStatusListMenu(MenuBox* parent);

@@ -39,9 +39,9 @@ i16 GetEncounterPending(void);
 // old bit.
 // @identity-TODO: that the list is the field command menu (drawn by 0x15940)
 // is inferred; what the two bits mean is unrecovered.
-b16 SetFieldStatusBit11(i16 on);
+b16 SetFieldStatusBit11(b16 on);
 
-b16 SetFieldStatusBit0(i16 on);
+b16 SetFieldStatusBit0(b16 on);
 
 RVA_DECL(0x00049cb0)
 void SetFieldRenderMode(void);

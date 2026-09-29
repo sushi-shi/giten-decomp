@@ -117,7 +117,7 @@ i16 IsPartyMemberFallen(i16 index);
 i16 GetPartyRosterId(i16 index);
 
 // An empty party position when `inParty`, else a free roster slot (-1: none).
-i16 FindEmptySlot(i16 inParty);
+i16 FindEmptySlot(b16 inParty);
 
 // Ages every member's conditions by one and rolls them for recovery; nonzero
 // when any wore off.

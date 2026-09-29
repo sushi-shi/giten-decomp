@@ -1041,7 +1041,7 @@ static __inline u8 GetScriptSetFile(i16 set, i16 index) {
 }
 
 RVA(0x0000e760, 0x3f)
-void SaveFieldLayer(i16 layer) {
+void SaveFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer) {
     i16 i;
     s_savedLayers[layer] = s_layers[layer];
     s_layers[layer].image = 0;
@@ -1051,7 +1051,7 @@ void SaveFieldLayer(i16 layer) {
 }
 
 RVA(0x0000e7a0, 0x3f)
-void RestoreFieldLayer(i16 layer) {
+void RestoreFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer) {
     i16 i;
     s_layers[layer] = s_savedLayers[layer];
     s_savedLayers[layer].image = 0;
@@ -1061,7 +1061,7 @@ void RestoreFieldLayer(i16 layer) {
 }
 
 RVA(0x0000e7e0, 0x3c)
-void ResetFieldLayer(i16 layer) {
+void ResetFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer) {
     s_layers[layer].image = DropLayerImage(s_layers[layer].image);
     FreeLayerScripts(&s_layers[layer]);
     s_layers[layer].record.id = -1;
@@ -2694,8 +2694,8 @@ void PrepareFieldRandom(void) {
         actor = GetFieldActor(i);
         AlertActor(actor, ATTITUDE_VERY_HOSTILE);
     }
-    LoadEnemyGroupSlot(0, s_encounterGroups[0]);
-    LoadEnemyGroupSlot(1, s_encounterGroups[1]);
+    LoadEnemyGroupSlot(FIELD_LAYER_FIRST, s_encounterGroups[FIELD_LAYER_FIRST]);
+    LoadEnemyGroupSlot(FIELD_LAYER_SECOND, s_encounterGroups[FIELD_LAYER_SECOND]);
 }
 
 RVA(0x00011620, 0x37)

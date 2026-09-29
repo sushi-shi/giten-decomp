@@ -7,7 +7,15 @@
 #include <Game/Character.h>
 #include <Ui/MenuBox.h>
 
-i16 PickPartyMember(i16 index);
+// An empty party position, a member that cannot be picked now, or one ready
+// for command input.
+GZ_ENUM_BEGIN_SPLIT(PartyMemberPickResult, i16)
+    PARTY_MEMBER_EMPTY = -1,
+    PARTY_MEMBER_UNAVAILABLE = 0,
+    PARTY_MEMBER_READY = 1
+GZ_ENUM_END_SPLIT(PartyMemberPickResult)
+
+GZ_ENUM_RETURN(PartyMemberPickResult, i16) PickPartyMember(i16 index);
 i16 FindPickablePartyMember(i16 index);
 i16 CountPickablePartyMembers(void);
 // Image state of a party member's panel; the missing image slot 2 is not
@@ -110,7 +118,14 @@ void FillCharacterCommands(i16* list, i16 id);
 i32 ScaleActionValue(i32 value, i16 resistance, i16 multiplier);
 // @identity-TODO: attribute and mode are the skill/item attack domains;
 // negative results encode special resistance outcomes whose names are unproven.
-i16 CheckBattleProtection(
+// The protection check either blocks the attack or allows normal resistance
+// handling. Its negative special outcomes still need the battle message table.
+GZ_ENUM_BEGIN_SPLIT(BattleProtectionResult, i16)
+    BATTLE_PROTECTION_BLOCKED = 0,
+    BATTLE_PROTECTION_NORMAL = 1
+GZ_ENUM_END_SPLIT(BattleProtectionResult)
+
+GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
     Character* actor,
     i16 attribute,
     GZ_ENUM_PARAM(AttackMode, i16) mode,

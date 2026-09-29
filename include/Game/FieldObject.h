@@ -6,6 +6,7 @@
 #include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/Character.h>
+#include <Game/FieldLayerIndex.h>
 #include <Game/FieldSupport.h>
 #include <Game/GameState.h>
 #include <Game/ViewDirection.h>
@@ -254,9 +255,9 @@ typedef struct FieldSkillCandidate {
 
 b16 RunObjectStep(FieldObject* object, i16 index);
 
-void SaveFieldLayer(i16 layer);
-void RestoreFieldLayer(i16 layer);
-void ResetFieldLayer(i16 layer);
+void SaveFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer);
+void RestoreFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer);
+void ResetFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer);
 i16 GetLayerKind(i16 layer);
 u32 GetLayerImage(i16 layer);
 i16 FindLayerOfKind(i16 kind);

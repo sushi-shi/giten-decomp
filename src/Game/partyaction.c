@@ -78,11 +78,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Distribution rows cover bursts of one through fifteen targets. The extra
+// live slot lets SpendGunRounds shift the last row forward before clearing it.
+#define GUN_BURST_MAX_TARGETS 15
+#define GUN_BURST_SLOT_COUNT (GUN_BURST_MAX_TARGETS + 1)
+#define GUN_BURST_LIMIT_SHIFT 4
+#define GUN_BURST_LIMIT_MASK 0x0f
+
 DATA(0x00078488)
-static i16 s_gunPower[16] = {0};
+static i16 s_gunPower[GUN_BURST_SLOT_COUNT] = {0};
 
 DATA(0x000784a8)
-static i16 s_gunRounds[16] = {0};
+static i16 s_gunRounds[GUN_BURST_SLOT_COUNT] = {0};
 
 DATA(0x000784c8)
 i16 g_commandPosition = 0;
@@ -152,7 +159,7 @@ DATA(0x00078518)
 static PaletteState* s_fieldPaletteState = NULL;
 
 DATA(0x0007851c)
-static i32 s_gunDistribution = 0;
+static i32 s_gunDistribution = HANDLE_NONE;
 
 // The list menu a picked member acts through (NULL: none open).
 DATA(0x00078520)
@@ -166,14 +173,14 @@ char g_unavailableCommandText[8] = {0};
 
 // The temporary swap: the party position and the roster slot it held.
 DATA(0x00068400)
-i16 g_guestIndex = -1;
+i16 g_guestIndex = PARTY_POSITION_NONE;
 
 DATA(0x00068404)
-static i16 s_swapSaved = -1;
+static i16 s_swapSaved = PARTY_SLOT_EMPTY;
 
 // @identity-TODO: the party position the picker last targeted (-1: none).
 DATA(0x00068408)
-static i16 s_pickedIndex = -1;
+static i16 s_pickedIndex = CHARACTER_ID_NONE;
 
 DATA(0x0006840c)
 static i16 s_fieldCountA = -1;
@@ -189,7 +196,7 @@ static i16 s_fieldRateB = 100;
 
 // -1 while no field map is active.
 DATA(0x0006841c)
-static i16 s_fieldMode = -1;
+static GZ_ENUM_STORAGE(FieldMapMode, i16) s_fieldMode = FIELD_MAP_INACTIVE;
 
 // The music track that was playing when the encounter started (or the field
 // map was entered).
@@ -233,23 +240,23 @@ static i16 s_actionConditions[] = {
 };
 
 RVA(0x00005a80, 0x86)
-i16 PickPartyMember(i16 index) {
+GZ_ENUM_RETURN(PartyMemberPickResult, i16) PickPartyMember(i16 index) {
     Character* member;
     if (PartySlotAt(index) == PARTY_SLOT_EMPTY) {
-        return -1;
+        return PARTY_MEMBER_EMPTY;
     }
     member = GetPartyCharacter(index);
     if (!GetPickBlockingCondition(GetCharacterConditions(member))
         && TickFieldCount(PartyCombatantId(index), true) >= 1) {
         if (GetFieldBattleActive()) {
             if (IsActionWaitPickable(GetCharacterActionWait(member))) {
-                return 1;
+                return PARTY_MEMBER_READY;
             }
         } else if (!IsActionWaitMarked(GetCharacterActionWait(member))) {
-            return 1;
+            return PARTY_MEMBER_READY;
         }
     }
-    return 0;
+    return PARTY_MEMBER_UNAVAILABLE;
 }
 
 RVA(0x00005b10, 0x31)
@@ -873,7 +880,7 @@ i32 ScaleActionValue(i32 value, i16 resistance, i16 multiplier) {
 }
 
 RVA(0x00006a80, 0x21a)
-i16 CheckBattleProtection(
+GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
     Character* actor,
     i16 attribute,
     GZ_ENUM_PARAM(AttackMode, i16) mode,
@@ -881,39 +888,39 @@ i16 CheckBattleProtection(
 ) {
     if (GetCharacterBattleTallies(actor)[13]) {
         ReportBattleTally(actor, 13, report);
-        return 0;
+        return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[14] && (mode == ATTACK_MAGIC || mode == ATTACK_GUN)) {
         ReportBattleTally(actor, 14, report);
-        return 0;
+        return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[0] && mode == ATTACK_MAGIC) {
         ReportBattleTally(actor, 0, report);
-        return 0;
+        return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[7] && mode == ATTACK_GUN) {
         ReportBattleTally(actor, 7, report);
-        return 0;
+        return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[8] && attribute == 2) {
         ReportBattleTally(actor, 8, report);
-        return 0;
+        return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[9] && attribute == 3) {
         ReportBattleTally(actor, 9, report);
-        return 0;
+        return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[10] && attribute == 5) {
         ReportBattleTally(actor, 10, report);
-        return 0;
+        return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[11] && attribute == 6) {
         ReportBattleTally(actor, 11, report);
-        return 0;
+        return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[12] && attribute == 8) {
         ReportBattleTally(actor, 12, report);
-        return 0;
+        return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[1] && mode == ATTACK_MAGIC) {
         ReportBattleTally(actor, 1, report);
@@ -935,7 +942,7 @@ i16 CheckBattleProtection(
         ReportBattleTally(actor, 3, report);
         return -3;
     }
-    return 1;
+    return BATTLE_PROTECTION_NORMAL;
 }
 
 RVA(0x00006ca0, 0xcd)
@@ -1086,11 +1093,11 @@ i16 SetFieldParams(i16 first, i16 second, i16 third) {
 }
 
 RVA(0x00007130, 0x23)
-b16 IsFieldModeAtLeast(i16 anyMode) {
-    if (anyMode == 0) {
-        return s_fieldMode >= 1;
+b16 IsFieldModeAtLeast(b16 anyMode) {
+    if (!anyMode) {
+        return s_fieldMode >= FIELD_MAP_SCRIPT_EVENT;
     }
-    return s_fieldMode >= 0;
+    return s_fieldMode >= FIELD_MAP_CELL_EVENT;
 }
 
 RVA(0x00007160, 0x7)
@@ -1105,7 +1112,14 @@ void SetFieldPair(i16 first, i16 second) {
 }
 
 RVA(0x00007190, 0x59)
-void EnterFieldMap(i16 map, i16 countA, i16 rateA, i16 countB, i16 rateB, i16 mode) {
+void EnterFieldMap(
+    i16 map,
+    i16 countA,
+    i16 rateA,
+    i16 countB,
+    i16 rateB,
+    GZ_ENUM_PARAM(FieldMapMode, i16) mode
+) {
     s_fieldMap = map;
     s_fieldCountA = countA;
     s_fieldRateA = rateA;
@@ -1140,7 +1154,7 @@ void SetFieldCounts(i16 countA, i16 countB) {
 RVA(0x00007230, 0x66)
 i16 TickFieldCount(i16 side, b16 hold) {
     i16* count;
-    if (s_fieldMode == -1) {
+    if (s_fieldMode == FIELD_MAP_INACTIVE) {
         return 1;
     }
     count = side < 0 ? &s_fieldCountA : &s_fieldCountB;
@@ -1166,7 +1180,7 @@ i16 TickFieldCount(i16 side, b16 hold) {
 RVA(0x000072a0, 0x60)
 i32 ScaleByFieldRate(i16 first, i16 second, i32 value) {
     double scaled;
-    if (s_fieldMode == -1) {
+    if (s_fieldMode == FIELD_MAP_INACTIVE) {
         return value;
     }
     scaled = value;
@@ -1181,14 +1195,14 @@ i32 ScaleByFieldRate(i16 first, i16 second, i32 value) {
 }
 
 RVA(0x00007300, 0x33)
-void SpawnSecondGroupActor(i16 x, i16 y, i16 battle) {
+void SpawnSecondGroupActor(i16 x, i16 y, b16 alternate) {
     SpawnFieldObject(
-        1,
+        FIELD_LAYER_SECOND,
         x,
         y,
         OppositeDirection(g_party.field.pos.direction),
         s_fieldParamSecond,
-        battle,
+        alternate,
         FIELD_OBJECT_NO_EVENT,
         false
     );
@@ -1229,21 +1243,21 @@ b16 RunFieldEncounter(void) {
     switch (GetGamePhase()) {
         case FIELD_ENCOUNTER_PHASE_ENTER:
             switch (GetGameStep()) {
-                case 0:
+                case FIELD_ENCOUNTER_STEP_SETUP:
                     NextGameStep();
                     LockStatusRedraw(false);
-                    SetFieldMenuMode(1);
+                    SetFieldMenuMode(FIELD_MENU_NO_SKILL_ITEM_FIGHT);
                     s_fieldMarker = true;
                     g_fieldBattleActive = true;
                     ResetFieldObjects();
                     s_fieldPaletteState = SavePaletteState(s_fieldPaletteState, 3);
-                    SaveFieldLayer(0);
-                    SaveFieldLayer(1);
+                    SaveFieldLayer(FIELD_LAYER_FIRST);
+                    SaveFieldLayer(FIELD_LAYER_SECOND);
                     NotifyEncounterStart();
-                    if (s_fieldMode == 0) {
+                    if (s_fieldMode == FIELD_MAP_CELL_EVENT) {
                         for (i = 0; i < s_fieldParamFirst; i++) {
                             SpawnFieldObject(
-                                0,
+                                FIELD_LAYER_FIRST,
                                 g_party.field.pos.x,
                                 g_party.field.pos.y,
                                 (g_party.field.pos.direction - 2) & 3,
@@ -1255,7 +1269,11 @@ b16 RunFieldEncounter(void) {
                         }
                         if (s_fieldParamSecond >= 0) {
                             for (i = 0; i < s_fieldParamThird; i++) {
-                                SpawnSecondGroupActor(g_party.field.pos.x, g_party.field.pos.y, 1);
+                                SpawnSecondGroupActor(
+                                    g_party.field.pos.x,
+                                    g_party.field.pos.y,
+                                    true
+                                );
                             }
                         }
                         if (s_fieldRefresh) {
@@ -1271,7 +1289,7 @@ b16 RunFieldEncounter(void) {
                         }
                         for (i = 0; i < s_fieldParamFirst; i++) {
                             SpawnFieldObject(
-                                0,
+                                FIELD_LAYER_FIRST,
                                 x,
                                 y,
                                 (g_party.field.pos.direction - 2) & 3,
@@ -1283,7 +1301,7 @@ b16 RunFieldEncounter(void) {
                         }
                         if (s_fieldParamSecond >= 0) {
                             for (i = 0; i < s_fieldParamThird; i++) {
-                                SpawnSecondGroupActor(x, y, 1);
+                                SpawnSecondGroupActor(x, y, true);
                             }
                         }
                         if (s_fieldRefresh) {
@@ -1292,9 +1310,9 @@ b16 RunFieldEncounter(void) {
                             s_fieldMusic = PlayMusic(s_fieldOption, true);
                         }
                     }
-                    LoadEnemyGroupSlot(0, s_fieldMap);
+                    LoadEnemyGroupSlot(FIELD_LAYER_FIRST, s_fieldMap);
                     if (s_fieldParamSecond >= 0) {
-                        LoadEnemyGroupSlot(1, s_fieldParamSecond);
+                        LoadEnemyGroupSlot(FIELD_LAYER_SECOND, s_fieldParamSecond);
                     }
                     RequestFieldRefresh();
                     for (i = 0; i < s_fieldParamThird + s_fieldParamFirst; i++) {
@@ -1302,7 +1320,7 @@ b16 RunFieldEncounter(void) {
                         AlertActor(actor, ATTITUDE_VERY_HOSTILE);
                     }
                     break;
-                case 1:
+                case FIELD_ENCOUNTER_STEP_START:
                     NextGamePhase();
                     ResetPartyTurnState();
                     RedrawFieldView();
@@ -1320,11 +1338,11 @@ b16 RunFieldEncounter(void) {
             for (i = 0; i < s_fieldParamThird + s_fieldParamFirst; i++) {
                 allFallen &= GetFatalCondition(GetCharacterConditions(GetFieldActor(i)));
             }
-            if (s_fieldMode >= 0 && CountFieldObjects() <= 0) {
+            if (s_fieldMode >= FIELD_MAP_CELL_EVENT && CountFieldObjects() <= 0) {
                 LeaveFieldMap(FIELD_MAP_WON);
                 break;
             }
-            if (s_fieldMode == 1 && allFallen) {
+            if (s_fieldMode == FIELD_MAP_SCRIPT_EVENT && allFallen) {
                 LeaveFieldMap(FIELD_MAP_WON);
                 break;
             }
@@ -1402,14 +1420,14 @@ b16 RunFieldEncounter(void) {
             RestoreScreenMode();
             ClearSelectedHotspot();
             ResetFieldObjects();
-            ResetFieldLayer(1);
-            ResetFieldLayer(0);
+            ResetFieldLayer(FIELD_LAYER_SECOND);
+            ResetFieldLayer(FIELD_LAYER_FIRST);
             CloseMessageWindow();
             NotifyEncounterEnd();
-            RestoreFieldLayer(1);
-            RestoreFieldLayer(0);
+            RestoreFieldLayer(FIELD_LAYER_SECOND);
+            RestoreFieldLayer(FIELD_LAYER_FIRST);
             s_fieldPaletteState = RestorePaletteState(s_fieldPaletteState, true);
-            if (s_fieldMode == 0) {
+            if (s_fieldMode == FIELD_MAP_CELL_EVENT) {
                 RespawnAreaActors();
             }
             RequestFieldRefresh();
@@ -1419,9 +1437,9 @@ b16 RunFieldEncounter(void) {
             s_fieldRateA = 100;
             s_fieldCountB = -1;
             s_fieldRateB = 100;
-            s_fieldMode = -1;
+            s_fieldMode = FIELD_MAP_INACTIVE;
             ResetRosterBattleState();
-            SetFieldMenuMode(0);
+            SetFieldMenuMode(FIELD_MENU_ALL);
             s_fieldMarker = false;
             s_fieldOption = 20;
             s_fieldParamFirst = 1;
@@ -1464,13 +1482,13 @@ b16 RunFieldState(void) {
     switch ((u16)GetGamePhase()) {
         case FIELD_ENCOUNTER_PHASE_ENTER:
             switch ((u16)GetGameStep()) {
-                case 0:
+                case FIELD_ENCOUNTER_STEP_SETUP:
                     ClearSceneSurfaces();
                     NextGameStep();
                     s_fieldLeftEarly = false;
-                    SetFieldStatusBit0(0);
-                    SetFieldStatusBit11(0);
-                    SetFieldMenuMode(3);
+                    SetFieldStatusBit0(false);
+                    SetFieldStatusBit11(false);
+                    SetFieldMenuMode(FIELD_MENU_NO_SKILL_ITEM_FIGHT_MAPPING);
                     g_fieldBattleActive = true;
                     ResetFieldScene();
                     s_fieldPaletteState = SavePaletteState(s_fieldPaletteState, 3);
@@ -1481,7 +1499,7 @@ b16 RunFieldState(void) {
                     ResetRosterFieldMarks();
                     RequestFieldRefresh();
                     return FlushFieldScreen();
-                case 1:
+                case FIELD_ENCOUNTER_STEP_START:
                     NextGamePhase();
                     StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
                     break;
@@ -1544,7 +1562,7 @@ b16 RunFieldState(void) {
             ClearEncounterPending();
             return UpdateFieldScreen(false);
         case FIELD_ENCOUNTER_PHASE_BACK_OUT:
-            SetFieldStatusBit0(0);
+            SetFieldStatusBit0(false);
             CloseMessageWindow();
             RestoreDrawState(SaveDrawState());
             PrevGamePhase();
@@ -1591,13 +1609,13 @@ b16 RunFieldState(void) {
             PlaySoundEffect(0x1b);
             CloseMessageWindow();
             ResetFieldObjects();
-            ResetFieldLayer(1);
-            ResetFieldLayer(0);
+            ResetFieldLayer(FIELD_LAYER_SECOND);
+            ResetFieldLayer(FIELD_LAYER_FIRST);
             RequestFieldRefresh();
             ReturnFromGameState();
-            SetFieldStatusBit11(1);
+            SetFieldStatusBit11(true);
             ResetRosterBattleState();
-            SetFieldMenuMode(2);
+            SetFieldMenuMode(FIELD_MENU_NO_FIGHT_TALK_MAPPING);
             ReleaseFieldImage();
             s_fieldPaletteState = RestorePaletteState(s_fieldPaletteState, true);
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
@@ -2189,17 +2207,17 @@ i16 PrepareGunBurst(Character* attacker, i16 count) {
     limits = GetGunTargetLimits(record);
     s_gunRoundPower =
         GetItemAttackPower(GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].item));
-    maximum = limits & 15;
-    minimum = limits >> 4;
+    maximum = limits & GUN_BURST_LIMIT_MASK;
+    minimum = limits >> GUN_BURST_LIMIT_SHIFT;
     if (minimum < 1) {
         minimum = 1;
-    } else if (minimum > 15) {
-        minimum = 15;
+    } else if (minimum > GUN_BURST_MAX_TARGETS) {
+        minimum = GUN_BURST_MAX_TARGETS;
     }
     if (maximum < minimum) {
         maximum = minimum;
-    } else if (maximum > 15) {
-        maximum = 15;
+    } else if (maximum > GUN_BURST_MAX_TARGETS) {
+        maximum = GUN_BURST_MAX_TARGETS;
     }
     if (count < minimum) {
         return minimum;
@@ -2218,13 +2236,13 @@ i16 GetGunRequirementPenalty(i16 stat, i16 requirement) {
     return ClampShort(5 - stat / requirement, 1, 0x7fff);
 }
 
-static __inline u8 GetGunRoundPercent(u8 (*table)[15], i16 count, i16 index) {
+static __inline u8 GetGunRoundPercent(u8 (*table)[GUN_BURST_MAX_TARGETS], i16 count, i16 index) {
     return table[count - 1][index];
 }
 
 RVA(0x000091f0, 0xe2)
 i16 DistributeGunRounds(i16 rounds, i16 count) {
-    u8(*table)[15];
+    u8(*table)[GUN_BURST_MAX_TARGETS];
     i16 index;
     i16 remaining;
     i16 share;
@@ -2280,12 +2298,12 @@ void SpendGunRounds(Character* attacker) {
             ClearItemSlot(&GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO]);
         }
     }
-    for (index = 0; index < 15; index++) {
+    for (index = 0; index < GUN_BURST_MAX_TARGETS; index++) {
         s_gunRounds[index] = s_gunRounds[index + 1];
         s_gunPower[index] = s_gunPower[index + 1];
     }
-    s_gunPower[15] = 0;
-    s_gunRounds[15] = 0;
+    s_gunPower[GUN_BURST_MAX_TARGETS] = 0;
+    s_gunRounds[GUN_BURST_MAX_TARGETS] = 0;
 }
 
 RVA(0x000093b0, 0x28)
@@ -2299,7 +2317,7 @@ void SpendAllGunRounds(Character* attacker) {
 
 static __inline void ResetPartyCommandPick(void) {
     s_pickMode = PARTY_COMMAND_WAIT_MEMBER;
-    s_pickedIndex = -1;
+    s_pickedIndex = CHARACTER_ID_NONE;
 }
 
 RVA(0x000093e0, 0x36)
@@ -2331,7 +2349,7 @@ i16 CheckPickTarget(i16 index) {
                 if (GetPickBlockingCondition(GetCharacterConditions(character))) {
                     s_pickDone = true;
                 }
-            } else if (PickPartyMember(index) == 1) {
+            } else if (PickPartyMember(index) == PARTY_MEMBER_READY) {
                 s_pickDone = true;
             }
     }
@@ -2403,7 +2421,7 @@ static __inline i16 CurrentMemberCombatantId(void) {
 static __inline i16 PickMemberActionTarget(Character* character, i16 flags, i16 range) {
     if (character->pickRole == PICK_ROLE_MAGIC) {
         if (character->pickTarget == SKILL_FUSION) {
-            return RunPickTargetWindow(0, range, 1, 0);
+            return RunPickTargetWindow(0, range, TARGET_PICK_FIELD_OBJECT, 0);
         }
         if (character->pickTarget == SKILL_MAHOROGI) {
             return RunPickTargetWindow(0, range, 0x82, 0);
@@ -2412,7 +2430,7 @@ static __inline i16 PickMemberActionTarget(Character* character, i16 flags, i16 
     if (flags == 1) {
         return RunPickTargetWindow(0, range, 0x12, 0);
     } else {
-        return RunPickTargetWindow(0, range, 3, 0);
+        return RunPickTargetWindow(0, range, TARGET_PICK_FIELD_OBJECT | TARGET_PICK_PARTY_SLOT, 0);
     }
 }
 
@@ -2522,11 +2540,21 @@ i16 RunPartyCommandInput(void) {
             }
             range = GetMemberPickRange(s_pickedIndex);
             if (flags == 0x10) {
-                result = RunPickTargetWindow(0, range, 5, 0);
+                result = RunPickTargetWindow(
+                    0,
+                    range,
+                    TARGET_PICK_FIELD_OBJECT | TARGET_PICK_ROSTER_LIST,
+                    0
+                );
             } else if (flags == 0x11) {
-                result = RunPickTargetWindow(0, range, 4, 0);
+                result = RunPickTargetWindow(0, range, TARGET_PICK_ROSTER_LIST, 0);
             } else if (flags == 0x30) {
-                result = RunPickTargetWindow(0, range, 6, 0);
+                result = RunPickTargetWindow(
+                    0,
+                    range,
+                    TARGET_PICK_PARTY_SLOT | TARGET_PICK_ROSTER_LIST,
+                    0
+                );
             } else {
                 result = PickMemberActionTarget(character, flags, range);
                 flags = 0;
@@ -2534,7 +2562,7 @@ i16 RunPartyCommandInput(void) {
             if (flags != 0) {
                 g_tickElapsed = 0;
             }
-            if (result == -1) {
+            if (result == TARGET_PICK_CANCELLED) {
                 s_pickMode--;
                 s_pickMode -= PrepareMemberPickTarget(s_pickedIndex);
                 if (s_pickMode < PARTY_COMMAND_PREPARE_MEMBER) {
@@ -2544,7 +2572,7 @@ i16 RunPartyCommandInput(void) {
                     character->pickRole = PICK_ROLE_ITEM;
                 }
             }
-            if (result < 1) {
+            if (result < TARGET_PICK_SELECTED) {
                 if (character->pickRole != PICK_ROLE_ATTACK) {
                     break;
                 }
@@ -2583,15 +2611,15 @@ i16 RunPartyCommandInput(void) {
         case PARTY_COMMAND_PICK_SUMMON_POSITION:
             character = GetCharacterById(s_pickedIndex);
             g_tickElapsed = 0;
-            result = RunPickTargetWindow(0, 0, 2, 0);
-            if (result == -1) {
+            result = RunPickTargetWindow(0, 0, TARGET_PICK_PARTY_SLOT, 0);
+            if (result == TARGET_PICK_CANCELLED) {
                 RestoreSwappedMember();
                 s_pickMode = PARTY_COMMAND_PICK_TARGET;
                 if (character->pickFlags & PICK_ITEM_SKILL) {
                     character->pickRole = PICK_ROLE_ITEM;
                 }
             }
-            if (result < 1) {
+            if (result < TARGET_PICK_SELECTED) {
                 break;
             }
             g_commandPosition = g_hoveredObjectId;
@@ -2659,7 +2687,7 @@ i16 GetTickElapsed(void) {
 
 static __inline i16 FindPickReplacementSlot(i16 keep) {
     i16 index;
-    index = FindEmptySlot(1);
+    index = FindEmptySlot(true);
     if (index >= 0) {
         return index;
     }
@@ -2669,7 +2697,7 @@ static __inline i16 FindPickReplacementSlot(i16 keep) {
         }
     }
     for (index = 0; index < PARTY_SIZE; index++) {
-        if (index != keep && GetPartyRosterId(index) >= 32) {
+        if (index != keep && GetPartyRosterId(index) >= HUMAN_ID_LIMIT) {
             return index;
         }
     }
@@ -2706,8 +2734,8 @@ RVA(0x00009dc0, 0x2c)
 void RestoreSwappedMember(void) {
     if (g_guestIndex >= 0) {
         ExchangePartySlot(g_guestIndex, s_swapSaved);
-        s_swapSaved = -1;
-        g_guestIndex = -1;
+        s_swapSaved = PARTY_SLOT_EMPTY;
+        g_guestIndex = PARTY_POSITION_NONE;
     }
 }
 
@@ -2731,10 +2759,10 @@ i16 IsGuestIndex(i16 index) {
 }
 
 RVA(0x00009e30, 0x214)
-i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
+GZ_ENUM_RETURN(TargetPickResult, i16) RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
     Character* character = GetCharacterById(id);
     i16 result;
-    if (kind & 4) {
+    if (kind & TARGET_PICK_ROSTER_LIST) {
         if (id && (!character || GetPickBlockingCondition(GetCharacterConditions(character)))) {
             RunStatusListPicker(true);
             g_hoveredObjectId = g_selectedObjectId = -1;
@@ -2743,23 +2771,23 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
                 FreeScreenSave(g_pickScreenSave);
                 s_pickScreenSaved = false;
             }
-            return -1;
+            return TARGET_PICK_CANCELLED;
         }
         if (!s_pickScreenSaved) {
             AllocScreenSave(g_pickScreenSave);
             CaptureScreenSaveWithState(g_pickScreenSave);
             s_pickScreenSaved = true;
         }
-        if (kind & 1) {
-            SetStatusColumn(4);
-        } else if (kind & 2) {
-            SetStatusColumn(5);
+        if (kind & TARGET_PICK_FIELD_OBJECT) {
+            SetStatusColumn(STATUS_LIST_RESERVE);
+        } else if (kind & TARGET_PICK_PARTY_SLOT) {
+            SetStatusColumn(STATUS_LIST_DEMONS);
         } else {
-            SetStatusColumn(0);
+            SetStatusColumn(STATUS_LIST_ALL);
         }
         result = RunStatusListPicker(false);
         if (result == -1) {
-            return 0;
+            return TARGET_PICK_WAITING;
         }
         RunStatusListPicker(true);
         PlaySoundEffect(1);
@@ -2768,16 +2796,16 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
             FreeScreenSave(g_pickScreenSave);
             s_pickScreenSaved = false;
         }
-        return result == -2 ? -1 : 1;
+        return result == LIST_MENU_CANCELLED ? TARGET_PICK_CANCELLED : TARGET_PICK_SELECTED;
     }
     if ((id && (!character || GetPickBlockingCondition(GetCharacterConditions(character))))
         || TakeMouseCancelSound()) {
         ClearPartySlotSelection();
         RunStatusListPicker(true);
         g_hoveredObjectId = g_selectedObjectId = -1;
-        return -1;
+        return TARGET_PICK_CANCELLED;
     }
-    if (kind & 1) {
+    if (kind & TARGET_PICK_FIELD_OBJECT) {
         result = PickFieldObjectTarget(minimumRange, maximumRange);
         if (result) {
             ClearPartySlotSelection();
@@ -2785,8 +2813,8 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
             return result;
         }
     }
-    if (kind & 2) {
-        if (kind == 2) {
+    if (kind & TARGET_PICK_PARTY_SLOT) {
+        if (kind == TARGET_PICK_PARTY_SLOT) {
             result = PickPartySlotTarget(minimumRange, PARTY_SLOT_EXCLUDE_HUMANS);
         } else {
             result = PickPartySlotTarget(minimumRange, PARTY_SLOT_REQUIRE_OCCUPIED);
@@ -2797,7 +2825,7 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
             return result;
         }
     }
-    return 0;
+    return TARGET_PICK_WAITING;
 }
 
 RVA(0x0000a050, 0x53)
@@ -2820,25 +2848,25 @@ b16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
 }
 
 RVA(0x0000a0b0, 0x69)
-i16 PickPartySlotTarget(i16 minimumRange, i16 mode) {
+GZ_ENUM_RETURN(TargetPickResult, i16) PickPartySlotTarget(i16 minimumRange, i16 mode) {
     i16 result = PollPartySlotSelection(mode);
     if (result == 0) {
         ClearMouseClicks();
-        return 0;
+        return TARGET_PICK_WAITING;
     }
     if (result == -1) {
         ClearMouseClicks();
-        return -1;
+        return TARGET_PICK_CANCELLED;
     }
     if (g_hoveredObjectId == -1) {
         ClearMouseClicks();
-        return 0;
+        return TARGET_PICK_WAITING;
     }
     if (minimumRange > 0) {
         ClearMouseClicks();
-        return 0;
+        return TARGET_PICK_WAITING;
     }
     g_selectedObjectId = PartyCombatantId(g_hoveredObjectId);
     ClearMouseClicks();
-    return 1;
+    return TARGET_PICK_SELECTED;
 }

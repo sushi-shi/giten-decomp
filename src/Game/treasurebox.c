@@ -2953,8 +2953,8 @@ i16 CellCodeDiffers(i16 code, i16 x, i16 y) {
 RVA(0x0001ef30, 0x24)
 void ResetFieldScene(void) {
     ReleaseNpcTextures();
-    ResetFieldLayer(1);
-    ResetFieldLayer(0);
+    ResetFieldLayer(FIELD_LAYER_SECOND);
+    ResetFieldLayer(FIELD_LAYER_FIRST);
     SetCurrentRoomCode(-1);
 }
 
@@ -3006,11 +3006,11 @@ void EnterRoom(i16 code) {
     }
     object = LookupCellObject(table, 0);
     if (object >= HUMAN_ID_LIMIT && object <= OBJECT_KIND_END - 1) {
-        LoadEnemyGroupSlot(0, object);
+        LoadEnemyGroupSlot(FIELD_LAYER_FIRST, object);
     }
     object = LookupCellObject(table, 1);
     if (object >= HUMAN_ID_LIMIT && object <= OBJECT_KIND_END - 1) {
-        LoadEnemyGroupSlot(1, object);
+        LoadEnemyGroupSlot(FIELD_LAYER_SECOND, object);
     }
 }
 

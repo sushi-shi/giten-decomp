@@ -183,7 +183,6 @@ src/Script/scriptactor.c	OpJumpUnlessStatContest	[01]	trivial-function-literal	[
 *	*	*	call-argument	CreateTextPlane(*argument 2	the text-plane creation argument
 src/Game/statestack.c	RunLevelUp	*	*	*GetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
 src/Game/statestack.c	RunLevelUp	*	call-argument	SetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
-src/Game/fieldobj.c	GetObjectLifeState	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
 src/Game/fieldobj.c	s_depthRise	*	data-or-extent	*	@identity-TODO: screen rise in pixels per view depth (0..-4)
 src/Game/fieldobj.c	s_approach[XY]	*	data-or-extent	*	@identity-TODO: approach offsets in pixels per step (0..-4)
 src/Game/fieldobj.c	s_facingSprite	*	data-or-extent	*	sprite per facing relative to the view (-1 mirrors the side sprite)
@@ -328,7 +327,6 @@ src/Game/fieldobj.c	AssignWorldEncounterGroups	40	*	*	a 40% chance per object of
 src/Game/fieldobj.c	AssignWorldEncounterGroups	*	*	*	layer 0 or 1
 src/Game/fieldobj.c	LoadFieldTable	0	*	*	no handle loaded
 src/Game/fieldobj.c	LoadFieldTable	0x5000	*	*	the field images start at image file 0x5000
-src/Game/fieldobj.c	PrepareFieldRandom	*	call-argument	LoadEnemyGroupSlot*	layers 0 and 1 and their groups
 src/Game/fieldobj.c	AnyObjectInReach	*	call-argument	HasObjectInReach*	@identity-TODO: reach mode 1 from the party (-1)
 src/Game/treasurebox.c	*	0	call-argument	FindTreasureBoxAt(*argument 3	find the box without making it the scene cell
 src/Game/treasurebox.c	IsHotspotTreasureOpen	*	*	*	@identity-TODO: dead code; box codes 0x4f and 0x89 (and TREASURE_BOX_LOWER) pick the box texture frame, two frames apart; frame 1 is an open box
@@ -400,13 +398,11 @@ src/Game/treasurebox.c	FindRegionData	*	*	*	an entry's data follows its four rec
 src/Game/treasurebox.c	MarkRoomRegions	*	*	*	the whole grid (0..REGION_GRID_SIZE - 1); rooms number their regions from 0
 src/Game/treasurebox.c	Get*	1	call-argument	FindRegionData*	a region's index within its list (REGION_DOOR - 1 masks the door bit)
 src/Game/treasurebox.c	GetCellSpawnRate	0	*	*	no door data: no spawns
-src/Game/treasurebox.c	ResetFieldScene	*	call-argument	ResetFieldLayer*	layers 1 and 0
 src/Game/treasurebox.c	ResetFieldScene	-1	*	*	no current room
 src/Game/treasurebox.c	LookupCellObject	1	*	*	layers 0 and 1
 src/Game/treasurebox.c	LookupCellObject	0x20	*	*	@identity-TODO: a door without data returns object kind HUMAN_ID_LIMIT
 src/Game/treasurebox.c	EnterRoom	-1	*	*	no region
 src/Game/treasurebox.c	*	*	call-argument	LookupCellObject*	layers 0 and 1
-src/Game/treasurebox.c	EnterRoom	*	call-argument	LoadEnemyGroupSlot*	layers 0 and 1
 src/Game/treasurebox.c	FindCellObject	*	*	*	-1 no door or not its object; else layer 0 or 1
 src/Game/treasurebox.c	FinishDoorStep	*	*	*	the cell one step behind the party
 src/Game/treasurebox.c	ReturnToLeaderMark	*	*	*	the cell one step behind
@@ -560,6 +556,34 @@ src/Script/scriptvm.c	ExecScriptOpcode	1	call-argument	OpSkipJumpTarget(*argumen
 src/Script/scriptvm.c	ExecScriptOpcode	[12]	call-argument	OpIfDemonCount(*argument 2	the demon count the opcode tests against
 src/Script/scriptvm.c	ExecScriptOpcode	[38]	call-argument	SetActorMode(*argument 1	actor modes 3 and 8 have no step behaviour (RunObjectStep has no case for them); their meaning is unrecovered
 src/Game/partyaction.c	*	[38]	case-label	*	actor modes 3 and 8 have no step behaviour (RunObjectStep has no case for them); their meaning is unrecovered
+src/Game/partyaction.c	CheckBattleProtection	*	array-index	*	@identity-TODO: the battle-tally slots are only numbered; message scripts 0xdd and 0xdf are needed to identify their effects
+src/Game/partyaction.c	CheckBattleProtection	*	call-argument	ReportBattleTally*	@identity-TODO: the battle-tally slot reported to the script has no recovered effect name
+src/Game/partyaction.c	CheckBattleProtection	*	trivial-function-literal	*array-index	@identity-TODO: battle-tally slots 0 and 1 need the message-script decoder
+src/Game/partyaction.c	CheckBattleProtection	*	comparison-or-bound	*attribute	@identity-TODO: the attack-attribute numbers paired with tally slots need the item/skill and message-script decoder
+src/Game/partyaction.c	CheckBattleProtection	*	trivial-function-literal	*attribute	@identity-TODO: attack attributes 0 and 1 are encoded values without recovered names
+src/Game/partyaction.c	CheckBattleProtection	-*	return	*	@identity-TODO: negative protection outcomes are special resistance codes named by battle messages in scripts 0xdd and 0xdf
+src/Game/partyaction.c	GetActionResistance	*	comparison-or-bound	*attribute	@identity-TODO: attack attributes 6 and 10 are encoded item/skill values without recovered names
+src/Game/partyaction.c	GetActionResistance	*	comparison-or-bound	*result	@identity-TODO: resistance bytes 251..255 encode special outcomes; their identities require battle message scripts 0xdd and 0xdf
+src/Game/partyaction.c	GetActionResistance	50	return	*	a same-side attack takes half resistance
+src/Game/partyaction.c	GetActionResistance	50	store	*	attribute 10 takes a 50-percent resistance value
+src/Game/partyaction.c	GetActionResistance	100	return	*	zombie resistance to attribute 6 is 100 percent
+src/Game/partyaction.c	GetActionResistance	-*	return	*	@identity-TODO: negative decoded resistance outcomes need the battle message-script decoder
+src/Game/partyaction.c	GetActionResistance	-1	trivial-function-literal	*return	@identity-TODO: resistance byte 251 decodes to the special outcome -1
+src/Game/partyaction.c	GetActionResistance	0	trivial-function-literal	0 return	no actor has no resistance value
+src/Game/partyaction.c	GetActionResistance	1	trivial-function-literal	1 bound result	positive protection-check results proceed to the resistance byte
+src/Game/partyaction.c	ApplyResistanceOutcome	*	case-label	*	@identity-TODO: special resistance outcomes -6..-2 need their battle-message identities
+src/Game/partyaction.c	ApplyResistanceOutcome	-1	trivial-function-literal	*case	@identity-TODO: special resistance outcome -1 needs its battle-message identity
+src/Game/partyaction.c	ApplyResistanceOutcome	0	trivial-function-literal	*case	resistance zero applies no damage and records a separate action result
+src/Game/partyaction.c	ApplyResistanceOutcome	2	call-argument	SetCharacterChanges*	half the amount is assigned to each of the HP and MP changes
+src/Game/partyaction.c	ApplyResistanceOutcome	6	store	*	@identity-TODO: the action-result code for zero resistance needs the battle-message decoder
+src/Game/partyaction.c	ReadActionResultFlags	*	*	*	@identity-TODO: bank 15 bits 26..31 form an action-result bitmap; the message-script decoder is needed to name the bits
+src/Game/partyaction.c	PickActorAction	-1	trivial-function-literal	*return	no condition is active, so no condition action was picked
+src/Game/partyaction.c	PickActorAction	0xdb	call-argument	StartScript*	script file 0xdb supplies the condition-action result; its disc identity is not decoded
+src/Game/partyaction.c	PickActorAction	0	call-argument	StartScript*	entry zero of the condition-action script selects an action
+src/Game/partyaction.c	PickActorAction	0	call-argument	NewScriptContext*	ordinary script context mode zero, with no actor bound
+src/Game/partyaction.c	PickActorAction	0	call-argument	RunScriptStep*	the condition-action script runs without a text window
+src/Game/partyaction.c	PickActorAction	0	call-argument	RetakeDeferredChar*	the condition-action script has no text window to restore
+src/Game/partyaction.c	PickActorAction	64	arithmetic	*	@identity-TODO: actor flag 31 raises action-result bit 6; the message-script decoder is needed to name it
 src/Script/scriptvm.c	ExecScriptOpcode	0x7eff	call-argument	CallScript(*argument 1	bank-script opcodes 1..8 call script files 0x7f00..0x7f07
 src/Script/*.c	*	0xdf	call-argument	*Script(*argument 1	the script file that the reward report, despawn and step-back paths enter; its contents are disc data and its identity is unrecovered
 src/Script/*.c	*	[0-2]	call-argument	*Script(*argument 2	an entry of script file 0xdf (unrecovered disc script)
@@ -865,7 +889,6 @@ src/Game/fieldscreen.c	UpdateFieldScreen	*	call-argument	*	@identity-TODO: the i
 src/Game/fieldscreen.c	*Cursor*	-1	*	*	no cursor cell
 src/Game/fieldscreen.c	TrackWorldMapCursor	*	*	*	the 640x328 view
 src/Game/fieldscreen.c	RunFieldPanelRow	1	call-argument	*	@identity-TODO: RunPanelRow's third argument 1
-src/Game/fieldscreen.c	SetFieldMenuMode	*	*	*	@identity-TODO: the field command panel's modes 0..3 (which of rows 2, 3, 5..7 are disabled); the rows are command icons with no recovered labels
 src/Game/fieldscreen.c	RevealAutomap*	*	*	*	automap reveal: one cell ahead; a hidden cell is 0
 src/Game/fieldscreen.c	CanRevealAutomap*	0	*	*	a hidden automap cell is 0
 src/Game/fieldscreen.c	LoadCommandMenuImage	0x11	*	*	@identity-TODO: menu image 0x11
@@ -1086,7 +1109,6 @@ src/Game/character.c	Add*	*	*	*	money: added within 0..9999999; nothing when no 
 src/Game/character.c	CompareMacca	-1	*	*	fewer macca
 src/Game/character.c	StatusListMenuHandler	-1	*	*	@identity-TODO: no result
 src/Game/character.c	FormatStatusLine	*	*	*	@identity-TODO: the status list's columns 0..4 (name, alignment letters, HP and MP widths 4 and 3); -1 and -2 for no line
-src/Game/character.c	BuildStatusSlots	0	*	*	@identity-TODO: status column 0
 src/Game/character.c	DrainUpkeep	*	*	*	upkeep: nothing yet; costs of at least 1; an emptied pool
 src/Game/character.c	*FieldState	*	*	*	the field state record: six party slots, the 32 roster ids (0x20 humans), -1 for none
 src/Game/character.c	WriteCharacters	16	*	*	the sixteen character slots (CHARACTER_SLOT_COUNT)

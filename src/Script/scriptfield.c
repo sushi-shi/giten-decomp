@@ -32,7 +32,7 @@ void OpEnterFieldMap(void) {
         SetGameStep(4);
         SetGameSub(ExchangeViewHold(hold));
         ThawObjectsForScript();
-        EnterFieldMap(map, countA, rateA, countB, rateB, 1);
+        EnterFieldMap(map, countA, rateA, countB, rateB, FIELD_MAP_SCRIPT_EVENT);
         HoldScriptFiles();
         SaveScriptState();
     }

@@ -36,7 +36,16 @@ static __inline b16 FlushFieldScreen(void) {
 
 // @identity-TODO: which menu the table 0x4687e8 is and what flag 0x8000 means (disabled?) are
 // unrecovered; decode 0x22aa0/0x22ab0.
-void SetFieldMenuMode(i16 mode);
+// Which command rows the field panel permits. The names give the disabled
+// command set: skill=2, item=3, fight=5, talk=6, mapping=7.
+GZ_ENUM_BEGIN_SPLIT(FieldMenuMode, i16)
+    FIELD_MENU_ALL = 0,
+    FIELD_MENU_NO_SKILL_ITEM_FIGHT = 1,
+    FIELD_MENU_NO_FIGHT_TALK_MAPPING = 2,
+    FIELD_MENU_NO_SKILL_ITEM_FIGHT_MAPPING = 3
+GZ_ENUM_END_SPLIT(FieldMenuMode)
+
+void SetFieldMenuMode(GZ_ENUM_PARAM(FieldMenuMode, i16) mode);
 
 // @identity-TODO: What the saved point is used for (the spot 0x125d0 restores after a scene) is
 // inferred from its only reader pair.

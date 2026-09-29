@@ -18,10 +18,25 @@ extern i16 g_fieldBattleActive;
 void MarkFieldRefresh(void);
 i16 ExchangeFieldOption(i16 option);
 i16 SetFieldParams(i16 first, i16 second, i16 third);
-b16 IsFieldModeAtLeast(i16 anyMode);
+// The entry route of a field map: none active, one entered from a cell event,
+// or one entered by a script command.
+GZ_ENUM_BEGIN_SPLIT(FieldMapMode, i16)
+    FIELD_MAP_INACTIVE = -1,
+    FIELD_MAP_CELL_EVENT = 0,
+    FIELD_MAP_SCRIPT_EVENT = 1
+GZ_ENUM_END_SPLIT(FieldMapMode)
+
+b16 IsFieldModeAtLeast(b16 anyMode);
 i16 GetFieldMarker(void);
 void SetFieldPair(i16 first, i16 second);
-void EnterFieldMap(i16 map, i16 countA, i16 rateA, i16 countB, i16 rateB, i16 mode);
+void EnterFieldMap(
+    i16 map,
+    i16 countA,
+    i16 rateA,
+    i16 countB,
+    i16 rateB,
+    GZ_ENUM_PARAM(FieldMapMode, i16) mode
+);
 i16 GetFieldMap(void);
 i16 GetFieldEntryState(void);
 void SetFieldCounts(i16 countA, i16 countB);
@@ -39,6 +54,12 @@ GZ_ENUM_BEGIN(FieldEncounterPhase)
     FIELD_ENCOUNTER_PHASE_ANALYZE = 5,
     FIELD_ENCOUNTER_PHASE_TEAR_DOWN = 6
 GZ_ENUM_END(FieldEncounterPhase)
+
+// The entry phase's two steps: initialize the scene, then start its turns.
+GZ_ENUM_BEGIN_SPLIT(FieldEncounterEntryStep, i16)
+    FIELD_ENCOUNTER_STEP_SETUP = 0,
+    FIELD_ENCOUNTER_STEP_START = 1
+GZ_ENUM_END_SPLIT(FieldEncounterEntryStep)
 
 b16 RunFieldEncounter(void);
 // How a field map ended (LeaveFieldMap): won (the encounter's enemies are
@@ -65,7 +86,7 @@ b16 ResetPartyTurnState(void);
 // @identity-TODO: that kind 0/1 of 0xda40 are the two enemy groups (graphics slots of 0xe820)
 // is inferred from the caller spawning s_fieldMap as kind 0 and s_fieldParamSecond as kind 1.
 RVA_DECL(0x00007300)
-void SpawnSecondGroupActor(i16 x, i16 y, i16 battle);
+void SpawnSecondGroupActor(i16 x, i16 y, b16 alternate);
 
 // @identity-TODO: the caller pushes s_fieldMap but the body never reads its argument; confirm
 // the declared parameter (or its absence) when the field TU is matched.

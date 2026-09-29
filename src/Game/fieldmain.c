@@ -629,7 +629,7 @@ i16 RunPendingTalk(void) {
         g_pendingTalk = objects;
         return -1;
     }
-    picked = RunPickTargetWindow(0, 3, 1, 0);
+    picked = RunPickTargetWindow(0, 3, TARGET_PICK_FIELD_OBJECT, 0);
     if (!picked) {
         return picked;
     }
@@ -1134,7 +1134,7 @@ void RunCellEvent(void) {
             kind = g_cellDestY;
             map = (u8)kind << 8 | g_cellDestX;
             MarkFieldRefresh();
-            EnterFieldMap(map, -1, 100, -1, 100, 0);
+            EnterFieldMap(map, -1, 100, -1, 100, FIELD_MAP_CELL_EVENT);
             break;
         case CELL_EVENT_FADE_SCENE:
             SetGamePhase(FIELD_PHASE_ENTER_CELL);

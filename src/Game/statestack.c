@@ -361,7 +361,7 @@ DATA(0x0007bed4)
 u16 g_rosterReturnStep = 0;
 
 DATA(0x0007bed8)
-static i16 s_rosterSavedColumn = 0;
+static GZ_ENUM_STORAGE(StatusListColumn, i16) s_rosterSavedColumn = STATUS_LIST_ALL;
 
 RVA(0x000169e0, 0xa)
 void ClearGameStateStack(void) {
@@ -569,7 +569,7 @@ i16 PickStatusMember(void) {
             RedrawPartyStatus();
             RepaintTextPlane(g_infoPlane, 1);
             ClearStatusMenu();
-            SetStatusColumn(0);
+            SetStatusColumn(STATUS_LIST_ALL);
             RunStatusListPicker(false);
             break;
         case PICK_MEMBER_STEP_PICKED:
@@ -692,7 +692,7 @@ b16 ReplaceRosterMember(void) {
     i16 selected;
     switch (GetGamePhase()) {
         case 0:
-            s_rosterSavedColumn = SetStatusColumn(2);
+            s_rosterSavedColumn = SetStatusColumn(STATUS_LIST_RESERVE_UNFLAGGED);
             NextGamePhase();
         case 1:
             selected = RunStatusListPicker(false);
@@ -978,7 +978,7 @@ i16 PickDdsRosterMember(i16 step) {
             RunStatusListPicker(true);
             return -1;
         case 0:
-            SetStatusColumn(1);
+            SetStatusColumn(STATUS_LIST_SUMMONABLE);
             step++;
         case 1:
             s_ddsRosterSlot = RunStatusListPicker(false);
@@ -1088,7 +1088,7 @@ i16 PickDdsPurgeMember(void) {
         case 0:
             NextGameSub();
             NextGameSub();
-            SetStatusColumn(2);
+            SetStatusColumn(STATUS_LIST_RESERVE_UNFLAGGED);
             break;
     }
     return -1;
@@ -2253,7 +2253,7 @@ b16 RunWorldMap(void) {
             LoadWorldMapEvents();
             LoadEncounterTables();
             g_worldMapRequest = 0;
-            SetFieldMenuMode(2);
+            SetFieldMenuMode(FIELD_MENU_NO_FIGHT_TALK_MAPPING);
         case WORLD_MAP_PHASE_SAVE_VIDEO:
             NextGamePhase();
             SaveVideoState(s_videoState);
@@ -2273,7 +2273,7 @@ b16 RunWorldMap(void) {
             PlayMusic(0, true);
             ClearMaskView();
             ResetMask(1);
-            SetFieldStatusBit11(1);
+            SetFieldStatusBit11(true);
             ClearTextPlane(g_infoPlane);
             SetInfoBarLayout(0);
             RedrawScreen(0, 1);
@@ -2395,7 +2395,7 @@ b16 RunWorldMap(void) {
             SetSubscreenActive(0);
             SetGameState(GAME_STATE_FIELD_EXPLORATION);
             ClearModeFlags(MODE_WORLD_MAP);
-            SetFieldMenuMode(0);
+            SetFieldMenuMode(FIELD_MENU_ALL);
             RecordWarpInLeader();
             return false;
         case WORLD_MAP_PHASE_LEAVE_FOR_STATE:
@@ -2764,20 +2764,40 @@ b16 RunItemUse(void) {
                 return false;
             }
             if (flags == 0x10) {
-                picked = RunPickTargetWindow(0, range, 5, GetPartyRosterId(s_usePosition));
+                picked = RunPickTargetWindow(
+                    0,
+                    range,
+                    TARGET_PICK_FIELD_OBJECT | TARGET_PICK_ROSTER_LIST,
+                    GetPartyRosterId(s_usePosition)
+                );
             } else if (flags == 0x11) {
-                picked = RunPickTargetWindow(0, range, 4, GetPartyRosterId(s_usePosition));
+                picked = RunPickTargetWindow(
+                    0,
+                    range,
+                    TARGET_PICK_ROSTER_LIST,
+                    GetPartyRosterId(s_usePosition)
+                );
             } else if (flags == 0x30) {
-                picked = RunPickTargetWindow(0, range, 6, GetPartyRosterId(s_usePosition));
+                picked = RunPickTargetWindow(
+                    0,
+                    range,
+                    TARGET_PICK_PARTY_SLOT | TARGET_PICK_ROSTER_LIST,
+                    GetPartyRosterId(s_usePosition)
+                );
             } else {
                 flags = 0;
-                picked = RunPickTargetWindow(0, range, 3, GetPartyRosterId(s_usePosition));
+                picked = RunPickTargetWindow(
+                    0,
+                    range,
+                    TARGET_PICK_FIELD_OBJECT | TARGET_PICK_PARTY_SLOT,
+                    GetPartyRosterId(s_usePosition)
+                );
             }
-            if (picked == -1) {
+            if (picked == TARGET_PICK_CANCELLED) {
                 PrevGamePhase();
                 return false;
             }
-            if (picked == 0) {
+            if (picked == TARGET_PICK_WAITING) {
                 break;
             }
             NextGamePhase();
