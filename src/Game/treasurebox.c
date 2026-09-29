@@ -774,7 +774,7 @@ i16 StepItemBuyMenu(i16* step) {
         }
         case 1: {
             i16 result = RunMenu(s_itemMenu);
-            if (result == -1 || result == 0) {
+            if (result == TEXT_EVENT_CANCEL || result == 0) {
                 return 0;
             }
             if (result == 2) {
@@ -1063,7 +1063,7 @@ i16 StepItemSellMenu(i16* step) {
         case 1: {
             i16 result;
             result = RunMenu(s_itemMenu);
-            if (result == -1 || result == 0) {
+            if (result == TEXT_EVENT_CANCEL || result == 0) {
                 return 0;
             }
             if (result == 2) {

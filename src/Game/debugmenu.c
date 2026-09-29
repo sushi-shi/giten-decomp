@@ -116,7 +116,7 @@ i16 RunDebugMenu(void) {
             return -1;
         case MENU_STEP_RUN:
             pick = RunMenu(s_debugMenu);
-            if (pick == -1) {
+            if (pick == TEXT_EVENT_CANCEL) {
                 PrevGameStep();
             }
             if (pick > 0) {
@@ -172,7 +172,7 @@ i16 RunDebugMenu(void) {
                     return 0;
                 case MENU_STEP_RUN:
                     pick = RunMenu(s_debugMenu);
-                    if (pick == -1) {
+                    if (pick == TEXT_EVENT_CANCEL) {
                         PrevGameSub();
                     }
                     if (pick > 0) {

@@ -842,7 +842,7 @@ b16 RunDdsMenu(void) {
             break;
         case MENU_STEP_RUN:
             result = RunMenu(s_ddsMenu);
-            if (result == -1) {
+            if (result == TEXT_EVENT_CANCEL) {
                 PrevGamePhase();
             }
             if (result > 0) {

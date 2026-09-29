@@ -1556,7 +1556,7 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
                         s_fusionPageActionPending = true;
                         s_fusionPageAction = result;
                     }
-                    if (result == -1) {
+                    if (result == TEXT_EVENT_CANCEL) {
                         s_fusionPreviewPlane = OpenFusionPreviewOnClick();
                         if (s_fusionPreviewPlane >= 0) {
                             step = 3;

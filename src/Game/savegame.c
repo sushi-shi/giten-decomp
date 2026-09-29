@@ -243,7 +243,7 @@ b16 RunSystemMenu(void) {
             return false;
         case MENU_STEP_RUN:
             pick = RunMenu(s_systemMenu);
-            if (pick == -1) {
+            if (pick == TEXT_EVENT_CANCEL) {
                 PrevGamePhase();
             }
             if (pick > 0) {
@@ -324,7 +324,7 @@ static b16 RunDisplayChoice(void) {
             if (pick == 0) {
                 break;
             }
-            if (pick == -1) {
+            if (pick == TEXT_EVENT_CANCEL) {
                 SetGamePhase(0);
             } else {
                 if (GetGamePhase() == 3) {
@@ -356,7 +356,7 @@ static b16 RunQuitConfirm(void) {
             if (pick == 0) {
                 break;
             }
-            if (pick == -1) {
+            if (pick == TEXT_EVENT_CANCEL) {
                 SetGamePhase(0);
             } else {
                 if (g_selectedObjectId == 0) {

@@ -126,11 +126,11 @@ RVA(0x00020990, 0x46)
 i16 PollMenuBox(MenuBox* menu) {
     i16 control;
     if (menu == NULL) {
-        return -1;
+        return TEXT_EVENT_CANCEL;
     }
     control = RunPanelInput(menu->list);
     if (control == -2) {
-        return -1;
+        return TEXT_EVENT_CANCEL;
     }
     if (control >= 0) {
         return HandleMenuControl(menu, control);
@@ -176,7 +176,7 @@ b16 HandleMenuControl(MenuBox* menu, i16 control) {
 RVA(0x00020a90, 0x32)
 i16 RunMenu(MenuBox* menu) {
     if (menu == NULL) {
-        return -1;
+        return TEXT_EVENT_CANCEL;
     }
     if (menu->flagBits.redraw) {
         BuildMenuPage(menu);

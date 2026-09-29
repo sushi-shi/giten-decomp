@@ -4810,24 +4810,24 @@ i16 PollMenuInput(i16 plane) {
     MenuLine* line;
 
     if (plane == TEXT_PLANE_NONE) {
-        return 0;
+        return TEXT_EVENT_NONE;
     }
     p = GetTextPlane(plane);
     cancelEnabled = IsTextPlaneCancelEnabled(plane);
     if (cancelEnabled) {
         if (TakeMouseCancel(true)) {
             CallTextPlaneHook(plane, TEXT_EVENT_CANCEL, 0);
-            return -1;
+            return TEXT_EVENT_CANCEL;
         }
     } else if (GetTextPlane(plane)->highlightY >= 0 && GetMouseRightClick()) {
         ChooseMenuLine(plane);
         CallTextPlaneHook(plane, TEXT_EVENT_CHOOSE_RIGHT, 0);
-        return 2;
+        return TEXT_EVENT_CHOOSE_RIGHT;
     }
     if (GetTextPlane(plane)->highlightY >= 0 && GetMouseLeftClick()) {
         ChooseMenuLine(plane);
         CallTextPlaneHook(plane, TEXT_EVENT_CHOOSE, GetTextPlane(plane)->highlightY);
-        return 1;
+        return TEXT_EVENT_CHOOSE;
     }
     x = TextPlaneCellAt(plane, g_cursorPos.x, g_cursorPos.y, &col, &row);
     if (x < 0) {
@@ -4850,7 +4850,7 @@ i16 PollMenuInput(i16 plane) {
             CallTextPlaneHook(plane, TEXT_EVENT_HIGHLIGHT, GetTextPlane(plane)->highlightY);
         }
     }
-    return 0;
+    return TEXT_EVENT_NONE;
 }
 
 // @identity-TODO: this and 0x53b10 are byte-identical; which callers want
