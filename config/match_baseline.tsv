@@ -78,7 +78,7 @@ partyaction	103	98
 playtime	4	4
 pool	6	6
 range	25	25
-recordcache	43	41
+recordcache	43	42
 restore	3	3
 savegame	10	10
 screensave	9	9
@@ -1613,7 +1613,7 @@ recordcache	_RestoreScriptState	100.0000	100.0000	1	663f30159ecb	0x2ea30	100.000
 recordcache	_RollSkillLearning	100.0000	100.0000	4	645a95049ce3	0x2dfb0	100.0000	
 recordcache	_SaveScriptState	100.0000	100.0000	1	6ba68caf5b47	0x2e9d0	100.0000	
 recordcache	_StripZeroWords	100.0000	100.0000	2	b3f00a7170f3	0x2dea0	100.0000	
-recordcache	_WearCachedSkill	24.8000	24.8000	2	38a98f6f9069	0x2e8a0	24.8000	
+recordcache	_WearCachedSkill	100.0000	100.0000	3	7607ffde7cca	0x2e8a0	100.0000	
 recordcache	_WearSkillValue	100.0000	100.0000	4	d783a1aa12ac	0x2e960	100.0000	
 restore	_ApplyRestoreEffect	100.0000	100.0000	12	6e32c9aa9376	0x1fe90	100.0000	
 restore	_ComputeRestoreAmount	100.0000	100.0000	4	a4dd284d8beb	0x1fdc0	100.0000	
@@ -2145,7 +2145,7 @@ sprite	_IsSpriteFrameLoaded	100.0000	100.0000	5	ca3289abefdf	0x58870	100.0000
 sprite	_IsSpritePlaced	100.0000	100.0000	4	bcdc4894d016	0x58800	100.0000	
 sprite	_LoadSpriteFrames	100.0000	100.0000	4	709a605b455b	0x588c0	100.0000	
 sprite	_PlaceSprite	100.0000	100.0000	3	35b7f235e02a	0x58780	100.0000	
-sprite	_UnplaceAllSprites	76.6667	76.6667	3	8bed1c83197c	0x586d0	76.6667	
+sprite	_UnplaceAllSprites	77.0833	77.0833	3	8bed1c83197c	0x586d0	77.0833	
 sprite	_UnplaceSprite	100.0000	100.0000	4	0f1d1ffb6430	0x58700	100.0000	
 statestack	@PushGameState@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16c00	100.0000	
 statestack	@SetGameState@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16a70	100.0000	
@@ -2664,19 +2664,19 @@ winmain	?PollJoystick@@YAXXZ	100.0000	100.0000	1	bda610032818	0x4a0c0	100.0000
 winmain	?PressPadButton@@YAXHH@Z	100.0000	100.0000	1	c0091faf1fcb	0x4ad40	100.0000	
 winmain	?ReleaseGraphics@@YAXXZ	100.0000	100.0000	9	d1657db95d50	0x4a100	100.0000	
 winmain	?RenderBlankMode@@YAXH@Z	100.0000	100.0000	3	900a8bc39a04	0x4f010	100.0000	
-winmain	?RenderEnemy@@YAXHHH@Z	82.2973	82.2973	30	cc837211cfda	0x4cb30	82.2973	
+winmain	?RenderEnemy@@YAXHHH@Z	82.3107	82.3107	30	cc837211cfda	0x4cb30	82.3107	
 winmain	?RenderEventMode@@YAXH@Z	100.0000	100.0000	5	3cfbf4ce8a13	0x4e910	100.0000	
 winmain	?RenderFieldMode@@YAXH@Z	100.0000	100.0000	4	d0ca88baa9c1	0x4ef30	100.0000	
 winmain	?RenderFieldView@@YAXH@Z	100.0000	100.0000	9	1b7fa84ab5d5	0x4ea90	100.0000	
 winmain	?RenderFrame@@YAXXZ	100.0000	100.0000	2	4a2fe617a52b	0x4f140	100.0000	
 winmain	?RenderLayersMode@@YAXH@Z	100.0000	100.0000	1	2b7b4382fad1	0x4f100	100.0000	
-winmain	?RenderNPC@@YAXH@Z	87.8235	87.8235	25	4cfcd3f0bd20	0x4c3c0	87.8235	
+winmain	?RenderNPC@@YAXH@Z	87.8425	87.8425	25	4cfcd3f0bd20	0x4c3c0	87.8425	
 winmain	?RenderNothing@@YAXH@Z	100.0000	100.0000	1	88c3c57d2781	0x4f130	100.0000	
 winmain	?RenderPanelMode@@YAXH@Z	100.0000	100.0000	4	3be769a9f10d	0x4ed80	100.0000	
 winmain	?RenderPictureMode@@YAXH@Z	100.0000	100.0000	4	a0444bd0eff1	0x4ece0	100.0000	
 winmain	?RenderSceneMode@@YAXH@Z	100.0000	100.0000	4	b8db0d39babd	0x4ea10	100.0000	
 winmain	?RenderStatusMode@@YAXH@Z	100.0000	100.0000	3	084af13f2f37	0x4f0b0	100.0000	
-winmain	?RenderTBox@@YAXXZ	92.5973	92.5973	21	0655c7bcc244	0x4bdd0	92.5973	
+winmain	?RenderTBox@@YAXXZ	92.6087	92.6087	21	0655c7bcc244	0x4bdd0	92.6087	
 winmain	?RenderViewMode@@YAXH@Z	100.0000	100.0000	10	8c67030739f7	0x4e3d0	100.0000	
 winmain	?RepeatPadMove@@YAXH@Z	100.0000	100.0000	2	380c7fa8dd37	0x4fc00	100.0000	
 winmain	?ResetCamera@@YAXXZ	100.0000	100.0000	2	aeb40630f29b	0x4f6e0	100.0000	
