@@ -82,8 +82,9 @@ Reached by elimination only. First exhaust the source-shape checklist
 (matcher `references/levers.md`): widths, cv/ref boundaries,
 local census and lifetimes, helper boundaries, statement grouping. One
 misplaced register op can mean the TYPE is wrong (a member array modeled as
-scalars, a lost aggregate). Then use classified `giten permute state|variants`
-(the `permute` skill). TU-global effects exist
+scalars, a lost aggregate). Then, only if the user has explicitly allowed the
+permuter (never while several agents are running), use classified
+`giten permute state|variants` (the `permute` skill). TU-global effects exist
 (`docs/patterns/tu-state-probe-family-decides-reachability.md`): a flat probe
 sweep is evidence about the probe, not the function. Probes are diagnostics:
 bank the MAX, then delete them.
