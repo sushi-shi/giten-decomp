@@ -304,3 +304,7 @@ src/Platform/winmain.cpp	ReleaseGraphics	*	*	*	Win32/DirectX API arguments and r
 src/Platform/winmain.cpp	ResetDisplayGlobals	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
 src/Platform/winmain.cpp	RestoreScreenMode	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
 src/Platform/winmain.cpp	WinMain	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	BlitTextPlanes	*	*	*	text-plane blitting: the plane bit, the keypad highlight frame count and the keypad rows rectangle in pixels
+src/Platform/winmain.cpp	RunMoveCommand	7	*	*	the move-command table index mask (eight commands)
+src/Platform/winmain.cpp	PollJoystick	0xffff	*	*	all joystick button bits, to invert the last state
+src/Platform/winmain.cpp	HandleInput	0	call-argument	PostQuitMessage(*argument 1	the exit code

@@ -3958,7 +3958,7 @@ i32 g_heldPadButton;
 RVA(0x0004fc00, 0xd0)
 void RepeatPadMove(BOOL turn) {
     if (g_heldPadButton && g_renderMode == RENDER_MODE_VIEW && !s_screenSaved
-        && !g_screenLayers[1]->visible) {
+        && !g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
         if (turn) {
             switch (g_heldPadButton) {
                 case PAD_RELEASED:
