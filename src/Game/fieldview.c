@@ -628,8 +628,8 @@ i16 GetWorldBlockY(i16 y) {
 RVA(0x0000cd70, 0x4b)
 MapCoord GetWorldCellAt(i16 x, i16 y) {
     MapCoord cell;
-    cell.y = -1;
-    cell.x = -1;
+    cell.y = MAP_COORD_NONE;
+    cell.x = MAP_COORD_NONE;
     if (IsPointInWorldView(x, y)) {
         cell = GetWorldViewOrigin();
         cell.x += x;
@@ -643,8 +643,8 @@ RVA(0x0000cdc0, 0x83)
 MapCoord GetMouseWorldCell(void) {
     i16 block = GetWorldBlock();
     MapCoord cell;
-    cell.y = -1;
-    cell.x = -1;
+    cell.y = MAP_COORD_NONE;
+    cell.x = MAP_COORD_NONE;
     if (IsPointInWorldView(g_mousePosition.x, g_mousePosition.y)) {
         cell.x = g_mousePosition.x + 0x70 + block % 8 * 288;
         cell.y = g_mousePosition.y + 0x24 + block / 8 * 200;
