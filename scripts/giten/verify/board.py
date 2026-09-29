@@ -136,10 +136,14 @@ _IDENT = re.compile(r"[A-Za-z_]\w*")
 _ARRAY_BOUND = re.compile(r"\[[^\]]*\]")
 _DECLSPEC = re.compile(
     r"\b(?:__declspec|__attribute__)\s*\([^()]*(?:\([^()]*\)[^()]*)*\)")
+#: EnumDomain.h's storage annotations spell a type, not a declarator.
+_ENUM_TYPE_MACRO = re.compile(
+    r"\bGZ_ENUM_(?:STORAGE|PARAM|RETURN|LOCAL|BITFIELD)\s*\([^()]*\)")
 
 
 def _declarator_name(part: str) -> str | None:
     head = _DECLSPEC.sub(" ", part)
+    head = _ENUM_TYPE_MACRO.sub(" T ", head)
     head = head.split("(", 1)[0]
     head = _ARRAY_BOUND.sub(" ", head)
     ids = _IDENT.findall(head)
