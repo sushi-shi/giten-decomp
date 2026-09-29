@@ -71,17 +71,18 @@ def era_tool(name: str) -> Path:
     return p
 
 
-def winepath(p: Path | str) -> str:
-    """Unix path -> windows path. stderr is discarded on purpose: winepath can
-    be the call that boots the persistent wine session, and a daemonised
-    session inheriting our stderr holds the caller's pipe open forever."""
+def winepath(p: Path | str, env: dict[str, str] | None = None) -> str:
+    """Unix path -> windows path, in `env`'s prefix (default: ours). stderr is
+    discarded on purpose: winepath can be the call that boots the persistent
+    wine session, and a daemonised session inheriting our stderr holds the
+    caller's pipe open forever."""
     exe = require("winepath")
-    fast = _default_drive_path(p)
+    fast = _default_drive_path(p, env)
     if fast is not None:
         return fast
     try:
         return subprocess.check_output([exe, "-w", str(p)],
-                                       text=True,
+                                       text=True, env=env,
                                        stderr=subprocess.DEVNULL).strip()
     except subprocess.CalledProcessError as e:
         raise ToolError(f"winepath -w {p} failed (rc={e.returncode}) - the "
@@ -89,7 +90,7 @@ def winepath(p: Path | str) -> str:
                         "`giten init`") from e
 
 
-def _default_drive_path(p: Path | str) -> str | None:
+def _default_drive_path(p: Path | str, env: dict[str, str] | None = None) -> str | None:
     """Avoid starting Wine for absolute paths under its default Z: mapping.
 
     Custom drives, paths inside C:, and unusual path syntax stay with winepath.
@@ -99,7 +100,7 @@ def _default_drive_path(p: Path | str) -> str | None:
     if (not raw.startswith('/') or raw.startswith('//') or '\\' in raw
             or raw != raw.strip() or any(ord(c) < 32 for c in raw)):
         return None
-    prefix = Path(os.environ.get('WINEPREFIX') or Path.home() / '.wine')
+    prefix = Path((env or os.environ).get('WINEPREFIX') or Path.home() / '.wine')
     try:
         devices = prefix / 'dosdevices'
         drives = {d.name for d in devices.iterdir()

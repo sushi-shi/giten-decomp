@@ -9,11 +9,12 @@ giten play                              # later runs
 ```
 
 It builds the `play` graph target and extracts the disc's `DDSWIN/` files
-(not its executables) into `build/play/DDSWIN`. It then creates
-`build/play/prefix` if it does not exist and starts the game from
-`build/play/DDSWIN` inside gamescope. The raw MODE1/2352 disc image defaults
-to `$GITEN_DISC` or `build/local/DDSWIN.BIN`. Options are in
-`giten play --help`. Saves are written to the prefix's `C:\windows`.
+(not its executables) into `build/play/DDSWIN`; a later `--disc` naming a
+different image replaces them. It then creates `build/play/prefix` if it
+does not exist, configures it, and starts the game from `build/play/DDSWIN`
+inside gamescope. The raw MODE1/2352 disc image defaults to `$GITEN_DISC` or
+`build/local/DDSWIN.BIN`. Options are in `giten play --help`. Saves are
+written to the prefix's `C:\windows`.
 
 ## Build
 
@@ -41,8 +42,11 @@ The prefix is configured the way the original setup would configure Windows:
   Shift-JIS.
 - The glyph font is created with no face name, which Japanese Windows
   resolves to MS Gothic. `Giten Gothic` replaces it. It is cut from Noto Sans
-  Mono CJK JP with Windows metrics rescaled so that every JIS X 0208 glyph
-  fits the game's 16-row cell.
+  Mono CJK JP: a static regular-weight instance, its outlines raised and its
+  Windows metrics rescaled so that every JIS X 0208 glyph lands in the rows
+  `RenderGlyph` copies into the game's 16-row cell (`giten.play.font`
+  explains the fit). The font and the prefix configuration carry stamps, so
+  a changed build or configuration is re-applied on the next run.
 - gamescope gives the game a real 640x480 screen and scales it by an integer
   factor. The game hides the system cursor, confines it to 640x480 and draws
   its own sprite at `GetCursorPos`, so a Wine-emulated mode change leaves the
