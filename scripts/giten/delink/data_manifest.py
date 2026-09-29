@@ -976,8 +976,12 @@ def fp_pool_rows(model: Model, base_dir=BASE_DIR):
             for member in stranded:
                 # The pin states the LITERAL's size, the member its padded
                 # slot extent; accept the prefix match (bytes still verified,
-                # the enrolled extent stays the obj's).
-                if pool[member][3] >= size and pool[member][2][:size] == want:
+                # the enrolled extent stays the obj's) when the rest of the
+                # slot is zero padding - a double whose low word matches a
+                # float pin is another constant, not its padded slot.
+                slot = pool[member][2]
+                if pool[member][3] >= size and slot[:size] == want \
+                        and not any(slot[size:]):
                     pairs[rva].append(member)
         claims = Counter(m for ms in pairs.values() for m in ms)
         pin_size = dict(pins.get(stem, ()))
