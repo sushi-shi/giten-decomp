@@ -8,6 +8,7 @@
 
 // Panel input policy; hidden, locked and disabled also apply to rows.
 GZ_ENUM_FLAGS_BEGIN(PanelFlags, u16)
+    PANEL_FLAGS_NONE = 0,
     PANEL_ALLOW_RIGHT_CLICK = 0x0002,
     PANEL_IGNORE_RIGHT_CLICK = 0x0004,
     PANEL_HIDDEN = 0x1000,
@@ -107,7 +108,7 @@ static __inline void InitPanelRow(Panel* panel, i16 index, i16 id, PanelRowHandl
     GetPanelRow(panel, index)->id = id;
     GetPanelRow(panel, index)->word04 = 0;
     GetPanelRow(panel, index)->handler = handler;
-    AssignPanelRowState(panel, index, 0);
+    AssignPanelRowState(panel, index, PANEL_FLAGS_NONE);
 }
 
 void SetFlagBits(GZ_ENUM_STORAGE(PanelFlags, u16) * flags, GZ_ENUM_PARAM(PanelFlags, u16) mask);

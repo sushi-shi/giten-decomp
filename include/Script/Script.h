@@ -7,6 +7,7 @@
 #include <Game/Character.h>
 #include <Game/GameState.h>
 #include <Ints.h>
+#include <Script/ObjectRef.h>
 #include <Script/ScriptBlock.h>
 #include <Script/ScriptStatus.h>
 
@@ -54,7 +55,7 @@ i16 GetScriptActorId(void);
 i16 ObjectSlotOfId(i16 id);
 
 static __inline i16 ScriptObjectRefFromSlot(i16 slot) {
-    return -1 - slot;
+    return SCRIPT_REF_SLOT_BASE - slot;
 }
 
 ScriptContext* SetCurrentScript(ScriptContext* script);

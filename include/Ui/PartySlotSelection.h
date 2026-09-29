@@ -14,12 +14,12 @@ GZ_ENUM_BEGIN(PartySlotSelectionMode)
 GZ_ENUM_END(PartySlotSelectionMode)
 
 static __inline i16 FilterPartySlotSelection(i16 slot, i16 mode) {
-    if (mode == PARTY_SLOT_REQUIRE_OCCUPIED && GetPartySlot(slot) == -1) {
-        slot = -1;
+    if (mode == PARTY_SLOT_REQUIRE_OCCUPIED && GetPartySlot(slot) == PARTY_SLOT_EMPTY) {
+        slot = PARTY_POSITION_NONE;
     }
-    if (mode == PARTY_SLOT_EXCLUDE_HUMANS && GetPartySlot(slot) != -1
-        && GetPartyRosterId(slot) < 32) {
-        slot = -1;
+    if (mode == PARTY_SLOT_EXCLUDE_HUMANS && GetPartySlot(slot) != PARTY_SLOT_EMPTY
+        && GetPartyRosterId(slot) < HUMAN_ID_LIMIT) {
+        slot = PARTY_POSITION_NONE;
     }
     return slot;
 }

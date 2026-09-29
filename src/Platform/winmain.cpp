@@ -71,7 +71,7 @@ DATA(0x0008d728)
 SpriteSlot g_spriteSlots[SPRITE_SLOT_COUNT];
 
 DATA(0x0008d860)
-Texture g_objectTextures[6];
+Texture g_objectTextures[OBJECT_TEXTURE_COUNT];
 
 // The layers from the topmost down.
 DATA(0x0008f290)
@@ -487,7 +487,7 @@ void SetViewRenderMode(void) {
 RVA(0x00049bb0, 0x15)
 void SetPanelRenderMode(void) {
     g_renderMode = RENDER_MODE_PANEL;
-    g_screenLayers[7]->visible = false;
+    g_screenLayers[SCREEN_LAYER_NAVIGATION]->visible = false;
 }
 
 RVA(0x00049bd0, 0xa)

@@ -3872,7 +3872,7 @@ void ResetTextPlanes(void) {
     int i;
 
     for (i = 0; i < TEXT_PLANE_COUNT; i++) {
-        GetTextPlane(i)->kind = -1;
+        GetTextPlane(i)->kind = TEXT_PLANE_FREE;
         GetTextPlane(i)->visible = false;
         GetTextPlane(i)->surface = NULL;
         GetTextPlane(i)->glyphSurface = NULL;

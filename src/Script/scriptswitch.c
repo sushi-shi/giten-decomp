@@ -33,11 +33,11 @@ void SwitchOnValue(u8 value, i16 call, i16 exactMatch) {
 
 RVA(0x000327c0, 0xfe)
 i16 ReadScriptSwitch(u8 value, i16* target, i16* entry, i16 exactMatch) {
-    i16 selected = 255;
+    i16 selected = SCRIPT_SWITCH_END;
     u8 localJump = 0;
     u8 key;
     if (exactMatch) {
-        for (key = ReadScriptByte(); key != 255; key = ReadScriptByte()) {
+        for (key = ReadScriptByte(); key != SCRIPT_SWITCH_END; key = ReadScriptByte()) {
             if (value != key) {
                 ReadScriptByte();
                 ReadScriptWord();

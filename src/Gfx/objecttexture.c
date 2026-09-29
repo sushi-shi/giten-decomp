@@ -6,7 +6,7 @@
 
 RVA(0x00058110, 0x77)
 void LoadObjectTexture(void* image, i16 slot) {
-    if (slot < 0 || slot > 5) {
+    if (slot < 0 || slot > OBJECT_TEXTURE_COUNT - 1) {
         return;
     }
     if (image == NULL) {
@@ -21,7 +21,7 @@ void LoadObjectTexture(void* image, i16 slot) {
 RVA(0x00058190, 0x1f)
 void ReleaseObjectTextures(void) {
     i32 slot;
-    for (slot = 0; slot < 6; slot++) {
+    for (slot = 0; slot < OBJECT_TEXTURE_COUNT; slot++) {
         ReleaseTexture(&g_objectTextures[slot]);
     }
 }

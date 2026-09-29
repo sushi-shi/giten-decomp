@@ -436,3 +436,36 @@ src/Gfx/layertexture.cpp	DecodeLayerImage	0	*	*consumed	decode offsets start at 
 src/Gfx/walltexture.cpp	LoadWallTextures	*	*	*	wall sets: the low nibble selects the set, levels 1..3 its variant
 src/Gfx/effectdraw.cpp	*	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
 src/Platform/worldmap.cpp	*	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
+src/Text/font.cpp	*	*	*	*	the Windows text-plane renderer: accessors answer 0 (lookups -1) for a missing plane, line or cell; 4-bit colour fields of text attributes; 8-pixel cells, 80 columns and glyph buffers; -1 for no highlight or no hit; hook values, header rows and line steps
+src/Gfx/surfacecopy.cpp	CopySurfaceSquare	0	call-argument	StretchBlt(*	the source and destination origins (0, 0)
+src/Script/scriptswitch.c	SwitchOnValue	0	call-argument	PushCallFrame(*argument 2	@identity-TODO: PushCallFrame's second argument, 0 for a switch call
+src/Gfx/screensave.c	SetTextCursorOffset	80	*	*	the PC-98 text screen's 80 columns
+src/Gfx/screensave.c	RedrawScreen	*	call-argument	*	@identity-TODO: FieldScreenNop's 0 and RefreshInfoBar's 1 on a full redraw
+include/Util/Text.h	AppendTextChar	*	*	*	a two-byte Shift-JIS character (above 0xff) stores its high byte first and advances two bytes
+include/Script/Script.h	ClearScriptPosition	0	*	*	a cleared script position (no code, pc 0)
+include/Script/ScriptBlock.h	ClearScriptEntry	0	*	*	a cleared script entry (no code, pc 0)
+include/Game/Fusion.h	SetFusionSummaryKind	*	store	*	@identity-TODO: fusion summary kinds 10, 11 and 12 for a result above, below and at the source's level
+include/Game/Clock.h	ResetClockPhaseAndTime	0	*	*	the clock restarts at moon phase 0, 00:00
+include/Game/Character.h	ClearItemSlot	0	*	*quantity	an empty item slot holds none
+include/Game/Character.h	SetCharacterPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
+include/Game/FieldObject.h	SetFieldObjectPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
+include/Game/Character.h	GetBattleStatGroup	6	*	*	six battle stats per group
+src/Ui/hotspotclick.cpp	ClickHotspotAt	-1	*	*	no hotspot hit
+src/Game/statusmenu.c	DrawStatusLine	2	*	*	two pixels below the line top
+src/Game/statusmenu.c	SetStatusMenuItemsHidden	-1	*	*	@identity-TODO: -1 marks an unswitched status-menu item
+src/Game/clickwait.c	TakeClickUnlessCancel	*	*	*	@identity-TODO: key code -2 cancels (-1); see the function comment
+include/Ui/Panel.h	InitPanelRow	0	*	*word04	@identity-TODO: panel row word +4 starts at 0
+include/Input/Mouse.h	ClearMouseSelection	-1	*	*	no hovered or selected object
+include/Game/DropTable.h	ClearDropSlot	0	*	*amount	an empty drop slot
+include/Game/DropTable.h	RollDropAmount	1	call-argument	RollItemAmount(*argument 3	@identity-TODO: RollItemAmount's third argument, 1 for a drop
+include/Game/CombatantId.h	*	-1	*	*	party combatant ids count down from -1 (position 0)
+include/Game/BattleEffect.h	ResetActionOutcome	0	*	*g_actionResult	no action result yet
+include/Game/BattleEffect.h	GetConditionDamageThreshold	2	*	*	half the target's level
+include/Game/AutomapData.h	GetAutomapLevelTableSize	4	*	*	four bytes per automap level entry after a 4-byte header
+src/Platform/devicesettings.cpp	LoadDeviceSettings	0	call-argument	RegOpenKeyExA(*	RegOpenKeyEx's reserved options (0)
+src/Input/mouse.c	TakeMouseCancel	0	*	*	@identity-TODO: clearSelection == 0 keeps the selection
+include/Sound/Mmio.h	*	0	*	*	MMIOINFO's first info word
+include/Game/SkillUse.h	ClearAllBattleTallies	0	*	*	battle tallies start at 0
+include/Game/FieldView.h	ApplyFacingOffset	3	*	*	the four directions (a 2-bit value)
+include/Game/Attack.h	GetExceptionalAttackLuck	0.5	*	*	half the exceptional-attack value
+include/Game/ActionWait.h	QueueActionWait	1	*	*remaining	a queued wait runs at least one more tick

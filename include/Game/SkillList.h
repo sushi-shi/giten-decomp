@@ -31,8 +31,11 @@ b16 RollSkillLearning(Character* character, i16 skill);
 
 i16 AddSkill(WordList* list, i16 skill);
 
+// The skills a character can know.
+#define SKILL_LIST_CAPACITY 30
+
 static __inline b32 IsSkillListFull(WordList* list) {
-    return GetWordCount(list) >= 30;
+    return GetWordCount(list) >= SKILL_LIST_CAPACITY;
 }
 
 i16 LearnLevelSkill(Character* character);

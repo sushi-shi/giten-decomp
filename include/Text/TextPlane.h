@@ -68,7 +68,7 @@ typedef struct TextPoint {
 // One text window: a grid of Shift-JIS cells with per-cell attributes
 // rendered through two DirectDraw surfaces.
 typedef struct TextPlane {
-    u16 kind; // 0xffff marks a free slot
+    u16 kind; // TEXT_PLANE_FREE marks a free slot
     i16 arg;
     i16 cols;
     i16 rows;
