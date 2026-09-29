@@ -675,9 +675,6 @@ void TakeFromPool(i16 item, u8 amount) {
     }
 }
 
-// @early-stop instruction selection: retail reads the entry count as a word
-// masked in 16 bits (and si,0xff), as TakeFromBagEntry's count; cl reads the
-// count byte. The permuter found one compiler island.
 RVA(0x00023990, 0xa0)
 i16 GivePooledItems(void) {
     i16 left = 0;
@@ -690,7 +687,11 @@ i16 GivePooledItems(void) {
             item = RemapItem(GetItemStackItem(GetItemPoolEntry(i)));
             amount = GetItemStackCount(GetItemPoolEntry(i));
             if (item != 0) {
-                amount = RollItemAmount(GetItemStackItem(GetItemPoolEntry(i)), amount, 0);
+                amount = RollItemAmount(
+                    GetItemStackItem(GetItemPoolEntry(i)),
+                    GetItemStackCount(GetItemPoolEntry(i)),
+                    0
+                );
             } else {
                 item = GetItemStackItem(GetItemPoolEntry(i));
             }
@@ -877,10 +878,8 @@ i16 AddToBagEntry(i16 index, u16 amount, u16 limit) {
 
 RVA(0x00023e10, 0x60)
 i16 TakeFromBagEntry(i16 index, i16 amount) {
-    i16 held = GetItemStackCount(&g_bagItems[index]);
-
-    if (amount > held) {
-        amount = held;
+    if (amount > GetItemStackCount(&g_bagItems[index])) {
+        amount = GetItemStackCount(&g_bagItems[index]);
     }
     amount &= 0xff;
     g_bagItems[index].count -= amount;
@@ -925,7 +924,6 @@ static void CompactBagCore(void) {
 #endif
     i16 kept = 0;
     i16 limit;
-    i16 count;
     i16 from;
     i16 i;
     i16 j;
@@ -955,7 +953,7 @@ static void CompactBagCore(void) {
             continue;
         }
         limit = GetItemStackLimit(GetItemStackItem(&g_bagItems[i]));
-        while ((count = GetItemStackCount(&g_bagItems[i])) < limit) {
+        while (GetItemStackCount(&g_bagItems[i]) < limit) {
             from = FindBagItem(GetItemStackItem(&g_bagItems[i]), 3);
             if (from <= i) {
                 break;
@@ -1229,18 +1227,15 @@ i16 AddGemItemsAt(i16 index, u16 amount) {
     if (index < 0 || index >= 16) {
         return -1;
     }
-    total = GetItemStackCount(GetGemItemEntry(index)) + amount;
+    total = GetGemItemEntry(index)->count + amount;
     if (total > GetItemStackLimit(GetItemStackItem(GetGemItemEntry(index)))) {
         amount = GetItemStackLimit(GetItemStackItem(GetGemItemEntry(index)))
-                 - GetItemStackCount(GetGemItemEntry(index));
+                 - GetGemItemEntry(index)->count;
     }
     GetGemItemEntry(index)->count += amount;
     return amount;
 }
 
-// @early-stop register allocation: retail reuses the extracted count for the
-// clamp (mov eax,edx) where cl re-extracts it from the word; the permuter found
-// one compiler island, and a count local, a pointer or a ternary move further.
 RVA(0x00024660, 0x50)
 i16 TakeGemItemsAt(i16 index, i16 amount) {
     if (index < 0 || index >= 16) {

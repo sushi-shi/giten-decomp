@@ -2640,10 +2640,9 @@ static __inline void SelectItemUserAsTarget(void) {
 // Runs the field item-use flow one phase: open the item list, pick an item,
 // pick its target (a skill-bearing item, kind 11 or 19, targets as its skill),
 // then hand the user's pick to the action prompt. Returns 0.
-// @early-stop instruction scheduling: in the final phase retail loads
-// g_targetId before storing g_actorId and reads the pick flags early into bl;
-// cl here keeps source order (statement reorders score lower), and the
-// permuter found one compiler island.
+// @early-stop instruction scheduling: in the final phase's skill arm retail
+// reads the pick flags into bl before storing pickTarget; cl here keeps the
+// flags update after the store, the statement order PC-98 shows.
 RVA(0x0001a400, 0x3e0)
 b16 RunItemUse(void) {
     ItemRecord* record;
@@ -2738,8 +2737,8 @@ b16 RunItemUse(void) {
             kind = record->kind;
             if (ItemUseInvokesSkill(kind)) {
                 g_actorId = PartyCombatantId(position);
-                user->pickRole = 4;
                 user->pickObject = g_targetId;
+                user->pickRole = 4;
                 g_actionId = GetItemSkillId(record);
                 user->pickTarget = GetItemSkillId(record);
                 user->pickFlags |= PICK_ITEM_SKILL;

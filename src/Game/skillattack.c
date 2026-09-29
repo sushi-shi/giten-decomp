@@ -23,7 +23,7 @@ b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide) {
     i32 defense;
     i32 skillValue;
     i16 value;
-    i16 roll;
+    i32 roll;
     g_attackResistance = GetSkillResistance(target, attacker->pickTarget, 1, sameSide, &attribute);
     g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, attribute);
     if (g_attackResistance == -6) {
@@ -54,16 +54,16 @@ b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide) {
     }
     skillValue = GetSkillValueA(GetCachedSkill(attacker->pickTarget));
     skillValue *= 100;
-    skillValue += accuracy;
-    value = WearSkillValue(skillValue);
+    value = WearSkillValue(skillValue + accuracy);
+    skillValue = value;
     if (accuracy >= defense) {
-        accuracy = ScaleActionValue(value + defense * 4, g_attackResistance, 4);
-        roll = RandomAverage(0, 14, 1);
+        accuracy = ScaleActionValue(skillValue + defense * 4, g_attackResistance, 4);
+        roll = defense * RandomAverage(0, 14, 1);
     } else {
-        accuracy = ScaleActionValue(value * 4, g_attackResistance, 4);
-        roll = RandomAverage(0, 15, 0);
+        accuracy = ScaleActionValue(skillValue * 4, g_attackResistance, 4);
+        roll = defense * RandomAverage(0, 15, 0);
     }
-    if (accuracy > defense * roll) {
+    if (accuracy > roll) {
         return true;
     }
     SetActionResult(attacker, 0);

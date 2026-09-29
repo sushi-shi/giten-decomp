@@ -1699,10 +1699,8 @@ static D3DVALUE s_boxUV[4][4][2] = {
 
 // Draws the treasure boxes within three cells of the party as billboards and
 // makes the box in front of the party a hotspot.
-// @early-stop x87 schedule and argument extension: the billboard corner
-// products and copies differ; retail rounds the -x corner through a temporary.
-// Retail also zero-extends the box coordinates into full registers before
-// IsCellInViewCone; the callee consumes only their low 16 bits. Calls and CFG match.
+// @early-stop x87 schedule: the billboard corner products and copies differ;
+// retail rounds the -x corner through a temporary. Calls and CFG match.
 RVA(0x0004bdd0, 0x5dc)
 void RenderTBox(void) {
     DATA(0x0008fd00)
@@ -1838,7 +1836,9 @@ void RenderTBox(void) {
                 return;
             }
             Hotspot* hotspot = GetHotspot(g_hotspotCount);
-            ProjectBillboardRect(hotspot->rect, s_box);
+            D3DVECTOR corner;
+            D3DVECTOR screen;
+            ProjectBillboardRect(hotspot->rect, s_box, corner, screen);
             hotspot->kind = HOTSPOT_BOX;
             hotspot->texture = &g_textBoxTexture;
             hotspot->data = box;
@@ -1855,9 +1855,9 @@ RVA_DYNINIT(0x0004c3b0, 0x1, RenderTBox)
 // ones in view hotspots (kind 15 for the one in front of the party, 14 for one
 // on the party's cell); with `ownCellOnly` only an NPC on the party's cell is
 // drawn. The two nearest are ordered, then every NPC hotspot becomes kind 2.
-// @early-stop x87 schedule and allocation: the corner arithmetic is scheduled
-// differently, and retail keeps the cell pointer in ebx while spilling the
-// widened party coordinates; calls, texture selection and CFG match.
+// @early-stop x87 schedule: the billboard corner products and their stores
+// through float temporaries are scheduled differently; calls, texture
+// selection, CFG and the integer code match.
 RVA(0x0004c3c0, 0x754)
 void RenderNPC(BOOL ownCellOnly) {
     DATA(0x0008f210)
@@ -1987,7 +1987,9 @@ void RenderNPC(BOOL ownCellOnly) {
                 continue;
             }
             Hotspot* hotspot = GetHotspot(g_hotspotCount);
-            ProjectBillboardRect(hotspot->rect, s_npc);
+            D3DVECTOR corner;
+            D3DVECTOR screen;
+            ProjectBillboardRect(hotspot->rect, s_npc, corner, screen);
             hotspot->kind = kind;
             SelectNpcBillboardTexture(hotspot->texture, textureSlot);
             hotspot->data = GetAreaNpc(npc);
@@ -2041,10 +2043,10 @@ static i16 s_turnImageCodesLeft[8] = {0, 1, 2, -1, 1, 1, 0, 0};
 // test and `byDistance` shades by distance (else fully lit).
 // @identity-TODO: the flag roles are read from the one call (1, 0, 1) and the
 // body; the lit-frame and 2D-fallback paths are undecoded beyond their data.
-// @early-stop x87 schedule and allocation: the corner stores and height
-// arithmetic, and the loop counters' registers differ. The extra loop-entry
-// branch skips a backedge-only coordinate reload; it is an allocator edge
-// split, not another source predicate.
+// @early-stop x87 schedule: the billboard corner products, the height and the
+// translation stores are scheduled differently (retail stores the far corners
+// first and copies the near z corners through integer moves). Calls, CFG,
+// block placement and the integer code match.
 RVA(0x0004cb30, 0xaec)
 void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
     DATA(0x0008f4d8)
@@ -2093,9 +2095,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
     partyX = position->x;
     partyY = position->y;
     if (g_moveState == 0) {
-        i32 viewY = partyY;
-        i32 viewX = partyX;
-        UpdateViewCells(viewX, viewY);
+        UpdateViewCells(partyX, partyY);
     }
     for (x = partyX - 3; x <= partyX + 3; x++) {
         for (y = partyY - 3; y <= partyY + 3; y++) {
@@ -2111,7 +2111,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     }
                 }
                 coord = GetObjectCoordPtr(i);
-                if (coord->x == x && coord->y == y) {
+                if (x == coord->x && y == coord->y) {
                     objects[found++] = i;
                 }
             }
@@ -2130,11 +2130,11 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     }
                 }
                 if (imageCode < 0) {
-                    imageCode = -imageCode;
                     s_enemy[3].tu = 1.0f;
                     s_enemy[0].tu = 1.0f;
                     s_enemy[2].tu = 0.0f;
                     s_enemy[1].tu = 0.0f;
+                    imageCode = -imageCode;
                 } else {
                     s_enemy[3].tu = 0.0f;
                     s_enemy[0].tu = 0.0f;
@@ -2148,20 +2148,20 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     if (g_renderMode == RENDER_MODE_VIEW_FRAME) {
                         switch (g_viewDirection) {
                             case VIEW_NORTH:
-                                partyY++;
                                 offsetZ = 30;
+                                partyY++;
                                 break;
                             case VIEW_EAST:
-                                partyX--;
                                 offsetX = -30;
+                                partyX--;
                                 break;
                             case VIEW_SOUTH:
-                                partyY--;
                                 offsetZ = -30;
+                                partyY--;
                                 break;
                             case VIEW_WEST:
-                                partyX++;
                                 offsetX = 30;
+                                partyX++;
                                 break;
                         }
                     } else {
@@ -2265,17 +2265,23 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     GetTextureHandle(&g_enemyTextures[layer][imageCode])
                 );
                 if (g_deviceType == D3D_DEVICE_RAMP) {
-                    result = g_d3dDevice->SetLightState(
-                        D3DLIGHTSTATE_MATERIAL,
-                        lit ? GetTextureMaterialHandle(
-                                  &g_enemyTextures[layer][imageCode],
-                                  TEXTURE_SHADE_LIT
-                              )
-                            : GetTextureMaterialHandle(
-                                  &g_enemyTextures[layer][imageCode],
-                                  TEXTURE_SHADE_NORMAL
-                              )
-                    );
+                    if (!lit) {
+                        result = g_d3dDevice->SetLightState(
+                            D3DLIGHTSTATE_MATERIAL,
+                            GetTextureMaterialHandle(
+                                &g_enemyTextures[layer][imageCode],
+                                TEXTURE_SHADE_NORMAL
+                            )
+                        );
+                    } else {
+                        result = g_d3dDevice->SetLightState(
+                            D3DLIGHTSTATE_MATERIAL,
+                            GetTextureMaterialHandle(
+                                &g_enemyTextures[layer][imageCode],
+                                TEXTURE_SHADE_LIT
+                            )
+                        );
+                    }
                     if (result != D3D_OK) {
                         TraceD3DCallError(
                             "lpD3DDev->SetLightState()@RenderEnemy() returns ",
@@ -2305,8 +2311,8 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                             NULL
                         );
                     } else {
-                        rect.top = 214 - s_enemySizes[anim][1] / 2;
                         rect.left = 256 - s_enemySizes[anim][0];
+                        rect.top = 214 - s_enemySizes[anim][1] / 2;
                         rect.right = 640 - rect.left;
                         rect.bottom = s_enemySizes[anim][1] / 2 + 178;
                         g_renderTarget->Blt(
@@ -2328,7 +2334,9 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                         break;
                     }
                     Hotspot* hotspot = GetHotspot(g_hotspotCount);
-                    ProjectBillboardRect(hotspot->rect, s_enemy);
+                    D3DVECTOR corner;
+                    D3DVECTOR screen;
+                    ProjectBillboardRect(hotspot->rect, s_enemy, corner, screen);
                     hotspot->kind = HOTSPOT_TARGET;
                     hotspot->texture = &g_enemyTextures[layer][imageCode];
                     hotspot->value = GetObjectSlot(index);

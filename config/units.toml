@@ -165,11 +165,6 @@ source = "src/Gfx/screensave.c"
 flags = "c"
 
 [[unit]]
-unit = "modeflags"
-source = "src/Game/modeflags.c"
-flags = "c"
-
-[[unit]]
 unit = "clickwait"
 source = "src/Game/clickwait.c"
 flags = "c"

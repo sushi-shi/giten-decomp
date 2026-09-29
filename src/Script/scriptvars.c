@@ -35,7 +35,6 @@
 #include <Input/Mouse.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
-#include <Platform/GameCalls.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
 #include <Script/LongVar.h>
@@ -486,9 +485,6 @@ u16 ReadScriptEntry(ScriptBlock* block, FILE* fp) {
 
 // Resizes entry `entry`'s code to `length` bytes (at least 1), moving the
 // code after it; returns the entry's code.
-// @early-stop register residue: in the shrinking branch retail forms
-// size + delta in eax and keeps size in esi, here the sum overwrites esi (and
-// the growing branch's temporaries shift); operand order and a u16 size tried.
 RVA(0x0003abc0, 0xd0)
 u8* ResizeScriptEntry(ScriptBlock* block, i16 entry, i16 length) {
     ScriptCode* code;

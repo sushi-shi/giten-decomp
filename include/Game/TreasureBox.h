@@ -27,7 +27,7 @@ static __inline b32 IsTreasureBoxOpen(TreasureBox* box) {
 }
 
 void PrepareViewedTreasureBox(void);
-b32 IsHotspotTreasureOpen(i32 index);
+void IsHotspotTreasureOpen(i32 index);
 void OpenTreasureBox(TreasureBox* box);
 u16 RotateByDirection(u16 mask, i16 direction);
 

@@ -5,16 +5,9 @@
 #include <Gfx/VideoState.h>
 #include <Ints.h>
 
-static __inline i32 GetSceneSpriteOffsetX(SpriteBitmap* image, u32 flags) {
-    if (!flags) {
-        return image->offsetX;
-    }
-    return 79 - image->offsetX;
-}
+#define GetSceneSpriteOffsetX(image, flags) (!(flags) ? (image)->offsetX : 79 - (image)->offsetX)
 
-static __inline i16 GetSceneSpriteOffsetY(SpriteBitmap* image) {
-    return image->offsetY << 3;
-}
+#define GetSceneSpriteOffsetY(image) ((image)->offsetY << 3)
 
 // @identity-TODO: the Windows build retains only the image-header copy.
 // Placement and flags are recovered from SceneSprite; the six global

@@ -7,15 +7,11 @@
 
 #include <string.h>
 
-// @early-stop register/scheduling residue: retail initializes the frame cursor
-// in edx before the order-table memset; this build uses eax after it. The
-// signed loop edge, stores and ordered referents match. Pointer lifetime,
-// counter-width and shared frame-setter controls do not recover the schedule.
 RVA(0x000586d0, 0x27)
 void UnplaceAllSprites(void) {
     i32 slot;
-    memset(g_spriteOrder, -1, sizeof(g_spriteOrder));
     for (slot = 0; slot < SPRITE_SLOT_COUNT; slot++) {
+        g_spriteOrder[slot] = SPRITE_UNPLACED;
         SetSpriteSlotFrame(GetSpriteSlot(slot), SPRITE_UNPLACED);
     }
 }

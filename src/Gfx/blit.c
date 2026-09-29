@@ -39,9 +39,13 @@ void PrepareFullSceneSprite(SpriteBitmap* image, i32 imageHandle, i16 x, i16 y, 
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).
 RVA(0x00001680, 0x43)
 void PrepareOffsetSceneSprite(SpriteBitmap* image, i32 imageHandle, i16 x, i16 y, u32 flags) {
-    i32 offsetX = GetSceneSpriteOffsetX(image, flags);
-    i16 offsetY = GetSceneSpriteOffsetY(image);
-    PrepareFullSceneSprite(image, imageHandle, x + offsetX, y + offsetY, flags);
+    PrepareFullSceneSprite(
+        image,
+        imageHandle,
+        x + GetSceneSpriteOffsetX(image, flags),
+        y + GetSceneSpriteOffsetY(image),
+        flags
+    );
 }
 
 // @identity-TODO: two empty sprite hooks have no recovered signatures or API names.
@@ -58,9 +62,6 @@ void SkipViewportSceneSprite(void) {}
 
 // @dead-code
 // Zero-ref: no retail call, jump or relocated pointer reaches this wrapper.
-// @early-stop: the final x sum uses edx rather than eax, moving the handle
-// load past its push. Parameter reuse is flat; a coordinate local schedules
-// the sum too early. Target-adjacent and top-inserted TU forests are flat.
 RVA(0x000016f0, 0x65)
 void PrepareViewportSceneSprite(
     SpriteBitmap* image,
@@ -70,13 +71,11 @@ void PrepareViewportSceneSprite(
     u32 flags,
     VideoViewport* viewport
 ) {
-    i32 offsetX = GetSceneSpriteOffsetX(image, flags);
-    i16 offsetY = GetSceneSpriteOffsetY(image);
     PrepareSceneSprite(
         image,
         imageHandle,
-        x + offsetX,
-        y + offsetY,
+        x + GetSceneSpriteOffsetX(image, flags),
+        y + GetSceneSpriteOffsetY(image),
         viewport->screenLeft,
         viewport->screenTop,
         viewport->clipLeft,

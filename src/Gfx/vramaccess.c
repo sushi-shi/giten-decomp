@@ -7,17 +7,6 @@
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
 
-// @identity-TODO: two 32-byte checkerboard tiles (and the inverse) plus a
-// cleared word, written at startup; no code in the image reads them.
-DATA(0x00091300)
-u32 g_checkerPattern[8];
-
-DATA(0x00091320)
-u32 g_checkerPatternInverse[8];
-
-DATA(0x000716fc)
-static i16 s_patternState;
-
 RVA(0x000028a0, 0x4)
 b16 SaveDrawState(void) {
     return false;
@@ -53,6 +42,17 @@ ScreenSaveHeader* AllocRegionScreenSave(ScreenSaveRegion* region) {
     save->offset += region->column;
     return save;
 }
+
+// @identity-TODO: two 32-byte checkerboard tiles (and the inverse) plus a
+// cleared word, written at startup; no code in the image reads them.
+DATA(0x00091300)
+u32 g_checkerPattern[8];
+
+DATA(0x00091320)
+u32 g_checkerPatternInverse[8];
+
+DATA(0x000716fc)
+static i16 s_patternState;
 
 RVA(0x00002970, 0x2e)
 void InitCheckerPatterns(void) {
