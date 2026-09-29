@@ -578,7 +578,24 @@ i16 StoreBagItem(i16 item, i16 count, i16 attachment) {
             count = left;
             if (s_bagQuiet == 0) {
                 if (count > 0) {
+#ifdef GITEN_BUGFIX
+                    // @bug A scenario item goes only into the bag's last 16
+                    // entries, and AddScenarioBagItems uses only empty ones
+                    // (a second copy takes another entry). With all 16 held
+                    // there is no room, but RunBagDiscardMenu lists only
+                    // entries that are neither priceless nor scenario items:
+                    // no discard frees a scenario entry, so this loop opens the
+                    // menu again after every discard until nothing is left to
+                    // list, and that menu, whose cancel is off, never closes.
+                    // Such an item is not stored instead.
+                    if (GetItemKind(item) == ITEM_KIND_SCENARIO) {
+                        count = 0;
+                    } else {
+                        RunBagDiscardMenu();
+                    }
+#else
                     RunBagDiscardMenu();
+#endif
                 }
             } else {
                 count = 0;
