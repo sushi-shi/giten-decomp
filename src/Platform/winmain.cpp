@@ -78,8 +78,7 @@ POINT g_dragOffset;
 DATA(0x0008fb04)
 u32 g_hotspotCount;
 
-// @identity-TODO: the layer table is filled by the layer constructor (0x551c0)
-// in font.cpp.
+// @identity-TODO: the layer table is filled by CreateScreenLayer in font.cpp.
 DATA(0x0008fb10)
 ScreenLayer* g_screenLayers[SCREEN_LAYER_COUNT];
 

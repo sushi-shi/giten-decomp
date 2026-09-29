@@ -1,8 +1,8 @@
-// @identity-TODO: the owning TU is unproven. One retail object: the battle
-// and field skill-use flows. Their .bss statics interleave in one run
-// (0x480a90..0x480d37: the field skill user, pick and menu words sit between
-// the battle action's), each read only by its own flow's code, and the field
-// flow's code follows the battle flow's in .text.
+// @identity-TODO: the owning TU is unproven. One retail object: the battle and
+// field skill-use flows. Their .bss statics interleave in one run (the field
+// skill user, pick and menu words sit between the battle action's), each read
+// only by its own flow's code, and the field flow's code follows the battle
+// flow's in .text.
 
 #include <rva.h>
 

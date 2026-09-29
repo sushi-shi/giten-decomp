@@ -28,10 +28,9 @@ static i16 s_sceneInputFirst = 0;
 DATA(0x00078064)
 static i16 s_sceneInputSecond = 0;
 
-// The legacy display interrupt consumes and clears these request bits.
-// Its Windows implementation is absent, but accesses retain that contract.
+// Request bits for a display interrupt that this image does not contain.
 DATA(0x00078068)
-static volatile i16 s_sceneFlags = 0;
+static i16 s_sceneFlags = 0;
 
 DATA(0x00078070)
 static i16 s_sceneInputPending = 0;
@@ -107,6 +106,9 @@ static i16 s_currentEffect = -1;
 DATA(0x000683f8)
 static i16 s_motionScale = 1;
 
+// @early-stop: retail loads the word, ORs in 32 bits and stores the low half;
+// cl folds `|=` into one `or word ptr` unless the word is volatile, and no
+// asynchronous writer or reader exists. Swapped, widened and u16 forms fold.
 RVA(0x00004920, 0x14)
 void SetSceneFlags(i32 bits) {
     s_sceneFlags |= bits;

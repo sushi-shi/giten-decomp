@@ -1,11 +1,11 @@
-// @identity-TODO: the owning TU is unproven. One retail object: the
-// character records and pools, the stat, affinity and condition helpers, the
-// status panels and lines, the party and the character save. character's
-// statics open and close one .bss run (0x4816a8..0x483b4f) with the status
-// draw, party, status line and save statics between them, each read only by
-// its own part's code; the .rdata tables interleave (condition, character,
-// status line); the action speed's floating-point constants lead the
-// object's constant run; and the code is contiguous in .text.
+// @identity-TODO: the owning TU is unproven. One retail object: the character
+// records and pools, the stat, affinity and condition helpers, the status
+// panels and lines, the party and the character save. character's statics open
+// and close one .bss run with the status draw, party, status line and save
+// statics between them, each read only by its own part's code; the .rdata
+// tables interleave (condition, character, status line); the action speed's
+// floating-point constants lead the object's constant run; and the code is
+// contiguous in .text.
 
 #include <rva.h>
 

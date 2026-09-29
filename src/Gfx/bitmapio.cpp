@@ -499,7 +499,7 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
     IDirectDrawSurface_QueryInterface(
         texture->sourceSurface,
         IID_IDirect3DTexture2,
-        reinterpret_cast<void**>(source)
+        reinterpret_cast<void**>(source) // API-forced: QueryInterface takes void**.
     );
     texture->width = min(TEXTURE_MAX_WIDTH, header->biWidth);
     if (IsPalettizedSurface(desc)) {
@@ -535,7 +535,7 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
     if (IDirectDrawSurface_QueryInterface(
             texture->surface,
             IID_IDirect3DTexture2,
-            reinterpret_cast<void**>(&texture->texture)
+            reinterpret_cast<void**>(&texture->texture) // API-forced: QueryInterface takes void**.
         )
         != DD_OK) {
         return false;
