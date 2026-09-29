@@ -3430,31 +3430,44 @@ static DWORD s_lastDrawTime;
 #define FRAME_INTERVAL 50
 
 #ifdef GITEN_BUGFIX
-// The display refresh the vertical-blank wait held the main loop to.
+// The display refresh the game was paced for, in passes of the main loop a second.
 #define REFRESH_RATE 60
+// One pass at REFRESH_RATE, in ms, rounded up.
+#define FRAME_PERIOD ((1000 + REFRESH_RATE - 1) / REFRESH_RATE)
 // A frame later than this restarts the clock instead of running to catch up.
 #define FRAME_MAX_LAG 100
 
+static BOOL s_frameClockStarted;
 static DWORD s_frameClockStart;
 static DWORD s_frameClockCount;
 
-// Retail paces the main loop, one game step per pass, on WaitForVerticalBlank.
-// Wine returns from it at once, so the game stepped at the timer's rate. This
-// sleeps to the next 1/REFRESH_RATE s boundary instead.
+// Retail paces the main loop, one game step per pass, on the vertical blank
+// alone, so the game's speed follows the display's refresh rate: a 120 Hz
+// display runs it twice as fast, and under Wine, whose WaitForVerticalBlank
+// returns at once, it runs as fast as the host allows. Called after that wait,
+// this holds the loop to REFRESH_RATE passes a second on its own clock. A
+// deadline more than a frame ahead or FRAME_MAX_LAG behind (the first call, a
+// timeGetTime wrap, a stall) restarts the clock at now.
 static void WaitForFrame(void) {
-    DWORD now = timeGetTime();
+    DWORD now;
     LONG ahead;
 
+    if (!s_frameClockStarted) {
+        // Sleep otherwise rounds up to the system tick, about 15.6 ms.
+        timeBeginPeriod(1);
+        s_frameClockStarted = TRUE;
+    }
+    now = timeGetTime();
     if (s_frameClockCount == REFRESH_RATE) {
         s_frameClockStart += 1000;
         s_frameClockCount = 0;
     }
     ahead = static_cast<LONG>(s_frameClockStart + s_frameClockCount * 1000 / REFRESH_RATE - now);
-    if (ahead > 0) {
-        Sleep(ahead);
-    } else if (ahead < -FRAME_MAX_LAG) {
+    if (ahead > FRAME_PERIOD || ahead < -FRAME_MAX_LAG) {
         s_frameClockStart = now;
         s_frameClockCount = 0;
+    } else if (ahead > 0) {
+        Sleep(ahead);
     }
     s_frameClockCount++;
 }
@@ -3486,10 +3499,9 @@ void RenderFrame(void) {
         }
         s_viewChanged = FALSE;
         DrawMouseCursor();
+        g_ddraw->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL);
 #ifdef GITEN_BUGFIX
         WaitForFrame();
-#else
-        g_ddraw->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL);
 #endif
         if (draw) {
             if (g_deviceType == D3D_DEVICE_HAL) {
