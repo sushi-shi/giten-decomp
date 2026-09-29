@@ -4,7 +4,8 @@ The generator reads one committed revision (`git archive`), never the build
 tree. It keeps the unit sources, the project headers, a standalone build and
 the licence, and removes the matching scaffolding: comments, the include/rva.h
 claims, and the enum-domain macros, which it expands to their MSVC 5.0
-spelling. `classic` also decides GITEN_BUGFIX and GITEN_COMPAT as undefined;
+spelling. The matching-only headers stay as stand-ins, so every unit opens
+the same files as in the matching build. `classic` also decides GITEN_BUGFIX and GITEN_COMPAT as undefined;
 `port` is seeded with both defined.
 """
 
@@ -37,9 +38,24 @@ RESOLVED = {
     "port": {flag: True for flag in PLAY_FLAGS},
 }
 
-#: Matching-only headers. Their users include <Ints.h> instead, which rva.h
-#: and Enums.h include.
-SCAFFOLD_HEADERS = {"rva.h": "Ints.h", "Enums.h": "Ints.h", "EnumDomain.h": None}
+#: Matching-only headers, exported as stand-ins that keep only their guard
+#: and includes. Every unit still opens them: MSVC 5.0's register allocation
+#: and temporary numbering follow the files a unit opens, so dropping an
+#: #include changes objects whose tokens are unchanged.
+_STAND_IN = """\
+#ifndef {guard}
+#define {guard}
+
+// Kept so that the headers each unit opens match the original build: MSVC 5.0
+// allocates registers differently when a unit opens another set of files.
+{includes}
+#endif
+"""
+SCAFFOLD_HEADERS = {
+    "include/rva.h": _STAND_IN.format(guard="GITEN_RVA_H", includes="#include <Ints.h>\n"),
+    "include/Enums.h": _STAND_IN.format(guard="GITEN_ENUMS_H", includes="#include <Ints.h>\n"),
+    "include/EnumDomain.h": _STAND_IN.format(guard="GITEN_ENUMDOMAIN_H", includes=""),
+}
 
 #: include/rva.h claims, removed; DATA_COMPGEN keeps its value, as it expands.
 CLAIMS = {
@@ -98,24 +114,7 @@ def clean_source(text: str, resolved: dict[str, bool]) -> str:
     text = strip_comments(text)
     if resolved:
         text = resolve_conditionals(text, resolved)
-    seen_ints = False
-    lines = []
-    for line in text.splitlines(keepends=True):
-        include = re.match(r"\s*#\s*include\s*<([^>]+)>", line)
-        header = include.group(1) if include else None
-        if header in SCAFFOLD_HEADERS:
-            header = SCAFFOLD_HEADERS[header]
-            if header is None:
-                lines.append(REMOVED + "\n")
-                continue
-            line = f"#include <{header}>\n"
-        if header == "Ints.h":
-            if seen_ints:
-                lines.append(REMOVED + "\n")
-                continue
-            seen_ints = True
-        lines.append(line)
-    text = rewrite_macros("".join(lines), CLAIMS, OBJECT_MACROS)
+    text = rewrite_macros(text, CLAIMS, OBJECT_MACROS)
     residue = words(text) & (SCAFFOLD_WORDS | (set(resolved) if resolved else set()))
     if residue:
         raise ValueError(f"unremoved scaffolding: {sorted(residue)}")
@@ -169,13 +168,13 @@ def generate(files: dict[str, bytes], variant: str) -> dict[str, bytes]:
     manifest = tomllib.loads(files["config/units.toml"].decode())
     sources = {unit["source"] for unit in manifest["unit"]}
     headers = {name for name in files if name.startswith("include/") and name.endswith(".h")
-               and PurePosixPath(name).name not in SCAFFOLD_HEADERS}
+               and name not in SCAFFOLD_HEADERS}
     if any(name.startswith("vendor/") and PurePosixPath(name).name != ".clang-format"
            for name in files):
         raise ValueError("vendor/ has content; the export does not handle vendored code")
     unsupported = [name for name in files if name.startswith(("src/", "include/"))
                    and name not in sources and name not in headers
-                   and PurePosixPath(name).name not in SCAFFOLD_HEADERS]
+                   and name not in SCAFFOLD_HEADERS]
     if unsupported:
         raise ValueError(f"source files the export does not handle: {sorted(unsupported)}")
     cleaned = {}
@@ -185,6 +184,10 @@ def generate(files: dict[str, bytes], variant: str) -> dict[str, bytes]:
         except (ValueError, KeyError, UnicodeDecodeError) as error:
             raise ValueError(f"{name}: {error}") from error
     style = clang_format_style(files[".clang-format"].decode())
+    for name, text in SCAFFOLD_HEADERS.items():
+        if name not in files:
+            raise ValueError(f"{name}: missing from the matching tree")
+        cleaned[name] = text.encode()
     output = clang_format(cleaned, style)
     output[".clang-format"] = style.encode()
     for name, data in files.items():

@@ -1,22 +1,18 @@
-"""Build a generated tree and check it against the matching tree.
+"""Build a generated tree and require the matching build's objects and image.
 
 The export only removes comments and scaffolding and decides conditionals, so
-for the same decision (retail, or the play build's GITEN_BUGFIX) every unit
-must preprocess to the matching source's token sequence. That is the check.
-
-The objects are compared as well, and reported. MSVC 5.0's register
-allocation and temporary numbering depend on the headers and macros a unit
-reads, not only on its tokens (include/Ints.h), so removing include/rva.h and
-include/Enums.h can move registers in an unchanged program. Objects are
-compared without the `.file` record, which holds the source path, and with
-compiler-private names (`$T644`, `$SG1234`, `name$S12`) renumbered in order of
-appearance, since no linker resolves them by name.
+for the same decision (retail, or the play build's GITEN_BUGFIX) every object
+it compiles must equal the matching build's: build/objdiff/base, or
+build/play/obj for a unit the play build recompiles. Objects are compared
+without their TimeDateStamp and `.file` record, which holds the source path.
+With the original DDS.EXE supplied, the linked image must also equal the
+matching tree's candidate (retail) or play (fixed) image apart from the PE
+link timestamp.
 """
 
 from __future__ import annotations
 
 import os
-import re
 import struct
 import subprocess
 import sys
@@ -32,11 +28,11 @@ def _string(data: bytes, table: int, raw: bytes) -> str:
     return raw.rstrip(b"\0").decode("latin-1")
 
 
-_PRIVATE = re.compile(r"(\$[A-Za-z]*)(\d+)")
-
-
 def canonical(data: bytes) -> tuple:
-    """An i386 COFF object without its TimeDateStamp and `.file` record."""
+    """An i386 COFF object without its TimeDateStamp and `.file` record.
+
+    Symbol references (relocations, weak-external tags) are renumbered past
+    the `.file` record, whose length follows the source path."""
     machine, count, _stamp, pointer, symbols, optional, flags = struct.unpack_from(
         "<HHIIIHH", data, 0)
     table = pointer + 18 * symbols
@@ -52,12 +48,11 @@ def canonical(data: bytes) -> tuple:
             names.append((name, value, section, kind, storage,
                           data[offset + 18:offset + 18 * (1 + aux)]))
         index += 1 + aux
-    ordinals: dict[str, str] = {}
-
-    def renumber(match: re.Match) -> str:
-        return ordinals.setdefault(match.group(0), f"{match.group(1)}#{len(ordinals)}")
-
-    names = [(_PRIVATE.sub(renumber, name), *rest) for name, *rest in names]
+    for position, (name, value, section, kind, storage, aux) in enumerate(names):
+        if storage == 105 and aux:                          # IMAGE_SYM_CLASS_WEAK_EXTERNAL
+            tag = index_names[struct.unpack_from("<I", aux)[0]]
+            names[position] = (name, value, section, kind, storage,
+                               struct.pack("<I", tag) + aux[4:])
     sections = []
     for number in range(count):
         base = 20 + optional + 40 * number
@@ -73,33 +68,6 @@ def canonical(data: bytes) -> tuple:
             fixups.append((address, index_names[symbol], kind))
         sections.append((name, size, characteristics, body, tuple(fixups)))
     return machine, flags, tuple(sections), tuple(names)
-
-
-def preprocess(root: Path, units: list[dict], defines: list[str], out: Path) -> dict[str, list]:
-    """{unit: its non-blank preprocessed tokens} under cl /EP with its flags."""
-    from concurrent.futures import ThreadPoolExecutor
-    from giten.branch.lexer import tokens
-    from giten.core.paths import dxsdk_dir, msvc_dir
-    from giten.tool.wine import era_tool, run, winepath
-
-    cl = era_tool("cl.exe")
-    includes = [root / "include", dxsdk_dir() / "Include", msvc_dir() / "include"]
-
-    def one(unit: dict) -> tuple[str, list]:
-        directory = out / unit["name"]
-        directory.mkdir(parents=True, exist_ok=True)
-        result = directory / (Path(unit["source"]).stem + ".i")
-        run(["wine", str(cl), *(f"/I{winepath(d)}" for d in includes), *unit["flags"],
-             *defines, "/EP", "/P", winepath(root / unit["source"])],
-            cwd=directory, success=result)
-        if not result.exists():
-            raise ValueError(f"{unit['source']}: cl /EP produced nothing")
-        text = result.read_text(encoding="latin-1")
-        return unit["name"], [spelling for _kind, spelling in tokens(text)
-                              if not spelling.isspace()]
-
-    with ThreadPoolExecutor(os.cpu_count() or 1) as pool:
-        return dict(pool.map(one, units))
 
 
 def reference_objects(repo: Path, fixes: bool) -> dict[str, Path]:
@@ -130,8 +98,16 @@ def compare(built: Path, reference: dict[str, Path]) -> list[str]:
             != canonical(reference[unit].read_bytes())]
 
 
+def image(data: bytes) -> bytes:
+    """A PE image without its link timestamp."""
+    buffer = bytearray(data)
+    pe = struct.unpack_from("<I", buffer, 0x3C)[0]
+    struct.pack_into("<I", buffer, pe + 8, 0)
+    return bytes(buffer)
+
+
 def verify(output: Path, repo: Path, commit: str, fixes: bool) -> None:
-    """Build `output` (retail, and with `fixes` also fixed) and compare objects."""
+    """Build `output` (retail, and with `fixes` also fixed) and compare it."""
     changed = subprocess.run(
         ["git", "-C", str(repo), "status", "--porcelain", "--untracked-files=all", "--",
          "src", "include", "config/units.toml"], capture_output=True, text=True, check=True)
@@ -140,30 +116,31 @@ def verify(output: Path, repo: Path, commit: str, fixes: bool) -> None:
              "src", "include", "config/units.toml"]).returncode:
         raise ValueError(f"the work tree's sources differ from {commit[:12]}; "
                          "verify compares with the matching build of that commit")
-    import json
-    from giten.graph import PLAY_DEFINES
-
-    units = json.loads((output / "build.json").read_text())["units"]
     exe = os.environ.get("GITEN_RETAIL_EXE")
+    link = bool(exe and Path(exe).is_file())
     for fixed in [False, True] if fixes else [False]:
         label = "fixed" if fixed else "retail"
         command = [sys.executable, "build.py", *(["--fixes"] if fixed else [])]
-        command += ["--exe", exe] if exe and Path(exe).is_file() else ["--compile-only"]
+        command += ["--exe", exe] if link else ["--compile-only"]
         print(f"[branch] {label}: building {output}", flush=True)
         subprocess.run(command, cwd=output, check=True)
         built = output / ("build/fixes" if fixed else "build")
-        defines = PLAY_DEFINES if fixed else []
-        scratch = repo / "build/branch/preprocessed" / label
-        theirs = preprocess(output, units, defines, scratch / "export")
-        ours = preprocess(repo, units, defines, scratch / "main")
-        differing = [unit for unit in sorted(ours) if ours[unit] != theirs[unit]]
-        if differing:
-            raise ValueError(f"{label}: {len(differing)} unit(s) preprocess differently from "
-                             f"the matching source: {', '.join(differing)}")
-        print(f"[branch] {label}: all {len(ours)} units preprocess to the matching "
-              "source's tokens", flush=True)
         reference = reference_objects(repo, fixed)
-        moved = compare(built / "obj", reference)
-        print(f"[branch] {label}: {len(reference) - len(moved)}/{len(reference)} objects equal "
-              f"the matching build's" + (f"; differing: {', '.join(moved)}"
-                                         if moved else ""), flush=True)
+        differing = compare(built / "obj", reference)
+        if differing:
+            raise ValueError(f"{label}: {len(differing)} object(s) differ from the matching "
+                             f"build: {', '.join(differing)}")
+        print(f"[branch] {label}: all {len(reference)} objects equal the matching build's",
+              flush=True)
+        if not link:
+            print(f"[branch] {label}: no GITEN_RETAIL_EXE, so no image was linked or compared",
+                  flush=True)
+            continue
+        from giten.graph.verbs import ninja
+        target = graph.PLAY_EXE if fixed else graph.CANDIDATE_EXE
+        if ninja([target]) != 0:
+            raise ValueError(f"the matching build failed to link {target}")
+        if image((built / "DDS.EXE").read_bytes()) != image((repo / target).read_bytes()):
+            raise ValueError(f"{label}: DDS.EXE differs from {target}")
+        print(f"[branch] {label}: DDS.EXE equals {target} apart from the link timestamp",
+              flush=True)

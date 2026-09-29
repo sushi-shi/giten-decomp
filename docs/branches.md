@@ -27,8 +27,7 @@ King's Field reconstruction: two generated branches and one maintained by hand.
 Both exports hold the unit sources of `config/units.toml`, the project
 headers, `build.json`, `build.py`, a Nix shell with Wine and Python,
 `.clang-format`, `LICENSE` and a README. They drop the matching tree's
-`config/`, `docs/`, `scripts/`, tests, `include/rva.h`, `include/Enums.h` and
-`include/EnumDomain.h`.
+`config/`, `docs/`, `scripts/` and tests.
 
 In every source and header the generator:
 
@@ -40,8 +39,13 @@ In every source and header the generator:
   `DATA_COMPGEN(rva, value)` by `value`;
 - expands the enum-domain macros to MSVC 5.0's spelling: `typedef enum X {`,
   `} X;`, and the storage type for `GZ_ENUM_STORAGE`;
-- includes `<Ints.h>` where the unit included `<rva.h>` or `<Enums.h>`;
 - formats the result with the tree's clang-format style.
+
+`include/rva.h`, `include/Enums.h` and `include/EnumDomain.h` stay as
+stand-ins holding only their include guard and includes, and every
+`#include` stays. MSVC 5.0's register allocation and temporary numbering
+follow the files a unit opens, not only its tokens (`include/Ints.h`), so
+removing a header changes objects whose preprocessed tokens are identical.
 
 `classic` also decides `GITEN_BUGFIX` and `GITEN_COMPAT` as undefined: it keeps
 the retail arm of each conditional on them and deletes the fix and its
@@ -74,17 +78,15 @@ Generation reads the committed `HEAD`; `--ref` selects another revision.
 `--working-tree` previews tracked working files, staged new files included,
 but cannot publish. Output goes to `build/branch/<name>`.
 
-`--verify` builds the export with its own `build.py` (the retail game, and
-for `source` also the fixed one) and preprocesses every unit of the export and
-of `main` with `cl /EP` under the same flags and defines. Each unit must yield
-the same token sequence as its `main` source; that is the check. The work
-tree's `src/`, `include/` and `config/units.toml` must equal the exported
-revision. The objects are then compared with `build/objdiff/base` (with
-`--fixes`, `build/play/obj`) and the differing units are listed. That list
-is not a failure: MSVC 5.0's register allocation and temporary numbering
-depend on the headers and macros a unit reads (`include/Ints.h`), so removing
-`rva.h` and `Enums.h` can move registers in a unit whose tokens are
-unchanged.
+`--verify` builds the export with its own `build.py`: the retail game, and
+for `source` also the fixed one. Every object must equal the matching
+build's object for the same decision, `build/objdiff/base` or, for a unit
+the play build recompiles, `build/play/obj`, apart from the COFF timestamp
+and the `.file` record, which holds the source path. With `GITEN_RETAIL_EXE`
+set, the linked `DDS.EXE` must also equal the matching tree's
+`build/exe/DDS.candidate.EXE` (retail) or `build/play/DDS.EXE` (fixed) apart
+from the PE link timestamp. The work tree's `src/`, `include/` and
+`config/units.toml` must equal the exported revision.
 
 `--publish` commits the export to the local branch `<name>`, checked out in
 the worktree `build/<name>`. Each publication replaces the branch with one
