@@ -24,6 +24,7 @@ extern i16 g_fieldRedrawRequest;
 extern i16 g_infoPlane;
 
 #include <Game/GameState.h>
+#include <Enums.h>
 
 typedef struct WorldEncounterChoices {
     i16 groups[6];
@@ -229,6 +230,24 @@ void LoadWorldMapEvents(void);
 void MarkWorldMapEventSpot(i16 x, i16 y);
 
 b16 CheckWorldMapEvent(i16 x, i16 y);
+
+// The phases of the world map state (RunWorldMap): load it, save the video
+// state, enter, load the view blocks, scroll the view, wait for a destination,
+// travel, fade out and close, leave for the state held in the step (an event
+// or an encounter), and re-enter after it.
+GZ_ENUM_BEGIN(WorldMapPhase)
+    WORLD_MAP_PHASE_LOAD = 0,
+    WORLD_MAP_PHASE_SAVE_VIDEO = 1,
+    WORLD_MAP_PHASE_ENTER = 2,
+    WORLD_MAP_PHASE_LOAD_BLOCKS = 3,
+    WORLD_MAP_PHASE_SCROLL_VIEW = 4,
+    WORLD_MAP_PHASE_WAIT_DESTINATION = 5,
+    WORLD_MAP_PHASE_TRAVEL = 6,
+    WORLD_MAP_PHASE_FADE_OUT = 7,
+    WORLD_MAP_PHASE_CLOSE = 8,
+    WORLD_MAP_PHASE_LEAVE_FOR_STATE = 9,
+    WORLD_MAP_PHASE_REENTER = 10
+GZ_ENUM_END(WorldMapPhase)
 
 b16 RunWorldMap(void);
 

@@ -1791,14 +1791,14 @@ b16 RunLevelUp(void) {
 
     SetStatusRenderMode();
     switch (GetGamePhase()) {
-        case 0:
+        case LEVEL_UP_PHASE_OPEN:
             s_savedMusic = PlayMusic(0x17, true);
             CloseMessageWindow();
-            SetGamePhase(2);
+            SetGamePhase(LEVEL_UP_PHASE_PICK_MEMBER);
             AllocScreenSave(s_screenSave);
             CaptureScreenSaveWithState(s_screenSave);
             return false;
-        case 1:
+        case LEVEL_UP_PHASE_CLOSE:
             switch (GetGameStep()) {
                 case 0:
                     NextGameStep();
@@ -1821,25 +1821,25 @@ b16 RunLevelUp(void) {
                     return false;
             }
             break;
-        case 2:
+        case LEVEL_UP_PHASE_PICK_MEMBER:
             CloseMessageWindow();
             EnterStatusScreen(0);
             member = GetRosterCharacter(s_levelUpSlot = FindLevelUpSlot());
             ClearConditionList(GetCharacterConditions(member), s_levelUpCures);
             DrawStatusScreen(s_levelUpSlot);
             s_statWindow = OpenStatListWindow(member);
-            SetGamePhase(1);
+            SetGamePhase(LEVEL_UP_PHASE_CLOSE);
             SaveGameState();
-            SetGamePhase(4);
+            SetGamePhase(LEVEL_UP_PHASE_DISTRIBUTE);
             if (!IsHumanCharacter(member)) {
                 NextGamePhase();
             }
             FadeScreenAndWait(SCREEN_FADE_FROM_BLACK, 1);
             return false;
-        case 3:
+        case LEVEL_UP_PHASE_SKIP:
             NextGamePhase();
             return false;
-        case 4:
+        case LEVEL_UP_PHASE_DISTRIBUTE:
             member = GetRosterCharacter(s_levelUpSlot);
             switch (GetGameStep()) {
                 case 0:
@@ -1909,7 +1909,7 @@ b16 RunLevelUp(void) {
                     ClearTextPlaneHighlight(s_statWindow);
                     s_raisedStat = g_selectedObjectId;
                     SaveGameState();
-                    SetGamePhase(6);
+                    SetGamePhase(LEVEL_UP_PHASE_REDRAW_STAT);
                     return false;
                 case 5:
                     while (CountPendingLevels(s_levelUpSlot)) {
@@ -1942,7 +1942,7 @@ b16 RunLevelUp(void) {
                     return false;
             }
             break;
-        case 5:
+        case LEVEL_UP_PHASE_DISTRIBUTE_DEMON:
             member = GetRosterCharacter(s_levelUpSlot);
             switch (GetGameStep()) {
                 case 0:
@@ -1984,7 +1984,7 @@ b16 RunLevelUp(void) {
                     break;
             }
             break;
-        case 6:
+        case LEVEL_UP_PHASE_REDRAW_STAT:
             member = GetRosterCharacter(s_levelUpSlot);
             switch (GetGameStep()) {
                 case 0:
@@ -2224,7 +2224,7 @@ b16 RunWorldMap(void) {
 
     SetPanelRenderMode();
     switch (GetGamePhase()) {
-        case 0:
+        case WORLD_MAP_PHASE_LOAD:
             ClearSceneSurfaces();
             NextGamePhase();
             s_traveling = false;
@@ -2246,13 +2246,13 @@ b16 RunWorldMap(void) {
             LoadEncounterTables();
             g_worldMapRequest = 0;
             SetFieldMenuMode(2);
-        case 1:
+        case WORLD_MAP_PHASE_SAVE_VIDEO:
             NextGamePhase();
             SaveVideoState(s_videoState);
-        case 2:
+        case WORLD_MAP_PHASE_ENTER:
             SetWorldMapActive(1);
             if (g_worldMapRequest < 0) {
-                SetGamePhase(8);
+                SetGamePhase(WORLD_MAP_PHASE_CLOSE);
                 return false;
             }
             if (g_worldMapRequest > 0) {
@@ -2272,11 +2272,11 @@ b16 RunWorldMap(void) {
             FlushStatusRedraw(true);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
             return true;
-        case 3:
+        case WORLD_MAP_PHASE_LOAD_BLOCKS:
             NextGamePhase();
             LoadWorldMapBlocks(GetWorldMapBlock(g_worldMapX, g_worldMapY));
             return false;
-        case 4:
+        case WORLD_MAP_PHASE_SCROLL_VIEW:
             NextGamePhase();
             origin = GetWorldMapViewOrigin(g_worldMapX, g_worldMapY);
             ScrollWorldMapView(origin.x, origin.y);
@@ -2285,15 +2285,15 @@ b16 RunWorldMap(void) {
             ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 1);
             DiscardWorldMapScreenSave();
             return false;
-        case 5:
+        case WORLD_MAP_PHASE_WAIT_DESTINATION:
             AllowImmediateInput();
             if (g_worldMapRequest < 0) {
-                SetGamePhase(7);
+                SetGamePhase(WORLD_MAP_PHASE_FADE_OUT);
                 return false;
             }
             if (g_fieldRedrawRequest) {
                 g_fieldRedrawRequest = 0;
-                SetGamePhase(2);
+                SetGamePhase(WORLD_MAP_PHASE_ENTER);
                 return false;
             }
             if (FindAbleHumanMember() == -1) {
@@ -2330,7 +2330,7 @@ b16 RunWorldMap(void) {
             ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
             FireCountdownEvent();
             return false;
-        case 6:
+        case WORLD_MAP_PHASE_TRAVEL:
             AllowImmediateInput();
             steps = StepWorldMapTravel(s_mapLayer, 2);
             if (steps == 0) {
@@ -2355,9 +2355,9 @@ b16 RunWorldMap(void) {
             }
             if (CheckWorldMapEvent(g_worldMapX, g_worldMapY)) {
                 CloseMessageWindow();
-                SetGamePhase(9);
+                SetGamePhase(WORLD_MAP_PHASE_LEAVE_FOR_STATE);
                 s_traveling = false;
-                SetGameStep(0x17);
+                SetGameStep(GAME_STATE_BACKGROUND_SCENE);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
                 return false;
             }
@@ -2366,17 +2366,17 @@ b16 RunWorldMap(void) {
                 g_party.field.pos.x = 3;
                 g_party.field.pos.y = 3;
                 g_party.field.pos.direction = 0;
-                SetGamePhase(9);
-                SetGameStep(0x22);
+                SetGamePhase(WORLD_MAP_PHASE_LEAVE_FOR_STATE);
+                SetGameStep(GAME_STATE_FIELD);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
                 return false;
             }
             break;
-        case 7:
+        case WORLD_MAP_PHASE_FADE_OUT:
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             return false;
-        case 8:
+        case WORLD_MAP_PHASE_CLOSE:
             SetWorldMapActive(0);
             FreeWorldMapScreenSave();
             ResetWorldMapBlocks(1);
@@ -2390,7 +2390,7 @@ b16 RunWorldMap(void) {
             SetFieldMenuMode(0);
             RecordWarpInLeader();
             return false;
-        case 9:
+        case WORLD_MAP_PHASE_LEAVE_FOR_STATE:
             ClearLayerSurface(SCREEN_LAYER_AUTOMAP);
             CancelLayerDrag();
             state = GetGameStep();
@@ -2400,10 +2400,10 @@ b16 RunWorldMap(void) {
             ResetWorldMapBlocks(1);
             PushGameState(state);
             return false;
-        case 10:
+        case WORLD_MAP_PHASE_REENTER:
             LoadWorldMapEvents();
             LoadEncounterTables();
-            SetGamePhase(2);
+            SetGamePhase(WORLD_MAP_PHASE_ENTER);
             ClearSceneSurfaces();
             ClearSelectedHotspot();
             break;

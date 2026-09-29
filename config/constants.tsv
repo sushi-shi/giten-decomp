@@ -180,3 +180,5 @@ src/Script/scriptactor.c	OpJumpUnlessStatContest	[01]	trivial-function-literal	[
 *	*	*	call-argument	PlayMusic(*argument 1	a music track number (the sound data files' tracks have no names)
 *	*	*	call-argument	CreateTextPlane(u16, i16) argument 1	a text-plane kind (its layout is s_planeLayouts[kind]; the kinds have no names)
 *	*	*	call-argument	CreateTextPlane(u16, i16) argument 2	the text-plane creation argument
+src/Game/statestack.c	RunLevelUp	*	*	*GetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
+src/Game/statestack.c	RunLevelUp	*	call-argument	SetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
