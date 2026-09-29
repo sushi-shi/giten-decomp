@@ -442,7 +442,7 @@ i16 FightRowHandler(PanelRow* row, i16 value, i16 op) {
         }
         if (!g_fieldBattleActive) {
             PlaySoundEffect(1);
-            PlayMusic(0xd, 1);
+            PlayMusic(0xd, true);
         }
         g_fieldBattleActive = 1;
         ResetPartyTurnState();
@@ -622,7 +622,7 @@ void FightCommand(i16 id) {
     }
     if (!g_fieldBattleActive) {
         PlaySoundEffect(1);
-        PlayMusic(0xd, 1);
+        PlayMusic(0xd, true);
         ResetPartyTurnState();
     }
     g_fieldBattleActive = 1;
@@ -641,7 +641,7 @@ void GunCommand(i16 id) {
     }
     if (!g_fieldBattleActive) {
         PlaySoundEffect(1);
-        PlayMusic(0xd, 1);
+        PlayMusic(0xd, true);
         ResetPartyTurnState();
     }
     g_fieldBattleActive = 1;
@@ -654,7 +654,7 @@ void SkillCommand(i16 id) {
     if (CountFieldObjects()) {
         if (!g_fieldBattleActive) {
             PlaySoundEffect(1);
-            PlayMusic(0xd, 1);
+            PlayMusic(0xd, true);
         }
         g_fieldBattleActive = 1;
         PlaySoundEffect(1);
@@ -673,7 +673,7 @@ void ItemCommand(i16 id) {
     if (CountFieldObjects()) {
         if (!g_fieldBattleActive) {
             PlaySoundEffect(1);
-            PlayMusic(0xd, 1);
+            PlayMusic(0xd, true);
         }
         g_fieldBattleActive = 1;
         PlaySoundEffect(1);
@@ -731,7 +731,7 @@ void DefenceCommand(i16 id) {
     }
     if (!g_fieldBattleActive) {
         PlaySoundEffect(1);
-        PlayMusic(0xd, 1);
+        PlayMusic(0xd, true);
         ResetPartyTurnState();
     }
     g_fieldBattleActive = 1;

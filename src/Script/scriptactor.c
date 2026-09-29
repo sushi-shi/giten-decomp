@@ -831,7 +831,7 @@ b16 StoreFrameLocals(void) {
     if (!frame) {
         return false;
     }
-    TransferFrameVars(frame, 0);
+    TransferFrameVars(frame, false);
     return true;
 }
 
@@ -842,7 +842,7 @@ b16 LoadFrameLocals(void) {
     if (!frame) {
         return false;
     }
-    TransferFrameVars(frame, 1);
+    TransferFrameVars(frame, true);
     return true;
 }
 
@@ -858,12 +858,12 @@ b16 SwapFrameLocals(void) {
     }
     saved = NewCallFrame();
     loaded = NewCallFrame();
-    TransferFrameVars(saved, 0);
-    TransferFrameVars(frame, 1);
-    TransferFrameVars(loaded, 0);
-    TransferFrameVars(saved, 1);
-    TransferFrameVars(frame, 0);
-    TransferFrameVars(loaded, 1);
+    TransferFrameVars(saved, false);
+    TransferFrameVars(frame, true);
+    TransferFrameVars(loaded, false);
+    TransferFrameVars(saved, true);
+    TransferFrameVars(frame, false);
+    TransferFrameVars(loaded, true);
     FreeCallFrames(loaded);
     FreeCallFrames(saved);
     return true;
@@ -1745,7 +1745,7 @@ RVA(0x00035140, 0x4c)
 void OpJumpUnlessRosterFull(i16 invert) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
-    i16 count = CountRosterEntries(1);
+    i16 count = CountRosterEntries(true);
     i16 limit = GetRosterCapacity() - 6;
     if ((count >= limit && !invert) || (count < limit && invert)) {
         jump = 1;
@@ -1797,7 +1797,7 @@ RVA(0x00035290, 0x3f)
 void OpJumpUnlessRosterHasNoDemons(i16 invert) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
-    i16 demons = CountRosterEntries(0);
+    i16 demons = CountRosterEntries(false);
     if (ScriptBooleanMatches(!demons, invert)) {
         jump = 1;
     }
@@ -2238,7 +2238,7 @@ RVA(0x00035c20, 0x45)
 void OpIfDemonCount(i16 mode, i16 limit) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
-    i16 demons = CountRosterEntries(0);
+    i16 demons = CountRosterEntries(false);
     if ((mode == 0 && demons > limit) || (mode == 1 && demons <= limit)) {
         jump = 1;
     }
@@ -2392,8 +2392,8 @@ GZ_ENUM_RETURN(ScriptStatus, i16) PlayScreenTransition(i16 effect) {
 RVA(0x00036030, 0x41)
 GZ_ENUM_RETURN(ScriptStatus, i16) OpScreenTransition(void) {
     i16 result = PlayScreenTransition(ReadScriptValue());
-    i16 lock = LockStatusRedraw(1);
-    UpdateFieldScreen(0);
+    i16 lock = LockStatusRedraw(true);
+    UpdateFieldScreen(false);
     SetLongFrame(1);
     LockStatusRedraw(lock);
     return result;
@@ -2631,7 +2631,7 @@ void OpAddMemberSkill(void) {
 
 RVA(0x00036610, 0x18)
 void OpSwitchOnMoonPhase(i16 call) {
-    SwitchOnValue(GetMoonPhase() + 1, call, 0);
+    SwitchOnValue(GetMoonPhase() + 1, call, false);
 }
 
 // @identity-TODO: what table 0x47beac (28 bytes per row, row = actor byte +0x1f8, column =
@@ -4016,7 +4016,7 @@ PrintScriptChoice(i16 window, ScriptChoice** head, const char* text, i16 value, 
     choice->width = strlen(text);
     choice->value = value;
     choice->disabled = disabled;
-    PrintWindowText(window, text, 0x400, 0, 1);
+    PrintWindowText(window, text, 0x400, 0, true);
     return choice;
 }
 

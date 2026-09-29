@@ -593,11 +593,11 @@ void PlayLevelMusic(void) {
                 g_areaLevel->music.choices[i].flagBank,
                 g_areaLevel->music.choices[i].flagIndex
             )) {
-            PlayMusic(g_areaLevel->music.choices[i].music, 1);
+            PlayMusic(g_areaLevel->music.choices[i].music, true);
             return;
         }
     }
-    PlayMusic(g_areaLevel->defaultMusic, 1);
+    PlayMusic(g_areaLevel->defaultMusic, true);
 }
 
 RVA(0x00021700, 0x9)

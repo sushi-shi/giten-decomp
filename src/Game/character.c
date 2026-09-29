@@ -739,22 +739,22 @@ void RecalcDerivedStats(Character* character) {
     i16* stats;
 
     memset(bonuses, 0, sizeof(bonuses));
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[5].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[6].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[7].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[5].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[6].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[7].attachment, bonuses, 1);
+    AddItemStatBonuses(GetCharacterEquipment(character)[0].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[1].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[2].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[3].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[4].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[5].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[6].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[7].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[0].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[1].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[2].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[3].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[4].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[5].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[6].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[7].attachment, bonuses, true);
 
     stats = character->stats.total;
     character->battleStats[0] = level;
@@ -806,16 +806,16 @@ i16 SumArmorDefenseBonus(Character* character) {
     i16 bonuses[24];
 
     memset(bonuses, 0, sizeof(bonuses));
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].attachment, bonuses, 1);
+    AddItemStatBonuses(GetCharacterEquipment(character)[0].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[1].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[2].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[3].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[4].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[0].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[1].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[2].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[3].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[4].attachment, bonuses, true);
     return bonuses[BATTLE_STAT_WEAPON_DEFENSE];
 }
 
@@ -1977,7 +1977,7 @@ i16 FilterPartyMember(i16 slot, i16 mode) {
 RVA(0x0003f7c0, 0x8a)
 i16 AddToRoster(Character* character) {
     i16 slot;
-    if (!IsHumanCharacter(character) && CountRosterEntries(0) >= 26) {
+    if (!IsHumanCharacter(character) && CountRosterEntries(false) >= 26) {
         return -1;
     }
     slot = FindEmptySlot(0);
@@ -2830,7 +2830,7 @@ MenuBox* CreateStatusListMenu(MenuBox* parent) {
     menu = CreateMenuBox(parent, 26, 2);
     MoveMenuBox(menu, 45, 86);
     SetMenuItems(menu, 16, g_statusSlots, g_statusSlotCount, StatusListMenuHandler);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 1);
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, true);
     return menu;
 }
 

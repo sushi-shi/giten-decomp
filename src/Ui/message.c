@@ -36,7 +36,7 @@ void PushTextWindowState(const char* text) {
     i16 plane;
     PushGameState(GAME_STATE_TEXT_WINDOW);
     plane = CreateTextPlane(15, 0x4000);
-    PrintWindowText(plane, text, 0, 0, 1);
+    PrintWindowText(plane, text, 0, 0, true);
     SetGamePhase(plane);
     s_textStateRefreshPending = 0;
 }
@@ -58,7 +58,7 @@ b16 RunTextWindowState(void) {
     }
     if (s_textStateRefreshPending) {
         s_textStateRefreshPending = 0;
-        return UpdateFieldScreen(1);
+        return UpdateFieldScreen(true);
     }
     return false;
 }
@@ -129,7 +129,7 @@ i16 StartMessageTimer(i16 ticks, i16 hold) {
 RVA(0x000026f0, 0x30)
 void ShowMessage(const char* text, i16 ticks) {
     OpenMessageWindow();
-    PrintWindowText(s_messageWindow, text, 0, 1, 1);
+    PrintWindowText(s_messageWindow, text, 0, 1, true);
     StartMessageTimer(ticks, 0);
 }
 

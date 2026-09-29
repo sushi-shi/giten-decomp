@@ -405,7 +405,7 @@ void OpSetMenuScroll(void) {
         ResetTextPlaneLineStep(menu->plane, step);
     }
     if (pos != -1) {
-        SetTextPlaneFirstSelectableRow(menu->plane, pos, 1);
+        SetTextPlaneFirstSelectableRow(menu->plane, pos, true);
     }
 }
 
@@ -658,7 +658,7 @@ RVA(0x0002fb20, 0x35)
 i16 OpenScriptWindow(u16 kind, i16 arg) {
     i16 window = CreateTextPlane(kind, arg);
     SetTextWindowScrollTop(window, 2);
-    SetTextScrollMode(1);
+    SetTextScrollMode(true);
     return StackScriptWindow(window);
 }
 

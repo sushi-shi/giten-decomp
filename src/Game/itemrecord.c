@@ -1410,7 +1410,7 @@ void UseAttackItem(Character* user, Character* target) {
     ResetActionOutcome();
     if (GetItemDamagePower(&s_usedItem) == 0) {
         user->lastChange = 0;
-        if (g_targetId >= 0 && IsFieldModeAtLeast(0)) {
+        if (g_targetId >= 0 && IsFieldModeAtLeast(false)) {
             if (GetItemInflictedCondition(&s_usedItem) >= 0x21
                 || IsFieldConditionRestricted(GetItemInflictedCondition(&s_usedItem))) {
                 return;
@@ -2228,7 +2228,7 @@ static MenuBox* CreateGiftMenu(MenuBox* old) {
 
     SetMenuItems(menu, 16, NULL, 16, GiftMenuHandler);
     MoveMenuBox(menu, 0x2a, 0x50);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 0);
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, false);
     return menu;
 }
 

@@ -190,7 +190,7 @@ void OpRefreshFieldScreen(void) {
     i16 option = ReadScriptValue();
     FieldScreenNop(option & 7);
     if (!(option & 0x10)) {
-        DrawInfoBar(1, 0);
+        DrawInfoBar(1, false);
     }
     RestoreDrawState(state);
     if (GetSpriteMode() == SPRITE_LAYERS_PARTY_AND_TEXT) {
@@ -674,8 +674,8 @@ b16 RunScriptScene(void) {
             ForgetTextPlaneAttr(window);
             ResetScriptPanels();
             StartScript(s_pendingScene, s_pendingSceneEntry, NewScriptContext(0, NULL));
-            SetTextScrollMode(1);
-            SetTextTimedWait(0);
+            SetTextScrollMode(true);
+            SetTextTimedWait(false);
             ClearScriptLongVars();
         case 2: {
             i16 result;
@@ -787,7 +787,7 @@ void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor) {
     SaveAndResetTextPlaneAttrs(window);
     SetTextPeriod(window);
     ClearTextPeriod();
-    SetTextScrollMode(0);
+    SetTextScrollMode(false);
     ForgetTextPlaneAttr(window);
     ResetScriptPanels();
     StartScript(s_pendingScene, s_pendingSceneEntry, NewScriptContext(index, actor));
@@ -814,7 +814,7 @@ b16 RunActorScene(void) {
                         WaitForScriptText(window);
                     }
                 } else {
-                    return UpdateFieldScreen(0);
+                    return UpdateFieldScreen(false);
                 }
                 break;
             }

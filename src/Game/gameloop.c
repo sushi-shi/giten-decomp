@@ -98,7 +98,7 @@ RVA(0x00001870, 0xa1)
 b16 InitGameData(void) {
     ClearScriptVars();
     ResetSceneInput();
-    PlayMusic(5, 1);
+    PlayMusic(5, true);
     ResetSubscreen();
     ResetTextPlanes();
     g_infoPlane = CreateTextPlane(0, 0x4001);

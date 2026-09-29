@@ -83,10 +83,10 @@ void SetStatusMenuItemFlag(i16 item, i16 flag, i16 on) {
 RVA(0x000419e0, 0x52)
 void ResetStatusMenu(void) {
     ClearPanelChecks(&s_statusMenu.panel);
-    SetStatusMenuItemFlag(6, PANEL_HIDDEN, 0);
-    SetStatusMenuItemFlag(7, PANEL_HIDDEN, 0);
-    SetStatusMenuItemFlag(8, PANEL_HIDDEN, 0);
-    SetStatusMenuItemFlag(9, PANEL_HIDDEN, 0);
+    SetStatusMenuItemFlag(6, PANEL_HIDDEN, false);
+    SetStatusMenuItemFlag(7, PANEL_HIDDEN, false);
+    SetStatusMenuItemFlag(8, PANEL_HIDDEN, false);
+    SetStatusMenuItemFlag(9, PANEL_HIDDEN, false);
 }
 
 // Checks item `item` and unchecks the others.
@@ -95,9 +95,9 @@ void CheckStatusMenuItem(i16 item) {
     i16 i;
     for (i = 0; i < 11; i++) {
         if (i != item) {
-            SetStatusMenuItemFlag(i, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(i, PANEL_ROW_CHECKED, false);
         } else {
-            SetStatusMenuItemFlag(i, PANEL_ROW_CHECKED, 1);
+            SetStatusMenuItemFlag(i, PANEL_ROW_CHECKED, true);
         }
     }
 }

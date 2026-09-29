@@ -133,7 +133,7 @@ b16 RollItemCondition(Character* attacker, Character* target, i16 resistance, i1
     if (g_actionResult >= 7) {
         return false;
     }
-    if (g_targetId >= 0 && IsFieldModeAtLeast(0) && IsFieldConditionRestricted(condition)) {
+    if (g_targetId >= 0 && IsFieldModeAtLeast(false) && IsFieldConditionRestricted(condition)) {
         return false;
     }
     roll = RandomAverage(0, 20, 0);

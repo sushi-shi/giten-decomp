@@ -537,7 +537,7 @@ i16 PickStatusMember(void) {
                 CheckStatusMenuItem(2);
                 SetGameStep(0xffff);
             } else {
-                selected = RunStatusListPicker(0);
+                selected = RunStatusListPicker(false);
                 if (selected >= 0) {
                     PrevGameStep();
                     SetGameSub(selected);
@@ -553,12 +553,12 @@ i16 PickStatusMember(void) {
             RepaintTextPlane(g_infoPlane, 1);
             ClearStatusMenu();
             SetStatusColumn(0);
-            RunStatusListPicker(0);
+            RunStatusListPicker(false);
             break;
         case 1:
         case 0xffff:
             SetStatusMenuItemsHidden(0);
-            RunStatusListPicker(1);
+            RunStatusListPicker(true);
             if (GetGameStep() == 0xffff) {
                 return -3;
             }
@@ -596,7 +596,7 @@ b16 RunStatusScreen(void) {
             break;
         case 1:
             ReturnFromGameState();
-            RunStatusListPicker(1);
+            RunStatusListPicker(true);
             RequestFieldRefresh();
             LeaveStatusScreen(0);
             g_statusFixedMember = false;
@@ -642,7 +642,7 @@ void LeaveStatusScreen(i16 nested) {
     ResetStatusMenu();
     if (!nested) {
         if (s_statusPaletteState) {
-            s_statusPaletteState = RestorePaletteState(s_statusPaletteState, 1);
+            s_statusPaletteState = RestorePaletteState(s_statusPaletteState, true);
         }
         SetSubscreenActive(0);
     }
@@ -678,7 +678,7 @@ b16 ReplaceRosterMember(void) {
             s_rosterSavedColumn = SetStatusColumn(2);
             NextGamePhase();
         case 1:
-            selected = RunStatusListPicker(0);
+            selected = RunStatusListPicker(false);
             if (selected == -1 || selected == -2) {
                 break;
             }
@@ -687,7 +687,7 @@ b16 ReplaceRosterMember(void) {
             // Retail leaves selected uninitialized on direct entry to this phase.
             RemoveFromRoster(selected);
             SetStatusColumn(s_rosterSavedColumn);
-            RunStatusListPicker(1);
+            RunStatusListPicker(true);
             if (AddToRoster(g_rosterPendingMember) < 0) {
                 SetGamePhase(0);
             }
@@ -958,13 +958,13 @@ RVA(0x000176f0, 0x4a)
 i16 PickDdsRosterMember(i16 step) {
     switch (step) {
         case 2:
-            RunStatusListPicker(1);
+            RunStatusListPicker(true);
             return -1;
         case 0:
             SetStatusColumn(1);
             step++;
         case 1:
-            s_ddsRosterSlot = RunStatusListPicker(0);
+            s_ddsRosterSlot = RunStatusListPicker(false);
             if (s_ddsRosterSlot != -1) {
                 step++;
             }
@@ -988,7 +988,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
             disabled = MENU_LINE_DISABLED;
             switch (index) {
                 case 2:
-                    if (CountRosterEntries(0)) {
+                    if (CountRosterEntries(false)) {
                         attribute = 0x2450;
                         disabled = 0;
                     }
@@ -1055,13 +1055,13 @@ RVA(0x00017900, 0x5f)
 i16 PickDdsPurgeMember(void) {
     switch (GetGameSub()) {
         case 2:
-            s_ddsRosterSlot = RunStatusListPicker(0);
+            s_ddsRosterSlot = RunStatusListPicker(false);
             if (s_ddsRosterSlot != -1) {
                 PrevGameSub();
             }
             break;
         case 1:
-            RunStatusListPicker(1);
+            RunStatusListPicker(true);
             return s_ddsRosterSlot;
         case 0:
             NextGameSub();
@@ -1307,7 +1307,7 @@ b16 RunCellScene(void) {
             LoadSceneSprites();
             PlaceSceneSprites();
             ClearTextPlane(g_infoPlane);
-            LockStatusRedraw(1);
+            LockStatusRedraw(true);
             RedrawScreen(1, 0);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
             return true;
@@ -1327,12 +1327,12 @@ b16 RunCellScene(void) {
             s_sceneDirty = false;
             FreeSceneSprites();
             SceneNop();
-            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
+            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, true);
             RestoreVideoState(g_sceneVideoState);
             SetSubscreenActive(0);
             ReturnFromGameState();
             PlayLevelMusic();
-            LockStatusRedraw(0);
+            LockStatusRedraw(false);
             SetRebuildRoom(1);
             if (g_worldMapRequest < 0) {
                 SetGameState(GAME_STATE_FIELD_EXPLORATION);
@@ -1410,7 +1410,7 @@ b16 RunFieldTextScene(void) {
             s_sceneDirty = false;
             FreeSceneSprites();
             ReturnFromGameState();
-            LockStatusRedraw(0);
+            LockStatusRedraw(false);
             RefreshStatusPanel(1);
             RepaintTextPlane(g_infoPlane, 3);
             g_fieldRedrawRequest = 1;
@@ -1429,7 +1429,7 @@ b16 RunFieldTextScene(void) {
             NextGamePhase();
             PrepareFieldRedraw(1);
             ClearTextPlane(g_infoPlane);
-            LockStatusRedraw(1);
+            LockStatusRedraw(true);
             RepaintTextPlane(g_infoPlane, 3);
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
             break;
@@ -1445,8 +1445,8 @@ b16 RunFrozenFieldScene(void) {
             FreeSceneSprites();
             ReturnFromGameState();
             ExchangeObjectsFrozen(s_sceneObjectsFrozen);
-            LockStatusRedraw(0);
-            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
+            LockStatusRedraw(false);
+            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, true);
             RefreshStatusPanel(1);
             g_fieldRedrawRequest = 1;
             if (g_worldMapRequest < 0 || g_worldMapRequest > 0) {
@@ -1464,13 +1464,13 @@ b16 RunFrozenFieldScene(void) {
             s_scenePaletteState = SavePaletteState(s_scenePaletteState, 3);
             PrepareFieldRedraw(1);
             ClearTextPlane(g_infoPlane);
-            LockStatusRedraw(1);
+            LockStatusRedraw(true);
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
             g_fieldRedrawRequest = 1;
             RedrawFieldView();
             break;
     }
-    return UpdateFieldScreen(0);
+    return UpdateFieldScreen(false);
 }
 
 // @identity-TODO: the role of the fixed scene script is unrecovered.
@@ -1479,7 +1479,7 @@ b16 RunPictureTransition(void) {
     switch (GetGamePhase()) {
         case 0:
             NextGamePhase();
-            LockStatusRedraw(1);
+            LockStatusRedraw(true);
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             break;
         case 1:
@@ -1495,8 +1495,8 @@ b16 RunPictureTransition(void) {
         case 3:
             s_sceneDirty = false;
             FreeSceneSprites();
-            LockStatusRedraw(0);
-            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
+            LockStatusRedraw(false);
+            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, true);
             SetGameState(GAME_STATE_FIELD_EXPLORATION);
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             s_sceneHold = 0;
@@ -1518,7 +1518,7 @@ b16 RunBackgroundScene(void) {
             ResetMask(1);
             s_scenePaletteState = SavePaletteState(s_scenePaletteState, 1);
             RestoreBackground();
-            LockStatusRedraw(1);
+            LockStatusRedraw(true);
             ClearTextPlane(g_infoPlane);
             SetInfoBarLayout(0);
             RedrawScreen(0, 1);
@@ -1540,10 +1540,10 @@ b16 RunBackgroundScene(void) {
             s_sceneDirty = false;
             FreeSceneSprites();
             SceneNop();
-            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
+            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, true);
             RestoreVideoState(g_sceneVideoState);
             ReturnFromGameState();
-            LockStatusRedraw(0);
+            LockStatusRedraw(false);
             s_sceneHold = 0;
             RestoreScreenState(s_sceneScreenState);
             break;
@@ -1734,7 +1734,7 @@ i16 GrantBattleRewards(void) {
         g_rewardMacca = 0;
         AddMagnetite(leader, g_rewardMagnetite);
         g_rewardMagnetite = 0;
-        DrawInfoBar(0, 0);
+        DrawInfoBar(0, false);
         ShareExperience(g_rewardExperience);
         g_rewardExperience = 0;
         s_rewardsPending = false;
@@ -1778,7 +1778,7 @@ b16 RunLevelUp(void) {
     SetStatusRenderMode();
     switch (GetGamePhase()) {
         case 0:
-            s_savedMusic = PlayMusic(0x17, 1);
+            s_savedMusic = PlayMusic(0x17, true);
             CloseMessageWindow();
             SetGamePhase(2);
             AllocScreenSave(s_screenSave);
@@ -1803,7 +1803,7 @@ b16 RunLevelUp(void) {
                     ClearStatusPicture();
                     RestoreScreenSave(s_screenSave);
                     FreeScreenSave(s_screenSave);
-                    PlayMusic(s_savedMusic, 1);
+                    PlayMusic(s_savedMusic, true);
                     return false;
             }
             break;
@@ -2003,10 +2003,10 @@ void ShowStatPointPrompt(i16 points) {
         "\202\242\n",
         0x400,
         0,
-        1
+        true
     );
     sprintf(g_scratchBuffer, "\214\343 %.1d \203|\203C\203\223\203g  \n", points);
-    PrintWindowText(s_pointPrompt, g_scratchBuffer, 0x400, 0, 1);
+    PrintWindowText(s_pointPrompt, g_scratchBuffer, 0x400, 0, true);
     RepaintTextPlane(s_pointPrompt, -2);
 }
 
@@ -2248,14 +2248,14 @@ b16 RunWorldMap(void) {
                 g_worldMapRequest = 0;
             }
             NextGamePhase();
-            PlayMusic(0, 1);
+            PlayMusic(0, true);
             ClearMaskView();
             ResetMask(1);
             SetFieldStatusBit11(1);
             ClearTextPlane(g_infoPlane);
             SetInfoBarLayout(0);
             RedrawScreen(0, 1);
-            FlushStatusRedraw(1);
+            FlushStatusRedraw(true);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
             return true;
         case 3:
@@ -2266,7 +2266,7 @@ b16 RunWorldMap(void) {
             NextGamePhase();
             origin = GetWorldMapViewOrigin(g_worldMapX, g_worldMapY);
             ScrollWorldMapView(origin.x, origin.y);
-            FlushStatusRedraw(1);
+            FlushStatusRedraw(true);
             RefreshInfoBar(1);
             ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 1);
             DiscardWorldMapScreenSave();
@@ -2291,12 +2291,12 @@ b16 RunWorldMap(void) {
             if (ProcessPartyCasualties()) {
                 RequestStatusRedraw();
             }
-            FlushStatusRedraw(0);
+            FlushStatusRedraw(false);
             s_idleFlag = 0;
             if (s_traveling) {
                 NextGamePhase();
                 if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
-                    DrawInfoBar(1, 1);
+                    DrawInfoBar(1, true);
                 }
                 ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
                 return false;
@@ -2305,13 +2305,13 @@ b16 RunWorldMap(void) {
                 s_traveling = true;
                 NextGamePhase();
                 if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
-                    DrawInfoBar(1, 1);
+                    DrawInfoBar(1, true);
                 }
                 ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
                 return false;
             }
             if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
-                DrawInfoBar(1, 1);
+                DrawInfoBar(1, true);
             }
             ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
             FireCountdownEvent();
@@ -2331,7 +2331,7 @@ b16 RunWorldMap(void) {
             if (ProcessPartyCasualties()) {
                 RequestStatusRedraw();
             }
-            FlushStatusRedraw(0);
+            FlushStatusRedraw(false);
             RefreshInfoBar(0);
             ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
             if (FindAbleHumanMember() == -1) {
@@ -2469,7 +2469,7 @@ RVA(0x00019f50, 0x52)
 MenuBox* OpenPartyPicker(PartyMemberList* entries) {
     MenuBox* menu = CreateMenuBox(NULL, 5, 2);
     SetMenuItems(menu, 7, entries, entries->count, PartyPickerHandler);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 1);
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, true);
     if (!s_partyPickerMode) {
         menu->list->flags |= 2;
     }

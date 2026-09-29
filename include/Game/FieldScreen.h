@@ -29,7 +29,7 @@ b16 UpdateFieldScreen(i16 force);
 
 static __inline b16 FlushFieldScreen(void) {
     FlushObjectRedraws();
-    return UpdateFieldScreen(0);
+    return UpdateFieldScreen(false);
 }
 
 // @identity-TODO: which menu the table 0x4687e8 is and what flag 0x8000 means (disabled?) are

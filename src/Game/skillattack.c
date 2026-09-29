@@ -135,7 +135,7 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
     if (g_actionResult >= 7) {
         return false;
     }
-    if (g_targetId >= 0 && IsFieldModeAtLeast(0) && IsFieldConditionRestricted(condition)) {
+    if (g_targetId >= 0 && IsFieldModeAtLeast(false) && IsFieldConditionRestricted(condition)) {
         return false;
     }
     roll = RandomAverage(0, 20, 0);
@@ -177,14 +177,14 @@ b16 ResolveSkillAttack(Character* attacker, Character* target) {
     i32 damage;
     if (mode == 1) {
         if (g_targetId >= 0) {
-            return ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(0));
+            return ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(false));
         } else {
             return ResolveWeaponAttack(attacker, target, 0);
         }
     }
     if (mode == 2) {
         if (g_targetId >= 0) {
-            return ResolveGunAttack(attacker, target, IsFieldModeAtLeast(0));
+            return ResolveGunAttack(attacker, target, IsFieldModeAtLeast(false));
         } else {
             return ResolveGunAttack(attacker, target, 0);
         }

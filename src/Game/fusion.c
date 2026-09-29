@@ -1367,7 +1367,7 @@ void AcquireFusionSelectionMode(void) {
 RVA(0x00028860, 0x2a)
 void ReleaseFusionSelectionResources(void) {
     s_fusionSelectionImage = FreeImageHandle(s_fusionSelectionImage);
-    s_fusionSelectionPaletteState = RestorePaletteState(s_fusionSelectionPaletteState, 1);
+    s_fusionSelectionPaletteState = RestorePaletteState(s_fusionSelectionPaletteState, true);
 }
 
 RVA(0x00028890, 0xa)
@@ -1498,7 +1498,7 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
         case 0:
             g_fusionFirstSlot = -1;
             g_fusionSecondSlot = -1;
-            CountRosterEntries(1);
+            CountRosterEntries(true);
             s_fusionInfoPlane = CreateFusionInfoPlane(6);
             if (!triple) {
                 g_fusionThirdSlot = -1;
@@ -1655,7 +1655,7 @@ i16 CreateFusionList(i16 window, i16 count) {
     SetPanelImage(0x11c);
     s_fusionMenu = CreateMenuBox(s_fusionMenu, window, 2);
     SetMenuItems(s_fusionMenu, 15, NULL, count, FusionListMenuHandler);
-    SetTextPlaneFirstSelectableRow(s_fusionMenu->plane, 1, 0);
+    SetTextPlaneFirstSelectableRow(s_fusionMenu->plane, 1, false);
     s_previousFusionTextHook = SetTextPlaneHook(FusionSelectionTextHook);
     if (s_fusionPageRows == -1) {
         s_fusionPageRows = 15;
@@ -2047,7 +2047,7 @@ i16 RunThirdFusionPicker(i16 step) {
             g_fusionThirdSlot = -1;
             g_fusionFirstSlot = -1;
             g_fusionSecondSlot = -1;
-            CountRosterEntries(1);
+            CountRosterEntries(true);
             s_fusionInfoPlane = CreateFusionInfoPlane(6);
             count = BuildPairFusionCandidates(1);
             s_fusionPageRows = 0;
@@ -2091,7 +2091,7 @@ RVA(0x0002a060, 0x49)
 b16 CloseFusionPreview(void) {
     LeaveStatusScreen(1);
     RestoreDrawState(SaveDrawState());
-    g_fusionPaletteState = RestorePaletteState(g_fusionPaletteState, 1);
+    g_fusionPaletteState = RestorePaletteState(g_fusionPaletteState, true);
     RestoreScreenSave(g_fusionPreviewSave);
     FreeScreenSave(g_fusionPreviewSave);
     return false;
@@ -2366,7 +2366,7 @@ b16 RunFusionMenuState(void) {
                 case 1:
                     ReturnFromGameState();
                     FreeFusionTables();
-                    g_fusionPaletteState = RestorePaletteState(g_fusionPaletteState, 1);
+                    g_fusionPaletteState = RestorePaletteState(g_fusionPaletteState, true);
                     ErasePictureSurface(54);
                     if (s_restoreFusionRenderMode) {
                         SetSceneRenderMode();

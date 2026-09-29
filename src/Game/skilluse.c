@@ -477,14 +477,14 @@ i16 ResolveCombatAction(void) {
     if (attacker->pickRole == PICK_ROLE_ATTACK) {
         attacker->pickTarget = GetCharacterEquipment(attacker)[EQUIP_SLOT_WEAPON].item;
         if (g_targetId >= 0) {
-            ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(0));
+            ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(false));
         } else {
             ResolveWeaponAttack(attacker, target, 0);
         }
     } else if (attacker->pickRole == PICK_ROLE_GUN) {
         attacker->pickTarget = GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].item;
         if (g_targetId >= 0) {
-            ResolveGunAttack(attacker, target, IsFieldModeAtLeast(0));
+            ResolveGunAttack(attacker, target, IsFieldModeAtLeast(false));
         } else {
             ResolveGunAttack(attacker, target, 0);
         }
@@ -501,7 +501,7 @@ i16 ResolveCombatAction(void) {
     if (hit && attacker->lastChange == 0) {
         SetActionResult(attacker, 1);
     }
-    TickFieldCount(g_actorId, 0);
+    TickFieldCount(g_actorId, false);
     g_hpChange = attacker->lastChange;
     if (g_hpChange >= 0x7fff) {
         g_actionResult = 5;
@@ -739,7 +739,7 @@ b16 RunBattleAction(void) {
                 return false;
             }
             if (actor->pickRole == PICK_ROLE_DEFENCE) {
-                TickFieldCount(g_actorId, 0);
+                TickFieldCount(g_actorId, false);
                 ClearPendingAction();
                 ReturnFromGameState();
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
@@ -747,7 +747,7 @@ b16 RunBattleAction(void) {
                 return false;
             }
             if (actor->pickRole == PICK_ROLE_RETURN && g_actorId < 0) {
-                TickFieldCount(g_actorId, 0);
+                TickFieldCount(g_actorId, false);
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 CheckPickTarget(CombatantPartyPosition(g_actorId));
                 SetPartySlot(CombatantPartyPosition(g_actorId), -1);
@@ -993,7 +993,7 @@ complete:
     if (skipEffects) {
         return false;
     }
-    return UpdateFieldScreen(0);
+    return UpdateFieldScreen(false);
 
 nextTarget:
     SetGamePhase(2);
@@ -1207,7 +1207,7 @@ MenuBox* OpenMemberSkillMenu(i16 id) {
         GetWordCount(GetCharacterSkills(character)),
         MemberSkillMenuHandler
     );
-    SetTextPlaneFirstSelectableRow(menu->plane, 1, 1);
+    SetTextPlaneFirstSelectableRow(menu->plane, 1, true);
     return menu;
 }
 
@@ -1524,7 +1524,7 @@ void UseAttackSkill(Character* user, Character* target) {
         ResolveSkillAttack(user, target);
         return;
     }
-    if (g_targetId >= 0 && IsFieldModeAtLeast(0)
+    if (g_targetId >= 0 && IsFieldModeAtLeast(false)
         && IsFieldConditionRestricted(GetSkillInflictedCondition(&s_effectSkill))) {
         return;
     }

@@ -227,7 +227,7 @@ static i16 DrawStatusCapacity(i16 x, i16 y, Character* member) {
         sprintf(
             g_scratchBuffer,
             "\222\207\226\202 %5d\201\136%2d",
-            CountRosterEntries(0),
+            CountRosterEntries(false),
             GetRosterCapacity() - 6
         );
     } else {
@@ -262,29 +262,29 @@ void DrawStatusScreen(i16 slot) {
         g_statusMember = 0;
     }
     if (!g_statusFixedMember && ListEquipCandidates(g_statusMember, 1)) {
-        SetStatusMenuItemFlag(8, 0x800, 0);
+        SetStatusMenuItemFlag(8, 0x800, false);
     } else {
-        SetStatusMenuItemFlag(8, 0x800, 1);
+        SetStatusMenuItemFlag(8, 0x800, true);
     }
     member = GetRosterCharacter(g_statusMember);
     if (!GetWordCount(GetCharacterSkills(member))) {
-        SetStatusMenuItemFlag(4, 0x800, 1);
+        SetStatusMenuItemFlag(4, 0x800, true);
     } else {
-        SetStatusMenuItemFlag(4, 0x800, 0);
+        SetStatusMenuItemFlag(4, 0x800, false);
     }
-    if (!g_statusFixedMember && CountRosterEntries(1) >= 2) {
-        SetStatusMenuItemFlag(6, 0x800, 0);
+    if (!g_statusFixedMember && CountRosterEntries(true) >= 2) {
+        SetStatusMenuItemFlag(6, 0x800, false);
     } else {
-        SetStatusMenuItemFlag(6, 0x800, 1);
+        SetStatusMenuItemFlag(6, 0x800, true);
     }
     if (g_statusFixedMember) {
-        SetStatusMenuItemFlag(7, 0x800, 1);
-        SetStatusMenuItemFlag(9, 0x800, 1);
-        SetStatusMenuItemFlag(3, 0x800, 1);
+        SetStatusMenuItemFlag(7, 0x800, true);
+        SetStatusMenuItemFlag(9, 0x800, true);
+        SetStatusMenuItemFlag(3, 0x800, true);
     } else {
-        SetStatusMenuItemFlag(7, 0x800, 0);
-        SetStatusMenuItemFlag(9, 0x800, 0);
-        SetStatusMenuItemFlag(3, 0x800, 0);
+        SetStatusMenuItemFlag(7, 0x800, false);
+        SetStatusMenuItemFlag(9, 0x800, false);
+        SetStatusMenuItemFlag(3, 0x800, false);
     }
     ClearStatusMenu();
     member = GetRosterCharacter(slot);
@@ -407,7 +407,7 @@ static i16 DrawStatList(i16 plane, Character* member) {
     for (stat = 0; stat < 10; stat++) {
         SetTextPlaneCursorLine(plane, 0, stat);
         sprintf(g_scratchBuffer, "%-6.6s %3d", g_statusStatNames[stat], GetStatTotal(member, stat));
-        PrintWindowText(plane, g_scratchBuffer, 0x1400, 0, 1);
+        PrintWindowText(plane, g_scratchBuffer, 0x1400, 0, true);
     }
     RepaintTextPlane(plane, -2);
     s_statPage.plane = plane;
@@ -500,12 +500,12 @@ i16 RunStatPage(i16 command) {
     switch (GetGameSub()) {
         case 0:
             SetGameSub(2);
-            SetStatusMenuItemFlag(5, PANEL_ROW_CHECKED, 1);
+            SetStatusMenuItemFlag(5, PANEL_ROW_CHECKED, true);
             s_statPage.plane = OpenStatListWindow(GetRosterCharacter(g_statusMember));
             break;
         case 1:
             s_statPage.plane = CloseTextWindow(s_statPage.plane);
-            SetStatusMenuItemFlag(5, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(5, PANEL_ROW_CHECKED, false);
             return s_statPage.resume;
         case 2:
             if (TakeClickUnlessCancel(command)) {
@@ -566,7 +566,7 @@ void DrawStatLine(Character* member, i16 stat, i16 highlight, i16 window) {
         );
         sprintf(g_scratchBuffer, "%-6.6s %3d", g_statusStatNames[stat], GetStatTotal(member, stat));
         SetTextPlaneCursorLine(window, 0, stat);
-        PrintWindowText(window, g_scratchBuffer, 0x1400, 0, 1);
+        PrintWindowText(window, g_scratchBuffer, 0x1400, 0, true);
     }
 }
 
@@ -638,7 +638,7 @@ i16 RunAlignmentPage(i16 command) {
     switch (GetGameSub()) {
         case 0:
             SetGameSub(2);
-            SetStatusMenuItemFlag(10, PANEL_ROW_CHECKED, 1);
+            SetStatusMenuItemFlag(10, PANEL_ROW_CHECKED, true);
             s_alignmentPage.plane = CreateTextPlane(6, 0);
             ResetTextPlaneLineStep(s_alignmentPage.plane, 1);
             DrawAlignmentMarker(g_statusMember, GetRosterCharacter(g_statusMember));
@@ -646,7 +646,7 @@ i16 RunAlignmentPage(i16 command) {
             break;
         case 1:
             s_alignmentPage.plane = CloseTextWindow(s_alignmentPage.plane);
-            SetStatusMenuItemFlag(10, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(10, PANEL_ROW_CHECKED, false);
             return s_alignmentPage.resume;
         case 2:
             if (TakeClickUnlessCancel(command)) {
@@ -867,7 +867,7 @@ i16 RunEquipScreen(i16 key) {
     switch (GetGameSub()) {
         case 0:
             SetGameSub(2);
-            SetStatusMenuItemFlag(8, PANEL_ROW_CHECKED, 1);
+            SetStatusMenuItemFlag(8, PANEL_ROW_CHECKED, true);
             s_equipPage.menu = OpenEquipMenu(g_statusMember, s_equipPage.menu);
             s_equipPage.panelPlane = CreateTextPlane(0x12, 0);
             ResetTextPlaneLineStep(s_equipPage.panelPlane, 3);
@@ -883,7 +883,7 @@ i16 RunEquipScreen(i16 key) {
                 DrawStatusScreen(g_statusMember);
                 s_equipPage.changed = false;
             }
-            SetStatusMenuItemFlag(8, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(8, PANEL_ROW_CHECKED, false);
             PollEquipPart(g_statusMember, EQUIP_PICK_CLEAR);
             if (s_equipPage.pick != -1) {
                 return s_equipPage.pick;
@@ -1223,7 +1223,7 @@ i16 RunAttachScreen(i16 sub) {
         case 0:
             SetGameSub(2);
             s_attach.itemBase = GetGemItemBase();
-            SetStatusMenuItemFlag(9, PANEL_ROW_CHECKED, 1);
+            SetStatusMenuItemFlag(9, PANEL_ROW_CHECKED, true);
             s_attach.itemMenu = CreateAttachItemMenu(s_attach.itemMenu);
             s_attach.plane = CreateTextPlane(0x12, 0);
             ResetTextPlaneLineStep(s_attach.plane, 3);
@@ -1240,7 +1240,7 @@ i16 RunAttachScreen(i16 sub) {
                 DrawStatusScreen(g_statusMember);
                 s_attach.redraw = 0;
             }
-            SetStatusMenuItemFlag(9, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(9, PANEL_ROW_CHECKED, false);
             if (s_attach.resume == -1) {
                 PrevGameSub();
                 return -1;
@@ -1296,7 +1296,7 @@ i16 RunAttachScreen(i16 sub) {
             NextGameSub();
             s_attach.plane = CreateTextPlane(0x12, 0);
             sprintf(g_scratchBuffer, "%s", GetLoadedRecordName(s_attach.item));
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, true);
             TakeBagItems(s_attach.item, 1);
             s_attach.item = AttachBagEntryItem(s_attach.target, s_attach.item);
             if (s_attach.item < 0) {
@@ -1311,7 +1311,7 @@ i16 RunAttachScreen(i16 sub) {
                     GetLoadedRecordName(s_attach.item)
                 );
             }
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, true);
             RepaintTextPlane(s_attach.plane, -2);
             PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
             return -1;
@@ -1324,7 +1324,7 @@ i16 RunAttachScreen(i16 sub) {
             NextGameSub();
             s_attach.plane = CreateTextPlane(0x12, 0);
             sprintf(g_scratchBuffer, "%s", GetLoadedRecordName(s_attach.item));
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, true);
             TakeBagItems(s_attach.item, 1);
             s_attach.item =
                 AttachEquipItem(g_statusMember, s_attach.target, s_attach.item - s_attach.itemBase);
@@ -1341,7 +1341,7 @@ i16 RunAttachScreen(i16 sub) {
                     GetLoadedRecordName(s_attach.item)
                 );
             }
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, true);
             RepaintTextPlane(s_attach.plane, -2);
             PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
             return -1;
@@ -1364,7 +1364,7 @@ static MenuBox* CreateAttachItemMenu(MenuBox* old) {
 
     SetMenuItems(menu, 16, NULL, 16, AttachItemMenuHandler);
     MoveMenuBox(menu, 0x2a, 0x50);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 0);
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, false);
     return menu;
 }
 
@@ -1470,7 +1470,7 @@ static void AttachTextHook(i16 plane, i16 event, i16 value) {
             break;
         case TEXT_EVENT_HIGHLIGHT:
             strcpy(g_scratchBuffer, GetItemDescription(value + s_attach.itemBase));
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 0);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, false);
             break;
     }
     RepaintTextPlane(s_attach.plane, -2);
@@ -1491,7 +1491,7 @@ i16 RunItemPage(i16 sub) {
         case 0:
             SetGameSub(2);
             CompactBag();
-            SetStatusMenuItemFlag(3, PANEL_ROW_CHECKED, 1);
+            SetStatusMenuItemFlag(3, PANEL_ROW_CHECKED, true);
             s_itemPage.menu = CreateMenuBox(s_itemPage.menu, 0x19, 2);
             MoveMenuBox(s_itemPage.menu, -8, -0x16);
             s_itemPage.list = CopyBagEntries(0, 64, NULL);
@@ -1502,12 +1502,12 @@ i16 RunItemPage(i16 sub) {
                 GetItemListCount(s_itemPage.list),
                 ItemListHandler
             );
-            SetTextPlaneFirstSelectableRow(s_itemPage.menu->plane, 1, 1);
+            SetTextPlaneFirstSelectableRow(s_itemPage.menu->plane, 1, true);
             return -1;
         case 1:
             s_itemPage.plane = CloseTextWindow(s_itemPage.plane);
             s_itemPage.menu = CloseListMenu(s_itemPage.menu);
-            SetStatusMenuItemFlag(3, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(3, PANEL_ROW_CHECKED, false);
             return s_itemPage.pick;
         case 2:
             if (sub == -2) {
@@ -1686,9 +1686,9 @@ i16 OpenItemInfoPlane(i16 item) {
 
     ClearTextPlane(plane);
     record = GetLoadedRecord(item);
-    PrintWindowText(plane, GetItemRecordName(record), 0x400, 0, 1);
-    PrintWindowText(plane, "\n", 0x400, 0, 1);
-    PrintWindowText(plane, record->description, 0x400, 0, 1);
+    PrintWindowText(plane, GetItemRecordName(record), 0x400, 0, true);
+    PrintWindowText(plane, "\n", 0x400, 0, true);
+    PrintWindowText(plane, record->description, 0x400, 0, true);
     RepaintTextPlane(plane, -2);
     return plane;
 }
@@ -1705,13 +1705,13 @@ i16 RunSkillPage(i16 sub) {
     switch (GetGameSub()) {
         case 0:
             SetGameSub(2);
-            SetStatusMenuItemFlag(4, PANEL_ROW_CHECKED, 1);
+            SetStatusMenuItemFlag(4, PANEL_ROW_CHECKED, true);
             s_skillPage.menu = CreateSkillMenu(g_statusMember, s_skillPage.menu);
             return -1;
         case 1:
             s_skillPage.plane = CloseTextWindow(s_skillPage.plane);
             s_skillPage.menu = DestroyMenuBox(s_skillPage.menu);
-            SetStatusMenuItemFlag(4, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(4, PANEL_ROW_CHECKED, false);
             return s_skillPage.pick;
         case 2:
             if (sub == -2) {
@@ -1734,7 +1734,7 @@ i16 RunSkillPage(i16 sub) {
                 FilterTextMarks(GetSkillDescription(s_skillPage.pick), 1),
                 0x400,
                 0,
-                1
+                true
             );
             RepaintTextPlane(s_skillPage.plane, -2);
             return -1;

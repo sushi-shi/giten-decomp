@@ -381,7 +381,7 @@ b16 RunPartyReorder(void) {
             break;
         case 1:
             ReturnFromGameState();
-            FlushStatusRedraw(1);
+            FlushStatusRedraw(true);
             break;
         case 2:
             s_reorderFirst = PickReorderSlot();
@@ -403,7 +403,7 @@ b16 RunPartyReorder(void) {
             ClearPartySlotSelection();
             if (s_reorderSecond < 0) {
                 PrevGamePhase();
-                FlushStatusRedraw(1);
+                FlushStatusRedraw(true);
                 break;
             }
             ExchangePartySlot(
@@ -493,7 +493,7 @@ i16 RunAnalyzeWindow(void) {
                 GetDemonRaceName(target->id),
                 target->namePrefix
             );
-            PrintWindowText(s_namePlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_namePlane, g_scratchBuffer, 0x400, 0, true);
             RepaintTextPlane(s_namePlane, -2);
             s_step++;
             return 0;
@@ -510,7 +510,7 @@ i16 RunAnalyzeWindow(void) {
                     "\202\252\202\240\202\350\202\334\202\271\202\361\n",
                     0x400,
                     1,
-                    1
+                    true
                 ); // アナライズデータがありません
                 s_step++;
                 return 0;
@@ -525,35 +525,35 @@ i16 RunAnalyzeWindow(void) {
                 s_lightDarkLetters[GetAlignmentClassA(target) + 1],
                 s_lawChaosLetters[GetAlignmentClassB(target) + 1]
             );
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
             sprintf(g_scratchBuffer, "\203\214\203x\203\213 L%2d\n", target->level); // レベル L%2d
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\202g\202o   %d/%d\n",
                 target->pools.hp.cur,
                 target->pools.hp.max
             ); // ＨＰ   %d/%d
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\202l\202o   %d/%d\n",
                 target->pools.mp.cur,
                 target->pools.mp.max
             ); // ＭＰ   %d/%d
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\221\324\223x   %s\n",
                 s_attitudeNames[target->attitude]
             ); // 態度   %s
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\217\363\221\324   %s\n",
                 GetFirstConditionName(GetCharacterConditions(target))
             ); // 状態   %s
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, true);
             RepaintTextPlane(s_dataPlane, -2);
             return 0;
 
@@ -579,11 +579,11 @@ i16 RunAnalyzeWindow(void) {
                 "\n",
                 0x400,
                 1,
-                1
+                true
             ); // 詳細アナライズしますか？
             s_menu = CreateMenuBox(s_menu, 16, 2);
             SetMenuItems(s_menu, 5, s_yesNo, 2, AnalyzeMenuHandler);
-            SetTextPlaneFirstSelectableRow(s_menu->plane, 0, 0);
+            SetTextPlaneFirstSelectableRow(s_menu->plane, 0, false);
             SetTextPlaneHighlightMode(s_menu->plane, TEXT_HIGHLIGHT_OUTER);
             s_step++;
             return 0;
@@ -789,7 +789,7 @@ MenuBox* CreateItemMenu(MenuBox* old, ItemStackList* entries, i16 count) {
     MoveMenuBox(menu, -8, -22);
     SetMenuItems(menu, 9, entries, count, ItemMenuHandler);
     SetTextPlaneCancelEnabled(menu->plane, 0);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 1);
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, true);
     menu->list->flags |= 2;
     return menu;
 }
@@ -952,7 +952,7 @@ void DrawItemMenuTotal(i16 plane, i32 total, i16 redraw, i16 line) {
     } else {
         sprintf(g_scratchBuffer, "\215\207\214\166 %10ld   ", total);
         SetTextPlaneCursorLine(plane, 16, 9);
-        PrintWindowText(plane, g_scratchBuffer, 0x1400, 1, 1);
+        PrintWindowText(plane, g_scratchBuffer, 0x1400, 1, true);
     }
 }
 
@@ -975,7 +975,7 @@ void AdjustItemMenuCount(MenuBox* menu, i16 row, i16 delta, i16 limit) {
         ResetTextPlaneHighlight(menu->plane);
         SetTextPlaneCursorLine(menu->plane, 0, row);
         SetMenuLineText(menu->plane, row, g_scratchBuffer);
-        PrintWindowText(menu->plane, g_scratchBuffer, attr, 1, 1);
+        PrintWindowText(menu->plane, g_scratchBuffer, attr, 1, true);
         total = GetItemMenuTotal(list, 1, menu->context.item.priceDivisor);
         DrawItemMenuTotal(menu->plane, total, 1, 9);
     }
@@ -1504,7 +1504,7 @@ void RunCellTrap(i16 mode, i16 x, i16 y) {
         } else {
             PlaySoundEffect(0x60);
         }
-        FlushStatusRedraw(1);
+        FlushStatusRedraw(true);
     }
 }
 
@@ -2585,11 +2585,11 @@ void DrawAreaInfo(void) {
 RVA(0x0001e9f0, 0x60)
 b16 RefreshInfoBar(i16 force) {
     if (force) {
-        DrawInfoBar(s_nextLayout, 1);
+        DrawInfoBar(s_nextLayout, true);
     } else if (s_shownMoonPhase != g_clock.moonPhase
                || s_shownMagnetite != RosterMemberAt(0)->magnetite
                || s_shownMacca != RosterMemberAt(0)->macca) {
-        DrawInfoBar(s_nextLayout, 1);
+        DrawInfoBar(s_nextLayout, true);
     }
     s_nextLayout = 1;
     return false;
@@ -2598,11 +2598,11 @@ b16 RefreshInfoBar(i16 force) {
 RVA(0x0001ea50, 0x34)
 b16 UpdateInfoBar(void) {
     if (g_fieldRedrawRequest) {
-        DrawInfoBar(0, 0);
+        DrawInfoBar(0, false);
         return false;
     }
     if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
-        DrawInfoBar(1, 0);
+        DrawInfoBar(1, false);
     }
     return false;
 }

@@ -91,7 +91,7 @@ i16 PushMessageBox(i16 window, const char* text) {
     i16 plane;
     PushGameState(GAME_STATE_MESSAGE_BOX);
     plane = CreateTextPlane(window, 0x4000);
-    PrintWindowText(plane, text, 0, 0, 1);
+    PrintWindowText(plane, text, 0, 0, true);
     SetGamePhase(plane);
     return plane;
 }

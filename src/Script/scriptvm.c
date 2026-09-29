@@ -80,13 +80,13 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 CallScript(op + 0x7eff, entry);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_FLAG_TEST_RESULT_CLEAR:
-                OpJumpUnlessEventFlag(SCRIPT_FLAG_TEST, 0);
+                OpJumpUnlessEventFlag(SCRIPT_FLAG_TEST, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_ADVANCE_WINDOW_LINE:
                 AdvanceWindowLine(window);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_FLAG_TEST_RESULT_SET:
-                OpJumpUnlessEventFlag(SCRIPT_FLAG_TEST, 1);
+                OpJumpUnlessEventFlag(SCRIPT_FLAG_TEST, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_GOTO_SCRIPT:
                 OpJumpScript(SCRIPT_BRANCH_JUMP);
@@ -101,43 +101,43 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpSwitchOnSelection(SCRIPT_BRANCH_JUMP);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_0_NORMAL:
-                OpJumpUnlessStatContest(0, SCRIPT_TEST_NORMAL, 0);
+                OpJumpUnlessStatContest(0, SCRIPT_TEST_NORMAL, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_0_INVERTED:
-                OpJumpUnlessStatContest(0, SCRIPT_TEST_INVERTED, 0);
+                OpJumpUnlessStatContest(0, SCRIPT_TEST_INVERTED, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_1_NORMAL:
-                OpJumpUnlessStatContest(1, SCRIPT_TEST_NORMAL, 0);
+                OpJumpUnlessStatContest(1, SCRIPT_TEST_NORMAL, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_1_INVERTED:
-                OpJumpUnlessStatContest(1, SCRIPT_TEST_INVERTED, 0);
+                OpJumpUnlessStatContest(1, SCRIPT_TEST_INVERTED, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_2_NORMAL:
-                OpJumpUnlessStatContest(2, SCRIPT_TEST_NORMAL, 0);
+                OpJumpUnlessStatContest(2, SCRIPT_TEST_NORMAL, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_2_INVERTED:
-                OpJumpUnlessStatContest(2, SCRIPT_TEST_INVERTED, 0);
+                OpJumpUnlessStatContest(2, SCRIPT_TEST_INVERTED, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_3_NORMAL:
-                OpJumpUnlessStatContest(3, SCRIPT_TEST_NORMAL, 0);
+                OpJumpUnlessStatContest(3, SCRIPT_TEST_NORMAL, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_3_INVERTED:
-                OpJumpUnlessStatContest(3, SCRIPT_TEST_INVERTED, 0);
+                OpJumpUnlessStatContest(3, SCRIPT_TEST_INVERTED, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP:
                 OpJump();
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_SET_EVENT_FLAG:
-                OpApplyEventFlag(SCRIPT_FLAG_SET, 1);
+                OpApplyEventFlag(SCRIPT_FLAG_SET, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_CLEAR_EVENT_FLAG:
-                OpApplyEventFlag(SCRIPT_FLAG_CLEAR, 0);
+                OpApplyEventFlag(SCRIPT_FLAG_CLEAR, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_BEGIN_TEXT_CAPTURE:
-                SetTextCapture(1);
+                SetTextCapture(true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_END_TEXT_CAPTURE:
-                SetTextCapture(0);
+                SetTextCapture(false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_PRINT_OPERAND_TEXT:
                 OpPrintOperandText();
@@ -152,28 +152,28 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpIfFlags(1);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_0_NORMAL:
-                OpJumpUnlessStatContest(0, SCRIPT_TEST_NORMAL, 1);
+                OpJumpUnlessStatContest(0, SCRIPT_TEST_NORMAL, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_0_INVERTED:
-                OpJumpUnlessStatContest(0, SCRIPT_TEST_INVERTED, 1);
+                OpJumpUnlessStatContest(0, SCRIPT_TEST_INVERTED, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_1_NORMAL:
-                OpJumpUnlessStatContest(1, SCRIPT_TEST_NORMAL, 1);
+                OpJumpUnlessStatContest(1, SCRIPT_TEST_NORMAL, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_1_INVERTED:
-                OpJumpUnlessStatContest(1, SCRIPT_TEST_INVERTED, 1);
+                OpJumpUnlessStatContest(1, SCRIPT_TEST_INVERTED, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_2_NORMAL:
-                OpJumpUnlessStatContest(2, SCRIPT_TEST_NORMAL, 1);
+                OpJumpUnlessStatContest(2, SCRIPT_TEST_NORMAL, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_2_INVERTED:
-                OpJumpUnlessStatContest(2, SCRIPT_TEST_INVERTED, 1);
+                OpJumpUnlessStatContest(2, SCRIPT_TEST_INVERTED, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_3_NORMAL:
-                OpJumpUnlessStatContest(3, SCRIPT_TEST_NORMAL, 1);
+                OpJumpUnlessStatContest(3, SCRIPT_TEST_NORMAL, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_3_INVERTED:
-                OpJumpUnlessStatContest(3, SCRIPT_TEST_INVERTED, 1);
+                OpJumpUnlessStatContest(3, SCRIPT_TEST_INVERTED, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_ALERT_ACTOR:
                 return OpSetActorAlert(ACTOR_ALERT_NORMAL);
@@ -270,28 +270,28 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpSetWindowColor(window, TEXT_COLOR_DIM);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_ENABLE_WINDOW_OPAQUE_BACKGROUND:
-                SetWindowOpaqueBg(window, 1);
+                SetWindowOpaqueBg(window, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_DISABLE_WINDOW_OPAQUE_BACKGROUND:
-                SetWindowOpaqueBg(window, 0);
+                SetWindowOpaqueBg(window, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_SET_WINDOW_ATTR_FLAG1:
-                SetWindowAttrFlag1(window, 1);
+                SetWindowAttrFlag1(window, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_CLEAR_WINDOW_ATTR_FLAG1:
-                SetWindowAttrFlag1(window, 0);
+                SetWindowAttrFlag1(window, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_DISABLE_WINDOW_HALF_WIDTH:
-                SetWindowHalfWidth(window, 0);
+                SetWindowHalfWidth(window, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_ENABLE_WINDOW_HALF_WIDTH:
-                SetWindowHalfWidth(window, 1);
+                SetWindowHalfWidth(window, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_CLEAR_WINDOW_ATTR_FLAG2:
-                SetWindowAttrFlag2(window, 0);
+                SetWindowAttrFlag2(window, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_SET_WINDOW_ATTR_FLAG2:
-                SetWindowAttrFlag2(window, 1);
+                SetWindowAttrFlag2(window, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_SAVE_WINDOW_COLOR:
                 StashWindowColor(window, WINDOW_COLOR_SAVE);
@@ -377,7 +377,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpPercentLongVar(LONG_OPERAND_IN_PLACE);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_TOGGLE_EVENT_FLAG:
-                OpApplyEventFlag(SCRIPT_FLAG_TOGGLE, 1);
+                OpApplyEventFlag(SCRIPT_FLAG_TOGGLE, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_PUSH_RETURN_TARGET:
                 OpPushReturnTarget();
@@ -462,22 +462,22 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpFadeOut();
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_FLAG_SET_RESULT_CLEAR:
-                OpJumpUnlessEventFlag(SCRIPT_FLAG_SET, 0);
+                OpJumpUnlessEventFlag(SCRIPT_FLAG_SET, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_FLAG_SET_RESULT_SET:
-                OpJumpUnlessEventFlag(SCRIPT_FLAG_SET, 1);
+                OpJumpUnlessEventFlag(SCRIPT_FLAG_SET, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_FLAG_CLEAR_RESULT_CLEAR:
-                OpJumpUnlessEventFlag(SCRIPT_FLAG_CLEAR, 0);
+                OpJumpUnlessEventFlag(SCRIPT_FLAG_CLEAR, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_FLAG_CLEAR_RESULT_SET:
-                OpJumpUnlessEventFlag(SCRIPT_FLAG_CLEAR, 1);
+                OpJumpUnlessEventFlag(SCRIPT_FLAG_CLEAR, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_FLAG_TOGGLE_RESULT_CLEAR:
-                OpJumpUnlessEventFlag(SCRIPT_FLAG_TOGGLE, 0);
+                OpJumpUnlessEventFlag(SCRIPT_FLAG_TOGGLE, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_FLAG_TOGGLE_RESULT_SET:
-                OpJumpUnlessEventFlag(SCRIPT_FLAG_TOGGLE, 1);
+                OpJumpUnlessEventFlag(SCRIPT_FLAG_TOGGLE, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_NOT_EQUAL_ZERO:
                 OpJumpUnlessCompare(COMPARE_NOT_EQUAL, SCRIPT_COMPARE_WITH_ZERO);
@@ -674,7 +674,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 PlaySoundEffect(MapSoundEffectId(ReadScriptValue()));
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_PLAY_MUSIC:
-                PlayMusic(ReadScriptValue(), 1);
+                PlayMusic(ReadScriptValue(), true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_INCREASE_HP:
             case SCRIPT_OP_INCREASE_HP_ALIAS:
@@ -842,18 +842,18 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpSetTextWaitFrames();
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_DISABLE_TEXT_TIMED_WAIT:
-                SetTextTimedWait(0);
+                SetTextTimedWait(false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_ENABLE_TEXT_TIMED_WAIT:
-                SetTextTimedWait(1);
+                SetTextTimedWait(true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_ENABLE_TEXT_SCROLL:
-                SetTextScrollMode(1);
+                SetTextScrollMode(true);
                 SetTextPeriod(window);
                 ClearTextPeriod();
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_DISABLE_TEXT_SCROLL:
-                SetTextScrollMode(0);
+                SetTextScrollMode(false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_CHANGE_MAP:
                 OpChangeMap();

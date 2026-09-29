@@ -223,7 +223,7 @@ i16 PickPartyMember(i16 index) {
     }
     member = GetPartyCharacter(index);
     if (!GetPickBlockingCondition(GetCharacterConditions(member))
-        && TickFieldCount(PartyCombatantId(index), 1) >= 1) {
+        && TickFieldCount(PartyCombatantId(index), true) >= 1) {
         if (GetFieldBattleActive()) {
             if (IsActionWaitPickable(GetCharacterActionWait(member))) {
                 return 1;
@@ -271,7 +271,7 @@ i16 GetMemberPanelState(i16 index) {
         state = 4;
     } else if (GetPickBlockingCondition(GetCharacterConditions(member))) {
         state = 1;
-    } else if (TickFieldCount(PartyCombatantId(index), 1) < 1) {
+    } else if (TickFieldCount(PartyCombatantId(index), true) < 1) {
         state = 1;
     } else if (IsActionWaitPickable(GetCharacterActionWait(member))) {
         state = GetReadyMemberPanelState(member);
@@ -488,7 +488,7 @@ b16 SwapPartyRows(void) {
         g_party.slots[i + 3] = member;
     }
     MarkPickDone();
-    FlushStatusRedraw(1);
+    FlushStatusRedraw(true);
     return true;
 }
 
@@ -575,7 +575,7 @@ MenuBox* OpenActorCommandMenu(i16 id) {
     }
     menu = CreateMenuBox(NULL, 5, 2);
     SetMenuItems(menu, 9, actor, 8, ActorCommandMenuHandler);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 1);
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, true);
     return menu;
 }
 
@@ -1181,7 +1181,7 @@ b16 RunFieldEncounter(void) {
             switch (GetGameStep()) {
                 case 0:
                     NextGameStep();
-                    LockStatusRedraw(0);
+                    LockStatusRedraw(false);
                     SetFieldMenuMode(1);
                     s_fieldMarker = true;
                     g_fieldBattleActive = 1;
@@ -1209,9 +1209,9 @@ b16 RunFieldEncounter(void) {
                             }
                         }
                         if (s_fieldRefresh) {
-                            s_fieldMusic = PlayMusic(0x15, 1);
+                            s_fieldMusic = PlayMusic(0x15, true);
                         } else {
-                            s_fieldMusic = PlayMusic(0xd, 1);
+                            s_fieldMusic = PlayMusic(0xd, true);
                         }
                     } else {
                         x = g_party.field.pos.x;
@@ -1237,9 +1237,9 @@ b16 RunFieldEncounter(void) {
                             }
                         }
                         if (s_fieldRefresh) {
-                            s_fieldMusic = PlayMusic(0xd, 1);
+                            s_fieldMusic = PlayMusic(0xd, true);
                         } else {
-                            s_fieldMusic = PlayMusic(s_fieldOption, 1);
+                            s_fieldMusic = PlayMusic(s_fieldOption, true);
                         }
                     }
                     LoadEnemyGroupSlot(0, s_fieldMap);
@@ -1282,11 +1282,11 @@ b16 RunFieldEncounter(void) {
                 LeaveFieldMap(-1);
                 break;
             }
-            if (!TickFieldCount(-1, 1)) {
+            if (!TickFieldCount(-1, true)) {
                 LeaveFieldMap(0);
                 break;
             }
-            if (!TickFieldCount(1, 1)) {
+            if (!TickFieldCount(1, true)) {
                 LeaveFieldMap(0);
                 break;
             }
@@ -1298,7 +1298,7 @@ b16 RunFieldEncounter(void) {
             if (RunPartyTurn(g_tickElapsed)) {
                 break;
             }
-            if (TickFieldCount(0, 1) <= 0) {
+            if (TickFieldCount(0, true) <= 0) {
                 break;
             }
             for (i = 0; i < s_fieldParamThird + s_fieldParamFirst; i++) {
@@ -1320,7 +1320,7 @@ b16 RunFieldEncounter(void) {
                 break;
             }
             MarkRewardsPending();
-            PlayMusic(s_fieldMusic, 1);
+            PlayMusic(s_fieldMusic, true);
             RunMessageScene(0xdd, 0x59, -1);
             if (s_fieldPairFirst != 0 || s_fieldPairSecond != 0) {
                 ModifyEventFlag(s_fieldPairFirst, s_fieldPairSecond, 1);
@@ -1358,7 +1358,7 @@ b16 RunFieldEncounter(void) {
             NotifyEncounterEnd();
             RestoreFieldLayer(1);
             RestoreFieldLayer(0);
-            s_fieldPaletteState = RestorePaletteState(s_fieldPaletteState, 1);
+            s_fieldPaletteState = RestorePaletteState(s_fieldPaletteState, true);
             if (s_fieldMode == 0) {
                 RespawnAreaActors();
             }
@@ -1427,7 +1427,7 @@ b16 RunFieldState(void) {
                     ResetFieldObjects();
                     LoadFieldTable();
                     PrepareFieldRandom();
-                    s_fieldMusic = PlayMusic(13, 1);
+                    s_fieldMusic = PlayMusic(13, true);
                     ResetRosterFieldMarks();
                     RequestFieldRefresh();
                     return FlushFieldScreen();
@@ -1485,20 +1485,20 @@ b16 RunFieldState(void) {
                 RunMessageScene(0x7f04, 0x10, -1);
                 PlaySoundEffect(4);
                 ClearEncounterPending();
-                return UpdateFieldScreen(0);
+                return UpdateFieldScreen(false);
             }
             NextGamePhase();
             RunMessageScene(0x7f04, 0x11, -1);
             PlaySoundEffect(3);
             PushWaitState(WAIT_FRAMES, 0x3c, 0x3c, 0);
             ClearEncounterPending();
-            return UpdateFieldScreen(0);
+            return UpdateFieldScreen(false);
         case 2:
             SetFieldStatusBit0(0);
             CloseMessageWindow();
             RestoreDrawState(SaveDrawState());
             PrevGamePhase();
-            return UpdateFieldScreen(0);
+            return UpdateFieldScreen(false);
         case 3:
             PlaySoundEffect(0x1b);
             NextGamePhase();
@@ -1507,7 +1507,7 @@ b16 RunFieldState(void) {
                 break;
             }
             MarkRewardsPending();
-            PlayMusic(s_fieldMusic, 1);
+            PlayMusic(s_fieldMusic, true);
             AccessScriptReg(1, 0, 1 - s_fieldLeftEarly);
             RunMessageScene(0xdd, 0x59, -1);
             if (s_fieldPairFirst == 0 && s_fieldPairSecond == 0) {
@@ -1549,7 +1549,7 @@ b16 RunFieldState(void) {
             ResetRosterBattleState();
             SetFieldMenuMode(2);
             ReleaseFieldImage();
-            s_fieldPaletteState = RestorePaletteState(s_fieldPaletteState, 1);
+            s_fieldPaletteState = RestorePaletteState(s_fieldPaletteState, true);
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             break;
     }
@@ -2024,7 +2024,7 @@ b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16
     if (g_actionResult >= 7) {
         return false;
     }
-    if (g_targetId >= 0 && IsFieldModeAtLeast(0) && IsFieldConditionRestricted(condition)) {
+    if (g_targetId >= 0 && IsFieldModeAtLeast(false) && IsFieldConditionRestricted(condition)) {
         return false;
     }
     roll = RandomAverage(0, 20, 0);
@@ -2684,7 +2684,7 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
     i16 result;
     if (kind & 4) {
         if (id && (!character || GetPickBlockingCondition(GetCharacterConditions(character)))) {
-            RunStatusListPicker(1);
+            RunStatusListPicker(true);
             g_hoveredObjectId = g_selectedObjectId = -1;
             if (s_pickScreenSaved) {
                 RestoreScreenSaveWithState(g_pickScreenSave);
@@ -2705,11 +2705,11 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
         } else {
             SetStatusColumn(0);
         }
-        result = RunStatusListPicker(0);
+        result = RunStatusListPicker(false);
         if (result == -1) {
             return 0;
         }
-        RunStatusListPicker(1);
+        RunStatusListPicker(true);
         PlaySoundEffect(1);
         if (s_pickScreenSaved) {
             RestoreScreenSaveWithState(g_pickScreenSave);
@@ -2721,7 +2721,7 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
     if ((id && (!character || GetPickBlockingCondition(GetCharacterConditions(character))))
         || TakeMouseCancelSound()) {
         ClearPartySlotSelection();
-        RunStatusListPicker(1);
+        RunStatusListPicker(true);
         g_hoveredObjectId = g_selectedObjectId = -1;
         return -1;
     }
