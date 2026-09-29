@@ -16,6 +16,7 @@ extern "C" {
 #include <Game/PartyPick.h>
 #include <Game/ScreenEffect.h>
 #include <Game/TreasureBox.h>
+#include <Gfx/Bitmap.h>
 #include <Gfx/D3DState.h>
 #include <Gfx/DDraw.h>
 #include <Gfx/DisplayConfig.h>

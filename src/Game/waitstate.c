@@ -3,7 +3,6 @@
 
 #include <rva.h>
 
-#include <Game/FieldSupport.h>
 #include <Game/StateStack.h>
 #include <Game/WaitLoop.h>
 #include <Game/WaitState.h>

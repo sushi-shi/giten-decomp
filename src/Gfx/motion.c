@@ -23,75 +23,82 @@
 
 // @identity-TODO: this build only clears these three scene-input words.
 DATA(0x00078060)
-static i16 s_sceneInputFirst;
-DATA(0x00078064)
-static i16 s_sceneInputSecond;
-DATA(0x00078070)
-static i16 s_sceneInputPending;
+static i16 s_sceneInputFirst = 0;
 
-// @identity-TODO: this uninitialized word is read only by an uncalled
+DATA(0x00078064)
+static i16 s_sceneInputSecond = 0;
+
+// Request bits for a display interrupt that this image does not contain.
+DATA(0x00078068)
+static i16 s_sceneFlags = 0;
+
+DATA(0x00078070)
+static i16 s_sceneInputPending = 0;
+
+DATA(0x00078078)
+MotionFile g_motionFile = {0};
+
+// @identity-TODO: this never-written word is read only by an uncalled
 // effect-state getter; no writer or stronger type survives in this image.
 DATA(0x00078088)
-static i32 s_legacyEffectStateValue;
-
-// The legacy display interrupt consumes and clears these request bits.
-// Its Windows implementation is absent, but accesses retain that contract.
-DATA(0x00078068)
-static volatile i16 s_sceneFlags;
+static i32 s_legacyEffectStateValue = 0;
 
 // The playing motion: its path, step delay (0: advance only on request),
 // countdown to the next step, current step, and the fixed-point scale.
 DATA(0x00078090)
-static EffectSlot s_effectSlots[EFFECT_SLOTS];
+static EffectSlot s_effectSlots[EFFECT_SLOTS] = {0};
 
-// @identity-TODO: this uninitialized word is read only by an uncalled
+DATA(0x00078098)
+MotionTable g_loadedMotionTable = {0};
+
+// @identity-TODO: this never-written word is read only by an uncalled
 // image-set getter; no writer or stronger type survives in this image.
 DATA(0x000780b8)
-static i32 s_legacyImageSetStateValue;
+static i32 s_legacyImageSetStateValue = 0;
 
 DATA(0x000780c0)
-static EffectImageSet s_imageSets[EFFECT_IMAGE_SETS];
+static EffectImageSet s_imageSets[EFFECT_IMAGE_SETS] = {0};
 
 DATA(0x00078118)
-static EffectPalette s_paletteData[64];
+static EffectPalette s_paletteData[64] = {0};
 
 DATA(0x00078218)
-static i16 s_currentImageSet;
+static i16 s_currentImageSet = 0;
 
 // @identity-TODO: set by the effect state's first phase (0) and its skip
 // path (1); nothing reads it back.
 DATA(0x0007821c)
-static i16 s_effectSkipping;
+static i16 s_effectSkipping = 0;
 
 DATA(0x00078220)
-static i16 s_paletteRefs;
+static i16 s_paletteRefs = 0;
 
 DATA(0x00078224)
-static i16 s_motionDelay;
+static i16 s_motionDelay = 0;
 
 DATA(0x00078228)
-static i16 s_motionCountdown;
+static i16 s_motionCountdown = 0;
 
 DATA(0x0007822c)
-static i16 s_effectDelay;
+static i16 s_effectDelay = 0;
 
 DATA(0x00078230)
-static EffectPalette* s_palettes;
+static EffectPalette* s_palettes = 0;
 
 DATA(0x00078234)
-static u8* s_effectScriptBase;
+static u8* s_effectScriptBase = 0;
 
 DATA(0x00078238)
-static MotionPath* s_motionPath;
+static MotionPath* s_motionPath = 0;
 
 DATA(0x0007823c)
-static EffectCommand* s_effectScript;
+static EffectCommand* s_effectScript = 0;
 
 DATA(0x00078240)
-static MotionTable* s_motionTable;
+static MotionTable* s_motionTable = 0;
 
 DATA(0x00078244)
-static u16 s_motionStep;
+static u16 s_motionStep = 0;
 
 DATA(0x000683f4)
 static i16 s_currentEffect = -1;
@@ -99,6 +106,9 @@ static i16 s_currentEffect = -1;
 DATA(0x000683f8)
 static i16 s_motionScale = 1;
 
+// @early-stop: retail loads the word, ORs in 32 bits and stores the low half;
+// cl folds `|=` into one `or word ptr` unless the word is volatile, and no
+// asynchronous writer or reader exists. Swapped, widened and u16 forms fold.
 RVA(0x00004920, 0x14)
 void SetSceneFlags(i32 bits) {
     s_sceneFlags |= bits;

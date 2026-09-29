@@ -26,11 +26,15 @@ its `[[unit]]` entry, shared declarations, source definitions and labels, then b
 | clang database | `giten.graph.compdb` | `clangd/compile_commands.json` |
 | Extract labels | `giten.retail_labels.source` | `gen/claims/<unit>.tsv` |
 | Resolve claims/providers | `giten.model` | `gen/bindings.tsv`, `gen/violations.tsv` |
+| Base-object data identity | `giten.graph.dataid` | `gen/data_ids.tsv` |
 | Synthetic PDB and delink | `giten.delink` | `pdb/`, `objdiff/target-new/` |
 | Normalize and compare | `giten.compare` | `objdiff/normalized/`, `objdiff/compare-new/report.json` |
 
 Producers write only changed content. A code edit with unchanged labels reuses
 the retail targets; a label change rebuilds the model and affected targets.
+The delink also reads the base objects' data topology, so a compile that moves
+only data identity (a COMMON becoming `.bss`, a string or vtable COMDAT)
+re-delinks through `gen/data_ids.tsv` without a label change.
 A comparator re-pin invalidates reports without recompiling. Use
 `giten build --force-delink` to force target regeneration.
 
@@ -134,6 +138,23 @@ Gates report findings; they do not bless baselines. `giten verify board --update
 and `giten verify bank` are explicit writes. Review the modeling change before
 accepting a new floor; lowering counters is not evidence of correctness.
 Verification policy for matching and tooling is in [AGENTS.md](../AGENTS.md#tests-and-repository-hygiene).
+
+## Candidate linking and resources
+
+`giten link` links the compiled objects into `build/exe/DDS.candidate.EXE`
+and a map with VC5 `link.exe`. Linking is opt-in and has no `/FORCE` fallback;
+unresolved or duplicate symbols are findings to fix in source.
+
+The resource edge (`giten.rsrc.retail_res`) reads the original EXE named by
+`GITEN_RETAIL_EXE` and writes ignored `build/gen/retail.res`. The linker places
+those payloads at the candidate's own resource RVA. This path needs no RC.EXE
+or reconstructed resource script. Changing the supplied EXE rebuilds the
+resource file and candidate; no resource payloads or download links are tracked.
+
+The candidate still needs the original installation's external game files and
+valid runtime settings. See [local build/run instructions](../README.md#local-candidate-and-resources).
+Optional candidate-image
+checks remain in `giten verify check --tier link`.
 
 ## Formatting and navigation
 

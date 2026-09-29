@@ -24,6 +24,8 @@ typedef struct CellHead {
     u8 code;
 } CellHead;
 
+#define IsCellListEnd(cell) ((cell)->x == 0xff)
+
 typedef enum CellEventKind {
     CELL_EVENT_NONE = 0,
     CELL_EVENT_WARP = 1,
@@ -259,11 +261,15 @@ static __inline u16 GetAreaLevelOffset(const AreaRecord* record, i16 level) {
 extern AreaMap* g_areaMap;
 extern AreaLevel* g_areaLevel;
 
-// The cell event's latch (LatchCellDestination): the cell's code, and the
-// destination's x, y, level and area RunCellEvent travels to.
+// The cell event's latch (LatchCellDestination): the cell's position and
+// code, and the destination's x, y, direction, level and area RunCellEvent
+// travels to (the position and direction are latched but never read).
 // @identity-TODO: what the codes 0x64, 0x67 and
 // 0x70..0x76 of a kind-9 cell are is unrecovered.
+extern i16 g_cellX;
+extern i16 g_cellY;
 extern u8 g_cellCode;
+extern u8 g_cellDestDirection;
 extern i16 g_cellDestX;
 extern i16 g_cellDestY;
 extern i16 g_cellDestLevel;

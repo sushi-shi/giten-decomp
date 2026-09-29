@@ -1,63 +1,70 @@
-// @identity-TODO: the owning TU is unproven; this unit holds one contiguous
-// retail span until link-order evidence names it. The field objects: sixteen
+// @identity-TODO: the owning TU is unproven. One retail object: the .bss
+// statics of fieldobj, demontable, familiarity and worldencounter interleave
+// in one run, each read only by its own unit's code, and the code is
+// contiguous in .text in that order. It holds the field objects (sixteen
 // slots of enemies placed on the field map, spawned from map cells and
-// records, checked and drawn every frame.
+// records, checked and drawn every frame), the demon tables, the saved
+// per-id counts that become a demon's familiarity with the per-id analyze
+// bits, and the world-map encounters.
 
 #include <rva.h>
 
-#include <Game/CombatantId.h>
-
 #include <File/DataFile.h>
+#include <Game/Actor.h>
+#include <Game/Alignment.h>
+#include <Game/AnalyzeData.h>
 #include <Game/AreaMap.h>
-#include <Game/DoorRegion.h>
 #include <Game/BattleEffect.h>
+#include <Game/Character.h>
+#include <Game/CharInfo.h>
+#include <Game/Clock.h>
+#include <Game/CombatantId.h>
 #include <Game/Condition.h>
+#include <Game/ConditionAge.h>
+#include <Game/DemonTable.h>
+#include <Game/DoorRegion.h>
+#include <Game/Familiarity.h>
+#include <Game/Field.h>
 #include <Game/FieldActor.h>
 #include <Game/FieldLayer.h>
 #include <Game/FieldMain.h>
+#include <Game/FieldMap.h>
 #include <Game/FieldObject.h>
 #include <Game/FieldScreen.h>
 #include <Game/FieldSight.h>
 #include <Game/FieldSupport.h>
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
+#include <Game/ItemRecord.h>
 #include <Game/ModeFlags.h>
+#include <Game/ObjectRecord.h>
+#include <Game/Party.h>
 #include <Game/PartyAction.h>
+#include <Game/PartyCommand.h>
 #include <Game/Skill.h>
+#include <Game/SkillUse.h>
+#include <Game/StateStack.h>
+#include <Game/Stats.h>
+#include <Game/StatUpdate.h>
 #include <Game/TargetFlags.h>
+#include <Game/WorldMap.h>
 #include <Gfx/ScreenMode.h>
 #include <Gfx/ScreenSave.h>
 #include <Gfx/Vram.h>
+#include <Input/Mouse.h>
 #include <Math/Vec3.h>
+#include <Mem/Handle.h>
+#include <Platform/GameCalls.h>
 #include <Script/EventFlags.h>
+#include <Script/Script.h>
+#include <Ui/Hotspot.h>
 #include <Util/BitSet.h>
 #include <Util/Range.h>
+#include <Util/WordList.h>
 
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
-
-// Game/StateStack.h, Ui/Hotspot.h and Game/Field.h are not included: their declaration counts
-// perturb this TU (RelativeFacing, RollEncounterSlot). These callees are
-// declared by hand instead.
-i16 GetGameState(void);
-void ClearSelectedHotspot(void);
-i16 GetFieldMarker(void);
-
-// @identity-TODO: approach offsets by step (0..-4): x scaled by the caller,
-// then y.
-DATA(0x000685e0)
-static i16 s_approachX[8] = {-40, -26, -16, -11, -8};
-
-DATA(0x000685f0)
-static i16 s_approachY[8] = {224, 120, 72, 48, 32};
-
-// @identity-TODO: the sprite for each facing relative to the view.
-DATA(0x00068600)
-static i16 s_facingSprite[4] = {0, 1, 2, -1};
-
-// Image codes by facing relative to the party; negative mirrors the side image.
-DATA(0x00068608)
-static i16 s_facingImageCodes[4] = {0, 1, 2, -1};
 
 // @identity-TODO: the floor cell of the n-th of up to ten objects drawn
 // together, far rows and the near row.
@@ -93,20 +100,136 @@ static const i16 s_nearCells[10][9] = {
 DATA(0x00064498)
 static const i16 s_depthRise[8] = {0, 20, 12, 4, 0};
 
+// @identity-TODO: approach offsets by step (0..-4): x scaled by the caller,
+// then y.
+DATA(0x000685e0)
+static i16 s_approachX[8] = {-40, -26, -16, -11, -8};
+
+DATA(0x000685f0)
+static i16 s_approachY[8] = {224, 120, 72, 48, 32};
+
+// @identity-TODO: the sprite for each facing relative to the view.
+DATA(0x00068600)
+static i16 s_facingSprite[4] = {0, 1, 2, -1};
+
+// Image codes by facing relative to the party; negative mirrors the side image.
+DATA(0x00068608)
+static i16 s_facingImageCodes[4] = {0, 1, 2, -1};
+
+DATA(0x00068610)
+static i16 s_encounterSpread[4] = {0, 0, 1, 2};
+
+// One bit per id: whether it has been analyzed.
+DATA(0x00078878)
+static u8 s_analyzed[0x40] = {0};
+
+DATA(0x000788b8)
+static i16 s_encounterGroups[2] = {0};
+
+DATA(0x000788c0)
+u8 g_worldEncounterGroupSlots[16] = {0};
+
+// @identity-TODO: nine cumulative weights per encounter row (data file 5).
+DATA(0x000788d0)
+static u8 s_encounterBuffer[0x100] = {0};
+
 DATA(0x000789d0)
-static FieldObject s_objects[16];
+static FieldObject s_objects[16] = {0};
+
+// The 7x7 sight grid around the object being stepped (1: seen).
+DATA(0x0007ada0)
+static u8 s_sight[7][7] = {0};
+
+// @identity-TODO: a count per id (0..255) whose eighth is the familiarity.
+DATA(0x0007add8)
+static u8 s_familiarityCounts[0x200] = {0};
+
+// The object record buffer every record read goes through.
+DATA(0x0007afd8)
+static ObjectRecord s_record = {0};
+
+DATA(0x0007b058)
+static u8 s_scriptSetBuffer[0x50] = {0};
+
+DATA(0x0007b0a8)
+static i16 s_encounterCount = 0;
+
+DATA(0x0007b0ac)
+static i16 s_fieldTableIndex = 0;
 
 // While set, GetLiveObject accepts any index.
 DATA(0x0007b0b0)
-static i16 s_objectCheckBypass;
+static i16 s_objectCheckBypass = 0;
 
 // While set, a hidden object is not removed (DeferObjectRemoval instead).
 DATA(0x0007b0b4)
-static i16 s_objectRemovalDeferred;
+static i16 s_objectRemovalDeferred = 0;
 
 // While set, the objects are not marked on the automap.
 DATA(0x0007b0b8)
-static i16 s_objectsFrozen;
+static i16 s_objectsFrozen = 0;
+
+DATA(0x0007b0bc)
+static i16 s_encounterChanceBonus = 0;
+
+DATA(0x0007b0c0)
+static i32 s_encounterChoices = 0;
+
+DATA(0x0007b0c4)
+static i32 s_encounterWeights = 0;
+
+DATA(0x0007b0c8)
+static i32 s_encounterBlock = 0;
+
+DATA(0x0007b0cc)
+static i32 s_fieldTable = 0;
+
+// Record and race-class tables, followed by the four name tables.
+DATA(0x0007b0d0)
+static i32 s_demonRecords = 0;
+
+DATA(0x0007b0d4)
+static i32 s_raceClasses = 0;
+
+DATA(0x0007b0d8)
+static i32 s_raceNames = 0;
+
+DATA(0x0007b0dc)
+static i32 s_pantheonNames = 0;
+
+DATA(0x0007b0e0)
+static i32 s_humanTitles = 0;
+
+DATA(0x0007b0e4)
+static i32 s_classNames = 0;
+
+DATA(0x0007b0e8)
+static u32 s_lastEncounterMinute = 0;
+
+DATA(0x0007b0ec)
+static u8* s_fieldEncounterWeights = 0;
+
+// The countdown (in ticks) to the next random spawn and the spawn interval
+// in seconds.
+DATA(0x0007b0f0)
+static i32 s_spawnTimer = 0;
+
+DATA(0x0007b0f4)
+static u16 s_spawnInterval = 0;
+
+DATA(0x0007b0f8)
+static FieldLayer s_layers[2] = {0};
+
+DATA(0x0007b2f8)
+static FieldLayer s_savedLayers[2] = {0};
+
+// The object script block (data file 0x6800), loaded on first use.
+DATA(0x0007b4f4)
+static ScriptBlock* s_objectScripts = 0;
+
+// The script-set table: three data-file numbers per set (0xff: none).
+DATA(0x0007b4f8)
+static u8* s_scriptSets = 0;
 
 RVA(0x0000d790, 0x52)
 b16 InitFieldObjects(void) {
@@ -157,7 +280,7 @@ void RemoveFieldObject(i16 index, i16 announce) {
     }
     ModifyEventFlag(8, 0, 1);
     if (queued != 0 && !HasQueuedObjectEvents()) {
-        MarkLevelEvent(g_field.pos.level);
+        MarkLevelEvent(g_party.field.pos.level);
     }
 }
 
@@ -671,7 +794,8 @@ i16 GetObjectImageCode(i16 index) {
 RVA(0x0000e600, 0x77)
 i16 GetObjectFacingImageCode(i16 index) {
     FieldObject* object = &s_objects[index];
-    i16 imageCode = s_facingImageCodes[RelativeFacing(g_field.pos.direction, object->direction)];
+    i16 imageCode =
+        s_facingImageCodes[RelativeFacing(g_party.field.pos.direction, object->direction)];
     if (object->redraw != 0) {
         imageCode = 4;
     } else if (object->anim != 0) {
@@ -731,23 +855,6 @@ RVA(0x0000e740, 0x16)
 i16 GetObjectLayer(i16 index) {
     return s_objects[index].layer;
 }
-
-DATA(0x0007b058)
-static u8 s_scriptSetBuffer[0x50];
-
-DATA(0x0007b0f8)
-static FieldLayer s_layers[2];
-
-DATA(0x0007b2f8)
-static FieldLayer s_savedLayers[2];
-
-// The script-set table: three data-file numbers per set (0xff: none).
-DATA(0x0007b4f8)
-static u8* s_scriptSets;
-
-// The object script block (data file 0x6800), loaded on first use.
-DATA(0x0007b4f4)
-static ScriptBlock* s_objectScripts;
 
 static __inline u8 GetScriptSetFile(i16 set, i16 index) {
     return s_scriptSets[set * 3 + index];
@@ -928,26 +1035,11 @@ void LoadLayerScriptSet(FieldLayer* layer, i16 set) {
     LoadLayerScripts(layer, layer->record.id, 14, 0, 0x10);
 }
 
-// The spawn interval in seconds and the countdown (in ticks) to the next
-// random spawn.
-DATA(0x0007b0f4)
-static u16 s_spawnInterval;
-
-DATA(0x0007b0f0)
-static i32 s_spawnTimer;
-
-// The 7x7 sight grid around the object being stepped (1: seen).
-DATA(0x0007ada0)
-static u8 s_sight[7][7];
-
-// @identity-TODO: nine cumulative weights per encounter row (data file 5).
-DATA(0x000788d0)
-static u8 s_encounterBuffer[0x100];
-
-DATA(0x0007b0ec)
-static u8* s_encounterWeights;
-
 MapCoord RandomNearOffset(void);
+
+static __inline void RestartEnemySpawnTimer(void) {
+    s_spawnTimer = s_spawnInterval * 60;
+}
 
 // Sets the spawn interval (0 picks 40..60 seconds) and restarts the timer.
 RVA(0x0000ec60, 0x31)
@@ -956,7 +1048,7 @@ void SetSpawnInterval(i16 seconds) {
         seconds = RandomAverage(0x28, 0x3c, 0);
     }
     s_spawnInterval = seconds;
-    s_spawnTimer = s_spawnInterval * 60;
+    RestartEnemySpawnTimer();
 }
 
 // Spawns a random enemy of either loaded layer on a free cell of the party's
@@ -988,11 +1080,11 @@ i16 SpawnRandomEnemy(void) {
     }
     for (tries = 0; tries < 10; tries++) {
         offset = RandomNearOffset();
-        x = offset.x + g_field.pos.x;
-        y = offset.y + g_field.pos.y;
+        x = offset.x + g_party.field.pos.x;
+        y = offset.y + g_party.field.pos.y;
         x = WrapMapCoord(x, width);
         y = WrapMapCoord(y, height);
-        if (!IsCellBlocked(g_field.pos.level, 1, x, y) && GetMapCellCode(x, y) == code) {
+        if (!IsCellBlocked(g_party.field.pos.level, 1, x, y) && GetMapCellCode(x, y) == code) {
             break;
         }
     }
@@ -1021,7 +1113,7 @@ i16 TickEnemySpawnTimer(void) {
         s_spawnTimer = timer;
     }
     if (timer == 0) {
-        s_spawnTimer = s_spawnInterval * 60;
+        RestartEnemySpawnTimer();
         if (!IsEventFlagSet(8, 0)) {
             return SpawnRandomEnemy();
         }
@@ -1054,6 +1146,15 @@ void TraceSight(i16 x, i16 y, i16 direction) {
     }
 }
 
+#define MarkSightCell(x0, y0, x, y)                                                                \
+    do {                                                                                           \
+        (x) += 3 - (x0);                                                                           \
+        (y) += 3 - (y0);                                                                           \
+        if ((y) >= 0 && (x) >= 0) {                                                                \
+            s_sight[(y)][(x)] = 1;                                                                 \
+        }                                                                                          \
+    } while (0)
+
 // Marks the cells of sight row `step` seen from x/y facing `direction`, out
 // to the left and right bounds; a blocking cell narrows its bound.
 RVA(0x0000eef0, 0x179)
@@ -1069,11 +1170,7 @@ void ScanSightRow(i16 x, i16 y, i16 step, i16 direction, i16* left, i16* right) 
         cellY = y;
         OffsetMapCoord(&cellX, &cellY, direction, i, step);
         blocked = GetMapWallKind(cellX, cellY, side);
-        cellX += 3 - x;
-        cellY += 3 - y;
-        if (cellY >= 0 && cellX >= 0) {
-            s_sight[cellY][cellX] = 1;
-        }
+        MarkSightCell(x, y, cellX, cellY);
         if (blocked) {
             *left = i;
             break;
@@ -1085,11 +1182,7 @@ void ScanSightRow(i16 x, i16 y, i16 step, i16 direction, i16* left, i16* right) 
         cellY = y;
         OffsetMapCoord(&cellX, &cellY, direction, i, step);
         blocked = GetMapWallKind(cellX, cellY, side);
-        cellX += 3 - x;
-        cellY += 3 - y;
-        if (cellY >= 0 && cellX >= 0) {
-            s_sight[cellY][cellX] = 1;
-        }
+        MarkSightCell(x, y, cellX, cellY);
         if (blocked) {
             *right = i;
             break;
@@ -1134,7 +1227,7 @@ i16 DirectionToParty(i16 x, i16 y) {
     coord = GetMapCoord();
     direction = RelativeDirection(x, y, coord.x, coord.y, 0);
     if (x == coord.x && y == coord.y) {
-        direction = TurnDirection(g_field.pos.direction, 2);
+        direction = TurnDirection(g_party.field.pos.direction, 2);
     }
     return direction;
 }
@@ -1143,7 +1236,7 @@ RVA(0x0000f1a0, 0x34)
 void LoadEncounterWeights(void) {
     FILE* fp = OpenDataFile(5, 12, 0);
     ReadRawBlock(fp, s_encounterBuffer);
-    s_encounterWeights = s_encounterBuffer;
+    s_fieldEncounterWeights = s_encounterBuffer;
     CloseDataFile(fp);
 }
 
@@ -1153,7 +1246,7 @@ i16 RollEncounterSlot(i16 row) {
     u8 roll = RandomUpTo(0xff);
     i16 i;
     for (i = 0; i < 9; i++) {
-        if (roll <= s_encounterWeights[row * 9 + i]) {
+        if (roll <= s_fieldEncounterWeights[row * 9 + i]) {
             break;
         }
     }
@@ -1175,7 +1268,7 @@ RVA(0x0000f240, 0x48)
 i16 GetPartySide(i16 x, i16 y, i16 direction) {
     MapCoord offset;
     i16 side;
-    offset = RelativeOffset(x, y, direction, g_field.pos.x, g_field.pos.y);
+    offset = RelativeOffset(x, y, direction, g_party.field.pos.x, g_party.field.pos.y);
     if (offset.x < 0) {
         side = 3;
     } else if (offset.x > 0) {
@@ -1222,7 +1315,7 @@ b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
             StepMapCoord(&x, &y, object->direction, 0);
             WrapMapPosition(&x, &y);
-            if (!CellCodeDiffers(code, x, y) && !IsCellBlocked(g_field.pos.level, 1, x, y)) {
+            if (!CellCodeDiffers(code, x, y) && !IsCellBlocked(g_party.field.pos.level, 1, x, y)) {
                 visible |= GetPartyView(x, y);
                 object->pos.y = y;
                 object->pos.x = x;
@@ -1283,18 +1376,6 @@ b16 IsWithinRange(i16 range) {
     return distance <= range;
 }
 
-// Callees of the object action flow (0x40f620, 0x40f890), declared here rather
-// than through their headers (FieldSight.h, and before RunObjectStep
-// Actor.h, ConditionAge.h, Script.h, FieldMap.h): included at the top of this
-// file they perturb RelativeFacing/RollEncounterSlot (TU state).
-b32 IsSkillIdBlocked(Character* character, i16 id);
-
-// @identity-TODO: the enemy action flow's helpers: the action wait (0x43f510,
-// on the actor's field mark), the action pick (0x405cd0) and its adjustment
-// (0x406180), and the scene start of a talking actor (0x43b340).
-RVA_DECL(0x0003f510)
-i16 TickActionWait(ActionWait* wait, i16 speed);
-
 // An object's use of skill `skill` in the field. A kind-2 skill first picks
 // its target among the objects in sight: with byte +0xa set, the ones while
 // the user is at three quarters of its HP or less, else the ones whose
@@ -1319,7 +1400,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
         for (i = 0; i < 16; i++) {
             InitFieldSkillCandidate(&candidates[i]);
         }
-        if (GetCachedSkill(skill)->parameters.valueB) {
+        if (GetSkillValueB(GetCachedSkill(skill))) {
             for (i = 0; i < 16; i++) {
                 if (GetLiveObject(i) >= 0) {
                     target = GetFieldObject(i);
@@ -1369,18 +1450,6 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     return picked != 0;
 }
 
-// Declared here, after the functions RelativeFacing and RollEncounterSlot sit
-// among: in FieldObject.h or FieldMap.h they perturb those (TU state).
-i16 HasTurnElapsed(void);
-i16 AgeConditions(ConditionSet* conditions, i16 amount);
-i16 RecoverConditions(Character* character);
-void AlertActor(Character* actor, i16 state);
-struct ScriptContext* GetCurrentScript(void);
-void StartScriptInCode(u32 code, i16 arg, i16 entry, struct ScriptContext* script);
-struct ScriptContext* NewScriptContext(i16 mode, Character* actor);
-void FreeScriptContext(struct ScriptContext* script);
-i16 RunScriptStep(i16 window);
-u16 RetakeDeferredChar(i16 window, i16 result, const char* caller);
 b16 ChooseObjectTarget(FieldObject* object);
 
 // One step of a field object's action flow: ticks its conditions and action
@@ -1441,8 +1510,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             g_actorId = index;
             object->mode = 10;
             object->pickRole = 1;
-            object->pickTarget = GetFieldObjectEquipment(object)[5].item;
-            object->pickTargetHigh = 0;
+            SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
             g_actionId = 1;
             tries = 0;
             for (;;) {
@@ -1459,8 +1527,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                         }
                         g_actionId = 1;
                         object->pickRole = 1;
-                        object->pickTarget = GetFieldObjectEquipment(object)[5].item;
-                        object->pickTargetHigh = 0;
+                        SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
                     } else if (result != 0) {
                         action = 2;
                         goto attack;
@@ -1468,8 +1535,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                 } else {
                     object->mode = 10;
                     object->pickRole = 1;
-                    object->pickTarget = GetFieldObjectEquipment(object)[5].item;
-                    object->pickTargetHigh = 0;
+                    SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
                     g_actionId = 1;
                 }
                 if (GetFieldMarker() || IsWithinRange(GetSkillAttackRange(g_actionId))) {
@@ -1537,7 +1603,6 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
 // or a random member able to act (else any member alive); 0 when there is
 // none. The pick goes to script object B and the actor's pick target.
 b16 BeginPartyTargetSkill(Character* character);
-i16 FindPartyPositionOfId(i16 id);
 
 RVA(0x0000fd20, 0x171)
 b16 ChooseObjectTarget(FieldObject* object) {
@@ -1607,4 +1672,828 @@ b16 BeginPartyTargetSkill(Character* character) {
         character->pickObject = g_targetId;
     }
     return true;
+}
+
+static __inline const DemonTable* ReadDemonTable(void) {
+    return HandleReadPtr(s_demonRecords);
+}
+
+RVA(0x0000ff30, 0x70)
+void LoadDemonTables(void) {
+    FILE* fp = OpenDataFile(0, 12, 0);
+    s_demonRecords = ReadCryptHandle(fp);
+    s_raceClasses = ReadCryptHandle(fp);
+    s_raceNames = ReadCryptHandle(fp);
+    s_pantheonNames = ReadCryptHandle(fp);
+    s_humanTitles = ReadCryptHandle(fp);
+    s_classNames = ReadCryptHandle(fp);
+    CloseDataFile(fp);
+}
+
+RVA(0x0000ffa0, 0x1a)
+i16 GetDemonRace(i16 id) {
+    return ReadDemonTable()->entries[id].race;
+}
+
+RVA(0x0000ffc0, 0x1a)
+i16 GetDemonPantheon(i16 id) {
+    return ReadDemonTable()->entries[id].pantheon;
+}
+
+RVA(0x0000ffe0, 0x1a)
+i16 GetDemonLevel(i16 id) {
+    return ReadDemonTable()->entries[id].level;
+}
+
+// -1 when flag bit 2 is set, else flag bit 0.
+RVA(0x00010000, 0x27)
+i16 GetDemonFlagLow(i16 id) {
+    u8 flags = ReadDemonTable()->entries[id].flags;
+    if (flags & 4) {
+        return -1;
+    }
+    return (u8)(flags & 1);
+}
+
+// -1 when flag bit 6 is set, else flag bit 4.
+RVA(0x00010030, 0x2a)
+i16 GetDemonFlagHigh(i16 id) {
+    u8 flags = ReadDemonTable()->entries[id].flags;
+    if (flags & 0x40) {
+        return -1;
+    }
+    return (u8)((flags >> 4) & 1);
+}
+
+RVA(0x00010060, 0x12)
+i16 GetDemonCount(void) {
+    return ReadDemonTable()->count;
+}
+
+RVA(0x00010080, 0x19)
+i16 GetRaceClass(i16 race) {
+    u8* classes = HandleReadPtr(s_raceClasses);
+    return classes[race];
+}
+
+RVA(0x000100a0, 0x17)
+i16 GetDemonClass(i16 id) {
+    return GetRaceClass(GetDemonRace(id));
+}
+
+static __inline char* ReadDemonName(i32 handle, i16 index) {
+    DemonNameTable* table = HandleReadPtr(handle);
+    return OffsetBy(table, table->offsets[index]);
+}
+
+RVA(0x000100c0, 0x33)
+char* GetDemonRaceName(i16 id) {
+    i16 race = GetDemonRace(id);
+    return ReadDemonName(s_raceNames, race);
+}
+
+RVA(0x00010100, 0x33)
+char* GetDemonClassName(i16 id) {
+    i16 cls = GetDemonClass(id);
+    return ReadDemonName(s_classNames, cls);
+}
+
+RVA(0x00010140, 0x33)
+char* GetDemonPantheonName(i16 id) {
+    i16 index = GetDemonPantheon(id);
+    return ReadDemonName(s_pantheonNames, index);
+}
+
+RVA(0x00010180, 0x23)
+char* GetHumanTitleName(i16 index) {
+    return ReadDemonName(s_humanTitles, index);
+}
+
+// @dead-code
+// Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).
+RVA(0x000101b0, 0x35)
+char* CopyObjectRecordName(i16 id, char* destination) {
+    strcpy(destination, GetObjectRecordName(id));
+    return destination;
+}
+
+// The highest-level demon of `race` at or below `maxLevel` (-1: none).
+RVA(0x000101f0, 0x52)
+i16 FindStrongestOfRace(i16 maxLevel, i16 race) {
+    i16 count = GetDemonCount();
+    i16 i;
+    i16 bestLevel = -1;
+    i16 best = -1;
+    i16 level;
+    for (i = 32; i < count; i++) {
+        if (GetDemonRace(i) == race) {
+            level = GetDemonLevel(i);
+            if (level <= maxLevel && bestLevel < level) {
+                bestLevel = level;
+                best = i;
+            }
+        }
+    }
+    return best;
+}
+
+// The strongest of `race` at or below `maxLevel`, else its weakest.
+RVA(0x00010250, 0x65)
+i16 FindDemonOfRace(i16 maxLevel, i16 race) {
+    i16 best = FindStrongestOfRace(maxLevel, race);
+    i16 count;
+    i16 i;
+    i16 bestLevel;
+    i16 level;
+    if (best != -1) {
+        return best;
+    }
+    count = GetDemonCount();
+    best = -1;
+    bestLevel = 500;
+    for (i = 32; i < count; i++) {
+        if (GetDemonRace(i) == race) {
+            level = GetDemonLevel(i);
+            if (bestLevel > level) {
+                bestLevel = level;
+                best = i;
+            }
+        }
+    }
+    return best;
+}
+
+// The highest-level demon of race class `cls` at or below `maxLevel` whose
+// low flag is not -1.
+RVA(0x000102c0, 0x69)
+i16 FindStrongestOfClass(i16 maxLevel, i16 cls) {
+    i16 count = GetDemonCount();
+    i16 i;
+    i16 bestLevel = -1;
+    i16 best = -1;
+    i16 level;
+    for (i = 32; i < count; i++) {
+        level = GetDemonLevel(i);
+        if (level <= maxLevel && GetDemonFlagLow(i) != -1 && GetDemonClass(i) == cls
+            && bestLevel < level) {
+            bestLevel = level;
+            best = i;
+        }
+    }
+    return best;
+}
+
+// The next stronger demon of `id`'s race; when none and `wrap` is set, the
+// weakest of the race (else `id`).
+RVA(0x00010330, 0xef)
+i16 FindNextOfRace(i16 id, i16 wrap) {
+    i16 count = GetDemonCount();
+    i16 race = GetDemonRace(id);
+    i16 bestLevel = 0x7fff;
+    i16 best = bestLevel;
+    i16 level = GetDemonLevel(id);
+    i16 i;
+    i16 other;
+    for (i = 32; i < count; i++) {
+        other = GetDemonLevel(i);
+        if (other > level && GetDemonRace(i) == race && bestLevel > other) {
+            bestLevel = other;
+            best = i;
+        }
+    }
+    if (best < 0x7fff) {
+        return best;
+    }
+    if (wrap == 0) {
+        return id;
+    }
+    bestLevel = 0x7fff;
+    best = 0x7fff;
+    for (i = 32; i < count; i++) {
+        other = GetDemonLevel(i);
+        if (other > -1 && GetDemonRace(i) == race && bestLevel > other) {
+            bestLevel = other;
+            best = i;
+        }
+    }
+    if (best == 0x8000) {
+        best = -1;
+    }
+    return best;
+}
+
+// @identity-TODO: (a - b) * 42 / 20 clamped to a signed byte.
+RVA(0x00010420, 0x44)
+i16 ScaleLevelGap(i16 a, i16 b) {
+    i16 gap = (a - b) * 42;
+    gap /= 20;
+    if (gap < -128) {
+        gap = -128;
+    } else if (gap > 127) {
+        gap = 127;
+    }
+    return gap;
+}
+
+static __inline void RecalcObjectStats(FieldObject* object) {
+    ClearStatModifiers(&object->stats);
+    RecalcEquippedStatTotals(&object->stats, GetFieldObjectEquipment(object));
+    RecalcDerivedStats((Character*)&object->kind);
+    ResetBattleStatsToBase(object);
+}
+
+// Builds object `object` from its record: identity, pools, stats, item slots
+// (an empty gun clears its ammunition, else the ammunition count is the gun's
+// magazine size) and skills; kind 0x117 then mirrors the first party member.
+RVA(0x00010470, 0x4b1)
+void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
+    i16 i;
+    i16 wait;
+    memset(object, 0, sizeof(FieldObject));
+    object->kind = record->id;
+    strncpy(object->namePrefix, record->name, 17);
+    object->macca = record->macca;
+    object->magnetite = record->magnetite;
+    object->rank = record->level;
+    object->title = 0;
+    object->experience = record->experience;
+    object->byte083 = record->bits68 & 3;
+    object->pantheon = GetDemonPantheon(record->id);
+    object->alignmentLevelB = ScaleLevelGap(record->alignB[0], record->alignB[1]);
+    object->alignmentLevelA = ScaleLevelGap(record->alignA[0], record->alignA[1]);
+    object->levelBonus = record->levelBonus;
+    object->hundredths = 0;
+    object->stats.base[STAT_INTUITION] = record->stats[STAT_INTUITION];
+    object->stats.base[STAT_MENTAL_STRENGTH] = record->stats[STAT_MENTAL_STRENGTH];
+    object->stats.base[STAT_MAGIC] = record->stats[STAT_MAGIC];
+    object->stats.base[STAT_INTELLIGENCE] = record->stats[STAT_INTELLIGENCE];
+    object->stats.base[STAT_STRENGTH] = record->stats[STAT_STRENGTH];
+    object->stats.base[STAT_VITALITY] = record->stats[STAT_VITALITY];
+    object->stats.base[STAT_PROTECTION] = record->stats[STAT_PROTECTION];
+    object->stats.base[STAT_AGILITY] = record->stats[STAT_AGILITY];
+    object->stats.base[STAT_DEXTERITY] = record->stats[STAT_DEXTERITY];
+    object->stats.base[STAT_CHARM] = record->stats[STAT_CHARM];
+    object->stats.base[STAT_FORTUNE] = record->stats[STAT_FORTUNE];
+    object->actionSpeed = record->actionSpeed;
+    wait = 0xff - RandomAverage(0, 100, 0);
+    GetFieldObjectActionWait(object)->remaining = wait;
+    memset(object->battleTally, 0, sizeof(object->battleTally));
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[0], record->items[0]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[1], record->items[1]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[2], record->items[2]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[3], record->items[3]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[4], record->items[4]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[5], record->items[5]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[6], record->items[6]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[7], record->items[7]);
+    if (GetFieldObjectEquipment(object)[6].item < 1) {
+        GetFieldObjectEquipment(object)[7].item = -1;
+        SetItemSlotItem(&GetFieldObjectEquipment(object)[6], -1);
+        GetFieldObjectEquipment(object)[7].attachment = -1;
+        GetFieldObjectEquipment(object)[6].quantity = 0;
+        GetFieldObjectEquipment(object)[7].quantity = 0;
+    } else if (GetFieldObjectEquipment(object)[7].item < 1) {
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
+        GetFieldObjectEquipment(object)[7].attachment = -1;
+    } else {
+        GetFieldObjectEquipment(object)[7].quantity =
+            GetGunMagazineSize(GetLoadedRecord(GetFieldObjectEquipment(object)[6].item));
+    }
+    NormalizeEquipSlots((Character*)&object->kind);
+    memset(GetFieldObjectConditions(object)->bits, 0, sizeof(object->conditions.bits));
+    memset(GetFieldObjectFlags(object), 0, sizeof(object->personalFlags));
+    object->byte096 = 1;
+    object->acting = 0;
+    object->word098 = 0x11;
+    object->attitude = 4;
+    object->triggerRange = (record->bits68 >> 2) & 7;
+    object->mode = 0;
+    object->fieldState = 0;
+    object->encounterRow = record->encounterRow;
+    object->shield = 0;
+    for (i = 0; i < 10; i++) {
+        object->resistance[i] = record->resistance[i];
+    }
+    object->moonRow = record->moonRow;
+    object->equipGroup = record->equipGroup;
+    object->pickFlags = (object->pickFlags & ~1) | ((record->bits68 >> 5) & 1);
+    object->pickFlags = (object->pickFlags & ~6) | ((record->bits68 >> 5) & 2);
+    object->dropChance = record->dropChance;
+    object->pickItem = record->pickItem;
+    for (i = 0; i < 3; i++) {
+        SetCharacterAffiliation(object, i, record->affiliation[i]);
+    }
+    ResetWordList(&object->list, 8);
+    for (i = 0; i < 8; i++) {
+        SetWord(&object->list, i, record->skills[i]);
+        object->skills[i] = record->skills[i];
+    }
+    object->battleStats[0] = 0;
+    object->battleStats[6] = 0;
+    object->battleStats[12] = 0;
+    object->battleStats[18] = 0;
+    RecalcObjectStats(object);
+    InitCurMax(&object->pools.hp, record->hp);
+    InitCurMax(&object->pools.mp, record->mp);
+    if (object->kind == 0x117) {
+        CopyLeaderIntoObject(object);
+    }
+}
+
+// @identity-TODO: object kind 0x117 takes over the first party member's
+// level, title, the bytes +0x69 (twice), stats, fieldMarkValue and full pools.
+RVA(0x00010930, 0xcb)
+void CopyLeaderIntoObject(FieldObject* object) {
+    Character* leader = GetCharacters();
+    object->rank = leader->level;
+    object->title = leader->title;
+    object->memberClass = object->byte083 = leader->byte069;
+    object->stats = leader->stats;
+    GetFieldObjectActionWait(object)->remaining = GetCharacterActionWait(leader)->remaining;
+    RecalcObjectStats(object);
+    InitCurMax(&object->pools.hp, leader->pools.hp.max);
+    InitCurMax(&object->pools.mp, leader->pools.mp.max);
+}
+
+// Loads the object record `kind` into `object`.
+RVA(0x00010a00, 0x20)
+void LoadObjectRecord(i16 kind, FieldObject* object) {
+    ReadObjectRecord(kind);
+    InitObjectFromRecord(object, &s_record);
+}
+
+RVA(0x00010a20, 0x32)
+void ReadObjectRecord(i16 kind) {
+    FILE* fp = OpenDataFile(kind + 0x2000, 10, 0);
+    ReadCryptRecord(fp, &s_record);
+    CloseDataFile(fp);
+}
+
+// @dead-code
+// Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
+RVA(0x00010a60, 0x14)
+i16 GetObjectRecordScriptSet(i16 kind) {
+    ReadObjectRecord(kind);
+    return s_record.scriptSet;
+}
+
+RVA(0x00010a80, 0x13)
+char* GetObjectRecordName(i16 kind) {
+    ReadObjectRecord(kind);
+    return s_record.name;
+}
+
+RVA(0x00010aa0, 0x2b)
+ObjectPicture GetObjectRecordPicture(i16 kind) {
+    ObjectPicture picture;
+    ReadObjectRecord(kind);
+    picture.index = s_record.imageIndex;
+    picture.variant = s_record.imageVariant;
+    return picture;
+}
+
+// Copies the (cached) record `kind` into `out` (0x7a bytes).
+RVA(0x00010ad0, 0x28)
+void LoadLayerRecord(i16 kind, ObjectRecord* out) {
+    if (out != NULL) {
+        ReadObjectRecord(kind);
+        memcpy(out, &s_record, sizeof(s_record));
+    }
+}
+
+// @dead-code
+// Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
+RVA(0x00010b00, 0x17)
+void ReadRecordIfWanted(FILE* fp, void* out) {
+    if (out != NULL) {
+        ReadCryptRecord(fp, out);
+    }
+}
+
+// Reads object record `kind` into a local copy and returns the byte (size
+// below 2), word (below 4) or dword at `offset`.
+RVA(0x00010b20, 0x7d)
+i32 ReadObjectRecordField(i16 kind, i16 offset, i16 size) {
+    u8 buffer[sizeof(ObjectRecord)];
+    FILE* fp = OpenDataFile(kind + 0x2000, 10, 0);
+    ReadCryptRecord(fp, buffer);
+    CloseDataFile(fp);
+    if (size < 2) {
+        return buffer[offset];
+    }
+    if (size < 4) {
+        return *(i16*)(buffer + offset);
+    }
+    return *(i32*)(buffer + offset);
+}
+
+RVA(0x00010ba0, 0x20)
+void SetFamiliarityCount(i16 id, i16 count) {
+    s_familiarityCounts[id] = ClampShort(count, 0, 0xff);
+}
+
+RVA(0x00010bc0, 0xe)
+i16 GetFamiliarityCount(i16 id) {
+    return s_familiarityCounts[id];
+}
+
+RVA(0x00010bd0, 0x20)
+void AddFamiliarityCount(i16 id, i16 delta) {
+    delta += GetFamiliarityCount(id);
+    SetFamiliarityCount(id, delta);
+}
+
+// Derives a record's familiarity and level gap once (personal flag 0).
+RVA(0x00010bf0, 0x7b)
+void RefreshFamiliarity(Character* character) {
+    i16 value;
+    i16 leaderLevel;
+    if (TestCharacterFlag(character, 0)) {
+        return;
+    }
+    value = GetFamiliarityCount(character->id) / 8;
+    character->familiarity = ClampShort(value, 0, 0x3f);
+    leaderLevel = GetRosterLeader()->level;
+    value = leaderLevel - character->level;
+    character->levelGap = ClampShort(value, 0, 0xff);
+    SetCharacterFlag(character, 0);
+}
+
+RVA(0x00010c70, 0x2a)
+void SetLevelGap(Character* character, i16 gap) {
+    RefreshFamiliarity(character);
+    character->levelGap = ClampShort(gap, 0, 0xff);
+}
+
+RVA(0x00010ca0, 0x28)
+void AddLevelGap(Character* character, i16 delta) {
+    RefreshFamiliarity(character);
+    SetLevelGap(character, character->levelGap + delta);
+}
+
+// The familiarity, two more unless event flag 2/8 is set.
+RVA(0x00010cd0, 0x2e)
+i16 GetFamiliarity(Character* character) {
+    i16 familiarity;
+    RefreshFamiliarity(character);
+    familiarity = character->familiarity;
+    if (!IsEventFlagSet(2, 8)) {
+        familiarity += 2;
+    }
+    return familiarity;
+}
+
+RVA(0x00010d00, 0x27)
+void SetFamiliarity(Character* character, i16 familiarity) {
+    RefreshFamiliarity(character);
+    character->familiarity = ClampShort(familiarity, 0, 0x3f);
+}
+
+RVA(0x00010d30, 0x20)
+void AddFamiliarity(Character* character, i16 delta) {
+    delta += GetFamiliarity(character);
+    SetFamiliarity(character, delta);
+}
+
+static __inline i32 RollCharacterFunds(Character* character) {
+    i32 score = character->level * 10;
+    score += RandomUpTo(10);
+    return score;
+}
+
+// The actor's script magnetite roll: ten times its level plus 0..10.
+RVA(0x00010d50, 0x22)
+i32 RollCharacterMagnetite(Character* character) {
+    return RollCharacterFunds(character);
+}
+
+// The actor's script macca roll uses the same level-based distribution.
+RVA(0x00010d80, 0x22)
+i32 RollCharacterMacca(Character* character) {
+    return RollCharacterFunds(character);
+}
+
+// @early-stop register scheduling: the alignment argument loads cross the
+// saved-result moves differently, and the final sum uses different scratch
+// registers. Calls, branch destinations and return paths agree.
+RVA(0x00010db0, 0x8e)
+i16 AlignmentConflicts(Character* character) {
+    i16 leaderClass;
+    i16 characterClass;
+    if (character == NULL) {
+        return -1;
+    }
+    leaderClass = GetAlignmentClassA(GetRosterLeader());
+    characterClass = GetAlignmentClassA(character);
+    if ((characterClass < 0 && leaderClass >= 0) || (characterClass >= 0 && leaderClass < 0)) {
+        return -1;
+    }
+    leaderClass = GetAlignmentClassB(GetRosterLeader());
+    characterClass = GetAlignmentClassB(character);
+    if (characterClass + leaderClass == 0 && leaderClass != 0) {
+        return -1;
+    }
+    return 0;
+}
+
+RVA(0x00010e40, 0x14)
+b16 ClearAnalyzed(void) {
+    memset(s_analyzed, 0, sizeof(s_analyzed));
+    return false;
+}
+
+RVA(0x00010e60, 0x2e)
+void SetAnalyzed(i16 id, i16 on) {
+    if (on == 0) {
+        ClearBit(s_analyzed, id);
+        return;
+    }
+    SetBit(s_analyzed, id);
+}
+
+RVA(0x00010e90, 0x13)
+b16 HasAnalyzeData(i16 id) {
+    return TestBit(s_analyzed, id);
+}
+
+// Save and load the counts and the analyze bits; each returns how many bytes
+// fell short (0 on success).
+RVA(0x00010eb0, 0x24)
+i16 SaveFamiliarityCounts(FILE* fp) {
+    return 0x200 - fwrite(s_familiarityCounts, 1, 0x200, fp);
+}
+
+RVA(0x00010ee0, 0x24)
+i16 LoadFamiliarityCounts(FILE* fp) {
+    return 0x200 - fread(s_familiarityCounts, 1, 0x200, fp);
+}
+
+RVA(0x00010f10, 0x21)
+i16 SaveAnalyzed(FILE* fp) {
+    return 0x40 - fwrite(s_analyzed, 1, 0x40, fp);
+}
+
+RVA(0x00010f40, 0x26)
+i16 LoadAnalyzed(FILE* fp) {
+    ClearAnalyzed();
+    return 0x40 - fread(s_analyzed, 1, 0x40, fp);
+}
+
+RVA(0x00010f70, 0x4f)
+void FreeEncounterTables(void) {
+    s_fieldTable = FreeHandle(s_fieldTable);
+    s_encounterBlock = FreeHandle(s_encounterBlock);
+    s_encounterWeights = FreeHandle(s_encounterWeights);
+    s_encounterChoices = FreeHandle(s_encounterChoices);
+}
+
+RVA(0x00010fc0, 0x67)
+void LoadEncounterTables(void) {
+    FILE* fp;
+    FreeEncounterTables();
+    fp = OpenDataFile(0x21, 12, 0);
+    s_encounterChoices = ReadRawHandle(fp);
+    s_encounterWeights = ReadRawHandle(fp);
+    CloseDataFile(fp);
+    fp = OpenDataFile(0x10ff, 12, 0);
+    s_fieldTable = ReadRawHandle(fp);
+    CloseDataFile(fp);
+}
+
+RVA(0x00011030, 0xfe)
+i16 RollWorldMapEncounter(i16 x, i16 y) {
+    i16 cell;
+    i16 variant;
+    WorldEncounterCell* cells;
+    Character* leader = GetRosterCharacter(0);
+    if (TestCharacterFlag(leader, 0x22) == 1) {
+        return -1;
+    }
+    if (CheckWorldEncounterInterval() < 1) {
+        return -1;
+    }
+    variant = 0;
+    cell = LoadWorldEncounterBlock(x, y);
+    cells = HandleReadPtr(s_encounterBlock);
+    if (!CheckFlagWord(&GetWorldEncounterVariant(&cells[cell], variant)->condition)) {
+        variant = 1;
+        if (!CheckFlagWord(&GetWorldEncounterVariant(&cells[cell], variant)->condition)) {
+            return 0;
+        }
+    }
+    s_fieldTableIndex = cells[cell].fieldTable;
+    if (!TestWorldEncounterChance(GetWorldEncounterVariant(&cells[cell], variant)->chance)) {
+        return 0;
+    }
+    s_encounterCount = PrepareWorldEncounter(
+        GetWorldEncounterVariant(&cells[cell], variant)->weights,
+        GetWorldEncounterVariant(&cells[cell], variant)->choices,
+        GetWorldEncounterVariant(&cells[cell], variant)->maximum
+    );
+    return s_encounterCount;
+}
+
+RVA(0x00011130, 0x38)
+i16 CheckWorldEncounterInterval(void) {
+    u32 next;
+    u32 now;
+    if (!(g_mousePosition.buttons & MOUSE_RIGHT_DOWN)) {
+        next = s_lastEncounterMinute + 120;
+    } else {
+        next = GetClockMinutes() + 120;
+    }
+    now = GetClockMinutes();
+    if (now < next) {
+        return -1;
+    }
+    s_lastEncounterMinute = now;
+    return 1;
+}
+
+RVA(0x00011170, 0xab)
+i16 LoadWorldEncounterBlock(i16 x, i16 y) {
+    i16 block = GetWorldMapBlock(x, y);
+    FILE* fp;
+    s_encounterBlock = FreeHandle(s_encounterBlock);
+    fp = OpenDataFile(block + 0x1000, 12, 0);
+    s_encounterBlock = ReadRawHandle(fp);
+    CloseDataFile(fp);
+    if (IsOddMapLayer()) {
+        return 45;
+    }
+    x = GetWorldBlockX(x);
+    y = GetWorldBlockY(y);
+    x /= 32;
+    y /= 40;
+    x += y * 9;
+    return x;
+}
+
+RVA(0x00011220, 0x53)
+b16 TestWorldEncounterChance(i16 chance) {
+    i16 totalChance = chance + s_encounterChanceBonus;
+    if (totalChance < RandomAverage(1, 100, 2)) {
+        s_encounterChanceBonus++;
+        if (RosterContainsId(4)) {
+            s_encounterChanceBonus++;
+        }
+        return false;
+    }
+    s_encounterChanceBonus = 0;
+    return true;
+}
+
+RVA(0x00011280, 0x77)
+i16 PrepareWorldEncounter(i16 weights, i16 choices, i16 maximum) {
+    i16 count;
+    i16 i;
+    maximum = GetWorldEncounterMaximum(maximum);
+    if (maximum == 0) {
+        return 0;
+    }
+    count = RandomAverage(1, maximum, 1);
+    s_encounterGroups[0] = s_encounterGroups[1] = PickWorldEncounterGroup(weights, choices);
+    for (i = 0; i < 10 && s_encounterGroups[1] == s_encounterGroups[0]; i++) {
+        s_encounterGroups[1] = PickWorldEncounterGroup(weights, choices);
+    }
+    AssignWorldEncounterGroups(count);
+    return count;
+}
+
+RVA(0x00011300, 0x2f)
+i16 GetWorldEncounterMaximum(i16 maximum) {
+    if (RosterContainsId(4)) {
+        maximum += 2;
+    }
+    maximum += GetPartyEncounterSizeBonus();
+    if (maximum >= 16) {
+        maximum = 16;
+    }
+    return maximum;
+}
+
+RVA(0x00011330, 0x6f)
+i16 GetPartyEncounterSizeBonus(void) {
+    i16 total = 0;
+    i16 count = 0;
+    i16 i;
+    Character* character;
+    for (i = 0; i < 6; i++) {
+        character = GetPartyCharacter(i);
+        if (character != NULL && IsHumanCharacter(character)) {
+            count++;
+            total += GetStatTotal(character, STAT_FORTUNE);
+        }
+    }
+    if (count < 1) {
+        return 0;
+    }
+    total = 50 - total / count;
+    total /= 10;
+    if (total < 1) {
+        total = 1;
+    }
+    return total;
+}
+
+RVA(0x000113a0, 0x9f)
+i16 PickWorldEncounterGroup(i16 weights, i16 choices) {
+    WorldEncounterWeights* table = HandleReadPtr(s_encounterWeights);
+    WorldEncounterChoices* groups;
+    i16 roll = RandomAverage(1, 100, 0);
+    i16 total;
+    i16 i;
+    if (RosterContainsId(4)) {
+        roll += 10;
+    }
+    total = 0;
+    for (i = 0; i < 6; i++) {
+        total += table[weights].weights[i];
+        if (roll < total) {
+            groups = HandleReadPtr(s_encounterChoices);
+            return groups[choices].groups[i];
+        }
+    }
+    groups = HandleReadPtr(s_encounterChoices);
+    return groups[choices + 1].groups[0];
+}
+
+RVA(0x00011440, 0x37)
+i16 AssignWorldEncounterGroups(i16 count) {
+    i16 i;
+    for (i = 0; i < count; i++) {
+        if (RandomAverage(1, 100, 0) < 40) {
+            g_worldEncounterGroupSlots[i] = 1;
+        } else {
+            g_worldEncounterGroupSlots[i] = 0;
+        }
+    }
+    return count;
+}
+
+RVA(0x00011480, 0x89)
+void LoadFieldTable(void) {
+    FILE* fp = NULL;
+    EncounterFieldImage* images;
+    if (s_fieldTable == 0) {
+        fp = OpenDataFile(0x10ff, 12, 0);
+        s_fieldTable = ReadRawHandle(fp);
+        CloseDataFile(fp);
+    }
+    images = HandleReadPtr(s_fieldTable);
+    LoadFieldImage(
+        images[s_fieldTableIndex].image + 0x5000,
+        images[s_fieldTableIndex].variant,
+        images[s_fieldTableIndex].option
+    );
+    if (fp != NULL) {
+        s_fieldTable = FreeHandle(s_fieldTable);
+    }
+}
+
+RVA(0x00011510, 0x102)
+void PrepareFieldRandom(void) {
+    i16 i;
+    i16 x;
+    i16 y;
+    i16 along;
+    i16 across;
+    i16 spread;
+    Character* actor;
+    for (i = 0; i < s_encounterCount; i++) {
+        x = g_party.field.pos.x;
+        y = g_party.field.pos.y;
+        along = RandomAverage(-3, 0, 0);
+        spread = s_encounterSpread[-along];
+        across = RandomAverage(-spread, spread, 0);
+        OffsetMapCoord(&x, &y, g_party.field.pos.direction, across, along);
+        SpawnFieldObject(
+            g_worldEncounterGroupSlots[i],
+            x,
+            y,
+            OppositeDirection(g_party.field.pos.direction),
+            s_encounterGroups[g_worldEncounterGroupSlots[i]],
+            0,
+            -1,
+            0
+        );
+        actor = GetFieldActor(i);
+        AlertActor(actor, 2);
+    }
+    LoadEnemyGroupSlot(0, s_encounterGroups[0]);
+    LoadEnemyGroupSlot(1, s_encounterGroups[1]);
+}
+
+RVA(0x00011620, 0x37)
+b32 AnyObjectInReach(void) {
+    b32 found = false;
+    i16 i;
+    i16 object;
+    for (i = 0; i < 16; i++) {
+        object = GetLiveObject(i);
+        if (object >= 0 && HasObjectInReach(1, -1, object)) {
+            found = true;
+        }
+    }
+    return found;
 }

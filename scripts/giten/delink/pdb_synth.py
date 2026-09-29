@@ -11,8 +11,8 @@ vostok-delinker to slice DDS.EXE into per-unit COFF objects:
      (giten.delink.eh_band). ILT/import thunks inherit the body/import name so
      relocations pair by name on both sides.
   2. Data records for every relocation-target address (S_LDATA32), renamed to
-     the claimed source names and cl's own `??_C@` string-pool spellings (the
-     base objs are the oracle), plus the proven `__imp_` IAT decorations.
+     the claimed source names and cl's own `??_C@` and C `$SG` literal spellings
+     (the base objs are the oracle), plus the proven `__imp_` IAT decorations.
      Every identity is PROVIDED, never invented: a target no name reaches
      keeps a fence whose spelling states the verdict of the referencing-band
      split - `DAT_<va>` when only library bands reference it (a deliberate
@@ -313,7 +313,7 @@ def game_site_test(model: Model):
     return is_game
 
 
-def reloc_data_symbols(model: Model) -> tuple[list, list]:
+def reloc_data_symbols(model: Model, iat_syms=()) -> tuple[list, list]:
     """(rdata, data) [(rva, fence name)] for every PE relocation target.
 
     Source names are overlaid later; a target no name reaches keeps the fence
@@ -325,11 +325,17 @@ def reloc_data_symbols(model: Model) -> tuple[list, list]:
     delinker emits `DAT_` but hard-fails on `UNPROVISIONED_`.
     """
     img = retail()
+    provided_iat = {rva for rva, _name in iat_syms}
     rd_lo, rd_hi = sections_of()[".rdata"]
     is_game = game_site_test(model)
     rdata: list[tuple[int, str]] = []
     data: list[tuple[int, str]] = []
     for rva, sites in sorted(reloc_target_refs().items()):
+        # This PE merges the IAT into .rdata. Its resolved slots already have
+        # their own synthetic .idata records and must not also acquire data
+        # fences in the overlapping .rdata address range.
+        if rva in provided_iat:
+            continue
         prefix = "UNPROVISIONED" if any(map(is_game, sites)) else "DAT"
         row = (rva, f"{prefix}_{img.image_base + rva:08x}")
         (rdata if rd_lo <= rva < rd_hi else data).append(row)
@@ -382,21 +388,27 @@ def drop_interior_placeholders(rdata_syms, data_syms, model) -> int:
 
 
 def apply_string_names(rdata_syms, data_syms, base_dir) -> int:
-    """Rename string-constant symbols to their MSVC `??_C@` pool names.
+    """Rename string-constant symbols to their proven MSVC literal names.
 
     cl names a pooled literal by length + a VC5 16-bit checksum + the text; we
-    never recompute it - the base objects ARE cl output, so their `??_C@`
-    symbols give the exact name for each literal's bytes. Mutates; returns the
-    count renamed.
+    never recompute it - the base objects ARE cl output. Ordinary C `$SG`
+    literals need an unambiguous owner and address from their content or an
+    exact code relocation. Mutates; returns the count renamed.
     """
+    from giten.delink import data_manifest
     str_map = coffx.build_string_map(Path(base_dir))
-    if not str_map:
-        return 0
+    c_names = {r["rva"]: r["name"] for r in
+               data_manifest.c_string_rows(base_dir)[0]}
     img = retail()
     n = 0
     for syms in (rdata_syms, data_syms):
         for i, (rva, name) in enumerate(syms):
-            if name.startswith("??_C@"):
+            if name.startswith("??_C@") or rva in c_names:
+                if rva in c_names and name.startswith(FENCE_PREFIXES):
+                    syms[i] = (rva, c_names[rva])
+                    n += 1
+                continue
+            if not name.startswith(FENCE_PREFIXES):
                 continue
             cs = img.cstring(rva)
             if cs and cs in str_map:
@@ -405,18 +417,19 @@ def apply_string_names(rdata_syms, data_syms, base_dir) -> int:
     return n
 
 
-def data_symbols(model, data_names, base_dir=BASE_DIR, log=lambda m: None):
+def data_symbols(model, data_names, base_dir=BASE_DIR, log=lambda m: None,
+                 iat_syms=()):
     """The fully-overlaid (rdata_syms, data_syms): fences for every reloc
     target, claimed names applied, `??_C@` pool spellings applied, interior
     fences dropped. The data-identity half of the synthesis, shared with the
     --unprovisioned worklist."""
-    rdata_syms, data_syms = reloc_data_symbols(model)
+    rdata_syms, data_syms = reloc_data_symbols(model, iat_syms)
     ndat = apply_named_data(rdata_syms, data_syms, data_names)
     log(f"named {ndat} global data symbol(s) from the Model")
-    nstr = apply_string_names(rdata_syms, data_syms, base_dir)
-    log(f"renamed {nstr} string constant(s) to MSVC ??_C@ names")
     ndrop = drop_interior_placeholders(rdata_syms, data_syms, model)
     log(f"dropped {ndrop} interior fence(s) (contained by a claim)")
+    nstr = apply_string_names(rdata_syms, data_syms, base_dir)
+    log(f"renamed {nstr} string constant(s) to MSVC literal names")
     return rdata_syms, data_syms
 
 
@@ -424,7 +437,7 @@ def data_symbols(model, data_names, base_dir=BASE_DIR, log=lambda m: None):
 
 def _oracle_extents(model) -> list[tuple[int, int]]:
     """[(rva, size)] the data manifest provides WITHOUT a Model claim (the
-    `??_C@` string and `$T` FP-pool oracles): the delinker resolves those
+    string and `$T` FP-pool oracles): the delinker resolves those
     extents before its PDB fallback, so a fence inside one never fires."""
     from giten.delink import data_manifest
     rows = data_manifest.string_rows()[0] + data_manifest.fp_pool_rows(model)[0]
@@ -849,7 +862,8 @@ def synth(model: Model, out_yaml: Path | None = None, out_pdb: Path | None = Non
                              band_spans, log)
     text_syms = [(b.rva, b.name) for b in model.data
                  if b.space == "text" and b.channel and b.name]
-    rdata_syms, data_syms = data_symbols(model, data_names, base_dir, log)
+    rdata_syms, data_syms = data_symbols(model, data_names, base_dir, log,
+                                         iat_syms)
     unprov = unprovisioned_rows(rdata_syms, data_syms, model)
     write_data_debt(unprov)
     from giten.core import data_matching

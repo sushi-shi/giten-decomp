@@ -10,4 +10,4 @@
 # `giten verify bank --rebase-data-matching`.
 
 [compare]
-data_matching = false
+data_matching = true

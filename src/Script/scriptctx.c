@@ -28,6 +28,9 @@
 #include <stddef.h>
 #include <string.h>
 
+DATA(0x00091120)
+char g_numberUnit[64];
+
 DATA(0x00091160)
 ScriptContext* g_curScript;
 

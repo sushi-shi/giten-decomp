@@ -1,3 +1,42 @@
 # Per-site retail relocation REFERENTS whose exact spelling (symbol + addend)
 # strict data containment cannot infer. Retail evidence; consumed by the delinker.
 function_rva	target_rva	site_rva	owner	addend	occurrences	provenance
+0x0000bed0	0x000684da	0x0000bf0b	_s_viewFloodMask$S	0xfffffff2	1	north-neighbor array address
+0x0000bed0	0x000684ea	0x0000bf3b	_s_viewFloodMask$S	0x00000002	1	east-neighbor array address
+0x0000bed0	0x000684e6	0x0000bf94	_s_viewFloodMask$S	0xfffffffe	1	west-neighbor array address
+0x0000c330	0x0006858c	0x0000c3be	_s_viewCellOrder$S	0xfffffffc	1	view-cell order indexed from one
+0x0000c330	0x0006858e	0x0000c3c6	_s_viewCellOrder$S	0xfffffffe	1	view-cell order indexed from one, row member
+0x00011b30	0x0007b4fb	0x00011ba7	_s_travelScores$S	0xfffffffb	1	travel-score preceding-row index
+0x00011b30	0x0007b4fb	0x00011c19	_s_travelScores$S	0xfffffffb	1	travel-score preceding-row index
+0x00043ac0	0x0006498a	0x00043bd9	_s_equipCountSlots$S	0xffffffea	1	equipment-kind table index minus weapon kind
+0x000489f0	0x0006a6c6	0x00048a48	_s_soundResources$S	0xfffffffe	1	sound resource indexed from one
+0x0004a100	0x0008d224	0x0004a13b	_g_spriteImages	0x00004814	1	sprite-picture loop end at surface member
+0x0004a100	0x0008778c	0x0004a1d4	_g_enemyTextures	0x00002a6c	1	enemy-texture loop one-past limit
+0x0004a100	0x0008fc74	0x0004a36c	?g_enemyPictures@@3PAUPicture@@A	0x000000ec	1	enemy-picture loop end at surface member
+0x0004bc20	0x0008f3f8	0x0004bd01	_?s_quad@?1??DrawScreenFade@@YAXXZ@4PAU_D3DTLVERTEX@@A$S	0x00000090	1	fade-quad loop end at color member
+0x0004bdd0	0x0008fd88	0x0004c114	_?s_box@?1??RenderTBox@@YAXXZ@4PAU_D3DLVERTEX@@A$S	0x00000088	1	box-quad loop end at z member
+0x0004c3c0	0x00087fe8	0x0004ca66	_g_hotspots	0xffffffd8	1	hotspot index minus one
+0x0004c3c0	0x00087fe8	0x0004ca6d	_g_hotspots	0xffffffd8	1	hotspot index minus one
+0x0004cb30	0x0006bbd0	0x0004cfa7	_s_enemySizes$S	0xfffffff8	1	enemy-size frame indexed from one
+0x0004cb30	0x0006bbd4	0x0004cfae	_s_enemySizes$S	0xfffffffc	1	enemy-size frame indexed from one, height member
+0x0004dcd0	0x0008f5c8	0x0004e06b	_g_spriteOrder	0x00000040	1	sprite-order loop one-past limit
+0x0004f260	0x0006bdc4	0x0004f2f8	_s_quadIndices$S	0x0000000c	1	index loop one-past limit
+0x0004f260	0x0006bdbc	0x0004f379	_s_quadUV$S	0x000000c4	1	quad UV loop end at second coordinate
+0x0004f780	0x0006be94	0x0004f990	_s_wallQuadIndices$S	0x0000000c	1	wall quad index loop one-past limit
+0x0004fcd0	0x0006b78c	0x0004fd04	?g_menuButtonX@@3PAIA	0x0000001c	1	menu-button loop one-past limit
+0x00050540	0x00090a94	0x00050911	_g_textPlanes	0x00000cec	1	text-plane loop end at kind member
+0x00050540	0x0006b764	0x000509c4	?g_menuButtonX@@3PAIA	0xfffffff4	1	menu-button index minus layer offset
+0x00050540	0x0006b50c	0x000509d2	?g_menuButtonImages@@3PAUMenuButtonImages@@A	0xfffffff4	1	menu-button image index minus layer offset
+0x00050ac0	0x0008fc60	0x00050ea1	?g_enemyPictures@@3PAUPicture@@A	0x000000d8	1	enemy-picture loop one-past limit
+0x000520b0	0x00090a60	0x000520d1	_g_textPlanes	0x00000cb8	1	text-plane loop one-past limit
+0x00052400	0x00090a94	0x0005241c	_g_textPlanes	0x00000cec	1	text-plane loop end at kind member
+0x00054bb0	0x0008fb4c	0x00054bc5	_g_screenLayers	0x0000003c	1	screen-layer loop one-past limit
+0x00054c10	0x00090bd0	0x00054c50	_s_savedScreenLayers$S	0x000000b8	1	saved-layer loop end at x member
+0x00054fd0	0x0008f2cc	0x00055015	?g_layerStack@@3PAPAUScreenLayer@@A	0x0000003c	1	layer-stack loop one-past limit
+0x00055020	0x0006db74	0x00055031	_s_padPositions$S	0xfffffffc	1	pad-position array index minus one
+0x00055020	0x0006db70	0x00055038	_s_padPositions$S	0xfffffff8	1	pad-position array index minus one
+0x00055020	0x0006b59c	0x0005504d	?g_padImages@@3PAY01GA	0xfffffffc	1	pad-image array index minus one
+0x00055760	0x00090be8	0x000557fb	_s_panelCommandIds$S	0x00000010	1	panel-command loop one-past limit
+0x00058040	0x0008fc74	0x000580f5	?g_enemyPictures@@3PAUPicture@@A	0x000000ec	1	enemy-picture loop end at surface member
+0x00058190	0x0008f1d4	0x000581a7	_g_objectTextures	0x00001974	1	object-texture loop one-past limit
+0x000586d0	0x0008d82a	0x000586ef	_g_spriteSlots	0x00000102	1	sprite-slot loop end at frame member

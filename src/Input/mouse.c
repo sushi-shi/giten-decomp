@@ -21,8 +21,14 @@ i16 g_mouseRightClickY;
 DATA(0x0009199e)
 i16 g_mouseRightClickX;
 
+DATA(0x000919e0)
+i16 g_hoveredObjectId;
+
 DATA(0x000919e8)
 MousePosition g_mousePosition;
+
+DATA(0x000919ee)
+i16 g_selectedObjectId;
 
 DATA(0x000919fa)
 i16 g_mouseRightClick;

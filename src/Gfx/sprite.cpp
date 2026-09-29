@@ -7,15 +7,6 @@
 
 #include <string.h>
 
-DATA(0x00088a10)
-Picture g_spriteImages[SPRITE_GROUP_COUNT][SPRITE_FRAME_COUNT];
-
-DATA(0x0008d728)
-SpriteSlot g_spriteSlots[SPRITE_SLOT_COUNT];
-
-DATA(0x0008f588)
-i16 g_spriteOrder[SPRITE_SLOT_COUNT];
-
 // @early-stop register/scheduling residue: retail initializes the frame cursor
 // in edx before the order-table memset; this build uses eax after it. The
 // signed loop edge, stores and ordered referents match. Pointer lifetime,

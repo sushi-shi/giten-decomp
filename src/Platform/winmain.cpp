@@ -12,6 +12,7 @@
 #include <Platform/Joystick.h>
 #include <Platform/Mesh.h>
 #include <Platform/Scene3D.h>
+#include <Platform/WindowsX.h>
 #include <Platform/WinMain.h>
 #include <Platform/WinMM.h>
 #include <Sound/MidiStream.h>
@@ -21,14 +22,68 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Billboard brightness remains full within two cells, then attenuates by distance.
+#define SetDistanceLight(light, distance)                                                                                                         \
+    do {                                                                                                                                          \
+        if ((distance) < 640.0) {                                                                                                                 \
+            (light) = 1.0f;                                                                                                                       \
+        } else {                                                                                                                                  \
+            (light) =                                                                                                                             \
+                (DATA_COMPGEN(0x00064a88, 320.0) - (distance) * DATA_COMPGEN(0x00064a80, 1.0 / 6.0)) / ((distance) - DATA_COMPGEN(0x00064a90, 323.2)); \
+        }                                                                                                                                         \
+    } while (0)
+
 DATA(0x0008778c)
 HWND g_mainWindow;
 
 DATA(0x0008fcf0)
 RECT g_windowRect;
 
-DATA(0x000840e8)
-DisplayConfig g_displayConfig;
+DATA(0x0006b4e0)
+i32 g_selectedHotspot = -1;
+
+DATA(0x00084800)
+Texture g_roomTexture;
+
+DATA(0x00084d20)
+Texture g_enemyTextures[2][5];
+
+DATA(0x00088010)
+Hotspot g_hotspots[64];
+
+DATA(0x00088a10)
+Picture g_spriteImages[SPRITE_GROUP_COUNT][SPRITE_FRAME_COUNT];
+
+DATA(0x0008d700)
+Picture g_scenePicture;
+
+DATA(0x0008d728)
+SpriteSlot g_spriteSlots[SPRITE_SLOT_COUNT];
+
+DATA(0x0008d860)
+Texture g_objectTextures[6];
+
+// The layers from the topmost down.
+DATA(0x0008f290)
+ScreenLayer* g_layerStack[SCREEN_LAYER_COUNT];
+
+DATA(0x0008f588)
+i16 g_spriteOrder[SPRITE_SLOT_COUNT];
+
+// Where the dragged layer was grabbed, from its top left (the drop position
+// is g_dragRect's top left).
+DATA(0x0008faf8)
+POINT g_dragOffset;
+
+DATA(0x0008fb04)
+u32 g_hotspotCount;
+
+// @identity-TODO: the layer table is filled by CreateScreenLayer in font.cpp.
+DATA(0x0008fb10)
+ScreenLayer* g_screenLayers[SCREEN_LAYER_COUNT];
+
+DATA(0x0008fda8)
+TextPlane g_textPlanes[TEXT_PLANE_COUNT];
 
 // The camera's eye and the point it looks at (the party's position); the view
 // matrix is rebuilt from them.
@@ -585,13 +640,13 @@ void StartScreenFade(i16 mode, i16 steps) {
     if (g_fadeMode != 0) {
         return;
     }
-    if (s_screenCovered && !(mode & 1)) {
+    if (s_screenCovered && !IsScreenFadeIn(mode)) {
         return;
     }
     g_fadeMode = mode;
     s_fadeSteps = steps;
     s_fadeCountdown = steps;
-    s_fadeAlpha = (mode & 1) ? 0xff : 0;
+    s_fadeAlpha = IsScreenFadeIn(mode) ? 0xff : 0;
     if (mode > 4) {
         g_fadeColor = RGBA_MAKE(0xff, 0xff, 0xff, s_fadeAlpha);
     } else {
@@ -622,7 +677,7 @@ void StepScreenFade(void) {
     }
     s_screenCovered = false;
     s_fadeCountdown = s_fadeSteps;
-    if (g_fadeMode & 1) {
+    if (IsScreenFadeIn(g_fadeMode)) {
         if (s_fadeAlpha <= 0) {
             g_fadeMode = 0;
             return;
@@ -907,7 +962,7 @@ DATA(0x00090ad4)
 static i32 s_doorFrame;
 
 // The camera's slide per frame of a step, and the cell size it slides across.
-#define STEP_SLIDE 40.0f
+#define STEP_SLIDE DATA_COMPGEN(0x00064a38, 40.0f)
 #define CELL_UNITS 320.0f
 
 // Slides the camera one frame of a forward step; past a whole cell the party
@@ -919,7 +974,7 @@ static b32 SlideForward(D3DVALUE* progress) {
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
-        step = -CELL_UNITS;
+        step = DATA_COMPGEN(0x00064a44, -320.0f);
         done = true;
         CommitPartyStep();
         BuildRoomGeometry();
@@ -1728,7 +1783,7 @@ void RenderTBox(void) {
                 dx += 40;
                 break;
         }
-        s_box[0].x = g_billboardX * 40.0;
+        s_box[0].x = g_billboardX * DATA_COMPGEN(0x00064a78, 40.0);
         s_box[1].x = -g_billboardX * 40.0;
         s_box[0].z = g_billboardZ * 40.0;
         s_box[1].z = -g_billboardZ * 40.0;
@@ -1744,9 +1799,8 @@ void RenderTBox(void) {
         }
         if (g_deviceType != D3D_DEVICE_RAMP) {
             if (!g_fixedLighting) {
-                dx -= static_cast<int>(g_cameraAt.x);
-                dz -= static_cast<int>(g_cameraAt.z);
-                distance = sqrt(static_cast<double>(dx * dx + dz * dz));
+                MakeBillboardCameraRelative(dx, dz);
+                distance = GetBillboardDistance(dx, dz);
                 SetDistanceLight(light, distance);
                 SetQuadColor(s_box, D3DRGB(light, light, light));
             }
@@ -1881,15 +1935,14 @@ void RenderNPC(BOOL ownCellOnly) {
         }
         dx = (cellX - partyX) * 320 + offsetX;
         dz = (partyY - cellY) * 320 + offsetZ;
-        s_npc[3].x = s_npc[0].x = g_billboardX * 128.0;
+        s_npc[3].x = s_npc[0].x = g_billboardX * DATA_COMPGEN(0x00064a98, 128.0);
         s_npc[2].x = s_npc[1].x = -g_billboardX * 128.0;
         s_npc[3].z = s_npc[0].z = g_billboardZ * 128.0;
         s_npc[2].z = s_npc[1].z = -g_billboardZ * 128.0;
         TranslateBillboard(s_npc, dx, dz);
         if (g_deviceType != D3D_DEVICE_RAMP && !g_fixedLighting) {
-            dx -= static_cast<int>(g_cameraAt.x);
-            dz -= static_cast<int>(g_cameraAt.z);
-            distance = sqrt(static_cast<double>(dx * dx + dz * dz));
+            MakeBillboardCameraRelative(dx, dz);
+            distance = GetBillboardDistance(dx, dz);
             SetDistanceLight(light, distance);
             SetQuadColor(s_npc, D3DRGB(light, light, light));
         }
@@ -1906,7 +1959,7 @@ void RenderNPC(BOOL ownCellOnly) {
                 TraceD3DCallError("lpD3DDev->SetLightState()@RenderNPC() returns ", result);
             }
         }
-        s_npc[0].y = s_npc[1].y = 256.0f - bottomMargin;
+        s_npc[0].y = s_npc[1].y = DATA_COMPGEN(0x00064aa0, 256.0f) - bottomMargin;
         s_npc[2].y = s_npc[3].y = -bottomMargin;
         DrawLitQuad(s_npc);
         if (IsCellInViewCone(partyX, partyY, cell[0], cell[1]) && kind != 0) {
@@ -2093,7 +2146,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                                 break;
                         }
                     } else {
-                        lift = 30.0f;
+                        lift = DATA_COMPGEN(0x00064aa4, 30.0f);
                         switch (g_viewDirection) {
                             case VIEW_NORTH:
                                 offsetZ = 40;
@@ -2176,10 +2229,9 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 s_enemy[0].y = s_enemy[1].y;
                 TranslateBillboard(s_enemy, dx, dz);
                 if (g_deviceType != D3D_DEVICE_RAMP && shade && !g_fixedLighting) {
-                    dx -= static_cast<int>(g_cameraAt.x);
-                    dz -= static_cast<int>(g_cameraAt.z);
+                    MakeBillboardCameraRelative(dx, dz);
                     if (byDistance) {
-                        distance = sqrt(static_cast<double>(dx * dx + dz * dz));
+                        distance = GetBillboardDistance(dx, dz);
                         SetDistanceLight(light, distance);
                     } else {
                         light = 1.0f;
@@ -2212,7 +2264,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 info = &texture->image->info;
                 if (info->biWidth > 256) {
                     for (i = 0; i < 4; i++) {
-                        s_enemy[i].x *= 2.0f;
+                        s_enemy[i].x *= DATA_COMPGEN(0x00064aa8, 2.0f);
                     }
                 }
                 if (info->biWidth > 256 && !HasTextureHandle(texture)) {
@@ -2635,7 +2687,7 @@ i32 DrawSprites(void) {
                 }
             }
             if (GetSpriteSlot(slot)->y != 0
-                && GetSpriteFramePicture(group, frame)->surfaceWidth != SCREEN_WIDTH) {
+                && GetPictureSurfaceWidth(GetSpriteFramePicture(group, frame)) != SCREEN_WIDTH) {
                 top = GetSpriteSlot(slot)->y - rect.bottom / 2;
                 if (top > 28) {
                     top -= 28;
@@ -2645,7 +2697,7 @@ i32 DrawSprites(void) {
             } else {
                 top = 0;
             }
-            if (GetSpriteFramePicture(group, frame)->surfaceWidth != SCREEN_WIDTH) {
+            if (GetPictureSurfaceWidth(GetSpriteFramePicture(group, frame)) != SCREEN_WIDTH) {
                 i32 width = rect.right - rect.left;
                 i32 height = rect.bottom - rect.top;
                 dest.left = GetSpriteSlot(slot)->x - width * 3 / 8;
@@ -2719,12 +2771,12 @@ void DrawSceneSprites(void) {
         dest.top += y;
         source.left = 0;
         source.top = 0;
-        source.right =
+        source.right = GetPictureSurfaceWidth(
             GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-                ->surfaceWidth;
-        source.bottom =
+        );
+        source.bottom = GetPictureSurfaceHeight(
             GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-                ->surfaceHeight;
+        );
         dest.right += x;
         dest.bottom += y;
         g_renderTarget->Blt(&dest, surface, &source, DDBLT_KEYSRC, NULL);
@@ -2743,45 +2795,11 @@ void BlitScreenLayers(i32 first, i32 last, u32 flags) {
     if (flags & BLIT_LAYERS_ORDERED) {
         for (i = first; i < last; i++) {
             index = s_layerOrder[i];
-            if (g_screenLayers[index]->visible) {
-                g_renderTarget->BltFast(
-                    g_screenLayers[index]->x,
-                    g_screenLayers[index]->y,
-                    g_screenLayers[index]->surface,
-                    &g_screenLayers[index]->source,
-                    g_screenLayers[index]->bltFlags
-                );
-                if (g_screenLayers[index]->canvas != NULL) {
-                    g_renderTarget->BltFast(
-                        g_screenLayers[index]->x,
-                        g_screenLayers[index]->y,
-                        g_screenLayers[index]->canvas,
-                        &g_screenLayers[index]->source,
-                        DDBLTFAST_SRCCOLORKEY
-                    );
-                }
-            }
+            BlitScreenLayer(g_renderTarget, g_screenLayers[index]);
         }
     } else {
         for (i = last - 1; i >= first; i--) {
-            if (g_layerStack[i]->visible) {
-                g_renderTarget->BltFast(
-                    g_layerStack[i]->x,
-                    g_layerStack[i]->y,
-                    g_layerStack[i]->surface,
-                    &g_layerStack[i]->source,
-                    g_layerStack[i]->bltFlags
-                );
-                if (g_layerStack[i]->canvas != NULL) {
-                    g_renderTarget->BltFast(
-                        g_layerStack[i]->x,
-                        g_layerStack[i]->y,
-                        g_layerStack[i]->canvas,
-                        &g_layerStack[i]->source,
-                        DDBLTFAST_SRCCOLORKEY
-                    );
-                }
-            }
+            BlitScreenLayer(g_renderTarget, g_layerStack[i]);
         }
     }
 }
@@ -3195,6 +3213,18 @@ MapScreenOffset g_mapScreenOffsets[MAP_SCREEN_COUNT] = {
     {-112, 164},
     {176, 164},
     {464, 164},
+};
+
+DATA(0x0006b7a8)
+JoystickKey g_joystickKeys[8] = {
+    {JOY_UP, VK_UP},
+    {JOY_DOWN, VK_DOWN},
+    {JOY_LEFT, VK_LEFT},
+    {JOY_RIGHT, VK_RIGHT},
+    {1 << JOY_BUTTON_SHIFT, VK_RETURN},
+    {2 << JOY_BUTTON_SHIFT, VK_SPACE},
+    {4 << JOY_BUTTON_SHIFT, VK_SHIFT},
+    {0, 0},
 };
 
 DATA(0x0008f570)

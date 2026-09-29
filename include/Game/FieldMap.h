@@ -17,7 +17,7 @@ void NotifyEncounterEnd(void);
 i16 HasTurnElapsed(void);
 
 // @identity-TODO: that 0x211b0/0x21010/0x211f0/0x1f070 re-place the current area's map objects
-// is inferred from their use of g_field and 0xdbf0/0xda00; decode 0x21010.
+// is inferred from their use of g_party.field and 0xdbf0/0xda00; decode 0x21010.
 void RespawnAreaActors(void);
 
 // Marks the cell (area, level, x, y, facing) the party must leave before a
@@ -29,6 +29,10 @@ void SaveFieldPosition(void);
 // -1 off the marked cell, else 0 (or, with `checkDirection`, 1 when facing
 // another way).
 i16 IsOnCellMark(i16 checkDirection);
+
+// The region code the field last entered (EnterRoom sets it).
+i16 GetCurrentRoomCode(void);
+i16 SetCurrentRoomCode(i16 code);
 
 // Resets field layers 1 and 0 between 0x1f540 and 0x1a190(-1).
 // @identity-TODO: what 0x1f540 and 0x1a190 reset is undecoded.

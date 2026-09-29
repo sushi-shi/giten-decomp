@@ -27,6 +27,14 @@ typedef struct BmpFile {
     RGBQUAD colors[];
 } BmpFile;
 
+#define GetBitmapRect(rect, bmp)                                                                   \
+    do {                                                                                           \
+        (rect).left = 0;                                                                           \
+        (rect).top = 0;                                                                            \
+        (rect).right = (bmp)->info.biWidth;                                                        \
+        (rect).bottom = (bmp)->info.biHeight;                                                      \
+    } while (0)
+
 // Byte-forced: the BMP file header stores the pixel payload offset.
 #ifdef __cplusplus
 #define GetBitmapPixels(bmp) (reinterpret_cast<u8*>(bmp) + (bmp)->file.bfOffBits)
@@ -71,6 +79,7 @@ extern "C" {
 #endif
 
     b32 CopyResourceBitmap16(BitmapResource* bmp, IDirectDrawSurface** surface, i32 x, i32 y);
+    b32 BlitImage(LPDIRECTDRAWSURFACE surface, u16 image, i32 x, i32 y);
     b32 CopyResourceBitmap8(
         BitmapResource* bmp,
         IDirectDrawSurface** surface,
@@ -93,7 +102,7 @@ extern "C" {
 
     // Seeks `fp` past `skip` bitmaps (of the `limit` bytes in the file) and
     // stores the next one's size; NULL when there is none.
-    // @identity-TODO: label-only here; its body is bmpseek's.
+    // @identity-TODO: label-only here; its body is bitmapio's.
     FILE* SeekBitmap(FILE* fp, i16 skip, i32 limit, u32* size);
 
 #ifdef __cplusplus

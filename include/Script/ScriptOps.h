@@ -268,13 +268,13 @@ void OpJumpUnlessRosterFull(i16 invert);
 
 void OpJumpUnlessAlignmentMatch(i16 invert);
 
-// charinfo's GetRankScore, gamestate's GetFieldCount and fieldobj's
+// charinfo's GetRankScore, gamestate's GetRosterCapacity and fieldobj's
 // IsPartyInSight, for the roster, price and sight branches.
 // Codegen constraint: declared here; in
 // <Game/CharInfo.h>, <Game/GameState.h> and <Game/FieldSight.h> they perturb
 // charpool, party and fieldobj (TU state).
 i32 GetRankScore(struct Character* character);
-i16 GetFieldCount(void);
+i16 GetRosterCapacity(void);
 i16 IsPartyInSight(i16 x, i16 y);
 
 // @identity-TODO: GetRankScore (rank*10) serving as the price is inferred.

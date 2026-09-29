@@ -5,9 +5,6 @@
 #include <Platform/GameApi.h>
 #include <Platform/Scene3D.h>
 
-DATA(0x00084800)
-Texture g_roomTexture;
-
 DATA(0x0006ddc8)
 static const char* s_wallTextureNames[16][4] = {
     {"w\\wall00_0.bmp", "w\\wall00_1.bmp", "w\\wall00_2.bmp", "w\\wall00_3.bmp"},

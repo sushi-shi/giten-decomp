@@ -7,7 +7,7 @@ outrank fuzzy scores. Compiler profiles live in `config/units.toml`.
 ## Environment
 
 - Work in `nix develop`; set `GITEN_DIR=$PWD` for this worktree.
-- Never launch the game or use Ghidra's decompiler on `DDS.EXE`. Use assembly,
+- Never use Ghidra's decompiler on `DDS.EXE`. Use assembly,
   xrefs, RTTI, vtables, data, and relocations.
 - `CLAUDE.md` links here; `.claude/skills` links to `.agents/skills`. Edit the
   canonical files. See [setup](README.md#quickstart) and [build](docs/build-system.md).

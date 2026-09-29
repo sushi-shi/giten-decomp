@@ -18,6 +18,10 @@ typedef struct ActionWait {
 
 #define ResetActionWaitDelay(wait) ((wait)->remaining = 0xff)
 
+static __inline void DelayActionWait(ActionWait* wait, u16 amount) {
+    wait->remaining = amount + wait->remaining;
+}
+
 static __inline void ResetActionWait(ActionWait* wait) {
     wait->ready = 0;
     ResetActionWaitDelay(wait);

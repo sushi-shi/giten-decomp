@@ -117,6 +117,11 @@ typedef struct FieldObject {
     i8 event;
 } FieldObject;
 
+static __inline void SetFieldObjectPickTarget(FieldObject* actor, i16 target) {
+    actor->pickTarget = target;
+    actor->pickTargetHigh = 0;
+}
+
 #define SetObjectDirection(object, facing, changed)                                                \
     do {                                                                                           \
         if ((facing) != (object)->direction) {                                                     \

@@ -7,12 +7,11 @@ void LevelUpNop(void);
 
 #include <Ints.h>
 
-// @identity-TODO: the experience a battle awards, cleared when the level-up
-// screen closes; its owner TU is unclaimed.
+// The experience a battle awards, cleared when the level-up screen closes.
 extern i32 g_rewardExperience;
 
-// @identity-TODO: the magnetite a battle awards (GrantBattleRewards pays it to
-// the leader); its owner TU is unclaimed.
+// The magnetite a battle awards (GrantBattleRewards pays it to the leader),
+// cleared when the field is entered.
 extern i32 g_rewardMagnetite;
 
 // Battle rewards and the level-up messages after a field battle.

@@ -14,6 +14,9 @@
 #include <math.h>
 #include <string.h>
 
+DATA(0x000919fc)
+i16 g_effectCondition;
+
 // The condition groups selected by restoration kinds 53..59, 62 and 64.
 DATA(0x00064558)
 static const i16 s_mentalRecoveryConditions[] = {14, 18, 19, 27, 28, 29, -1};
@@ -44,6 +47,20 @@ static const i16 s_generalRecoveryConditions[] = {2,  3,  4,  5,  6,  10, 11, 12
 
 DATA(0x00064600)
 static const i16 s_specialRecoveryConditions[] = {0, 1, 8, 9, 31, 14, 18, 19, 27, 28, 29, -1};
+
+DATA(0x00064618)
+const i16 g_affiliationGrowthStats[4][2] = {{5, 7}, {8, 0}, {2, 1}, {3, 9}};
+
+// @identity-TODO: no reader survives in this image; the four words hold the
+// order 0..3 with the middle pair swapped, and a reader would name them.
+DATA(0x00064628)
+static const i16 s_swappedPairOrder[4] = {0, 2, 1, 3};
+
+// @identity-TODO: no reader survives in this image; the PC-98 build keeps the
+// same seven words as one table (all four bits, each bit, then the two
+// alternating pairs), and a reader would name them.
+DATA(0x00064630)
+static const i16 s_fourBitMasks[7] = {15, 1, 2, 4, 8, 5, 10};
 
 RVA(0x0001fdc0, 0xc1)
 i16 ComputeRestoreAmount(i16 code, Character* user, u16 max) {
@@ -248,8 +265,7 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
     }
     if (!HasCondition(conditions, CONDITION_ZOMBIE) && wasZombie
         && !GetFatalCondition(conditions)) {
-        ApplyItemStatBonuses(&target->stats, GetCharacterEquipment(target));
-        RecalcStatTotals(&target->stats);
+        RecalcEquippedStatTotals(&target->stats, GetCharacterEquipment(target));
         ApplyEquipmentEffects(target, EQUIP_EFFECT_STAT_UPDATE);
         RecalcDerivedStats(target);
         ResetBattleStatsToBase(target);
@@ -264,7 +280,8 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
     if (GetFatalCondition(conditions)) {
         hpPool->cur = 0;
         mpPool->cur = oldMp;
-        g_mpChange = g_hpChange = 0;
+        g_mpChange = 0;
+        g_hpChange = 0;
         target->lastChange = 0;
         return revival == 1 ? 6 : 2;
     }

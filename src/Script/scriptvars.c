@@ -70,83 +70,90 @@ DATA(0x0006982c)
 static i16 s_messageHookEntry = -1;
 
 DATA(0x000815a0)
-char g_formattedNumber[64];
+char g_formattedNumber[64] = {0};
 
 // The script's 32-bit variables (script operands address them 0..25).
 DATA(0x000815e0)
-u32 g_scriptLongVars[26];
+u32 g_scriptLongVars[26] = {0};
 
 DATA(0x00081648)
-static ScriptScratchValue s_scratchValue;
+static ScriptScratchValue s_scratchValue = {0};
 
 // @identity-TODO: a counter that advances once per call of its tick while
 // counting is on; a script opcode reads it into a variable.
 DATA(0x0008164c)
-u32 g_tickCounter;
+u32 g_tickCounter = 0;
 
 DATA(0x00081650)
-static i16 s_tickCountOn;
+static i16 s_tickCountOn = 0;
 
 // @identity-TODO: the option word the script's window-opening opcode passes on.
 // Set while a script builds a choice list; the text writer takes it with
 // every character.
 DATA(0x00081654)
-b16 g_inChoices;
+b16 g_inChoices = 0;
 
 DATA(0x00081658)
-static i16 s_pendingScene;
+static i16 s_pendingScene = 0;
 
 DATA(0x0008165c)
-static i16 s_pendingSceneEntry;
+static i16 s_pendingSceneEntry = 0;
 
 DATA(0x00081660)
-static ScriptChoice* s_choices;
+static ScriptChoice* s_choices = 0;
+
 DATA(0x00081664)
-static i16 s_choiceIndex;
+static i16 s_choiceIndex = 0;
+
 DATA(0x00081668)
-static i16 s_choiceColumns;
+static i16 s_choiceColumns = 0;
+
 DATA(0x0008166c)
-static i16 s_choiceColumnWidth;
+static i16 s_choiceColumnWidth = 0;
+
 DATA(0x00081670)
-static i16 s_choiceTop;
+static i16 s_choiceTop = 0;
+
 DATA(0x00081674)
-static i16 s_choiceX;
+static i16 s_choiceX = 0;
+
 DATA(0x00081678)
-static i16 s_choiceY;
+static i16 s_choiceY = 0;
+
 DATA(0x0008167c)
-static i16 s_choiceDisabled;
+static i16 s_choiceDisabled = 0;
 
 DATA(0x00081680)
-i16 g_windowOption;
+i16 g_windowOption = 0;
 
 // Whether the field objects were frozen when a script thawed them.
 DATA(0x00081684)
-static i16 s_objectsWereFrozen;
+static i16 s_objectsWereFrozen = 0;
 
 // The loaded script files, oldest first.
 DATA(0x00081688)
-ScriptFileEntry* g_scriptFiles;
+ScriptFileEntry* g_scriptFiles = 0;
 
 // @identity-TODO: a script-set countdown that other code draws down; the
 // script fires its pending event once it reaches zero.
 DATA(0x0008168c)
-u32 g_countdown;
+u32 g_countdown = 0;
 
 // @identity-TODO: when set, the script's message opcode waits in a loop until
 // the wait is released.
 // The script file and entry the countdown fires.
 DATA(0x00081690)
-static i16 s_countdownFile;
+static i16 s_countdownFile = 0;
 
 DATA(0x00081694)
-static i16 s_countdownEntry;
+static i16 s_countdownEntry = 0;
 
 DATA(0x00081698)
-static i16 s_holdOn;
+static i16 s_holdOn = 0;
 
 // The handle of the block that holds generated script text.
 DATA(0x0008169c)
-static i32 s_textScript;
+static i32 s_textScript = 0;
 
 RVA(0x0003a350, 0x12)
 b16 OpHideSprite(void) {
@@ -198,8 +205,8 @@ void OpFadeOutAndClear(void) {
     ReadScriptValue();
     StartScreenFade(SCREEN_FADE_TO_BLACK, 1);
     FinishScreenFade();
-    if (g_field.pos.area == 0x82 && g_field.pos.level == 8 && g_field.pos.x == 2
-        && g_field.pos.y == 1 && GetRenderMode() == 2) {
+    if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 8 && g_party.field.pos.x == 2
+        && g_party.field.pos.y == 1 && GetRenderMode() == 2) {
         ResetSprites(SPRITE_LAYERS_PARTY_AND_TEXT);
     }
 }
@@ -764,7 +771,7 @@ RVA(0x0003b340, 0x10f)
 void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor) {
     i16 window;
     CloseMessageWindow();
-    actor->facing = OppositeDirection(g_field.pos.direction);
+    actor->facing = OppositeDirection(g_party.field.pos.direction);
     RequestFieldRefresh();
     RedrawFieldView();
     PushGameState(10);

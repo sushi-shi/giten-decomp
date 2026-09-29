@@ -152,12 +152,8 @@ def print_data_debt() -> None:
 def manifest_targets() -> set[str]:
     """Every output the emitted manifest declares an edge for.
 
-    Asked of the MANIFEST, not of `era_rc_available()`: the `.res` edge exists
-    only when the toolchain carried rc.exe at CONFIGURE time, and $MSVC_DIR is
-    not a declared input, so the emitter's answer and the file on disk can
-    disagree. Requesting a target the manifest does not have is a hard
-    `ninja: error: unknown target`, which is how `giten link --anything`
-    (`--help` included) used to die on a pre-r3 toolchain.
+    Asked of the manifest so direct-link experiments request the generated
+    retail .res only when the configured graph has its edge.
     """
     out: set[str] = set()
     try:
@@ -191,14 +187,15 @@ def link_main(argv: list[str] | None = None) -> int:
     if graph.RESOURCE_RES in manifest_targets():
         targets.append(graph.RESOURCE_RES)
     elif not any(a == "--res" or a.startswith("--res=") for a in argv):
-        print(f"[link] this manifest has no {graph.RESOURCE_RES} edge (the "
-              "pinned toolchain shipped no rc.exe at configure time), so the "
-              "direct link gets NO .rsrc: the .map is still exact, the image "
-              "has no dialogs. Re-pin an r3+ toolchain and `giten configure`.",
+        print(f"[link] this manifest has no {graph.RESOURCE_RES} edge; "
+              "reconfigure before linking the candidate with resources.",
               file=sys.stderr)
     rc = ninja(targets)
     if rc:
         return rc
+    if graph.RESOURCE_RES in targets and not any(
+            a == "--res" or a.startswith("--res=") for a in argv):
+        argv = ["--res", graph.RESOURCE_RES, *argv]
     sys.argv = ["giten link", *argv]
     return link_direct()
 

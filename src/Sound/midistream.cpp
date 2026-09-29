@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <Platform/WindowsX.h>
 #include <Sound/MidiStream.h>
 #include <Sound/Mmio.h>
 

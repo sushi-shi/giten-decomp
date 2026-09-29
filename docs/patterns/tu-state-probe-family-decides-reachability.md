@@ -40,3 +40,14 @@ unedited function can load `a + b` in the other order (field.c's
 operand-order swap, not a finding).  The declarations in
 scope were the original TU's, which an incomplete TU does not reproduce, so
 the board counts declarations placed away from their definition.
+
+## Declarations after the function
+
+In a C++ TU the context includes what follows the function. With
+`bitmapio.cpp` otherwise fixed, appending one unused prototype, typedef or
+initialized global after its last function reordered the hoisted
+channel-global loads in `LoadBitmapToSurface16` and `CopyResourceBitmap16`,
+which come hundreds of lines earlier. The same three appended lines left every
+function of two C units (`scriptvars.c`, `treasurebox.c`) unchanged. When a C
+unit becomes C++ (a fold into a C++ object), its bodies therefore become
+sensitive to the whole TU, including code and declarations after them.
