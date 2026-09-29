@@ -148,11 +148,11 @@ static i16 s_markedY = -1;
 
 // The window with the target's name (and the prompts).
 DATA(0x00068c18)
-static i16 s_namePlane = -1;
+static i16 s_namePlane = TEXT_PLANE_NONE;
 
 // The window with the target's analyze data.
 DATA(0x00068c1c)
-static i16 s_dataPlane = -1;
+static i16 s_dataPlane = TEXT_PLANE_NONE;
 
 // The law/chaos and light/dark letters, indexed by AlignmentClass + 1.
 DATA(0x00068c20)
@@ -462,10 +462,10 @@ i16 RunAnalyzeWindow(void) {
             if (s_menu != NULL) {
                 s_menu = DestroyMenuBox(s_menu);
             }
-            if (s_dataPlane != -1) {
+            if (s_dataPlane != TEXT_PLANE_NONE) {
                 s_dataPlane = CloseTextWindow(s_dataPlane);
             }
-            if (s_namePlane != -1) {
+            if (s_namePlane != TEXT_PLANE_NONE) {
                 s_namePlane = CloseTextWindow(s_namePlane);
             }
             s_step++;

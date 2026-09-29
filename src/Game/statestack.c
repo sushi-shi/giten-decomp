@@ -122,7 +122,7 @@ i16 g_worldMapY = 192;
 
 // @identity-TODO: the menu plane is only read; its creator is unrecovered.
 DATA(0x00068a50)
-static i16 s_dismissMenuPlane = -1;
+static i16 s_dismissMenuPlane = TEXT_PLANE_NONE;
 
 // The item being used (-1 for none).
 DATA(0x00068a54)
@@ -152,7 +152,7 @@ static i16 s_currentRoomCode = -1;
 
 // The stat-list window of the member levelling up.
 DATA(0x00068a74)
-static i16 s_statWindow = -1;
+static i16 s_statWindow = TEXT_PLANE_NONE;
 
 // The roster slot of the member levelling up.
 DATA(0x00068a78)

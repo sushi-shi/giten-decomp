@@ -515,10 +515,10 @@ i32 CalcMaxHp(Character* character) {
     value *= character->stats.total[6];
     value *= 0.5;
     value += character->stats.total[4] + character->stats.total[10] + 5;
-    if (TestBit(character->personalFlags, 37) == 1) {
+    if (TestBit(character->personalFlags, 37) == true) {
         value += value;
     }
-    if (TestBit(character->personalFlags, 38) == 1) {
+    if (TestBit(character->personalFlags, 38) == true) {
         value += value;
     }
     if (value > 9999.0) {
@@ -537,7 +537,7 @@ i32 CalcMaxMp(Character* character) {
     scaled *= GetStatTotal(character, 2);
     scaled *= 1.5;
     value += scaled;
-    if (TestCharacterFlag(character, 38) == 1) {
+    if (TestCharacterFlag(character, 38) == true) {
         value += value;
     }
     if (value > 999.0) {

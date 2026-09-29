@@ -21,7 +21,7 @@ void PrintWindowText(i16 window, const char* text, u16 attr, i16 style, i16 noKi
     u16 activeAttr;
     i16 pos;
 
-    if (window == -1) {
+    if (window == TEXT_PLANE_NONE) {
         return;
     }
     activeAttr = attr;

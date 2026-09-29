@@ -1457,7 +1457,7 @@ static void AttachEntryMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuE
 
 RVA(0x00044590, 0xb8)
 static void AttachTextHook(i16 plane, i16 event, i16 value) {
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     switch (event) {

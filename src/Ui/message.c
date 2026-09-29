@@ -18,7 +18,7 @@
 // The shared message window: its handle (-1 while closed), the ticks left
 // before it closes by itself, and whether it is held open (no countdown).
 DATA(0x00068300)
-static i16 s_messageWindow = -1;
+static i16 s_messageWindow = TEXT_PLANE_NONE;
 
 DATA(0x000716f0)
 static i16 s_textStateRefreshPending = 0;
@@ -65,7 +65,7 @@ b16 RunTextWindowState(void) {
 
 RVA(0x000025c0, 0x40)
 i16 OpenMessageWindow(void) {
-    if (s_messageWindow == -1) {
+    if (s_messageWindow == TEXT_PLANE_NONE) {
         s_messageWindow = CreateTextPlane(15, 0);
     } else {
         ClearTextPlane(s_messageWindow);
@@ -76,7 +76,7 @@ i16 OpenMessageWindow(void) {
 
 RVA(0x00002600, 0x30)
 i16 OpenMessageText(void) {
-    if (s_messageWindow == -1) {
+    if (s_messageWindow == TEXT_PLANE_NONE) {
         s_messageWindow = CreateTextPlane(15, 0);
     }
     ClearTextPlaneText(s_messageWindow);
@@ -99,7 +99,7 @@ i16 SetMessageHold(i16 hold) {
     if (hold == -1) {
         return s_messageHold;
     }
-    if (s_messageWindow == -1) {
+    if (s_messageWindow == TEXT_PLANE_NONE) {
         s_messageHold = 1;
         return 1;
     }
@@ -110,7 +110,7 @@ i16 SetMessageHold(i16 hold) {
 
 RVA(0x00002690, 0x30)
 i16 RefreshMessageWindow(void) {
-    if (s_messageWindow == -1) {
+    if (s_messageWindow == TEXT_PLANE_NONE) {
         return s_messageWindow;
     }
     RepaintTextPlane(s_messageWindow, -2);
@@ -135,16 +135,16 @@ void ShowMessage(const char* text, i16 ticks) {
 
 RVA(0x00002720, 0x20)
 i16 CloseMessageWindow(void) {
-    if (s_messageWindow != -1) {
+    if (s_messageWindow != TEXT_PLANE_NONE) {
         CloseTextWindow(s_messageWindow);
-        s_messageWindow = -1;
+        s_messageWindow = TEXT_PLANE_NONE;
     }
     return s_messageWindow;
 }
 
 RVA(0x00002740, 0x40)
 void TickMessageWindow(void) {
-    if (s_messageWindow != -1 && s_messageHold == 0 && s_messageLifetime != 0) {
+    if (s_messageWindow != TEXT_PLANE_NONE && s_messageHold == 0 && s_messageLifetime != 0) {
         if (--s_messageLifetime <= 0) {
             CloseMessageWindow();
         }

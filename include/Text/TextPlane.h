@@ -10,6 +10,9 @@
 
 #define TEXT_PLANE_COUNT 37
 
+// No text plane: CreateTextPlane's failure result and a closed plane handle.
+#define TEXT_PLANE_NONE (-1)
+
 void SaveAndResetTextPlaneAttrs(i16 plane);
 void ForgetTextPlaneAttr(i16 plane);
 

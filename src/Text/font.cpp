@@ -3568,7 +3568,7 @@ void RepaintTextPlane(i16 plane, i16 mode) {
     u8* text;
     TextAttr* attrs;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     px = 0;
@@ -3616,7 +3616,7 @@ i16 DrawTextCell(i16 plane, u16 code, u16 attr, i16 px, i16 y) {
     u8 glyph[32];
     i32 width;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     if (plane == 0) {
@@ -3639,7 +3639,7 @@ void RedrawTextPlane(i16 plane) {
     i16 x;
     i16 px;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = GetTextPlane(plane);
@@ -3661,7 +3661,7 @@ void RedrawTextRun(i16 plane, i16 x, i16 y, i16 count) {
     TextPlane* p;
     i16 px = x * 8;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = GetTextPlane(plane);
@@ -3678,7 +3678,7 @@ i16 ToggleTextRunHighlight(i16 plane, i16 x, i16 y) {
     TextAttr* row;
     u16 attr;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     p = GetTextPlane(plane);
@@ -3705,7 +3705,7 @@ i16 SetTextRunAttr(i16 plane, i16 x, i16 y, u16 attr) {
     TextPlane* p;
     i16 i;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     p = GetTextPlane(plane);
@@ -3724,7 +3724,7 @@ void ReverseTextRun(i16 plane, i16 x, i16 y, i16 count) {
     TextAttr* row;
     i16 i;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     row = TextPlaneAttrRow(GetTextPlane(plane), y);
@@ -3739,7 +3739,7 @@ void BlankTextRun(i16 plane, i16 x, i16 y, i16 count) {
     TextAttr* row;
     i16 i;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     row = TextPlaneAttrRow(GetTextPlane(plane), y);
@@ -3786,7 +3786,7 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
         }
     }
     if (plane == TEXT_PLANE_COUNT) {
-        return -1;
+        return TEXT_PLANE_NONE;
     }
     if (kind == 0 && GetTextPlane(0)->surface != NULL) {
         return 0;
@@ -3908,7 +3908,7 @@ i16 FreeTextPlane(u16 plane) {
 // Closes a window; window 0 stays allocated and is hidden.
 RVA(0x00052510, 0x28)
 i16 CloseTextWindow(i16 window) {
-    if (window == -1) {
+    if (window == TEXT_PLANE_NONE) {
         return window;
     }
     if (window == 0) {
@@ -3920,7 +3920,7 @@ i16 CloseTextWindow(i16 window) {
 
 RVA(0x00052540, 0x22)
 i32 GetTextPlaneAttr(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->attr.value;
     }
     return 0;
@@ -3930,7 +3930,7 @@ RVA(0x00052570, 0x2c)
 u16 SetTextPlaneAttr(i16 plane, u16 attr) {
     u16 old = 0;
 
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         old = GetTextPlane(plane)->attr.value;
         GetTextPlane(plane)->attr.value = attr;
     }
@@ -3939,21 +3939,21 @@ u16 SetTextPlaneAttr(i16 plane, u16 attr) {
 
 RVA(0x000525a0, 0x1f)
 void ResetTextPlaneNormalAttr(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         GetTextPlane(plane)->normalAttr.value = TEXT_ATTR_NORMAL;
     }
 }
 
 RVA(0x000525c0, 0x1f)
 void ResetTextPlaneAccentAttr(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         GetTextPlane(plane)->accentAttr.value = TEXT_ATTR_ACCENT;
     }
 }
 
 RVA(0x000525e0, 0x2d)
 void SaveTextPlaneAttr(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         SaveCurrentTextAttr(GetTextPlane(plane));
     }
 }
@@ -3962,7 +3962,7 @@ RVA(0x00052610, 0x42)
 void SaveAndResetTextPlaneAttrs(i16 plane) {
     TextPlane* p;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = GetTextPlane(plane);
@@ -3976,7 +3976,7 @@ RVA(0x00052660, 0x36)
 void RestoreTextPlaneAttr(i16 plane) {
     TextPlane* p;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = GetTextPlane(plane);
@@ -3987,14 +3987,14 @@ void RestoreTextPlaneAttr(i16 plane) {
 
 RVA(0x000526a0, 0x1d)
 void ForgetTextPlaneAttr(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         GetTextPlane(plane)->flags.attrSaved = 0;
     }
 }
 
 RVA(0x000526c0, 0x2a)
 i32 IsTextPlaneAttrSaved(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->flags.attrSaved;
     }
     return 0;
@@ -4004,7 +4004,7 @@ RVA(0x000526f0, 0x2c)
 u16 SetTextPlaneNormalAttr(i16 plane, u16 attr) {
     u16 old = 0;
 
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         old = GetTextPlane(plane)->normalAttr.value;
         GetTextPlane(plane)->normalAttr.value = attr;
     }
@@ -4015,7 +4015,7 @@ RVA(0x00052720, 0x2c)
 u16 SetTextPlaneAccentAttr(i16 plane, u16 attr) {
     u16 old = 0;
 
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         old = GetTextPlane(plane)->accentAttr.value;
         GetTextPlane(plane)->accentAttr.value = attr;
     }
@@ -4024,7 +4024,7 @@ u16 SetTextPlaneAccentAttr(i16 plane, u16 attr) {
 
 RVA(0x00052750, 0x22)
 i32 GetTextPlaneNormalAttr(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->normalAttr.value;
     }
     return 0;
@@ -4032,7 +4032,7 @@ i32 GetTextPlaneNormalAttr(i16 plane) {
 
 RVA(0x00052780, 0x22)
 i32 GetTextPlaneAccentAttr(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->accentAttr.value;
     }
     return 0;
@@ -4040,14 +4040,14 @@ i32 GetTextPlaneAccentAttr(i16 plane) {
 
 RVA(0x000527b0, 0x1f)
 void ResetTextPlaneAttr(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         GetTextPlane(plane)->attr.value = TEXT_ATTR_DEFAULT;
     }
 }
 
 RVA(0x000527d0, 0x27)
 TextAttr* GetTextPlaneAttrRow(i16 plane, i16 y) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return TextPlaneAttrRow(GetTextPlane(plane), y);
     }
     return NULL;
@@ -4055,7 +4055,7 @@ TextAttr* GetTextPlaneAttrRow(i16 plane, i16 y) {
 
 RVA(0x00052800, 0x40)
 void ReverseTextPlaneAttr(i16 plane) {
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     GetTextPlane(plane)->attr.value = (GetTextPlane(plane)->attr.value & 0xf0f0)
@@ -4090,7 +4090,7 @@ void SetTextPlaneColor(i16 plane, i16 which, u16 color) {
 
 RVA(0x000528b0, 0x36)
 void SetWindowOpaqueBg(i16 window, i32 on) {
-    if (window == -1) {
+    if (window == TEXT_PLANE_NONE) {
         return;
     }
     SetTextAttrFlag(&GetTextPlane(window)->attr, 1, on);
@@ -4098,7 +4098,7 @@ void SetWindowOpaqueBg(i16 window, i32 on) {
 
 RVA(0x000528f0, 0x36)
 void SetWindowAttrFlag1(i16 window, i32 on) {
-    if (window == -1) {
+    if (window == TEXT_PLANE_NONE) {
         return;
     }
     SetTextAttrFlag(&GetTextPlane(window)->attr, 2, on);
@@ -4106,7 +4106,7 @@ void SetWindowAttrFlag1(i16 window, i32 on) {
 
 RVA(0x00052930, 0x36)
 void SetWindowHalfWidth(i16 window, i32 on) {
-    if (window == -1) {
+    if (window == TEXT_PLANE_NONE) {
         return;
     }
     SetTextAttrFlag(&GetTextPlane(window)->attr, 8, on);
@@ -4114,7 +4114,7 @@ void SetWindowHalfWidth(i16 window, i32 on) {
 
 RVA(0x00052970, 0x36)
 void SetWindowAttrFlag2(i16 window, i32 on) {
-    if (window == -1) {
+    if (window == TEXT_PLANE_NONE) {
         return;
     }
     SetTextAttrFlag(&GetTextPlane(window)->attr, 4, on);
@@ -4122,7 +4122,7 @@ void SetWindowAttrFlag2(i16 window, i32 on) {
 
 RVA(0x000529b0, 0x20)
 i32 GetTextPlaneCursorX(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->cursorX;
     }
     return 0;
@@ -4130,7 +4130,7 @@ i32 GetTextPlaneCursorX(i16 plane) {
 
 RVA(0x000529d0, 0x20)
 i32 GetTextPlaneCursorY(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->cursorY;
     }
     return 0;
@@ -4141,7 +4141,7 @@ void SetTextPlaneCursor(i16 plane, i16 x, i16 y) {
     TextPlane* p;
     i16 v;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = GetTextPlane(plane);
@@ -4157,7 +4157,7 @@ void SetTextPlaneCursor(i16 plane, i16 x, i16 y) {
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00052a40, 0x34)
 void GetTextPlaneCursor(i16 plane, i16* x, i16* y) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         *x = GetTextPlane(plane)->cursorX;
         *y = GetTextPlane(plane)->cursorY;
     }
@@ -4165,14 +4165,14 @@ void GetTextPlaneCursor(i16 plane, i16* x, i16* y) {
 
 RVA(0x00052a80, 0x22)
 void MoveTextPlaneCursorX(i16 plane, i16 dx) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         GetTextPlane(plane)->cursorX += dx;
     }
 }
 
 RVA(0x00052ab0, 0x20)
 i32 GetTextPlaneLineStep(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->lineStep;
     }
     return 0;
@@ -4180,7 +4180,11 @@ i32 GetTextPlaneLineStep(i16 plane) {
 
 RVA(0x00052ad0, 0x36)
 void SetTextPlaneCursorLine(i16 plane, i16 x, i16 line) {
-    SetTextPlaneCursor(plane, x, (plane != -1 ? GetTextPlane(plane)->lineStep : 0) * line);
+    SetTextPlaneCursor(
+        plane,
+        x,
+        (plane != TEXT_PLANE_NONE ? GetTextPlane(plane)->lineStep : 0) * line
+    );
 }
 
 // @dead-code
@@ -4188,7 +4192,7 @@ void SetTextPlaneCursorLine(i16 plane, i16 x, i16 line) {
 // The line step of `plane` when `on` is set and the plane is open, else 0.
 RVA(0x00052b10, 0x2f)
 i32 GetTextPlaneLineStepIf(i16 plane, i16 on) {
-    if ((plane != -1) * on) {
+    if ((plane != TEXT_PLANE_NONE) * on) {
         return GetTextPlane(plane)->lineStep;
     }
     return 0;
@@ -4198,14 +4202,14 @@ i32 GetTextPlaneLineStepIf(i16 plane, i16 on) {
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00052b40, 0x39)
 i16 TextPlaneRowToLine(i16 plane, i16 row) {
-    return row / static_cast<i16>(plane != -1 ? GetTextPlane(plane)->lineStep : 1);
+    return row / static_cast<i16>(plane != TEXT_PLANE_NONE ? GetTextPlane(plane)->lineStep : 1);
 }
 
 RVA(0x00052b80, 0x2b)
 i16 ResetTextPlaneLineStep(i16 plane, i16 step) {
     i16 old;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     old = GetTextPlane(plane)->lineStep;
@@ -4217,7 +4221,7 @@ i16 ResetTextPlaneLineStep(i16 plane, i16 step) {
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00052bb0, 0x2a)
 i32 IsTextPlaneIndentEnabled(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->flags.indentEnabled;
     }
     return 0;
@@ -4227,7 +4231,7 @@ RVA(0x00052be0, 0x41)
 i16 SetTextPlaneIndentEnabled(i16 plane, i16 on) {
     i16 old;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     old = GetTextPlane(plane)->flags.indentEnabled;
@@ -4237,21 +4241,21 @@ i16 SetTextPlaneIndentEnabled(i16 plane, i16 on) {
 
 RVA(0x00052c30, 0x34)
 void SaveTextPlaneIndentMode(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         GetTextPlane(plane)->flags.savedIndentEnabled = GetTextPlane(plane)->flags.indentEnabled;
     }
 }
 
 RVA(0x00052c70, 0x34)
 void RestoreTextPlaneIndentMode(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         GetTextPlane(plane)->flags.indentEnabled = GetTextPlane(plane)->flags.savedIndentEnabled;
     }
 }
 
 RVA(0x00052cb0, 0x20)
 i32 GetTextPlaneIndent(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->indent;
     }
     return 0;
@@ -4261,7 +4265,7 @@ RVA(0x00052cd0, 0x2e)
 i16 SetTextPlaneIndent(i16 plane, i16 indent) {
     i16 old;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     old = GetTextPlane(plane)->indent;
@@ -4271,7 +4275,7 @@ i16 SetTextPlaneIndent(i16 plane, i16 indent) {
 
 RVA(0x00052d00, 0x2b)
 i16 GetActiveTextPlaneIndent(i16 plane) {
-    if (plane != -1 && GetTextPlane(plane)->flags.indentEnabled) {
+    if (plane != TEXT_PLANE_NONE && GetTextPlane(plane)->flags.indentEnabled) {
         return GetTextPlaneIndent(plane);
     }
     return 0;
@@ -4283,7 +4287,7 @@ i16 ApplyTextPlaneIndent(i16 plane) {
     i16 indent;
     i16 x;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     indent = GetActiveTextPlaneIndent(plane);
@@ -4296,7 +4300,7 @@ i16 ApplyTextPlaneIndent(i16 plane) {
 
 RVA(0x00052d80, 0x2a)
 i32 IsTextPlaneCancelEnabled(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->flags.cancelEnabled;
     }
     return 0;
@@ -4306,7 +4310,7 @@ RVA(0x00052db0, 0x4b)
 i16 SetTextPlaneCancelEnabled(i16 plane, i16 on) {
     i16 old;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     old = GetTextPlane(plane)->flags.cancelEnabled;
@@ -4318,7 +4322,7 @@ i16 SetTextPlaneCancelEnabled(i16 plane, i16 on) {
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00052e00, 0x20)
 i32 GetTextPlaneFirstSelectableRow(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->firstSelectableRow;
     }
     return 0;
@@ -4328,7 +4332,7 @@ RVA(0x00052e20, 0x4b)
 i16 SetTextPlaneFirstSelectableRow(i16 plane, i16 pos, i16 inLines) {
     i16 old;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     old = GetTextPlane(plane)->firstSelectableRow;
@@ -4341,7 +4345,7 @@ i16 SetTextPlaneFirstSelectableRow(i16 plane, i16 pos, i16 inLines) {
 
 RVA(0x00052e70, 0x40)
 i16 SetTextPlaneHighlightMode(i16 plane, i16 mode) {
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     GetTextPlane(plane)->flags.highlight = mode;
@@ -4357,7 +4361,7 @@ RVA(0x00052ed0, 0x5c)
 void ResetTextPlaneMenu(i16 plane, i16 line, i16 cancelEnabled) {
     TextPlane* p;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = GetTextPlane(plane);
@@ -4375,7 +4379,7 @@ RVA(0x00052f30, 0x3c)
 void ToggleCurrentTextHighlight(i16 plane) {
     TextPlane* p;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = GetTextPlane(plane);
@@ -4388,7 +4392,7 @@ RVA(0x00052f70, 0x4a)
 void ClearTextPlaneHighlight(i16 plane) {
     TextPlane* p;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = GetTextPlane(plane);
@@ -4403,7 +4407,7 @@ RVA(0x00052fc0, 0x42)
 void SetTextPlaneHighlight(i16 plane, i16 x, i16 y) {
     TextPlane* p;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = GetTextPlane(plane);
@@ -4421,7 +4425,7 @@ i16 GetTextPlanePageLines(i16 plane) {
     i16 step;
     i16 lines;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     rows = GetTextPlane(plane)->rows - GetTextPlane(plane)->headerRows;
@@ -4453,7 +4457,7 @@ i16 ClearTextPlaneLine(i16 plane, i16 row) {
     u8* text;
     TextAttr* attrs;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     p = GetTextPlane(plane);
@@ -4478,7 +4482,7 @@ RVA(0x00053140, 0x45)
 void MoveTextPlaneCursorToPrevLine(i16 plane) {
     i16 y;
 
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         y = GetTextPlane(plane)->cursorY - GetTextPlaneLineStep(plane);
         if (y < 0) {
             y = 0;
@@ -4500,7 +4504,7 @@ void ScrollTextPlaneText(i16 plane) {
     i16 attrBytes;
     u8 buffer[240];
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = &g_textPlanes[plane];
@@ -4524,7 +4528,7 @@ void ScrollTextPlaneSurface(i16 plane) {
     i32 y;
     RECT rect;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     p = GetTextPlane(plane);
@@ -4553,7 +4557,7 @@ void ScrollTextWindowLine(i16 plane) {
 
 RVA(0x00053390, 0x20)
 i32 GetTextPlaneHeaderRows(i16 plane) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return GetTextPlane(plane)->headerRows;
     }
     return 0;
@@ -4563,7 +4567,7 @@ RVA(0x000533b0, 0x2e)
 i16 SetTextWindowScrollTop(i16 plane, i16 rows) {
     i16 old;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     old = GetTextPlane(plane)->headerRows;
@@ -4575,7 +4579,7 @@ RVA(0x000533e0, 0x4f)
 void FreeMenuLines(i16 plane) {
     MenuLine* line;
 
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         while (GetTextPlane(plane)->menuLines != NULL) {
             line = static_cast<MenuLine*>(ListUnlink(GetTextPlane(plane)->menuLines));
             FreeBlock(line->text);
@@ -4591,7 +4595,7 @@ RVA(0x00053430, 0x9b)
 MenuLine* AddMenuLine(i16 plane, const char* text, i16 attr, i16 value, i16 flags) {
     MenuLine* line;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return NULL;
     }
     line = static_cast<MenuLine*>(AllocCleared(1, sizeof(MenuLine)));
@@ -4608,7 +4612,7 @@ RVA(0x000534d0, 0x3d)
 MenuLine* FindMenuLineByValue(i16 plane, i16 value) {
     MenuLine* line;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return NULL;
     }
     line = GetTextPlane(plane)->menuLines;
@@ -4623,7 +4627,7 @@ RVA(0x00053510, 0x3c)
 MenuLine* GetMenuLine(i16 plane, i16 index) {
     MenuLine* line;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return NULL;
     }
     line = GetTextPlane(plane)->menuLines;
@@ -4676,7 +4680,7 @@ RVA(0x00053610, 0x51)
 i16 SetTextPlaneFlag8(i16 plane, i16 on) {
     i16 old;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     old = GetTextPlane(plane)->flags.flag8;
@@ -4709,7 +4713,7 @@ TextPoint GetMenuLinePos(i16 plane, i16 index) {
     i = 0;
     pos.x = 0;
     pos.y = 0;
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return pos;
     }
     line = GetTextPlane(plane)->menuLines;
@@ -4730,7 +4734,7 @@ TextPoint GetMenuLinePos(i16 plane, i16 index) {
 
 RVA(0x00053770, 0x30)
 void SetTextPlaneMenuOrigin(i16 plane, i16 x, i16 y) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         GetTextPlane(plane)->menuX = x;
         GetTextPlane(plane)->menuY = y;
     }
@@ -4808,7 +4812,7 @@ i16 PollMenuInput(i16 plane) {
     i16 row;
     MenuLine* line;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     p = GetTextPlane(plane);
@@ -4856,7 +4860,7 @@ i16 PollMenuInput(i16 plane) {
 // which is unrecovered.
 RVA(0x00053ac0, 0x4f)
 void GetTextPlaneOrigin(i16 plane, i16* x, i16* y) {
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         *x = 0;
         *y = 0;
         return;
@@ -4869,7 +4873,7 @@ void GetTextPlaneOrigin(i16 plane, i16* x, i16* y) {
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00053b10, 0x4f)
 void GetTextPlaneOrigin2(i16 plane, i16* x, i16* y) {
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         *x = 0;
         *y = 0;
         return;
@@ -4880,7 +4884,7 @@ void GetTextPlaneOrigin2(i16 plane, i16* x, i16* y) {
 
 RVA(0x00053b60, 0x27)
 u8* GetTextPlaneRowText(i16 plane, i16 row) {
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         return TextPlaneTextRow(GetTextPlane(plane), row);
     }
     return NULL;
@@ -4888,7 +4892,7 @@ u8* GetTextPlaneRowText(i16 plane, i16 row) {
 
 RVA(0x00053b90, 0x22)
 void SetWindowDeferredChar(i16 window, u16 ch) {
-    if (window != -1) {
+    if (window != TEXT_PLANE_NONE) {
         GetTextPlane(window)->deferredChar = ch;
     }
 }
@@ -4898,7 +4902,7 @@ u16 TakeWindowDeferredChar(i16 window) {
     u16 ch;
 
     ch = 0;
-    if (window != -1) {
+    if (window != TEXT_PLANE_NONE) {
         ch = GetTextPlane(window)->deferredChar;
         GetTextPlane(window)->deferredChar = 0;
     }
@@ -4913,7 +4917,7 @@ i16 AdvanceWindowLine(i16 window) {
     i16 x;
     i16 y;
 
-    if (window == -1) {
+    if (window == TEXT_PLANE_NONE) {
         return 0;
     }
     p = GetTextPlane(window);
@@ -4938,7 +4942,7 @@ i16 ReserveTextPlaneCells(i16 plane, i16 width, i16 slack) {
     TextPlane* p;
     i16 x;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     p = &g_textPlanes[plane];
@@ -4959,7 +4963,7 @@ RVA(0x00053cd0, 0x38)
 void EraseTextPlaneText(i16 plane) {
     i16 row;
 
-    if (plane != -1) {
+    if (plane != TEXT_PLANE_NONE) {
         for (row = 0; row < GetTextPlane(plane)->rows;) {
             row = ClearTextPlaneLine(plane, row);
         }
@@ -4972,7 +4976,7 @@ RVA(0x00053d10, 0xa9)
 void ClearTextPlane(i16 plane) {
     RECT rect;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     EraseTextPlaneText(plane);
@@ -4996,7 +5000,7 @@ RVA(0x00053dc0, 0xb2)
 void ClearTextPlaneText(i16 plane) {
     RECT rect;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     EraseTextPlaneText(plane);
@@ -5026,7 +5030,7 @@ void PrintMenuLines(i16 plane) {
     i16 i;
     TextPoint pos;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     ClearTextPlane(plane);
@@ -5054,7 +5058,7 @@ RVA(0x00053f40, 0x33)
 i16 GetTextPlaneLineCount(i16 plane) {
     TextPoint size;
 
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return 0;
     }
     size = GetTextPlaneSize(plane);
@@ -5240,7 +5244,7 @@ void HighlightHotspot(i16 plane, i16 id, i16 on) {
     RECT rect;
     i16 keypad;
 
-    if (plane == -1 || id == -1) {
+    if (plane == TEXT_PLANE_NONE || id == -1) {
         return;
     }
     if (plane == 0) {

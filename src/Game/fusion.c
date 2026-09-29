@@ -48,7 +48,7 @@ DATA(0x00064670)
 static const i16 s_fusionFlagLevelBonuses[4] = {0, 5, 7, 10};
 
 DATA(0x00068f88)
-static i16 s_fusionInfoPlane = -1;
+static i16 s_fusionInfoPlane = TEXT_PLANE_NONE;
 
 DATA(0x00068f8c)
 static i16 s_fusionPageRows = 1;
@@ -78,19 +78,19 @@ i16 g_fusionThirdSlot = -1;
 
 // @identity-TODO: the individual contents of these auxiliary planes are unproven.
 DATA(0x00068fc4)
-static i16 s_firstFusionDetailPlane = -1;
+static i16 s_firstFusionDetailPlane = TEXT_PLANE_NONE;
 
 DATA(0x00068fc8)
-static i16 s_secondFusionDetailPlane = -1;
+static i16 s_secondFusionDetailPlane = TEXT_PLANE_NONE;
 
 DATA(0x00068fcc)
-static i16 s_thirdFusionDetailPlane = -1;
+static i16 s_thirdFusionDetailPlane = TEXT_PLANE_NONE;
 
 DATA(0x00068fd0)
 static i16 s_pendingFusionResultId = -1;
 
 DATA(0x00068fd4)
-static i16 s_fusionPreviewPlane = -1;
+static i16 s_fusionPreviewPlane = TEXT_PLANE_NONE;
 
 DATA(0x00068fd8)
 i16 g_fusionResult = -1;
@@ -1727,7 +1727,7 @@ RVA(0x00029350, 0x94)
 void FusionSelectionTextHook(i16 plane, i16 event, i16 value) {
     Character* character;
     i16 index;
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     switch (event) {
@@ -1899,7 +1899,7 @@ i16 CloseFusionPreviewOnClick(i16 plane) {
     if (!g_mouseLeftClick) {
         return plane;
     }
-    if (s_thirdFusionDetailPlane != -1) {
+    if (s_thirdFusionDetailPlane != TEXT_PLANE_NONE) {
         s_thirdFusionDetailPlane = CloseTextWindow(s_thirdFusionDetailPlane);
     }
     s_secondFusionDetailPlane = CloseTextWindow(s_secondFusionDetailPlane);
