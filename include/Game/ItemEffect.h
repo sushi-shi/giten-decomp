@@ -112,6 +112,6 @@ void RecalcDerivedStats(Character* character);
 // Whether field-mode attacks suppress this condition on field actors.
 // Codegen constraint: declared here; in <Game/Condition.h> it shifts
 // fieldobj's TU state (RelativeFacing).
-b16 IsFieldConditionRestricted(i16 condition);
+b16 IsFieldConditionRestricted(GZ_ENUM_PARAM(ConditionId, i16) condition);
 
 #endif // GITEN_GAME_ITEMEFFECT_H

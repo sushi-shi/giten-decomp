@@ -18,9 +18,9 @@ SetConditionAge(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condit
 // The condition set's per-condition ages: aging, recovery rolls and the
 // conditions an empty pool brings, plus easing and the name walk.
 i16 AgeConditions(ConditionSet* conditions, i16 amount);
-b16 AgeCondition(i16 amount, ConditionSet* conditions, i16 condition);
+b16 AgeCondition(i16 amount, ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
 i16 RecoverConditions(Character* character);
-b16 RecoverCondition(Character* character, i16 condition);
+b16 RecoverCondition(Character* character, GZ_ENUM_PARAM(ConditionId, i16) condition);
 i16 ApplyEmptyPools(Character* character);
 i16 EaseCondition(
     ConditionSet* conditions,

@@ -34,12 +34,12 @@ ClearCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) conditi
 extern i16 g_statusCondition;
 
 const char* GetConditionName(GZ_ENUM_PARAM(ConditionId, i16) bit);
-b16 HasCondition(ConditionSet* conditions, i16 condition);
+b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
 i16 ConditionKindApplies(GZ_ENUM_PARAM(RestoreEffect, i16) kind, ConditionSet* conditions);
 
 // The physical ailments selected by restoration kind 57.
 extern const i16 g_physicalRecoveryConditions[8];
-i16 AddCondition(ConditionSet* conditions, i16 condition);
+i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
 i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
 void ClearConditionList(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
 GZ_ENUM_RETURN(ConditionId, i16) GetDisablingCondition(ConditionSet* conditions);

@@ -1245,7 +1245,7 @@ void RequestStatusRedraw(void) {
 }
 
 RVA(0x0003e6b0, 0x13)
-b16 HasCondition(ConditionSet* conditions, i16 condition) {
+b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     return TestBit(conditions->bits, condition);
 }
 
@@ -1266,7 +1266,7 @@ b16 HasCondition(ConditionSet* conditions, i16 condition) {
 // case 5's here; instructions, calls and branch counts are identical. Loop
 // form (for/goto), nested-if returns, case 33/34 spelling and order were tried.
 RVA(0x0003e6d0, 0x700)
-i16 AddCondition(ConditionSet* conditions, i16 condition) {
+i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     i16 blocked;
     i16 i;
 
@@ -1563,9 +1563,9 @@ GZ_ENUM_RETURN(ConditionId, i16) GetPickBlockingCondition(ConditionSet* conditio
 }
 
 RVA(0x0003eea0, 0x36)
-b16 IsFieldConditionRestricted(i16 condition) {
+b16 IsFieldConditionRestricted(GZ_ENUM_PARAM(ConditionId, i16) condition) {
     i16 i;
-    for (i = 0; s_fieldRestrictedConditions[i] != -1; i++) {
+    for (i = 0; s_fieldRestrictedConditions[i] != CONDITION_LIST_END; i++) {
         if (s_fieldRestrictedConditions[i] == condition) {
             return true;
         }
@@ -1610,7 +1610,7 @@ i16 AgeConditions(ConditionSet* conditions, i16 amount) {
 // Ages `condition` by `amount` (kept in 0..255) when it is held and can wear
 // off; 1 when aged.
 RVA(0x0003efa0, 0x57)
-b16 AgeCondition(i16 amount, ConditionSet* conditions, i16 condition) {
+b16 AgeCondition(i16 amount, ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     if (!HasCondition(conditions, condition)) {
         return false;
     }
@@ -1641,7 +1641,7 @@ i16 RecoverConditions(Character* character) {
 // 0..255. A condition that stays can hurt: dancing (19) drains 1..5 HP,
 // suffocation (11) 1..33.
 RVA(0x0003f030, 0xb6)
-b16 RecoverCondition(Character* character, i16 condition) {
+b16 RecoverCondition(Character* character, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     i16 chance;
     if (!HasCondition(GetCharacterConditions(character), condition)) {
         return false;
@@ -1652,9 +1652,9 @@ b16 RecoverCondition(Character* character, i16 condition) {
     chance = (GetConditionAge(GetCharacterConditions(character), condition) >> 3)
              + s_recoveryChance[condition];
     if (chance <= RandomUpTo(0xff)) {
-        if (condition == 19) {
+        if (condition == CONDITION_DANCE) {
             DrainPool(&character->pools.hp, RandomUpTo(4) + 1);
-        } else if (condition == 11) {
+        } else if (condition == CONDITION_SUFFOCATION) {
             DrainPool(&character->pools.hp, RandomUpTo(0x20) + 1);
         }
         return false;
