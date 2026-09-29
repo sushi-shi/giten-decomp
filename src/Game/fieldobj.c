@@ -925,23 +925,24 @@ ScriptEntry FindLayerScriptEntry(i16 layerSlot, i16 file, i16 entry) {
     FILE* fp;
     ScriptEntry none;
     ClearScriptEntry(&none);
-    if (layerSlot != 0) {
-        layer = layerSlot - 1;
-        if (file == 0xff) {
-            if (s_objectScripts == NULL) {
-                fp = OpenDataFile(0x6800, 9, 0);
-                s_objectScripts = ReadScriptBlock(s_objectScripts, fp);
-                CloseDataFile(fp);
-            }
-            return MakeScriptEntry(s_objectScripts, entry);
+    if (layerSlot == 0) {
+        return none;
+    }
+    layer = layerSlot - 1;
+    if (file == 0xff) {
+        if (s_objectScripts == NULL) {
+            fp = OpenDataFile(0x6800, 9, 0);
+            s_objectScripts = ReadScriptBlock(s_objectScripts, fp);
+            CloseDataFile(fp);
         }
-        if (GetLayerScript(&s_layers[layer], 0) == NULL) {
-            LoadLayerScriptSet(&s_layers[layer], s_layers[layer].record.scriptSet);
-        }
-        for (i = 0; i < 32; i++) {
-            if (GetScriptBlockId(GetLayerScript(&s_layers[layer], i)) == file) {
-                return MakeScriptEntry(GetLayerScript(&s_layers[layer], i), entry);
-            }
+        return MakeScriptEntry(s_objectScripts, entry);
+    }
+    if (GetLayerScript(&s_layers[layer], 0) == NULL) {
+        LoadLayerScriptSet(&s_layers[layer], s_layers[layer].record.scriptSet);
+    }
+    for (i = 0; i < 32; i++) {
+        if (GetScriptBlockId(GetLayerScript(&s_layers[layer], i)) == file) {
+            return MakeScriptEntry(GetLayerScript(&s_layers[layer], i), entry);
         }
     }
     return none;
@@ -1123,9 +1124,6 @@ i16 TickEnemySpawnTimer(void) {
 
 // Traces the sight lines from x/y along `direction` row by row (up to three
 // steps back) until a cell blocks it.
-// @early-stop register residue: retail keeps direction in esi and the step
-// in edi; this build swaps them. The call, branch and relocation shapes match,
-// and a 32-island compiler-state search stayed in one state.
 RVA(0x0000ee70, 0x80)
 void TraceSight(i16 x, i16 y, i16 direction) {
     i16 step;
@@ -1133,6 +1131,7 @@ void TraceSight(i16 x, i16 y, i16 direction) {
     i16 left;
     i16 cellX;
     i16 cellY;
+    i16 blocked;
     left = -3;
     right = 3;
     for (step = 0; step >= -3; step--) {
@@ -1140,7 +1139,8 @@ void TraceSight(i16 x, i16 y, i16 direction) {
         cellX = x;
         cellY = y;
         OffsetMapCoord(&cellX, &cellY, direction, 0, step);
-        if (GetMapWallKind(cellX, cellY, direction)) {
+        blocked = GetMapWallKind(cellX, cellY, direction);
+        if (blocked) {
             break;
         }
     }
@@ -1947,11 +1947,10 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     SetItemSlotItem(&GetFieldObjectEquipment(object)[6], record->items[6]);
     SetItemSlotItem(&GetFieldObjectEquipment(object)[7], record->items[7]);
     if (GetFieldObjectEquipment(object)[6].item < 1) {
-        GetFieldObjectEquipment(object)[7].item = -1;
-        SetItemSlotItem(&GetFieldObjectEquipment(object)[6], -1);
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[6]);
+        GetFieldObjectEquipment(object)[6].attachment = -1;
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
         GetFieldObjectEquipment(object)[7].attachment = -1;
-        GetFieldObjectEquipment(object)[6].quantity = 0;
-        GetFieldObjectEquipment(object)[7].quantity = 0;
     } else if (GetFieldObjectEquipment(object)[7].item < 1) {
         EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
         GetFieldObjectEquipment(object)[7].attachment = -1;

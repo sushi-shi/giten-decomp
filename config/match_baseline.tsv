@@ -38,7 +38,7 @@ automap	1	1
 bitmapio	22	21
 bitset	5	5
 blit	18	15
-character	171	162
+character	171	163
 clickwait	1	1
 clock	74	70
 d3dapp	41	36
@@ -50,7 +50,7 @@ effectdraw	3	1
 equipeffect	2	2
 eventflags	28	28
 fieldmain	59	57
-fieldobj	141	135
+fieldobj	141	137
 fieldscreen	103	103
 fieldview	38	36
 font	150	141
@@ -246,7 +246,7 @@ character	_FilterPartyMember	100.0000	100.0000	1	e6cdc5e94899	0x3f780	100.0000
 character	_FindCharacter	100.0000	100.0000	1	1606c69cc349	0x3cdb0	100.0000	
 character	_FindCharacterById	100.0000	100.0000	1	f9cb24d17a52	0x3cde0	100.0000	
 character	_FindEmptySlot	100.0000	100.0000	1	80016a501bf5	0x3f450	100.0000	
-character	_FindMemberByPoolState	93.6923	93.6923	5	79b3ee614fc1	0x3f6d0	93.6923	
+character	_FindMemberByPoolState	100.0000	100.0000	6	9854514186ef	0x3f6d0	100.0000	
 character	_FindPartyPositionOfId	100.0000	100.0000	1	398fcbb8a4b4	0x40060	100.0000	
 character	_FindPartySlot	100.0000	100.0000	2	14bf78f14610	0x3fe90	100.0000	
 character	_FindReadyMember	100.0000	100.0000	4	1e92021086f5	0x3f5f0	100.0000	
@@ -588,7 +588,7 @@ fieldobj	_AddFamiliarity	100.0000	100.0000	1	00581cb3b89f	0x10d30	100.0000
 fieldobj	_AddFamiliarityCount	100.0000	100.0000	1	b04d85dbfdb6	0x10bd0	100.0000	
 fieldobj	_AddLevelGap	100.0000	100.0000	1	0795a7a1ca52	0x10ca0	100.0000	
 fieldobj	_AdvanceObjectAnims	100.0000	100.0000	1	3356896f9e9f	0xe6b0	100.0000	
-fieldobj	_AlignmentConflicts	84.6364	84.4545	3	17b6457589ce	0x10db0	84.6364	
+fieldobj	_AlignmentConflicts	84.6364	84.6364	3	17b6457589ce	0x10db0	84.6364	
 fieldobj	_AnyObjectInReach	100.0000	100.0000	2	9a32e4b47d55	0x11620	100.0000	
 fieldobj	_ApplyObjectConditions	100.0000	100.0000	3	314c8302441b	0xe4e0	100.0000	
 fieldobj	_AssignWorldEncounterGroups	100.0000	100.0000	2	bce8d3f42846	0x11440	100.0000	
@@ -614,7 +614,7 @@ fieldobj	_ExchangeObjectsFrozen	100.0000	100.0000	1	4654db843ed5	0xd9b0	100.0000
 fieldobj	_FaceObjectToParty	100.0000	100.0000	4	ac6a77d254da	0xf4e0	100.0000	
 fieldobj	_FindDemonOfRace	100.0000	100.0000	1	74e00185b0d2	0x10250	100.0000	
 fieldobj	_FindLayerOfKind	100.0000	100.0000	2	776d5de4cfb6	0xeaa0	100.0000	
-fieldobj	_FindLayerScriptEntry	97.8205	97.8205	5	14249bd8de5e	0xe910	97.8205	
+fieldobj	_FindLayerScriptEntry	100.0000	100.0000	6	db8f8f050517	0xe910	100.0000	
 fieldobj	_FindNextOfRace	100.0000	100.0000	1	8f2a2cb513ac	0x10330	100.0000	
 fieldobj	_FindObjectAt	100.0000	100.0000	2	2f1e33b75ec7	0xe2b0	100.0000	
 fieldobj	_FindObjectAtParty	100.0000	100.0000	1	f101ee7667a9	0xe3d0	100.0000	
@@ -664,7 +664,7 @@ fieldobj	_GetSightCell	100.0000	100.0000	1	f498b35984d8	0xf0c0	100.0000
 fieldobj	_GetWorldEncounterMaximum	100.0000	100.0000	2	bcef6969011a	0x11300	100.0000	
 fieldobj	_HasAnalyzeData	100.0000	100.0000	2	4aea30c3b899	0x10e90	100.0000	
 fieldobj	_InitFieldObjects	100.0000	100.0000	2	1193d7b17cd8	0xd790	100.0000	
-fieldobj	_InitObjectFromRecord	93.6483	93.6483	21	7c2359028999	0x10470	93.6483	
+fieldobj	_InitObjectFromRecord	93.8586	93.8586	22	79dfe1f88e70	0x10470	93.8586	
 fieldobj	_IsFieldActor	100.0000	100.0000	2	ecd87ace417f	0xd980	100.0000	
 fieldobj	_IsPartyInSight	100.0000	100.0000	1	c03c64e92c2c	0xf120	100.0000	
 fieldobj	_IsWithinRange	100.0000	100.0000	5	5fe0b6c1417d	0xf590	100.0000	
@@ -722,7 +722,7 @@ fieldobj	_SpawnRandomEnemy	100.0000	100.0000	2	d8327d9ef1c0	0xeca0	100.0000
 fieldobj	_StepObjectTowardParty	81.7016	81.7016	8	cd55a9f62729	0xf290	81.7016	
 fieldobj	_TestWorldEncounterChance	100.0000	100.0000	4	c4599ebfbf7f	0x11220	100.0000	
 fieldobj	_TickEnemySpawnTimer	100.0000	100.0000	3	27ea2f3f1a75	0xee20	100.0000	
-fieldobj	_TraceSight	94.9800	94.9800	2	16a51e4af01d	0xee70	94.9800	
+fieldobj	_TraceSight	100.0000	100.0000	3	bde15fa1e0c9	0xee70	100.0000	
 fieldobj	_UpdateFieldObjects	100.0000	100.0000	1	62f41f6a320d	0xe400	100.0000	
 fieldobj	_UseObjectSkill	98.4444	98.4444	12	040f4328e76e	0xf620	98.4444	
 fieldscreen	_AllocLayerImage	100.0000	100.0000	1	984e16cb6225	0x168d0	100.0000	
@@ -2474,7 +2474,7 @@ treasurebox	_ReleaseNpcTextures	100.0000	100.0000	1	59f9ff5479eb	0x1f540	100.000
 treasurebox	_ResetFieldScene	100.0000	100.0000	1	c97f57cd7790	0x1ef30	100.0000	
 treasurebox	_ReturnToLeaderMark	100.0000	100.0000	4	74901ea6b1cc	0x1fa70	100.0000	
 treasurebox	_ReturnToLeaderWarp	100.0000	100.0000	3	fda3584008d9	0x1fa30	100.0000	
-treasurebox	_RoomRegionsChanged	96.9367	96.9367	4	bbe3537e51cf	0x1ed70	96.9367	
+treasurebox	_RoomRegionsChanged	99.6835	99.6835	4	bbe3537e51cf	0x1ed70	99.6835	
 treasurebox	_RotateAutomapRegion	100.0000	100.0000	2	ab3938b51a6e	0x1d210	100.0000	
 treasurebox	_RunAnalyzeWindow	100.0000	100.0000	11	775a7e57d96f	0x1ad50	100.0000	
 treasurebox	_RunAutomapState	100.0000	100.0000	7	5dc6282471d3	0x1d530	100.0000	

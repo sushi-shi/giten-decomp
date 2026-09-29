@@ -1918,9 +1918,6 @@ PartyMemberList* ListPickableMembers(PartyMemberList* list, i16 max, i16 idleOnl
 // The first roster slot from `start` on that passes FilterPartyMember(`mode`)
 // and whose HP (`pools` bit 0) or MP (bit 1) pool is in `state` (state 1 also
 // takes an empty pool); -1 when none.
-// @early-stop register residue: retail keeps the slot in edi and `state` in
-// ebp, cl the reverse; the parameter as loop variable, an inline match helper
-// and the permuter are flat or worse.
 RVA(0x0003f6d0, 0xa6)
 i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
     i16 slot;
@@ -1931,13 +1928,19 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
         if (character && FilterPartyMember(slot, mode) != -1) {
             if (pools & POOL_MASK_HP) {
                 pool = PoolState(&character->pools.hp);
-                if (PoolStateMatches(pool, state)) {
+                if (pool == state) {
+                    return slot;
+                }
+                if (state == 1 && pool == 0) {
                     return slot;
                 }
             }
             if (pools & POOL_MASK_MP) {
                 pool = PoolState(&character->pools.mp);
-                if (PoolStateMatches(pool, state)) {
+                if (pool == state) {
+                    return slot;
+                }
+                if (state == 1 && pool == 0) {
                     return slot;
                 }
             }

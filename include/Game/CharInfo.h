@@ -25,7 +25,6 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools);
 // The pool state: 2 full, 1 partly spent, 0 empty.
 i16 PoolState(CurMax* pool);
 
-#define PoolStateMatches(actual, wanted) ((actual) == (wanted) || ((wanted) == 1 && !(actual)))
 i32 ScalePercent999(i16 value, i16 percent);
 
 #endif // GITEN_GAME_CHARINFO_H
