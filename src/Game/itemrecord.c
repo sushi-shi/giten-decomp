@@ -1577,43 +1577,43 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
             break;
     }
     switch (GetItemPassiveEffectCode(&g_loadedItem)) {
-        case 0x30:
+        case ITEM_PASSIVE_WEAPON_POWER_5:
             bonuses[BATTLE_STAT_WEAPON_POWER] += 5;
             break;
-        case 0x31:
+        case ITEM_PASSIVE_WEAPON_POWER_10:
             bonuses[BATTLE_STAT_WEAPON_POWER] += 10;
             break;
-        case 0x32:
+        case ITEM_PASSIVE_WEAPON_POWER_20:
             bonuses[BATTLE_STAT_WEAPON_POWER] += 20;
             break;
-        case 0x33:
+        case ITEM_PASSIVE_WEAPON_POWER_30:
             bonuses[BATTLE_STAT_WEAPON_POWER] += 30;
             break;
-        case 0x34:
+        case ITEM_PASSIVE_WEAPON_ACCURACY_20:
             bonuses[BATTLE_STAT_WEAPON_ACCURACY] += 20;
             break;
-        case 0x35:
+        case ITEM_PASSIVE_GUN_ACCURACY_20:
             bonuses[BATTLE_STAT_GUN_ACCURACY] += 20;
             break;
-        case 0x36:
+        case ITEM_PASSIVE_WEAPON_ACCURACY_BONUS:
             bonuses[BATTLE_STAT_WEAPON_ACCURACY] +=
                 GetItemRecordPhysicalAccuracyBonus(&g_loadedItem);
             break;
-        case 0x37:
+        case ITEM_PASSIVE_MAGIC_EVASION_4:
             bonuses[BATTLE_STAT_MAGIC_EVASION] += 4;
             break;
-        case 0x38:
+        case ITEM_PASSIVE_MAGIC_EVASION_20:
             bonuses[BATTLE_STAT_MAGIC_EVASION] += 20;
             break;
-        case 0x39:
+        case ITEM_PASSIVE_DEFENSE_10:
             bonuses[BATTLE_STAT_WEAPON_DEFENSE] += 10;
             bonuses[BATTLE_STAT_GUN_DEFENSE] += 10;
             break;
-        case 0x3a:
+        case ITEM_PASSIVE_DEFENSE_20:
             bonuses[BATTLE_STAT_WEAPON_DEFENSE] += 20;
             bonuses[BATTLE_STAT_GUN_DEFENSE] += 20;
             break;
-        case 0x3b:
+        case ITEM_PASSIVE_MAGIC_DEFENSE_15:
             bonuses[BATTLE_STAT_MAGIC_DEFENSE] += 15;
             break;
     }
@@ -1801,19 +1801,19 @@ void AddItemRegen(i16 item, PoolRegen* regen) {
         return;
     }
     switch (GetItemPassiveEffectCode(&g_loadedItem)) {
-        case 0x70:
+        case ITEM_PASSIVE_HP_REGEN_1:
             regen->hp += 1;
             break;
-        case 0x71:
+        case ITEM_PASSIVE_HP_REGEN_2:
             regen->hp += 2;
             break;
-        case 0x72:
+        case ITEM_PASSIVE_HP_REGEN_3:
             regen->hp += 3;
             break;
-        case 0x73:
+        case ITEM_PASSIVE_HP_REGEN_5:
             regen->hp += 5;
             break;
-        case 0x74:
+        case ITEM_PASSIVE_MP_REGEN_1:
             regen->mp += 1;
             break;
     }
@@ -1952,7 +1952,7 @@ i16 IsConditionResisted(Character* target, i16 code) {
 }
 
 RVA(0x000259d0, 0x1c4)
-b16 ItemResistsCondition(i16 item, i16 condition) {
+b16 ItemResistsCondition(i16 item, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     if (item < 1) {
         return false;
     }
@@ -1961,78 +1961,81 @@ b16 ItemResistsCondition(i16 item, i16 condition) {
         return false;
     }
     switch (GetItemPassiveEffectCode(&g_loadedItem)) {
-        case 0x77:
-            if (condition == 4) {
+        case ITEM_PASSIVE_RESIST_STONE:
+            if (condition == CONDITION_STONE) {
                 return true;
             }
             break;
-        case 0x78:
-            if (condition == 5) {
+        case ITEM_PASSIVE_RESIST_PARALYSIS:
+            if (condition == CONDITION_PARALYSIS) {
                 return true;
             }
             break;
-        case 0x79:
-            if (condition == 6 || condition == 0x15) {
+        case ITEM_PASSIVE_RESIST_FREEZE_ICE:
+            if (condition == CONDITION_FREEZE || condition == CONDITION_ICE) {
                 return true;
             }
             break;
-        case 0x7a:
-            if (condition == 0xc) {
+        case ITEM_PASSIVE_RESIST_BIND:
+            if (condition == CONDITION_BIND) {
                 return true;
             }
             break;
-        case 0x7b:
-            if (condition == 0x19 || condition == 0xd) {
+        case ITEM_PASSIVE_RESIST_SLEEP:
+            if (condition == CONDITION_DOZE || condition == CONDITION_SLEEP) {
                 return true;
             }
             break;
-        case 0x7c:
-            if (condition == 0x12 || condition == 0x1c || condition == 0x10) {
+        case ITEM_PASSIVE_RESIST_MENTAL:
+            if (condition == CONDITION_CONFUSION || condition == CONDITION_HAPPY
+                || condition == CONDITION_HALLUCINATION) {
                 return true;
             }
             break;
-        case 0x7d:
-            if (condition == 0x1c) {
+        case ITEM_PASSIVE_RESIST_HAPPY:
+            if (condition == CONDITION_HAPPY) {
                 return true;
             }
             break;
-        case 0x7e:
-            if (condition == 0x10) {
+        case ITEM_PASSIVE_RESIST_HALLUCINATION:
+            if (condition == CONDITION_HALLUCINATION) {
                 return true;
             }
             break;
-        case 0x7f:
-            if (condition == 0xe) {
+        case ITEM_PASSIVE_RESIST_PANIC:
+            if (condition == CONDITION_PANIC) {
                 return true;
             }
             break;
-        case 0x80:
-            if (condition == 0xf || condition == 0x20) {
+        case ITEM_PASSIVE_RESIST_POISON:
+            if (condition == CONDITION_POISON || condition == CONDITION_SEVERE_POISON) {
                 return true;
             }
             break;
-        case 0x81:
-            if (condition == 0x14) {
+        case ITEM_PASSIVE_RESIST_SHOCK:
+            if (condition == CONDITION_SHOCK) {
                 return true;
             }
             break;
-        case 0x82:
-            if (condition == 0x16) {
+        case ITEM_PASSIVE_RESIST_BURN:
+            if (condition == CONDITION_BURN) {
                 return true;
             }
             break;
-        case 0x83:
-            if (condition == 0x18) {
+        case ITEM_PASSIVE_RESIST_MAGIC_SEAL:
+            if (condition == CONDITION_MAGIC_SEAL) {
                 return true;
             }
             break;
-        case 0x84:
-            if (condition == 0x1b || condition == 0x1a || condition == 0x1d) {
+        case ITEM_PASSIVE_RESIST_INTOXICATION:
+            if (condition == CONDITION_HIGH || condition == CONDITION_BERSERK
+                || condition == CONDITION_TIPSY) {
                 return true;
             }
             break;
-        case 0x85:
-            if (condition == 0x16 || condition == 6 || condition == 0x15) {
+        case ITEM_PASSIVE_RESIST_FIRE_AND_ICE:
+            if (condition == CONDITION_BURN || condition == CONDITION_FREEZE
+                || condition == CONDITION_ICE) {
                 return true;
             }
             break;

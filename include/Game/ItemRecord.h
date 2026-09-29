@@ -4,9 +4,10 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
-#include <Ints.h>
-#include <Game/SkillMessage.h>
+#include <Enums.h>
 #include <Game/ItemKind.h>
+#include <Game/SkillMessage.h>
+#include <Ints.h>
 
 typedef struct ItemTable {
     i16 count;
@@ -161,6 +162,46 @@ static __inline i16 GetItemRecordMagicDefenseBonus(const ItemRecord* record) {
     i8 bonus = record->params[0x2f];
     return bonus;
 }
+
+// An equipped item's passive effect (its params[0x25]): a battle-stat bonus
+// (AddItemStatBonuses; the number is the bonus), HP or MP regeneration per
+// turn (AddItemRegen), or resistance to conditions (ItemResistsCondition:
+// mental is confusion, happy and hallucination; intoxication is high,
+// berserk and tipsy; fire and ice is burn, freeze and ice).
+GZ_ENUM_BEGIN(ItemPassiveEffect)
+    ITEM_PASSIVE_WEAPON_POWER_5 = 0x30,
+    ITEM_PASSIVE_WEAPON_POWER_10 = 0x31,
+    ITEM_PASSIVE_WEAPON_POWER_20 = 0x32,
+    ITEM_PASSIVE_WEAPON_POWER_30 = 0x33,
+    ITEM_PASSIVE_WEAPON_ACCURACY_20 = 0x34,
+    ITEM_PASSIVE_GUN_ACCURACY_20 = 0x35,
+    ITEM_PASSIVE_WEAPON_ACCURACY_BONUS = 0x36,
+    ITEM_PASSIVE_MAGIC_EVASION_4 = 0x37,
+    ITEM_PASSIVE_MAGIC_EVASION_20 = 0x38,
+    ITEM_PASSIVE_DEFENSE_10 = 0x39,
+    ITEM_PASSIVE_DEFENSE_20 = 0x3a,
+    ITEM_PASSIVE_MAGIC_DEFENSE_15 = 0x3b,
+    ITEM_PASSIVE_HP_REGEN_1 = 0x70,
+    ITEM_PASSIVE_HP_REGEN_2 = 0x71,
+    ITEM_PASSIVE_HP_REGEN_3 = 0x72,
+    ITEM_PASSIVE_HP_REGEN_5 = 0x73,
+    ITEM_PASSIVE_MP_REGEN_1 = 0x74,
+    ITEM_PASSIVE_RESIST_STONE = 0x77,
+    ITEM_PASSIVE_RESIST_PARALYSIS = 0x78,
+    ITEM_PASSIVE_RESIST_FREEZE_ICE = 0x79,
+    ITEM_PASSIVE_RESIST_BIND = 0x7a,
+    ITEM_PASSIVE_RESIST_SLEEP = 0x7b,
+    ITEM_PASSIVE_RESIST_MENTAL = 0x7c,
+    ITEM_PASSIVE_RESIST_HAPPY = 0x7d,
+    ITEM_PASSIVE_RESIST_HALLUCINATION = 0x7e,
+    ITEM_PASSIVE_RESIST_PANIC = 0x7f,
+    ITEM_PASSIVE_RESIST_POISON = 0x80,
+    ITEM_PASSIVE_RESIST_SHOCK = 0x81,
+    ITEM_PASSIVE_RESIST_BURN = 0x82,
+    ITEM_PASSIVE_RESIST_MAGIC_SEAL = 0x83,
+    ITEM_PASSIVE_RESIST_INTOXICATION = 0x84,
+    ITEM_PASSIVE_RESIST_FIRE_AND_ICE = 0x85
+GZ_ENUM_END(ItemPassiveEffect)
 
 // Selects the equipped item's stat, resistance, regeneration or drain effect.
 #define GetItemPassiveEffectCode(record) ((record)->params[0x25])

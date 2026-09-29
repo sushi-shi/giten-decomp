@@ -660,6 +660,7 @@ def _scan_entry(payload):
     except RuntimeError as exc:
         return [], f"{path}: {exc}"
     tu = None
+    strict = False
     # The strict-enum view types domain-annotated storage, parameters and
     # returns with their enums, so literals meeting them can be named; a unit
     # that does not parse in it falls back to the retail view.
@@ -673,6 +674,7 @@ def _scan_entry(payload):
         errors = [d for d in candidate.diagnostics if d.severity >= cidx.Diagnostic.Error]
         if not errors:
             tu = candidate
+            strict = bool(extra)
             break
     if tu is None:
         return [], f"{path}: parse error: {errors[0]}"
@@ -723,7 +725,7 @@ def _scan_entry(payload):
             walk(child, stack + (node,))
 
     walk(tu.cursor)
-    return sites, None
+    return sites, None if strict or path.suffix == ".cpp" else f"RETAIL-VIEW {path}"
 
 
 def scan_entries(entries: list[dict], *, repo: Path = REPO, jobs: int = 1):
@@ -737,6 +739,9 @@ def scan_entries(entries: list[dict], *, repo: Path = REPO, jobs: int = 1):
         results = pool.map(_scan_entry, payloads)
     try:
         for sites, error in results:
+            if error and error.startswith("RETAIL-VIEW "):
+                RETAIL_VIEW_UNITS.append(error[len("RETAIL-VIEW "):])
+                error = None
             if error:
                 errors.append(error)
                 continue
@@ -833,6 +838,10 @@ def legacy_boolean_spellings(*, repo: Path = REPO) -> list[str]:
 #: name (an enumerator, a named macro, NULL, true/false) or a row here keeps
 #: it numeric with the reason.
 WORKLIST = REPO / "config/constants.tsv"
+
+#: C units the last scan read in the retail view because the strict-enum view
+#: does not parse (a declaration disagrees with its definition).
+RETAIL_VIEW_UNITS: list[str] = []
 OPEN_REPORT = BUILD / "gen/constants_open.tsv"
 _WORKLIST_FIELDS = ("file", "owner", "spelling", "group", "detail", "reason")
 
@@ -1018,6 +1027,8 @@ def main(argv=None) -> int:
     print(f"[constants] legacy TRUE/FALSE spelling(s): {len(legacy_booleans)}")
     if not args.no_report:
         print(f"[constants] report: {REPORT.relative_to(REPO)}")
+    for unit in RETAIL_VIEW_UNITS:
+        print(f"   {unit}: read in the retail view; the strict-enum view does not parse")
     print(f"[constants] {open_summary(remaining)}; floor "
           f"{floor if floor is not None else 'unset'} "
           f"({WORKLIST.relative_to(REPO)}: {len(keeps)} kept row(s))")

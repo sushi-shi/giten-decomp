@@ -60,7 +60,7 @@ GZ_ENUM_END(InflictCode)
 // The condition an inflict code gives `target`: codes 1..34 are conditions
 // themselves, 57..65 pick one by chance, alignment or demon class; -1 none.
 // @identity-TODO: what the coded conditions name is unrecovered.
-i16 ResolveInflictedCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target);
+GZ_ENUM_RETURN(ConditionId, i16) ResolveInflictedCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target);
 
 // Gives `target` the condition of inflict code `code` (recomputing its stats
 // when it newly gains condition 8).
@@ -69,7 +69,7 @@ void InflictCondition(i16 code, Character* target);
 // Whether `target` resists inflict code `code` (1 when it gives no condition):
 // whether an equipped item's resistance code (0x77..0x85) covers it.
 i16 IsConditionResisted(Character* target, i16 code);
-b16 ItemResistsCondition(i16 item, i16 condition);
+b16 ItemResistsCondition(i16 item, GZ_ENUM_PARAM(ConditionId, i16) condition);
 
 // Rolls whether the item attack hits, recording resistance and action result.
 b16 ResolveItemAttack(Character* user, Character* target, i16 sameSide);
