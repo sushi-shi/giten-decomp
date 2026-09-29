@@ -1,4 +1,4 @@
-"""giten.verify.astprint - per-function AST fingerprints (the `ast2:` domain).
+"""giten.verify.astprint - per-function AST fingerprints (the `ast3:` domain).
 
 A function's src_hash should change when its implementation changes, not when
 its spelling does. The fingerprint hashes the libclang AST of each definition
@@ -13,13 +13,14 @@ expressions, statements, types, calls or literal values changes it.
 from __future__ import annotations
 
 import hashlib
+import re
 import json
 from pathlib import Path
 
 from giten.core.paths import BUILD, REPO
 
 CDB = BUILD / "clangd/compile_commands.json"
-PREFIX = "ast2:"
+PREFIX = "ast3:"
 
 _FUNCTION_KINDS = ("FUNCTION_DECL", "CXX_METHOD", "CONSTRUCTOR", "DESTRUCTOR",
                    "CONVERSION_FUNCTION")
@@ -143,8 +144,15 @@ def _constant(cidx, node) -> str | None:
         lib.clang_EvalResult_dispose(result)
 
 
+_UNNAMED = re.compile(r"\((?:unnamed|anonymous)( struct| union| enum)? at [^)]*\)")
+
+
 def _canonical(ty) -> str:
-    return ty.get_canonical().spelling if ty is not None else ""
+    """A type's canonical spelling, with anonymous types' source locations
+    (which move with the header's lines and the checkout's path) dropped."""
+    if ty is None:
+        return ""
+    return _UNNAMED.sub(r"(unnamed\1)", ty.get_canonical().spelling)
 
 
 def _emit(cidx, node, out: list[str]) -> None:
