@@ -1,7 +1,7 @@
 #ifndef GITEN_GAME_GAMESTATEID_H
 #define GITEN_GAME_GAMESTATEID_H
 
-#include <Enums.h>
+#include <EnumDomain.h>
 
 // The game states DispatchGameState runs, named after each state's handler.
 // @identity-TODO: states 2, 3, 4, 17 and 20 have no handler in the dispatcher.

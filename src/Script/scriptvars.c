@@ -1374,7 +1374,7 @@ i16 SetHold(i16 on) {
 // frame count, 1 waits on input mask 2). While held, runs the wait here until
 // it ends and returns 0; otherwise returns -3 to leave the script loop.
 RVA(0x0003c0c0, 0x85)
-i16 OpWaitMessage(i16 window) {
+GZ_ENUM_RETURN(ScriptStatus, i16) OpWaitMessage(i16 window) {
     GZ_ENUM_STORAGE(WaitMode, i16) kind;
     u16 mask;
     u16 frames;
@@ -1397,9 +1397,9 @@ i16 OpWaitMessage(i16 window) {
             PollIdle(1, 0x18);
             StepWaitState();
         }
-        return 0;
+        return SCRIPT_CONTINUE;
     }
-    return -3;
+    return SCRIPT_YIELD;
 }
 
 RVA(0x0003c150, 0xf)

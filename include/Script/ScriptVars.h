@@ -3,8 +3,10 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
 #include <Script/ScriptBlock.h>
+#include <Script/ScriptStatus.h>
 
 // An entry of the loaded script-file cache. `holds` counts the nested holds
 // taken while it was loaded; a purge keeps the preloaded files and the held
@@ -145,7 +147,7 @@ RVA_DECL(0x0003bd40)
 void OpPeekPokeScratch(void);
 
 // @identity-TODO: The meaning of game state 1 and of its type byte 0/1/2 is unrecovered.
-i16 OpWaitMessage(i16 window);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpWaitMessage(i16 window);
 
 i16 AccessScriptReg(i16 write, i16 index, i16 value);
 

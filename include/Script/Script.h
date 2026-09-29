@@ -8,6 +8,7 @@
 #include <Game/GameState.h>
 #include <Ints.h>
 #include <Script/ScriptBlock.h>
+#include <Script/ScriptStatus.h>
 
 // @identity-TODO: a running script's context; the word at +0x0e is the script
 // position that jumps and calls rewrite, relative to the code block (a memory
@@ -91,7 +92,7 @@ void OpJumpScript(i16 call);
 i16 ReadJumpTarget(void);
 void OpJump(void);
 
-i16 SetActorMode(i16 mode);
+GZ_ENUM_RETURN(ScriptStatus, i16) SetActorMode(i16 mode);
 
 // Resolves a script object id (negative: party slots; 1000+/2000+/3000+:
 // other ranges; -16..-23: special objects) to its record.

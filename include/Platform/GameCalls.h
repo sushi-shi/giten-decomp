@@ -5,8 +5,8 @@
 
 #include <EnumDomain.h>
 #include <Game/Field.h>
-#include <Game/GameStateId.h>
 #include <Game/GameLoop.h>
+#include <Game/GameStateId.h>
 #include <Game/PartyAction.h>
 #include <Ints.h>
 

@@ -228,15 +228,15 @@ void RetireScriptActor(void) {
 }
 
 RVA(0x00032d30, 0x41)
-i16 StepScriptActor(i16 turn) {
+GZ_ENUM_RETURN(ScriptStatus, i16) StepScriptActor(i16 turn) {
     FieldActor* actor = (FieldActor*)g_curScript->actor;
     if (actor == NULL) {
-        return 0;
+        return SCRIPT_CONTINUE;
     }
     StepMapCoord(&actor->pos.x, &actor->pos.y, actor->direction, turn);
     InvalidateSelectedHotspot();
     RequestFieldRefresh();
-    return -3;
+    return SCRIPT_YIELD;
 }
 
 RVA(0x00032d80, 0x3b)
@@ -519,7 +519,7 @@ void OpJumpUnlessActorCanStep(i16 invert, i16 turn) {
 }
 
 RVA(0x00033490, 0x76)
-i16 OpSetActorAlert(i16 level) {
+GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(i16 level) {
     ReadScriptValue();
     if (g_curScript->actor != NULL) {
         if (level != 2) {
@@ -535,7 +535,7 @@ i16 OpSetActorAlert(i16 level) {
             }
         }
     }
-    return -1;
+    return SCRIPT_END;
 }
 
 RVA(0x00033510, 0x87)
@@ -2176,9 +2176,9 @@ void OpTakeDropSlot(void) {
 }
 
 RVA(0x00035b20, 0xf)
-i16 OpCallSubScene(void) {
+GZ_ENUM_RETURN(ScriptStatus, i16) OpCallSubScene(void) {
     PushGameState(GAME_STATE_GEM_ITEM_GIFT);
-    return -3;
+    return SCRIPT_YIELD;
 }
 
 // Stores in a long variable a handle to a copy of the item's decoded record
@@ -2381,16 +2381,16 @@ void OpIfBlockedToward(i16 negate, i16 turn) {
 
 // Runs move command `effect` as a screen transition and refreshes the field.
 RVA(0x00036010, 0x19)
-i16 PlayScreenTransition(i16 effect) {
+GZ_ENUM_RETURN(ScriptStatus, i16) PlayScreenTransition(i16 effect) {
     RunMoveCommand(effect, 0);
     RequestFieldRefresh();
-    return -3;
+    return SCRIPT_YIELD;
 }
 
 // Plays a screen transition, then redraws the field screen in one long frame
 // with the status redraw locked.
 RVA(0x00036030, 0x41)
-i16 OpScreenTransition(void) {
+GZ_ENUM_RETURN(ScriptStatus, i16) OpScreenTransition(void) {
     i16 result = PlayScreenTransition(ReadScriptValue());
     i16 lock = LockStatusRedraw(1);
     UpdateFieldScreen(0);
@@ -2406,7 +2406,7 @@ static __inline void LoadScriptCharacterToRoster(i16 id) {
 }
 
 RVA(0x00036080, 0xd7)
-i16 OpAddToRoster(void) {
+GZ_ENUM_RETURN(ScriptStatus, i16) OpAddToRoster(void) {
     i16 ref = ReadObjectRef();
     i16 id = ref;
     Character* character;
@@ -2419,11 +2419,11 @@ i16 OpAddToRoster(void) {
             DespawnScriptActor();
             LoadScriptCharacterToRoster(id);
         }
-        return -1;
+        return SCRIPT_END;
     }
     if (id >= 0) {
         LoadScriptCharacterToRoster(id);
-        return 0;
+        return SCRIPT_CONTINUE;
     }
     character = GetCharacter(ObjectSlotOfId(ref));
     if (RosterSlotOfId(character->id) == -1) {
@@ -2431,7 +2431,7 @@ i16 OpAddToRoster(void) {
         SetAnalyzed(character->id, 1);
         SortRoster();
     }
-    return 0;
+    return SCRIPT_CONTINUE;
 }
 
 RVA(0x00036160, 0x50)

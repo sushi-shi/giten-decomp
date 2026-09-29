@@ -5,6 +5,7 @@
 
 #include <Enums.h>
 #include <Script/ScriptPanel.h>
+#include <Script/ScriptStatus.h>
 #include <Util/Compare.h>
 
 GZ_ENUM_BEGIN(ScriptFlagAction)
@@ -163,7 +164,7 @@ void DespawnScriptActor(void);
 void RetireScriptActor(void);
 
 RVA_DECL(0x00032d30)
-i16 StepScriptActor(i16 turn);
+GZ_ENUM_RETURN(ScriptStatus, i16) StepScriptActor(i16 turn);
 
 RVA_DECL(0x00032d80)
 void OpStoreActorDistance(void);
@@ -195,7 +196,7 @@ void OpJumpUnlessActorCanStep(i16 invert, i16 turn);
 // @identity-TODO: Meaning of 0x2ac50 (actor+0x1c4=2, local flags 8/10, mode=6) and the word at
 // actor+0x17f is unproven; decode other 0x2ac50 callers (0x7390, 0xf890).
 RVA_DECL(0x00033490)
-i16 OpSetActorAlert(i16 level);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(i16 level);
 
 RVA_DECL(0x00033510)
 void OpJumpUnlessPlayerInLine(i16 invert);
@@ -355,7 +356,7 @@ void OpTakeDropSlot(void);
 
 // @identity-TODO: which scene game mode 0x26 is (pushed with 0x16c00) is unrecovered; find the
 // mode-0x26 handler.
-i16 OpCallSubScene(void);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpCallSubScene(void);
 
 void OpCopyItemRecord(void);
 
@@ -402,14 +403,14 @@ void OpIfBlockedToward(i16 negate, i16 turn);
 
 // @identity-TODO: the effect table 0x46b9d8 (8 entries, called after a colour-fill Blt in
 // 0x49f50) is unnamed.
-i16 PlayScreenTransition(i16 effect);
+GZ_ENUM_RETURN(ScriptStatus, i16) PlayScreenTransition(i16 effect);
 
-i16 OpScreenTransition(void);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpScreenTransition(void);
 
 // Adds the character, entering the roster replacement state on failure.
 void AddScriptCharacterToRoster(struct Character* character, i16 unused);
 
-i16 OpAddToRoster(void);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpAddToRoster(void);
 
 RVA_DECL(0x000361b0)
 i16 OpRemoveFromRoster(void);
