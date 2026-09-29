@@ -191,8 +191,10 @@ class BandGapTest(unittest.TestCase):
                                     "section's own layout")])
 
     def test_zero_hole_the_candidate_section_lacks_is_carved(self):
+        # A 4-byte item needs no eight-byte boundary, so neither alignment nor
+        # the candidate section (which packs it at +0xc) explains the hole.
         rows, withheld = self._gaps([self._row("_item", 0x6a238, 0xc, 0x140),
-                                     self._row("_skill", 0x6a248, 0x8, 0x14c)])
+                                     self._row("_skill", 0x6a248, 0x4, 0x14c)])
         self.assertEqual([(r["rva"], r["size"], r["provenance"]) for r in rows],
                          [(0x6a244, 4, "provisional-band-gap-zero")])
         self.assertEqual(withheld, [])

@@ -78,8 +78,7 @@ POINT g_dragOffset;
 DATA(0x0008fb04)
 u32 g_hotspotCount;
 
-// @identity-TODO: the layer table is filled by the layer constructor (0x551c0)
-// in font.cpp.
+// @identity-TODO: the layer table is filled by CreateScreenLayer in font.cpp.
 DATA(0x0008fb10)
 ScreenLayer* g_screenLayers[SCREEN_LAYER_COUNT];
 
@@ -963,7 +962,7 @@ DATA(0x00090ad4)
 static i32 s_doorFrame;
 
 // The camera's slide per frame of a step, and the cell size it slides across.
-#define STEP_SLIDE 40.0f
+#define STEP_SLIDE DATA_COMPGEN(0x00064a38, 40.0f)
 #define CELL_UNITS 320.0f
 
 // Slides the camera one frame of a forward step; past a whole cell the party
@@ -975,7 +974,7 @@ static b32 SlideForward(D3DVALUE* progress) {
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
-        step = -CELL_UNITS;
+        step = DATA_COMPGEN(0x00064a44, -320.0f);
         done = true;
         CommitPartyStep();
         BuildRoomGeometry();
@@ -2147,7 +2146,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                                 break;
                         }
                     } else {
-                        lift = 30.0f;
+                        lift = DATA_COMPGEN(0x00064aa4, 30.0f);
                         switch (g_viewDirection) {
                             case VIEW_NORTH:
                                 offsetZ = 40;
@@ -2265,7 +2264,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 info = &texture->image->info;
                 if (info->biWidth > 256) {
                     for (i = 0; i < 4; i++) {
-                        s_enemy[i].x *= 2.0f;
+                        s_enemy[i].x *= DATA_COMPGEN(0x00064aa8, 2.0f);
                     }
                 }
                 if (info->biWidth > 256 && !HasTextureHandle(texture)) {

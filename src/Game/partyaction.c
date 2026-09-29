@@ -1,8 +1,8 @@
 // @identity-TODO: the owning TU is unproven. One retail object: the .bss
-// statics of partyaction, field, attack and partypick interleave in a single run,
-// and their initialized data and string literals form one .data run. The
-// field-map routine at 0x407390 and the field state handler at 0x407aa0
-// (about forty unclaimed callees) use the field statics and belong to it.
+// statics of partyaction, field, attack and partypick interleave in a single
+// run, and their initialized data and string literals form one .data run. The
+// unreconstructed field-map routine and field state handler (about forty
+// unclaimed callees) use the field statics and belong to it.
 
 #include <rva.h>
 

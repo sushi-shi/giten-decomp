@@ -1,9 +1,9 @@
 // @identity-TODO: the owning TU is unproven. One retail object: the world-map
 // travel code, the route queue and the world-map place names. Their .bss
-// statics form one run (0x47b500..0x47b73f) ahead of fieldmain's, and their
-// initialized data forms one .data run out of .text order (the place-name
-// words, then the travel-history limit) closed by the place-name code's
-// literal, before fieldmain's .data.
+// statics form one run ahead of fieldmain's, and their initialized data forms
+// one .data run out of .text order (the place-name words, then the
+// travel-history limit) closed by the place-name code's literal, before
+// fieldmain's .data.
 
 #include <rva.h>
 

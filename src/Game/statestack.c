@@ -1,15 +1,15 @@
 // @identity-TODO: the owning TU is unproven. One retail object: the .bss
 // statics of the state stack, menu cursor, status screen, DDS menu, scene
 // cell, level-up, world map, party picker, subscreen and item-use code
-// interleave in one run (0x47b818..0x47bedb), each read only by its own
-// part's code; their initialized data forms one .data run (the world-map
-// position, then status-screen, item-use, field-mark, level-up and DDS menu
-// words) ahead of one run of literals; and the code, from the state stack
-// through the item-use flow, is contiguous in .text. It holds the state stack
-// and main state dispatcher, the status screen entry and exit, the DDS menu,
-// the scene record the cell events fill with the background loader and moon
-// table, the level-up screen, the world-map state, the field-location marks
-// and the field item-use flow.
+// interleave in one run, each read only by its own part's code; their
+// initialized data forms one .data run (the world-map position, then
+// status-screen, item-use, field-mark, level-up and DDS menu words) ahead of
+// one run of literals; and the code, from the state stack through the item-use
+// flow, is contiguous in .text. It holds the state stack and main state
+// dispatcher, the status screen entry and exit, the DDS menu, the scene record
+// the cell events fill with the background loader and moon table, the level-up
+// screen, the world-map state, the field-location marks and the field item-use
+// flow.
 
 #include <rva.h>
 

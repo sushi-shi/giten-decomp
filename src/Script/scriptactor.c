@@ -1,10 +1,10 @@
 // @identity-TODO: the owning TU is unproven. One retail object: the script
 // actor and flow opcodes, the comparison and clock opcodes, the text tokens,
 // the operand reader and the choice commands. The flow and actor statics
-// follow the token, choice and operand statics in one .bss run
-// (0x481230..0x48135b), against .text order; the token tables follow the
-// choice command's hovered word in .data; each static is read only by its
-// own part's code, and the code is contiguous in .text.
+// follow the token, choice and operand statics in one .bss run, against .text
+// order; the token tables follow the choice command's hovered word in .data;
+// each static is read only by its own part's code, and the code is contiguous
+// in .text.
 
 #include <rva.h>
 

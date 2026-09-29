@@ -29,7 +29,7 @@ typedef struct LearnableSkillRequirement {
 void LoadLearnableSkillTables(void);
 i16 TakeLearnableSkill(Character* character, i16* skills);
 
-// Four stat pairs; unrelated nonzero words follow this table in retail.
+// Four stat pairs.
 extern const i16 g_affiliationGrowthStats[4][2];
 
 #define GetAffiliationGrowthStat(affiliation, choice)                                              \

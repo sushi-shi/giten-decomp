@@ -7,8 +7,8 @@
 
 #include <Game/Alignment.h>
 #include <Game/BagItems.h>
-#include <Game/CharInfo.h>
 #include <Game/Character.h>
+#include <Game/CharInfo.h>
 #include <Game/ClickWait.h>
 #include <Game/ConditionAge.h>
 #include <Game/DemonTable.h>
