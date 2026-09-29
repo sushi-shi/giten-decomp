@@ -8,6 +8,7 @@
 #include <Game/ItemPool.h>
 #include <Game/StateStack.h>
 #include <Gfx/Render.h>
+#include <Script/BranchMode.h>
 #include <Script/EventFlags.h>
 #include <Script/LongVar.h>
 #include <Script/Script.h>
@@ -76,40 +77,40 @@ i16 ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(ScriptOpcode, u16) op) {
                 OpJumpUnlessEventFlag(SCRIPT_FLAG_TEST, 1);
                 return 0;
             case SCRIPT_OP_GOTO_SCRIPT:
-                OpJumpScript(0);
+                OpJumpScript(SCRIPT_BRANCH_JUMP);
                 return 0;
             case SCRIPT_OP_CALL_SCRIPT:
-                OpJumpScript(1);
+                OpJumpScript(SCRIPT_BRANCH_CALL);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_RANDOM_JUMP:
-                OpSwitchOnRandom(0);
+                OpSwitchOnRandom(SCRIPT_BRANCH_JUMP);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_SELECTION_JUMP:
-                OpSwitchOnSelection(0);
+                OpSwitchOnSelection(SCRIPT_BRANCH_JUMP);
                 return 0;
             case 16:
-                OpJumpUnlessStatContest(0, 0, 0);
+                OpJumpUnlessStatContest(0, SCRIPT_TEST_NORMAL, 0);
                 return 0;
             case 17:
-                OpJumpUnlessStatContest(0, 1, 0);
+                OpJumpUnlessStatContest(0, SCRIPT_TEST_INVERTED, 0);
                 return 0;
             case 18:
-                OpJumpUnlessStatContest(1, 0, 0);
+                OpJumpUnlessStatContest(1, SCRIPT_TEST_NORMAL, 0);
                 return 0;
             case 19:
-                OpJumpUnlessStatContest(1, 1, 0);
+                OpJumpUnlessStatContest(1, SCRIPT_TEST_INVERTED, 0);
                 return 0;
             case 20:
-                OpJumpUnlessStatContest(2, 0, 0);
+                OpJumpUnlessStatContest(2, SCRIPT_TEST_NORMAL, 0);
                 return 0;
             case 21:
-                OpJumpUnlessStatContest(2, 1, 0);
+                OpJumpUnlessStatContest(2, SCRIPT_TEST_INVERTED, 0);
                 return 0;
             case 22:
-                OpJumpUnlessStatContest(3, 0, 0);
+                OpJumpUnlessStatContest(3, SCRIPT_TEST_NORMAL, 0);
                 return 0;
             case 23:
-                OpJumpUnlessStatContest(3, 1, 0);
+                OpJumpUnlessStatContest(3, SCRIPT_TEST_INVERTED, 0);
                 return 0;
             case SCRIPT_OP_JUMP:
                 OpJump();
@@ -169,46 +170,46 @@ i16 ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(ScriptOpcode, u16) op) {
             case SCRIPT_OP_DELAY_ACTOR:
                 return OpSetActorAlert(2);
             case SCRIPT_OP_SWITCH_ON_RANDOM_CALL:
-                OpSwitchOnRandom(1);
+                OpSwitchOnRandom(SCRIPT_BRANCH_CALL);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_SELECTION_CALL:
-                OpSwitchOnSelection(1);
+                OpSwitchOnSelection(SCRIPT_BRANCH_CALL);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_ALIGNMENT_A_JUMP:
-                OpSwitchOnAlignmentA(0);
+                OpSwitchOnAlignmentA(SCRIPT_BRANCH_JUMP);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_ALIGNMENT_A_CALL:
-                OpSwitchOnAlignmentA(1);
+                OpSwitchOnAlignmentA(SCRIPT_BRANCH_CALL);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_ALIGNMENT_B_JUMP:
-                OpSwitchOnAlignmentB(0);
+                OpSwitchOnAlignmentB(SCRIPT_BRANCH_JUMP);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_ALIGNMENT_B_CALL:
-                OpSwitchOnAlignmentB(1);
+                OpSwitchOnAlignmentB(SCRIPT_BRANCH_CALL);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_MOON_PHASE_JUMP:
-                OpSwitchOnMoonPhase(0);
+                OpSwitchOnMoonPhase(SCRIPT_BRANCH_JUMP);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_MOON_PHASE_CALL:
-                OpSwitchOnMoonPhase(1);
+                OpSwitchOnMoonPhase(SCRIPT_BRANCH_CALL);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_RANGE_JUMP:
-                OpSwitchOnRange(0);
+                OpSwitchOnRange(SCRIPT_BRANCH_JUMP);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_RANGE_CALL:
-                OpSwitchOnRange(1);
+                OpSwitchOnRange(SCRIPT_BRANCH_CALL);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_ACTOR_ATTR_A_JUMP:
-                OpSwitchOnActorAttrA(0);
+                OpSwitchOnActorAttrA(SCRIPT_BRANCH_JUMP);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_ACTOR_ATTR_A_CALL:
-                OpSwitchOnActorAttrA(1);
+                OpSwitchOnActorAttrA(SCRIPT_BRANCH_CALL);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_ACTOR_ATTR_B_JUMP:
-                OpSwitchOnActorAttrB(0);
+                OpSwitchOnActorAttrB(SCRIPT_BRANCH_JUMP);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_ACTOR_ATTR_B_CALL:
-                OpSwitchOnActorAttrB(1);
+                OpSwitchOnActorAttrB(SCRIPT_BRANCH_CALL);
                 return 0;
             case SCRIPT_OP_SET_ACTOR_ATTITUDE:
                 OpSetActorAttitude();
@@ -1239,10 +1240,10 @@ i16 ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(ScriptOpcode, u16) op) {
                 OpTestEventFlagByValue();
                 return 0;
             case SCRIPT_OP_SWITCH_ON_VALUE_JUMP:
-                OpSwitchOnValue(0);
+                OpSwitchOnValue(SCRIPT_BRANCH_JUMP);
                 return 0;
             case SCRIPT_OP_SWITCH_ON_VALUE_CALL:
-                OpSwitchOnValue(1);
+                OpSwitchOnValue(SCRIPT_BRANCH_CALL);
                 return 0;
             case SCRIPT_OP_GET_PLAYER_LOCATION:
                 OpGetPlayerLocation();
