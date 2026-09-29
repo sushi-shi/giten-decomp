@@ -59,16 +59,17 @@ typedef struct StatBlock {
 
 // A battle command, numbered from its row in the actor command menu
 // (s_commandLabels), as a member's pickRole keeps it; 0 is none.
-// Codegen constraint: an enum here renumbers the declarations of every unit
-// including this header and loses exact matches (see rule-exceptions.tsv).
-#define PICK_ROLE_ATTACK 1
-#define PICK_ROLE_GUN 2
-#define PICK_ROLE_COMP 3
-#define PICK_ROLE_MAGIC 4
-#define PICK_ROLE_ITEM 5
-#define PICK_ROLE_EXTRA 6
-#define PICK_ROLE_RETURN 7
-#define PICK_ROLE_DEFENCE 8
+GZ_ENUM_BEGIN_SPLIT(PickRole, i8)
+    PICK_ROLE_NONE = 0,
+    PICK_ROLE_ATTACK = 1,
+    PICK_ROLE_GUN = 2,
+    PICK_ROLE_COMP = 3,
+    PICK_ROLE_MAGIC = 4,
+    PICK_ROLE_ITEM = 5,
+    PICK_ROLE_EXTRA = 6,
+    PICK_ROLE_RETURN = 7,
+    PICK_ROLE_DEFENCE = 8
+GZ_ENUM_END_SPLIT(PickRole)
 
 // @identity-TODO: a party member's 0x21f-byte record (the 16-entry table of
 // them, the script objects resolved from negative ids, and the objects whose
@@ -167,7 +168,7 @@ typedef struct Character {
     // member with it set) and an action wait (OpSetActorAlert clamps it).
     ActionWait actionWait;
     // The battle command the member picked (a PICK_ROLE_*), and the record it uses.
-    i8 pickRole;
+    GZ_ENUM_STORAGE(PickRole, i8) pickRole;
     i16 pickTarget : 15;
     i16 pickTargetHigh : 1;
     // @identity-TODO: the object (or -1 - party position) the pick targets.

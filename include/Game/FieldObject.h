@@ -70,7 +70,7 @@ typedef struct FieldObject {
     i16 battleStatsShown[24];
     ConditionSet conditions;
     ActionWait actionWait;
-    i8 pickRole;
+    GZ_ENUM_STORAGE(PickRole, i8) pickRole;
     i16 pickTarget : 15;
     i16 pickTargetHigh : 1;
     i16 pickObject : 14;
