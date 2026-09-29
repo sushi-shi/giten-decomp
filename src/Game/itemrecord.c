@@ -578,7 +578,13 @@ i16 StoreBagItem(i16 item, i16 count, i16 attachment) {
             count = left;
             if (s_bagQuiet == 0) {
                 if (count > 0) {
+#ifdef GITEN_BUGFIX
+                    if (!RunBagDiscardMenu()) {
+                        break;
+                    }
+#else
                     RunBagDiscardMenu();
+#endif
                 }
             } else {
                 count = 0;
@@ -907,7 +913,16 @@ i16 FillBagEntry(i16 index, i16 item, u16 amount, u16 limit, i16 attachment, i16
 // build keeps it at the item word.
 RVA(0x00023f20, 0x1d0)
 static void CompactBagCore(void) {
+#ifdef GITEN_BUGFIX
+    // @bug Retail keeps the first 16 scenario entries it finds and clears the
+    // rest, which AddScenarioBagItems's overflow into the normal entries would
+    // lose on the next compaction. Every scenario entry is kept: the scenario
+    // range takes the first 16 again and the rest go to the free normal
+    // entries, which the other entries' compaction leaves at its end.
+    ItemStack scenarioItems[64];
+#else
     ItemStack scenarioItems[16];
+#endif
     i16 kept = 0;
     i16 limit;
     i16 count;
@@ -915,15 +930,23 @@ static void CompactBagCore(void) {
     i16 i;
     i16 j;
 
+#ifdef GITEN_BUGFIX
+    for (i = 0; i < 64; i++) {
+#else
     for (i = 0; i < 16; i++) {
+#endif
         ClearItemStack(&scenarioItems[i]);
     }
     for (i = 0; i < 64; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != -1
             && GetItemKind(GetItemStackItem(&g_bagItems[i])) == ITEM_KIND_SCENARIO) {
+#ifdef GITEN_BUGFIX
+            scenarioItems[kept++] = g_bagItems[i];
+#else
             if (kept < 16) {
                 scenarioItems[kept++] = g_bagItems[i];
             }
+#endif
             ClearItemStack(&g_bagItems[i]);
         }
     }
@@ -956,7 +979,11 @@ static void CompactBagCore(void) {
         if (GetItemStackItem(&g_bagItems[i]) != -1) {
             continue;
         }
+#ifdef GITEN_BUGFIX
+        for (j = 0; j < kept; j++) {
+#else
         for (j = 0; j < 16; j++) {
+#endif
             if (GetItemStackItem(&scenarioItems[j]) != -1) {
                 g_bagItems[i] = scenarioItems[j];
                 ClearItemStack(&scenarioItems[j]);
@@ -964,6 +991,20 @@ static void CompactBagCore(void) {
             }
         }
     }
+#ifdef GITEN_BUGFIX
+    for (i = 0; i < 48; i++) {
+        if (GetItemStackItem(&g_bagItems[i]) != -1) {
+            continue;
+        }
+        for (j = 0; j < kept; j++) {
+            if (GetItemStackItem(&scenarioItems[j]) != -1) {
+                g_bagItems[i] = scenarioItems[j];
+                ClearItemStack(&scenarioItems[j]);
+                break;
+            }
+        }
+    }
+#endif
 }
 
 RVA(0x000240f0, 0x50)
@@ -1032,6 +1073,21 @@ i16 AddScenarioBagItems(i16 item, i16 count) {
             }
         }
     }
+#ifdef GITEN_BUGFIX
+    // @bug A scenario item goes only into the bag's last 16 entries, and only
+    // into empty ones (a second copy takes another entry). With all 16 held
+    // StoreBagItem opens RunBagDiscardMenu until the item fits, but that menu
+    // lists no scenario entry, so no discard makes room: it opens again after
+    // every discard until nothing is left to list, and that last menu never
+    // closes. The rest goes to empty normal entries instead; the scenario
+    // item's readers find it by item, in any entry.
+    for (i = 0; i < 48 && count > 0; i++) {
+        if (GetItemStackItem(&g_bagItems[i]) == -1) {
+            SetBagEntry(i, item, -1);
+            count -= AddToBagEntry(i, count, limit);
+        }
+    }
+#endif
     return count;
 }
 
@@ -2018,7 +2074,11 @@ i16 ExpireSpecialItems(void) {
 static void DiscardMenuHandler(MenuBox* menu, i16 index, i16 event);
 
 RVA(0x00025cb0, 0xe0)
+#ifdef GITEN_BUGFIX
+b32 RunBagDiscardMenu(void) {
+#else
 void RunBagDiscardMenu(void) {
+#endif
     i16 entries[64];
     i16 count = 0;
     MenuBox* menu;
@@ -2035,12 +2095,30 @@ void RunBagDiscardMenu(void) {
     menu->flags |= 0x1e;
     SetMenuItems(menu, 8, entries, count, DiscardMenuHandler);
     MoveMenuBox(menu, -8, -0x16);
+#ifdef GITEN_BUGFIX
+    // @bug With no entry to list (every one priceless or a scenario item) the
+    // menu, whose cancel is off, can never be left, and the entry it clears
+    // would be read from the uninitialised `entries`. The menu then says the
+    // item cannot be carried, turns cancel on and discards nothing, and
+    // StoreBagItem stops trying to store the rest.
+    if (count == 0) {
+        SetTextPlaneCancelEnabled(menu->plane, 1);
+        while (RunMenu(menu) != -1) {
+            WaitMenuFrame();
+        }
+        DestroyMenuBox(menu);
+        return false;
+    }
+#endif
     SetTextPlaneCancelEnabled(menu->plane, 0);
     while (RunMenu(menu) != 1) {
         WaitMenuFrame();
     }
     DestroyMenuBox(menu);
     SetBagEntry(entries[g_selectedObjectId], -1, -1);
+#ifdef GITEN_BUGFIX
+    return true;
+#endif
 }
 
 RVA(0x00025d90, 0x20)
@@ -2061,6 +2139,19 @@ static void DiscardMenuHandler(MenuBox* menu, i16 index, i16 event) {
             // "アイテム削除" (delete item)
             sprintf(g_scratchBuffer, "\203\101\203\103\203\145\203\200\215\355\217\234");
             AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
+#ifdef GITEN_BUGFIX
+            if (menu->itemCount == 0) {
+                // "アイテムを持ちきれません" (the item cannot be carried)
+                AddMenuLine(
+                    menu->plane,
+                    "\203\101\203\103\203\145\203\200\202\360\216\235"
+                    "\202\277\202\253\202\352\202\334\202\271\202\361",
+                    0x400,
+                    -1,
+                    1
+                );
+            }
+#endif
             break;
         case MENU_EVENT_ADD_ROW:
             sprintf(

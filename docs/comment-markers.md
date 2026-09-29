@@ -10,6 +10,7 @@ Address and symbol bindings use [include/rva.h](../include/rva.h) macros or
 | `// @identity-TODO` | Unproven identity; state what evidence would establish it. |
 | `// @interleaver <sym>` | Proven linker-pooled member within another unit's contribution; record placement evidence. |
 | `// @dead-code` | Proven zero-reference function; still requires full reconstruction. |
+| `// @bug` | Inside a `GITEN_COMPAT` or `GITEN_BUGFIX` block: the retail defect, its trigger and consequence, and the fix ([bugs](bugs.md)). |
 
 A marker starts its comment line; trailing text is prose. Other TODOs and
 observations use plain prose, not new `@` names. Mid-line mentions are prose.

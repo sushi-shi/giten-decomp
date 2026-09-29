@@ -71,6 +71,15 @@ CANDIDATE_EXE = "build/exe/DDS.candidate.EXE"
 CANDIDATE_MAP = "build/exe/DDS.candidate.map"
 RESOURCE_RES = "build/gen/retail.res"
 
+#: The playable image (`giten play`): the units that test a play flag
+#: recompiled with the bug-fix defines into their own object tree, linked with
+#: every other unit's matching object and the retail resources.
+PLAY_DIR = "build/play"
+PLAY_OBJ_DIR = f"{PLAY_DIR}/obj"
+PLAY_EXE = f"{PLAY_DIR}/DDS.EXE"
+PLAY_MAP = f"{PLAY_DIR}/DDS.map"
+PLAY_DEFINES = ["/DGITEN_BUGFIX"]
+
 #: `wine cl` parallelism. Wine serialises far more than it looks under a
 #: shared wineserver, and past ~8 concurrent cl.exe the server thrashes and
 #: the build slows down; the pool caps the cl edges without capping ninja.

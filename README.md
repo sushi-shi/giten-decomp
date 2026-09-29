@@ -5,6 +5,8 @@ Binary-matching reconstruction of **Giten Megami Tensei: Tokyo Mokushiroku**
 The build compares reconstructed C and platform C++ with retail using MSVC 5.0 SP3.
 The optional candidate EXE uses resources extracted from your local original EXE.
 Correct rendering and gameplay have not been validated.
+`giten play` builds a playable image with retail bug fixes and starts it under Wine;
+see [Playing](docs/play.md).
 
 ## Quickstart
 

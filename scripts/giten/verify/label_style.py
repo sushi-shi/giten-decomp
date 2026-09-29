@@ -49,7 +49,7 @@ FIND_RE = re.compile(
     r"\b(RVA_COMPGEN|RVA_DYNINIT|RVA_DECL|DATA_COMPGEN|DATA_MESSAGE_MAP|RVA|DATA)\s*\(")
 COMMENT_ROW_RE = re.compile(r"@(?:rva|data)-symbol:\s*\S+\s+0x[0-9a-fA-F]+")
 ALLOWED_MARKERS = {"stub", "early-stop", "identity-TODO", "confidence",
-                   "source", "interleaver", "dead-code"}
+                   "source", "interleaver", "dead-code", "bug"}
 MARKER_RE = re.compile(r"^\s*// ?@([A-Za-z][A-Za-z0-9_-]*)")
 
 
