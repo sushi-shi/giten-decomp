@@ -22,6 +22,7 @@
 #include <Game/ConditionAge.h>
 #include <Game/DemonTable.h>
 #include <Game/DropTable.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/Familiarity.h>
 #include <Game/Field.h>
 #include <Game/FieldMain.h>
@@ -1868,8 +1869,8 @@ void OpJumpUnlessHeroEquipped(i16 invert) {
     i32 jump = 0;
     i16 target = ReadBranchTarget();
     Character* player = ResolveScriptObject(-1);
-    if ((GetCharacterEquipment(player)[6].item != -1 && !invert)
-        || (GetCharacterEquipment(player)[6].item == -1 && invert)) {
+    if ((GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item != -1 && !invert)
+        || (GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item == -1 && invert)) {
         jump = 1;
     }
     ScriptJumpUnless(target, jump);
@@ -3076,21 +3077,21 @@ i32* ReadScriptOperand(void) {
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[5].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].item;
             return &s_operand;
         case 60:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[6].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item;
             return &s_operand;
         case 61:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[7].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].item;
             return &s_operand;
         case 62:
             object = ReadScriptObject();
@@ -3125,35 +3126,35 @@ i32* ReadScriptOperand(void) {
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[0].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].item;
             return &s_operand;
         case 67:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[1].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_BODY].item;
             return &s_operand;
         case 68:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[2].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].item;
             return &s_operand;
         case 69:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[3].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].item;
             return &s_operand;
         case 70:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[4].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].item;
             return &s_operand;
         case 71:
         case 72:
@@ -3221,56 +3222,56 @@ i32* ReadScriptOperand(void) {
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[5].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].value;
             return &s_operand;
         case 87:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[6].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_GUN].value;
             return &s_operand;
         case 88:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[7].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].value;
             return &s_operand;
         case 89:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[0].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].value;
             return &s_operand;
         case 90:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[1].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_BODY].value;
             return &s_operand;
         case 91:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[2].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].value;
             return &s_operand;
         case 92:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[3].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].value;
             return &s_operand;
         case 93:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[4].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].value;
             break;
     }
     return &s_operand;
@@ -3444,15 +3445,16 @@ void OpSetObjectField(void) {
             object->battleStats[18] = value;
             return;
         case 59:
-            GetCharacterEquipment(object)[5].item = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].item = value;
             return;
         case 60:
-            GetCharacterEquipment(object)[6].item = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item = value;
             return;
         case 61:
-            GetCharacterEquipment(object)[7].item = value;
-            GetCharacterEquipment(object)[7].quantity =
-                GetGunMagazineSize(GetLoadedRecord(GetCharacterEquipment(object)[6].item));
+            GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].item = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].quantity = GetGunMagazineSize(
+                GetLoadedRecord(GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item)
+            );
             return;
         case 63:
             object->battleStats[0] = value;
@@ -3464,19 +3466,19 @@ void OpSetObjectField(void) {
             object->battleStats[12] = value;
             return;
         case 66:
-            GetCharacterEquipment(object)[0].item = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].item = value;
             return;
         case 67:
-            GetCharacterEquipment(object)[1].item = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_BODY].item = value;
             return;
         case 68:
-            GetCharacterEquipment(object)[2].item = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].item = value;
             return;
         case 69:
-            GetCharacterEquipment(object)[3].item = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].item = value;
             return;
         case 70:
-            GetCharacterEquipment(object)[4].item = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].item = value;
             return;
         case 71:
         case 72:
@@ -3499,28 +3501,28 @@ void OpSetObjectField(void) {
             object->title = value;
             return;
         case 86:
-            GetCharacterEquipment(object)[5].value = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].value = value;
             return;
         case 87:
-            GetCharacterEquipment(object)[6].value = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_GUN].value = value;
             return;
         case 88:
-            GetCharacterEquipment(object)[7].value = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].value = value;
             return;
         case 89:
-            GetCharacterEquipment(object)[0].value = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].value = value;
             return;
         case 90:
-            GetCharacterEquipment(object)[1].value = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_BODY].value = value;
             return;
         case 91:
-            GetCharacterEquipment(object)[2].value = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].value = value;
             return;
         case 92:
-            GetCharacterEquipment(object)[3].value = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].value = value;
             return;
         case 93:
-            GetCharacterEquipment(object)[4].value = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].value = value;
             return;
     }
 }

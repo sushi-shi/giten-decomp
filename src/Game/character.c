@@ -20,6 +20,7 @@
 #include <Game/EquipEffect.h>
 #include <Game/EquipMagicDefense.h>
 #include <Game/EquipScreen.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/FieldHud.h>
 #include <Game/FieldMain.h>
 #include <Game/FieldObject.h>
@@ -713,22 +714,30 @@ void RecalcDerivedStats(Character* character) {
     i16* stats;
 
     memset(bonuses, 0, sizeof(bonuses));
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[5].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[6].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[7].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[5].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[6].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[7].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].attachment, bonuses, true);
+    AddItemStatBonuses(
+        GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].attachment,
+        bonuses,
+        true
+    );
+    AddItemStatBonuses(
+        GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].attachment,
+        bonuses,
+        true
+    );
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].attachment, bonuses, true);
 
     stats = character->stats.total;
     character->battleStats[0] = level;
@@ -754,15 +763,17 @@ void RecalcDerivedStats(Character* character) {
         GetBattleStatBase(character, BATTLE_STAT_WEAPON_DEFENSE);
     character->battleStats[12] = kept12;
     character->battleStats[13] = 1;
-    character->battleStats[BATTLE_STAT_MAGIC_POWER] =
-        CalcMagicPowerStat(stats, GetItemMagicPowerBonus(GetCharacterEquipment(character)[5].item));
+    character->battleStats[BATTLE_STAT_MAGIC_POWER] = CalcMagicPowerStat(
+        stats,
+        GetItemMagicPowerBonus(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item)
+    );
     character->battleStats[BATTLE_STAT_MAGIC_ACCURACY] = CalcMagicAccuracyStat(
         stats,
-        GetItemMagicAccuracyBonus(GetCharacterEquipment(character)[5].item)
+        GetItemMagicAccuracyBonus(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item)
     );
     character->battleStats[BATTLE_STAT_MAGIC_EVASION] = CalcMagicEvasionStat(
         stats,
-        GetItemPhysicalEvasionBonus(GetCharacterEquipment(character)[4].item)
+        GetItemPhysicalEvasionBonus(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item)
     );
     character->battleStats[BATTLE_STAT_MAGIC_DEFENSE] =
         CalcMagicDefenseStat(stats, SumEquippedMagicDefenseBonus(character, 3));
@@ -780,16 +791,20 @@ i16 SumArmorDefenseBonus(Character* character) {
     i16 bonuses[24];
 
     memset(bonuses, 0, sizeof(bonuses));
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].item, bonuses, false);
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].attachment, bonuses, true);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].attachment, bonuses, true);
+    AddItemStatBonuses(
+        GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].attachment,
+        bonuses,
+        true
+    );
     return bonuses[BATTLE_STAT_WEAPON_DEFENSE];
 }
 
@@ -2532,21 +2547,21 @@ ItemSlot GetEquipSlot(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part) 
     if (character != NULL) {
         switch (part) {
             case EQUIP_PART_WEAPON:
-                return GetCharacterEquipment(character)[5];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON];
             case EQUIP_PART_GUN:
-                return GetCharacterEquipment(character)[6];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_GUN];
             case EQUIP_PART_AMMO:
-                return GetCharacterEquipment(character)[7];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_AMMO];
             case EQUIP_PART_HEAD:
-                return GetCharacterEquipment(character)[0];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_HEAD];
             case EQUIP_PART_BODY:
-                return GetCharacterEquipment(character)[1];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_BODY];
             case EQUIP_PART_ARMS:
-                return GetCharacterEquipment(character)[2];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_ARMS];
             case EQUIP_PART_LEGS:
-                return GetCharacterEquipment(character)[3];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_LEGS];
             case EQUIP_PART_ACCESSORY:
-                return GetCharacterEquipment(character)[4];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY];
         }
     }
     return none;
@@ -2570,31 +2585,33 @@ GZ_ENUM_RETURN(EquipPart, i16) SetEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i
     }
     switch (part) {
         case EQUIP_PART_WEAPON:
-            GetCharacterEquipment(character)[5] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON] = item;
             break;
         case EQUIP_PART_GUN:
-            GetCharacterEquipment(character)[6] = item;
-            if (check && CanEquipItem(character, GetCharacterEquipment(character)[7].item) < 1) {
+            GetCharacterEquipment(character)[EQUIP_SLOT_GUN] = item;
+            if (check
+                && CanEquipItem(character, GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item)
+                       < 1) {
                 UnequipPart(slot, EQUIP_PART_AMMO);
             }
             break;
         case EQUIP_PART_AMMO:
-            GetCharacterEquipment(character)[7] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_AMMO] = item;
             break;
         case EQUIP_PART_HEAD:
-            GetCharacterEquipment(character)[0] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_HEAD] = item;
             break;
         case EQUIP_PART_BODY:
-            GetCharacterEquipment(character)[1] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_BODY] = item;
             break;
         case EQUIP_PART_ARMS:
-            GetCharacterEquipment(character)[2] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_ARMS] = item;
             break;
         case EQUIP_PART_LEGS:
-            GetCharacterEquipment(character)[3] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_LEGS] = item;
             break;
         case EQUIP_PART_ACCESSORY:
-            GetCharacterEquipment(character)[4] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY] = item;
             break;
         default:
             part = -1;
@@ -2634,10 +2651,10 @@ i16 GetGunAmmoType(Character* character) {
     if (!character) {
         return -1;
     }
-    if (GetCharacterEquipment(character)[6].item < 1) {
+    if (GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item < 1) {
         return -1;
     }
-    return GetItemAmmoType(GetLoadedRecord(GetCharacterEquipment(character)[6].item));
+    return GetItemAmmoType(GetLoadedRecord(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item));
 }
 
 // The equipment part item `item` goes in when `character` can equip it, else
@@ -2719,14 +2736,14 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
 // Normalises all eight equipment slots.
 RVA(0x00040830, 0x7f)
 void NormalizeEquipSlots(Character* character) {
-    NormalizeItemSlot(&GetCharacterEquipment(character)[0]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[1]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[2]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[3]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[4]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[5]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[6]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[7]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_HEAD]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_BODY]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_ARMS]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_LEGS]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_GUN]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_AMMO]);
 }
 
 // Empties a slot without an item; a non-ammunition item gets quantity 1.

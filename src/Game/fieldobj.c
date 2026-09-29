@@ -1514,7 +1514,10 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             g_actorId = index;
             object->mode = 10;
             object->pickRole = PICK_ROLE_ATTACK;
-            SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
+            SetFieldObjectPickTarget(
+                object,
+                GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON].item
+            );
             g_actionId = 1;
             tries = 0;
             for (;;) {
@@ -1531,7 +1534,10 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                         }
                         g_actionId = 1;
                         object->pickRole = PICK_ROLE_ATTACK;
-                        SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
+                        SetFieldObjectPickTarget(
+                            object,
+                            GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON].item
+                        );
                     } else if (result != 0) {
                         action = 2;
                         goto attack;
@@ -1539,7 +1545,10 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                 } else {
                     object->mode = 10;
                     object->pickRole = PICK_ROLE_ATTACK;
-                    SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
+                    SetFieldObjectPickTarget(
+                        object,
+                        GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON].item
+                    );
                     g_actionId = 1;
                 }
                 if (GetFieldMarker() || IsWithinRange(GetSkillAttackRange(g_actionId))) {
@@ -1942,22 +1951,22 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     for (i = 0; i < sizeof(object->battleTally); i++) {
         object->battleTally[i] = 0;
     }
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[0], record->items[0]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[1], record->items[1]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[2], record->items[2]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[3], record->items[3]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[4], record->items[4]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[5], record->items[5]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[6], record->items[6]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[7], record->items[7]);
-    if (GetFieldObjectEquipment(object)[6].item < 1) {
-        EmptyItemSlot(&GetFieldObjectEquipment(object)[6]);
-        GetFieldObjectEquipment(object)[6].attachment = -1;
-        EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
-        GetFieldObjectEquipment(object)[7].attachment = -1;
-    } else if (GetFieldObjectEquipment(object)[7].item < 1) {
-        EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
-        GetFieldObjectEquipment(object)[7].attachment = -1;
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_HEAD], record->items[0]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_BODY], record->items[1]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_ARMS], record->items[2]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_LEGS], record->items[3]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_ACCESSORY], record->items[4]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON], record->items[5]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN], record->items[6]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO], record->items[7]);
+    if (GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item < 1) {
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN]);
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].attachment = -1;
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO]);
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].attachment = -1;
+    } else if (GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].item < 1) {
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO]);
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].attachment = -1;
     } else {
         GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].quantity = GetGunMagazineSize(
             GetLoadedRecord(GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item)

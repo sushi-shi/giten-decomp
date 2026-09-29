@@ -18,6 +18,7 @@
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
 #include <Game/EquipEffect.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/Field.h>
 #include <Game/FieldActor.h>
 #include <Game/FieldMap.h>
@@ -341,7 +342,7 @@ i16 PickActorAction(Character* actor) {
 static __inline void SetBasicAttackPick(Character* actor, i16 target) {
     actor->mode = 1;
     actor->pickRole = PICK_ROLE_ATTACK;
-    SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[5].item);
+    SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item);
     actor->pickObject = target;
 }
 
@@ -650,11 +651,11 @@ i16 RunActorCommandMenu(i16 id) {
 RVA(0x00006500, 0xaa)
 b16 FormatAttackCommand(Character* actor) {
     ItemRecord record;
-    if (GetCharacterEquipment(actor)[5].item < 1) {
+    if (GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item < 1) {
         strcpy(g_scratchBuffer, "ATTACK");
         return true;
     }
-    DecodeItemRecord(&record, GetCharacterEquipment(actor)[5].item);
+    DecodeItemRecord(&record, GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item);
     if (!record.kind) {
         strcpy(g_scratchBuffer, "ATTACK");
         return true;
@@ -666,21 +667,21 @@ b16 FormatAttackCommand(Character* actor) {
 RVA(0x000065b0, 0xb0)
 b16 FormatGunCommand(Character* actor) {
     ItemRecord record;
-    if (GetCharacterEquipment(actor)[6].item < 1) {
+    if (GetCharacterEquipment(actor)[EQUIP_SLOT_GUN].item < 1) {
         return false;
     }
     if (HasObjectInReach(0, -1, 0)) {
         return false;
     }
     strcpy(g_scratchBuffer, "GUN");
-    DecodeItemRecord(&record, GetCharacterEquipment(actor)[6].item);
+    DecodeItemRecord(&record, GetCharacterEquipment(actor)[EQUIP_SLOT_GUN].item);
     if (!record.kind) {
         return false;
     }
-    if (GetCharacterEquipment(actor)[7].item < 1) {
+    if (GetCharacterEquipment(actor)[EQUIP_SLOT_AMMO].item < 1) {
         return false;
     }
-    DecodeItemRecord(&record, GetCharacterEquipment(actor)[7].item);
+    DecodeItemRecord(&record, GetCharacterEquipment(actor)[EQUIP_SLOT_AMMO].item);
     return record.kind != 0;
 }
 
@@ -756,10 +757,10 @@ i16 PrepareMemberPickTarget(i16 id) {
     if (actor) {
         switch (actor->pickRole) {
             case PICK_ROLE_ATTACK:
-                SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[5].item);
+                SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item);
                 return 1;
             case PICK_ROLE_GUN:
-                SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[6].item);
+                SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[EQUIP_SLOT_GUN].item);
                 return 1;
             case PICK_ROLE_MAGIC:
             case PICK_ROLE_EXTRA:
@@ -956,11 +957,13 @@ i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
     switch (actor->pickRole) {
         case PICK_ROLE_ATTACK:
             *condition = 0;
-            if (GetCharacterEquipment(actor)[5].item != -1) {
+            if (GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item != -1) {
                 *condition = GetEquipmentInflictedCondition(
-                    GetLoadedRecord(GetCharacterEquipment(actor)[5].item)
+                    GetLoadedRecord(GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item)
                 );
-                return GetEquipmentAttribute(GetLoadedRecord(GetCharacterEquipment(actor)[5].item));
+                return GetEquipmentAttribute(
+                    GetLoadedRecord(GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item)
+                );
             }
             break;
         case PICK_ROLE_MAGIC:
@@ -1791,11 +1794,11 @@ static __inline void AddArmorSlotHitModifier(ItemSlot* slot, i16* modifier) {
 RVA(0x00008480, 0x11b)
 i16 GetEquipmentHitModifier(Character* attacker, Character* target) {
     i16 modifier = 0;
-    AddArmorSlotHitModifier(&GetCharacterEquipment(target)[0], &modifier);
-    AddArmorSlotHitModifier(&GetCharacterEquipment(target)[1], &modifier);
-    AddArmorSlotHitModifier(&GetCharacterEquipment(target)[2], &modifier);
-    AddArmorSlotHitModifier(&GetCharacterEquipment(target)[3], &modifier);
-    AddArmorSlotHitModifier(&GetCharacterEquipment(target)[4], &modifier);
+    AddArmorSlotHitModifier(&GetCharacterEquipment(target)[EQUIP_SLOT_HEAD], &modifier);
+    AddArmorSlotHitModifier(&GetCharacterEquipment(target)[EQUIP_SLOT_BODY], &modifier);
+    AddArmorSlotHitModifier(&GetCharacterEquipment(target)[EQUIP_SLOT_ARMS], &modifier);
+    AddArmorSlotHitModifier(&GetCharacterEquipment(target)[EQUIP_SLOT_LEGS], &modifier);
+    AddArmorSlotHitModifier(&GetCharacterEquipment(target)[EQUIP_SLOT_ACCESSORY], &modifier);
     modifier = -modifier;
     if (attacker->pickTarget >= 1) {
         modifier += GetLoadedRecord(attacker->pickTarget)->params[0x1c];
@@ -2104,17 +2107,17 @@ RVA(0x00009050, 0x62)
 i16 GetGunBurstRounds(Character* attacker) {
     i16 rounds;
     i16 limit;
-    if (GetCharacterEquipment(attacker)[6].item < 1) {
+    if (GetCharacterEquipment(attacker)[EQUIP_SLOT_GUN].item < 1) {
         return 0;
     }
-    if (GetCharacterEquipment(attacker)[7].item < 1) {
+    if (GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].item < 1) {
         return 0;
     }
-    rounds = GetCharacterEquipment(attacker)[7].quantity;
+    rounds = GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].quantity;
     if (g_actorId >= 0) {
         rounds = 255;
     }
-    limit = GetGunBurstLimit(GetLoadedRecord(GetCharacterEquipment(attacker)[6].item));
+    limit = GetGunBurstLimit(GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_GUN].item));
     if (limit > rounds) {
         limit = rounds;
     }
@@ -2123,7 +2126,7 @@ i16 GetGunBurstRounds(Character* attacker) {
 
 RVA(0x000090c0, 0xe7)
 i16 PrepareGunBurst(Character* attacker, i16 count) {
-    ItemRecord* record = GetLoadedRecord(GetCharacterEquipment(attacker)[6].item);
+    ItemRecord* record = GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_GUN].item);
     u8 limits;
     i16 minimum;
     i16 maximum;
@@ -2137,7 +2140,8 @@ i16 PrepareGunBurst(Character* attacker, i16 count) {
     );
     s_gunBasePower = GetItemAttackPower(record);
     limits = GetGunTargetLimits(record);
-    s_gunRoundPower = GetItemAttackPower(GetLoadedRecord(GetCharacterEquipment(attacker)[7].item));
+    s_gunRoundPower =
+        GetItemAttackPower(GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].item));
     maximum = limits & 15;
     minimum = limits >> 4;
     if (minimum < 1) {
@@ -2221,12 +2225,12 @@ void SpendGunRounds(Character* attacker) {
     i16 index;
     if (g_actorId < 0) {
         rounds = s_gunRounds[0];
-        if (rounds > GetCharacterEquipment(attacker)[7].quantity) {
-            rounds = GetCharacterEquipment(attacker)[7].quantity;
+        if (rounds > GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].quantity) {
+            rounds = GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].quantity;
         }
-        GetCharacterEquipment(attacker)[7].quantity -= rounds;
-        if (GetCharacterEquipment(attacker)[7].quantity <= 0) {
-            ClearItemSlot(&GetCharacterEquipment(attacker)[7]);
+        GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].quantity -= rounds;
+        if (GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].quantity <= 0) {
+            ClearItemSlot(&GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO]);
         }
     }
     for (index = 0; index < 15; index++) {
@@ -2568,14 +2572,14 @@ i16 GetMemberPickRange(i16 id) {
         return 0;
     }
     if (role == 1) {
-        item = GetCharacterEquipment(character)[5].item;
+        item = GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item;
         if (item == 0 || item == -1) {
             return 1;
         }
         return GetItemAttackRange(GetLoadedRecord(item));
     }
     if (role == 2) {
-        item = GetCharacterEquipment(character)[6].item;
+        item = GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item;
         if (item == 0 || item == -1) {
             return 1;
         }

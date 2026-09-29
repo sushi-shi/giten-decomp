@@ -7,6 +7,7 @@
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
 #include <Game/EquipEffect.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/ItemCurse.h>
 #include <Game/ItemRecord.h>
 #include <Game/Pool.h>
@@ -159,12 +160,12 @@ void ApplyEquipmentEffects(
     Character* character,
     GZ_ENUM_STORAGE(EquipmentEffectTiming, i16) timing
 ) {
-    ApplyItemCurse(character, GetCharacterEquipment(character)[0].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[1].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[2].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[3].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[4].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[5].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[6].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[7].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, timing);
 }

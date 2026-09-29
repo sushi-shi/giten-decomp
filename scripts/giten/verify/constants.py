@@ -446,7 +446,7 @@ def _nearest_expression_context(cidx, stack):
     arithmetic = {"+", "-", "*", "/", "%"}
     for node in reversed(stack):
         if node.kind == cidx.CursorKind.ARRAY_SUBSCRIPT_EXPR:
-            return "array-index", "array subscript"
+            return "array-index", f"array subscript {_subscript_base(cidx, node)}".rstrip()
         if node.kind != cidx.CursorKind.BINARY_OPERATOR:
             continue
         if node.spelling in bitwise:
@@ -456,6 +456,22 @@ def _nearest_expression_context(cidx, stack):
         if node.spelling in arithmetic:
             return "arithmetic", f"operator {node.spelling}"
     return None
+
+
+def _subscript_base(cidx, node) -> str:
+    """The name of the array an ARRAY_SUBSCRIPT_EXPR indexes (its member or
+    variable), or '' when the base is not a plain name."""
+    children = list(node.get_children())
+    base = children[0] if children else None
+    while base is not None and base.kind in (cidx.CursorKind.UNEXPOSED_EXPR,
+                                             cidx.CursorKind.PAREN_EXPR,
+                                             cidx.CursorKind.ARRAY_SUBSCRIPT_EXPR):
+        inner = list(base.get_children())
+        base = inner[0] if inner else None
+    if base is not None and base.kind in (cidx.CursorKind.MEMBER_REF_EXPR,
+                                          cidx.CursorKind.DECL_REF_EXPR):
+        return base.spelling
+    return ""
 
 
 def _trivial_role(cidx, literal, stack) -> str:
@@ -504,7 +520,7 @@ def _trivial_role(cidx, literal, stack) -> str:
         if kind == cidx.CursorKind.CONDITIONAL_OPERATOR:
             return "conditional"
         if kind == cidx.CursorKind.ARRAY_SUBSCRIPT_EXPR:
-            return "array-index"
+            return f"array-index {_subscript_base(cidx, node)}".rstrip()
         if kind in (cidx.CursorKind.IF_STMT, cidx.CursorKind.WHILE_STMT,
                     cidx.CursorKind.DO_STMT):
             return "condition"

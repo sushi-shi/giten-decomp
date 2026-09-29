@@ -14,6 +14,7 @@
 #include <Game/DemonTable.h>
 #include <Game/EquipRequirements.h>
 #include <Game/EquipScreen.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/FieldSight.h>
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
@@ -617,7 +618,7 @@ void DrawBattleStatsPanel(i16 x, i16 y, Character* member, i16 hideIcons) {
     x = DrawBattleStatColumn(x + 6, startY, GetBattleStatGroup(member, 0), icon, member->id);
     gunX = x;
     x = DrawBattleStatColumn(x, startY, GetBattleStatGroup(member, 1), icon + 1, member->id);
-    DrawStatusNumber(gunX, startY + 13, GetCharacterEquipment(member)[7].quantity);
+    DrawStatusNumber(gunX, startY + 13, GetCharacterEquipment(member)[EQUIP_SLOT_AMMO].quantity);
     x = DrawBattleStatColumn(x, startY, GetBattleStatGroup(member, 2), icon + 2, member->id);
     if (icon >= 0 && IsHumanCharacter(member)) {
         DrawBattleStatColumn(x, startY, GetBattleStatGroup(member, 3), icon + 3, member->id);
@@ -791,8 +792,9 @@ i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
         if (CanEquipItem(character, item) < 0) {
             continue;
         }
-        if (GetCharacterEquipment(character)[1].item >= 1
-            && GetItemKind(GetCharacterEquipment(character)[1].item) == ITEM_KIND_FULL_BODY_ARMOR) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item >= 1
+            && GetItemKind(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item)
+                   == ITEM_KIND_FULL_BODY_ARMOR) {
             kind = GetItemKind(item);
             if (kind == ITEM_KIND_HEAD_ARMOR || kind == ITEM_KIND_ARM_ARMOR
                 || kind == ITEM_KIND_LEG_ARMOR) {
@@ -802,28 +804,28 @@ i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
         s_equipEntries[count++] = i;
     }
     if (count == 0 && anyEquipped) {
-        if (GetCharacterEquipment(character)[0].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[1].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[2].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[3].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[4].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[5].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[6].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item >= 1) {
             return 1;
         }
-        return GetCharacterEquipment(character)[7].item >= 1;
+        return GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item >= 1;
     }
     return count;
 }
@@ -942,8 +944,8 @@ i16 RunEquipScreen(i16 key) {
                     if (slot.quantity < 0) {
                         slot.quantity = 0;
                     }
-                    GetCharacterEquipment(GetRosterCharacter(g_statusMember))[7].quantity +=
-                        slot.quantity;
+                    GetCharacterEquipment(GetRosterCharacter(g_statusMember))[EQUIP_SLOT_AMMO]
+                        .quantity += slot.quantity;
                     TakeBagItems(slot.item, slot.quantity);
                     return FinishEquipChange();
                 }
@@ -1174,13 +1176,14 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
         ReadBagEntry(index, &slot, &count);
         kind = GetItemKind(slot.item);
         if (kind == ITEM_KIND_AMMO) {
-            slot.quantity =
-                GetGunMagazineSize(GetLoadedRecord(GetCharacterEquipment(member)[6].item));
+            slot.quantity = GetGunMagazineSize(
+                GetLoadedRecord(GetCharacterEquipment(member)[EQUIP_SLOT_GUN].item)
+            );
             LimitItemSlotToBag(&slot);
         } else if (kind == ITEM_KIND_FULL_BODY_ARMOR) {
-            EmptyItemSlot(&GetCharacterEquipment(member)[0]);
-            EmptyItemSlot(&GetCharacterEquipment(member)[2]);
-            EmptyItemSlot(&GetCharacterEquipment(member)[3]);
+            EmptyItemSlot(&GetCharacterEquipment(member)[EQUIP_SLOT_HEAD]);
+            EmptyItemSlot(&GetCharacterEquipment(member)[EQUIP_SLOT_ARMS]);
+            EmptyItemSlot(&GetCharacterEquipment(member)[EQUIP_SLOT_LEGS]);
         } else {
             // Kind 19 selects index 7, overwriting returnPosition.area in
             // the saved preview copy; retain this original store.
@@ -1188,12 +1191,12 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
             slot.quantity = 1;
         }
         if (kind == ITEM_KIND_GUN) {
-            gun = GetCharacterEquipment(member)[6].item;
-            GetCharacterEquipment(member)[6].item = slot.item;
-            if (CanEquipItem(member, GetCharacterEquipment(member)[7].item) < 1) {
-                EmptyItemSlot(&GetCharacterEquipment(member)[7]);
+            gun = GetCharacterEquipment(member)[EQUIP_SLOT_GUN].item;
+            GetCharacterEquipment(member)[EQUIP_SLOT_GUN].item = slot.item;
+            if (CanEquipItem(member, GetCharacterEquipment(member)[EQUIP_SLOT_AMMO].item) < 1) {
+                EmptyItemSlot(&GetCharacterEquipment(member)[EQUIP_SLOT_AMMO]);
             }
-            GetCharacterEquipment(member)[6].item = gun;
+            GetCharacterEquipment(member)[EQUIP_SLOT_GUN].item = gun;
         }
         SwapEquipSlot(g_statusMember, slot, &result);
     } else {
@@ -1580,8 +1583,8 @@ RVA(0x00044940, 0x18a)
 void DrawEquipLines(Character* character, i16 x, i16 y) {
     DrawEquipLine(
         0,
-        GetCharacterEquipment(character)[5].item,
-        GetCharacterEquipment(character)[5].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].attachment,
         x,
         y,
         character,
@@ -1589,8 +1592,8 @@ void DrawEquipLines(Character* character, i16 x, i16 y) {
     );
     DrawEquipLine(
         1,
-        GetCharacterEquipment(character)[6].item,
-        GetCharacterEquipment(character)[6].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_GUN].attachment,
         x,
         y + 4,
         character,
@@ -1598,8 +1601,8 @@ void DrawEquipLines(Character* character, i16 x, i16 y) {
     );
     DrawEquipLine(
         2,
-        GetCharacterEquipment(character)[7].item,
-        GetCharacterEquipment(character)[7].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].attachment,
         x,
         y + 8,
         character,
@@ -1607,17 +1610,17 @@ void DrawEquipLines(Character* character, i16 x, i16 y) {
     );
     DrawEquipLine(
         3,
-        GetCharacterEquipment(character)[0].item,
-        GetCharacterEquipment(character)[0].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].attachment,
         x,
         y + 12,
         character,
-        GetCharacterEquipment(character)[1].item
+        GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item
     );
     DrawEquipLine(
         4,
-        GetCharacterEquipment(character)[1].item,
-        GetCharacterEquipment(character)[1].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_BODY].attachment,
         x,
         y + 16,
         character,
@@ -1625,26 +1628,26 @@ void DrawEquipLines(Character* character, i16 x, i16 y) {
     );
     DrawEquipLine(
         5,
-        GetCharacterEquipment(character)[2].item,
-        GetCharacterEquipment(character)[2].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].attachment,
         x,
         y + 20,
         character,
-        GetCharacterEquipment(character)[1].item
+        GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item
     );
     DrawEquipLine(
         6,
-        GetCharacterEquipment(character)[3].item,
-        GetCharacterEquipment(character)[3].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].attachment,
         x,
         y + 24,
         character,
-        GetCharacterEquipment(character)[1].item
+        GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item
     );
     DrawEquipLine(
         7,
-        GetCharacterEquipment(character)[4].item,
-        GetCharacterEquipment(character)[4].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].attachment,
         x,
         y + 28,
         character,
