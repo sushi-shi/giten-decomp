@@ -532,10 +532,9 @@ i32 CalcMaxHp(Character* character) {
 RVA(0x0003cf70, 0x8c)
 i32 CalcMaxMp(Character* character) {
     double scaled = sqrt(character->level);
-    double value =
-        GetStatTotal(character, STAT_CHARM) + GetStatTotal(character, STAT_MENTAL_STRENGTH);
+    double value = GetStatTotal(character, 9) + GetStatTotal(character, 1);
     value *= 0.5;
-    scaled *= GetStatTotal(character, STAT_MAGIC);
+    scaled *= GetStatTotal(character, 2);
     scaled *= 1.5;
     value += scaled;
     if (TestCharacterFlag(character, 38) == 1) {
@@ -715,7 +714,7 @@ i32 CalcMagicPowerStat(i16* stats, i16 amount) {
 
 RVA(0x0003d510, 0x1e)
 i32 CalcMagicEvasionStat(i16* stats, i16 bonus) {
-    i16 sum = stats[STAT_PROTECTION] + stats[STAT_INTELLIGENCE];
+    i16 sum = stats[4] + stats[3];
     return ClampTo999(sum / 2);
 }
 
@@ -2645,7 +2644,7 @@ void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part) {
 }
 
 RVA(0x00040590, 0x4d)
-i16 AttachEquipItem(i16 member, GZ_ENUM_PARAM(EquipPart, i16) part, i16 index) {
+i16 AttachEquipItem(i16 member, i16 part, i16 index) {
     ItemSlot item = GetRosterEquipSlot(member, part);
     i16 previous = item.attachment;
     item.attachment = index;
