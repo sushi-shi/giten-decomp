@@ -1670,8 +1670,8 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
     g_actorId = index;
     action = PickActorAction(actor);
     if (action > 0) {
-        if ((action & 0xf) == 4) {
-            action = (action & 0xf0) | 1;
+        if ((action & CONDITION_ACTION_MASK) == CONDITION_ACTION_NONE) {
+            action = (action & CONDITION_ACTION_FLAGS_MASK) | CONDITION_ACTION_ATTACK_OPPONENT;
         }
         action = AdjustActorAction(index, action);
     }

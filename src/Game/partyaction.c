@@ -534,45 +534,45 @@ i16 AdjustActorAction(i16 id, i16 action) {
     SetMessageHold(0);
     result = 0;
     actor = GetCombatant(id);
-    switch (action & 15) {
-        case 0:
+    switch (action & CONDITION_ACTION_MASK) {
+        case CONDITION_ACTION_IDLE:
             actor->mode = ACTOR_MODE_IDLE;
             result = 1;
             break;
-        case 1:
-        case 9:
-        case 12:
+        case CONDITION_ACTION_ATTACK_OPPONENT:
+        case CONDITION_ACTION_ATTACK_OPPONENT_ALIAS_1:
+        case CONDITION_ACTION_ATTACK_OPPONENT_ALIAS_2:
             result = PickRandomOpponentAttack(id);
             break;
-        case 2:
-        case 10:
-        case 13:
+        case CONDITION_ACTION_ATTACK_ALLY:
+        case CONDITION_ACTION_ATTACK_ALLY_ALIAS_1:
+        case CONDITION_ACTION_ATTACK_ALLY_ALIAS_2:
             result = PickRandomAllyAttack(id);
             break;
-        case 3:
+        case CONDITION_ACTION_FLEE:
             actor->mode = ACTOR_MODE_FLEE;
             result = 1;
             break;
-        case 4:
-        case 8:
+        case CONDITION_ACTION_NONE:
+        case CONDITION_ACTION_NONE_ALIAS:
             result = 0;
             break;
-        case 5:
+        case CONDITION_ACTION_TALK:
             result = PickActorDialogue(id);
             break;
-        case 6:
-        case 11:
+        case CONDITION_ACTION_DELAY_SIDE:
+        case CONDITION_ACTION_DELAY_SIDE_ALIAS:
             result = DelayActionSide(id);
             actor->mode = ACTOR_MODE_IDLE;
             break;
-        case 7:
+        case CONDITION_ACTION_RESET_WAITS:
             result = ResetActionWaits();
             actor->mode = ACTOR_MODE_IDLE;
             break;
-        case 14:
+        case CONDITION_ACTION_ATTACK_RANDOM:
             result = PickRandomAttack(id);
             break;
-        case 15:
+        case CONDITION_ACTION_SWAP_ROWS:
             SwapPartyRows();
             actor->mode = ACTOR_MODE_IDLE;
             result = 1;
