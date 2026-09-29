@@ -2768,7 +2768,9 @@ void DrawSceneSprites(void) {
             y = 0;
         }
         dest.left += x;
+        dest.right += x;
         dest.top += y;
+        dest.bottom += y;
         source.left = 0;
         source.top = 0;
         source.right = GetPictureSurfaceWidth(
@@ -2777,8 +2779,6 @@ void DrawSceneSprites(void) {
         source.bottom = GetPictureSurfaceHeight(
             GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
         );
-        dest.right += x;
-        dest.bottom += y;
         g_renderTarget->Blt(&dest, surface, &source, DDBLT_KEYSRC, NULL);
     }
 }
