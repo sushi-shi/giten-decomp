@@ -8,6 +8,11 @@
 DATA(0x000840e8)
 DisplayConfig g_displayConfig = {0};
 
+// The registry value names of the settings, in DisplayConfig's field order,
+// each in a 16-byte slot.
+DATA(0x0006a650)
+static char s_configValueNames[3][16] = {"GUID", "AutoSelect", "Version"};
+
 // Reads the display settings; any missing value (or another version) falls
 // back to the defaults.
 RVA(0x00045bb0, 0xe6)
@@ -19,13 +24,28 @@ i32 LoadDisplayConfig(DisplayConfig* config) {
     if (RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\ASCII\\GITEN_DDS", 0, KEY_QUERY_VALUE, &key)
         == ERROR_SUCCESS) {
         size = 1;
-        if (RegQueryValueExA(key, "Version", NULL, &type, &config->version, &size) == ERROR_SUCCESS
+        if (RegQueryValueExA(key, s_configValueNames[2], NULL, &type, &config->version, &size)
+                == ERROR_SUCCESS
             && config->version == 4) {
             size = sizeof(GUID);
-            if (RegQueryValueExA(key, "GUID", NULL, &type, (BYTE*)&config->driver, &size)
+            if (RegQueryValueExA(
+                    key,
+                    s_configValueNames[0],
+                    NULL,
+                    &type,
+                    (BYTE*)&config->driver,
+                    &size
+                )
                 == ERROR_SUCCESS) {
                 size = 1;
-                if (RegQueryValueExA(key, "AutoSelect", NULL, &type, &config->autoSelect, &size)
+                if (RegQueryValueExA(
+                        key,
+                        s_configValueNames[1],
+                        NULL,
+                        &type,
+                        &config->autoSelect,
+                        &size
+                    )
                     == ERROR_SUCCESS) {
                     failed = false;
                 }
