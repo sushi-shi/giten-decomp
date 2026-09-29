@@ -669,9 +669,6 @@ void TakeFromPool(i16 item, u8 amount) {
     }
 }
 
-// @early-stop instruction selection: retail reads the entry count as a word
-// masked in 16 bits (and si,0xff), as TakeFromBagEntry's count; cl reads the
-// count byte. The permuter found one compiler island.
 RVA(0x00023990, 0xa0)
 i16 GivePooledItems(void) {
     i16 left = 0;
@@ -684,7 +681,11 @@ i16 GivePooledItems(void) {
             item = RemapItem(GetItemStackItem(GetItemPoolEntry(i)));
             amount = GetItemStackCount(GetItemPoolEntry(i));
             if (item != 0) {
-                amount = RollItemAmount(GetItemStackItem(GetItemPoolEntry(i)), amount, 0);
+                amount = RollItemAmount(
+                    GetItemStackItem(GetItemPoolEntry(i)),
+                    GetItemStackCount(GetItemPoolEntry(i)),
+                    0
+                );
             } else {
                 item = GetItemStackItem(GetItemPoolEntry(i));
             }
