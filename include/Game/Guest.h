@@ -8,9 +8,6 @@
 // held and swaps it back through 0x43f910.
 extern i16 g_guestIndex;
 
-// @identity-TODO: unreferenced placeholder; its owner is unrecovered.
-extern i16 g_guestValue;
-
 i16 IsGuestIndex(i16 index);
 
 #endif // GITEN_GAME_GUEST_H

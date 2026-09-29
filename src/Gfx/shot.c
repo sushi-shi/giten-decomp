@@ -10,33 +10,33 @@
 #include <Gfx/Shot.h>
 
 DATA(0x00078248)
-static ShotFile s_shotData;
+static ShotFile s_shotData = {0};
 
 DATA(0x00078348)
-static Vec3 s_shotPos;
+static Vec3 s_shotPos = {0};
 
 // Velocity (8.8 fixed point) and its per-step change.
 DATA(0x00078350)
-static Body s_shotMotion;
+static Body s_shotMotion = {0};
 
 DATA(0x00078360)
-static Vec3 s_shotStart;
+static Vec3 s_shotStart = {0};
 
 DATA(0x00078368)
-static Vec3 s_shotTarget;
+static Vec3 s_shotTarget = {0};
 
 DATA(0x00078370)
-static ShotTable s_shotTableData;
+static ShotTable s_shotTableData = {0};
 
 DATA(0x00078470)
-static ShotTable* s_shotTable;
+static ShotTable* s_shotTable = 0;
 
 // Sideways drift per unit of depth travelled.
 DATA(0x00078478)
-static double s_shotSlope;
+static double s_shotSlope = 0;
 
 DATA(0x00078480)
-static i16 s_shotPower;
+static i16 s_shotPower = 0;
 
 RVA(0x00005480, 0x69)
 void LoadShotTable(FILE* fp) {
@@ -55,8 +55,8 @@ i16 SetShotPath(i16 fromX, i16 fromY, i16 toX, i16 toY) {
     i16 distance;
     i16 dx, dz;
     double lateral;
-    RotateOffset(&fromX, &fromY, origin.x, origin.y, g_field.pos.direction);
-    RotateOffset(&toX, &toY, origin.x, origin.y, g_field.pos.direction);
+    RotateOffset(&fromX, &fromY, origin.x, origin.y, g_party.field.pos.direction);
+    RotateOffset(&toX, &toY, origin.x, origin.y, g_party.field.pos.direction);
     distance = toY - fromY;
     CellToField(fromX, fromY, 4, &s_shotStart);
     CellToField(toX, toY, 4, &s_shotTarget);
@@ -101,10 +101,8 @@ i16 StartShot(i16 kind, i16 strength, i16 height) {
 // Returns 1 while the shot flies, 0 once it reached its target depth or left
 // the field sideways/vertically (it is then clamped and put on the floor),
 // and -1 when it left the field across x.
-// @early-stop: block placement only. Retail branches into the bounds check
-// (jl) and keeps the "return 1" block after the arrival block; goto,
-// ternary and flag spellings all fall through into the check and place it
-// inline.
+// Codegen constraint: keep the forward-depth edge and the two bounds exits
+// separate so the shared arrival block precedes the flying return.
 RVA(0x000056e0, 0xdb)
 i16 StepShot(void) {
     Vec3 before = s_shotPos;
@@ -113,23 +111,28 @@ i16 StepShot(void) {
     StepBody(&s_shotMotion);
     s_shotPos.x += (i16)((s_shotPos.z - before.z) * s_shotSlope);
     if (s_shotTarget.z - s_shotStart.z > 0) {
-        if (s_shotPos.z >= s_shotTarget.z) {
-            goto arrived;
+        if (s_shotPos.z < s_shotTarget.z) {
+            goto moving;
         }
+        goto arrived;
     } else if (s_shotPos.z <= s_shotTarget.z) {
         goto arrived;
     }
+moving:
     result = CheckFieldBounds(s_shotPos.x, s_shotPos.y, s_shotPos.z);
     if (result == FIELD_OUT_X) {
         return result;
     }
-    if (result != FIELD_OUT_Z && result != FIELD_OUT_Y) {
-        return 1;
+    if (result == FIELD_OUT_Z) {
+        goto arrived;
     }
-arrived:
-    ClampToField(&s_shotPos);
-    s_shotPos.y = 0;
-    return 0;
+    if (result == FIELD_OUT_Y) {
+    arrived:
+        ClampToField(&s_shotPos);
+        s_shotPos.y = 0;
+        return 0;
+    }
+    return 1;
 }
 
 RVA(0x000057c0, 0x40)
@@ -209,7 +212,7 @@ void LaunchShot(i16 effect, i16 mode, i16 rise, i16 fromX, i16 fromY, i16 toX, i
 }
 
 RVA(0x000059d0, 0x60)
-i16 RunShotState(void) {
+b16 RunShotState(void) {
     i16 result;
     if (GetGamePhase() == 0) {
         ExchangeEffectSkipping(0);
@@ -219,7 +222,7 @@ i16 RunShotState(void) {
     if (result == 0) {
         CloseEffect();
         ReturnFromGameState();
-        return 0;
+        return false;
     }
     StepEffectScript();
     if (GetEffectScript() == NULL || result < 0) {
@@ -227,21 +230,21 @@ i16 RunShotState(void) {
         StopEffectScript();
         ReleaseEffectPalettes();
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00005a30, 0x50)
-i16 RunClosingEffectState(void) {
+b16 RunClosingEffectState(void) {
     if (GetEffectScript() != NULL) {
         ExchangeEffectSkipping(1);
         StepEffectScript();
         if (GetEffectScript() != NULL) {
-            return 0;
+            return false;
         }
     }
     FreeEffectImageSet(0);
     FreeEffectRecord(0);
     ReturnFromGameState();
     ReleaseEffectPalettes();
-    return 0;
+    return false;
 }

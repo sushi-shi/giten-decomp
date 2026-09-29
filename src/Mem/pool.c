@@ -8,6 +8,7 @@
 #include <Mem/Handle.h>
 #include <Mem/Pool.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 // Eight-row screen cells with four, three, two or one colour planes.
@@ -34,7 +35,7 @@ void AllocatePool(ElementPool* pools, i16 index, u16 count) {
     }
     remaining = count;
     for (chunk = 0; chunk < chunks; chunk++) {
-        u16 part = remaining < 256 ? remaining : 256;
+        u16 part = min(remaining, 256);
         i32 handle = AllocArrayHandle(part, size);
         ElementPool* writable = HandleWritePtr((i32)pools);
         writable[index].chunks[chunk] = handle;
@@ -71,14 +72,14 @@ ElementPool* CreatePools(void) {
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00003550, 0x3)
-i32 GetLegacyPoolResetResult(void) {
-    return 0;
+b32 GetLegacyPoolResetResult(void) {
+    return false;
 }
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00003560, 0xe)
-i32 FreePools(i32 pools) {
+b32 FreePools(i32 pools) {
     return FreeHandle(pools);
 }
 

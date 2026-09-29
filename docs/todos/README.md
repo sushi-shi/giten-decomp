@@ -1,5 +1,13 @@
 # Todo ledgers
 
+## Vendor macros
+
+[Vendor macro recovery](vendor-macros.md) tracks plausible SDK/CRT macro
+sites that remain expanded, their evidence or semantic blockers, and the
+next matching step. Remove an entry when all its supported sites are
+recovered; retain a semantic exclusion while it explains an apparent match
+that would change retail behavior.
+
 ## Data referents
 
 - [ ] Clear the data debt and re-enable strict `data_matching` using the

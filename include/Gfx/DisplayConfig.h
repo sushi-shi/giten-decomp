@@ -18,8 +18,8 @@ typedef struct DisplayConfig {
 extern "C" {
 #endif
 
-    // The all-zero GUID the defaults start from.
-    extern const GUID g_defaultDriverGuid;
+    // The settings WinMain loads; InitDirectDraw creates DirectDraw on their driver.
+    extern DisplayConfig g_displayConfig;
 
     i32 LoadDisplayConfig(DisplayConfig* config);
     void SetDefaultDisplayConfig(DisplayConfig* config);

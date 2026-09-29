@@ -5,8 +5,13 @@
 
 #include <Gfx/DisplayConfig.h>
 
-DATA(0x00066328)
-const GUID g_defaultDriverGuid = {0};
+DATA(0x000840e8)
+DisplayConfig g_displayConfig = {0};
+
+// The registry value names of the settings, in DisplayConfig's field order,
+// each in a 16-byte slot.
+DATA(0x0006a650)
+static char s_configValueNames[3][16] = {"GUID", "AutoSelect", "Version"};
 
 // Reads the display settings; any missing value (or another version) falls
 // back to the defaults.
@@ -15,19 +20,34 @@ i32 LoadDisplayConfig(DisplayConfig* config) {
     DWORD type = REG_BINARY;
     DWORD size = 2;
     HKEY key;
-    i32 failed = 1;
+    b32 failed = true;
     if (RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\ASCII\\GITEN_DDS", 0, KEY_QUERY_VALUE, &key)
         == ERROR_SUCCESS) {
         size = 1;
-        if (RegQueryValueExA(key, "Version", NULL, &type, &config->version, &size) == ERROR_SUCCESS
+        if (RegQueryValueExA(key, s_configValueNames[2], NULL, &type, &config->version, &size)
+                == ERROR_SUCCESS
             && config->version == 4) {
             size = sizeof(GUID);
-            if (RegQueryValueExA(key, "GUID", NULL, &type, (BYTE*)&config->driver, &size)
+            if (RegQueryValueExA(
+                    key,
+                    s_configValueNames[0],
+                    NULL,
+                    &type,
+                    (BYTE*)&config->driver,
+                    &size
+                )
                 == ERROR_SUCCESS) {
                 size = 1;
-                if (RegQueryValueExA(key, "AutoSelect", NULL, &type, &config->autoSelect, &size)
+                if (RegQueryValueExA(
+                        key,
+                        s_configValueNames[1],
+                        NULL,
+                        &type,
+                        &config->autoSelect,
+                        &size
+                    )
                     == ERROR_SUCCESS) {
-                    failed = 0;
+                    failed = false;
                 }
             }
         }
@@ -40,7 +60,7 @@ i32 LoadDisplayConfig(DisplayConfig* config) {
 
 RVA(0x00045ca0, 0x32)
 void SetDefaultDisplayConfig(DisplayConfig* config) {
-    config->driver = g_defaultDriverGuid;
+    config->driver = GUID_NULL;
     config->autoSelect = 1;
     config->version = 4;
 }

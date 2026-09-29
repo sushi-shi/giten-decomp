@@ -12,15 +12,6 @@
 
 #include <stdio.h>
 
-DATA(0x00088010)
-Hotspot g_hotspots[64];
-
-DATA(0x0008fb04)
-u32 g_hotspotCount;
-
-DATA(0x0006b4e0)
-i32 g_selectedHotspot = -1;
-
 RVA(0x00058580, 0xb)
 void ClearSelectedHotspot(void) {
     g_selectedHotspot = -1;
@@ -55,15 +46,15 @@ i16 GetSelectedHotspotObject(void) {
 // Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x000585f0, 0x48)
-i16 HasHotspotTo(i16 x, i16 y) {
+b16 HasHotspotTo(i16 x, i16 y) {
     u32 i;
     for (i = 0; i < g_hotspotCount; i++) {
         if (GetHotspot(i)->kind == 1 && GetHotspot(i)->targetX == x
             && GetHotspot(i)->targetY == y) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 RVA(0x00058640, 0x90)

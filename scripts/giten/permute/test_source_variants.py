@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -79,6 +80,36 @@ class BatchSourceVariantTests(unittest.TestCase):
                 )
             self.assertEqual(result, (7, (True, "", False)))
             self.assertFalse((source.parent / ".unit.sourcevariant0007.cpp").exists())
+
+    def test_scoring_can_start_before_compiles_finish_and_exit_cleans_probes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / 'unit.c'
+            source.write_bytes(b'original')
+            later_started, release = threading.Event(), threading.Event()
+
+            def compile_one(_root, probe, _output, _flags, _timeout):
+                if probe.read_bytes() == b'later':
+                    later_started.set()
+                    if not release.wait(5):
+                        raise TimeoutError('test compile was not released')
+                return True, '', False
+
+            with mock.patch.object(batch, 'compile_object', side_effect=compile_one):
+                with self.assertRaisesRegex(RuntimeError, 'interrupted scoring'):
+                    with batch.precompile_variants(
+                            root, source, root, [(b'first', {}), (b'later', {}),
+                                                 (b'first', {})], [], 5, 2) as pending:
+                        try:
+                            self.assertEqual(set(pending), {0, 1})
+                            self.assertTrue(pending[0].result(timeout=2)[1][0])
+                            self.assertTrue(later_started.wait(2))
+                            self.assertFalse(pending[1].done())
+                        finally:
+                            release.set()
+                        raise RuntimeError('interrupted scoring')
+            self.assertEqual(source.read_bytes(), b'original')
+            self.assertEqual(list(root.glob('.unit.sourcevariant*.c')), [])
 
 
 if __name__ == "__main__":

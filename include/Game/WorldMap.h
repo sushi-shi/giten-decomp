@@ -64,7 +64,7 @@ void PrepareFieldRandom(void);
 i16 LoadWorldEncounterBlock(i16 x, i16 y);
 i16 PickWorldEncounterGroup(i16 weights, i16 choices);
 i16 CheckWorldEncounterInterval(void);
-i16 TestWorldEncounterChance(i16 chance);
+b16 TestWorldEncounterChance(i16 chance);
 i16 PrepareWorldEncounter(i16 weights, i16 choices, i16 maximum);
 i16 GetWorldEncounterMaximum(i16 maximum);
 i16 GetPartyEncounterSizeBonus(void);
@@ -77,7 +77,7 @@ i16 RollWorldMapEncounter(i16 x, i16 y);
 
 // @identity-TODO: What word 0x47be68 (passed as layer; bit 0 picks surface 0x48f5e4 vs 0x48d714
 // in 0x581b0) distinguishes is unrecovered.
-i16 PickWorldMapDestination(i16 layer);
+b16 PickWorldMapDestination(i16 layer);
 i16 GetWorldTravelDirection(i16 x, i16 y);
 i16 GetWorldTravelLateralDelta(i16 x, i16 y, i16 direction);
 
@@ -117,6 +117,13 @@ extern const u8 g_worldTravelTerrainFlags[16];
 extern MapCoord g_worldTravelHistory[];
 MapCoord GetBestWorldTravelStep(i16 direction);
 void ExcludeWorldTravelStep(i16 x, i16 y, i16 direction);
+
+// The world-map route queue: points walked one per travel step.
+void GrowRoute(i16 more);
+void FreeRoute(void);
+void PushRoutePoint(MapCoord point);
+MapCoord PopRoutePoint(void);
+i16 IsRouteActive(void);
 
 // The place-id grid for a map block, divided into 32-by-40-pixel cells.
 typedef struct WorldMapPlaceGrid {
@@ -221,9 +228,9 @@ void LoadWorldMapEvents(void);
 
 void MarkWorldMapEventSpot(i16 x, i16 y);
 
-i16 CheckWorldMapEvent(i16 x, i16 y);
+b16 CheckWorldMapEvent(i16 x, i16 y);
 
-i16 RunWorldMap(void);
+b16 RunWorldMap(void);
 
 // Sets the world-map layer and the spot (offset by the layer's origin
 // 0x40cc60) the world map opens at.

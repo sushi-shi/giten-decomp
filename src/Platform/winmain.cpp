@@ -12,6 +12,7 @@
 #include <Platform/Joystick.h>
 #include <Platform/Mesh.h>
 #include <Platform/Scene3D.h>
+#include <Platform/WindowsX.h>
 #include <Platform/WinMain.h>
 #include <Platform/WinMM.h>
 #include <Sound/MidiStream.h>
@@ -38,8 +39,51 @@ HWND g_mainWindow;
 DATA(0x0008fcf0)
 RECT g_windowRect;
 
-DATA(0x000840e8)
-DisplayConfig g_displayConfig;
+DATA(0x0006b4e0)
+i32 g_selectedHotspot = -1;
+
+DATA(0x00084800)
+Texture g_roomTexture;
+
+DATA(0x00084d20)
+Texture g_enemyTextures[2][5];
+
+DATA(0x00088010)
+Hotspot g_hotspots[64];
+
+DATA(0x00088a10)
+Picture g_spriteImages[SPRITE_GROUP_COUNT][SPRITE_FRAME_COUNT];
+
+DATA(0x0008d700)
+Picture g_scenePicture;
+
+DATA(0x0008d728)
+SpriteSlot g_spriteSlots[SPRITE_SLOT_COUNT];
+
+DATA(0x0008d860)
+Texture g_objectTextures[6];
+
+// The layers from the topmost down.
+DATA(0x0008f290)
+ScreenLayer* g_layerStack[SCREEN_LAYER_COUNT];
+
+DATA(0x0008f588)
+i16 g_spriteOrder[SPRITE_SLOT_COUNT];
+
+// Where the dragged layer was grabbed, from its top left (the drop position
+// is g_dragRect's top left).
+DATA(0x0008faf8)
+POINT g_dragOffset;
+
+DATA(0x0008fb04)
+u32 g_hotspotCount;
+
+// @identity-TODO: the layer table is filled by CreateScreenLayer in font.cpp.
+DATA(0x0008fb10)
+ScreenLayer* g_screenLayers[SCREEN_LAYER_COUNT];
+
+DATA(0x0008fda8)
+TextPlane g_textPlanes[TEXT_PLANE_COUNT];
 
 // The camera's eye and the point it looks at (the party's position); the view
 // matrix is rebuilt from them.
@@ -99,11 +143,11 @@ DATA(0x000847ac)
 i32 g_viewDirection;
 
 DATA(0x000847b8)
-BOOL g_fixedLighting;
+b32 g_fixedLighting;
 
 // Set while a screen layer is being dragged (see g_dragRect).
 DATA(0x0008fb08)
-static BOOL s_layerDragging;
+static b32 s_layerDragging;
 
 DATA(0x00090abc)
 static i16 s_spriteMode;
@@ -124,21 +168,21 @@ DATA(0x0008f60c)
 CMidiStream* g_midiStream;
 
 DATA(0x0008fc60)
-static BOOL s_immediateInput;
+static b32 s_immediateInput;
 
 DATA(0x00090ab8)
-static BOOL s_cursorArmed;
+static b32 s_cursorArmed;
 
 DATA(0x00090ac4)
 static i32 s_busyFrame;
 
 DATA(0x00090ac8)
-static BOOL s_screenSaved;
+static b32 s_screenSaved;
 
 // The busy cursor animates while this is set; it starts set until the first
 // frame clears it.
 DATA(0x0006b968)
-static BOOL s_busyCursor = TRUE;
+static b32 s_busyCursor = true;
 
 // The music track PlayMusic last started (-1 = none).
 DATA(0x0006b96c)
@@ -195,13 +239,13 @@ void* FreeBlock(void* block) {
 RVA(0x000496e0, 0x1e)
 void ShowBusyCursor(void) {
     if (!GetFieldBattleActive() && !s_busyCursor) {
-        s_busyCursor = TRUE;
+        s_busyCursor = true;
     }
 }
 
 RVA(0x00049700, 0xb)
 void HideBusyCursor(void) {
-    s_busyCursor = FALSE;
+    s_busyCursor = false;
 }
 
 // Builds the path of save slot `slot` in the Windows directory.
@@ -222,7 +266,7 @@ void RebuildViewScene(void) {
 
 RVA(0x00049780, 0xb)
 void CancelLayerDrag(void) {
-    s_layerDragging = FALSE;
+    s_layerDragging = false;
 }
 
 RVA(0x00049790, 0x6)
@@ -292,12 +336,12 @@ RVA(0x00049840, 0x64)
 void ConfineCursor(void) {
     if (!GetClipCursor(&g_savedClipRect)) {
         if (!GetWindowRect(GetDesktopWindow(), &g_savedClipRect)) {
-            memset(&g_savedClipRect, 0, sizeof(g_savedClipRect));
+            ZeroMemory(&g_savedClipRect, sizeof(g_savedClipRect));
             return;
         }
     }
     if (!ClipCursor(&g_windowRect)) {
-        memset(&g_savedClipRect, 0, sizeof(g_savedClipRect));
+        ZeroMemory(&g_savedClipRect, sizeof(g_savedClipRect));
     }
 }
 
@@ -333,7 +377,7 @@ void DrawMouseCursor(void) {
         source.bottom = 480 - position.y;
     }
     if (!s_cursorArmed) {
-        s_cursorArmed = TRUE;
+        s_cursorArmed = true;
         return;
     }
     if (!s_busyCursor) {
@@ -415,7 +459,7 @@ i16 CurrentMusicTrack(void) {
 
 RVA(0x00049b80, 0xb)
 void AllowImmediateInput(void) {
-    s_immediateInput = TRUE;
+    s_immediateInput = true;
 }
 
 RVA(0x00049b90, 0xe)
@@ -471,7 +515,7 @@ RVA(0x00049c50, 0x21)
 void SaveScreenMode(void) {
     s_savedRenderMode = g_renderMode;
     g_selectedHotspot = -1;
-    s_screenSaved = TRUE;
+    s_screenSaved = true;
 }
 
 RVA(0x00049c80, 0x2a)
@@ -479,7 +523,7 @@ void RestoreScreenMode(void) {
     g_renderMode = s_savedRenderMode;
     s_savedRenderMode = 0xffff;
     g_selectedHotspot = -1;
-    s_screenSaved = FALSE;
+    s_screenSaved = false;
 }
 
 RVA(0x00049cb0, 0xa)
@@ -526,7 +570,7 @@ i16 GetRenderMode(void) {
 }
 
 DATA(0x00084360)
-static BOOL s_viewDirty;
+static b32 s_viewDirty;
 
 DATA(0x000847bc)
 static i16 s_fadeCountdown;
@@ -535,13 +579,13 @@ DATA(0x00084c64)
 static i32 s_fadeAlpha;
 
 DATA(0x0008d290)
-BOOL g_boxOpening;
+b32 g_boxOpening;
 
 DATA(0x0008d830)
-static BOOL s_screenCovered;
+static b32 s_screenCovered;
 
 DATA(0x0008d834)
-static i16 s_pendingKey;
+static b16 s_pendingKey;
 
 // The running fade's mode (0 = none).
 DATA(0x0008f1d4)
@@ -631,7 +675,7 @@ void StepScreenFade(void) {
     if (--s_fadeCountdown != 0) {
         return;
     }
-    s_screenCovered = FALSE;
+    s_screenCovered = false;
     s_fadeCountdown = s_fadeSteps;
     if (IsScreenFadeIn(g_fadeMode)) {
         if (s_fadeAlpha <= 0) {
@@ -642,7 +686,7 @@ void StepScreenFade(void) {
     } else {
         if (s_fadeAlpha >= 0xff) {
             g_fadeMode = 0;
-            s_screenCovered = TRUE;
+            s_screenCovered = true;
             SetScreenFadeAlpha(0xff);
             if (g_renderMode == RENDER_MODE_VIEW && g_scenePicture.visible) {
                 ClearScenePicture();
@@ -666,7 +710,7 @@ void FinishScreenFade(void) {
     while (g_fadeMode != 0) {
         RenderFrame();
     }
-    s_screenCovered = FALSE;
+    s_screenCovered = false;
     PollInput();
     ClearMouseClicks();
     SetMouseState(0, 0, 0);
@@ -695,8 +739,8 @@ void RunFrame(void) {
 
 // The eighth move command: nothing to do.
 RVA(0x00049f40, 0x6)
-static BOOL NoMoveCommand(i16 nextPhase) {
-    return TRUE;
+static b32 NoMoveCommand(i16 nextPhase) {
+    return true;
 }
 
 // The move commands by command number.
@@ -725,7 +769,7 @@ BOOL RunMoveCommand(i16 command, i16 nextPhase) {
 RVA(0x00049fa0, 0x1e)
 void RedrawFieldView(void) {
     if (g_renderMode == RENDER_MODE_VIEW) {
-        s_viewDirty = TRUE;
+        s_viewDirty = true;
         s_viewChanged = TRUE;
         DrawFieldView();
     }
@@ -734,16 +778,16 @@ void RedrawFieldView(void) {
 // Opens `box`: its closed frame shows open until the view redraws.
 RVA(0x00049fc0, 0x1e)
 void OpenTreasureBox(TreasureBox* box) {
-    s_viewDirty = TRUE;
+    s_viewDirty = true;
     s_viewChanged = TRUE;
-    g_boxOpening = TRUE;
+    g_boxOpening = true;
     g_openingBox = box;
 }
 
 RVA(0x00049fe0, 0x51)
 void RequestObjectRedraw(i16 index, i16 a, i16 b) {
     if (g_renderMode == RENDER_MODE_VIEW) {
-        s_viewDirty = TRUE;
+        s_viewDirty = true;
         s_viewChanged = TRUE;
         if (g_hotspotObject == index && (g_hotspotCellX != a || g_hotspotCellY != b)) {
             g_selectedHotspot = -1;
@@ -778,7 +822,7 @@ i16 GetPendingKey(void) {
 
 RVA(0x0004a090, 0xa)
 void ClearPendingKey(void) {
-    s_pendingKey = 0;
+    s_pendingKey = false;
 }
 
 RVA(0x0004a0a0, 0x17)
@@ -809,7 +853,7 @@ void PollJoystick(void) {
 
 // Set once DirectX is up (RenderFrame draws only then).
 DATA(0x000847f4)
-static BOOL s_directXReady;
+static b32 s_directXReady;
 
 // Releases the display: the automap, the text planes, the sprite images, the
 // meshes and textures, every picture's surface, the layers and the glyph
@@ -887,51 +931,51 @@ void ReleaseGraphics(void) {
     ReleaseComObject(g_primarySurface);
     ReleaseComObject(g_ddraw2);
     ReleaseComObject(g_ddraw);
-    s_directXReady = FALSE;
+    s_directXReady = false;
 }
 
 // Releases the graphics and brings DirectDraw, Direct3D, input and sound
 // (back) up; FALSE when DirectDraw or Direct3D fails.
 RVA(0x0004a4f0, 0x3d)
-BOOL InitDirectX(void) {
+b32 InitDirectX(void) {
     ReleaseGraphics();
     if (!InitDirectDraw()) {
-        return FALSE;
+        return false;
     }
     if (!InitDirect3D()) {
-        return FALSE;
+        return false;
     }
     ClearScreenSurfaces();
     InitDirectInput();
     InitJoystick();
     g_soundEnabled = InitDirectSound();
-    s_directXReady = TRUE;
-    return TRUE;
+    s_directXReady = true;
+    return true;
 }
 
 // Set while the door ahead opens (AnimateDoor runs instead of the step).
 // @identity-TODO: set by 0x44e3d0 with s_doorFrame; read from its uses.
 DATA(0x00090ad0)
-static BOOL s_doorOpening;
+static b32 s_doorOpening;
 
 DATA(0x00090ad4)
 static i32 s_doorFrame;
 
 // The camera's slide per frame of a step, and the cell size it slides across.
-#define STEP_SLIDE 40.0f
+#define STEP_SLIDE DATA_COMPGEN(0x00064a38, 40.0f)
 #define CELL_UNITS 320.0f
 
 // Slides the camera one frame of a forward step; past a whole cell the party
 // moves into it and the camera jumps back. Returns whether the step ended.
 RVA(0x0004a530, 0x104)
-static BOOL SlideForward(D3DVALUE* progress) {
+static b32 SlideForward(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = FALSE;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
-        step = -CELL_UNITS;
-        done = TRUE;
+        step = DATA_COMPGEN(0x00064a44, -320.0f);
+        done = true;
         CommitPartyStep();
         BuildRoomGeometry();
     }
@@ -958,14 +1002,14 @@ static BOOL SlideForward(D3DVALUE* progress) {
 
 // SlideForward for a step back.
 RVA(0x0004a640, 0x104)
-static BOOL SlideBack(D3DVALUE* progress) {
+static b32 SlideBack(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = FALSE;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
         step = -CELL_UNITS;
-        done = TRUE;
+        done = true;
         CommitPartyStep();
         BuildRoomGeometry();
     }
@@ -992,14 +1036,14 @@ static BOOL SlideBack(D3DVALUE* progress) {
 
 // SlideForward for a step to the left.
 RVA(0x0004a750, 0x104)
-static BOOL SlideLeft(D3DVALUE* progress) {
+static b32 SlideLeft(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = FALSE;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
         step = -CELL_UNITS;
-        done = TRUE;
+        done = true;
         CommitPartyStep();
         BuildRoomGeometry();
     }
@@ -1026,14 +1070,14 @@ static BOOL SlideLeft(D3DVALUE* progress) {
 
 // SlideForward for a step to the right.
 RVA(0x0004a860, 0x104)
-static BOOL SlideRight(D3DVALUE* progress) {
+static b32 SlideRight(D3DVALUE* progress) {
     D3DVALUE step = STEP_SLIDE;
-    BOOL done = FALSE;
+    b32 done = false;
 
     *progress += STEP_SLIDE;
     if (*progress > CELL_UNITS) {
         step = -CELL_UNITS;
-        done = TRUE;
+        done = true;
         CommitPartyStep();
         BuildRoomGeometry();
     }
@@ -1080,12 +1124,12 @@ u16 g_compassImages[4] = {106, 108, 107, 109};
 
 // Set between the two quarter turns of a turn around.
 DATA(0x00090acc)
-static BOOL s_halfTurned;
+static b32 s_halfTurned;
 
 // Turns the camera one frame of a quarter turn left; at its end the party
 // faces the new way. Returns whether the turn ended.
 RVA(0x0004a970, 0x130)
-static BOOL TurnLeftStep(D3DVALUE* progress) {
+static b32 TurnLeftStep(D3DVALUE* progress) {
     D3DVALUE dx;
     D3DVALUE dz;
     i32 step;
@@ -1124,14 +1168,14 @@ static BOOL TurnLeftStep(D3DVALUE* progress) {
             32,
             32
         );
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 // TurnLeftStep for a quarter turn right.
 RVA(0x0004aaa0, 0x130)
-static BOOL TurnRightStep(D3DVALUE* progress) {
+static b32 TurnRightStep(D3DVALUE* progress) {
     D3DVALUE dx;
     D3DVALUE dz;
     i32 step;
@@ -1170,14 +1214,14 @@ static BOOL TurnRightStep(D3DVALUE* progress) {
             32,
             32
         );
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 // Two quarter turns right; the party's facing is set once, at the end.
 RVA(0x0004abd0, 0x154)
-static BOOL TurnAroundStep(D3DVALUE* progress) {
+static b32 TurnAroundStep(D3DVALUE* progress) {
     D3DVALUE dx;
     D3DVALUE dz;
     i32 step;
@@ -1210,7 +1254,7 @@ static BOOL TurnAroundStep(D3DVALUE* progress) {
     if (*progress == TURN_END) {
         g_viewDirection = (g_viewDirection + 1) & 3;
         if (s_halfTurned) {
-            s_halfTurned = FALSE;
+            s_halfTurned = false;
             BlitImage(
                 g_screenLayers[SCREEN_LAYER_NAVIGATION]->surface,
                 g_compassImages[g_viewDirection],
@@ -1218,18 +1262,18 @@ static BOOL TurnAroundStep(D3DVALUE* progress) {
                 32
             );
             SetPartyDirection(g_viewDirection);
-            return TRUE;
+            return true;
         }
         *progress = 0.0f;
-        s_halfTurned = TRUE;
+        s_halfTurned = true;
     }
-    return FALSE;
+    return false;
 }
 
 // The step of move state 0 and 8..15: nothing moves.
 RVA(0x0004ad30, 0x6)
-static BOOL NoMoveStep(D3DVALUE* progress) {
-    return TRUE;
+static b32 NoMoveStep(D3DVALUE* progress) {
+    return true;
 }
 
 RVA(0x0004ad40, 0x1d)
@@ -1275,8 +1319,8 @@ static i32 s_movePadButtons[8] = {
 // then re-aims the camera; at the move's end the pad button comes up and the
 // view is redrawn at the party's new cell. Returns whether a move ran.
 RVA(0x0004ad60, 0xcb)
-BOOL AnimateMove(void) {
-    BOOL moving = FALSE;
+b32 AnimateMove(void) {
+    b32 moving = false;
 
     if (g_moveState & MOVE_STATE_KIND) {
         if (s_lastMoveState != g_moveState) {
@@ -1286,7 +1330,7 @@ BOOL AnimateMove(void) {
             PressPadButton(s_movePadButtons[g_moveState & 7], FALSE);
             DrawFieldView();
             g_moveState = 0;
-            s_doorOpening = FALSE;
+            s_doorOpening = false;
             g_selectedHotspot = -1;
             MapPosition* position = GetMapPosition();
             // the pun: this layer's own prototype of RedrawFieldAt takes int
@@ -1299,7 +1343,7 @@ BOOL AnimateMove(void) {
         }
         SetViewMatrix(g_viewMatrix, g_cameraFrom, g_cameraAt);
         g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &g_viewMatrix);
-        moving = TRUE;
+        moving = true;
     }
     s_lastMoveState = g_moveState;
     return moving;
@@ -1368,7 +1412,6 @@ void ShadeMesh(Mesh* mesh) {
     D3DVECTOR view;
     u32 i;
     D3DVALUE shade;
-    i32 level;
 
     if (g_deviceType == D3D_DEVICE_RAMP) {
         for (i = 0; i < mesh->vertexCount; i++) {
@@ -1394,8 +1437,7 @@ void ShadeMesh(Mesh* mesh) {
         } else {
             shade = (320.0f - view.z * 0.125f) / (view.z - 640.0);
         }
-        level = static_cast<i32>(shade * 255.0f);
-        mesh->vertices[i].color = RGBA_MAKE(level, level, level, 0xff);
+        mesh->vertices[i].color = D3DRGB(shade, shade, shade);
     }
 }
 
@@ -1583,10 +1625,10 @@ void DrawDragOutline(void) {
         D3DTLVERTEX(D3DVECTOR(0.0f, 0.0f, 0.0f), 1.0f, 0xffffffff, 0, 0.0f, 0.0f),
     };
 
-    s_outline[0].sx = s_outline[3].sx = s_outline[4].sx = static_cast<D3DVALUE>(g_dragRect.left);
-    s_outline[0].sy = s_outline[1].sy = s_outline[4].sy = static_cast<D3DVALUE>(g_dragRect.top);
-    s_outline[1].sx = s_outline[2].sx = static_cast<D3DVALUE>(g_dragRect.right);
-    s_outline[2].sy = s_outline[3].sy = static_cast<D3DVALUE>(g_dragRect.bottom);
+    s_outline[0].sx = s_outline[3].sx = s_outline[4].sx = D3DVAL(g_dragRect.left);
+    s_outline[0].sy = s_outline[1].sy = s_outline[4].sy = D3DVAL(g_dragRect.top);
+    s_outline[1].sx = s_outline[2].sx = D3DVAL(g_dragRect.right);
+    s_outline[2].sy = s_outline[3].sy = D3DVAL(g_dragRect.bottom);
     g_screenDevice->BeginScene();
     g_screenDevice
         ->DrawPrimitive(D3DPT_LINESTRIP, D3DVT_TLVERTEX, s_outline, 5, D3DDP_DONOTUPDATEEXTENTS);
@@ -1669,7 +1711,6 @@ void RenderTBox(void) {
     int i;
     double distance;
     D3DVALUE light;
-    int shade;
     HRESULT result;
 
     box = GetMapTreasureBoxes();
@@ -1761,8 +1802,7 @@ void RenderTBox(void) {
                 MakeBillboardCameraRelative(dx, dz);
                 distance = GetBillboardDistance(dx, dz);
                 SetDistanceLight(light, distance);
-                shade = static_cast<int>(light * 255.0f);
-                SetQuadColor(s_box, RGBA_MAKE(shade, shade, shade, 0xff));
+                SetQuadColor(s_box, D3DRGB(light, light, light));
             }
         }
         if (g_deviceType == D3D_DEVICE_RAMP) {
@@ -1790,7 +1830,7 @@ void RenderTBox(void) {
             g_hotspotCount++;
         }
     }
-    g_boxOpening = FALSE;
+    g_boxOpening = false;
 }
 
 // The atexit callback of RenderTBox's vertex table (nothing to destroy).
@@ -1826,7 +1866,6 @@ void RenderNPC(BOOL ownCellOnly) {
     i16 dz;
     double distance;
     D3DVALUE light;
-    int shade;
     i16 textureSlot;
     Texture* texture;
     D3DVALUE bottomMargin;
@@ -1905,8 +1944,7 @@ void RenderNPC(BOOL ownCellOnly) {
             MakeBillboardCameraRelative(dx, dz);
             distance = GetBillboardDistance(dx, dz);
             SetDistanceLight(light, distance);
-            shade = static_cast<int>(light * 255.0f);
-            SetQuadColor(s_npc, RGBA_MAKE(shade, shade, shade, 0xff));
+            SetQuadColor(s_npc, D3DRGB(light, light, light));
         }
         textureSlot = GetAreaNpcTextureSlot(npc);
         SelectNpcBillboardTexture(texture, textureSlot);
@@ -2108,7 +2146,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                                 break;
                         }
                     } else {
-                        lift = 30.0f;
+                        lift = DATA_COMPGEN(0x00064aa4, 30.0f);
                         switch (g_viewDirection) {
                             case VIEW_NORTH:
                                 offsetZ = 40;
@@ -2172,7 +2210,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     anim = GetObjectAnim(index);
                     width = s_enemySizes[anim - 1][0];
                     height = s_enemySizes[anim - 1][1];
-                    light = static_cast<D3DVALUE>(anim) * 0.125f;
+                    light = D3DVAL(anim) * 0.125f;
                     level = static_cast<int>(light * 255.0f);
                     SetQuadSpecular(s_enemy, RGBA_MAKE(level, level, level, 0xff));
                 } else {
@@ -2226,7 +2264,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 info = &texture->image->info;
                 if (info->biWidth > 256) {
                     for (i = 0; i < 4; i++) {
-                        s_enemy[i].x *= 2.0f;
+                        s_enemy[i].x *= DATA_COMPGEN(0x00064aa8, 2.0f);
                     }
                 }
                 if (info->biWidth > 256 && !HasTextureHandle(texture)) {
@@ -2418,8 +2456,8 @@ void DrawHotspotMarks(void) {
         );
         s_markFrame++;
     } else {
-        x = s_markX - MARK_HALF > 0 ? s_markX - MARK_HALF : 0;
-        y = s_markY - MARK_HALF > 0 ? s_markY - MARK_HALF : 0;
+        x = max(s_markX - MARK_HALF, 0);
+        y = max(s_markY - MARK_HALF, 0);
         source.top = 0;
         source.left = 0;
         source.bottom = MARK_SIZE;
@@ -2833,13 +2871,13 @@ static BOOL s_fogEnabled;
 // Without `draw` only the door keeps opening.
 RVA(0x0004e3d0, 0x53e)
 void RenderViewMode(BOOL draw) {
-    BOOL moved = FALSE;
+    b32 moved = false;
     Texture* texture;
     HRESULT result;
     MapPosition* position;
 
     if (AnimateMove()) {
-        moved = TRUE;
+        moved = true;
     }
     if (g_scenePicture.visible) {
         g_renderTarget->BltFast(0, 0, g_scenePicture.surface, &g_scenePicture.rect, DDBLTFAST_WAIT);
@@ -2936,7 +2974,7 @@ void RenderViewMode(BOOL draw) {
         RenderEnemy(TRUE, FALSE, TRUE);
         if (!moved) {
             g_viewCachePicture.surface->BltFast(0, 0, g_renderTarget, &g_viewCachePicture.rect, 0);
-            s_viewDirty = FALSE;
+            s_viewDirty = false;
         }
     } else {
         g_renderTarget->BltFast(0, 0, g_viewCachePicture.surface, &g_viewCachePicture.rect, 0);
@@ -2961,8 +2999,8 @@ void RenderViewMode(BOOL draw) {
                 g_moveState = AnimateDoor(&g_doorMesh);
                 if (g_moveState == MOVE_STATE_STEP) {
                     s_doorFrame = 0;
-                    s_doorOpening = TRUE;
-                    s_viewDirty = TRUE;
+                    s_doorOpening = true;
+                    s_viewDirty = true;
                 }
             } else if (g_moveState == MOVE_STATE_DOOR_BACK) {
                 g_moveState = MOVE_STATE_BACK;
@@ -2970,15 +3008,15 @@ void RenderViewMode(BOOL draw) {
                 g_moveState = AnimateDoor(&g_doorMesh);
                 if (g_moveState == MOVE_STATE_LEFT) {
                     s_doorFrame = 0;
-                    s_doorOpening = TRUE;
-                    s_viewDirty = TRUE;
+                    s_doorOpening = true;
+                    s_viewDirty = true;
                 }
             } else if (g_moveState == MOVE_STATE_DOOR_RIGHT) {
                 g_moveState = AnimateDoor(&g_doorMesh);
                 if (g_moveState == MOVE_STATE_RIGHT) {
                     s_doorFrame = 0;
-                    s_doorOpening = TRUE;
-                    s_viewDirty = TRUE;
+                    s_doorOpening = true;
+                    s_viewDirty = true;
                 }
             }
             if (g_bilinearFiltering) {
@@ -2988,7 +3026,7 @@ void RenderViewMode(BOOL draw) {
             RenderNPC(TRUE);
         }
         if (moved) {
-            s_viewDirty = TRUE;
+            s_viewDirty = true;
         }
         BlitFieldBackground();
         DrawHotspotMarks();
@@ -3034,9 +3072,9 @@ void RenderEventMode(BOOL draw) {
         || g_scenePicture.id == EVENT_CURSOR_DELAY_SINGLE) {
         if (GetFrameCount() < 60) {
             TickFrameCount();
-            s_cursorArmed = FALSE;
+            s_cursorArmed = false;
         } else {
-            s_cursorArmed = TRUE;
+            s_cursorArmed = true;
         }
     } else {
         s_cursorArmed = (g_scenePicture.id > EVENT_CURSOR_ACTIVE_EXCLUSIVE_BEGIN
@@ -3046,10 +3084,10 @@ void RenderEventMode(BOOL draw) {
                         || g_scenePicture.id == EVENT_CURSOR_ACTIVE_SINGLE;
     }
     if (DrawSprites()) {
-        s_cursorArmed = TRUE;
+        s_cursorArmed = true;
     }
     if (BlitTextPlanes(0, TEXT_PLANE_COUNT, 0)) {
-        s_cursorArmed = TRUE;
+        s_cursorArmed = true;
     }
 }
 
@@ -3088,7 +3126,6 @@ void RenderFieldView(BOOL draw) {
         D3DTLVERTEX(D3DVECTOR(480.0f, 324.0f, 0.0f), 1.0f, 0xffffffff, 0xff000000, 1.0f, 1.0f),
     };
     int level;
-    int tint;
     D3DVALUE light;
     D3DCOLOR specular;
 
@@ -3101,9 +3138,8 @@ void RenderFieldView(BOOL draw) {
         if (level > 8) {
             level = 7;
         }
-        light = static_cast<D3DVALUE>(level) * 0.125f;
-        tint = static_cast<int>(light * 255.0f);
-        specular = RGBA_MAKE(tint, tint, tint, 0xff);
+        light = D3DVAL(level) * 0.125f;
+        specular = D3DRGB(light, light, light);
         s_backdrop[0].specular = s_backdrop[1].specular = s_backdrop[2].specular =
             s_backdrop[3].specular = specular;
     } else {
@@ -3177,6 +3213,18 @@ MapScreenOffset g_mapScreenOffsets[MAP_SCREEN_COUNT] = {
     {-112, 164},
     {176, 164},
     {464, 164},
+};
+
+DATA(0x0006b7a8)
+JoystickKey g_joystickKeys[8] = {
+    {JOY_UP, VK_UP},
+    {JOY_DOWN, VK_DOWN},
+    {JOY_LEFT, VK_LEFT},
+    {JOY_RIGHT, VK_RIGHT},
+    {1 << JOY_BUTTON_SHIFT, VK_RETURN},
+    {2 << JOY_BUTTON_SHIFT, VK_SPACE},
+    {4 << JOY_BUTTON_SHIFT, VK_SHIFT},
+    {0, 0},
 };
 
 DATA(0x0008f570)
@@ -3442,7 +3490,7 @@ void BuildQuadMesh(Mesh* mesh) {
             for (k = 0; k < 4; k++, mesh->vertexCount++) {
                 mesh->vertices[mesh->vertexCount].sx = 0;
                 mesh->vertices[mesh->vertexCount].sz = 0;
-                mesh->vertices[mesh->vertexCount].sy = static_cast<D3DVALUE>(s_quadY[quad * 4 + k]);
+                mesh->vertices[mesh->vertexCount].sy = D3DVAL(s_quadY[quad * 4 + k]);
                 mesh->vertices[mesh->vertexCount].color = 0xffffffff;
                 mesh->vertices[mesh->vertexCount].specular = 0;
                 mesh->vertices[mesh->vertexCount].tu = s_quadUV[quad * 4 + k][0];
@@ -3524,10 +3572,8 @@ void BuildRoomMesh(Mesh* mesh, i32 cols, i32 rows) {
                     }
                 }
                 for (k = 0; k < 4; k++, mesh->vertexCount++) {
-                    mesh->vertices[mesh->vertexCount].sx =
-                        static_cast<D3DVALUE>(s_cellCorner[k][0] + x);
-                    mesh->vertices[mesh->vertexCount].sz =
-                        static_cast<D3DVALUE>(z + s_cellCorner[k][1]);
+                    mesh->vertices[mesh->vertexCount].sx = D3DVAL(s_cellCorner[k][0] + x);
+                    mesh->vertices[mesh->vertexCount].sz = D3DVAL(z + s_cellCorner[k][1]);
                     mesh->vertices[mesh->vertexCount].specular = 0;
                     if (layer == 0) {
                         mesh->vertices[mesh->vertexCount].sy = 0;
@@ -3648,7 +3694,7 @@ void BuildRoomGeometry(void) {
     u32 k;
     MapPosition* position;
 
-    s_viewChanged = s_viewDirty = TRUE;
+    s_viewChanged = s_viewDirty = true;
     position = GetMapPosition();
     partyX = position->x;
     partyY = position->y;
@@ -3718,9 +3764,9 @@ void BuildRoomGeometry(void) {
                     }
                     for (corner = 0; corner < 4; corner++, g_wallMesh.vertexCount++) {
                         g_wallMesh.vertices[g_wallMesh.vertexCount].sx =
-                            static_cast<D3DVALUE>(s_wallCorners[(corner & 1) + side][0] + cellX);
+                            D3DVAL(s_wallCorners[(corner & 1) + side][0] + cellX);
                         g_wallMesh.vertices[g_wallMesh.vertexCount].sz =
-                            static_cast<D3DVALUE>(s_wallCorners[(corner & 1) + side][1] + cellZ);
+                            D3DVAL(s_wallCorners[(corner & 1) + side][1] + cellZ);
                         g_wallMesh.vertices[g_wallMesh.vertexCount].sy =
                             corner < 2 ? WALL_TOP : 0.0f;
                         g_wallMesh.vertices[g_wallMesh.vertexCount].specular = 0;
@@ -4090,8 +4136,8 @@ LRESULT CALLBACK MainWindowProc(HWND window, UINT message, WPARAM wparam, LPARAM
 // clear rectangle to 640x480, the clear-blit parameters, and seeds rand.
 RVA(0x00050090, 0x72)
 void ResetDisplayGlobals(void) {
-    s_directXReady = FALSE;
-    s_viewDirty = FALSE;
+    s_directXReady = false;
+    s_viewDirty = false;
     g_windowRect.left = 0;
     g_windowRect.top = 0;
     g_viewClearRect.x1 = 0;
@@ -4100,13 +4146,13 @@ void ResetDisplayGlobals(void) {
     g_viewClearRect.x2 = g_windowRect.right = 640;
     g_viewClearRect.y2 = g_windowRect.bottom = 480;
     srand(timeGetTime());
-    memset(&g_clearBltFx, 0, sizeof(g_clearBltFx));
+    ZeroMemory(&g_clearBltFx, sizeof(g_clearBltFx));
     g_clearBltFx.dwSize = sizeof(g_clearBltFx);
 }
 
 // Registers the window class and creates the game window.
 RVA(0x00050110, 0xd0)
-BOOL CreateMainWindow(HINSTANCE instance) {
+b32 CreateMainWindow(HINSTANCE instance) {
     WNDCLASS windowClass;
     LONG width;
     LONG height;
@@ -4119,11 +4165,11 @@ BOOL CreateMainWindow(HINSTANCE instance) {
     windowClass.hInstance = instance;
     windowClass.hIcon = LoadIcon(instance, IDI_APPLICATION);
     windowClass.hCursor = NULL;
-    windowClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+    windowClass.hbrBackground = GetStockBrush(BLACK_BRUSH);
     windowClass.lpszMenuName = NULL;
     windowClass.lpszClassName = "CLASSSDDSWIN";
     if (!RegisterClass(&windowClass)) {
-        return FALSE;
+        return false;
     }
     width = g_windowRect.right;
     height = g_windowRect.bottom;
@@ -4142,10 +4188,10 @@ BOOL CreateMainWindow(HINSTANCE instance) {
         NULL
     );
     if (g_mainWindow == NULL) {
-        return FALSE;
+        return false;
     }
     g_ime.Enable(g_mainWindow, FALSE);
-    return TRUE;
+    return true;
 }
 
 // The cursor's screen position, read every frame.
@@ -4174,8 +4220,8 @@ u8 PollInput(void) {
 // (a door step opens the door first); a turn only when no object stands in
 // the party's cell.
 RVA(0x00050220, 0x5d)
-BOOL MoveForwardCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 MoveForwardCommand(i16 nextPhase) {
+    b32 moved = false;
     i16 step = StepParty(STEP_FORWARD);
 
     if (step) {
@@ -4186,22 +4232,22 @@ BOOL MoveForwardCommand(i16 nextPhase) {
         }
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_STEP : MOVE_STATE_DOOR_AHEAD;
-        moved = TRUE;
+        moved = true;
         PressPadButton(PAD_FORWARD, TRUE);
     }
     return moved;
 }
 
 RVA(0x00050280, 0x45)
-BOOL TurnAroundCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 TurnAroundCommand(i16 nextPhase) {
+    b32 moved = false;
 
     if (FindObjectAtParty() < 0) {
         if (nextPhase) {
             NextGamePhase();
         }
         g_viewDirection = GetMapPosition()->direction;
-        moved = TRUE;
+        moved = true;
         g_moveState = MOVE_STATE_TURN_AROUND;
         PressPadButton(PAD_BACK, TRUE);
     }
@@ -4209,8 +4255,8 @@ BOOL TurnAroundCommand(i16 nextPhase) {
 }
 
 RVA(0x000502d0, 0x61)
-BOOL MoveBackCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 MoveBackCommand(i16 nextPhase) {
+    b32 moved = false;
     i16 step = StepParty(STEP_BACK);
 
     if (step) {
@@ -4221,22 +4267,22 @@ BOOL MoveBackCommand(i16 nextPhase) {
         }
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_BACK : MOVE_STATE_DOOR_BACK;
-        moved = TRUE;
+        moved = true;
         PressPadButton(PAD_BACK, TRUE);
     }
     return moved;
 }
 
 RVA(0x00050340, 0x45)
-BOOL TurnLeftCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 TurnLeftCommand(i16 nextPhase) {
+    b32 moved = false;
 
     if (FindObjectAtParty() < 0) {
         if (nextPhase) {
             NextGamePhase();
         }
         g_viewDirection = GetMapPosition()->direction;
-        moved = TRUE;
+        moved = true;
         g_moveState = MOVE_STATE_TURN_LEFT;
         PressPadButton(PAD_LEFT, TRUE);
     }
@@ -4244,8 +4290,8 @@ BOOL TurnLeftCommand(i16 nextPhase) {
 }
 
 RVA(0x00050390, 0x61)
-BOOL MoveLeftCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 MoveLeftCommand(i16 nextPhase) {
+    b32 moved = false;
     i16 step = StepParty(STEP_LEFT);
 
     if (step) {
@@ -4256,22 +4302,22 @@ BOOL MoveLeftCommand(i16 nextPhase) {
         }
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_LEFT : MOVE_STATE_DOOR_LEFT;
-        moved = TRUE;
+        moved = true;
         PressPadButton(PAD_LEFT, TRUE);
     }
     return moved;
 }
 
 RVA(0x00050400, 0x45)
-BOOL TurnRightCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 TurnRightCommand(i16 nextPhase) {
+    b32 moved = false;
 
     if (FindObjectAtParty() < 0) {
         if (nextPhase) {
             NextGamePhase();
         }
         g_viewDirection = GetMapPosition()->direction;
-        moved = TRUE;
+        moved = true;
         g_moveState = MOVE_STATE_TURN_RIGHT;
         PressPadButton(PAD_RIGHT, TRUE);
     }
@@ -4279,8 +4325,8 @@ BOOL TurnRightCommand(i16 nextPhase) {
 }
 
 RVA(0x00050450, 0x61)
-BOOL MoveRightCommand(i16 nextPhase) {
-    BOOL moved = FALSE;
+b32 MoveRightCommand(i16 nextPhase) {
+    b32 moved = false;
     i16 step = StepParty(STEP_RIGHT);
 
     if (step) {
@@ -4291,7 +4337,7 @@ BOOL MoveRightCommand(i16 nextPhase) {
         }
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_RIGHT : MOVE_STATE_DOOR_RIGHT;
-        moved = TRUE;
+        moved = true;
         PressPadButton(PAD_RIGHT, TRUE);
     }
     return moved;
@@ -4300,7 +4346,7 @@ BOOL MoveRightCommand(i16 nextPhase) {
 // Starts the joystick's move: up steps forward; down, left and right step
 // with its third button held, else turn. Returns whether a move started.
 RVA(0x000504c0, 0x71)
-BOOL RunJoystickMove(void) {
+b32 RunJoystickMove(void) {
     BOOL moved;
 
     if (!s_screenSaved) {
@@ -4325,13 +4371,13 @@ BOOL RunJoystickMove(void) {
                 moved = TurnRightCommand(TRUE);
             }
         } else {
-            return FALSE;
+            return false;
         }
         if (moved) {
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
 }
 
 // The frames the input waits once TickFrameCount starts counting (unless
@@ -4395,7 +4441,7 @@ void HandleInput(u8 buttons) {
         case MOUSE_UP:
             if (s_layerDragging) {
                 s_pressedLayer = SCREEN_LAYER_COUNT;
-                s_layerDragging = FALSE;
+                s_layerDragging = false;
             }
             break;
         case MOUSE_HELD:
@@ -4403,7 +4449,7 @@ void HandleInput(u8 buttons) {
                 if (s_pressedLayer < SCREEN_LAYER_COUNT) {
                     if (g_dragRect.left != g_cursorPos.x - g_dragOffset.x
                         || g_dragRect.top != g_cursorPos.y - g_dragOffset.y) {
-                        s_dragMoved = TRUE;
+                        s_dragMoved = true;
                     }
                     g_dragRect.left = g_cursorPos.x - g_dragOffset.x;
                     g_dragRect.top = g_cursorPos.y - g_dragOffset.y;
@@ -4425,8 +4471,8 @@ void HandleInput(u8 buttons) {
                 PostQuitMessage(0);
                 return;
             }
-            s_dragMoved = FALSE;
-            s_layerDragging = FALSE;
+            s_dragMoved = false;
+            s_layerDragging = false;
             s_pressedLayer = LayerAtPoint(g_cursorPos.x, g_cursorPos.y);
             if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
                 if (s_pressedLayer == SCREEN_LAYER_PANEL) {
@@ -4455,11 +4501,11 @@ void HandleInput(u8 buttons) {
                         !g_screenLayers[SCREEN_LAYER_MOON_PHASE]->visible;
                     return;
                 case SCREEN_LAYER_NAVIGATION:
-                    s_dragMoved = FALSE;
-                    s_layerDragging = FALSE;
+                    s_dragMoved = false;
+                    s_layerDragging = false;
                     RepeatPadMove(TRUE);
                     if (g_heldPadButton != PAD_RELEASED) {
-                        s_padHeld = TRUE;
+                        s_padHeld = true;
                         return;
                     }
                     g_heldPadButton = 0;
@@ -4475,8 +4521,8 @@ void HandleInput(u8 buttons) {
                     for (i = 0; i < TEXT_PLANE_COUNT; i++) {
                         busy |= GetTextPlane(i)->visible;
                     }
-                    s_dragMoved = FALSE;
-                    s_layerDragging = FALSE;
+                    s_dragMoved = false;
+                    s_layerDragging = false;
                     if (busy) {
                         return;
                     }
@@ -4487,7 +4533,7 @@ void HandleInput(u8 buttons) {
                     g_dragRect.bottom = layer->source.bottom + layer->y;
                     g_dragOffset.x = g_cursorPos.x - layer->x;
                     g_dragOffset.y = g_cursorPos.y - layer->y;
-                    s_layerDragging = TRUE;
+                    s_layerDragging = true;
                     return;
                 default:
                     ClickHotspotAt(g_cursorPos.x, g_cursorPos.y);
@@ -4511,14 +4557,14 @@ void HandleInput(u8 buttons) {
                 }
             }
             s_pressedLayer = SCREEN_LAYER_COUNT;
-            s_padHeld = FALSE;
+            s_padHeld = false;
             return;
         default:
             return;
     }
     switch (buttons >> MOUSE_RIGHT_SHIFT) {
         case MOUSE_UP:
-            s_pendingKey = 0;
+            s_pendingKey = false;
             if (!g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
                 if (g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible) {
                     if (g_cursorPos.y > MENU_BAR_HIDE_Y) {
@@ -4548,10 +4594,10 @@ void HandleInput(u8 buttons) {
             if (s_rightPressedLayer == SCREEN_LAYER_NAVIGATION) {
                 RepeatPadMove(FALSE);
                 if (g_heldPadButton != PAD_RELEASED) {
-                    s_padHeld = TRUE;
+                    s_padHeld = true;
                 }
             } else {
-                s_pendingKey = 1;
+                s_pendingKey = true;
             }
             break;
         case MOUSE_LET_GO:
@@ -4561,7 +4607,7 @@ void HandleInput(u8 buttons) {
                     ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
             } else {
                 s_rightPressedLayer = SCREEN_LAYER_COUNT;
-                s_padHeld = FALSE;
+                s_padHeld = false;
             }
             break;
     }
@@ -4638,7 +4684,7 @@ Texture g_textBoxTexture;
 // Creates the display's pictures, meshes, textures and layers: FALSE when
 // the game setup, the glyph surface or a layer fails.
 RVA(0x00050ac0, 0x48e)
-BOOL LoadGraphics(void) {
+b32 LoadGraphics(void) {
     i32 i;
     i32 layer;
     b32 failed;
@@ -4646,10 +4692,10 @@ BOOL LoadGraphics(void) {
     ClearHandleTable();
     CreatePicture(&g_scenePicture, 640, 480, 640, 480, TRUE);
     if (StartGame()) {
-        return FALSE;
+        return false;
     }
     if (!CreateGlyphSurface()) {
-        return FALSE;
+        return false;
     }
     BuildRoomMesh(&g_roomMesh, ROOM_SPAN, ROOM_SPAN);
     AllocWallMesh(&g_wallMesh);
@@ -4700,10 +4746,10 @@ BOOL LoadGraphics(void) {
         failed |= CreateScreenLayer(layer);
     }
     if (failed) {
-        return FALSE;
+        return false;
     }
     DrawLayerText(3, 24, 8, "\201^28" /* ／28 */, 0x3400);
-    return TRUE;
+    return true;
 }
 
 // The captions of WinMain's failure boxes: empty.
@@ -4786,7 +4832,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
                     PostQuitMessage(0);
                 }
                 HandleInput(buttons);
-                s_immediateInput = FALSE;
+                s_immediateInput = false;
             }
             UpdateLayerPanels();
             RenderFrame();

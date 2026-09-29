@@ -1,10 +1,10 @@
-// @identity-TODO: the owning TU is unproven; this unit holds one contiguous
-// retail span until link-order evidence names it.
+// @identity-TODO: the owning TU is unproven. One retail object: the battle and
+// field skill-use flows. Their .bss statics interleave in one run (the field
+// skill user, pick and menu words sit between the battle action's), each read
+// only by its own flow's code, and the field flow's code follows the battle
+// flow's in .text.
 
 #include <rva.h>
-
-#include <Game/CombatantId.h>
-#include <Game/TargetFlags.h>
 
 #include <Game/Actor.h>
 #include <Game/AreaNpc.h>
@@ -13,12 +13,12 @@
 #include <Game/BattleEffect.h>
 #include <Game/Character.h>
 #include <Game/CharInfo.h>
+#include <Game/CombatantId.h>
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
 #include <Game/DropTable.h>
 #include <Game/Familiarity.h>
 #include <Game/Field.h>
-#include <Game/FieldMain.h>
 #include <Game/FieldObject.h>
 #include <Game/FieldScreen.h>
 #include <Game/FieldSight.h>
@@ -32,18 +32,22 @@
 #include <Game/LevelUp.h>
 #include <Game/ModeFlags.h>
 #include <Game/Party.h>
+#include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
-#include <Game/Pool.h>
 #include <Game/Skill.h>
 #include <Game/SkillUse.h>
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
+#include <Game/TargetFlags.h>
 #include <Gfx/ScreenMode.h>
 #include <Gfx/Shot.h>
+#include <Input/Mouse.h>
+#include <Math/Vec3.h>
 #include <Script/EventFlags.h>
 #include <Sound/Sound.h>
 #include <Text/TextWindow.h>
 #include <Ui/FieldMenus.h>
+#include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
 #include <Ui/MessageScript.h>
 #include <Util/BitSet.h>
@@ -53,7 +57,57 @@
 #include <math.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
+// The conditions that block a skill as they would a spell: severe poison and
+// sealed magic.
+DATA(0x00064678)
+static const i16 s_skillBlockingConditions[] = {11, 24, -1};
+
+DATA(0x00064680)
+static const i16 s_skillIdBlockingConditions[] = {11, 24, -1};
+
+DATA(0x00064688)
+static const u8 s_targetCellDistance[7][7] = {
+    {6, 5, 4, 3, 4, 5, 6},
+    {5, 4, 3, 2, 3, 4, 5},
+    {4, 3, 2, 1, 2, 3, 4},
+    {3, 2, 1, 0, 1, 2, 3},
+    {4, 3, 2, 1, 2, 3, 4},
+    {5, 4, 3, 2, 3, 4, 5},
+    {6, 5, 4, 3, 4, 5, 6}
+};
+
+// @identity-TODO: the requested effect position and mode are stored but
+// never read by the Windows action-state implementation.
+DATA(0x000690c8)
+static i16 s_promptX = -1;
+
+DATA(0x000690cc)
+static i16 s_promptY = -1;
+
+DATA(0x000690d0)
+static i16 s_promptZ = -1;
+
+DATA(0x000690d4)
+static i16 s_promptMode = -1;
+
+// The game sub-state PushPromptState asks for (-1 for none).
+DATA(0x000690d8)
+static i16 s_promptSub = -1;
+
+// The combatant defeated by the last action (0x7fff for none).
+DATA(0x000690dc)
+static i16 s_knockedOut = 0x7fff;
+
+// @identity-TODO: the battle byte ReportBattleTally last reported (-1 for
+// none) and a message flag checked with it after the action (-1 for none).
+DATA(0x000690e0)
+static i16 s_reportedTally = -1;
+
+DATA(0x000690e4)
+static i16 s_tallyMessage = -1;
 
 DATA(0x00091542)
 i16 g_battleOutcome;
@@ -97,123 +151,94 @@ i16 g_targetCount;
 DATA(0x000919f6)
 i16 g_actorId;
 
-// @identity-TODO: the requested effect position and mode are stored but
-// never read by the Windows action-state implementation.
-DATA(0x000690c8)
-static i16 s_promptX = -1;
+// The member (by id) using a skill on the field; -1 asks the picker.
+DATA(0x00080a90)
+static i16 s_skillUser = 0;
 
-DATA(0x000690cc)
-static i16 s_promptY = -1;
-
-DATA(0x000690d0)
-static i16 s_promptZ = -1;
-
-DATA(0x000690d4)
-static i16 s_promptMode = -1;
-
-// The game sub-state PushPromptState asks for (-1 for none).
-DATA(0x000690d8)
-static i16 s_promptSub = -1;
-
-// The combatant defeated by the last action (0x7fff for none).
-DATA(0x000690dc)
-static i16 s_knockedOut = 0x7fff;
-
-// @identity-TODO: the battle byte ReportBattleTally last reported (-1 for
-// none) and a message flag checked with it after the action (-1 for none).
-DATA(0x000690e0)
-static i16 s_reportedTally = -1;
-
-DATA(0x000690e4)
-static i16 s_tallyMessage = -1;
+// The skill picked from the member's list.
+DATA(0x00080a94)
+static i16 s_skillPicked = 0;
 
 DATA(0x00080a98)
-static SkillHeader s_effectSkill;
-
-DATA(0x00080cf4)
-static i32 s_effectSkillId;
+static SkillHeader s_effectSkill = {0};
 
 // Which objects the action marked (and whose stuns and conditions it clears
 // and applies).
 DATA(0x00080ab0)
-static i16 s_objectMarks[16];
+static i16 s_objectMarks[16] = {0};
 
 DATA(0x00080ad0)
-static i16 s_targetList[270];
+static i16 s_targetList[270] = {0};
+
+// The selected skill's attack range, passed to the target window.
+DATA(0x00080cec)
+static u8 s_pickRange = 0;
+
+// The user's party position.
+DATA(0x00080cf0)
+static i16 s_userPosition = 0;
+
+DATA(0x00080cf4)
+static i32 s_effectSkillId = 0;
 
 // The number of combatants left on the action's target list.
 DATA(0x00080cfc)
-static i16 s_targetListCount;
+static i16 s_targetListCount = 0;
 
 // Set while PushPromptState's prompt is pending.
 DATA(0x00080d00)
-static i16 s_promptPending;
+static b16 s_promptPending = false;
 
 // The picked role of the action being played (PlayActionEffect reads it).
 DATA(0x00080d04)
-static i16 s_actionRole;
+static i16 s_actionRole = 0;
 
 // Set while effects are skipped (SetWorldMapActive): no shots, no redraw.
 DATA(0x00080d08)
-static i16 s_skipEffects;
+static i16 s_skipEffects = 0;
 
 // The object-removal deferral saved over the action.
 DATA(0x00080d0c)
-static i16 s_savedRemovalDeferred;
+static i16 s_savedRemovalDeferred = 0;
 
 // @identity-TODO: when set, a hidden object's removal waits (0x42bd09 then
 // calls 0x414750).
 DATA(0x00080d10)
-static i16 s_removalDeferred;
+static b16 s_removalDeferred = false;
 
 // Which hit sound the resolved action plays (0, 1 or 2 pick sounds 0x10,
 // 0x36 and 0x24): set by the effect code (0x42ce57, 0x42d02a).
 // @identity-TODO: what the three outcomes are is unrecovered.
 DATA(0x00080d14)
-static i16 s_actionOutcome;
+static i16 s_actionOutcome = 0;
 
 // The actor's and the target's HP before the action.
 DATA(0x00080d18)
-static i16 s_actorHpBefore;
+static i16 s_actorHpBefore = 0;
 
 DATA(0x00080d1c)
-static i16 s_targetHpBefore;
+static i16 s_targetHpBefore = 0;
 
 // The action's actor and target, and the actor's role and pick, kept until
 // the action ends.
 DATA(0x00080d20)
-static Character* s_actionActor;
+static Character* s_actionActor = 0;
 
 DATA(0x00080d24)
-static Character* s_actionTarget;
+static Character* s_actionTarget = 0;
 
 DATA(0x00080d28)
-static i16 s_actionRoleKept;
+static i16 s_actionRoleKept = 0;
 
 DATA(0x00080d2c)
-static i16 s_actionPickKept;
+static i16 s_actionPickKept = 0;
+
+// The picker or skill list menu.
+DATA(0x00080d30)
+static MenuBox* s_fieldMenu = 0;
 
 DATA(0x00080d34)
-char g_emptySkillMenuLabel[4];
-
-// The conditions that block a skill as they would a spell: severe poison and
-// sealed magic.
-DATA(0x00064678)
-static const i16 s_skillBlockingConditions[] = {11, 24, -1};
-
-DATA(0x00064680)
-static const i16 s_skillIdBlockingConditions[] = {11, 24, -1};
-
-DATA(0x00064688)
-static const u8 s_targetCellDistance[7][7] = {
-    {6, 5, 4, 3, 4, 5, 6},
-    {5, 4, 3, 2, 3, 4, 5},
-    {4, 3, 2, 1, 2, 3, 4},
-    {3, 2, 1, 0, 1, 2, 3},
-    {4, 3, 2, 1, 2, 3, 4},
-    {5, 4, 3, 2, 3, 4, 5},
-    {6, 5, 4, 3, 4, 5, 6}
-};
+char g_emptySkillMenuLabel[4] = {0};
 
 RVA(0x0002aa20, 0x20)
 i16 SetWorldMapActive(i16 active) {
@@ -280,9 +305,9 @@ i16 RemoveCombatTarget(i16 id) {
 }
 
 RVA(0x0002ab40, 0x60)
-i16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
+b16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     if (s_promptPending) {
-        return 1;
+        return true;
     }
     PushGameState(0x18);
     s_promptX = x;
@@ -290,8 +315,8 @@ i16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     s_promptZ = z;
     s_promptMode = mode;
     s_promptSub = sub;
-    s_promptPending = 1;
-    return 0;
+    s_promptPending = true;
+    return false;
 }
 
 RVA(0x0002aba0, 0x40)
@@ -319,13 +344,13 @@ Character* GetCombatant(i16 id) {
 }
 
 RVA(0x0002ac20, 0x29)
-i16 FlashHitObject(i16 object, i32 change) {
+b16 FlashHitObject(i16 object, i32 change) {
     if (change != 0) {
         GetFieldObject(object)->redraw = 2;
         RedrawFieldView();
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 RVA(0x0002ac50, 0x40)
@@ -378,9 +403,7 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
                 g_mpChange = attacker->lastChange;
                 return;
             case 8:
-                if (target->experience < attacker->lastChange) {
-                    attacker->lastChange = target->experience;
-                }
+                attacker->lastChange = min(target->experience, attacker->lastChange);
                 target->experience -= attacker->lastChange;
                 attacker->experience += attacker->lastChange;
                 g_actionResult |= 0x80;
@@ -481,9 +504,7 @@ i16 ResolveCombatAction(void) {
         g_statusCondition = 0;
         attacker->lastChange = 0;
         ResetPoolChanges();
-        if (s_targetHpBefore < 1) {
-            s_targetHpBefore = 1;
-        }
+        s_targetHpBefore = max(1, s_targetHpBefore);
     }
 
     if (IsSkillAction(attacker)) {
@@ -538,7 +559,7 @@ i16 ResolveCombatAction(void) {
         GetCharacterFlags(attacker)[1] |= 0x80;
     }
     if (g_targetId >= 0) {
-        GetFieldActor(g_targetId)->facing = OppositeDirection(g_field.pos.direction);
+        GetFieldActor(g_targetId)->facing = OppositeDirection(g_party.field.pos.direction);
         AlertActor(target, 2);
         GetCharacterFlags(target)[1] |= 0x40;
         if (attacker->pickRole == 4) {
@@ -656,7 +677,7 @@ static __inline void ClearActionActors(void) {
 }
 
 static __inline void ClearPendingAction(void) {
-    s_promptPending = 0;
+    s_promptPending = false;
     ClearActionActors();
 }
 
@@ -682,14 +703,10 @@ static __inline void ResetReportedBattleTally(void) {
     s_reportedTally = -1;
 }
 
-// @early-stop register allocation: retail keeps 0 in edi for the whole
-// function (zero stores and the NULL tests use it); cl here materialises it
-// per phase, and the scratch registers rotate one place from there; the
-// permuter found one compiler island.
 // Codegen constraint: keep next-target success outside the phase switch;
 // an in-loop return or a post-loop sentinel test changes the shared tail.
 RVA(0x0002b6a0, 0x9b0)
-i16 RunBattleAction(void) {
+b16 RunBattleAction(void) {
     Character* actor;
     ItemRecord* record;
     SkillHeader* skill;
@@ -698,17 +715,21 @@ i16 RunBattleAction(void) {
     i16 count;
     i16 shot;
     i16 slot;
+    i16 skipEffects;
 
     actor = GetCombatant(g_actorId);
     if (actor != NULL) {
         g_actionId = actor->pickTarget;
     }
     switch (GetGamePhase()) {
+        default:
+            skipEffects = s_skipEffects;
+            goto complete;
         case 0:
             ResetReportedBattleTally();
             if (actor == NULL) {
                 CancelPendingAction();
-                return 0;
+                return false;
             }
             if (actor->pickRole == 8) {
                 TickFieldCount(g_actorId, 0);
@@ -716,7 +737,7 @@ i16 RunBattleAction(void) {
                 ReturnFromGameState();
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 RestoreSwappedMember();
-                return 0;
+                return false;
             }
             if (actor->pickRole == 7 && g_actorId < 0) {
                 TickFieldCount(g_actorId, 0);
@@ -726,12 +747,12 @@ i16 RunBattleAction(void) {
                 RequestFieldRefresh();
                 CancelPendingAction();
                 PlaySoundEffect(0x55);
-                return 0;
+                return false;
             }
             if (GetCombatant(actor->pickObject) == NULL) {
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 CancelPendingAction();
-                return 0;
+                return false;
             }
             s_actionActor = actor;
             s_actionTarget = GetCombatant(actor->pickObject);
@@ -777,8 +798,8 @@ i16 RunBattleAction(void) {
                     record = GetLoadedRecord(actor->pickTarget);
                     count = CollectTargets(
                         0xff,
-                        record->params[0x1d],
-                        record->params[0x1e],
+                        GetWeaponMinHits(record),
+                        GetWeaponMaxHits(record),
                         g_targetId,
                         g_actorId
                     );
@@ -821,13 +842,13 @@ i16 RunBattleAction(void) {
                 shot = GetItemShotId(record);
             } else if (actor->pickRole == 1) {
                 CacheSkill(1, GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY));
-                shot = GetCachedSkill(1)->parameters.effect;
+                shot = GetSkillShotId(1);
             } else {
                 CacheSkill(
                     actor->pickTarget,
                     GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY)
                 );
-                shot = GetCachedSkill(actor->pickTarget)->parameters.effect;
+                shot = GetSkillShotId(actor->pickTarget);
             }
             if (s_skipEffects) {
                 shot = 0;
@@ -849,7 +870,7 @@ i16 RunBattleAction(void) {
 
         case 2:
             NextGamePhase();
-            s_removalDeferred = 0;
+            s_removalDeferred = false;
             s_savedRemovalDeferred = ExchangeObjectRemovalDeferred(1);
             ResolveCombatAction();
             ClearObjectStuns(s_objectMarks);
@@ -887,7 +908,8 @@ i16 RunBattleAction(void) {
             }
             if (s_reportedTally != -1) {
                 if (g_actionResult >= 2) {
-                    ReportBattleTally(GetCombatant(g_targetId), s_reportedTally, -1);
+                    Character* target = GetCombatant(g_targetId);
+                    ReportBattleTally(target, s_reportedTally, -1);
                 }
                 if (s_tallyMessage != -1) {
                     RunMessageScript(0xdf, 3, -1);
@@ -901,7 +923,8 @@ i16 RunBattleAction(void) {
                 NextGamePhase();
                 while (NextTarget() != TARGET_LIST_END) {
                 }
-                break;
+                skipEffects = s_skipEffects;
+                goto complete;
             }
             for (slot = NextTarget(); slot != TARGET_LIST_END; slot = NextTarget()) {
                 if (slot >= 0) {
@@ -917,10 +940,11 @@ i16 RunBattleAction(void) {
                 actor->acting = 0;
                 RequestFieldRefresh();
             }
-            break;
+            skipEffects = s_skipEffects;
+            goto complete;
 
         case 8:
-            s_promptPending = 0;
+            s_promptPending = false;
             ResetRecordCache();
             RestoreSwappedMember();
             ReturnFromGameState();
@@ -957,15 +981,18 @@ i16 RunBattleAction(void) {
             break;
     }
 done:
-    if (s_skipEffects) {
-        return 0;
+    skipEffects = s_skipEffects;
+complete:
+    if (skipEffects) {
+        return false;
     }
     return UpdateFieldScreen(0);
 
 nextTarget:
     SetGamePhase(2);
     g_targetId = slot;
-    GetCombatant(g_actorId)->pickObject = slot;
+    actor = GetCombatant(g_actorId);
+    actor->pickObject = slot;
     goto done;
 }
 
@@ -1068,7 +1095,7 @@ void DropFlaggedMember(i16 id) {
 
 RVA(0x0002c2a0, 0xa)
 void DeferObjectRemoval(void) {
-    s_removalDeferred = 1;
+    s_removalDeferred = true;
 }
 
 RVA(0x0002c2b0, 0xc)
@@ -1078,7 +1105,7 @@ void SetActionOutcome(i16 outcome) {
 
 // Nonzero when `character` cannot pay the skill's HP or MP cost.
 RVA(0x0002c2c0, 0x22)
-i32 CannotPaySkill(Character* character, SkillParameters* skill) {
+b32 CannotPaySkill(Character* character, SkillParameters* skill) {
     return HpMpLeftAfterCost(GetSkillParameterCost(skill), character) < 0;
 }
 
@@ -1087,38 +1114,38 @@ i32 CannotPaySkill(Character* character, SkillParameters* skill) {
 // Nonzero when a condition or the member's lock keeps it from using `skill`;
 // skills with a mode are never blocked here.
 RVA(0x0002c2f0, 0x5d)
-i32 IsSkillBlocked(Character* character, SkillParameters* skill) {
+b32 IsSkillBlocked(Character* character, SkillParameters* skill) {
     if (GetPickBlockingCondition(GetCharacterConditions(character))) {
-        return 1;
+        return true;
     }
     if (!skill->mode) {
         if (GetCharacterBattleTallies(character)[0]) {
-            return 1;
+            return true;
         }
         if (LastConditionIn(GetCharacterConditions(character), s_skillBlockingConditions)) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 // The same check by skill id; skill 0x7a is also blocked while the first
 // roster member's byte +0x30 is clear.
 RVA(0x0002c350, 0x69)
-i32 IsSkillIdBlocked(Character* character, i16 id) {
+b32 IsSkillIdBlocked(Character* character, i16 id) {
     if (GetSkillMode(id)) {
-        return 0;
+        return false;
     }
     if (GetCharacterBattleTallies(character)[0]) {
-        return 1;
+        return true;
     }
     if (LastConditionIn(GetCharacterConditions(character), s_skillIdBlockingConditions)) {
-        return 1;
+        return true;
     }
     if (id == 0x7a && !GetRosterCharacter(0)->markPosition.area) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // Takes the skill's cost from `who`: MP for a positive cost, HP for a
@@ -1428,7 +1455,7 @@ i16 CollectTargetsAlongLine(i16 area, i16 flags, i16 range, i16 target, i16 acto
         direction = GetObjectDirection(target);
     } else {
         origin = GetMapCoord();
-        direction = g_field.pos.direction;
+        direction = g_party.field.pos.direction;
     }
     if (target >= 0) {
         offset = GetObjectCoord(target);
@@ -1453,7 +1480,7 @@ RVA(0x0002cc80, 0x100)
 i16 CollectTargetsInView(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
     MapCoord origin;
     i16 count = 0;
-    i16 direction = g_field.pos.direction;
+    i16 direction = g_party.field.pos.direction;
     i16 distance;
     i16 across;
     i16 along;
@@ -1747,4 +1774,167 @@ RVA(0x0002d750, 0x50)
 void UseInertSkill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
     SetFlaggedActionResult(user, 3);
+}
+
+// @identity-TODO: PrepareSkillAction only clears this word; no reader survives.
+DATA(0x00091980)
+i16 g_skillActionResetValue;
+
+RVA(0x0002d7a0, 0x20)
+i16 CancelFieldTargetMenu(i16 command) {
+    if (command == -1) {
+        s_fieldMenu = CloseListMenu(s_fieldMenu);
+    }
+    return -1;
+}
+
+static __inline void LocateFieldSkillUser(void) {
+    s_userPosition = FindRosterSlotIn(s_skillUser, 1);
+    s_userPosition = FindPartySlot(s_userPosition);
+}
+
+// Runs the field skill-use flow one phase: pick the member (unless one is
+// set), pick a skill from its list, pick the skill's target, then hand the
+// member's pick to the action prompt. Returns 0.
+RVA(0x0002d7c0, 0x370)
+b16 RunFieldSkillUse(void) {
+    i16 flags;
+    i16 picked;
+
+    switch (GetGamePhase()) {
+        case 0:
+            HideScreenLayer(1);
+            if (s_skillUser < 0) {
+                SetGamePhase(8);
+                return false;
+            }
+            LocateFieldSkillUser();
+            SetGamePhase(3);
+            return false;
+
+        case 1:
+            s_fieldMenu = ClosePickerMenu(s_fieldMenu);
+            SetGamePhase(8);
+            return false;
+
+        case 2:
+            s_skillUser = RunPickerMenu(s_fieldMenu);
+            if (s_skillUser == -2) {
+                PrevGamePhase();
+            }
+            if (s_skillUser < 0) {
+                break;
+            }
+            LocateFieldSkillUser();
+            NextGamePhase();
+            s_fieldMenu = ClosePickerMenu(s_fieldMenu);
+            return false;
+
+        case 3:
+            NextGamePhase();
+            NextGamePhase();
+            s_fieldMenu = OpenMemberSkillMenu(s_skillUser);
+            return false;
+
+        case 4:
+            SetGamePhase(8);
+            s_fieldMenu = CloseListMenu(s_fieldMenu);
+            return false;
+
+        case 5:
+            s_skillPicked = RunListMenu(s_fieldMenu);
+            if (s_skillPicked == -2) {
+                PrevGamePhase();
+            }
+            if (s_skillPicked < 0) {
+                break;
+            }
+            NextGamePhase();
+            s_fieldMenu = CloseListMenu(s_fieldMenu);
+            g_actionId = s_skillPicked;
+            return false;
+
+        case 6:
+            flags = GetSkillTargetFlags(s_skillPicked);
+            if (TargetFlagsSelectSelf(flags)) {
+                g_targetId = PartyCombatantId(s_userPosition);
+                NextGamePhase();
+                return false;
+            }
+            if (TargetFlagsSelectActorGroup(flags)) {
+                g_targetId = PartyCombatantId(s_userPosition);
+                NextGamePhase();
+                return false;
+            }
+            s_pickRange = GetSkillAttackRange(g_actionId);
+            if (flags == 0x10) {
+                picked = RunPickTargetWindow(0, s_pickRange, 5, 0);
+            } else if (flags == 0x11) {
+                picked = RunPickTargetWindow(0, s_pickRange, 4, 0);
+            } else if (flags == 0x30) {
+                picked = RunPickTargetWindow(0, s_pickRange, 6, 0);
+            } else {
+                flags = 0;
+                picked = RunPickTargetWindow(0, s_pickRange, 3, 0);
+            }
+            if (picked == -1) {
+                SetGamePhase(3);
+            }
+            if (picked <= 0) {
+                break;
+            }
+            if (flags) {
+                g_selectedObjectId = SwapInForPick(s_userPosition, g_selectedObjectId);
+            }
+            g_targetId = g_selectedObjectId;
+            NextGamePhase();
+            return false;
+
+        case 7:
+            NextGamePhase();
+            g_actorId = PartyCombatantId(s_userPosition);
+            SetSkillPick(s_userPosition);
+            PrepareSkillAction();
+            PushFieldUsePrompt();
+            return false;
+
+        case 8:
+            RestoreSwappedMember();
+            ReturnFromGameState();
+            break;
+    }
+    return false;
+}
+
+// Makes party member `position`'s pick the chosen skill on the current target.
+// @early-stop operand order: retail loads g_targetId into a register and xors the
+// old pick word into it; cl here xors g_targetId from memory into the old word
+// (same bits); the permuter found one compiler island.
+RVA(0x0002db30, 0x60)
+void SetSkillPick(i16 position) {
+    Character* user = GetPartyCharacter(position);
+
+    if (user != NULL) {
+        user->pickObject = g_targetId;
+        user->pickRole = 4;
+        g_actionId = s_skillPicked;
+        user->pickTarget = s_skillPicked;
+    }
+}
+
+RVA(0x0002db90, 0x4e)
+void PrepareSkillAction(void) {
+    SkillHeader* skill;
+    g_skillActionResetValue = 0;
+    skill = GetCachedSkill(g_actionId);
+    g_statusCondition = GetSkillInflictedCondition(skill);
+    g_actionResult = GetSkillEffectCode(skill);
+    g_drainAmount = 0;
+    g_hpChange = GetSkillValueB(skill);
+    g_mpChange = 0;
+}
+
+RVA(0x0002dbe0, 0x10)
+void SetFieldSkillUser(i16 id) {
+    s_skillUser = id;
 }

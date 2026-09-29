@@ -108,8 +108,9 @@ def obj_align(kind: str, size: int, ratchet: int) -> int:
         return 8
     if kind == "scalar":
         return 4
-    # array / aggregate
-    if size > 8:
+    # array / aggregate: eight bytes or more take an eight-byte boundary even
+    # before the ratchet latches (docs/patterns/c-bss-globals-and-commons.md)
+    if size >= 8:
         return 8
     if size < 4:
         return 4
@@ -164,7 +165,7 @@ def _alignment(rva, size, kind):
     final retail RVA, so the modelled value is lowered to the largest usable
     divisor (not a source refutation - the linker places whole contributions).
     """
-    modelled = obj_align(kind or ("array" if size > 8 else "scalar"), size,
+    modelled = obj_align(kind or ("array" if size >= 8 else "scalar"), size,
                          UNLATCHED_RATCHET)
     a = modelled
     while rva % a:
@@ -975,16 +976,26 @@ def fp_pool_rows(model: Model, base_dir=BASE_DIR):
             for member in stranded:
                 # The pin states the LITERAL's size, the member its padded
                 # slot extent; accept the prefix match (bytes still verified,
-                # the enrolled extent stays the obj's).
-                if pool[member][3] >= size and pool[member][2][:size] == want:
+                # the enrolled extent stays the obj's) when the rest of the
+                # slot is zero padding - a double whose low word matches a
+                # float pin is another constant, not its padded slot.
+                slot = pool[member][2]
+                if pool[member][3] >= size and slot[:size] == want \
+                        and not any(slot[size:]):
                     pairs[rva].append(member)
         claims = Counter(m for ms in pairs.values() for m in ms)
+        pin_size = dict(pins.get(stem, ()))
         for rva, ms in sorted(pairs.items()):
             if len(ms) != 1 or claims[ms[0]] != 1:
                 withheld.append((rva, ms[0] if ms else "$T?",
                                  f"DATA_COMPGEN pin matches {len(ms)} pool members"))
                 continue
             storage, _off, want, size = pool[ms[0]]
+            # A float slot padded to the next double's alignment: the pin's
+            # literal size is the datum, the zero tail is cl's padding.
+            if not any(want[pin_size[rva]:]):
+                size = pin_size[rva]
+                want = want[:size]
             emit(ms[0], rva, storage, size, want, "src-DATA_COMPGEN-fp-pool")
         for member in stranded:
             if not claims.get(member):
@@ -1325,6 +1336,74 @@ def section_rows(rows, base_dir=BASE_DIR):
     return secs, withheld
 
 
+def _candidate_reproduces_gap(before, after, n):
+    """True when one candidate section holds a definition ending at the gap
+    and one starting after it, `n` bytes apart: the hole is cl's own padding
+    (e.g. an aggregate aligned to the section's latched eight), already part
+    of the placed section's shape, never a datum src/ left unmodelled."""
+    for p in before:
+        for q in after:
+            if "section" not in p or "section" not in q \
+                    or p["object"] != q["object"] \
+                    or p["section"]["index"] != q["section"]["index"]:
+                continue
+            if q["section_offset"] - (p["section_offset"] + p["size"]) == n:
+                return True
+    return False
+
+
+@lru_cache(maxsize=None)
+def _bss_layout(obj, base_dir=BASE_DIR):
+    """The candidate object's uninitialized storage, keyed by MASKED name:
+    ({name: (section index, offset)} for its .bss members, {name: size} for
+    its COMMONs - section 0, value = size)."""
+    members, commons = {}, {}
+    path = Path(base_dir) / (obj[:-2] + ".obj")
+    if not path.exists():
+        return members, commons
+    c = coffx.Obj(path)
+    for sec in c.section_table:
+        if sec["name"] != ".bss" or sec["characteristics"] & LNK_COMDAT:
+            continue
+        for off, name, _scl in c.section_members(sec["index"]):
+            members[msvc_names.mask(name)] = (sec["index"], off)
+    for idx, value, secnum in c.iter_symbols():
+        if secnum == 0 and value > 0:
+            commons[msvc_names.mask(c.sym_name(idx))] = value
+    return members, commons
+
+
+def _common_alignment(size):
+    """link.exe 5.10's COMMON alignment: the size rounded up to a power of
+    two, capped at 32 (docs/patterns/c-bss-globals-and-commons.md)."""
+    a = 1
+    while a < size and a < 32:
+        a *= 2
+    return a
+
+
+def _candidate_reproduces_bss_gap(before, after, b1, n):
+    """The .bss twin of _candidate_reproduces_gap. `.bss` rows are never
+    section-placed, so read the claiming object itself: two of its .bss
+    members `n` bytes apart reproduce the hole as cl's padding, and a hole
+    that ends at a COMMON's link alignment is the linker's slack."""
+    for p in before:
+        for q in after:
+            if p["object"] != q["object"]:
+                continue
+            members, commons = _bss_layout(p["object"])
+            a = members.get(msvc_names.mask(p.get("member") or p["name"]))
+            b = members.get(msvc_names.mask(q.get("member") or q["name"]))
+            if a and b and a[0] == b[0] and b[1] - (a[1] + p["size"]) == n:
+                return True
+            size = commons.get(msvc_names.mask(q.get("member") or q["name"]))
+            if size:
+                align = _common_alignment(size)
+                if n < align and (b1 + n) % align == 0:
+                    return True
+    return False
+
+
 def gap_rows(enrolled, secs):
     """Band-completion rows: retail bytes strictly between two claims of ONE
     unit, carved with no base counterpart so a datum src/ never models becomes
@@ -1379,9 +1458,22 @@ def gap_rows(enrolled, secs):
         unit = next(iter(both))
         is_bss = STORAGE[cls1] == "bss"
         pay = b"" if is_bss else img.payload(b1, n)
+        if not any(pay) and _candidate_reproduces_gap(
+                ends.get(b1, ()), starts.get(a2, ()), n):
+            withheld.append((b1, name, "band gap reproduced by the candidate "
+                             f"section's own layout (padding; 0x{n:x} B, "
+                             f"unit {unit})"))
+            continue
+        if is_bss and _candidate_reproduces_bss_gap(
+                ends.get(b1, ()), starts.get(a2, ()), b1, n):
+            withheld.append((b1, name, "band gap reproduced by the candidate "
+                             f"object's own .bss or COMMON layout (padding; "
+                             f"0x{n:x} B, unit {unit})"))
+            continue
         next_align = max((w.get("alignment")
                           or _alignment(w["rva"], w["size"],
-                                        w.get("storage", "data"))[0]
+                                        _object_kind(w["name"], w["rva"],
+                                                     w["size"]))[0]
                           for w in starts.get(a2, ())), default=0)
         if not is_bss and not any(pay):
             # A hole strictly smaller than the next claim's alignment exists

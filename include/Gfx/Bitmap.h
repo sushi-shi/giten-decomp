@@ -102,7 +102,7 @@ extern "C" {
 
     // Seeks `fp` past `skip` bitmaps (of the `limit` bytes in the file) and
     // stores the next one's size; NULL when there is none.
-    // @identity-TODO: label-only here; its body is bmpseek's.
+    // @identity-TODO: label-only here; its body is bitmapio's.
     FILE* SeekBitmap(FILE* fp, i16 skip, i32 limit, u32* size);
 
 #ifdef __cplusplus

@@ -38,7 +38,7 @@ void LoadWorldMapOverlay(BmpFile* bmp, i16 slot);
 u8 ReadWorldMapTileCode(i16 x, i16 y, i16 slot, i16 layer);
 // Zero for no marker colour, two on the world map, three on the automap.
 i16 HitTestWorldMap(i16 x, i16 y, i16 layer);
-i16 IsWorldMapMarkerNearEdge(i16 x, i16 y);
+b16 IsWorldMapMarkerNearEdge(i16 x, i16 y);
 // Magnifies the map around the mouse into the automap canvas.
 void DrawWorldMapCursor(i16 x, i16 y, i16 layer);
 

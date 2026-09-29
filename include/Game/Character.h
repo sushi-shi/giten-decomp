@@ -93,7 +93,7 @@ typedef struct Character {
     char name[17];
     // @identity-TODO: bag-entry details copied during equipment preview;
     // their meaning is unrecovered. The ammunition writer is disabled by
-    // g_ammoCountIndex == -1. No consumer reads these entries directly.
+    // the -1 count slot of ammunition. No consumer reads these entries directly.
     u8 ammoCounts[7];
     // The return point (area, level, x, y, direction) RecordWarpInLeader
     // copies into the roster leader and 0x41fa30 restores.
@@ -241,7 +241,7 @@ static __inline u8* GetCharacterBattleTallies(Character* character) {
         }                                                                                          \
     } while (0)
 
-static __inline i32 IsSkillAction(const Character* character) {
+static __inline b32 IsSkillAction(const Character* character) {
     return character->pickRole == 4 || character->pickRole == 6;
 }
 

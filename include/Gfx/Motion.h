@@ -77,22 +77,22 @@ static __inline MotionStep* GetMotionPathStep(MotionPath* path, u16 index) {
 }
 
 // The loaded motion table keeps its path pointers right after the count, on
-// a 2-byte boundary (retail reads them at +2).
+// a 2-byte boundary (retail reads them at +2); it has room for seven paths.
 typedef struct MotionTable {
     u16 count;
-    MotionPath* paths[1];
+    MotionPath* paths[7];
 } MotionTable;
 
-// A variable-length file block: path offsets are relative to its first byte.
+// The motion file block: path count, byte offsets from the block start, then
+// the paths. The load buffer has 16-byte capacity.
 typedef union MotionFile {
     struct {
         u16 count;
         u16 offsets[1];
     } table;
-    u8 bytes[1];
+    u8 bytes[16];
 } MotionFile;
 
-// @identity-TODO: the loader reveals their headers but not either storage extent.
 extern MotionFile g_motionFile;
 extern MotionTable g_loadedMotionTable;
 
@@ -151,7 +151,7 @@ typedef struct EffectPalette {
 void SetSceneFlags(i32 bits);
 i16 GetSceneFlags(void);
 void StartMotion(i16 index, i16 delay, i16 scale);
-i16 StepMotion(i16 immediate);
+b16 StepMotion(i16 immediate);
 void MotionPoint(i16 x, i16 y, Vec3* out);
 i32 ClampEffectCount(i16 count);
 void StartEffectScript(u8* base, u16 offset);

@@ -140,7 +140,7 @@ void BlitObjectSprite(
 ) {}
 
 RVA(0x000017c0, 0x4)
-i16 TestSceneSpritePixel(
+b16 TestSceneSpritePixel(
     i32 imageHandle,
     SpriteBitmap* image,
     i16 x,
@@ -151,11 +151,11 @@ i16 TestSceneSpritePixel(
     i16 pointX,
     i16 pointY
 ) {
-    return 0;
+    return false;
 }
 
 RVA(0x000017d0, 0x3)
-i32 DrawImageFrame(
+b32 DrawImageFrame(
     VideoViewport* dest,
     u32 image,
     i16 frame,
@@ -166,7 +166,7 @@ i32 DrawImageFrame(
     i16 e,
     i16 f
 ) {
-    return 0;
+    return false;
 }
 
 // @dead-code
@@ -188,16 +188,16 @@ i16 GetSpriteAlignedY(SpriteBitmap* image, i16 y) {
 // @dead-code
 // Zero-ref: no effective rel32 caller or relocated pointer reaches this body.
 RVA(0x00001820, 0x3)
-i32 GetLegacySpriteTestResult(void) {
-    return 0;
+b32 GetLegacySpriteTestResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller or relocated pointer reaches this body.
 RVA(0x00001830, 0x3)
-i32 GetLegacyImageDrawResult(void) {
-    return 0;
+b32 GetLegacyImageDrawResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.

@@ -37,19 +37,19 @@ extern BOOL g_bilinearFiltering;
 // released with the devices.
 extern IUnknown* g_roomObject;
 
-BOOL InitDirectDraw(void);
+b32 InitDirectDraw(void);
 // Enumerates the Direct3D devices into g_deviceSettings.caps (InitDirectDraw).
 void QueryD3DDevices(void);
 // The z-buffer depth a device supports: 16, else 24, else 32 or 0.
 DWORD __fastcall ZBufferDepth(D3DDEVICEDESC* desc);
-BOOL InitDirect3D(void);
-BOOL InitDirectSound(void);
-BOOL InitDirectInput(void);
+b32 InitDirect3D(void);
+b32 InitDirectSound(void);
+b32 InitDirectInput(void);
 void AcquireInput(BOOL acquire);
 u8 PollMouseButtons(void);
 void ClearScreenSurfaces(void);
 void ReleaseDirectX(void);
-BOOL RestoreSurfaces(BOOL restore);
+b32 RestoreSurfaces(BOOL restore);
 u16 ReadSurfaceWord(LPDIRECTDRAWSURFACE surface, i32 x, i32 pitch, i32 y);
 
 // D3DCaps.blendMode: the device alpha-blends (otherwise it stipples).
@@ -58,9 +58,6 @@ u16 ReadSurfaceWord(LPDIRECTDRAWSURFACE surface, i32 x, i32 pitch, i32 y);
 // The 16-bit display depth, and a 5-bit channel mask.
 #define PIXEL_BITS_16 16
 #define CHANNEL_MASK_5BIT 0x1f
-
-// The display settings the entry TU loaded (the DirectDraw driver's GUID).
-extern struct DisplayConfig g_displayConfig;
 
 // The Direct3D devices' descriptions as the device query keeps them.
 // @identity-TODO: the 0x38 bytes before the caps and the tail after the

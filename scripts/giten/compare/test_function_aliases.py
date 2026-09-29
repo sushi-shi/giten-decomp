@@ -3,6 +3,7 @@ from pathlib import Path
 from types import SimpleNamespace as NS
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from giten.compare import canonicalize as canon
 from giten.compare import function_aliases as fa
@@ -89,6 +90,32 @@ class AliasProofTest(unittest.TestCase):
                 fa.prove(model, root, img, overrides={'caller': candidate})
             with self.assertRaisesRegex(ValueError, 'does not equal retail'):
                 fa.prove(model, root, img, overrides={'alias': candidate})
+
+    def test_cached_base_objects_invalidate_on_equal_length_body_change(self):
+        claim = NS(name=ALIAS, unit='alias', channel='src_compgen', size=3)
+        model = NS(functions=[binding(aliases=[claim])])
+        img = NS(read=lambda rva, size: BODY, relocs_in=lambda lo, hi: [])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            primary, alias, candidate = [root / name for name in
+                                         ('primary.obj', 'alias.obj', 'candidate.obj')]
+            primary.write_bytes(object_body(PRIMARY))
+            alias.write_bytes(object_body(ALIAS))
+            candidate.write_bytes(object_body(ALIAS))
+            cache = {}
+            with patch.object(canon, 'CoffObject', wraps=canon.CoffObject) as parse:
+                for _ in range(2):
+                    self.assertEqual(fa.prove(model, root, img, _base_objects=cache,
+                                             overrides={'caller': candidate}),
+                                     {ALIAS: (PRIMARY, 0x1000)})
+                self.assertEqual(parse.call_count, 4)
+            self.assertEqual(set(cache), {primary, alias})
+            candidate.write_bytes(object_body(ALIAS, bytes.fromhex('33c0c3')))
+            with self.assertRaisesRegex(ValueError, 'candidate .*does not equal retail'):
+                fa.prove(model, root, img, _base_objects=cache, overrides={'caller': candidate})
+            alias.write_bytes(object_body(ALIAS, bytes.fromhex('33c0c3')))
+            with self.assertRaisesRegex(ValueError, 'does not equal retail'):
+                fa.prove(model, root, img, _base_objects=cache)
 
 
 class AliasRewriteTest(unittest.TestCase):

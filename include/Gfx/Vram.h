@@ -49,7 +49,7 @@ PaletteState* SavePaletteState(PaletteState* state, i16 mode);
 PaletteState* RestorePaletteState(PaletteState* state, i16 release);
 u8 FindPaletteEntry(i16 color);
 void RetainPaletteEntry(u8 index);
-i16 SetPaletteColor(u8 index, i16 color);
+b16 SetPaletteColor(u8 index, i16 color);
 void SetPaletteEntry(u8 index, i16 color);
 u32 GrbToRgb(u32 grb);
 void ReleasePaletteEntry(u8 index);

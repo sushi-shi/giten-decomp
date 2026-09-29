@@ -26,50 +26,50 @@ DATA(0x00069108)
 i16 g_cachedRecordId = -1;
 
 DATA(0x00080d38)
-static char s_skillViewName[0x100];
+static char s_skillViewName[0x100] = {0};
 
 DATA(0x00080e38)
-static SkillHeader s_cachedSkill;
+static SkillHeader s_cachedSkill = {0};
 
 DATA(0x00080e50)
-static i16 s_wordScratch[64];
+static i16 s_wordScratch[64] = {0};
 
 DATA(0x00080ed0)
-static SkillView s_skillView;
+static SkillView s_skillView = {0};
 
 DATA(0x00080ef0)
-static char s_skillViewDescription[0x100];
+static char s_skillViewDescription[0x100] = {0};
 
 // The stacked script states, newest first.
 DATA(0x00080ff0)
-static SavedScriptState* s_savedScripts;
+static SavedScriptState* s_savedScripts = 0;
 
 // The handle of the loaded skill file.
 DATA(0x00080ff4)
-static i32 s_skillTable;
+static i32 s_skillTable = 0;
 
 // One byte per map area; bit 0 allows skills 0x79..0x7b there.
 DATA(0x00080ff8)
-static u8* s_areaSkillFlags;
+static u8* s_areaSkillFlags = 0;
 
 DATA(0x00080ffc)
-static i16 s_skillCount;
+static i16 s_skillCount = 0;
 
 DATA(0x00081000)
-static i16 s_valueA;
+static i16 s_valueA = 0;
 
 DATA(0x00081004)
-static i16 s_valueB;
+static i16 s_valueB = 0;
 
 DATA(0x00081008)
-i16 g_recordBaseValue;
+i16 g_recordBaseValue = 0;
 
 DATA(0x0008100c)
-i16 g_recordValue;
+i16 g_recordValue = 0;
 
 // How often the cached skill has been used.
 DATA(0x00081010)
-static i16 s_skillUses;
+static i16 s_skillUses = 0;
 
 static __inline void AllocWordArray(i16** words, i16 count) {
     if (count < 1) {
@@ -233,7 +233,7 @@ void CopySkillList(Character* from, WordList* to) {
 }
 
 RVA(0x0002dfb0, 0x42)
-i16 RollSkillLearning(Character* character, i16 skill) {
+b16 RollSkillLearning(Character* character, i16 skill) {
     i16 chance = character->level;
     chance = (chance - GetSkillLevel(skill)) * 10 + GetStatTotal(character, STAT_INTELLIGENCE);
     return chance > RandomAverage(10, 60, 2);
@@ -488,7 +488,7 @@ i16 CheckSkillArea(i16 id) {
     if (GetFieldMarker()) {
         return 0;
     }
-    return (s_areaSkillFlags[g_field.pos.area] & 1) * 2 - 1;
+    return (s_areaSkillFlags[g_party.field.pos.area] & 1) * 2 - 1;
 }
 
 // A record's signed cost byte: negative costs HP (which must not reach 0),
@@ -606,18 +606,25 @@ static __inline i16 RollCachedSkillWearPercent(void) {
     return min(percent, 100);
 }
 
-// The legacy routine evaluates the worn values but discards the quotients.
-// Retail retains these divisions; their source spelling remains unresolved.
+// @early-stop: retail keeps each discarded worn quotient's DWORD store to one
+// stack slot; cl /Ox deletes them with their arithmetic for every non-volatile
+// form tried (i32/i16 scalar, array, struct, union, address-taken local, inline
+// out-parameter or returning helper, optimize("g"/"a"/"w"/"y", off) probes).
 RVA(0x0002e8a0, 0xad)
 void WearCachedSkill(void) {
     i16 percent;
+    i16 wear;
+    i32 worn;
     if (g_cachedRecordId == -1) {
         return;
     }
     percent = RollCachedSkillWearPercent();
-    (i16)((100 - percent) * s_valueA) / 100;
-    (i16)((100 - percent) * s_valueB) / 100;
-    (i16)((100 - percent) * g_recordBaseValue) / 100;
+    wear = (100 - percent) * s_valueA;
+    worn = wear / 100;
+    wear = (100 - percent) * s_valueB;
+    worn = wear / 100;
+    wear = (100 - percent) * g_recordBaseValue;
+    worn = wear / 100;
     s_skillUses++;
 }
 

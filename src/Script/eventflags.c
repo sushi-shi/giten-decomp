@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 DATA(0x000813a0)
-FlagBank g_eventFlags[16];
+FlagBank g_eventFlags[16] = {0};
 
 RVA(0x000391b0, 0x1b)
 void SetFlagBank(i16 bank) {
@@ -34,7 +34,7 @@ void ClearFlagBank(i16 bank) {
 
 // Bank 14 is the script actor's own flag bank when there is an actor.
 RVA(0x000391f0, 0x52)
-i32 ChangeEventFlag(u16 bank, u16 index, i16 op) {
+b32 ChangeEventFlag(u16 bank, u16 index, i16 op) {
     if (bank == 14 && g_curScript->actor != NULL) {
         return ChangeCharacterFlag(g_curScript->actor, index, op);
     }
@@ -42,7 +42,7 @@ i32 ChangeEventFlag(u16 bank, u16 index, i16 op) {
 }
 
 RVA(0x00039250, 0x15)
-i32 ClearEventFlag(u16 bank, u16 index) {
+b32 ClearEventFlag(u16 bank, u16 index) {
     return ChangeEventFlag(bank, index, 0);
 }
 
@@ -61,9 +61,9 @@ void ResetEventFlags(void) {
 
 // Flag 0 of bank 0 always reads clear.
 RVA(0x000392b0, 0x51)
-i32 TestEventFlag(u16 bank, u16 index) {
+b32 TestEventFlag(u16 bank, u16 index) {
     if (bank == 0 && index == 0) {
-        return 0;
+        return false;
     }
     if (bank == 14 && g_curScript->actor != NULL) {
         return TestCharacterFlag(g_curScript->actor, index);
@@ -72,22 +72,22 @@ i32 TestEventFlag(u16 bank, u16 index) {
 }
 
 RVA(0x00039310, 0x13)
-i32 IsEventFlagSet(u16 bank, u16 index) {
+b32 IsEventFlagSet(u16 bank, u16 index) {
     return TestEventFlag(bank, index);
 }
 
 RVA(0x00039330, 0x18)
-i32 ModifyEventFlag(u16 bank, u16 index, i16 op) {
+b32 ModifyEventFlag(u16 bank, u16 index, i16 op) {
     return ChangeEventFlag(bank, index, op);
 }
 
 RVA(0x00039350, 0x15)
-i32 SetEventFlag(u16 bank, u16 index) {
+b32 SetEventFlag(u16 bank, u16 index) {
     return ChangeEventFlag(bank, index, 1);
 }
 
 RVA(0x00039370, 0x15)
-i32 ToggleEventFlag(u16 bank, u16 index) {
+b32 ToggleEventFlag(u16 bank, u16 index) {
     return ChangeEventFlag(bank, index, -1);
 }
 
@@ -139,7 +139,7 @@ i16 CheckFlagWord(u16* cond) {
 }
 
 RVA(0x00039480, 0x5d)
-i16 MatchFlagWord(u16* cond) {
+b16 MatchFlagWord(u16* cond) {
     i16 set;
     if ((*cond & 0x7f) == 0x7f && (*cond & 0xff00) == 0xff00) {
         set = 1;
@@ -147,30 +147,30 @@ i16 MatchFlagWord(u16* cond) {
         set = TestEventFlag(*cond & 0x7f, *cond >> 8);
     }
     if (set == 0 && !(*cond & 0x80)) {
-        return 1;
+        return true;
     }
     if (set != 0 && (*cond & 0x80)) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // Whether flag `index` of `bank` (bits 0-6) is set, inverted by bit 7.
 RVA(0x000394e0, 0x3f)
-i16 MatchEventFlag(u16 bank, u16 index) {
+b16 MatchEventFlag(u16 bank, u16 index) {
     i16 negate = bank & 0x80;
     if (!TestEventFlag(bank & 0x7f, index)) {
         if (negate) {
-            return 0;
+            return false;
         }
     } else if (!negate) {
-        return 0;
+        return false;
     }
-    return 1;
+    return true;
 }
 
 RVA(0x00039520, 0x3a)
-i16 ReadAndMatchEventFlag(void) {
+b16 ReadAndMatchEventFlag(void) {
     u16 bank;
     u16 index;
     if (ReadFlagOperand(&bank, &index)) {

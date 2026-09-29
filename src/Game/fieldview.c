@@ -31,11 +31,36 @@ static i16 s_viewFloodMask[4][7] = {
     {0, 0, 0, 1, 0, 0, 0},
 };
 
-// The view cells in the order the occlusion pass visits them (entry 0 unused):
-// the far row left to right, then each nearer row.
-DATA(0x0006858c)
+// @identity-TODO: no code in this image reads these 28 words; they hold
+// seven zero-terminated runs of up to four cell numbers (see
+// s_viewCellNumbers), but whether they form one table, and of which shape,
+// is unproven.
+DATA(0x00068520)
+static i16 s_unusedViewCellLists[7][4] = {
+    {0, 0, 0, 0},
+    {1, 0, 0, 0},
+    {2, 9, 12, 0},
+    {2, 3, 4, 9},
+    {5, 10, 11, 0},
+    {5, 6, 7, 10},
+    {8, 0, 0, 0},
+};
+
+// The number k of each view cell (zero off the flood mask): the inverse of
+// s_viewCellOrder. No code in this image reads it.
+DATA(0x00068558)
+static i16 s_viewCellNumbers[4][7] = {
+    {1, 2, 3, 4, 5, 6, 7},
+    {0, 8, 9, 10, 11, 12, 0},
+    {0, 0, 13, 14, 15, 0, 0},
+    {0, 0, 0, 16, 0, 0, 0},
+};
+
+// The view cells in the order the occlusion pass visits them (cell k at
+// k - 1): the far row left to right, then each nearer row. A seventeenth,
+// zero entry fills the table's last four bytes.
+DATA(0x00068590)
 static ViewCell s_viewCellOrder[17] = {
-    {0, 0},
     {0, 0},
     {1, 0},
     {2, 0},
@@ -59,7 +84,7 @@ DATA(0x00078540)
 static u8 s_drawTable[0x200];
 
 DATA(0x00078740)
-i16 g_viewCells[4][7];
+i16 g_viewCells[4][7] = {0};
 
 // Clears the draw-cell bitmap.
 RVA(0x0000bdd0, 0x11)
@@ -75,7 +100,7 @@ void MarkDrawCell(i16 index) {
 
 // Whether x/y is a drawn view cell seen from the party.
 RVA(0x0000be20, 0x28)
-i16 GetPartyView(i16 x, i16 y) {
+b16 GetPartyView(i16 x, i16 y) {
     MapCoord party = GetMapCoord();
     return IsCellInViewCone(party.x, party.y, x, y);
 }
@@ -114,30 +139,30 @@ i16 StepViewCell(i16 col, i16 row, i32 dir, i16 axis) {
 }
 
 RVA(0x0000bed0, 0xe4)
-i32 CanFloodViewCell(i16 col, i16 row, i32 direction) {
+b32 CanFloodViewCell(i16 col, i16 row, i32 direction) {
     switch (direction & 3) {
         case VIEW_NORTH:
             if (row - 1 >= 0 && s_viewFloodMask[row - 1][col]) {
-                return 1;
+                return true;
             }
             break;
         case VIEW_EAST:
             if (col + 1 < 7 && s_viewFloodMask[row][col + 1]) {
-                return 1;
+                return true;
             }
             break;
         case VIEW_SOUTH:
             if (row + 1 < 4 && s_viewFloodMask[row + 1][col]) {
-                return 1;
+                return true;
             }
             break;
         case VIEW_WEST:
             if (col - 1 >= 0 && s_viewFloodMask[row][col - 1]) {
-                return 1;
+                return true;
             }
             break;
     }
-    return 0;
+    return false;
 }
 
 // Turns view cell *col/*row (party at column 3, row 3) seen from x/y facing
@@ -373,8 +398,8 @@ void UpdateViewCells(i16 x, i16 y) {
     g_viewCells[3][4] = 0;
     g_viewCells[3][2] = 0;
     for (k = 1; k < 17; k++) {
-        col = s_viewCellOrder[k].col;
-        row = s_viewCellOrder[k].row;
+        col = s_viewCellOrder[k - 1].col;
+        row = s_viewCellOrder[k - 1].row;
         switch (k) {
             case 1:
             case 2:
@@ -511,7 +536,7 @@ static i16 s_sideWeights[4] = {27, 9, 3, 1};
 // Whether cell (cellX, cellY) is a drawn view cell seen from (x, y) facing
 // the view direction.
 RVA(0x0000cba0, 0xc0)
-i16 IsCellInViewCone(i16 x, i16 y, i16 cellX, i16 cellY) {
+b16 IsCellInViewCone(i16 x, i16 y, i16 cellX, i16 cellY) {
     i16 row;
     i16 col;
     switch (GetViewDirection()) {
@@ -533,7 +558,7 @@ i16 IsCellInViewCone(i16 x, i16 y, i16 cellX, i16 cellY) {
             break;
     }
     if (row > 3) {
-        return 0;
+        return false;
     }
     return g_viewCells[row][col] != 0;
 }
@@ -611,11 +636,11 @@ MapCoord GetMouseWorldCell(void) {
 
 // Whether a world cell lies inside the 0x900 x 0x898 map.
 RVA(0x0000ce50, 0x29)
-i16 IsWorldCellInMap(i16 x, i16 y) {
+b16 IsWorldCellInMap(i16 x, i16 y) {
     if (x >= 0 && x < 0x900 && y >= 0 && y < 0x898) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 // `direction` turned by `turn` quarter turns.
@@ -760,7 +785,7 @@ i16 GetWallStopCode(u16 cell, i16 mode) {
 // count, here only its byte; i16/u16 locals and casts tried.
 RVA(0x0000d2a0, 0xf)
 i32 GetFacingBit(void) {
-    return 1 << g_field.pos.direction;
+    return 1 << g_party.field.pos.direction;
 }
 
 // x1/y1 relative to x0/y0 in the frame of `direction`.

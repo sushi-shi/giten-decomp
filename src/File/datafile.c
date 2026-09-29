@@ -11,28 +11,28 @@
 // Running XOR key of the length-prefixed encrypted records: seeded from the
 // record length, then each ciphertext byte keys the next one.
 DATA(0x000712d0)
-static u8 s_cryptKey;
+static u8 s_cryptKey = 0;
 
 // The open data file and the one it displaced (OpenDataFile nests one level).
 // stdio buffers for the open data file and for one nested open.
 DATA(0x000712d8)
-static char s_fileBuffer[0x200];
+static char s_fileBuffer[0x200] = {0};
 
 DATA(0x000714d8)
-static char s_nestedFileBuffer[0x200];
+static char s_nestedFileBuffer[0x200] = {0};
 
 DATA(0x000716d8)
-static FILE* s_dataFile;
+static FILE* s_dataFile = 0;
 
 DATA(0x000716dc)
-static FILE* s_prevDataFile;
+static FILE* s_prevDataFile = 0;
 
 // The id last asked for, and the id actually opened (after any fallback).
 DATA(0x000716e0)
-static i16 s_requestedId;
+static i16 s_requestedId = 0;
 
 DATA(0x000716e4)
-static i16 s_openedId;
+static i16 s_openedId = 0;
 
 RVA(0x00001b20, 0x11)
 void SetCryptKey(u16 seed) {
@@ -280,13 +280,13 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
 }
 
 RVA(0x00002250, 0x28)
-i32 CloseDataFile(FILE* fp) {
+b32 CloseDataFile(FILE* fp) {
     if (fp != NULL) {
         fclose(fp);
     }
     s_dataFile = s_prevDataFile;
     s_prevDataFile = NULL;
-    return 0;
+    return false;
 }
 
 // @identity-TODO: these uncalled data-file results have no recoverable API
@@ -294,46 +294,46 @@ i32 CloseDataFile(FILE* fp) {
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00002280, 0x3)
-i32 GetLegacyDataFileOpenResult(void) {
-    return 0;
+b32 GetLegacyDataFileOpenResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x00002290, 0x3)
-i32 GetLegacyDataFileReadResult(void) {
-    return 0;
+b32 GetLegacyDataFileReadResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022a0, 0x3)
-i32 GetLegacyDataFileSeekResult(void) {
-    return 0;
+b32 GetLegacyDataFileSeekResult(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022b0, 0x3)
-i32 GetLegacyDataFileStatus(void) {
-    return 0;
+b32 GetLegacyDataFileStatus(void) {
+    return false;
 }
 
 // @identity-TODO: original API name and signature are unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022c0, 0x3)
-i32 GetLegacyDataFileLength(void) {
-    return 0;
+b32 GetLegacyDataFileLength(void) {
+    return false;
 }
 
 // @identity-TODO: the one-valued legacy data-file result's role is unproven.
 // @dead-code
 // Zero-ref: no effective rel32 caller, relocated pointer or data slot.
 RVA(0x000022d0, 0x5)
-i16 IsLegacyDataFileReady(void) {
-    return 1;
+b16 IsLegacyDataFileReady(void) {
+    return true;
 }

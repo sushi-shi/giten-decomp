@@ -18,6 +18,8 @@ extern PaletteState* g_fusionPaletteState;
 extern i16 g_fusionFirstSlot;
 extern i16 g_fusionSecondSlot;
 extern i16 g_fusionThirdSlot;
+// The current fusion result's demon (initially -1).
+extern i16 g_fusionResult;
 
 void AcquireFusionSelectionMode(void);
 void ReleaseFusionSelectionResources(void);
@@ -45,17 +47,17 @@ i16 CloseFusionPreviewOnClick(i16 plane);
 i16 OpenFusionPreviewOnClick(void);
 void DrawFusionPreviewCard(i16 plane, Character* character);
 i16 CreateFusionPreviewCard(i16 window, i16 slot);
-i16 PreviewFusionCharacter(Character* character);
-i16 CloseFusionPreview(void);
+b16 PreviewFusionCharacter(Character* character);
+b16 CloseFusionPreview(void);
 void RunPairFusion(void);
 void RunTripleFusion(void);
 void EndFusion(void);
 i16 CommitPairFusion(void);
 i16 CommitTripleFusion(void);
 Character* LoadFusionResultCharacter(Character* destination);
-i16 StageFusionCharacter(i16 id);
+b16 StageFusionCharacter(i16 id);
 i16 StagePairFusionCharacter(i16 first, i16 second, i16 rankChanges);
-i32 RestoreFusionCharacter(void);
+b32 RestoreFusionCharacter(void);
 
 Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges);
 

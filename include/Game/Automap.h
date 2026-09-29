@@ -15,9 +15,9 @@ void DrawAutomapMark(i16 mark, i16 x, i16 y);
 void DrawAutomapTile(i16 tile, i16 x, i16 y);
 void DrawMapOverlayTile(i16 tile, i16 x, i16 y);
 void DrawAutomapRegion(i16 x, i16 y, i16 width, i16 height, i16 across, i16 along);
-i16 DrawAutomapViewport(MapPosition position);
+b16 DrawAutomapViewport(MapPosition position);
 void UpdateAutomapScrollPanel(void);
-i16 RunAutomapState(void);
+b16 RunAutomapState(void);
 
 // Detail gates include NPC markers at level two and object markers at level three.
 // clang-format off

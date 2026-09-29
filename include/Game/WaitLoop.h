@@ -11,13 +11,13 @@
 
 // One step of the wait state (game state 1): pops it when its input or time
 // condition is met.
-i16 StepWaitState(void);
-i16 RunScreenFadeState(void);
-i16 RunMessageBoxState(void);
+b16 StepWaitState(void);
+b16 RunScreenFadeState(void);
+b16 RunMessageBoxState(void);
 
 // @identity-TODO: empty in the retail build (returns 0); the message opcode's
 // wait loop calls it with (1, 0x18) each step. It lies in the motion TU's span.
 RVA_DECL(0x00004990)
-i16 PollIdle(i16 mode, i16 frames);
+b16 PollIdle(i16 mode, i16 frames);
 
 #endif // GITEN_GAME_WAITLOOP_H

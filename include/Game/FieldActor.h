@@ -13,7 +13,7 @@
 void LoadEnemyGroupSlot(i16 slot, i16 id);
 
 // @identity-TODO: That 0xeca0 spawns a wandering enemy group near the party is inferred (random
-// offset around g_field, 0xdbf0 with random group); decode 0xdbf0/0xe8f0 to confirm.
+// offset around g_party.field, 0xdbf0 with random group); decode 0xdbf0/0xe8f0 to confirm.
 i16 TickEnemySpawnTimer(void);
 
 #endif // GITEN_GAME_FIELDACTOR_H

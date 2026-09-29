@@ -12,7 +12,7 @@
 // action, AdvanceObjectAnims count in 0x12d20, 0 gates 0x135b0); name its reader 0x12860.
 i16 SetFieldBusy(i16 busy);
 
-i16 CanCharacterOpenAutomap(Character* character);
+b16 CanCharacterOpenAutomap(Character* character);
 i16 PickAnalyzeTarget(void);
 
 void RequestFieldRefresh(void);
@@ -25,9 +25,9 @@ void InitFieldPanels(void);
 
 // @identity-TODO: what 0x14770 (mask reset, position snapshot) and 0x3980 (view redraw, refresh
 // flag latch) complete is only partly decoded; decode 0x14770/0x15b90.
-i16 UpdateFieldScreen(i16 force);
+b16 UpdateFieldScreen(i16 force);
 
-static __inline i16 FlushFieldScreen(void) {
+static __inline b16 FlushFieldScreen(void) {
     FlushObjectRedraws();
     return UpdateFieldScreen(0);
 }
@@ -120,7 +120,7 @@ typedef struct FieldMessage {
 } FieldMessage;
 
 FieldMessage* GetFieldMessage(i16 code);
-i16 DrawFieldMessage(i16 code, i16 band, i16 marked);
+b16 DrawFieldMessage(i16 code, i16 band, i16 marked);
 
 void ResetSubscreen(void);
 

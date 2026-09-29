@@ -33,14 +33,14 @@ RVA_DECL(0x00058820)
 void FreeSpriteImages(i16 slot);
 
 // Completes the party's step through a door once it has opened.
-// @identity-TODO: read from its only caller (AnimateDoor) and its g_field use.
+// @identity-TODO: read from its only caller (AnimateDoor) and its g_party.field use.
 void FinishDoorStep(void);
 
 // The current area's NPCs.
 i16 GetAreaNpcCount(void);
 
 // Whether `npc` has left (its event flag is set).
-i32 IsAreaNpcGone(i16 npc);
+b32 IsAreaNpcGone(i16 npc);
 
 // The cell (x, y) of `npc`.
 i16* GetAreaNpcCell(i16 npc);
