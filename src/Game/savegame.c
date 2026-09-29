@@ -29,6 +29,7 @@
 #include <Script/EventFlags.h>
 #include <Text/TextWindow.h>
 #include <Ui/MenuBox.h>
+#include <Ui/MenuStep.h>
 #include <Util/Scratch.h>
 
 #include <stdio.h>
@@ -229,34 +230,34 @@ b16 RunSystemMenu(void) {
     i16 pick;
 
     switch (GetGamePhase()) {
-        case 0:
+        case MENU_STEP_OPEN:
             NextGamePhase();
             NextGamePhase();
             OpenSystemMenu(s_systemEntries, s_systemEntryCount);
             return false;
-        case 1:
+        case MENU_STEP_CLOSE:
             ReturnFromGameState();
             s_systemMenu = DestroyMenuBox(s_systemMenu);
             return false;
-        case 2:
+        case MENU_STEP_RUN:
             pick = RunMenu(s_systemMenu);
             if (pick == -1) {
                 PrevGamePhase();
             }
             if (pick > 0) {
-                SetGamePhase(g_selectedObjectId + 3);
+                SetGamePhase(g_selectedObjectId + MENU_STEP_PICK_FIRST);
                 s_systemMenu = DestroyMenuBox(s_systemMenu);
                 return false;
             }
             break;
-        case 3:
-        case 4:
+        case MENU_STEP_PICK_FIRST + SYSTEM_ROW_AUTO_MAPPING:
+        case MENU_STEP_PICK_FIRST + SYSTEM_ROW_AUTO_NAVIGATION:
             return RunDisplayChoice();
-        case 5:
+        case MENU_STEP_PICK_FIRST + SYSTEM_ROW_QUIT:
             return RunQuitConfirm();
-        case 6:
+        case MENU_STEP_PICK_FIRST + SYSTEM_ROW_DEBUG:
             if (RunDebugMenu() < 0) {
-                SetGamePhase(1);
+                SetGamePhase(MENU_STEP_CLOSE);
             }
             break;
     }

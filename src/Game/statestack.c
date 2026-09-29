@@ -97,6 +97,7 @@
 #include <Ui/Hotspot.h>
 #include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
+#include <Ui/MenuStep.h>
 #include <Ui/Message.h>
 #include <Ui/Panel.h>
 #include <Ui/PartySlotSelection.h>
@@ -824,7 +825,7 @@ RVA(0x00017330, 0x178)
 b16 RunDdsMenu(void) {
     i16 result;
     switch (GetGamePhase()) {
-        case 0:
+        case MENU_STEP_OPEN:
             NextGamePhase();
             NextGamePhase();
             RunPartyPicker(-1);
@@ -833,34 +834,34 @@ b16 RunDdsMenu(void) {
             SetMenuItems(s_ddsMenu, 9, s_ddsCommands, 3, DdsMenuHandler);
             HideScreenLayer(SCREEN_LAYER_PANEL);
             break;
-        case 1:
+        case MENU_STEP_CLOSE:
             ReturnFromGameState();
             s_ddsMenu = DestroyMenuBox(s_ddsMenu);
             SetFieldPanelRowChecked(4, 0);
             RequestFieldRefresh();
             break;
-        case 2:
+        case MENU_STEP_RUN:
             result = RunMenu(s_ddsMenu);
             if (result == -1) {
                 PrevGamePhase();
             }
             if (result > 0) {
-                SetGamePhase(g_selectedObjectId + 3);
+                SetGamePhase(g_selectedObjectId + MENU_STEP_PICK_FIRST);
                 s_ddsMenu = DestroyMenuBox(s_ddsMenu);
             }
             break;
-        case 3:
+        case MENU_STEP_PICK_FIRST + DDS_ROW_CALL:
             RunDdsSummon();
             break;
-        case 4:
+        case MENU_STEP_PICK_FIRST + DDS_ROW_RETURN:
             s_ddsRosterSlot = ReturnDdsMember();
             if (s_ddsRosterSlot) {
-                SetGamePhase(1);
+                SetGamePhase(MENU_STEP_CLOSE);
             }
             break;
-        case 5:
+        case MENU_STEP_PICK_FIRST + DDS_ROW_PURGE:
             if (PickDdsPurgeMember() != -1) {
-                SetGamePhase(1);
+                SetGamePhase(MENU_STEP_CLOSE);
                 if (s_ddsRosterSlot >= 0) {
                     RemoveFromRoster(s_ddsRosterSlot);
                     PlaySoundEffect(0x36);

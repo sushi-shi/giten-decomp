@@ -17,6 +17,7 @@
 #include <Script/ScriptVars.h>
 #include <Text/TextWindow.h>
 #include <Ui/MenuBox.h>
+#include <Ui/MenuStep.h>
 #include <Util/Scratch.h>
 
 #include <stddef.h>
@@ -98,7 +99,7 @@ i16 RunDebugMenu(void) {
     MapCoord to;
 
     switch (GetGameStep()) {
-        case 0:
+        case MENU_STEP_OPEN:
             s_testSkill = 0x10;
             s_shotRise = 3;
             NextGameStep();
@@ -107,55 +108,55 @@ i16 RunDebugMenu(void) {
             MoveMenuBox(s_debugMenu, -8, -0x16);
             SetMenuItems(s_debugMenu, 8, s_debugEntries, 15, DebugMenuHandler);
             return 0;
-        case 1:
+        case MENU_STEP_CLOSE:
             s_debugMenu = DestroyMenuBox(s_debugMenu);
             HideTextPlane(0);
             return -1;
-        case 2:
+        case MENU_STEP_RUN:
             pick = RunMenu(s_debugMenu);
             if (pick == -1) {
                 PrevGameStep();
             }
             if (pick > 0) {
-                SetGameStep(g_selectedObjectId + 3);
+                SetGameStep(g_selectedObjectId + MENU_STEP_PICK_FIRST);
                 s_debugMenu = DestroyMenuBox(s_debugMenu);
                 return 0;
             }
             break;
-        case 7:
-            SetGameStep(1);
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_DESTROY_ALL_DEMONS:
+            SetGameStep(MENU_STEP_CLOSE);
             ResetObjectAnims();
             return 0;
-        case 9:
-        case 12:
-        case 15:
-            row = GetGameStep() - 3;
-            SetGameStep(1);
+        case MENU_STEP_PICK_FIRST + 6:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_MOVE_3D:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_LOAD:
+            row = GetGameStep() - MENU_STEP_PICK_FIRST;
+            SetGameStep(MENU_STEP_CLOSE);
             StartDebugScene(0xaf, s_debugEntries[row].value, g_infoPlane);
             return 0;
-        case 16:
-            row = GetGameStep() - 3;
-            SetGameStep(0);
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_CHECK_DATA:
+            row = GetGameStep() - MENU_STEP_PICK_FIRST;
+            SetGameStep(MENU_STEP_OPEN);
             StartDebugScene(0xd1, s_debugEntries[row].value, g_infoPlane);
             return 0;
-        case 3:
-        case 4:
-        case 6:
-        case 8:
-        case 10:
-        case 11:
-        case 13:
-        case 14:
-            row = GetGameStep() - 3;
-            SetGameStep(0);
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_BGM:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_SE:
+        case MENU_STEP_PICK_FIRST + 3:
+        case MENU_STEP_PICK_FIRST + 5:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_GET_ITEMS:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_CHANGE_STATS:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_CHANGE_FLAGS:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_SAVE:
+            row = GetGameStep() - MENU_STEP_PICK_FIRST;
+            SetGameStep(MENU_STEP_OPEN);
             StartDebugScene(0xaf, s_debugEntries[row].value, g_infoPlane);
             return 0;
-        case 17:
-            SetGameStep(0);
+        case MENU_STEP_PICK_FIRST + 14:
+            SetGameStep(MENU_STEP_OPEN);
             return 0;
-        case 5:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_MAGIC_EFFECT:
             switch (GetGameSub()) {
-                case 0:
+                case MENU_STEP_OPEN:
                     s_skillCount = GetSkillCount();
                     NextGameSub();
                     NextGameSub();
@@ -163,42 +164,42 @@ i16 RunDebugMenu(void) {
                     MoveMenuBox(s_debugMenu, -8, -0x16);
                     SetMenuItems(s_debugMenu, 8, s_magicEntries, 8, MagicMenuHandler);
                     return 0;
-                case 1:
+                case MENU_STEP_CLOSE:
                     s_debugMenu = DestroyMenuBox(s_debugMenu);
-                    SetGameStep(0);
+                    SetGameStep(MENU_STEP_OPEN);
                     return 0;
-                case 2:
+                case MENU_STEP_RUN:
                     pick = RunMenu(s_debugMenu);
                     if (pick == -1) {
                         PrevGameSub();
                     }
                     if (pick > 0) {
-                        SetGameSub(g_selectedObjectId + 3);
+                        SetGameSub(g_selectedObjectId + MENU_STEP_PICK_FIRST);
                         return 0;
                     }
                     break;
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                    row = GetGameSub() - 3;
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_PLUS_1:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_MINUS_1:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_PLUS_10:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_MINUS_10:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_PLUS_100:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_MINUS_100:
+                    row = GetGameSub() - MENU_STEP_PICK_FIRST;
                     s_testSkill += s_magicEntries[row].value;
-                    SetGameSub(2);
+                    SetGameSub(MENU_STEP_RUN);
                     s_debugMenu->flags |= 1;
                     return 0;
-                case 9:
-                    SetGameSub(2);
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_DISTANCE:
+                    SetGameSub(MENU_STEP_RUN);
                     s_debugMenu->flags |= 1;
                     if (++s_shotRise > 3) {
                         s_shotRise = 0;
                         return 0;
                     }
                     break;
-                case 10:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_RUN:
                     s_debugMenu = DestroyMenuBox(s_debugMenu);
-                    SetGameSub(0);
+                    SetGameSub(MENU_STEP_OPEN);
                     from = GetMapCoord();
                     to = MoveMapCoord(from, g_party.field.pos.direction, 0, -s_shotRise);
                     PushGameState(GAME_STATE_CLOSING_EFFECT);
