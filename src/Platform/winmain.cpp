@@ -2060,7 +2060,6 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
     i32 level;
     double distance;
     D3DVALUE light;
-    Texture* texture;
     HRESULT result;
     RECT rect;
     MapCoord* coord;
@@ -2219,10 +2218,10 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     SetQuadSpecular(s_enemy, 0xff000000);
                 }
                 double billboardWidth = width;
-                s_enemy[2].x = s_enemy[1].x = -g_billboardX * billboardWidth;
-                s_enemy[3].x = s_enemy[0].x = g_billboardX * billboardWidth;
-                s_enemy[3].z = s_enemy[0].z = g_billboardZ * billboardWidth;
-                s_enemy[2].z = s_enemy[1].z = -g_billboardZ * billboardWidth;
+                s_enemy[1].x = s_enemy[2].x = -g_billboardX * billboardWidth;
+                s_enemy[0].x = s_enemy[3].x = g_billboardX * billboardWidth;
+                s_enemy[0].z = s_enemy[3].z = g_billboardZ * billboardWidth;
+                s_enemy[1].z = s_enemy[2].z = -g_billboardZ * billboardWidth;
                 layer = GetObjectLayer(index) & 1;
                 s_enemy[2].y = s_enemy[3].y = lift - g_enemyTextures[layer][0].bottomMargin;
                 s_enemy[1].y = s_enemy[2].y + height;
@@ -2241,16 +2240,21 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 } else {
                     SetQuadColor(s_enemy, 0xffffffff);
                 }
-                texture = &g_enemyTextures[layer][imageCode];
                 g_d3dDevice->SetRenderState(
                     D3DRENDERSTATE_TEXTUREHANDLE,
-                    GetTextureHandle(texture)
+                    GetTextureHandle(&g_enemyTextures[layer][imageCode])
                 );
                 if (g_deviceType == D3D_DEVICE_RAMP) {
                     result = g_d3dDevice->SetLightState(
                         D3DLIGHTSTATE_MATERIAL,
-                        lit ? GetTextureMaterialHandle(texture, TEXTURE_SHADE_LIT)
-                            : GetTextureMaterialHandle(texture, TEXTURE_SHADE_NORMAL)
+                        lit ? GetTextureMaterialHandle(
+                                  &g_enemyTextures[layer][imageCode],
+                                  TEXTURE_SHADE_LIT
+                              )
+                            : GetTextureMaterialHandle(
+                                  &g_enemyTextures[layer][imageCode],
+                                  TEXTURE_SHADE_NORMAL
+                              )
                     );
                     if (result != D3D_OK) {
                         TraceD3DCallError(
@@ -2261,13 +2265,13 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 } else if (lit) {
                     g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, TRUE);
                 }
-                info = &texture->image->info;
+                info = &g_enemyTextures[layer][imageCode].image->info;
                 if (info->biWidth > 256) {
                     for (i = 0; i < 4; i++) {
                         s_enemy[i].x *= DATA_COMPGEN(0x00064aa8, 2.0f);
                     }
                 }
-                if (info->biWidth > 256 && !HasTextureHandle(texture)) {
+                if (info->biWidth > 256 && !HasTextureHandle(&g_enemyTextures[layer][imageCode])) {
                     if (!lit) {
                         rect.left = 128;
                         rect.top = 100;
