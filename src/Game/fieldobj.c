@@ -1398,7 +1398,7 @@ i16 DirectionToParty(i16 x, i16 y) {
     MapCoord coord;
     i16 direction;
     coord = GetMapCoord();
-    direction = RelativeDirection(x, y, coord.x, coord.y, 0);
+    direction = RelativeDirection(x, y, coord.x, coord.y, VIEW_NORTH);
     if (x == coord.x && y == coord.y) {
         direction = TurnDirection(g_party.field.pos.direction, 2);
     }

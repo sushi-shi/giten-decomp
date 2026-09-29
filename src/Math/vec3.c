@@ -6,6 +6,8 @@
 #include <Math/Vec3.h>
 #include <Util/Range.h>
 
+#include <limits.h>
+
 // Perspective projection onto the 640x400 screen (centre 320, horizon 114).
 RVA(0x0000d3f0, 0x4f)
 ScreenPoint ProjectPoint(i16 x, i16 y, i16 z) {
@@ -26,17 +28,17 @@ b16 MoveBySubVelocity(Vec3* pos, const Vec3* velocity) {
     b16 moved = false;
     i16 before;
     before = pos->x;
-    pos->x += ClampDelta(before, velocity->x >> 8, -32768, 32767);
+    pos->x += ClampDelta(before, velocity->x >> 8, SHRT_MIN, SHRT_MAX);
     if (before != pos->x) {
         moved = true;
     }
     before = pos->y;
-    pos->y += ClampDelta(before, velocity->y >> 8, -32768, 32767);
+    pos->y += ClampDelta(before, velocity->y >> 8, SHRT_MIN, SHRT_MAX);
     if (before != pos->y) {
         moved = true;
     }
     before = pos->z;
-    pos->z += ClampDelta(before, velocity->z >> 8, -32768, 32767);
+    pos->z += ClampDelta(before, velocity->z >> 8, SHRT_MIN, SHRT_MAX);
     if (before != pos->z) {
         moved = true;
     }
@@ -45,9 +47,9 @@ b16 MoveBySubVelocity(Vec3* pos, const Vec3* velocity) {
 
 RVA(0x0000d510, 0x65)
 void StepBody(Body* body) {
-    body->pos.x += ClampDelta(body->pos.x, body->vel.x, -32768, 32767);
-    body->pos.y += ClampDelta(body->pos.y, body->vel.y, -32768, 32767);
-    body->pos.z += ClampDelta(body->pos.z, body->vel.z, -32768, 32767);
+    body->pos.x += ClampDelta(body->pos.x, body->vel.x, SHRT_MIN, SHRT_MAX);
+    body->pos.y += ClampDelta(body->pos.y, body->vel.y, SHRT_MIN, SHRT_MAX);
+    body->pos.z += ClampDelta(body->pos.z, body->vel.z, SHRT_MIN, SHRT_MAX);
 }
 
 // @identity-TODO: returns an FIELD_OUT_* code for the first axis outside the
@@ -105,23 +107,29 @@ Vec3* UnprojectPoint(i16 x, i16 y, i16 depth, Vec3* out) {
 // observer facing `facing` (0..3); the origin arguments are reused for the
 // result, so other facings store them back.
 RVA(0x0000d700, 0x84)
-void RotateOffset(i16* x, i16* y, i16 originX, i16 originY, i16 facing) {
+void RotateOffset(
+    i16* x,
+    i16* y,
+    i16 originX,
+    i16 originY,
+    GZ_ENUM_PARAM(ViewDirection, i16) facing
+) {
     *x -= originX;
     *y -= originY;
     switch (facing) {
-        case 0:
+        case VIEW_NORTH:
             originX = *x;
             originY = *y;
             break;
-        case 1:
+        case VIEW_EAST:
             originX = *y;
             originY = -*x;
             break;
-        case 2:
+        case VIEW_SOUTH:
             originX = -*x;
             originY = -*y;
             break;
-        case 3:
+        case VIEW_WEST:
             originX = -*y;
             originY = *x;
             break;

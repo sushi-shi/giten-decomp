@@ -3,6 +3,8 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 i32 PowerOfTwo(i16 exponent);
@@ -25,8 +27,8 @@ u16 CappedDecrease(u16 value, u16 amount, u16 min);
 void SubCapped(u16* value, u16 amount, u16 min);
 i32 AddClampInt(i32 a, i32 b, i32 lo, i32 hi);
 i16 AddClampShort(i16 a, i16 b, i16 lo, i16 hi);
-i16 Direction4(i16 dx, i16 dy);
-i16 RelativeDirection(i16 x0, i16 y0, i16 x1, i16 y1, i16 facing);
+GZ_ENUM_RETURN(ViewDirection, i16) Direction4(i16 dx, i16 dy);
+i16 RelativeDirection(i16 x0, i16 y0, i16 x1, i16 y1, GZ_ENUM_PARAM(ViewDirection, i16) facing);
 i16 GridDistance(i16 x0, i16 y0, i16 x1, i16 y1);
 void SortShortPair(i16* lo, i16* hi);
 

@@ -6,6 +6,7 @@
 #include <Util/Range.h>
 #include <Util/Text.h>
 
+#include <limits.h>
 #include <math.h>
 #include <mbstring.h>
 #include <stdlib.h>
@@ -66,12 +67,12 @@ u16 ClampUShort(u16 value, u16 lo, u16 hi) {
 
 RVA(0x0000b8b0, 0x18)
 i16 ClampToShort(i32 value) {
-    return ClampInt(value, -32768, 32767);
+    return ClampInt(value, SHRT_MIN, SHRT_MAX);
 }
 
 RVA(0x0000b8d0, 0x15)
 u16 ClampToUShort(i32 value) {
-    return ClampInt(value, 0, 0xffff);
+    return ClampInt(value, 0, USHRT_MAX);
 }
 
 // Rounds half away from zero.
@@ -182,14 +183,14 @@ i16 AddClampShort(i16 a, i16 b, i16 lo, i16 hi) {
     return ClampToShort(AddClampInt(a, b, lo, hi));
 }
 
-// Which of four directions (0..3) the offset (dx, dy) points in.
+// Which of the four directions the offset (dx, dy) points in.
 RVA(0x0000bb10, 0x5d)
-i16 Direction4(i16 dx, i16 dy) {
+GZ_ENUM_RETURN(ViewDirection, i16) Direction4(i16 dx, i16 dy) {
     if (dx < 0) {
         if (dy < 0) {
-            return dx - dy < 0 ? 3 : 0;
+            return dx - dy < 0 ? VIEW_WEST : VIEW_NORTH;
         }
-        return dx + dy < 0 ? 3 : 2;
+        return dx + dy < 0 ? VIEW_WEST : VIEW_SOUTH;
     }
     if (dy <= 0) {
         return dx + dy > 0;
@@ -199,21 +200,21 @@ i16 Direction4(i16 dx, i16 dy) {
 
 // Direction4 of (x1, y1) seen from (x0, y0) by an observer facing `facing`.
 RVA(0x0000bb70, 0x62)
-i16 RelativeDirection(i16 x0, i16 y0, i16 x1, i16 y1, i16 facing) {
+i16 RelativeDirection(i16 x0, i16 y0, i16 x1, i16 y1, GZ_ENUM_PARAM(ViewDirection, i16) facing) {
     i16 dx = x1 - x0;
     i16 dy = y1 - y0;
     i16 rx;
     i16 ry;
     switch (facing) {
-        case 1:
+        case VIEW_EAST:
             rx = dy;
             ry = -dx;
             break;
-        case 2:
+        case VIEW_SOUTH:
             rx = -dx;
             ry = -dy;
             break;
-        case 3:
+        case VIEW_WEST:
             rx = -dy;
             ry = dx;
             break;

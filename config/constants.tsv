@@ -330,3 +330,18 @@ src/Game/treasurebox.c	RunFieldEffect	*	*	* case	skill field-effect codes (GetSk
 src/Game/treasurebox.c	RunFieldEffect	*	case-label	switch on effect	skill field-effect codes (GetSkillEffectCode); the handlers are named from their bodies only, so the codes stay numeric until a handler's identity is recovered (@identity-TODO)
 src/Game/treasurebox.c	KnockBack	[01]	*	*at	x and y of the pushed position (`at` points at its x)
 src/Game/treasurebox.c	KnockBack	[01]	call-argument	*argument [12]	x and y of the pushed position (`at` points at its x)
+*	*	0	trivial-function-literal	0 store z	a coordinate reset to the origin
+src/Math/vec3.c	ProjectPoint	*	arithmetic	*	the 3D view's screen projection: centre column 320, eye height 233 and horizon row 114
+src/Math/vec3.c	ProjectFloorPoint	0	call-argument	ProjectPoint(*argument 2	a point on the floor (height 0)
+src/Math/vec3.c	MoveBySubVelocity	8	call-argument	ClampDelta(*argument 2	velocity is kept in 1/256 units; the step adds its whole part
+src/Math/vec3.c	CellToField	*	arithmetic	*	field cell to 3D coordinates: 3x3 subcells per cell, 6 subcells per column or row step, 75 units per subcell, and the origin offsets
+src/Mem/handle.c	Clear*	0	call-argument	SetHandleEntry(*argument 3	a freed entry has size 0
+src/Util/range.c	PowerOfTwo	1	*	*	the power of two starts at 2^0
+src/Util/range.c	ClampToUShort	0	call-argument	ClampInt(*argument 2	the unsigned short range starts at 0
+src/Util/range.c	RoundToInt	*	*	*	rounding half away from zero
+src/Util/range.c	RandomPercent	*	*	*	percent arithmetic: scale by 100, round at 50
+src/Util/range.c	Capped*	0	trivial-function-literal	0 return	no change applied
+src/Util/range.c	FilterTextMarks	0	trivial-function-literal	*	an empty string / the text's terminator
+src/Util/range.c	FilterTextMarks	0x8197	comparison-or-bound	*	Shift-JIS '＠', the text mark (see Range.h); a wide character constant would not be the same code
+src/Util/bitset.c	*	*	*	*	byte and bit of a bit index (8 bits per byte)
+src/Mem/pool.c	*	*	*	*	the dead element-pool API: four pools of 256-element chunks (index >> 8, low byte), sixteen chunks each; the size table ends at 0
