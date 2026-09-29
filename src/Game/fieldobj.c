@@ -1908,7 +1908,6 @@ static __inline void RecalcObjectStats(FieldObject* object) {
 RVA(0x00010470, 0x4b1)
 void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     i16 i;
-    i16 wait;
     memset(object, 0, sizeof(FieldObject));
     object->kind = record->id;
     strncpy(object->namePrefix, record->name, 17);
@@ -1935,9 +1934,10 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->stats.base[STAT_CHARM] = record->stats[STAT_CHARM];
     object->stats.base[STAT_FORTUNE] = record->stats[STAT_FORTUNE];
     object->actionSpeed = record->actionSpeed;
-    wait = 0xff - RandomAverage(0, 100, 0);
-    GetFieldObjectActionWait(object)->remaining = wait;
-    memset(object->battleTally, 0, sizeof(object->battleTally));
+    GetFieldObjectActionWait(object)->remaining = 0xff - RandomAverage(0, 100, 0);
+    for (i = 0; i < sizeof(object->battleTally); i++) {
+        object->battleTally[i] = 0;
+    }
     SetItemSlotItem(&GetFieldObjectEquipment(object)[0], record->items[0]);
     SetItemSlotItem(&GetFieldObjectEquipment(object)[1], record->items[1]);
     SetItemSlotItem(&GetFieldObjectEquipment(object)[2], record->items[2]);
@@ -1959,8 +1959,12 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
             GetGunMagazineSize(GetLoadedRecord(GetFieldObjectEquipment(object)[6].item));
     }
     NormalizeEquipSlots((Character*)&object->kind);
-    memset(GetFieldObjectConditions(object)->bits, 0, sizeof(object->conditions.bits));
-    memset(GetFieldObjectFlags(object), 0, sizeof(object->personalFlags));
+    for (i = 0; i < sizeof(object->conditions.bits); i++) {
+        GetFieldObjectConditions(object)->bits[i] = 0;
+    }
+    for (i = 0; i < sizeof(object->personalFlags); i++) {
+        GetFieldObjectFlags(object)[i] = 0;
+    }
     object->byte096 = 1;
     object->acting = 0;
     object->word098 = 0x11;
