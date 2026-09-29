@@ -22,6 +22,7 @@
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
 #include <Game/LevelUp.h>
+#include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
 #include <Game/Party.h>
@@ -796,7 +797,7 @@ b16 RunFieldExploration(void) {
                     s_eventRunning = false;
                     return false;
                 }
-                if (g_party.field.pos.area == 0x82
+                if (g_party.field.pos.area == MAP_AREA_HATSUDAI
                     && (g_party.field.pos.level == 0xc || g_party.field.pos.level == 0xd
                         || g_party.field.pos.level == 0xe)) {
                     CloseMessageWindow();
