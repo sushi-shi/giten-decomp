@@ -186,3 +186,22 @@ src/Game/fieldobj.c	GetObjectLifeState	0	existing-symbol	enum	0 from GetFatalCon
 src/Game/itemrecord.c	ApplyEquipmentRegen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
 src/Game/character.c	AgeConditions	0	existing-symbol	enum	a loop over every condition starts at condition 0
 src/Game/character.c	IsPartyMemberFallen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
+*	*	0	trivial-function-literal	0 store [xy]	a coordinate reset to the origin
+*	*	0	trivial-function-literal	0 store p[xy]	a coordinate reset to the origin
+*	*	0	trivial-function-literal	0 store s[xyz]	a coordinate reset to the origin
+*	*	0	trivial-function-literal	0 store top	a rectangle edge reset to the origin
+*	*	0	trivial-function-literal	0 store left	a rectangle edge reset to the origin
+*	*	0	trivial-function-literal	0 store pos	a position reset to the origin
+*	*	0	trivial-function-literal	0 store offset[XYZ]	an offset reset to none
+*	*	0	trivial-function-literal	0 store *[Cc]ount	a count reset to zero
+*	*	0	trivial-function-literal	0 store g_hpChange	an HP change reset to none
+*	*	0	trivial-function-literal	0 store g_mpChange	an MP change reset to none
+*	*	0	trivial-function-literal	0 store lastChange	the last pool change reset to none
+*	*	0	trivial-function-literal	0 store g_drainAmount	the drained amount reset to none
+*	*	0	trivial-function-literal	0 store *[Tt]ick*	a tick timer reset
+*	*	0	trivial-function-literal	0 store delay*	a delay reset
+*	*	0	trivial-function-literal	0 store flags	every flag cleared
+*	*	0	trivial-function-literal	0 store g_viewCells[]	a view-grid cell cleared
+*	*	0	trivial-function-literal	0 store cursor	a cursor back at the first entry
+*	*	0	trivial-function-literal	0 store index	an index back at the first entry
+*	*	0	trivial-function-literal	0 store i	an index back at the first entry
