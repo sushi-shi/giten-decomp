@@ -55,11 +55,12 @@ b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide) {
     skillValue = GetSkillValueA(GetCachedSkill(attacker->pickTarget));
     skillValue *= 100;
     value = WearSkillValue(skillValue + accuracy);
+    skillValue = value;
     if (accuracy >= defense) {
-        accuracy = ScaleActionValue(value + defense * 4, g_attackResistance, 4);
+        accuracy = ScaleActionValue(skillValue + defense * 4, g_attackResistance, 4);
         roll = defense * RandomAverage(0, 14, 1);
     } else {
-        accuracy = ScaleActionValue(value * 4, g_attackResistance, 4);
+        accuracy = ScaleActionValue(skillValue * 4, g_attackResistance, 4);
         roll = defense * RandomAverage(0, 15, 0);
     }
     if (accuracy > roll) {
