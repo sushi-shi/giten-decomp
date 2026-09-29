@@ -11,6 +11,7 @@ Short observations, not a wall database. [Scope and admission rules](README.md).
 - [Local-static guards](function-local-static-dynamic-init-guard.md) — recognize dynamic initialization without inventing flag globals.
 - [Scopes and stack slots](switch-arm-locals-overlay-only-when-scoped.md) — sibling scopes can change stack reuse.
 - [Store scheduling](emitted-store-order-is-not-the-source-order.md) — emitted order need not be source order.
+- [Fill loops](fill-loop-distributes-into-memset.md) — a constant array fill inside a counted loop becomes an inline memset; the rest of the loop stays.
 - [Call arguments](call-argument-evaluated-before-pushes-means-a-temporary.md) — an inner call evaluated before the other pushes went through a local.
 - [Shared returns](shared-return-forwards-stored-register.md) — leaving through a common `return g;` can return the register a store used instead of the folded constant.
 - [Local declaration order](local-declaration-order-decides-spill-reload.md) — declaring a frame local before a register-held one reloads it into a scratch register at each use.
