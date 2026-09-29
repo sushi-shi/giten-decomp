@@ -5,6 +5,7 @@
 
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/FieldSight.h>
 #include <Gfx/Background.h>
 #include <Gfx/Bitmap.h>
@@ -79,7 +80,7 @@ void ResetMask(i16 copySaved) {
 RVA(0x00002bf0, 0x69)
 void LoadMask(void) {
     u16 size;
-    FILE* fp = OpenDataFile(2, DATA_FILE_TABLE, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_MAP_MASK, DATA_FILE_TABLE, 0);
     fread(&size, 2, 1, fp);
     s_savedMask = &s_savedMaskData;
     s_mask = &s_maskData;

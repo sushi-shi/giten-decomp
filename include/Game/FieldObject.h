@@ -64,7 +64,7 @@ typedef struct FieldObject {
     char namePrefix[17];
     u8 pad02d[0x25];
     u8 resistance[10];
-    i8 affiliation[3];
+    i8 affiliation[AFFILIATION_COUNT];
     i16 equipGroup;
     GZ_ENUM_STORAGE(PickFlags, u8) pickFlags;
     u32 trainingPoints[4];

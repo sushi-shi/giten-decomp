@@ -31,8 +31,8 @@ typedef struct LearnableSkillRequirement {
 void LoadLearnableSkillTables(void);
 i16 TakeLearnableSkill(Character* character, i16* skills);
 
-// Four stat pairs.
-extern const i16 g_affiliationGrowthStats[4][2];
+// Two growth stats per affiliation (training kind).
+extern const i16 g_affiliationGrowthStats[BATTLE_GROUP_COUNT][2];
 
 #define GetAffiliationGrowthStat(affiliation, choice)                                              \
     (g_affiliationGrowthStats[(affiliation) & 3][choice])

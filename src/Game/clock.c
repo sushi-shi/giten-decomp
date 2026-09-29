@@ -8,6 +8,7 @@
 
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/AreaLevel.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
@@ -150,7 +151,7 @@ void InitClock(void) {
     ResetClockPhaseAndTime(&g_clock);
     g_tickElapsed = 0;
     if (!s_moonFlags) {
-        FILE* fp = OpenDataFile(0x19, DATA_FILE_TABLE, 0);
+        FILE* fp = OpenDataFile(DATA_TABLE_MOON_FLAGS, DATA_FILE_TABLE, 0);
         s_moonFlags = ReadRawHandle(fp);
         CloseDataFile(fp);
     }

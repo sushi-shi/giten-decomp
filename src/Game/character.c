@@ -11,6 +11,7 @@
 
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/Alignment.h>
 #include <Game/CharInfo.h>
 #include <Game/Character.h>
@@ -2534,7 +2535,7 @@ void SwapPartySlots(i16 a, i16 b) {
 // the group can equip.
 RVA(0x00040220, 0x2a)
 void LoadEquipTable(void) {
-    FILE* fp = OpenDataFile(6, DATA_FILE_TABLE, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_EQUIPMENT_RULES, DATA_FILE_TABLE, 0);
     s_equipTable = ReadRawHandle(fp);
     CloseDataFile(fp);
 }

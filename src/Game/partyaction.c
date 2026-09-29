@@ -8,6 +8,7 @@
 
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/Actor.h>
 #include <Game/Analyze.h>
 #include <Game/Attack.h>
@@ -2129,7 +2130,7 @@ b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode) {
 
 RVA(0x00008fe0, 0x2a)
 void LoadGunDistributionTable(void) {
-    FILE* fp = OpenDataFile(18, DATA_FILE_TABLE, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_GUN_DISTRIBUTION, DATA_FILE_TABLE, 0);
     s_gunDistribution = ReadRawHandle(fp);
     CloseDataFile(fp);
 }

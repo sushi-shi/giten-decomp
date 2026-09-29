@@ -2189,7 +2189,7 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->pickFlags = (object->pickFlags & ~6) | ((record->bits68 >> 5) & 2);
     object->dropChance = record->dropChance;
     object->pickItem = record->pickItem;
-    for (i = 0; i < sizeof(object->affiliation); i++) {
+    for (i = 0; i < AFFILIATION_COUNT; i++) {
         SetCharacterAffiliation(object, i, record->affiliation[i]);
     }
     ResetWordList(&object->list, OBJECT_SKILL_COUNT);
@@ -2528,7 +2528,7 @@ i16 LoadWorldEncounterBlock(i16 x, i16 y) {
     i16 block = GetWorldMapBlock(x, y);
     FILE* fp;
     s_encounterBlock = FreeHandle(s_encounterBlock);
-    fp = OpenDataFile(block + 0x1000, DATA_FILE_TABLE, 0);
+    fp = OpenDataFile(block + DATA_TABLE_WORLD_ENCOUNTER_BLOCKS_BEGIN, DATA_FILE_TABLE, 0);
     s_encounterBlock = ReadRawHandle(fp);
     CloseDataFile(fp);
     if (IsOddMapLayer()) {

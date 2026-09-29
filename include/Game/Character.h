@@ -128,6 +128,10 @@ GZ_ENUM_END_SPLIT(PickRole)
 // @identity-TODO: `fieldState` is set to 6 on every map actor after a party turn
 // of a field encounter and read as a script switch key; its values are unrecovered.
 #define FAMILIARITY_MAX 0x3f
+// A character's affiliations are training kinds (BattleStatGroup) or
+// AFFILIATION_NONE, packed to the front.
+#define AFFILIATION_COUNT 3
+#define AFFILIATION_NONE (-1)
 
 typedef struct Character {
     i16 id;
@@ -149,7 +153,7 @@ typedef struct Character {
     u8 pad037;
     // Per-attribute resistance; the special attribute beyond this array uses 50.
     u8 resistance[10];
-    i8 affiliation[3];
+    i8 affiliation[AFFILIATION_COUNT];
     // The group whose row of the equipment table (0x483b38) says what it can
     // equip.
     i16 equipGroup;

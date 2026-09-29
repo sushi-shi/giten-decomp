@@ -10,6 +10,7 @@
 
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/Alignment.h>
 #include <Game/Analyze.h>
 #include <Game/AnalyzeData.h>
@@ -687,7 +688,7 @@ RVA(0x0001b3b0, 0x2f)
 void LoadWorldMapEvents(void) {
     FILE* fp;
     FreeWorldMapEvents();
-    fp = OpenDataFile(32, DATA_FILE_TABLE, 0);
+    fp = OpenDataFile(DATA_TABLE_WORLD_EVENTS, DATA_FILE_TABLE, 0);
     s_events = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -1218,7 +1219,7 @@ i16* GetItemMenuStock(i16 index) {
 RVA(0x0001c160, 0x33)
 void LoadItemMenuStock(void) {
     if (s_itemMenuStock == 0) {
-        FILE* fp = OpenDataFile(8, DATA_FILE_TABLE, 0);
+        FILE* fp = OpenDataFile(DATA_TABLE_ITEM_MENU_STOCK, DATA_FILE_TABLE, 0);
         s_itemMenuStock = ReadRawHandle(fp);
         CloseDataFile(fp);
     }
@@ -1260,10 +1261,10 @@ i16* AllocItemMenuStock(i16 index, i16* count) {
 
 RVA(0x0001c250, 0x51)
 void LoadLearnableSkillTables(void) {
-    FILE* fp = OpenDataFile(48, DATA_FILE_TABLE, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_LEARNABLE_SKILLS, DATA_FILE_TABLE, 0);
     s_learnableSkillTable = ReadRawHandle(fp);
     CloseDataFile(fp);
-    fp = OpenDataFile(49, DATA_FILE_TABLE, 0);
+    fp = OpenDataFile(DATA_TABLE_SKILL_LEARNING_REQUIREMENTS, DATA_FILE_TABLE, 0);
     s_learnableSkillRequirements = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -1333,7 +1334,7 @@ i16 TakeLearnableSkill(Character* character, i16* skills) {
 
 RVA(0x0001c460, 0x173)
 i16 PickGrowthStats(Character* character, i16* picks, i16 turn) {
-    memset(picks, -1, 3 * sizeof(i16));
+    memset(picks, -1, AFFILIATION_COUNT * sizeof(i16));
     if (GetCharacterAffiliation(character, 2) >= 0) {
         picks[0] =
             GetAffiliationGrowthStat(GetCharacterAffiliation(character, 0), RandomAverage(0, 1, 0));
@@ -1368,15 +1369,15 @@ i16 PickGrowthStats(Character* character, i16* picks, i16 turn) {
 RVA(0x0001c5e0, 0x61)
 void DropTopStatPicks(Character* character, i16* picks) {
     i16 i;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < AFFILIATION_COUNT; i++) {
         if (picks[i] >= 0) {
             i16 j;
-            for (j = 0; j < 10; j++) {
+            for (j = 0; j < STAT_FORTUNE; j++) {
                 if (GetBaseStat(character, j) > GetBaseStat(character, picks[i])) {
                     break;
                 }
             }
-            if (j >= 10 && RandomAverage(0, 3, 0) == 0) {
+            if (j >= STAT_FORTUNE && RandomAverage(0, 3, 0) == 0) {
                 picks[i] = -1;
             }
         }
@@ -1477,26 +1478,26 @@ RVA(0x0001c830, 0x9b)
 void NormalizeAffiliations(Character* character) {
     i16 i;
     i16 j;
-    for (i = 0; i < 3; i++) {
-        if (character->affiliation[i] > 3 || character->affiliation[i] < 0) {
-            SetCharacterAffiliation(character, i, -1);
+    for (i = 0; i < AFFILIATION_COUNT; i++) {
+        if (character->affiliation[i] > BATTLE_GROUP_COUNT - 1 || character->affiliation[i] < 0) {
+            SetCharacterAffiliation(character, i, AFFILIATION_NONE);
         }
     }
-    for (i = 2; i > 0; i--) {
-        if (character->affiliation[i] != -1) {
+    for (i = AFFILIATION_COUNT - 1; i > 0; i--) {
+        if (character->affiliation[i] != AFFILIATION_NONE) {
             for (j = i - 1; j >= 0; j--) {
                 if (character->affiliation[i] == character->affiliation[j]) {
-                    SetCharacterAffiliation(character, i, -1);
+                    SetCharacterAffiliation(character, i, AFFILIATION_NONE);
                 }
             }
         }
     }
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < AFFILIATION_COUNT - 1; i++) {
         if (character->affiliation[i] < 0) {
-            for (j = 0; i + j + 1 < 3; j++) {
+            for (j = 0; i + j + 1 < AFFILIATION_COUNT; j++) {
                 SetCharacterAffiliation(character, i + j, character->affiliation[i + j + 1]);
             }
-            SetCharacterAffiliation(character, i + j, -1);
+            SetCharacterAffiliation(character, i + j, AFFILIATION_NONE);
         }
     }
 }

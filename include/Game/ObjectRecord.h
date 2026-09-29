@@ -38,7 +38,7 @@ typedef struct ObjectRecord {
     u8 levelBonus;
     i8 moonRow;
     u8 resistance[10];
-    i8 affiliation[3];
+    i8 affiliation[AFFILIATION_COUNT];
     u8 actionSpeed;
     u8 dropChance;
     u8 bits68;

@@ -6,6 +6,7 @@
 
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/Alignment.h>
 #include <Game/CharacterStat.h>
 #include <Game/CharInfo.h>
@@ -1042,7 +1043,7 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
 
 RVA(0x00027d60, 0x104)
 void LoadFusionTables(void) {
-    FILE* fp = OpenDataFile(12, DATA_FILE_TABLE, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FUSION_RACES, DATA_FILE_TABLE, 0);
     s_fusionRaceMatrix = ReadCryptHandle(fp);
     s_fusionSameRaceChanges = ReadCryptHandle(fp);
     s_fusionDemonMatrix = ReadCryptHandle(fp);
@@ -1052,13 +1053,13 @@ void LoadFusionTables(void) {
     s_fusionFallbackHandle = ReadCryptHandle(fp);
     ReadCryptRecord(fp, &s_fusionRestrictedClass);
     CloseDataFile(fp);
-    fp = OpenDataFile(15, DATA_FILE_TABLE, 0);
+    fp = OpenDataFile(DATA_TABLE_FUSION_CLASSES, DATA_FILE_TABLE, 0);
     s_fusionClassMatrix = ReadRawHandle(fp);
     s_fusionRaceRows = ReadRawHandle(fp);
     s_fusionPairs = ReadRawHandle(fp);
     s_fusionPrimaryComplements = ReadRawHandle(fp);
     CloseDataFile(fp);
-    fp = OpenDataFile(17, DATA_FILE_TABLE, 0);
+    fp = OpenDataFile(DATA_TABLE_FUSION_RESTRICTIONS, DATA_FILE_TABLE, 0);
     s_fusionFlagRestrictions = ReadRawHandle(fp);
     CloseDataFile(fp);
 }

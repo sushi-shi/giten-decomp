@@ -5,6 +5,7 @@
 
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/Character.h>
 #include <Game/Field.h>
 #include <Game/GameState.h>
@@ -401,12 +402,12 @@ int CompareSkillRanks(const void* left, const void* right) {
 RVA(0x0002e3a0, 0x69)
 void LoadSkillFiles(void) {
     SkillTable* table;
-    FILE* fp = OpenDataFile(4, DATA_FILE_TABLE, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_SKILLS, DATA_FILE_TABLE, 0);
     s_skillTable = ReadCryptHandle(fp);
     CloseDataFile(fp);
     table = HandleReadPtr(s_skillTable);
     s_skillCount = table->count;
-    fp = OpenDataFile(0x28, DATA_FILE_TABLE, 0);
+    fp = OpenDataFile(DATA_TABLE_AREA_SKILL_FLAGS, DATA_FILE_TABLE, 0);
     s_areaSkillFlags = ReadRawAlloc(fp);
     CloseDataFile(fp);
 }

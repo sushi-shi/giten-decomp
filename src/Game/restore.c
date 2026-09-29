@@ -110,7 +110,7 @@ static const i16 s_specialRecoveryConditions[] = {
 };
 
 DATA(0x00064618)
-const i16 g_affiliationGrowthStats[4][2] = {
+const i16 g_affiliationGrowthStats[BATTLE_GROUP_COUNT][2] = {
     {STAT_STRENGTH, STAT_AGILITY},
     {STAT_DEXTERITY, STAT_INTUITION},
     {STAT_MAGIC, STAT_MENTAL_STRENGTH},
