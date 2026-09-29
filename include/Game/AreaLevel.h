@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Ints.h>
 
@@ -51,7 +52,7 @@ extern "C" {
     void ResetFieldMemory(void);
 
     RVA_DECL(0x00057e80)
-    void LoadWallTextures(i16 wallSet, i16 variant);
+    void LoadWallTextures(GZ_ENUM_PARAM(WallTextureKind, i16) wallSet, i16 variant);
 
 #ifdef __cplusplus
 }

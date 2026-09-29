@@ -1175,7 +1175,7 @@ void PaySkillCost(i16 who, i16 skill) {
 }
 
 RVA(0x0002c440, 0x54)
-i16 IsSkillUsableNow(u16 usable) {
+i16 IsSkillUsableNow(GZ_ENUM_PARAM(SkillUseModes, u16) usable) {
     if (g_fieldBattleActive && (usable & SKILL_USE_FIELD_BATTLE)) {
         return 1;
     }
@@ -1205,7 +1205,7 @@ MenuBox* OpenMemberSkillMenu(i16 id) {
 }
 
 RVA(0x0002c500, 0x1c0)
-void MemberSkillMenuHandler(MenuBox* menu, i16 index, i16 event) {
+void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     Character* character = menu->items.character;
     SkillView* skill;
     i16 disabled;

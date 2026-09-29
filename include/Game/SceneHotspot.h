@@ -1,6 +1,7 @@
 #ifndef GITEN_GAME_SCENEHOTSPOT_H
 #define GITEN_GAME_SCENEHOTSPOT_H
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/AreaNpc.h>
 #include <Game/MapCoord.h>
@@ -28,13 +29,13 @@ typedef struct SceneSprite {
     i16 y;
     i16 offsetX;
     i16 offsetY;
-    u16 flags;
+    GZ_ENUM_STORAGE(SceneSpriteFlags, u16) flags;
     u8 cellX;
     u8 cellY;
 } SceneSprite;
 
 typedef struct SceneHotspot {
-    i16 kind;
+    GZ_ENUM_STORAGE(SceneHotspotKind, i16) kind;
     union {
         void* object;
         struct AreaNpc* npc;
@@ -58,7 +59,7 @@ i16 DrawSceneSprite(
     i16 mode,
     SceneSprite* sprite,
     struct FieldObject* object,
-    i16 kind,
+    GZ_ENUM_PARAM(SceneHotspotKind, i16) kind,
     i16 centered
 );
 

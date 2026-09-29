@@ -11,8 +11,8 @@ GZ_ENUM_FLAGS_BEGIN(ModeFlags, i16)
 GZ_ENUM_FLAGS_END(ModeFlags)
 
 i16 TestFeatureMask(i16 bits);
-i16 TestModeFlags(i16 bits);
-i16 SetModeFlags(i16 bits);
-i16 ClearModeFlags(i16 bits);
+i16 TestModeFlags(GZ_ENUM_PARAM(ModeFlags, i16) bits);
+i16 SetModeFlags(GZ_ENUM_PARAM(ModeFlags, i16) bits);
+i16 ClearModeFlags(GZ_ENUM_PARAM(ModeFlags, i16) bits);
 
 #endif // GITEN_GAME_MODEFLAGS_H

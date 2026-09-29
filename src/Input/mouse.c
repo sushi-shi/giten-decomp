@@ -44,7 +44,7 @@ LatchMouseButtonClick(i16 pressed, i16 x, i16 y, i16* click, i16* clickX, i16* c
 
 RVA(0x00002a00, 0x5d)
 void LatchMouseClicks(void) {
-    u8 buttons = g_mousePosition.buttons;
+    GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = g_mousePosition.buttons;
     i16 y = g_mousePosition.y;
     i16 x = g_mousePosition.x;
     LatchMouseButtonClick(
@@ -107,7 +107,7 @@ i16 TakeMouseLeftClick(void) {
 }
 
 RVA(0x00002b00, 0x24)
-void SetMouseState(i16 buttons, i16 x, i16 y) {
+void SetMouseState(GZ_ENUM_PARAM(MouseButtonBits, i16) buttons, i16 x, i16 y) {
     g_mousePosition.buttons = buttons;
     g_mousePosition.x = x;
     g_mousePosition.y = y;

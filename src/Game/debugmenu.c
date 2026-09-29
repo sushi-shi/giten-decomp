@@ -219,7 +219,7 @@ i16 RunDebugMenu(void) {
 }
 
 RVA(0x00001410, 0xc0)
-static void DebugMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void DebugMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     MenuEntry* entries = menu->items.table;
     MenuEntry* entry;
 
@@ -248,7 +248,7 @@ static void DebugMenuHandler(MenuBox* menu, i16 index, i16 event) {
 }
 
 RVA(0x000014d0, 0x150)
-static void MagicMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void MagicMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     MenuEntry* entries = menu->items.table;
     i16 skill;
 

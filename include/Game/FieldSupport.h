@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
 #include <Platform/ScreenFade.h>
 #include <Script/ScriptBlock.h>

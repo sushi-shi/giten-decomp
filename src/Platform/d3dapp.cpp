@@ -1507,7 +1507,7 @@ RVA(0x00048e60, 0xbb)
 u8 PollMouseButtons(void) {
     DIMOUSESTATE state;
     HRESULT result;
-    u8 buttons = 0;
+    GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = MOUSE_UP;
     u8 left;
     u8 right;
 

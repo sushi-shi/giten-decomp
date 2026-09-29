@@ -85,7 +85,8 @@ i16 ResolveObjectRosterSlot(i16 ref) {
 RVA(0x00038900, 0x138)
 void OpConvertCharacterRef(void) {
     i16 index = ReadLongVarIndex();
-    GZ_ENUM_STORAGE(CharacterRefConversion, i16) kind = ReadScriptValue();
+    GZ_ENUM_STORAGE(CharacterRefConversion, i16)
+    kind = ReadScriptValue();
     i16 value = GetScriptLongVar(index);
     i16 slot;
     switch (kind) {

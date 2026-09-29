@@ -391,7 +391,7 @@ char* GetLoadedRecordName(i16 id) {
 }
 
 RVA(0x000233c0, 0x1b)
-i16 GetItemKind(i16 id) {
+GZ_ENUM_RETURN(ItemKind, i16) GetItemKind(i16 id) {
     DecodeItemRecord(&g_loadedItem, id);
     return g_loadedItem.kind;
 }
@@ -506,7 +506,7 @@ b16 IsEquipCurseActive(Character* character, i16 part) {
 }
 
 RVA(0x000235f0, 0xa0)
-i16 GetItemCategory(i16 id) {
+GZ_ENUM_RETURN(EquipPart, i16) GetItemCategory(i16 id) {
     DecodeItemRecord(&g_loadedItem, id);
     switch (g_loadedItem.kind) {
         case ITEM_KIND_RESTORATIVE:
@@ -2051,7 +2051,7 @@ void WaitMenuFrame(void) {
 }
 
 RVA(0x00025db0, 0xc0)
-static void DiscardMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void DiscardMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     i16* entries = menu->items.entries;
 
     switch (event) {
@@ -2075,7 +2075,7 @@ static void DiscardMenuHandler(MenuBox* menu, i16 index, i16 event) {
 }
 
 static MenuBox* CreateGiftMenu(MenuBox* old);
-static void GiftMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void GiftMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x00025e70, 0xf0)
 b16 RunGemItemGift(void) {
@@ -2124,7 +2124,7 @@ static MenuBox* CreateGiftMenu(MenuBox* old) {
 }
 
 RVA(0x00025fb0, 0xc0)
-static void GiftMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void GiftMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     i16 count;
 
     switch (event) {

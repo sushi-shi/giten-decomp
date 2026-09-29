@@ -3,7 +3,9 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/ItemStack.h>
+#include <Ui/MenuBox.h>
 
 struct MenuBox;
 
@@ -24,7 +26,7 @@ i16* AllocItemMenuStock(i16 index, i16* count);
 extern i16 g_itemMenuAmmoType;
 
 void SetItemMenuCharacter(i16 member);
-void ItemMenuHandler(struct MenuBox* menu, i16 index, i16 event);
+void ItemMenuHandler(struct MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 struct MenuBox* CreateItemMenu(struct MenuBox* old, ItemStackList* entries, i16 count);
 
 i32 FormatItemMenuEntry(ItemStack entry, i32 numerator, i32 denominator);

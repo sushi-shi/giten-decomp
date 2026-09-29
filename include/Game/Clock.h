@@ -47,7 +47,7 @@ GZ_ENUM_STORAGE(ClockUpdate, i16) AdvanceClock(u16 minutes);
 GZ_ENUM_STORAGE(ClockUpdate, i16) TickClock(u16 minutes);
 void ApplyClockChanges(GZ_ENUM_STORAGE(ClockUpdate, i16) changed);
 void ClearMoonFlags(void);
-GZ_ENUM_STORAGE(ClockUpdate, i16) TickGameClock(i16 paused);
+GZ_ENUM_RETURN(ClockUpdate, i16) TickGameClock(i16 paused);
 
 // Steps a character's moon-driven personal flags; the count changed.
 i16 ApplyMoonPhase(struct Character* character, i16 keep);

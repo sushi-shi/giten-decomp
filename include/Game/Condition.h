@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
 #include <Game/ConditionId.h>
 #include <Util/BitSet.h>
@@ -46,7 +47,7 @@ void ClearAllConditions(ConditionSet* conditions);
 
 // The last of the fatal conditions (ash, dead, dying) the set holds, else 0:
 // LastConditionIn over the list {0, 1, 2}.
-i16 GetFatalCondition(ConditionSet* conditions);
+GZ_ENUM_RETURN(ConditionId, i16) GetFatalCondition(ConditionSet* conditions);
 
 i16 EaseSleep(ConditionSet* conditions);
 const char* GetFirstConditionName(ConditionSet* conditions);

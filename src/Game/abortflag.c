@@ -85,7 +85,7 @@ void FlushPlaneUpdates(void) {
 }
 
 RVA(0x000455b0, 0xa7)
-i16 AddSceneHotspot(void* object, i16 kind, SceneSprite* sprite) {
+i16 AddSceneHotspot(void* object, GZ_ENUM_PARAM(SceneHotspotKind, i16) kind, SceneSprite* sprite) {
     if (s_hotspotCount >= 31) {
         return -1;
     }
@@ -175,7 +175,7 @@ i16 PickSceneHotspot(i16 x, i16 y) {
 // @dead-code
 // Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it.
 RVA(0x000457e0, 0x15)
-i16 GetHotspotKind(i16 index) {
+GZ_ENUM_RETURN(SceneHotspotKind, i16) GetHotspotKind(i16 index) {
     return s_hotspots[index].kind;
 }
 
@@ -236,7 +236,13 @@ static __inline b32 IsSceneObjectVisible(FieldObject* object, i16 kind) {
 // @dead-code
 // Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it.
 RVA(0x00045930, 0x1b7)
-i16 DrawSceneSprite(i16 mode, SceneSprite* sprite, FieldObject* object, i16 kind, i16 centered) {
+i16 DrawSceneSprite(
+    i16 mode,
+    SceneSprite* sprite,
+    FieldObject* object,
+    GZ_ENUM_PARAM(SceneHotspotKind, i16) kind,
+    i16 centered
+) {
     i16 x;
     i16 y;
     if (sprite == NULL || object == NULL) {

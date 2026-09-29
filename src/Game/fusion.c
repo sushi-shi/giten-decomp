@@ -651,8 +651,8 @@ void GetFusionResult(i16* demon, i16* kind) {
 
 RVA(0x000270b0, 0x72)
 void InheritFusionStats(Character* first, Character* second, Character* result) {
-    i16 stat;
-    for (stat = 0; stat <= 10; stat++) {
+    GZ_ENUM_LOCAL(CharacterStat, i16) stat;
+    for (stat = STAT_INTUITION; stat <= STAT_FORTUNE; stat++) {
         if (first->stats.base[stat] < second->stats.base[stat]) {
             InheritFusionStat(first, result, stat);
             InheritFusionStat(second, result, stat);
@@ -664,7 +664,11 @@ void InheritFusionStats(Character* first, Character* second, Character* result) 
 }
 
 RVA(0x00027130, 0x44)
-void InheritFusionStat(Character* source, Character* result, i16 stat) {
+void InheritFusionStat(
+    Character* source,
+    Character* result,
+    GZ_ENUM_PARAM(CharacterStat, i16) stat
+) {
     i16 difference = GetBaseStat(source, stat) - GetBaseStat(result, stat);
     if (difference >= 0) {
         result->stats.base[stat] = ClampTo100(GetBaseStat(result, stat) + difference / 4);
@@ -1664,7 +1668,7 @@ i16 CreateFusionList(i16 window, i16 count) {
 }
 
 RVA(0x000291b0, 0x198)
-void FusionListMenuHandler(MenuBox* menu, i16 index, i16 event) {
+void FusionListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     Character* character;
     switch (event) {
         case MENU_EVENT_DESTROY:
@@ -1704,7 +1708,13 @@ void FusionListMenuHandler(MenuBox* menu, i16 index, i16 event) {
                            != -1)) {
                 AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, s_fusionSlots[index], 0);
             } else {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2500, s_fusionSlots[index], 1);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    0x2500,
+                    s_fusionSlots[index],
+                    MENU_LINE_DISABLED
+                );
             }
             break;
         case MENU_EVENT_BEFORE_PANEL:
@@ -1724,13 +1734,13 @@ void FusionSelectionTextHook(i16 plane, i16 event, i16 value) {
         return;
     }
     switch (event) {
-        case -1:
+        case TEXT_EVENT_CANCEL:
             break;
-        case 3:
+        case TEXT_EVENT_UNHIGHLIGHT:
             ClearTextPlane(s_fusionInfoPlane);
             RepaintTextPlane(s_fusionInfoPlane, -2);
             break;
-        case 4:
+        case TEXT_EVENT_HIGHLIGHT:
             g_scratchBuffer[0] = 0;
             index = s_fusionMenu->cursor + value - 1;
             character = GetRosterCharacter(s_fusionSlots[index]);

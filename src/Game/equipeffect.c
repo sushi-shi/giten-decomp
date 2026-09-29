@@ -21,7 +21,7 @@ RVA(0x00026070, 0x400)
 void ApplyItemCurse(
     Character* character,
     i16 item,
-    GZ_ENUM_STORAGE(EquipmentEffectTiming, i16) timing
+    GZ_ENUM_PARAM(EquipmentEffectTiming, i16) timing
 ) {
     ItemRecord* record;
     i16 curse;

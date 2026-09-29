@@ -3,13 +3,14 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Ints.h>
 
 // Installs `character` as roster entry `slot` and returns the previous entry.
 Character* SetRosterEntry(i16 slot, Character* character);
 i16 GetRosterId(i16 slot);
-i16 GetEquipItem(Character* character, i16 part);
+i16 GetEquipItem(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part);
 void SetPartySlot(i16 index, i16 slot);
 void ClearPartyPosition(i16 index);
 void RemoveFromParty(i16 slot);
@@ -41,7 +42,7 @@ i16 AddToParty(i16 slot);
 // @identity-TODO: label-only; for other kinds it returns its argument (no
 // return statement on that path), which callers only test for a sign.
 RVA_DECL(0x00040290)
-i16 EquipPartOfItem(struct ItemRecord* item);
+GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(struct ItemRecord* item);
 
 // charpool's pool change (drain for a negative amount). Codegen constraint:
 // declared here; in <Game/Stats.h> or <Game/CharInfo.h> it flips charpool's
@@ -53,7 +54,7 @@ void ChangePool(CurMax* pool, i32 amount);
 void CopySkillList(Character* from, WordList* to);
 b16 CanGroupEquip(i16 group, i16 item);
 i16 GetGunAmmoType(Character* character);
-i16 CanEquipItem(Character* character, i16 item);
+GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(Character* character, i16 item);
 void NormalizeEquipSlots(Character* character);
 void NormalizeItemSlot(ItemSlot* slot);
 
@@ -66,6 +67,6 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index);
 
 // Sets equipment part `part` of roster member `slot`. When `check` is set,
 // changing the gun unequips ammunition that no longer fits it.
-i16 SetEquipSlot(i16 slot, i16 part, ItemSlot item, i16 check);
+GZ_ENUM_RETURN(EquipPart, i16) SetEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part, ItemSlot item, i16 check);
 
 #endif // GITEN_GAME_PARTY_H

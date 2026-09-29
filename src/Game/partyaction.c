@@ -580,7 +580,7 @@ MenuBox* OpenActorCommandMenu(i16 id) {
 }
 
 RVA(0x00006390, 0xaf)
-void ActorCommandMenuHandler(MenuBox* menu, i16 index, i16 event) {
+void ActorCommandMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     Character* actor = menu->items.character;
     switch (event) {
         case MENU_EVENT_DESTROY:
@@ -588,12 +588,18 @@ void ActorCommandMenuHandler(MenuBox* menu, i16 index, i16 event) {
             break;
         case MENU_EVENT_BEGIN_PAGE:
             FormatFullName(g_scratchBuffer, actor);
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x2460, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, 0x2460, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             if (index < 8) {
                 if (!s_commandLabels[index](actor)) {
-                    AddMenuLine(menu->plane, g_unavailableCommandText, 0x2500, index + 1, 1);
+                    AddMenuLine(
+                        menu->plane,
+                        g_unavailableCommandText,
+                        0x2500,
+                        index + 1,
+                        MENU_LINE_DISABLED
+                    );
                 } else {
                     AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, index + 1, 0);
                 }
@@ -795,7 +801,7 @@ void FillCharacterCommands(i16* list, i16 id) {
             list[count++] = 6;
         }
         list[count++] = 7;
-        if (GetRenderMode() == 6) {
+        if (GetRenderMode() == RENDER_MODE_FIELD) {
             list[count++] = 8;
         }
         while (count < 8) {
@@ -1324,7 +1330,7 @@ b16 RunFieldEncounter(void) {
                 PushScreenFade(SCREEN_FADE_FROM_BLACK, 1);
                 PushGameState(0x1b);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
-                PushWaitState(2, 0xffff, 0x50, -1);
+                PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, 0x50, -1);
                 MarkRewardsPending();
                 FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
                 ShowMessage(g_scratchBuffer, 0x3c);
@@ -1470,7 +1476,7 @@ b16 RunFieldState(void) {
             if (!GetEncounterPending()) {
                 break;
             }
-            HideScreenLayer(1);
+            HideScreenLayer(SCREEN_LAYER_PANEL);
             if (RollProximityEvent() > 0) {
                 LeaveFieldMap(0);
                 s_fieldLeftEarly = true;
@@ -2026,7 +2032,7 @@ b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16
         return false;
     }
     roll = RandomAverage(0, 40, 0);
-    defense = GetBattleStatShown(target, 11);
+    defense = GetBattleStatShown(target, BATTLE_STAT_GUN_DEFENSE);
     defense *= roll;
     if (ScaleActionValue(GetBattleStatShown(attacker, 9) * 10, resistance, 2) - defense <= 0) {
         return false;
@@ -2725,9 +2731,9 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
     }
     if (kind & 2) {
         if (kind == 2) {
-            result = PickPartySlotTarget(minimumRange, 2);
+            result = PickPartySlotTarget(minimumRange, PARTY_SLOT_EXCLUDE_HUMANS);
         } else {
-            result = PickPartySlotTarget(minimumRange, 0);
+            result = PickPartySlotTarget(minimumRange, PARTY_SLOT_REQUIRE_OCCUPIED);
         }
         if (result) {
             ClearPartySlotSelection();
@@ -2758,7 +2764,7 @@ b16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
 }
 
 RVA(0x0000a0b0, 0x69)
-i16 PickPartySlotTarget(i16 minimumRange, i16 mode) {
+i16 PickPartySlotTarget(i16 minimumRange, GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
     i16 result = PollPartySlotSelection(mode);
     if (result == 0) {
         ClearMouseClicks();

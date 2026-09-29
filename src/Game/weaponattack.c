@@ -46,9 +46,9 @@ b16 RollWeaponCondition(
         return false;
     }
     roll = RandomAverage(0, 40, 0);
-    defense = GetBattleStatShown(target, 5);
+    defense = GetBattleStatShown(target, BATTLE_STAT_WEAPON_DEFENSE);
     defense *= roll;
-    power = GetBattleStatShown(attacker, 3);
+    power = GetBattleStatShown(attacker, BATTLE_STAT_WEAPON_POWER);
     ApplyWeaponPowerConditions(attacker, power);
     if (ScaleActionValue(power * 10, resistance, 2) - defense <= 0) {
         return false;

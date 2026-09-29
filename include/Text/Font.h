@@ -3,6 +3,7 @@
 
 #include <Win32.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Gfx/Bitmap.h>
 #include <Text/TextAttr.h>
@@ -170,7 +171,7 @@ typedef struct HotspotArea {
     i32 top;
     i32 right;
     i32 bottom;
-    i32 images;
+    GZ_ENUM_STORAGE(HotspotImageGroup, i32) images;
 } HotspotArea;
 
 // Hotspot areas by where they are drawn: below AREA_PANEL_LIMIT on their

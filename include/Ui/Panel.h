@@ -35,7 +35,7 @@ struct PanelRow;
 typedef i16 (*PanelRowHandler)(struct PanelRow* row, i16 value, i16 op);
 
 typedef struct PanelRow {
-    u16 flags;
+    GZ_ENUM_STORAGE(PanelFlags, u16) flags;
     i16 id;
     i16 word04;
     PanelRowHandler handler;
@@ -118,8 +118,8 @@ void ClearPanelChecks(Panel* panel);
 void ClearPanelChecksAgain(Panel* panel);
 void SavePanelChecks(Panel* panel);
 void RestorePanelChecks(Panel* panel);
-void SetPanelFlags(Panel* panel, u16 mask);
-void ClearPanelFlags(Panel* panel, u16 mask);
+void SetPanelFlags(Panel* panel, GZ_ENUM_PARAM(PanelFlags, u16) mask);
+void ClearPanelFlags(Panel* panel, GZ_ENUM_PARAM(PanelFlags, u16) mask);
 
 // The shared row handler body: op -1 toggles the row's check, 0 clears it,
 // 1 sets it; returns whether it is now set.

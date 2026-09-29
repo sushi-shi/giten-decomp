@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Ints.h>
 
@@ -108,7 +109,7 @@ void MoveMenuBox(MenuBox* menu, i16 x, i16 y);
 void SetMenuItems(MenuBox* menu, i16 pageRows, void* items, i16 itemCount, MenuHandler handler);
 
 i16 RunMenu(MenuBox* menu);
-void DispatchMenuEvent(MenuBox* menu, i16 index, i16 event);
+void DispatchMenuEvent(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 void BuildMenuPage(MenuBox* menu);
 void PaintMenuBox(MenuBox* menu);
 i16 PollMenuBox(MenuBox* menu);

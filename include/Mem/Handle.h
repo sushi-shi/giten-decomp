@@ -25,7 +25,7 @@ typedef struct ListLink {
 } ListLink;
 
 void ClearHandleTable(void);
-i32 SetHandleEntry(i32 handle, void* ptr, u16 size, u16 flags);
+i32 SetHandleEntry(i32 handle, void* ptr, u16 size, GZ_ENUM_PARAM(HandleFlags, u16) flags);
 u32 HandleSize(i32 handle);
 u32 GetHandleSize(i32 handle);
 i32 NewHandle(void* ptr, u32 size);

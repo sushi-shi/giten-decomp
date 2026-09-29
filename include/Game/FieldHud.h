@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/GameState.h>
 #include <Ints.h>
 #include <Ui/Panel.h>

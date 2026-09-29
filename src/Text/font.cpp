@@ -3824,7 +3824,7 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
     } else {
         p->flags.twoColumns = 0;
     }
-    p->flags.highlight = 0;
+    p->flags.highlight = TEXT_HIGHLIGHT_MIDDLE;
     p->flags.flag8 = 0;
     p->visible = kind != 0;
     p->left = s_planeLayouts[kind].left;
@@ -5274,9 +5274,9 @@ i16 IsPanelLayerVisible(void) {
 }
 
 RVA(0x00054360, 0x26)
-void ShowScreenLayer(i16 layer) {
+void ShowScreenLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i16) layer) {
     g_screenLayers[layer]->visible = TRUE;
-    if (layer > 7) {
+    if (layer > SCREEN_LAYER_NONPARTY_LAST) {
         GetTextPlane(0)->visible = FALSE;
     }
 }
@@ -5291,7 +5291,7 @@ void HideScreenLayer(i16 layer) {
 }
 
 RVA(0x000543d0, 0x26)
-void ClearLayerSurface(i16 layer) {
+void ClearLayerSurface(GZ_ENUM_PARAM(ScreenLayerSlot, i16) layer) {
     ScreenLayer* screen = g_screenLayers[layer];
 
     screen->canvas->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
@@ -5323,7 +5323,7 @@ void DrawPlaneImage(i16 plane, i16 x, i16 y, i16 index) {
 }
 
 RVA(0x000544b0, 0x48)
-void DrawStatBarMark(i16 x, i16 y, i16 index, i16 plane) {
+void DrawStatBarMark(i16 x, i16 y, GZ_ENUM_PARAM(StatBarMark, i16) index, i16 plane) {
     BlitImage(
         GetTextPlane(plane)->glyphSurface,
         g_statBarMarkImages[index],
@@ -5791,9 +5791,9 @@ b32 DrawPadButton(LPDIRECTDRAWSURFACE surface, i32 button, b32 pressed) {
     }
     return BlitImage(
         surface,
-        g_padImages[button - 1][pressed],
-        s_padPositions[button - 1].x,
-        s_padPositions[button - 1].y
+        g_padImages[button - PAD_FORWARD][pressed],
+        s_padPositions[button - PAD_FORWARD].x,
+        s_padPositions[button - PAD_FORWARD].y
     );
 }
 
@@ -5801,7 +5801,7 @@ b32 DrawPadButton(LPDIRECTDRAWSURFACE surface, i32 button, b32 pressed) {
 // the icon, the toggled layers' frames, the navigation pad with the compass,
 // the party panels; FALSE when a blit fails.
 RVA(0x00055060, 0x155)
-static b32 PaintLayer(i32 slot, ScreenLayer* layer) {
+static b32 PaintLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, ScreenLayer* layer) {
     i32 i;
 
     switch (slot) {
@@ -5931,7 +5931,7 @@ b32 CreateScreenLayer(i32 slot) {
 // the navigation pad only its opaque pixels count, and the pad button under
 // them becomes the pressed and held one.
 RVA(0x000553d0, 0x142)
-i32 LayerAtPoint(u32 x, u32 y) {
+GZ_ENUM_RETURN(ScreenLayerSlot, i32) LayerAtPoint(u32 x, u32 y) {
     i32 i;
     ScreenLayer* layer;
     LPDIRECTDRAWSURFACE surface;
@@ -6059,7 +6059,7 @@ b32 ClickPanelCommand(u32 y) {
 // opens the member's command panel; dropped elsewhere the member moves to the
 // panel position under the drop point.
 RVA(0x00055760, 0x174)
-void ReleasePartyPanel(i32 slot, b32 dragged) {
+void ReleasePartyPanel(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, b32 dragged) {
     ScreenLayer* layer = g_screenLayers[slot];
     i32 line;
     i32 x;
@@ -6119,7 +6119,7 @@ void ReleasePartyPanel(i32 slot, b32 dragged) {
 // Moves the dragged layer to the drop position (kept on the 3D view area) and
 // to the top of the dragged layers.
 RVA(0x000558e0, 0xb1)
-void PlaceDraggedLayer(i32 slot) {
+void PlaceDraggedLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot) {
     ScreenLayer* layer = g_screenLayers[slot];
     i32 i;
 

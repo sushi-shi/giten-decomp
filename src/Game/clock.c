@@ -157,7 +157,7 @@ void InitClock(void) {
 // flags, the countdown, special items, party timers); returns the change
 // bits of TickClock.
 RVA(0x00020b80, 0x6c)
-GZ_ENUM_STORAGE(ClockUpdate, i16) AdvanceClock(u16 minutes) {
+GZ_ENUM_RETURN(ClockUpdate, i16) AdvanceClock(u16 minutes) {
     GZ_ENUM_STORAGE(ClockUpdate, i16) changed = TickClock(minutes);
     ModifyEventFlag(0, 0x23, g_clock.moonPhase != 0xe);
     ModifyEventFlag(0, 0x25, g_clock.moonPhase != 0);
@@ -170,7 +170,7 @@ GZ_ENUM_STORAGE(ClockUpdate, i16) AdvanceClock(u16 minutes) {
 
 // Adds `minutes`: 3, | 4 when an hour passed, | 8 a day, | 0x10 a moon phase.
 RVA(0x00020bf0, 0xfe)
-GZ_ENUM_STORAGE(ClockUpdate, i16) TickClock(u16 minutes) {
+GZ_ENUM_RETURN(ClockUpdate, i16) TickClock(u16 minutes) {
     GZ_ENUM_STORAGE(ClockUpdate, i16) changed = CLOCK_UPDATE_TICK | CLOCK_UPDATE_MINUTE;
     u16 total = minutes + g_clock.minute;
     u16 carry = total / 60;
@@ -201,7 +201,7 @@ GZ_ENUM_STORAGE(ClockUpdate, i16) TickClock(u16 minutes) {
 // flag 10 of every live object, applies the phase to the party and the
 // objects, and handles the full (0xe), new (0) and waning (0xf) moons.
 RVA(0x00020cf0, 0x149)
-void ApplyClockChanges(GZ_ENUM_STORAGE(ClockUpdate, i16) changed) {
+void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
     i16 i;
     u8* flags;
     Character* character;
@@ -690,7 +690,7 @@ const CellKind* FindCellKind(const CellHead* cell) {
 // Finds the event of cell x/y on `level`, latches its destination and scene
 // record, and returns its kind (0 for none).
 RVA(0x00021880, 0x49d)
-GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
+i16 CheckCellEvent(i16 x, i16 y, i16 level) {
     WarpCell* warp;
     BattleCell* battle;
     LinkCell* link;
@@ -1297,7 +1297,7 @@ Panel* ReleasePanel(Panel* panel, i16 freePanel) {
 }
 
 RVA(0x000229c0, 0x22)
-void SetPanelRowState(Panel* panel, i16 index, u16 flags) {
+void SetPanelRowState(Panel* panel, i16 index, GZ_ENUM_PARAM(PanelFlags, u16) flags) {
     if (index < GetPanelRowCount(panel)) {
         AssignPanelRowState(panel, index, flags);
     }
@@ -1339,17 +1339,17 @@ void ClearPanelChecksAgain(Panel* panel) {
 }
 
 RVA(0x00022aa0, 0xd)
-void SetFlagBits(u16* flags, u16 mask) {
+void SetFlagBits(GZ_ENUM_STORAGE(PanelFlags, u16) * flags, GZ_ENUM_PARAM(PanelFlags, u16) mask) {
     *flags |= mask;
 }
 
 RVA(0x00022ab0, 0xe)
-void ClearFlagBits(u16* flags, u16 mask) {
+void ClearFlagBits(GZ_ENUM_STORAGE(PanelFlags, u16) * flags, GZ_ENUM_PARAM(PanelFlags, u16) mask) {
     *flags &= ~mask;
 }
 
 RVA(0x00022ac0, 0x11)
-i16 ToggleFlagBits(u16* flags, u16 mask) {
+i16 ToggleFlagBits(GZ_ENUM_STORAGE(PanelFlags, u16) * flags, GZ_ENUM_PARAM(PanelFlags, u16) mask) {
     *flags ^= mask;
     mask &= *flags;
     return mask;
@@ -1366,7 +1366,7 @@ b32 TestPanelRowFlags(Panel* panel, i16 row, u16 mask) {
 }
 
 RVA(0x00022b30, 0x4a)
-void SetPanelRowFlags(Panel* panel, i16 row, u16 mask, i16 on) {
+void SetPanelRowFlags(Panel* panel, i16 row, GZ_ENUM_PARAM(PanelFlags, u16) mask, i16 on) {
     if (on == 0) {
         ClearFlagBits(&GetPanelRow(panel, row)->flags, mask);
         return;
@@ -1430,11 +1430,11 @@ void RestorePanelChecks(Panel* panel) {
 }
 
 RVA(0x00022ce0, 0xd)
-void SetPanelFlags(Panel* panel, u16 mask) {
+void SetPanelFlags(Panel* panel, GZ_ENUM_PARAM(PanelFlags, u16) mask) {
     panel->flags |= mask;
 }
 
 RVA(0x00022cf0, 0xe)
-void ClearPanelFlags(Panel* panel, u16 mask) {
+void ClearPanelFlags(Panel* panel, GZ_ENUM_PARAM(PanelFlags, u16) mask) {
     panel->flags &= ~mask;
 }

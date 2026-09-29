@@ -581,7 +581,7 @@ b16 RunStatusScreen(void) {
     switch (GetGamePhase()) {
         case 0:
             SetPictureRenderMode();
-            HideScreenLayer(1);
+            HideScreenLayer(SCREEN_LAYER_PANEL);
             CloseMessageWindow();
             SetGamePhase(2);
             SetStatusMenuItemsHidden(0);
@@ -829,7 +829,7 @@ b16 RunDdsMenu(void) {
             s_ddsMenu = CreateMenuBox(s_ddsMenu, 25, 2);
             MoveMenuBox(s_ddsMenu, -8, -22);
             SetMenuItems(s_ddsMenu, 9, s_ddsCommands, 3, DdsMenuHandler);
-            HideScreenLayer(1);
+            HideScreenLayer(SCREEN_LAYER_PANEL);
             break;
         case 1:
             ReturnFromGameState();
@@ -972,7 +972,7 @@ i16 PickDdsRosterMember(i16 step) {
 }
 
 RVA(0x00017740, 0x126)
-void DdsMenuHandler(MenuBox* menu, i16 index, i16 event) {
+void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     char** items;
     i16 slot;
     i16 disabled;
@@ -983,7 +983,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, i16 event) {
     switch (event) {
         case MENU_EVENT_ADD_ROW:
             attribute = 0x500;
-            disabled = 1;
+            disabled = MENU_LINE_DISABLED;
             switch (index) {
                 case 2:
                     if (CountRosterEntries(0)) {
@@ -1015,7 +1015,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, i16 event) {
             break;
         case MENU_EVENT_BEGIN_PAGE:
             sprintf(g_scratchBuffer, "<DDS>");
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_DESTROY:
             menu->items.text = NULL;
@@ -1027,7 +1027,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, i16 event) {
 RVA(0x00017870, 0x8a)
 i16 ReturnDdsMember(void) {
     Character* character;
-    if (!PollPartySlotSelection(0)) {
+    if (!PollPartySlotSelection(PARTY_SLOT_REQUIRE_OCCUPIED)) {
         return 0;
     }
     ClearPartySlotSelection();
@@ -1251,7 +1251,7 @@ void LoadSpriteImage(i16 slot, i16 image, i16 arg) {
         return;
     }
     image += 0x4000;
-    if (image == 0x401d && GetRenderMode() == 1) {
+    if (image == 0x401d && GetRenderMode() == RENDER_MODE_VIEW) {
         image = 0x40fd;
     }
     request.file = image;
@@ -1680,7 +1680,7 @@ b16 ApplyLevelStatGrowth(Character* character) {
 
 // Nonzero when one more point would take `stat` past its cap.
 RVA(0x000189d0, 0x24)
-i16 IsStatCapped(Character* character, i16 stat) {
+i16 IsStatCapped(Character* character, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
     i16 raised = GetBaseStat(character, stat) + 1;
     return raised - ClampTo100(raised);
 }
@@ -2375,7 +2375,7 @@ b16 RunWorldMap(void) {
             RecordWarpInLeader();
             return false;
         case 9:
-            ClearLayerSurface(6);
+            ClearLayerSurface(SCREEN_LAYER_AUTOMAP);
             CancelLayerDrag();
             state = GetGameStep();
             NextGamePhase();
@@ -2476,7 +2476,7 @@ MenuBox* OpenPartyPicker(PartyMemberList* entries) {
 }
 
 RVA(0x00019fb0, 0xd4)
-void PartyPickerHandler(MenuBox* menu, i16 index, i16 event) {
+void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     PartyMemberList* entries = menu->items.memberList;
     Character* character;
     i16 enabled;
@@ -2500,7 +2500,13 @@ void PartyPickerHandler(MenuBox* menu, i16 index, i16 event) {
             if (enabled) {
                 AddMenuLine(menu->plane, g_scratchBuffer, 0x2460, entries->ids[index], 0);
             } else {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2500, entries->ids[index], 1);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    0x2500,
+                    entries->ids[index],
+                    MENU_LINE_DISABLED
+                );
             }
             break;
         case MENU_EVENT_DESTROY:
@@ -2589,7 +2595,7 @@ static __inline void AddItemUseMenuLine(MenuBox* menu, i16 item, i16 disabled) {
 }
 
 RVA(0x0001a240, 0x1bc)
-void ItemListMenuHandler(MenuBox* menu, i16 index, i16 event) {
+void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     ItemStackList* entries = menu->items.itemList;
     ItemRecord* record;
     switch (event) {
@@ -2604,7 +2610,11 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, i16 event) {
                  && IsEventFlagSet(7, 0xff))
                 || (GetItemStackItem(GetItemListEntry(entries, index)) == 0x24
                     && IsEventFlagSet(7, 0xfe))) {
-                AddItemUseMenuLine(menu, GetItemStackItem(GetItemListEntry(entries, index)), 1);
+                AddItemUseMenuLine(
+                    menu,
+                    GetItemStackItem(GetItemListEntry(entries, index)),
+                    MENU_LINE_DISABLED
+                );
                 return;
             }
             record = GetLoadedRecord(GetItemStackItem(GetItemListEntry(entries, index)));
@@ -2613,7 +2623,11 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, i16 event) {
                 event = GetSkillUseModes(GetSkillView(GetItemSkillId(record)));
             }
             if (CheckSkillArea(GetItemSkillId(record)) != 1) {
-                AddItemUseMenuLine(menu, GetItemStackItem(GetItemListEntry(entries, index)), 1);
+                AddItemUseMenuLine(
+                    menu,
+                    GetItemStackItem(GetItemListEntry(entries, index)),
+                    MENU_LINE_DISABLED
+                );
                 return;
             }
             if (IsSkillUsableNow(event) != 1) {
@@ -2623,7 +2637,7 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, i16 event) {
             AddItemUseMenuLine(menu, GetItemStackItem(GetItemListEntry(entries, index)), 0);
             return;
         case MENU_EVENT_BEGIN_PAGE:
-            AddMenuLine(menu->plane, "<\203A\203C\203e\203\200>", 0x2450, 0, 1);
+            AddMenuLine(menu->plane, "<\203A\203C\203e\203\200>", 0x2450, 0, MENU_LINE_DISABLED);
             return;
         case MENU_EVENT_DESTROY:
             menu->items.itemList = FreeBlock(entries);

@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Ints.h>
 #include <Enums.h>
@@ -113,6 +114,6 @@ typedef struct AttachEntry {
 
 // Attaches gem item index `index` to `member`'s equipped part `part`;
 // returns the index it replaced, else -1.
-i16 AttachEquipItem(i16 member, i16 part, i16 index);
+i16 AttachEquipItem(i16 member, GZ_ENUM_PARAM(EquipPart, i16) part, i16 index);
 
 #endif // GITEN_GAME_EQUIPSCREEN_H

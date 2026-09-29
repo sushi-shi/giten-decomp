@@ -6,7 +6,7 @@
 
 // Keep the comparisons in the caller: their short-circuit exits differ.
 #define LacksItemRequiredStats(member, record, bonus)                                              \
-    (GetStatTotal((member), 6) + (bonus) < GetItemRequiredVitality(record)                         \
-     || GetStatTotal((member), 8) + (bonus) < GetItemRequiredDexterity(record))
+    (GetStatTotal((member), STAT_VITALITY) + (bonus) < GetItemRequiredVitality(record)             \
+     || GetStatTotal((member), STAT_DEXTERITY) + (bonus) < GetItemRequiredDexterity(record))
 
 #endif // GITEN_GAME_EQUIPREQUIREMENTS_H

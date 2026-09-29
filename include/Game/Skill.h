@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Ints.h>
 
@@ -32,8 +33,9 @@ typedef struct SkillParameters {
     u8 level;  // FindSkill takes skills up to a given level
     i8 cost;   // negative: HP, positive: MP (see HpMpLeftAfterCost)
     GZ_ENUM_STORAGE(SkillUseModes, u8) usable;
-    u8 targetArea;   // @identity-TODO: CollectTargets' area code
-    u8 targetFlags;  // @identity-TODO: target-picker combinations 0x10/0x11/0x30 remain unnamed.
+    u8 targetArea; // @identity-TODO: CollectTargets' area code
+    // @identity-TODO: target-picker combinations 0x10/0x11/0x30 remain unnamed.
+    u8 targetFlags;
     u8 targetCounts; // Low nibble: hits; high nibble: target count or selection mode.
     u8 attackRange;  // Packed minimum/maximum distance; also selects the target-picker range icon.
     u8 valueA;       // @identity-TODO: the two values a use of the skill wears down
@@ -131,6 +133,6 @@ void ApplySkillEffect(i16 skill, struct Character* user, struct Character* targe
 void WearCachedSkill(void);
 
 // 1 when a skill with these `usable` bits works in the current mode, else -1.
-i16 IsSkillUsableNow(u16 usable);
+i16 IsSkillUsableNow(GZ_ENUM_PARAM(SkillUseModes, u16) usable);
 
 #endif // GITEN_GAME_SKILL_H

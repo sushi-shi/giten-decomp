@@ -678,7 +678,7 @@ b16 RunFieldExploration(void) {
     i16 count;
 
     if (GetGamePhase() != 0) {
-        if (GetRenderMode() == 5 && g_worldMapRequest == 1) {
+        if (GetRenderMode() == RENDER_MODE_PANEL && g_worldMapRequest == 1) {
             SetPanelRenderMode();
         } else {
             SetViewRenderMode();
@@ -688,10 +688,10 @@ b16 RunFieldExploration(void) {
         case 0:
             s_eventRunning = false;
             SetModeFlags(MODE_FIELD);
-            ShowScreenLayer(7);
+            ShowScreenLayer(SCREEN_LAYER_NAVIGATION);
             if (g_worldMapRequest > 0) {
-                if (GetRenderMode() == 5) {
-                    HideScreenLayer(7);
+                if (GetRenderMode() == RENDER_MODE_PANEL) {
+                    HideScreenLayer(SCREEN_LAYER_NAVIGATION);
                 }
                 SetGamePhase(10);
                 return false;

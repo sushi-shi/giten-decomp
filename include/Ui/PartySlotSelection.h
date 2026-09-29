@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/GameState.h>
 #include <Ints.h>
@@ -27,7 +28,7 @@ i16 PollTextPartySlotSelection(i16 mode);
 
 // Polls the hovered party panel and commits or cancels on a mouse click.
 // Mode 0 excludes empty slots; mode 2 excludes occupied human slots.
-i16 PollPartySlotSelection(i16 mode);
+i16 PollPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode);
 
 void ClearPartySlotSelection(void);
 

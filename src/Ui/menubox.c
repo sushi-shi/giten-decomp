@@ -24,7 +24,7 @@ MenuBox* DestroyMenuBox(MenuBox* menu) {
 }
 
 RVA(0x00020730, 0x1c)
-void DispatchMenuEvent(MenuBox* menu, i16 index, i16 event) {
+void DispatchMenuEvent(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     if (menu->handler) {
         menu->handler(menu, index, event);
     }
@@ -76,8 +76,8 @@ void SetMenuItems(MenuBox* menu, i16 pageRows, void* items, i16 itemCount, MenuH
 
 RVA(0x00020830, 0xbd)
 void BuildMenuPage(MenuBox* menu) {
-    i16 previous;
-    i16 next;
+    GZ_ENUM_LOCAL(PanelFlags, i16) previous;
+    GZ_ENUM_LOCAL(PanelFlags, i16) next;
     i16 index;
     i16 end;
     if (menu == NULL) {

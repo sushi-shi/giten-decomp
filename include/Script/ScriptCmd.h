@@ -4,6 +4,8 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/CharacterPools.h>
+#include <Game/CharacterStat.h>
 #include <Ints.h>
 
 GZ_ENUM_BEGIN_SPLIT(ItemCountScope, i16)
@@ -47,7 +49,7 @@ void OpSaveObjectConditions(void);
 void OpApplyObjectCondition(void);
 void OpClearObjectCondition(void);
 // An object's total of `stat`; 0 for no object.
-i32 GetObjectStatTotal(i16 ref, i16 stat);
+i32 GetObjectStatTotal(i16 ref, GZ_ENUM_PARAM(CharacterStat, i16) stat);
 i32 GetObjectLevel(i16 ref);
 i32 GetObjectAlignmentLevelB(i16 ref);
 i32 GetObjectAlignmentLevelA(i16 ref);
@@ -71,7 +73,7 @@ void OpAddPendingItem(void);
 // @identity-TODO: The byte at +2 of the per-id record read by 0xffa0 (table handle 0x47b0d0) is
 // assumed to be a kind/race; its other readers would name it.
 void OpMaskRosterByKind(void);
-void OpRecoverRosterPool(i16 pool);
+void OpRecoverRosterPool(GZ_ENUM_PARAM(CharacterPoolMask, i16) pool);
 void OpCureRosterCondition(void);
 
 #endif // GITEN_SCRIPT_SCRIPTCMD_H

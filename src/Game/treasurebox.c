@@ -570,7 +570,7 @@ i16 RunAnalyzeWindow(void) {
             s_menu = CreateMenuBox(s_menu, 16, 2);
             SetMenuItems(s_menu, 5, s_yesNo, 2, AnalyzeMenuHandler);
             SetTextPlaneFirstSelectableRow(s_menu->plane, 0, 0);
-            SetTextPlaneHighlightMode(s_menu->plane, 1);
+            SetTextPlaneHighlightMode(s_menu->plane, TEXT_HIGHLIGHT_OUTER);
             s_step++;
             return 0;
 
@@ -621,7 +621,7 @@ i16 RunAnalyzeWindow(void) {
 // Lists the yes/no items, and forgets them when the menu is torn down; an
 // item's object id is minus its index.
 RVA(0x0001b340, 0x50)
-static void AnalyzeMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void AnalyzeMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     char** items = menu->items.text;
 
     switch (event) {
@@ -781,7 +781,7 @@ MenuBox* CreateItemMenu(MenuBox* old, ItemStackList* entries, i16 count) {
 }
 
 RVA(0x0001b7c0, 0x196)
-void ItemMenuHandler(MenuBox* menu, i16 index, i16 event) {
+void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     ItemStackList* list = menu->items.itemList;
     i16 i;
     switch (event) {
@@ -808,7 +808,13 @@ void ItemMenuHandler(MenuBox* menu, i16 index, i16 event) {
             i32 price = FormatItemMenuEntry(*entry, 1, menu->context.item.priceDivisor);
             ItemRecord* record = GetLoadedRecord(GetItemStackItem(entry));
             if (!GetItemRecordPrice(record)) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x3500, GetItemStackItem(entry), 1);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    0x3500,
+                    GetItemStackItem(entry),
+                    MENU_LINE_DISABLED
+                );
             } else {
                 if (menu->context.item.mode == 0 && menu->context.item.priceDivisor == 1) {
                     if (CompareMacca(-1, price) < 0) {
@@ -931,9 +937,9 @@ void DrawItemMenuTotal(i16 plane, i32 total, i16 redraw, i16 line) {
             s_hideItemMenuTotal = false;
         }
         for (; line < 9; line++) {
-            AddMenuLine(plane, s_emptyItemLine, 0x1400, -1, 1);
+            AddMenuLine(plane, s_emptyItemLine, 0x1400, -1, MENU_LINE_DISABLED);
         }
-        AddMenuLine(plane, g_scratchBuffer, 0x1400, -1, 1);
+        AddMenuLine(plane, g_scratchBuffer, 0x1400, -1, MENU_LINE_DISABLED);
     } else {
         sprintf(g_scratchBuffer, "\215\207\214\166 %10ld   ", total);
         SetTextPlaneCursorLine(plane, 16, 9);

@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/ActionWait.h>
 #include <Game/Alignment.h>
 #include <Game/BattleStat.h>
@@ -329,7 +330,7 @@ i16 GetCharacterId(i16 slot);
 void RecalcCharacterStats(Character* character);
 
 RVA_DECL(0x000404f0)
-void UnequipPart(i16 slot, i16 part);
+void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part);
 
 void FullyRestoreCharacter(Character* character);
 

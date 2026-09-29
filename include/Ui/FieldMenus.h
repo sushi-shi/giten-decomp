@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/PartyAction.h>
 #include <Ints.h>
 #include <Ui/Menu.h>
@@ -14,7 +15,7 @@ i16 RunPartyPicker(i16 command);
 void SetPartyPickerMode(i16 mode);
 struct PartyMemberList;
 MenuBox* OpenPartyPicker(struct PartyMemberList* entries);
-void PartyPickerHandler(MenuBox* menu, i16 index, i16 event);
+void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 i16 CancelItemTargetMenu(i16 command);
 
@@ -39,9 +40,9 @@ MenuBox* ClosePickerMenu(MenuBox* menu);
 // @identity-TODO: list menus a picked member acts through: the member's own
 // skills (by member id) and an item list (0x423aa0 with 0x40 entries).
 MenuBox* OpenItemListMenu(void);
-void ItemListMenuHandler(MenuBox* menu, i16 index, i16 event);
+void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 MenuBox* OpenMemberSkillMenu(i16 id);
-void MemberSkillMenuHandler(MenuBox* menu, i16 index, i16 event);
+void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 #endif // GITEN_UI_FIELDMENUS_H
