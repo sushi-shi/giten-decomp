@@ -38,8 +38,9 @@ typedef union FlagBank {
 // (unless preserved) and EVENT_FLAG_BANK_SCRATCH, which each scene or actor
 // script also clears before it runs.
 #define EVENT_FLAG_BANK_LEVEL 8
-// Level flag 0 is the developers' "敵無し" (no enemies); spawning an enemy
-// clears it.
+// Level flag 0 is the developers' "敵無し" (no enemies): a new level and the
+// removal of its last field object set it, spawning an object clears it, and
+// random enemies spawn only while it is clear.
 #define LEVEL_FLAG_NO_ENEMIES 0
 #define EVENT_FLAG_BANK_AREA 9
 #define EVENT_FLAG_BANK_SCRATCH 12

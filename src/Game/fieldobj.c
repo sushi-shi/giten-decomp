@@ -1291,7 +1291,7 @@ MapCoord RandomNearOffset(void) {
 }
 
 // Counts the spawn timer down; when it runs out it restarts and, unless
-// objects are barred (event flag 8/0), spawns a random enemy.
+// the level has no enemies (LEVEL_FLAG_NO_ENEMIES), spawns a random enemy.
 RVA(0x0000ee20, 0x45)
 i16 TickEnemySpawnTimer(void) {
     i32 timer = s_spawnTimer;
@@ -2340,7 +2340,8 @@ void AddLevelGap(Character* character, i16 delta) {
     SetLevelGap(character, character->levelGap + delta);
 }
 
-// The familiarity, two more unless the DCS Mabudachi is held.
+// The familiarity, two more once the DCS Mabudachi is held (its owned flag
+// cleared).
 RVA(0x00010cd0, 0x2e)
 i16 GetFamiliarity(Character* character) {
     i16 familiarity;

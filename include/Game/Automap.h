@@ -8,6 +8,32 @@
 #include <Game/GameState.h>
 #include <Game/ViewDirection.h>
 
+// The automap window shows AUTOMAP_VIEW_WIDTH x AUTOMAP_VIEW_HEIGHT cells
+// around the party; the field's map overlay shows MAP_OVERLAY_SIZE cells square
+// with its top left at text cell (MAP_OVERLAY_X, MAP_OVERLAY_Y).
+#define AUTOMAP_VIEW_WIDTH 38
+#define AUTOMAP_VIEW_HEIGHT 18
+#define MAP_OVERLAY_SIZE 7
+#define MAP_OVERLAY_X 1
+#define MAP_OVERLAY_Y 14
+
+// The automap's scroll panel rows (its input is the row clicked), and the
+// bits UpdateAutomapScrollPanel sets for the directions the map cannot scroll.
+GZ_ENUM_BEGIN_SPLIT(AutomapScroll, i16)
+    AUTOMAP_SCROLL_UP = 0,
+    AUTOMAP_SCROLL_RIGHT = 1,
+    AUTOMAP_SCROLL_DOWN = 2,
+    AUTOMAP_SCROLL_LEFT = 3
+GZ_ENUM_END_SPLIT(AutomapScroll)
+
+GZ_ENUM_FLAGS_BEGIN(AutomapScrollBlock, i16)
+    AUTOMAP_BLOCK_NONE = 0,
+    AUTOMAP_BLOCK_LEFT = 1,
+    AUTOMAP_BLOCK_RIGHT = 2,
+    AUTOMAP_BLOCK_UP = 4,
+    AUTOMAP_BLOCK_DOWN = 8
+GZ_ENUM_FLAGS_END(AutomapScrollBlock)
+
 // Marks a cell explored in the bitmap saved for its area and level.
 void MarkAutomapCell(i16 area, i16 level, i16 x, i16 y);
 

@@ -5,7 +5,8 @@
 
 // Flags of bank EVENT_FLAG_BANK_OWNED: the maps and arm-terminal programs the
 // player holds, named after the developers' event-flag name table on the disc
-// (ET0018, "...所持"/"...マップ入手").
+// (ET0018, "...所持"/"...マップ入手"). A new game starts with every flag set;
+// obtaining the item clears its flag.
 GZ_ENUM_CONST_BEGIN(OwnedFlag)
     OWNED_TOCHO_MAP = 0,
     OWNED_TOCHO_2_MAP = 1,

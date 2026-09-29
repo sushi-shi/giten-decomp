@@ -5,7 +5,9 @@
 
 // Scenario flags the code tests or sets, named after the developers'
 // event-flag name table on the disc (ET0018), which numbers them on through
-// bank EVENT_FLAG_BANK_SCENARIO into EVENT_FLAG_BANK_SCENARIO_2.
+// bank EVENT_FLAG_BANK_SCENARIO into EVENT_FLAG_BANK_SCENARIO_2. A new game
+// starts with every flag set; the event clears its flag (AdvanceClock clears
+// SCENARIO_FULL_MOON_1 while the moon is full).
 GZ_ENUM_CONST_BEGIN(ScenarioFlag)
     SCENARIO_FULL_MOON_1 = 0x23,
     SCENARIO_FULL_MOON_2 = 0x24,

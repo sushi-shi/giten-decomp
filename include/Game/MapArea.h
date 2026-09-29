@@ -9,6 +9,9 @@
 // tests.
 // @identity-TODO: the other area ids, including WallOverrideArea's alternate-wall
 // areas, are not named yet.
+// Area ids are bytes; the automap keeps a handle per possible area.
+#define MAP_AREA_COUNT 256
+
 GZ_ENUM_BEGIN_SPLIT(MapAreaId, u8)
     MAP_AREA_VIRTUAL_DUNGEON = 0x01,
     MAP_AREA_SHINJUKU_UNDERGROUND = 0x06,

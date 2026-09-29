@@ -220,7 +220,7 @@ static i16 s_unusedItemMenuValue = -1;
 
 // The per-area level tables (256 handles).
 DATA(0x0007bee0)
-static i32 s_areaStore[256] = {0};
+static i32 s_areaStore[MAP_AREA_COUNT] = {0};
 
 DATA(0x0007c2e0)
 static i16 s_mapPlane = 0;
@@ -275,7 +275,7 @@ DATA(0x0007d5e0)
 static i32* s_areas = NULL;
 
 DATA(0x0007d5e4)
-static i16 s_mapDirection = 0;
+static GZ_ENUM_STORAGE(ViewDirection, i16) s_mapDirection = VIEW_NORTH;
 
 DATA(0x0007d5e8)
 static i16 s_mapOriginX = 0;
@@ -1749,16 +1749,16 @@ void AllocAutomapLevels(void) {
     count = GetAreaLevelCount();
     slot = &s_areas[area];
     levels = *slot;
-    if (levels == 0) {
+    if (levels == HANDLE_NONE) {
         levels = CreateArrayHandle(GetAutomapLevelTableSize(count), 1);
         *slot = levels;
         ((AutomapLevels*)HandleWritePtr(levels))->header.count = count;
     }
     for (level = 0; level < count; level++) {
-        if (GetAutomapLevelHandle(HandleReadPtr(levels), level) == 0) {
+        if (GetAutomapLevelHandle(HandleReadPtr(levels), level) == HANDLE_NONE) {
             size = GetAreaSize(level);
             bytes = ((i16)(size.x * size.y) + 7) / 8;
-            bitmap = CreateArrayHandle(bytes + 8, 1);
+            bitmap = CreateArrayHandle(bytes + sizeof(AutomapBitmapHeader), 1);
             SetAutomapLevelHandle(HandleWritePtr(levels), level, bitmap);
             data = HandleWritePtr(bitmap);
             data->header.width = size.x;
@@ -1777,9 +1777,9 @@ void FreeAutomap(void) {
     if (s_areas == NULL) {
         return;
     }
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < MAP_AREA_COUNT; i++) {
         levels = GetAutomapAreaHandle(i);
-        if (levels != 0) {
+        if (levels != HANDLE_NONE) {
             count = GetAutomapLevelCount(HandleReadPtr(levels));
             for (k = 0; k < count; k++) {
                 FreeHandle(GetAutomapLevelHandle(HandleReadPtr(levels), k));
@@ -1798,11 +1798,11 @@ void StoreAutomapLevel(void) {
     i32 bitmap;
     u16 size;
     if (s_levelArea >= 0 && s_levelIndex >= 0 && s_areas != NULL
-        && GetAutomapAreaHandle(s_levelArea) != 0) {
+        && GetAutomapAreaHandle(s_levelArea) != HANDLE_NONE) {
         levels = HandleReadPtr(GetAutomapAreaHandle(s_levelArea));
         if (GetAutomapLevelCount(levels) > s_levelIndex) {
             bitmap = GetAutomapLevelHandle(levels, s_levelIndex);
-            if (bitmap != 0) {
+            if (bitmap != HANDLE_NONE) {
                 size = GetAutomapBitmapSize(&s_levelBitmap->header);
                 data = HandleWritePtr(bitmap);
                 memmove(data, s_levelBitmap, size);
@@ -1821,7 +1821,7 @@ void LoadAutomapLevel(i16 area, i16 level) {
         return;
     }
     StoreAutomapLevel();
-    if (s_areas == NULL || GetAutomapAreaHandle(area) == 0) {
+    if (s_areas == NULL || GetAutomapAreaHandle(area) == HANDLE_NONE) {
         return;
     }
     levels = HandleReadPtr(GetAutomapAreaHandle(area));
@@ -1829,7 +1829,7 @@ void LoadAutomapLevel(i16 area, i16 level) {
         return;
     }
     bitmap = GetAutomapLevelHandle(levels, level);
-    if (bitmap == 0) {
+    if (bitmap == HANDLE_NONE) {
         return;
     }
     data = HandleReadPtr(bitmap);
@@ -1845,7 +1845,7 @@ void MarkAutomapCell(i16 area, i16 level, i16 x, i16 y) {
     }
 }
 
-// 0x100 when x/y of `area`/`level` has not been explored (or has no bitmap);
+// AUTOMAP_CELL_HIDDEN when x/y of `area`/`level` has not been explored (or has no bitmap);
 // coordinates wrap at the level size.
 RVA(0x0001d120, 0xe1)
 i16 IsAutomapCellHidden(i16 x, i16 y, i16 area, i16 level) {
@@ -1855,22 +1855,23 @@ i16 IsAutomapCellHidden(i16 x, i16 y, i16 area, i16 level) {
     u8* bits;
     i16 index;
     if (s_levelArea == area && s_levelIndex == level) {
-        return TestBit(s_levelBitmap->bits, AutomapCellIndex(s_levelBitmap, x, y)) != true ? 0x100
-                                                                                           : 0;
+        return TestBit(s_levelBitmap->bits, AutomapCellIndex(s_levelBitmap, x, y)) != true
+                   ? AUTOMAP_CELL_HIDDEN
+                   : 0;
     } else {
         if (s_areas == NULL) {
-            return 0x100;
+            return AUTOMAP_CELL_HIDDEN;
         }
-        if (GetAutomapAreaHandle(area) == 0) {
-            return 0x100;
+        if (GetAutomapAreaHandle(area) == HANDLE_NONE) {
+            return AUTOMAP_CELL_HIDDEN;
         }
         levels = HandleReadPtr(GetAutomapAreaHandle(area));
         if (GetAutomapLevelCount(levels) <= level) {
-            return 0x100;
+            return AUTOMAP_CELL_HIDDEN;
         }
         bitmap = GetAutomapLevelHandle(levels, level);
-        if (bitmap == 0) {
-            return 0x100;
+        if (bitmap == HANDLE_NONE) {
+            return AUTOMAP_CELL_HIDDEN;
         }
         data = HandleReadPtr(bitmap);
         if (x >= data->header.width) {
@@ -1882,7 +1883,7 @@ i16 IsAutomapCellHidden(i16 x, i16 y, i16 area, i16 level) {
         bits = data->bits;
         index = AutomapCellIndex(data, x, y);
     }
-    return TestBit(bits, index) != true ? 0x100 : 0;
+    return TestBit(bits, index) != true ? AUTOMAP_CELL_HIDDEN : 0;
 }
 
 RVA(0x0001d210, 0xd4)
@@ -1939,20 +1940,20 @@ RVA(0x0001d380, 0xb4)
 void TransformAutomapPoint(i16* x, i16* y) {
     i16 oldX;
     switch (s_mapDirection) {
-        case 0:
+        case VIEW_NORTH:
             *x -= s_mapOriginX;
             *y -= s_mapOriginY;
             break;
-        case 1:
+        case VIEW_EAST:
             oldX = *x;
             *x = *y - s_mapOriginY;
             *y = s_mapOriginX - oldX;
             break;
-        case 2:
+        case VIEW_SOUTH:
             *x = s_mapOriginX - *x;
             *y = s_mapOriginY - *y;
             break;
-        case 3:
+        case VIEW_WEST:
             oldX = *x;
             *x = s_mapOriginY - *y;
             *y = oldX - s_mapOriginX;
@@ -2024,12 +2025,12 @@ b16 RunAutomapState(void) {
             } else if (input != PANEL_INPUT_NONE) {
                 savedState = SaveDrawState();
                 switch (input) {
-                    case 0:
+                    case AUTOMAP_SCROLL_UP:
                         ScrollPlaneMapDown(s_mapPlane);
                         OffsetMapCoord(&s_mapOriginX, &s_mapOriginY, s_mapDirection, 0, -1);
                         DrawAutomapRegion(s_mapOriginX, s_mapOriginY, s_mapWidth, 1, 0, 0);
                         break;
-                    case 1:
+                    case AUTOMAP_SCROLL_RIGHT:
                         ScrollPlaneMapLeft(s_mapPlane);
                         OffsetMapCoord(&s_mapOriginX, &s_mapOriginY, s_mapDirection, 1, 0);
                         DrawAutomapRegion(
@@ -2041,7 +2042,7 @@ b16 RunAutomapState(void) {
                             0
                         );
                         break;
-                    case 2:
+                    case AUTOMAP_SCROLL_DOWN:
                         ScrollPlaneMapUp(s_mapPlane);
                         OffsetMapCoord(&s_mapOriginX, &s_mapOriginY, s_mapDirection, 0, 1);
                         DrawAutomapRegion(
@@ -2053,7 +2054,7 @@ b16 RunAutomapState(void) {
                             s_mapHeight - 1
                         );
                         break;
-                    case 3:
+                    case AUTOMAP_SCROLL_LEFT:
                         ScrollPlaneMapRight(s_mapPlane);
                         OffsetMapCoord(&s_mapOriginX, &s_mapOriginY, s_mapDirection, -1, 0);
                         DrawAutomapRegion(s_mapOriginX, s_mapOriginY, 1, s_mapHeight, 0, 0);
@@ -2079,72 +2080,72 @@ RVA(0x0001d890, 0x1ec)
 void UpdateAutomapScrollPanel(void) {
     i16 width;
     i16 height;
-    i16 blocked;
+    GZ_ENUM_LOCAL(AutomapScrollBlock, i16) blocked;
     ClearPanelChecksAgain(s_mapPanel);
     GetMapSize(&width, &height);
-    blocked = 0;
+    blocked = AUTOMAP_BLOCK_NONE;
     switch (s_mapDirection) {
-        case 0:
+        case VIEW_NORTH:
             if (s_mapOriginX == 0) {
-                blocked |= 1;
+                blocked |= AUTOMAP_BLOCK_LEFT;
             }
             if (s_mapOriginX + s_mapWidth >= width) {
-                blocked |= 2;
+                blocked |= AUTOMAP_BLOCK_RIGHT;
             }
             if (s_mapOriginY == 0) {
-                blocked |= 4;
+                blocked |= AUTOMAP_BLOCK_UP;
             }
             if (s_mapOriginY + s_mapHeight >= height) {
-                blocked |= 8;
+                blocked |= AUTOMAP_BLOCK_DOWN;
             }
             break;
-        case 1:
+        case VIEW_EAST:
             if (s_mapOriginY == 0) {
-                blocked |= 1;
+                blocked |= AUTOMAP_BLOCK_LEFT;
             }
             if (s_mapOriginY + s_mapWidth >= height) {
-                blocked |= 2;
+                blocked |= AUTOMAP_BLOCK_RIGHT;
             }
             if (s_mapOriginX == width - 1) {
-                blocked |= 4;
+                blocked |= AUTOMAP_BLOCK_UP;
             }
             if (s_mapOriginX - s_mapHeight < 0) {
-                blocked |= 8;
+                blocked |= AUTOMAP_BLOCK_DOWN;
             }
             break;
-        case 2:
+        case VIEW_SOUTH:
             if (s_mapOriginX == width - 1) {
-                blocked |= 1;
+                blocked |= AUTOMAP_BLOCK_LEFT;
             }
             if (s_mapOriginX - s_mapWidth < 0) {
-                blocked |= 2;
+                blocked |= AUTOMAP_BLOCK_RIGHT;
             }
             if (s_mapOriginY == height - 1) {
-                blocked |= 4;
+                blocked |= AUTOMAP_BLOCK_UP;
             }
             if (s_mapOriginY - s_mapHeight < 0) {
-                blocked |= 8;
+                blocked |= AUTOMAP_BLOCK_DOWN;
             }
             break;
-        case 3:
+        case VIEW_WEST:
             if (s_mapOriginY == height - 1) {
-                blocked |= 1;
+                blocked |= AUTOMAP_BLOCK_LEFT;
             }
             if (s_mapOriginY - s_mapWidth < 0) {
-                blocked |= 2;
+                blocked |= AUTOMAP_BLOCK_RIGHT;
             }
             if (s_mapOriginX == 0) {
-                blocked |= 4;
+                blocked |= AUTOMAP_BLOCK_UP;
             }
             if (s_mapOriginX + s_mapHeight == width) {
-                blocked |= 8;
+                blocked |= AUTOMAP_BLOCK_DOWN;
             }
             break;
     }
-    SetPanelRowFlags(s_mapPanel, 3, PANEL_HIDDEN, blocked & 1);
-    SetPanelRowFlags(s_mapPanel, 1, PANEL_HIDDEN, blocked & 2);
-    SetPanelRowFlags(s_mapPanel, 0, PANEL_HIDDEN, blocked & 4);
-    SetPanelRowFlags(s_mapPanel, 2, PANEL_HIDDEN, blocked & 8);
+    SetPanelRowFlags(s_mapPanel, AUTOMAP_SCROLL_LEFT, PANEL_HIDDEN, blocked & AUTOMAP_BLOCK_LEFT);
+    SetPanelRowFlags(s_mapPanel, AUTOMAP_SCROLL_RIGHT, PANEL_HIDDEN, blocked & AUTOMAP_BLOCK_RIGHT);
+    SetPanelRowFlags(s_mapPanel, AUTOMAP_SCROLL_UP, PANEL_HIDDEN, blocked & AUTOMAP_BLOCK_UP);
+    SetPanelRowFlags(s_mapPanel, AUTOMAP_SCROLL_DOWN, PANEL_HIDDEN, blocked & AUTOMAP_BLOCK_DOWN);
     PaintPanel(s_mapPanel, s_mapPlane);
 }
 
@@ -2201,67 +2202,67 @@ b16 DrawAutomapViewport(MapPosition position) {
     i16 viewHeight;
     i16 x;
     i16 y;
-    i16 direction;
+    GZ_ENUM_LOCAL(ViewDirection, i16) direction;
     GetMapSize(&width, &height);
     x = position.x;
     y = position.y;
     direction = position.direction;
     RotateAutomapRegion(x, y, direction, &left, &top, &width, &height);
-    if (width <= 38) {
+    if (width <= AUTOMAP_VIEW_WIDTH) {
         viewWidth = width;
     } else {
-        viewWidth = 38;
-        if (-left * 2 > 38) {
-            left = -19;
+        viewWidth = AUTOMAP_VIEW_WIDTH;
+        if (-left * 2 > AUTOMAP_VIEW_WIDTH) {
+            left = -(AUTOMAP_VIEW_WIDTH / 2);
             switch (direction) {
-                case 0:
-                    if (x + 19 > width) {
-                        left = width - x - 38;
+                case VIEW_NORTH:
+                    if (x + AUTOMAP_VIEW_WIDTH / 2 > width) {
+                        left = width - x - AUTOMAP_VIEW_WIDTH;
                     }
                     break;
-                case 1:
-                    if (y + 19 > width) {
-                        left = width - y - 38;
+                case VIEW_EAST:
+                    if (y + AUTOMAP_VIEW_WIDTH / 2 > width) {
+                        left = width - y - AUTOMAP_VIEW_WIDTH;
                     }
                     break;
-                case 2:
-                    if (x - 18 < 0) {
-                        left = x - 37;
+                case VIEW_SOUTH:
+                    if (x - (AUTOMAP_VIEW_WIDTH / 2 - 1) < 0) {
+                        left = x - (AUTOMAP_VIEW_WIDTH - 1);
                     }
                     break;
-                case 3:
-                    if (y - 18 < 0) {
-                        left = y - 37;
+                case VIEW_WEST:
+                    if (y - (AUTOMAP_VIEW_WIDTH / 2 - 1) < 0) {
+                        left = y - (AUTOMAP_VIEW_WIDTH - 1);
                     }
                     break;
             }
         }
     }
-    if (height <= 18) {
+    if (height <= AUTOMAP_VIEW_HEIGHT) {
         viewHeight = height;
     } else {
-        viewHeight = 18;
-        if (-top * 2 > 18) {
-            top = -9;
+        viewHeight = AUTOMAP_VIEW_HEIGHT;
+        if (-top * 2 > AUTOMAP_VIEW_HEIGHT) {
+            top = -(AUTOMAP_VIEW_HEIGHT / 2);
             switch (direction) {
-                case 0:
-                    if (y + 9 > height) {
-                        top = height - y - 18;
+                case VIEW_NORTH:
+                    if (y + AUTOMAP_VIEW_HEIGHT / 2 > height) {
+                        top = height - y - AUTOMAP_VIEW_HEIGHT;
                     }
                     break;
-                case 1:
-                    if (x - 8 < 0) {
-                        top = x - 17;
+                case VIEW_EAST:
+                    if (x - (AUTOMAP_VIEW_HEIGHT / 2 - 1) < 0) {
+                        top = x - (AUTOMAP_VIEW_HEIGHT - 1);
                     }
                     break;
-                case 2:
-                    if (y - 8 < 0) {
-                        top = y - 17;
+                case VIEW_SOUTH:
+                    if (y - (AUTOMAP_VIEW_HEIGHT / 2 - 1) < 0) {
+                        top = y - (AUTOMAP_VIEW_HEIGHT - 1);
                     }
                     break;
-                case 3:
-                    if (x + 9 > height) {
-                        top = height - x - 18;
+                case VIEW_WEST:
+                    if (x + AUTOMAP_VIEW_HEIGHT / 2 > height) {
+                        top = height - x - AUTOMAP_VIEW_HEIGHT;
                     }
                     break;
             }
@@ -2317,70 +2318,70 @@ void DrawMapOverlay(MapPosition position) {
     y = position.y;
     direction = position.direction;
     RotateAutomapRegion(x, y, direction, &left, &top, &width, &height);
-    if (width <= 7) {
+    if (width <= MAP_OVERLAY_SIZE) {
         viewWidth = width;
-        screenX = 8 - width;
+        screenX = MAP_OVERLAY_X + MAP_OVERLAY_SIZE - width;
     } else {
-        screenX = 1;
-        viewWidth = 7;
-        if (-left * 2 > 7) {
-            left = -3;
+        screenX = MAP_OVERLAY_X;
+        viewWidth = MAP_OVERLAY_SIZE;
+        if (-left * 2 > MAP_OVERLAY_SIZE) {
+            left = -(MAP_OVERLAY_SIZE / 2);
             switch (position.direction) {
                 case VIEW_NORTH:
-                    if (position.x + 4 > width) {
-                        left = width - x - 7;
+                    if (position.x + MAP_OVERLAY_SIZE / 2 + 1 > width) {
+                        left = width - x - MAP_OVERLAY_SIZE;
                     }
                     break;
                 case VIEW_EAST:
-                    if (position.y + 4 > width) {
-                        left = width - y - 7;
+                    if (position.y + MAP_OVERLAY_SIZE / 2 + 1 > width) {
+                        left = width - y - MAP_OVERLAY_SIZE;
                     }
                     break;
                 case VIEW_SOUTH:
-                    edge = x - 3;
+                    edge = x - MAP_OVERLAY_SIZE / 2;
                     if (edge < 0) {
-                        left = x - 6;
+                        left = x - (MAP_OVERLAY_SIZE - 1);
                     }
                     break;
                 case VIEW_WEST:
-                    edge = y - 3;
+                    edge = y - MAP_OVERLAY_SIZE / 2;
                     if (edge < 0) {
-                        left = y - 6;
+                        left = y - (MAP_OVERLAY_SIZE - 1);
                     }
                     break;
             }
         }
     }
-    if (height <= 7) {
+    if (height <= MAP_OVERLAY_SIZE) {
         viewHeight = height;
-        screenY = 21 - height;
+        screenY = MAP_OVERLAY_Y + MAP_OVERLAY_SIZE - height;
     } else {
-        screenY = 14;
-        viewHeight = 7;
+        screenY = MAP_OVERLAY_Y;
+        viewHeight = MAP_OVERLAY_SIZE;
         edge = -top * 2;
-        if (edge > 7) {
-            top = -3;
+        if (edge > MAP_OVERLAY_SIZE) {
+            top = -(MAP_OVERLAY_SIZE / 2);
             switch (position.direction) {
                 case VIEW_NORTH:
-                    if (position.y + 4 > height) {
-                        top = height - y - 7;
+                    if (position.y + MAP_OVERLAY_SIZE / 2 + 1 > height) {
+                        top = height - y - MAP_OVERLAY_SIZE;
                     }
                     break;
                 case VIEW_EAST:
-                    edge = x - 3;
+                    edge = x - MAP_OVERLAY_SIZE / 2;
                     if (edge < 0) {
-                        top = x - 6;
+                        top = x - (MAP_OVERLAY_SIZE - 1);
                     }
                     break;
                 case VIEW_SOUTH:
-                    edge = y - 3;
+                    edge = y - MAP_OVERLAY_SIZE / 2;
                     if (edge < 0) {
-                        top = y - 6;
+                        top = y - (MAP_OVERLAY_SIZE - 1);
                     }
                     break;
                 case VIEW_WEST:
-                    if (position.x + 4 > height) {
-                        top = height - x - 7;
+                    if (position.x + MAP_OVERLAY_SIZE / 2 + 1 > height) {
+                        top = height - x - MAP_OVERLAY_SIZE;
                     }
                     break;
             }
@@ -2484,8 +2485,8 @@ i16 WriteAutomapAreas(FILE* fp) {
         return errors;
     }
     StoreAutomapLevel();
-    errors = 256 - fwrite(s_areas, 4, 256, fp);
-    for (area = 0; area < 256; area++) {
+    errors = MAP_AREA_COUNT - fwrite(s_areas, 4, MAP_AREA_COUNT, fp);
+    for (area = 0; area < MAP_AREA_COUNT; area++) {
         handle = GetAutomapAreaHandle(area);
         if (handle) {
             levels = HandleReadPtr(handle);
@@ -2523,11 +2524,11 @@ i16 LoadAutomapAreas(FILE* fp) {
     StoreAutomapLevel();
     FreeAutomap();
     EnsureAutomapStore();
-    errors = 256 - fread(s_areas, 4, 256, fp);
+    errors = MAP_AREA_COUNT - fread(s_areas, 4, MAP_AREA_COUNT, fp);
     if (errors) {
         return errors;
     }
-    for (area = 0; area < 256; area++) {
+    for (area = 0; area < MAP_AREA_COUNT; area++) {
         if (GetAutomapAreaHandle(area)) {
             errors += 1 - fread(&levelHeader, 4, 1, fp);
             count = levelHeader.count;

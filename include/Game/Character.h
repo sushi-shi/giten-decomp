@@ -124,7 +124,7 @@ GZ_ENUM_END_SPLIT(PickRole)
 // 0x41c690 adds to, capped by 0x41c650(99); `title` picks the name 0x410180
 // returns for a human member (id < 0x20); `familiarity` is an eighth of the
 // per-id count GetFamiliarityCount reads, clamped to 0..FAMILIARITY_MAX (the
-// script adds 2 unless the DCS Mabudachi is held).
+// script adds 2 once the DCS Mabudachi is held).
 // @identity-TODO: `fieldState` is set to 6 on every map actor after a party turn
 // of a field encounter and read as a script switch key; its values are unrecovered.
 #define FAMILIARITY_MAX 0x3f
