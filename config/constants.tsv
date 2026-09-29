@@ -469,3 +469,32 @@ include/Game/SkillUse.h	ClearAllBattleTallies	0	*	*	battle tallies start at 0
 include/Game/FieldView.h	ApplyFacingOffset	3	*	*	the four directions (a 2-bit value)
 include/Game/Attack.h	GetExceptionalAttackLuck	0.5	*	*	half the exceptional-attack value
 include/Game/ActionWait.h	QueueActionWait	1	*	*remaining	a queued wait runs at least one more tick
+src/Script/scriptop.c	OpSaveDataCommand	1	*	*result	reading the summary always succeeds (script result 1)
+src/Script/scriptop.c	SetActorMode	*	*	*g_scriptRegs*	@identity-TODO: script register 0 set to 1 when an actor's mode changes
+src/Script/scriptop.c	OpIfFlags	*	*	*	a flag list ends with the operand (bank 0x7f, invert -1); `every` starts as all bits and the low bit of invert negates a flag
+src/Script/scripttext.c	DestroyScriptPanel	1	call-argument	ReleasePanel(*	the panel block is freed too
+src/Script/scripttext.c	CreateScriptPanel	0	call-argument	CreateImagePanel(*	@identity-TODO: CreateImagePanel's unused fourth argument
+src/Script/scripttext.c	OpOpenScriptPanel	0x113	*	*	@identity-TODO: opening panel image 0x113 first clears the element pool
+src/Script/scripttext.c	PollScriptPanels	*	*	*	panels are polled from the last one down; the long vars 0x16..0x19 the panel script reads (count, right click, checked, row)
+src/Script/scripttext.c	RunScriptMenuHandler	1	call-argument	SetScriptLongVar(*	@identity-TODO: the menu handler's script result 1
+src/Script/scripttext.c	OpSetMenuScroll	-1	*	*	-1 keeps the menu's scroll step or position
+src/Script/scripttext.c	WriteFormattedTextLine	0	*	*	an empty text line
+src/Script/scripttext.c	OpAllocLongArray	4	call-argument	CreateArrayHandle(*	a long array of 4-byte elements
+src/Script/scripttext.c	ReadSizedDataInt	*	*	*	little-endian bytes, sign-extended from the top byte (0x80)
+src/Script/scripttext.c	Op*Int	*	*	*	the operand's sign (1 or -1)
+src/Script/scripttext.c	OpSaveSceneCell	*	call-argument	CreateArrayHandle(*	a 16-byte scene-cell record
+src/Script/scripttext.c	OpCallTextScript	0	*	*	@identity-TODO: text source 0
+src/Script/scripttext.c	OpenScriptWindow	2	call-argument	SetTextWindowScrollTop(*	@identity-TODO: a script window's scroll-top row 2
+src/Script/scripttext.c	TopScriptWindow	-1	*	*	no script window open
+src/Script/scripttext.c	Op*	[01]	trivial-function-literal	[01] case	@identity-TODO: the script operand's two sub-operations (0 and 1)
+src/Script/scripttext.c	OpPushScriptWindow	*	*	*	@identity-TODO: window kind 5 is remapped to 0xe (see the function comment); OpenScriptWindow's second argument 0
+src/Game/savegame.c	WriteSaveHeader	0	call-argument	GetCharacter(*	character slot 0, the hero
+src/Game/savegame.c	LoadGame	0	trivial-function-literal	0 return	no errors when the file cannot be opened
+src/Game/savegame.c	LoadGame	*	*	*direction	turning around (a half turn of the four directions)
+src/Game/savegame.c	LoadGame	*	call-argument	OffsetMapCoordFacing(*	one cell ahead
+src/Game/savegame.c	LoadGame	*	call-argument	ReadObjectRecordField(*	the equipment group: the 2-byte object-record field at 0x20
+src/Game/savegame.c	Read*	-1	trivial-function-literal	-1 return	the file cannot be read
+src/Game/savegame.c	Run*	[01]	trivial-function-literal	[01] case	a system sub-menu's steps: open it, then run it
+src/Game/savegame.c	Run*	2	call-argument	OpenSystemMenu(*	the two rows of the display and quit choices
+src/Game/savegame.c	RunQuitConfirm	*	*	*	row 0 of the quit choice quits; g_quitRequest 1 asks StepGame to end
+src/Game/savegame.c	ReadSaveSummary	0	*	*g_scratchBuffer*	an empty floor text

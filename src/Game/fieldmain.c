@@ -489,15 +489,14 @@ void MovePartyTo(i16 x, i16 y, i16 direction) {
     RebuildViewScene();
 }
 
-// Copies the return point (area, level, x, y, direction) into `out`;
-// returns the pending world-map request.
+// Copies the return point into `out`; returns the pending world-map request.
 RVA(0x00012930, 0x41)
-i16 GetReturnPoint(i16* out) {
-    out[0] = s_returnArea;
-    out[1] = s_returnLevel;
-    out[2] = s_returnX;
-    out[3] = s_returnY;
-    out[4] = s_returnDirection;
+i16 GetReturnPoint(ReturnPoint* out) {
+    out->area = s_returnArea;
+    out->level = s_returnLevel;
+    out->x = s_returnX;
+    out->y = s_returnY;
+    out->direction = s_returnDirection;
     return g_worldMapRequest;
 }
 

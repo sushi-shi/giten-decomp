@@ -5,6 +5,9 @@
 
 struct Panel;
 
+// The jump value of a panel row that runs no script.
+#define SCRIPT_PANEL_NO_JUMP 0xffff
+
 typedef union ScriptPanelJump {
     u16 value;
     struct {

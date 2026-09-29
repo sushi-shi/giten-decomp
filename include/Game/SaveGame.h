@@ -3,22 +3,37 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Enums.h>
 #include <Ints.h>
 
 #include <stdio.h>
 
+// The save-file header: the leader's full name, level, the format version,
+// the area name and the displayed floor; the names fill fixed text fields.
+#define SAVE_TEXT_SIZE 32
+#define SAVE_FORMAT_VERSION 4
+
+// The header fields ReadSaveSummary reads up to.
+GZ_ENUM_BEGIN(SaveSummaryField)
+    SAVE_SUMMARY_NAME = 0,
+    SAVE_SUMMARY_LEVEL = 1,
+    SAVE_SUMMARY_AREA = 2,
+    SAVE_SUMMARY_FLOOR = 3
+GZ_ENUM_END(SaveSummaryField)
+
 i16 ReadSaveHeader(FILE* fp);
-i16 LoadGame(i16 slot, i16 keepField);
+i16 LoadGame(i16 slot, b16 keepField);
 i16 SaveGame(i16 slot);
 void RecordMarkInLeader(void);
 i16 WriteSaveHeader(FILE* fp);
-i16 ReadSaveSummary(i16 slot, i16 field);
+i16 ReadSaveSummary(i16 slot, GZ_ENUM_PARAM(SaveSummaryField, i16) field);
 
 // The system menu's game state (auto-mapping, auto-navigation, quit).
 b16 RunSystemMenu(void);
 
 // Set until the first save is loaded (the party then turns around and steps out).
-extern i16 g_loadedBefore;
+extern b16 g_loadedBefore;
 
 // The save loaders LoadGame chains; each returns its error count.
 // @identity-TODO: label-only; named from what each reads.

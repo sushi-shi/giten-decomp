@@ -22,44 +22,44 @@ i16 g_scriptRegs[16];
 
 RVA(0x0002fd00, 0x174)
 b16 OpSaveDataCommand(void) {
-    i16 savedPoint[5];
-    i16 point[5];
-    i16 operation = ReadScriptValue();
+    ReturnPoint savedPoint;
+    ReturnPoint point;
+    GZ_ENUM_LOCAL(SaveDataOperation, i16) operation = ReadScriptValue();
     i16 slot = ReadScriptValue();
     i16 variable = ReadLongVarIndex();
     i16 field = ReadScriptValue();
     i16 result = 0;
     switch (operation) {
-        case 0:
+        case SAVE_DATA_SUMMARY:
             ReadSaveSummary(slot, field);
             result = 1;
             break;
-        case 1:
-            if (GetReturnPoint(point) >= 0) {
+        case SAVE_DATA_SAVE:
+            if (GetReturnPoint(&point) >= 0) {
                 result = SaveGame(slot);
             } else {
-                savedPoint[0] = g_party.field.pos.area;
-                savedPoint[1] = g_party.field.pos.level;
-                savedPoint[2] = g_party.field.pos.x;
-                savedPoint[3] = g_party.field.pos.y;
-                savedPoint[4] = g_party.field.pos.direction;
-                g_party.field.pos.area = point[0];
-                g_party.field.pos.level = point[1];
-                g_party.field.pos.x = point[2];
-                g_party.field.pos.y = point[3];
-                g_party.field.pos.direction = point[4];
+                savedPoint.area = g_party.field.pos.area;
+                savedPoint.level = g_party.field.pos.level;
+                savedPoint.x = g_party.field.pos.x;
+                savedPoint.y = g_party.field.pos.y;
+                savedPoint.direction = g_party.field.pos.direction;
+                g_party.field.pos.area = point.area;
+                g_party.field.pos.level = point.level;
+                g_party.field.pos.x = point.x;
+                g_party.field.pos.y = point.y;
+                g_party.field.pos.direction = point.direction;
                 result = SaveGame(slot);
-                g_party.field.pos.area = savedPoint[0];
-                g_party.field.pos.level = savedPoint[1];
-                g_party.field.pos.x = savedPoint[2];
-                g_party.field.pos.y = savedPoint[3];
-                g_party.field.pos.direction = savedPoint[4];
+                g_party.field.pos.area = savedPoint.area;
+                g_party.field.pos.level = savedPoint.level;
+                g_party.field.pos.x = savedPoint.x;
+                g_party.field.pos.y = savedPoint.y;
+                g_party.field.pos.direction = savedPoint.direction;
             }
             break;
-        case 2:
-            result = LoadGame(slot, 1);
+        case SAVE_DATA_LOAD:
+            result = LoadGame(slot, true);
             break;
-        case 3:
+        case SAVE_DATA_SUMMARY_TEXT:
             EndSaveRenderMode();
             result = ReadSaveSummary(slot, field);
             if (result >= 0) {

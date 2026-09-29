@@ -112,7 +112,16 @@ i16 NextAutoMove(void);
 i16 GetFieldExplorationActive(void);
 i16 SetPendingSound(i16 sound);
 void SetRebuildRoom(i16 rebuild);
-i16 GetReturnPoint(i16* out);
+// The return point as GetReturnPoint copies it out.
+typedef struct ReturnPoint {
+    i16 area;
+    i16 level;
+    i16 x;
+    i16 y;
+    GZ_ENUM_STORAGE(ViewDirection, i16) direction;
+} ReturnPoint;
+
+i16 GetReturnPoint(ReturnPoint* out);
 b16 TickStepDamage(void);
 i16 TickFieldSteps(void);
 

@@ -37,36 +37,36 @@
 #include <stdio.h>
 #include <string.h>
 
-// The system menu's rows; picking row n runs phase n + 3.
+// The system menu's rows; picking row n runs phase MENU_STEP_PICK_FIRST + n.
 DATA(0x00068310)
 static i32 s_systemEntryCount = 3;
 DATA(0x00068318)
 static SystemMenuEntry s_systemEntries[4] = {
     // "オートマッピング" (auto-mapping)
-    {0, "\203\111\201\133\203\147\203\175\203\142\203\163\203\223\203\117"},
+    {false, "\203\111\201\133\203\147\203\175\203\142\203\163\203\223\203\117"},
     // "オートナビゲーション" (auto-navigation)
-    {0, "\203\111\201\133\203\147\203\151\203\162\203\121\201\133\203\126\203\207\203\223"},
+    {false, "\203\111\201\133\203\147\203\151\203\162\203\121\201\133\203\126\203\207\203\223"},
     // "ゲーム中断" (quit the game)
-    {0, "\203\121\201\133\203\200\222\206\222\146"},
-    {0, NULL},
+    {false, "\203\121\201\133\203\200\222\206\222\146"},
+    {false, NULL},
 };
 
 // The quit confirmation's rows.
 DATA(0x00068330)
 static SystemMenuEntry s_quitEntries[2] = {
-    {0, "\222\206\222\146\202\267\202\351"},         // "中断する" (quit)
-    {0, "\222\206\222\146\202\265\202\310\202\242"}, // "中断しない" (don't quit)
+    {false, "\222\206\222\146\202\267\202\351"},         // "中断する" (quit)
+    {false, "\222\206\222\146\202\265\202\310\202\242"}, // "中断しない" (don't quit)
 };
 
 // The auto-mapping and auto-navigation display choices.
 DATA(0x00068340)
 static SystemMenuEntry s_displayEntries[2] = {
-    {0, "\216\251\227\122\225\134\216\246"}, // "自由表示" (free display)
-    {0, "\214\305\222\350\225\134\216\246"}, // "固定表示" (fixed display)
+    {false, "\216\251\227\122\225\134\216\246"}, // "自由表示" (free display)
+    {false, "\214\305\222\350\225\134\216\246"}, // "固定表示" (fixed display)
 };
 
 DATA(0x00076050)
-i16 g_loadedBefore = 0;
+b16 g_loadedBefore = false;
 
 DATA(0x00076054)
 static MenuBox* s_systemMenu = NULL;
@@ -117,16 +117,16 @@ i16 WriteSaveHeader(FILE* fp) {
     u8 value;
     i16 floor;
     i16 failed;
-    memset(g_scratchBuffer, 0, 32);
+    memset(g_scratchBuffer, 0, SAVE_TEXT_SIZE);
     FormatFullName(g_scratchBuffer, leader);
-    failed = 32 - fwrite(g_scratchBuffer, 1, 32, fp);
+    failed = SAVE_TEXT_SIZE - fwrite(g_scratchBuffer, 1, SAVE_TEXT_SIZE, fp);
     value = leader->level;
     failed |= 1 - fwrite(&value, 1, 1, fp);
-    value = 4;
+    value = SAVE_FORMAT_VERSION;
     failed |= 1 - fwrite(&value, 1, 1, fp);
-    memset(g_scratchBuffer, 0, 32);
+    memset(g_scratchBuffer, 0, SAVE_TEXT_SIZE);
     strcpy(g_scratchBuffer, GetAreaName());
-    failed |= 32 - fwrite(g_scratchBuffer, 1, 32, fp);
+    failed |= SAVE_TEXT_SIZE - fwrite(g_scratchBuffer, 1, SAVE_TEXT_SIZE, fp);
     floor = GetLevelFloor();
     failed |= 1 - fwrite(&floor, 2, 1, fp);
     return failed;
@@ -153,7 +153,7 @@ void RecordMarkInLeader(void) {
 // steps one cell; every roster member's equipment group is re-read and its
 // slots normalised, and the return point is set to the party's cell.
 RVA(0x00003c30, 0x16d)
-i16 LoadGame(i16 slot, i16 keepField) {
+i16 LoadGame(i16 slot, b16 keepField) {
     FILE* fp;
     i16 errors;
     i16 i;
@@ -200,7 +200,7 @@ i16 LoadGame(i16 slot, i16 keepField) {
             NormalizeEquipSlots(character);
         }
     }
-    g_loadedBefore = 0;
+    g_loadedBefore = false;
     ReturnToCurrentCell();
     return errors;
 }
@@ -213,15 +213,15 @@ i16 ReadSaveHeader(FILE* fp) {
     u8 value;
     u16 word;
     i16 failed;
-    failed = 32 - fread(g_scratchBuffer, 1, 32, fp);
+    failed = SAVE_TEXT_SIZE - fread(g_scratchBuffer, 1, SAVE_TEXT_SIZE, fp);
     failed |= 1 - fread(&value, 1, 1, fp);
     failed |= 1 - fread(&value, 1, 1, fp);
-    failed |= 32 - fread(g_scratchBuffer, 1, 32, fp);
+    failed |= SAVE_TEXT_SIZE - fread(g_scratchBuffer, 1, SAVE_TEXT_SIZE, fp);
     failed |= 1 - fread(&word, 2, 1, fp);
     if (failed) {
         return -1;
     }
-    return 4 - value;
+    return SAVE_FORMAT_VERSION - value;
 }
 
 // The system menu's game state: phase 0 opens it, 1 closes it and returns, 2
@@ -279,8 +279,12 @@ static void SystemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent,
             menu->itemCount = 0;
             break;
         case MENU_EVENT_BEGIN_PAGE:
-            if (phase >= 3) {
-                sprintf(g_scratchBuffer, "<SYSTEM> %s", s_systemEntries[phase - 3].label);
+            if (phase >= MENU_STEP_PICK_FIRST) {
+                sprintf(
+                    g_scratchBuffer,
+                    "<SYSTEM> %s",
+                    s_systemEntries[phase - MENU_STEP_PICK_FIRST].label
+                );
             } else {
                 sprintf(g_scratchBuffer, "<SYSTEM>");
             }
@@ -376,7 +380,7 @@ static b16 RunQuitConfirm(void) {
 // ("Bn" below ground, "nF" above, empty at 0). Returns `slot`, or -1 when the
 // file cannot be opened.
 RVA(0x00004230, 0x13f)
-i16 ReadSaveSummary(i16 slot, i16 field) {
+i16 ReadSaveSummary(i16 slot, GZ_ENUM_PARAM(SaveSummaryField, i16) field) {
     FILE* fp;
     u8 value;
     i16 floor;
@@ -385,14 +389,14 @@ i16 ReadSaveSummary(i16 slot, i16 field) {
     if (fp == NULL) {
         return -1;
     }
-    fread(g_scratchBuffer, 1, 32, fp);
-    if (field != 0) {
+    fread(g_scratchBuffer, 1, SAVE_TEXT_SIZE, fp);
+    if (field != SAVE_SUMMARY_NAME) {
         fread(&value, 1, 1, fp);
         sprintf(g_scratchBuffer, "LV %2d", value);
-        if (field != 1) {
+        if (field != SAVE_SUMMARY_LEVEL) {
             fread(&value, 1, 1, fp);
-            fread(g_scratchBuffer, 1, 32, fp);
-            if (field != 2) {
+            fread(g_scratchBuffer, 1, SAVE_TEXT_SIZE, fp);
+            if (field != SAVE_SUMMARY_AREA) {
                 fread(&floor, 2, 1, fp);
                 if (floor < 0) {
                     sprintf(g_scratchBuffer, "B%1d", -floor);

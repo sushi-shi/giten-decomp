@@ -90,6 +90,16 @@ void OpCallTextScript(void);
 b16 OpStepListMenu(void);
 void OpSetMenuCharacter(void);
 
+// The save-data operations OpSaveDataCommand reads: a slot's summary field,
+// saving (at the return point when one is set), loading, and the summary field
+// as captured text.
+GZ_ENUM_BEGIN(SaveDataOperation)
+    SAVE_DATA_SUMMARY = 0,
+    SAVE_DATA_SAVE = 1,
+    SAVE_DATA_LOAD = 2,
+    SAVE_DATA_SUMMARY_TEXT = 3
+GZ_ENUM_END(SaveDataOperation)
+
 b16 OpSaveDataCommand(void);
 
 void OpIfFlags(b16 all);

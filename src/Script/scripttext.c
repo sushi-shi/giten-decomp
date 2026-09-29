@@ -71,7 +71,7 @@ void DestroyScriptPanel(ScriptPanel* node) {
     RestoreSavedCursor(HandleReadPtr(node->screenSave));
     FreeHandle(node->screenSave);
     FreeBlock(node->jumps);
-    node->flags.drawn = 0;
+    node->flags.drawn = false;
     ErasePanelPictures(node->panel);
     ReleasePanel(node->panel, 1);
     FreeBlock(node);
@@ -115,13 +115,13 @@ ScriptPanel* CreateScriptPanel(i16 image, i16 count, i16 x, i16 y) {
     SetPanelPosition(node->panel, x, y);
     node->jumps = AllocCleared(count, sizeof(ScriptPanelJump));
     for (i = 0; i < count; i++) {
-        GetScriptPanelJump(node, i)->value = 0xffff;
+        GetScriptPanelJump(node, i)->value = SCRIPT_PANEL_NO_JUMP;
     }
     node->image = image;
     ListAppend(&s_scriptPanels, node);
     size = GetPanelSize(node->panel);
     node->screenSave = AllocScreenSaveHandle(size.x, size.y);
-    node->flags.drawn = 0;
+    node->flags.drawn = false;
     return node;
 }
 
@@ -137,7 +137,7 @@ void DrawScriptPanel(ScriptPanel* node) {
     token = SaveDrawState();
     ClearPanel(node->panel, cell);
     RestoreDrawState(token);
-    node->flags.drawn = 1;
+    node->flags.drawn = true;
 }
 
 RVA(0x0002ef00, 0x3e)
@@ -239,11 +239,11 @@ i16 PollScriptPanels(void) {
         while (count > 1) {
             count--;
             row = PollPanel(last->panel);
-            if (row == -1) {
+            if (row == PANEL_INPUT_NONE) {
                 last = last->prev;
             } else {
                 jump = *GetScriptPanelJump(last, row);
-                if (jump.value != 0xffff) {
+                if (jump.value != SCRIPT_PANEL_NO_JUMP) {
                     CallScript(jump.parts.file, jump.parts.entry);
                     SetScriptLongVar(0x19, row);
                     SetScriptLongVar(0x18, IsPanelRowChecked(last->panel, row));
@@ -254,7 +254,7 @@ i16 PollScriptPanels(void) {
             }
         }
     }
-    return -1;
+    return PANEL_INPUT_NONE;
 }
 
 // @dead-code

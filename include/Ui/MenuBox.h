@@ -39,7 +39,7 @@ typedef struct MenuEntry {
 // A row of the system menu's tables (savegame): its label, shown disabled
 // while mode flag 2 is set when `restricted`.
 typedef struct SystemMenuEntry {
-    i16 restricted;
+    b16 restricted;
     char* label;
 } SystemMenuEntry;
 
