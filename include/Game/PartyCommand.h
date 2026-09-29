@@ -3,7 +3,24 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Enums.h>
 #include <Ints.h>
+
+// The command picker waits for a member, prepares its role, runs its action
+// menu, picks a target, confirms the action, then may pick a summon position.
+GZ_ENUM_BEGIN_SPLIT(PartyCommandPhase, i16)
+    PARTY_COMMAND_WAIT_MEMBER = 0,
+    PARTY_COMMAND_PREPARE_MEMBER = 1,
+    PARTY_COMMAND_PICK_ACTION = 2,
+    PARTY_COMMAND_PICK_TARGET = 3,
+    PARTY_COMMAND_CONFIRM = 4,
+    PARTY_COMMAND_PICK_SUMMON_POSITION = 5
+GZ_ENUM_END_SPLIT(PartyCommandPhase)
+
+// Eight action rows are shown beneath the actor's name.
+#define ACTOR_COMMAND_COUNT 8
+#define ACTOR_COMMAND_MENU_ROWS (ACTOR_COMMAND_COUNT + 1)
 
 // Callees of the party command-input machine (0x409620), label-only until
 // their TUs are claimed. Kept out of the field headers: field.c's codegen is

@@ -10,12 +10,31 @@
 i16 PickPartyMember(i16 index);
 i16 FindPickablePartyMember(i16 index);
 i16 CountPickablePartyMembers(void);
-i16 GetMemberPanelState(i16 member);
+// Image state of a party member's panel; the missing image slot 2 is not
+// produced by this state reader.
+GZ_ENUM_BEGIN_SPLIT(MemberPanelState, i16)
+    MEMBER_PANEL_EMPTY = -1,
+    MEMBER_PANEL_READY = 0,
+    MEMBER_PANEL_UNAVAILABLE = 1,
+    MEMBER_PANEL_LOW_HP = 3,
+    MEMBER_PANEL_FALLEN = 4
+GZ_ENUM_END_SPLIT(MemberPanelState)
+
+GZ_ENUM_RETURN(MemberPanelState, i16) GetMemberPanelState(i16 member);
 i16 ReadActionResultFlags(void);
 i16 GetActionCondition(Character* actor);
 i16 PickActorAction(Character* actor);
 
-i16 PickRandomCombatant(u8 sides);
+// The random-target picker searches living party members, visible field
+// objects, or both. -100 means neither side supplied a candidate.
+GZ_ENUM_FLAGS_BEGIN(CombatantSide, u8)
+    COMBATANT_SIDE_PARTY = 1,
+    COMBATANT_SIDE_FIELD = 2,
+    COMBATANT_SIDE_BOTH = COMBATANT_SIDE_PARTY | COMBATANT_SIDE_FIELD
+GZ_ENUM_FLAGS_END(CombatantSide)
+#define RANDOM_COMBATANT_NONE (-100)
+
+i16 PickRandomCombatant(GZ_ENUM_PARAM(CombatantSide, u8) sides);
 i16 PickRandomOpponentAttack(i16 id);
 i16 PickRandomAllyAttack(i16 id);
 i16 PickRandomAttack(i16 id);
@@ -68,6 +87,23 @@ b16 FormatCompCommand(Character* actor);
 b16 FormatExtraCommand(Character* actor);
 b16 FormatReturnCommand(Character* actor);
 b16 FormatDefenceCommand(Character* actor);
+
+// The command image and handler selected by each row of the character panel.
+// The panel holds eight rows and the ninth handler starts an encounter.
+GZ_ENUM_BEGIN_SPLIT(PanelCommandId, i16)
+    PANEL_COMMAND_NONE = -1,
+    PANEL_COMMAND_FIGHT = 0,
+    PANEL_COMMAND_GUN = 1,
+    PANEL_COMMAND_SKILL = 2,
+    PANEL_COMMAND_ITEM = 3,
+    PANEL_COMMAND_DEFENCE = 4,
+    PANEL_COMMAND_RETURN = 5,
+    PANEL_COMMAND_DDS = 6,
+    PANEL_COMMAND_STATUS = 7,
+    PANEL_COMMAND_ENCOUNTER = 8
+GZ_ENUM_END_SPLIT(PanelCommandId)
+#define PANEL_COMMAND_ROWS 8
+#define PANEL_COMMAND_COUNT 9
 
 void FillCharacterCommands(i16* list, i16 id);
 

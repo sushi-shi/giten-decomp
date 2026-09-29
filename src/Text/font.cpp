@@ -5815,7 +5815,7 @@ static i32 s_padGrid[10] = {
 // The character panel's commands: the ids shown on its eight lines (-1 for
 // none), the character it shows, and the handlers by command id.
 DATA(0x00090bd8)
-static i16 s_panelCommandIds[8];
+static i16 s_panelCommandIds[PANEL_COMMAND_ROWS];
 
 DATA(0x00090b10)
 static i16 s_shownCharacter;
@@ -5825,7 +5825,7 @@ static i16 s_shownCharacter;
 // encounter command FillCharacterCommands lists in render mode 6) is the
 // ninth handler.
 DATA(0x0006dbc0)
-static void (*s_panelCommands[9])(i16 character) = {
+static void (*s_panelCommands[PANEL_COMMAND_COUNT])(i16 character) = {
     FightCommand,
     GunCommand,
     SkillCommand,

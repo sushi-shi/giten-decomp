@@ -25,7 +25,7 @@ void EnterFieldMap(i16 map, i16 countA, i16 rateA, i16 countB, i16 rateB, i16 mo
 i16 GetFieldMap(void);
 i16 GetFieldEntryState(void);
 void SetFieldCounts(i16 countA, i16 countB);
-i16 TickFieldCount(i16 side, i16 hold);
+i16 TickFieldCount(i16 side, b16 hold);
 i32 ScaleByFieldRate(i16 first, i16 second, i32 value);
 // The phases of a field encounter (RunFieldEncounter, RunFieldState): enter
 // it, run the turns, back out, grant the rewards, show the level-ups and the
