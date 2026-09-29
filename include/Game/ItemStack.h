@@ -31,9 +31,13 @@ typedef union ItemStack {
 
 #define HasItemStackAttachment(entry) ((entry)->hasAttachment)
 
-#define GetItemStackItem(entry) ((entry)->item)
+static __inline i16 GetItemStackItem(const ItemStack* entry) {
+    return entry->item;
+}
 
-#define GetItemStackCount(entry) ((entry)->count)
+static __inline i16 GetItemStackCount(const ItemStack* entry) {
+    return entry->count;
+}
 
 static __inline void SetItemStackCount(ItemStack* entry, u8 count) {
     entry->count = count;
