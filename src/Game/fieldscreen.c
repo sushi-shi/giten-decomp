@@ -5,6 +5,8 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/AreaMap.h>
 #include <Game/Automap.h>
 #include <Game/AutomapData.h>
@@ -1141,7 +1143,7 @@ void PlayWallEffect(void) {
 
 RVA(0x00015d10, 0x2d)
 void LoadFieldMessages(void) {
-    FILE* fp = OpenDataFile(0x101, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_MESSAGES, DATA_FILE_TABLE, 0);
     s_fieldMessages = ReadCryptHandle(fp);
     CloseDataFile(fp);
 }

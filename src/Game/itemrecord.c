@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <File/DataTableId.h>
 #include <Game/Alignment.h>
 #include <Game/AlignmentSide.h>
@@ -21,6 +22,7 @@
 #include <Game/GemItems.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
+#include <Game/ItemCurse.h>
 #include <Game/ItemEffect.h>
 #include <Game/ItemId.h>
 #include <Game/ItemPool.h>
@@ -364,7 +366,7 @@ void LoadItemFiles(void) {
     i16 count;
     i16 id;
 
-    fp = OpenDataFile(1, 11, 0);
+    fp = OpenDataFile(DATA_TABLE_ITEM_RECORDS, DATA_FILE_ITEM_RECORDS, 0);
     s_itemDataHandle = ReadCryptHandle(fp);
     CloseDataFile(fp);
 
@@ -506,7 +508,7 @@ b16 IsEquipCurseActive(Character* character, i16 part) {
         return false;
     }
     record = GetLoadedRecord(slot.item);
-    if (GetItemCurse(record) == 0) {
+    if (GetItemCurse(record) == ITEM_CURSE_NONE) {
         return false;
     }
     return GetItemCurseLevel(record) > character->level;

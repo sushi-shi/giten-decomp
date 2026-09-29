@@ -14,6 +14,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/AreaMap.h>
 #include <Game/Automap.h>
 #include <Game/BagItems.h>
@@ -1092,7 +1093,7 @@ u32 GetClockMinutes(void) {
 
 RVA(0x000179d0, 0x34)
 void LoadMoonTable(void) {
-    FILE* fp = OpenDataFile(3, 12, 0);
+    FILE* fp = OpenDataFile(3, DATA_FILE_TABLE, 0);
     ReadRawBlock(fp, s_moonTableBuffer);
     s_moonTable = s_moonTableBuffer;
     CloseDataFile(fp);

@@ -25,6 +25,7 @@
 #include <Game/ConditionAge.h>
 #include <Game/DemonTable.h>
 #include <Game/DoorRegion.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/Familiarity.h>
 #include <Game/Field.h>
 #include <Game/FieldActor.h>
@@ -1958,8 +1959,9 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
         EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
         GetFieldObjectEquipment(object)[7].attachment = -1;
     } else {
-        GetFieldObjectEquipment(object)[7].quantity =
-            GetGunMagazineSize(GetLoadedRecord(GetFieldObjectEquipment(object)[6].item));
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].quantity = GetGunMagazineSize(
+            GetLoadedRecord(GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item)
+        );
     }
     NormalizeEquipSlots((Character*)&object->kind);
     memset(GetFieldObjectConditions(object)->bits, 0, sizeof(object->conditions.bits));

@@ -46,6 +46,7 @@
 #include <Sound/Sound.h>
 #include <Ui/Hotspot.h>
 #include <Ui/Message.h>
+#include <Util/BitChangeMode.h>
 #include <Util/BitSet.h>
 #include <Util/Debug.h>
 #include <Util/Range.h>
@@ -722,7 +723,7 @@ b16 RunFieldExploration(void) {
                 g_party.field.pos.x,
                 g_party.field.pos.y
             );
-            if (!ModifyEventFlag(0xf, 0xff, 1)
+            if (!ModifyEventFlag(0xf, 0xff, BIT_CHANGE_SET)
                 && CheckCellEvent(g_party.field.pos.x, g_party.field.pos.y, g_party.field.pos.level)
                        == CELL_EVENT_SCRIPT) {
                 CloseMessageWindow();

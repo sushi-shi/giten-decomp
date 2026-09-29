@@ -87,7 +87,7 @@ GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancel(i16 clearSelection) {
     }
     ClearMouseClicks();
     if (clearSelection == 0) {
-        return 0;
+        return MOUSE_CLICK_NONE;
     }
     ClearMouseSelection();
     PlaySoundEffect(2);
