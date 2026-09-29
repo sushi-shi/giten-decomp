@@ -1,10 +1,11 @@
-"""giten.verify.astprint - per-function AST fingerprints (the `ast:` domain).
+"""giten.verify.astprint - per-function AST fingerprints (the `ast2:` domain).
 
 A function's src_hash should change when its implementation changes, not when
 its spelling does. The fingerprint hashes the libclang AST of each definition
 in a unit's own source file, as the retail compile sees it: node kinds,
 operators, canonical types, literal values and referenced declarations, with
-every enum constant replaced by its value. Comments, layout, macro names,
+every constant expression (literals, enum constants and the operators between
+them) replaced by its value. Comments, layout, macro names,
 typedef names and enumerator names therefore leave it unchanged; any change to
 expressions, statements, types, calls or literal values changes it.
 """
@@ -18,7 +19,7 @@ from pathlib import Path
 from giten.core.paths import BUILD, REPO
 
 CDB = BUILD / "clangd/compile_commands.json"
-PREFIX = "ast:"
+PREFIX = "ast2:"
 
 _FUNCTION_KINDS = ("FUNCTION_DECL", "CXX_METHOD", "CONSTRUCTOR", "DESTRUCTOR",
                    "CONVERSION_FUNCTION")
@@ -108,11 +109,13 @@ def _evaluator(cidx):
 
 
 def _constant(cidx, node) -> str | None:
-    """The value of a literal-only subtree (literals, signs, parentheses,
-    implicit conversions and enum constants), else None."""
+    """The value of a constant subtree built only from literals, enum
+    constants, unary and binary operators, parentheses and implicit
+    conversions (as a named constant or a composing macro expands), else None."""
     allowed = {cidx.CursorKind.INTEGER_LITERAL, cidx.CursorKind.FLOATING_LITERAL,
                cidx.CursorKind.PAREN_EXPR, cidx.CursorKind.UNARY_OPERATOR,
-               cidx.CursorKind.UNEXPOSED_EXPR, cidx.CursorKind.DECL_REF_EXPR}
+               cidx.CursorKind.BINARY_OPERATOR, cidx.CursorKind.UNEXPOSED_EXPR,
+               cidx.CursorKind.DECL_REF_EXPR}
     for sub in node.walk_preorder():
         if sub.kind not in allowed:
             return None
