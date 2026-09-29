@@ -46,6 +46,7 @@
 #include <Game/ItemPool.h>
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
+#include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
@@ -936,7 +937,8 @@ void GotoScript(i16 file, i16 entry) {
     } else if (file == 0x2c && entry == 4) {
         ResetSprites(SPRITE_LAYERS_PARTY_AND_TEXT);
     } else if (file == 0x5b && entry == 0x22 && g_party.field.pos.x == 1 && g_party.field.pos.y == 4
-               && g_party.field.pos.level == 1 && g_party.field.pos.area == 0x83) {
+               && g_party.field.pos.level == 1
+               && g_party.field.pos.area == MAP_AREA_RESISTANCE_FRONTLINE_BASE) {
         LoadSpriteImage(0, 0x42, 0);
         PlaceSprite(0, 0, 0, 40, 240);
     }
@@ -1076,7 +1078,9 @@ void OpLoadRecord(void) {
                 "\226\330\202\314\216\360\217\352\202\305\202\310\202\242\217\352\215\207\202\315"
                 "\230A\227\215\202\265\202\304\211\272\202\263\202\242\201BTakubo\012"
             );
-        } else if (entry == 0x100 || (entry == 0x101 && g_party.field.pos.area == 0x83)) {
+        } else if (entry == 0x100
+                   || (entry == 0x101
+                       && g_party.field.pos.area == MAP_AREA_RESISTANCE_FRONTLINE_BASE)) {
             LoadSpriteImage(0x1f, 0x79, 0);
             PlaceSprite(0x1f, 0x1f, 0, 0x28, 0xd3);
             // 初台以外の道具屋＆レジスタンス前線基地の薬屋でない場合は連絡して下さい。Takubo
@@ -1087,7 +1091,8 @@ void OpLoadRecord(void) {
                 "\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304\211\272\202\263\202"
                 "\242\201BTakubo\012"
             );
-        } else if (entry == 0x101 && g_party.field.pos.area == 0x2e && g_party.field.pos.x == 7) {
+        } else if (entry == 0x101 && g_party.field.pos.area == MAP_AREA_ROPPONGI
+                   && g_party.field.pos.x == 7) {
             LoadSpriteImage(0x1f, 0xc7, 1);
             PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xe1);
             // 六本木の防具屋でない場合は連絡して下さい。Takubo
@@ -1098,18 +1103,23 @@ void OpLoadRecord(void) {
             );
         } else if (entry == 0x101) {
             LoadSpriteImage(0x1f, 0x79, 1);
-            if ((g_party.field.pos.area == 0x06 && g_party.field.pos.y == 0x12)
-                || (g_party.field.pos.area == 0x0a && g_party.field.pos.y == 0x0d)
-                || (g_party.field.pos.area == 0x13 && g_party.field.pos.y == 0x01)
-                || (g_party.field.pos.area == 0x1b && g_party.field.pos.y == 0x05)
-                || (g_party.field.pos.area == 0x8a && g_party.field.pos.y == 0x02)
-                || (g_party.field.pos.area == 0x1f && g_party.field.pos.level == 2)
-                || (g_party.field.pos.area == 0x1a && g_party.field.pos.x == 0x0a)
-                || (g_party.field.pos.area == 0x34 && g_party.field.pos.level == 0)
-                || g_party.field.pos.area == 0x2e
-                || (g_party.field.pos.area == 0x25 && g_party.field.pos.level == 0)
-                || (g_party.field.pos.area == 0x21 && g_party.field.pos.y == 0x09)
-                || (g_party.field.pos.area == 0x30 && g_party.field.pos.y == 0x0b)) {
+            if ((g_party.field.pos.area == MAP_AREA_SHINJUKU_UNDERGROUND
+                 && g_party.field.pos.y == 0x12)
+                || (g_party.field.pos.area == MAP_AREA_MY_CITY && g_party.field.pos.y == 0x0d)
+                || (g_party.field.pos.area == MAP_AREA_SHANSHAN_CITY && g_party.field.pos.y == 0x01)
+                || (g_party.field.pos.area == MAP_AREA_KANDA_UNDERGROUND
+                    && g_party.field.pos.y == 0x05)
+                || (g_party.field.pos.area == MAP_AREA_OCHANOMIZU && g_party.field.pos.y == 0x02)
+                || (g_party.field.pos.area == MAP_AREA_AKIHABARA_STATION_BUILDING
+                    && g_party.field.pos.level == 2)
+                || (g_party.field.pos.area == MAP_AREA_GINZA_UNDERGROUND
+                    && g_party.field.pos.x == 0x0a)
+                || (g_party.field.pos.area == MAP_AREA_EBISU_GARDEN && g_party.field.pos.level == 0)
+                || g_party.field.pos.area == MAP_AREA_ROPPONGI
+                || (g_party.field.pos.area == MAP_AREA_ASAKUSA_SUBWAY_BUILDING
+                    && g_party.field.pos.level == 0)
+                || (g_party.field.pos.area == MAP_AREA_AMEYA_PLAZA && g_party.field.pos.y == 0x09)
+                || (g_party.field.pos.area == MAP_AREA_SHIBUYA && g_party.field.pos.y == 0x0b)) {
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xda);
                 // 臨海コロシアム以外の武器屋でない場合は連絡して下さい。Takubo
                 DebugTrace(
@@ -1128,7 +1138,8 @@ void OpLoadRecord(void) {
                 );
             }
         } else if (entry == 0x102 || entry == 0x104) {
-            if (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 3) {
+            if (g_party.field.pos.area == MAP_AREA_GINZA_UNDERGROUND
+                && g_party.field.pos.level == 3) {
                 LoadSpriteImage(0x1f, 0x4f, 1);
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xd4);
                 // 銀座地下街秘密区の薬屋でない場合は連絡して下さい。Takubo
@@ -1137,8 +1148,10 @@ void OpLoadRecord(void) {
                     "\211\256\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202\265"
                     "\202\304\211\272\202\263\202\242\201BTakubo\012"
                 );
-            } else if (g_party.field.pos.area == 0x06 || g_party.field.pos.area == 0x1b
-                       || g_party.field.pos.area == 0x34 || g_party.field.pos.area == 0x25) {
+            } else if (g_party.field.pos.area == MAP_AREA_SHINJUKU_UNDERGROUND
+                       || g_party.field.pos.area == MAP_AREA_KANDA_UNDERGROUND
+                       || g_party.field.pos.area == MAP_AREA_EBISU_GARDEN
+                       || g_party.field.pos.area == MAP_AREA_ASAKUSA_SUBWAY_BUILDING) {
                 LoadSpriteImage(0x1f, 0x79, 2);
                 PlaceSprite(0x1f, 0x1f, 2, 0x28, 0xda);
                 // 新宿地下街・神田地下街・恵比寿ガーデン・浅草地下鉄ビルの薬屋でない場合は連絡して下さい。Takubo
@@ -1149,7 +1162,7 @@ void OpLoadRecord(void) {
                     "\362\211\256\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202"
                     "\265\202\304\211\272\202\263\202\242\201BTakubo\012"
                 );
-            } else if (g_party.field.pos.area == 0x56) {
+            } else if (g_party.field.pos.area == MAP_AREA_RINKAI_COLISEUM) {
                 LoadSpriteImage(0x1f, 0x2b, 3);
                 PlaceSprite(0x1f, 0x1f, 3, 0x28, 0xd4);
                 // 臨海コロシアムの薬屋でない場合は連絡して下さい。Takubo
@@ -1193,7 +1206,7 @@ void OpLoadRecord(void) {
                 "\215\202\265\202\304\211\272\202\263\202\242\201BTakubo\012"
             );
         } else if (entry == 0x105) {
-            if (g_party.field.pos.area == 0x21) {
+            if (g_party.field.pos.area == MAP_AREA_AMEYA_PLAZA) {
                 LoadSpriteImage(0x1f, 0x79, 2);
                 PlaceSprite(0x1f, 0x1f, 2, 0x28, 0xda);
                 // アメ屋プラザ２階の薬屋でない場合は連絡して下さい。Takubo
@@ -1254,7 +1267,7 @@ void OpLoadRecord(void) {
                 "\272\202\263\202\242\201BTakubo\012"
             );
         } else if (entry == 0x115) {
-            if (g_party.field.pos.area == 0x21) {
+            if (g_party.field.pos.area == MAP_AREA_AMEYA_PLAZA) {
                 LoadSpriteImage(0x1f, 0x2c, 1);
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xf0);
                 // アメ屋プラザの病院でない場合は連絡して下さい。Takubo
@@ -1263,7 +1276,7 @@ void OpLoadRecord(void) {
                     "\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304"
                     "\211\272\202\263\202\242\201BTakubo\012"
                 );
-            } else if (g_party.field.pos.area == 0x56) {
+            } else if (g_party.field.pos.area == MAP_AREA_RINKAI_COLISEUM) {
                 LoadSpriteImage(0x1f, 0x76, 1);
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xf0);
                 // 臨海コロシアムの病院でない場合は連絡して下さい。Takubo
@@ -2291,7 +2304,7 @@ void OpQueueAutoMoves(void) {
     i = 0;
     move = ReadScriptByte();
     while (move != 0xff) {
-        if (i == 0 && g_party.field.pos.area == 0x82 && g_party.field.pos.level == 5
+        if (i == 0 && g_party.field.pos.area == MAP_AREA_HATSUDAI && g_party.field.pos.level == 5
             && g_party.field.pos.x == 4 && g_party.field.pos.y == 9
             && g_party.field.pos.direction == VIEW_WEST && move == 3) {
             move = 1;

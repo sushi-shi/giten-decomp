@@ -22,6 +22,12 @@ GZ_ENUM_END_SPLIT(ClockUpdate)
 // value OpSwitchOnMoonPhase switches on), the time of day, and the tick
 // pacing (a tick every framesPerTick frames; minuteStep per tick toward
 // minuteLimit per minute).
+// The moon's 28 phases, each MOON_PHASE_TICKS minutes long.
+#define MOON_PHASE_COUNT 28
+#define MOON_PHASE_TICKS 0x5f0
+#define MOON_PHASE_NEW 0
+#define MOON_PHASE_FULL 14
+
 typedef struct GameClock {
     i32 days;
     u16 moonTicks;
@@ -36,7 +42,7 @@ typedef struct GameClock {
 } GameClock;
 
 static __inline void ResetClockPhaseAndTime(GameClock* clock) {
-    clock->moonPhase = 0;
+    clock->moonPhase = MOON_PHASE_NEW;
     clock->hour = 0;
     clock->minute = 0;
 }

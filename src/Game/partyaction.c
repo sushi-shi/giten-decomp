@@ -13,8 +13,8 @@
 #include <Game/Attack.h>
 #include <Game/BagItems.h>
 #include <Game/BattleEffect.h>
-#include <Game/Character.h>
 #include <Game/CharInfo.h>
+#include <Game/Character.h>
 #include <Game/Clock.h>
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
@@ -1365,7 +1365,7 @@ b16 RunFieldEncounter(void) {
             PlayMusic(s_fieldMusic, true);
             RunMessageScene(0xdd, 0x59, -1);
             if (s_fieldPairFirst != 0 || s_fieldPairSecond != 0) {
-                ModifyEventFlag(s_fieldPairFirst, s_fieldPairSecond, 1);
+                ModifyEventFlag(s_fieldPairFirst, s_fieldPairSecond, BIT_CHANGE_SET);
             }
             break;
         case FIELD_ENCOUNTER_PHASE_LEVEL_UPS:
@@ -1555,7 +1555,7 @@ b16 RunFieldState(void) {
             if (s_fieldPairFirst == 0 && s_fieldPairSecond == 0) {
                 break;
             }
-            ModifyEventFlag(s_fieldPairFirst, s_fieldPairSecond, 1);
+            ModifyEventFlag(s_fieldPairFirst, s_fieldPairSecond, BIT_CHANGE_SET);
             return FlushFieldScreen();
         case FIELD_ENCOUNTER_PHASE_LEVEL_UPS:
             if (GrantBattleRewards()) {

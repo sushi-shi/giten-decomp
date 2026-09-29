@@ -136,7 +136,6 @@ src/Game/worldtravel.c	g_worldTravelTerrainFlags	*	data-or-extent	*	the terrain 
 src/Game/fieldscreen.c	g_worldMapOverlayFlags	89	data-or-extent	*	the table's length: one flag per world-map tile variant
 *	*	*	data-or-extent	array extent	the element count of an array, written in its declaration
 *	*	0	data-or-extent	zero fill	the {0} zero fill of static storage
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*== area	a shopkeeper's map area, beside the developer trace that names the shop
 src/Script/scriptsprite.c	OpLoadSprite	*	*	*== level	a shopkeeper's map level, beside the developer trace that names the shop
 src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality level	a shopkeeper's map level, beside the developer trace that names the shop
 src/Script/scriptsprite.c	OpLoadSprite	*	*	*== x	a shopkeeper's map x, beside the developer trace that names the shop

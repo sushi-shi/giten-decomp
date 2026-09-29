@@ -16,6 +16,7 @@
 #include <Game/GameState.h>
 #include <Game/InfoBar.h>
 #include <Game/LevelUp.h>
+#include <Game/MapArea.h>
 #include <Game/Scene.h>
 #include <Game/ScreenEffect.h>
 #include <Game/StateStack.h>
@@ -205,8 +206,8 @@ void OpFadeOutAndClear(void) {
     ReadScriptValue();
     StartScreenFade(SCREEN_FADE_TO_BLACK, 1);
     FinishScreenFade();
-    if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 8 && g_party.field.pos.x == 2
-        && g_party.field.pos.y == 1 && GetRenderMode() == 2) {
+    if (g_party.field.pos.area == MAP_AREA_HATSUDAI && g_party.field.pos.level == 8
+        && g_party.field.pos.x == 2 && g_party.field.pos.y == 1 && GetRenderMode() == 2) {
         ResetSprites(SPRITE_LAYERS_PARTY_AND_TEXT);
     }
 }

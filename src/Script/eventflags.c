@@ -34,7 +34,7 @@ void ClearFlagBank(i16 bank) {
 }
 
 RVA(0x000391f0, 0x52)
-b32 ChangeEventFlag(u16 bank, u16 index, i16 op) {
+b32 ChangeEventFlag(u16 bank, u16 index, GZ_ENUM_PARAM(BitChangeMode, i16) op) {
     if (bank == EVENT_FLAG_BANK_ACTOR && g_curScript->actor != NULL) {
         return ChangeCharacterFlag(g_curScript->actor, index, op);
     }
@@ -77,7 +77,7 @@ b32 IsEventFlagSet(u16 bank, u16 index) {
 }
 
 RVA(0x00039330, 0x18)
-b32 ModifyEventFlag(u16 bank, u16 index, i16 op) {
+b32 ModifyEventFlag(u16 bank, u16 index, GZ_ENUM_PARAM(BitChangeMode, i16) op) {
     return ChangeEventFlag(bank, index, op);
 }
 

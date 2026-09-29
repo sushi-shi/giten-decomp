@@ -36,7 +36,7 @@ b32 ToggleBit(u8* bits, u16 index) {
 
 // op < 0 toggles, op > 0 sets, 0 clears.
 RVA(0x0000b7c0, 0x45)
-b32 ChangeBit(u8* bits, u16 index, i16 op) {
+b32 ChangeBit(u8* bits, u16 index, GZ_ENUM_PARAM(BitChangeMode, i16) op) {
     if (op < 0) {
         return ToggleBit(bits, index);
     }

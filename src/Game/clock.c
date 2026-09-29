@@ -24,6 +24,7 @@
 #include <Game/FieldSupport.h>
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
+#include <Game/MapArea.h>
 #include <Game/ObjectRecord.h>
 #include <Game/Scene.h>
 #include <Game/SkillUse.h>
@@ -160,8 +161,8 @@ void InitClock(void) {
 RVA(0x00020b80, 0x6c)
 GZ_ENUM_RETURN(ClockUpdate, i16) AdvanceClock(u16 minutes) {
     GZ_ENUM_STORAGE(ClockUpdate, i16) changed = TickClock(minutes);
-    ModifyEventFlag(0, 0x23, g_clock.moonPhase != 0xe);
-    ModifyEventFlag(0, 0x25, g_clock.moonPhase != 0);
+    ModifyEventFlag(0, 0x23, g_clock.moonPhase != MOON_PHASE_FULL);
+    ModifyEventFlag(0, 0x25, g_clock.moonPhase != MOON_PHASE_NEW);
     ApplyClockChanges(changed);
     DrawDownCountdown(minutes);
     ExpireSpecialItems();
@@ -188,19 +189,19 @@ GZ_ENUM_RETURN(ClockUpdate, i16) TickClock(u16 minutes) {
     g_clock.days += carry;
     total = g_clock.moonTicks;
     total = total + minutes;
-    carry = total / 0x5f0;
-    g_clock.moonTicks = total % 0x5f0;
+    carry = total / MOON_PHASE_TICKS;
+    g_clock.moonTicks = total % MOON_PHASE_TICKS;
     if (carry) {
         changed |= CLOCK_UPDATE_MOON;
     }
     total = carry + g_clock.moonPhase;
-    g_clock.moonPhase = total % 28;
+    g_clock.moonPhase = total % MOON_PHASE_COUNT;
     return changed;
 }
 
 // On a new moon phase: clears flag 7/0xfd and the leader's flag 0x22, sets
 // flag 10 of every live object, applies the phase to the party and the
-// objects, and handles the full (0xe), new (0) and waning (0xf) moons.
+// objects, and handles the full and new moons and the phase after the full moon.
 RVA(0x00020cf0, 0x149)
 void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
     i16 i;
@@ -209,7 +210,7 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
     if (!(changed & CLOCK_UPDATE_MOON)) {
         return;
     }
-    ModifyEventFlag(7, 0xfd, 0);
+    ModifyEventFlag(7, 0xfd, BIT_CHANGE_CLEAR);
     flags = GetCharacterFlags(GetRosterCharacter(ROSTER_LEADER));
     ClearBit(flags, 0x22);
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
@@ -234,17 +235,17 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
             }
         }
     }
-    if (g_clock.moonPhase == 0xe) {
-        ModifyEventFlag(0, 0x24, 0);
+    if (g_clock.moonPhase == MOON_PHASE_FULL) {
+        ModifyEventFlag(0, 0x24, BIT_CHANGE_CLEAR);
     }
-    if (g_clock.moonPhase == 0) {
-        ModifyEventFlag(0, 0x26, 0);
+    if (g_clock.moonPhase == MOON_PHASE_NEW) {
+        ModifyEventFlag(0, 0x26, BIT_CHANGE_CLEAR);
     }
-    if (g_clock.moonPhase == 0xe) {
-        ModifyEventFlag(7, 0xff, 0);
-        ModifyEventFlag(7, 0xfe, 0);
+    if (g_clock.moonPhase == MOON_PHASE_FULL) {
+        ModifyEventFlag(7, 0xff, BIT_CHANGE_CLEAR);
+        ModifyEventFlag(7, 0xfe, BIT_CHANGE_CLEAR);
     }
-    if (g_clock.moonPhase == 0xf) {
+    if (g_clock.moonPhase == MOON_PHASE_FULL + 1) {
         ClearMoonFlags();
     }
 }
@@ -261,7 +262,7 @@ void ClearMoonFlags(void) {
     }
     list = HandleReadPtr(s_moonFlags);
     for (i = 0; list[i] != 0xff; i += 2) {
-        ModifyEventFlag(list[i], list[i + 1], 0);
+        ModifyEventFlag(list[i], list[i + 1], BIT_CHANGE_CLEAR);
     }
 }
 
@@ -355,9 +356,9 @@ void SpawnMapObjects(i16 cellCode) {
     if (!g_areaLevel) {
         return;
     }
-    if (g_party.field.pos.area == 0x10 && g_party.field.pos.level == 6) {
+    if (g_party.field.pos.area == MAP_AREA_HARAJUKU && g_party.field.pos.level == 6) {
         special = 1;
-    } else if (g_party.field.pos.area == 0x13 && g_party.field.pos.level == 4) {
+    } else if (g_party.field.pos.area == MAP_AREA_SHANSHAN_CITY && g_party.field.pos.level == 4) {
         special = 2;
     }
     for (entry = g_areaLevel->spawns; entry->xLayer != 0xff; entry++, index++) {
@@ -515,7 +516,7 @@ void LoadAreaMap(i16 area, i16 level) {
         CloseDataFile(fp);
         DecodeAreaMap(g_areaMap, s_areaRecord);
         g_areaMap->area = area;
-        if (area == 9) {
+        if (area == MAP_AREA_SHINJUKU_TOCHO) {
             AreaLevelAt(g_areaMap, 1)->floor = -1;
         }
         ResetLevelEvents();
@@ -1115,8 +1116,9 @@ i16 GetCellAtOffset(i16 dx, i16 dy) {
     if (g_areaLevel == NULL) {
         return 0;
     }
-    if (g_party.field.pos.x == 2 && g_party.field.pos.y == 5 && g_party.field.pos.area == 9
-        && g_party.field.pos.level == 6 && dx == -1 && dy == 0) {
+    if (g_party.field.pos.x == 2 && g_party.field.pos.y == 5
+        && g_party.field.pos.area == MAP_AREA_SHINJUKU_TOCHO && g_party.field.pos.level == 6
+        && dx == -1 && dy == 0) {
         return CELL_STAIRS_UP;
     }
     ReturnWarpCodeAt(g_areaLevel->warps, g_party.field.pos.x, g_party.field.pos.y, 8);

@@ -46,6 +46,7 @@
 #include <Game/ItemRecord.h>
 #include <Game/ItemUse.h>
 #include <Game/LevelUp.h>
+#include <Game/MapArea.h>
 #include <Game/MenuCursor.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
@@ -1184,13 +1185,13 @@ void SceneNop(void) {}
 RVA(0x00017ba0, 0xf3)
 void RestoreBackground(void) {
     MapPosition position = g_party.field.pos;
-    if (position.area == 0x82) {
+    if (position.area == MAP_AREA_HATSUDAI) {
         if (position.x == 12 && position.y == 11 && position.level == 8) {
             s_sceneCell[9] = 0x31;
             s_sceneCell[10] = 2;
             s_sceneCell[11] = 2;
         }
-    } else if (position.area == 0x35) {
+    } else if (position.area == MAP_AREA_BAEL_CASTLE) {
         if (position.x == 4 && position.y == 3 && position.level == 7) {
             s_sceneCell[13] = 0x31;
             s_sceneCell[14] = 3;

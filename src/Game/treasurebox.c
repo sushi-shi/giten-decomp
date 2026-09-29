@@ -43,6 +43,7 @@
 #include <Game/InfoBar.h>
 #include <Game/ItemMenu.h>
 #include <Game/ItemRecord.h>
+#include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
 #include <Game/Party.h>
@@ -1960,7 +1961,7 @@ void MarkMapCell(i16 kind, i16 x, i16 y) {
     }
     TransformAutomapPoint(&x, &y);
     if (x >= 0 && x < s_mapWidth && y >= 0 && y < s_mapHeight) {
-        if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 15) {
+        if (g_party.field.pos.area == MAP_AREA_HATSUDAI && g_party.field.pos.level == 15) {
             if (!g_party.status.navigationFixed && (g_party.field.pos.direction & 1)) {
                 x += 3;
                 y += 2;
@@ -2419,7 +2420,7 @@ void DrawMapOverlayTile(i16 tile, i16 x, i16 y) {
     }
     TransformAutomapPoint(&x, &y);
     if (x >= 0 && x < s_mapWidth && y >= 0 && y < s_mapHeight) {
-        if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 15) {
+        if (g_party.field.pos.area == MAP_AREA_HATSUDAI && g_party.field.pos.level == 15) {
             if (!g_party.status.navigationFixed && (g_party.field.pos.direction & 1)) {
                 x += 3;
                 y += 2;
@@ -3157,7 +3158,7 @@ RVA(0x0001f550, 0xd0)
 void LoadNpcTexture(i16 slot, i16 code, i16 mode) {
     ImageRequest request;
     void* image;
-    if (code == 0x2b && mode == 0 && g_party.field.pos.area == 0x82
+    if (code == 0x2b && mode == 0 && g_party.field.pos.area == MAP_AREA_HATSUDAI
         && g_party.field.pos.level == 8) {
         if ((g_party.field.pos.x == 0xb && g_party.field.pos.y == 7)
             || (g_party.field.pos.x == 0xc && g_party.field.pos.y == 6)) {

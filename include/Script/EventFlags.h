@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <Ints.h>
+#include <Util/BitChangeMode.h>
 
 #include <stdio.h>
 
@@ -41,12 +42,12 @@ b16 MatchFlagWord(u16* condition);
 
 void SetFlagBank(i16 bank);
 void ClearFlagBank(i16 bank);
-b32 ChangeEventFlag(u16 bank, u16 index, i16 op);
+b32 ChangeEventFlag(u16 bank, u16 index, GZ_ENUM_PARAM(BitChangeMode, i16) op);
 b32 ClearEventFlag(u16 bank, u16 index);
 b32 SetEventFlag(u16 bank, u16 index);
 b32 ToggleEventFlag(u16 bank, u16 index);
 b32 IsEventFlagSet(u16 bank, u16 index);
-b32 ModifyEventFlag(u16 bank, u16 index, i16 op);
+b32 ModifyEventFlag(u16 bank, u16 index, GZ_ENUM_PARAM(BitChangeMode, i16) op);
 b32 TestEventFlag(u16 bank, u16 index);
 u32 GetFlagSettings(void);
 void SetFlagSettings(u32 packed);

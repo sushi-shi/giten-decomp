@@ -18,8 +18,8 @@
 #include <Game/AnalyzeData.h>
 #include <Game/AreaMap.h>
 #include <Game/BattleEffect.h>
-#include <Game/Character.h>
 #include <Game/CharInfo.h>
+#include <Game/Character.h>
 #include <Game/Clock.h>
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
@@ -47,9 +47,9 @@
 #include <Game/PartyCommand.h>
 #include <Game/Skill.h>
 #include <Game/SkillUse.h>
+#include <Game/StatUpdate.h>
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
-#include <Game/StatUpdate.h>
 #include <Game/TargetFlags.h>
 #include <Game/WorldMap.h>
 #include <Gfx/ScreenMode.h>
@@ -406,7 +406,7 @@ b16 InitFieldObjects(void) {
         s_objects[i].script = NULL;
         InitWordList(&s_objects[i].list, 0);
     }
-    ModifyEventFlag(8, 0, 1);
+    ModifyEventFlag(8, 0, BIT_CHANGE_SET);
     return false;
 }
 
@@ -443,7 +443,7 @@ void RemoveFieldObject(i16 index, i16 announce) {
             return;
         }
     }
-    ModifyEventFlag(8, 0, 1);
+    ModifyEventFlag(8, 0, BIT_CHANGE_SET);
     if (queued != false && !HasQueuedObjectEvents()) {
         MarkLevelEvent(g_party.field.pos.level);
     }
@@ -455,7 +455,7 @@ b16 ResetFieldObjects(void) {
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         RemoveFieldObject(i, 0);
     }
-    ModifyEventFlag(8, 0, 1);
+    ModifyEventFlag(8, 0, BIT_CHANGE_SET);
     s_objectsFrozen = 0;
     return false;
 }
@@ -557,7 +557,7 @@ i16 SpawnFieldObject(
         s_objects[slot].experience = s_objects[slot].rank;
     }
     SetObjectEventFlag(slot, 0xff, 0xff);
-    ModifyEventFlag(8, 0, 0);
+    ModifyEventFlag(8, 0, BIT_CHANGE_CLEAR);
     return slot;
 }
 
