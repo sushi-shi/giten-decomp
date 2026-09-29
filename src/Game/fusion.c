@@ -1530,7 +1530,7 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
                 ++step;
             } else {
                 result = RunPanelInput(s_fusionPager);
-                if (s_fusionPageActionPending == 1) {
+                if (s_fusionPageActionPending == true) {
                     result = s_fusionPageAction;
                     s_fusionPageActionPending = false;
                     s_fusionPageAction = -1;

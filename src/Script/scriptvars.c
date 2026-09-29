@@ -90,7 +90,7 @@ static i16 s_tickCountOn = 0;
 // Set while a script builds a choice list; the text writer takes it with
 // every character.
 DATA(0x00081654)
-b16 g_inChoices = 0;
+b16 g_inChoices = false;
 
 DATA(0x00081658)
 static i16 s_pendingScene = 0;

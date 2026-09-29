@@ -2463,7 +2463,7 @@ i16 RunPartyCommandInput(void) {
             if (flags == 0x10 || flags == 0x11 || flags == 0x30) {
                 reach = true;
             }
-            if (reach == 0 && HasObjectInReach(0, -1, 0)) {
+            if (reach == false && HasObjectInReach(0, -1, 0)) {
                 character->pickObject = FindObjectAtParty();
             target_selected:
                 s_pickMode++;

@@ -44,7 +44,7 @@ _NUMBER = re.compile(rb"(?:0[xX][0-9A-Fa-f]+|[0-9]+)(?:[uUlL]*)(?![A-Za-z0-9_.])
 _FLOAT = re.compile(rb"(?:[0-9]+\.[0-9]*|\.[0-9]+)(?:[eE][-+]?[0-9]+)?[fFlL]?"
                     rb"|[0-9]+[eE][-+]?[0-9]+[fFlL]?")
 _SUFFIX = re.compile(r"[uUlL]+$")
-_BOOLEAN_TYPE_SPELLINGS = {"BOOL", "b32"}
+_BOOLEAN_TYPE_SPELLINGS = {"BOOL", "b16", "b32"}
 _LEGACY_BOOLEAN = re.compile(r"\b(?:FALSE|TRUE)\b")
 _STRING = re.compile(r'"(?:\\.|[^"\\\n])*"')
 _CHAR = re.compile(r"'(?:\\.|[^'\\\n])*'")

@@ -283,7 +283,7 @@ void RemoveFieldObject(i16 index, i16 announce) {
         }
     }
     ModifyEventFlag(8, 0, 1);
-    if (queued != 0 && !HasQueuedObjectEvents()) {
+    if (queued != false && !HasQueuedObjectEvents()) {
         MarkLevelEvent(g_party.field.pos.level);
     }
 }

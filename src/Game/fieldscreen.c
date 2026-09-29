@@ -309,7 +309,7 @@ MapCoord GetMouseTravelCell(void) {
 RVA(0x00014960, 0x93)
 b16 CanOpenAutomap(void) {
     Character* character;
-    if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) == 1) {
+    if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) == true) {
         return false;
     }
     character = GetCharacterById(0);
@@ -812,7 +812,7 @@ void OpenAutomap(void) {
 // Whether this character can use the automap command on the current cell.
 RVA(0x00015530, 0x56)
 b16 CanCharacterOpenAutomap(Character* character) {
-    if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) != 1 && character != NULL
+    if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) != true && character != NULL
         && (character->id == 0 || character->id == 10 || character->id == 11)
         && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;

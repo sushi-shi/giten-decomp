@@ -925,7 +925,7 @@ b16 RunFieldExploration(void) {
                 if (s_returnDirection >= 0) {
                     g_party.field.pos.direction = (u8)s_returnDirection;
                 }
-                if (s_stayOnExit == 0) {
+                if (s_stayOnExit == false) {
                     StepMapCoord(
                         &g_party.field.pos.x,
                         &g_party.field.pos.y,
@@ -1049,14 +1049,14 @@ void RunCellEvent(void) {
                 g_cellDestLevel,
                 g_cellDestX,
                 g_cellDestY,
-                s_stayOnExit == 1 ? g_party.field.pos.direction : -1
+                s_stayOnExit == true ? g_party.field.pos.direction : -1
             );
             SetCellMark(
                 g_cellDestArea,
                 g_cellDestLevel,
                 g_cellDestX,
                 g_cellDestY,
-                s_stayOnExit == 1 ? g_party.field.pos.direction : -1
+                s_stayOnExit == true ? g_party.field.pos.direction : -1
             );
             break;
         case CELL_EVENT_TRAP:
@@ -1075,7 +1075,7 @@ void RunCellEvent(void) {
                 g_cellDestLevel,
                 g_cellDestX,
                 g_cellDestY,
-                s_stayOnExit == 1 ? g_party.field.pos.direction : -1
+                s_stayOnExit == true ? g_party.field.pos.direction : -1
             );
             if (g_cellCode == 0x67) {
                 ExchangeObjectsHidden(1);
