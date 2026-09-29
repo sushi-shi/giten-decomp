@@ -86,12 +86,6 @@ static u32 s_backdropImage = 0;
 DATA(0x0007b7fc)
 static u32 s_effectFrames = 0;
 
-// @identity-TODO: no code in this image touches this datum; its
-// zero-initialized run keeps one four-byte slot for it, so its width and
-// role are unproven. A reader in the PC-98 build would name it.
-DATA(0x0007b800)
-static u32 s_unusedImage = 0;
-
 // @identity-TODO: the image is only freed in this build.
 DATA(0x0007b804)
 static u32 s_overlayImage = 0;
