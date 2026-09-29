@@ -4589,7 +4589,13 @@ void FreeMenuLines(i16 plane) {
 // its text attribute, selection value and flags. NULL for
 // no plane.
 RVA(0x00053430, 0x9b)
-MenuLine* AddMenuLine(i16 plane, const char* text, i16 attr, i16 value, i16 flags) {
+MenuLine* AddMenuLine(
+    i16 plane,
+    const char* text,
+    i16 attr,
+    i16 value,
+    GZ_ENUM_PARAM(MenuLineFlags, i16) flags
+) {
     MenuLine* line;
 
     if (plane == TEXT_PLANE_NONE) {

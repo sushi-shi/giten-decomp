@@ -665,7 +665,7 @@ static void AnalyzeMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent
                 items[index],
                 TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_YELLOW, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
                 -index,
-                0
+                MENU_LINE_NORMAL
             );
             break;
     }

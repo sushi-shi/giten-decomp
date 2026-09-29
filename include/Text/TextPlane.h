@@ -8,6 +8,7 @@
 #include <Enums.h>
 #include <Ints.h>
 #include <Text/TextAttr.h>
+#include <Text/MenuLineFlags.h>
 #include <Text/TextEvent.h>
 
 #define TEXT_PLANE_COUNT 37
@@ -55,13 +56,8 @@ typedef struct MenuLine {
     char* text;
     i16 attr;
     i16 value;
-    i16 flags;
+    GZ_ENUM_STORAGE(MenuLineFlags, i16) flags;
 } MenuLine;
-
-// Disabled lines cannot be highlighted. Unchoosable lines can be highlighted
-// but yield no selected value.
-#define MENU_LINE_DISABLED 0x1
-#define MENU_LINE_UNCHOOSABLE 0x2
 
 // A cell position or extent on a text plane, returned by value.
 typedef struct TextPoint {

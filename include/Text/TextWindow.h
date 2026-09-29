@@ -3,6 +3,9 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Text/MenuLineFlags.h>
+
 // Per-window text attributes and cursor of the window table.
 
 // Keeps a zero background colour opaque when enabled.
@@ -53,7 +56,13 @@ void ResetTextPlaneMenu(i16 plane, i16 line, i16 cancelEnabled);
 void ClearTextPlaneHighlight(i16 plane);
 
 struct MenuLine;
-struct MenuLine* AddMenuLine(i16 plane, const char* text, i16 attr, i16 value, i16 flags);
+struct MenuLine* AddMenuLine(
+    i16 plane,
+    const char* text,
+    i16 attr,
+    i16 value,
+    GZ_ENUM_PARAM(MenuLineFlags, i16) flags
+);
 
 void SetTextPlaneMenuOrigin(i16 plane, i16 x, i16 y);
 i16 SetTextPlaneCancelEnabled(i16 plane, i16 on);

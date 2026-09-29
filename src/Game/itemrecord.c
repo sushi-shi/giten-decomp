@@ -2189,7 +2189,7 @@ static void DiscardMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent
                 g_scratchBuffer,
                 TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
                 index,
-                0
+                MENU_LINE_NORMAL
             );
             break;
     }
@@ -2276,7 +2276,7 @@ static void GiftMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                     g_scratchBuffer,
                     TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                     index,
-                    0
+                    MENU_LINE_NORMAL
                 );
             }
             break;

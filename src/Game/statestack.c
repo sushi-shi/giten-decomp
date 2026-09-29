@@ -2521,7 +2521,7 @@ void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) 
                     TEXT_ATTR_FLAG1
                         | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                     entries->ids[index],
-                    0
+                    MENU_LINE_NORMAL
                 );
             } else {
                 AddMenuLine(

@@ -1711,7 +1711,7 @@ void FusionListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i1
                     g_scratchBuffer,
                     TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
                     s_fusionSlots[index],
-                    0
+                    MENU_LINE_NORMAL
                 );
             } else {
                 AddMenuLine(

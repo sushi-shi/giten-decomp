@@ -629,7 +629,7 @@ void ActorCommandMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                         TEXT_ATTR_FLAG1
                             | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
                         index + 1,
-                        0
+                        MENU_LINE_NORMAL
                     );
                 }
             }

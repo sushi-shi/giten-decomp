@@ -363,3 +363,11 @@ src/Game/playtime.c	*	*	*	*	play-time units: 7232/10000 of a 17 ms tick, millise
 src/Game/gamestate.c	GetMapValue	*	*	*	selector 0..3 of the party's area, level, x and y (a script operand); 0 for any other
 src/Game/gamestate.c	InitNewGame	*	*	*	a new game starts at level 8, cell (2, 1) with the movement words cleared, the hero's character slot 0 in party position 0
 src/Game/abortflag.c	AddSceneHotspot	-1	trivial-function-literal	-1 return	no free hotspot slot
+src/Game/debugmenu.c	RunDebugMenu	*	*	*s_shotRise	the magic test's shot distance: starts at 3 and wraps from 3 to 0
+src/Game/debugmenu.c	RunDebugMenu	0x10	store	*s_testSkill	the magic test's first skill number
+src/Game/debugmenu.c	RunDebugMenu	*	call-argument	SetMenuItems(*argument 4	the row counts of s_debugEntries (15) and s_magicEntries (8)
+src/Game/debugmenu.c	RunDebugMenu	0	call-argument	HideTextPlane(*	@identity-TODO: text plane 0, which the debug scenes print on
+src/Game/debugmenu.c	RunDebugMenu	*	arithmetic	operator + MENU_STEP_PICK_FIRST	debug-menu rows 3, 5, 6 and 14 have no label (see DebugMenuRow)
+src/Game/debugmenu.c	RunDebugMenu	*	call-argument	StartDebugScene(*argument 1	@identity-TODO: the debug script files 0xaf and 0xd1 the rows run (disc scripts)
+src/Game/debugmenu.c	RunDebugMenu	0	call-argument	MoveMapCoord(*argument 3	the shot flies straight ahead (no sideways offset)
+src/Game/debugmenu.c	RunDebugMenu	0	call-argument	LaunchShot(*argument 2	@identity-TODO: LaunchShot's second argument, 0 for the test shot

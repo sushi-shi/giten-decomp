@@ -255,7 +255,7 @@ static void DebugMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     entry->label,
                     TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
                     index,
-                    0
+                    MENU_LINE_NORMAL
                 );
             }
             break;
@@ -278,18 +278,23 @@ static void MagicMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
             AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             return;
         case MENU_EVENT_ADD_ROW:
-            if (index == 6) {
-                sprintf(g_scratchBuffer, "%s(%.1d) +1", entries[6].label, s_shotRise);
+            if (index == DEBUG_MAGIC_ROW_DISTANCE) {
+                sprintf(
+                    g_scratchBuffer,
+                    "%s(%.1d) +1",
+                    entries[DEBUG_MAGIC_ROW_DISTANCE].label,
+                    s_shotRise
+                );
                 AddMenuLine(
                     menu->plane,
                     g_scratchBuffer,
                     TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
-                    6,
-                    0
+                    DEBUG_MAGIC_ROW_DISTANCE,
+                    MENU_LINE_NORMAL
                 );
                 return;
             }
-            if (index <= 5) {
+            if (index <= DEBUG_MAGIC_ROW_MINUS_100) {
                 skill = entries[index].value + s_testSkill;
                 if (skill < 0 || skill >= s_skillCount) {
                     AddMenuLine(
@@ -308,7 +313,7 @@ static void MagicMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                 entries[index].label,
                 TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
                 index,
-                0
+                MENU_LINE_NORMAL
             );
             return;
         case MENU_EVENT_END_PAGE:

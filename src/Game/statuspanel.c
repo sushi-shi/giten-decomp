@@ -1132,7 +1132,7 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                         g_scratchBuffer,
                         TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                         s_equipEntries[index],
-                        0
+                        MENU_LINE_NORMAL
                     );
                     return;
                 }
@@ -1152,7 +1152,7 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                 g_scratchBuffer,
                 TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                 s_equipEntries[index],
-                0
+                MENU_LINE_NORMAL
             );
             return;
     }
@@ -1468,7 +1468,7 @@ static void AttachItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEv
                     g_scratchBuffer,
                     TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                     index + s_attach.itemBase,
-                    0
+                    MENU_LINE_NORMAL
                 );
             }
             break;
@@ -1532,7 +1532,7 @@ static void AttachEntryMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuE
                 g_scratchBuffer,
                 TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                 s_attachEntries[index].entry,
-                0
+                MENU_LINE_NORMAL
             );
             break;
     }
@@ -1656,7 +1656,7 @@ static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                 g_scratchBuffer,
                 TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                 item,
-                0
+                MENU_LINE_NORMAL
             );
             break;
     }
@@ -1924,7 +1924,7 @@ static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                 g_scratchBuffer,
                 TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                 skills[index],
-                0
+                MENU_LINE_NORMAL
             );
             break;
     }
