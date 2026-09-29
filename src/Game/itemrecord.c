@@ -11,6 +11,7 @@
 #include <Game/Condition.h>
 #include <Game/DemonTable.h>
 #include <Game/DropTable.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/Field.h>
 #include <Game/FieldSight.h>
 #include <Game/GameState.h>
@@ -1561,16 +1562,17 @@ RVA(0x00024f40, 0x100)
 i16 SumEquippedMagicDefenseBonus(Character* character, u8 groups) {
     i16 total = 0;
     if (groups & 1) {
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[0].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[1].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[2].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[3].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[4].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item);
+        total +=
+            GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item);
     }
     if (groups & 2) {
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[5].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[6].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[7].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item);
     }
     return total;
 }
@@ -1655,14 +1657,14 @@ i16 ScaleDamageByEquipment(Character* character, i16 damage, i16 element) {
     for (i = 0; i < 10; i++) {
         ratios[i] = 100;
     }
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[0].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[1].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[2].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[3].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[4].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[5].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[6].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[7].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, ratios);
     value = ratios[element] * damage / 100;
     if (value < -0x8000) {
         value = -0x8000;
@@ -1694,14 +1696,16 @@ i16 CountElementGuards(Character* character, i16 element) {
     if (element < 0 || element >= 10) {
         return 0;
     }
-    count = IsItemGuardingElement(GetCharacterEquipment(character)[0].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[1].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[2].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[3].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[4].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[5].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[6].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[7].item, element);
+    count = IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, element);
+    count += IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, element);
+    count += IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, element);
+    count += IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, element);
+    count +=
+        IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, element);
+    count +=
+        IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item, element);
+    count += IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, element);
+    count += IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, element);
     return count;
 }
 
@@ -1711,14 +1715,14 @@ PoolRegen ApplyEquipmentRegen(Character* character) {
 
     regen.hp = 0;
     regen.mp = 0;
-    AddItemRegen(GetCharacterEquipment(character)[0].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[1].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[2].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[3].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[4].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[5].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[6].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[7].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, &regen);
     if (GetFatalCondition(GetCharacterConditions(character)) == 0) {
         FillPool(&character->pools.hp, regen.hp, POOL_FILL_TO_DOUBLE_MAX);
         FillPool(&character->pools.mp, regen.mp, POOL_FILL_TO_DOUBLE_MAX);
@@ -1869,14 +1873,20 @@ i16 IsConditionResisted(Character* target, i16 code) {
     if (condition < 1) {
         return 1;
     }
-    resisted = ItemResistsCondition(GetCharacterEquipment(target)[0].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[1].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[2].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[3].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[4].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[5].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[6].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[7].item, condition);
+    resisted = ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_HEAD].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_BODY].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_ARMS].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_LEGS].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_ACCESSORY].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_WEAPON].item, condition);
+    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_GUN].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_AMMO].item, condition);
     return resisted;
 }
 

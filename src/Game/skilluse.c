@@ -17,6 +17,7 @@
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
 #include <Game/DropTable.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/Familiarity.h>
 #include <Game/Field.h>
 #include <Game/FieldObject.h>
@@ -412,8 +413,11 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
         }
     }
     ApplyShieldedDamage(target, attacker->lastChange);
-    if (attacker->pickRole == PICK_ROLE_ATTACK && GetCharacterEquipment(attacker)[5].item >= 1) {
-        kind = GetItemPassiveEffectCode(GetLoadedRecord(GetCharacterEquipment(attacker)[5].item));
+    if (attacker->pickRole == PICK_ROLE_ATTACK
+        && GetCharacterEquipment(attacker)[EQUIP_SLOT_WEAPON].item >= 1) {
+        kind = GetItemPassiveEffectCode(
+            GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_WEAPON].item)
+        );
         if (kind == 0x86) {
             ChangePool(&attacker->pools.hp, attacker->lastChange);
         } else if (kind == 0x87) {
@@ -469,14 +473,14 @@ i16 ResolveCombatAction(void) {
     }
 
     if (attacker->pickRole == PICK_ROLE_ATTACK) {
-        attacker->pickTarget = GetCharacterEquipment(attacker)[5].item;
+        attacker->pickTarget = GetCharacterEquipment(attacker)[EQUIP_SLOT_WEAPON].item;
         if (g_targetId >= 0) {
             ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(0));
         } else {
             ResolveWeaponAttack(attacker, target, 0);
         }
     } else if (attacker->pickRole == PICK_ROLE_GUN) {
-        attacker->pickTarget = GetCharacterEquipment(attacker)[7].item;
+        attacker->pickTarget = GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].item;
         if (g_targetId >= 0) {
             ResolveGunAttack(attacker, target, IsFieldModeAtLeast(0));
         } else {
@@ -836,9 +840,9 @@ b16 RunBattleAction(void) {
             if (actor->pickRole == PICK_ROLE_ITEM) {
                 shot = GetItemShotId(GetLoadedRecord(actor->pickTarget));
             } else if (actor->pickRole == PICK_ROLE_GUN) {
-                record = GetLoadedRecord(GetCharacterEquipment(actor)[7].item);
+                record = GetLoadedRecord(GetCharacterEquipment(actor)[EQUIP_SLOT_AMMO].item);
                 if (GetItemShotId(record) == 0) {
-                    record = GetLoadedRecord(GetCharacterEquipment(actor)[6].item);
+                    record = GetLoadedRecord(GetCharacterEquipment(actor)[EQUIP_SLOT_GUN].item);
                 }
                 shot = GetItemShotId(record);
             } else if (actor->pickRole == PICK_ROLE_ATTACK) {
@@ -1019,7 +1023,7 @@ void PlayActionEffect(i16 stage) {
     } else if (s_actionRole == PICK_ROLE_ATTACK) {
         before.script = 0xde;
         after.script = 0xdd;
-        weapon = GetCharacterEquipment(GetCombatant(g_actorId))[5].item;
+        weapon = GetCharacterEquipment(GetCombatant(g_actorId))[EQUIP_SLOT_WEAPON].item;
         if (weapon < 1) {
             before.entry = 3;
             after.entry = 5;
