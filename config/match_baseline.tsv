@@ -37,7 +37,7 @@ abortflag	16	15
 automap	1	1
 bitmapio	22	20
 bitset	5	5
-blit	18	15
+blit	18	18
 character	171	164
 clickwait	1	1
 clock	74	70
@@ -101,7 +101,7 @@ surfacecopy	1	1
 textapi	5	5
 textchar	1	0
 textstate	21	20
-treasurebox	147	138
+treasurebox	147	139
 vec3	10	8
 videostate	5	5
 vram	44	39
@@ -167,11 +167,11 @@ blit	_DrawImageFrame	100.0000	100.0000	4	2a52f7ef12e1	0x17d0	100.0000
 blit	_GetLegacyImageDrawResult	100.0000	100.0000	3	74b4c9272fa9	0x1830	100.0000	
 blit	_GetLegacySpriteTestResult	100.0000	100.0000	3	52b1c09701dd	0x1820	100.0000	
 blit	_GetSpriteAlignedX	100.0000	100.0000	1	c1f431523fde	0x17e0	100.0000	
-blit	_GetSpriteAlignedY	100.0000	96.1429	1	d3614da7b095	0x1800	100.0000	
+blit	_GetSpriteAlignedY	100.0000	100.0000	1	d3614da7b095	0x1800	100.0000	
 blit	_PrepareFullSceneSprite	100.0000	100.0000	1	33b3d9edcca2	0x1640	100.0000	
-blit	_PrepareOffsetSceneSprite	91.8846	91.8846	4	6da9148f3d94	0x1680	91.8846	
+blit	_PrepareOffsetSceneSprite	100.0000	100.0000	5	567442d39446	0x1680	100.0000	
 blit	_PrepareSceneSprite	100.0000	100.0000	2	f1beb5119252	0x1620	100.0000	
-blit	_PrepareViewportSceneSprite	94.5897	94.5897	3	794131d4e375	0x16f0	94.5897	
+blit	_PrepareViewportSceneSprite	100.0000	100.0000	4	a9ec9fa6f7d1	0x16f0	100.0000	
 blit	_SceneBlitNop	100.0000	100.0000	1	bbd87221539b	0x17a0	100.0000	
 blit	_SkipLegacyImageTransfer	100.0000	100.0000	1	1f75e426add7	0x1840	100.0000	
 blit	_SkipLegacyScriptBlit	100.0000	100.0000	1	4ad4aeb0b11d	0x1850	100.0000	
@@ -734,7 +734,7 @@ fieldscreen	_CanRevealAutomapNorth	100.0000	100.0000	5	5dea7ab9ef9c	0x157b0	100.
 fieldscreen	_CanRevealAutomapSouth	100.0000	100.0000	5	a6ac176fc278	0x15730	100.0000	
 fieldscreen	_ClearEncounterPending	100.0000	100.0000	2	c6a8532d1c67	0x154b0	100.0000	
 fieldscreen	_ClearFieldPanelSelection	100.0000	100.0000	3	f0a02c9b9580	0x169c0	100.0000	
-fieldscreen	_ClearPanel	100.0000	100.0000	4	2db25cd2f54e	0x159e0	100.0000	
+fieldscreen	_ClearPanel	100.0000	99.8750	4	2db25cd2f54e	0x159e0	100.0000	
 fieldscreen	_ClearPanelRow	100.0000	100.0000	4	ae3a8aeb3147	0x15a40	100.0000	
 fieldscreen	_ClearWorldMapBlock	100.0000	100.0000	1	a5d8fc14e6a1	0x163c0	100.0000	
 fieldscreen	_CommandRowHandler	100.0000	100.0000	1	6930d4e748ea	0x158e0	100.0000	
@@ -743,7 +743,7 @@ fieldscreen	_DdsRowHandler	100.0000	100.0000	2	316c89d69e44	0x14b90	100.0000
 fieldscreen	_DefenceCommand	100.0000	100.0000	2	8a52603fbeff	0x153b0	100.0000	
 fieldscreen	_DiscardWorldMapScreenSave	100.0000	100.0000	1	cd07839b3469	0x167d0	100.0000	
 fieldscreen	_DrawFieldMessage	100.0000	100.0000	6	a06b3ef17b31	0x160c0	100.0000	
-fieldscreen	_DrawPanel	100.0000	99.8947	4	fe062e1c7fed	0x15940	100.0000	
+fieldscreen	_DrawPanel	100.0000	100.0000	4	fe062e1c7fed	0x15940	100.0000	
 fieldscreen	_DrawPanelRow	100.0000	100.0000	4	f252d56046af	0x159a0	100.0000	
 fieldscreen	_DrawWorldMapBlock	100.0000	100.0000	1	9a351fb76fdc	0x16460	100.0000	
 fieldscreen	_DropLayerImage	100.0000	100.0000	1	b92485aff4f6	0x16910	100.0000	
@@ -2430,7 +2430,7 @@ treasurebox	_InitAutomap	100.0000	100.0000	2	f73124ea39b2	0x1cde0	100.0000
 treasurebox	_IsAreaNpcGone	100.0000	100.0000	2	c74244fd9078	0x1f430	100.0000	
 treasurebox	_IsAutomapCellHidden	100.0000	100.0000	6	94ddf3b74a34	0x1d120	100.0000	
 treasurebox	_IsCellInView	100.0000	100.0000	2	0dfc10ec21d9	0x1e300	100.0000	
-treasurebox	_IsHotspotTreasureOpen	95.8333	95.8333	4	22a5769e0037	0x1ab40	95.8333	
+treasurebox	_IsHotspotTreasureOpen	100.0000	100.0000	5	9ac185cd60ae	0x1ab40	100.0000	
 treasurebox	_IsObjectCell	100.0000	100.0000	1	f9dbe0b17170	0x1eee0	100.0000	
 treasurebox	_IsPanelActive	100.0000	100.0000	3	f7257e655b47	0x1caf0	100.0000	
 treasurebox	_IsRegionFlagOn	99.5000	99.5000	2	ed5b2a21b841	0x1ebe0	100.0000	
@@ -2454,7 +2454,7 @@ treasurebox	_MarkRegionList	100.0000	99.6923	3	14ca732094a9	0x1ec10	100.0000
 treasurebox	_MarkRoomRegions	100.0000	100.0000	1	99db59ebe46b	0x1ed20	100.0000	
 treasurebox	_MarkWorldMapEventSpot	100.0000	100.0000	2	b3dce3b77d3f	0x1b3e0	100.0000	
 treasurebox	_NextNpcSlot	100.0000	100.0000	1	e4293f3a61cc	0x1f250	100.0000	
-treasurebox	_NormalizeAffiliations	100.0000	84.5588	2	f118670abb71	0x1c830	100.0000	
+treasurebox	_NormalizeAffiliations	100.0000	82.0441	2	f118670abb71	0x1c830	100.0000	
 treasurebox	_NotifyEncounterEnd	100.0000	100.0000	1	73fdb9352997	0x1f530	100.0000	
 treasurebox	_NotifyEncounterStart	100.0000	100.0000	1	f0391215057f	0x1f520	100.0000	
 treasurebox	_OpenScriptItemMenu	100.0000	100.0000	3	475bcf67c4a6	0x1c010	100.0000	
