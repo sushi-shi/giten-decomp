@@ -5,6 +5,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/Alignment.h>
 #include <Game/CharInfo.h>
 #include <Game/Clock.h>
@@ -1040,7 +1041,7 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
 
 RVA(0x00027d60, 0x104)
 void LoadFusionTables(void) {
-    FILE* fp = OpenDataFile(12, 12, 0);
+    FILE* fp = OpenDataFile(12, DATA_FILE_TABLE, 0);
     s_fusionRaceMatrix = ReadCryptHandle(fp);
     s_fusionSameRaceChanges = ReadCryptHandle(fp);
     s_fusionDemonMatrix = ReadCryptHandle(fp);
@@ -1050,13 +1051,13 @@ void LoadFusionTables(void) {
     s_fusionFallbackHandle = ReadCryptHandle(fp);
     ReadCryptRecord(fp, &s_fusionRestrictedClass);
     CloseDataFile(fp);
-    fp = OpenDataFile(15, 12, 0);
+    fp = OpenDataFile(15, DATA_FILE_TABLE, 0);
     s_fusionClassMatrix = ReadRawHandle(fp);
     s_fusionRaceRows = ReadRawHandle(fp);
     s_fusionPairs = ReadRawHandle(fp);
     s_fusionPrimaryComplements = ReadRawHandle(fp);
     CloseDataFile(fp);
-    fp = OpenDataFile(17, 12, 0);
+    fp = OpenDataFile(17, DATA_FILE_TABLE, 0);
     s_fusionFlagRestrictions = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -1336,7 +1337,7 @@ b16 RunScriptAnimationState(void) {
 
 RVA(0x00028790, 0x32)
 void LoadScriptAnimation(i16 resource) {
-    FILE* file = OpenDataFile(resource + 0x3000, 2, 0);
+    FILE* file = OpenDataFile(resource + 0x3000, DATA_FILE_EFFECT, 0);
     s_animationScript = ReadRawAlloc(file);
     CloseDataFile(file);
 }

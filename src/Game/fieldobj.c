@@ -10,6 +10,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <File/DataTableId.h>
 #include <Game/ActionMark.h>
 #include <Game/Actor.h>
@@ -374,11 +375,11 @@ i16 SpawnFieldObject(
     s_objects[slot].word21f = 0;
     s_objects[slot].hidden = 0;
     if (alternate != 0) {
-        file = OpenDataFile(0x6802, 9, 0);
+        file = OpenDataFile(0x6802, DATA_FILE_SCRIPT, 0);
     } else if (TestModeFlags(MODE_WORLD_MAP)) {
-        file = OpenDataFile(0x6801, 9, 0);
+        file = OpenDataFile(0x6801, DATA_FILE_SCRIPT, 0);
     } else {
-        file = OpenDataFile(0x6800, 9, 0);
+        file = OpenDataFile(0x6800, DATA_FILE_SCRIPT, 0);
     }
     s_objects[slot].script = ReadScriptBlock(s_objects[slot].script, file);
     s_objects[slot].script->id = 0xff;
@@ -935,7 +936,7 @@ ScriptEntry FindLayerScriptEntry(i16 layerSlot, i16 file, i16 entry) {
     layer = layerSlot - 1;
     if (file == 0xff) {
         if (s_objectScripts == NULL) {
-            fp = OpenDataFile(0x6800, 9, 0);
+            fp = OpenDataFile(0x6800, DATA_FILE_SCRIPT, 0);
             s_objectScripts = ReadScriptBlock(s_objectScripts, fp);
             CloseDataFile(fp);
         }
@@ -1022,7 +1023,7 @@ RVA(0x0000eb70, 0xea)
 void LoadLayerScriptSet(FieldLayer* layer, i16 set) {
     FILE* fp;
     if (s_scriptSets == NULL) {
-        fp = OpenDataFile(DATA_TABLE_OBJECT_SCRIPT_SETS, 12, 0);
+        fp = OpenDataFile(DATA_TABLE_OBJECT_SCRIPT_SETS, DATA_FILE_TABLE, 0);
         ReadRawBlock(fp, s_scriptSetBuffer);
         s_scriptSets = s_scriptSetBuffer;
         CloseDataFile(fp);
@@ -1238,7 +1239,7 @@ i16 DirectionToParty(i16 x, i16 y) {
 
 RVA(0x0000f1a0, 0x34)
 void LoadEncounterWeights(void) {
-    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_ENCOUNTER_WEIGHTS, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_ENCOUNTER_WEIGHTS, DATA_FILE_TABLE, 0);
     ReadRawBlock(fp, s_encounterBuffer);
     s_fieldEncounterWeights = s_encounterBuffer;
     CloseDataFile(fp);
@@ -1693,7 +1694,7 @@ static __inline const DemonTable* ReadDemonTable(void) {
 
 RVA(0x0000ff30, 0x70)
 void LoadDemonTables(void) {
-    FILE* fp = OpenDataFile(DATA_TABLE_DEMONS, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_DEMONS, DATA_FILE_TABLE, 0);
     s_demonRecords = ReadCryptHandle(fp);
     s_raceClasses = ReadCryptHandle(fp);
     s_raceNames = ReadCryptHandle(fp);
@@ -2041,7 +2042,7 @@ void LoadObjectRecord(i16 kind, FieldObject* object) {
 
 RVA(0x00010a20, 0x32)
 void ReadObjectRecord(i16 kind) {
-    FILE* fp = OpenDataFile(kind + 0x2000, 10, 0);
+    FILE* fp = OpenDataFile(kind + 0x2000, DATA_FILE_OBJECT, 0);
     ReadCryptRecord(fp, &s_record);
     CloseDataFile(fp);
 }
@@ -2092,7 +2093,7 @@ void ReadRecordIfWanted(FILE* fp, void* out) {
 RVA(0x00010b20, 0x7d)
 i32 ReadObjectRecordField(i16 kind, i16 offset, i16 size) {
     u8 buffer[sizeof(ObjectRecord)];
-    FILE* fp = OpenDataFile(kind + 0x2000, 10, 0);
+    FILE* fp = OpenDataFile(kind + 0x2000, DATA_FILE_OBJECT, 0);
     ReadCryptRecord(fp, buffer);
     CloseDataFile(fp);
     if (size < 2) {
@@ -2268,11 +2269,11 @@ RVA(0x00010fc0, 0x67)
 void LoadEncounterTables(void) {
     FILE* fp;
     FreeEncounterTables();
-    fp = OpenDataFile(DATA_TABLE_WORLD_ENCOUNTERS, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_WORLD_ENCOUNTERS, DATA_FILE_TABLE, 0);
     s_encounterChoices = ReadRawHandle(fp);
     s_encounterWeights = ReadRawHandle(fp);
     CloseDataFile(fp);
-    fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, DATA_FILE_TABLE, 0);
     s_fieldTable = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -2332,7 +2333,7 @@ i16 LoadWorldEncounterBlock(i16 x, i16 y) {
     i16 block = GetWorldMapBlock(x, y);
     FILE* fp;
     s_encounterBlock = FreeHandle(s_encounterBlock);
-    fp = OpenDataFile(block + 0x1000, 12, 0);
+    fp = OpenDataFile(block + 0x1000, DATA_FILE_TABLE, 0);
     s_encounterBlock = ReadRawHandle(fp);
     CloseDataFile(fp);
     if (IsOddMapLayer()) {
@@ -2453,7 +2454,7 @@ void LoadFieldTable(void) {
     FILE* fp = NULL;
     EncounterFieldImage* images;
     if (s_fieldTable == 0) {
-        fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, 12, 0);
+        fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, DATA_FILE_TABLE, 0);
         s_fieldTable = ReadRawHandle(fp);
         CloseDataFile(fp);
     }

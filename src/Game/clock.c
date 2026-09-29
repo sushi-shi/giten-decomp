@@ -7,6 +7,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/AreaLevel.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
@@ -147,7 +148,7 @@ void InitClock(void) {
     ResetClockPhaseAndTime(&g_clock);
     g_tickElapsed = 0;
     if (!s_moonFlags) {
-        FILE* fp = OpenDataFile(0x19, 0xc, 0);
+        FILE* fp = OpenDataFile(0x19, DATA_FILE_TABLE, 0);
         s_moonFlags = ReadRawHandle(fp);
         CloseDataFile(fp);
     }
@@ -509,7 +510,7 @@ void LoadAreaMap(i16 area, i16 level) {
         s_preserveAreaFlags = 0;
         SetFlagBank(0xc);
         UnloadAreaMap();
-        fp = OpenDataFile(area, 3, 0);
+        fp = OpenDataFile(area, DATA_FILE_MAP, 0);
         ReadCryptRecord(fp, s_areaRecord);
         CloseDataFile(fp);
         DecodeAreaMap(g_areaMap, s_areaRecord);

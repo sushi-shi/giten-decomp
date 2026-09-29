@@ -64,3 +64,28 @@ src/Game/fieldview.c	*	*	*	*array*[ ]s_view*	row and column of the 4x7 view-cell
 *	*	0	trivial-function-literal	0 initializer*	an accumulator or counter declared at zero
 *	*	1	trivial-function-literal	1 arithmetic*	a one-step offset: the next index, element or count
 *	*	1	trivial-function-literal	1 compound-assignment*	a one-step increment or decrement
+*	*	*	call-argument	operator()(int, int) argument 2	D3DMATRIX element row
+*	*	*	call-argument	operator()(int, int) argument 3	D3DMATRIX element column
+*	*	*	call-argument	PlaceSprite(i16, i16, i16, i16, i16) argument 4	sprite x in pixels
+*	*	*	call-argument	PlaceSprite(i16, i16, i16, i16, i16) argument 5	sprite y in pixels
+*	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 2	picture width in pixels
+*	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 3	picture height in pixels
+*	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 4	surface width in pixels
+*	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 5	surface height in pixels
+*	*	*	call-argument	DrawPlaneText(i16, i16, i16, const char *, i32) argument 2	text x in pixels
+*	*	*	call-argument	DrawPlaneText(i16, i16, i16, const char *, i32) argument 3	text y in pixels
+*	*	*	call-argument	DrawLayerText*argument 2	text x in pixels
+*	*	*	call-argument	DrawLayerText*argument 3	text y in pixels
+*	*	*	call-argument	MoveMenuBox(*argument 2	menu box x offset in pixels
+*	*	*	call-argument	MoveMenuBox(*argument 3	menu box y offset in pixels
+*	*	*	call-argument	ReadSurfaceWord*argument 3	surface x in pixels
+*	*	*	call-argument	ReadSurfaceWord*argument 4	surface y in pixels
+*	*	*	call-argument	ShowMessage(const char *, i16) argument 2	how many ticks the message stays (-1 until dismissed)
+*	*	*	call-argument	PushWaitState(i16, u16, u16, i16) argument 3	how many frames to wait
+*	*	*	call-argument	SetMenuItems(*argument 2	rows per menu page
+*	*	*	call-argument	CreateMenuBox(MenuBox *, i16, i16) argument 3	rows of the menu box panel
+*	*	*	call-argument	ScalePercent999(*argument 2	a percentage
+*	*	*	call-argument	AddTrainingPoints(*argument 3	training points to add
+*	*	*	call-argument	ScaleActionValue(*argument 3	a multiplier
+*	*	*	call-argument	ResetTextPlaneLineStep(*argument 2	the text line step in rows
+*	*	*	call-argument	RunPickTargetWindow(*argument 1	the minimum target range

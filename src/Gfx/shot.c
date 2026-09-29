@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/GameState.h>
 #include <Game/StateStack.h>
 #include <Gfx/Motion.h>
@@ -198,7 +199,7 @@ void LoadEffectTables(void) {
     FILE* fp;
     InitEffectSlots();
     InitEffectImageSets();
-    fp = OpenDataFile(0x10, 2, 0);
+    fp = OpenDataFile(0x10, DATA_FILE_EFFECT, 0);
     LoadMotionTable(fp);
     LoadShotTable(fp);
     LoadEffectPalettes(fp);

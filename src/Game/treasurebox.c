@@ -9,6 +9,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/Alignment.h>
 #include <Game/Analyze.h>
 #include <Game/AnalyzeData.h>
@@ -659,7 +660,7 @@ RVA(0x0001b3b0, 0x2f)
 void LoadWorldMapEvents(void) {
     FILE* fp;
     FreeWorldMapEvents();
-    fp = OpenDataFile(32, 12, 0);
+    fp = OpenDataFile(32, DATA_FILE_TABLE, 0);
     s_events = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -1140,7 +1141,7 @@ i16* GetItemMenuStock(i16 index) {
 RVA(0x0001c160, 0x33)
 void LoadItemMenuStock(void) {
     if (s_itemMenuStock == 0) {
-        FILE* fp = OpenDataFile(8, 12, 0);
+        FILE* fp = OpenDataFile(8, DATA_FILE_TABLE, 0);
         s_itemMenuStock = ReadRawHandle(fp);
         CloseDataFile(fp);
     }
@@ -1182,10 +1183,10 @@ i16* AllocItemMenuStock(i16 index, i16* count) {
 
 RVA(0x0001c250, 0x51)
 void LoadLearnableSkillTables(void) {
-    FILE* fp = OpenDataFile(48, 12, 0);
+    FILE* fp = OpenDataFile(48, DATA_FILE_TABLE, 0);
     s_learnableSkillTable = ReadRawHandle(fp);
     CloseDataFile(fp);
-    fp = OpenDataFile(49, 12, 0);
+    fp = OpenDataFile(49, DATA_FILE_TABLE, 0);
     s_learnableSkillRequirements = ReadRawHandle(fp);
     CloseDataFile(fp);
 }

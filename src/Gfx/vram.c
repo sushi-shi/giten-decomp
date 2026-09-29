@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/FieldSight.h>
 #include <Gfx/Background.h>
 #include <Gfx/Bitmap.h>
@@ -78,7 +79,7 @@ void ResetMask(i16 copySaved) {
 RVA(0x00002bf0, 0x69)
 void LoadMask(void) {
     u16 size;
-    FILE* fp = OpenDataFile(2, 12, 0);
+    FILE* fp = OpenDataFile(2, DATA_FILE_TABLE, 0);
     fread(&size, 2, 1, fp);
     s_savedMask = &s_savedMaskData;
     s_mask = &s_maskData;
@@ -371,7 +372,7 @@ u32 FreeImageHandle(u32 handle) {
 RVA(0x00003130, 0x58)
 void* LoadImageData(ImageRequest* request) {
     void* block = NULL;
-    FILE* fp = OpenDataFile(request->file, 0, request->variant);
+    FILE* fp = OpenDataFile(request->file, DATA_FILE_IMAGE, request->variant);
     i32 size;
     if (fp != NULL) {
         size = _filelength(_fileno(fp));
@@ -384,7 +385,7 @@ void* LoadImageData(ImageRequest* request) {
 RVA(0x00003190, 0x5e)
 void* LoadImageVariant(ImageRequest* request, i32* size) {
     void* block = NULL;
-    FILE* fp = OpenDataFile(request->file, 0, request->variant);
+    FILE* fp = OpenDataFile(request->file, DATA_FILE_IMAGE, request->variant);
     if (fp != NULL) {
         *size = _filelength(_fileno(fp));
         ReadImageBytes(block, fp, *size);
@@ -397,7 +398,7 @@ void* LoadImageVariant(ImageRequest* request, i32* size) {
 RVA(0x000031f0, 0x79)
 void* LoadImageRequest(ImageRequest* request, i16 mode) {
     void* block = NULL;
-    FILE* fp = OpenDataFile(request->file, 0, request->variant);
+    FILE* fp = OpenDataFile(request->file, DATA_FILE_IMAGE, request->variant);
     u32 size;
     i32 length;
     if (fp != NULL) {
@@ -415,7 +416,7 @@ void* LoadImageRequest(ImageRequest* request, i16 mode) {
 RVA(0x00003270, 0x55)
 void* LoadImageKind1(ImageRequest* request) {
     void* block = NULL;
-    FILE* fp = OpenDataFile(request->file, 1, 0);
+    FILE* fp = OpenDataFile(request->file, DATA_FILE_IMAGE_FCH, 0);
     i32 size;
     if (fp != NULL) {
         size = _filelength(_fileno(fp));
@@ -428,7 +429,7 @@ void* LoadImageKind1(ImageRequest* request) {
 RVA(0x000032d0, 0x5f)
 void* LoadImageFile(ImageRequest* request, i32* size) {
     void* block = NULL;
-    FILE* fp = OpenDataFile(request->file, 0xf, request->variant);
+    FILE* fp = OpenDataFile(request->file, DATA_FILE_IMAGE_VARIANT, request->variant);
     if (fp != NULL) {
         *size = _filelength(_fileno(fp));
         ReadImageBytes(block, fp, *size);

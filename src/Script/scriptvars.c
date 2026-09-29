@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/CharInfo.h>
 #include <Game/Condition.h>
 #include <Game/FieldMain.h>
@@ -537,7 +538,7 @@ void ShiftScriptEntries(ScriptCode* code, i16 entry, i16 delta, u16 size) {
 // Loads script data file `file` into `block` (a new block when NULL).
 RVA(0x0003ad20, 0x38)
 ScriptBlock* LoadScriptBlock(ScriptBlock* block, i16 file) {
-    FILE* fp = OpenDataFile(file, 9, 0);
+    FILE* fp = OpenDataFile(file, DATA_FILE_SCRIPT, 0);
     block = ReadScriptBlock(block, fp);
     block->id = file;
     CloseDataFile(fp);

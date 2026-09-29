@@ -370,7 +370,7 @@ void LoadItemFiles(void) {
     s_itemDataHandle = ReadCryptHandle(fp);
     CloseDataFile(fp);
 
-    fp = OpenDataFile(DATA_TABLE_ITEM_INDEX, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_ITEM_INDEX, DATA_FILE_TABLE, 0);
     s_itemIndexHandle = ReadRawHandle(fp);
     g_itemRemapHandle = ReadRawHandle(fp);
     CloseDataFile(fp);
