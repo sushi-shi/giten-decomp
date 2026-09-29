@@ -155,20 +155,6 @@ typedef struct DoorCell {
     u8 pad05[11];
 } DoorCell;
 
-// A cell record copied out of its list into sixteen bytes, the size of the
-// scene cell (SetSceneCell); every kind but the script cell fits whole.
-// RunCellTrap copies its exit into one.
-typedef union MapCell {
-    CellHead head;
-    WarpCell warp;
-    BattleCell battle;
-    LinkCell link;
-    ObjectCell object;
-    ExitCell exit;
-    TreasureBox box;
-    DoorCell door;
-} MapCell;
-
 // A four-byte map-object spawn record; xLayer == 0xff terminates the list.
 typedef struct MapSpawn {
     u8 xLayer; // Low seven bits are x; the top bit selects the object layer.
