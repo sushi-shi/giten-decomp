@@ -121,17 +121,17 @@ i16 FindWord(WordList* list, i16 word) {
             }
         }
     }
-    return -1;
+    return WORD_NONE;
 }
 
 RVA(0x0002dce0, 0x99)
 i16 AddSkill(WordList* list, i16 skill) {
     i16 i;
     if (!list) {
-        return -1;
+        return WORD_NONE;
     }
     if (ContainsWord(list, skill)) {
-        return -1;
+        return WORD_NONE;
     }
     for (i = 0; i < list->count; i++) {
         s_wordScratch[i] = GetWord(list, i);
@@ -149,7 +149,7 @@ RVA(0x0002dd80, 0x82)
 void MoveWord(WordList* list, i16 from, i16 to) {
     i16 value = list->words[from];
     i16 i;
-    if (to == -1) {
+    if (to == WORD_LAST) {
         to = list->count - 1;
     }
     if (from <= to) {
@@ -169,13 +169,13 @@ i16 RemoveWord(WordList* list, i16 word) {
     i16 index;
     i16 i;
     if (!list) {
-        return -1;
+        return WORD_NONE;
     }
     index = FindWord(list, word);
     if (index < 0) {
-        return -1;
+        return WORD_NONE;
     }
-    MoveWord(list, index, -1);
+    MoveWord(list, index, WORD_LAST);
     list->count--;
     for (i = 0; i < list->count; i++) {
         s_wordScratch[i] = GetWord(list, i);
