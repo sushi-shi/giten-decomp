@@ -74,7 +74,7 @@ motion	43	42
 mouse	10	9
 nibble	4	3
 objecttexture	2	2
-partyaction	103	98
+partyaction	103	99
 playtime	4	4
 pool	6	6
 range	25	25
@@ -1520,7 +1520,7 @@ partyaction	_RunActorCommandMenu	94.6038	94.6038	4	d1f98d643d5c	0x6460	94.6038
 partyaction	_RunFieldEncounter	100.0000	100.0000	9	2b5934954aec	0x7390	100.0000	
 partyaction	_RunFieldState	100.0000	100.0000	9	46d59951b812	0x7aa0	100.0000	
 partyaction	_RunMemberPickMenu	100.0000	100.0000	2	fdd11366aedb	0x94d0	100.0000	
-partyaction	_RunPartyCommandInput	91.0436	91.0436	20	c3a07597b543	0x9620	91.0436	
+partyaction	_RunPartyCommandInput	100.0000	100.0000	21	250a2cb3453b	0x9620	100.0000	
 partyaction	_RunPartyTurn	100.0000	100.0000	9	64b7e4bb6107	0x8330	100.0000	
 partyaction	_RunPickTargetWindow	100.0000	100.0000	6	116bae42ae95	0x9e30	100.0000	
 partyaction	_ScaleActionValue	100.0000	100.0000	1	d4b757752929	0x6a40	100.0000	
