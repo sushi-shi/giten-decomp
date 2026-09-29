@@ -20,7 +20,7 @@ from pathlib import Path
 from giten.core.paths import BUILD, REPO
 
 CDB = BUILD / "clangd/compile_commands.json"
-PREFIX = "ast3:"
+PREFIX = "ast4:"
 
 _FUNCTION_KINDS = ("FUNCTION_DECL", "CXX_METHOD", "CONSTRUCTOR", "DESTRUCTOR",
                    "CONVERSION_FUNCTION")
@@ -175,7 +175,8 @@ def _emit(cidx, node, out: list[str]) -> None:
         if ref is not None and ref.kind == cidx.CursorKind.ENUM_CONSTANT_DECL:
             item = ["INTEGER_LITERAL", str(ref.enum_value)]
         else:
-            item.append(node.spelling)
+            # An anonymous member's spelling carries its header location.
+            item.append(_UNNAMED.sub(r"(unnamed\1)", node.spelling))
     elif kind in (cidx.CursorKind.BINARY_OPERATOR,
                   cidx.CursorKind.COMPOUND_ASSIGNMENT_OPERATOR,
                   cidx.CursorKind.UNARY_OPERATOR):
