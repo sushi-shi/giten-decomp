@@ -382,12 +382,38 @@ u16 NextScriptChar(i16 window) {
     return c;
 }
 
+#ifdef GITEN_COMPAT
+// Whether ReadCodeChar's character `ch` is text rather than an opcode: a
+// single byte by _ismbcprint, whose tables the CRT builds from the code page
+// alone; a double-byte character (ReadCodeChar pairs only a lead byte) when
+// its trail byte is a Shift-JIS trail byte.
+static b32 IsScriptTextChar(u16 ch) {
+    i32 trail;
+
+    if (ch <= 0xff) {
+        return _ismbcprint(ch) != 0;
+    }
+    trail = ch & 0xff;
+    return trail >= 0x40 && trail <= 0xfc && trail != 0x7f;
+}
+#endif
+
 // Runs one character: an opcode for a non-printable one, else the character
 // is captured or written to `window`. Negative when the script stops.
 RVA(0x00039020, 0x6d)
 i16 StepScript(i16 window, u16 ch) {
     i16 result;
+#ifdef GITEN_COMPAT
+    // @bug For a double-byte character _ismbcprint asks GetStringTypeA for its
+    // C1 type bits, which differ by Windows version: on Windows XP some
+    // characters the game prints (the long vowel mark ー, 0x815b) have none of
+    // the printable bits. Such a character goes to ExecScriptOpcode, which has
+    // no case for it, so it is dropped from the text. The test here does not
+    // ask the system.
+    if (!IsScriptTextChar(ch)) {
+#else
     if (!_ismbcprint(ch)) {
+#endif
         return ExecScriptOpcode(window, ch);
     }
     if (!CaptureTextChar(ch)) {
