@@ -66,10 +66,17 @@ NORMALIZE_STAMP = "build/objdiff/.normalize.stamp"
 OBJDIFF_JSON = f"{COMPARE_DIR}/objdiff.json"
 REPORT_JSON = f"{COMPARE_DIR}/report.json"
 
-#: Phase 2 (opt-in): the candidate image and ignored local resource transfer.
+#: Phase 2 (opt-in): the candidate image. Its .rsrc compiles from the tracked
+#: resource script and ID header; the payload files that script names are
+#: written from the user's original into the ignored payload directory, and
+#: the listing is that edge's output.
 CANDIDATE_EXE = "build/exe/DDS.candidate.EXE"
 CANDIDATE_MAP = "build/exe/DDS.candidate.map"
-RESOURCE_RES = "build/gen/retail.res"
+RESOURCE_SCRIPT = "src/Giten/Giten.rc"
+RESOURCE_HEADER = "include/Giten/Resource.h"
+RESOURCE_PAYLOADS = "build/gen/rsrc"
+RESOURCE_PAYLOAD_LIST = f"{RESOURCE_PAYLOADS}/payloads.tsv"
+RESOURCE_RES = "build/gen/giten.res"
 
 #: The playable image (`giten play`): the units that test a play flag
 #: recompiled with the bug-fix defines into their own object tree, linked with
