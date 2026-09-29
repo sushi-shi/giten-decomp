@@ -2,6 +2,7 @@
 #define GITEN_INPUT_MOUSE_H
 
 #include <EnumDomain.h>
+#include <Input/MouseClickState.h>
 #include <Ints.h>
 
 // Mouse button bits as polled from DirectInput each frame.
@@ -50,10 +51,10 @@ typedef struct MousePosition {
 // A click latch is -1 from the press until a consumer clears it, and keeps
 // the cursor position of the press.
 extern MousePosition g_mousePosition;
-extern i16 g_mouseLeftClick;
+extern GZ_ENUM_STORAGE(MouseClickState, i16) g_mouseLeftClick;
 extern i16 g_mouseLeftClickX;
 extern i16 g_mouseLeftClickY;
-extern i16 g_mouseRightClick;
+extern GZ_ENUM_STORAGE(MouseClickState, i16) g_mouseRightClick;
 extern i16 g_mouseRightClickX;
 extern i16 g_mouseRightClickY;
 
@@ -70,13 +71,13 @@ static __inline void ClearMouseSelection(void) {
 
 void LatchMouseClicks(void);
 void ClearMouseClicks(void);
-i16 TakeMouseCancel(i16 clearSelection);
-i16 TakeMouseCancelSound(void);
-i16 TakeMouseLeftClick(void);
+GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancel(i16 clearSelection);
+GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancelSound(void);
+GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseLeftClick(void);
 void SetMouseState(GZ_ENUM_PARAM(MouseButtonBits, i16) buttons, i16 x, i16 y);
 i16 GetMouseX(void);
 i16 GetMouseY(void);
-i16 GetMouseRightClick(void);
-i16 GetMouseLeftClick(void);
+GZ_ENUM_RETURN(MouseClickState, i16) GetMouseRightClick(void);
+GZ_ENUM_RETURN(MouseClickState, i16) GetMouseLeftClick(void);
 
 #endif // GITEN_INPUT_MOUSE_H

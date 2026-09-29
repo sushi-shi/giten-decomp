@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Ui/MenuBox.h>
 
 // Script text capture and the formatted text line.
 
@@ -15,7 +16,7 @@ typedef struct ScriptWindowNode {
 } ScriptWindowNode;
 
 struct MenuBox;
-void RunScriptMenuHandler(struct MenuBox* menu, i16 index, i16 event);
+void RunScriptMenuHandler(struct MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 b16 CaptureTextChar(u16 ch);
 void SetCapturedText(const char* text);

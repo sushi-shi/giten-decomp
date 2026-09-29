@@ -6,6 +6,7 @@
 #include <Enums.h>
 #include <Script/ScriptPanel.h>
 #include <Script/ScriptStatus.h>
+#include <Script/WindowReverseMode.h>
 #include <Util/Compare.h>
 
 GZ_ENUM_BEGIN(ScriptFlagAction)
@@ -19,7 +20,7 @@ GZ_ENUM_END(ScriptFlagAction)
 // units are not recovered yet; each declaration moves to its owner's header
 // when that unit is reconstructed.
 
-void SetWindowReverse(i16 window, i16 mode);
+void SetWindowReverse(i16 window, GZ_ENUM_PARAM(WindowReverseMode, i16) mode);
 
 void OpSetWindowColor(i16 window, i16 part);
 

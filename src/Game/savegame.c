@@ -418,16 +418,16 @@ i16 TestFeatureMask(i16 bits) {
 }
 
 RVA(0x00004380, 0xc)
-i16 TestModeFlags(i16 bits) {
+i16 TestModeFlags(GZ_ENUM_PARAM(ModeFlags, i16) bits) {
     return bits & s_modeFlags;
 }
 
 RVA(0x00004390, 0x12)
-i16 SetModeFlags(i16 bits) {
+i16 SetModeFlags(GZ_ENUM_PARAM(ModeFlags, i16) bits) {
     return s_modeFlags |= bits;
 }
 
 RVA(0x000043b0, 0x16)
-i16 ClearModeFlags(i16 bits) {
+i16 ClearModeFlags(GZ_ENUM_PARAM(ModeFlags, i16) bits) {
     return s_modeFlags &= ~bits;
 }

@@ -321,7 +321,7 @@ void OpCreateScriptMenu(void) {
 // 0x12..0x16 set to the menu, the event + 1, the item index, the cursor and
 // the index less the cursor.
 RVA(0x0002f2d0, 0x6c)
-void RunScriptMenuHandler(MenuBox* menu, i16 index, i16 event) {
+void RunScriptMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     CallScript(menu->context.script.file, menu->context.script.entry);
     SetScriptLongVar(0x12, (u32)menu);
     SetScriptLongVar(0x13, event + 1);

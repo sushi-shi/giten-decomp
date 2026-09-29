@@ -42,7 +42,7 @@ extern const i16 g_physicalRecoveryConditions[8];
 i16 AddCondition(ConditionSet* conditions, i16 condition);
 i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
 void ClearConditionList(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
-i16 GetDisablingCondition(ConditionSet* conditions);
+GZ_ENUM_RETURN(ConditionId, i16) GetDisablingCondition(ConditionSet* conditions);
 void ClearBattleConditions(ConditionSet* conditions);
 void ClearLeaveConditions(ConditionSet* conditions);
 void ClearAllConditions(ConditionSet* conditions);
