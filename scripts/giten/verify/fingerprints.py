@@ -1,9 +1,12 @@
 """giten.verify.fingerprints - per-function source fingerprints (src_hash).
 
-The ported mechanism: a function's src_hash is the 12-hex sha1 of ITS OWN
-source extent, recovered by asking clangd for the unit's hierarchical
-documentSymbol tree and hashing the body range(s) of the matching qualified
-name. Hashing a whole .cpp is too coarse - editing one function would reset
+A function's src_hash is the `ast:` fingerprint of ITS OWN definition
+(giten.verify.astprint): the libclang AST as the retail compile sees it, with
+enum constants and constant expressions reduced to their values. Renaming a
+constant to an enumerator or macro of the same value, retyping through a
+typedef of the same type, or editing comments and layout is not an edit.
+Hashes of another domain (the older raw-text range hashes) are never compared
+against it: a domain change is re-banked, not counted as an edit. Hashing a whole .cpp is too coarse - editing one function would reset
 the high-water of every sibling in the unit, hiding collateral regressions.
 
 Bridge from the report's MANGLED names to clangd's source-level names:
@@ -35,7 +38,6 @@ from giten.core.paths import BUILD, REPO
 
 CACHE = BUILD / "gen/func_fingerprints.tsv"
 SEED = BUILD / "clangd/func_fingerprints.tsv"   # old pipeline's cache (read-only)
-CDB_DIR = BUILD / "clangd"                       # compile_commands.json home
 
 FALLBACK = "cpp:"  # marks a fingerprint we could NOT resolve per-function
 
@@ -44,11 +46,17 @@ def is_fallback(h: str) -> bool:
     return h.startswith(FALLBACK)
 
 
+def domain(fp: str) -> str:
+    """The hash domain: the prefix before ':' (`ast`, `header`, `cpp`), or
+    `text` for the older bare raw-text range hashes."""
+    return fp.split(":", 1)[0] if ":" in fp else "text"
+
+
 def real_edit(prev_fp: str, cur_fp: str) -> bool:
-    """True only when BOTH sides are real (non-fallback) fingerprints that
-    differ - a genuine source edit, not a cache hash-domain change."""
+    """True only when BOTH sides are real (non-fallback) fingerprints of the
+    SAME domain that differ - a genuine source edit, not a domain change."""
     return not is_fallback(prev_fp) and not is_fallback(cur_fp) \
-        and prev_fp != cur_fp
+        and domain(prev_fp) == domain(cur_fp) and prev_fp != cur_fp
 
 
 def cpp_hash(source: str) -> str:
@@ -245,112 +253,6 @@ def _candidates(mangled: str) -> list:
 
 
 # --------------------------------------------------------------------------- #
-# minimal clangd LSP client (documentSymbol only)                             #
-# --------------------------------------------------------------------------- #
-class Clangd:
-    def __init__(self):
-        import os
-        self.proc = subprocess.Popen(
-            ["clangd", "--log=error", "--header-insertion=never",
-             "--background-index=false",
-             f"--compile-commands-dir={CDB_DIR}"],
-            cwd=REPO, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL)
-        self._id = 0
-        self._request("initialize", {
-            "processId": os.getpid(), "rootUri": REPO.as_uri(),
-            "capabilities": {"textDocument": {"documentSymbol": {
-                "hierarchicalDocumentSymbolSupport": True}}}})
-        self._notify("initialized", {})
-
-    def _send(self, payload: dict) -> None:
-        import json
-        body = json.dumps({"jsonrpc": "2.0", **payload}).encode()
-        self.proc.stdin.write(
-            f"Content-Length: {len(body)}\r\n\r\n".encode() + body)
-        self.proc.stdin.flush()
-
-    def _recv(self) -> dict:
-        import json
-        import re
-        headers = b""
-        while not headers.endswith(b"\r\n\r\n"):
-            b1 = self.proc.stdout.read(1)
-            if not b1:
-                raise RuntimeError("clangd exited unexpectedly (EOF)")
-            headers += b1
-        length = int(re.search(rb"Content-Length: (\d+)", headers).group(1))
-        return json.loads(self.proc.stdout.read(length))
-
-    def _notify(self, method: str, params: dict) -> None:
-        self._send({"method": method, "params": params})
-
-    def _request(self, method: str, params: dict, timeout: float = 120.0):
-        import time
-        self._id += 1
-        self._send({"id": self._id, "method": method, "params": params})
-        deadline = time.monotonic() + timeout
-        while time.monotonic() < deadline:
-            msg = self._recv()
-            if msg.get("method") == "window/workDoneProgress/create":
-                self._send({"id": msg["id"], "result": None})
-                continue
-            if msg.get("id") == self._id:
-                if "error" in msg:
-                    raise RuntimeError(
-                        f"clangd error: {msg['error'].get('message')}")
-                return msg.get("result")
-        raise RuntimeError(f"clangd: no reply to {method} within {timeout}s")
-
-    def document_symbols(self, path: Path) -> list:
-        self._notify("textDocument/didOpen", {"textDocument": {
-            "uri": path.as_uri(), "languageId": "cpp", "version": 1,
-            "text": path.read_text(errors="replace")}})
-        return self._request("textDocument/documentSymbol", {
-            "textDocument": {"uri": path.as_uri()}}) or []
-
-    def close(self) -> None:
-        try:
-            self._request("shutdown", {}, timeout=5)
-            self._notify("exit", {})
-        except Exception:  # noqa: BLE001 - best-effort teardown
-            pass
-        self.proc.terminate()
-
-
-def body_ranges(symbols: list) -> dict[str, list]:
-    """Hierarchical DocumentSymbol[] -> {qualified_name: [(start, end)]}.
-
-    Keep the multi-line range(s) (the definition body); a name with only
-    single-line ranges keeps those. Genuine overloads are unioned.
-    """
-    acc: dict[str, list] = {}
-
-    def walk(syms, prefix):
-        for s in syms:
-            k = s.get("kind")
-            nm = s.get("name", "")
-            if k in (6, 9, 12):  # Method / Constructor / Function
-                r = s["range"]
-                acc.setdefault(prefix + nm, []).append(
-                    (r["start"]["line"], r["end"]["line"]))
-            child_prefix = prefix + nm + "::" if k in (3, 5, 11, 23) else prefix
-            walk(s.get("children") or [], child_prefix)
-
-    walk(symbols, "")
-    chosen: dict[str, list] = {}
-    for name, ranges in acc.items():
-        multi = [r for r in ranges if r[1] > r[0]]
-        chosen[name] = sorted(multi or ranges)
-    return chosen
-
-
-def _hash_ranges(lines: list, ranges: list) -> str:
-    chunks = ["\n".join(lines[a:b + 1]) for (a, b) in ranges]
-    return _sha12("\n--\n".join(chunks))
-
-
-# --------------------------------------------------------------------------- #
 # regenerate (incremental)                                                    #
 # --------------------------------------------------------------------------- #
 def regenerate(force_all: bool = False, verbose: bool = False) -> int:
@@ -385,29 +287,20 @@ def regenerate(force_all: bool = False, verbose: bool = False) -> int:
         for u in todo:
             allm |= umang.get(u, set())
         if allm:
+            from giten.verify.astprint import unit_fingerprints
             m2q = demangle_map(allm)
-            lsp = Clangd()
-            try:
-                for unit in todo:
-                    path = (REPO / sources[unit]).resolve()
-                    if not path.is_file():
-                        continue
-                    chosen = body_ranges(lsp.document_symbols(path))
-                    lines = path.read_text(errors="replace").splitlines()
-                    qhash = {q: _hash_ranges(lines, rs)
-                             for q, rs in chosen.items()}
-                    n = 0
-                    for m in umang.get(unit, set()):
-                        q = m2q.get(m) if m.startswith("?") else next(
-                            (c for c in _candidates(m) if c in qhash), None)
-                        if q and q in qhash:
-                            new_funcs[(unit, m)] = qhash[q]
-                            n += 1
-                    if verbose:
-                        print(f"  {unit}: {n}/{len(umang.get(unit, set()))} "
-                              f"fingerprinted ({len(chosen)} defs in clangd)")
-            finally:
-                lsp.close()
+            for unit in todo:
+                qhash = unit_fingerprints(sources[unit])
+                n = 0
+                for m in umang.get(unit, set()):
+                    q = m2q.get(m) if m.startswith("?") else next(
+                        (c for c in _candidates(m) if c in qhash), None)
+                    if q and q in qhash:
+                        new_funcs[(unit, m)] = qhash[q]
+                        n += 1
+                if verbose:
+                    print(f"  {unit}: {n}/{len(umang.get(unit, set()))} "
+                          f"fingerprinted ({len(qhash)} defs in the AST)")
 
     write_cache(new_units, new_funcs)
     print(f"func fingerprints: {len(new_funcs)} functions  "
