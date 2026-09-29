@@ -872,10 +872,8 @@ i16 AddToBagEntry(i16 index, u16 amount, u16 limit) {
 
 RVA(0x00023e10, 0x60)
 i16 TakeFromBagEntry(i16 index, i16 amount) {
-    i16 held = GetItemStackCount(&g_bagItems[index]);
-
-    if (amount > held) {
-        amount = held;
+    if (amount > GetItemStackCount(&g_bagItems[index])) {
+        amount = GetItemStackCount(&g_bagItems[index]);
     }
     amount &= 0xff;
     g_bagItems[index].count -= amount;
