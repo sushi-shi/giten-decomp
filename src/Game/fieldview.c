@@ -9,6 +9,7 @@
 #include <Game/FieldView.h>
 #include <Game/TreasureBox.h>
 #include <Game/ViewCellAxis.h>
+#include <Game/WorldMap.h>
 #include <Input/Mouse.h>
 #include <Platform/PlatformApi.h>
 #include <Util/PixelMask.h>
@@ -558,19 +559,19 @@ b16 IsCellInViewCone(i16 x, i16 y, i16 cellX, i16 cellY) {
     i16 row;
     i16 col;
     switch (GetViewDirection()) {
-        case 0:
+        case VIEW_NORTH:
             row = cellY - y + 3;
             col = cellX - x + 3;
             break;
-        case 1:
+        case VIEW_EAST:
             row = x - cellX + 3;
             col = cellY - y + 3;
             break;
-        case 2:
+        case VIEW_SOUTH:
             row = y - cellY + 3;
             col = x - cellX + 3;
             break;
-        case 3:
+        case VIEW_WEST:
             row = cellX - x + 3;
             col = y - cellY + 3;
             break;
@@ -587,37 +588,37 @@ RVA(0x0000cc60, 0x5c)
 MapCoord GetLayerOrigin(i16 layer) {
     MapCoord origin;
     i16 cell = layer / 2;
-    origin.x = cell % 8;
-    origin.y = cell / 8;
-    origin.x *= 288;
-    origin.y *= 200;
+    origin.x = cell % WORLD_BLOCK_COLUMNS;
+    origin.y = cell / WORLD_BLOCK_COLUMNS;
+    origin.x *= WORLD_BLOCK_WIDTH;
+    origin.y *= WORLD_BLOCK_HEIGHT;
     return origin;
 }
 
-// A world position within its 288x200 block.
+// A world position within its block.
 RVA(0x0000ccc0, 0x29)
 MapCoord GetWorldBlockOffset(i16 x, i16 y) {
     MapCoord offset;
-    offset.x = x % 288;
-    offset.y = y % 200;
+    offset.x = x % WORLD_BLOCK_WIDTH;
+    offset.y = y % WORLD_BLOCK_HEIGHT;
     return offset;
 }
 
 // The world-map block (8 across) holding a world position.
 RVA(0x0000ccf0, 0x32)
 i16 GetWorldMapBlock(i16 x, i16 y) {
-    i16 row = y / 200;
-    return x / 288 + row * 8;
+    i16 row = y / WORLD_BLOCK_HEIGHT;
+    return x / WORLD_BLOCK_WIDTH + row * WORLD_BLOCK_COLUMNS;
 }
 
 RVA(0x0000cd30, 0x11)
 i16 GetWorldBlockX(i16 x) {
-    return x % 288;
+    return x % WORLD_BLOCK_WIDTH;
 }
 
 RVA(0x0000cd50, 0x11)
 i16 GetWorldBlockY(i16 y) {
-    return y % 200;
+    return y % WORLD_BLOCK_HEIGHT;
 }
 
 #define IsPointInWorldView(x, y) ((x) >= 0 && (x) < 0x280 && (y) >= 0 && (y) < 0x148)
@@ -646,16 +647,17 @@ MapCoord GetMouseWorldCell(void) {
     cell.y = MAP_COORD_NONE;
     cell.x = MAP_COORD_NONE;
     if (IsPointInWorldView(g_mousePosition.x, g_mousePosition.y)) {
-        cell.x = g_mousePosition.x + 0x70 + block % 8 * 288;
-        cell.y = g_mousePosition.y + 0x24 + block / 8 * 200;
+        cell.x = g_mousePosition.x + 0x70 + block % WORLD_BLOCK_COLUMNS * WORLD_BLOCK_WIDTH;
+        cell.y = g_mousePosition.y + 0x24 + block / WORLD_BLOCK_COLUMNS * WORLD_BLOCK_HEIGHT;
     }
     return cell;
 }
 
-// Whether a world cell lies inside the 0x900 x 0x898 map.
+// Whether a world cell lies inside the map.
 RVA(0x0000ce50, 0x29)
 b16 IsWorldCellInMap(i16 x, i16 y) {
-    if (x >= 0 && x < 0x900 && y >= 0 && y < 0x898) {
+    if (x >= 0 && x < WORLD_BLOCK_COLUMNS * WORLD_BLOCK_WIDTH && y >= 0
+        && y < WORLD_BLOCK_ROWS * WORLD_BLOCK_HEIGHT) {
         return true;
     }
     return false;
@@ -663,7 +665,7 @@ b16 IsWorldCellInMap(i16 x, i16 y) {
 
 // `direction` turned by `turn` quarter turns.
 RVA(0x0000ce80, 0xe)
-i16 TurnDirection(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn) {
+GZ_ENUM_RETURN(ViewDirection, i16) TurnDirection(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn) {
     return (u8)(direction + turn) & 3;
 }
 
@@ -749,13 +751,13 @@ i16 GetWallAtOffsetClamped(
 RVA(0x0000d0f0, 0x60)
 i16 GetCellWall(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn, u16 cell) {
     switch (TurnDirection(direction, turn)) {
-        case 0:
+        case VIEW_NORTH:
             return cell & 0xf;
-        case 1:
+        case VIEW_EAST:
             return cell >> 4 & 0xf;
-        case 2:
+        case VIEW_SOUTH:
             return cell >> 8 & 0xf;
-        case 3:
+        case VIEW_WEST:
             return cell >> 12;
     }
     return 0;

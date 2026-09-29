@@ -280,7 +280,7 @@ void CancelLayerDrag(void) {
 }
 
 RVA(0x00049790, 0x6)
-i32 GetViewDirection(void) {
+GZ_ENUM_RETURN(ViewDirection, i32) GetViewDirection(void) {
     return g_viewDirection;
 }
 

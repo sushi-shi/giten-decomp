@@ -649,3 +649,4 @@ src/Game/fieldscreen.c	*LayerImage*	*	*	*	@identity-TODO: layer image bands (7),
 src/Game/fieldscreen.c	GetLayerFrame	0	*	*	no frame
 src/Game/fieldscreen.c	InitWorldPanel	0x118	*	*	@identity-TODO: menu image 0x118
 src/Game/fieldscreen.c	ClearFieldPanelSelection	0	*	*	no movement under way (move state 0)
+src/Game/fieldview.c	*	*	*	*	the 3D view's geometry: the 4-row x 7-column cell grid around the party (column 3 ahead), the perspective wall slots 1..16 and their left/right wedges and edges, flood-fill steps, 2-bit directions and 4-bit wall nibbles per side of a cell word

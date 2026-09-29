@@ -27,10 +27,11 @@ extern i16 g_infoPlane;
 #include <Enums.h>
 
 // The world map is laid out in blocks of WORLD_BLOCK_WIDTH x WORLD_BLOCK_HEIGHT
-// pixels, WORLD_BLOCK_COLUMNS to a row.
+// pixels, WORLD_BLOCK_COLUMNS to a row and WORLD_BLOCK_ROWS rows.
 #define WORLD_BLOCK_WIDTH 288
 #define WORLD_BLOCK_HEIGHT 200
 #define WORLD_BLOCK_COLUMNS 8
+#define WORLD_BLOCK_ROWS 11
 
 typedef struct WorldEncounterChoices {
     i16 groups[6];

@@ -19,7 +19,7 @@ void GetMapSize(i16* width, i16* height);
 // The direction the party faces (0..3).
 // @identity-TODO: read from 0x4847ac; the owner of that word is unrecovered.
 RVA_DECL(0x00049790)
-i32 GetViewDirection(void);
+GZ_ENUM_RETURN(ViewDirection, i32) GetViewDirection(void);
 
 // The draw-cell bitmap: clearing it and setting one cell.
 void ClearDrawTable(void);
@@ -104,7 +104,7 @@ MapCoord GetMouseWorldCell(void);
 b16 IsWorldCellInMap(i16 x, i16 y);
 #define OppositeDirection(direction) (((direction) - 2) & 3)
 
-i16 TurnDirection(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn);
+GZ_ENUM_RETURN(ViewDirection, i16) TurnDirection(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn);
 static __inline void ApplyFacingOffset(
     i16* x,
     i16* y,
