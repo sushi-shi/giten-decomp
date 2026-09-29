@@ -224,3 +224,8 @@ src/Game/treasurebox.c	s_mapIcons	*	data-or-extent	*	automap icon rows: the icon
 *	*	*	call-argument	OffsetMapCoord(*argument 4	an offset across the facing, in cells
 *	*	*	call-argument	OffsetMapCoord(*argument 5	an offset along the facing, in cells
 *	*	*	call-argument	GetCellWallStop(*argument 2	a quarter-turn count from the facing
+src/Platform/d3dapp.cpp	Map*SoundId	*	*	*	a sound number the platform layer remaps between the game's and its WAVE table (the sounds have no names)
+src/Platform/d3dapp.cpp	MapSoundEffectId	*	*	*	a sound number the platform layer remaps between the game's and its WAVE table (the sounds have no names)
+src/Platform/d3dapp.cpp	ZBufferDepth	*	*	*	a z-buffer bit depth
+src/Platform/d3dapp.cpp	*	*	store	store to operator()()	a D3DMATRIX element value
+src/Platform/d3dapp.cpp	*	*	store	store to g_*Loss	the bits a colour channel loses in the pixel format
