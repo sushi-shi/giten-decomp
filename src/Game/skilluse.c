@@ -150,7 +150,7 @@ DATA(0x00091998)
 i16 g_hpChange;
 
 DATA(0x0009199a)
-i16 g_statusCondition;
+GZ_ENUM_STORAGE(InflictCode, i16) g_statusCondition;
 
 DATA(0x000919f0)
 i16 g_targetCount;
@@ -512,7 +512,7 @@ i16 ResolveCombatAction(void) {
     }
     if (fatal && GetFatalCondition(GetCharacterConditions(target))) {
         SetActionResult(attacker, 1);
-        g_statusCondition = 0;
+        g_statusCondition = INFLICT_NONE;
         attacker->lastChange = 0;
         ResetPoolChanges();
         s_targetHpBefore = max(1, s_targetHpBefore);
@@ -1551,7 +1551,7 @@ void UseAttackSkill(Character* user, Character* target) {
     g_statusCondition = GetSkillInflictedCondition(&s_effectSkill);
     switch (ApplySkillResistanceOutcome(user, 0)) {
         case 0:
-            g_statusCondition = 0;
+            g_statusCondition = INFLICT_NONE;
             break;
         case -1:
             SetActionOutcome(ACTION_OUTCOME_CONDITION);
@@ -1569,7 +1569,7 @@ void UseRestoreSkill(Character* user, Character* target) {
     i16 hit;
     i16 amount;
     i16 result;
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     hit = RollSkillHit(user, target, 1);
     amount = ComputeRestoreAmount(GetSkillValueB(&s_effectSkill), user, target->pools.hp.max);
     user->lastChange = amount;
@@ -1590,7 +1590,7 @@ void UseBattleTallySkill(Character* user, Character* target) {
     i16 tally;
     target->pickNoEffect = true;
     user->pickNoEffect = true;
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     g_hpChange = 0;
     g_actionResult = 0;
     user->lastChange = 0;
@@ -1614,7 +1614,7 @@ void UseBattleTallySkill(Character* user, Character* target) {
 
 static __inline void PrepareBattleStatSkill(Character* user) {
     user->pickNoEffect = true;
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     g_hpChange = 0;
     g_actionResult = 0;
     SetCharacterResult(user, 0, 0);
@@ -1695,7 +1695,7 @@ i16 ChangeBattleStat(i16* value, i16 amount, i16 base) {
 static __inline void PrepareNonDamageSkill(Character* user, Character* target) {
     target->pickNoEffect = true;
     user->pickNoEffect = true;
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     g_hpChange = 0;
     user->lastChange = 0;
 }

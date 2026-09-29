@@ -26,7 +26,7 @@ b16 RollWeaponCondition(
     i16 roll;
     i16 defense;
     i32 power;
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     if (!condition) {
         return false;
     }

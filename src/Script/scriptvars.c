@@ -741,15 +741,15 @@ void WaitForScriptText(i16 window) {
     i16 top = GetScriptWindowOrDefault(window);
     if (g_textState.timedWait && g_textState.inputWait) {
         if (g_textState.waitFrames > 1) {
-            PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, g_textState.waitFrames - 1, top);
+            PushWaitState(WAIT_INPUT_OR_FRAMES, WAIT_ON_ANY_INPUT, g_textState.waitFrames - 1, top);
         } else {
-            PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, 1, top);
+            PushWaitState(WAIT_INPUT_OR_FRAMES, WAIT_ON_ANY_INPUT, 1, top);
         }
     } else if (!g_textState.timedWait && g_textState.inputWait) {
-        PushWaitState(WAIT_INPUT, 0xffff, g_textState.waitFrames, top);
+        PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, g_textState.waitFrames, top);
     } else if (g_textState.timedWait && !g_textState.inputWait) {
         if (g_textState.waitFrames > 1) {
-            PushWaitState(WAIT_FRAMES, 0xffff, g_textState.waitFrames - 1, top);
+            PushWaitState(WAIT_FRAMES, WAIT_ON_ANY_INPUT, g_textState.waitFrames - 1, top);
         }
     }
 }

@@ -1332,7 +1332,7 @@ b16 RunCellScene(void) {
             break;
         case 2:
             NextGamePhase();
-            PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
+            PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
             break;
         case 3:
             NextGamePhase();
@@ -1545,7 +1545,7 @@ b16 RunBackgroundScene(void) {
             break;
         case 2:
             NextGamePhase();
-            PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
+            PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
             break;
         case 3:
             NextGamePhase();
@@ -1777,7 +1777,7 @@ static __inline void ApplyPickedStatGain(Character* member) {
 static __inline void ShowRaisedStat(Character* member, i16 highlighted) {
     FullyRestoreCharacter(member);
     DrawStatLine(member, s_raisedStat, highlighted, s_statWindow);
-    PushWaitState(WAIT_FRAMES, 0xffff, 10, 0);
+    PushWaitState(WAIT_FRAMES, WAIT_ON_ANY_INPUT, 10, 0);
 }
 
 // Runs one frame of the level-up screen, by phase: 0 opens it, 2 picks the
@@ -1805,7 +1805,7 @@ b16 RunLevelUp(void) {
                     NextGameStep();
                     s_pointPrompt = CloseTextWindow(s_pointPrompt);
                     PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
-                    PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
+                    PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
                     s_statWindow = CloseTextWindow(s_statWindow);
                     DrawStatusVitals(s_levelUpSlot);
                     return false;

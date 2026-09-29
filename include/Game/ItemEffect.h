@@ -7,6 +7,7 @@
 #include <Game/BattleEffect.h>
 #include <Game/Character.h>
 #include <Game/Condition.h>
+#include <Game/InflictCode.h>
 #include <Game/RestoreEffect.h>
 #include <Ints.h>
 
@@ -39,24 +40,6 @@ ClearEffectConditions(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionI
     ClearConditionList(conditions, list);
 }
 
-// What an item or skill inflicts (ResolveInflictedCondition): nothing, the
-// condition of that number (1..34), or a condition picked by chance, the
-// target's alignment or its demon class.
-GZ_ENUM_BEGIN(InflictCode)
-    INFLICT_NONE = 0,
-    INFLICT_CONDITION_FIRST = 1,
-    INFLICT_CONDITION_LAST = 34,
-    INFLICT_CHARM_UNLESS_ALIGNED_B_POSITIVE = 57,
-    INFLICT_TIPSY_BY_HALF = 58,
-    INFLICT_PARALYSIS_OR_TIPSY = 59,
-    INFLICT_HIGH_HALLUCINATION_OR_BERSERK = 60,
-    INFLICT_DRUNK_OR_TIPSY = 61,
-    INFLICT_DYING_OR_DEAD = 62,
-    INFLICT_HIGH_OR_ASH = 63,
-    INFLICT_DEAD_BY_HALF = 64,
-    INFLICT_PANIC_UNLESS_ALIGNED_B_NEGATIVE = 65
-GZ_ENUM_END(InflictCode)
-
 // The condition an inflict code gives `target`: codes 1..34 are conditions
 // themselves, 57..65 pick one by chance, alignment or demon class; -1 none.
 // @identity-TODO: what the coded conditions name is unrecovered.
@@ -64,7 +47,7 @@ GZ_ENUM_RETURN(ConditionId, i16) ResolveInflictedCondition(GZ_ENUM_PARAM(Inflict
 
 // Gives `target` the condition of inflict code `code` (recomputing its stats
 // when it newly gains condition 8).
-void InflictCondition(i16 code, Character* target);
+void InflictCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target);
 
 // Whether `target` resists inflict code `code` (1 when it gives no condition):
 // whether an equipped item's resistance code (0x77..0x85) covers it.

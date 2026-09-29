@@ -1363,7 +1363,7 @@ b16 RunFieldEncounter(void) {
                 PushScreenFade(SCREEN_FADE_FROM_BLACK, 1);
                 PushGameState(GAME_STATE_LEVEL_UP);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
-                PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, 0x50, -1);
+                PushWaitState(WAIT_INPUT_OR_FRAMES, WAIT_ON_ANY_INPUT, 0x50, -1);
                 MarkRewardsPending();
                 FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
                 ShowMessage(g_scratchBuffer, 0x3c);
@@ -2045,7 +2045,7 @@ b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16
     i16 luck;
     i16 roll;
     i16 defense;
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     if (!condition) {
         return false;
     }

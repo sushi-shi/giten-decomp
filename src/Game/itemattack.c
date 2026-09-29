@@ -123,7 +123,7 @@ b16 RollItemCondition(Character* attacker, Character* target, i16 resistance, i1
     i16 defense;
     i32 value;
     i16 power;
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     if (!condition) {
         return false;
     }

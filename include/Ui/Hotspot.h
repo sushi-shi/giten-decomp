@@ -39,7 +39,8 @@ extern Hotspot g_hotspots[64];
 // The number of live entries in g_hotspots.
 extern u32 g_hotspotCount;
 
-// The selected hotspot (-1 = none).
+// The selected hotspot, or HOTSPOT_NONE.
+#define HOTSPOT_NONE (-1)
 extern i32 g_selectedHotspot;
 
 void ClearSelectedHotspot(void);

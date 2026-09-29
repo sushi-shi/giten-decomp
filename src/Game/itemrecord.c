@@ -1384,7 +1384,7 @@ void UseRestoreItem(Character* user, Character* target) {
     i16 hp;
     i16 result;
 
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     mp = ComputeRestoreAmount(s_usedItem.params[8], user, target->pools.mp.max);
     g_mpChange = mp;
     hp = ComputeRestoreAmount(s_usedItem.params[7], user, target->pools.hp.max);
@@ -1421,7 +1421,7 @@ void UseAttackItem(Character* user, Character* target) {
         }
         if (ResolveItemAttack(user, target, 0) > 0) {
             g_statusCondition = GetItemInflictedCondition(&s_usedItem);
-            if (g_statusCondition != 0) {
+            if (g_statusCondition != INFLICT_NONE) {
                 InflictCondition(g_statusCondition, target);
             }
         }
@@ -1913,7 +1913,7 @@ GZ_ENUM_RETURN(ConditionId, i16) ResolveInflictedCondition(GZ_ENUM_PARAM(Inflict
 }
 
 RVA(0x00025840, 0x7c)
-void InflictCondition(i16 code, Character* target) {
+void InflictCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target) {
     b16 had = HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE);
     i16 condition = ResolveInflictedCondition(code, target);
 

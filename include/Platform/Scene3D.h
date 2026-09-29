@@ -403,6 +403,7 @@ extern u32 g_moveState;
 #define STEP_WALK 1
 
 // The buttons of the navigation pad on layer SCREEN_LAYER_NAVIGATION.
+#define PAD_NONE 0
 #define PAD_FORWARD 1
 #define PAD_BACK 2
 #define PAD_LEFT 3

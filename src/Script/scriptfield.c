@@ -80,7 +80,7 @@ RVA(0x00032660, 0x39)
 void OpIfStatusPositive(i16 invert) {
     i16 target = ReadBranchTarget();
     b32 matches = false;
-    if ((g_statusCondition > 0 && !invert) || (g_statusCondition == 0 && invert)) {
+    if ((g_statusCondition > 0 && !invert) || (g_statusCondition == INFLICT_NONE && invert)) {
         matches = true;
     }
     ScriptJumpUnless(target, matches);

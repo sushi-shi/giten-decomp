@@ -1384,7 +1384,7 @@ i16 RunAttachScreen(i16 sub) {
             }
             PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_attach.plane, -2);
-            PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
+            PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
             return STATUS_COMMAND_NONE;
         case 6:
             SetGameSub(MENU_STEP_CLOSE);
@@ -1414,7 +1414,7 @@ i16 RunAttachScreen(i16 sub) {
             }
             PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_attach.plane, -2);
-            PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
+            PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
             return STATUS_COMMAND_NONE;
         case 8:
             SetGameSub(MENU_STEP_CLOSE);

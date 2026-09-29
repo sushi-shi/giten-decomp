@@ -125,7 +125,7 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
     i16 defense;
     i32 value;
     i16 power;
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     if (!condition) {
         return false;
     }

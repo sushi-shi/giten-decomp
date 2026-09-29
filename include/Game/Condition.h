@@ -6,6 +6,7 @@
 #include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/ConditionId.h>
+#include <Game/InflictCode.h>
 #include <Game/RestoreEffect.h>
 #include <Ints.h>
 #include <Util/BitSet.h>
@@ -29,10 +30,9 @@ ClearCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) conditi
         }                                                                                          \
     } while (0)
 
-// @identity-TODO: a condition id the battle code keeps (cleared by
-// 0x424b20/0x424b60 and the attack routines 0x408d30/0x424950, set from byte
-// +0xd of the cached skill by 0x42db90); its role is unrecovered.
-extern i16 g_statusCondition;
+// The inflict code of the action being resolved (the skill's inflicted
+// condition, or the one an attack inflicted); INFLICT_NONE when none.
+extern GZ_ENUM_STORAGE(InflictCode, i16) g_statusCondition;
 
 const char* GetConditionName(GZ_ENUM_PARAM(ConditionId, i16) bit);
 b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);

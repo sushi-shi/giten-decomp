@@ -407,3 +407,22 @@ src/Gfx/vramaccess.c	*	*	*	*	screen-save buffers of 4 planes x 128 bytes and 640
 src/Gfx/blit.c	PrepareFullSceneSprite	*	call-argument	PrepareSceneSprite(*	the full 80x400 sprite cell with no origin or offset
 src/Gfx/videostate.c	GetPlane*	*	*	*	@identity-TODO: video planes 0..2 map to their data and headers; which screen layer each is is unrecovered
 src/Gfx/displayconfig.c	*	*	*	*	registry value sizes, key-open options and the display-config version (4) Win32 reads and writes
+src/Game/gameloop.c	InitGameData	0xc000	*	*	@identity-TODO: the feature bits set at start-up (TestFeatureMask); their meaning is unrecovered
+src/Game/gameloop.c	StepGame	*	*	*	-1 from the state dispatch or at the quit point asks to quit; the clock ticks with no extra time; a long frame advances play time 31 ms, a short one 24 ms
+src/Ui/hotspot.c	GetSelectedHotspot*	-1	*	*	no selected hotspot value
+src/Ui/hotspot.c	CountFieldObjects	*	*	*	the debug trace buffer size; -1 reports a pending abort in place of a count, which it clears
+src/Script/windowcolor.c	*	*	*	*	@identity-TODO: the alternate-text window switches: save flag 1, cursor column 0, scroll-top rows 0 and 2, and no text delay
+src/Game/waitstate.c	StepWaitState	1	*	*	a timed wait ends when its frame count reaches 1
+src/Game/waitstate.c	PushMessageBox	0	call-argument	PrintWindowText(*argument 3	attribute 0: print in the plane's own attribute
+src/Game/waitstate.c	RunMessageBoxState	[01]	*	*	the message box state's sub-steps: wait, then close
+src/Text/textchar.c	*	*	*	*	Shift-JIS decoding: a trail byte forms the low byte; codes 0xfe and up are two-byte escapes; a lead byte at the end reads as '※' (0x81a6)
+src/Script/scriptfield.c	OpEnterFieldMap	*	call-argument	*	@identity-TODO: the field-map entry's game step 4 and EnterFieldMap's last argument 1
+src/Script/scriptfield.c	OpIfBattleResult	*	*	*g_targetCount	target counts: exactly one, or two or more
+src/Script/scriptfield.c	OpCountObjectsAt	1	call-argument	*	@identity-TODO: CountObjectsAt's third argument, 1 for the script count
+src/Gfx/automap.c	ScreenToAutomapCell	*	*	*	automap screen geometry: an 8-pixel margin, 8 pixels per cell, 0x70 pixels (14 cells) across, and cell 7 at the centre
+src/Game/equipeffect.c	ApplyItemCurse	*	*	*	curse effects: HP and MP drained per step and chances of 0x40 or 0x20 in RandomUpTo(0xff); items below 1 are none
+include/Game/WorldMap.h	ClampWorldMapViewOrigin	*	*	*	world-map view origin limits in pixels (1664 x 1872), aligned down to 8 pixels
+include/Game/FieldSight.h	PushFieldUsePrompt	*	call-argument	*	@identity-TODO: the use prompt's position (the centre subcell 4 of cell (0, 0), height 0xba) and its sub-state and mode 0
+src/Platform/winmain.cpp	RestoreCursorClip	0	*	*	an empty (never saved) clip rectangle
+src/Platform/winmain.cpp	g_joystickKeys	*	data-or-extent	*	joystick button bits (1, 2, 4 shifted to the button field); the table ends with {0, 0}
+src/Platform/winmain.cpp	ClickMenuBar	0	*	*	no menu-bar command handled

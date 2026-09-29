@@ -14,7 +14,7 @@
 
 RVA(0x00058580, 0xb)
 void ClearSelectedHotspot(void) {
-    g_selectedHotspot = -1;
+    g_selectedHotspot = HOTSPOT_NONE;
 }
 
 RVA(0x00058590, 0xa)

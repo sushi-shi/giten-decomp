@@ -780,7 +780,7 @@ b16 RunFieldExploration(void) {
                 SetGamePhase(FIELD_PHASE_ENTER_CELL);
                 PushGameState(GAME_STATE_LEVEL_UP);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
-                PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, 0x50, -1);
+                PushWaitState(WAIT_INPUT_OR_FRAMES, WAIT_ON_ANY_INPUT, 0x50, -1);
                 MarkRewardsPending();
                 FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
                 ShowMessage(g_scratchBuffer, 0x3c);

@@ -22,7 +22,7 @@ static __inline void ResetPoolChanges(void) {
 }
 
 static __inline void ResetActionOutcome(void) {
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     g_actionResult = 0;
 }
 

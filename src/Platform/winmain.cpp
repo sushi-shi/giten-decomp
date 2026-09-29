@@ -50,7 +50,7 @@ DATA(0x0008fcf0)
 RECT g_windowRect;
 
 DATA(0x0006b4e0)
-i32 g_selectedHotspot = -1;
+i32 g_selectedHotspot = HOTSPOT_NONE;
 
 DATA(0x00084800)
 Texture g_roomTexture;
@@ -298,7 +298,7 @@ void WaitMilliseconds(DWORD ms) {
 // callers use which copy is all that tells them apart.
 RVA(0x000497c0, 0xb)
 void InvalidateSelectedHotspot(void) {
-    g_selectedHotspot = -1;
+    g_selectedHotspot = HOTSPOT_NONE;
 }
 
 RVA(0x000497d0, 0x25)
@@ -524,7 +524,7 @@ void RefreshScreenMode(void) {
 RVA(0x00049c50, 0x21)
 void SaveScreenMode(void) {
     s_savedRenderMode = g_renderMode;
-    g_selectedHotspot = -1;
+    g_selectedHotspot = HOTSPOT_NONE;
     s_screenSaved = true;
 }
 
@@ -532,7 +532,7 @@ RVA(0x00049c80, 0x2a)
 void RestoreScreenMode(void) {
     g_renderMode = s_savedRenderMode;
     s_savedRenderMode = 0xffff;
-    g_selectedHotspot = -1;
+    g_selectedHotspot = HOTSPOT_NONE;
     s_screenSaved = false;
 }
 
@@ -808,7 +808,7 @@ void RequestObjectRedraw(i16 index, i16 a, i16 b) {
         s_viewDirty = true;
         s_viewChanged = true;
         if (g_hotspotObject == index && (g_hotspotCellX != a || g_hotspotCellY != b)) {
-            g_selectedHotspot = -1;
+            g_selectedHotspot = HOTSPOT_NONE;
         }
         DrawFieldView();
     }
@@ -1323,7 +1323,7 @@ static BOOL (*s_moveSteps[16])(D3DVALUE* progress) = {
 // The pad button each move kind presses.
 DATA(0x0006ba38)
 static i32 s_movePadButtons[8] = {
-    0,
+    PAD_NONE,
     PAD_FORWARD,
     PAD_BACK,
     PAD_LEFT,
@@ -1349,7 +1349,7 @@ b32 AnimateMove(void) {
             DrawFieldView();
             g_moveState = MOVE_STATE_NONE;
             s_doorOpening = false;
-            g_selectedHotspot = -1;
+            g_selectedHotspot = HOTSPOT_NONE;
             MapPosition* position = GetMapPosition();
             // the pun: this layer's own prototype of RedrawFieldAt takes int
             // arguments (0x44adda sign-extends each; the C callers push words).
@@ -2392,7 +2392,7 @@ void DrawHotspotMarks(void) {
     u32 x;
     u32 y;
 
-    if (g_selectedHotspot == -1 || s_markedCount != g_hotspotCount) {
+    if (g_selectedHotspot == HOTSPOT_NONE || s_markedCount != g_hotspotCount) {
         anyTarget = true;
         s_markedCount = g_hotspotCount;
         if (AnyObjectInReach()) {
@@ -4934,7 +4934,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                         s_padHeld = true;
                         return;
                     }
-                    g_heldPadButton = 0;
+                    g_heldPadButton = PAD_NONE;
                 case SCREEN_LAYER_LOCATION:
                 case SCREEN_LAYER_CURRENCY:
                 case SCREEN_LAYER_AUTOMAP:
