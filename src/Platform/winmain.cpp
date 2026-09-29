@@ -1684,10 +1684,8 @@ static D3DVALUE s_boxUV[4][4][2] = {
 
 // Draws the treasure boxes within three cells of the party as billboards and
 // makes the box in front of the party a hotspot.
-// @early-stop x87 schedule and argument extension: the billboard corner
-// products and copies differ; retail rounds the -x corner through a temporary.
-// Retail also zero-extends the box coordinates into full registers before
-// IsCellInViewCone; the callee consumes only their low 16 bits. Calls and CFG match.
+// @early-stop x87 schedule: the billboard corner products and copies differ;
+// retail rounds the -x corner through a temporary. Calls and CFG match.
 RVA(0x0004bdd0, 0x5dc)
 void RenderTBox(void) {
     DATA(0x0008fd00)
@@ -2078,9 +2076,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
     partyX = position->x;
     partyY = position->y;
     if (g_moveState == 0) {
-        i32 viewY = partyY;
-        i32 viewX = partyX;
-        UpdateViewCells(viewX, viewY);
+        UpdateViewCells(partyX, partyY);
     }
     for (x = partyX - 3; x <= partyX + 3; x++) {
         for (y = partyY - 3; y <= partyY + 3; y++) {
