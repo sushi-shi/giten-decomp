@@ -393,40 +393,85 @@ new one always takes an empty entry, even when the same item is already held.
 When none is empty, `StoreBagItem` opens `RunBagDiscardMenu` and retries until
 the item fits. The menu lists only entries that are neither priceless nor
 scenario items, so no discard frees a scenario entry. The menu turns cancel
-off, so once its list is empty it can never be left.
+off, so once its list is empty it can never be left
+([below](#the-discard-menu-with-nothing-to-discard)).
 The item table has 18 scenario items (the 8 lover's parts, the 4 cyber limbs,
-the Newton wreckage, the culture tank and more), and the FAQ reports parts that
-cannot be removed [FAQ]. Whether normal play reaches 16 held at once is
-unproven.
+the Newton wreckage, the culture tank and more), all priceless, and the FAQ
+reports parts that cannot be removed [FAQ]. Whether normal play reaches 16
+held at once is unproven.
 
-**Fix:** `StoreBagItem` does not open the menu for a scenario item and leaves
-it unstored.
+**Fix:** `AddScenarioBagItems` puts what does not fit in the scenario range
+into empty normal entries (the first 48). If those are full too, the discard
+menu opens as for any item; each discard frees a normal entry, which the retry
+fills. `CompactBagCore`, which runs before every store and in `CompactBag`,
+keeps every scenario entry instead of the first 16: the scenario range takes
+16 again and the rest go to the free normal entries that the compaction leaves
+at the end of the normal range. When a scenario entry is taken, the next
+compaction moves one back into the scenario range.
 
-**Save impact:** none; a save made afterwards lacks the item that could not
-be stored.
+The bag's readers find a scenario item by item or kind, not by entry range,
+so one in a normal entry behaves as one in the scenario range:
+
+- `CountBagItem` (the event checks, through `CountHeldItem`),
+  `TakeBagItemsFromEnd` (`TakeBagItems`, the scripts' item removal) and
+  `OpListBagByCategory` scan all 64 entries; the script categories that
+  exclude scenario items test the kind.
+- `StampSpecialItem`, `ExpireSpecialItems` and `IsSpecialItemExpired` (the
+  timed items `0xad`-`0xb4`) take the item id and `CountHeldItem`.
+- The status screen's item page and `OpenItemListMenu` list all 64 entries
+  (`CopyBagEntries(0, 64, ...)`).
+- The lists over the normal range refuse it: `RunBagDiscardMenu` by kind,
+  the equip list by `CanEquipItem` (no equip part), the attach list by stack
+  limit (99, not 1), and the sell menu (`StepItemSellMenu`) shows it as a
+  priceless, unselectable row.
+- `WriteBag`/`ReadBag` and `SaveOrRestoreBag` copy the 64 entries verbatim.
+
+**Save impact:** a save made with more than 16 scenario entries holds the
+extra ones in normal entries. The play build loads it unchanged. The retail
+game and the matching build keep, at the `CompactBag` in `LoadGame`, only the
+first 16 scenario entries in entry order (the ones in normal entries come
+first) and clear the rest. Retail saves load unchanged.
 
 **Sources:** [FAQ].
 
 ### The discard menu with nothing to discard
 
-**Class:** unfixed; not reproducible.
+**Class:** bugfix. **Fixed** under `GITEN_BUGFIX`.
 
-**Symptom (hypothetical):** a bag full of priceless items would open a discard
-menu with no entries and no cancel, and the game would hang.
+**Symptom:** with every one of the 48 normal entries holding a priceless
+item or a scenario item, receiving an item that does not fit opens a discard
+menu with no entries and no cancel, and the game hangs.
 
-**Root cause:** `RunBagDiscardMenu` does not handle an empty list. Other than
-the scenario case above, it opens only when the 48 normal entries are full,
-and every one of them would have to hold a priceless item. The item table
-has 22 priceless items besides the scenario items (keycards, the named
-swords, the dummy armour and a few others). Filling 48 entries would take at
-least 26 extra copies of the ten unstackable ones (the swords and the
-armour).
+**Root cause:** `RunBagDiscardMenu` does not handle an empty list. It turns
+cancel off and waits for a pick that cannot come; after it, it would clear
+the entry read from its uninitialised list. The item table has 22 priceless
+items besides the scenario items (keycards, the named swords, the dummy
+armour and a few others). Filling 48 entries with them would take at least 26
+extra copies of the ten unstackable ones (the swords and the armour), so
+without the scenario overflow above it needs deliberate hoarding. The overflow
+makes scenario entries count toward the 48.
 
-**Fix:** none needed.
+**Fix:** with nothing to list, the menu shows "アイテムを持ちきれません" (the
+item cannot be carried) under its title, turns cancel on and discards
+nothing. `RunBagDiscardMenu` reports that to `StoreBagItem`, which stops
+retrying and returns what it stored. The item that did not fit is not
+received, whatever its source: a script's gift (whose own message may still
+say it was received), a shop or treasure pool, or an item taken off in the
+equipment screen.
 
-**Save impact:** none.
+This is a loss, but not a silent one, and the least surprising of the honest
+options. Retail hangs in this state, so no retail save reaches past it. No
+held item is discarded without the player picking it. Offering the priceless
+items instead would let the player discard a keycard or a scenario
+prerequisite, which retail never allows. Keeping an unequipped item on its
+wearer would need every equipment caller of `StoreBagItem` (`EquipItem`,
+`UnequipPart`, the status screen's equip and attach steps) to undo its change
+on a partial store. The state needs all 48 normal entries to hold items that
+the discard menu cannot list.
 
-**Sources:** none.
+**Save impact:** none; a later save lacks the item that could not be carried.
+
+**Sources:** none; found in the reconstruction.
 
 ### The discard menu freezes or appears with room left
 
