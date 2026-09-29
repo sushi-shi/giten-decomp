@@ -116,7 +116,7 @@ i16 ExchangeAbortPending(i16 pending) {
 }
 
 RVA(0x00045680, 0x59)
-i16 CountHotspotsOfKind(i16 kind, i16 consume) {
+i16 CountHotspotsOfKind(GZ_ENUM_PARAM(SceneHotspotKind, i16) kind, b16 consume) {
     i32 count;
     i16 i;
     if (kind == SCENE_HOTSPOT_OBJECT && s_abortPending && consume) {

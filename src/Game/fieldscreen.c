@@ -24,6 +24,7 @@
 #include <Game/InfoBar.h>
 #include <Game/ItemUse.h>
 #include <Game/PartyPick.h>
+#include <Game/SceneHotspotKind.h>
 #include <Game/StateStack.h>
 #include <Game/TreasureBox.h>
 #include <Game/WorldMap.h>
@@ -436,7 +437,7 @@ i16 DdsRowHandler(PanelRow* row, i16 value, i16 op) {
 RVA(0x00014c20, 0x83)
 i16 FightRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
-        if (!CountHotspotsOfKind(2, 0)) {
+        if (!CountHotspotsOfKind(SCENE_HOTSPOT_OBJECT, false)) {
             ClearPanelRowCheck(row);
             // "[FIGHT] 戦う相手が居ません"
             ShowMessage(
@@ -460,7 +461,7 @@ RVA(0x00014cb0, 0xd1)
 i16 TalkRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         if (CanOpenAutomap()) {
-            if (!CountHotspotsOfKind(2, 0)) {
+            if (!CountHotspotsOfKind(SCENE_HOTSPOT_OBJECT, false)) {
                 ClearPanelRowCheck(row);
                 // "[TALK] 会話相手が居ません"
                 ShowMessage(

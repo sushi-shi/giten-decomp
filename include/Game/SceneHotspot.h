@@ -5,13 +5,9 @@
 #include <Enums.h>
 #include <Game/AreaNpc.h>
 #include <Game/MapCoord.h>
+#include <Game/SceneHotspotKind.h>
 #include <Gfx/SpriteBitmap.h>
 #include <Ints.h>
-
-GZ_ENUM_BEGIN(SceneHotspotKind)
-    SCENE_HOTSPOT_OBJECT = 2,
-    SCENE_HOTSPOT_BOX = 3
-GZ_ENUM_END(SceneHotspotKind)
 
 GZ_ENUM_BEGIN(SceneSpriteFlags)
     SCENE_SPRITE_INTERACTIVE = 1,

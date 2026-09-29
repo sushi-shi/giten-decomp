@@ -5,6 +5,7 @@
 
 #include <Game/Clock.h>
 #include <Game/GameState.h>
+#include <Game/MapArea.h>
 #include <Game/Party.h>
 
 #include <string.h>
@@ -30,7 +31,7 @@ i16 GetMapValue(i16 which) {
 RVA(0x0003c6f0, 0xb8)
 void InitNewGame(void) {
     i16 i;
-    g_party.field.pos.area = 0x82;
+    g_party.field.pos.area = MAP_AREA_HATSUDAI;
     g_party.field.pos.level = 8;
     g_party.field.pos.x = 2;
     g_party.field.pos.y = 1;
@@ -38,17 +39,17 @@ void InitNewGame(void) {
     g_party.field.moveState = 0;
     g_party.field.turnsLeft = 0;
     g_party.field.moveCommand = 0;
-    g_party.status.rosterCapacity = 32;
+    g_party.status.rosterCapacity = ROSTER_SIZE;
     memset(g_party.roster, 0, sizeof(g_party.roster));
     ResetClockPhaseAndTime(&g_clock);
     InitCharacters();
-    SetRosterEntry(0, GetCharacter(0));
-    SetPartySlot(0, 0);
+    SetRosterEntry(ROSTER_LEADER, GetCharacter(0));
+    SetPartySlot(0, ROSTER_LEADER);
     for (i = 1; i < PARTY_SIZE; i++) {
         SetPartySlot(i, PARTY_SLOT_EMPTY);
     }
-    g_party.status.automapFixed = 0;
-    g_party.status.navigationFixed = 0;
+    g_party.status.automapFixed = false;
+    g_party.status.navigationFixed = false;
 }
 
 RVA(0x0003c7b0, 0x1e)

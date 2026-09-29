@@ -345,3 +345,21 @@ src/Util/range.c	FilterTextMarks	0	trivial-function-literal	*	an empty string / 
 src/Util/range.c	FilterTextMarks	0x8197	comparison-or-bound	*	Shift-JIS '＠', the text mark (see Range.h); a wide character constant would not be the same code
 src/Util/bitset.c	*	*	*	*	byte and bit of a bit index (8 bits per byte)
 src/Mem/pool.c	*	*	*	*	the dead element-pool API: four pools of 256-element chunks (index >> 8, low byte), sixteen chunks each; the size table ends at 0
+src/File/datafile.c	SetCryptKey	8	*	*	the crypt key folds the seed's high byte into its low byte
+src/File/datafile.c	ReadCryptWord	8	*	*	a little-endian word from two crypt bytes
+src/File/datafile.c	Read*Handle	1	call-argument	AllocArrayHandle(*argument 2	a byte array (element size 1)
+src/File/datafile.c	SkipBytes	0	trivial-function-literal	0 equality count	no bytes left to skip
+src/File/datafile.c	OpenDataFile	*	*	*	file-id ranges (0x2000..0x3fff, 0x4000.., 0x5000.., 0x6000.., scripts up to 0xdf) and the fallback file each range opens when a file is missing; the name buffer size and the retry loop's passes
+src/Game/abortflag.c	AddSceneHotspot	31	comparison-or-bound	*	the last usable slot of s_hotspots[32]
+src/Game/abortflag.c	*	*	*	*[0145] case	dead scene-hotspot code: kinds 0, 1, 4 and 5 have no recovered caller, so their identity is unrecovered
+src/Game/abortflag.c	AddSceneHotspot	[45]	case-label	*	dead scene-hotspot code: kinds 0, 1, 4 and 5 have no recovered caller, so their identity is unrecovered
+src/Game/abortflag.c	CountHotspotsOfKind	*	*	*	-1 reports a pending abort in place of a count; the count starts at 0 and the pending abort is cleared
+src/Game/abortflag.c	PickSceneHotspot	*	*	*	dead: a hit is the button in bits 5 and up over the hotspot index; -1 is no hit
+src/Game/abortflag.c	*	[01]	*	*dest	a treasure box's destination script and entry
+src/Game/abortflag.c	GetHotspotScript	*	*	*	dead: an empty scene script {0, 0}; FindTreasureBoxAt's `1` is its live-box filter
+src/Game/abortflag.c	IsSceneObjectVisible	33	call-argument	*	@identity-TODO: field-object flag 33 hides the object from the scene
+src/Game/abortflag.c	DrawSceneSprite	*	*	*	dead: sprite mode 0 draws into the scene; flips mirror inside the 80x400 sprite cell, and centered sprites sit at (40, 112); -1 is no sprite
+src/Game/playtime.c	*	*	*	*	play-time units: 7232/10000 of a 17 ms tick, milliseconds, seconds, minutes, hours, days and hundreds of days
+src/Game/gamestate.c	GetMapValue	*	*	*	selector 0..3 of the party's area, level, x and y (a script operand); 0 for any other
+src/Game/gamestate.c	InitNewGame	*	*	*	a new game starts at level 8, cell (2, 1) with the movement words cleared, the hero's character slot 0 in party position 0
+src/Game/abortflag.c	AddSceneHotspot	-1	trivial-function-literal	-1 return	no free hotspot slot
