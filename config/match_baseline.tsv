@@ -136,7 +136,7 @@ automap	_ScreenToAutomapCell	100.0000	100.0000	1	f9ff95d2ab3a	0x58500	100.0000
 bitmapio	_BlitImage	100.0000	100.0000	2	c3e84fc06546	0x57290	100.0000	
 bitmapio	_ClearScenePicture	100.0000	100.0000	4	b265a69dea3e	0x57c40	100.0000	
 bitmapio	_ClearSceneSurfaces	100.0000	100.0000	5	3a8e44e031ed	0x57bf0	100.0000	
-bitmapio	_CopyResourceBitmap16	99.6558	88.8961	6	44c451fd87d9	0x56f30	100.0000	
+bitmapio	_CopyResourceBitmap16	100.0000	88.8961	6	44c451fd87d9	0x56f30	100.0000	
 bitmapio	_CopyResourceBitmap8	100.0000	100.0000	7	aa9f9567e742	0x57120	100.0000	
 bitmapio	_CreatePicture	100.0000	100.0000	5	adc9011ef101	0x57380	100.0000	
 bitmapio	_DrawResourceBitmap	100.0000	100.0000	4	3cc185ba23e9	0x572e0	100.0000	
@@ -353,8 +353,8 @@ clickwait	_TakeClickUnlessCancel	100.0000	100.0000	1	49b00a210859	0x41ab0	100.00
 clock	_AdvanceClock	100.0000	100.0000	2	97343a5de148	0x20b80	100.0000	
 clock	_ApplyClockChanges	100.0000	100.0000	3	7c4931326201	0x20cf0	100.0000	
 clock	_BuildRoomMap	100.0000	100.0000	1	465439efbabb	0x211b0	100.0000	
-clock	_CheckBlockingCell	100.0000	100.0000	1	83852b0c64be	0x220b0	100.0000	
-clock	_CheckCellEvent	99.3541	99.3541	7	c5eb78ecd3b6	0x21880	99.3541	
+clock	_CheckBlockingCell	100.0000	80.4865	1	83852b0c64be	0x220b0	100.0000	
+clock	_CheckCellEvent	100.0000	100.0000	7	c5eb78ecd3b6	0x21880	100.0000	
 clock	_ClampMapCoord	100.0000	100.0000	1	d8d50387fabb	0x222c0	100.0000	
 clock	_ClampMapPosition	100.0000	100.0000	1	9bfed5219665	0x223a0	100.0000	
 clock	_ClearFlagBits	100.0000	100.0000	1	dfaedc93d85f	0x22ab0	100.0000	
@@ -367,7 +367,7 @@ clock	_CreateImagePanel	100.0000	100.0000	4	c83daeecac79	0x226d0	100.0000
 clock	_CreateKindPanel	100.0000	100.0000	4	76910d04845a	0x227c0	100.0000	
 clock	_CreatePositionedPanel	100.0000	100.0000	2	6c149d53b41e	0x22910	100.0000	
 clock	_CreateSequentialPanel	100.0000	100.0000	4	3bbd1abe9162	0x22870	100.0000	
-clock	_DecodeAreaMap	75.0698	74.2326	9	90f8bb8b908e	0x21470	75.0698	
+clock	_DecodeAreaMap	75.0698	75.0698	9	90f8bb8b908e	0x21470	75.0698	
 clock	_FindCellKind	100.0000	100.0000	1	6568aa3013f9	0x21850	100.0000	
 clock	_FindTreasureBoxAt	100.0000	100.0000	2	fc7e7f5c850f	0x22560	100.0000	
 clock	_GetAreaLevelCount	100.0000	100.0000	1	074500fa1285	0x21710	100.0000	
@@ -392,9 +392,9 @@ clock	_IsDarkCell	100.0000	100.0000	3	9040d464ca05	0x21dc0	100.0000
 clock	_IsLevelMapRevealed	100.0000	100.0000	3	5215a34c22b3	0x225d0	100.0000	
 clock	_IsPanelRowChecked	100.0000	100.0000	3	85c2ad27dc6b	0x22b80	100.0000	
 clock	_IsRoomCell	100.0000	100.0000	2	6f9194d8b526	0x21ea0	100.0000	
-clock	_IsSpawnEnabled	100.0000	100.0000	2	ed420803658a	0x21160	100.0000	
+clock	_IsSpawnEnabled	100.0000	91.2963	2	ed420803658a	0x21160	100.0000	
 clock	_IsStepBarred	100.0000	100.0000	3	05a359ca36f7	0x221f0	100.0000	
-clock	_LatchCellDestination	99.0625	98.4375	3	58f4c4a0e491	0x21d20	100.0000	
+clock	_LatchCellDestination	100.0000	100.0000	3	58f4c4a0e491	0x21d20	100.0000	
 clock	_LoadAreaMap	100.0000	100.0000	4	96911704c21e	0x213a0	100.0000	
 clock	_LoadClock	100.0000	100.0000	1	517a076cb2f2	0x20f60	100.0000	
 clock	_PaintPanel	100.0000	100.0000	1	005c5866204a	0x229f0	100.0000	
@@ -871,9 +871,9 @@ font	?CreateScreenLayer@@YAHH@Z	100.0000	100.0000	4	e2c1a84d850d	0x551c0	100.000
 font	?DrawPadButton@@YAHPAUIDirectDrawSurface@@HH@Z	100.0000	100.0000	3	fcd73c6c27ad	0x55020	100.0000	
 font	?FindPartyPanel@@YAFFF@Z	100.0000	100.0000	1	2075d924f450	0x54b30	100.0000	
 font	?FreeScreenLayers@@YAXXZ	100.0000	100.0000	2	d9d7006e081d	0x54fd0	100.0000	
-font	?LayerAtPoint@@YAHII@Z	96.2255	96.2255	2	cfa5a6265e3a	0x553d0	100.0000	
+font	?LayerAtPoint@@YAHII@Z	100.0000	96.2255	2	cfa5a6265e3a	0x553d0	100.0000	
 font	?LayerIndexAtPoint@@YAHII@Z	100.0000	100.0000	1	1187ab0ecbd4	0x55520	100.0000	
-font	?PadButtonAtPoint@@YAHII@Z	90.7065	90.7065	2	3aed21698f51	0x55580	100.0000	
+font	?PadButtonAtPoint@@YAHII@Z	100.0000	90.7065	2	3aed21698f51	0x55580	100.0000	
 font	?PaintLayer@@YAHHPAUScreenLayer@@@Z	100.0000	100.0000	4	31b016236b8c	0x55060	100.0000	
 font	?PlaceDraggedLayer@@YAXH@Z	100.0000	100.0000	1	e993720fc0f5	0x558e0	100.0000	
 font	?ReleasePartyPanel@@YAXHH@Z	100.0000	100.0000	3	c589de396cfc	0x55760	100.0000	
@@ -2079,7 +2079,7 @@ shot	_SetShotPosition	100.0000	100.0000	1	5d47141a5196	0x58d0	100.0000
 shot	_SetShotPower	100.0000	100.0000	1	5b0b36881851	0x5900	100.0000	
 shot	_ShotRelativePoint	100.0000	100.0000	1	e278fd21aefe	0x57c0	100.0000	
 shot	_StartShot	100.0000	100.0000	3	0762ead00fee	0x5620	100.0000	
-shot	_StepShot	90.1077	90.1077	2	3a51a63fe14c	0x56e0	90.1077	
+shot	_StepShot	100.0000	90.1077	2	3a51a63fe14c	0x56e0	100.0000	
 shot	_StopShot	100.0000	100.0000	1	eb752c1ebfec	0x5800	100.0000	
 skillattack	_ApplySkillResistanceOutcome	100.0000	100.0000	1	1909e14736cc	0xaf70	100.0000	
 skillattack	_ComputeSkillDamage	100.0000	98.4266	7	a90e460c0181	0xac50	100.0000	
@@ -2337,7 +2337,7 @@ textapi	_PaintTextRun	100.0000	100.0000	2	29901dc7a92a	0x452c0	100.0000
 textapi	_RefreshTextPlane	100.0000	100.0000	1	cbd68c234fe5	0x45280	100.0000	
 textapi	_SetTextPlaneHook	100.0000	100.0000	1	9fcbeac9d6ea	0x452f0	100.0000	
 textapi	_ToggleTextHighlight	100.0000	100.0000	1	6fb0a9eaf4d4	0x45290	100.0000	
-textchar	_ReadTextChar	99.5918	99.5918	3	477cb7c60c88	0x1aa0	99.5918	
+textchar	_ReadTextChar	100.0000	99.5918	3	477cb7c60c88	0x1aa0	100.0000	
 textstate	_AdvanceTextDelay	100.0000	100.0000	1	e28d1979d4c7	0x32a40	100.0000	
 textstate	_ClearTextPeriod	100.0000	100.0000	1	426da387d8e3	0x32ca0	100.0000	
 textstate	_DisableTextDelay	100.0000	100.0000	1	2ba59892f991	0x32ac0	100.0000	
@@ -2433,7 +2433,7 @@ treasurebox	_IsCellInView	100.0000	100.0000	2	0dfc10ec21d9	0x1e300	100.0000
 treasurebox	_IsHotspotTreasureOpen	100.0000	100.0000	5	9ac185cd60ae	0x1ab40	100.0000	
 treasurebox	_IsObjectCell	100.0000	100.0000	1	f9dbe0b17170	0x1eee0	100.0000	
 treasurebox	_IsPanelActive	100.0000	100.0000	3	f7257e655b47	0x1caf0	100.0000	
-treasurebox	_IsRegionFlagOn	99.5000	99.5000	2	ed5b2a21b841	0x1ebe0	100.0000	
+treasurebox	_IsRegionFlagOn	100.0000	99.5000	2	ed5b2a21b841	0x1ebe0	100.0000	
 treasurebox	_IsReservedObjectCell	100.0000	100.0000	2	3e123498400c	0x1f350	100.0000	
 treasurebox	_ItemMenuHandler	100.0000	100.0000	6	5bd375844051	0x1b7c0	100.0000	
 treasurebox	_KnockBack	100.0000	100.0000	5	48924f38b420	0x1f7d0	100.0000	
@@ -2617,7 +2617,7 @@ windowcolor	_RestoreWindowAttr	100.0000	100.0000	2	4b64ccf22e99	0x2eb90	100.0000
 windowcolor	_SetWindowReverse	100.0000	100.0000	1	28f319f2440e	0x2ea80	100.0000	
 windowcolor	_StashWindowColor	100.0000	100.0000	1	39fcf2b9a35a	0x2eaf0	100.0000	
 windowcolor	_SwitchWindowAttr	100.0000	100.0000	2	f9697dae5b3e	0x2eb20	100.0000	
-windowtext	_PrintWindowText	93.2192	93.2192	5	d5e9f1bcde25	0x45340	93.2192	
+windowtext	_PrintWindowText	100.0000	93.2192	5	d5e9f1bcde25	0x45340	100.0000	
 windowtext	_PutTextChar	100.0000	100.0000	4	5ed9c2ac81fe	0x45410	100.0000	
 winmain	??0CIme@@QAE@XZ	100.0000	100.0000	1	cpp:cb01e3a51116	0x51100	100.0000	
 winmain	??0_D3DLVERTEX@@QAE@ABU_D3DVECTOR@@KKMM@Z	100.0000	100.0000	1	header:fa9afff5ee6c	0x511a0	100.0000	
