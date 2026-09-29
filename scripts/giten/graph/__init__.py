@@ -71,8 +71,9 @@ CANDIDATE_EXE = "build/exe/DDS.candidate.EXE"
 CANDIDATE_MAP = "build/exe/DDS.candidate.map"
 RESOURCE_RES = "build/gen/retail.res"
 
-#: The playable image (`giten play`): every unit recompiled with the bug-fix
-#: defines into its own object tree, linked with the retail resources.
+#: The playable image (`giten play`): the units that test a play flag
+#: recompiled with the bug-fix defines into their own object tree, linked with
+#: every other unit's matching object and the retail resources.
 PLAY_DIR = "build/play"
 PLAY_OBJ_DIR = f"{PLAY_DIR}/obj"
 PLAY_EXE = f"{PLAY_DIR}/DDS.EXE"

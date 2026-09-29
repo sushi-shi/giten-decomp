@@ -18,10 +18,17 @@ written to the prefix's `C:\windows`.
 
 ## Build
 
-The `play` target compiles every unit again with its own flag profile plus
-`/DGITEN_BUGFIX` into `build/play/obj`. It links those objects with the
-`.res` built from the local retail executable into `build/play/DDS.EXE`. The
-matching objects in `build/objdiff/base` never see the define, so scores are
+The `play` target compiles again, with its own flag profile plus
+`/DGITEN_BUGFIX`, every unit whose source or scanned headers test
+`GITEN_COMPAT` or `GITEN_BUGFIX` in an `#if`, `#ifdef`, `#ifndef` or `#elif`,
+into `build/play/obj`. The implication in `include/Ints.h`, which every unit
+reaches, does not count. Every other unit compiles to the same bytes with the
+define as without, so the link takes its matching object from
+`build/objdiff/base`. It links them, in the candidate link's order, with the
+`.res` built from the local retail executable into `build/play/DDS.EXE`, an
+image identical (up to the link timestamp) to one linked from a full
+recompile. `build/play/obj` holds the recompiled units only; configure
+deletes the others. The matching objects never see the define, so scores are
 unaffected.
 
 Fixes go under one of two flags, beside the retail spelling, which stays in

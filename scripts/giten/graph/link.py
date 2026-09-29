@@ -132,7 +132,7 @@ def collect_objs(objs_dir: Path, *, order: Path | None = None,
             objs.append(p)
         return objs
     if explicit:
-        return [Path(o) for o in explicit]
+        return [Path(o).resolve() for o in explicit]
     if not objs_dir.is_dir():
         raise ToolError(f"--objs-dir not found: {objs_dir}")
     from giten.manifest import units as manifest_units
