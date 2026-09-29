@@ -67,6 +67,12 @@ i16 g_cellDestLevel = 0;
 DATA(0x000712c0)
 i16 g_cellDestArea = 0;
 
+// @identity-TODO: no code in this image touches this datum; its
+// zero-initialized run keeps one four-byte slot for it, so its width and
+// role are unproven. A reader in the PC-98 build would name it.
+DATA(0x000712c4)
+static i16 s_unusedCellLatch = 0;
+
 // Set to 0xc000 by the start-up path in this span; tested by TestFeatureMask.
 DATA(0x000919e2)
 i16 g_featureMask;

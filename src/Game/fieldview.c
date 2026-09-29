@@ -31,10 +31,36 @@ static i16 s_viewFloodMask[4][7] = {
     {0, 0, 0, 1, 0, 0, 0},
 };
 
+// @identity-TODO: no code in this image reads these 28 words; they hold
+// seven zero-terminated runs of up to four cell numbers (see
+// s_viewCellNumbers), but whether they form one table, and of which shape,
+// is unproven.
+DATA(0x00068520)
+static i16 s_unusedViewCellLists[7][4] = {
+    {0, 0, 0, 0},
+    {1, 0, 0, 0},
+    {2, 9, 12, 0},
+    {2, 3, 4, 9},
+    {5, 10, 11, 0},
+    {5, 6, 7, 10},
+    {8, 0, 0, 0},
+};
+
+// The number k of each view cell (zero off the flood mask): the inverse of
+// s_viewCellOrder. No code in this image reads it.
+DATA(0x00068558)
+static i16 s_viewCellNumbers[4][7] = {
+    {1, 2, 3, 4, 5, 6, 7},
+    {0, 8, 9, 10, 11, 12, 0},
+    {0, 0, 13, 14, 15, 0, 0},
+    {0, 0, 0, 16, 0, 0, 0},
+};
+
 // The view cells in the order the occlusion pass visits them (cell k at
-// k - 1): the far row left to right, then each nearer row.
+// k - 1): the far row left to right, then each nearer row. A seventeenth,
+// zero entry fills the table's last four bytes.
 DATA(0x00068590)
-static ViewCell s_viewCellOrder[16] = {
+static ViewCell s_viewCellOrder[17] = {
     {0, 0},
     {1, 0},
     {2, 0},

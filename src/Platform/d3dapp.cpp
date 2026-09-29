@@ -265,7 +265,7 @@ void ProjectVector(D3DMATRIX* matrix, D3DVECTOR* in, D3DVECTOR* out) {
     out->x /= w;
     out->y /= w;
     out->z /= w;
-    out->x = out->x * 160.0f / out->z * 2.0f - -320.0f;
+    out->x = out->x * 160.0f / out->z * DATA_COMPGEN(0x000649ec, 2.0f) - -320.0f;
     out->y = 164.0f - out->y * 160.0f / out->z * 2.0f;
 }
 
@@ -1133,12 +1133,12 @@ b32 InitDirect3D(void) {
     viewport.dwSize = sizeof(viewport);
     viewport.dwWidth = 640;
     viewport.dwHeight = 328;
-    viewport.dvClipX = -1.0f;
+    viewport.dvClipX = DATA_COMPGEN(0x000649f8, -1.0f);
     viewport.dvClipWidth = 2.0f;
-    viewport.dvClipY = 0.5125f;
-    viewport.dvClipHeight = 1.025f;
-    viewport.dvMinZ = 0.0f;
-    viewport.dvMaxZ = 1.0f;
+    viewport.dvClipY = DATA_COMPGEN(0x000649fc, 0.5125f);
+    viewport.dvClipHeight = DATA_COMPGEN(0x00064a00, 1.025f);
+    viewport.dvMinZ = DATA_COMPGEN(0x00064a04, 0.0f);
+    viewport.dvMaxZ = DATA_COMPGEN(0x00064a08, 1.0f);
     if (g_viewport->SetViewport2(&viewport) != D3D_OK) {
         return false;
     }
@@ -1160,7 +1160,8 @@ b32 InitDirect3D(void) {
     viewport.dvMinZ = 0.0f;
     viewport.dvMaxZ = 1.0f;
     viewport.dvClipHeight =
-        g_viewClearRect.x2 * 2.0 / g_viewClearRect.y2 * DATA_COMPGEN(0x00064a20, 1.0 / 3.0);
+        g_viewClearRect.x2
+        * DATA_COMPGEN(0x00064a18, 2.0) / g_viewClearRect.y2 * DATA_COMPGEN(0x00064a20, 1.0 / 3.0);
     viewport.dvClipY = viewport.dvClipHeight * DATA_COMPGEN(0x00064a28, 1.0f / 6.0f);
     if (g_screenViewport->SetViewport2(&viewport) != D3D_OK) {
         return false;
@@ -1190,8 +1191,8 @@ b32 InitDirect3D(void) {
     lighting->SetMaterial(&lightingDesc);
     lighting->GetHandle(g_d3dDevice, &lightingHandle);
     g_d3dDevice->SetLightState(D3DLIGHTSTATE_MATERIAL, lightingHandle);
-    fogStart = 800.5f;
-    fogEnd = 1280.8f;
+    fogStart = DATA_COMPGEN(0x00064a2c, 800.5f);
+    fogEnd = DATA_COMPGEN(0x00064a30, 1280.8f);
     g_d3dDevice->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_LINEAR);
     // the pun: the light state takes the float's bits
     g_d3dDevice->SetLightState(D3DLIGHTSTATE_FOGSTART, *reinterpret_cast<DWORD*>(&fogStart));

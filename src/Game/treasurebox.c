@@ -106,7 +106,13 @@ static AutomapIcon s_mapIcons[] = {
 };
 
 DATA(0x00068b88)
-NpcTexture g_npcTextures[6] = {
+NpcTexture g_npcTextures[12] = {
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
+    {0xffff, 0},
     {0xffff, 0},
     {0xffff, 0},
     {0xffff, 0},
@@ -114,6 +120,12 @@ NpcTexture g_npcTextures[6] = {
     {0xffff, 0},
     {0xffff, 0},
 };
+
+// @identity-TODO: no code in this image touches these eight words, which are
+// one datum (cl keeps no all-zero initialized item in .data). The PC-98
+// build keeps the same eight words; a reader there would name them.
+DATA(0x00068be8)
+static i16 s_unusedWordTable[8] = {0, 0, 2, 2, 0, 0, 0, 0};
 
 // The five attitude names, indexed by Character.attitude.
 DATA(0x00068bf8)
@@ -181,6 +193,12 @@ static i16 s_itemMenuMember = -1;
 DATA(0x00068c50)
 i16 g_itemMenuAmmoType = -1;
 
+// @identity-TODO: no code in this image touches this datum; the object's
+// last initialized item is a 0xffff word in a four-byte slot, so its width
+// and role are unproven. A reader in the PC-98 build would name it.
+DATA(0x00068c54)
+static i16 s_unusedItemMenuValue = -1;
+
 // The per-area level tables (256 handles).
 DATA(0x0007bee0)
 static i32 s_areaStore[256] = {0};
@@ -200,19 +218,24 @@ DATA(0x0007d300)
 static AreaNpc s_npcs[16] = {0};
 
 // The treasure box in view: its cell, and the party's map position with x/y
-// set to the view's lateral and depth position.
-// @identity-TODO: the leading word is unreferenced.
-typedef struct ViewedTreasureBox {
-    u8 pad00[2];
-    TreasureBoxCell cell;
-    MapPosition position;
-} ViewedTreasureBox;
+// set to the view's lateral and depth position. Nothing reads either back.
+// @identity-TODO: retail keeps the two adjacent inside one record (cl gives
+// no standalone datum their addresses), but nothing references its leading
+// bytes or uses it whole, so the record's type is unrecovered.
+DATA(0x0007d5b2)
+static TreasureBoxCell s_boxCell = {0};
 
-DATA(0x0007d5b0)
-static ViewedTreasureBox s_viewedBox = {0};
+DATA(0x0007d5b4)
+static MapPosition s_boxPosition = {0};
 
 DATA(0x0007d5c0)
 static ItemStackList* s_itemMenuLimits = 0;
+
+// @identity-TODO: no code in this image touches this datum; its
+// zero-initialized run keeps one four-byte slot for it, so its width and
+// role are unproven. A reader in the PC-98 build would name it.
+DATA(0x0007d5c4)
+static i32 s_unusedMenuState = 0;
 
 DATA(0x0007d5c8)
 static i32 s_events = 0;
@@ -319,10 +342,10 @@ void PrepareViewedTreasureBox(void) {
     if (box) {
         IsTreasureBoxOpen(box);
         GetApproachOffset(g_viewLateral, g_viewDepth);
-        s_viewedBox.position = g_party.field.pos;
-        s_viewedBox.position.x = g_viewLateral;
-        s_viewedBox.position.y = g_viewDepth;
-        memcpy(&s_viewedBox.cell, &box->head, sizeof(s_viewedBox.cell));
+        s_boxPosition = g_party.field.pos;
+        s_boxPosition.x = g_viewLateral;
+        s_boxPosition.y = g_viewDepth;
+        memcpy(&s_boxCell, &box->head, sizeof(s_boxCell));
     }
 }
 
