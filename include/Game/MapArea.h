@@ -10,6 +10,7 @@
 // @identity-TODO: the other area ids, including WallOverrideArea's alternate-wall
 // areas, are not named yet.
 GZ_ENUM_BEGIN_SPLIT(MapAreaId, u8)
+    MAP_AREA_VIRTUAL_DUNGEON = 0x01,
     MAP_AREA_SHINJUKU_UNDERGROUND = 0x06,
     MAP_AREA_SHINJUKU_TOCHO = 0x09,
     MAP_AREA_MY_CITY = 0x0a,
@@ -29,6 +30,7 @@ GZ_ENUM_BEGIN_SPLIT(MapAreaId, u8)
     MAP_AREA_SHIBUYA = 0x30,
     MAP_AREA_EBISU_GARDEN = 0x34,
     MAP_AREA_BAEL_CASTLE = 0x35,
+    MAP_AREA_CHIYODA_LINE = 0x3d,
     MAP_AREA_MILLENNIUM_HOSPITAL = 0x53,
     MAP_AREA_RINKAI_COLISEUM = 0x56,
     MAP_AREA_HATSUDAI = 0x82,

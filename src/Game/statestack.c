@@ -1474,7 +1474,7 @@ b16 RunFrozenFieldScene(void) {
             RedrawFieldView();
             break;
         case 0:
-            s_sceneObjectsFrozen = ExchangeObjectsFrozen(1);
+            s_sceneObjectsFrozen = ExchangeObjectsFrozen(true);
             s_sceneScreenState = SaveScreenState();
             NextGamePhase();
             s_scenePaletteState = SavePaletteState(s_scenePaletteState, 3);

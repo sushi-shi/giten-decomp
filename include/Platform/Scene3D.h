@@ -6,6 +6,7 @@
 #include <EnumDomain.h>
 #include <Game/CellCode.h>
 #include <Game/GameStateId.h>
+#include <Game/PartyStep.h>
 #include <Gfx/DDError.h>
 #include <Gfx/ScreenLayer.h>
 #include <Gfx/Sprite.h>
@@ -393,14 +394,6 @@ extern u32 g_moveState;
 #define MOVE_STATE_DOOR_BACK 0x20
 #define MOVE_STATE_DOOR_LEFT 0x40
 #define MOVE_STATE_DOOR_RIGHT 0x80
-
-// StepParty's directions relative to the party's facing, and its result for
-// a plain step (0x10 when the step goes through a door).
-#define STEP_FORWARD 0
-#define STEP_RIGHT 1
-#define STEP_BACK 2
-#define STEP_LEFT 3
-#define STEP_WALK 1
 
 // The buttons of the navigation pad on layer SCREEN_LAYER_NAVIGATION.
 #define PAD_NONE 0

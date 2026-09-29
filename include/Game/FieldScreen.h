@@ -90,7 +90,7 @@ void LoadCommandMenuImage(void);
 void FreeCommandMenuImage(void);
 
 i16 GetObjectsHidden(void);
-i16 ExchangeObjectsHidden(i16 hidden);
+b16 ExchangeObjectsHidden(b16 hidden);
 
 // @identity-TODO: What effect 0x15cc0 plays (sound 6, frames 0..8 of image 0x47b7fc) is
 // unrecovered.

@@ -70,7 +70,7 @@ static i16 s_viewX = 0;
 
 // While set, field objects are drawn hidden.
 DATA(0x0007b7e8)
-static i16 s_objectsHidden = 0;
+static b16 s_objectsHidden = false;
 
 // Set while the area palette is switched on (a dark cell).
 DATA(0x0007b7ec)
@@ -1039,8 +1039,8 @@ i16 HitTestPanelRow(Panel* panel, i16 id, i16 x, i16 y, u16 flags) {
 }
 
 RVA(0x00015a90, 0x12)
-i16 ExchangeObjectsHidden(i16 hidden) {
-    i16 old = s_objectsHidden;
+b16 ExchangeObjectsHidden(b16 hidden) {
+    b16 old = s_objectsHidden;
     s_objectsHidden = hidden;
     return old;
 }
@@ -1090,7 +1090,7 @@ b16 RebuildFieldView(void) {
     ClearDrawTable();
     FlushPlaneUpdates();
     RedrawFieldViewAt(GetPlaneHeader(0), 0);
-    s_objectsHidden = 0;
+    s_objectsHidden = false;
     return true;
 }
 

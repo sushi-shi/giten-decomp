@@ -157,7 +157,7 @@ static __inline b32 TestFieldObjectFlag(FieldObject* object, i16 index) {
 b16 InitFieldObjects(void);
 void RemoveFieldObject(i16 index, i16 announce);
 b16 ResetFieldObjects(void);
-i16 ExchangeObjectsFrozen(i16 frozen);
+b16 ExchangeObjectsFrozen(b16 frozen);
 i16 FindObjectOnLayer(i16 layer);
 void SetObjectEventFlag(i16 index, u8 bank, u8 flag);
 i16 SpawnFieldObject(

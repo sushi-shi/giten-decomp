@@ -332,7 +332,7 @@ static i16 s_objectRemovalDeferred = 0;
 
 // While set, the objects are not marked on the automap.
 DATA(0x0007b0b8)
-static i16 s_objectsFrozen = 0;
+static b16 s_objectsFrozen = false;
 
 DATA(0x0007b0bc)
 static i16 s_encounterChanceBonus = 0;
@@ -456,7 +456,7 @@ b16 ResetFieldObjects(void) {
         RemoveFieldObject(i, 0);
     }
     ModifyEventFlag(8, 0, BIT_CHANGE_SET);
-    s_objectsFrozen = 0;
+    s_objectsFrozen = false;
     return false;
 }
 
@@ -474,8 +474,8 @@ b16 IsFieldActor(const void* actor) {
 }
 
 RVA(0x0000d9b0, 0x12)
-i16 ExchangeObjectsFrozen(i16 frozen) {
-    i16 old = s_objectsFrozen;
+b16 ExchangeObjectsFrozen(b16 frozen) {
+    b16 old = s_objectsFrozen;
     s_objectsFrozen = frozen;
     return old;
 }
@@ -654,7 +654,7 @@ Character* GetFieldActor(i16 index) {
 RVA(0x0000dde0, 0x43)
 void MarkObjectsOnMap(void) {
     i16 i;
-    if (s_objectsFrozen == 0) {
+    if (s_objectsFrozen == false) {
         for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             if (s_objects[i].layer != FIELD_LAYER_NONE) {
                 MarkMapCell(5, s_objects[i].pos.x, s_objects[i].pos.y);

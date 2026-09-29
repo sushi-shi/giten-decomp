@@ -22,12 +22,19 @@ typedef struct MapPosition {
 } MapPosition;
 
 // The field state saved as one 16-byte block.
-// @identity-TODO: the three movement words are named from the step/turn
-// state machine that drives them (0x412280: state 0 idle, 1 stepping,
-// 2 turning; the command; the turns still to make).
+// The party's step/turn state machine (AdvancePartyMove): idle, stepping or
+// turning.
+GZ_ENUM_BEGIN_SPLIT(FieldMoveState, i16)
+    FIELD_MOVE_IDLE = 0,
+    FIELD_MOVE_STEPPING = 1,
+    FIELD_MOVE_TURNING = 2
+GZ_ENUM_END_SPLIT(FieldMoveState)
+
+// @identity-TODO: the movement words are named from the step/turn state
+// machine that drives them (the state; the command; the turns still to make).
 typedef struct FieldState {
     MapPosition pos;
-    i16 moveState;
+    GZ_ENUM_STORAGE(FieldMoveState, i16) moveState;
     i16 moveCommand;
     i16 turnsLeft;
 } FieldState;

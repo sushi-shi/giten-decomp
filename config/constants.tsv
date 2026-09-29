@@ -685,3 +685,27 @@ src/Script/scriptvars.c	OpSaveRestoreScreen	*	*	*	@identity-TODO: the save/resto
 src/Script/scriptvars.c	ClearSystemVars	0	*	*	a cleared variable reads 0
 src/Script/scriptvars.c	SetScriptLongVar	-1	*	*	no variable (ReadLongVarIndex's -1)
 src/Script/scriptvars.c	Call*Name	*	call-argument	GetTextToken(*	the second member is slot 1's ref (SCRIPT_REF_SLOT_BASE - 1)
+src/Game/fieldmain.c	AdvancePartyMove	*	*	*	@identity-TODO: turn commands less 3 give quarter turns (3 = one left); wall kinds 1 and 2 and stop class 3 block a step that is not forward; a step takes 3..6 minutes; results 0 (under way), 1 (done), 2 (blocked)
+src/Game/fieldmain.c	StepParty	*	*	*	wall kinds 1 and 2 and stop class 3 block a step that is not forward
+src/Game/fieldmain.c	CommitPartyStep	3	*	*	a step takes 3 minutes
+src/Game/fieldmain.c	*AutoMove*	*	*	*	the auto-move queue: read position and capacity reset to 0, grown by one; 0xff ends it; -1 once it is empty
+src/Game/fieldmain.c	SetReturnPoint	-1	*	*	no selected hotspot
+src/Game/fieldmain.c	MovePartyTo	1	*	*	@identity-TODO: SetRebuildRoom's 1
+src/Game/fieldmain.c	SetReturnPointAhead	3	*	*	@identity-TODO: a three-quarter turn of the facing
+src/Game/fieldmain.c	FindExitDirection	*	*	*	the four sides; wall kind 1 marks an exit, 0 an open side
+src/Game/fieldmain.c	PickAnalyzeTarget	*	*	*	-1 when nothing is picked; analyzing trains the fourth battle-stat group (3, @identity-TODO in BattleStat.h)
+src/Game/fieldmain.c	RunPendingTalk	*	*	*	@identity-TODO: talk: the pick window's (3, 1, 0), actor scene script 0xe0 entry 0 with 1, the fourth group's training; -1 when no talk starts
+src/Game/fieldmain.c	TickStepDamage	*	*	*	damage every third step: one point (-1) to each member
+src/Game/fieldmain.c	TickFieldSteps	*	*	*	three steps between field ticks
+src/Game/fieldmain.c	PollFieldCommand	*	*	*	@identity-TODO: no move (-1); RunMoveCommand's next phase 1
+src/Game/fieldmain.c	ReturnToCurrentCell	1	*	*	@identity-TODO: both flag banks preserved
+src/Game/fieldmain.c	*FieldMemory	*	*	*	field memory: 0x100 event bytes and 0x40 state words (0x20 bytes)
+src/Game/fieldmain.c	*ObjectEvent*	*	*	*	@identity-TODO: object event states 0..3 (raised, queued) for events below 0x100
+src/Game/fieldmain.c	*View*	*	*	*	the 3D view's occlusion: 4-cell rows (along -3..0, across -3..3), 4-bit occlusion nibbles per side, 0xff for unoccluded
+src/Game/fieldmain.c	*FieldImageCache	-1	*	*	no cached field image
+src/Game/fieldmain.c	SelectFieldImageCache	*	*	*	@identity-TODO: the cache key packs 0x100 | id with the variant in bits 4 and up
+src/Game/fieldmain.c	LoadFieldImage	*	*	*	@identity-TODO: field image 0x5000 shows as 0x5049; variant, mode 0 and flags 1
+src/Game/fieldmain.c	VisitVisibleCellWalls	*	*	*	the 3D view's occlusion nibbles (0x0f, 0xf0), 0xffff for no cell, the sides (-1, 0, 1) and the cell ahead
+src/Game/fieldmain.c	MarkVisibleFieldCells	*	*	*	the 3D view's occlusion: 4-cell rows from -3, 0xff for unoccluded, the centre column 0
+src/Game/fieldmain.c	RunFieldExploration	*	*	*	@identity-TODO: exploration's special cases and parameters: the world-map request 1, scene scripts (7, 8), field text scenes (0x1a/6, 0x59/6, 0x16/0xd, 0x2a/0), battle-message scene 0xdd/0x59, script register 1, Chiyoda Line level 3 (5, 0), Hatsudai levels 0xc..0xe, fade speeds 1 and the room rebuild 1
+src/Game/fieldmain.c	RunCellEvent	*	*	*	@identity-TODO: cell event parameters: scene scripts (7, 8) and (5, 6), the stairs' script 0x7f04/7 and sound 4, forced-move steps and turns, traps (1), field maps entered at rates 100 and a map id packed as y << 8 | x

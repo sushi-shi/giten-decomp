@@ -30,6 +30,7 @@
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
+#include <Game/PartyStep.h>
 #include <Game/Scene.h>
 #include <Game/StateStack.h>
 #include <Game/TreasureBox.h>
@@ -225,13 +226,13 @@ i16 AdvancePartyMove(i16 command) {
     i16 y;
     for (;;) {
         switch (g_party.field.moveState) {
-            case 0:
-                if (command < 4) {
+            case FIELD_MOVE_IDLE:
+                if (command < MOVE_TURN_RIGHT) {
                     g_party.field.moveCommand = command;
-                    g_party.field.moveState = 1;
+                    g_party.field.moveState = FIELD_MOVE_STEPPING;
                 } else {
                     command -= 3;
-                    g_party.field.moveState = 2;
+                    g_party.field.moveState = FIELD_MOVE_TURNING;
                     if (command == 3) {
                         g_party.field.turnsLeft = -1;
                     } else {
@@ -240,9 +241,9 @@ i16 AdvancePartyMove(i16 command) {
                 }
                 command = 0;
                 continue;
-            case 1:
+            case FIELD_MOVE_STEPPING:
                 SaveReturnPoint();
-                g_party.field.moveState = 0;
+                g_party.field.moveState = FIELD_MOVE_IDLE;
                 if (!IsStepBarred(
                         g_party.field.pos.x,
                         g_party.field.pos.y,
@@ -254,7 +255,7 @@ i16 AdvancePartyMove(i16 command) {
                         g_party.field.moveCommand,
                         RevealAreaMapAt(g_party.field.pos.x, g_party.field.pos.y)
                     );
-                    if (((wall == 1 || wall == 2) && g_party.field.moveCommand != 0)
+                    if (((wall == 1 || wall == 2) && g_party.field.moveCommand != MOVE_FORWARD)
                         || WallStops(wall, WALL_STOP_MOVEMENT) == 3) {
                         PlaySoundEffect(8);
                         return 2;
@@ -281,12 +282,12 @@ i16 AdvancePartyMove(i16 command) {
                 );
                 PlaySoundEffect(8);
                 return 2;
-            case 2:
+            case FIELD_MOVE_TURNING:
                 step = g_party.field.turnsLeft < 0 ? -1 : 1;
                 g_party.field.pos.direction = TurnDirection(g_party.field.pos.direction, step);
                 g_party.field.turnsLeft -= step;
                 if (g_party.field.turnsLeft == 0) {
-                    g_party.field.moveState = 0;
+                    g_party.field.moveState = FIELD_MOVE_IDLE;
                     return 1;
                 }
                 break;
@@ -340,11 +341,11 @@ RVA(0x00012600, 0xde)
 i16 StepParty(i16 direction) {
     i16 wall;
     if (FindObjectAtParty() >= 0) {
-        return 0;
+        return STEP_BLOCKED;
     }
     g_party.field.moveCommand = direction;
     SaveReturnPoint();
-    g_party.field.moveState = 0;
+    g_party.field.moveState = FIELD_MOVE_IDLE;
     if (!IsStepBarred(
             g_party.field.pos.x,
             g_party.field.pos.y,
@@ -356,16 +357,16 @@ i16 StepParty(i16 direction) {
             g_party.field.moveCommand,
             RevealAreaMapAt(g_party.field.pos.x, g_party.field.pos.y)
         );
-        if (((wall == 1 || wall == 2) && g_party.field.moveCommand != 0)
+        if (((wall == 1 || wall == 2) && g_party.field.moveCommand != MOVE_FORWARD)
             || WallStops(wall, WALL_STOP_MOVEMENT) == 3) {
             PlaySoundEffect(8);
-            return 0;
+            return STEP_BLOCKED;
         }
-        return WallStops(wall, WALL_STOP_MOVEMENT) ? 0x10 : 1;
+        return WallStops(wall, WALL_STOP_MOVEMENT) ? STEP_DOOR : STEP_WALK;
     }
     ShowMessage("\224\340\202\315\203\215\203b\203N\202\263\202\352\202\304\202\242\202\351", 0x3c);
     PlaySoundEffect(8);
-    return 0;
+    return STEP_BLOCKED;
 }
 
 // Frees the queued automatic moves.
@@ -741,7 +742,7 @@ b16 RunFieldExploration(void) {
                 PushGameState(GAME_STATE_CELL_SCENE);
                 RevealAutomapRoom(g_party.field.pos.x, g_party.field.pos.y);
                 CancelFieldMap();
-                ExchangeObjectsHidden(1);
+                ExchangeObjectsHidden(true);
                 SetReturnPointAhead();
                 return FlushFieldScreen();
             }
@@ -760,7 +761,7 @@ b16 RunFieldExploration(void) {
                 s_pendingSound = 0;
             }
             FadeScreenAndWait(SCREEN_FADE_FROM_BLACK, 1);
-            if (g_party.field.pos.area == 0x3d && g_party.field.pos.level == 3
+            if (g_party.field.pos.area == MAP_AREA_CHIYODA_LINE && g_party.field.pos.level == 3
                 && g_party.field.pos.x == 5 && g_party.field.pos.y == 0) {
                 SaveFieldPosition();
                 return FlushFieldScreen();
@@ -797,7 +798,7 @@ b16 RunFieldExploration(void) {
                 return false;
             }
             if (FindAbleHumanMember() == -1) {
-                if (g_party.field.pos.area == 1) {
+                if (g_party.field.pos.area == MAP_AREA_VIRTUAL_DUNGEON) {
                     CloseMessageWindow();
                     PushFieldTextScene(0x59, 6);
                     ClearRosterConditions();
@@ -1026,12 +1027,12 @@ void RunCellEvent(void) {
             RevealAutomapRoom(g_party.field.pos.x, g_party.field.pos.y);
             CancelFieldMap();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
-            ExchangeObjectsHidden(1);
+            ExchangeObjectsHidden(true);
             break;
         case CELL_EVENT_WORLD_EXIT:
             SetGamePhase(FIELD_PHASE_FADE_TO_WORLD_MAP);
             CancelFieldMap();
-            ExchangeObjectsHidden(1);
+            ExchangeObjectsHidden(true);
             break;
         case CELL_EVENT_STAIRS:
             s_stayOnExit = false;
@@ -1091,7 +1092,7 @@ void RunCellEvent(void) {
                 s_stayOnExit == true ? g_party.field.pos.direction : -1
             );
             if (g_cellCode == CELL_WARP_HIDING_OBJECTS) {
-                ExchangeObjectsHidden(1);
+                ExchangeObjectsHidden(true);
             }
             break;
         case CELL_EVENT_FORCED_MOVE:
@@ -1141,7 +1142,7 @@ void RunCellEvent(void) {
             PushGameState(GAME_STATE_CELL_SCENE);
             CancelFieldMap();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
-            ExchangeObjectsHidden(1);
+            ExchangeObjectsHidden(true);
             MarkSceneDirty();
             break;
     }
