@@ -36,6 +36,9 @@ static i16 s_effectLateralOffsets[4] = {60, 0, 0, 0};
 DATA(0x0006dcb8)
 static i16 s_effectHeightOffsets[4] = {0, 80, 56, 55};
 
+// @early-stop register allocation: retail splits the size word into dl and bl,
+// which frees ebx and reloads `code` for the mirror tests; here the low byte is
+// masked from a word copy and `code` stays in ebx through the offsets.
 RVA(0x000589e0, 0x457)
 void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     i16 screenX;
@@ -161,6 +164,9 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     g_backdropPicture.surface->SetColorKey(DDCKEY_SRCBLT, &key);
 }
 
+// @early-stop register allocation: retail extracts the vertical offset byte
+// before halving the height, which keeps the left edge in edi and the right
+// edge in ecx; every ordering of that sum emits the halving first here.
 RVA(0x00058e40, 0x252)
 void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16 y) {
     BmpFile* bmp = imageData;

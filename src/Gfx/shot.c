@@ -103,6 +103,9 @@ i16 StartShot(i16 kind, i16 strength, i16 height) {
 // and -1 when it left the field across x.
 // Codegen constraint: keep the forward-depth edge and the two bounds exits
 // separate so the shared arrival block precedes the flying return.
+// @early-stop register allocation: retail keeps the saved depth in edi and the
+// stepped depth in esi; here the saved depth is extended before the reload,
+// so both share esi. Operand order, negation and product spellings are flat.
 RVA(0x000056e0, 0xdb)
 i16 StepShot(void) {
     Vec3 before = s_shotPos;
