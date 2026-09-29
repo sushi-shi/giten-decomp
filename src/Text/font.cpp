@@ -3621,7 +3621,8 @@ void RedrawTextPlane(i16 plane) {
 // @early-stop register/scheduling residue: pixel x occupies the dead x
 // parameter home and the plane pointer occupies ebp, as in retail. The
 // pixel initialization precedes the guard here; retail schedules it after
-// the plane lookup. The attribute and next-position registers are swapped.
+// the plane lookup, but moving it there hands ebp to the pixel and spills the
+// plane pointer. The attribute and next-position registers are swapped.
 RVA(0x00051e40, 0xa6)
 void RedrawTextRun(i16 plane, i16 x, i16 y, i16 count) {
     TextPlane* p;

@@ -250,6 +250,10 @@ void SetRotateZMatrix(D3DMATRIX& m, D3DVALUE degrees) {
     m(1, 1) = c;
 }
 
+// @early-stop operand order: retail evaluates each row's y and z products
+// before the x product. Every grouping and operand order of the three terms
+// emits the same canonical x, z, y order here, and unused-declaration probes
+// move only the w-row schedule, so the order is translation-unit state.
 RVA(0x00046060, 0x1cb)
 void ProjectVector(D3DMATRIX* matrix, D3DVECTOR* in, D3DVECTOR* out) {
     D3DVALUE w;
