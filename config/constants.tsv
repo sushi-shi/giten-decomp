@@ -393,3 +393,17 @@ src/Gfx/shot.c	RunShotState	0	*	*	phase 0 starts the shot; StepShot's 0 means it
 src/Gfx/shot.c	RunClosingEffectState	0	call-argument	*	the effect's image set and record slot 0
 src/Text/windowtext.c	PrintWindowText	0	*	*inputWait	printed text waits for no input
 src/Text/windowtext.c	PutTextChar	*	*	*	a character's cell width (1 or 2, 8 pixels per cell), the slack its punctuation may use at the line end (0, -2 or -4), and -2 when the character is deferred to the next line
+src/Gfx/vram.c	LoadMask	1	call-argument	ResetMask(*	@identity-TODO: ResetMask's argument 1 when a mask file is loaded
+src/Gfx/vram.c	ClearMaskSeam	*	*	*	the seam's edge pixels: bit 0 of the left byte and bit 7 of the right
+src/Gfx/vram.c	*Mask*	*	*	*	mask geometry: 8 pixels per mask byte; 0 outside the mask
+src/Gfx/vram.c	ResetUpperPalette	*	*	*	dead: the upper eight palette entries (8..15) cleared to colour 0
+src/Gfx/vram.c	FindPaletteEntry	2	return	*	dead: the legacy colour lookup always answers entry 2
+src/Gfx/vram.c	GrbToRgb	*	*	*	PC-98 0xGRB palette words: swap the G and R nibbles
+src/Gfx/vram.c	FreeImageHandle	0	*	*	a freed image handle is none (0)
+src/Gfx/vram.c	CopySpriteBitmap	2	arithmetic	*	two bytes per 16-bit pixel
+src/Gfx/vramcell.c	*	*	*	*	PC-98 VRAM cells: 8 rows of up to 4 colour planes
+include/Gfx/VramCell.h	*	4	unresolved	*	PC-98 VRAM cells: 8 rows of up to 4 colour planes
+src/Gfx/vramaccess.c	*	*	*	*	screen-save buffers of 4 planes x 128 bytes and 640-pixel rows (8 lines per band); the 0x55aa checkerboard dither patterns and their inverse
+src/Gfx/blit.c	PrepareFullSceneSprite	*	call-argument	PrepareSceneSprite(*	the full 80x400 sprite cell with no origin or offset
+src/Gfx/videostate.c	GetPlane*	*	*	*	@identity-TODO: video planes 0..2 map to their data and headers; which screen layer each is is unrecovered
+src/Gfx/displayconfig.c	*	*	*	*	registry value sizes, key-open options and the display-config version (4) Win32 reads and writes

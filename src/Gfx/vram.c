@@ -40,10 +40,10 @@ static MaskGrid* s_mask = NULL;
 // The 16 analog palette entries (0xGRB) and how many users hold each one.
 // Nothing in this image reads the colours back.
 DATA(0x00075f38)
-static i16 s_paletteColors[16] = {0};
+static i16 s_paletteColors[PALETTE_SIZE] = {0};
 
 DATA(0x00075f58)
-static i16 s_paletteRefs[16] = {0};
+static i16 s_paletteRefs[PALETTE_SIZE] = {0};
 
 // Bit 0x40: a palette entry or mode changed; bit 0x80: a change awaits
 // upload. No reader of the queued bit survives in this image.
@@ -190,7 +190,7 @@ RVA(0x00002ec0, 0x2b)
 void ResetUpperPalette(void) {
     i16 i;
     memset(&s_paletteRefs[8], 0, 8 * sizeof(s_paletteRefs[0]));
-    for (i = 8; i < 16; i++) {
+    for (i = 8; i < PALETTE_SIZE; i++) {
         StorePaletteColor(i, 0);
     }
 }
@@ -216,7 +216,7 @@ u8 FindPaletteEntry(i16 color) {
 RVA(0x00002f20, 0x1d)
 void RetainPaletteEntry(u8 index) {
     i16* ref;
-    if (index < 16) {
+    if (index < PALETTE_SIZE) {
         ref = &s_paletteRefs[index];
         (*ref)++;
     }
@@ -224,7 +224,7 @@ void RetainPaletteEntry(u8 index) {
 
 RVA(0x00002f40, 0x28)
 b16 SetPaletteColor(u8 index, i16 color) {
-    if (index < 16) {
+    if (index < PALETTE_SIZE) {
         StorePaletteColor(index, color);
         MarkPaletteDirty();
         return true;
@@ -255,7 +255,7 @@ u32 GrbToRgb(u32 grb) {
 RVA(0x00002fe0, 0x26)
 void ReleasePaletteEntry(u8 index) {
     i16* ref;
-    if (index < 16) {
+    if (index < PALETTE_SIZE) {
         ref = &s_paletteRefs[index];
         if (*ref > 0) {
             (*ref)--;
@@ -333,10 +333,10 @@ void SkipPaletteSync(void) {}
 RVA(0x000030d0, 0x27)
 void ReleaseImagePalette(ImagePalette* palette) {
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (palette->entries[i] != 0xff) {
+    for (i = 0; i < PALETTE_SIZE; i++) {
+        if (palette->entries[i] != PALETTE_ENTRY_NONE) {
             ReleasePaletteEntry(palette->entries[i]);
-            palette->entries[i] = 0xff;
+            palette->entries[i] = PALETTE_ENTRY_NONE;
         }
     }
 }
