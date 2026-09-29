@@ -3195,9 +3195,11 @@ u8* RenderGlyph(u16 code, u8* glyph) {
         }
     } else {
 #ifdef GITEN_BUGFIX
-        // Retail ignores the result. GDI fails for an empty glyph (U+3000) or one
-        // taller than the buffer and leaves `metrics` unset, so the row lookup
-        // below indexed with stack garbage. The callers pass a cleared glyph.
+        // Retail passes 64 of the buffer's 128 bytes and ignores the result. GDI
+        // fails for an empty glyph (U+3000) or a bitmap larger than the buffer
+        // (more than 16 rows; 32 with the whole buffer) and leaves `metrics` unset,
+        // so the row lookup below indexed with stack garbage. Cleared metrics
+        // render the cleared `bits` as a blank glyph and keep the underline.
         if (GetGlyphOutline(
                 g_fontDC,
                 code,
@@ -3208,7 +3210,7 @@ u8* RenderGlyph(u16 code, u8* glyph) {
                 &s_identityMatrix
             )
             == GDI_ERROR) {
-            return glyph;
+            memset(&metrics, 0, sizeof(metrics));
         }
 #else
         GetGlyphOutline(g_fontDC, code, GGO_BITMAP, &metrics, 64, bits, &s_identityMatrix);
@@ -3222,12 +3224,14 @@ u8* RenderGlyph(u16 code, u8* glyph) {
         }
         if (code != SJIS_LOW_LINE) {
 #ifdef GITEN_BUGFIX
-            // A font other than MS Gothic can place a glyph's top outside the table.
-            if (metrics.gmptGlyphOrigin.y < 0
-                || metrics.gmptGlyphOrigin.y >= static_cast<LONG>(
-                       sizeof(s_glyphRowOffset) / sizeof(s_glyphRowOffset[0])
-                   )) {
-                return glyph;
+            // Retail indexes the table with the glyph top unchecked. MS Gothic keeps
+            // the top within it; another font need not.
+            const LONG tops =
+                static_cast<LONG>(sizeof(s_glyphRowOffset) / sizeof(s_glyphRowOffset[0]));
+            if (metrics.gmptGlyphOrigin.y < 0) {
+                metrics.gmptGlyphOrigin.y = 0;
+            } else if (metrics.gmptGlyphOrigin.y >= tops) {
+                metrics.gmptGlyphOrigin.y = tops - 1;
             }
 #endif
             for (i = s_glyphRowOffset[metrics.gmptGlyphOrigin.y], j = 0; i < 30; i += 2, j += 4) {
