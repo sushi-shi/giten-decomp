@@ -1144,9 +1144,9 @@ i16 GetCellAtOffset(i16 dx, i16 dy) {
     return 0;
 }
 
-// The current level's room list (0) or door list (1).
+// The current level's room list or door list.
 RVA(0x00022540, 0x1c)
-u8* GetLevelList(i16 which) {
+u8* GetLevelList(GZ_ENUM_PARAM(LevelListKind, i16) which) {
     AreaLevel* level = g_areaLevel;
     u8* list;
     if (level == NULL) {

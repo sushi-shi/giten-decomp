@@ -331,7 +331,12 @@ void WrapMapPosition(i16* x, i16* y);
 void ClampMapPosition(i16* x, i16* y);
 i16 GetWarpCodeAtOffset(i16 dx, i16 dy);
 i16 GetCellAtOffset(i16 dx, i16 dy);
-u8* GetLevelList(i16 which);
+// GetLevelList's lists: the level's rooms or its doors.
+GZ_ENUM_BEGIN_SPLIT(LevelListKind, i16)
+    LEVEL_LIST_ROOMS = 0,
+    LEVEL_LIST_DOORS = 1
+GZ_ENUM_END_SPLIT(LevelListKind)
+u8* GetLevelList(GZ_ENUM_PARAM(LevelListKind, i16) which);
 b16 IsLevelMapRevealed(void);
 ExitCell* CopyExitAt(i16 x, i16 y, ExitCell* out);
 

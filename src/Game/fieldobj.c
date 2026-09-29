@@ -49,6 +49,7 @@
 #include <Game/Party.h>
 #include <Game/PartyAction.h>
 #include <Game/PartyCommand.h>
+#include <Game/RoomRegion.h>
 #include <Game/Skill.h>
 #include <Game/SkillUse.h>
 #include <Game/StatUpdate.h>
@@ -580,7 +581,7 @@ i16 SpawnMapObject(i16 layer, i16 x, i16 y, i16 direction, i8 event) {
     i16 code = GetMapCellCode(x, y);
     DoorRegionData* table;
     i16 kind;
-    if (code == 0xff || code == -1) {
+    if (code == REGION_NONE || code == -1) {
         return -1;
     }
     if (!IsObjectCell(code)) {
@@ -591,7 +592,7 @@ i16 SpawnMapObject(i16 layer, i16 x, i16 y, i16 direction, i8 event) {
         return -1;
     }
     kind = LookupCellObject(table, layer);
-    if (kind < HUMAN_ID_LIMIT || kind >= 0x2020) {
+    if (kind < HUMAN_ID_LIMIT || kind >= OBJECT_KIND_END) {
         return -1;
     }
     return SpawnFieldObject(layer, x, y, direction, kind, false, event, false);

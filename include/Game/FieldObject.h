@@ -32,6 +32,8 @@ GZ_ENUM_END(FieldObjectImageCode);
 // magazine size.
 // The field object table, and the layer of an unused object slot.
 #define FIELD_OBJECT_COUNT 16
+// Field-object record kinds run from HUMAN_ID_LIMIT below OBJECT_KIND_END.
+#define OBJECT_KIND_END 0x2020
 // The skills an object record lists (a field object rolls them by slot).
 #define OBJECT_SKILL_COUNT 8
 #define FIELD_LAYER_NONE (-1)

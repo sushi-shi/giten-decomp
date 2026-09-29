@@ -3,6 +3,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/RoomRegion.h>
 #include <Ints.h>
 
 // A 42-byte record of an NPC placed in the current area: its cell, picture,

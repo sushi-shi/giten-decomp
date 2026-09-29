@@ -2739,12 +2739,12 @@ b16 UpdateInfoBar(void) {
 
 static __inline void EnsureGridByteStorage(i32* grid) {
     if (!*grid) {
-        *grid = AllocHandle(0x1000);
+        *grid = AllocHandle(REGION_GRID_SIZE * REGION_GRID_SIZE);
     }
 }
 
 static __inline i16 GridByteIndex(i16 x, i16 y) {
-    return y * 64 + x;
+    return y * REGION_GRID_SIZE + x;
 }
 
 // Sets region `value` on every cell of the rectangle x0..x1, y0..y1.
@@ -2764,7 +2764,7 @@ void SetRoomRegion(i16 x, i16 y, u8 value) {
     SetGridByte(&s_roomRegions, x, y, value);
 }
 
-// Sets cell x/y of a 64x64 byte grid (allocated on first use).
+// Sets cell x/y of a region grid (allocated on first use).
 RVA(0x0001eaf0, 0x3d)
 void SetGridByte(i32* grid, i16 x, i16 y, u8 value) {
     u8* bytes;
@@ -2780,7 +2780,7 @@ void FillEmptyRegions(i16 width, i16 height, u8 value) {
     i16 y;
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-            if (GetRoomRegion(x, y) == 0xff) {
+            if (GetRoomRegion(x, y) == REGION_NONE) {
                 SetRoomRegion(x, y, value);
             }
         }
@@ -2863,13 +2863,12 @@ u8* FindRegionData(u8* list, i16 stride, i16 index) {
     }
 }
 
-// Clears the region grid, then marks the level's rooms (0x1f-byte entries,
-// regions 0..) and doors (13-byte entries, regions 0x80..).
+// Clears the region grid, then marks the level's rooms and doors.
 RVA(0x0001ed20, 0x4b)
 void MarkRoomRegions(u8* rooms, u8* doors, i16 width, i16 height) {
-    FillRegionRect(0, 0, 0x3f, 0x3f, 0xff);
-    MarkRegionList(rooms, 0x1f, 0, width, height);
-    MarkRegionList(doors, 0xd, 0x80, width, height);
+    FillRegionRect(0, 0, REGION_GRID_SIZE - 1, REGION_GRID_SIZE - 1, REGION_NONE);
+    MarkRegionList(rooms, ROOM_ENTRY_SIZE, 0, width, height);
+    MarkRegionList(doors, DOOR_ENTRY_SIZE, REGION_DOOR, width, height);
 }
 
 static __inline void SaveRoomRegions(i16 width, i16 height) {
@@ -2931,10 +2930,10 @@ i16 GetPartyCellCode(void) {
     return GetMapCellCode(g_party.field.pos.x, g_party.field.pos.y);
 }
 
-// Whether a region code is a door (0x80..).
+// Whether a region code is a door.
 RVA(0x0001eee0, 0xa)
 i16 IsObjectCell(i16 code) {
-    return code & 0x80;
+    return code & REGION_DOOR;
 }
 
 RVA(0x0001eef0, 0x1a)
@@ -2970,23 +2969,28 @@ i16 LookupCellObject(DoorRegionData* table, i16 layer) {
 
 RVA(0x0001ef90, 0x1e)
 u8* GetRoomData(i16 code) {
-    return FindRegionData(GetLevelList(0), 0x1f, code & 0x7f);
+    return FindRegionData(
+        GetLevelList(LEVEL_LIST_ROOMS),
+        ROOM_ENTRY_SIZE,
+        code & (REGION_DOOR - 1)
+    );
 }
 
 RVA(0x0001efb0, 0x1e)
 DoorRegionData* GetCellObjectTable(i16 code) {
-    void* data = FindRegionData(GetLevelList(1), 0xd, code & 0x7f);
+    void* data =
+        FindRegionData(GetLevelList(LEVEL_LIST_DOORS), DOOR_ENTRY_SIZE, code & (REGION_DOOR - 1));
     return data;
 }
 
 // Enters region `code`: a room loads its NPC images, a door its two enemy
-// groups (object ids 0x20..0x201f).
+// groups (object record kinds).
 RVA(0x0001efd0, 0x95)
 void EnterRoom(i16 code) {
     DoorRegionData* table;
     i16 object;
     SetCurrentRoomCode(code);
-    if (code == 0xff || code == -1) {
+    if (code == REGION_NONE || code == -1) {
         return;
     }
     if (!IsObjectCell(code)) {
@@ -3001,11 +3005,11 @@ void EnterRoom(i16 code) {
         return;
     }
     object = LookupCellObject(table, 0);
-    if (object >= 0x20 && object <= 0x201f) {
+    if (object >= HUMAN_ID_LIMIT && object <= OBJECT_KIND_END - 1) {
         LoadEnemyGroupSlot(0, object);
     }
     object = LookupCellObject(table, 1);
-    if (object >= 0x20 && object <= 0x201f) {
+    if (object >= HUMAN_ID_LIMIT && object <= OBJECT_KIND_END - 1) {
         LoadEnemyGroupSlot(1, object);
     }
 }
