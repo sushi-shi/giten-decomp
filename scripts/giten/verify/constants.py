@@ -458,6 +458,60 @@ def _nearest_expression_context(cidx, stack):
     return None
 
 
+def _trivial_role(cidx, literal, stack) -> str:
+    """The syntactic role of a 0/1/-1 in a function body, for review rows."""
+    transparent = {cidx.CursorKind.PAREN_EXPR, cidx.CursorKind.UNEXPOSED_EXPR,
+                   cidx.CursorKind.UNARY_OPERATOR}
+    child = literal
+    for node in reversed(stack):
+        if node.kind in transparent:
+            child = node
+            continue
+        kind = node.kind
+        if kind == cidx.CursorKind.RETURN_STMT:
+            return "return"
+        if kind == cidx.CursorKind.CASE_STMT:
+            return "case"
+        if kind == cidx.CursorKind.VAR_DECL:
+            return "initializer"
+        if kind == cidx.CursorKind.FOR_STMT:
+            parts = list(node.get_children())
+            return "for-init" if parts and _cursor_contains(parts[0], literal) \
+                else "for-bound"
+        if kind == cidx.CursorKind.COMPOUND_ASSIGNMENT_OPERATOR:
+            return "compound-assignment"
+        if kind == cidx.CursorKind.BINARY_OPERATOR:
+            op = node.spelling
+            if op == "=":
+                loop = next((n for n in reversed(stack)
+                             if n.kind == cidx.CursorKind.FOR_STMT), None)
+                if loop is not None:
+                    parts = list(loop.get_children())
+                    if parts and _cursor_contains(parts[0], literal):
+                        return "for-init"
+                return "store"
+            if op in ("==", "!="):
+                return "equality"
+            if op in ("<", "<=", ">", ">="):
+                return "bound"
+            if op in ("+", "-", "*", "/", "%"):
+                return "arithmetic"
+            if op in ("&", "|", "^", "<<", ">>"):
+                return "bitwise"
+            if op in ("&&", "||"):
+                return "condition"
+            return f"operator {op}"
+        if kind == cidx.CursorKind.CONDITIONAL_OPERATOR:
+            return "conditional"
+        if kind == cidx.CursorKind.ARRAY_SUBSCRIPT_EXPR:
+            return "array-index"
+        if kind in (cidx.CursorKind.IF_STMT, cidx.CursorKind.WHILE_STMT,
+                    cidx.CursorKind.DO_STMT):
+            return "condition"
+        return kind.name.lower()
+    return "unresolved"
+
+
 def _review_group(cidx, literal, stack, scope, value, classification):
     if classification in {"null-pointer", "boolean", "enum"}:
         return "existing-symbol", classification
@@ -472,7 +526,7 @@ def _review_group(cidx, literal, stack, scope, value, classification):
     if call is not None:
         return "call-argument", call
     if scope == "function-body" and value in (-1, 0, 1):
-        return "trivial-function-literal", str(value)
+        return "trivial-function-literal", f"{value} {_trivial_role(cidx, literal, stack)}"
     expression = _nearest_expression_context(cidx, stack)
     if expression is not None:
         return expression

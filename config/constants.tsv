@@ -29,3 +29,4 @@ src/Platform/winmain.cpp	g_commandImages	0	data-or-extent	*	entry with no bitmap
 src/Platform/winmain.cpp	g_layerImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
 src/Platform/winmain.cpp	g_panelImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
 src/Text/font.cpp	s_hotspotImages	0	data-or-extent	*	hotspot with no bitmap resource (0 = none)
+*	*	0	trivial-function-literal	0 for-init	a for loop's counter starts at zero
