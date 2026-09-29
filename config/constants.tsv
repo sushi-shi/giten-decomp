@@ -3,7 +3,7 @@
 # until it is written as a name (enumerator, named macro, NULL, true/false).
 # `giten verify constants --list [FILTER]` prints the open ones; the floor
 # never rises (`--update-floor` lowers it). Columns (tab-separated; `*` matches
-# anything, `file` takes a glob): file owner spelling group detail reason.
+# anything; every field takes a glob): file owner spelling group detail reason.
 # group/detail are the census' review_group/review_context columns.
 #floor	16046
 src/Text/font.cpp	s_halfWidthGlyphs	*	data-or-extent	*	glyph bitmap rows: one byte of pixels per row of each 8x16 half-width glyph
@@ -48,3 +48,19 @@ src/Text/font.cpp	s_hotspotImages	0	data-or-extent	*	hotspot with no bitmap reso
 *	*	*	call-argument	AllocCleared(u16, u16) argument 2	the element size of an allocation
 *	*	*	call-argument	sprintf(char *, const char *, ...) argument 3	a value formatted into the text
 *	*	*	call-argument	sprintf(char *, const char *, ...) argument 4	a value formatted into the text
+src/Platform/winmain.cpp	*	*	*	*array*[ ]vertices	vertex slot of a fixed quad or strip mesh
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_door*	corner and animation-step slot of the door frame tables
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_enemy	vertex slot of the enemy billboard quad
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_npc	vertex slot of the NPC billboard quad
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_box	vertex slot of the treasure-box quad
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_outline	vertex slot of the drag-outline strip
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_stairs	vertex slot of the stairs quad
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_backdrop	vertex slot of the backdrop quad
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_*AtlasUV	quarter, corner and u/v slot of the room-texture coordinates
+src/Game/fieldview.c	*	*	*	*array*[ ]g_viewCells	row and column of the 4x7 view-cell grid
+src/Game/fieldview.c	*	*	*	*array*[ ]s_view*	row and column of the 4x7 view-cell grid
+*	*	*	*	*array*[ ]params	ItemRecord parameter byte index; the params block is not yet recovered as typed fields (@identity-TODO in Game/ItemRecord.h)
+*	*	0	trivial-function-literal	0 bound	sign test against zero (a handle's validity test keeps its retail >= 0 / < 0 form)
+*	*	0	trivial-function-literal	0 initializer	an accumulator or counter declared at zero
+*	*	1	trivial-function-literal	1 arithmetic	a one-step offset: the next index, element or count
+*	*	1	trivial-function-literal	1 compound-assignment	a one-step increment or decrement

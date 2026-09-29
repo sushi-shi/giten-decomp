@@ -743,10 +743,10 @@ class Keep:
     def matches(self, site: Site) -> bool:
         from fnmatch import fnmatchcase
         return (fnmatchcase(site.file, self.file)
-                and (self.owner == "*" or self.owner == site.function)
-                and (self.spelling == "*" or self.spelling == site.spelling)
-                and (self.group == "*" or self.group == site.review_group)
-                and (self.detail == "*" or self.detail == site.review_context))
+                and fnmatchcase(site.function, self.owner)
+                and fnmatchcase(site.spelling, self.spelling)
+                and fnmatchcase(site.review_group, self.group)
+                and fnmatchcase(site.review_context, self.detail))
 
 
 def load_worklist(path: Path = WORKLIST) -> tuple[list[Keep], int | None, list[str]]:
