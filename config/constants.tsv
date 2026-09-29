@@ -875,3 +875,76 @@ src/Game/statuspanel.c	DrawStatusExperience	*	*	*	experience to the next level: 
 src/Game/statuspanel.c	DrawStatusMemberPortrait	*	*	*	@identity-TODO: portraits 0x4000 + picture index (0x4001 before the event flag), variant 0, mode 1
 src/Game/statuspanel.c	DrawStatusName	*	*	*	the name buffer (36 bytes), an empty name, two lines down
 src/Game/statuspanel.c	DrawStatusVitals	*	call-argument	*	vitals layout: text column 3, the battle panel at 52
+src/Script/scriptactor.c	OpJumpUnlessCompanionHealthy	*	*	*	@identity-TODO: the companion slot refs -2, -3 and -7 (see the function comment)
+src/Script/scriptactor.c	AddScriptCharacterToRoster	0	call-argument	SetGamePhase(*	the roster replacement state's first phase
+src/Script/scriptactor.c	*CallFrame*	*	*	*	@identity-TODO: call frames: PushCallFrame's and PopCallFrame's flag words (0, 1)
+src/Script/scriptactor.c	CallScript	0	call-argument	*	@identity-TODO: PushCallFrame's second argument 0
+src/Script/scriptactor.c	OpPushReturnTarget	1	call-argument	*	@identity-TODO: PushCallFrame's second argument 1
+src/Script/scriptactor.c	CompareByOp	0	*	*	equal order (0)
+src/Script/scriptactor.c	CompareInt	-1	*	*	less than
+src/Script/scriptactor.c	CountItemInSlots	*	*	*	the eight equipment slots, counted in order
+src/Script/scriptactor.c	*ScriptActor	1	*	*	a despawned actor is hidden (fieldHidden)
+src/Script/scriptactor.c	DismissTalkTarget	*	*	*	a dismissed object is hidden; @identity-TODO: flash pattern 0x37
+src/Script/scriptactor.c	FindScriptChoiceAtMouse	*	*	*	8-pixel cells; -1 when no choice is under the mouse
+src/Script/scriptactor.c	Get*Value	*	*	*	script value selectors 0..3 (see GetActionValue's and GetBattleResultValue's comments); twice the experience per able member; the first drop slot
+src/Script/scriptactor.c	GetObject*	0	*	*	no object: 0
+src/Script/scriptactor.c	GetResolvedPartyCharacter	1	call-argument	*	@identity-TODO: GetRosterCharacterById's second argument 1
+src/Script/scriptactor.c	GetTextToken	0	*	*	the token text buffer's start
+src/Script/scriptactor.c	GotoScript	*	*	*	@identity-TODO: script file 0xde's entry 1 remapped to 9
+src/Script/scriptactor.c	InitScriptChoiceMenu	-1	*	*	no hovered choice
+src/Script/scriptactor.c	ListTail	1	*	*	loop until the list's end
+src/Script/scriptactor.c	OpAddToRoster	*	*	*	@identity-TODO: roster changes: AddScriptCharacterToRoster's mode 3, the character analyzed (1), -1 for no slot, 0 for none added
+src/Script/scriptactor.c	OpRemoveFromRoster	*	*	*	@identity-TODO: roster changes: AddScriptCharacterToRoster's mode 3, the character analyzed (1), -1 for no slot, 0 for none added
+src/Script/scriptactor.c	Op*ActiveParty	*	*	*	@identity-TODO: party changes: AddScriptCharacterToRoster's mode 3, the character analyzed (1), 0 or -1 results
+src/Script/scriptactor.c	Op*	1	call-argument	DrawMoneyCounters(*	redraw the money counters
+src/Script/scriptactor.c	OpAdjustItemCount	*	*	*	nothing moved yet; the quiet bag; StoreBagItem's -1
+src/Script/scriptactor.c	OpApplyEventFlag	0	*	*	no result yet
+src/Script/scriptactor.c	OpBoostPool	*	*	*	@identity-TODO: pool boosts: pool 0 (HP), modes 1 and 2 (limit doubled), the floor 0, the cap 0x7fff
+src/Script/scriptactor.c	OpChangeMap	-1	*	*	leave the map (a negative request)
+src/Script/scriptactor.c	OpClearBagEntry	0	*	*	no attachment
+src/Script/scriptactor.c	OpCloseItemListWindow	0x115	*	*	@identity-TODO: panel image 0x115, the item list window
+src/Script/scriptactor.c	OpDivLongVar	*	*	*	long-variable arithmetic: a zero operand divides by 1; percent scaling
+src/Script/scriptactor.c	OpPercentLongVar	*	*	*	long-variable arithmetic: a zero operand divides by 1; percent scaling
+src/Script/scriptactor.c	OpFindMember*	*	*	*	no member found yet (0, -1); the 32 roster slots
+src/Script/scriptactor.c	OpGetActorMoonValue	2	*	*	@identity-TODO: half the moon value
+src/Script/scriptactor.c	OpGetCombatantId	-1	*	*	no combatant id
+src/Script/scriptactor.c	OpGetTimeOfDay	60	*	*	minutes per hour
+src/Script/scriptactor.c	OpGiveItem	*	call-argument	*	the quiet bag (0); one item stored
+src/Script/scriptactor.c	OpIf*	*	*	*	@identity-TODO: script tests: facing masks (& 3), -1 for no saved direction, object states below 2 (3 set), side offsets (-1), the adjacent distance 0, item lists ending at -1
+src/Script/scriptactor.c	OpJump*	*	*	*	@identity-TODO: script jumps: the wall kind (& 3), IsCellBlocked's 1, a blocked start, the hero's ref, the price cap, percent and quarter rolls, the near-front distance 4, the line test's x 0, withRhs 1
+src/Script/scriptactor.c	OpListBagByCategory	*	*	*	item categories 1..19 (0 for all), the 65-entry list and 4-byte entries, item ids from 1
+src/Script/scriptactor.c	OpOpenItemListWindow	8	*	*	@identity-TODO: the item list window's eight rows
+src/Script/scriptactor.c	OpQueueAutoMoves	*	*	*	the auto-move list ends at 0xff; the scene hold; the first move
+src/Script/scriptactor.c	OpRebalanceMemberStats	2	*	*	@identity-TODO: half the stat sum
+src/Script/scriptactor.c	OpRollActor*	0	*	*	no rolled spoils
+src/Script/scriptactor.c	OpRunFusion	1	call-argument	*	@identity-TODO: SetBlankStep's 1
+src/Script/scriptactor.c	OpScreenTransition	1	call-argument	*	@identity-TODO: SetLongFrame's 1
+src/Script/scriptactor.c	OpSetActorAlert	*	*	*	@identity-TODO: alert levels 1 and 2 and the 0x200-tick alert
+src/Script/scriptactor.c	OpSetObjectFamiliarity	0	*	*	familiarity from 0
+src/Script/scriptactor.c	OpSetObjectField	*	*	*	@identity-TODO: object field 3 and the fourth group's level (battle-stat word 18)
+src/Script/scriptactor.c	OpSetObjectPresence	1	*	*	@identity-TODO: SetAnalyzed's 1
+src/Script/scriptactor.c	OpSetWorldMapSpot	1	*	*	mark the saved spot (a positive request)
+src/Script/scriptactor.c	OpShiftPlayerAlignment*	*	*	*	@identity-TODO: alignment shift modes
+src/Script/scriptactor.c	PlaceScriptActor	*	*	*	@identity-TODO: no layer (-1); SpawnFieldObject's and SpawnMapObject's defaults (0, -1, 0)
+src/Script/scriptactor.c	PickEquipmentReward	*	*	*	@identity-TODO: the eight equipment slots picked from, item ids from 1, at most three candidates; 0 when none
+src/Script/scriptactor.c	ReadLongOperand	0	*	*	not in place
+src/Script/scriptactor.c	ResolveScriptEntry	*	*	*	script files 0xe0..0xff are the layer scripts; @identity-TODO: FindLayerScriptEntry's 1
+src/Script/scriptactor.c	ReturnFromCall	*	*	*	@identity-TODO: PopCallFrame's 0; 0 after a return, -1 with no frame
+src/Script/scriptactor.c	RequestQuit	1	*	*	ask StepGame to end
+src/Script/scriptactor.c	OpTakeItem	1	call-argument	*	one item taken
+src/Script/scriptactor.c	OpOpenItemListWindow	0	call-argument	*	the window at (0, 0)
+src/Script/scriptactor.c	OpStashItemLists	*	call-argument	*	@identity-TODO: SaveOrRestoreBag's 16 stacks and its save/restore flag (0, 1)
+src/Script/scriptactor.c	PlayScreenTransition	0	call-argument	*	@identity-TODO: RunMoveCommand's next phase 0
+src/Script/scriptactor.c	OpSwitchOnMoonPhase	1	call-argument	*	@identity-TODO: SwitchOnValue's 1
+src/Script/scriptactor.c	ReadTextToken	*	*	*	@identity-TODO: text tokens: the object-check bypass, the token buffer, no id, long variable 11
+src/Script/scriptactor.c	ReadScriptOperand	*	*	*	@identity-TODO: operand scaling (a quarter of the price, doubling) and a zero value
+src/Script/scriptactor.c	ReadContestValues	*	*	*	contest values: none (0) for a missing object, and -1 for the other side when it has none
+src/Script/scriptactor.c	StepForMode	*	*	*	@identity-TODO: step modes 0..2 and their steps (1, 0, -1)
+src/Script/scriptactor.c	OpSetObjectFamiliarity	0xff	*	*	familiarity up to 0xff
+src/Script/scriptactor.c	PollScriptChoiceMenu	*	*	*	choice polls: 1 picked, -1 cancelled, 0 still open; no hovered choice (-1)
+src/Script/scriptactor.c	RunScriptChoiceState	*	*	*	the choice state's steps: open, then poll
+src/Script/scriptactor.c	LoadScriptCharacterToRoster	*	call-argument	*	@identity-TODO: AddScriptCharacterToRoster's mode 3; analyzed (1)
+src/Script/scriptactor.c	OpSetLongVar	*	*	*	@identity-TODO: long variable 23 (a system variable) and sprite 0
+src/Script/scriptactor.c	OpCureRosterCondition	1	*	*	the roster's first slot
+src/Script/scriptactor.c	OpRecoverRosterPool	1	*	*	the roster's first slot
+src/Script/scriptactor.c	OpZeroLongVar	0	call-argument	*	the variable is set to 0

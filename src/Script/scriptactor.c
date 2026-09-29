@@ -1890,7 +1890,7 @@ RVA(0x00035400, 0x4d)
 void OpJumpUnlessHeroEquipped(i16 invert) {
     b32 jump = false;
     i16 target = ReadBranchTarget();
-    Character* player = ResolveScriptObject(-1);
+    Character* player = ResolveScriptObject(SCRIPT_REF_SLOT_BASE);
     if ((GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item != ITEM_ID_EMPTY && !invert)
         || (GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item == ITEM_ID_EMPTY && invert)) {
         jump = true;
@@ -2278,13 +2278,13 @@ void OpGetFusionResult(void) {
 
 RVA(0x00035c90, 0x2c)
 void OpAddMagnetite(i16 sign) {
-    AddMagnetite(ResolveScriptObject(-1), ReadScriptValue() * sign);
+    AddMagnetite(ResolveScriptObject(SCRIPT_REF_SLOT_BASE), ReadScriptValue() * sign);
     DrawMoneyCounters(1);
 }
 
 RVA(0x00035cc0, 0x2c)
 void OpAddMacca(i16 sign) {
-    AddMacca(ResolveScriptObject(-1), ReadScriptValue() * sign);
+    AddMacca(ResolveScriptObject(SCRIPT_REF_SLOT_BASE), ReadScriptValue() * sign);
     DrawMoneyCounters(1);
 }
 
@@ -2438,8 +2438,8 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpAddToRoster(void) {
     i16 ref = ReadObjectRef();
     i16 id = ref;
     Character* character;
-    if (ref >= 3000) {
-        id = ref - 3000;
+    if (ref >= SCRIPT_REF_CHARACTER_BASE) {
+        id = ref - SCRIPT_REF_CHARACTER_BASE;
     }
     if (ref == -17 || ref == -19) {
         id = GetScriptActorId();
@@ -2476,13 +2476,13 @@ RVA(0x000361b0, 0x97)
 i16 OpRemoveFromRoster(void) {
     i16 ref = ReadObjectRef();
     i16 id = ref;
-    if (id >= 3000) {
-        id = ref - 3000;
-    } else if (id >= 2000) {
-        RemoveFromRoster(id - 2000);
+    if (id >= SCRIPT_REF_CHARACTER_BASE) {
+        id = ref - SCRIPT_REF_CHARACTER_BASE;
+    } else if (id >= SCRIPT_REF_ROSTER_BASE) {
+        RemoveFromRoster(id - SCRIPT_REF_ROSTER_BASE);
         return 0;
-    } else if (id >= 1000) {
-        i16 slot = GetPartySlot(id - 1000);
+    } else if (id >= SCRIPT_REF_PARTY_BASE) {
+        i16 slot = GetPartySlot(id - SCRIPT_REF_PARTY_BASE);
         if (slot != -1) {
             RemoveFromRoster(slot);
         }
@@ -2510,11 +2510,11 @@ i16 OpJoinActiveParty(void) {
     i16 ref = ReadObjectRef();
     i16 id = ref;
     i16 slot;
-    if (ref >= 3000) {
-        id = ref - 3000;
+    if (ref >= SCRIPT_REF_CHARACTER_BASE) {
+        id = ref - SCRIPT_REF_CHARACTER_BASE;
     }
-    if (id >= 2000) {
-        id = GetRosterId(id - 2000);
+    if (id >= SCRIPT_REF_ROSTER_BASE) {
+        id = GetRosterId(id - SCRIPT_REF_ROSTER_BASE);
         if (id < 0) {
             return -1;
         }
@@ -2546,11 +2546,11 @@ RVA(0x00036330, 0xa0)
 i16 OpLeaveActiveParty(void) {
     i16 ref = ReadObjectRef();
     i16 id = ref;
-    if (ref >= 3000) {
-        id = ref - 3000;
+    if (ref >= SCRIPT_REF_CHARACTER_BASE) {
+        id = ref - SCRIPT_REF_CHARACTER_BASE;
     }
-    if (id >= 2000) {
-        id = GetRosterId(id - 2000);
+    if (id >= SCRIPT_REF_ROSTER_BASE) {
+        id = GetRosterId(id - SCRIPT_REF_ROSTER_BASE);
         if (id < 0) {
             return -1;
         }
@@ -2597,9 +2597,9 @@ RVA(0x00036440, 0x7b)
 i16 OpGetCombatantId(void) {
     i16 index = ReadLongVarIndex();
     i16 id = ReadObjectRef();
-    if (id == -20) {
+    if (id == SCRIPT_REF_BATTLE_ACTOR) {
         id = g_actorId;
-    } else if (id == -21) {
+    } else if (id == SCRIPT_REF_BATTLE_TARGET) {
         id = g_targetId;
     } else {
         id = -1;
@@ -2613,7 +2613,7 @@ void OpIfObjectIsAlly(i16 negate) {
     i16 target = ReadBranchTarget();
     i16 id = ReadObjectRef();
     b32 matches;
-    if (id == -20) {
+    if (id == SCRIPT_REF_BATTLE_ACTOR) {
         id = g_actorId;
     } else if (id == -21) {
         id = g_targetId;
@@ -3483,7 +3483,7 @@ void OpSetObjectField(void) {
             );
             return;
         case SCRIPT_OPERAND_OBJECT_WEAPON_GROUP_BASE:
-            object->battleStats[0] = value;
+            object->battleStats[BATTLE_STAT_WEAPON_LEVEL] = value;
             return;
         case SCRIPT_OPERAND_OBJECT_GUN_GROUP_BASE:
             object->battleStats[6] = value;
@@ -3564,7 +3564,7 @@ void OpFindMemberByPoolState(i16 all, i16 pools) {
         result = FindMemberByPoolState(slot, mode, state, pools);
     } else {
         result = 0;
-        while (slot >= 0 && slot < 32) {
+        while (slot >= 0 && slot < ROSTER_SIZE) {
             slot = FindMemberByPoolState(slot, mode, state, pools);
             if (slot != ROSTER_SLOT_NONE) {
                 result |= PowerOfTwo(slot);
