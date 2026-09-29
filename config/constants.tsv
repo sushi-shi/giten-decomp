@@ -152,3 +152,12 @@ src/Script/scriptsprite.c	Op*Sprite	*	*	*slot	a sprite slot
 src/Script/scriptsprite.c	Op*Sprite	*	*	*image	a sprite image number
 src/Script/scriptsprite.c	OpPlaceSprite	1	*	1 case	the sprite placement override (see g_shopKind)
 src/Script/scriptsprite.c	OpLoadSprite	*	*	*arg	the sprite load argument of the Osaki-fox event image the developer trace names
+src/Platform/winmain.cpp	[RD][er][na][dw]*	*	initializer-payload	*	vertex fields of a rendered primitive: screen or world position, colour and texture coordinates
+src/Platform/winmain.cpp	AnimateDoor	*	*	*	door animation geometry: corner offsets, widths and texture u per step
+src/Platform/winmain.cpp	Render[ENT]*	*	store	*	billboard geometry: offsets, spread and texture coordinates
+src/Platform/winmain.cpp	Render[ENT]*	*	arithmetic	*	billboard geometry scale factors
+src/Platform/winmain.cpp	BuildRoomMesh	*	arithmetic	*	room mesh geometry
+src/Platform/winmain.cpp	s_*Indices	*	data-or-extent	*	triangle vertex indices of a quad
+src/Platform/winmain.cpp	g_menuButtonX	*	data-or-extent	*	menu bar button left edges in pixels
+src/Platform/winmain.cpp	s_layerOrder	*	data-or-extent	*	the party panel number after SCREEN_LAYER_FIRST_PANEL
+src/Platform/winmain.cpp	HandleInput	*	arithmetic	*SCREEN_LAYER_FIRST_PANEL	the party panel number after SCREEN_LAYER_FIRST_PANEL
