@@ -63,15 +63,15 @@ static CellKind s_cellKinds[] = {
     {CELL_EXIT, CELL_EVENT_WORLD_EXIT, 0, 0},
     {0x7f, CELL_EVENT_FROZEN_SCENE, CELL_KIND_CHECK_FACING, 0},
     {0x79, CELL_EVENT_SCRIPT, CELL_KIND_CHECK_FACING, 0},
-    {0x7c, 10, 0, 0},
-    {0x8b, 10, 0, 0},
-    {0x8c, 10, 0, 0},
-    {0x8d, 10, 0, 0},
-    {0x8e, 10, 0, 0},
-    {0x8f, 10, 0, 0},
+    {0x7c, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
+    {0x8b, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
+    {0x8c, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
+    {CELL_DARK, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
+    {CELL_COMMAND_BLOCKED, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
+    {0x8f, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
     {CELL_CHUTE, CELL_EVENT_CHUTE, 0, 0},
-    {0x88, 12, 0, 0},
-    {0x89, 12, 0, 0},
+    {0x88, CELL_EVENT_FADE_SCENE, 0, 0},
+    {0x89, CELL_EVENT_FADE_SCENE, 0, 0},
     {0x65, 13, 0, 0},
     {0xff, CELL_EVENT_NONE, 0, 0},
 };
@@ -748,7 +748,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
             && !(link->facings & GetFacingBit())) {
             continue;
         }
-        if (kind->code == 0x7f) {
+        if (kind->code == CELL_FROZEN_SCENE) {
             SetSceneScriptByIndex(7, 8);
         }
         return kind->kind;
@@ -864,7 +864,7 @@ b16 IsDarkCell(i16 x, i16 y) {
     }
     for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
         if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(&cell->head, 3)
-            && cell->head.code == 0x8d) {
+            && cell->head.code == CELL_DARK) {
             return true;
         }
     }
@@ -881,7 +881,7 @@ b16 IsCellCommandBlocked(i16 x, i16 y) {
     }
     for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
         if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(&cell->head, 3)
-            && cell->head.code == 0x8e) {
+            && cell->head.code == CELL_COMMAND_BLOCKED) {
             return true;
         }
     }

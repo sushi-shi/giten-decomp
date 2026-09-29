@@ -25,6 +25,7 @@
 #include <Game/LevelUp.h>
 #include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
+#include <Game/MoveCommand.h>
 #include <Game/ObjectRecord.h>
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
@@ -1078,31 +1079,34 @@ void RunCellEvent(void) {
                 g_cellDestY,
                 s_stayOnExit == true ? g_party.field.pos.direction : -1
             );
-            if (g_cellCode == 0x67) {
+            if (g_cellCode == CELL_WARP_HIDING_OBJECTS) {
                 ExchangeObjectsHidden(1);
             }
             break;
         case CELL_EVENT_FORCED_MOVE:
-            SetGamePhaseKeepStep(3);
-            if (g_cellCode >= 0x70 && g_cellCode <= 0x73) {
-                command = TurnDirection(g_cellCode - g_party.field.pos.direction - 0x70, 0);
+            SetGamePhaseKeepStep(FIELD_PHASE_CELL_EVENT);
+            if (g_cellCode >= CELL_FORCED_MOVE_NORTH && g_cellCode <= CELL_FORCED_MOVE_WEST) {
+                command = TurnDirection(
+                    g_cellCode - g_party.field.pos.direction - CELL_FORCED_MOVE_NORTH,
+                    0
+                );
                 SetGameStep(0);
-            } else if (g_cellCode == 0x64) {
+            } else if (g_cellCode == CELL_FORCED_MOVE_BACK) {
                 command = TurnDirection(
                     TurnDirection(g_party.savedDirection, 2) - g_party.field.pos.direction,
                     0
                 );
                 SetGameStep(0);
-            } else if (g_cellCode == 0x76) {
-                command = 6;
+            } else if (g_cellCode == CELL_SPIN_LEFT) {
+                command = MOVE_TURN_LEFT;
                 SetGameStep(0);
             } else {
                 if ((step = GetGameStep()) == 0) {
-                    SetGameStep(g_cellCode - 0x74);
+                    SetGameStep(g_cellCode - CELL_SPIN_RIGHT);
                 } else {
                     SetGameStep(step - 1);
                 }
-                command = 4;
+                command = MOVE_TURN_RIGHT;
             }
             RunMoveCommand(command, 0);
             RequestFieldRefresh();
@@ -1120,7 +1124,7 @@ void RunCellEvent(void) {
             MarkFieldRefresh();
             EnterFieldMap(map, -1, 100, -1, 100, 0);
             break;
-        case 12:
+        case CELL_EVENT_FADE_SCENE:
             SetGamePhase(FIELD_PHASE_ENTER_CELL);
             SetSceneScriptByIndex(5, 6);
             PushGameState(GAME_STATE_CELL_SCENE);

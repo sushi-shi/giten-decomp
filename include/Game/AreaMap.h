@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/CellCode.h>
 #include <Game/ViewDirection.h>
 #include <Ints.h>
 
@@ -13,13 +14,6 @@
 // map cell and its kind code; a list ends at x == 0xff. The records' other
 // bytes are addressed by offset: an event-flag pair (bank, index) that
 // disables the cell, and the destination bytes LatchCellDestination copies.
-
-GZ_ENUM_BEGIN(CellCode)
-    CELL_EXIT = 0x41,
-    CELL_STAIRS_UP = 0x42,
-    CELL_STAIRS_DOWN = 0x43,
-    CELL_CHUTE = 0x47
-GZ_ENUM_END(CellCode)
 
 typedef struct CellHead {
     u8 x;
@@ -42,7 +36,9 @@ GZ_ENUM_BEGIN(CellEventKind)
     CELL_EVENT_CHUTE = 7,
     CELL_EVENT_STAIRS = 8,
     CELL_EVENT_FORCED_MOVE = 9,
+    CELL_EVENT_FLOOR_PROPERTY = 10,
     CELL_EVENT_TRAP = 11,
+    CELL_EVENT_FADE_SCENE = 12,
     CELL_EVENT_MARKED_WARP = 14
 GZ_ENUM_END(CellEventKind)
 

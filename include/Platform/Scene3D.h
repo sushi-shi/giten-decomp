@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/CellCode.h>
 #include <Game/GameStateId.h>
 #include <Gfx/DDError.h>
 #include <Gfx/ScreenLayer.h>
@@ -201,10 +202,6 @@ extern struct Mesh g_wallMesh;
 // CELL_STAIRS_NEAR marks those half a cell nearer.
 // @identity-TODO: how the "steps" pair (0x90, 0x91) differs from the stairs
 // is unrecovered; the up/down texture split is DrawStairs' low-bit test.
-#define CELL_STAIRS_UP 0x42
-#define CELL_STAIRS_DOWN 0x43
-#define CELL_STEPS_UP 0x90
-#define CELL_STEPS_DOWN 0x91
 #define CELL_STAIRS_NEAR 0x08
 
 // The stairs quad: its half width and its distance ahead.

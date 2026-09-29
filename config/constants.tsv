@@ -206,3 +206,4 @@ src/Game/character.c	IsPartyMemberFallen	0	existing-symbol	enum	0 from GetFatalC
 *	*	0	trivial-function-literal	0 store index	an index back at the first entry
 *	*	0	trivial-function-literal	0 store i	an index back at the first entry
 *	*	0	trivial-function-literal	0 equality strcmp()	strcmp returns 0 for equal strings
+*	*	*	call-argument	RepaintTextPlane(*argument 2	the repaint mode RepaintTextPlane does not read
