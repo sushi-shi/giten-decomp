@@ -838,28 +838,23 @@ void ItemMenuHandler(MenuBox* menu, i16 index, i16 event) {
     }
 }
 
-// @early-stop load width: retail extracts the by-value entry's item with
-// a dword load and left shift followed by a word arithmetic right shift;
-// this build uses word operations throughout. The item/attachment container
-// remains a word, as the other packed-entry readers and writers require.
 RVA(0x0001b960, 0x1d5)
 i32 FormatItemMenuEntry(ItemStack entry, i32 numerator, i32 denominator) {
-    i16 item = GetItemStackItem(&entry);
     char marker = ' ';
-    ItemRecord* record = GetLoadedRecord(item);
+    ItemRecord* record = GetLoadedRecord(GetItemStackItem(&entry));
     i16 equipGroup = GetItemEquipCode(record);
     i32 price;
     if (EquipPartOfItem(record) >= 0 && s_itemMenuEquipGroup != -1) {
-        if (GetItemCategory(item) == EQUIP_PART_ACCESSORY) {
+        if (GetItemCategory(GetItemStackItem(&entry)) == EQUIP_PART_ACCESSORY) {
             Character* member = GetCharacterById(s_itemMenuMember);
-            if (member && CanEquipItem(member, item) > 0) {
+            if (member && CanEquipItem(member, GetItemStackItem(&entry)) > 0) {
                 marker = 'E';
             }
         } else if (CanGroupEquip(s_itemMenuEquipGroup, equipGroup)) {
             Character* member;
             marker = 'E';
             member = GetCharacterById(s_itemMenuMember);
-            record = GetLoadedRecord(item);
+            record = GetLoadedRecord(GetItemStackItem(&entry));
             if (record->kind == ITEM_KIND_GUN && GetBattleStatShown(member, 6) > 0) {
                 if (LacksItemRequiredStats(member, record, GetBattleStatShown(member, 6))) {
                     marker = 'e';
@@ -869,7 +864,7 @@ i32 FormatItemMenuEntry(ItemStack entry, i32 numerator, i32 denominator) {
             }
         }
     }
-    record = GetLoadedRecord(item);
+    record = GetLoadedRecord(GetItemStackItem(&entry));
     price = ScaleItemPrice(GetItemRecordPrice(record), numerator, denominator, 1);
     if (GetItemRecordPrice(record)) {
         if (!GetItemStackCount(&entry)) {
