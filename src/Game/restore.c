@@ -155,7 +155,7 @@ static __inline void FillRestorePools(CurMax* hpPool, CurMax* mpPool, i16 hp, i1
 }
 
 RVA(0x0001fe90, 0x6f0)
-i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
+i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* target, i16 mp) {
     i16 reportCondition;
     i16 revival;
     i16 sleep;
@@ -176,129 +176,129 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
     g_effectCondition = 0;
     wasZombie = HasCondition(conditions, CONDITION_ZOMBIE);
     switch (kind) {
-        case 0:
+        case RESTORE_EFFECT_POOLS:
             sleep = 0;
             FillRestorePools(hpPool, mpPool, hp, mp);
             reportCondition = 0;
             break;
-        case 1:
-        case 2:
+        case CONDITION_DEAD:
+        case CONDITION_DYING:
             revival = 1;
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-        case 16:
-        case 17:
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 24:
-        case 25:
-        case 26:
-        case 27:
-        case 28:
-        case 29:
-        case 30:
-        case 31:
-        case 32:
-        case 33:
-        case 34:
+        case CONDITION_COLLAPSE:
+        case CONDITION_STONE:
+        case CONDITION_PARALYSIS:
+        case CONDITION_FREEZE:
+        case CONDITION_POSSESSION:
+        case CONDITION_ZOMBIE:
+        case CONDITION_CURSE:
+        case CONDITION_STUN:
+        case CONDITION_SUFFOCATION:
+        case CONDITION_BIND:
+        case CONDITION_SLEEP:
+        case CONDITION_PANIC:
+        case CONDITION_POISON:
+        case CONDITION_HALLUCINATION:
+        case CONDITION_CHARM:
+        case CONDITION_CONFUSION:
+        case CONDITION_DANCE:
+        case CONDITION_SHOCK:
+        case CONDITION_ICE:
+        case CONDITION_BURN:
+        case CONDITION_BLIND:
+        case CONDITION_MAGIC_SEAL:
+        case CONDITION_DOZE:
+        case CONDITION_BERSERK:
+        case CONDITION_HIGH:
+        case CONDITION_HAPPY:
+        case CONDITION_TIPSY:
+        case CONDITION_DRUNK:
+        case CONDITION_SLIME:
+        case CONDITION_SEVERE_POISON:
+        case CONDITION_VAMPIRE:
+        case CONDITION_INJURY:
             if (HasCondition(conditions, kind)) {
                 g_effectCondition = kind;
             }
             ClearCondition(conditions, kind);
             FillRestorePools(hpPool, mpPool, hp, mp);
             break;
-        case 49:
+        case RESTORE_EFFECT_HP_PAST_MAX:
             g_hpChange = hp;
             FillPool(hpPool, hp, POOL_FILL_TO_USHORT_MAX);
             FillPool(mpPool, mp, POOL_FILL_TO_MAX);
             g_mpChange = mp;
             break;
-        case 50:
+        case RESTORE_EFFECT_MP:
             g_mpChange = hp;
             FillPool(mpPool, hp, POOL_FILL_TO_MAX);
             reportCondition = 0;
             break;
-        case 51:
+        case RESTORE_EFFECT_HP_QUARTER_MP:
             g_hpChange = hp;
             FillPool(hpPool, hp, POOL_FILL_TO_MAX);
             g_mpChange = hp / 4;
             FillPool(mpPool, g_mpChange, POOL_FILL_TO_MAX);
             reportCondition = 0;
             break;
-        case 52:
+        case RESTORE_EFFECT_MP_QUARTER_HP:
             g_mpChange = hp;
             FillPool(mpPool, hp, POOL_FILL_TO_MAX);
             g_hpChange = hp / 4;
             FillPool(hpPool, g_hpChange, POOL_FILL_TO_MAX);
             reportCondition = 0;
             break;
-        case 53:
+        case RESTORE_EFFECT_MENTAL:
             ClearEffectConditions(conditions, s_mentalRecoveryConditions);
             sleep = EaseSleep(conditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
             break;
-        case 54:
+        case RESTORE_EFFECT_EXTENDED_MENTAL:
             ClearEffectConditions(conditions, s_extendedMentalRecoveryConditions);
             sleep = EaseSleep(conditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
             break;
-        case 55:
+        case RESTORE_EFFECT_POISON_PARALYSIS:
             ClearEffectConditions(conditions, s_poisonParalysisConditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
             break;
-        case 56:
+        case RESTORE_EFFECT_EXTENDED_POISON_PARALYSIS:
             ClearEffectConditions(conditions, s_extendedPoisonParalysisConditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
             break;
-        case 57:
+        case RESTORE_EFFECT_PHYSICAL:
             ClearEffectConditions(conditions, g_physicalRecoveryConditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
             break;
-        case 58:
+        case RESTORE_EFFECT_FAINT:
             ClearEffectConditions(conditions, s_faintRecoveryConditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
             revival = 1;
             break;
-        case 59:
+        case RESTORE_EFFECT_DEATH:
             ClearEffectConditions(conditions, s_deathRecoveryConditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
             revival = 1;
             break;
-        case 60:
+        case RESTORE_EFFECT_DRAIN_MP:
             g_mpChange = -hp;
             DrainPool(mpPool, hp);
             FillPool(mpPool, mp, POOL_FILL_TO_MAX);
             g_mpChange = mp;
             reportCondition = 0;
             break;
-        case 61:
+        case RESTORE_EFFECT_DRAIN_HP:
             g_hpChange = -hp;
             DrainPool(hpPool, hp);
             FillPool(mpPool, mp, POOL_FILL_TO_MAX);
             g_mpChange = mp;
             reportCondition = 0;
             break;
-        case 62:
+        case RESTORE_EFFECT_GENERAL:
             ClearEffectConditions(conditions, s_generalRecoveryConditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
             revival = 1;
             break;
-        case 63:
+        case RESTORE_EFFECT_HEAL_IF_ALIGNMENT_B_ABOVE_NEUTRAL:
             if (GetAlignmentClassB(target) > ALIGNMENT_NEUTRAL) {
                 g_hpChange = hp;
                 FillPool(hpPool, target->pools.hp.max, POOL_FILL_TO_MAX);
@@ -308,12 +308,12 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
             FillPool(mpPool, mp, POOL_FILL_TO_MAX);
             g_mpChange = mp;
             break;
-        case 64:
+        case RESTORE_EFFECT_SPECIAL:
             ClearEffectConditions(conditions, s_specialRecoveryConditions);
             sleep = EaseSleep(conditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
             break;
-        case 65:
+        case RESTORE_EFFECT_HEAL_IF_ALIGNMENT_B_BELOW_NEUTRAL:
             if (GetAlignmentClassB(target) < ALIGNMENT_NEUTRAL) {
                 g_hpChange = target->pools.hp.max - hpPool->cur;
                 FillPool(hpPool, target->pools.hp.max, POOL_FILL_TO_MAX);
@@ -358,71 +358,71 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp) {
 }
 
 RVA(0x00020580, 0x160)
-i16 ConditionKindApplies(i16 kind, ConditionSet* conditions) {
+i16 ConditionKindApplies(GZ_ENUM_PARAM(RestoreEffect, i16) kind, ConditionSet* conditions) {
     i16 result = 0;
     switch (kind) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-        case 16:
-        case 17:
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 24:
-        case 25:
-        case 26:
-        case 27:
-        case 28:
-        case 29:
-        case 30:
-        case 31:
-        case 32:
-        case 33:
-        case 34:
+        case CONDITION_ASH:
+        case CONDITION_DEAD:
+        case CONDITION_DYING:
+        case CONDITION_COLLAPSE:
+        case CONDITION_STONE:
+        case CONDITION_PARALYSIS:
+        case CONDITION_FREEZE:
+        case CONDITION_POSSESSION:
+        case CONDITION_ZOMBIE:
+        case CONDITION_CURSE:
+        case CONDITION_STUN:
+        case CONDITION_SUFFOCATION:
+        case CONDITION_BIND:
+        case CONDITION_SLEEP:
+        case CONDITION_PANIC:
+        case CONDITION_POISON:
+        case CONDITION_HALLUCINATION:
+        case CONDITION_CHARM:
+        case CONDITION_CONFUSION:
+        case CONDITION_DANCE:
+        case CONDITION_SHOCK:
+        case CONDITION_ICE:
+        case CONDITION_BURN:
+        case CONDITION_BLIND:
+        case CONDITION_MAGIC_SEAL:
+        case CONDITION_DOZE:
+        case CONDITION_BERSERK:
+        case CONDITION_HIGH:
+        case CONDITION_HAPPY:
+        case CONDITION_TIPSY:
+        case CONDITION_DRUNK:
+        case CONDITION_SLIME:
+        case CONDITION_SEVERE_POISON:
+        case CONDITION_VAMPIRE:
+        case CONDITION_INJURY:
             result = HasCondition(conditions, kind);
             break;
-        case 53:
+        case RESTORE_EFFECT_MENTAL:
             result = LastConditionIn(conditions, s_mentalRecoveryConditions);
             break;
-        case 54:
+        case RESTORE_EFFECT_EXTENDED_MENTAL:
             result = LastConditionIn(conditions, s_extendedMentalRecoveryConditions);
             break;
-        case 55:
+        case RESTORE_EFFECT_POISON_PARALYSIS:
             result = LastConditionIn(conditions, s_poisonParalysisConditions);
             break;
-        case 56:
+        case RESTORE_EFFECT_EXTENDED_POISON_PARALYSIS:
             result = LastConditionIn(conditions, s_extendedPoisonParalysisConditions);
             break;
-        case 57:
+        case RESTORE_EFFECT_PHYSICAL:
             result = LastConditionIn(conditions, g_physicalRecoveryConditions);
             break;
-        case 58:
+        case RESTORE_EFFECT_FAINT:
             result = LastConditionIn(conditions, s_faintRecoveryConditions);
             break;
-        case 59:
+        case RESTORE_EFFECT_DEATH:
             result = LastConditionIn(conditions, s_deathRecoveryConditions);
             break;
-        case 62:
+        case RESTORE_EFFECT_GENERAL:
             result = LastConditionIn(conditions, s_generalRecoveryConditions);
             break;
-        case 64:
+        case RESTORE_EFFECT_SPECIAL:
             result = LastConditionIn(conditions, s_specialRecoveryConditions);
             break;
     }

@@ -7,6 +7,7 @@
 #include <Game/BattleEffect.h>
 #include <Game/Character.h>
 #include <Game/Condition.h>
+#include <Game/RestoreEffect.h>
 #include <Ints.h>
 
 // The condition a restorative item or a skill inflicts once its effect lands.
@@ -27,7 +28,7 @@ i16 ComputeRestoreAmount(i16 code, Character* user, u16 max);
 
 // Applies an HP/MP restoration of kind `kind` to `target`; returns the result
 // code (3..5 let a condition follow).
-i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp);
+i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* target, i16 mp);
 
 #define RestoreEffectAllowsCondition(result) ((result) >= 3 && (result) <= 5)
 

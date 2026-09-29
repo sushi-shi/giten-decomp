@@ -6,6 +6,7 @@
 #include <EnumDomain.h>
 #include <Ints.h>
 #include <Game/ConditionId.h>
+#include <Game/RestoreEffect.h>
 #include <Util/BitSet.h>
 
 // Status conditions are bits 0..34, followed by their individual ages.
@@ -34,7 +35,7 @@ extern i16 g_statusCondition;
 
 const char* GetConditionName(GZ_ENUM_PARAM(ConditionId, i16) bit);
 b16 HasCondition(ConditionSet* conditions, i16 condition);
-i16 ConditionKindApplies(i16 kind, ConditionSet* conditions);
+i16 ConditionKindApplies(GZ_ENUM_PARAM(RestoreEffect, i16) kind, ConditionSet* conditions);
 
 // The physical ailments selected by restoration kind 57.
 extern const i16 g_physicalRecoveryConditions[8];
