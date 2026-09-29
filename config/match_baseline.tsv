@@ -93,7 +93,7 @@ scriptvm	2	2
 shot	15	14
 skillattack	5	4
 skilluse	53	50
-sprite	7	6
+sprite	7	7
 statestack	127	123
 statusmenu	9	9
 statuspanel	49	47
@@ -236,7 +236,7 @@ character	_DrawPartyStatusSlot	100.0000	100.0000	4	58f8426a6268	0x3e1f0	100.0000
 character	_EaseCondition	100.0000	100.0000	3	2a4af4fe3878	0x3f220	100.0000	
 character	_EaseSleep	100.0000	100.0000	3	79314546ffe4	0x3f290	100.0000	
 character	_EmptyPoolMask	100.0000	100.0000	3	23db49781a75	0x3d050	100.0000	
-character	_EquipItem	99.8936	99.8936	5	12292ef14d8e	0x40710	100.0000	
+character	_EquipItem	100.0000	99.8936	5	12292ef14d8e	0x40710	100.0000	
 character	_EquipPartOfItem	100.0000	100.0000	5	2d00d489be30	0x40290	100.0000	
 character	_EscalateCondition	100.0000	100.0000	3	d663eff844ed	0x3f1c0	100.0000	
 character	_ExchangePartySlot	100.0000	100.0000	1	44a1e645c44c	0x3f910	100.0000	
@@ -2144,7 +2144,7 @@ sprite	_IsSpriteFrameLoaded	100.0000	100.0000	5	ca3289abefdf	0x58870	100.0000
 sprite	_IsSpritePlaced	100.0000	100.0000	4	bcdc4894d016	0x58800	100.0000	
 sprite	_LoadSpriteFrames	100.0000	100.0000	4	709a605b455b	0x588c0	100.0000	
 sprite	_PlaceSprite	100.0000	100.0000	3	35b7f235e02a	0x58780	100.0000	
-sprite	_UnplaceAllSprites	77.0833	77.0833	3	8bed1c83197c	0x586d0	77.0833	
+sprite	_UnplaceAllSprites	100.0000	100.0000	4	063761a305b1	0x586d0	100.0000	
 sprite	_UnplaceSprite	100.0000	100.0000	4	0f1d1ffb6430	0x58700	100.0000	
 statestack	@PushGameState@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16c00	100.0000	
 statestack	@SetGameState@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16a70	100.0000	
