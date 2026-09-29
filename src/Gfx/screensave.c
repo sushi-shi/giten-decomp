@@ -7,7 +7,6 @@
 #include <Game/FieldScreen.h>
 #include <Game/InfoBar.h>
 #include <Game/ModeFlags.h>
-#include <Game/WorldMap.h>
 #include <Gfx/ScreenSave.h>
 #include <Gfx/VramAccess.h>
 
@@ -73,7 +72,7 @@ b16 RedrawScreen(i16 drawView, i16 unused) {
         RefreshInfoBar(1);
     }
     if (drawView) {
-        DrawMapOverlay(g_field.pos);
+        DrawMapOverlay(g_party.field.pos);
     }
     g_fieldRedrawRequest = s_refreshRequested;
     s_refreshRequested = false;

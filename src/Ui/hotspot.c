@@ -12,15 +12,6 @@
 
 #include <stdio.h>
 
-DATA(0x00088010)
-Hotspot g_hotspots[64];
-
-DATA(0x0008fb04)
-u32 g_hotspotCount;
-
-DATA(0x0006b4e0)
-i32 g_selectedHotspot = -1;
-
 RVA(0x00058580, 0xb)
 void ClearSelectedHotspot(void) {
     g_selectedHotspot = -1;

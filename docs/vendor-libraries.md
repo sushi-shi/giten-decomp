@@ -12,6 +12,7 @@ are reconstructed wrappers, not evidence of MFC.
 | DirectX | Retail imports DDRAW, DSOUND, and DINPUT. Direct3D interfaces are obtained through DirectDraw COM calls. The reconstruction uses the pinned package's DirectX headers; its label is not proof of the retail SDK revision. |
 | WinMM | Retail imports WINMM for multimedia, joystick, MIDI stream, and MMIO APIs. |
 | DirectX static data | `DXGUID.LIB` supplies interface/device GUIDs; `DINPUT.LIB` supplies the keyboard/mouse formats. Exact library-object evidence is recorded in [`data_static_libs.tsv`](../config/retail/data_static_libs.tsv). |
+| COM static data | `UUID.LIB` supplies `GUID_NULL` (`cguid_i_guid0.obj`), the default DirectDraw driver GUID, placed directly after `DXGUID.LIB`'s `.rdata`. |
 
 The explicit link inputs are in
 [`LINK_LIBS`](../scripts/giten/graph/link.py); see also

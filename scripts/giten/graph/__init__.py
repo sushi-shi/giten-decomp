@@ -54,6 +54,10 @@ TOOLCHAIN_ID = "build/gen/toolchain.id"
 #: Comparison-tool identity is separate so a re-pin only invalidates reports.
 COMPARATOR_ID = "build/gen/comparator.id"
 
+#: The base objects' data identity (giten.graph.dataid): the delink reads
+#: their data topology, which a code-only edit leaves unchanged.
+DATA_IDS = "build/gen/data_ids.tsv"
+
 #: Stamps for the two edges whose real outputs are a directory the graph
 #: cannot enumerate at configure time.
 DELINK_STAMP = "build/objdiff/.delink.stamp"
@@ -62,11 +66,10 @@ NORMALIZE_STAMP = "build/objdiff/.normalize.stamp"
 OBJDIFF_JSON = f"{COMPARE_DIR}/objdiff.json"
 REPORT_JSON = f"{COMPARE_DIR}/report.json"
 
-#: Phase 2 (opt-in): the candidate image for the link-order study.
+#: Phase 2 (opt-in): the candidate image and ignored local resource transfer.
 CANDIDATE_EXE = "build/exe/DDS.candidate.EXE"
 CANDIDATE_MAP = "build/exe/DDS.candidate.map"
-RESOURCE_SCRIPT = "src/Giten/Giten.rc"
-RESOURCE_RES = "build/gen/giten.res"
+RESOURCE_RES = "build/gen/retail.res"
 
 #: `wine cl` parallelism. Wine serialises far more than it looks under a
 #: shared wineserver, and past ~8 concurrent cl.exe the server thrashes and

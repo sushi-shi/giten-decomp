@@ -22,7 +22,7 @@
 #include <Text/TextWindow.h>
 
 DATA(0x00081228)
-u16 g_scriptOpcode;
+u16 g_scriptOpcode = 0;
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).

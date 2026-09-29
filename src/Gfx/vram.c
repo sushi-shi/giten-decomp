@@ -24,39 +24,43 @@ const u8 g_pixelMasks[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
 
 // Storage for the mask as loaded from its data file and for the working copy.
 DATA(0x00071700)
-static MaskGrid s_savedMaskData;
+static MaskGrid s_savedMaskData = {0};
 
 DATA(0x00073b00)
-static MaskGrid s_maskData;
+static MaskGrid s_maskData = {0};
 
 // The mask as loaded from its data file, and the working copy drawn against.
 DATA(0x00075f00)
-static MaskGrid* s_savedMask;
+static MaskGrid* s_savedMask = 0;
 
 DATA(0x00075f04)
-static MaskGrid* s_mask;
+static MaskGrid* s_mask = 0;
 
 // The 16 analog palette entries (0xGRB) and how many users hold each one.
-// The colours are read by the upload side, so stores are never combined.
+// Nothing in this image reads the colours back.
 DATA(0x00075f38)
-static volatile i16 s_paletteColors[16];
+static i16 s_paletteColors[16] = {0};
 
 DATA(0x00075f58)
-static i16 s_paletteRefs[16];
+static i16 s_paletteRefs[16] = {0};
 
 // Bit 0x40: a palette entry or mode changed; bit 0x80: a change awaits
-// upload. Shared with the upload side, so every access goes to memory.
+// upload. No reader of the queued bit survives in this image.
 DATA(0x00075f7c)
-static volatile GZ_ENUM_STORAGE(PaletteUpdateFlags, u8) s_paletteFlags;
+static GZ_ENUM_STORAGE(PaletteUpdateFlags, u8) s_paletteFlags = 0;
 
 // @identity-TODO: palette modes chosen from map-area tests (the area one at
 // the party's square, the view one at a derived position); the renderer picks
 // its alternate material set when either is set. Their game meaning is open.
 DATA(0x00075f80)
-static i16 s_areaPaletteMode;
+static i16 s_areaPaletteMode = 0;
 
 DATA(0x00075f84)
-static i16 s_viewPaletteMode;
+static i16 s_viewPaletteMode = 0;
+
+static __inline void StorePaletteColor(i16 index, i16 color) {
+    s_paletteColors[index] = color;
+}
 
 RVA(0x00002b70, 0x71)
 void ResetMask(i16 copySaved) {
@@ -175,8 +179,10 @@ i16 TestMaskPixel(i16 x, i16 line) {
     return s_mask->bits[GetMaskGridOffset(s_mask, column, line)] & GetPixelMask(pixel);
 }
 
-// @early-stop: retail stores a zeroed register through base+offset; the
-// volatile colour loop stays a loop but stores an immediate. Loop forms flat.
+// @early-stop: retail keeps an 8-step word-store loop through base+offset;
+// with no asynchronous reader of the colours, cl merges the zero stores into
+// four dword stores. Pointer, int-index and fused-loop forms merge them too;
+// an int index passed through StorePaletteColor keeps a sign-extending loop.
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00002ec0, 0x2b)
@@ -184,7 +190,7 @@ void ResetUpperPalette(void) {
     i16 i;
     memset(&s_paletteRefs[8], 0, 8 * sizeof(s_paletteRefs[0]));
     for (i = 8; i < 16; i++) {
-        s_paletteColors[i] = 0;
+        StorePaletteColor(i, 0);
     }
 }
 
@@ -218,7 +224,7 @@ void RetainPaletteEntry(u8 index) {
 RVA(0x00002f40, 0x28)
 b16 SetPaletteColor(u8 index, i16 color) {
     if (index < 16) {
-        s_paletteColors[index] = color;
+        StorePaletteColor(index, color);
         MarkPaletteDirty();
         return true;
     }
@@ -256,6 +262,9 @@ void ReleasePaletteEntry(u8 index) {
     }
 }
 
+// @early-stop: retail loads, ORs and stores the flag byte separately; cl
+// folds the update into one `or byte ptr` unless the byte is volatile, and no
+// asynchronous writer or reader exists. A bitfield form folds too.
 RVA(0x00003010, 0xd)
 void MarkPaletteDirty(void) {
     s_paletteFlags |= PALETTE_UPDATE_DIRTY;
@@ -286,6 +295,9 @@ i16 GetViewPaletteMode(void) {
 }
 
 // Turns a pending change into a queued upload.
+// @early-stop: retail re-reads the flag byte for each update; cl merges the
+// test and both updates into one load and store unless the byte is volatile,
+// and no asynchronous writer or reader exists. A bitfield form merges too.
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00003070, 0x25)
@@ -345,8 +357,8 @@ b32 GetLegacyImagePaletteResult(void) {
 // @identity-TODO: callers drop a cached image with it (resetting the cache
 // key to -1) and store the NULL result back.
 RVA(0x00003120, 0x3)
-ub32 FreeImageHandle(u32 handle) {
-    return false;
+u32 FreeImageHandle(u32 handle) {
+    return 0;
 }
 
 // Reload a caller-owned size after the allocation.

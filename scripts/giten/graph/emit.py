@@ -14,7 +14,8 @@ is the DEFAULT target; `verify_check` runs only for the `verify` target
                 flags extraction and the LSP consumers ride (giten.graph.compdb)
     labels      source + headers + base obj -> build/gen/claims/<unit>.tsv
     model       claims x censuses/providers -> build/gen/bindings.tsv
-    delink      bindings -> build/objdiff/target-new/<unit>.c.obj
+    dataid      base objs -> their data identity (the delink reads it)
+    delink      bindings + data identity -> build/objdiff/target-new/<unit>.c.obj
     normalize   base + target objs -> the comparison copies
     project     the delinked directory -> compare-new/objdiff.json
     report      comparison copies + pairing -> compare-new/report.json
@@ -22,7 +23,7 @@ is the DEFAULT target; `verify_check` runs only for the `verify` target
     verify_readme report x ledger -> README's score block (write-if-changed)
     verify_check the MAX gate + the fast+normal tiers -> a stamp; FATAL;
                 opt-in (`giten build verify`)
-    rc / link   PHASE 2, opt-in (`ninja candidate`): base objs + .res ->
+    retail_res / link   PHASE 2, opt-in (`ninja candidate`): base objs + .res ->
                 the candidate image + .map for the link-order study
 
 Two edges declare a STAMP rather than their real outputs, because neither set
@@ -32,8 +33,8 @@ leave ninja re-running the whole delink on every build), and `normalize`
 writes a variable pair of copies per unit. Both drivers are keyed on content
 upstream, so the stamp only moves when something real did.
 
-Restat is on `cl`, `compdb`, `labels`, `model` and `project` - the producers
-that write if-changed. That is the whole incrementality story: a pure code
+Restat is on `cl`, `compdb`, `labels`, `model`, `dataid` and `project` - the
+producers that write if-changed. That is the whole incrementality story: a pure code
 edit re-runs configure (every source is in the include scan's own dep set) +
 cl + labels, stops at an unchanged claim fragment, and reaches the report
 without re-delinking; a label edit carries on through model, delink and the
@@ -115,6 +116,7 @@ MODEL_MODS = _mods("model.py", "retail_labels/", "core/tsv.py", "core/paths.py",
 DELINK_MODS = _mods("delink/", "tool/delinker.py", "core/pe.py",
                     "core/coff.py", "core/msvc_names.py", "core/data_matching.py",
                     "model.py") + TOOL_MODS
+DATAID_MODS = _mods("graph/dataid.py", "delink/coffx.py")
 NORMALIZE_MODS = _mods("compare/normalize.py", "compare/canonicalize.py",
                        "delink/eh_band.py", "core/coff.py", "core/msvc_names.py",
                        "core/data_matching.py")
@@ -248,28 +250,6 @@ def prune_orphan_artifacts(units: list[dict]) -> int:
 # --------------------------------------------------------------------------- #
 # the graph
 # --------------------------------------------------------------------------- #
-def era_rc_available() -> bool:
-    """True when the pinned toolchain ships RC.EXE (release r3+).
-
-    Probed at CONFIGURE time because the answer decides an edge, not a flag:
-    without it the candidate links with no `.rsrc` and every MFC dialog - which
-    is created from a DIALOG resource - is missing, so the image is a
-    link-ORDER artifact only. The `.map` is what phase 2 is for, and it comes
-    out either way, so a toolchain without rc.exe must not block it.
-
-    $MSVC_DIR is environment, not a declared input, so this answer is frozen
-    into the manifest until the next `giten configure`: re-pinning r3 does
-    not grow the edge by itself, and `giten link` therefore asks the emitted
-    manifest whether the `.res` target exists rather than re-probing.
-    """
-    try:
-        from giten.core.paths import msvc_dir
-        from giten.tool.wine import find_ci
-        return find_ci(msvc_dir() / "bin", "rc.exe") is not None
-    except (RuntimeError, OSError):
-        return True     # cannot probe (no dev shell): assume the full toolchain
-
-
 def toolchain_id() -> str:
     """The pinned toolchain's identity, as the text that goes in TOOLCHAIN_ID.
 
@@ -328,7 +308,7 @@ def write_comparator_id(out: Path | None = None) -> bool:
     return True
 
 
-def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str]) -> None:
+def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str], retail: str) -> None:
     """PHASE 2: base objs -> candidate .EXE + .map. Opt-in, never in `all`.
 
     The deliverable is the `.map`: every function's link-assigned RVA and its
@@ -337,38 +317,23 @@ def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str]) -> None:
     cross-TU = object link order). A normal build never links, so this stays
     out of the default target and behind `ninja candidate` / `giten link`.
 
-    The .rsrc comes from the era RC.EXE (toolchain r3+) over the tracked
-    resource script - once it exists. DDS.EXE's .rsrc (WAVE and BITMAP data)
-    is not reconstructed yet, so until then the candidate links without one.
+    The resource payloads come from the locally supplied retail image. The
+    ignored .res is rebuilt by the graph and passed to the era linker; nothing
+    from .rsrc enters the tracked source tree.
     """
     w.comment("=== PHASE 2: link -> candidate .EXE + .map (opt-in: `ninja candidate`) ===")
-    with_res = era_rc_available() and (REPO / graph.RESOURCE_SCRIPT).exists()
-    if not (REPO / graph.RESOURCE_SCRIPT).exists():
-        w.comment(f"no tracked {graph.RESOURCE_SCRIPT} yet: the candidate links "
-                  "WITHOUT a .rsrc; the .map is still exact.")
-    elif not with_res:
-        print("[configure] the pinned toolchain ships no RC.EXE (pre-r3): the "
-              "candidate will link WITHOUT a .rsrc and `giten rsrc check` "
-              "cannot run. Re-pin an r3+ toolchain and reconfigure.",
-              file=sys.stderr)
-    if with_res:
-        w.rule("rc", command="$py -m giten.tool.rc --out $out --src $in",
-               description="rc $out")
-        w.build(graph.RESOURCE_RES, "rc", inputs=graph.RESOURCE_SCRIPT,
-                implicit=_mods("tool/rc.py") + TOOL_MODS)
-    else:
-        w.comment("this toolchain ships no RC.EXE (pre-r3), so the candidate "
-                  "links WITHOUT a .rsrc: the .map is still exact, the image "
-                  "has no dialogs. Re-pin an r3+ toolchain and reconfigure.")
-    res_flag = f" --res {graph.RESOURCE_RES}" if with_res else ""
+    w.rule("retail_res",
+           command="$py -m giten.rsrc.retail_res --exe $in --out $out",
+           description="copy local retail resources -> $out", restat=True)
+    w.build(graph.RESOURCE_RES, "retail_res", inputs=retail,
+            implicit=_mods("rsrc/retail_res.py", "core/pe.py", "core/paths.py"))
     w.rule("link",
            command=(f"$py -m giten.graph.link --out {graph.CANDIDATE_EXE} "
-                    f"--objs-dir {graph.BASE_DIR}{res_flag}"),
+                    f"--objs-dir {graph.BASE_DIR} --res {graph.RESOURCE_RES}"),
            description="link candidate EXE + map")
     w.build([graph.CANDIDATE_EXE, graph.CANDIDATE_MAP], "link",
             inputs=base_objs,
-            implicit=([graph.RESOURCE_RES] if with_res else [])
-                     + [MANIFEST] + LINK_MODS)
+            implicit=[graph.RESOURCE_RES, MANIFEST] + LINK_MODS)
     w.build("candidate", "phony", inputs=[graph.CANDIDATE_EXE, graph.CANDIDATE_MAP])
     w.newline()
 
@@ -512,10 +477,18 @@ def emit(out: Path | None = None) -> tuple[int, int]:
         # reaches here. The declared output is a STAMP - units with no claim
         # produce no object, so declaring all of them would leave the edge
         # perpetually unbuilt and re-run the whole delink on every build.
-        # NOT declared, and known: giten.delink.{pdb_synth,data_manifest} also
-        # read build/objdiff/base/*.obj (cl's own string/vtable/RTTI COMDATs),
-        # so a code edit that moves those without moving a CLAIM does not
-        # re-delink; and vostok-delinker itself is environment, not a file.
+        # giten.delink.{pdb_synth,data_manifest} also read the base objects'
+        # data topology (COMMONs, .bss/.data members, string/vtable/RTTI
+        # COMDATs), which a compile can move without moving a claim - a
+        # storage-class change alone is one. The objects themselves would
+        # re-delink on every code edit, so the edge keys on their DATA_IDS
+        # rendering instead, written if-changed and restatted.
+        w.rule("dataid",
+               command=(f"$py -m giten.graph.dataid --base-dir {graph.BASE_DIR} "
+                        f"--out $out"),
+               description="base-object data identity -> $out", restat=True)
+        w.build(graph.DATA_IDS, "dataid", inputs=base_objs,
+                implicit=DATAID_MODS)
         w.rule("delink",
                command=(f"$py -m giten.delink.run --target-dir {graph.TARGET_DIR} "
                         f"--delink-dir {graph.DELINK_RAW} && touch $out"),
@@ -523,7 +496,7 @@ def emit(out: Path | None = None) -> tuple[int, int]:
         w.build(graph.DELINK_STAMP, "delink",
                 inputs=[graph.BINDINGS, RETAIL_EXE],
                 implicit=[RELOC_REFERENTS, COMPARE_CONFIG, *DELINK_MODS,
-                          graph.TOOLCHAIN_ID])
+                          graph.DATA_IDS, graph.TOOLCHAIN_ID])
         w.newline()
 
         w.comment("=== normalize: base + target -> content-addressed copies ===")
@@ -614,7 +587,7 @@ def emit(out: Path | None = None) -> tuple[int, int]:
         w.default(["all"])
         w.newline()
 
-        emit_link_phase(w, base_objs)
+        emit_link_phase(w, base_objs, retail)
 
     return len(units), pruned
 

@@ -22,15 +22,15 @@ typedef struct AreaNpc {
     i16 textureSlot;
 } AreaNpc;
 
-// An NPC picture's texture (and a second word).
+// An NPC picture's texture, after a word the table starts as 0xffff.
 // @identity-TODO: what `other` holds is unrecovered.
 typedef struct NpcTexture {
-    u32 texture;
     u32 other;
+    u32 texture;
 } NpcTexture;
 
-// @identity-TODO: the six NPC picture textures; placeholder extern.
-extern NpcTexture g_npcTextures[6];
+// Twelve records; only the first six are used by the readers and loader.
+extern NpcTexture g_npcTextures[12];
 
 // The map cell the field view is drawing.
 extern i16 g_viewCellX;
@@ -65,10 +65,6 @@ void SetPrevRegion(i16 x, i16 y, u8 value);
 u8 GetPrevRegion(i16 x, i16 y);
 u8* GetRoomData(i16 code);
 void EnterRoom(i16 code);
-
-// The region code the field last entered (EnterRoom sets it).
-i16 GetCurrentRoomCode(void);
-i16 SetCurrentRoomCode(i16 code);
 
 i16 FindCellObject(i16 id, i16 x, i16 y);
 i16 NextNpcSlot(void);

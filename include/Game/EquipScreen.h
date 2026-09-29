@@ -42,11 +42,13 @@ i16 OpenItemInfoPlane(i16 item);
 
 i16 DrawEquipPickRow(i16 member, i16 part, i32 attr);
 
-// @identity-TODO: empty picker label storage extent is unproven.
+// The game step the status screen last ran; RunStatusCommands redraws the
+// stat totals when it leaves step 8.
+extern i16 g_previousStatusStep;
+// The zero-initialized empty battle-skill label.
+extern char g_emptyBattleSkillLabel[];
+// The zero-initialized empty picker label.
 extern char g_emptyEquipPickLabel[];
-
-// Count slots for equipment kinds 11 through 19; ammunition is handled separately.
-extern const i16 g_equipCountSlots[9];
 
 // The equipment part under the cursor, or -1 when none is picked. Reset
 // forgets the selection; clear restores its normal appearance before forgetting it.
@@ -73,6 +75,19 @@ typedef struct AttachPage {
     i16 target;
     i16 redraw;
 } AttachPage;
+
+typedef struct EquipItemPage {
+    MenuBox* menu;
+    i16 plane;
+    i16 pick;
+    struct ItemStackList* list;
+} EquipItemPage;
+
+typedef struct EquipSkillPage {
+    MenuBox* menu;
+    i16 plane;
+    i16 pick;
+} EquipSkillPage;
 
 // The status screen's item page: lists the bag (with `*` on entries holding a
 // gem item) and opens the picked item's description (sub-state 0 opens

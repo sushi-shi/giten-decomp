@@ -40,21 +40,52 @@
 #include <stdio.h>
 #include <string.h>
 
-// The gem gift menu and the item id its rows start from.
-DATA(0x00080104)
-static i16 s_giftItemBase;
-DATA(0x00080108)
-static MenuBox* s_giftMenu;
+DATA(0x0007fe60)
+ItemStack g_gemItems[16] = {0};
+
+DATA(0x0007fea0)
+ItemStack g_itemPool[64] = {0};
+
+DATA(0x0007ffa0)
+ItemStack g_bagItems[64] = {0};
+
+// The record of the item whose effect is being applied.
+DATA(0x000800a0)
+static ItemRecord s_usedItem = {0};
+
+// The loaded item records, auxiliary index, and item remapping table.
+DATA(0x000800e8)
+static i32 s_itemDataHandle = 0;
+
+DATA(0x000800ec)
+static i32 s_itemIndexHandle = 0;
+
+DATA(0x000800f0)
+i32 g_itemRemapHandle = 0;
+
+// Shared text buffers for the decoded item name and description.
+DATA(0x000800f4)
+char* g_itemNameText = 0;
+
+DATA(0x000800f8)
+char* g_itemDescriptionText = 0;
 
 // Nonzero while bag stores are quiet (see SetBagQuiet).
 DATA(0x000800fc)
-static i16 s_bagQuiet;
+static i16 s_bagQuiet = 0;
 
 // The first id of the sixteen gem items (g_gemItems): ResetGemItems
 // sets it, GemItemIndex maps a gem id back to its index by subtracting
 // it; an item slot's 5-bit `attachment` hold such an index.
 DATA(0x00080100)
-static i16 s_gemItemBase;
+static i16 s_gemItemBase = 0;
+
+// The gem gift menu and the item id its rows start from.
+DATA(0x00080104)
+static i16 s_giftItemBase = 0;
+
+DATA(0x00080108)
+static MenuBox* s_giftMenu = 0;
 
 // The event flag each timed item clears when it expires.
 DATA(0x00068f38)
@@ -71,40 +102,10 @@ static TimedItemFlag s_timedItemFlags[8] = {
 
 // The familiarity each gem item adds when given.
 DATA(0x00064650)
-static i16 s_giftFamiliarity[16] = {2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60};
-
-// The record of the item whose effect is being applied.
-DATA(0x000800a0)
-static ItemRecord s_usedItem;
-
-DATA(0x0007fe60)
-ItemStack g_gemItems[16];
-
-DATA(0x0007fea0)
-ItemStack g_itemPool[64];
-
-DATA(0x0007ffa0)
-ItemStack g_bagItems[64];
+static const i16 s_giftFamiliarity[16] = {2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60};
 
 DATA(0x000919a0)
 DropSlot g_dropSlots[16];
-
-// The loaded item records, auxiliary index, and item remapping table.
-DATA(0x000800e8)
-static i32 s_itemDataHandle;
-
-DATA(0x000800ec)
-static i32 s_itemIndexHandle;
-
-DATA(0x000800f0)
-i32 g_itemRemapHandle;
-
-// Shared text buffers for the decoded item name and description.
-DATA(0x000800f4)
-char* g_itemNameText;
-
-DATA(0x000800f8)
-char* g_itemDescriptionText;
 
 DATA(0x000911c0)
 ItemRecord g_loadedItem;
@@ -126,6 +127,21 @@ u8* GetItemRecordData(i16 id) {
 #define ReadItemTargeting(record, src)                                                             \
     ((record)->params[4] = *(src)++, (record)->params[5] = *(src)++, (record)->params[6] = *(src)++)
 
+static __inline u8* ReadItemRestoreParameters(ItemRecord* record, u8* src) {
+    record->params[7] = *src++;
+    record->params[8] = *src++;
+    record->params[9] = *src++;
+    return src;
+}
+
+static __inline u8* ReadItemAttackParameters(ItemRecord* record, u8* src) {
+    record->params[0xc] = *src++;
+    record->params[0xd] = *src++;
+    record->params[0xe] = *src++;
+    record->params[0xf] = *src++;
+    return src;
+}
+
 // Decodes item `id`'s data-file entry into `record`: the price, the kind, the
 // kind's parameter bytes (in the order the entry stores them), then the name
 // and the description strings.
@@ -144,12 +160,10 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
     src += sizeof(record->price);
     record->kind = *src++;
     switch (record->kind) {
-        case 1:
+        case ITEM_KIND_RESTORATIVE:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
-            record->params[7] = *src++;
-            record->params[8] = *src++;
-            record->params[9] = *src++;
+            src = ReadItemRestoreParameters(record, src);
             record->params[0x10] = *src;
             record->params[0xa] = *src++;
             record->params[0x32] = *src++;
@@ -160,18 +174,15 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
             ReadItemTargeting(record, src);
             record->params[0xb] = *src++;
             break;
-        case 3:
+        case ITEM_KIND_ENHANCER:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
             src = ReadItemMessages(record, src, 1, 1);
             break;
-        case 4:
+        case ITEM_KIND_ATTACK:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
-            record->params[0xc] = *src++;
-            record->params[0xd] = *src++;
-            record->params[0xe] = *src++;
-            record->params[0xf] = *src++;
+            src = ReadItemAttackParameters(record, src);
             record->params[0xa] = *src;
             record->params[0x10] = *src++;
             record->params[0x11] = *src++;
@@ -200,17 +211,12 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
             record->params[0xb] = *src++;
-            record->params[0xc] = *src++;
-            record->params[0xd] = *src++;
-            record->params[0xe] = *src++;
-            record->params[0xf] = *src++;
+            src = ReadItemAttackParameters(record, src);
             record->params[0xa] = *src;
             record->params[0x10] = *src++;
             record->params[0x31] = *src++;
             record->params[0x31] = *src++;
-            record->params[7] = *src++;
-            record->params[8] = *src++;
-            record->params[9] = *src++;
+            src = ReadItemRestoreParameters(record, src);
             record->params[0xa] = *src++;
             record->params[0x32] = *src++;
             src = ReadItemMessages(record, src, 1, 1);
@@ -423,10 +429,10 @@ RVA(0x00023480, 0x70)
 u16 GetItemStackLimit(i16 id) {
     DecodeItemRecord(&g_loadedItem, id);
     switch (g_loadedItem.kind) {
-        case 1:
+        case ITEM_KIND_RESTORATIVE:
         case ITEM_KIND_INCENSE:
-        case 3:
-        case 4:
+        case ITEM_KIND_ENHANCER:
+        case ITEM_KIND_ATTACK:
         case 5:
         case 6:
         case ITEM_KIND_SOFTWARE:
@@ -503,10 +509,10 @@ RVA(0x000235f0, 0xa0)
 i16 GetItemCategory(i16 id) {
     DecodeItemRecord(&g_loadedItem, id);
     switch (g_loadedItem.kind) {
-        case 1:
+        case ITEM_KIND_RESTORATIVE:
         case ITEM_KIND_INCENSE:
-        case 3:
-        case 4:
+        case ITEM_KIND_ENHANCER:
+        case ITEM_KIND_ATTACK:
         case 5:
         case 6:
         case ITEM_KIND_SOFTWARE:
@@ -788,7 +794,7 @@ i16 AddDropSlot(i16 item, i16 amount) {
     }
     remap = RemapItem(item);
     if (remap != 0) {
-        amount = RollItemAmount(item, amount, 1);
+        amount = RollDropAmount(item, amount);
         item = remap;
     }
     for (i = 0; i < 16; i++) {
@@ -1281,10 +1287,10 @@ RVA(0x00024890, 0xc0)
 void ApplyItemEffect(i16 item, Character* user, Character* target) {
     s_usedItem = *GetLoadedRecord(item);
     switch (s_usedItem.kind) {
-        case 1:
+        case ITEM_KIND_RESTORATIVE:
             UseRestoreItem(user, target);
             break;
-        case 4:
+        case ITEM_KIND_ATTACK:
             UseAttackItem(user, target);
             break;
         case 5:
@@ -1331,7 +1337,7 @@ void UseRestoreItem(Character* user, Character* target) {
     user->pickNoEffect = 1;
     user->result = result;
     g_pendingCondition = s_usedItem.params[10];
-    if (g_pendingCondition != 0 && result >= 3 && result <= 5
+    if (g_pendingCondition != 0 && RestoreEffectAllowsCondition(result)
         && !IsConditionResisted(target, g_pendingCondition)) {
         g_statusCondition = g_pendingCondition;
         InflictCondition(g_pendingCondition, target);
@@ -1341,8 +1347,7 @@ void UseRestoreItem(Character* user, Character* target) {
 RVA(0x00024a50, 0xd0)
 void UseAttackItem(Character* user, Character* target) {
     user->result = 0;
-    g_statusCondition = 0;
-    g_actionResult = 0;
+    ResetActionOutcome();
     if (GetItemDamagePower(&s_usedItem) == 0) {
         user->lastChange = 0;
         if (g_targetId >= 0 && IsFieldModeAtLeast(0)) {
@@ -1365,8 +1370,7 @@ void UseAttackItem(Character* user, Character* target) {
 }
 
 static __inline void SetInertItemOutcome(Character* user, Character* target) {
-    g_statusCondition = 0;
-    g_actionResult = 0;
+    ResetActionOutcome();
     user->result = 0;
     user->pickNoEffect = 1;
     target->pickNoEffect = 1;
@@ -1492,7 +1496,8 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
         case ITEM_KIND_ACCESSORY:
             bonuses[BATTLE_STAT_WEAPON_POWER] += GetItemAttackPower(&g_loadedItem);
             bonuses[BATTLE_STAT_WEAPON_DEFENSE] += GetItemDefensePower(&g_loadedItem);
-            bonuses[BATTLE_STAT_WEAPON_ACCURACY] += (i8)g_loadedItem.params[0x1b];
+            bonuses[BATTLE_STAT_WEAPON_ACCURACY] +=
+                GetItemRecordPhysicalAccuracyBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_WEAPON_EVASION] += GetItemRecordPhysicalEvasionBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_MAGIC_POWER] += GetItemRecordMagicPowerBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_MAGIC_DEFENSE] += GetItemRecordMagicDefenseBonus(&g_loadedItem);
@@ -1502,7 +1507,7 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
         case ITEM_KIND_AMMO:
             bonuses[BATTLE_STAT_GUN_POWER] += GetItemAttackPower(&g_loadedItem);
             bonuses[BATTLE_STAT_GUN_DEFENSE] += GetItemDefensePower(&g_loadedItem);
-            bonuses[BATTLE_STAT_GUN_ACCURACY] += (i8)g_loadedItem.params[0x1b];
+            bonuses[BATTLE_STAT_GUN_ACCURACY] += GetItemRecordPhysicalAccuracyBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_GUN_EVASION] += GetItemRecordPhysicalEvasionBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_MAGIC_POWER] += GetItemRecordMagicPowerBonus(&g_loadedItem);
             bonuses[BATTLE_STAT_MAGIC_DEFENSE] += GetItemRecordMagicDefenseBonus(&g_loadedItem);
@@ -1529,7 +1534,8 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
             bonuses[BATTLE_STAT_GUN_ACCURACY] += 20;
             break;
         case 0x36:
-            bonuses[BATTLE_STAT_WEAPON_ACCURACY] += (i8)g_loadedItem.params[0x1b];
+            bonuses[BATTLE_STAT_WEAPON_ACCURACY] +=
+                GetItemRecordPhysicalAccuracyBonus(&g_loadedItem);
             break;
         case 0x37:
             bonuses[BATTLE_STAT_MAGIC_EVASION] += 4;
@@ -1675,7 +1681,7 @@ b16 IsItemGuardingElement(i16 item, i16 element) {
     if (GetItemEquipCode(&g_loadedItem) < 0) {
         return false;
     }
-    if (element >= 2 && element <= 5 && element == g_loadedItem.params[0x21]) {
+    if (element >= 2 && element <= 5 && element == GetEquipmentAttribute(&g_loadedItem)) {
         return true;
     }
     return false;

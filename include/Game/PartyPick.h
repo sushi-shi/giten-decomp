@@ -3,6 +3,10 @@
 
 #include <Ints.h>
 
+// The party position saved when the command's target is confirmed; summoning
+// exchanges the summoned demon into that position.
+extern i16 g_commandPosition;
+
 // @identity-TODO: party picking during field play. A pick mode (0/1 while a
 // member is being picked), a done flag the menus set, and one temporary party
 // swap (a position and the slot it held) that is undone afterwards.

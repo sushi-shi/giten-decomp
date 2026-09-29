@@ -39,18 +39,6 @@ void InitJoystick(void) {
     }
 }
 
-DATA(0x0006b7a8)
-static JoystickKey s_joystickKeys[8] = {
-    {JOY_UP, VK_UP},
-    {JOY_DOWN, VK_DOWN},
-    {JOY_LEFT, VK_LEFT},
-    {JOY_RIGHT, VK_RIGHT},
-    {1 << JOY_BUTTON_SHIFT, VK_RETURN},
-    {2 << JOY_BUTTON_SHIFT, VK_SPACE},
-    {4 << JOY_BUTTON_SHIFT, VK_SHIFT},
-    {0, 0},
-};
-
 // Returns the joystick bits: the arrow keys, Return, Space and Shift, then the
 // stick past a quarter of its travel and its buttons. `state` (optional) gets
 // the bits, the axes' offsets from centre and their half travels (without a
@@ -69,7 +57,7 @@ u32 ReadJoystick(JoystickState* state) {
     if (s_joystickCount < 0) {
         return 0;
     }
-    for (key = s_joystickKeys; key->bit != 0; key++) {
+    for (key = g_joystickKeys; key->bit != 0; key++) {
         if (GetAsyncKeyState(key->key) & 0x8000) {
             buttons |= key->bit;
         }

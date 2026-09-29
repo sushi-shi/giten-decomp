@@ -4,7 +4,6 @@
 #include <rva.h>
 
 #include <Game/AreaMap.h>
-#include <Game/AreaNpc.h>
 #include <Game/BagItems.h>
 #include <Game/Character.h>
 #include <Game/CharInfo.h>
@@ -63,8 +62,11 @@ static SystemMenuEntry s_displayEntries[2] = {
     {0, "\214\305\222\350\225\134\216\246"}, // "固定表示" (fixed display)
 };
 
+DATA(0x00076050)
+i16 g_loadedBefore = 0;
+
 DATA(0x00076054)
-static MenuBox* s_systemMenu;
+static MenuBox* s_systemMenu = 0;
 
 static void SystemMenuHandler(MenuBox* menu, i16 index, i16 event);
 static b16 RunDisplayChoice(void);
@@ -132,11 +134,14 @@ i16 WriteSaveHeader(FILE* fp) {
 RVA(0x00003bf0, 0x38)
 void RecordMarkInLeader(void) {
     Character* leader = GetRosterCharacter(0);
-    leader->markPosition.area = g_field.pos.area;
-    leader->markPosition.level = g_field.pos.level;
-    leader->markPosition.x = (u8)g_field.pos.x;
-    leader->markPosition.y = (u8)g_field.pos.y;
-    leader->markPosition.direction = (u8)g_field.pos.direction;
+    SetSavedMapPosition(
+        &leader->markPosition,
+        g_party.field.pos.area,
+        g_party.field.pos.level,
+        g_party.field.pos.x,
+        g_party.field.pos.y,
+        g_party.field.pos.direction
+    );
 }
 
 // Loads save slot `slot` (without `keepField`, resetting the field objects
@@ -174,9 +179,15 @@ i16 LoadGame(i16 slot, i16 keepField) {
     errors |= LoadScreenLayers(fp);
     fclose(fp);
     if (!g_loadedBefore) {
-        g_field.pos.direction += 2;
-        g_field.pos.direction &= 3;
-        OffsetMapCoordFacing(&g_field.pos.x, &g_field.pos.y, g_field.pos.direction, 0, -1);
+        g_party.field.pos.direction += 2;
+        g_party.field.pos.direction &= 3;
+        OffsetMapCoordFacing(
+            &g_party.field.pos.x,
+            &g_party.field.pos.y,
+            g_party.field.pos.direction,
+            0,
+            -1
+        );
     }
     CompactBag();
     for (i = 0; i < 32; i++) {
@@ -302,9 +313,9 @@ static b16 RunDisplayChoice(void) {
                 SetGamePhase(0);
             } else {
                 if (GetGamePhase() == 3) {
-                    g_fieldStatus.automapFixed = g_selectedObjectId;
+                    g_party.status.automapFixed = g_selectedObjectId;
                 } else {
-                    g_fieldStatus.navigationFixed = g_selectedObjectId;
+                    g_party.status.navigationFixed = g_selectedObjectId;
                 }
                 g_fieldRedrawRequest = 1;
                 SetGamePhase(1);

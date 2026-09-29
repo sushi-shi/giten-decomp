@@ -27,8 +27,7 @@ static __inline void ClearCondition(ConditionSet* conditions, i16 condition) {
 
 // @identity-TODO: a condition id the battle code keeps (cleared by
 // 0x424b20/0x424b60 and the attack routines 0x408d30/0x424950, set from byte
-// +0xd of the cached skill by 0x42db90); its role is unrecovered. Placeholder extern until its
-// owner TU defines it.
+// +0xd of the cached skill by 0x42db90); its role is unrecovered.
 extern i16 g_statusCondition;
 
 const char* GetConditionName(i16 bit);

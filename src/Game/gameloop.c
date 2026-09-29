@@ -40,17 +40,44 @@
 DATA(0x00091580)
 i32 g_scriptVars[256];
 
+// The cell event's latch (declared in <Game/AreaMap.h>). Its .bss run lies
+// between blit's and gameloop's statics, apart from the area map's object.
+// @identity-TODO: blit.c may own it instead.
+DATA(0x000712a4)
+i16 g_cellX = 0;
+
+DATA(0x000712a8)
+i16 g_cellY = 0;
+
+DATA(0x000712ac)
+u8 g_cellCode = 0;
+
+DATA(0x000712b0)
+u8 g_cellDestDirection = 0;
+
+DATA(0x000712b4)
+i16 g_cellDestX = 0;
+
+DATA(0x000712b8)
+i16 g_cellDestY = 0;
+
+DATA(0x000712bc)
+i16 g_cellDestLevel = 0;
+
+DATA(0x000712c0)
+i16 g_cellDestArea = 0;
+
 // Set to 0xc000 by the start-up path in this span; tested by TestFeatureMask.
 DATA(0x000919e2)
 i16 g_featureMask;
 
+DATA(0x000712c8)
+i16 g_quitRequest = 0;
+
 // @identity-TODO: consumed and cleared by the main-loop step, which then
 // advances the play clock by 31 ticks instead of 24; set by a script command.
 DATA(0x000712cc)
-static i16 s_longFrame;
-
-DATA(0x000712c8)
-i16 g_quitRequest;
+static i16 s_longFrame = 0;
 
 // A matching map position requests exit; all five selectors start disabled.
 DATA(0x00068170)
@@ -131,7 +158,8 @@ RVA(0x000019a0, 0x26)
 b16 StartGame(void) {
     InitGameData();
     ResetGameSession();
-    g_mouseLeftClick = g_mouseRightClick = 0;
+    g_mouseLeftClick = 0;
+    g_mouseRightClick = 0;
     SetGameState(0x27);
     return false;
 }
@@ -148,11 +176,12 @@ i16 StepGame(void) {
     TickGameTasks();
     state |= s_longFrame;
     s_longFrame = 0;
-    g_mouseLeftClick = g_mouseRightClick = 0;
+    g_mouseLeftClick = 0;
+    g_mouseRightClick = 0;
     AdvancePlayTime(state ? 31 : 24);
-    if (g_field.pos.area == s_quitArea && g_field.pos.level == s_quitLevel
-        && g_field.pos.x == s_quitX && g_field.pos.y == s_quitY
-        && g_field.pos.direction == s_quitDirection) {
+    if (g_party.field.pos.area == s_quitArea && g_party.field.pos.level == s_quitLevel
+        && g_party.field.pos.x == s_quitX && g_party.field.pos.y == s_quitY
+        && g_party.field.pos.direction == s_quitDirection) {
         g_quitRequest = -1;
     }
     return g_quitRequest;

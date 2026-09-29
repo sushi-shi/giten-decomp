@@ -57,7 +57,7 @@ void DdsCommand(void);
 void StatusCommand(void);
 i16 WorldRowHandler(PanelRow* row, i16 value, i16 op);
 
-ub32 LoadMenuImage(i16 id);
+u32 LoadMenuImage(i16 id);
 
 // The Windows port reports no saved screen area for a panel.
 MapCoord GetPanelSize(Panel* panel);
@@ -80,7 +80,7 @@ i16 RequestTalk(void);
 
 // The status panel redraw (`force` redraws even without a pending request).
 // @identity-TODO: the map position and word the held view keeps; the word
-// is cleared with them and read nowhere else. Placeholder externs.
+// is cleared with them and read nowhere else.
 void RefreshStatusPanel(i16 force);
 
 extern i16 g_viewX;

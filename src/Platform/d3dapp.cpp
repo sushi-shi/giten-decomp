@@ -128,15 +128,15 @@ u8 g_blueLoss;
 DATA(0x00084328)
 BOOL g_bilinearFiltering;
 
-// The WAVE resource of each sound effect (0 = none).
-DATA(0x0006a6c6)
-static u16 s_soundResources[SOUND_COUNT] = {
-    0,   383, 384, 385, 386, 387, 388, 389, 390, 392, 393, 394, 0,   395, 396, 397, 398, 399, 727,
-    400, 401, 728, 402, 403, 729, 404, 405, 0,   406, 407, 408, 409, 410, 411, 412, 413, 414, 732,
-    415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 0,
-    433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 0,   0,   0,   0,   0,   0,   0,   0,
-    0,   444, 445, 446, 447, 448, 449, 450, 0,   451, 452, 453, 454, 455, 456, 0,   457, 458, 459,
-    460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 0,   470, 471, 730, 0,   0,   472,
+// The WAVE resource of each sound effect (0 = none), sound 1 first.
+DATA(0x0006a6c8)
+static u16 s_soundResources[SOUND_COUNT - 1] = {
+    383, 384, 385, 386, 387, 388, 389, 390, 392, 393, 394, 0,   395, 396, 397, 398, 399, 727, 400,
+    401, 728, 402, 403, 729, 404, 405, 0,   406, 407, 408, 409, 410, 411, 412, 413, 414, 732, 415,
+    416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 0,   433,
+    434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 0,   0,   0,   0,   0,   0,   0,   0,   0,
+    444, 445, 446, 447, 448, 449, 450, 0,   451, 452, 453, 454, 455, 456, 0,   457, 458, 459, 460,
+    461, 462, 463, 464, 465, 466, 467, 468, 469, 0,   470, 471, 730, 0,   0,   472,
 };
 
 // The identity matrix the Set*Matrix helpers start from.
@@ -265,7 +265,7 @@ void ProjectVector(D3DMATRIX* matrix, D3DVECTOR* in, D3DVECTOR* out) {
     out->x /= w;
     out->y /= w;
     out->z /= w;
-    out->x = out->x * 160.0f / out->z * 2.0f - -320.0f;
+    out->x = out->x * 160.0f / out->z * DATA_COMPGEN(0x000649ec, 2.0f) - -320.0f;
     out->y = 164.0f - out->y * 160.0f / out->z * 2.0f;
 }
 
@@ -1130,15 +1130,15 @@ b32 InitDirect3D(void) {
         return false;
     }
     ZeroMemory(&viewport, sizeof(viewport));
-    viewport.dvMinZ = 0.0f;
     viewport.dwSize = sizeof(viewport);
     viewport.dwWidth = 640;
     viewport.dwHeight = 328;
-    viewport.dvClipX = -1.0f;
+    viewport.dvClipX = DATA_COMPGEN(0x000649f8, -1.0f);
     viewport.dvClipWidth = 2.0f;
-    viewport.dvClipY = 0.5125f;
-    viewport.dvClipHeight = 1.025f;
-    viewport.dvMaxZ = 1.0f;
+    viewport.dvClipY = DATA_COMPGEN(0x000649fc, 0.5125f);
+    viewport.dvClipHeight = DATA_COMPGEN(0x00064a00, 1.025f);
+    viewport.dvMinZ = DATA_COMPGEN(0x00064a04, 0.0f);
+    viewport.dvMaxZ = DATA_COMPGEN(0x00064a08, 1.0f);
     if (g_viewport->SetViewport2(&viewport) != D3D_OK) {
         return false;
     }
@@ -1155,12 +1155,14 @@ b32 InitDirect3D(void) {
     viewport.dwSize = sizeof(viewport);
     viewport.dwWidth = g_viewClearRect.x2;
     viewport.dwHeight = g_viewClearRect.y2;
+    viewport.dvClipX = DATA_COMPGEN(0x00064a0c, -1.0f / 3.0f);
+    viewport.dvClipWidth = DATA_COMPGEN(0x00064a10, 2.0f / 3.0f);
     viewport.dvMinZ = 0.0f;
     viewport.dvMaxZ = 1.0f;
-    viewport.dvClipHeight = g_viewClearRect.x2 * 2.0 / g_viewClearRect.y2 / 3.0;
-    viewport.dvClipX = -1.0f / 3.0f;
-    viewport.dvClipWidth = 2.0f / 3.0f;
-    viewport.dvClipY = viewport.dvClipHeight / 6.0f;
+    viewport.dvClipHeight =
+        g_viewClearRect.x2
+        * DATA_COMPGEN(0x00064a18, 2.0) / g_viewClearRect.y2 * DATA_COMPGEN(0x00064a20, 1.0 / 3.0);
+    viewport.dvClipY = viewport.dvClipHeight * DATA_COMPGEN(0x00064a28, 1.0f / 6.0f);
     if (g_screenViewport->SetViewport2(&viewport) != D3D_OK) {
         return false;
     }
@@ -1189,8 +1191,8 @@ b32 InitDirect3D(void) {
     lighting->SetMaterial(&lightingDesc);
     lighting->GetHandle(g_d3dDevice, &lightingHandle);
     g_d3dDevice->SetLightState(D3DLIGHTSTATE_MATERIAL, lightingHandle);
-    fogStart = 800.5f;
-    fogEnd = 1280.8f;
+    fogStart = DATA_COMPGEN(0x00064a2c, 800.5f);
+    fogEnd = DATA_COMPGEN(0x00064a30, 1280.8f);
     g_d3dDevice->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_LINEAR);
     // the pun: the light state takes the float's bits
     g_d3dDevice->SetLightState(D3DLIGHTSTATE_FOGSTART, *reinterpret_cast<DWORD*>(&fogStart));
@@ -1205,11 +1207,9 @@ b32 InitDirect3D(void) {
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
     if (g_deviceSettings.caps.blendMode[static_cast<i32>(g_deviceType)] == BLEND_MODE_ALPHA) {
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, TRUE);
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, FALSE);
+        SetDeviceAlphaBlend(g_d3dDevice, TRUE);
     } else {
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, TRUE);
+        SetDeviceAlphaBlend(g_d3dDevice, FALSE);
     }
     if (g_deviceType != D3D_DEVICE_MMX) {
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
@@ -1242,11 +1242,9 @@ b32 InitDirect3D(void) {
         g_screenDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
         if (g_deviceSettings.caps.blendMode[static_cast<i32>(g_deviceType)] == BLEND_MODE_ALPHA) {
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, TRUE);
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, FALSE);
+            SetDeviceAlphaBlend(g_screenDevice, TRUE);
         } else {
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
-            g_screenDevice->SetRenderState(D3DRENDERSTATE_STIPPLEDALPHA, TRUE);
+            SetDeviceAlphaBlend(g_screenDevice, FALSE);
         }
     } else {
         g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);
@@ -1324,10 +1322,10 @@ void PlaySoundEffect(i16 sound) {
         g_longSoundBuffer->Stop();
         return;
     }
-    if (s_soundResources[sound] == 0) {
+    if (s_soundResources[sound - 1] == 0) {
         return;
     }
-    resource = FindResource(NULL, MAKEINTRESOURCE(s_soundResources[sound]), "WAVE");
+    resource = FindResource(NULL, MAKEINTRESOURCE(s_soundResources[sound - 1]), "WAVE");
     if (resource == NULL) {
         return;
     }

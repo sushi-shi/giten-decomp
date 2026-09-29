@@ -50,6 +50,9 @@ struct JoystickKey {
     i32 key;
 };
 
+// The keys ReadJoystick folds into the joystick bits, zero-terminated.
+extern JoystickKey g_joystickKeys[8];
+
 void InitJoystick(void);
 u32 ReadJoystick(JoystickState* state);
 

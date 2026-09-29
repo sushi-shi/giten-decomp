@@ -22,21 +22,42 @@
 #include <stddef.h>
 #include <stdio.h>
 
-// The label of the debug menu's unnamed rows.
+// The open menu, the skill the magic test launches, and how many skills
+// there are.
+DATA(0x00071170)
+static MenuBox* s_debugMenu = 0;
+
+DATA(0x00071174)
+static i16 s_testSkill = 0;
+
+DATA(0x00071178)
+static i16 s_skillCount = 0;
+
+// The empty labels of the debug menu's unnamed rows 3, 5, 6 and 14: each is
+// its own 4-byte .bss item.
 DATA(0x0007117c)
-static char s_emptyLabels[4][4];
+static char s_row3Label[4] = "";
+
+DATA(0x00071180)
+static char s_row5Label[4] = "";
+
+DATA(0x00071184)
+static char s_row6Label[4] = "";
+
+DATA(0x00071188)
+static char s_row14Label[4] = "";
 
 // The debug menu: each row starts scene 0xaf (0xd1 for the last) with its
 // value, except the magic test (row 2) and destroying every demon (row 4).
 DATA(0x000641f0)
-static MenuEntry s_debugEntries[15] = {
+static const MenuEntry s_debugEntries[15] = {
     {0, 0, "\202\141\202\146\202\154"},         // "ＢＧＭ"
     {0, 1, "\202\162\202\144"},                 // "ＳＥ"
     {1, 3, "\226\202\226\100\214\370\211\312"}, // "魔法効果" (magic effects)
-    {1, 4, s_emptyLabels[0]},
+    {1, 4, s_row3Label},
     {1, 6, "\210\253\226\202\221\123\226\305"}, // "悪魔全滅" (all demons destroyed)
-    {1, 7, s_emptyLabels[1]},
-    {0, 8, s_emptyLabels[2]},
+    {1, 7, s_row5Label},
+    {0, 8, s_row6Label},
     {0, 10, "\203\101\203\103\203\145\203\200\216\346\223\276"}, // "アイテム取得" (get items)
     {0, 12, "\224\134\227\315\222\154\225\317\211\273"},         // "能力値変化" (change stats)
     {0, 29, "\202\122\202\143\210\332\223\256"},                 // "３Ｄ移動" (3D move)
@@ -44,12 +65,12 @@ static MenuEntry s_debugEntries[15] = {
     {1, 36, "\203\132\201\133\203\165"},                         // "セーブ" (save)
     {1, 38, "\203\215\201\133\203\150"},                         // "ロード" (load)
     {0, 6, "\203\146\201\133\203\136\212\155\224\106"},          // "データ確認" (check data)
-    {0, 0, s_emptyLabels[3]},
+    {0, 0, s_row14Label},
 };
 
 // The magic test's rows: step the skill id, set the shot's rise, launch it.
 DATA(0x00064250)
-static MenuEntry s_magicEntries[8] = {
+static const MenuEntry s_magicEntries[8] = {
     {0, 1, "\201\173\202\120"},                    // "＋１"
     {0, -1, "\201\174\202\120"},                   // "－１"
     {0, 10, "\201\173\202\120\202\117"},           // "＋１０"
@@ -63,17 +84,6 @@ static MenuEntry s_magicEntries[8] = {
 // The magic test's shot rise (0..3, the distance row cycles it).
 DATA(0x00068050)
 static i16 s_shotRise = 3;
-
-// The open menu, the skill the magic test launches, and how many skills
-// there are.
-DATA(0x00071170)
-static MenuBox* s_debugMenu;
-
-DATA(0x00071174)
-static i16 s_testSkill;
-
-DATA(0x00071178)
-static i16 s_skillCount;
 
 static void DebugMenuHandler(MenuBox* menu, i16 index, i16 event);
 static void MagicMenuHandler(MenuBox* menu, i16 index, i16 event);
@@ -190,7 +200,7 @@ i16 RunDebugMenu(void) {
                     s_debugMenu = DestroyMenuBox(s_debugMenu);
                     SetGameSub(0);
                     from = GetMapCoord();
-                    to = MoveMapCoord(from, g_field.pos.direction, 0, -s_shotRise);
+                    to = MoveMapCoord(from, g_party.field.pos.direction, 0, -s_shotRise);
                     PushGameState(0xc);
                     LaunchShot(
                         GetSkillShotId(s_testSkill),

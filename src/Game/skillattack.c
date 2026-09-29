@@ -52,7 +52,7 @@ b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide) {
     if (GetCombatantFacingDifference(g_actorId, g_targetId) != 0) {
         accuracy = accuracy * 150 / 100;
     }
-    skillValue = GetCachedSkill(attacker->pickTarget)->parameters.valueA;
+    skillValue = GetSkillValueA(GetCachedSkill(attacker->pickTarget));
     skillValue *= 100;
     skillValue += accuracy;
     value = WearSkillValue(skillValue);
@@ -82,7 +82,7 @@ i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
         return 0;
     }
     skill = GetCachedSkill(attacker->pickTarget);
-    power = WearSkillValue(skill->parameters.valueB + GetBattleStatShown(attacker, 15));
+    power = WearSkillValue(GetSkillValueB(skill) + GetBattleStatShown(attacker, 15));
     defense = GetBattleStatShown(target, 17);
     amount = power;
     if (power < defense) {
@@ -147,7 +147,7 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
     roll = RandomAverage(0, 30, 0);
     defense = GetBattleStatShown(target, 5);
     defense *= roll;
-    value = GetCachedSkill(attacker->pickTarget)->parameters.valueA;
+    value = GetSkillValueA(GetCachedSkill(attacker->pickTarget));
     value += GetRecordValue();
     power = WearSkillValue(value);
     if (ScaleActionValue(power * 10, resistance, 2) - defense <= 0) {

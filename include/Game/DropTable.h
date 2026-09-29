@@ -44,4 +44,8 @@ i16 RemapItem(u16 item);
 // set a random average between its low and high values.
 i16 RollItemAmount(i16 item, i16 count, i16 random);
 
+static __inline i16 RollDropAmount(i16 item, i16 amount) {
+    return RollItemAmount(item, amount, 1);
+}
+
 #endif // GITEN_GAME_DROPTABLE_H

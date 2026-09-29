@@ -18,21 +18,9 @@
 #include <stdio.h>
 #include <string.h>
 
-// @identity-TODO: the layer table is filled by the layer constructor (0x551c0)
-// in this TU.
-DATA(0x0008fb10)
-ScreenLayer* g_screenLayers[SCREEN_LAYER_COUNT];
-
-DATA(0x0008fda8)
-TextPlane g_textPlanes[TEXT_PLANE_COUNT];
-
 // The memory DC holding the text font.
 DATA(0x00090bd0)
 HDC g_fontDC;
-
-// The layers from the topmost down.
-DATA(0x0008f290)
-ScreenLayer* g_layerStack[SCREEN_LAYER_COUNT];
 
 // The built-in 8x16 half-width glyphs for codes 0x20-0xdf, one byte per row.
 DATA(0x0006c230)
@@ -5600,7 +5588,7 @@ i16 PartyPanelAtPoint(i16 x, i16 y) {
 
 // The layers' visibility and positions as a save file keeps them.
 DATA(0x00090b18)
-static SavedLayer s_savedLayers[SCREEN_LAYER_COUNT];
+static SavedLayer s_savedScreenLayers[SCREEN_LAYER_COUNT];
 
 // Writes the layers' visibility and positions to `file`; 0 on success.
 RVA(0x00054bb0, 0x51)
@@ -5608,11 +5596,11 @@ i16 SaveScreenLayers(FILE* file) {
     i32 i;
 
     for (i = 0; i < SCREEN_LAYER_COUNT; i++) {
-        s_savedLayers[i].visible = g_screenLayers[i]->visible;
-        s_savedLayers[i].x = g_screenLayers[i]->x;
-        s_savedLayers[i].y = g_screenLayers[i]->y;
+        s_savedScreenLayers[i].visible = g_screenLayers[i]->visible;
+        s_savedScreenLayers[i].x = g_screenLayers[i]->x;
+        s_savedScreenLayers[i].y = g_screenLayers[i]->y;
     }
-    return 1 - fwrite(s_savedLayers, sizeof(s_savedLayers), 1, file);
+    return 1 - fwrite(s_savedScreenLayers, sizeof(s_savedScreenLayers), 1, file);
 }
 
 // Reads the layers' visibility and positions from `file` (the character
@@ -5622,11 +5610,11 @@ i16 LoadScreenLayers(FILE* file) {
     i16 result;
     i32 i;
 
-    result = 1 - fread(s_savedLayers, sizeof(s_savedLayers), 1, file);
+    result = 1 - fread(s_savedScreenLayers, sizeof(s_savedScreenLayers), 1, file);
     for (i = 0; i < SCREEN_LAYER_COUNT; i++) {
-        g_screenLayers[i]->visible = s_savedLayers[i].visible;
-        g_screenLayers[i]->x = s_savedLayers[i].x;
-        g_screenLayers[i]->y = s_savedLayers[i].y;
+        g_screenLayers[i]->visible = s_savedScreenLayers[i].visible;
+        g_screenLayers[i]->x = s_savedScreenLayers[i].x;
+        g_screenLayers[i]->y = s_savedScreenLayers[i].y;
     }
     g_screenLayers[SCREEN_LAYER_PANEL]->visible = FALSE;
     return result;
@@ -5761,18 +5749,21 @@ static i16 s_panelCommandIds[8];
 DATA(0x00090b10)
 static i16 s_shownCharacter;
 
-// the pun: DdsCommand and StatusCommand take no argument; the table calls
-// every command with the character.
+// the pun: DdsCommand, StatusCommand and SetEncounterPending take no
+// argument; the table calls every command with the character. Id 8 (the
+// encounter command FillCharacterCommands lists in render mode 6) is the
+// ninth handler.
 DATA(0x0006dbc0)
-static void (*s_panelCommands[8])(i16 character) = {
+static void (*s_panelCommands[9])(i16 character) = {
     FightCommand,
     GunCommand,
     SkillCommand,
     ItemCommand,
     DefenceCommand,
     ReturnCommand,
-    reinterpret_cast<void (*)(i16)>(DdsCommand),    // the pun: see the table
-    reinterpret_cast<void (*)(i16)>(StatusCommand), // the pun: see the table
+    reinterpret_cast<void (*)(i16)>(DdsCommand),          // the pun: see the table
+    reinterpret_cast<void (*)(i16)>(StatusCommand),       // the pun: see the table
+    reinterpret_cast<void (*)(i16)>(SetEncounterPending), // the pun: see the table
 };
 
 // The pad button last pressed down.
@@ -5782,11 +5773,6 @@ static i32 s_pressedPadButton;
 // The party panels' last drawn states.
 DATA(0x00090af8)
 static i32 s_panelStates[PARTY_PANEL_COUNT];
-
-// Where the dragged layer was grabbed, from its top left (the drop position
-// is g_dragRect's top left).
-DATA(0x0008faf8)
-POINT g_dragOffset;
 
 // Frees every layer: its surfaces and the record.
 RVA(0x00054fd0, 0x4e)

@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 // The bag's storage and the item module's own bag helpers.
-// Codegen constraint: kept apart from <Game/ItemBag.h>, which equipscreen.c
+// Codegen constraint: kept apart from <Game/ItemBag.h>, which statuspanel.c
 // and skilluse.c include and whose declaration count their codegen follows.
 
 // The party's 64-entry item bag.

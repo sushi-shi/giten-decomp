@@ -25,9 +25,9 @@ b16 SortRoster(void);
 i16 FilterPartyMember(i16 slot, i16 mode);
 i16 DamageParty(i16 percent, i16 skipId13);
 i16 HealParty(i16 percent);
-void ClearRosterConditions(void);
 Character* CopyCharacter(Character* src, Character* dst);
 i32 AddMacca(Character* character, i32 amount);
+// Adds `amount` magnetite to `character`, clamped to 0..9999999.
 i32 AddMagnetite(Character* character, i32 amount);
 i16 CompareMacca(i16 who, i32 amount);
 i16 GetPartyMemberId(i16 index);
@@ -64,19 +64,8 @@ ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, i16* result);
 // in the character's `ammoCounts` entry.
 ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index);
 
-// The index into Character `ammoCounts` that equipping ammunition writes: a
-// read-only word, -1 in retail (0x4648fc, .rdata), so the store never runs.
-// Placeholder extern (only reader: EquipItem).
-extern const i16 g_ammoCountIndex;
-
 // Sets equipment part `part` of roster member `slot`. When `check` is set,
 // changing the gun unequips ammunition that no longer fits it.
 i16 SetEquipSlot(i16 slot, i16 part, ItemSlot item, i16 check);
-
-void SetPartySlot(i16 index, i16 slot);
-
-// Adds `amount` magnetite to `character`, clamped to 0..9999999.
-RVA_DECL(0x00040920)
-i32 AddMagnetite(Character* character, i32 amount);
 
 #endif // GITEN_GAME_PARTY_H

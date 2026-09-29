@@ -5,7 +5,7 @@ from giten.core.paths import REPO, BUILD
 from giten.tool import cl, link
 from giten.tool.wine import winepath
 
-UNITS = ('datafile', 'bmpseek', 'resourceblit', 'midistream', 'areamap', 'itemrecord', 'range', 'd3dapp', 'textchar')
+UNITS = ('datafile', 'bitmapio', 'midistream', 'areamap', 'itemrecord', 'range', 'd3dapp', 'textchar')
 
 
 def build():

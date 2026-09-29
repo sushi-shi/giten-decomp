@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 DATA(0x000813a0)
-FlagBank g_eventFlags[16];
+FlagBank g_eventFlags[16] = {0};
 
 RVA(0x000391b0, 0x1b)
 void SetFlagBank(i16 bank) {

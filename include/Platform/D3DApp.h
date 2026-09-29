@@ -59,9 +59,6 @@ u16 ReadSurfaceWord(LPDIRECTDRAWSURFACE surface, i32 x, i32 pitch, i32 y);
 #define PIXEL_BITS_16 16
 #define CHANNEL_MASK_5BIT 0x1f
 
-// The display settings the entry TU loaded (the DirectDraw driver's GUID).
-extern struct DisplayConfig g_displayConfig;
-
 // The Direct3D devices' descriptions as the device query keeps them.
 // @identity-TODO: the 0x38 bytes before the caps and the tail after the
 // descriptions are unrecovered.

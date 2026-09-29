@@ -12,7 +12,6 @@
 
 // The actor and target of the action being resolved (script objects -20 and
 // -21): a field object index, or -1 - party position.
-// @identity-TODO: their owner TU is unclaimed. Placeholder externs.
 extern i16 g_actorId;
 extern i16 g_targetId;
 
@@ -40,7 +39,7 @@ extern i16 g_viewDepth;
 
 // @identity-TODO: a stub (returns 0) that picks a layer frame for depth `z`.
 i16 GetLayerImageBand(i16 value);
-ub32 GetLayerFrame(u32 image, i16 a, i16 z);
+u32 GetLayerFrame(u32 image, i16 a, i16 z);
 
 // The actor record at FieldObject +0x1a as other TUs see it (GetFieldActor):
 // a Character up to `alignmentA`, then the object's own map state. Not a
