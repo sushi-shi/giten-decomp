@@ -62,6 +62,7 @@
 #include <Gfx/Render.h>
 #include <Gfx/ScreenLayer.h>
 #include <Gfx/VramAccess.h>
+#include <Giten/Resource.h>
 #include <Input/Mouse.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
@@ -1944,7 +1945,7 @@ b16 RunAutomapState(void) {
             RestoreDrawState(SaveDrawState());
             s_mapPosition = g_party.field.pos;
             s_mapPlane = CreateTextPlane(31, 0);
-            s_mapPanel = CreateKindPanel(s_mapPanel, 0x11d, 4, 31);
+            s_mapPanel = CreateKindPanel(s_mapPanel, IDB_BITMAP61, 4, 31);
             if (g_party.status.automapFixed) {
                 s_mapPosition.direction = 0;
             }

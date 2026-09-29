@@ -4303,7 +4303,7 @@ i32 ClickMenuBar(u32 x, u32 y) {
                 OpenAutomap();
                 BlitImage(
                     g_screenLayers[SCREEN_LAYER_MENU_BAR]->surface,
-                    634,
+                    IDB_BITMAP297,
                     g_menuButtonX[MENU_BUTTON_AUTOMAP],
                     MENU_BAR_TOP
                 );
@@ -4312,7 +4312,7 @@ i32 ClickMenuBar(u32 x, u32 y) {
                 OpenFieldMenu();
                 BlitImage(
                     g_screenLayers[SCREEN_LAYER_MENU_BAR]->surface,
-                    300,
+                    IDB_BITMAP70,
                     g_menuButtonX[MENU_BUTTON_FIELD_MENU],
                     MENU_BAR_TOP
                 );

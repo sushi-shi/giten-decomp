@@ -56,6 +56,7 @@
 #include <Game/StatusScreen.h>
 #include <Game/WorldMap.h>
 #include <Gfx/Sprite.h>
+#include <Giten/Resource.h>
 #include <Input/Mouse.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
@@ -1998,7 +1999,7 @@ RVA(0x000356f0, 0x55)
 void OpOpenItemListWindow(void) {
     i16 totalVar = ReadScriptValue();
     i16 selling = ReadScriptValue();
-    ScriptPanel* node = CreateScriptPanel(0x118, 8, 0, 0);
+    ScriptPanel* node = CreateScriptPanel(IDB_BITMAP56, 8, 0, 0);
     i16 i;
     node->panel->flags |= PANEL_ALLOW_RIGHT_CLICK;
     node->panel->flags &= ~PANEL_IGNORE_RIGHT_CLICK;

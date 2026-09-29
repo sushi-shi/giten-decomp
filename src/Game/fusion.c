@@ -28,6 +28,7 @@
 #include <Gfx/ScreenLayer.h>
 #include <Gfx/ScreenSave.h>
 #include <Gfx/Vram.h>
+#include <Giten/Resource.h>
 #include <Input/Mouse.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
@@ -1512,7 +1513,7 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
             s_fusionColumnCount = count;
             PaintMenuBox(s_fusionMenu);
             if (s_fusionPageRows < count) {
-                s_fusionPager = CreateKindPanel(s_fusionPager, 284, 2, 1);
+                s_fusionPager = CreateKindPanel(s_fusionPager, IDB_BITMAP60, 2, 1);
                 PaintPanel(s_fusionPager, s_fusionMenu->plane);
             }
             ++step;
@@ -1652,7 +1653,7 @@ FusionSummary* GetFusionPairSummaryCell(i16 first, i16 second) {
 
 RVA(0x00029120, 0x8d)
 i16 CreateFusionList(i16 window, i16 count) {
-    SetPanelImage(0x11c);
+    SetPanelImage(IDB_BITMAP60);
     s_fusionMenu = CreateMenuBox(s_fusionMenu, window, 2);
     SetMenuItems(s_fusionMenu, 15, NULL, count, FusionListMenuHandler);
     SetTextPlaneFirstSelectableRow(s_fusionMenu->plane, 1, false);
