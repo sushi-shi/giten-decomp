@@ -61,7 +61,7 @@ handle	33	32
 hotspot	6	6
 hotspotclick	1	0
 itemattack	4	4
-itemrecord	109	106
+itemrecord	109	107
 joystick	2	2
 layertexture	2	2
 list	6	6
@@ -73,7 +73,7 @@ motion	43	42
 mouse	10	9
 nibble	4	4
 objecttexture	2	2
-partyaction	103	99
+partyaction	103	100
 playtime	4	4
 pool	6	6
 range	25	25
@@ -373,7 +373,7 @@ clock	_FindTreasureBoxAt	100.0000	100.0000	2	fc7e7f5c850f	0x22560	100.0000
 clock	_GetAreaLevelCount	100.0000	100.0000	1	074500fa1285	0x21710	100.0000	
 clock	_GetAreaName	100.0000	100.0000	1	8b4b612e8652	0x21750	100.0000	
 clock	_GetAreaSize	100.0000	100.0000	2	525ec9f54018	0x21720	100.0000	
-clock	_GetCellAtOffset	80.4568	80.4568	4	04e967303fcc	0x22460	80.4568	
+clock	_GetCellAtOffset	82.0988	82.0988	5	d556e7c4c126	0x22460	82.0988	
 clock	_GetCurrentArea	100.0000	100.0000	1	2668c09bcabe	0x21700	100.0000	
 clock	_GetEventCellCode	100.0000	100.0000	2	e500ff8ceb37	0x22120	100.0000	
 clock	_GetLevelFloor	100.0000	100.0000	2	c7937fb508b3	0x21770	100.0000	
@@ -1284,7 +1284,7 @@ itemrecord	_SumEquippedMagicDefenseBonus	100.0000	100.0000	3	2349e4a9242f	0x24f4
 itemrecord	_TakeBagItems	100.0000	100.0000	2	a4df7a2e9765	0x23780	100.0000	
 itemrecord	_TakeBagItemsAt	100.0000	100.0000	2	f56b5fd54ee3	0x24390	100.0000	
 itemrecord	_TakeBagItemsFromEnd	100.0000	100.0000	2	b0bdfc6f2b3b	0x240f0	100.0000	
-itemrecord	_TakeFromBagEntry	99.6552	99.6552	4	56ab65424958	0x23e10	99.6552	
+itemrecord	_TakeFromBagEntry	100.0000	100.0000	5	6ab235beac38	0x23e10	100.0000	
 itemrecord	_TakeFromPool	100.0000	100.0000	4	839a9aa94385	0x23920	100.0000	
 itemrecord	_TakeGemItems	100.0000	100.0000	4	cadc405b2d5e	0x24720	100.0000	
 itemrecord	_TakeGemItemsAt	100.0000	100.0000	4	325174fd552a	0x24660	100.0000	
@@ -1511,7 +1511,7 @@ partyaction	_RollExceptionalAttack	100.0000	99.4183	5	cec84366749b	0x8700	100.00
 partyaction	_RollGunCondition	100.0000	100.0000	10	c992f81ace81	0x8d30	100.0000	
 partyaction	_RollGunHit	100.0000	100.0000	9	4dde76569003	0x8910	100.0000	
 partyaction	_RollProximityEvent	100.0000	100.0000	5	f09f53b9298c	0x7f80	100.0000	
-partyaction	_RunActorCommandMenu	94.6038	94.6038	4	d1f98d643d5c	0x6460	94.6038	
+partyaction	_RunActorCommandMenu	100.0000	100.0000	5	f363b6e1f17b	0x6460	100.0000	
 partyaction	_RunFieldEncounter	100.0000	100.0000	9	2b5934954aec	0x7390	100.0000	
 partyaction	_RunFieldState	100.0000	100.0000	9	46d59951b812	0x7aa0	100.0000	
 partyaction	_RunMemberPickMenu	100.0000	100.0000	2	fdd11366aedb	0x94d0	100.0000	
