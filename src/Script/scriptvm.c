@@ -22,12 +22,12 @@
 #include <Text/TextWindow.h>
 
 DATA(0x00081228)
-u16 g_scriptOpcode = 0;
+GZ_ENUM_STORAGE(ScriptOpcode, u16) g_scriptOpcode = 0;
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).
 RVA(0x0002ff40, 0x7)
-u16 GetScriptOpcode(void) {
+GZ_ENUM_RETURN(ScriptOpcode, u16) GetScriptOpcode(void) {
     return g_scriptOpcode;
 }
 
@@ -36,24 +36,24 @@ u16 GetScriptOpcode(void) {
 // which is dispatched in turn. Returns 0 to continue, -1 to end the script
 // and -3 to yield until the next frame; some handlers return their own status.
 RVA(0x0002ff50, 0x2560)
-i16 ExecScriptOpcode(i16 window, u16 op) {
+i16 ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(ScriptOpcode, u16) op) {
     u16 entry;
     i16 target;
 
     for (;;) {
         g_scriptOpcode = op;
         switch (op) {
-            case 29:
-                op = ReadScriptByte() + 0x300;
+            case SCRIPT_OP_EXTEND_BANK_THREE:
+                op = ReadScriptByte() + SCRIPT_OPCODE_BANK_THREE;
                 continue;
-            case 30:
-                op = ReadScriptByte() + 0x200;
+            case SCRIPT_OP_EXTEND_BANK_TWO:
+                op = ReadScriptByte() + SCRIPT_OPCODE_BANK_TWO;
                 continue;
-            case 31:
-                op = ReadScriptByte() + 0x100;
+            case SCRIPT_OP_EXTEND_BANK_ONE:
+                op = ReadScriptByte() + SCRIPT_OPCODE_BANK_ONE;
                 continue;
-            case 354:
-                op = 0x1de;
+            case SCRIPT_OP_RESTART_AND_DESPAWN_ALIAS:
+                op = SCRIPT_OP_RESTART_AND_DESPAWN;
                 continue;
             case 1:
             case 2:
@@ -66,25 +66,25 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
                 entry = ReadScriptByte();
                 CallScript(op + 0x7eff, entry);
                 return 0;
-            case 9:
+            case SCRIPT_OP_JUMP_UNLESS_FLAG_TEST_RESULT_CLEAR:
                 OpJumpUnlessEventFlag(SCRIPT_FLAG_TEST, 0);
                 return 0;
-            case 10:
+            case SCRIPT_OP_ADVANCE_WINDOW_LINE:
                 AdvanceWindowLine(window);
                 return 0;
-            case 11:
+            case SCRIPT_OP_JUMP_UNLESS_FLAG_TEST_RESULT_SET:
                 OpJumpUnlessEventFlag(SCRIPT_FLAG_TEST, 1);
                 return 0;
-            case 12:
+            case SCRIPT_OP_GOTO_SCRIPT:
                 OpJumpScript(0);
                 return 0;
-            case 13:
+            case SCRIPT_OP_CALL_SCRIPT:
                 OpJumpScript(1);
                 return 0;
-            case 14:
+            case SCRIPT_OP_SWITCH_ON_RANDOM_JUMP:
                 OpSwitchOnRandom(0);
                 return 0;
-            case 15:
+            case SCRIPT_OP_SWITCH_ON_SELECTION_JUMP:
                 OpSwitchOnSelection(0);
                 return 0;
             case 16:
@@ -111,31 +111,31 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
             case 23:
                 OpJumpUnlessStatContest(3, 1, 0);
                 return 0;
-            case 24:
+            case SCRIPT_OP_JUMP:
                 OpJump();
                 return 0;
-            case 25:
+            case SCRIPT_OP_SET_EVENT_FLAG:
                 OpApplyEventFlag(SCRIPT_FLAG_SET, 1);
                 return 0;
-            case 26:
+            case SCRIPT_OP_CLEAR_EVENT_FLAG:
                 OpApplyEventFlag(SCRIPT_FLAG_CLEAR, 0);
                 return 0;
-            case 27:
+            case SCRIPT_OP_BEGIN_TEXT_CAPTURE:
                 SetTextCapture(1);
                 return 0;
-            case 28:
+            case SCRIPT_OP_END_TEXT_CAPTURE:
                 SetTextCapture(0);
                 return 0;
-            case 257:
+            case SCRIPT_OP_PRINT_OPERAND_TEXT:
                 OpPrintOperandText();
                 return 0;
-            case 258:
+            case SCRIPT_OP_PRINT_NUMBER:
                 OpPrintNumber();
                 return 0;
-            case 259:
+            case SCRIPT_OP_IF_ANY_FLAGS:
                 OpIfFlags(0);
                 return 0;
-            case 260:
+            case SCRIPT_OP_IF_ALL_FLAGS:
                 OpIfFlags(1);
                 return 0;
             case 261:
@@ -162,58 +162,58 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
             case 268:
                 OpJumpUnlessStatContest(3, 1, 1);
                 return 0;
-            case 269:
+            case SCRIPT_OP_ALERT_ACTOR:
                 return OpSetActorAlert(0);
-            case 270:
+            case SCRIPT_OP_ALERT_ACTOR_IMMEDIATELY:
                 return OpSetActorAlert(1);
-            case 271:
+            case SCRIPT_OP_DELAY_ACTOR:
                 return OpSetActorAlert(2);
-            case 273:
+            case SCRIPT_OP_SWITCH_ON_RANDOM_CALL:
                 OpSwitchOnRandom(1);
                 return 0;
-            case 274:
+            case SCRIPT_OP_SWITCH_ON_SELECTION_CALL:
                 OpSwitchOnSelection(1);
                 return 0;
-            case 275:
+            case SCRIPT_OP_SWITCH_ON_ALIGNMENT_A_JUMP:
                 OpSwitchOnAlignmentA(0);
                 return 0;
-            case 276:
+            case SCRIPT_OP_SWITCH_ON_ALIGNMENT_A_CALL:
                 OpSwitchOnAlignmentA(1);
                 return 0;
-            case 277:
+            case SCRIPT_OP_SWITCH_ON_ALIGNMENT_B_JUMP:
                 OpSwitchOnAlignmentB(0);
                 return 0;
-            case 278:
+            case SCRIPT_OP_SWITCH_ON_ALIGNMENT_B_CALL:
                 OpSwitchOnAlignmentB(1);
                 return 0;
-            case 279:
+            case SCRIPT_OP_SWITCH_ON_MOON_PHASE_JUMP:
                 OpSwitchOnMoonPhase(0);
                 return 0;
-            case 280:
+            case SCRIPT_OP_SWITCH_ON_MOON_PHASE_CALL:
                 OpSwitchOnMoonPhase(1);
                 return 0;
-            case 281:
+            case SCRIPT_OP_SWITCH_ON_RANGE_JUMP:
                 OpSwitchOnRange(0);
                 return 0;
-            case 282:
+            case SCRIPT_OP_SWITCH_ON_RANGE_CALL:
                 OpSwitchOnRange(1);
                 return 0;
-            case 283:
+            case SCRIPT_OP_SWITCH_ON_ACTOR_ATTR_A_JUMP:
                 OpSwitchOnActorAttrA(0);
                 return 0;
-            case 284:
+            case SCRIPT_OP_SWITCH_ON_ACTOR_ATTR_A_CALL:
                 OpSwitchOnActorAttrA(1);
                 return 0;
-            case 285:
+            case SCRIPT_OP_SWITCH_ON_ACTOR_ATTR_B_JUMP:
                 OpSwitchOnActorAttrB(0);
                 return 0;
-            case 286:
+            case SCRIPT_OP_SWITCH_ON_ACTOR_ATTR_B_CALL:
                 OpSwitchOnActorAttrB(1);
                 return 0;
-            case 287:
+            case SCRIPT_OP_SET_ACTOR_ATTITUDE:
                 OpSetActorAttitude();
                 return 0;
-            case 288:
+            case SCRIPT_OP_SET_ACTOR_FIELD_STATE:
                 OpSetActorFieldState();
                 return 0;
             case 289:
@@ -238,28 +238,28 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
                 return SetActorMode(10);
             case 299:
                 return SetActorMode(11);
-            case 300:
+            case SCRIPT_OP_RESET_AND_REVERSE_WINDOW_ATTR:
                 SetWindowReverse(window, 1);
                 return 0;
-            case 301:
+            case SCRIPT_OP_RESET_WINDOW_ATTR:
                 SetWindowReverse(window, 0);
                 return 0;
-            case 302:
+            case SCRIPT_OP_REVERSE_WINDOW_ATTR:
                 SetWindowReverse(window, -1);
                 return 0;
-            case 303:
+            case SCRIPT_OP_SET_WINDOW_GLYPH_COLOR:
                 OpSetWindowColor(window, 0);
                 return 0;
-            case 304:
+            case SCRIPT_OP_SET_WINDOW_BACKGROUND_COLOR:
                 OpSetWindowColor(window, 2);
                 return 0;
-            case 305:
+            case SCRIPT_OP_SET_WINDOW_DIM_COLOR:
                 OpSetWindowColor(window, 1);
                 return 0;
-            case 306:
+            case SCRIPT_OP_ENABLE_WINDOW_OPAQUE_BACKGROUND:
                 SetWindowOpaqueBg(window, 1);
                 return 0;
-            case 307:
+            case SCRIPT_OP_DISABLE_WINDOW_OPAQUE_BACKGROUND:
                 SetWindowOpaqueBg(window, 0);
                 return 0;
             case 308:
@@ -268,10 +268,10 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
             case 309:
                 SetWindowAttrFlag1(window, 0);
                 return 0;
-            case 310:
+            case SCRIPT_OP_DISABLE_WINDOW_HALF_WIDTH:
                 SetWindowHalfWidth(window, 0);
                 return 0;
-            case 311:
+            case SCRIPT_OP_ENABLE_WINDOW_HALF_WIDTH:
                 SetWindowHalfWidth(window, 1);
                 return 0;
             case 312:
@@ -280,130 +280,130 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
             case 313:
                 SetWindowAttrFlag2(window, 1);
                 return 0;
-            case 314:
+            case SCRIPT_OP_SAVE_WINDOW_COLOR:
                 StashWindowColor(window, 1);
                 return 0;
-            case 315:
+            case SCRIPT_OP_RESTORE_WINDOW_COLOR:
                 StashWindowColor(window, 0);
                 return 0;
-            case 316:
+            case SCRIPT_OP_SET_WINDOW_ALT_COLOR:
                 OpSetWindowAltColor(window);
                 return 0;
-            case 317:
+            case SCRIPT_OP_SET_WINDOW_INSTANT_COLOR:
                 OpSetWindowInstantColor(window);
                 return 0;
-            case 318:
+            case SCRIPT_OP_ADD_TO_ROSTER:
                 return OpAddToRoster();
-            case 319:
+            case SCRIPT_OP_REMOVE_FROM_ROSTER:
                 OpRemoveFromRoster();
                 return 0;
-            case 320:
+            case SCRIPT_OP_JOIN_ACTIVE_PARTY:
                 OpJoinActiveParty();
                 return 0;
-            case 321:
+            case SCRIPT_OP_LEAVE_ACTIVE_PARTY:
                 OpLeaveActiveParty();
                 return 0;
-            case 322:
+            case SCRIPT_OP_MUL_LONG_VAR_EXPLICIT:
                 OpMulLongVar(0);
                 return 0;
-            case 323:
+            case SCRIPT_OP_DIV_LONG_VAR_EXPLICIT:
                 OpDivLongVar(0);
                 return 0;
-            case 324:
+            case SCRIPT_OP_ADD_LONG_VAR_EXPLICIT:
                 OpAddLongVar(0);
                 return 0;
-            case 325:
+            case SCRIPT_OP_SUB_LONG_VAR_EXPLICIT:
                 OpSubLongVar(0);
                 return 0;
-            case 326:
+            case SCRIPT_OP_AND_LONG_VAR_EXPLICIT:
                 OpAndLongVar(0);
                 return 0;
-            case 327:
+            case SCRIPT_OP_OR_LONG_VAR_EXPLICIT:
                 OpOrLongVar(0);
                 return 0;
-            case 328:
+            case SCRIPT_OP_XOR_LONG_VAR_EXPLICIT:
                 OpXorLongVar(0);
                 return 0;
-            case 329:
+            case SCRIPT_OP_SHL_LONG_VAR_EXPLICIT:
                 OpShlLongVar(0);
                 return 0;
-            case 330:
+            case SCRIPT_OP_SAR_LONG_VAR_EXPLICIT:
                 OpSarLongVar(0);
                 return 0;
-            case 331:
+            case SCRIPT_OP_PERCENT_LONG_VAR_EXPLICIT:
                 OpPercentLongVar(0);
                 return 0;
-            case 332:
+            case SCRIPT_OP_MUL_LONG_VAR_IN_PLACE:
                 OpMulLongVar(1);
                 return 0;
-            case 333:
+            case SCRIPT_OP_DIV_LONG_VAR_IN_PLACE:
                 OpDivLongVar(1);
                 return 0;
-            case 334:
+            case SCRIPT_OP_ADD_LONG_VAR_IN_PLACE:
                 OpAddLongVar(1);
                 return 0;
-            case 335:
+            case SCRIPT_OP_SUB_LONG_VAR_IN_PLACE:
                 OpSubLongVar(1);
                 return 0;
-            case 336:
+            case SCRIPT_OP_AND_LONG_VAR_IN_PLACE:
                 OpAndLongVar(1);
                 return 0;
-            case 337:
+            case SCRIPT_OP_OR_LONG_VAR_IN_PLACE:
                 OpOrLongVar(1);
                 return 0;
-            case 338:
+            case SCRIPT_OP_XOR_LONG_VAR_IN_PLACE:
                 OpXorLongVar(1);
                 return 0;
-            case 339:
+            case SCRIPT_OP_SHL_LONG_VAR_IN_PLACE:
                 OpShlLongVar(1);
                 return 0;
-            case 340:
+            case SCRIPT_OP_SAR_LONG_VAR_IN_PLACE:
                 OpSarLongVar(1);
                 return 0;
-            case 341:
+            case SCRIPT_OP_PERCENT_LONG_VAR_IN_PLACE:
                 OpPercentLongVar(1);
                 return 0;
-            case 342:
+            case SCRIPT_OP_TOGGLE_EVENT_FLAG:
                 OpApplyEventFlag(SCRIPT_FLAG_TOGGLE, 1);
                 return 0;
-            case 344:
+            case SCRIPT_OP_PUSH_RETURN_TARGET:
                 OpPushReturnTarget();
                 return 0;
-            case 345:
+            case SCRIPT_OP_DROP_CALL_FRAME:
                 DropCallFrame();
                 return 0;
-            case 346:
+            case SCRIPT_OP_SWAP_CALL_FRAMES:
                 SwapCallFrames();
                 return 0;
-            case 347:
+            case SCRIPT_OP_CLEAR_CALL_STACK:
                 ClearCallStack();
                 return 0;
-            case 348:
+            case SCRIPT_OP_ADD_MACCA:
                 OpAddMacca(1);
                 return 0;
-            case 349:
+            case SCRIPT_OP_SUBTRACT_MACCA:
                 OpAddMacca(-1);
                 return 0;
-            case 350:
+            case SCRIPT_OP_ADD_MAGNETITE:
                 OpAddMagnetite(1);
                 return 0;
-            case 351:
+            case SCRIPT_OP_SUBTRACT_MAGNETITE:
                 OpAddMagnetite(-1);
                 return 0;
-            case 352:
+            case SCRIPT_OP_GIVE_ITEM:
                 OpGiveItem();
                 return 0;
-            case 353:
+            case SCRIPT_OP_TAKE_ITEM:
                 OpTakeItem();
                 return 0;
             case 355:
             case 356:
                 GrantActorReward(3);
                 return 0;
-            case 357:
+            case SCRIPT_OP_GRANT_ACTOR_MACCA:
                 GrantActorSpoil(0);
                 return 0;
-            case 358:
+            case SCRIPT_OP_GRANT_ACTOR_MAGNETITE:
                 GrantActorSpoil(1);
                 return 0;
             case 359:
@@ -412,130 +412,130 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
             case 360:
                 GrantActorReward(0);
                 return 0;
-            case 361:
+            case SCRIPT_OP_GRANT_ACTOR_GEM:
                 GrantActorReward(2);
                 return 0;
-            case 362:
+            case SCRIPT_OP_GRANT_ACTOR_EXPERIENCE:
                 GrantActorSpoil(2);
                 return 0;
-            case 363:
+            case SCRIPT_OP_GRANT_RANDOM_ACTOR_REWARD:
                 GrantActorReward(7);
                 return 0;
             case 364:
                 GrantActorReward(8);
                 return 0;
-            case 365:
+            case SCRIPT_OP_ROLL_ACTOR_MAGNETITE:
                 OpRollActorMagnetite();
                 return 0;
-            case 366:
+            case SCRIPT_OP_ROLL_ACTOR_MACCA:
                 OpRollActorMacca();
                 return 0;
-            case 368:
+            case SCRIPT_OP_LOAD_SPRITE:
                 OpLoadSprite();
                 return 0;
-            case 369:
+            case SCRIPT_OP_PLACE_SPRITE:
                 OpPlaceSprite(0);
                 return 0;
-            case 370:
+            case SCRIPT_OP_HIDE_SPRITE:
                 OpHideSprite();
                 return 0;
-            case 371:
+            case SCRIPT_OP_PLACE_SPRITE_ALIAS:
                 OpPlaceSprite(1);
                 return 0;
-            case 375:
+            case SCRIPT_OP_FADE_IN:
                 OpFadeIn();
                 return 0;
-            case 376:
+            case SCRIPT_OP_FADE_OUT:
                 OpFadeOut();
                 return 0;
-            case 377:
+            case SCRIPT_OP_JUMP_UNLESS_FLAG_SET_RESULT_CLEAR:
                 OpJumpUnlessEventFlag(SCRIPT_FLAG_SET, 0);
                 return 0;
-            case 378:
+            case SCRIPT_OP_JUMP_UNLESS_FLAG_SET_RESULT_SET:
                 OpJumpUnlessEventFlag(SCRIPT_FLAG_SET, 1);
                 return 0;
-            case 379:
+            case SCRIPT_OP_JUMP_UNLESS_FLAG_CLEAR_RESULT_CLEAR:
                 OpJumpUnlessEventFlag(SCRIPT_FLAG_CLEAR, 0);
                 return 0;
-            case 380:
+            case SCRIPT_OP_JUMP_UNLESS_FLAG_CLEAR_RESULT_SET:
                 OpJumpUnlessEventFlag(SCRIPT_FLAG_CLEAR, 1);
                 return 0;
-            case 381:
+            case SCRIPT_OP_JUMP_UNLESS_FLAG_TOGGLE_RESULT_CLEAR:
                 OpJumpUnlessEventFlag(SCRIPT_FLAG_TOGGLE, 0);
                 return 0;
-            case 382:
+            case SCRIPT_OP_JUMP_UNLESS_FLAG_TOGGLE_RESULT_SET:
                 OpJumpUnlessEventFlag(SCRIPT_FLAG_TOGGLE, 1);
                 return 0;
-            case 383:
+            case SCRIPT_OP_JUMP_UNLESS_NOT_EQUAL_ZERO:
                 OpJumpUnlessCompare(COMPARE_NOT_EQUAL, 0);
                 return 0;
-            case 384:
+            case SCRIPT_OP_JUMP_UNLESS_EQUAL_ZERO:
                 OpJumpUnlessCompare(COMPARE_EQUAL, 0);
                 return 0;
-            case 385:
+            case SCRIPT_OP_JUMP_UNLESS_GREATER_EQUAL_ZERO:
                 OpJumpUnlessCompare(COMPARE_GREATER_EQUAL, 0);
                 return 0;
-            case 386:
+            case SCRIPT_OP_JUMP_UNLESS_LESS_ZERO:
                 OpJumpUnlessCompare(COMPARE_LESS, 0);
                 return 0;
-            case 387:
+            case SCRIPT_OP_JUMP_UNLESS_GREATER_ZERO:
                 OpJumpUnlessCompare(COMPARE_GREATER, 0);
                 return 0;
-            case 388:
+            case SCRIPT_OP_JUMP_UNLESS_LESS_EQUAL_ZERO:
                 OpJumpUnlessCompare(COMPARE_LESS_EQUAL, 0);
                 return 0;
-            case 389:
+            case SCRIPT_OP_JUMP_UNLESS_NOT_EQUAL_OPERAND:
                 OpJumpUnlessCompare(COMPARE_NOT_EQUAL, 1);
                 return 0;
-            case 390:
+            case SCRIPT_OP_JUMP_UNLESS_EQUAL_OPERAND:
                 OpJumpUnlessCompare(COMPARE_EQUAL, 1);
                 return 0;
-            case 391:
+            case SCRIPT_OP_JUMP_UNLESS_LESS_EQUAL_OPERAND:
                 OpJumpUnlessCompare(COMPARE_LESS_EQUAL, 1);
                 return 0;
-            case 392:
+            case SCRIPT_OP_JUMP_UNLESS_GREATER_EQUAL_OPERAND:
                 OpJumpUnlessCompare(COMPARE_GREATER_EQUAL, 1);
                 return 0;
-            case 393:
+            case SCRIPT_OP_JUMP_UNLESS_LESS_OPERAND:
                 OpJumpUnlessCompare(COMPARE_LESS, 1);
                 return 0;
-            case 394:
+            case SCRIPT_OP_JUMP_UNLESS_GREATER_OPERAND:
                 OpJumpUnlessCompare(COMPARE_GREATER, 1);
                 return 0;
-            case 395:
+            case SCRIPT_OP_JUMP_UNLESS_PLAYER_IN_VIEW_NORMAL:
                 OpJumpUnlessPlayerInView(0);
                 return 0;
-            case 396:
+            case SCRIPT_OP_JUMP_UNLESS_PLAYER_IN_VIEW_INVERTED:
                 OpJumpUnlessPlayerInView(1);
                 return 0;
-            case 397:
+            case SCRIPT_OP_JUMP_UNLESS_HP_PERCENT_ROLL_LESS_EQUAL:
                 OpJumpUnlessHpPercentRoll(COMPARE_LESS_EQUAL);
                 return 0;
-            case 398:
+            case SCRIPT_OP_JUMP_UNLESS_HP_PERCENT_ROLL_GREATER:
                 OpJumpUnlessHpPercentRoll(COMPARE_GREATER);
                 return 0;
-            case 399:
+            case SCRIPT_OP_JUMP_UNLESS_HP_QUARTER_ROLL_GREATER_EQUAL:
                 OpJumpUnlessHpQuarterRoll(COMPARE_GREATER_EQUAL);
                 return 0;
-            case 400:
+            case SCRIPT_OP_JUMP_UNLESS_HP_QUARTER_ROLL_LESS:
                 OpJumpUnlessHpQuarterRoll(COMPARE_LESS);
                 return 0;
-            case 401:
+            case SCRIPT_OP_JUMP_UNLESS_ACTOR_VISIBLE_NORMAL:
                 OpJumpUnlessActorVisible(0);
                 return 0;
-            case 402:
+            case SCRIPT_OP_JUMP_UNLESS_ACTOR_VISIBLE_INVERTED:
                 OpJumpUnlessActorVisible(1);
                 return 0;
-            case 403:
+            case SCRIPT_OP_JUMP_UNLESS_PLAYER_NEAR_FRONT_NORMAL:
                 OpJumpUnlessPlayerNearFront(0);
                 return 0;
-            case 404:
+            case SCRIPT_OP_JUMP_UNLESS_PLAYER_NEAR_FRONT_INVERTED:
                 OpJumpUnlessPlayerNearFront(1);
                 return 0;
-            case 405:
+            case SCRIPT_OP_JUMP_UNLESS_PLAYER_AT_RANGE_NORMAL:
                 OpJumpUnlessPlayerAtRange(0);
                 return 0;
-            case 406:
+            case SCRIPT_OP_JUMP_UNLESS_PLAYER_AT_RANGE_INVERTED:
                 OpJumpUnlessPlayerAtRange(1);
                 return 0;
             case 407:
@@ -550,302 +550,302 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
             case 410:
                 OpIfBlockedToward(1, 2);
                 return 0;
-            case 411:
+            case SCRIPT_OP_JUMP_UNLESS_IN_ROSTER_NORMAL:
                 OpJumpUnlessInRoster(0);
                 return 0;
-            case 412:
+            case SCRIPT_OP_JUMP_UNLESS_IN_ROSTER_INVERTED:
                 OpJumpUnlessInRoster(1);
                 return 0;
-            case 413:
+            case SCRIPT_OP_JUMP_UNLESS_ROSTER_FULL_NORMAL:
                 OpJumpUnlessRosterFull(0);
                 return 0;
-            case 414:
+            case SCRIPT_OP_JUMP_UNLESS_ROSTER_FULL_INVERTED:
                 OpJumpUnlessRosterFull(1);
                 return 0;
-            case 415:
+            case SCRIPT_OP_JUMP_UNLESS_ALIGNMENT_MATCH_NORMAL:
                 OpJumpUnlessAlignmentMatch(0);
                 return 0;
-            case 416:
+            case SCRIPT_OP_JUMP_UNLESS_ALIGNMENT_MATCH_INVERTED:
                 OpJumpUnlessAlignmentMatch(1);
                 return 0;
-            case 417:
+            case SCRIPT_OP_JUMP_UNLESS_CAN_AFFORD_NORMAL:
                 OpJumpUnlessCanAfford(0);
                 return 0;
-            case 418:
+            case SCRIPT_OP_JUMP_UNLESS_CAN_AFFORD_INVERTED:
                 OpJumpUnlessCanAfford(1);
                 return 0;
-            case 419:
+            case SCRIPT_OP_JUMP_UNLESS_IN_PARTY_NORMAL:
                 OpJumpUnlessInParty(0);
                 return 0;
-            case 420:
+            case SCRIPT_OP_JUMP_UNLESS_IN_PARTY_INVERTED:
                 OpJumpUnlessInParty(1);
                 return 0;
-            case 421:
+            case SCRIPT_OP_IF_HAS_ITEM_NORMAL:
                 OpIfHasItem(0);
                 return 0;
-            case 422:
+            case SCRIPT_OP_IF_HAS_ITEM_INVERTED:
                 OpIfHasItem(1);
                 return 0;
-            case 423:
+            case SCRIPT_OP_IF_HAS_ALL_ITEMS_NORMAL:
                 OpIfHasAllItems(0);
                 return 0;
-            case 424:
+            case SCRIPT_OP_IF_HAS_ALL_ITEMS_INVERTED:
                 OpIfHasAllItems(1);
                 return 0;
-            case 425:
+            case SCRIPT_OP_JUMP_UNLESS_HEALTHY_NORMAL:
                 OpJumpUnlessHealthy(0);
                 return 0;
-            case 426:
+            case SCRIPT_OP_JUMP_UNLESS_HEALTHY_INVERTED:
                 OpJumpUnlessHealthy(1);
                 return 0;
-            case 427:
+            case SCRIPT_OP_JUMP_UNLESS_COMPANION_HEALTHY_NORMAL:
                 OpJumpUnlessCompanionHealthy(0);
                 return 0;
-            case 428:
+            case SCRIPT_OP_JUMP_UNLESS_COMPANION_HEALTHY_INVERTED:
                 OpJumpUnlessCompanionHealthy(1);
                 return 0;
-            case 429:
+            case SCRIPT_OP_JUMP_UNLESS_HERO_EQUIPPED_NORMAL:
                 OpJumpUnlessHeroEquipped(0);
                 return 0;
-            case 430:
+            case SCRIPT_OP_JUMP_UNLESS_HERO_EQUIPPED_INVERTED:
                 OpJumpUnlessHeroEquipped(1);
                 return 0;
-            case 431:
+            case SCRIPT_OP_IF_NO_ACTOR_NORMAL:
                 OpIfNoActor(0);
                 return 0;
-            case 432:
+            case SCRIPT_OP_IF_NO_ACTOR_INVERTED:
                 OpIfNoActor(1);
                 return 0;
-            case 433:
+            case SCRIPT_OP_BEGIN_CHOICES:
                 OpBeginChoices(window);
                 ReloadTextPeriod();
                 return 0;
-            case 434:
+            case SCRIPT_OP_NEXT_CHOICE:
                 OpNextChoice(window);
                 return 0;
-            case 439:
+            case SCRIPT_OP_END_CHOICES:
                 OpEndChoices(window);
                 ReloadTextPeriod();
                 return 0;
-            case 442:
+            case SCRIPT_OP_CLEAR_MESSAGE_WINDOW:
                 ClearMessageWindow(window);
                 return 0;
-            case 443:
+            case SCRIPT_OP_SCROLL_WINDOW:
                 OpScrollWindow(window);
                 return 0;
-            case 444:
+            case SCRIPT_OP_GET_WINDOW_SCROLL_TOP:
                 OpGetWindowScrollTop(window);
                 return 0;
-            case 445:
+            case SCRIPT_OP_SET_WINDOW_SCROLL_TOP:
                 OpSetWindowScrollTop(window);
                 return 0;
-            case 446:
+            case SCRIPT_OP_GET_WINDOW_INDENT:
                 OpGetWindowIndent(window);
                 return 0;
-            case 447:
+            case SCRIPT_OP_SET_WINDOW_INDENT:
                 OpSetWindowIndent(window);
                 return 0;
-            case 448:
+            case SCRIPT_OP_GET_WINDOW_SCROLL_STEP:
                 OpGetWindowScrollStep(window);
                 return 0;
-            case 449:
+            case SCRIPT_OP_SET_WINDOW_SCROLL_STEP:
                 OpSetWindowScrollStep(window);
                 return 0;
-            case 450:
+            case SCRIPT_OP_GET_WINDOW_CURSOR:
                 OpGetWindowCursor(window);
                 return 0;
-            case 451:
+            case SCRIPT_OP_SET_WINDOW_CURSOR:
                 OpSetWindowCursor(window);
                 return 0;
-            case 452:
+            case SCRIPT_OP_PLAY_SOUND_EFFECT:
                 PlaySoundEffect(MapSoundEffectId(ReadScriptValue()));
                 return 0;
-            case 453:
+            case SCRIPT_OP_PLAY_MUSIC:
                 PlayMusic(ReadScriptValue(), 1);
                 return 0;
             case 455:
             case 576:
                 OpChangeHp(1);
                 return 0;
-            case 456:
+            case SCRIPT_OP_DECREASE_HP:
                 OpChangeHp(-1);
                 return 0;
             case 457:
             case 577:
                 OpChangeMp(1);
                 return 0;
-            case 458:
+            case SCRIPT_OP_DECREASE_MP:
                 OpChangeMp(-1);
                 return 0;
-            case 459:
+            case SCRIPT_OP_APPLY_OBJECT_CONDITION:
                 OpApplyObjectCondition();
                 return 0;
             case 460:
             case 578:
                 OpClearObjectCondition();
                 return 0;
-            case 461:
+            case SCRIPT_OP_SHIFT_PLAYER_ALIGNMENT_B:
                 OpShiftPlayerAlignmentB();
                 return 0;
-            case 462:
+            case SCRIPT_OP_SHIFT_PLAYER_ALIGNMENT_A:
                 OpShiftPlayerAlignmentA();
                 return 0;
-            case 463:
+            case SCRIPT_OP_SAVE_OBJECT_CONDITIONS:
                 OpSaveObjectConditions();
                 return 0;
-            case 464:
+            case SCRIPT_OP_BEGIN_WINDOW_ALT_TEXT:
                 BeginWindowAltText(window);
                 return 0;
-            case 465:
+            case SCRIPT_OP_END_WINDOW_ALT_TEXT:
                 EndWindowAltText(window);
                 return 0;
-            case 466:
+            case SCRIPT_OP_BEGIN_WINDOW_INSTANT_TEXT:
                 BeginWindowInstantText(window);
                 return 0;
-            case 467:
+            case SCRIPT_OP_END_WINDOW_INSTANT_TEXT:
                 EndWindowInstantText(window);
                 return 0;
-            case 468:
+            case SCRIPT_OP_SET_OBJECT_FAMILIARITY:
                 OpSetObjectFamiliarity(0);
                 return 0;
-            case 469:
+            case SCRIPT_OP_SET_OBJECT_FAMILIARITY_NEGATED:
                 OpSetObjectFamiliarity(1);
                 return 0;
-            case 470:
+            case SCRIPT_OP_ADD_ACTOR_FAMILIARITY:
                 OpAddActorFamiliarity(0);
                 return 0;
-            case 471:
+            case SCRIPT_OP_SUBTRACT_ACTOR_FAMILIARITY:
                 OpAddActorFamiliarity(1);
                 return 0;
-            case 472:
+            case SCRIPT_OP_ADD_FAMILIARITY_COUNT:
                 OpAddFamiliarityCount(0);
                 return 0;
-            case 473:
+            case SCRIPT_OP_SUBTRACT_FAMILIARITY_COUNT:
                 OpAddFamiliarityCount(1);
                 return 0;
-            case 474:
+            case SCRIPT_OP_ADD_ACTOR_LEVEL_GAP:
                 OpAddActorLevelGap(0);
                 return 0;
-            case 475:
+            case SCRIPT_OP_SUBTRACT_ACTOR_LEVEL_GAP:
                 OpAddActorLevelGap(1);
                 return 0;
-            case 476:
+            case SCRIPT_OP_SET_ACTOR_FAMILIARITY:
                 OpSetActorFamiliarity();
                 return 0;
-            case 477:
+            case SCRIPT_OP_SET_ACTOR_LEVEL_GAP:
                 OpSetActorLevelGap();
                 return 0;
-            case 478:
+            case SCRIPT_OP_RESTART_AND_DESPAWN:
                 RestartScript(0xdf, 1);
                 DespawnScriptActor();
                 return -3;
-            case 479:
+            case SCRIPT_OP_RESTART_AND_STEP_ACTOR_BACK:
                 RestartScript(0xdf, 0);
                 StepScriptActor(2);
                 return -3;
-            case 481:
+            case SCRIPT_OP_STEP_ACTOR_FORWARD:
                 return StepScriptActor(0);
-            case 482:
+            case SCRIPT_OP_STEP_ACTOR_BACK:
                 return StepScriptActor(2);
-            case 483:
+            case SCRIPT_OP_TRANSITION_FORWARD:
                 return PlayScreenTransition(0);
-            case 484:
+            case SCRIPT_OP_TRANSITION_BACK:
                 return PlayScreenTransition(2);
-            case 487:
+            case SCRIPT_OP_UNEQUIP_LEADER_GUN_AND_AMMO:
                 UnequipPart(0, EQUIP_PART_GUN);
                 UnequipPart(0, EQUIP_PART_AMMO);
                 RecalcCharacterStats(GetRosterCharacter(0));
                 return 0;
-            case 488:
+            case SCRIPT_OP_SET_LONG_VAR:
                 OpSetLongVar();
                 return 0;
-            case 489:
+            case SCRIPT_OP_SWAP_LONG_VARS:
                 OpSwapLongVars();
                 return 0;
-            case 490:
+            case SCRIPT_OP_COPY_LONG_VAR:
                 OpCopyLongVar();
                 return 0;
-            case 491:
+            case SCRIPT_OP_UNSET_LONG_VAR:
                 OpUnsetLongVar();
                 return 0;
-            case 492:
+            case SCRIPT_OP_ZERO_LONG_VAR:
                 OpZeroLongVar();
                 return 0;
-            case 493:
+            case SCRIPT_OP_NEG_LONG_VAR:
                 OpNegLongVar();
                 return 0;
-            case 494:
+            case SCRIPT_OP_NOT_LONG_VAR:
                 OpNotLongVar();
                 return 0;
-            case 495:
+            case SCRIPT_OP_INC_LONG_VAR:
                 OpIncLongVar();
                 return 0;
-            case 496:
+            case SCRIPT_OP_DEC_LONG_VAR:
                 OpDecLongVar();
                 return 0;
-            case 497:
+            case SCRIPT_OP_INC_LONG_VAR_BELOW:
                 OpIncLongVarBelow();
                 return 0;
-            case 498:
+            case SCRIPT_OP_DEC_LONG_VAR_ABOVE:
                 OpDecLongVarAbove();
                 return 0;
-            case 499:
+            case SCRIPT_OP_CLAMP_LONG_VAR:
                 OpClampLongVar();
                 return 0;
-            case 500:
+            case SCRIPT_OP_ROLL_LONG_VAR:
                 OpRollLongVar();
                 return 0;
-            case 501:
+            case SCRIPT_OP_RAND_LONG_VAR:
                 OpRandLongVar();
                 return 0;
-            case 502:
+            case SCRIPT_OP_STORE_FRAME_LOCALS:
                 StoreFrameLocals();
                 return 0;
-            case 503:
+            case SCRIPT_OP_LOAD_FRAME_LOCALS:
                 LoadFrameLocals();
                 return 0;
-            case 504:
+            case SCRIPT_OP_SWAP_FRAME_LOCALS:
                 SwapFrameLocals();
                 return 0;
-            case 505:
+            case SCRIPT_OP_SET_TEXT_CHAR_DELAY:
                 OpSetTextCharDelay();
                 return 0;
-            case 506:
+            case SCRIPT_OP_ENABLE_TEXT_DELAY:
                 EnableTextDelay();
                 return 0;
-            case 507:
+            case SCRIPT_OP_DISABLE_TEXT_DELAY:
                 DisableTextDelay();
                 return 0;
-            case 508:
+            case SCRIPT_OP_REPLACE_TEXT_CHAR_DELAY:
                 OpReplaceTextCharDelay();
                 return 0;
-            case 509:
+            case SCRIPT_OP_DISABLE_TEXT_DELAY_SKIP:
                 DisableTextDelaySkip();
                 return 0;
-            case 510:
+            case SCRIPT_OP_ENABLE_TEXT_DELAY_SKIP:
                 EnableTextDelaySkip();
                 return 0;
-            case 511:
+            case SCRIPT_OP_SET_TEXT_WAIT_FRAMES:
                 OpSetTextWaitFrames();
                 return 0;
-            case 512:
+            case SCRIPT_OP_DISABLE_TEXT_TIMED_WAIT:
                 SetTextTimedWait(0);
                 return 0;
-            case 513:
+            case SCRIPT_OP_ENABLE_TEXT_TIMED_WAIT:
                 SetTextTimedWait(1);
                 return 0;
-            case 514:
+            case SCRIPT_OP_ENABLE_TEXT_SCROLL:
                 SetTextScrollMode(1);
                 SetTextPeriod(window);
                 ClearTextPeriod();
                 return 0;
-            case 515:
+            case SCRIPT_OP_DISABLE_TEXT_SCROLL:
                 SetTextScrollMode(0);
                 return 0;
-            case 516:
+            case SCRIPT_OP_CHANGE_MAP:
                 OpChangeMap();
                 return 0;
-            case 517:
+            case SCRIPT_OP_SET_WORLD_MAP_SPOT:
                 OpSetWorldMapSpot();
                 return 0;
             case 519:
@@ -856,42 +856,42 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
             case 522:
                 PopScriptWindow();
                 return -3;
-            case 523:
+            case SCRIPT_OP_START_TICK_COUNTER:
                 OpStartTickCounter();
                 return 0;
-            case 524:
+            case SCRIPT_OP_PAUSE_TICK_COUNTER:
                 OpPauseTickCounter();
                 return 0;
-            case 525:
+            case SCRIPT_OP_STOP_TICK_COUNTER:
                 OpStopTickCounter();
                 return 0;
-            case 526:
+            case SCRIPT_OP_GET_TICK_COUNTER:
                 OpGetTickCounter();
                 return 0;
-            case 527:
+            case SCRIPT_OP_SET_TICK_COUNTER:
                 OpSetTickCounter();
                 return 0;
-            case 528:
+            case SCRIPT_OP_WAIT_MESSAGE:
                 return OpWaitMessage(window);
-            case 529:
+            case SCRIPT_OP_RUN_CHOICE_MENU:
                 OpRunChoiceMenu(window);
                 return -3;
-            case 530:
+            case SCRIPT_OP_IF_FACING_NORMAL:
                 OpIfFacing(0);
                 return 0;
-            case 531:
+            case SCRIPT_OP_IF_FACING_INVERTED:
                 OpIfFacing(1);
                 return 0;
-            case 532:
+            case SCRIPT_OP_IF_RETURN_FACING_NORMAL:
                 OpIfReturnFacing(0);
                 return 0;
-            case 533:
+            case SCRIPT_OP_IF_RETURN_FACING_INVERTED:
                 OpIfReturnFacing(1);
                 return 0;
-            case 534:
+            case SCRIPT_OP_IF_OBJECT_HAS_CONDITION_NORMAL:
                 OpIfObjectHasCondition(0);
                 return 0;
-            case 535:
+            case SCRIPT_OP_IF_OBJECT_HAS_CONDITION_INVERTED:
                 OpIfObjectHasCondition(1);
                 return 0;
             case 536:
@@ -906,85 +906,85 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
             case 539:
                 OpJumpUnlessActorCanStep(1, 0);
                 return 0;
-            case 540:
+            case SCRIPT_OP_BRANCH_ON_ITEMS_FIT_NORMAL:
                 OpBranchOnItemsFit(0);
                 return 0;
-            case 541:
+            case SCRIPT_OP_BRANCH_ON_ITEMS_FIT_INVERTED:
                 OpBranchOnItemsFit(1);
                 return 0;
-            case 542:
+            case SCRIPT_OP_QUEUE_AUTO_MOVES:
                 OpQueueAutoMoves();
                 return 0;
-            case 543:
+            case SCRIPT_OP_ADD_PENDING_ITEM:
                 OpAddPendingItem();
                 return 0;
-            case 544:
+            case SCRIPT_OP_REMOVE_PENDING_ITEM:
                 OpRemovePendingItem();
                 return 0;
-            case 545:
+            case SCRIPT_OP_GIVE_POOLED_ITEMS:
                 GivePooledItems();
                 return 0;
-            case 546:
+            case SCRIPT_OP_TAKE_POOLED_ITEMS:
                 TakePooledItems();
                 return 0;
-            case 547:
+            case SCRIPT_OP_FIND_FIRST_MEMBER_BY_HP_STATE:
                 OpFindMemberByPoolState(0, POOL_MASK_HP);
                 return 0;
-            case 548:
+            case SCRIPT_OP_MASK_MEMBERS_BY_HP_STATE:
                 OpFindMemberByPoolState(1, POOL_MASK_HP);
                 return 0;
-            case 549:
+            case SCRIPT_OP_FIND_FIRST_MEMBER_BY_MP_STATE:
                 OpFindMemberByPoolState(0, POOL_MASK_MP);
                 return 0;
-            case 550:
+            case SCRIPT_OP_MASK_MEMBERS_BY_MP_STATE:
                 OpFindMemberByPoolState(1, POOL_MASK_MP);
                 return 0;
-            case 551:
+            case SCRIPT_OP_FIND_FIRST_MEMBER_WITH_CONDITION:
                 OpFindMemberWithCondition(0);
                 return 0;
-            case 552:
+            case SCRIPT_OP_MASK_MEMBERS_WITH_CONDITION:
                 OpFindMemberWithCondition(1);
                 return 0;
-            case 553:
+            case SCRIPT_OP_FIND_FIRST_MEMBER_BY_ALIGNMENT_A:
                 OpFindMemberByAlignmentA(0);
                 return 0;
-            case 554:
+            case SCRIPT_OP_MASK_MEMBERS_BY_ALIGNMENT_A:
                 OpFindMemberByAlignmentA(1);
                 return 0;
-            case 555:
+            case SCRIPT_OP_FIND_FIRST_MEMBER_BY_ALIGNMENT_B:
                 OpFindMemberByAlignmentB(0);
                 return 0;
-            case 556:
+            case SCRIPT_OP_MASK_MEMBERS_BY_ALIGNMENT_B:
                 OpFindMemberByAlignmentB(1);
                 return 0;
-            case 557:
+            case SCRIPT_OP_COUNT_ITEM_OWNED:
                 OpCountItemOwned();
                 return 0;
-            case 558:
+            case SCRIPT_OP_ENABLE_CHOICE_CANCEL:
                 SetWindowOption(1);
                 return 0;
-            case 559:
+            case SCRIPT_OP_DISABLE_CHOICE_CANCEL:
                 SetWindowOption(0);
                 return 0;
-            case 560:
+            case SCRIPT_OP_CALL_SUB_SCENE:
                 return OpCallSubScene();
-            case 561:
+            case SCRIPT_OP_GET_ACTOR_MOON_VALUE:
                 OpGetActorMoonValue();
                 return 0;
-            case 562:
+            case SCRIPT_OP_STORE_ACTOR_DISTANCE:
                 OpStoreActorDistance();
                 return 0;
-            case 563:
+            case SCRIPT_OP_PLACE_SCRIPT_ACTOR:
                 PlaceScriptActor();
                 return -1;
-            case 564:
+            case SCRIPT_OP_RETIRE_SCRIPT_ACTOR:
                 RetireScriptActor();
                 return -1;
             case 566:
                 ReadScriptWord();
                 ReadScriptWord();
                 return 0;
-            case 570:
+            case SCRIPT_OP_SET_OBJECT_FIELD:
                 OpSetObjectField();
                 return 0;
             case 571:
@@ -992,16 +992,16 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
                 ReadScriptByte();
                 ReadScriptWord();
                 return 0;
-            case 572:
+            case SCRIPT_OP_SQRT_LONG_VAR_EXPLICIT:
                 OpSqrtLongVar(0);
                 return 0;
-            case 573:
+            case SCRIPT_OP_SQRT_LONG_VAR_IN_PLACE:
                 OpSqrtLongVar(1);
                 return 0;
-            case 574:
+            case SCRIPT_OP_PRINT_ROSTER_NAME:
                 OpPrintRosterName();
                 return 0;
-            case 579:
+            case SCRIPT_OP_GET_SELECTED_OBJECT_ID:
                 OpGetSelectedObjectId();
                 return 0;
             case 580:
@@ -1019,127 +1019,127 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
                 target = ReadBranchTarget();
                 ScriptJumpUnless(target, 1);
                 return 0;
-            case 592:
+            case SCRIPT_OP_JUMP_UNLESS_ROSTER_HAS_NO_DEMONS_NORMAL:
                 OpJumpUnlessRosterHasNoDemons(0);
                 return 0;
-            case 593:
+            case SCRIPT_OP_JUMP_UNLESS_ROSTER_HAS_NO_DEMONS_INVERTED:
                 OpJumpUnlessRosterHasNoDemons(1);
                 return 0;
-            case 604:
+            case SCRIPT_OP_IF_OBJECT_IS_ALLY_NORMAL:
                 OpIfObjectIsAlly(0);
                 return 0;
-            case 605:
+            case SCRIPT_OP_IF_OBJECT_IS_ALLY_INVERTED:
                 OpIfObjectIsAlly(1);
                 return 0;
-            case 606:
+            case SCRIPT_OP_IF_STATUS_POSITIVE_NORMAL:
                 OpIfStatusPositive(0);
                 return 0;
-            case 607:
+            case SCRIPT_OP_IF_STATUS_POSITIVE_INVERTED:
                 OpIfStatusPositive(1);
                 return 0;
-            case 610:
+            case SCRIPT_OP_RECOVER_ROSTER_HP:
                 OpRecoverRosterPool(1);
                 return 0;
-            case 611:
+            case SCRIPT_OP_RECOVER_ROSTER_MP:
                 OpRecoverRosterPool(2);
                 return 0;
-            case 612:
+            case SCRIPT_OP_CURE_ROSTER_CONDITION:
                 OpCureRosterCondition();
                 return 0;
-            case 613:
+            case SCRIPT_OP_MASK_ROSTER_BY_KIND:
                 OpMaskRosterByKind();
                 return 0;
-            case 614:
+            case SCRIPT_OP_SHOW_BACKGROUND:
                 OpShowBackground();
                 return 0;
-            case 615:
+            case SCRIPT_OP_RESTORE_BACKGROUND:
                 OpRestoreBackground();
                 return 0;
-            case 616:
+            case SCRIPT_OP_OPEN_SCRIPT_PANEL:
                 OpOpenScriptPanel();
                 return 0;
-            case 617:
+            case SCRIPT_OP_CLOSE_LAST_SCRIPT_PANEL:
                 CloseLastScriptPanel();
                 return 0;
-            case 618:
+            case SCRIPT_OP_CLOSE_ALL_SCRIPT_PANELS:
                 CloseAllScriptPanels();
                 return 0;
-            case 619:
+            case SCRIPT_OP_SET_PANEL_ENTRY_JUMP:
                 OpSetPanelEntryJump();
                 return 0;
-            case 620:
+            case SCRIPT_OP_DRAW_SCRIPT_PANELS:
                 DrawScriptPanels();
                 return 0;
-            case 621:
+            case SCRIPT_OP_SKIP_PANEL_OPERANDS:
                 OpSkipPanelOperands();
                 return 0;
-            case 622:
+            case SCRIPT_OP_SET_PANEL_ENTRY_VALUE:
                 OpSetPanelEntryValue();
                 return 0;
-            case 623:
+            case SCRIPT_OP_PUSH_GAME_STATE:
                 OpPushGameState();
                 return -3;
-            case 624:
+            case SCRIPT_OP_LOAD_RECORD:
                 OpLoadRecord();
                 return 0;
-            case 625:
+            case SCRIPT_OP_OPEN_ITEM_LIST_WINDOW:
                 OpOpenItemListWindow();
                 return 0;
-            case 626:
+            case SCRIPT_OP_CLOSE_ITEM_LIST_WINDOW:
                 OpCloseItemListWindow();
                 return 0;
-            case 627:
+            case SCRIPT_OP_CLOSE_SCRIPT_PANEL:
                 OpCloseScriptPanel();
                 return 0;
-            case 628:
+            case SCRIPT_OP_REDRAW_ITEM_LIST_TOTAL:
                 OpRedrawItemListTotal();
                 return 0;
-            case 629:
+            case SCRIPT_OP_IF_POOL_HAS_ITEMS_NORMAL:
                 OpIfPoolHasItems(0);
                 return 0;
-            case 630:
+            case SCRIPT_OP_IF_POOL_HAS_ITEMS_INVERTED:
                 OpIfPoolHasItems(1);
                 return 0;
-            case 631:
+            case SCRIPT_OP_IF_BAG_HAS_ENTRIES_NORMAL:
                 OpIfBagHasEntries(0);
                 return 0;
-            case 632:
+            case SCRIPT_OP_IF_BAG_HAS_ENTRIES_INVERTED:
                 OpIfBagHasEntries(1);
                 return 0;
-            case 633:
+            case SCRIPT_OP_FUSION_MENU_PAIR_FIRST:
                 OpOpenFusionScreen(0);
                 return -3;
-            case 634:
+            case SCRIPT_OP_FUSION_MENU_PAIR_SECOND:
                 OpOpenFusionScreen(1);
                 return -3;
-            case 635:
+            case SCRIPT_OP_FUSION_MENU_TRIPLE_THIRD:
                 OpOpenFusionScreen(0x10);
                 return -3;
-            case 636:
+            case SCRIPT_OP_FUSION_MENU_TRIPLE_FIRST:
                 OpOpenFusionScreen(0x11);
                 return -3;
-            case 637:
+            case SCRIPT_OP_FUSION_MENU_TRIPLE_SECOND:
                 OpOpenFusionScreen(0x12);
                 return -3;
-            case 638:
+            case SCRIPT_OP_RUN_FUSION_PAIR:
                 OpRunFusion(0);
                 return 0;
-            case 639:
+            case SCRIPT_OP_RUN_FUSION_TRIPLE:
                 OpRunFusion(1);
                 return 0;
-            case 640:
+            case SCRIPT_OP_END_FUSION:
                 OpEndFusion();
                 return 0;
-            case 641:
+            case SCRIPT_OP_FUSION_MENU_PAIR_COMMIT:
                 OpOpenFusionScreen(3);
                 return -3;
-            case 642:
+            case SCRIPT_OP_FUSION_MENU_TRIPLE_COMMIT:
                 OpOpenFusionScreen(0x14);
                 return -3;
-            case 643:
+            case SCRIPT_OP_OPEN_STATUS:
                 PushGameState(0x19);
                 return -3;
-            case 649:
+            case SCRIPT_OP_SET_SCENE_RENDER_MODE:
                 SetSceneRenderMode();
                 return 0;
             case 645:
@@ -1151,322 +1151,322 @@ i16 ExecScriptOpcode(i16 window, u16 op) {
             case 652:
                 SetBlankRenderMode();
                 return 0;
-            case 660:
+            case SCRIPT_OP_JUMP_IF:
                 OpJumpIf(1);
                 return 0;
-            case 661:
+            case SCRIPT_OP_SKIP_JUMP_TARGET:
                 OpSkipJumpTarget(1);
                 return 0;
-            case 662:
+            case SCRIPT_OP_JUMP_UNLESS_AT_MOST_ONE_DEMON:
                 OpIfDemonCount(1, 1);
                 return 0;
-            case 663:
+            case SCRIPT_OP_JUMP_UNLESS_AT_MOST_TWO_DEMONS:
                 OpIfDemonCount(1, 2);
                 return 0;
-            case 664:
+            case SCRIPT_OP_CREATE_SCRIPT_MENU:
                 OpCreateScriptMenu();
                 return 0;
-            case 665:
+            case SCRIPT_OP_RUN_SCRIPT_MENU:
                 OpRunScriptMenu();
                 return 0;
-            case 666:
+            case SCRIPT_OP_DESTROY_SCRIPT_MENU:
                 OpDestroyScriptMenu();
                 return 0;
-            case 667:
+            case SCRIPT_OP_ADD_MENU_LINE:
                 OpAddMenuLine();
                 return 0;
-            case 668:
+            case SCRIPT_OP_CLEAR_TEXT_BUFFERS:
                 ClearTextBuffers();
                 return 0;
-            case 669:
+            case SCRIPT_OP_FORMAT_NUMBER:
                 OpFormatNumber();
                 return 0;
-            case 670:
+            case SCRIPT_OP_FORMAT_CAPTURED_TEXT:
                 OpFormatCapturedText();
                 return 0;
-            case 671:
+            case SCRIPT_OP_RETURN_FROM_CALL:
                 ReturnFromCall();
-            case 0:
+            case SCRIPT_OP_END:
             case 272:
             case 485:
                 return -1;
-            case 672:
+            case SCRIPT_OP_GET_MENU_TAG:
                 OpGetMenuTag();
                 return 0;
-            case 673:
+            case SCRIPT_OP_ALLOC_LONG_ARRAY:
                 OpAllocLongArray();
                 return 0;
-            case 674:
+            case SCRIPT_OP_FREE_LONG_ARRAY:
                 OpFreeLongArray();
                 return 0;
-            case 675:
+            case SCRIPT_OP_GET_LONG_ARRAY_ITEM:
                 OpGetLongArrayItem();
                 return 0;
-            case 676:
+            case SCRIPT_OP_SET_LONG_ARRAY_ITEM:
                 OpSetLongArrayItem();
                 return 0;
-            case 677:
+            case SCRIPT_OP_CONVERT_CHARACTER_REF:
                 OpConvertCharacterRef();
                 return 0;
-            case 678:
+            case SCRIPT_OP_SELECT_PARTY_SLOT:
                 OpSelectPartySlot();
                 return 0;
-            case 679:
+            case SCRIPT_OP_END_PARTY_SLOT_SELECT:
                 OpEndPartySlotSelect();
                 return 0;
-            case 680:
+            case SCRIPT_OP_JUMP_UNLESS_FLAG_SET:
                 OpJumpUnlessFlagSet();
                 return 0;
-            case 681:
+            case SCRIPT_OP_LOAD_DATA_FILE:
                 OpLoadDataFile();
                 return 0;
-            case 682:
+            case SCRIPT_OP_FREE_DATA_FILE:
                 OpFreeDataFile();
                 return 0;
-            case 683:
+            case SCRIPT_OP_READ_RECORD_INT:
                 OpReadRecordInt();
                 return 0;
-            case 684:
+            case SCRIPT_OP_READ_DATA_INT:
                 OpReadDataInt();
                 return 0;
-            case 685:
+            case SCRIPT_OP_SAVE_SCENE_CELL:
                 OpSaveSceneCell();
                 return 0;
-            case 686:
+            case SCRIPT_OP_MODIFY_EVENT_FLAG_BY_VALUE:
                 OpModifyEventFlagByValue();
                 return 0;
-            case 687:
+            case SCRIPT_OP_TEST_EVENT_FLAG_BY_VALUE:
                 OpTestEventFlagByValue();
                 return 0;
-            case 688:
+            case SCRIPT_OP_SWITCH_ON_VALUE_JUMP:
                 OpSwitchOnValue(0);
                 return 0;
-            case 689:
+            case SCRIPT_OP_SWITCH_ON_VALUE_CALL:
                 OpSwitchOnValue(1);
                 return 0;
-            case 690:
+            case SCRIPT_OP_GET_PLAYER_LOCATION:
                 OpGetPlayerLocation();
                 return 0;
-            case 691:
+            case SCRIPT_OP_SET_PLAYER_POSITION:
                 OpSetPlayerPosition();
                 return 0;
-            case 692:
+            case SCRIPT_OP_GET_HOVERED_OBJECT_ID:
                 OpGetHoveredObjectId();
                 return 0;
-            case 694:
+            case SCRIPT_OP_SET_MENU_LINE_COLOR:
                 OpSetMenuLineColor();
                 return 0;
-            case 695:
+            case SCRIPT_OP_CLEAR_MENU_HIGHLIGHT:
                 OpClearMenuHighlight();
                 return 0;
-            case 696:
+            case SCRIPT_OP_GET_MENU_CURSOR:
                 OpGetMenuCursor();
                 return 0;
-            case 697:
+            case SCRIPT_OP_IF_MEMBER_HAS_CONDITION:
                 OpIfMemberHasCondition();
                 return 0;
-            case 698:
+            case SCRIPT_OP_REFRESH_FIELD_SCREEN:
                 OpRefreshFieldScreen();
                 return -3;
-            case 699:
+            case SCRIPT_OP_FADE_OUT_AND_CLEAR:
                 OpFadeOutAndClear();
                 return 0;
-            case 700:
+            case SCRIPT_OP_RESET_MASK:
                 OpResetMask();
                 return 0;
-            case 701:
+            case SCRIPT_OP_DRAW_IMAGE:
                 OpDrawImage();
                 return 0;
-            case 702:
+            case SCRIPT_OP_ENTER_FIELD_MAP:
                 OpEnterFieldMap();
                 return -3;
-            case 703:
+            case SCRIPT_OP_ADVANCE_CLOCK:
                 OpAdvanceClock();
                 return 0;
-            case 704:
+            case SCRIPT_OP_GET_TICKS_UNTIL_MOON_PHASE:
                 OpGetTicksUntilMoonPhase();
                 return 0;
-            case 705:
+            case SCRIPT_OP_GET_DAY_COUNT:
                 OpGetDayCount();
                 return 0;
-            case 706:
+            case SCRIPT_OP_GET_TIME_OF_DAY:
                 OpGetTimeOfDay();
                 return 0;
-            case 707:
+            case SCRIPT_OP_MOD_LONG_VAR_EXPLICIT:
                 OpModLongVar(0);
                 return 0;
-            case 708:
+            case SCRIPT_OP_MOD_LONG_VAR_IN_PLACE:
                 OpModLongVar(1);
                 return 0;
-            case 709:
+            case SCRIPT_OP_SET_OBJECT_PRESENCE:
                 OpSetObjectPresence();
                 return 0;
-            case 710:
+            case SCRIPT_OP_SAVE_DATA_COMMAND:
                 OpSaveDataCommand();
                 return 0;
-            case 711:
+            case SCRIPT_OP_FILL_SCREEN_CELLS:
                 OpFillScreenCells();
                 return 0;
-            case 712:
+            case SCRIPT_OP_MASK_SCREEN_CELLS:
                 OpMaskScreenCells();
                 return 0;
-            case 713:
+            case SCRIPT_OP_ENABLE_BACKGROUND:
                 OpEnableBackground();
                 return 0;
-            case 715:
+            case SCRIPT_OP_SET_MESSAGE_HOOK:
                 OpSetMessageHook();
                 return 0;
-            case 714:
+            case SCRIPT_OP_SKIP_VALUE_AND_VAR:
                 OpSkipValueAndVar();
                 return 0;
-            case 716:
+            case SCRIPT_OP_GET_ITEM_PRICE:
                 OpGetItemPrice();
                 return 0;
-            case 717:
+            case SCRIPT_OP_STEP_LIST_MENU:
                 OpStepListMenu();
                 return 0;
-            case 718:
+            case SCRIPT_OP_IF_BATTLE_RESULT:
                 OpIfBattleResult();
                 return 0;
-            case 719:
+            case SCRIPT_OP_IF_EVENT_OBJECT_IS:
                 OpIfEventObjectIs();
                 return 0;
-            case 720:
+            case SCRIPT_OP_COUNT_OBJECTS_AT:
                 OpCountObjectsAt();
                 return 0;
-            case 721:
+            case SCRIPT_OP_BOOST_POOL:
                 OpBoostPool();
                 return 0;
-            case 722:
+            case SCRIPT_OP_DISMISS_TALK_TARGET:
                 DismissTalkTarget();
                 return -3;
-            case 723:
+            case SCRIPT_OP_GET_COMBATANT_ID:
                 OpGetCombatantId();
                 return 0;
-            case 724:
+            case SCRIPT_OP_CAPTURE_DATA_STRING:
                 OpCaptureDataString();
                 return 0;
-            case 725:
+            case SCRIPT_OP_CAPTURE_RECORD_STRING:
                 OpCaptureRecordString();
                 return 0;
-            case 726:
+            case SCRIPT_OP_REQUEST_QUIT:
                 RequestQuit();
                 return -3;
-            case 727:
+            case SCRIPT_OP_COUNT_ACTIVE_PARTY:
                 OpCountActiveParty();
                 return 0;
-            case 728:
+            case SCRIPT_OP_PEEK_POKE_SCRATCH:
                 OpPeekPokeScratch();
                 return 0;
-            case 729:
+            case SCRIPT_OP_POLL_MOUSE_CLICK:
                 OpPollMouseClick();
                 return 0;
-            case 730:
+            case SCRIPT_OP_REDRAW_SCRIPT_MENU:
                 OpRedrawScriptMenu();
                 return 0;
-            case 731:
+            case SCRIPT_OP_SHOW_PICTURE:
                 OpShowPicture();
                 return 0;
-            case 732:
+            case SCRIPT_OP_SAVE_RESTORE_SCREEN:
                 OpSaveRestoreScreen();
                 return 0;
-            case 733:
+            case SCRIPT_OP_REBALANCE_MEMBER_STATS:
                 OpRebalanceMemberStats();
                 return 0;
-            case 734:
+            case SCRIPT_OP_STORE_SCRIPT_VAR:
                 OpStoreScriptVar();
                 return 0;
-            case 735:
+            case SCRIPT_OP_LOAD_SCRIPT_VAR:
                 OpLoadScriptVar();
                 return 0;
-            case 736:
+            case SCRIPT_OP_ADD_ROUTE_POINT:
                 OpAddRoutePoint();
                 return 0;
-            case 737:
+            case SCRIPT_OP_IF_IN_BATTLE:
                 OpIfInBattle();
                 return 0;
-            case 738:
+            case SCRIPT_OP_SET_LAST_PANEL_FLAG:
                 OpSetLastPanelFlag();
                 return 0;
-            case 739:
+            case SCRIPT_OP_GET_FUSION_RESULT:
                 OpGetFusionResult();
                 return 0;
-            case 740:
+            case SCRIPT_OP_CLEAR_CAPTURED_TEXT:
                 ClearCapturedText();
                 return 0;
-            case 741:
+            case SCRIPT_OP_LEVEL_UP_MEMBER:
                 OpLevelUpMember();
                 return 0;
-            case 742:
+            case SCRIPT_OP_STASH_ITEM_LISTS:
                 OpStashItemLists();
                 return 0;
-            case 743:
+            case SCRIPT_OP_GET_BATTLE_OUTCOME:
                 OpGetBattleOutcome();
                 return 0;
-            case 744:
+            case SCRIPT_OP_START_COUNTDOWN:
                 OpStartCountdown();
                 return 0;
-            case 745:
+            case SCRIPT_OP_CALL_TEXT_SCRIPT:
                 OpCallTextScript();
                 return 0;
-            case 746:
+            case SCRIPT_OP_SHOW_EVENT_PICTURE:
                 OpShowEventPicture();
                 return 0;
-            case 747:
+            case SCRIPT_OP_SET_FIELD_OPTION:
                 OpSetFieldOption();
                 return 0;
-            case 748:
+            case SCRIPT_OP_SET_FIELD_PARAMS:
                 OpSetFieldParams();
                 return 0;
-            case 749:
+            case SCRIPT_OP_SET_MENU_CHARACTER:
                 OpSetMenuCharacter();
                 return 0;
-            case 750:
+            case SCRIPT_OP_SET_MENU_SCROLL:
                 OpSetMenuScroll();
                 return 0;
-            case 751:
+            case SCRIPT_OP_PLAY_ANIMATION:
                 OpPlayAnimation();
-            case 343:
+            case SCRIPT_OP_YIELD:
                 return -3;
-            case 752:
+            case SCRIPT_OP_ADJUST_ITEM_COUNT:
                 OpAdjustItemCount();
                 return 0;
-            case 753:
+            case SCRIPT_OP_LIST_BAG_BY_CATEGORY:
                 OpListBagByCategory();
                 return 0;
-            case 754:
+            case SCRIPT_OP_GET_BAG_ENTRY:
                 OpGetBagEntry();
                 return 0;
-            case 755:
+            case SCRIPT_OP_CLEAR_BAG_ENTRY:
                 OpClearBagEntry();
                 return 0;
-            case 756:
+            case SCRIPT_OP_TAKE_DROP_SLOT:
                 OpTakeDropSlot();
                 return 0;
-            case 757:
+            case SCRIPT_OP_MODIFY_EVENT_FLAG:
                 OpModifyEventFlag();
                 return 0;
-            case 758:
+            case SCRIPT_OP_TEST_EVENT_FLAG:
                 OpTestEventFlag();
                 return 0;
-            case 759:
+            case SCRIPT_OP_STACK_MESSAGE_WINDOW:
                 OpStackMessageWindow();
                 return 0;
-            case 760:
+            case SCRIPT_OP_JUMP_UNLESS_PLAYER_IN_LINE_NORMAL:
                 OpJumpUnlessPlayerInLine(0);
                 return 0;
-            case 761:
+            case SCRIPT_OP_JUMP_UNLESS_PLAYER_IN_LINE_INVERTED:
                 OpJumpUnlessPlayerInLine(1);
                 return 0;
-            case 762:
+            case SCRIPT_OP_SCREEN_TRANSITION:
                 return OpScreenTransition();
-            case 763:
+            case SCRIPT_OP_SWAP_SCREEN_STATE:
                 OpSwapScreenState();
                 return 0;
-            case 764:
+            case SCRIPT_OP_COPY_ITEM_RECORD:
                 OpCopyItemRecord();
                 return 0;
-            case 765:
+            case SCRIPT_OP_ADD_MEMBER_SKILL:
                 OpAddMemberSkill();
             default:
                 return 0;
