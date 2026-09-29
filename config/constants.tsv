@@ -60,7 +60,7 @@ src/Platform/winmain.cpp	*	*	*	*array*[ ]s_*AtlasUV	quarter, corner and u/v slot
 src/Game/fieldview.c	*	*	*	*array*[ ]g_viewCells	row and column of the 4x7 view-cell grid
 src/Game/fieldview.c	*	*	*	*array*[ ]s_view*	row and column of the 4x7 view-cell grid
 *	*	*	*	*array*[ ]params	ItemRecord parameter byte index; the params block is not yet recovered as typed fields (@identity-TODO in Game/ItemRecord.h)
-*	*	0	trivial-function-literal	0 bound	sign test against zero (a handle's validity test keeps its retail >= 0 / < 0 form)
-*	*	0	trivial-function-literal	0 initializer	an accumulator or counter declared at zero
-*	*	1	trivial-function-literal	1 arithmetic	a one-step offset: the next index, element or count
-*	*	1	trivial-function-literal	1 compound-assignment	a one-step increment or decrement
+*	*	0	trivial-function-literal	0 bound*	sign test against zero (a handle's validity test keeps its retail >= 0 / < 0 form)
+*	*	0	trivial-function-literal	0 initializer*	an accumulator or counter declared at zero
+*	*	1	trivial-function-literal	1 arithmetic*	a one-step offset: the next index, element or count
+*	*	1	trivial-function-literal	1 compound-assignment*	a one-step increment or decrement

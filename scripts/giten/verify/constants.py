@@ -440,23 +440,72 @@ def _call_argument_context(cidx, literal, stack):
     return None
 
 
-def _nearest_expression_context(cidx, stack):
+def _expr_name(cidx, node) -> str:
+    """A short name for an operand: a variable or member, a call's callee
+    with (), an array's name with [], else ''."""
+    while node is not None and node.kind in (cidx.CursorKind.UNEXPOSED_EXPR,
+                                             cidx.CursorKind.PAREN_EXPR):
+        inner = list(node.get_children())
+        node = inner[0] if inner else None
+    if node is None:
+        return ""
+    if node.kind in (cidx.CursorKind.MEMBER_REF_EXPR, cidx.CursorKind.DECL_REF_EXPR):
+        return node.spelling
+    if node.kind == cidx.CursorKind.CALL_EXPR:
+        return f"{node.spelling}()" if node.spelling else ""
+    if node.kind == cidx.CursorKind.ARRAY_SUBSCRIPT_EXPR:
+        base = _subscript_base(cidx, node)
+        return f"{base}[]" if base else ""
+    if node.kind == cidx.CursorKind.UNARY_OPERATOR:
+        inner = list(node.get_children())
+        return _expr_name(cidx, inner[0]) if inner else ""
+    return ""
+
+
+def _other_operand(cidx, binary, literal) -> str:
+    children = list(binary.get_children())
+    if len(children) != 2:
+        return ""
+    other = children[1] if _cursor_contains(children[0], literal) else children[0]
+    return _expr_name(cidx, other)
+
+
+def _nearest_expression_context(cidx, stack, literal=None):
     bitwise = {"&", "|", "^", "<<", ">>"}
     comparison = {"==", "!=", "<", "<=", ">", ">="}
     arithmetic = {"+", "-", "*", "/", "%"}
-    for node in reversed(stack):
+    for pos in range(len(stack) - 1, -1, -1):
+        node = stack[pos]
         if node.kind == cidx.CursorKind.ARRAY_SUBSCRIPT_EXPR:
             return "array-index", f"array subscript {_subscript_base(cidx, node)}".rstrip()
+        if node.kind == cidx.CursorKind.CASE_STMT:
+            switch = next((n for n in reversed(stack[:pos])
+                           if n.kind == cidx.CursorKind.SWITCH_STMT), None)
+            subject = ""
+            if switch is not None:
+                parts = list(switch.get_children())
+                subject = _expr_name(cidx, parts[0]) if parts else ""
+            return "case-label", f"switch on {subject}".rstrip()
+        if node.kind == cidx.CursorKind.RETURN_STMT:
+            return "return", "return value"
+        if node.kind == cidx.CursorKind.COMPOUND_ASSIGNMENT_OPERATOR:
+            children = list(node.get_children())
+            target = _expr_name(cidx, children[0]) if children else ""
+            return "arithmetic", f"compound assignment to {target}".rstrip()
+        if node.kind == cidx.CursorKind.VAR_DECL:
+            return "store", f"initializer of {node.spelling}"
         if node.kind != cidx.CursorKind.BINARY_OPERATOR:
             continue
+        other = _other_operand(cidx, node, literal) if literal is not None else ""
+        if node.spelling == "=":
+            return "store", f"store to {other}".rstrip()
         if node.spelling in bitwise:
-            return "bitwise-or-packing", f"operator {node.spelling}"
+            return "bitwise-or-packing", f"operator {node.spelling} {other}".rstrip()
         if node.spelling in comparison:
-            return "comparison-or-bound", f"operator {node.spelling}"
+            return "comparison-or-bound", f"operator {node.spelling} {other}".rstrip()
         if node.spelling in arithmetic:
-            return "arithmetic", f"operator {node.spelling}"
+            return "arithmetic", f"operator {node.spelling} {other}".rstrip()
     return None
-
 
 def _subscript_base(cidx, node) -> str:
     """The name of the array an ARRAY_SUBSCRIPT_EXPR indexes (its member or
@@ -505,11 +554,11 @@ def _trivial_role(cidx, literal, stack) -> str:
                     parts = list(loop.get_children())
                     if parts and _cursor_contains(parts[0], literal):
                         return "for-init"
-                return "store"
+                return f"store {_other_operand(cidx, node, literal)}".rstrip()
             if op in ("==", "!="):
-                return "equality"
+                return f"equality {_other_operand(cidx, node, literal)}".rstrip()
             if op in ("<", "<=", ">", ">="):
-                return "bound"
+                return f"bound {_other_operand(cidx, node, literal)}".rstrip()
             if op in ("+", "-", "*", "/", "%"):
                 return "arithmetic"
             if op in ("&", "|", "^", "<<", ">>"):
@@ -543,7 +592,7 @@ def _review_group(cidx, literal, stack, scope, value, classification):
         return "call-argument", call
     if scope == "function-body" and value in (-1, 0, 1):
         return "trivial-function-literal", f"{value} {_trivial_role(cidx, literal, stack)}"
-    expression = _nearest_expression_context(cidx, stack)
+    expression = _nearest_expression_context(cidx, stack, literal)
     if expression is not None:
         return expression
     return "unresolved", "no narrower AST context"
