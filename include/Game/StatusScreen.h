@@ -8,12 +8,36 @@
 #include <Game/StateStack.h>
 #include <Ints.h>
 #include <Ui/MenuBox.h>
+#include <Enums.h>
 
 // The roster slot the status screen shows.
 extern i16 g_statusMember;
 extern b16 g_statusFixedMember;
 b16 RunStatusScreen(void);
 b16 RunDismissMenuState(void);
+// The status screen's steps (RunStatusCommands): the status menu returns the
+// step of the command picked, so a command is a StatusStep too.
+GZ_ENUM_BEGIN(StatusStep)
+    STATUS_STEP_DRAW = 0,
+    STATUS_STEP_POLL = 1,
+    STATUS_STEP_CLOSE = 2,
+    STATUS_STEP_ITEMS = 3,
+    STATUS_STEP_SKILLS = 4,
+    STATUS_STEP_STATS = 5,
+    STATUS_STEP_NEXT_MEMBER = 6,
+    STATUS_STEP_EXIT = 7,
+    STATUS_STEP_EQUIPMENT = 8,
+    STATUS_STEP_ATTACH = 9,
+    STATUS_STEP_ALIGNMENT = 10
+GZ_ENUM_END(StatusStep)
+
+// What the status menu and pages return when no page command is due.
+GZ_ENUM_CONST_BEGIN(StatusCommand)
+    STATUS_COMMAND_NONE = -1,
+    STATUS_COMMAND_CANCEL = -2,
+    STATUS_COMMAND_CANCEL_FIXED_MEMBER = -3
+GZ_ENUM_CONST_END(StatusCommand)
+
 i16 RunStatusCommands(void);
 i16 GetStatusAnalyzeMode(void);
 
