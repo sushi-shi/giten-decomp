@@ -43,7 +43,8 @@ GZ_ENUM_BEGIN(ConditionId)
     CONDITION_VAMPIRE = 33,
     CONDITION_INJURY = 34,
     CONDITION_COUNT = 35,
-    CONDITION_LIST_END = -1
+    CONDITION_LIST_END = -1,
+    CONDITION_NONE = -1
 GZ_ENUM_END(ConditionId);
 // clang-format on
 

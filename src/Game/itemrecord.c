@@ -1820,91 +1820,91 @@ void AddItemRegen(i16 item, PoolRegen* regen) {
 }
 
 RVA(0x00025680, 0x1c0)
-i16 ResolveInflictedCondition(i16 code, Character* target) {
-    i16 condition = -1;
+GZ_ENUM_RETURN(ConditionId, i16) ResolveInflictedCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target) {
+    GZ_ENUM_LOCAL(ConditionId, i16) condition = CONDITION_NONE;
     i16 roll;
 
     switch (code) {
-        case 0:
+        case INFLICT_NONE:
             break;
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-        case 16:
-        case 17:
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 24:
-        case 25:
-        case 26:
-        case 27:
-        case 28:
-        case 29:
-        case 30:
-        case 31:
-        case 32:
-        case 33:
-        case 34:
+        case CONDITION_DEAD:
+        case CONDITION_DYING:
+        case CONDITION_COLLAPSE:
+        case CONDITION_STONE:
+        case CONDITION_PARALYSIS:
+        case CONDITION_FREEZE:
+        case CONDITION_POSSESSION:
+        case CONDITION_ZOMBIE:
+        case CONDITION_CURSE:
+        case CONDITION_STUN:
+        case CONDITION_SUFFOCATION:
+        case CONDITION_BIND:
+        case CONDITION_SLEEP:
+        case CONDITION_PANIC:
+        case CONDITION_POISON:
+        case CONDITION_HALLUCINATION:
+        case CONDITION_CHARM:
+        case CONDITION_CONFUSION:
+        case CONDITION_DANCE:
+        case CONDITION_SHOCK:
+        case CONDITION_ICE:
+        case CONDITION_BURN:
+        case CONDITION_BLIND:
+        case CONDITION_MAGIC_SEAL:
+        case CONDITION_DOZE:
+        case CONDITION_BERSERK:
+        case CONDITION_HIGH:
+        case CONDITION_HAPPY:
+        case CONDITION_TIPSY:
+        case CONDITION_DRUNK:
+        case CONDITION_SLIME:
+        case CONDITION_SEVERE_POISON:
+        case CONDITION_VAMPIRE:
+        case CONDITION_INJURY:
             condition = code;
             break;
-        case 57:
+        case INFLICT_CHARM_UNLESS_ALIGNED_B_POSITIVE:
             if (GetAlignmentClassB(target) <= ALIGNMENT_NEUTRAL) {
-                condition = 0x11;
+                condition = CONDITION_CHARM;
             }
             break;
-        case 58:
+        case INFLICT_TIPSY_BY_HALF:
             if (RandomUpTo(100) < 50) {
-                condition = 0x1d;
+                condition = CONDITION_TIPSY;
             }
             break;
-        case 59:
+        case INFLICT_PARALYSIS_OR_TIPSY:
             if (GetDemonClass(target->id) == 8) {
-                condition = 5;
+                condition = CONDITION_PARALYSIS;
             } else if (RandomUpTo(100) < 50) {
-                condition = 0x1d;
+                condition = CONDITION_TIPSY;
             }
             break;
-        case 60:
+        case INFLICT_HIGH_HALLUCINATION_OR_BERSERK:
             roll = RandomUpTo(3);
             if (roll <= 1) {
-                condition = 0x1b;
+                condition = CONDITION_HIGH;
             } else {
-                condition = roll == 2 ? 0x10 : 0x1a;
+                condition = roll == 2 ? CONDITION_HALLUCINATION : CONDITION_BERSERK;
             }
             break;
-        case 61:
-            condition = RandomUpTo(100) >= 75 ? 0x1e : 0x1d;
+        case INFLICT_DRUNK_OR_TIPSY:
+            condition = RandomUpTo(100) >= 75 ? CONDITION_DRUNK : CONDITION_TIPSY;
             break;
-        case 62:
-            condition = RandomUpTo(100) < 75 ? 2 : 1;
+        case INFLICT_DYING_OR_DEAD:
+            condition = RandomUpTo(100) < 75 ? CONDITION_DYING : CONDITION_DEAD;
             break;
-        case 63:
-            condition = RandomUpTo(100) < 75 ? 0x1b : 0;
+        case INFLICT_HIGH_OR_ASH:
+            condition = RandomUpTo(100) < 75 ? CONDITION_HIGH : CONDITION_ASH;
             break;
-        case 64:
+        case INFLICT_DEAD_BY_HALF:
             if (RandomUpTo(100) < 50) {
-                condition = 1;
+                condition = CONDITION_DEAD;
             }
             break;
-        case 65:
+        case INFLICT_PANIC_UNLESS_ALIGNED_B_NEGATIVE:
             if (GetAlignmentClassB(target) != ALIGNMENT_NEGATIVE) {
-                condition = 0xe;
+                condition = CONDITION_PANIC;
             }
             break;
     }
