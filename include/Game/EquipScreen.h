@@ -21,6 +21,15 @@ GZ_ENUM_END(EquipPickMode);
 
 // The status screen's equipment page.
 
+// The equipment page's steps past MenuStateStep's open, close and run:
+// preview and equip a bag item, preview and remove an equipped one.
+GZ_ENUM_BEGIN(EquipScreenStep)
+    EQUIP_STEP_PREVIEW_EQUIP = 3,
+    EQUIP_STEP_EQUIP = 4,
+    EQUIP_STEP_PREVIEW_REMOVE = 5,
+    EQUIP_STEP_REMOVE = 6
+GZ_ENUM_END(EquipScreenStep)
+
 i16 RunEquipScreen(i16 key);
 
 // Lists the bag entries (of the first 48) member `member` can equip; with none

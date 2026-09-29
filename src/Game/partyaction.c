@@ -1207,7 +1207,7 @@ b16 RunFieldEncounter(void) {
     }
     RefreshScreenMode();
     switch (GetGamePhase()) {
-        case 0:
+        case FIELD_ENCOUNTER_PHASE_ENTER:
             switch (GetGameStep()) {
                 case 0:
                     NextGameStep();
@@ -1289,7 +1289,7 @@ b16 RunFieldEncounter(void) {
                     break;
             }
             break;
-        case 1:
+        case FIELD_ENCOUNTER_PHASE_TURNS:
             if (HasTurnElapsed() && TickPartyConditions()) {
                 RequestFieldRefresh();
             }
@@ -1321,7 +1321,7 @@ b16 RunFieldEncounter(void) {
                 break;
             }
             if (!GetPickMode() && PickAnalyzeTarget() >= 0) {
-                SetGamePhase(5);
+                SetGamePhase(FIELD_ENCOUNTER_PHASE_ANALYZE);
                 break;
             }
             SetFieldBusy(0);
@@ -1339,10 +1339,10 @@ b16 RunFieldEncounter(void) {
             }
             RunFieldIdle();
             break;
-        case 2:
+        case FIELD_ENCOUNTER_PHASE_BACK_OUT:
             PrevGamePhase();
             break;
-        case 3:
+        case FIELD_ENCOUNTER_PHASE_REWARDS:
             PlaySoundEffect(0x1b);
             NextGamePhase();
             ResetRosterStatModifiers();
@@ -1356,7 +1356,7 @@ b16 RunFieldEncounter(void) {
                 ModifyEventFlag(s_fieldPairFirst, s_fieldPairSecond, 1);
             }
             break;
-        case 4:
+        case FIELD_ENCOUNTER_PHASE_LEVEL_UPS:
             if (GrantBattleRewards()) {
                 CloseMessageWindow();
                 PushScreenFade(SCREEN_FADE_FROM_BLACK, 1);
@@ -1370,14 +1370,14 @@ b16 RunFieldEncounter(void) {
             }
             s_fieldPairFirst = 0;
             s_fieldPairSecond = 0;
-            SetGamePhase(6);
+            SetGamePhase(FIELD_ENCOUNTER_PHASE_TEAR_DOWN);
             break;
-        case 5:
+        case FIELD_ENCOUNTER_PHASE_ANALYZE:
             if (RunAnalyzeWindow()) {
-                SetGamePhase(1);
+                SetGamePhase(FIELD_ENCOUNTER_PHASE_TURNS);
             }
             break;
-        case 6:
+        case FIELD_ENCOUNTER_PHASE_TEAR_DOWN:
             PlaySoundEffect(0x1b);
             RestoreScreenMode();
             ClearSelectedHotspot();

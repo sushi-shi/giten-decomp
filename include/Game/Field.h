@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <Ints.h>
+#include <Enums.h>
 
 struct Character;
 
@@ -25,6 +26,19 @@ i16 GetFieldEntryState(void);
 void SetFieldCounts(i16 countA, i16 countB);
 i16 TickFieldCount(i16 side, i16 hold);
 i32 ScaleByFieldRate(i16 first, i16 second, i32 value);
+// The phases of a field encounter (RunFieldEncounter): enter it, run the turns,
+// back out, grant the rewards, show the level-ups and the analyze window, and
+// tear it down.
+GZ_ENUM_BEGIN(FieldEncounterPhase)
+    FIELD_ENCOUNTER_PHASE_ENTER = 0,
+    FIELD_ENCOUNTER_PHASE_TURNS = 1,
+    FIELD_ENCOUNTER_PHASE_BACK_OUT = 2,
+    FIELD_ENCOUNTER_PHASE_REWARDS = 3,
+    FIELD_ENCOUNTER_PHASE_LEVEL_UPS = 4,
+    FIELD_ENCOUNTER_PHASE_ANALYZE = 5,
+    FIELD_ENCOUNTER_PHASE_TEAR_DOWN = 6
+GZ_ENUM_END(FieldEncounterPhase)
+
 b16 RunFieldEncounter(void);
 void LeaveFieldMap(i16 result);
 

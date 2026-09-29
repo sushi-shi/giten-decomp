@@ -736,7 +736,7 @@ b16 RunBattleAction(void) {
         default:
             skipEffects = s_skipEffects;
             goto complete;
-        case 0:
+        case BATTLE_ACTION_PHASE_COLLECT_TARGETS:
             ResetReportedBattleTally();
             if (actor == NULL) {
                 CancelPendingAction();
@@ -873,13 +873,13 @@ b16 RunBattleAction(void) {
             LaunchShot(shot, s_promptSub, to.y - from.y, from.x, from.y, to.x, to.y);
             break;
 
-        case 1:
+        case BATTLE_ACTION_PHASE_PROMPT:
             NextGamePhase();
             PushGameState(GAME_STATE_CLOSING_EFFECT);
             SetGameSub(s_promptSub);
             break;
 
-        case 2:
+        case BATTLE_ACTION_PHASE_RESOLVE:
             NextGamePhase();
             s_removalDeferred = false;
             s_savedRemovalDeferred = ExchangeObjectRemovalDeferred(1);
@@ -887,7 +887,7 @@ b16 RunBattleAction(void) {
             ClearObjectStuns(s_objectMarks);
             break;
 
-        case 3:
+        case BATTLE_ACTION_PHASE_APPLY_EFFECT:
             NextGamePhase();
             ApplyObjectConditions(s_objectMarks);
             PlayActionEffect(1);
@@ -899,20 +899,20 @@ b16 RunBattleAction(void) {
             ClearObjectStuns(s_objectMarks);
             break;
 
-        case 4:
+        case BATTLE_ACTION_PHASE_APPLY_CONDITIONS:
             NextGamePhase();
             RefreshAfterDeferredRemoval();
             ApplyObjectConditions(s_objectMarks);
             break;
 
-        case 5:
+        case BATTLE_ACTION_PHASE_SHOW_KNOCKOUTS:
             NextGamePhase();
             ExchangeObjectRemovalDeferred(s_savedRemovalDeferred);
             ShowKnockoutMessage();
             RefreshAfterDeferredRemoval();
             break;
 
-        case 6:
+        case BATTLE_ACTION_PHASE_REPORT:
             NextGamePhase();
             if (actor == NULL) {
                 break;
@@ -929,7 +929,7 @@ b16 RunBattleAction(void) {
             ResetReportedBattleTally();
             break;
 
-        case 7:
+        case BATTLE_ACTION_PHASE_NEXT_TARGET:
             if (actor == NULL) {
                 NextGamePhase();
                 while (NextTarget() != TARGET_LIST_END) {
@@ -954,7 +954,7 @@ b16 RunBattleAction(void) {
             skipEffects = s_skipEffects;
             goto complete;
 
-        case 8:
+        case BATTLE_ACTION_PHASE_END:
             s_promptPending = false;
             ResetRecordCache();
             RestoreSwappedMember();
@@ -1000,7 +1000,7 @@ complete:
     return UpdateFieldScreen(false);
 
 nextTarget:
-    SetGamePhase(2);
+    SetGamePhase(BATTLE_ACTION_PHASE_RESOLVE);
     g_targetId = slot;
     actor = GetCombatant(g_actorId);
     actor->pickObject = slot;

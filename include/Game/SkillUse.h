@@ -10,6 +10,7 @@
 #include <Ints.h>
 
 #include <string.h>
+#include <Enums.h>
 
 // The member (negative id: party slot -1 - id) or field object `id` stands
 // for; NULL for an object that is gone.
@@ -119,6 +120,23 @@ static __inline void ClearAllBattleTallies(Character* combatant) {
 
 // Shows the knocked-out combatant's message.
 void ShowKnockoutMessage(void);
+
+// The phases of an actor's action on the field (RunBattleAction): collect its
+// targets and fly its shot, show a pending prompt, resolve it on the current
+// target, apply its effect and the object conditions, show knockouts, report
+// a battle byte, move to
+// the next living target, and end the action.
+GZ_ENUM_BEGIN(BattleActionPhase)
+    BATTLE_ACTION_PHASE_COLLECT_TARGETS = 0,
+    BATTLE_ACTION_PHASE_PROMPT = 1,
+    BATTLE_ACTION_PHASE_RESOLVE = 2,
+    BATTLE_ACTION_PHASE_APPLY_EFFECT = 3,
+    BATTLE_ACTION_PHASE_APPLY_CONDITIONS = 4,
+    BATTLE_ACTION_PHASE_SHOW_KNOCKOUTS = 5,
+    BATTLE_ACTION_PHASE_REPORT = 6,
+    BATTLE_ACTION_PHASE_NEXT_TARGET = 7,
+    BATTLE_ACTION_PHASE_END = 8
+GZ_ENUM_END(BattleActionPhase)
 
 b16 RunBattleAction(void);
 
