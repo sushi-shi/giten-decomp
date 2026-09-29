@@ -5,7 +5,7 @@
 # never rises (`--update-floor` lowers it). Columns (tab-separated; `*` matches
 # anything; every field takes a glob): file owner spelling group detail reason.
 # group/detail are the census' review_group/review_context columns.
-#floor	14284
+#floor	14188
 src/Text/font.cpp	s_halfWidthGlyphs	*	data-or-extent	*	glyph bitmap rows: one byte of pixels per row of each 8x16 half-width glyph
 src/Text/font.cpp	s_planeLayouts	*	data-or-extent	*	text window geometry: screen position and size in pixels, text grid in cells
 src/Text/font.cpp	s_textPalette	*	data-or-extent	*	RGB colour components of the 16 text colours
