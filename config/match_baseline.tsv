@@ -53,7 +53,7 @@ fieldmain	59	57
 fieldobj	141	135
 fieldscreen	103	103
 fieldview	38	36
-font	150	141
+font	150	142
 fusion	114	111
 gameloop	7	7
 gamestate	7	7
@@ -1015,7 +1015,7 @@ font	_TakeWindowDeferredChar	100.0000	100.0000	2	29396fa2d472	0x53bc0	100.0000
 font	_TextPlaneCellAt	100.0000	99.8809	4	4b2ad45d1849	0x53830	100.0000	
 font	_TextPlaneRowToLine	100.0000	100.0000	3	5768f0b9b023	0x52b40	100.0000	
 font	_ToggleCurrentTextHighlight	100.0000	100.0000	2	c9ece8bf06e7	0x52f30	100.0000	
-font	_ToggleTextRunHighlight	85.4310	85.4310	6	c41f1deb7fc3	0x51ef0	85.4310	
+font	_ToggleTextRunHighlight	100.0000	100.0000	7	cd123b383c27	0x51ef0	100.0000	
 fusion	_AcquireFusionSelectionMode	100.0000	100.0000	2	cd6478c92bf6	0x28840	100.0000	
 fusion	_ApplyFusionRankChange	100.0000	100.0000	2	01dca8bd2bd1	0x26910	100.0000	
 fusion	_BuildPairFusionCandidates	100.0000	100.0000	2	f28c4f699466	0x296f0	100.0000	
@@ -2642,7 +2642,7 @@ winmain	?DrawDragOutline@@YAXXZ	100.0000	100.0000	5	998970b36171	0x4ba70	100.000
 winmain	?DrawHotspotMarks@@YAXXZ	100.0000	100.0000	4	7f4c0946daf9	0x4d630	100.0000	
 winmain	?DrawMouseCursor@@YAXXZ	100.0000	100.0000	3	7390246ef83b	0x498d0	100.0000	
 winmain	?DrawSceneOverlay@@YAXXZ	100.0000	100.0000	2	6e94710efef6	0x4da00	100.0000	
-winmain	?DrawSceneSprites@@YAXXZ	91.6458	91.6458	9	adef7c96f7cd	0x4e090	91.6458	
+winmain	?DrawSceneSprites@@YAXXZ	96.8229	96.8229	10	5b63493e9dd3	0x4e090	96.8229	
 winmain	?DrawScreenFade@@YAXXZ	100.0000	100.0000	5	270b117ddb36	0x4bc20	100.0000	
 winmain	?DrawSprites@@YAHXZ	100.0000	100.0000	9	5379afcf5ea8	0x4dcd0	100.0000	
 winmain	?DrawStairs@@YAXXZ	100.0000	100.0000	10	8d144836c05e	0x4da30	100.0000	
@@ -2664,13 +2664,13 @@ winmain	?PollJoystick@@YAXXZ	100.0000	100.0000	1	bda610032818	0x4a0c0	100.0000
 winmain	?PressPadButton@@YAXHH@Z	100.0000	100.0000	1	c0091faf1fcb	0x4ad40	100.0000	
 winmain	?ReleaseGraphics@@YAXXZ	100.0000	100.0000	9	d1657db95d50	0x4a100	100.0000	
 winmain	?RenderBlankMode@@YAXH@Z	100.0000	100.0000	3	900a8bc39a04	0x4f010	100.0000	
-winmain	?RenderEnemy@@YAXHHH@Z	82.3107	82.3107	31	712344abbe24	0x4cb30	82.3107	
+winmain	?RenderEnemy@@YAXHHH@Z	82.5253	82.5253	32	d3e850dc8497	0x4cb30	82.5253	
 winmain	?RenderEventMode@@YAXH@Z	100.0000	100.0000	5	3cfbf4ce8a13	0x4e910	100.0000	
 winmain	?RenderFieldMode@@YAXH@Z	100.0000	100.0000	4	d0ca88baa9c1	0x4ef30	100.0000	
 winmain	?RenderFieldView@@YAXH@Z	100.0000	100.0000	9	1b7fa84ab5d5	0x4ea90	100.0000	
 winmain	?RenderFrame@@YAXXZ	100.0000	100.0000	2	4a2fe617a52b	0x4f140	100.0000	
 winmain	?RenderLayersMode@@YAXH@Z	100.0000	100.0000	1	2b7b4382fad1	0x4f100	100.0000	
-winmain	?RenderNPC@@YAXH@Z	87.8425	87.8425	25	4cfcd3f0bd20	0x4c3c0	87.8425	
+winmain	?RenderNPC@@YAXH@Z	91.0892	91.0892	26	341c1d90b06b	0x4c3c0	91.0892	
 winmain	?RenderNothing@@YAXH@Z	100.0000	100.0000	1	88c3c57d2781	0x4f130	100.0000	
 winmain	?RenderPanelMode@@YAXH@Z	100.0000	100.0000	4	3be769a9f10d	0x4ed80	100.0000	
 winmain	?RenderPictureMode@@YAXH@Z	100.0000	100.0000	4	a0444bd0eff1	0x4ece0	100.0000	
