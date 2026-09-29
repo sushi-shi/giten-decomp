@@ -6,6 +6,7 @@
 #include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/GameState.h>
+#include <Game/MoveCommand.h>
 #include <Game/ViewDirection.h>
 
 // The first-person view's cells: 4 rows ahead of the party (row 3 is the
@@ -165,7 +166,12 @@ u16 GetRotatedWallAtOffset(
 );
 // Raw wall kind at x/y in an absolute direction; pass it to WallStops for a stop class.
 i16 GetMapWallKind(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
-i16 StepMapCoord(i16* x, i16* y, GZ_ENUM_PARAM(ViewDirection, i16) dir, i16 turn);
+i16 StepMapCoord(
+    i16* x,
+    i16* y,
+    GZ_ENUM_PARAM(ViewDirection, i16) dir,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+);
 GZ_ENUM_BEGIN(WallStopMode)
     WALL_STOP_GEOMETRY = 0,
     WALL_STOP_MOVEMENT = 1

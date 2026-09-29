@@ -504,7 +504,7 @@ i16 GetReturnPoint(i16* out) {
 // Records the return point in the roster leader (see Character.returnPosition).
 RVA(0x00012980, 0x38)
 void RecordWarpInLeader(void) {
-    Character* leader = GetRosterCharacter(0);
+    Character* leader = GetRosterCharacter(ROSTER_LEADER);
     SetSavedMapPosition(
         &leader->returnPosition,
         s_returnArea,
@@ -523,7 +523,7 @@ void SetReturnPointAhead(void) {
     i16 y = g_party.field.pos.y;
     i16 direction = FindExitDirection(x, y);
     direction &= 3;
-    StepMapCoord(&x, &y, direction, 0);
+    StepMapCoord(&x, &y, direction, MOVE_FORWARD);
     SetSavedPoint(x, y, direction);
 }
 
@@ -938,7 +938,7 @@ b16 RunFieldExploration(void) {
                         &g_party.field.pos.x,
                         &g_party.field.pos.y,
                         g_party.field.pos.direction,
-                        0
+                        MOVE_FORWARD
                     );
                     RebuildViewScene();
                 }

@@ -308,3 +308,19 @@ src/Platform/winmain.cpp	BlitTextPlanes	*	*	*	text-plane blitting: the plane bit
 src/Platform/winmain.cpp	RunMoveCommand	7	*	*	the move-command table index mask (eight commands)
 src/Platform/winmain.cpp	PollJoystick	0xffff	*	*	all joystick button bits, to invert the last state
 src/Platform/winmain.cpp	HandleInput	0	call-argument	PostQuitMessage(*argument 1	the exit code
+src/Script/scriptvm.c	ExecScriptOpcode	[0-3]	call-argument	OpJumpUnlessStatContest(*argument 1	the contest level 0..3 that the opcode names carry (0 compares the target's own value, 1..3 roll wider ranges)
+src/Script/scriptvm.c	ExecScriptOpcode	[-1]*	call-argument	Op[AC][dh]*(*argument 1	the sign that scales the script operand (add or take away)
+src/Script/scriptvm.c	ExecScriptOpcode	[01]	call-argument	OpPlaceSprite(*argument 1	an argument the body never reads; what the two opcodes differ in is unrecovered (@identity-TODO in ScriptOps.h)
+src/Script/scriptvm.c	ExecScriptOpcode	1	call-argument	OpSkipJumpTarget(*argument 1	an argument the body never reads (@identity-TODO in ScriptOps.h)
+src/Script/scriptvm.c	ExecScriptOpcode	[12]	call-argument	OpIfDemonCount(*argument 2	the demon count the opcode tests against
+src/Script/scriptvm.c	ExecScriptOpcode	[38]	call-argument	SetActorMode(*argument 1	actor modes 3 and 8 have no step behaviour (RunObjectStep has no case for them); their meaning is unrecovered
+src/Game/partyaction.c	*	[38]	case-label	*	actor modes 3 and 8 have no step behaviour (RunObjectStep has no case for them); their meaning is unrecovered
+src/Script/scriptvm.c	ExecScriptOpcode	0x7eff	call-argument	CallScript(*argument 1	bank-script opcodes 1..8 call script files 0x7f00..0x7f07
+src/Script/*.c	*	0xdf	call-argument	*Script(*argument 1	the script file that the reward report, despawn and step-back paths enter; its contents are disc data and its identity is unrecovered
+src/Script/*.c	*	[0-2]	call-argument	*Script(*argument 2	an entry of script file 0xdf (unrecovered disc script)
+src/Script/scriptactor.c	GrantActorReward	0	existing-symbol	*	the loop reuses `kind` as the gem index
+src/Script/scriptactor.c	GrantActorReward	16	comparison-or-bound	*	the gem index bound (s_rewardLevelThresholds)
+src/Script/scriptactor.c	GrantActorReward	*	comparison-or-bound	operator <= roll	percent thresholds of the random reward tables
+src/Script/scriptactor.c	GrantActorReward	[1-3]	call-argument	GrantAdjustedActorSpoil(*argument 2	the spoil amount adjustment the random reward table applies
+src/Script/scriptactor.c	GrantActorReward	[89]	*	*	reward kinds 8 and 9 (reward is the actor's level) that only the reward script interprets; unrecovered
+src/Script/scriptactor.c	GrantActorReward	1	trivial-function-literal	1 bound reward	an equipment reward below item 1 means none was picked

@@ -1236,7 +1236,7 @@ i16* GetLearnableSkillList(i16 id, i16 source) {
     i16 i;
     LearnableSkillTable* table;
     if (id == 0) {
-        key = GetCharacterAffiliation(GetRosterCharacter(0), source);
+        key = GetCharacterAffiliation(GetRosterCharacter(ROSTER_LEADER), source);
         key = -1 - key;
     } else {
         key = FindCharacter(id);
@@ -2555,10 +2555,10 @@ i16 SetInfoBarLayout(i16 layout) {
 
 RVA(0x0001e740, 0x4b)
 void DrawMoneyCounters(i16 mode) {
-    DrawMoneyCounter(mode, 8, RosterMemberAt(0)->magnetite, 0);
-    s_shownMagnetite = RosterMemberAt(0)->magnetite;
-    DrawMoneyCounter(mode, 11, RosterMemberAt(0)->macca, 1);
-    s_shownMacca = RosterMemberAt(0)->macca;
+    DrawMoneyCounter(mode, 8, RosterMemberAt(ROSTER_LEADER)->magnetite, 0);
+    s_shownMagnetite = RosterMemberAt(ROSTER_LEADER)->magnetite;
+    DrawMoneyCounter(mode, 11, RosterMemberAt(ROSTER_LEADER)->macca, 1);
+    s_shownMacca = RosterMemberAt(ROSTER_LEADER)->macca;
 }
 
 RVA(0x0001e790, 0xcf)
@@ -2670,8 +2670,8 @@ b16 RefreshInfoBar(i16 force) {
     if (force) {
         DrawInfoBar(s_nextLayout, true);
     } else if (s_shownMoonPhase != g_clock.moonPhase
-               || s_shownMagnetite != RosterMemberAt(0)->magnetite
-               || s_shownMacca != RosterMemberAt(0)->macca) {
+               || s_shownMagnetite != RosterMemberAt(ROSTER_LEADER)->magnetite
+               || s_shownMacca != RosterMemberAt(ROSTER_LEADER)->macca) {
         DrawInfoBar(s_nextLayout, true);
     }
     s_nextLayout = 1;
@@ -3290,7 +3290,7 @@ i16 KnockBack(i16 who) {
         code = GetMapCellCode(at[0], at[1]);
         x = at[0];
         y = at[1];
-        StepMapCoord(&x, &y, direction, 2);
+        StepMapCoord(&x, &y, direction, MOVE_BACK);
         WrapMapPosition(&x, &y);
         if (CellCodeDiffers(code, x, y)) {
             return -1;
@@ -3302,7 +3302,7 @@ i16 KnockBack(i16 who) {
     if (WallStopsToward(at[0], at[1], direction, 2)) {
         return -1;
     }
-    StepMapCoord(&at[0], &at[1], direction, 2);
+    StepMapCoord(&at[0], &at[1], direction, MOVE_BACK);
     RefreshFieldScene();
     return 1;
 }
@@ -3338,7 +3338,7 @@ i16 SetTargetFlag21(void) {
 RVA(0x0001f9c0, 0x67)
 b16 ScatterObjects(void) {
     i16 i;
-    u8* flags = GetCharacterFlags(GetRosterCharacter(0));
+    u8* flags = GetCharacterFlags(GetRosterCharacter(ROSTER_LEADER));
     SetBit(flags, 0x22);
     for (i = 0; i < 16; i++) {
         i16 object = GetLiveObject(i);
@@ -3353,7 +3353,7 @@ b16 ScatterObjects(void) {
 // Sends the party to the return point recorded in the roster leader.
 RVA(0x0001fa30, 0x35)
 b16 ReturnToLeaderWarp(void) {
-    Character* leader = GetRosterCharacter(0);
+    Character* leader = GetRosterCharacter(ROSTER_LEADER);
     SetReturnPoint(
         leader->returnPosition.area,
         leader->returnPosition.level,
@@ -3367,7 +3367,7 @@ b16 ReturnToLeaderWarp(void) {
 // Sends the party to the cell in front of the leader's marked position.
 RVA(0x0001fa70, 0x6d)
 b16 ReturnToLeaderMark(void) {
-    Character* leader = GetRosterCharacter(0);
+    Character* leader = GetRosterCharacter(ROSTER_LEADER);
     i16 area = leader->markPosition.area;
     i16 level = leader->markPosition.level;
     i16 x = leader->markPosition.x;

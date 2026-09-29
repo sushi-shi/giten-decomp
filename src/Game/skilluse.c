@@ -966,7 +966,10 @@ b16 RunBattleAction(void) {
                         FindRosterSlotById(s_actionTarget->id)
                     );
                     ClearActionWait(GetCharacterActionWait(s_actionTarget));
-                    AddMagnetite(GetRosterCharacter(0), -GetSummonMagnetiteCost(s_actionTarget));
+                    AddMagnetite(
+                        GetRosterCharacter(ROSTER_LEADER),
+                        -GetSummonMagnetiteCost(s_actionTarget)
+                    );
                     ResetBattleTally(s_actionTarget);
                     s_actionTarget = GetRosterCharacter(slot);
                     if (s_actionTarget != NULL) {
@@ -1153,7 +1156,7 @@ b32 IsSkillIdBlocked(Character* character, i16 id) {
     if (LastConditionIn(GetCharacterConditions(character), s_skillIdBlockingConditions)) {
         return true;
     }
-    if (id == 0x7a && !GetRosterCharacter(0)->markPosition.area) {
+    if (id == 0x7a && !GetRosterCharacter(ROSTER_LEADER)->markPosition.area) {
         return true;
     }
     return false;

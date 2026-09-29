@@ -951,7 +951,7 @@ i16 PickDdsSummon(void) {
             character = GetRosterCharacter(s_ddsRosterSlot);
             if (character != NULL) {
                 ClearActionWait(GetCharacterActionWait(character));
-                AddMagnetite(GetRosterCharacter(0), -GetSummonMagnetiteCost(character));
+                AddMagnetite(GetRosterCharacter(ROSTER_LEADER), -GetSummonMagnetiteCost(character));
                 ResetBattleTally(character);
             }
             character = GetRosterCharacter(previous);
@@ -1743,7 +1743,7 @@ RVA(0x00018ad0, 0x76)
 i16 GrantBattleRewards(void) {
     Character* leader;
     if (s_rewardsPending) {
-        leader = GetRosterCharacter(0);
+        leader = GetRosterCharacter(ROSTER_LEADER);
         AddMacca(leader, g_rewardMacca);
         g_rewardMacca = 0;
         AddMagnetite(leader, g_rewardMagnetite);

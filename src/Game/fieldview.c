@@ -781,7 +781,12 @@ i16 GetMapWallKind(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
 
 // Steps x/y one cell toward `turn` of `dir` (wrapped); the direction taken.
 RVA(0x0000d1b0, 0x3f)
-i16 StepMapCoord(i16* x, i16* y, GZ_ENUM_PARAM(ViewDirection, i16) dir, i16 turn) {
+i16 StepMapCoord(
+    i16* x,
+    i16* y,
+    GZ_ENUM_PARAM(ViewDirection, i16) dir,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+) {
     i16 facing = TurnDirection(dir, turn);
     OffsetMapCoord(x, y, facing, 0, -1);
     WrapMapPosition(x, y);

@@ -210,7 +210,7 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
         return;
     }
     ModifyEventFlag(7, 0xfd, 0);
-    flags = GetCharacterFlags(GetRosterCharacter(0));
+    flags = GetCharacterFlags(GetRosterCharacter(ROSTER_LEADER));
     ClearBit(flags, 0x22);
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         i16 object = GetLiveObject(i);

@@ -576,7 +576,7 @@ FusionSummary GetPairFusionSummary(i16 first, i16 second) {
     result->fields.highFlag = GetDemonFlagHigh(g_fusionResult);
     result->fields.lowFlag = GetDemonFlagLow(g_fusionResult);
     SetFusionSummaryKind(&summary, s_fusionResultKind, resultLevel, sourceLevel);
-    if (GetRosterCharacter(0)->level + 3 <= resultLevel) {
+    if (GetRosterCharacter(ROSTER_LEADER)->level + 3 <= resultLevel) {
         summary.fields.overLevel = 1;
     }
     return summary;
@@ -587,7 +587,7 @@ i16 ResolveRandomFusion(void) {
     i16 phaseDistance = abs(14 - g_clock.moonPhase) + 1;
     i16 limit = 10 / phaseDistance;
     i16 demon;
-    limit += GetRosterCharacter(0)->level;
+    limit += GetRosterCharacter(ROSTER_LEADER)->level;
     do {
         demon = SelectRandomFusionDemon();
     } while (limit < GetDemonLevel(demon));

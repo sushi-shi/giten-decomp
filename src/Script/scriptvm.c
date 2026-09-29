@@ -146,10 +146,10 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpPrintNumber();
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_IF_ANY_FLAGS:
-                OpIfFlags(0);
+                OpIfFlags(false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_IF_ALL_FLAGS:
-                OpIfFlags(1);
+                OpIfFlags(true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_0_NORMAL:
                 OpJumpUnlessStatContest(0, SCRIPT_TEST_NORMAL, true);
@@ -552,16 +552,16 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpJumpUnlessPlayerAtRange(SCRIPT_TEST_INVERTED);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_ACTOR_CAN_STEP_AWAY_NORMAL:
-                OpJumpUnlessActorCanStep(SCRIPT_TEST_NORMAL, 2);
+                OpJumpUnlessActorCanStep(SCRIPT_TEST_NORMAL, MOVE_BACK);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_ACTOR_CAN_STEP_AWAY_INVERTED:
-                OpJumpUnlessActorCanStep(SCRIPT_TEST_INVERTED, 2);
+                OpJumpUnlessActorCanStep(SCRIPT_TEST_INVERTED, MOVE_BACK);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_IF_BLOCKED_BEHIND_NORMAL:
-                OpIfBlockedToward(SCRIPT_TEST_NORMAL, 2);
+                OpIfBlockedToward(SCRIPT_TEST_NORMAL, MOVE_BACK);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_IF_BLOCKED_BEHIND_INVERTED:
-                OpIfBlockedToward(SCRIPT_TEST_INVERTED, 2);
+                OpIfBlockedToward(SCRIPT_TEST_INVERTED, MOVE_BACK);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_IN_ROSTER_NORMAL:
                 OpJumpUnlessInRoster(SCRIPT_TEST_NORMAL);
@@ -754,20 +754,20 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 return SCRIPT_YIELD;
             case SCRIPT_OP_RESTART_AND_STEP_ACTOR_BACK:
                 RestartScript(0xdf, 0);
-                StepScriptActor(2);
+                StepScriptActor(MOVE_BACK);
                 return SCRIPT_YIELD;
             case SCRIPT_OP_STEP_ACTOR_FORWARD:
-                return StepScriptActor(0);
+                return StepScriptActor(MOVE_FORWARD);
             case SCRIPT_OP_STEP_ACTOR_BACK:
-                return StepScriptActor(2);
+                return StepScriptActor(MOVE_BACK);
             case SCRIPT_OP_TRANSITION_FORWARD:
                 return PlayScreenTransition(MOVE_FORWARD);
             case SCRIPT_OP_TRANSITION_BACK:
                 return PlayScreenTransition(MOVE_BACK);
             case SCRIPT_OP_UNEQUIP_LEADER_GUN_AND_AMMO:
-                UnequipPart(0, EQUIP_PART_GUN);
-                UnequipPart(0, EQUIP_PART_AMMO);
-                RecalcCharacterStats(GetRosterCharacter(0));
+                UnequipPart(ROSTER_LEADER, EQUIP_PART_GUN);
+                UnequipPart(ROSTER_LEADER, EQUIP_PART_AMMO);
+                RecalcCharacterStats(GetRosterCharacter(ROSTER_LEADER));
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_SET_LONG_VAR:
                 OpSetLongVar();
@@ -908,16 +908,16 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpIfObjectHasCondition(SCRIPT_TEST_INVERTED);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_IF_BLOCKED_AHEAD_NORMAL:
-                OpIfBlockedToward(SCRIPT_TEST_NORMAL, 0);
+                OpIfBlockedToward(SCRIPT_TEST_NORMAL, MOVE_FORWARD);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_IF_BLOCKED_AHEAD_INVERTED:
-                OpIfBlockedToward(SCRIPT_TEST_INVERTED, 0);
+                OpIfBlockedToward(SCRIPT_TEST_INVERTED, MOVE_FORWARD);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_ACTOR_CAN_STEP_TOWARD_NORMAL:
-                OpJumpUnlessActorCanStep(SCRIPT_TEST_NORMAL, 0);
+                OpJumpUnlessActorCanStep(SCRIPT_TEST_NORMAL, MOVE_FORWARD);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_ACTOR_CAN_STEP_TOWARD_INVERTED:
-                OpJumpUnlessActorCanStep(SCRIPT_TEST_INVERTED, 0);
+                OpJumpUnlessActorCanStep(SCRIPT_TEST_INVERTED, MOVE_FORWARD);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_BRANCH_ON_ITEMS_FIT_NORMAL:
                 OpBranchOnItemsFit(SCRIPT_TEST_NORMAL);
@@ -1030,7 +1030,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
             case SCRIPT_OP_NEVER_JUMP_10:
             case SCRIPT_OP_NEVER_JUMP_11:
                 target = ReadBranchTarget();
-                ScriptJumpUnless(target, 1);
+                ScriptJumpUnless(target, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_ROSTER_HAS_NO_DEMONS_NORMAL:
                 OpJumpUnlessRosterHasNoDemons(SCRIPT_TEST_NORMAL);
@@ -1135,10 +1135,10 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpOpenFusionScreen(FUSION_MENU_TRIPLE_SECOND);
                 return SCRIPT_YIELD;
             case SCRIPT_OP_RUN_FUSION_PAIR:
-                OpRunFusion(0);
+                OpRunFusion(false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_RUN_FUSION_TRIPLE:
-                OpRunFusion(1);
+                OpRunFusion(true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_END_FUSION:
                 OpEndFusion();
@@ -1165,7 +1165,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 SetBlankRenderMode();
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_IF:
-                OpJumpIf(1);
+                OpJumpIf(true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_SKIP_JUMP_TARGET:
                 OpSkipJumpTarget(1);

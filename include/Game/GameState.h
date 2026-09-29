@@ -49,6 +49,8 @@ typedef struct FieldStatus {
 // The party positions and the roster size.
 #define PARTY_SIZE 6
 #define ROSTER_SIZE 32
+// The roster slot of the party leader (GetRosterLeader).
+#define ROSTER_LEADER 0
 // A party position holding no roster member.
 #define PARTY_SLOT_EMPTY (-1)
 // What the finders return when there is no such roster slot, party position

@@ -62,7 +62,7 @@ ScriptContext* GetCurrentScript(void);
 #define ScriptBooleanMatches(value, negate) (((value) && !(negate)) || (!(value) && (negate)))
 
 void ScriptJump(i16 pc);
-i32 ScriptJumpUnless(i16 pc, i32 condition);
+b32 ScriptJumpUnless(i16 pc, b32 condition);
 b16 ScriptJumpTo(u32 codeBase, i16 pc);
 i32 PushCallFrame(ScriptContext* script, i16 keepVars);
 i32 TopCallFrame(ScriptContext* script);

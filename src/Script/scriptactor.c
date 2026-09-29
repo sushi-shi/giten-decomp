@@ -233,7 +233,7 @@ void RetireScriptActor(void) {
 }
 
 RVA(0x00032d30, 0x41)
-GZ_ENUM_RETURN(ScriptStatus, i16) StepScriptActor(i16 turn) {
+GZ_ENUM_RETURN(ScriptStatus, i16) StepScriptActor(GZ_ENUM_PARAM(MoveCommand, i16) turn) {
     FieldActor* actor = (FieldActor*)g_curScript->actor;
     if (actor == NULL) {
         return SCRIPT_CONTINUE;
@@ -467,12 +467,12 @@ void GrantActorSpoil(GZ_ENUM_PARAM(ActorSpoilKind, i16) kind) {
             case ACTOR_SPOIL_MAGNETITE:
                 amount = g_curScript->actor->magnetite;
                 AdjustActorSpoilAmount(amount);
-                AddMagnetite(GetRosterCharacter(0), amount);
+                AddMagnetite(GetRosterCharacter(ROSTER_LEADER), amount);
                 break;
             case ACTOR_SPOIL_MACCA:
                 amount = g_curScript->actor->macca;
                 AdjustActorSpoilAmount(amount);
-                AddMacca(GetRosterCharacter(0), amount);
+                AddMacca(GetRosterCharacter(ROSTER_LEADER), amount);
                 break;
         }
         CallScript(0xdf, 2);
@@ -502,8 +502,11 @@ void DismissTalkTarget(void) {
 }
 
 RVA(0x00033390, 0xf6)
-void OpJumpUnlessActorCanStep(i16 invert, i16 turn) {
-    i32 matches = 0;
+void OpJumpUnlessActorCanStep(
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+) {
+    b32 matches = false;
     i16 blocked = 1;
     i16 target = ReadBranchTarget();
     if (g_curScript->actor != NULL) {
@@ -974,7 +977,7 @@ void OpJump(void) {
 
 // Jumps to `pc` when `condition` is zero; passes `condition` through.
 RVA(0x00033ef0, 0x1a)
-i32 ScriptJumpUnless(i16 pc, i32 condition) {
+b32 ScriptJumpUnless(i16 pc, b32 condition) {
     if (!condition) {
         ScriptJump(pc);
     }
@@ -1477,7 +1480,7 @@ void OpJumpUnlessFlagSet(void) {
 // value, a random spread around it, or a fixed random range chosen by the
 // stat and the contest `level` (0..3); `swap` exchanges the sides.
 RVA(0x000348b0, 0x520)
-void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
+void OpJumpUnlessStatContest(i16 level, GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert, b16 swap) {
     i16 target = ReadBranchTarget();
     i16 stat = ReadScriptValue();
     i32 own;
@@ -1543,11 +1546,11 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
         case CONTEST_LEVEL:
             switch (level) {
                 case 0: {
-                    i32 ownAgility;
-                    i32 otherAgility;
+                    i32 ownProtection;
+                    i32 otherProtection;
 
-                    ReadContestValues(4, &ownAgility, &otherAgility, swap);
-                    other = -sqrt(otherAgility);
+                    ReadContestValues(STAT_PROTECTION, &ownProtection, &otherProtection, swap);
+                    other = -sqrt(otherProtection);
                     break;
                 }
                 case 1:
@@ -2207,7 +2210,7 @@ void OpOpenFusionScreen(i16 kind) {
 }
 
 RVA(0x00035bb0, 0x1c)
-void OpRunFusion(i16 triple) {
+void OpRunFusion(b16 triple) {
     SetBlankStep(1);
     if (!triple) {
         RunPairFusion();
@@ -2223,11 +2226,11 @@ void OpEndFusion(void) {
 
 // Jumps unless `cond` is zero.
 RVA(0x00035be0, 0x20)
-void OpJumpIf(i16 cond) {
-    i32 jump = 0;
+void OpJumpIf(b16 cond) {
+    b32 jump = false;
     i16 target = ReadBranchTarget();
-    if (cond == 0) {
-        jump = 1;
+    if (!cond) {
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -2235,18 +2238,19 @@ void OpJumpIf(i16 cond) {
 RVA(0x00035c00, 0x11)
 void OpSkipJumpTarget(i16 unused) {
     i16 target = ReadBranchTarget();
-    ScriptJumpUnless(target, 1);
+    ScriptJumpUnless(target, true);
 }
 
 // Jumps unless the roster's demon count is above `limit` (mode 0) or at most
 // `limit` (mode 1).
 RVA(0x00035c20, 0x45)
-void OpIfDemonCount(i16 mode, i16 limit) {
-    i32 jump = 0;
+void OpIfDemonCount(GZ_ENUM_PARAM(ScriptTestPolarity, i16) mode, i16 limit) {
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 demons = CountRosterEntries(false);
-    if ((mode == 0 && demons > limit) || (mode == 1 && demons <= limit)) {
-        jump = 1;
+    if ((mode == SCRIPT_TEST_NORMAL && demons > limit)
+        || (mode == SCRIPT_TEST_INVERTED && demons <= limit)) {
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -2360,8 +2364,11 @@ void OpSetPlayerPosition(void) {
 }
 
 RVA(0x00035f20, 0xe8)
-void OpIfBlockedToward(i16 negate, i16 turn) {
-    i32 matches = 0;
+void OpIfBlockedToward(
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) negate,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+) {
+    b32 matches = false;
     i16 target = ReadBranchTarget();
     i16 x = g_party.field.pos.x;
     i16 y = g_party.field.pos.y;

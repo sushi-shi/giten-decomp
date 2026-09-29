@@ -82,14 +82,14 @@ GZ_ENUM_RETURN(ScriptStatus, i16) SetActorMode(GZ_ENUM_PARAM(ActorMode, i16) mod
 }
 
 RVA(0x0002feb0, 0x82)
-void OpIfFlags(i16 all) {
+void OpIfFlags(b16 all) {
     u16 bank, index;
     i16 target = ReadBranchTarget();
     i16 every = -1;
     i16 any = 0;
     i16 invert;
     i16 matched;
-    i32 skip;
+    b32 skip;
     for (;;) {
         invert = ReadFlagOperand(&bank, &index);
         if (invert == -1 && bank == 0x7f) {
@@ -99,13 +99,13 @@ void OpIfFlags(i16 all) {
         any |= matched;
         every &= matched;
     }
-    skip = 0;
+    skip = false;
     if (all) {
         if (!every) {
-            skip = 1;
+            skip = true;
         }
     } else if (!any) {
-        skip = 1;
+        skip = true;
     }
     ScriptJumpUnless(target, skip);
 }

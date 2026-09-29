@@ -1486,7 +1486,7 @@ b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
             return RefreshIfTurned(visible, turned);
         }
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
-            StepMapCoord(&x, &y, object->direction, 0);
+            StepMapCoord(&x, &y, object->direction, MOVE_FORWARD);
             WrapMapPosition(&x, &y);
             if (!CellCodeDiffers(code, x, y) && !IsCellBlocked(g_party.field.pos.level, 1, x, y)) {
                 visible |= GetPartyView(x, y);
@@ -2451,7 +2451,7 @@ i16 RollWorldMapEncounter(i16 x, i16 y) {
     i16 cell;
     i16 variant;
     WorldEncounterCell* cells;
-    Character* leader = GetRosterCharacter(0);
+    Character* leader = GetRosterCharacter(ROSTER_LEADER);
     if (TestCharacterFlag(leader, 0x22) == true) {
         return -1;
     }

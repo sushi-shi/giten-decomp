@@ -136,7 +136,7 @@ i16 WriteSaveHeader(FILE* fp) {
 // leader (see Character.markPosition).
 RVA(0x00003bf0, 0x38)
 void RecordMarkInLeader(void) {
-    Character* leader = GetRosterCharacter(0);
+    Character* leader = GetRosterCharacter(ROSTER_LEADER);
     SetSavedMapPosition(
         &leader->markPosition,
         g_party.field.pos.area,

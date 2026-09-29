@@ -2325,7 +2325,7 @@ Character* AsCharacter(Character* character) {
 
 RVA(0x0003fe40, 0x6)
 Character* GetRosterLeader(void) {
-    return RosterMemberAt(0);
+    return RosterMemberAt(ROSTER_LEADER);
 }
 
 RVA(0x0003fe50, 0x1e)
@@ -2941,7 +2941,7 @@ i16 FormatStatusLine(i16 slot, i16 row) {
             if (GetFatalCondition(GetCharacterConditions(member))) {
                 return -1;
             }
-            if (GetRosterCharacter(0)->magnetite < cost) {
+            if (GetRosterCharacter(ROSTER_LEADER)->magnetite < cost) {
                 return -2;
             }
             break;
@@ -3007,7 +3007,7 @@ i16 BuildStatusSlots(void) {
 RVA(0x00040fa0, 0x183)
 i16 PayStepUpkeep(void) {
     i16 died = 0;
-    Character* hero = GetRosterCharacter(0);
+    Character* hero = GetRosterCharacter(ROSTER_LEADER);
     i16 i;
     for (i = 0; i < PARTY_SIZE; i++) {
         Character* member = GetPartyCharacter(i);

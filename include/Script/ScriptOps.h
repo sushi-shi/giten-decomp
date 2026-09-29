@@ -4,7 +4,9 @@
 #include <rva.h>
 
 #include <Enums.h>
+#include <Game/MoveCommand.h>
 #include <Script/ActorSpoilKind.h>
+#include <Script/BranchMode.h>
 #include <Script/ScriptPanel.h>
 #include <Script/ScriptStatus.h>
 #include <Script/WindowReverseMode.h>
@@ -90,7 +92,7 @@ void OpSetMenuCharacter(void);
 
 b16 OpSaveDataCommand(void);
 
-void OpIfFlags(i16 all);
+void OpIfFlags(b16 all);
 
 // Queries the last field-entry result, or enters a map with a view-hold
 // setting and the two sides' count/rate pairs.
@@ -166,7 +168,7 @@ void DespawnScriptActor(void);
 void RetireScriptActor(void);
 
 RVA_DECL(0x00032d30)
-GZ_ENUM_RETURN(ScriptStatus, i16) StepScriptActor(i16 turn);
+GZ_ENUM_RETURN(ScriptStatus, i16) StepScriptActor(GZ_ENUM_PARAM(MoveCommand, i16) turn);
 
 RVA_DECL(0x00032d80)
 void OpStoreActorDistance(void);
@@ -209,7 +211,10 @@ void OpSetObjectPresence(void);
 void DismissTalkTarget(void);
 
 RVA_DECL(0x00033390)
-void OpJumpUnlessActorCanStep(i16 invert, i16 turn);
+void OpJumpUnlessActorCanStep(
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+);
 
 // @identity-TODO: Meaning of 0x2ac50 (actor+0x1c4=2, local flags 8/10, mode=6) and the word at
 // actor+0x17f is unproven; decode other 0x2ac50 callers (0x7390, 0xf890).
@@ -268,7 +273,7 @@ RVA_DECL(0x00034880)
 void OpJumpUnlessFlagSet(void);
 
 RVA_DECL(0x000348b0)
-void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap);
+void OpJumpUnlessStatContest(i16 level, GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert, b16 swap);
 
 void OpJumpUnlessPlayerInView(i16 invert);
 
@@ -380,17 +385,17 @@ void OpCopyItemRecord(void);
 
 void OpOpenFusionScreen(i16 kind);
 
-void OpRunFusion(i16 triple);
+void OpRunFusion(b16 triple);
 
 void OpEndFusion(void);
 
-void OpJumpIf(i16 cond);
+void OpJumpIf(b16 cond);
 
 // @identity-TODO: the dispatcher pushes 1 but the body never reads it; whether the original
 // took a flag is unproven.
 void OpSkipJumpTarget(i16 unused);
 
-void OpIfDemonCount(i16 mode, i16 limit);
+void OpIfDemonCount(GZ_ENUM_PARAM(ScriptTestPolarity, i16) mode, i16 limit);
 
 void OpGetFusionResult(void);
 
@@ -417,7 +422,10 @@ void OpGetPlayerLocation(void);
 
 void OpSetPlayerPosition(void);
 
-void OpIfBlockedToward(i16 negate, i16 turn);
+void OpIfBlockedToward(
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) negate,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+);
 
 // @identity-TODO: the effect table 0x46b9d8 (8 entries, called after a colour-fill Blt in
 // 0x49f50) is unnamed.
