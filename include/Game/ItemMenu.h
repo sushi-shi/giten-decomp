@@ -9,7 +9,9 @@
 
 struct MenuBox;
 
-// The stock file stores byte offsets to -1-terminated item-ID lists.
+// The stock file stores byte offsets to item-ID lists ending with
+// ITEM_STOCK_END.
+#define ITEM_STOCK_END (-1)
 typedef struct ItemMenuStockTable {
     i16 count;
     u16 offsets[1];

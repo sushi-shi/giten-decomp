@@ -10,11 +10,11 @@ extern "C" {
 #endif
 
     RVA_DECL(0x00045550)
-    i16 IsAbortPending(void);
+    b16 IsAbortPending(void);
     RVA_DECL(0x00045560)
-    void SetAbortPending(i16 pending);
+    void SetAbortPending(b16 pending);
     RVA_DECL(0x00045660)
-    i16 ExchangeAbortPending(i16 pending);
+    b16 ExchangeAbortPending(b16 pending);
 
 #ifdef __cplusplus
 }

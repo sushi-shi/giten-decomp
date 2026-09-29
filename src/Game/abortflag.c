@@ -26,7 +26,7 @@ static i16 s_hotspotCount = 0;
 // (0x45680) returns -1 instead and clears it; callers set it around nested
 // work.
 DATA(0x000840e4)
-static i16 s_abortPending = 0;
+static b16 s_abortPending = false;
 
 DATA(0x00091240)
 i16 g_viewLateral;
@@ -65,12 +65,12 @@ DATA(0x000912dc)
 i16 g_spriteClipTop;
 
 RVA(0x00045550, 0x7)
-i16 IsAbortPending(void) {
+b16 IsAbortPending(void) {
     return s_abortPending;
 }
 
 RVA(0x00045560, 0xc)
-void SetAbortPending(i16 pending) {
+void SetAbortPending(b16 pending) {
     s_abortPending = pending;
 }
 
@@ -109,8 +109,8 @@ i16 AddSceneHotspot(void* object, GZ_ENUM_PARAM(SceneHotspotKind, i16) kind, Sce
 }
 
 RVA(0x00045660, 0x12)
-i16 ExchangeAbortPending(i16 pending) {
-    i16 prev = s_abortPending;
+b16 ExchangeAbortPending(b16 pending) {
+    b16 prev = s_abortPending;
     s_abortPending = pending;
     return prev;
 }
@@ -129,7 +129,7 @@ i16 CountHotspotsOfKind(GZ_ENUM_PARAM(SceneHotspotKind, i16) kind, b16 consume) 
             }
         }
     }
-    s_abortPending = 0;
+    s_abortPending = false;
     return count;
 }
 

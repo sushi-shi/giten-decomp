@@ -31,7 +31,11 @@ typedef struct NpcTexture {
     u32 texture;
 } NpcTexture;
 
-// Twelve records; only the first six are used by the readers and loader.
+// An area places up to AREA_NPC_COUNT NPCs drawn from NPC_TEXTURE_SLOTS
+// pictures. The texture table has twelve records; only the first
+// NPC_TEXTURE_SLOTS are used by the readers and loader.
+#define AREA_NPC_COUNT 16
+#define NPC_TEXTURE_SLOTS 6
 extern NpcTexture g_npcTextures[12];
 
 // The map cell the field view is drawing.

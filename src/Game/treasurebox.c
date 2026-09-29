@@ -11,6 +11,7 @@
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <File/DataTableId.h>
+#include <Game/ActorFlag.h>
 #include <Game/Alignment.h>
 #include <Game/Analyze.h>
 #include <Game/AnalyzeData.h>
@@ -42,6 +43,7 @@
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
 #include <Game/Growth.h>
+#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemMenu.h>
 #include <Game/ItemRecord.h>
@@ -235,7 +237,7 @@ static AutomapBitmap s_levelBuffer = {0};
 
 // The current area's NPCs (s_npcCount of them placed).
 DATA(0x0007d300)
-static AreaNpc s_npcs[16] = {0};
+static AreaNpc s_npcs[AREA_NPC_COUNT] = {0};
 
 // The treasure box in view: its cell, and the party's map position with x/y
 // set to the view's lateral and depth position. Nothing reads either back.
@@ -1218,7 +1220,7 @@ i16* GetItemMenuStock(i16 index) {
 
 RVA(0x0001c160, 0x33)
 void LoadItemMenuStock(void) {
-    if (s_itemMenuStock == 0) {
+    if (s_itemMenuStock == HANDLE_NONE) {
         FILE* fp = OpenDataFile(DATA_TABLE_ITEM_MENU_STOCK, DATA_FILE_TABLE, 0);
         s_itemMenuStock = ReadRawHandle(fp);
         CloseDataFile(fp);
@@ -1231,7 +1233,7 @@ i16 CountItemMenuStock(i16 index) {
     i16* items;
     LoadItemMenuStock();
     items = GetItemMenuStock(index);
-    while (*items != -1) {
+    while (*items != ITEM_STOCK_END) {
         items++;
         count++;
     }
@@ -1244,7 +1246,7 @@ i16 CopyItemMenuStock(i16 index, i16* items) {
     i16* stock;
     LoadItemMenuStock();
     stock = GetItemMenuStock(index);
-    while (*stock != -1) {
+    while (*stock != ITEM_STOCK_END) {
         items[count++] = *stock++;
     }
     return count;
@@ -1274,7 +1276,7 @@ i16* GetLearnableSkillList(i16 id, i16 source) {
     i16 key;
     i16 i;
     LearnableSkillTable* table;
-    if (id == 0) {
+    if (id == HUMAN_KATSURAGI) {
         key = GetCharacterAffiliation(GetRosterCharacter(ROSTER_LEADER), source);
         key = -1 - key;
     } else {
@@ -1298,14 +1300,14 @@ i16 TakeLearnableSkill(Character* character, i16* skills) {
     i16 i;
     i16 skill;
     i16 j;
-    for (i = 0; skills[i] != -1; i++) {
+    for (i = 0; skills[i] != SKILL_LIST_END; i++) {
         if (ContainsWord(GetCharacterSkills(character), skills[i])) {
             continue;
         }
-        if (id == 0) {
+        if (id == HUMAN_KATSURAGI) {
             i16 found = -1;
             LearnableSkillRequirement* requirements = HandleReadPtr(s_learnableSkillRequirements);
-            for (j = 0; requirements[j].skill != -1; j++) {
+            for (j = 0; requirements[j].skill != SKILL_LIST_END; j++) {
                 if (requirements[j].skill == skills[i]) {
                     found = j;
                     break;
@@ -1320,15 +1322,15 @@ i16 TakeLearnableSkill(Character* character, i16* skills) {
         }
     }
     skill = skills[i];
-    if (skill == -1) {
-        skills[0] = -1;
-        return -1;
+    if (skill == SKILL_LIST_END) {
+        skills[0] = SKILL_LIST_END;
+        return SKILL_LIST_END;
     }
     i++;
-    for (j = 0; skills[i + j] != -1; j++) {
+    for (j = 0; skills[i + j] != SKILL_LIST_END; j++) {
         skills[j] = skills[i + j];
     }
-    skills[j] = -1;
+    skills[j] = SKILL_LIST_END;
     return skill;
 }
 
@@ -1530,19 +1532,19 @@ i32 GetCellTrapDamage(ExitCell* cell, i16 maxHp) {
             }
             percent = RandomAverage(1, cell->secondaryDamagePercent, 1);
             break;
-        case 0x60:
+        case CELL_DAMAGE_TRAP:
             if (cell->trap.damagePercent < 1) {
                 return 0;
             }
             percent = RandomAverage(1, cell->trap.damagePercent, 1);
             break;
-        case 0x68:
+        case CELL_ALIGNMENT_TRAP_FIRST:
         case 0x69:
         case 0x6a:
         case 0x6b:
         case 0x6c:
         case 0x6d:
-        case 0x6e:
+        case CELL_ALIGNMENT_TRAP_LAST:
             // Alignment traps reuse the flag-index byte as the damage percentage.
             if (cell->disableFlag[1] < 1) {
                 return 0;
@@ -1570,7 +1572,8 @@ void RunCellTrap(i16 mode, i16 x, i16 y) {
             if (member) {
                 damage = GetCellTrapDamage(&cell.exit, member->pools.hp.max);
                 hp = member->pools.hp.cur;
-                if (cell.exit.head.code >= 0x68 && cell.exit.head.code <= 0x6e) {
+                if (cell.exit.head.code >= CELL_ALIGNMENT_TRAP_FIRST
+                    && cell.exit.head.code <= CELL_ALIGNMENT_TRAP_LAST) {
                     alignmentMask = 4;
                     alignmentMask >>= GetAlignmentClassB(member) + 1;
                     if (!(cell.exit.trap.alignmentMask & alignmentMask)) {
@@ -3068,10 +3071,10 @@ i16 FindCellObject(i16 id, i16 x, i16 y) {
     return LookupCellObject(table, 1) != id ? -1 : 1;
 }
 
-// The slot the next NPC takes, -1 when all 16 are placed.
+// The slot the next NPC takes, -1 when all AREA_NPC_COUNT are placed.
 RVA(0x0001f250, 0x11)
 i16 NextNpcSlot(void) {
-    if (s_npcCount >= 16) {
+    if (s_npcCount >= AREA_NPC_COUNT) {
         return -1;
     }
     return s_npcCount;
@@ -3079,7 +3082,7 @@ i16 NextNpcSlot(void) {
 
 RVA(0x0001f270, 0x12)
 void CountPlacedNpc(void) {
-    if (s_npcCount < 16) {
+    if (s_npcCount < AREA_NPC_COUNT) {
         s_npcCount++;
     }
 }
@@ -3236,7 +3239,7 @@ void LoadAreaNpcImages(u8* record) {
         return;
     }
     p = (u8*)LoadNpcPalette((u16*)(record + 3));
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < NPC_TEXTURE_SLOTS; i++) {
         if (p[1] != 0xff) {
             LoadNpcTexture(i, p[0], p[1]);
         }
@@ -3244,10 +3247,10 @@ void LoadAreaNpcImages(u8* record) {
     }
 }
 
-// The NPC texture in `slot` (0..5), else 0.
+// The NPC texture in `slot` (below NPC_TEXTURE_SLOTS), else 0.
 RVA(0x0001f6b0, 0x1e)
 u32 GetNpcTexture(i16 slot) {
-    if (slot >= 0 && slot < 6) {
+    if (slot >= 0 && slot < NPC_TEXTURE_SLOTS) {
         return g_npcTextures[slot].texture;
     }
     return 0;
@@ -3377,18 +3380,18 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) SetTargetFlag21(void) {
     return FIELD_EFFECT_DONE;
 }
 
-// Sets the leader's flag 0x22 and clears flag 10 of every live object out of
-// reach.
+// Sets the leader's flag 0x22 and clears ACTOR_FLAG_NOTICED of every live
+// object out of reach.
 RVA(0x0001f9c0, 0x67)
 b16 ScatterObjects(void) {
     i16 i;
     u8* flags = GetCharacterFlags(GetRosterCharacter(ROSTER_LEADER));
     SetBit(flags, 0x22);
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         i16 object = GetLiveObject(i);
         if (object >= 0 && !HasObjectInReach(1, -1, object)) {
             flags = GetCharacterFlags(GetCombatant(object));
-            ClearBit(flags, 10);
+            ClearBit(flags, ACTOR_FLAG_NOTICED);
         }
     }
     return true;
@@ -3437,7 +3440,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBackActor(void) {
     if (HasObjectInReach(0, -1, 0)) {
         return FIELD_EFFECT_NONE;
     }
-    ExchangeAbortPending(1);
+    ExchangeAbortPending(true);
     return FIELD_EFFECT_DONE;
 }
 

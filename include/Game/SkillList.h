@@ -6,7 +6,10 @@
 #include <Game/Character.h>
 #include <Util/WordList.h>
 
-// The sentinel-terminated list of skills available for `id` and `source`.
+// Skill lists (and the learning requirement table) end with SKILL_LIST_END.
+#define SKILL_LIST_END (-1)
+
+// The list of skills available for `id` and `source`.
 // For id zero, source selects one of the roster leader's affiliations.
 i16* GetLearnableSkillList(i16 id, i16 source);
 

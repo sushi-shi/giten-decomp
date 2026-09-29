@@ -62,7 +62,7 @@ i16 CountFieldObjects(void) {
     char buffer[128];
     i16 count = IsAbortPending();
     if (count) {
-        SetAbortPending(0);
+        SetAbortPending(false);
         count = -1;
     } else if (g_renderMode == RENDER_MODE_VIEW) {
         u32 i;

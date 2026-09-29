@@ -620,7 +620,7 @@ void StartNpcScene(AreaNpc* npc) {
 // gives the player a training point of kind 3; returns 1.
 RVA(0x00012be0, 0xb3)
 i16 RunPendingTalk(void) {
-    i16 abort = ExchangeAbortPending(0);
+    b16 abort = ExchangeAbortPending(false);
     i16 objects = CountFieldObjects();
     i16 picked;
     Character* actor;
