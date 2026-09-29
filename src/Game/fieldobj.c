@@ -16,6 +16,7 @@
 #include <Game/Actor.h>
 #include <Game/ActorFlag.h>
 #include <Game/Alignment.h>
+#include <Game/AlignmentSide.h>
 #include <Game/AnalyzeData.h>
 #include <Game/AreaMap.h>
 #include <Game/Attitude.h>
@@ -71,6 +72,7 @@
 #include <Util/Range.h>
 #include <Util/WordList.h>
 
+#include <limits.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
@@ -293,10 +295,10 @@ DATA(0x00078878)
 static u8 s_analyzed[0x40] = {0};
 
 DATA(0x000788b8)
-static i16 s_encounterGroups[2] = {0};
+static i16 s_encounterGroups[FIELD_LAYER_COUNT] = {0};
 
 DATA(0x000788c0)
-u8 g_worldEncounterGroupSlots[16] = {0};
+u8 g_worldEncounterGroupSlots[FIELD_OBJECT_COUNT] = {0};
 
 // @identity-TODO: nine cumulative weights per encounter row (data file 5).
 #define ENCOUNTER_ROW_SLOTS 9
@@ -589,7 +591,7 @@ i16 SpawnMapObject(i16 layer, i16 x, i16 y, i16 direction, i8 event) {
         return -1;
     }
     kind = LookupCellObject(table, layer);
-    if (kind < 0x20 || kind >= 0x2020) {
+    if (kind < HUMAN_ID_LIMIT || kind >= 0x2020) {
         return -1;
     }
     return SpawnFieldObject(layer, x, y, direction, kind, false, event, false);
@@ -2296,7 +2298,7 @@ i32 ReadObjectRecordField(i16 kind, i16 offset, i16 size) {
 
 RVA(0x00010ba0, 0x20)
 void SetFamiliarityCount(i16 id, i16 count) {
-    s_familiarityCounts[id] = ClampShort(count, 0, 0xff);
+    s_familiarityCounts[id] = ClampShort(count, 0, UCHAR_MAX);
 }
 
 RVA(0x00010bc0, 0xe)
@@ -2319,17 +2321,17 @@ void RefreshFamiliarity(Character* character) {
         return;
     }
     value = GetFamiliarityCount(character->id) / 8;
-    character->familiarity = ClampShort(value, 0, 0x3f);
+    character->familiarity = ClampShort(value, 0, FAMILIARITY_MAX);
     leaderLevel = GetRosterLeader()->level;
     value = leaderLevel - character->level;
-    character->levelGap = ClampShort(value, 0, 0xff);
+    character->levelGap = ClampShort(value, 0, UCHAR_MAX);
     SetCharacterFlag(character, ACTOR_FLAG_POINTS_READY);
 }
 
 RVA(0x00010c70, 0x2a)
 void SetLevelGap(Character* character, i16 gap) {
     RefreshFamiliarity(character);
-    character->levelGap = ClampShort(gap, 0, 0xff);
+    character->levelGap = ClampShort(gap, 0, UCHAR_MAX);
 }
 
 RVA(0x00010ca0, 0x28)
@@ -2338,7 +2340,7 @@ void AddLevelGap(Character* character, i16 delta) {
     SetLevelGap(character, character->levelGap + delta);
 }
 
-// The familiarity, two more unless event flag 2/8 is set.
+// The familiarity, two more unless the DCS Mabudachi is held.
 RVA(0x00010cd0, 0x2e)
 i16 GetFamiliarity(Character* character) {
     i16 familiarity;
@@ -2353,7 +2355,7 @@ i16 GetFamiliarity(Character* character) {
 RVA(0x00010d00, 0x27)
 void SetFamiliarity(Character* character, i16 familiarity) {
     RefreshFamiliarity(character);
-    character->familiarity = ClampShort(familiarity, 0, 0x3f);
+    character->familiarity = ClampShort(familiarity, 0, FAMILIARITY_MAX);
 }
 
 RVA(0x00010d30, 0x20)
@@ -2392,12 +2394,13 @@ i16 AlignmentConflicts(Character* character) {
     }
     leaderClass = GetAlignmentClassA(GetRosterLeader());
     characterClass = GetAlignmentClassA(character);
-    if ((characterClass < 0 && leaderClass >= 0) || (characterClass >= 0 && leaderClass < 0)) {
+    if ((characterClass < ALIGNMENT_NEUTRAL && leaderClass >= ALIGNMENT_NEUTRAL)
+        || (characterClass >= ALIGNMENT_NEUTRAL && leaderClass < ALIGNMENT_NEUTRAL)) {
         return -1;
     }
     leaderClass = GetAlignmentClassB(GetRosterLeader());
     characterClass = GetAlignmentClassB(character);
-    if (characterClass + leaderClass == 0 && leaderClass != 0) {
+    if (characterClass + leaderClass == 0 && leaderClass != ALIGNMENT_NEUTRAL) {
         return -1;
     }
     return 0;
@@ -2427,23 +2430,25 @@ b16 HasAnalyzeData(i16 id) {
 // fell short (0 on success).
 RVA(0x00010eb0, 0x24)
 i16 SaveFamiliarityCounts(FILE* fp) {
-    return 0x200 - fwrite(s_familiarityCounts, 1, 0x200, fp);
+    return sizeof(s_familiarityCounts)
+           - fwrite(s_familiarityCounts, 1, sizeof(s_familiarityCounts), fp);
 }
 
 RVA(0x00010ee0, 0x24)
 i16 LoadFamiliarityCounts(FILE* fp) {
-    return 0x200 - fread(s_familiarityCounts, 1, 0x200, fp);
+    return sizeof(s_familiarityCounts)
+           - fread(s_familiarityCounts, 1, sizeof(s_familiarityCounts), fp);
 }
 
 RVA(0x00010f10, 0x21)
 i16 SaveAnalyzed(FILE* fp) {
-    return 0x40 - fwrite(s_analyzed, 1, 0x40, fp);
+    return sizeof(s_analyzed) - fwrite(s_analyzed, 1, sizeof(s_analyzed), fp);
 }
 
 RVA(0x00010f40, 0x26)
 i16 LoadAnalyzed(FILE* fp) {
     ClearAnalyzed();
-    return 0x40 - fread(s_analyzed, 1, 0x40, fp);
+    return sizeof(s_analyzed) - fread(s_analyzed, 1, sizeof(s_analyzed), fp);
 }
 
 RVA(0x00010f70, 0x4f)
@@ -2526,13 +2531,13 @@ i16 LoadWorldEncounterBlock(i16 x, i16 y) {
     s_encounterBlock = ReadRawHandle(fp);
     CloseDataFile(fp);
     if (IsOddMapLayer()) {
-        return 45;
+        return WORLD_ENCOUNTER_CELLS;
     }
     x = GetWorldBlockX(x);
     y = GetWorldBlockY(y);
-    x /= 32;
-    y /= 40;
-    x += y * 9;
+    x /= WORLD_ENCOUNTER_CELL_WIDTH;
+    y /= WORLD_ENCOUNTER_CELL_HEIGHT;
+    x += y * WORLD_ENCOUNTER_COLUMNS;
     return x;
 }
 
@@ -2573,8 +2578,8 @@ i16 GetWorldEncounterMaximum(i16 maximum) {
         maximum += 2;
     }
     maximum += GetPartyEncounterSizeBonus();
-    if (maximum >= 16) {
-        maximum = 16;
+    if (maximum >= FIELD_OBJECT_COUNT) {
+        maximum = FIELD_OBJECT_COUNT;
     }
     return maximum;
 }
@@ -2614,7 +2619,7 @@ i16 PickWorldEncounterGroup(i16 weights, i16 choices) {
         roll += 10;
     }
     total = 0;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < WORLD_ENCOUNTER_GROUPS; i++) {
         total += table[weights].weights[i];
         if (roll < total) {
             groups = HandleReadPtr(s_encounterChoices);

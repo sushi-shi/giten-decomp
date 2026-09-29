@@ -48,6 +48,9 @@ src/Text/font.cpp	s_hotspotImages	0	data-or-extent	*	hotspot with no bitmap reso
 *	*	*	call-argument	AllocCleared(*argument 2	the element size of an allocation
 *	*	*	call-argument	sprintf(char *, const char *, ...) argument 3	a value formatted into the text
 *	*	*	call-argument	sprintf(char *, const char *, ...) argument 4	a value formatted into the text
+*	*	*	call-argument	PushPromptState(*argument 1	the action state's sub-state
+*	*	*	call-argument	PushPromptState(*argument [234]	the action effect's field position (x, height, depth)
+*	*	*	call-argument	PushPromptState(*argument 5	the action state's mode
 src/Platform/winmain.cpp	*	*	*	*array*[ ]vertices	vertex slot of a fixed quad or strip mesh
 src/Platform/winmain.cpp	*	*	*	*array*[ ]s_door*	corner and animation-step slot of the door frame tables
 src/Platform/winmain.cpp	*	*	*	*array*[ ]s_enemy	vertex slot of the enemy billboard quad
@@ -181,6 +184,154 @@ src/Script/scriptactor.c	OpJumpUnlessStatContest	[01]	trivial-function-literal	[
 src/Game/statestack.c	RunLevelUp	*	*	*GetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
 src/Game/statestack.c	RunLevelUp	*	call-argument	SetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
 src/Game/fieldobj.c	GetObjectLifeState	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
+src/Game/fieldobj.c	s_depthRise	*	data-or-extent	*	@identity-TODO: screen rise in pixels per view depth (0..-4)
+src/Game/fieldobj.c	s_approach[XY]	*	data-or-extent	*	@identity-TODO: approach offsets in pixels per step (0..-4)
+src/Game/fieldobj.c	s_facingSprite	*	data-or-extent	*	sprite per facing relative to the view (-1 mirrors the side sprite)
+src/Game/fieldobj.c	s_facingImageCodes	*	data-or-extent	*	image code per facing relative to the party (-1 mirrors the side image)
+src/Game/fieldobj.c	s_encounterSpread	*	data-or-extent	*	how far across an encounter object may land, per step along (0..-3)
+src/Game/fieldobj.c	*	*	*	*anim*	anim is a frame counter: 0 idle, -1 restart, frames from 1, hidden past frame 8
+src/Game/fieldobj.c	*	0	call-argument	*WordList(*argument 2	an empty word list
+src/Game/fieldobj.c	RemoveFieldObject	0	trivial-function-literal	0 equality flag*	flag 0 of bank 0 is the object's no-flag value (it always reads clear)
+src/Game/fieldobj.c	RemoveFieldObject	7	call-argument	ModifyEventFlag*	shifts the bank byte's negate bit (FLAG_NEGATE) down to a BitChangeMode
+src/Game/fieldobj.c	FindObjectOnLayer	-1	*	*	no slot
+src/Game/fieldobj.c	SpawnFieldObject	-1	*	*	no free slot
+src/Game/fieldobj.c	SpawnFieldObject	0	trivial-function-literal	0 store *	a fresh slot starts with these fields clear
+src/Game/fieldobj.c	SpawnFieldObject	0x20	call-argument	SetBit*	@identity-TODO: actor flag 0x20 marks an object on its alternate script; StepObjectTowardParty keeps such objects still (the flag table names no bit 0x20)
+src/Game/fieldobj.c	StepObjectTowardParty	0x20	call-argument	TestFieldObjectFlag*	@identity-TODO: actor flag 0x20 (set for an alternate-script object) keeps it from stepping
+src/Game/fieldobj.c	SpawnMapObject	0xff	*	*	a map cell code of 0xff (or -1) holds nothing
+src/Game/fieldobj.c	SpawnMapObject	-1	*	*	a map cell code of -1 holds nothing; -1 is the no-object result
+src/Game/fieldobj.c	SpawnMapObject	0x2020	*	*	@identity-TODO: the end of the spawnable object record range
+src/Game/fieldobj.c	GetLiveObject	0	*	*	the object checks are not bypassed
+src/Game/fieldobj.c	GetLiveObject	-1	*	*	no live object
+src/Game/fieldobj.c	RespawnFieldObject	-1	*	*	no object spawned
+src/Game/fieldobj.c	GetObjectLifeState	0	*	*	no object in play; GetObjectLifeState counts 1 per live object and 2 per fallen one, and DrawFieldObjects sums the counts
+src/Game/fieldobj.c	RelativeFacing	*	*	*	quarter-turn arithmetic on ViewDirection values: add a half turn and wrap to 0..3
+src/Game/fieldobj.c	GetApproachOffset	-80	store	*	@identity-TODO: the approach offset outside the table's five steps
+src/Game/fieldobj.c	GetApproachOffset	-4	*	*	the table covers steps 0..-4
+src/Game/fieldobj.c	DrawFieldObject	9	*	*	@identity-TODO: the near/far cell tables cover up to 9 objects in a cell
+src/Game/fieldobj.c	DrawFieldObject	8	comparison-or-bound	*	@identity-TODO: the near/far cell tables have 9 draw positions (0..8)
+src/Game/fieldobj.c	DrawFieldObject	8	store	*	@identity-TODO: the near/far cell tables have 9 draw positions (0..8)
+src/Game/fieldobj.c	DrawFieldObject	0	*	*	view depth 0 is the party's own row
+src/Game/fieldobj.c	DrawFieldObject	0x72	*	*	@identity-TODO: screen y of the floor projection's base line in pixels
+src/Game/fieldobj.c	DrawFieldObject	320	*	*	half the 640-pixel screen width: x from the screen centre
+src/Game/fieldobj.c	DrawFieldObject	8	arithmetic	*	@identity-TODO: the sprite position is in 8-pixel units
+src/Game/fieldobj.c	DrawFieldObjects	0	*	*	no object drawn yet
+src/Game/fieldobj.c	FindObjectAt	-1	*	*	no object
+src/Game/fieldobj.c	CountObjectsAt	-1	*	*	FindObjectAt's no-object result
+src/Game/fieldobj.c	CountObjectsAt	1	*	*	the next slot after the one found
+src/Game/fieldobj.c	FindObjectAtParty	0	*	*	search from slot 0; OBJECT_MATCH_ANY ignores the kind
+src/Game/fieldobj.c	UpdateFieldObjects	4	*	*	@identity-TODO: objects at map y 4 and beyond are hidden
+src/Game/fieldobj.c	ClearObjectStuns	*	*	*	cleared[] is a per-slot yes/no word array the caller passes on to ApplyObjectConditions
+src/Game/fieldobj.c	ApplyObjectConditions	0	*	*	marked[] is a per-slot yes/no word array
+src/Game/fieldobj.c	GetObject*ImageCode	*	*	*	@identity-TODO: image codes 3 (acting) and 4 (redrawn/animating/hidden) select sprite rows; 0-2 face the party
+src/Game/fieldobj.c	GetScriptSetFile	3	*	*	a script set lists three script files
+src/Game/fieldobj.c	SaveFieldLayer	0	*	*	the layer's picture moves to the saved copy
+src/Game/fieldobj.c	RestoreFieldLayer	0	*	*	the saved copy's picture moves back to the layer
+src/Game/fieldobj.c	ResetFieldLayer	-1	*	*	an empty layer's record id
+src/Game/fieldobj.c	LoadEnemyGroupSlot	-1	*	*	an empty layer's record id
+src/Game/fieldobj.c	LoadEnemyGroupSlot	4	*	*	a record's picture index selects a block of 16 image files
+src/Game/fieldobj.c	LoadEnemyGroupSlot	0x2002	*	*	the object pictures start at image file 0x2002
+src/Game/fieldobj.c	LoadEnemyGroupSlot	0xb80	*	*	@identity-TODO: picture block 0xb80 decodes with the alternate decoder
+src/Game/fieldobj.c	FindLayerScriptEntry	0	*	*	layer slot 0 is no layer (slots count from 1); script 0 is the layer's first, loaded with the set
+src/Game/fieldobj.c	FindLayerOfKind	-1	*	*	no layer holds the record
+src/Game/fieldobj.c	LoadLayerScripts	0x20	*	*	@identity-TODO: a layer script's state is its index minus 32
+src/Game/fieldobj.c	LoadLayerScriptSet	0x6000	*	*	the common object scripts are script file 0x6000, the set's files count from it
+src/Game/fieldobj.c	LoadLayerScriptSet	0x6100	*	*	a set's third file counts from script file 0x6100
+src/Game/fieldobj.c	LoadLayerScriptSet	0	call-argument	LoadLayerScripts*	each file fills script slots 0..15
+src/Game/fieldobj.c	LoadLayerScriptSet	0x10	call-argument	LoadLayerScripts*	each file fills script slots 0..15
+src/Game/fieldobj.c	LoadLayerScriptSet	*	call-argument	GetScriptSetFile*	the set's first, second and third file
+src/Game/fieldobj.c	LoadLayerScriptSet	0xff	*	*	a set's file 0xff is none
+src/Game/fieldobj.c	RestartEnemySpawnTimer	60	*	*	the interval is in seconds, the timer in ticks (60 a second)
+src/Game/fieldobj.c	SetSpawnInterval	0	*	*	0 seconds picks a random interval
+src/Game/fieldobj.c	SpawnRandomEnemy	-1	*	*	no enemy spawned
+src/Game/fieldobj.c	SpawnRandomEnemy	1	*	*	picks one of the two layers from a random roll's low bit
+src/Game/fieldobj.c	SpawnRandomEnemy	10	*	*	ten tries at a free cell
+src/Game/fieldobj.c	TickEnemySpawnTimer	0	*	*	the timer has run out
+src/Game/fieldobj.c	TickEnemySpawnTimer	-1	*	*	no enemy spawned
+src/Game/fieldobj.c	ScanSightRow	3	*	*	wraps a turned ViewDirection to 0..3
+src/Game/fieldobj.c	BuildSightGrid	*	*	*	the four ViewDirections from the facing, wrapped to 0..3
+src/Game/fieldobj.c	GetSightCell	0	*	*	unseen
+src/Game/fieldobj.c	GetPartySide	2	*	*	a random side: MOVE_RIGHT (1) or MOVE_LEFT (3)
+src/Game/fieldobj.c	StepObjectTowardParty	1	*	*	mode 1 stops next to the party
+src/Game/fieldobj.c	IsWithinRange	*	*	*	a range byte packs the near distance in its high nibble and the far one in its low nibble
+src/Game/fieldobj.c	UseObjectSkill	-1	*	*	the skill cannot be used, is out of range or fails
+src/Game/fieldobj.c	UseObjectSkill	2	comparison-or-bound	*	@identity-TODO: skill kind 2 targets field objects by HP or conditions
+src/Game/fieldobj.c	UseObjectSkill	*	*	operator >> max	three quarters of the maximum HP
+src/Game/fieldobj.c	UseObjectSkill	3	arithmetic	*	three quarters of the maximum HP
+src/Game/fieldobj.c	RunObjectStep	0	trivial-function-literal	0 equality g_tickElapsed	no ticks have elapsed
+src/Game/fieldobj.c	RunObjectStep	1	call-argument	AgeConditions*	conditions age one turn
+src/Game/fieldobj.c	RunObjectStep	1	call-argument	SetFieldBusy*	one actor is busy (the value counts animating objects)
+src/Game/fieldobj.c	RunObjectStep	0xff	call-argument	StartScriptInCode*	@identity-TODO: the object script's call argument
+src/Game/fieldobj.c	RunObjectStep	0	call-argument	StartScriptInCode*	entry 0 of the object script
+src/Game/fieldobj.c	RunObjectStep	1	call-argument	NewScriptContext*	@identity-TODO: script context mode 1 runs for an actor
+src/Game/fieldobj.c	RunObjectStep	0	call-argument	Run*	text window 0
+src/Game/fieldobj.c	RunObjectStep	0	call-argument	RetakeDeferredChar*	text window 0
+src/Game/fieldobj.c	RunObjectStep	2	store	store to action	@identity-TODO: PickActorAction's result 2, a skill
+src/Game/fieldobj.c	RunObjectStep	1	trivial-function-literal	1 store g_actionId	@identity-TODO: action 1 goes with the weapon attack (PICK_ROLE_ATTACK)
+src/Game/fieldobj.c	RunObjectStep	*	*	* action	@identity-TODO: PickActorAction's result: 1 attack, 2 skill (the action-result codes need the message-script decoder)
+src/Game/fieldobj.c	RunObjectStep	0	trivial-function-literal	0 equality result	UseObjectSkill picked no target
+src/Game/fieldobj.c	RunObjectStep	0	trivial-function-literal	0 store tries	no tries yet
+src/Game/fieldobj.c	RunObjectStep	1	trivial-function-literal	1 bound slot	encounter slot 0 attacks; slots 1..OBJECT_SKILL_COUNT pick a skill
+src/Game/fieldobj.c	RunObjectStep	1	trivial-function-literal	1 for-init	encounter slot n picks skills[n - 1]; @identity-TODO: action 1 again (the weapon attack) once the skill tries fail
+src/Game/fieldobj.c	RunObjectStep	4	*	*	four tries at a usable skill in range
+src/Game/fieldobj.c	RunObjectStep	*	call-argument	StepObjectTowardParty*argument 3	mode 1 stops next to the party, 0 closes in
+src/Game/fieldobj.c	RunObjectStep	*	call-argument	StepObjectTowardParty*argument 2	a random side: MOVE_RIGHT (1) or MOVE_LEFT (3)
+src/Game/fieldobj.c	RunObjectStep	*	*	*scene*	@identity-TODO: the talk scene's entries per attitude (-1 falls back to entry 2)
+src/Game/fieldobj.c	RunObjectStep	0xe2	*	*	@identity-TODO: scene file 0xe2 is the field talk scene
+src/Game/fieldobj.c	ChooseObjectTarget	0xce	*	*	@identity-TODO: object record 0xce targets party member 0x22 first (record names are undecoded)
+src/Game/fieldobj.c	ChooseObjectTarget	0x22	*	*	@identity-TODO: the character object record 0xce seeks out (record names are undecoded)
+src/Game/fieldobj.c	ChooseObjectTarget	-1	*	*	FindPartyPositionOfId's not-in-party result
+src/Game/fieldobj.c	ChooseObjectTarget	0	trivial-function-literal	0 equality count	no candidate
+src/Game/fieldobj.c	GetDemonFlag*	*	*	*	@identity-TODO: a demon table entry's flag byte: bit 2 (bit 6) disables the low (high) flag in bit 0 (bit 4)
+src/Game/fieldobj.c	FindStrongestOfClass	-1	*	-1 equality GetDemonFlagLow()	GetDemonFlagLow's disabled result
+src/Game/fieldobj.c	FindStrongestOf*	-1	*	*	no demon or level found yet
+src/Game/fieldobj.c	FindDemonOfRace	-1	*	*	no demon found
+src/Game/fieldobj.c	FindDemonOfRace	500	*	*	above any demon level, so the first match wins
+src/Game/fieldobj.c	FindNextOfRace	0x7fff	*	*	above any level or id, so the first match wins
+src/Game/fieldobj.c	FindNextOfRace	0x8000	*	*	@identity-TODO: the i16 best id wrapped past 0x7fff
+src/Game/fieldobj.c	FindNextOfRace	-1	*	*	no demon found; levels from 0 count
+src/Game/fieldobj.c	FindNextOfRace	0	*	*	no wrap-around search
+src/Game/fieldobj.c	ScaleLevelGap	*	*	*	@identity-TODO: (a - b) * 42 / 20 clamped to a signed byte
+src/Game/fieldobj.c	InitObjectFromRecord	0	trivial-function-literal	0 store *	a new object starts with these fields clear
+src/Game/fieldobj.c	InitObjectFromRecord	0	trivial-function-literal	0 store	a new object starts with its conditions and flags clear
+src/Game/fieldobj.c	InitObjectFromRecord	*	*	*bits68*	a record's bits68 packs byte083 (bits 0-1), triggerRange (bits 2-4) and the pick flags (bits 5-6)
+src/Game/fieldobj.c	InitObjectFromRecord	*	*	operator & pickFlags	a record's bits68 bits 5-6 replace the pick flags' bits 0-2
+src/Game/fieldobj.c	InitObjectFromRecord	*	*	operator &	a record's bits68 packs byte083 (bits 0-1), triggerRange (bits 2-4) and the pick flags (bits 5-6)
+src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 bitwise	a record's bits68 packs the pick flags in bits 5-6
+src/Game/fieldobj.c	InitObjectFromRecord	*	call-argument	ScaleLevelGap*	the record's two alignment bytes
+src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 bound item	item 0 is no item
+src/Game/fieldobj.c	InitObjectFromRecord	-1	*	*	an empty slot has no attachment
+src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 store byte096	@identity-TODO: byte096 starts at 1
+src/Game/fieldobj.c	InitObjectFromRecord	0x11	*	*	@identity-TODO: word098 starts at 0x11
+src/Game/fieldobj.c	InitObjectFromRecord	18	*	*	@identity-TODO: the fourth battle-stat group's level (its identity is unrecovered)
+src/Game/fieldobj.c	InitObjectFromRecord	0x117	*	*	@identity-TODO: object record 0x117 mirrors the party leader (record names are undecoded)
+src/Game/fieldobj.c	ReadObjectRecordField	*	*	*	a field of one, two or four bytes
+src/Game/fieldobj.c	SetFamiliarityCount	0	*	*	counts start at zero
+src/Game/fieldobj.c	RefreshFamiliarity	8	*	*	the familiarity is an eighth of the count
+src/Game/fieldobj.c	RefreshFamiliarity	0	*	*	familiarity and level gap start at zero
+src/Game/fieldobj.c	SetLevelGap	0	*	*	the level gap starts at zero
+src/Game/fieldobj.c	SetFamiliarity	0	*	*	familiarity starts at zero
+src/Game/fieldobj.c	GetFamiliarity	2	*	*	two more without the DCS Mabudachi
+src/Game/fieldobj.c	RollCharacterFunds	10	*	*	ten times the level (plus 0..10)
+src/Game/fieldobj.c	AlignmentConflicts	-1	*	*	no character, or the alignments conflict
+src/Game/fieldobj.c	AlignmentConflicts	0	*	*	opposite classes sum to zero; 0 is no conflict
+src/Game/fieldobj.c	RollWorldMapEncounter	*	*	*	-1 no encounter this turn, 0 none rolled, else the count; a cell has two variants (0 and 1)
+src/Game/fieldobj.c	CheckWorldEncounterInterval	120	*	*	two hours of game minutes between encounters
+src/Game/fieldobj.c	CheckWorldEncounterInterval	*	*	*	-1 too soon, 1 an encounter may happen
+src/Game/fieldobj.c	TestWorldEncounterChance	0	*	*	the bonus resets after an encounter
+src/Game/fieldobj.c	PrepareWorldEncounter	0	*	*	no encounter
+src/Game/fieldobj.c	PrepareWorldEncounter	*	*	*array-index s_encounterGroups	layers 0 and 1 each get a group
+src/Game/fieldobj.c	PrepareWorldEncounter	10	*	*	ten rolls for a second group different from the first
+src/Game/fieldobj.c	GetWorldEncounterMaximum	2	*	*	Asuka's two extra encounter objects
+src/Game/fieldobj.c	GetPartyEncounterSizeBonus	*	*	*	(50 - the human members' mean fortune) / 10, at least 1; 0 without humans
+src/Game/fieldobj.c	PickWorldEncounterGroup	10	*	*	Asuka adds 10 to the group roll
+src/Game/fieldobj.c	PickWorldEncounterGroup	0	*	*	the weights' running total starts at 0; past the weights, the next table's first group
+src/Game/fieldobj.c	AssignWorldEncounterGroups	40	*	*	a 40% chance per object of the second group
+src/Game/fieldobj.c	AssignWorldEncounterGroups	*	*	*	layer 0 or 1
+src/Game/fieldobj.c	LoadFieldTable	0	*	*	no handle loaded
+src/Game/fieldobj.c	LoadFieldTable	0x5000	*	*	the field images start at image file 0x5000
+src/Game/fieldobj.c	PrepareFieldRandom	*	call-argument	LoadEnemyGroupSlot*	layers 0 and 1 and their groups
+src/Game/fieldobj.c	AnyObjectInReach	*	call-argument	HasObjectInReach*	@identity-TODO: reach mode 1 from the party (-1)
 src/Game/itemrecord.c	ApplyEquipmentRegen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
 src/Game/character.c	AgeConditions	0	existing-symbol	enum	a loop over every condition starts at condition 0
 src/Game/character.c	IsPartyMemberFallen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH

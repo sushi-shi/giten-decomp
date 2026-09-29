@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <Game/FieldObject.h>
 #include <Game/FieldView.h>
 #include <Ints.h>
 
@@ -33,12 +34,23 @@ extern i16 g_infoPlane;
 #define WORLD_BLOCK_COLUMNS 8
 #define WORLD_BLOCK_ROWS 11
 
+// A world encounter table weighs WORLD_ENCOUNTER_GROUPS enemy groups. A world
+// block's encounter file holds one cell per WORLD_ENCOUNTER_CELL_WIDTH x
+// WORLD_ENCOUNTER_CELL_HEIGHT pixels of the block, row by row, then the cell
+// for the odd map layer.
+#define WORLD_ENCOUNTER_GROUPS 6
+#define WORLD_ENCOUNTER_CELL_WIDTH 32
+#define WORLD_ENCOUNTER_CELL_HEIGHT 40
+#define WORLD_ENCOUNTER_COLUMNS (WORLD_BLOCK_WIDTH / WORLD_ENCOUNTER_CELL_WIDTH)
+#define WORLD_ENCOUNTER_CELLS                                                                      \
+    (WORLD_ENCOUNTER_COLUMNS * (WORLD_BLOCK_HEIGHT / WORLD_ENCOUNTER_CELL_HEIGHT))
+
 typedef struct WorldEncounterChoices {
-    i16 groups[6];
+    i16 groups[WORLD_ENCOUNTER_GROUPS];
 } WorldEncounterChoices;
 
 typedef struct WorldEncounterWeights {
-    u8 weights[6];
+    u8 weights[WORLD_ENCOUNTER_GROUPS];
 } WorldEncounterWeights;
 
 typedef struct WorldEncounterVariant {
@@ -78,7 +90,7 @@ i16 GetWorldEncounterMaximum(i16 maximum);
 i16 GetPartyEncounterSizeBonus(void);
 i16 AssignWorldEncounterGroups(i16 count);
 // Group selection for each member of an encounter, capped at sixteen.
-extern u8 g_worldEncounterGroupSlots[16];
+extern u8 g_worldEncounterGroupSlots[FIELD_OBJECT_COUNT];
 
 // @identity-TODO: What leader personal flag 0x22 is (it suppresses encounters) is unrecovered.
 i16 RollWorldMapEncounter(i16 x, i16 y);
