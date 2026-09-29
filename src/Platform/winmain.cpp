@@ -56,7 +56,7 @@ DATA(0x00084800)
 Texture g_roomTexture;
 
 DATA(0x00084d20)
-Texture g_enemyTextures[2][5];
+Texture g_enemyTextures[2][ENEMY_TEXTURE_FRAMES];
 
 DATA(0x00088010)
 Hotspot g_hotspots[64];

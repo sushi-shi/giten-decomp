@@ -426,3 +426,13 @@ include/Game/FieldSight.h	PushFieldUsePrompt	*	call-argument	*	@identity-TODO: t
 src/Platform/winmain.cpp	RestoreCursorClip	0	*	*	an empty (never saved) clip rectangle
 src/Platform/winmain.cpp	g_joystickKeys	*	data-or-extent	*	joystick button bits (1, 2, 4 shifted to the button field); the table ends with {0, 0}
 src/Platform/winmain.cpp	ClickMenuBar	0	*	*	no menu-bar command handled
+src/Platform/d3dapp.cpp	*	*	*	*	DirectDraw, Direct3D, DirectSound and DirectInput setup: surface sizes (640x480, 640x328 view), bit depths, 4x4 matrices, the projection (160, 1281), light and material colours, the 22050 Hz 16-bit mono sound format, buffer sizes and volumes, and API flags left 0
+src/Sound/midistream.cpp	*	*	*	*	MIDI stream buffers: members cleared at construction, 3-word events (4-byte aligned lengths), 16 channels, one MIDI device, API flags left 0
+src/Gfx/bitmapio.cpp	*	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Platform/joystick.cpp	*	*	*	*	joystick ranges: the axis centre (half the range) and a quarter-range dead zone; GetAsyncKeyState's down bit (0x8000); joystick 1 (id 0)
+src/Gfx/sprite.cpp	*	*	*	*	sprite placement: 8 pixels per column, one-slot shifts of the placement list, and demon images (0x2000..0x2fff) whose low nibble selects the half-size variant
+src/Gfx/layertexture.cpp	DecodeLayerImageAlt	*	*	*	the alternate decode's six pictures and the loaded check on g_enemyPictures[0]; decode offsets start at 0
+src/Gfx/layertexture.cpp	DecodeLayerImage	0	*	*consumed	decode offsets start at 0
+src/Gfx/walltexture.cpp	LoadWallTextures	*	*	*	wall sets: the low nibble selects the set, levels 1..3 its variant
+src/Gfx/effectdraw.cpp	*	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
+src/Platform/worldmap.cpp	*	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
