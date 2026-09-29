@@ -109,11 +109,11 @@ i16 RunDebugMenu(void) {
             s_debugMenu = CreateMenuBox(s_debugMenu, 0x19, 2);
             MoveMenuBox(s_debugMenu, -8, -0x16);
             SetMenuItems(s_debugMenu, 8, s_debugEntries, 15, DebugMenuHandler);
-            return 0;
+            return SUBSTATE_RUNNING;
         case MENU_STEP_CLOSE:
             s_debugMenu = DestroyMenuBox(s_debugMenu);
             HideTextPlane(0);
-            return -1;
+            return SUBSTATE_FINISHED;
         case MENU_STEP_RUN:
             pick = RunMenu(s_debugMenu);
             if (pick == TEXT_EVENT_CANCEL) {
@@ -122,25 +122,25 @@ i16 RunDebugMenu(void) {
             if (pick > 0) {
                 SetGameStep(g_selectedObjectId + MENU_STEP_PICK_FIRST);
                 s_debugMenu = DestroyMenuBox(s_debugMenu);
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             break;
         case MENU_STEP_PICK_FIRST + DEBUG_ROW_DESTROY_ALL_DEMONS:
             SetGameStep(MENU_STEP_CLOSE);
             ResetObjectAnims();
-            return 0;
+            return SUBSTATE_RUNNING;
         case MENU_STEP_PICK_FIRST + 6:
         case MENU_STEP_PICK_FIRST + DEBUG_ROW_MOVE_3D:
         case MENU_STEP_PICK_FIRST + DEBUG_ROW_LOAD:
             row = GetGameStep() - MENU_STEP_PICK_FIRST;
             SetGameStep(MENU_STEP_CLOSE);
             StartDebugScene(0xaf, s_debugEntries[row].value, g_infoPlane);
-            return 0;
+            return SUBSTATE_RUNNING;
         case MENU_STEP_PICK_FIRST + DEBUG_ROW_CHECK_DATA:
             row = GetGameStep() - MENU_STEP_PICK_FIRST;
             SetGameStep(MENU_STEP_OPEN);
             StartDebugScene(0xd1, s_debugEntries[row].value, g_infoPlane);
-            return 0;
+            return SUBSTATE_RUNNING;
         case MENU_STEP_PICK_FIRST + DEBUG_ROW_BGM:
         case MENU_STEP_PICK_FIRST + DEBUG_ROW_SE:
         case MENU_STEP_PICK_FIRST + 3:
@@ -152,10 +152,10 @@ i16 RunDebugMenu(void) {
             row = GetGameStep() - MENU_STEP_PICK_FIRST;
             SetGameStep(MENU_STEP_OPEN);
             StartDebugScene(0xaf, s_debugEntries[row].value, g_infoPlane);
-            return 0;
+            return SUBSTATE_RUNNING;
         case MENU_STEP_PICK_FIRST + 14:
             SetGameStep(MENU_STEP_OPEN);
-            return 0;
+            return SUBSTATE_RUNNING;
         case MENU_STEP_PICK_FIRST + DEBUG_ROW_MAGIC_EFFECT:
             switch (GetGameSub()) {
                 case MENU_STEP_OPEN:
@@ -165,11 +165,11 @@ i16 RunDebugMenu(void) {
                     s_debugMenu = CreateMenuBox(s_debugMenu, 0x19, 2);
                     MoveMenuBox(s_debugMenu, -8, -0x16);
                     SetMenuItems(s_debugMenu, 8, s_magicEntries, 8, MagicMenuHandler);
-                    return 0;
+                    return SUBSTATE_RUNNING;
                 case MENU_STEP_CLOSE:
                     s_debugMenu = DestroyMenuBox(s_debugMenu);
                     SetGameStep(MENU_STEP_OPEN);
-                    return 0;
+                    return SUBSTATE_RUNNING;
                 case MENU_STEP_RUN:
                     pick = RunMenu(s_debugMenu);
                     if (pick == TEXT_EVENT_CANCEL) {
@@ -177,7 +177,7 @@ i16 RunDebugMenu(void) {
                     }
                     if (pick > 0) {
                         SetGameSub(g_selectedObjectId + MENU_STEP_PICK_FIRST);
-                        return 0;
+                        return SUBSTATE_RUNNING;
                     }
                     break;
                 case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_PLUS_1:
@@ -190,13 +190,13 @@ i16 RunDebugMenu(void) {
                     s_testSkill += s_magicEntries[row].value;
                     SetGameSub(MENU_STEP_RUN);
                     s_debugMenu->flags |= 1;
-                    return 0;
+                    return SUBSTATE_RUNNING;
                 case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_DISTANCE:
                     SetGameSub(MENU_STEP_RUN);
                     s_debugMenu->flags |= 1;
                     if (++s_shotRise > 3) {
                         s_shotRise = 0;
-                        return 0;
+                        return SUBSTATE_RUNNING;
                     }
                     break;
                 case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_RUN:
@@ -218,7 +218,7 @@ i16 RunDebugMenu(void) {
             }
             break;
     }
-    return 0;
+    return SUBSTATE_RUNNING;
 }
 
 RVA(0x00001410, 0xc0)

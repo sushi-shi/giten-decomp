@@ -44,6 +44,13 @@ void __fastcall PushGameState(GZ_ENUM_PARAM(GameStateId, i16) state);
 // call it to return to the state that pushed them.
 void ReturnFromGameState(void);
 
+// What a sub-state run once per frame returns: still running, or finished
+// (its window closed).
+GZ_ENUM_CONST_BEGIN(SubstateResult)
+    SUBSTATE_FINISHED = -1,
+    SUBSTATE_RUNNING = 0
+GZ_ENUM_CONST_END(SubstateResult)
+
 i16 DispatchGameState(void);
 
 #endif // GITEN_GAME_STATESTACK_H

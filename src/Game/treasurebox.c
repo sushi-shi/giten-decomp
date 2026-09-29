@@ -485,11 +485,11 @@ i16 RunAnalyzeWindow(void) {
                 s_namePlane = CloseTextWindow(s_namePlane);
             }
             s_step++;
-            return -1;
+            return SUBSTATE_FINISHED;
 
         case 0:
             if (target == NULL) {
-                return -1;
+                return SUBSTATE_FINISHED;
             }
             if (IsEventFlagSet(2, 11) && IsEventFlagSet(2, 12) && IsEventFlagSet(2, 16)) {
                 ShowMessage(
@@ -498,7 +498,7 @@ i16 RunAnalyzeWindow(void) {
                     -1
                 ); // ＤＡＳがインストゥールされていません
                 s_step = -1;
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             s_namePlane = CreateTextPlane(15, 0);
             EraseTextPlaneText(s_namePlane);
@@ -512,12 +512,12 @@ i16 RunAnalyzeWindow(void) {
             PrintWindowText(s_namePlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_namePlane, -2);
             s_step++;
-            return 0;
+            return SUBSTATE_RUNNING;
 
         case 1:
             if (IsEventFlagSet(2, 12) && IsEventFlagSet(2, 16)) {
                 s_step++;
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             if (!HasAnalyzeData(target->id)) {
                 PrintWindowText(
@@ -529,7 +529,7 @@ i16 RunAnalyzeWindow(void) {
                     true
                 ); // アナライズデータがありません
                 s_step++;
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             s_step++;
             s_dataPlane = CreateTextPlane(16, 0);
@@ -571,23 +571,23 @@ i16 RunAnalyzeWindow(void) {
             ); // 状態   %s
             PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_dataPlane, -2);
-            return 0;
+            return SUBSTATE_RUNNING;
 
         case 2:
             if (TakeMouseLeftClick()) {
                 s_step++;
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             if (TakeMouseCancelSound()) {
                 s_step = -1;
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             break;
 
         case 3:
             if (IsEventFlagSet(2, 16) || !HasAnalyzeData(target->id)) {
                 s_step = -1;
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             PrintWindowText(
                 s_namePlane,
@@ -602,7 +602,7 @@ i16 RunAnalyzeWindow(void) {
             SetTextPlaneFirstSelectableRow(s_menu->plane, 0, false);
             SetTextPlaneHighlightMode(s_menu->plane, TEXT_HIGHLIGHT_OUTER);
             s_step++;
-            return 0;
+            return SUBSTATE_RUNNING;
 
         case 4:
             choice = RunMenu(s_menu);
@@ -615,7 +615,7 @@ i16 RunAnalyzeWindow(void) {
                 break;
             }
             s_step = -1;
-            return 0;
+            return SUBSTATE_RUNNING;
 
         case 5: {
             Character* copy;
@@ -630,7 +630,7 @@ i16 RunAnalyzeWindow(void) {
             PushGameState(GAME_STATE_STATUS);
             s_dataPlane = CloseTextWindow(s_dataPlane);
             s_namePlane = CloseTextWindow(s_namePlane);
-            return 0;
+            return SUBSTATE_RUNNING;
         }
 
         case 6: {
@@ -645,7 +645,7 @@ i16 RunAnalyzeWindow(void) {
             break;
         }
     }
-    return 0;
+    return SUBSTATE_RUNNING;
 }
 
 // Lists the yes/no items, and forgets them when the menu is torn down; an

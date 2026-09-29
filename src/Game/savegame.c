@@ -258,7 +258,7 @@ b16 RunSystemMenu(void) {
         case MENU_STEP_PICK_FIRST + SYSTEM_ROW_QUIT:
             return RunQuitConfirm();
         case MENU_STEP_PICK_FIRST + SYSTEM_ROW_DEBUG:
-            if (RunDebugMenu() < 0) {
+            if (RunDebugMenu() < SUBSTATE_RUNNING) {
                 SetGamePhase(MENU_STEP_CLOSE);
             }
             break;
