@@ -345,15 +345,29 @@ void PrepareViewedTreasureBox(void) {
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).
-// No return without a box: retail returns FindTreasureBoxAt's NULL as it is.
-// Retail also stores the result into `index`'s slot before returning; assigning
-// the result to `index` (returned or not) does not keep that store.
+// @identity-TODO: PC-98 draws the hotspot's closed treasure-box frame after
+// computing it here; the Windows build keeps only the frame arithmetic, and
+// retail retains its first store.
 RVA(0x0001ab40, 0x46)
-b32 IsHotspotTreasureOpen(i32 index) {
+void IsHotspotTreasureOpen(i32 index) {
     SceneSprite* sprite = GetHotspotSprite(index);
     TreasureBox* box = FindTreasureBoxAt(sprite->cellX, sprite->cellY, 0);
-    if (box) {
-        return IsTreasureBoxOpen(box);
+    i16 frame;
+    if (box == NULL) {
+        return;
+    }
+    frame = IsTreasureBoxOpen(box);
+    if (frame == 1) {
+        return;
+    }
+    frame++;
+    switch (box->head.code) {
+        case 0x4f:
+            frame += 2;
+        case TREASURE_BOX_LOWER:
+            frame += 2;
+        case 0x89:
+            frame += 2;
     }
 }
 
