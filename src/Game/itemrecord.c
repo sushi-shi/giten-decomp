@@ -1396,7 +1396,7 @@ RVA(0x00024ba0, 0x1b0)
 void AddItemStatPoints(i16 item, i16* stats) {
     i16 code;
 
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return;
     }
     DecodeItemRecord(&g_loadedItem, item);

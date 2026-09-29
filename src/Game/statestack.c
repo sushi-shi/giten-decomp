@@ -2632,7 +2632,11 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
                 return;
             }
             if (IsSkillUsableNow(event) != 1) {
-                AddItemUseMenuLine(menu, GetItemStackItem(GetItemListEntry(entries, index)), 1);
+                AddItemUseMenuLine(
+                    menu,
+                    GetItemStackItem(GetItemListEntry(entries, index)),
+                    MENU_LINE_DISABLED
+                );
                 return;
             }
             AddItemUseMenuLine(menu, GetItemStackItem(GetItemListEntry(entries, index)), 0);

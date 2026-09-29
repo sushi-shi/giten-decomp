@@ -2373,7 +2373,7 @@ b16 RunFusionMenuState(void) {
                     ErasePictureSurface(54);
                     if (s_restoreFusionRenderMode) {
                         SetSceneRenderMode();
-                        SetBlankStep(0);
+                        SetBlankStep(BLANK_STEP_NONE);
                         s_restoreFusionRenderMode = false;
                     }
                     break;

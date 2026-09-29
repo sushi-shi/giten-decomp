@@ -65,7 +65,7 @@ void PushWaitState(GZ_ENUM_STORAGE(WaitMode, i16) mode, u16 inputMask, u16 frame
 
 RVA(0x0001a960, 0x25)
 b16 RunScreenFadeState(void) {
-    i16 kind = GetGamePhase();
+    GZ_ENUM_LOCAL(ScreenFadeMode, i16) kind = GetGamePhase();
     i16 speed = GetGameStep();
     ReturnFromGameState();
     StartScreenFade(kind, speed);

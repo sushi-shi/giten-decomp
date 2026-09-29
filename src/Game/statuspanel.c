@@ -442,7 +442,8 @@ static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16
         row = offset / 50;
         column = offset % 50;
         if (row < 2) {
-            if (band == 0 || (band == -1 && row == 0) || (band == 1 && row == 1)) {
+            if (band == STAT_BAR_ROWS_BOTH || (band == STAT_BAR_ROWS_FIRST && row == 0)
+                || (band == STAT_BAR_ROWS_SECOND && row == 1)) {
                 DrawStatBarMark(x + column, y, mark, s_statPage.plane);
             }
         }
@@ -1022,7 +1023,13 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     cursed |= IsEquipCurseActive(member, EQUIP_PART_ARMS);
                     cursed |= IsEquipCurseActive(member, EQUIP_PART_LEGS);
                     if (cursed) {
-                        AddMenuLine(menu->plane, g_scratchBuffer, 0x560, s_equipEntries[index], 1);
+                        AddMenuLine(
+                            menu->plane,
+                            g_scratchBuffer,
+                            0x560,
+                            s_equipEntries[index],
+                            MENU_LINE_DISABLED
+                        );
                         return;
                     }
                     record = GetLoadedRecord(item);

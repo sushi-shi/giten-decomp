@@ -1317,7 +1317,7 @@ i16 RunPanelInput(Panel* panel) {
         return -1;
     }
     ExchangeActivePanel(panel);
-    if (!(panel->flags & 2) && TakeMouseCancelSound()) {
+    if (!(panel->flags & PANEL_ALLOW_RIGHT_CLICK) && TakeMouseCancelSound()) {
         g_hoveredObjectId = g_selectedObjectId = -1;
         ExchangeActivePanel(NULL);
         return -2;

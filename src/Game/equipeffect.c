@@ -25,7 +25,7 @@ void ApplyItemCurse(
     GZ_ENUM_PARAM(EquipmentEffectTiming, i16) timing
 ) {
     ItemRecord* record;
-    i16 curse;
+    GZ_ENUM_LOCAL(ItemCurse, i16) curse;
     i16 minLevel;
 
     if (item < 1) {

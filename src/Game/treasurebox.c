@@ -2231,7 +2231,7 @@ void DrawMapOverlay(MapPosition position) {
     if (TestModeFlags(MODE_WORLD_MAP)) {
         return;
     }
-    ClearLayerSurface(6);
+    ClearLayerSurface(SCREEN_LAYER_AUTOMAP);
     if (g_party.status.navigationFixed) {
         position.direction = 0;
     }

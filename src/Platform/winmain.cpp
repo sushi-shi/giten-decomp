@@ -669,7 +669,7 @@ RVA(0x00049dd0, 0xb3)
 void StepScreenFade(void) {
     i32 alpha;
 
-    if (g_fadeMode == 0) {
+    if (g_fadeMode == SCREEN_FADE_NONE) {
         return;
     }
     if (--s_fadeCountdown != 0) {
@@ -685,7 +685,7 @@ void StepScreenFade(void) {
         alpha = s_fadeAlpha - 17;
     } else {
         if (s_fadeAlpha >= 0xff) {
-            g_fadeMode = 0;
+            g_fadeMode = SCREEN_FADE_NONE;
             s_screenCovered = true;
             SetScreenFadeAlpha(0xff);
             if (g_renderMode == RENDER_MODE_VIEW && g_scenePicture.visible) {
@@ -3553,7 +3553,7 @@ static u16 s_ceilingIndices[6] = {0, 3, 2, 0, 2, 1};
 // matching ceiling cells.
 RVA(0x0004f3f0, 0x270)
 void BuildRoomMesh(Mesh* mesh, i32 cols, i32 rows) {
-    i32 layer;
+    GZ_ENUM_STORAGE(ScreenLayerSlot, i32) layer;
     i32 col;
     i32 row;
     i32 k;

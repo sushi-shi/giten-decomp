@@ -944,7 +944,7 @@ b16 RunFieldExploration(void) {
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             return FlushFieldScreen();
         case 11:
-            ClearLayerSurface(6);
+            ClearLayerSurface(SCREEN_LAYER_AUTOMAP);
             s_eventRunning = false;
             CloseMessageWindow();
             ResetFieldObjects();

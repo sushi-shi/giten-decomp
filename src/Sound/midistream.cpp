@@ -460,7 +460,7 @@ b32 CMidiStream::Replay(BOOL looping, DWORD volume, DWORD* channelVolumes) {
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00056640, 0xf0)
 b32 CMidiStream::Restore() {
-    char files[2][MAX_PATH];
+    char files[MIDI_PART_COUNT][MAX_PATH];
     int i;
 
     for (i = 0; i < MIDI_PART_COUNT; i++) {

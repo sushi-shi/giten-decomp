@@ -8,7 +8,7 @@
 #include <Sound/Sound.h>
 
 DATA(0x00091540)
-i16 g_mouseLeftClick;
+GZ_ENUM_STORAGE(MouseClickState, i16) g_mouseLeftClick;
 
 DATA(0x00091982)
 i16 g_mouseLeftClickX;

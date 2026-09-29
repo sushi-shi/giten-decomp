@@ -2034,7 +2034,9 @@ b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16
     roll = RandomAverage(0, 40, 0);
     defense = GetBattleStatShown(target, BATTLE_STAT_GUN_DEFENSE);
     defense *= roll;
-    if (ScaleActionValue(GetBattleStatShown(attacker, 9) * 10, resistance, 2) - defense <= 0) {
+    if (ScaleActionValue(GetBattleStatShown(attacker, BATTLE_STAT_GUN_POWER) * 10, resistance, 2)
+            - defense
+        <= 0) {
         return false;
     }
     if (IsConditionResisted(target, g_attackCondition)) {

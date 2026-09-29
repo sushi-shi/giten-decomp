@@ -445,7 +445,7 @@ i16 ResolveCombatAction(void) {
     i16 hit;
     i16 kind;
 
-    s_actionOutcome = 0;
+    s_actionOutcome = ACTION_OUTCOME_DEFAULT;
     s_knockedOut = 0x7fff;
     attacker = GetCombatant(g_actorId);
     if (attacker == NULL) {
