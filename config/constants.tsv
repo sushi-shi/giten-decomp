@@ -709,3 +709,34 @@ src/Game/fieldmain.c	MarkVisibleFieldCells	*	*	*	the 3D view's occlusion: 4-cell
 src/Game/fieldmain.c	RunFieldExploration	*	*	*	@identity-TODO: exploration's special cases and parameters: the world-map request 1, scene scripts (7, 8), field text scenes (0x1a/6, 0x59/6, 0x16/0xd, 0x2a/0), battle-message scene 0xdd/0x59, script register 1, Chiyoda Line level 3 (5, 0), Hatsudai levels 0xc..0xe, fade speeds 1 and the room rebuild 1
 src/Game/fieldmain.c	RunCellEvent	*	*	*	@identity-TODO: cell event parameters: scene scripts (7, 8) and (5, 6), the stairs' script 0x7f04/7 and sound 4, forced-move steps and turns, traps (1), field maps entered at rates 100 and a map id packed as y << 8 | x
 src/Game/treasurebox.c	DrawMoneyCounter	0xffffb*	store	*attr	a half-width, flag-1, opaque attribute (white or red text) held sign-extended in an i32
+src/Game/skilluse.c	AddCombatTarget	270	*	*	@identity-TODO: the target list's 270 slots
+src/Game/skilluse.c	NextTarget	*	*	*	the first target of a non-empty list
+src/Game/skilluse.c	FlashHitObject	*	*	*	@identity-TODO: no change; redraw mode 2
+src/Game/skilluse.c	ApplyCombatDamage	*	*	*	@identity-TODO: damage kinds 5..8 (shield, drains), items below 1 are none, item kinds 0x86 and 0x87
+src/Game/skilluse.c	ResolveCombatAction	*	*	*	@identity-TODO: knockout sentinel 0x7fff, demon ids 0x22/0xce/0x36 and Noelem's special pair (-2, -2), resistance results -1..-6 (see SetActionResult's row), the reply alert bits 0x40/0x80 and alert level 2, the counter-attack kinds
+src/Game/skilluse.c	ResolveKnockout	*	*	*	a knocked-out combatant's HP 0; analyzed (1) and one drop added
+src/Game/skilluse.c	*BattleTall*	*	*	*	@identity-TODO: battle tallies (14 of them, indices from the message scripts); -1 for none reported; the tally modes 1 and -1
+src/Game/skilluse.c	ShowKnockoutMessage	*	*	*	@identity-TODO: battle-message script 221 (0xdd), entries 79 and 80; the knockout sentinel 0x7fff
+src/Game/skilluse.c	IsSkill*Blocked	0	*	*	the first battle tally
+src/Game/skilluse.c	PaySkillCost	0x10	*	*	skills below 0x10 (the attacks) cost nothing
+src/Game/skilluse.c	IsSkillUsableNow	*	*	*	1 when usable now, -1 when not
+src/Game/skilluse.c	OpenMemberSkillMenu	0x1e	*	*	@identity-TODO: menu flags 0x1e
+src/Game/skilluse.c	MemberSkillMenuHandler	*	*	*	an empty skill word; the usable and blocked tests (1)
+src/Game/skilluse.c	CountUsableMemberSkills	1	*	*	usable skills (at least 1)
+src/Game/skilluse.c	CollectTargets	*	*	*	@identity-TODO: target areas 2..7 of a skill's range byte
+src/Game/skilluse.c	CollectTargetsAtCell	*	*	*	@identity-TODO: a skill's range byte (hits in the low nibble, the mode in the high one; 15 all), area 0xff, the target list buffer
+src/Game/skilluse.c	Add*TargetsAtCell	*	*	*	@identity-TODO: FindObjectAt's filters (0 or 1), no object (-1), party combatant ids -1..-6, the related flag 0
+src/Game/skilluse.c	AddRelatedCombatTargets	0	*	*	@identity-TODO: AddCombatTarget's related flag 0
+src/Game/skilluse.c	CollectTargetsAlongLine	*	*	*	the line's step (-1 or 0) and its three cells ahead
+src/Game/skilluse.c	CollectTargetsInView	*	*	*	the 3D view's 7-cell grid and its six-cell reach
+src/Game/skilluse.c	UseAttackSkill	*	*	*	@identity-TODO: the resistance outcome's amount 0; the hit results 0 and -1
+src/Game/skilluse.c	UseRestoreSkill	0	call-argument	ApplyRestoreEffect(*	@identity-TODO: ApplyRestoreEffect's fourth argument 0
+src/Game/skilluse.c	UseBattleStatSkill	*	*	*	@identity-TODO: the effect code's raise bit 0x80 and its six battle-stat kinds 0..5; percent scaling
+src/Game/skilluse.c	ChangeBattleStat	*	*	*	@identity-TODO: a battle stat doubled or halved, clamped to 999 (4 digits)
+src/Game/skilluse.c	ApplySkillEffect	*	*	*	@identity-TODO: skill effect kinds 2..16 and skill 250's type 2
+src/Game/skilluse.c	CancelFieldTargetMenu	-1	*	*	no command picked
+src/Game/skilluse.c	LocateFieldSkillUser	1	*	*	@identity-TODO: FindRosterSlotIn's 1
+src/Game/skilluse.c	RunFieldSkillUse	*	*	*	@identity-TODO: target flags 0x10, 0x11 and 0x30 and the pick windows (5, 4, 6, 3) they open; user -2; no pick (-1); screen layer 1 hidden
+src/Game/skilluse.c	PrepareSkillAction	0	*	*	@identity-TODO: the skill action's reset value 0
+src/Game/skilluse.c	RunBattleAction	*	*	*	@identity-TODO: battle-action parameters: the outcome flags 0/1, the target collections (7, 0xa, 0xf1) and 0xff, one bag item used, the effect stages, the battle-message script 0xdf entry 3, the kept pick cleared
+src/Game/skilluse.c	PlayActionEffect	*	*	*	@identity-TODO: the action message scripts 0xdd/0xde and their entries (3, 4, 5, 0x44), the before/after message (0/1), weapons from 1

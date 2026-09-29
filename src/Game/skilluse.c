@@ -1549,7 +1549,7 @@ void UseAttackSkill(Character* user, Character* target) {
     if (IsConditionResisted(target, GetSkillInflictedCondition(&s_effectSkill))) {
         return;
     }
-    if (RollSkillHit(user, target, 0) <= 0) {
+    if (RollSkillHit(user, target, false) <= 0) {
         return;
     }
     AddTrainingPoints(user, BATTLE_GROUP_MAGIC, 3);
@@ -1575,7 +1575,7 @@ void UseRestoreSkill(Character* user, Character* target) {
     i16 amount;
     i16 result;
     g_statusCondition = INFLICT_NONE;
-    hit = RollSkillHit(user, target, 1);
+    hit = RollSkillHit(user, target, true);
     amount = ComputeRestoreAmount(GetSkillValueB(&s_effectSkill), user, target->pools.hp.max);
     user->lastChange = amount;
     result = ApplyRestoreEffect(GetSkillEffectCode(&s_effectSkill), amount, target, 0);
@@ -1635,11 +1635,11 @@ void UseBattleStatSkill(Character* user, Character* target) {
     }
     PrepareBattleStatSkill(user);
     if (amount < 0) {
-        if (RollSkillHit(user, target, 0) <= 0) {
+        if (RollSkillHit(user, target, false) <= 0) {
             return;
         }
     } else {
-        if (RollSkillHit(user, target, 1) <= 0) {
+        if (RollSkillHit(user, target, true) <= 0) {
             return;
         }
     }
@@ -1709,7 +1709,7 @@ RVA(0x0002d390, 0x70)
 void UseClearBattleTallySkill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
     SetFlaggedActionResult(user, 3);
-    if (RollSkillHit(user, target, 0) > 0) {
+    if (RollSkillHit(user, target, false) > 0) {
         ClearAllBattleTallies(target);
     }
 }

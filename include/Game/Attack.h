@@ -85,7 +85,7 @@ b16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode);
 // An attack with the gun (slot 6) and its ammunition (slot 7).
 b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode);
 
-b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide);
+b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide);
 i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit);
 b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
 i16 ApplySkillResistanceOutcome(Character* attacker, i32 amount);

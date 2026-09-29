@@ -17,7 +17,7 @@
 #include <math.h>
 
 RVA(0x0000aa20, 0x22c)
-b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide) {
+b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
     i16 attribute;
     i32 accuracy;
     i32 defense;
@@ -190,7 +190,7 @@ b16 ResolveSkillAttack(Character* attacker, Character* target) {
             return ResolveGunAttack(attacker, target, 0);
         }
     }
-    hit = RollSkillHit(attacker, target, 0);
+    hit = RollSkillHit(attacker, target, false);
     if (hit) {
         AddTrainingPoints(attacker, BATTLE_GROUP_MAGIC, 3);
     }
