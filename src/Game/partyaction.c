@@ -232,7 +232,7 @@ static i16 s_actionConditions[] = {
 RVA(0x00005a80, 0x86)
 i16 PickPartyMember(i16 index) {
     Character* member;
-    if (PartySlotAt(index) == -1) {
+    if (PartySlotAt(index) == PARTY_SLOT_EMPTY) {
         return -1;
     }
     member = GetPartyCharacter(index);
@@ -845,7 +845,7 @@ b16 ResetPartyTurnState(void) {
     i16 index;
     Character* actor;
     for (index = 0; index < PARTY_SIZE; index++) {
-        if (PartySlotAt(index) != -1) {
+        if (PartySlotAt(index) != PARTY_SLOT_EMPTY) {
             actor = GetPartyEntry(index);
             ClearActionWait(GetCharacterActionWait(actor));
         }

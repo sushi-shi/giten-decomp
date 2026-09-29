@@ -1070,7 +1070,7 @@ void RedrawPartyStatus(void) {
     i16 swapped;
     ClearTextPlane(g_infoPlane);
     for (slot = 0; slot < PARTY_SIZE; slot++) {
-        if (PartySlotAt(slot) == -1) {
+        if (PartySlotAt(slot) == PARTY_SLOT_EMPTY) {
             DrawPartyStatusSlot(slot, NULL);
         } else {
             swapped = GetSwappedMember(slot);
@@ -2396,7 +2396,7 @@ void SetPartySlot(i16 index, i16 slot) {
     if (slot < -1 || slot >= 32) {
         return;
     }
-    if (PartySlotAt(index) != -1) {
+    if (PartySlotAt(index) != PARTY_SLOT_EMPTY) {
         character = GetPartyCharacter(index);
         if (character != NULL && IsGuestIndex(index) < 0) {
             ClearLeaveConditions(GetCharacterConditions(character));
@@ -2504,13 +2504,14 @@ void SwapPartySlots(i16 a, i16 b) {
         slot = PartySlotAt(a);
         g_party.slots[a] = PartySlotAt(b);
         g_party.slots[b] = slot;
-        if (PartySlotAt(0) == -1 && PartySlotAt(1) == -1 && PartySlotAt(2) == -1) {
+        if (PartySlotAt(0) == PARTY_SLOT_EMPTY && PartySlotAt(1) == PARTY_SLOT_EMPTY
+            && PartySlotAt(2) == PARTY_SLOT_EMPTY) {
             g_party.slots[0] = PartySlotAt(3);
             g_party.slots[1] = PartySlotAt(4);
             g_party.slots[2] = PartySlotAt(5);
-            g_party.slots[3] = -1;
-            g_party.slots[4] = -1;
-            g_party.slots[5] = -1;
+            g_party.slots[3] = PARTY_SLOT_EMPTY;
+            g_party.slots[4] = PARTY_SLOT_EMPTY;
+            g_party.slots[5] = PARTY_SLOT_EMPTY;
         }
     }
 }
@@ -3114,8 +3115,8 @@ i16 TickPartyTimers(u16 minutes) {
         return -1;
     }
     for (i = 0; i < PARTY_SIZE; i++) {
-        if (PartySlotAt(i) != -1 && (character = RosterMemberAt(PartySlotAt(i))) != NULL
-            && character->id == 2) {
+        if (PartySlotAt(i) != PARTY_SLOT_EMPTY
+            && (character = RosterMemberAt(PartySlotAt(i))) != NULL && character->id == 2) {
             if (TestModeFlags(MODE_WORLD_MAP)) {
                 s_timerMinutes += minutes;
                 count = s_timerMinutes / 240;

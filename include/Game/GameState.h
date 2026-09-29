@@ -48,6 +48,8 @@ typedef struct FieldStatus {
 // The party positions and the roster size.
 #define PARTY_SIZE 6
 #define ROSTER_SIZE 32
+// A party position holding no roster member.
+#define PARTY_SLOT_EMPTY (-1)
 // Character ids below this are human members.
 #define HUMAN_ID_LIMIT 32
 

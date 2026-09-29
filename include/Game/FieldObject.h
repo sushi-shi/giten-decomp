@@ -28,6 +28,10 @@ GZ_ENUM_END(FieldObjectImageCode);
 // rank corresponds to Character.level and list to Character.skills. Slots
 // 6/7 are the gun/ammunition pair; the ammunition extra field holds the
 // magazine size.
+// The field object table, and the layer of an unused object slot.
+#define FIELD_OBJECT_COUNT 16
+#define FIELD_LAYER_NONE (-1)
+
 typedef struct FieldObject {
     u8 pad000[0x14];
     i16 layer;

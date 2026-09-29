@@ -299,7 +299,7 @@ DATA(0x000788d0)
 static u8 s_encounterBuffer[0x100] = {0};
 
 DATA(0x000789d0)
-static FieldObject s_objects[16] = {0};
+static FieldObject s_objects[FIELD_OBJECT_COUNT] = {0};
 
 // The 7x7 sight grid around the object being stepped (1: seen).
 DATA(0x0007ada0)
@@ -399,8 +399,8 @@ static u8* s_scriptSets = NULL;
 RVA(0x0000d790, 0x52)
 b16 InitFieldObjects(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
-        s_objects[i].layer = -1;
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        s_objects[i].layer = FIELD_LAYER_NONE;
         s_objects[i].redraw = 0;
         s_objects[i].anim = 0;
         s_objects[i].script = NULL;
@@ -417,7 +417,7 @@ RVA(0x0000d7f0, 0x145)
 void RemoveFieldObject(i16 index, i16 announce) {
     b16 queued = false;
     i16 i;
-    if (announce != 0 && s_objects[index].layer != -1) {
+    if (announce != 0 && s_objects[index].layer != FIELD_LAYER_NONE) {
         if (!(s_objects[index].flagBank == 0 && s_objects[index].flagIndex == 0)
             && !(s_objects[index].flagBank == 0xff && s_objects[index].flagIndex == 0xff)) {
             ModifyEventFlag(
@@ -431,15 +431,15 @@ void RemoveFieldObject(i16 index, i16 announce) {
             queued = true;
         }
     }
-    s_objects[index].layer = -1;
+    s_objects[index].layer = FIELD_LAYER_NONE;
     s_objects[index].redraw = 0;
     s_objects[index].anim = 0;
     s_objects[index].script = FreeScriptBlock(s_objects[index].script);
     s_objects[index].hidden = false;
     ClearCondition(GetFieldObjectConditions(&s_objects[index]), CONDITION_ZOMBIE);
     ResetWordList(&s_objects[index].list, 0);
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE) {
             return;
         }
     }
@@ -452,7 +452,7 @@ void RemoveFieldObject(i16 index, i16 announce) {
 RVA(0x0000d940, 0x31)
 b16 ResetFieldObjects(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         RemoveFieldObject(i, 0);
     }
     ModifyEventFlag(8, 0, 1);
@@ -465,7 +465,7 @@ b16 ResetFieldObjects(void) {
 RVA(0x0000d980, 0x30)
 b16 IsFieldActor(const void* actor) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         if (&s_objects[i].kind == actor) {
             return true;
         }
@@ -484,7 +484,7 @@ i16 ExchangeObjectsFrozen(i16 frozen) {
 RVA(0x0000d9d0, 0x2a)
 i16 FindObjectOnLayer(i16 layer) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         if (s_objects[i].layer == layer) {
             return i;
         }
@@ -588,7 +588,7 @@ i16 SpawnMapObject(i16 layer, i16 x, i16 y, i16 direction, i8 event) {
 RVA(0x0000dc70, 0x41)
 i16 GetLiveObject(i16 index) {
     if (s_objectCheckBypass == 0) {
-        if (index < 0 || index >= 16 || s_objects[index].layer == -1
+        if (index < 0 || index >= FIELD_OBJECT_COUNT || s_objects[index].layer == FIELD_LAYER_NONE
             || s_objects[index].hidden != false) {
             return -1;
         }
@@ -628,7 +628,7 @@ i16 RespawnFieldObject(i16 index, i16 alternate, i8 event, i16 fresh) {
 RVA(0x0000dd60, 0x15)
 void ResetObjectAnims(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         ResetObjectAnim(i);
     }
 }
@@ -655,8 +655,8 @@ RVA(0x0000dde0, 0x43)
 void MarkObjectsOnMap(void) {
     i16 i;
     if (s_objectsFrozen == 0) {
-        for (i = 0; i < 16; i++) {
-            if (s_objects[i].layer != -1) {
+        for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+            if (s_objects[i].layer != FIELD_LAYER_NONE) {
                 MarkMapCell(5, s_objects[i].pos.x, s_objects[i].pos.y);
             }
         }
@@ -687,8 +687,8 @@ RVA(0x0000dea0, 0x3d)
 i16 FlushObjectRedraws(void) {
     i16 drawn = 0;
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && s_objects[i].redraw != 0) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].redraw != 0) {
             s_objects[i].redraw = 0;
             RedrawFieldView();
             drawn |= 1;
@@ -704,7 +704,7 @@ i16 GetObjectLifeState(FieldObject* object) {
     if (object == NULL) {
         return 0;
     }
-    if (object->layer == -1) {
+    if (object->layer == FIELD_LAYER_NONE) {
         return 0;
     }
     if (FindLayerOfKind(object->kind) < 0) {
@@ -777,13 +777,13 @@ void DrawFieldObjects(void) {
     i16 total = 0;
     i16 drawn;
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         if (CheckObjectState(i) >= 1) {
             total += GetObjectLifeState(&s_objects[i]);
         }
     }
     drawn = 0;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         if (CheckObjectState(i) >= 1) {
             drawn +=
                 DrawFieldObject(&s_objects[i], GetLayerImage(s_objects[i].layer), i, total, drawn);
@@ -795,7 +795,7 @@ void DrawFieldObjects(void) {
 // removed (0) unless removal is deferred.
 RVA(0x0000e1e0, 0x65)
 i16 CheckObjectState(i16 index) {
-    if (s_objects[index].layer == -1) {
+    if (s_objects[index].layer == FIELD_LAYER_NONE) {
         return -1;
     }
     if (s_objects[index].hidden == false) {
@@ -813,7 +813,7 @@ i16 CheckObjectState(i16 index) {
 RVA(0x0000e250, 0x60)
 void RunFieldIdle(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         if (CheckObjectState(i) >= 1) {
             BuildSightGrid(s_objects[i].pos.x, s_objects[i].pos.y, s_objects[i].direction);
             if (RunObjectStep(&s_objects[i], i)) {
@@ -828,8 +828,8 @@ void RunFieldIdle(void) {
 RVA(0x0000e2b0, 0xc8)
 i16 FindObjectAt(i16 x, i16 y, i16 start, i16 mode, i16 kind) {
     i16 i;
-    for (i = start; i < 16; i++) {
-        if (s_objects[i].layer == -1 || s_objects[i].hidden != false) {
+    for (i = start; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer == FIELD_LAYER_NONE || s_objects[i].hidden != false) {
             continue;
         }
         if (FindLayerOfKind(s_objects[i].kind) < 0) {
@@ -873,8 +873,9 @@ i16 FindObjectAtParty(void) {
 RVA(0x0000e400, 0x48)
 void UpdateFieldObjects(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && s_objects[i].hidden == false && s_objects[i].pos.y >= 4) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].hidden == false
+            && s_objects[i].pos.y >= 4) {
             ResetObjectAnim(i);
             s_objects[i].hidden = true;
         }
@@ -893,9 +894,9 @@ i16 ExchangeObjectRemovalDeferred(i16 deferred) {
 RVA(0x0000e470, 0x6f)
 void ClearObjectStuns(i16* cleared) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         cleared[i] = 0;
-        if (s_objects[i].layer != -1 && s_objects[i].hidden != false) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].hidden != false) {
             cleared[i] = 1;
             ClearCondition(GetFieldObjectConditions(&s_objects[i]), CONDITION_ASH);
             ClearCondition(GetFieldObjectConditions(&s_objects[i]), CONDITION_DEAD);
@@ -908,8 +909,8 @@ void ClearObjectStuns(i16* cleared) {
 RVA(0x0000e4e0, 0x40)
 void ApplyObjectConditions(i16* marked) {
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && marked[i] != 0) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && marked[i] != 0) {
             AddCondition(GetFieldObjectConditions(&s_objects[i]), CONDITION_DEAD);
         }
     }
@@ -977,8 +978,8 @@ RVA(0x0000e680, 0x2b)
 i16 CountActiveObjects(void) {
     i16 count = 0;
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && s_objects[i].hidden == false) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].hidden == false) {
             count++;
         }
     }
@@ -991,8 +992,8 @@ RVA(0x0000e6b0, 0x65)
 i16 AdvanceObjectAnims(void) {
     i32 count = 0;
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && s_objects[i].anim != 0) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].anim != 0) {
             if (s_objects[i].anim == -1) {
                 s_objects[i].anim = 1;
             } else {
@@ -1011,7 +1012,7 @@ i16 AdvanceObjectAnims(void) {
 RVA(0x0000e720, 0x15)
 void CheckAllObjects(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         CheckObjectState(i);
     }
 }
@@ -1562,11 +1563,11 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     }
     if ((i16)GetSkillKind(skill) == 2) {
         count = 0;
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             InitFieldSkillCandidate(&candidates[i]);
         }
         if (GetSkillValueB(GetCachedSkill(skill))) {
-            for (i = 0; i < 16; i++) {
+            for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
                 if (GetLiveObject(i) >= 0) {
                     target = GetFieldObject(i);
                     coord = GetObjectCoord(i);
@@ -1578,7 +1579,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
                 }
             }
         } else {
-            for (i = 0; i < 16; i++) {
+            for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
                 if (GetLiveObject(i) >= 0) {
                     target = GetFieldObject(i);
                     coord = GetObjectCoord(i);
@@ -2667,7 +2668,7 @@ b32 AnyObjectInReach(void) {
     b32 found = false;
     i16 i;
     i16 object;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         object = GetLiveObject(i);
         if (object >= 0 && HasObjectInReach(1, -1, object)) {
             found = true;
