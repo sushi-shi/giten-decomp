@@ -7,10 +7,12 @@
 #include <Ints.h>
 
 GZ_ENUM_BEGIN_SPLIT(ItemCountScope, i16)
-ITEM_COUNT_BAG = 0, ITEM_COUNT_EQUIPMENT = 1,
-                    ITEM_COUNT_BAG_AND_EQUIPMENT = 2 GZ_ENUM_END_SPLIT(ItemCountScope)
+    ITEM_COUNT_BAG = 0,
+    ITEM_COUNT_EQUIPMENT = 1,
+    ITEM_COUNT_BAG_AND_EQUIPMENT = 2
+GZ_ENUM_END_SPLIT(ItemCountScope)
 
-                        struct ItemSlot;
+struct ItemSlot;
 i16 CountItemInSlots(i16 item, struct ItemSlot* slots);
 
 // One selectable text run in a script window's choice list.

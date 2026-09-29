@@ -102,12 +102,17 @@ RVA_DECL(0x00038900)
 void OpConvertCharacterRef(void);
 
 GZ_ENUM_BEGIN_SPLIT(CharacterRefConversion, i16)
-ROSTER_TO_PARTY = 0, PARTY_TO_ROSTER = 1, ROSTER_TO_OBJECT_REF = 2, OBJECT_REF_TO_ROSTER = 3,
-                     PARTY_TO_OBJECT_REF = 4, OBJECT_REF_TO_PARTY = 5, ROSTER_TO_CHARACTER_ID = 6,
-                     CHARACTER_ID_TO_ROSTER = 7 GZ_ENUM_END_SPLIT(CharacterRefConversion)
+    ROSTER_TO_PARTY = 0,
+    PARTY_TO_ROSTER = 1,
+    ROSTER_TO_OBJECT_REF = 2,
+    OBJECT_REF_TO_ROSTER = 3,
+    PARTY_TO_OBJECT_REF = 4,
+    OBJECT_REF_TO_PARTY = 5,
+    ROSTER_TO_CHARACTER_ID = 6,
+    CHARACTER_ID_TO_ROSTER = 7
+GZ_ENUM_END_SPLIT(CharacterRefConversion)
 
-                         i16
-                         ResolveObjectRosterSlot(i16 ref);
+i16 ResolveObjectRosterSlot(i16 ref);
 
 u8 ReadScriptByte(void);
 u16 ReadScriptWord(void);

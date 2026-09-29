@@ -8,14 +8,17 @@
 #include <Util/Compare.h>
 
 GZ_ENUM_BEGIN(ScriptFlagAction)
-SCRIPT_FLAG_TEST = 0, SCRIPT_FLAG_SET = 1, SCRIPT_FLAG_CLEAR = 2, SCRIPT_FLAG_TOGGLE = 3,
-                      GZ_ENUM_END(ScriptFlagAction)
+    SCRIPT_FLAG_TEST = 0,
+    SCRIPT_FLAG_SET = 1,
+    SCRIPT_FLAG_CLEAR = 2,
+    SCRIPT_FLAG_TOGGLE = 3,
+GZ_ENUM_END(ScriptFlagAction)
 
-    // Script opcode handlers and the helpers they share. Their owning translation
-    // units are not recovered yet; each declaration moves to its owner's header
-    // when that unit is reconstructed.
+// Script opcode handlers and the helpers they share. Their owning translation
+// units are not recovered yet; each declaration moves to its owner's header
+// when that unit is reconstructed.
 
-    void SetWindowReverse(i16 window, i16 mode);
+void SetWindowReverse(i16 window, i16 mode);
 
 void OpSetWindowColor(i16 window, i16 part);
 

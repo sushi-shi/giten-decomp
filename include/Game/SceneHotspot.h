@@ -8,14 +8,17 @@
 #include <Ints.h>
 
 GZ_ENUM_BEGIN(SceneHotspotKind)
-SCENE_HOTSPOT_OBJECT = 2,
-    SCENE_HOTSPOT_BOX = 3 GZ_ENUM_END(SceneHotspotKind)
+    SCENE_HOTSPOT_OBJECT = 2,
+    SCENE_HOTSPOT_BOX = 3
+GZ_ENUM_END(SceneHotspotKind)
 
-        GZ_ENUM_BEGIN(SceneSpriteFlags) SCENE_SPRITE_INTERACTIVE = 1,
+GZ_ENUM_BEGIN(SceneSpriteFlags)
+    SCENE_SPRITE_INTERACTIVE = 1,
     SCENE_SPRITE_FLIP_Y = 0x4000,
-    SCENE_SPRITE_FLIP_X = -32768 GZ_ENUM_END(SceneSpriteFlags)
+    SCENE_SPRITE_FLIP_X = -32768
+GZ_ENUM_END(SceneSpriteFlags)
 
-                              struct FieldObject;
+struct FieldObject;
 
 // The sprite description copied whole into each scene hotspot.
 typedef struct SceneSprite {

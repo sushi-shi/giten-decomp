@@ -8,10 +8,11 @@
 #include <Ints.h>
 
 GZ_ENUM_BEGIN(PartySlotSelectionMode)
-PARTY_SLOT_REQUIRE_OCCUPIED = 0, PARTY_SLOT_EXCLUDE_HUMANS = 2 GZ_ENUM_END(PartySlotSelectionMode)
+    PARTY_SLOT_REQUIRE_OCCUPIED = 0,
+    PARTY_SLOT_EXCLUDE_HUMANS = 2
+GZ_ENUM_END(PartySlotSelectionMode)
 
-                                     static __inline i16
-                                     FilterPartySlotSelection(i16 slot, i16 mode) {
+static __inline i16 FilterPartySlotSelection(i16 slot, i16 mode) {
     if (mode == PARTY_SLOT_REQUIRE_OCCUPIED && GetPartySlot(slot) == -1) {
         slot = -1;
     }

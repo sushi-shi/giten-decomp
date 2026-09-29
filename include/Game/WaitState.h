@@ -7,14 +7,17 @@
 #include <EnumDomain.h>
 
 GZ_ENUM_BEGIN_SPLIT(WaitMode, i16)
-WAIT_FRAMES = 0, WAIT_INPUT = 1, WAIT_INPUT_OR_FRAMES = 2, WAIT_FADE = 3,
-                 GZ_ENUM_END_SPLIT(WaitMode)
+    WAIT_FRAMES = 0,
+    WAIT_INPUT = 1,
+    WAIT_INPUT_OR_FRAMES = 2,
+    WAIT_FADE = 3,
+GZ_ENUM_END_SPLIT(WaitMode)
 
-    // The wait and fade states pushed on the game-state stack.
+// The wait and fade states pushed on the game-state stack.
 
-    // @identity-TODO: script waits pass a text window as the fourth argument;
-    // other callers pass -1. The Windows body never reads it.
-    void PushWaitState(GZ_ENUM_STORAGE(WaitMode, i16) mode, u16 inputMask, u16 frames, i16 unused);
+// @identity-TODO: script waits pass a text window as the fourth argument;
+// other callers pass -1. The Windows body never reads it.
+void PushWaitState(GZ_ENUM_STORAGE(WaitMode, i16) mode, u16 inputMask, u16 frames, i16 unused);
 
 static __inline void StartScreenFadeAndWait(i16 kind, i16 speed) {
     StartScreenFade(kind, speed);

@@ -9,16 +9,20 @@
 #include <stdio.h>
 
 GZ_ENUM_BEGIN_SPLIT(ClockUpdate, i16)
-CLOCK_UPDATE_NONE = 0, CLOCK_UPDATE_TICK = 1, CLOCK_UPDATE_MINUTE = 2, CLOCK_UPDATE_HOUR = 4,
-                       CLOCK_UPDATE_DAY = 8, CLOCK_UPDATE_MOON = 16,
-                       GZ_ENUM_END_SPLIT(ClockUpdate)
+    CLOCK_UPDATE_NONE = 0,
+    CLOCK_UPDATE_TICK = 1,
+    CLOCK_UPDATE_MINUTE = 2,
+    CLOCK_UPDATE_HOUR = 4,
+    CLOCK_UPDATE_DAY = 8,
+    CLOCK_UPDATE_MOON = 16,
+GZ_ENUM_END_SPLIT(ClockUpdate)
 
-    // The game clock, saved and loaded as one record: days, the moon's ticks
-    // (0x5f0 a phase) and phase (0..27: the column of the moon table and the
-    // value OpSwitchOnMoonPhase switches on), the time of day, and the tick
-    // pacing (a tick every framesPerTick frames; minuteStep per tick toward
-    // minuteLimit per minute).
-    typedef struct GameClock {
+// The game clock, saved and loaded as one record: days, the moon's ticks
+// (0x5f0 a phase) and phase (0..27: the column of the moon table and the
+// value OpSwitchOnMoonPhase switches on), the time of day, and the tick
+// pacing (a tick every framesPerTick frames; minuteStep per tick toward
+// minuteLimit per minute).
+typedef struct GameClock {
     i32 days;
     u16 moonTicks;
     u8 moonPhase;
