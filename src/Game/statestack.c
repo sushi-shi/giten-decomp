@@ -2709,21 +2709,21 @@ b16 RunItemUse(void) {
     i16 position;
 
     switch (GetGamePhase()) {
-        case 0:
+        case ITEM_USE_PHASE_OPEN:
             NextGamePhase();
             NextGamePhase();
             s_itemMenu = OpenItemListMenu();
             HideScreenLayer(1);
             return false;
 
-        case 1:
+        case ITEM_USE_PHASE_CLOSE:
             ReturnFromGameState();
             s_itemMenu = CloseListMenu(s_itemMenu);
             RestoreSwappedMember();
             s_useMemberId = -1;
             return false;
 
-        case 2:
+        case ITEM_USE_PHASE_PICK_ITEM:
             picked = RunListMenu(s_itemMenu);
             if (picked == -2) {
                 PrevGamePhase();
@@ -2737,7 +2737,7 @@ b16 RunItemUse(void) {
             s_usePosition = FindFirstAbleMemberPosition();
             return false;
 
-        case 3:
+        case ITEM_USE_PHASE_PICK_TARGET:
             record = GetLoadedRecord(s_useItem);
             kind = record->kind;
             if (ItemUseInvokesSkill(kind)) {
@@ -2779,12 +2779,12 @@ b16 RunItemUse(void) {
             g_targetId = g_selectedObjectId;
             return false;
 
-        case 4:
+        case ITEM_USE_PHASE_DESTROY_MENU:
             NextGamePhase();
             s_itemMenu = DestroyMenuBox(s_itemMenu);
             return false;
 
-        case 5:
+        case ITEM_USE_PHASE_PROMPT_ACTION:
             NextGamePhase();
             position = FindPartyPositionOfId(s_useMemberId);
             user = GetPartyCharacter(position);
@@ -2793,7 +2793,7 @@ b16 RunItemUse(void) {
             if (ItemUseInvokesSkill(kind)) {
                 g_actorId = PartyCombatantId(position);
                 user->pickObject = g_targetId;
-                user->pickRole = 4;
+                user->pickRole = PICK_ROLE_MAGIC;
                 g_actionId = GetItemSkillId(record);
                 user->pickTarget = GetItemSkillId(record);
                 user->pickFlags |= PICK_ITEM_SKILL;
@@ -2801,15 +2801,15 @@ b16 RunItemUse(void) {
             } else {
                 g_actorId = PartyCombatantId(position);
                 user->pickObject = g_targetId;
-                user->pickRole = 5;
+                user->pickRole = PICK_ROLE_ITEM;
                 g_actionId = s_useItem;
                 user->pickTarget = s_useItem;
             }
             PushFieldUsePrompt();
             return false;
 
-        case 6:
-            SetGamePhase(1);
+        case ITEM_USE_PHASE_FINISH:
+            SetGamePhase(ITEM_USE_PHASE_CLOSE);
             break;
     }
     return false;

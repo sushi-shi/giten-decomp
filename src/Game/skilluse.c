@@ -1819,22 +1819,22 @@ b16 RunFieldSkillUse(void) {
     i16 picked;
 
     switch (GetGamePhase()) {
-        case 0:
+        case SKILL_USE_PHASE_START:
             HideScreenLayer(1);
             if (s_skillUser < 0) {
-                SetGamePhase(8);
+                SetGamePhase(SKILL_USE_PHASE_END);
                 return false;
             }
             LocateFieldSkillUser();
-            SetGamePhase(3);
+            SetGamePhase(SKILL_USE_PHASE_OPEN_SKILL_LIST);
             return false;
 
-        case 1:
+        case SKILL_USE_PHASE_CLOSE_MEMBER_PICKER:
             s_fieldMenu = ClosePickerMenu(s_fieldMenu);
-            SetGamePhase(8);
+            SetGamePhase(SKILL_USE_PHASE_END);
             return false;
 
-        case 2:
+        case SKILL_USE_PHASE_PICK_MEMBER:
             s_skillUser = RunPickerMenu(s_fieldMenu);
             if (s_skillUser == -2) {
                 PrevGamePhase();
@@ -1847,18 +1847,18 @@ b16 RunFieldSkillUse(void) {
             s_fieldMenu = ClosePickerMenu(s_fieldMenu);
             return false;
 
-        case 3:
+        case SKILL_USE_PHASE_OPEN_SKILL_LIST:
             NextGamePhase();
             NextGamePhase();
             s_fieldMenu = OpenMemberSkillMenu(s_skillUser);
             return false;
 
-        case 4:
-            SetGamePhase(8);
+        case SKILL_USE_PHASE_CLOSE_SKILL_LIST:
+            SetGamePhase(SKILL_USE_PHASE_END);
             s_fieldMenu = CloseListMenu(s_fieldMenu);
             return false;
 
-        case 5:
+        case SKILL_USE_PHASE_PICK_SKILL:
             s_skillPicked = RunListMenu(s_fieldMenu);
             if (s_skillPicked == -2) {
                 PrevGamePhase();
@@ -1871,7 +1871,7 @@ b16 RunFieldSkillUse(void) {
             g_actionId = s_skillPicked;
             return false;
 
-        case 6:
+        case SKILL_USE_PHASE_PICK_TARGET:
             flags = GetSkillTargetFlags(s_skillPicked);
             if (TargetFlagsSelectSelf(flags)) {
                 g_targetId = PartyCombatantId(s_userPosition);
@@ -1895,7 +1895,7 @@ b16 RunFieldSkillUse(void) {
                 picked = RunPickTargetWindow(0, s_pickRange, 3, 0);
             }
             if (picked == -1) {
-                SetGamePhase(3);
+                SetGamePhase(SKILL_USE_PHASE_OPEN_SKILL_LIST);
             }
             if (picked <= 0) {
                 break;
@@ -1907,7 +1907,7 @@ b16 RunFieldSkillUse(void) {
             NextGamePhase();
             return false;
 
-        case 7:
+        case SKILL_USE_PHASE_PROMPT_ACTION:
             NextGamePhase();
             g_actorId = PartyCombatantId(s_userPosition);
             SetSkillPick(s_userPosition);
@@ -1915,7 +1915,7 @@ b16 RunFieldSkillUse(void) {
             PushFieldUsePrompt();
             return false;
 
-        case 8:
+        case SKILL_USE_PHASE_END:
             RestoreSwappedMember();
             ReturnFromGameState();
             break;
