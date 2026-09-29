@@ -184,3 +184,5 @@ src/Game/statestack.c	RunLevelUp	*	*	*GetGame[SS][tu][eb]*	a step or sub-step wi
 src/Game/statestack.c	RunLevelUp	*	call-argument	SetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
 src/Game/fieldobj.c	GetObjectLifeState	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
 src/Game/itemrecord.c	ApplyEquipmentRegen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
+src/Game/character.c	AgeConditions	0	existing-symbol	enum	a loop over every condition starts at condition 0
+src/Game/character.c	IsPartyMemberFallen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH

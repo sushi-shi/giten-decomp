@@ -4054,7 +4054,7 @@ RVA(0x000384a0, 0x4c)
 void InitScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode) {
     SetScriptChoiceMenu(choices, window, keep, cancelMode);
     if (g_mouseLeftClick) {
-        g_mouseLeftClick = 0;
+        g_mouseLeftClick = MOUSE_CLICK_NONE;
     }
     s_hoveredChoice = -1;
     s_highlightedChoice = NULL;

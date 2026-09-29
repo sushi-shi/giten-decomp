@@ -284,7 +284,7 @@ void TrackWorldMapCursor(i16 layer) {
     if (s_cursorCellX == cell.x && s_cursorCellY == cell.y) {
         return;
     }
-    g_mouseRightClick = 0;
+    g_mouseRightClick = MOUSE_CLICK_NONE;
     if (g_mousePosition.x >= 0 && g_mousePosition.x < 0x280 && g_mousePosition.y >= 0
         && g_mousePosition.y < 0x148) {
         DrawWorldMapCursor(g_mousePosition.x, g_mousePosition.y, layer);
@@ -1611,7 +1611,7 @@ void InitWorldPanel(void) {
 // The world panel's row handler (drops a pending left click first).
 RVA(0x00016990, 0x26)
 i16 WorldRowHandler(PanelRow* row, i16 value, i16 op) {
-    g_mouseLeftClick = 0;
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
     ApplyRowCheck(row, value, op);
     return value;
 }

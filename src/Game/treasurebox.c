@@ -1674,7 +1674,7 @@ i16 ApplyRowCheck(PanelRow* row, i16 value, i16 op) {
     i16 result = 0;
     switch (op) {
         case -1:
-            g_mouseLeftClick = 0;
+            g_mouseLeftClick = MOUSE_CLICK_NONE;
             result = ToggleFlagBits(&row->flags, PANEL_ROW_CHECKED);
             break;
         case 0:

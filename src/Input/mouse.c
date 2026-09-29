@@ -110,7 +110,7 @@ GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseLeftClick(void) {
         ClearMouseClicks();
         return -1;
     }
-    return 0;
+    return MOUSE_CLICK_NONE;
 }
 
 RVA(0x00002b00, 0x24)

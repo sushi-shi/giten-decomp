@@ -1981,7 +1981,7 @@ i16 OpenFusionPreviewOnClick(void) {
     if (!g_mouseLeftClick) {
         return -1;
     }
-    g_mouseLeftClick = 0;
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
     column = (g_mousePosition.x - 272) / 24;
     row = (g_mousePosition.y - 54) / 16;
     if (column < 0 || column >= s_fusionPageRows || row < 0 || row >= s_fusionMenu->pageRows) {
