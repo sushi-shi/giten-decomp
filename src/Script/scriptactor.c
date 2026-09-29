@@ -1831,8 +1831,9 @@ static __inline Character* GetResolvedPartyCharacter(i16 id) {
 
 // The same for the first of the companions -2, -3 and -7 in the roster.
 // @early-stop: with no companion and no invert, retail re-zeroes the jump
-// flag in its register before the call; every spelling here passes the
-// known-zero pointer instead.
+// flag in its register before a duplicated call. A single call after an
+// `else if (!companion) jump = 0;` arm is exact, but that assignment repeats
+// the initializer; the early return here passes the known-zero pointer.
 RVA(0x00035340, 0xb5)
 void OpJumpUnlessCompanionHealthy(i16 invert) {
     i16 conditions = 0;
