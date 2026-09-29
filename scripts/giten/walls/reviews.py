@@ -61,8 +61,18 @@ def render(rows: dict[int, dict[str, str]]) -> str:
     return "".join(lines)
 
 
-def current() -> dict[int, dict[str, str]]:
-    """Reviews whose recorded fingerprint matches the current source body."""
+def current(rvas=None) -> dict[int, dict[str, str]]:
+    """Reviews whose recorded fingerprint matches the current source body,
+    restricted to `rvas` when given.
+
+    Only the reviewed rvas asked about are fingerprinted: a header-owned
+    function's fingerprint costs a libclang parse of its unit, so hashing
+    every function to answer for a handful of rows is the slow way to the
+    same verdicts."""
+    rows = load()
+    wanted = set(rows) if rvas is None else set(rows) & set(rvas)
+    if not wanted:
+        return {}
     from giten.model import resolve
     from giten.verify.fingerprints import fingerprinter
 
@@ -70,11 +80,11 @@ def current() -> dict[int, dict[str, str]]:
     fingerprints = {
         binding.rva: fingerprint(binding.unit, binding.name)
         for binding in resolve().functions
-        if binding.name and binding.unit
+        if binding.name and binding.unit and binding.rva in wanted
     }
     return {
-        rva: row for rva, row in load().items()
-        if fingerprints.get(rva) == row["src_hash"]
+        rva: row for rva, row in rows.items()
+        if rva in wanted and fingerprints.get(rva) == row["src_hash"]
     }
 
 

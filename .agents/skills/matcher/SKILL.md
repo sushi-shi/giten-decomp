@@ -8,7 +8,8 @@ description: Reconstruct and byte-match Giten C++ functions, translation units, 
 Recover the source structure that explains retail bytes. `AGENTS.md` holds the
 authority, modeling rules, and validation cadence; this skill is the working
 loop. Use `wall-identifier` to classify a plateau and `permute` only for a
-diagnosed register/schedule residue.
+diagnosed register/schedule residue, and only when the user has explicitly
+allowed it (never while several agents are running; see `docs/permuter.md`).
 
 Do not write per-function plan files or formal matching plans unless the user
 asks. A brief note of target, hypothesis, and next compiler control is enough.
