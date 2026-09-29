@@ -181,12 +181,6 @@ static i16 s_userPosition = 0;
 DATA(0x00080cf4)
 static i32 s_effectSkillId = 0;
 
-// @identity-TODO: no code in this image touches this datum; its
-// zero-initialized run keeps one four-byte slot for it, so its width and
-// role are unproven. A reader in the PC-98 build would name it.
-DATA(0x00080cf8)
-static i32 s_unusedSkillState = 0;
-
 // The number of combatants left on the action's target list.
 DATA(0x00080cfc)
 static i16 s_targetListCount = 0;
