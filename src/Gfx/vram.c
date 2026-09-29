@@ -37,17 +37,17 @@ DATA(0x00075f04)
 static MaskGrid* s_mask = 0;
 
 // The 16 analog palette entries (0xGRB) and how many users hold each one.
-// The colours are read by the upload side, so stores are never combined.
+// Nothing in this image reads the colours back.
 DATA(0x00075f38)
-static volatile i16 s_paletteColors[16] = {0};
+static i16 s_paletteColors[16] = {0};
 
 DATA(0x00075f58)
 static i16 s_paletteRefs[16] = {0};
 
 // Bit 0x40: a palette entry or mode changed; bit 0x80: a change awaits
-// upload. Shared with the upload side, so every access goes to memory.
+// upload. No reader of the queued bit survives in this image.
 DATA(0x00075f7c)
-static volatile GZ_ENUM_STORAGE(PaletteUpdateFlags, u8) s_paletteFlags = 0;
+static GZ_ENUM_STORAGE(PaletteUpdateFlags, u8) s_paletteFlags = 0;
 
 // @identity-TODO: palette modes chosen from map-area tests (the area one at
 // the party's square, the view one at a derived position); the renderer picks
@@ -179,8 +179,9 @@ i16 TestMaskPixel(i16 x, i16 line) {
     return s_mask->bits[GetMaskGridOffset(s_mask, column, line)] & GetPixelMask(pixel);
 }
 
-// @early-stop: retail stores a zeroed register through base+offset; the
-// volatile colour loop stays a loop but stores an immediate. Loop forms flat.
+// @early-stop: retail keeps an 8-step word-store loop through base+offset;
+// with no asynchronous reader of the colours, cl merges the zero stores into
+// four dword stores. Index-width, pointer and fused-loop forms stay flat.
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00002ec0, 0x2b)
@@ -260,6 +261,9 @@ void ReleasePaletteEntry(u8 index) {
     }
 }
 
+// @early-stop: retail loads, ORs and stores the flag byte separately; cl
+// folds the update into one `or byte ptr` unless the byte is volatile, and no
+// asynchronous writer or reader exists. A bitfield form folds too.
 RVA(0x00003010, 0xd)
 void MarkPaletteDirty(void) {
     s_paletteFlags |= PALETTE_UPDATE_DIRTY;
@@ -290,6 +294,9 @@ i16 GetViewPaletteMode(void) {
 }
 
 // Turns a pending change into a queued upload.
+// @early-stop: retail re-reads the flag byte for each update; cl merges the
+// test and both updates into one load and store unless the byte is volatile,
+// and no asynchronous writer or reader exists. A bitfield form merges too.
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00003070, 0x25)
