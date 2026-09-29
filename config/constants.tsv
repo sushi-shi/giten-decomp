@@ -209,3 +209,4 @@ src/Game/character.c	IsPartyMemberFallen	0	existing-symbol	enum	0 from GetFatalC
 *	*	*	call-argument	RepaintTextPlane(*argument 2	the repaint mode RepaintTextPlane does not read
 src/Game/clock.c	s_cellKinds	*	data-or-extent	*	cell-kind rows: the kind flags (0 none), the pad byte, and the cell codes still unnamed (@identity-TODO in Game/CellCode.h)
 src/Game/treasurebox.c	s_mapIcons	*	data-or-extent	*	automap icon rows: the icon image index and the cell codes still unnamed (@identity-TODO in Game/CellCode.h)
+*	*	*	call-argument	LatchCellDestination(*argument [2-6]	a byte offset of a destination field within the cell record

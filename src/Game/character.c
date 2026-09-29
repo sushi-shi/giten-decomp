@@ -2612,7 +2612,7 @@ RVA(0x000403e0, 0x110)
 GZ_ENUM_RETURN(EquipPart, i16) SetEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part, ItemSlot item, i16 check) {
     Character* character = GetRosterCharacter(slot);
     if (!character) {
-        return -1;
+        return EQUIP_PART_NONE;
     }
     switch (part) {
         case EQUIP_PART_WEAPON:
@@ -2645,7 +2645,7 @@ GZ_ENUM_RETURN(EquipPart, i16) SetEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i
             GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY] = item;
             break;
         default:
-            part = -1;
+            part = EQUIP_PART_NONE;
     }
     return part;
 }
@@ -2696,21 +2696,21 @@ GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(Character* character, i16 item) {
     ItemRecord* record;
     i16 part;
     if (item < 1) {
-        return -1;
+        return EQUIP_PART_NONE;
     }
     record = GetLoadedRecord(item);
     part = EquipPartOfItem(record);
     if (part < 0) {
-        return -1;
+        return EQUIP_PART_NONE;
     }
     if (record->kind != ITEM_KIND_AMMO) {
         if (!CanGroupEquip(character->equipGroup, GetItemEquipCode(record))) {
-            return -1;
+            return EQUIP_PART_NONE;
         }
     } else {
         i16 ammo = GetItemAmmoType(record);
         if (GetGunAmmoType(character) != ammo) {
-            return -1;
+            return EQUIP_PART_NONE;
         }
     }
     return part;
@@ -2734,7 +2734,7 @@ RVA(0x00040710, 0x11a)
 ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
     GZ_ENUM_STORAGE(EquipPart, i16) result;
     ItemSlot old = SwapEquipSlot(slot, item, &result);
-    if (result != -1) {
+    if (result != EQUIP_PART_NONE) {
         Character* character = GetRosterCharacter(slot);
         if (item.item != ITEM_ID_EMPTY) {
             i16 kind = GetItemKind(item.item);

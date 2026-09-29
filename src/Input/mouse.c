@@ -91,7 +91,7 @@ GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancel(i16 clearSelection) {
     }
     ClearMouseSelection();
     PlaySoundEffect(2);
-    return -1;
+    return MOUSE_CLICK_PRESENT;
 }
 
 RVA(0x00002ab0, 0x22)
@@ -101,14 +101,14 @@ GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancelSound(void) {
     }
     ClearMouseClicks();
     PlaySoundEffect(2);
-    return -1;
+    return MOUSE_CLICK_PRESENT;
 }
 
 RVA(0x00002ae0, 0x18)
 GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseLeftClick(void) {
     if (g_mouseLeftClick != MOUSE_CLICK_NONE) {
         ClearMouseClicks();
-        return -1;
+        return MOUSE_CLICK_PRESENT;
     }
     return MOUSE_CLICK_NONE;
 }

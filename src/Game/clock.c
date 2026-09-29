@@ -704,7 +704,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
 
     for (warp = AreaLevelAt(g_areaMap, level)->warps; !IsCellListEnd(&warp->head); warp++) {
         if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(&warp->head, 6)) {
-            LatchCellDestination(&warp->head, 3, 4, -1, 5, 8);
+            LatchCellDestination(&warp->head, 3, 4, CELL_FIELD_NONE, 5, 8);
             SetSceneCell(&warp->head);
             kind = FindCellKind(&warp->head);
             if (kind == NULL) {
@@ -718,7 +718,14 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (IsCellAt(x, y, &battle->head) && !IsCellFlagSet(&battle->head, 3)
             && !IsCellFlagSet(&battle->head, 7)) {
             SetFieldPair(battle->battleFlag[0], battle->battleFlag[1]);
-            LatchCellDestination(&battle->head, 5, 6, -1, -1, -1);
+            LatchCellDestination(
+                &battle->head,
+                5,
+                6,
+                CELL_FIELD_NONE,
+                CELL_FIELD_NONE,
+                CELL_FIELD_NONE
+            );
             SetSceneCell(&battle->head);
             return CELL_EVENT_BATTLE;
         }
@@ -728,7 +735,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (!IsCellAt(x, y, &link->head) || IsCellFlagSet(&link->head, 3)) {
             continue;
         }
-        LatchCellDestination(&link->head, 5, 6, 7, -1, -1);
+        LatchCellDestination(&link->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
         SetSceneCell(&link->head);
         SetCellScript(OffsetByWord((u8*)g_areaMap, &link->script));
         kind = FindCellKind(&link->head);
@@ -761,7 +768,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (!IsCellAt(x, y, &object->head) || IsCellFlagSet(&object->head, 3)) {
             continue;
         }
-        LatchCellDestination(&object->head, 5, 6, 7, -1, -1);
+        LatchCellDestination(&object->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
         SetSceneCell(&object->head);
         kind = FindCellKind(&object->head);
         if (kind == NULL) {
@@ -776,7 +783,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (!IsCellAt(x, y, &exit->head)) {
             continue;
         }
-        LatchCellDestination(&exit->head, 3, 4, 5, -1, -1);
+        LatchCellDestination(&exit->head, 3, 4, 5, CELL_FIELD_NONE, CELL_FIELD_NONE);
         SetSceneCell(&exit->head);
         kind = FindCellKind(&exit->head);
         if (kind == NULL) {
@@ -791,7 +798,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (IsCellFlagSet(&exit->head, 6)) {
             continue;
         }
-        LatchCellDestination(&exit->head, 3, 4, -1, 5, -1);
+        LatchCellDestination(&exit->head, 3, 4, CELL_FIELD_NONE, 5, CELL_FIELD_NONE);
         g_cellDestArea = g_areaMap->area;
         return kind->kind;
     }
@@ -804,7 +811,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (kind == NULL) {
             continue;
         }
-        LatchCellDestination(&box->head, 5, 6, 7, -1, -1);
+        LatchCellDestination(&box->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
         SetSceneCell(&box->head);
         SetCellScript(NULL);
         return kind->kind;
@@ -814,7 +821,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (!IsCellAt(x, y, &script->head) || IsCellFlagSet(&script->head, 3)) {
             continue;
         }
-        LatchCellDestination(&script->head, 5, 6, 7, -1, -1);
+        LatchCellDestination(&script->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
         SetSceneCell(&script->head);
         SetCellScript(OffsetByWord((u8*)g_areaMap, &script->script));
         SwapSceneCellParams();
@@ -829,27 +836,20 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
 
 // Destination offsets address bytes in the cell's variable-format record.
 RVA(0x00021d20, 0x91)
-void LatchCellDestination(
-    const CellHead* cell,
-    i16 x,
-    i16 y,
-    GZ_ENUM_PARAM(ViewDirection, i16) direction,
-    i16 level,
-    i16 area
-) {
+void LatchCellDestination(const CellHead* cell, i16 x, i16 y, i16 direction, i16 level, i16 area) {
     const u8* bytes = &cell->x;
     g_cellX = cell->x;
     g_cellY = cell->y;
     g_cellCode = cell->code;
     g_cellDestX = bytes[x];
     g_cellDestY = bytes[y];
-    if (direction != -1) {
+    if (direction != CELL_FIELD_NONE) {
         g_cellDestDirection = bytes[direction];
     }
-    if (level != -1) {
+    if (level != CELL_FIELD_NONE) {
         g_cellDestLevel = bytes[level];
     }
-    if (area != -1) {
+    if (area != CELL_FIELD_NONE) {
         g_cellDestArea = bytes[area];
     }
 }

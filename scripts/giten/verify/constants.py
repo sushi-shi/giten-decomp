@@ -205,6 +205,7 @@ def _comparison_sibling(cidx, literal, stack):
     transparent = {
         cidx.CursorKind.PAREN_EXPR,
         cidx.CursorKind.UNEXPOSED_EXPR,
+        cidx.CursorKind.UNARY_OPERATOR,
     }
     for pos in range(len(stack) - 1, -1, -1):
         binary = stack[pos]
@@ -315,6 +316,7 @@ def _direct_value_path(cidx, node, literal) -> bool:
     transparent = {
         cidx.CursorKind.PAREN_EXPR,
         cidx.CursorKind.UNEXPOSED_EXPR,
+        cidx.CursorKind.UNARY_OPERATOR,
     }
     if node.kind in transparent:
         children = list(node.get_children())
@@ -801,12 +803,22 @@ def apply_proven(sites: list[Site], *, repo: Path = REPO) -> int:
         path = repo / rel
         raw = path.read_bytes()
         for site in sorted(file_sites, key=lambda item: item.offset, reverse=True):
-            old = site.spelling.encode("ascii")
             replacement = site.replacement.encode("ascii")
-            if raw[site.offset:site.offset + len(old)] != old:
+            start, digits = site.offset, site.spelling
+            if digits.startswith("-"):
+                # The literal's offset is its digits; the sign sits before it.
+                digits = digits[1:]
+                start = site.offset - 1
+                while start > 0 and raw[start:start + 1] in (b" ", b"\t"):
+                    start -= 1
+                if raw[start:start + 1] != b"-":
+                    raise RuntimeError(
+                        f"{rel}:{site.line}:{site.column}: source changed since scan")
+            end = site.offset + len(digits)
+            if raw[site.offset:end] != digits.encode("ascii"):
                 raise RuntimeError(
                     f"{rel}:{site.line}:{site.column}: source changed since scan")
-            raw = raw[:site.offset] + replacement + raw[site.offset + len(old):]
+            raw = raw[:start] + replacement + raw[end:]
             applied += 1
         path.write_bytes(raw)
     return applied

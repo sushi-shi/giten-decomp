@@ -3,8 +3,10 @@
 
 #include <rva.h>
 
-#include <Game/GameState.h>
+#include <EnumDomain.h>
 #include <Game/FieldObject.h>
+#include <Game/GameState.h>
+#include <Game/ViewDirection.h>
 
 // The field screen: its redraw requests and menu mode.
 
@@ -46,7 +48,7 @@ void SetReturnPointAhead(void);
 
 // @identity-TODO: That wall kind 1 (preferred over 0 = open) is a door is inferred; confirm
 // from the wall renderer.
-i16 FindExitDirection(i16 x, i16 y);
+GZ_ENUM_RETURN(ViewDirection, i16) FindExitDirection(i16 x, i16 y);
 
 // @identity-TODO: That 0x9e30(0,3,1,0) is the party-member pick and 0xeaa0 maps an actor to its
 // talk entry is inferred.

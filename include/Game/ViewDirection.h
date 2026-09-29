@@ -6,11 +6,12 @@
 // The directions the party and the map objects face; each steps one cell
 // along its axis.
 GZ_ENUM_BEGIN(ViewDirection)
+    VIEW_NONE = -1, // no direction (keep the current one)
     VIEW_NORTH = 0, // y - 1
     VIEW_EAST = 1,  // x + 1
     VIEW_SOUTH = 2, // y + 1
     VIEW_WEST = 3
-        // x - 1
+// x - 1
 GZ_ENUM_END(ViewDirection)
 
 #endif // GITEN_GAME_VIEWDIRECTION_H

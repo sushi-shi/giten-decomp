@@ -3,8 +3,10 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/GameState.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 #include <stdio.h>
@@ -35,7 +37,7 @@ b16 RunFieldExploration(void);
 
 // Sets the return point the field leaves to (and resets the field objects
 // and the selected hotspot).
-void SetReturnPoint(i16 area, i16 level, i16 x, i16 y, i16 direction);
+void SetReturnPoint(i16 area, i16 level, i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 // Moves the party to x/y facing `direction` and rebuilds the view.
 void MovePartyTo(i16 x, i16 y, i16 direction);

@@ -530,7 +530,7 @@ GZ_ENUM_RETURN(EquipPart, i16) GetItemCategory(i16 id) {
         case ITEM_KIND_KEYCARD:
         case ITEM_KIND_GEM:
         case ITEM_KIND_SCENARIO:
-            return -1;
+            return EQUIP_PART_NONE;
         case ITEM_KIND_WEAPON:
             return EQUIP_PART_WEAPON;
         case ITEM_KIND_GUN:
@@ -550,7 +550,7 @@ GZ_ENUM_RETURN(EquipPart, i16) GetItemCategory(i16 id) {
         case ITEM_KIND_ACCESSORY:
             return EQUIP_PART_ACCESSORY;
     }
-    return -1;
+    return EQUIP_PART_NONE;
 }
 
 RVA(0x00023690, 0x20)

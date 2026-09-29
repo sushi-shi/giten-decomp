@@ -68,7 +68,7 @@ static u8 s_levelEvents[0x20] = {0};
 // The direction the party faces after returning to the field (-1: find the
 // exit it came through).
 DATA(0x0007b760)
-static i16 s_returnDirection = 0;
+static GZ_ENUM_STORAGE(ViewDirection, i16) s_returnDirection = VIEW_NORTH;
 
 // The return point: the field position restored when the field is re-entered.
 DATA(0x0007b764)
@@ -458,7 +458,13 @@ i16 RequestTalk(void) {
 }
 
 RVA(0x00012880, 0x53)
-void SetReturnPoint(i16 area, i16 level, i16 x, i16 y, i16 direction) {
+void SetReturnPoint(
+    i16 area,
+    i16 level,
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction
+) {
     s_returnArea = area;
     s_returnLevel = level;
     s_returnX = x;
@@ -524,7 +530,7 @@ void SetReturnPointAhead(void) {
 // The first side of x/y with a door (wall kind 1), else the first open side;
 // -1 for none.
 RVA(0x00012a20, 0x58)
-i16 FindExitDirection(i16 x, i16 y) {
+GZ_ENUM_RETURN(ViewDirection, i16) FindExitDirection(i16 x, i16 y) {
     i16 cell = RevealAreaMapAt(x, y);
     i16 side;
     for (side = 0; side < 4; side++) {
@@ -537,7 +543,7 @@ i16 FindExitDirection(i16 x, i16 y) {
             return side;
         }
     }
-    return -1;
+    return VIEW_NONE;
 }
 
 // With a key pending and the automap allowed, makes the object under the
@@ -922,7 +928,7 @@ b16 RunFieldExploration(void) {
                 g_party.field.pos.x,
                 g_party.field.pos.y
             );
-            if (s_returnDirection == -1) {
+            if (s_returnDirection == VIEW_NONE) {
                 s_returnDirection = FindExitDirection(s_returnX, s_returnY);
                 if (s_returnDirection >= 0) {
                     g_party.field.pos.direction = (u8)s_returnDirection;
@@ -1033,7 +1039,13 @@ void RunCellEvent(void) {
             if (HasAutoMoves()) {
                 SetGamePhase(FIELD_PHASE_END_EVENT);
                 CancelFieldMap();
-                SetReturnPoint(g_cellDestArea, g_cellDestLevel, g_cellDestX, g_cellDestY, -1);
+                SetReturnPoint(
+                    g_cellDestArea,
+                    g_cellDestLevel,
+                    g_cellDestX,
+                    g_cellDestY,
+                    VIEW_NONE
+                );
                 s_eventSound = 4;
                 break;
             }

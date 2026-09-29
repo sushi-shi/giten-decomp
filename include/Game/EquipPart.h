@@ -6,6 +6,7 @@
 // Logical equipment parts, distinct from the packed slot order.
 // clang-format off
 GZ_ENUM_BEGIN(EquipPart)
+    EQUIP_PART_NONE = -1,
     EQUIP_PART_WEAPON = 0,
     EQUIP_PART_GUN = 1,
     EQUIP_PART_AMMO = 2,

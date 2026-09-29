@@ -282,14 +282,11 @@ const CellKind* FindCellKind(const CellHead* cell);
 
 // Latches the cell and the destination bytes at the given offsets (x, y, then
 // direction, level and area where the offset is not -1) for RunCellEvent.
-void LatchCellDestination(
-    const CellHead* cell,
-    i16 x,
-    i16 y,
-    GZ_ENUM_PARAM(ViewDirection, i16) direction,
-    i16 level,
-    i16 area
-);
+// LatchCellDestination's field arguments are byte offsets into the cell record;
+// CELL_FIELD_NONE marks a field the cell does not have.
+#define CELL_FIELD_NONE (-1)
+
+void LatchCellDestination(const CellHead* cell, i16 x, i16 y, i16 direction, i16 level, i16 area);
 
 // @identity-TODO: what the codes 0x48..0x4e are is unrecovered.
 b16 IsReservedObjectCell(const CellHead* cell);
