@@ -925,23 +925,24 @@ ScriptEntry FindLayerScriptEntry(i16 layerSlot, i16 file, i16 entry) {
     FILE* fp;
     ScriptEntry none;
     ClearScriptEntry(&none);
-    if (layerSlot != 0) {
-        layer = layerSlot - 1;
-        if (file == 0xff) {
-            if (s_objectScripts == NULL) {
-                fp = OpenDataFile(0x6800, 9, 0);
-                s_objectScripts = ReadScriptBlock(s_objectScripts, fp);
-                CloseDataFile(fp);
-            }
-            return MakeScriptEntry(s_objectScripts, entry);
+    if (layerSlot == 0) {
+        return none;
+    }
+    layer = layerSlot - 1;
+    if (file == 0xff) {
+        if (s_objectScripts == NULL) {
+            fp = OpenDataFile(0x6800, 9, 0);
+            s_objectScripts = ReadScriptBlock(s_objectScripts, fp);
+            CloseDataFile(fp);
         }
-        if (GetLayerScript(&s_layers[layer], 0) == NULL) {
-            LoadLayerScriptSet(&s_layers[layer], s_layers[layer].record.scriptSet);
-        }
-        for (i = 0; i < 32; i++) {
-            if (GetScriptBlockId(GetLayerScript(&s_layers[layer], i)) == file) {
-                return MakeScriptEntry(GetLayerScript(&s_layers[layer], i), entry);
-            }
+        return MakeScriptEntry(s_objectScripts, entry);
+    }
+    if (GetLayerScript(&s_layers[layer], 0) == NULL) {
+        LoadLayerScriptSet(&s_layers[layer], s_layers[layer].record.scriptSet);
+    }
+    for (i = 0; i < 32; i++) {
+        if (GetScriptBlockId(GetLayerScript(&s_layers[layer], i)) == file) {
+            return MakeScriptEntry(GetLayerScript(&s_layers[layer], i), entry);
         }
     }
     return none;
