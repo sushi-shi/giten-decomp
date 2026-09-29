@@ -1,5 +1,7 @@
 # Permutation experiments
 
+Run the permuter only when the user has explicitly allowed it for the current task, and never while several agents or lanes are running: it saturates the shared CPU and wineserver, and its candidates are hard to audit across concurrent branches.
+
 Use the `permute` skill after reconstructing a complete, credible body.
 Direct `state`/`variants` commands require a diagnosed register/schedule residue
 and HIST < 100. Candidate/campaign commands classify the live population and

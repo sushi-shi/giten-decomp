@@ -5,6 +5,8 @@ description: Use simonlindholm/decomp-permuter's C AST randomizer to search diag
 
 # Decomp-permuter for Giten
 
+Run the permuter only when the user has explicitly allowed it for the current task, and never while several agents or lanes are running: it saturates the shared CPU and wineserver, and its candidates are hard to audit across concurrent branches.
+
 The [upstream decomp-permuter](https://github.com/simonlindholm/decomp-permuter)
 parses and mutates C, but its command-line scorer supports MIPS, PowerPC, and
 ARM32 rather than this project's x86 COFF. Run its `src.randomizer.Randomizer`
