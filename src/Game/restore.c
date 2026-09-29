@@ -5,9 +5,11 @@
 
 #include <Game/Alignment.h>
 #include <Game/AlignmentSide.h>
+#include <Game/CharacterStat.h>
 #include <Game/Condition.h>
 #include <Game/EquipEffect.h>
 #include <Game/ItemEffect.h>
+#include <Game/RestoreEffect.h>
 #include <Game/Stats.h>
 #include <Util/BitSet.h>
 #include <Util/Range.h>
@@ -108,7 +110,12 @@ static const i16 s_specialRecoveryConditions[] = {
 };
 
 DATA(0x00064618)
-const i16 g_affiliationGrowthStats[4][2] = {{5, 7}, {8, 0}, {2, 1}, {3, 9}};
+const i16 g_affiliationGrowthStats[4][2] = {
+    {STAT_STRENGTH, STAT_AGILITY},
+    {STAT_DEXTERITY, STAT_INTUITION},
+    {STAT_MAGIC, STAT_MENTAL_STRENGTH},
+    {STAT_INTELLIGENCE, STAT_CHARM},
+};
 
 // @identity-TODO: no reader survives in this image; the four words hold the
 // order 0..3 with the middle pair swapped, and a reader would name them.
@@ -127,13 +134,13 @@ i16 ComputeRestoreAmount(i16 code, Character* user, u16 max) {
     if (code == 0) {
         return 0;
     }
-    if (code == 255) {
+    if (code == RESTORE_AMOUNT_FULL) {
         return max;
     }
-    if (code == 254) {
+    if (code == RESTORE_AMOUNT_HALF) {
         return max / 2;
     }
-    if (code == 253) {
+    if (code == RESTORE_AMOUNT_QUARTER) {
         return max / 4;
     }
     amount = GetStatTotal(user, STAT_MAGIC);
@@ -347,9 +354,9 @@ i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character
     if (reportCondition) {
         if (!g_effectCondition) {
             if (sleep == 2) {
-                g_effectCondition = 13;
+                g_effectCondition = CONDITION_SLEEP;
             } else if (sleep == 1) {
-                g_effectCondition = 25;
+                g_effectCondition = CONDITION_DOZE;
             }
         }
         return g_effectCondition ? 3 : 6;

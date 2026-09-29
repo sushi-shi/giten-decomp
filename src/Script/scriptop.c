@@ -92,7 +92,7 @@ void OpIfFlags(b16 all) {
     b32 skip;
     for (;;) {
         invert = ReadFlagOperand(&bank, &index);
-        if (invert == -1 && bank == 0x7f) {
+        if (invert == -1 && bank == FLAG_BANK_MASK) {
             break;
         }
         matched = (TestEventFlag(bank, index) != false) ^ (invert & 1);

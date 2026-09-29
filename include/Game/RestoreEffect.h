@@ -29,4 +29,12 @@ GZ_ENUM_BEGIN_SPLIT(RestoreEffect, i16)
     RESTORE_EFFECT_HEAL_IF_ALIGNMENT_B_BELOW_NEUTRAL = 65
 GZ_ENUM_END_SPLIT(RestoreEffect)
 
+// ComputeRestoreAmount's amount codes that restore a fixed share of the pool;
+// other codes add to a roll on the user's magic.
+GZ_ENUM_CONST_BEGIN(RestoreAmount)
+    RESTORE_AMOUNT_QUARTER = 253,
+    RESTORE_AMOUNT_HALF = 254,
+    RESTORE_AMOUNT_FULL = 255
+GZ_ENUM_CONST_END(RestoreAmount)
+
 #endif // GITEN_GAME_RESTOREEFFECT_H

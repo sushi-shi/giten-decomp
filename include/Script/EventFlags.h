@@ -20,8 +20,21 @@ typedef union FlagBank {
     } sys;
 } FlagBank;
 
-// The event-flag banks, saved and loaded as one 512-byte block.
-extern FlagBank g_eventFlags[16];
+// The event-flag banks, saved and loaded as one 512-byte block. Bank
+// EVENT_FLAG_BANK_ACTOR is the script actor's own flags while there is one;
+// EVENT_FLAG_BANK_SYSTEM holds the flag settings and tag.
+#define EVENT_FLAG_BANK_COUNT 16
+#define EVENT_FLAG_BANK_WORDS 8
+#define EVENT_FLAG_BANK_ACTOR 14
+#define EVENT_FLAG_BANK_SYSTEM 15
+extern FlagBank g_eventFlags[EVENT_FLAG_BANK_COUNT];
+
+// A flag word or operand: the bank in bits 0-6, a negate bit, and (in a word)
+// the index in the high byte; bank FLAG_BANK_MASK with index 0xff always reads
+// set, and ends a flag list.
+#define FLAG_BANK_MASK 0x7f
+#define FLAG_NEGATE 0x80
+#define FLAG_INDEX_MASK 0xff00
 
 i16 CheckFlagWord(u16* condition);
 b16 MatchFlagWord(u16* condition);
