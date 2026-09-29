@@ -2700,7 +2700,7 @@ void OpGetTimeOfDay(void) {
 // escape selects each is unrecovered. `byId` makes kinds 1/2 take `id` as a
 // character id instead of a script object id.
 RVA(0x00036700, 0x218)
-char* GetTextToken(GZ_ENUM_PARAM(TextTokenKind, i16) kind, i16 byId, i16 id) {
+char* GetTextToken(GZ_ENUM_PARAM(TextTokenKind, i16) kind, b16 byId, i16 id) {
     const char* text = NULL;
     Character* object;
     s_tokenText[0] = '\0';

@@ -684,4 +684,4 @@ src/Script/scriptvars.c	OpShow*Picture	*	*	*	@identity-TODO: event pictures 0x50
 src/Script/scriptvars.c	OpSaveRestoreScreen	*	*	*	@identity-TODO: the save/restore flag bits 1 and 2 and the 80-byte rows
 src/Script/scriptvars.c	ClearSystemVars	0	*	*	a cleared variable reads 0
 src/Script/scriptvars.c	SetScriptLongVar	-1	*	*	no variable (ReadLongVarIndex's -1)
-src/Script/scriptvars.c	Call*Name	*	call-argument	GetTextToken(*	@identity-TODO: GetTextToken's second argument 0; the second member is slot 1's ref
+src/Script/scriptvars.c	Call*Name	*	call-argument	GetTextToken(*	the second member is slot 1's ref (SCRIPT_REF_SLOT_BASE - 1)
