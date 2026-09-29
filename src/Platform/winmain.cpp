@@ -3459,10 +3459,11 @@ static DWORD s_frameClockCount;
 // @bug Retail paces the main loop, one game step per pass, on the vertical blank
 // alone, so the game's speed follows the display's refresh rate: a 120 Hz
 // display runs it twice as fast, and under Wine, whose WaitForVerticalBlank
-// returns at once, it runs as fast as the host allows. Called after that wait,
-// this holds the loop to REFRESH_RATE passes a second on its own clock. A
-// deadline more than a frame ahead or FRAME_MAX_LAG behind (the first call, a
-// timeGetTime wrap, a stall) restarts the clock at now.
+// returns at once, it runs as fast as the host allows. Called before that
+// wait, so the frame is still shown on the vertical blank, this holds the loop
+// to REFRESH_RATE passes a second on its own clock. A deadline more than a
+// frame ahead or FRAME_MAX_LAG behind (the first call, a timeGetTime wrap, a
+// stall) restarts the clock at now.
 static void WaitForFrame(void) {
     DWORD now;
     LONG ahead;
@@ -3492,10 +3493,9 @@ static void WaitForFrame(void) {
 // none for as long as the player keeps it open: Windows NT marks the window
 // Not Responding and ghosts it, a missed WM_ACTIVATEAPP leaves the input
 // acquired and the cursor confined after switching away, and wrappers such as
-// DxWnd that work through the message queue stall (reported as minutes of
-// delay in the item-discard screen). And while the application is inactive,
-// WinMain's loop spins without waiting, dispatching the last message again on
-// every pass.
+// DxWnd that work through the message queue stall. And while the application
+// is inactive, WinMain's loop spins without waiting, dispatching the last
+// message again on every pass.
 // This removes and dispatches the pending messages as WinMain's loop does and
 // exits on WM_QUIT as it does; while the application is inactive it waits for
 // the next message instead of spinning. Its callers run outside any window
@@ -3545,10 +3545,10 @@ void RenderFrame(void) {
         }
         s_viewChanged = FALSE;
         DrawMouseCursor();
-        g_ddraw->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL);
 #ifdef GITEN_COMPAT
         WaitForFrame();
 #endif
+        g_ddraw->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL);
         if (draw) {
             if (g_deviceType == D3D_DEVICE_HAL) {
                 while ((result = g_primarySurface->Flip(NULL, DDFLIP_WAIT)) != DD_OK) {
@@ -4527,16 +4527,40 @@ static b32 ClockTickedThisPass(void) {
     return g_clock.frames == g_clock.framesPerTick;
 }
 
+// Whether input held for a later tick pass may still stand: the battle goes on
+// in the 3D view, no command is being entered and the command panel is not
+// shown.
+static b32 CanHoldBattleInput(void) {
+    return GetFieldBattleActive() && GetPickMode() == 0 && g_renderMode == RENDER_MODE_VIEW
+           && !g_screenLayers[SCREEN_LAYER_PANEL]->visible;
+}
+
+// Whether a left press on a party panel would start its drag now: HandleInput
+// refuses one while the command panel or any text plane is shown.
+static b32 CanPressPartyPanel(void) {
+    i32 i;
+
+    if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
+        return false;
+    }
+    for (i = 0; i < TEXT_PLANE_COUNT; i++) {
+        if (GetTextPlane(i)->visible) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // Opens the held party panel release's command panel on the first pass a tick
-// passes, through ReleasePartyPanel's gate as retail would have on that pass;
-// drops it once the battle ends or a command is being entered.
+// passes, through ReleasePartyPanel's gate as retail would have on that pass.
+// Drops it when a check that let it be held or its press through fails.
 static void ApplyHeldPanelRelease(void) {
     i32 slot = s_heldPanelRelease;
 
     if (slot == SCREEN_LAYER_COUNT) {
         return;
     }
-    if (!GetFieldBattleActive() || GetPickMode() != 0) {
+    if (!CanHoldBattleInput() || !CanPressPartyPanel()) {
         s_heldPanelRelease = SCREEN_LAYER_COUNT;
         return;
     }
@@ -4554,14 +4578,14 @@ static void ApplyHeldPanelRelease(void) {
 // also refuses the click while the command machine has stopped the clock
 // (RunPartyCommandInput clears GetTickElapsed while it runs): removing it
 // lets a click that picks an ally as a target open that ally's panel in the
-// middle of the pick (the XP patch tool's "battle click fix"). Retail lets
-// that through too on a tick pass after the pick completes, since the pick
-// is taken on the press and the machine is idle again by the release.
-// A release in battle is kept only when neither its press nor its release
-// came while a command was being entered, and then waits for the next pass
-// on which a tick passes and goes through the retail gate there.
+// middle of the pick. Retail lets that through too on a tick pass after the
+// pick completes, since the pick is taken on the press and the machine is
+// idle again by the release.
+// A release in place in the battle view is kept only when neither its press
+// nor its release came while a command was being entered, and then waits for
+// the next pass on which a tick passes and goes through the retail gate there.
 static void ReleasePartyPanelOnTick(i32 slot, b32 dragged) {
-    if (dragged || !GetFieldBattleActive()) {
+    if (dragged || !GetFieldBattleActive() || g_renderMode != RENDER_MODE_VIEW) {
         ReleasePartyPanel(slot, dragged);
         return;
     }
@@ -4593,22 +4617,26 @@ void HandleInput(u8 buttons) {
     // tap let go before the next tick is lost. A tap turned away on a pass
     // without a tick, while no command is being entered, is held and stands in
     // for the stick's bits on the next pass the gate lets through if the
-    // stick is let go by then; a tick pass the gate refuses drops it.
-    if (s_layerDragging || g_renderMode != RENDER_MODE_VIEW
-        || g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
+    // stick is let go by then. A tick pass the gate refuses, the end of the
+    // battle, command entry, the command panel and leaving the view drop it.
+    if (s_layerDragging || !CanHoldBattleInput()) {
         s_heldJoystickBits = 0;
-    } else if (!GetFieldBattleActive() || GetTickElapsed()) {
-        if (s_heldJoystickBits != 0 && !(s_joystickBits & JOY_DIRECTIONS)) {
-            s_joystickBits = s_heldJoystickBits;
+    }
+    if (!s_layerDragging && g_renderMode == RENDER_MODE_VIEW
+        && !g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
+        if (!GetFieldBattleActive() || GetTickElapsed()) {
+            if (s_heldJoystickBits != 0 && !(s_joystickBits & JOY_DIRECTIONS)) {
+                s_joystickBits = s_heldJoystickBits;
+            }
+            s_heldJoystickBits = 0;
+            if (RunJoystickMove()) {
+                return;
+            }
+        } else if (ClockTickedThisPass()) {
+            s_heldJoystickBits = 0;
+        } else if (CanHoldBattleInput() && (s_joystickBits & JOY_DIRECTIONS)) {
+            s_heldJoystickBits = s_joystickBits;
         }
-        s_heldJoystickBits = 0;
-        if (RunJoystickMove()) {
-            return;
-        }
-    } else if (ClockTickedThisPass() || GetPickMode() != 0) {
-        s_heldJoystickBits = 0;
-    } else if (s_joystickBits & JOY_DIRECTIONS) {
-        s_heldJoystickBits = s_joystickBits;
     }
 #else
     if (!s_layerDragging && g_renderMode == RENDER_MODE_VIEW

@@ -76,9 +76,11 @@ per pass, and `RenderFrame` paces the pass only with
 machine a pass also outlasts the vertical blank, so the speed depends on the
 CPU as well [DDS414].
 
-**Fix:** `WaitForFrame`, called from `RenderFrame` after the vertical-blank
+**Fix:** `WaitForFrame`, called from `RenderFrame` before the vertical-blank
 wait, holds the loop to 60 passes a second on `timeGetTime`, the rate of the
-60 Hz displays of the time.
+60 Hz displays of the time. The frame is still flipped or copied right after
+the vertical-blank wait, so pacing adds no delay between the blank and the
+present.
 
 **Save impact:** none.
 
@@ -305,11 +307,15 @@ can open that panel too, on a tick pass: the target is picked on the press,
 and by the release the machine is idle again.
 
 **Fix:** `HandleInput` records whether a command was being entered when the
-button went down. A release in place in battle is kept only when neither the
-press nor the release came during command entry. It is then held until the
-next pass on which the clock ticks, where it goes through `ReleasePartyPanel`
-and the retail gate. A new press drops a held release, as do the battle
-ending and command entry starting.
+button went down. A release in place in the battle view is kept only when
+neither the press nor the release came during command entry. It is then held
+until the next pass on which the clock ticks, where it goes through
+`ReleasePartyPanel` and the retail gate. On every pass until then it is
+re-checked against what let it be held and what the press needed: the battle
+goes on, the 3D view is still shown, no command is being entered, the command
+panel is not shown and no text plane is open. It is dropped when any fails,
+or on a new press. Outside the 3D view a release goes to `ReleasePartyPanel`
+at once, as in retail.
 
 **Save impact:** none.
 
@@ -328,8 +334,10 @@ current state, so a tap let go before the next tick is never seen.
 
 **Fix:** a direction turned away on a pass without a tick, while no command is
 being entered, is held. On the next pass the gate lets through, it stands in
-for the stick if the stick has been let go by then. A tick pass that the gate
-refuses (command entry) drops it.
+for the stick if the stick has been let go by then. It is dropped on a tick
+pass that the gate refuses, and whenever the battle has ended, a command is
+being entered, the command panel is shown, a layer is being dragged or the 3D
+view is left, so a tap never carries over into the field.
 
 **Save impact:** none.
 
