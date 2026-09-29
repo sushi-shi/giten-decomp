@@ -11,7 +11,7 @@
 // Status conditions are bits 0..34, followed by their individual ages.
 typedef struct ConditionSet {
     u8 bits[5];
-    u8 ages[35];
+    u8 ages[CONDITION_COUNT];
 } ConditionSet;
 
 static __inline void

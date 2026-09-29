@@ -20,34 +20,92 @@ i16 g_effectCondition;
 
 // The condition groups selected by restoration kinds 53..59, 62 and 64.
 DATA(0x00064558)
-static const i16 s_mentalRecoveryConditions[] = {14, 18, 19, 27, 28, 29, -1};
+static const i16 s_mentalRecoveryConditions[] = {
+    CONDITION_PANIC,
+    CONDITION_CONFUSION,
+    CONDITION_DANCE,
+    CONDITION_HIGH,
+    CONDITION_HAPPY,
+    CONDITION_TIPSY,
+    CONDITION_LIST_END
+};
 
 DATA(0x00064568)
-static const i16 s_extendedMentalRecoveryConditions[] =
-    {14, 18, 19, 27, 28, 29, 23, 26, 17, 16, 10, -1};
+static const i16 s_extendedMentalRecoveryConditions[] = {
+    CONDITION_PANIC,
+    CONDITION_CONFUSION,
+    CONDITION_DANCE,
+    CONDITION_HIGH,
+    CONDITION_HAPPY,
+    CONDITION_TIPSY,
+    CONDITION_BLIND,
+    CONDITION_BERSERK,
+    CONDITION_CHARM,
+    CONDITION_HALLUCINATION,
+    CONDITION_STUN,
+    CONDITION_LIST_END
+};
 
 DATA(0x00064580)
-static const i16 s_poisonParalysisConditions[] = {15, 5, -1};
+static const i16 s_poisonParalysisConditions[] =
+    {CONDITION_POISON, CONDITION_PARALYSIS, CONDITION_LIST_END};
 
 DATA(0x00064588)
-static const i16 s_extendedPoisonParalysisConditions[] = {15, 5, 32, 4, -1};
+static const i16 s_extendedPoisonParalysisConditions[] = {
+    CONDITION_POISON,
+    CONDITION_PARALYSIS,
+    CONDITION_SEVERE_POISON,
+    CONDITION_STONE,
+    CONDITION_LIST_END
+};
 
 DATA(0x00064598)
-const i16 g_physicalRecoveryConditions[] = {21, 22, 20, 11, 4, 15, 5, -1};
+const i16 g_physicalRecoveryConditions[] = {
+    CONDITION_ICE,
+    CONDITION_BURN,
+    CONDITION_SHOCK,
+    CONDITION_SUFFOCATION,
+    CONDITION_STONE,
+    CONDITION_POISON,
+    CONDITION_PARALYSIS,
+    CONDITION_LIST_END
+};
 
 DATA(0x000645a8)
-static const i16 s_faintRecoveryConditions[] = {2, 3, 10, -1};
+static const i16 s_faintRecoveryConditions[] =
+    {CONDITION_DYING, CONDITION_COLLAPSE, CONDITION_STUN, CONDITION_LIST_END};
 
 DATA(0x000645b0)
-static const i16 s_deathRecoveryConditions[] = {1, 2, 3, 10, -1};
+static const i16 s_deathRecoveryConditions[] =
+    {CONDITION_DEAD, CONDITION_DYING, CONDITION_COLLAPSE, CONDITION_STUN, CONDITION_LIST_END};
 
 DATA(0x000645c0)
-static const i16 s_generalRecoveryConditions[] = {2,  3,  4,  5,  6,  10, 11, 12, 13, 14,
-                                                  15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-                                                  25, 26, 27, 28, 29, 30, 32, 33, 34, -1};
+static const i16 s_generalRecoveryConditions[] = {
+    CONDITION_DYING,  CONDITION_COLLAPSE,  CONDITION_STONE,         CONDITION_PARALYSIS,
+    CONDITION_FREEZE, CONDITION_STUN,      CONDITION_SUFFOCATION,   CONDITION_BIND,
+    CONDITION_SLEEP,  CONDITION_PANIC,     CONDITION_POISON,        CONDITION_HALLUCINATION,
+    CONDITION_CHARM,  CONDITION_CONFUSION, CONDITION_DANCE,         CONDITION_SHOCK,
+    CONDITION_ICE,    CONDITION_BURN,      CONDITION_BLIND,         CONDITION_MAGIC_SEAL,
+    CONDITION_DOZE,   CONDITION_BERSERK,   CONDITION_HIGH,          CONDITION_HAPPY,
+    CONDITION_TIPSY,  CONDITION_DRUNK,     CONDITION_SEVERE_POISON, CONDITION_VAMPIRE,
+    CONDITION_INJURY, CONDITION_LIST_END
+};
 
 DATA(0x00064600)
-static const i16 s_specialRecoveryConditions[] = {0, 1, 8, 9, 31, 14, 18, 19, 27, 28, 29, -1};
+static const i16 s_specialRecoveryConditions[] = {
+    CONDITION_ASH,
+    CONDITION_DEAD,
+    CONDITION_ZOMBIE,
+    CONDITION_CURSE,
+    CONDITION_SLIME,
+    CONDITION_PANIC,
+    CONDITION_CONFUSION,
+    CONDITION_DANCE,
+    CONDITION_HIGH,
+    CONDITION_HAPPY,
+    CONDITION_TIPSY,
+    CONDITION_LIST_END
+};
 
 DATA(0x00064618)
 const i16 g_affiliationGrowthStats[4][2] = {{5, 7}, {8, 0}, {2, 1}, {3, 9}};

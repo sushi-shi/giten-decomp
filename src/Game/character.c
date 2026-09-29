@@ -80,128 +80,102 @@ typedef struct ConditionName {
 
 // The fatal conditions (ash, dead, dying).
 DATA(0x000646e8)
-static const i16 s_fatalConditions[] = {CONDITION_ASH, CONDITION_DEAD, CONDITION_DYING, -1};
+static const i16 s_fatalConditions[] =
+    {CONDITION_ASH, CONDITION_DEAD, CONDITION_DYING, CONDITION_LIST_END};
 
 // @identity-TODO: the conditions GetPickBlockingCondition reports (the last one
 // set wins); named from its caller in the party picker.
 DATA(0x000646f0)
 static const i16 s_pickBlockingConditions[] = {
-    21,
-    6,
+    CONDITION_ICE,
+    CONDITION_FREEZE,
     CONDITION_DOZE,
     CONDITION_SLEEP,
-    10,
-    3,
+    CONDITION_STUN,
+    CONDITION_COLLAPSE,
     CONDITION_DYING,
     CONDITION_DEAD,
     CONDITION_ASH,
-    20,
-    12,
-    5,
-    4,
-    19,
-    -1
+    CONDITION_SHOCK,
+    CONDITION_BIND,
+    CONDITION_PARALYSIS,
+    CONDITION_STONE,
+    CONDITION_DANCE,
+    CONDITION_LIST_END
 };
 
 // Conditions suppressed when an attack targets a field actor in field mode.
 DATA(0x00064710)
 static const i16 s_fieldRestrictedConditions[] = {
-    CONDITION_ASH,
-    CONDITION_DEAD,
-    CONDITION_DYING,
-    3,
-    4,
-    5,
-    6,
-    7,
-    CONDITION_ZOMBIE,
-    9,
-    10,
-    11,
-    12,
-    CONDITION_SLEEP,
-    14,
-    CONDITION_POISON,
-    17,
-    19,
-    21,
-    30,
-    31,
-    CONDITION_SEVERE_POISON,
-    33,
-    -1,
+    CONDITION_ASH,    CONDITION_DEAD,          CONDITION_DYING,   CONDITION_COLLAPSE,
+    CONDITION_STONE,  CONDITION_PARALYSIS,     CONDITION_FREEZE,  CONDITION_POSSESSION,
+    CONDITION_ZOMBIE, CONDITION_CURSE,         CONDITION_STUN,    CONDITION_SUFFOCATION,
+    CONDITION_BIND,   CONDITION_SLEEP,         CONDITION_PANIC,   CONDITION_POISON,
+    CONDITION_CHARM,  CONDITION_DANCE,         CONDITION_ICE,     CONDITION_DRUNK,
+    CONDITION_SLIME,  CONDITION_SEVERE_POISON, CONDITION_VAMPIRE, CONDITION_LIST_END,
 };
 
 // @identity-TODO: the conditions GetDisablingCondition reports (the last one
 // set wins), those cleared after a battle, those cleared when a member leaves
 // the party, and every condition in display order.
 DATA(0x00064740)
-static const i16 s_disablingConditions[] =
-    {CONDITION_DYING, CONDITION_DEAD, CONDITION_ASH, 3, 4, 5, 6, -1};
+static const i16 s_disablingConditions[] = {
+    CONDITION_DYING,
+    CONDITION_DEAD,
+    CONDITION_ASH,
+    CONDITION_COLLAPSE,
+    CONDITION_STONE,
+    CONDITION_PARALYSIS,
+    CONDITION_FREEZE,
+    CONDITION_LIST_END
+};
 
 DATA(0x00064750)
-static const i16 s_battleConditions[] = {17, 20, 21, 22, CONDITION_DOZE, 26, 27, 28, -1};
+static const i16 s_battleConditions[] = {
+    CONDITION_CHARM,
+    CONDITION_SHOCK,
+    CONDITION_ICE,
+    CONDITION_BURN,
+    CONDITION_DOZE,
+    CONDITION_BERSERK,
+    CONDITION_HIGH,
+    CONDITION_HAPPY,
+    CONDITION_LIST_END
+};
 
 DATA(0x00064768)
 static const i16 s_leaveConditions[] = {
-    10,
-    11,
+    CONDITION_STUN,
+    CONDITION_SUFFOCATION,
     CONDITION_SLEEP,
-    14,
-    16,
-    18,
-    19,
-    20,
-    21,
-    22,
-    23,
+    CONDITION_PANIC,
+    CONDITION_HALLUCINATION,
+    CONDITION_CONFUSION,
+    CONDITION_DANCE,
+    CONDITION_SHOCK,
+    CONDITION_ICE,
+    CONDITION_BURN,
+    CONDITION_BLIND,
     CONDITION_DOZE,
-    26,
-    27,
-    28,
-    29,
-    31,
-    -1,
+    CONDITION_BERSERK,
+    CONDITION_HIGH,
+    CONDITION_HAPPY,
+    CONDITION_TIPSY,
+    CONDITION_SLIME,
+    CONDITION_LIST_END,
 };
 
 DATA(0x00064790)
 static const i16 s_allConditions[] = {
-    CONDITION_ASH,
-    CONDITION_DEAD,
-    CONDITION_DYING,
-    3,
-    4,
-    5,
-    6,
-    7,
-    CONDITION_ZOMBIE,
-    9,
-    10,
-    11,
-    12,
-    CONDITION_SLEEP,
-    14,
-    CONDITION_SEVERE_POISON,
-    CONDITION_POISON,
-    16,
-    17,
-    18,
-    19,
-    20,
-    21,
-    22,
-    23,
-    24,
-    CONDITION_DOZE,
-    26,
-    27,
-    30,
-    29,
-    28,
-    31,
-    33,
-    34,
-    -1,
+    CONDITION_ASH,    CONDITION_DEAD,          CONDITION_DYING,  CONDITION_COLLAPSE,
+    CONDITION_STONE,  CONDITION_PARALYSIS,     CONDITION_FREEZE, CONDITION_POSSESSION,
+    CONDITION_ZOMBIE, CONDITION_CURSE,         CONDITION_STUN,   CONDITION_SUFFOCATION,
+    CONDITION_BIND,   CONDITION_SLEEP,         CONDITION_PANIC,  CONDITION_SEVERE_POISON,
+    CONDITION_POISON, CONDITION_HALLUCINATION, CONDITION_CHARM,  CONDITION_CONFUSION,
+    CONDITION_DANCE,  CONDITION_SHOCK,         CONDITION_ICE,    CONDITION_BURN,
+    CONDITION_BLIND,  CONDITION_MAGIC_SEAL,    CONDITION_DOZE,   CONDITION_BERSERK,
+    CONDITION_HIGH,   CONDITION_DRUNK,         CONDITION_TIPSY,  CONDITION_HAPPY,
+    CONDITION_SLIME,  CONDITION_VAMPIRE,       CONDITION_INJURY, CONDITION_LIST_END,
 };
 
 // Shown when no condition name applies: three full-width spaces.
@@ -213,38 +187,38 @@ static const ConditionName s_conditionNames[] = {
     {CONDITION_ASH, "\212D"},                      // 灰
     {CONDITION_DEAD, "\216\200"},                  // 死
     {CONDITION_DYING, "\225m\216\200"},            // 瀕死
-    {3, "\215\250\223|"},                          // 昏倒
-    {4, "\220\316\211\273"},                       // 石化
-    {5, "\226\203\341\203"},                       // 麻痺
-    {6, "\223\200\214\213"},                       // 凍結
-    {7, "\234\337\210\313"},                       // 憑依
+    {CONDITION_COLLAPSE, "\215\250\223|"},         // 昏倒
+    {CONDITION_STONE, "\220\316\211\273"},         // 石化
+    {CONDITION_PARALYSIS, "\226\203\341\203"},     // 麻痺
+    {CONDITION_FREEZE, "\223\200\214\213"},        // 凍結
+    {CONDITION_POSSESSION, "\234\337\210\313"},    // 憑依
     {CONDITION_ZOMBIE, "\203]\203\223\203r"},      // ゾンビ
-    {9, "\216\364\202\242"},                       // 呪い
-    {10, "\213C\220\342"},                         // 気絶
-    {11, "\222\202\221\247"},                      // 窒息
-    {12, "\213\326\224\233"},                      // 禁縛
+    {CONDITION_CURSE, "\216\364\202\242"},         // 呪い
+    {CONDITION_STUN, "\213C\220\342"},             // 気絶
+    {CONDITION_SUFFOCATION, "\222\202\221\247"},   // 窒息
+    {CONDITION_BIND, "\213\326\224\233"},          // 禁縛
     {CONDITION_SLEEP, "\226\260\202\350"},         // 眠り
-    {14, "\213\260\215Q"},                         // 恐慌
+    {CONDITION_PANIC, "\213\260\215Q"},            // 恐慌
     {CONDITION_SEVERE_POISON, "\226\322\223\305"}, // 猛毒
     {CONDITION_POISON, "\223\305"},                // 毒
-    {16, "\214\266\212o"},                         // 幻覚
-    {17, "\226\243\227\271"},                      // 魅了
-    {18, "\215\254\227\220"},                      // 混乱
-    {19, "\225\221\223\245"},                      // 舞踏
-    {20, "\212\264\223d"},                         // 感電
-    {21, "\225X\214\213"},                         // 氷結
-    {22, "\211\212\217\343"},                      // 炎上
-    {23, "\226\323\226\332"},                      // 盲目
-    {24, "\225\225\226\202"},                      // 封魔
+    {CONDITION_HALLUCINATION, "\214\266\212o"},    // 幻覚
+    {CONDITION_CHARM, "\226\243\227\271"},         // 魅了
+    {CONDITION_CONFUSION, "\215\254\227\220"},     // 混乱
+    {CONDITION_DANCE, "\225\221\223\245"},         // 舞踏
+    {CONDITION_SHOCK, "\212\264\223d"},            // 感電
+    {CONDITION_ICE, "\225X\214\213"},              // 氷結
+    {CONDITION_BURN, "\211\212\217\343"},          // 炎上
+    {CONDITION_BLIND, "\226\323\226\332"},         // 盲目
+    {CONDITION_MAGIC_SEAL, "\225\225\226\202"},    // 封魔
     {CONDITION_DOZE, "\213\217\226\260\202\350"},  // 居眠り
-    {26, "\213\266\220\355\216m"},                 // 狂戦士
-    {27, "\203n\203C"},                            // ハイ
-    {30, "\223D\220\214"},                         // 泥酔
-    {29, "\202\331\202\353\220\214"},              // ほろ酔
-    {28, "\215K\225\237"},                         // 幸福
-    {31, "\275\327\262\321"},                      // ｽﾗｲﾑ
-    {33, "\213z\214\214"},                         // 吸血
-    {34, "\212O\217\235"},                         // 外傷
+    {CONDITION_BERSERK, "\213\266\220\355\216m"},  // 狂戦士
+    {CONDITION_HIGH, "\203n\203C"},                // ハイ
+    {CONDITION_DRUNK, "\223D\220\214"},            // 泥酔
+    {CONDITION_TIPSY, "\202\331\202\353\220\214"}, // ほろ酔
+    {CONDITION_HAPPY, "\215K\225\237"},            // 幸福
+    {CONDITION_SLIME, "\275\327\262\321"},         // ｽﾗｲﾑ
+    {CONDITION_VAMPIRE, "\213z\214\214"},          // 吸血
+    {CONDITION_INJURY, "\212O\217\235"},           // 外傷
 };
 
 // The Character `ammoCounts` entry of equipment kinds 11 through 19 (-1 for
@@ -270,7 +244,7 @@ static i16 s_selectedPartySlot = -1;
 
 // Each condition's base chance (of 256) to wear off per roll; 0 never does.
 DATA(0x00069f08)
-static i16 s_recoveryChance[35] = {
+static i16 s_recoveryChance[CONDITION_COUNT] = {
     0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  15, 40, 30, 40, 40, 0, 60, 10,
     50, 50, 128, 60, 50, 50, 10, 80, 10, 70, 80, 50, 10, 0,  0,  0, 0,
 };
@@ -1259,7 +1233,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 4);
+                blocked |= HasCondition(conditions, CONDITION_STONE);
                 blocked |= HasCondition(conditions, CONDITION_SEVERE_POISON);
                 if (blocked) {
                     return 0;
@@ -1269,26 +1243,26 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 }
                 condition = CONDITION_SEVERE_POISON;
                 continue;
-            case 21:
+            case CONDITION_ICE:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 4);
-                blocked |= HasCondition(conditions, 6);
+                blocked |= HasCondition(conditions, CONDITION_STONE);
+                blocked |= HasCondition(conditions, CONDITION_FREEZE);
                 if (blocked) {
                     return 0;
                 }
-                if (!HasCondition(conditions, 21)) {
+                if (!HasCondition(conditions, CONDITION_ICE)) {
                     break;
                 }
-                condition = 6;
+                condition = CONDITION_FREEZE;
                 continue;
             case CONDITION_DOZE:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 10);
+                blocked |= HasCondition(conditions, CONDITION_STUN);
                 blocked |= HasCondition(conditions, CONDITION_SLEEP);
                 if (blocked) {
                     return 0;
@@ -1298,25 +1272,25 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 }
                 condition = CONDITION_SLEEP;
                 continue;
-            case 29:
+            case CONDITION_TIPSY:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 30);
+                blocked |= HasCondition(conditions, CONDITION_DRUNK);
                 if (blocked) {
                     return 0;
                 }
-                if (!HasCondition(conditions, 29)) {
+                if (!HasCondition(conditions, CONDITION_TIPSY)) {
                     break;
                 }
-                condition = 30;
+                condition = CONDITION_DRUNK;
                 continue;
             case CONDITION_ASH:
                 if (HasCondition(conditions, condition)) {
                     return -1;
                 }
-                for (i = 0; i < 35; i++) {
+                for (i = 0; i < CONDITION_COUNT; i++) {
                     ClearCondition(conditions, i);
                 }
                 break;
@@ -1328,33 +1302,33 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                for (i = 0; i < 35; i++) {
+                for (i = 0; i < CONDITION_COUNT; i++) {
                     ClearCondition(conditions, i);
                 }
                 break;
-            case 3:
+            case CONDITION_COLLAPSE:
                 if (HasCondition(conditions, condition)) {
                     return -1;
                 }
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                if (HasCondition(conditions, 26)) {
+                if (HasCondition(conditions, CONDITION_BERSERK)) {
                     return 0;
                 }
-                ClearCondition(conditions, 10);
+                ClearCondition(conditions, CONDITION_STUN);
                 ClearCondition(conditions, CONDITION_SLEEP);
-                ClearCondition(conditions, 18);
-                ClearCondition(conditions, 20);
+                ClearCondition(conditions, CONDITION_CONFUSION);
+                ClearCondition(conditions, CONDITION_SHOCK);
                 ClearCondition(conditions, CONDITION_DOZE);
-                ClearCondition(conditions, 27);
-                ClearCondition(conditions, 28);
-                ClearCondition(conditions, 29);
-                ClearCondition(conditions, 30);
+                ClearCondition(conditions, CONDITION_HIGH);
+                ClearCondition(conditions, CONDITION_HAPPY);
+                ClearCondition(conditions, CONDITION_TIPSY);
+                ClearCondition(conditions, CONDITION_DRUNK);
                 break;
-            case 4:
-            case 9:
-            case 24:
+            case CONDITION_STONE:
+            case CONDITION_CURSE:
+            case CONDITION_MAGIC_SEAL:
                 if (HasCondition(conditions, condition)) {
                     return -1;
                 }
@@ -1362,12 +1336,12 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                     return 0;
                 }
                 break;
-            case 5:
-            case 12:
-            case 17:
-            case 19:
-            case 20:
-            case 28:
+            case CONDITION_PARALYSIS:
+            case CONDITION_BIND:
+            case CONDITION_CHARM:
+            case CONDITION_DANCE:
+            case CONDITION_SHOCK:
+            case CONDITION_HAPPY:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
@@ -1376,22 +1350,22 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                     return 0;
                 }
                 break;
-            case 26:
+            case CONDITION_BERSERK:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 5);
-                blocked |= HasCondition(conditions, 7);
+                blocked |= HasCondition(conditions, CONDITION_PARALYSIS);
+                blocked |= HasCondition(conditions, CONDITION_POSSESSION);
                 blocked |= HasCondition(conditions, CONDITION_ZOMBIE);
-                blocked |= HasCondition(conditions, 10);
+                blocked |= HasCondition(conditions, CONDITION_STUN);
                 blocked |= HasCondition(conditions, CONDITION_SLEEP);
                 blocked |= HasCondition(conditions, CONDITION_DOZE);
                 if (blocked) {
                     return 0;
                 }
                 break;
-            case 30:
+            case CONDITION_DRUNK:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
@@ -1399,7 +1373,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 if (blocked) {
                     return 0;
                 }
-                ClearCondition(conditions, 29);
+                ClearCondition(conditions, CONDITION_TIPSY);
                 break;
             case CONDITION_SEVERE_POISON:
                 if (GetFatalCondition(conditions)) {
@@ -1411,46 +1385,46 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                 }
                 ClearCondition(conditions, CONDITION_POISON);
                 break;
-            case 33:
-            case 34:
+            case CONDITION_VAMPIRE:
+            case CONDITION_INJURY:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
                 break;
-            case 6:
+            case CONDITION_FREEZE:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 4);
+                blocked |= HasCondition(conditions, CONDITION_STONE);
                 if (blocked) {
                     return 0;
                 }
-                if (HasCondition(conditions, 22)) {
-                    ClearCondition(conditions, 22);
+                if (HasCondition(conditions, CONDITION_BURN)) {
+                    ClearCondition(conditions, CONDITION_BURN);
                     return 2;
                 }
-                ClearCondition(conditions, 21);
+                ClearCondition(conditions, CONDITION_ICE);
                 break;
-            case 7:
+            case CONDITION_POSSESSION:
             case CONDITION_ZOMBIE:
-            case 11:
-            case 31:
+            case CONDITION_SUFFOCATION:
+            case CONDITION_SLIME:
                 if (HasCondition(conditions, condition)) {
                     return -1;
                 }
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                if (HasCondition(conditions, 4)) {
+                if (HasCondition(conditions, CONDITION_STONE)) {
                     return 0;
                 }
                 break;
-            case 10:
+            case CONDITION_STUN:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 26);
+                blocked |= HasCondition(conditions, CONDITION_BERSERK);
                 if (blocked) {
                     return 0;
                 }
@@ -1462,45 +1436,45 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
                     return 0;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 10);
-                blocked |= HasCondition(conditions, 26);
+                blocked |= HasCondition(conditions, CONDITION_STUN);
+                blocked |= HasCondition(conditions, CONDITION_BERSERK);
                 if (blocked) {
                     return 0;
                 }
                 ClearCondition(conditions, CONDITION_DOZE);
                 break;
-            case 14:
-            case 16:
-            case 18:
-            case 27:
+            case CONDITION_PANIC:
+            case CONDITION_HALLUCINATION:
+            case CONDITION_CONFUSION:
+            case CONDITION_HIGH:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 26);
+                blocked |= HasCondition(conditions, CONDITION_BERSERK);
                 if (blocked) {
                     return 0;
                 }
                 ClearCondition(conditions, CONDITION_DOZE);
                 break;
-            case 22:
+            case CONDITION_BURN:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 4);
+                blocked |= HasCondition(conditions, CONDITION_STONE);
                 if (blocked) {
                     return 0;
                 }
-                if (HasCondition(conditions, 6)) {
-                    ClearCondition(conditions, 6);
+                if (HasCondition(conditions, CONDITION_FREEZE)) {
+                    ClearCondition(conditions, CONDITION_FREEZE);
                     return 2;
                 }
                 break;
-            case 23:
+            case CONDITION_BLIND:
                 if (GetFatalCondition(conditions)) {
                     return 0;
                 }
-                blocked |= HasCondition(conditions, 4);
+                blocked |= HasCondition(conditions, CONDITION_STONE);
                 if (blocked) {
                     return 0;
                 }
@@ -1582,7 +1556,7 @@ i16 AgeConditions(ConditionSet* conditions, i16 amount) {
     if (!amount) {
         return 0;
     }
-    for (i = 0; i < 35; i++) {
+    for (i = 0; i < CONDITION_COUNT; i++) {
         aged |= AgeCondition(amount, conditions, i);
     }
     return aged;
@@ -1612,7 +1586,7 @@ RVA(0x0003f000, 0x25)
 i16 RecoverConditions(Character* character) {
     i16 recovered = 0;
     i16 i;
-    for (i = 0; i < 35; i++) {
+    for (i = 0; i < CONDITION_COUNT; i++) {
         recovered |= RecoverCondition(character, i);
     }
     return recovered;
@@ -3098,9 +3072,9 @@ i16 TickPartyTimers(u16 minutes) {
             ApplyEmptyPools(character);
             RequestStatusRedraw();
             if (g_clock.moonPhase <= 14) {
-                ClearCondition(GetCharacterConditions(character), 3);
+                ClearCondition(GetCharacterConditions(character), CONDITION_COLLAPSE);
             } else {
-                AddCondition(GetCharacterConditions(character), 3);
+                AddCondition(GetCharacterConditions(character), CONDITION_COLLAPSE);
             }
             return 1;
         }

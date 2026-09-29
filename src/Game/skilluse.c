@@ -66,10 +66,12 @@
 // The conditions that block a skill as they would a spell: severe poison and
 // sealed magic.
 DATA(0x00064678)
-static const i16 s_skillBlockingConditions[] = {11, 24, -1};
+static const i16 s_skillBlockingConditions[] =
+    {CONDITION_SUFFOCATION, CONDITION_MAGIC_SEAL, CONDITION_LIST_END};
 
 DATA(0x00064680)
-static const i16 s_skillIdBlockingConditions[] = {11, 24, -1};
+static const i16 s_skillIdBlockingConditions[] =
+    {CONDITION_SUFFOCATION, CONDITION_MAGIC_SEAL, CONDITION_LIST_END};
 
 DATA(0x00064688)
 static const u8 s_targetCellDistance[7][7] = {

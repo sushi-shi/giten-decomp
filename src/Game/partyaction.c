@@ -1902,7 +1902,7 @@ b16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
     accuracy = GetBattleStatShown(attacker, BATTLE_STAT_GUN_ACCURACY);
     ApplyAttackAccuracyConditions(attacker, accuracy);
     evasion = GetBattleStatShown(target, BATTLE_STAT_GUN_EVASION);
-    if (HasCondition(GetCharacterConditions(target), 19)) {
+    if (HasCondition(GetCharacterConditions(target), CONDITION_DANCE)) {
         evasion *= 2;
     }
     if (GetAttackRangeExcess(g_actorId, g_targetId) < 0) {
