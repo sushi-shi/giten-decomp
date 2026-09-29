@@ -78,7 +78,7 @@ partyaction	103	98
 playtime	4	4
 pool	6	6
 range	25	25
-recordcache	43	42
+recordcache	43	41
 restore	3	3
 savegame	10	10
 screensave	9	9
@@ -1613,7 +1613,7 @@ recordcache	_RestoreScriptState	100.0000	100.0000	1	663f30159ecb	0x2ea30	100.000
 recordcache	_RollSkillLearning	100.0000	100.0000	4	645a95049ce3	0x2dfb0	100.0000	
 recordcache	_SaveScriptState	100.0000	100.0000	1	6ba68caf5b47	0x2e9d0	100.0000	
 recordcache	_StripZeroWords	100.0000	100.0000	2	b3f00a7170f3	0x2dea0	100.0000	
-recordcache	_WearCachedSkill	100.0000	100.0000	3	7607ffde7cca	0x2e8a0	100.0000	
+recordcache	_WearCachedSkill	24.8000	24.8000	4	4f65b2e0fdcf	0x2e8a0	100.0000	
 recordcache	_WearSkillValue	100.0000	100.0000	4	d783a1aa12ac	0x2e960	100.0000	
 restore	_ApplyRestoreEffect	100.0000	100.0000	12	6e32c9aa9376	0x1fe90	100.0000	
 restore	_ComputeRestoreAmount	100.0000	100.0000	4	a4dd284d8beb	0x1fdc0	100.0000	
