@@ -102,7 +102,7 @@ surfacecopy	1	1
 textapi	5	5
 textchar	1	0
 textstate	21	20
-treasurebox	147	137
+treasurebox	147	136
 vec3	10	8
 videostate	5	5
 vram	44	39
@@ -436,7 +436,7 @@ d3dapp	?ChooseTextureFormat@@YGJPAU_DDSURFACEDESC@@PAX@Z	100.0000	100.0000	1	51f
 d3dapp	?ClearScreenSurfaces@@YAXXZ	100.0000	100.0000	3	404c739e401d	0x48f20	100.0000	
 d3dapp	?CrossProduct@@YA?AU_D3DVECTOR@@ABU1@0@Z	100.0000	100.0000	1	header:c10460422f3d	0x49170	100.0000	
 d3dapp	?DotProduct@@YAMABU_D3DVECTOR@@0@Z	100.0000	91.8667	1	header:eda9abb1977f	0x49140	100.0000	
-d3dapp	?InitDirect3D@@YAHXZ	99.5451	99.5451	11	d5d9bd6a9506	0x47ef0	99.5451	
+d3dapp	?InitDirect3D@@YAHXZ	99.5451	99.5451	12	59dc47aaa0a9	0x47ef0	99.5451	
 d3dapp	?InitDirectDraw@@YAHXZ	100.0000	100.0000	3	ce02c34b07a0	0x479a0	100.0000	
 d3dapp	?InitDirectInput@@YAHXZ	100.0000	100.0000	3	2621b516f66f	0x48ce0	100.0000	
 d3dapp	?InitDirectSound@@YAHXZ	100.0000	100.0000	3	969b4a39dd80	0x488a0	100.0000	
@@ -445,7 +445,7 @@ d3dapp	?Magnitude@@YAMABU_D3DVECTOR@@@Z	100.0000	100.0000	1	header:96c4b6ace3bd	
 d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	100.0000	98.8902	1	86daea2860ef	0x46230	100.0000	
 d3dapp	?Normalize@@YA?AU_D3DVECTOR@@ABU1@@Z	100.0000	100.0000	1	header:9f72dd33a7f5	0x49090	100.0000	
 d3dapp	?PollMouseButtons@@YAEXZ	88.8028	88.8028	6	f52c6ff1cf0f	0x48e60	88.8028	
-d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	93.9325	93.8344	4	cba51180c80d	0x46060	93.9325	
+d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	93.8344	93.8344	5	8b5a2a4ab054	0x46060	93.9325	
 d3dapp	?QueryD3DDevices@@YAXXZ	100.0000	100.0000	4	44d942462a32	0x47c00	100.0000	
 d3dapp	?ReadSurfaceWord@@YAGPAUIDirectDrawSurface@@HHH@Z	100.0000	100.0000	2	790df696d752	0x47e70	100.0000	
 d3dapp	?ReleaseDirectInput@@YAXXZ	100.0000	100.0000	3	de724fbf4fca	0x48db0	100.0000	
@@ -490,7 +490,7 @@ debugmenu	_MagicMenuHandler	100.0000	100.0000	2	9f250f40fa1b	0x14d0	100.0000
 debugmenu	_RunDebugMenu	100.0000	100.0000	5	ba33f2780210	0x1000	100.0000	
 devicesettings	?GetDeviceSettingsValueName@@YIXPAD@Z	100.0000	100.0000	1	776d041bceed	0x45d60	100.0000	
 devicesettings	?LoadDeviceSettings@@YAHPAUDeviceSettings@@@Z	100.0000	100.0000	2	0ca62da03264	0x45ce0	100.0000	
-displayconfig	_LoadDisplayConfig	100.0000	100.0000	2	791f31d2fbd5	0x45bb0	100.0000	
+displayconfig	_LoadDisplayConfig	100.0000	100.0000	3	cdcf105faeb0	0x45bb0	100.0000	
 displayconfig	_SetDefaultDisplayConfig	100.0000	100.0000	2	9ec3ea0a3279	0x45ca0	100.0000	
 effectdraw	_ClearEffectLayer	100.0000	100.0000	3	0f8fe514d847	0x58990	100.0000	
 effectdraw	_DrawProjectedEffectSprite	94.6055	94.6055	12	848e541ed05e	0x589e0	94.6086	
@@ -2415,7 +2415,7 @@ treasurebox	_GetAreaNpcCount	100.0000	100.0000	1	1f59d2c052de	0x1f420	100.0000
 treasurebox	_GetAreaNpcTextureSlot	100.0000	100.0000	2	0f869bbaa423	0x1f480	100.0000	
 treasurebox	_GetCellObjectTable	100.0000	100.0000	2	0163ea789db6	0x1efb0	100.0000	
 treasurebox	_GetCellSpawnRate	100.0000	100.0000	2	9d2b206eb775	0x1eef0	100.0000	
-treasurebox	_GetCellTrapDamage	100.0000	100.0000	4	873bac125595	0x1c920	100.0000	
+treasurebox	_GetCellTrapDamage	100.0000	98.8571	4	873bac125595	0x1c920	100.0000	
 treasurebox	_GetGridByte	100.0000	100.0000	3	f153c34f43c6	0x1eba0	100.0000	
 treasurebox	_GetItemMenuStock	100.0000	100.0000	2	15e85dbbc6a5	0x1c120	100.0000	
 treasurebox	_GetItemMenuTotal	100.0000	100.0000	6	cbbea6898335	0x1bb60	100.0000	
@@ -2455,7 +2455,7 @@ treasurebox	_MarkRegionList	100.0000	99.6923	3	14ca732094a9	0x1ec10	100.0000
 treasurebox	_MarkRoomRegions	100.0000	100.0000	1	99db59ebe46b	0x1ed20	100.0000	
 treasurebox	_MarkWorldMapEventSpot	100.0000	100.0000	2	b3dce3b77d3f	0x1b3e0	100.0000	
 treasurebox	_NextNpcSlot	100.0000	100.0000	1	e4293f3a61cc	0x1f250	100.0000	
-treasurebox	_NormalizeAffiliations	100.0000	84.5588	2	f118670abb71	0x1c830	100.0000	
+treasurebox	_NormalizeAffiliations	100.0000	82.0441	2	f118670abb71	0x1c830	100.0000	
 treasurebox	_NotifyEncounterEnd	100.0000	100.0000	1	73fdb9352997	0x1f530	100.0000	
 treasurebox	_NotifyEncounterStart	100.0000	100.0000	1	f0391215057f	0x1f520	100.0000	
 treasurebox	_OpenScriptItemMenu	100.0000	100.0000	3	475bcf67c4a6	0x1c010	100.0000	
@@ -2463,7 +2463,7 @@ treasurebox	_PickGrowthStats	100.0000	100.0000	5	a571197212bf	0x1c460	100.0000
 treasurebox	_PickReorderSlot	100.0000	100.0000	1	e73bdb5d59f7	0x1ad00	100.0000	
 treasurebox	_PollPanel	100.0000	100.0000	1	b4ea72d76c6f	0x1cd30	100.0000	
 treasurebox	_PollScriptItemMenu	100.0000	100.0000	1	5732b6697319	0x1c0e0	100.0000	
-treasurebox	_PrepareViewedTreasureBox	100.0000	100.0000	4	d1d13ffc5d39	0x1aaa0	100.0000	
+treasurebox	_PrepareViewedTreasureBox	100.0000	100.0000	5	756bc9418875	0x1aaa0	100.0000	
 treasurebox	_RaiseAffiliationLevels	100.0000	100.0000	2	59c8738643db	0x1c8d0	100.0000	
 treasurebox	_RaiseTargetFlag23	100.0000	100.0000	4	54b36a8b02bb	0x1fc70	100.0000	
 treasurebox	_RaiseTargetFlag25	100.0000	100.0000	4	1d6f3adf5395	0x1fce0	100.0000	
@@ -2503,7 +2503,7 @@ treasurebox	_StoreAutomapLevel	100.0000	100.0000	7	646d85ac94c0	0x1cfc0	100.0000
 treasurebox	_TakeLearnableSkill	100.0000	100.0000	3	1291de355438	0x1c330	100.0000	
 treasurebox	_TrainingThreshold	100.0000	100.0000	1	466d0a0b0508	0x1c650	100.0000	
 treasurebox	_TransformAutomapPoint	100.0000	100.0000	1	2aff8df87c47	0x1d380	100.0000	
-treasurebox	_UpdateAutomapScrollPanel	100.0000	98.9510	3	cd918d158742	0x1d890	100.0000	
+treasurebox	_UpdateAutomapScrollPanel	100.0000	98.1469	3	cd918d158742	0x1d890	100.0000	
 treasurebox	_UpdateCurrentRoom	100.0000	100.0000	2	f36ff1157c00	0x1f070	100.0000	
 treasurebox	_UpdateInfoBar	100.0000	100.0000	3	0e067f87e574	0x1ea50	100.0000	
 treasurebox	_WriteAutomapAreas	100.0000	100.0000	7	ac8dc06a41f0	0x1e3c0	100.0000	
@@ -2664,7 +2664,7 @@ winmain	?PollJoystick@@YAXXZ	100.0000	100.0000	1	bda610032818	0x4a0c0	100.0000
 winmain	?PressPadButton@@YAXHH@Z	100.0000	100.0000	1	c0091faf1fcb	0x4ad40	100.0000	
 winmain	?ReleaseGraphics@@YAXXZ	100.0000	100.0000	9	d1657db95d50	0x4a100	100.0000	
 winmain	?RenderBlankMode@@YAXH@Z	100.0000	100.0000	3	900a8bc39a04	0x4f010	100.0000	
-winmain	?RenderEnemy@@YAXHHH@Z	82.3107	82.3107	30	cc837211cfda	0x4cb30	82.3107	
+winmain	?RenderEnemy@@YAXHHH@Z	82.3107	82.3107	31	712344abbe24	0x4cb30	82.3107	
 winmain	?RenderEventMode@@YAXH@Z	100.0000	100.0000	5	3cfbf4ce8a13	0x4e910	100.0000	
 winmain	?RenderFieldMode@@YAXH@Z	100.0000	100.0000	4	d0ca88baa9c1	0x4ef30	100.0000	
 winmain	?RenderFieldView@@YAXH@Z	100.0000	100.0000	9	1b7fa84ab5d5	0x4ea90	100.0000	
@@ -2687,7 +2687,7 @@ winmain	?RestoreTextures@@YAXXZ	100.0000	100.0000	2	c0868f7ce98c	0x4fdf0	100.000
 winmain	?RunJoystickMove@@YAHXZ	100.0000	100.0000	2	6a2823d7caa0	0x504c0	100.0000	
 winmain	?ShadeMesh@@YAXPAUMesh@@@Z	100.0000	98.4359	2	b7879f142c93	0x4ae30	100.0000	
 winmain	?SlideBack@@YAHPAM@Z	100.0000	100.0000	2	0d5ab2e473e3	0x4a640	100.0000	
-winmain	?SlideForward@@YAHPAM@Z	100.0000	100.0000	2	560f9a0d7afa	0x4a530	100.0000	
+winmain	?SlideForward@@YAHPAM@Z	100.0000	100.0000	3	f64d2276c323	0x4a530	100.0000	
 winmain	?SlideLeft@@YAHPAM@Z	100.0000	100.0000	2	0482dc4dd745	0x4a750	100.0000	
 winmain	?SlideRight@@YAHPAM@Z	100.0000	100.0000	2	0f0e58602c2c	0x4a860	100.0000	
 winmain	?TickFrameCount@@YAXXZ	100.0000	100.0000	1	ce8b6629ec05	0x49810	100.0000	
