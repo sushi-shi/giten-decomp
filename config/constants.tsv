@@ -989,3 +989,60 @@ src/Game/fusion.c	GetTripleFusionLevel*	*	*	*	@identity-TODO: triple fusion leve
 src/Game/fusion.c	MoveUnrankedFusionSlot	-1	*	*	an unranked demon (flag -1)
 src/Game/fusion.c	ResetThirdFusionSlot	-1	*	*	no third slot
 src/Game/fusion.c	SetFusionResult	*	*	*	no demon (-1); a new result's kind 0
+src/Game/statestack.c	Next*	1	call-argument	*	one step forward
+src/Game/statestack.c	Prev*	1	call-argument	*	one step back
+src/Game/statestack.c	SetGame*	0	*	*	a new phase, step or state starts its step and sub-step at 0
+src/Game/statestack.c	*Cursor*	*	*	*	the menu cursor's four levels (0..3), reset to 0 below the one set
+src/Game/statestack.c	*StateStack	0	*	*	an empty state stack
+src/Game/statestack.c	PopGameState	0	*	*	an empty state stack
+src/Game/statestack.c	DispatchGameState	0	*	*	@identity-TODO: a state's result 0
+src/Game/statestack.c	CountPendingLevels	*	*	*	no pending levels; ExperienceToLevel's 1
+src/Game/statestack.c	*LearnableSkills	*	*	*	@identity-TODO: learnable skill lists: at most 63, -1 ends a list, sources 0..2
+src/Game/statestack.c	LearnAllSkills	*	*	*	skills learned from at least one source; none (0); -1 ends a list
+src/Game/statestack.c	ApplyLevelStatGrowth	*	*	*	@identity-TODO: a growth point every third level (bit 1 selects the stat)
+src/Game/statestack.c	BuildStatWeightRanges	*	*	*	stat weights in 1/10000: the ten stats before fortune, ten per base point, -1 for no range
+src/Game/statestack.c	RollWeightedStat	*	*	*	a weighted roll in 1/10000 over the ten stats before fortune; -1 when none
+src/Game/statestack.c	ResolveRaisableStat	-1	*	*	no raisable stat
+src/Game/statestack.c	GainLevels	*	*	*	@identity-TODO: level gains: four stat picks (-1 none, index 3 the last), levelBonus +2, ClampLevel's 1, LearnAllSkills' -1
+src/Game/statestack.c	ShareExperience	*	*	*	twice the experience split among the able members (CountPartyMembers' 1)
+src/Game/statestack.c	FindLevelUpSlot	-1	*	*	no member to level up
+src/Game/statestack.c	FormatLevelUpMessage	64	*	*	the name buffer (64 bytes)
+src/Game/statestack.c	FindFirstAbleMemberPosition	*	*	*	@identity-TODO: the first sixteen ids; FindPartyPositionOfId's 0
+src/Game/statestack.c	GetClockMinutes	*	*	*	minutes per day (24 x 60)
+src/Game/statestack.c	GetMoonValue	2	*	*	@identity-TODO: twice the moon table's value
+src/Game/statestack.c	ScaleByMoonValue	100	*	*	percent scaling
+src/Game/statestack.c	GetPickerSelection	-1	*	*	no selection
+src/Game/statestack.c	RestoreBackground*	*	*	*	@identity-TODO: background scene exceptions (by area, level and cell) and their scene-cell parameter overrides (0x31, 2); BackgroundParameterNop's (11, 1), (15, 1)
+src/Game/statestack.c	Run*Scene	*	*	*	@identity-TODO: scene states' phases and steps (0..3), their redraw and palette modes (0, 1, 3), the scene hold cleared
+src/Game/statestack.c	EnterStatusScreen	*	*	*	the subscreen is active; palette mode 2
+src/Game/statestack.c	LeaveStatusScreen	0	*	*	the subscreen is inactive
+src/Game/statestack.c	ResetSubscreen	0	*	*	the subscreen is inactive
+src/Game/statestack.c	InitFieldPanels	1	*	*	@identity-TODO: menu image 1
+src/Game/statestack.c	IsOddMapLayer	1	*	*	the layer's low bit
+src/Game/statestack.c	IsOnCellMark	*	*	*	1 on the mark, 0 off it, -1 with no mark
+src/Game/statestack.c	ItemListMenuHandler	*	*	*	@identity-TODO: items 0x21 and 0x24 (area-restricted like Traesto), the usable tests (1), AddItemUseMenuLine's 0
+src/Game/statestack.c	LoadSpriteImage	*	*	*	@identity-TODO: sprite images: -1 none, human portraits 0x4000 + id (0x401d remapped to 0x40fd), demons 0x2000..0x2fff with variant bits (& 15 == 4, & 13 | 2)
+src/Game/statestack.c	OpenItemListMenu	*	*	*	the whole bag copied (0, 64 entries); menu flags 0x1e
+src/Game/statestack.c	OpenPartyPicker	*	*	*	@identity-TODO: menu flags 0x1e and 2
+src/Game/statestack.c	PartyPickerHandler	*	*	*	@identity-TODO: picker modes 0..2; CountUsableMemberSkills' 1
+src/Game/statestack.c	PickStatusMember	*	*	*	@identity-TODO: the status menu items hidden (1, 0), status column 0, panel row flag 0x800
+src/Game/statestack.c	PollRewardClick	*	*	*	the reward window's hit box (0xea..0x192, 0xc0..0xf6); 2 on a click, 0 outside, -1 cancelled
+src/Game/statestack.c	ReplaceRosterMember	*	*	*	@identity-TODO: the replacement's phases 0..2, status column 2, restart at phase 0
+src/Game/statestack.c	ReturnDdsMember	*	*	*	@identity-TODO: returned (1), not (0), cancelled (-1)
+src/Game/statestack.c	RunDismissMenuState	*	*	*	@identity-TODO: the dismiss menu's phases 0..2
+src/Game/statestack.c	RunItemUse	*	*	*	@identity-TODO: item use: screen layer 1 hidden, no user (-1), target flags (0x10, 0x11, 0x30) and their pick windows (5, 4, 6, 3)
+src/Game/statestack.c	RunLevelUp	*	*	*	@identity-TODO: level-up screen parameters: fades (1), the status screen entered and left (0), picture surface 0x36, reward experience cleared
+src/Game/statestack.c	RunPartyPicker	*	*	*	@identity-TODO: the picker's results (-2 cancelled, -1 none), six members listed with mode 1, command 0
+src/Game/statestack.c	RunPictureTransition	*	*	*	@identity-TODO: the transition's phases 0..3, fade speed 1, debug scene 0x2d
+src/Game/statestack.c	RunStatusScreen	*	*	*	@identity-TODO: status screen parameters: menu items shown (0), not nested (0), the analyze member slot 15, field panel row 1 unchecked, the member reset
+src/Game/statestack.c	RunWorldMap	*	*	*	@identity-TODO: world-map parameters: the start cell (3, 3) and level 0, the request cleared, field menu mode 2, the world map active, its phases and panels
+src/Game/statestack.c	ShowBackground	0x5000	*	*	@identity-TODO: background pictures 0x5000 + n
+src/Game/statestack.c	ShowStatPointPrompt	-1	*	*	no prompt shown
+src/Game/statestack.c	SwapSceneCellParams	*	*	*	@identity-TODO: scene-cell parameter words 9, 10, 12 and 13 swapped
+src/Game/statestack.c	TickStepCounter	*	*	*	idle after 50 ticks; the counter reset
+src/Game/statestack.c	CancelItemTargetMenu	-1	*	*	no command picked
+src/Game/statestack.c	ClosePickerMenu	0	*	*	@identity-TODO: picker mode 0
+src/Game/statestack.c	GrantBattleRewards	*	*	*	the rewards cleared once granted; the info bar's layout 0; 0 when none
+src/Game/statestack.c	*Experience*	*	*	*	experience: the level cap (99, 100), the cube formula (4, 6, 5) and demon ids from 0x20; ExperienceToLevel's 1; 0 or -1 when no level is gained
+src/Game/statestack.c	*Scene*	*	*	*	@identity-TODO: scene cells and sprites: the sixteen cells, cell kind at index 5, the 32 entries and sprite slots (31 the last), streams ending at 0xff and packed 16 at a time, frames (-1 none) at (40, 112)
+src/Game/statestack.c	*Dds*	*	*	*	@identity-TODO: DDS menu steps (0..4), status columns (1, 2), no roster slot (-1), the party slot poll's mode 1, results (0, 1, -1), the summon's training (group 3) and menu rows (3, 4)

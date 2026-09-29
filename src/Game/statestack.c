@@ -1097,9 +1097,9 @@ RVA(0x00017960, 0x2a)
 u16 TimeUntilMoonPhase(i16 phase) {
     phase -= g_clock.moonPhase;
     if (phase <= 0) {
-        phase += 28;
+        phase += MOON_PHASE_COUNT;
     }
-    return phase * 1520 - g_clock.moonTicks;
+    return phase * MOON_PHASE_TICKS - g_clock.moonTicks;
 }
 
 RVA(0x00017990, 0x9)
@@ -1713,7 +1713,7 @@ RVA(0x00018a00, 0x2b)
 i16 CountRaisableStats(Character* character) {
     i16 count = 0;
     i16 i;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < STAT_FORTUNE; i++) {
         count += !IsStatCapped(character, i);
     }
     return count;
@@ -2041,9 +2041,9 @@ i16 RollWeightedStat(Character* character) {
         return -1;
     }
     draw = rand() * 10000 / RAND_MAX;
-    for (stat = 0; stat < 10 && s_statPicks[stat] < draw; stat++) {
+    for (stat = 0; stat < STAT_FORTUNE && s_statPicks[stat] < draw; stat++) {
     }
-    if (stat >= 10) {
+    if (stat >= STAT_FORTUNE) {
         return -1;
     }
     return stat;
@@ -2235,12 +2235,12 @@ b16 RunWorldMap(void) {
             ClearSceneSurfaces();
             NextGamePhase();
             s_traveling = false;
-            g_party.field.pos.area = 0xff;
+            g_party.field.pos.area = MAP_AREA_WORLD_MAP;
             g_party.field.pos.level = 0;
             g_party.field.pos.x = 3;
             g_party.field.pos.y = 3;
             g_party.field.pos.direction = VIEW_NORTH;
-            LoadAreaMap(0xff, 0);
+            LoadAreaMap(MAP_AREA_WORLD_MAP, 0);
             SetModeFlags(MODE_WORLD_MAP);
             if (g_worldMapRequest > 0) {
                 g_worldMapX = s_savedSpotX;
