@@ -200,6 +200,7 @@ _ORPHAN_PATTERNS = [
     (f"{graph.COMPARE_DIR}/target", "{}.c.obj"),
     (f"{graph.COMPARE_DIR}/target", "{}.symbols.tsv"),
     (graph.CLAIMS_DIR, "{}.tsv"),
+    (graph.PLAY_OBJ_DIR, "{}.obj"),
 ]
 
 
