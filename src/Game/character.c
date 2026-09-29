@@ -3072,7 +3072,7 @@ i16 TickPartyTimers(u16 minutes) {
     Character* character;
     i16 i;
     i16 count;
-    if (IsEventFlagSet(1, 0xc) || GetGameState() == 5) {
+    if (IsEventFlagSet(1, 0xc) || GetGameState() == GAME_STATE_SCRIPT_SCENE) {
         return -1;
     }
     for (i = 0; i < 6; i++) {

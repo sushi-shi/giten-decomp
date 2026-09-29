@@ -2177,7 +2177,7 @@ void OpTakeDropSlot(void) {
 
 RVA(0x00035b20, 0xf)
 i16 OpCallSubScene(void) {
-    PushGameState(0x26);
+    PushGameState(GAME_STATE_GEM_ITEM_GIFT);
     return -3;
 }
 
@@ -2439,7 +2439,7 @@ void AddScriptCharacterToRoster(Character* character, i16 unused) {
     if (AddToRoster(character) < 0) {
         g_rosterPendingMember = character;
         SaveRosterReturnState();
-        SetGameState(0x28);
+        SetGameState(GAME_STATE_REPLACE_ROSTER_MEMBER);
         SetGamePhase(0);
     }
 }
@@ -4041,7 +4041,7 @@ SetScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode)
 RVA(0x00038460, 0x39)
 ScriptChoice* PushScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode) {
     SetScriptChoiceMenu(choices, window, keep, cancelMode);
-    PushGameState(6);
+    PushGameState(GAME_STATE_SCRIPT_CHOICE);
     return NULL;
 }
 

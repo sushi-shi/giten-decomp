@@ -731,7 +731,7 @@ b16 RunFieldExploration(void) {
                 SaveFieldPosition();
                 SetGamePhase(1);
                 SetSceneScriptByIndex(7, 8);
-                PushGameState(0x12);
+                PushGameState(GAME_STATE_CELL_SCENE);
                 RevealAutomapRoom(g_party.field.pos.x, g_party.field.pos.y);
                 CancelFieldMap();
                 ExchangeObjectsHidden(1);
@@ -770,7 +770,7 @@ b16 RunFieldExploration(void) {
             }
             if (GrantBattleRewards()) {
                 SetGamePhase(1);
-                PushGameState(0x1b);
+                PushGameState(GAME_STATE_LEVEL_UP);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
                 PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, 0x50, -1);
                 MarkRewardsPending();
@@ -865,7 +865,7 @@ b16 RunFieldExploration(void) {
                     RunFieldIdle();
                 }
             }
-            if (GetGameState() == 0x10 && s_actorVanishing == 0) {
+            if (GetGameState() == GAME_STATE_FIELD_EXPLORATION && s_actorVanishing == 0) {
                 PollFieldCommand();
             }
             TickEnemySpawnTimer();
@@ -956,7 +956,7 @@ b16 RunFieldExploration(void) {
             FreeEffectFrames();
             FreeFieldImageCache();
             UnloadAreaMap();
-            SetGameState(0x16);
+            SetGameState(GAME_STATE_WORLD_MAP);
             ClearModeFlags(MODE_FIELD);
             return false;
     }
@@ -1015,7 +1015,7 @@ void RunCellEvent(void) {
         case CELL_EVENT_SCRIPT:
             SetGamePhase(1);
             SetSceneScriptByIndex(7, 8);
-            PushGameState(0x12);
+            PushGameState(GAME_STATE_CELL_SCENE);
             RevealAutomapRoom(g_party.field.pos.x, g_party.field.pos.y);
             CancelFieldMap();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
@@ -1037,7 +1037,7 @@ void RunCellEvent(void) {
             }
             SetSceneScript(0x7f04, 7);
         case CELL_EVENT_FROZEN_SCENE:
-            PushGameState(0x1d);
+            PushGameState(GAME_STATE_FROZEN_FIELD_SCENE);
             CancelFieldMap();
             break;
         case CELL_EVENT_MARKED_WARP:
@@ -1107,7 +1107,7 @@ void RunCellEvent(void) {
             RequestFieldRefresh();
             break;
         case CELL_EVENT_OBJECT:
-            PushGameState(0x15);
+            PushGameState(GAME_STATE_FIELD_TEXT_SCENE);
             CancelFieldMap();
             break;
         case CELL_EVENT_BATTLE:
@@ -1122,7 +1122,7 @@ void RunCellEvent(void) {
         case 12:
             SetGamePhase(1);
             SetSceneScriptByIndex(5, 6);
-            PushGameState(0x12);
+            PushGameState(GAME_STATE_CELL_SCENE);
             CancelFieldMap();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             ExchangeObjectsHidden(1);

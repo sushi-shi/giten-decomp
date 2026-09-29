@@ -312,7 +312,7 @@ b16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     if (s_promptPending) {
         return true;
     }
-    PushGameState(0x18);
+    PushGameState(GAME_STATE_BATTLE_ACTION);
     s_promptX = x;
     s_promptY = y;
     s_promptZ = z;
@@ -871,7 +871,7 @@ b16 RunBattleAction(void) {
 
         case 1:
             NextGamePhase();
-            PushGameState(0xc);
+            PushGameState(GAME_STATE_CLOSING_EFFECT);
             SetGameSub(s_promptSub);
             break;
 

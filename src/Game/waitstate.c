@@ -57,7 +57,7 @@ b16 StepWaitState(void) {
 
 RVA(0x0001a930, 0x29)
 void PushWaitState(GZ_ENUM_STORAGE(WaitMode, i16) mode, u16 inputMask, u16 frames, i16 unused) {
-    PushGameState(1);
+    PushGameState(GAME_STATE_WAIT);
     SetGamePhase(mode);
     SetGameStep(inputMask);
     SetGameSub(frames);
@@ -75,7 +75,7 @@ b16 RunScreenFadeState(void) {
 RVA(0x0001a990, 0x30)
 void PushScreenFade(GZ_ENUM_PARAM(ScreenFadeMode, i16) kind, i16 speed) {
     PushWaitState(WAIT_FADE, 0, 0, -1);
-    PushGameState(13);
+    PushGameState(GAME_STATE_SCREEN_FADE);
     SetGamePhase(kind);
     SetGameStep(speed);
 }
@@ -89,7 +89,7 @@ void FadeScreenAndWait(GZ_ENUM_PARAM(ScreenFadeMode, i16) kind, i16 speed) {
 RVA(0x0001a9f0, 0x41)
 i16 PushMessageBox(i16 window, const char* text) {
     i16 plane;
-    PushGameState(33);
+    PushGameState(GAME_STATE_MESSAGE_BOX);
     plane = CreateTextPlane(window, 0x4000);
     PrintWindowText(plane, text, 0, 0, 1);
     SetGamePhase(plane);

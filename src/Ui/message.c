@@ -34,7 +34,7 @@ static i16 s_messageHold = 0;
 RVA(0x00002500, 0x50)
 void PushTextWindowState(const char* text) {
     i16 plane;
-    PushGameState(8);
+    PushGameState(GAME_STATE_TEXT_WINDOW);
     plane = CreateTextPlane(15, 0x4000);
     PrintWindowText(plane, text, 0, 0, 1);
     SetGamePhase(plane);
@@ -153,7 +153,7 @@ void TickMessageWindow(void) {
 
 RVA(0x00002780, 0x50)
 void RunMessageScene(i16 scene, i16 entry, i16 ticks) {
-    PushGameState(0x23);
+    PushGameState(GAME_STATE_MESSAGE_SCENE_END);
     SetGamePhase(ticks);
     OpenMessageWindow();
     RefreshMessageWindow();

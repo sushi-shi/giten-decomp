@@ -1306,7 +1306,7 @@ void PushScriptAnimation(i16 animation, i16 x, i16 y) {
     s_animationResource = animation * 16;
     s_animationX = x;
     s_animationY = y;
-    PushGameState(37);
+    PushGameState(GAME_STATE_SCRIPT_ANIMATION);
 }
 
 RVA(0x000286f0, 0x9e)
@@ -2339,7 +2339,7 @@ RVA(0x0002a760, 0x21)
 void PushFusionMenu(i16 kind, i16 resultVariable) {
     s_initialFusionStep = kind;
     s_fusionResultVariable = resultVariable;
-    PushGameState(31);
+    PushGameState(GAME_STATE_FUSION_MENU);
 }
 
 RVA(0x0002a790, 0x23d)

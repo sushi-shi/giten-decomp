@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Game/Field.h>
+#include <Game/GameStateId.h>
 #include <Game/GameLoop.h>
 #include <Game/PartyAction.h>
 #include <Ints.h>
@@ -54,7 +55,7 @@ struct AreaNpc* GetAreaNpc(i16 npc);
 // From Game/StateStack.h and Game/FieldHud.h, declared here instead: including
 // those headers shifts winmain's TU state (AllocCleared, AllocClearedLong).
 i16 NextGamePhase(void);
-i16 GetGameState(void);
+GZ_ENUM_RETURN(GameStateId, i16) GetGameState(void);
 u16 GetGamePhase(void);
 void RedrawFieldAt(i16 x, i16 y, i16 direction);
 

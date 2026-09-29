@@ -160,7 +160,7 @@ b16 StartGame(void) {
     ResetGameSession();
     g_mouseLeftClick = 0;
     g_mouseRightClick = 0;
-    SetGameState(0x27);
+    SetGameState(GAME_STATE_PICTURE_TRANSITION);
     return false;
 }
 

@@ -611,7 +611,7 @@ i16 RunAnalyzeWindow(void) {
             s_savedRosterEntry = GetRosterEntry(15);
             SetRosterEntry(15, copy);
             SetStatusAnalyzeMode(1);
-            PushGameState(0x19);
+            PushGameState(GAME_STATE_STATUS);
             s_dataPlane = CloseTextWindow(s_dataPlane);
             s_namePlane = CloseTextWindow(s_namePlane);
             return 0;

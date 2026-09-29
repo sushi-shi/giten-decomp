@@ -72,7 +72,7 @@ u16 TimeUntilMoonPhase(i16 phase);
 i16 GetMoonValue(i16 row);
 i32 ScaleByMoonValue(i32 value, i16 row, i16 percent);
 
-// @identity-TODO: What 0x181e0 (stores two words at 0x47be78/0x47be7c) plus PushGameState(0x15)
+// @identity-TODO: What 0x181e0 (stores two words at 0x47be78/0x47be7c) plus PushGameState(GAME_STATE_FIELD_TEXT_SCENE)
 // do with the script position OpStartCountdown saved at 0x81690/0x81694 is unproven; decoding
 // 0x181e0 and state 0x15 would confirm it runs the handler. It is scriptvars.c's function.
 b16 FireCountdownEvent(void);

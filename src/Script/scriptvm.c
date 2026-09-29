@@ -1150,7 +1150,7 @@ i16 ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(ScriptOpcode, u16) op) {
                 OpOpenFusionScreen(FUSION_MENU_TRIPLE_COMMIT);
                 return -3;
             case SCRIPT_OP_OPEN_STATUS:
-                PushGameState(0x19);
+                PushGameState(GAME_STATE_STATUS);
                 return -3;
             case SCRIPT_OP_SET_SCENE_RENDER_MODE:
                 SetSceneRenderMode();

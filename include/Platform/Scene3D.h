@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/GameStateId.h>
 #include <Gfx/DDError.h>
 #include <Gfx/ScreenLayer.h>
 #include <Gfx/Sprite.h>
@@ -61,10 +62,6 @@ void DrawScreenFade(void);
 // states 9 and 12; what it shows is unrecovered.
 void BlitFieldBackground(void);
 
-#define GAME_STATE_SHOT 9
-#define GAME_STATE_CLOSING_EFFECT 12
-#define GAME_STATE_SCRIPT_ANIMATION 37
-
 // Selects and marks the hotspot the party points at.
 void DrawHotspotMarks(void);
 
@@ -100,10 +97,8 @@ i32 BlitTextPlanes(i32 first, i32 last, u32 skip);
 // The layers from the top down, as the layer code keeps them.
 extern struct ScreenLayer* g_layerStack[SCREEN_LAYER_COUNT];
 
-// The status screen's game state (pushed by the status command), and the
-// status phase that hides the first layers.
+// The status phase that hides the first layers.
 // @identity-TODO: what phase 3 shows is unrecovered.
-#define GAME_STATE_STATUS 0x19
 #define STATUS_PHASE_NO_LAYERS 3
 
 // Draws the sprites of the sprite table over the render target.

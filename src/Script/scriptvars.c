@@ -627,7 +627,7 @@ void StartDebugScene(i16 scene, i16 arg, i16 phase) {
         StartActorScene(0xe0, arg, 1, GetFieldActor(0));
         return;
     }
-    PushGameState(5);
+    PushGameState(GAME_STATE_SCRIPT_SCENE);
     SetGamePhase(phase);
     s_pendingScene = scene;
     s_pendingSceneEntry = arg;
@@ -770,7 +770,7 @@ void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor) {
     actor->facing = OppositeDirection(g_party.field.pos.direction);
     RequestFieldRefresh();
     RedrawFieldView();
-    PushGameState(10);
+    PushGameState(GAME_STATE_ACTOR_SCENE);
     window = CreateTextPlane(2, 0);
     SetGamePhase(window);
     RepaintTextPlane(window, 1);
@@ -1393,7 +1393,7 @@ i16 OpWaitMessage(i16 window) {
     }
     PushWaitState(kind, mask, frames, window);
     if (s_holdOn) {
-        while (GetGameState() == 1) {
+        while (GetGameState() == GAME_STATE_WAIT) {
             PollIdle(1, 0x18);
             StepWaitState();
         }

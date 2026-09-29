@@ -208,7 +208,7 @@ void LoadEffectTables(void) {
 RVA(0x00005980, 0x42)
 void LaunchShot(i16 effect, i16 mode, i16 rise, i16 fromX, i16 fromY, i16 toX, i16 toY) {
     i16 strength;
-    PushGameState(9);
+    PushGameState(GAME_STATE_SHOT);
     strength = SetShotPath(fromX, fromY, toX, toY);
     StartEffect(effect, strength);
     SetShotPower(strength);

@@ -20,7 +20,7 @@ void SetSceneScript(i16 script, i16 entry);
 
 static __inline void PushFieldTextScene(i16 script, i16 entry) {
     SetSceneScript(script, entry);
-    PushGameState(0x15);
+    PushGameState(GAME_STATE_FIELD_TEXT_SCENE);
 }
 
 // @identity-TODO: What the byte table 0x47bb50 lists (also read at 0x17cb0 for indices 11/15)

@@ -1327,7 +1327,7 @@ b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
                 if (!DistanceFromParty(x, y)) {
                     InvalidateSelectedHotspot();
                 }
-                if (GetGameState() == 0x22) {
+                if (GetGameState() == GAME_STATE_FIELD) {
                     ClearSelectedHotspot();
                 }
                 return RefreshIfTurned(visible, 1);

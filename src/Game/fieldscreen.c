@@ -332,7 +332,7 @@ RVA(0x00014a00, 0x36)
 i16 ReorderRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         PlaySoundEffect(1);
-        PushGameState(0x24);
+        PushGameState(GAME_STATE_PARTY_REORDER);
     }
     return value;
 }
@@ -342,7 +342,7 @@ RVA(0x00014a40, 0x36)
 i16 StatusRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         PlaySoundEffect(1);
-        PushGameState(0x19);
+        PushGameState(GAME_STATE_STATUS);
     }
     return value;
 }
@@ -352,7 +352,7 @@ RVA(0x00014a80, 0x36)
 i16 SkillRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         PlaySoundEffect(1);
-        PushGameState(0x1a);
+        PushGameState(GAME_STATE_FIELD_SKILL_USE);
     }
     return value;
 }
@@ -365,7 +365,7 @@ i16 ItemRowHandler(PanelRow* row, i16 value, i16 op) {
         if (CanHumanMemberAct()) {
             if (CountBagEntries()) {
                 PlaySoundEffect(1);
-                PushGameState(0xe);
+                PushGameState(GAME_STATE_ITEM_USE);
             } else {
                 ClearPanelRowCheck(row);
                 // "[ITEM] アイテムが有りません"
@@ -418,7 +418,7 @@ i16 DdsRowHandler(PanelRow* row, i16 value, i16 op) {
                 );
             } else {
                 PlaySoundEffect(1);
-                PushGameState(0x1e);
+                PushGameState(GAME_STATE_DDS_MENU);
             }
         } else {
             ClearPanelRowCheck(row);
@@ -498,7 +498,7 @@ i16 MappingRowHandler(PanelRow* row, i16 value, i16 op) {
                 );
             } else {
                 PlaySoundEffect(1);
-                PushGameState(0x20);
+                PushGameState(GAME_STATE_AUTOMAP);
             }
         } else {
             ClearPanelRowCheck(row);
@@ -512,7 +512,7 @@ RVA(0x00014e20, 0x36)
 i16 MenuRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         PlaySoundEffect(1);
-        PushGameState(0xf);
+        PushGameState(GAME_STATE_SYSTEM_MENU);
     }
     return value;
 }
@@ -662,7 +662,7 @@ void SkillCommand(i16 id) {
         return;
     }
     PlaySoundEffect(1);
-    PushGameState(0x1a);
+    PushGameState(GAME_STATE_FIELD_SKILL_USE);
     SetFieldSkillUser(id);
 }
 
@@ -691,7 +691,7 @@ void ItemCommand(i16 id) {
     }
     if (CountBagEntries()) {
         PlaySoundEffect(1);
-        PushGameState(0xe);
+        PushGameState(GAME_STATE_ITEM_USE);
         SetUseMemberId(id);
         return;
     }
@@ -759,13 +759,13 @@ void DdsCommand(void) {
         return;
     }
     PlaySoundEffect(1);
-    PushGameState(0x1e);
+    PushGameState(GAME_STATE_DDS_MENU);
 }
 
 RVA(0x00015470, 0x14)
 void StatusCommand(void) {
     PlaySoundEffect(1);
-    PushGameState(0x19);
+    PushGameState(GAME_STATE_STATUS);
 }
 
 RVA(0x00015490, 0x14)
@@ -788,7 +788,7 @@ i16 GetEncounterPending(void) {
 RVA(0x000154d0, 0x14)
 void OpenFieldMenu(void) {
     PlaySoundEffect(1);
-    PushGameState(0xf);
+    PushGameState(GAME_STATE_SYSTEM_MENU);
 }
 
 // Opens the automap (game state 0x20) unless the MAPPING program is missing.
@@ -806,7 +806,7 @@ void OpenAutomap(void) {
         return;
     }
     PlaySoundEffect(1);
-    PushGameState(0x20);
+    PushGameState(GAME_STATE_AUTOMAP);
 }
 
 // Whether this character can use the automap command on the current cell.

@@ -1063,7 +1063,7 @@ void EnterFieldMap(i16 map, i16 countA, i16 rateA, i16 countB, i16 rateB, i16 mo
     s_fieldRateB = rateB;
     s_fieldMode = mode;
     s_fieldEntryState = 0;
-    PushGameState(0xb);
+    PushGameState(GAME_STATE_FIELD_ENCOUNTER);
 }
 
 // @dead-code
@@ -1330,7 +1330,7 @@ b16 RunFieldEncounter(void) {
             if (GrantBattleRewards()) {
                 CloseMessageWindow();
                 PushScreenFade(SCREEN_FADE_FROM_BLACK, 1);
-                PushGameState(0x1b);
+                PushGameState(GAME_STATE_LEVEL_UP);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
                 PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, 0x50, -1);
                 MarkRewardsPending();
@@ -1519,7 +1519,7 @@ b16 RunFieldState(void) {
             if (GrantBattleRewards()) {
                 CloseMessageWindow();
                 PushScreenFade(SCREEN_FADE_FROM_BLACK, 1);
-                PushGameState(0x1b);
+                PushGameState(GAME_STATE_LEVEL_UP);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
                 PushWaitState(WAIT_INPUT_OR_FRAMES, -1, 0x50, -1);
                 MarkRewardsPending();

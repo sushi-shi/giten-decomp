@@ -366,7 +366,7 @@ void PopGameState(void) {
 }
 
 RVA(0x00016a70, 0x24)
-i16 __fastcall SetGameState(i16 state) {
+i16 __fastcall SetGameState(GZ_ENUM_PARAM(GameStateId, i16) state) {
     i16 old = s_gameState.state;
     s_gameState.state = state;
     s_gameState.phase = 0;
@@ -443,7 +443,7 @@ i16 PrevGameSub(void) {
 }
 
 RVA(0x00016bc0, 0x7)
-i16 GetGameState(void) {
+GZ_ENUM_RETURN(GameStateId, i16) GetGameState(void) {
     return s_gameState.state;
 }
 
@@ -463,7 +463,7 @@ u16 GetGameSub(void) {
 }
 
 RVA(0x00016c00, 0x16)
-void __fastcall PushGameState(i16 state) {
+void __fastcall PushGameState(GZ_ENUM_PARAM(GameStateId, i16) state) {
     SaveGameState();
     SetGameState(state);
 }
@@ -702,117 +702,117 @@ i16 DispatchGameState(void) {
     i16 result;
     u16 state = GetGameState();
     switch (state) {
-        case 0:
+        case GAME_STATE_RETURN:
             ReturnFromGameState();
             result = 0;
             break;
-        case 1:
+        case GAME_STATE_WAIT:
             result = StepWaitState();
             break;
-        case 5:
+        case GAME_STATE_SCRIPT_SCENE:
             RunScriptScene();
             result = 0;
             break;
-        case 6:
+        case GAME_STATE_SCRIPT_CHOICE:
             RunScriptChoiceState();
             result = 0;
             break;
-        case 7:
+        case GAME_STATE_DISMISS_MENU:
             RunDismissMenuState();
             result = 0;
             break;
-        case 8:
+        case GAME_STATE_TEXT_WINDOW:
             RunTextWindowState();
             result = 0;
             break;
-        case 9:
+        case GAME_STATE_SHOT:
             result = RunShotState();
             break;
-        case 10:
+        case GAME_STATE_ACTOR_SCENE:
             result = RunActorScene();
             break;
-        case 11:
+        case GAME_STATE_FIELD_ENCOUNTER:
             result = RunFieldEncounter();
             break;
-        case 12:
+        case GAME_STATE_CLOSING_EFFECT:
             result = RunClosingEffectState();
             break;
-        case 13:
+        case GAME_STATE_SCREEN_FADE:
             result = RunScreenFadeState();
             break;
-        case 14:
+        case GAME_STATE_ITEM_USE:
             result = RunItemUse();
             break;
-        case 15:
+        case GAME_STATE_SYSTEM_MENU:
             result = RunSystemMenu();
             break;
-        case 16:
+        case GAME_STATE_FIELD_EXPLORATION:
             result = RunFieldExploration();
             break;
-        case 18:
+        case GAME_STATE_CELL_SCENE:
             result = RunCellScene();
             break;
-        case 19:
+        case GAME_STATE_ITEM_BUY_MENU:
             result = RunItemBuyMenu();
             break;
-        case 21:
+        case GAME_STATE_FIELD_TEXT_SCENE:
             result = RunFieldTextScene();
             break;
-        case 22:
+        case GAME_STATE_WORLD_MAP:
             result = RunWorldMap();
             break;
-        case 23:
+        case GAME_STATE_BACKGROUND_SCENE:
             result = RunBackgroundScene();
             break;
-        case 24:
+        case GAME_STATE_BATTLE_ACTION:
             result = RunBattleAction();
             break;
-        case 25:
+        case GAME_STATE_STATUS:
             result = RunStatusScreen();
             break;
-        case 26:
+        case GAME_STATE_FIELD_SKILL_USE:
             result = RunFieldSkillUse();
             break;
-        case 27:
+        case GAME_STATE_LEVEL_UP:
             result = RunLevelUp();
             break;
-        case 28:
+        case GAME_STATE_ITEM_SELL_MENU:
             result = RunItemSellMenu();
             break;
-        case 29:
+        case GAME_STATE_FROZEN_FIELD_SCENE:
             result = RunFrozenFieldScene();
             break;
-        case 30:
+        case GAME_STATE_DDS_MENU:
             result = RunDdsMenu();
             break;
-        case 31:
+        case GAME_STATE_FUSION_MENU:
             result = RunFusionMenuState();
             break;
-        case 32:
+        case GAME_STATE_AUTOMAP:
             result = RunAutomapState();
             break;
-        case 33:
+        case GAME_STATE_MESSAGE_BOX:
             result = RunMessageBoxState();
             break;
-        case 34:
+        case GAME_STATE_FIELD:
             result = RunFieldState();
             break;
-        case 35:
+        case GAME_STATE_MESSAGE_SCENE_END:
             result = FinishMessageScene();
             break;
-        case 36:
+        case GAME_STATE_PARTY_REORDER:
             result = RunPartyReorder();
             break;
-        case 37:
+        case GAME_STATE_SCRIPT_ANIMATION:
             result = RunScriptAnimationState();
             break;
-        case 38:
+        case GAME_STATE_GEM_ITEM_GIFT:
             result = RunGemItemGift();
             break;
-        case 39:
+        case GAME_STATE_PICTURE_TRANSITION:
             result = RunPictureTransition();
             break;
-        case 40:
+        case GAME_STATE_REPLACE_ROSTER_MEMBER:
             result = ReplaceRosterMember();
             break;
     }
@@ -1335,9 +1335,9 @@ b16 RunCellScene(void) {
             LockStatusRedraw(0);
             SetRebuildRoom(1);
             if (g_worldMapRequest < 0) {
-                SetGameState(16);
+                SetGameState(GAME_STATE_FIELD_EXPLORATION);
             } else if (g_worldMapRequest > 0) {
-                SetGameState(16);
+                SetGameState(GAME_STATE_FIELD_EXPLORATION);
             } else if (!s_sceneHold) {
                 RestoreSavedPoint();
             }
@@ -1415,10 +1415,10 @@ b16 RunFieldTextScene(void) {
             RepaintTextPlane(g_infoPlane, 3);
             g_fieldRedrawRequest = 1;
             if (g_worldMapRequest < 0) {
-                SetGameState(16);
+                SetGameState(GAME_STATE_FIELD_EXPLORATION);
                 SetGamePhase(8);
             } else if (g_worldMapRequest > 0) {
-                SetGameState(16);
+                SetGameState(GAME_STATE_FIELD_EXPLORATION);
             }
             s_sceneHold = 0;
             RestoreScreenState(s_sceneScreenState);
@@ -1450,7 +1450,7 @@ b16 RunFrozenFieldScene(void) {
             RefreshStatusPanel(1);
             g_fieldRedrawRequest = 1;
             if (g_worldMapRequest < 0 || g_worldMapRequest > 0) {
-                SetGameState(16);
+                SetGameState(GAME_STATE_FIELD_EXPLORATION);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             }
             s_sceneHold = 0;
@@ -1497,7 +1497,7 @@ b16 RunPictureTransition(void) {
             FreeSceneSprites();
             LockStatusRedraw(0);
             s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
-            SetGameState(16);
+            SetGameState(GAME_STATE_FIELD_EXPLORATION);
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             s_sceneHold = 0;
             break;
@@ -2371,7 +2371,7 @@ b16 RunWorldMap(void) {
             FreeFieldImageCache();
             RestoreVideoState(s_videoState);
             SetSubscreenActive(0);
-            SetGameState(0x10);
+            SetGameState(GAME_STATE_FIELD_EXPLORATION);
             ClearModeFlags(MODE_WORLD_MAP);
             SetFieldMenuMode(0);
             RecordWarpInLeader();
