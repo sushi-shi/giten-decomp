@@ -5,6 +5,8 @@ description: Run classified Giten permutation campaigns as bounded N-island/M-fr
 
 # Permute
 
+Run the permuter only when the user has explicitly allowed it for the current task, and never while several agents or lanes are running: it saturates the shared CPU and wineserver, and its candidates are hard to audit across concurrent branches.
+
 Use permutation as an evidence loop after reconstruction and wall classification.
 The objective remains exact retail structure, not the highest fuzzy spelling.
 Never retain generated declarations, fake locals, volatile carriers, or unexplained
