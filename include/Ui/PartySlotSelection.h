@@ -10,6 +10,7 @@
 
 GZ_ENUM_BEGIN(PartySlotSelectionMode)
     PARTY_SLOT_REQUIRE_OCCUPIED = 0,
+    PARTY_SLOT_ANY = 1,
     PARTY_SLOT_EXCLUDE_HUMANS = 2
 GZ_ENUM_END(PartySlotSelectionMode)
 

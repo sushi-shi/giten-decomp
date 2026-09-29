@@ -30,7 +30,7 @@ void ItemMenuHandler(struct MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
 struct MenuBox* CreateItemMenu(struct MenuBox* old, ItemStackList* entries, i16 count);
 
 i32 FormatItemMenuEntry(ItemStack entry, i32 numerator, i32 denominator);
-void DrawItemMenuTotal(i16 plane, i32 total, i16 redraw, i16 line);
+void DrawItemMenuTotal(i16 plane, i32 total, b16 redraw, i16 line);
 
 void AdjustItemMenuCount(struct MenuBox* menu, i16 row, i16 delta, i16 limit);
 
@@ -40,7 +40,31 @@ ItemStackList* CreateItemMenuEntries(i16* items, i16 count);
 
 ItemStackList* CopyItemMenuEntries(ItemStack* entries, i16 count);
 
-// Step 0 opens, 1 handles input, 2 closes; no other step is valid.
+// An item menu shows ITEM_MENU_ROWS rows, then its total. Prices show at
+// 1/priceDivisor of the item price (buying or selling). A shop menu leaves
+// its total in script long variable ITEM_MENU_TOTAL_VAR; a script's menu
+// (ITEM_MENU_MODE_SCRIPT) shows the total the script keeps in its own.
+#define ITEM_MENU_ROWS 9
+#define ITEM_PRICE_DIVISOR_BUY 1
+#define ITEM_PRICE_DIVISOR_SELL 4
+#define ITEM_MENU_MODE_SHOP 0
+#define ITEM_MENU_MODE_SCRIPT 2
+#define ITEM_MENU_TOTAL_VAR 0x11
+
+// The shop menus' steps (no other step is valid), and the phases of their
+// game states: enter, run the steps until they finish, and return.
+GZ_ENUM_BEGIN_SPLIT(ItemMenuStep, i16)
+    ITEM_MENU_STEP_OPEN = 0,
+    ITEM_MENU_STEP_RUN = 1,
+    ITEM_MENU_STEP_CLOSE = 2
+GZ_ENUM_END_SPLIT(ItemMenuStep)
+
+GZ_ENUM_BEGIN_SPLIT(ItemMenuPhase, i16)
+    ITEM_MENU_PHASE_ENTER = 0,
+    ITEM_MENU_PHASE_RUN = 1,
+    ITEM_MENU_PHASE_RETURN = 2
+GZ_ENUM_END_SPLIT(ItemMenuPhase)
+
 i16 StepItemBuyMenu(i16* step);
 i16 StepItemSellMenu(i16* step);
 b16 RunItemBuyMenu(void);

@@ -262,7 +262,7 @@ static Character* s_target = NULL;
 
 // The window's step; -1 closes it.
 DATA(0x0007d5d4)
-static i16 s_step = 0;
+static GZ_ENUM_STORAGE(AnalyzeStep, i16) s_step = ANALYZE_STEP_SHOW_NAME;
 
 // Roster entry 15 while the detailed analysis borrows it.
 DATA(0x0007d5d8)
@@ -394,17 +394,17 @@ RVA(0x0001ab90, 0x168)
 b16 RunPartyReorder(void) {
     i16 slot;
     switch (GetGamePhase()) {
-        case 0:
+        case REORDER_PHASE_OPEN:
             NextGamePhase();
             NextGamePhase();
             break;
-        case 1:
+        case REORDER_PHASE_CLOSE:
             ReturnFromGameState();
             FlushStatusRedraw(true);
             break;
-        case 2:
+        case REORDER_PHASE_PICK_FIRST:
             s_reorderFirst = PickReorderSlot();
-            if (s_reorderFirst == -1) {
+            if (s_reorderFirst == REORDER_PICK_PENDING) {
                 break;
             }
             if (s_reorderFirst < 0) {
@@ -414,9 +414,9 @@ b16 RunPartyReorder(void) {
                 NextGamePhase();
             }
             break;
-        case 3:
+        case REORDER_PHASE_PICK_SECOND:
             s_reorderSecond = PickReorderSlot();
-            if (s_reorderSecond == -1) {
+            if (s_reorderSecond == REORDER_PICK_PENDING) {
                 break;
             }
             ClearPartySlotSelection();
@@ -430,16 +430,16 @@ b16 RunPartyReorder(void) {
                 ExchangePartySlot(s_reorderSecond, GetPartySlot(s_reorderFirst))
             );
             MarkPickDone();
-            SetGamePhase(1);
-            for (s_reorderFirst = 0; s_reorderFirst < 3; s_reorderFirst++) {
+            SetGamePhase(REORDER_PHASE_CLOSE);
+            for (s_reorderFirst = 0; s_reorderFirst < PARTY_ROW_SIZE; s_reorderFirst++) {
                 if (GetPartySlot(s_reorderFirst) >= 0) {
                     return false;
                 }
             }
-            for (slot = 3; slot < PARTY_SIZE; slot++) {
+            for (slot = PARTY_ROW_SIZE; slot < PARTY_SIZE; slot++) {
                 s_reorderFirst = GetPartySlot(slot);
                 if (s_reorderFirst >= 0) {
-                    s_reorderFirst = ExchangePartySlot(slot - 3, s_reorderFirst);
+                    s_reorderFirst = ExchangePartySlot(slot - PARTY_ROW_SIZE, s_reorderFirst);
                     ExchangePartySlot(slot, s_reorderFirst);
                 }
             }
@@ -450,11 +450,11 @@ b16 RunPartyReorder(void) {
 
 RVA(0x0001ad00, 0x39)
 i16 PickReorderSlot(void) {
-    if (!PollPartySlotSelection(1)) {
-        return -1;
+    if (!PollPartySlotSelection(PARTY_SLOT_ANY)) {
+        return REORDER_PICK_PENDING;
     }
     if (g_selectedObjectId < 0) {
-        return -2;
+        return REORDER_PICK_CANCELLED;
     }
     ResetTextPlaneHighlight(g_infoPlane);
     return g_selectedObjectId;
@@ -477,7 +477,7 @@ i16 RunAnalyzeWindow(void) {
     GZ_ENUM_LOCAL(TextEvent, i16) choice;
 
     switch (s_step) {
-        case -1:
+        case ANALYZE_STEP_CLOSE:
             if (s_menu != NULL) {
                 s_menu = DestroyMenuBox(s_menu);
             }
@@ -490,7 +490,7 @@ i16 RunAnalyzeWindow(void) {
             s_step++;
             return SUBSTATE_FINISHED;
 
-        case 0:
+        case ANALYZE_STEP_SHOW_NAME:
             if (target == NULL) {
                 return SUBSTATE_FINISHED;
             }
@@ -502,7 +502,7 @@ i16 RunAnalyzeWindow(void) {
                     "\203\213\202\263\202\352\202\304\202\242\202\334\202\271\202\361",
                     -1
                 ); // ＤＡＳがインストゥールされていません
-                s_step = -1;
+                s_step = ANALYZE_STEP_CLOSE;
                 return SUBSTATE_RUNNING;
             }
             s_namePlane = CreateTextPlane(15, 0);
@@ -519,7 +519,7 @@ i16 RunAnalyzeWindow(void) {
             s_step++;
             return SUBSTATE_RUNNING;
 
-        case 1:
+        case ANALYZE_STEP_SHOW_DATA:
             if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V1_1)
                 && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V2_0)) {
                 s_step++;
@@ -579,21 +579,21 @@ i16 RunAnalyzeWindow(void) {
             RepaintTextPlane(s_dataPlane, -2);
             return SUBSTATE_RUNNING;
 
-        case 2:
+        case ANALYZE_STEP_WAIT:
             if (TakeMouseLeftClick()) {
                 s_step++;
                 return SUBSTATE_RUNNING;
             }
             if (TakeMouseCancelSound()) {
-                s_step = -1;
+                s_step = ANALYZE_STEP_CLOSE;
                 return SUBSTATE_RUNNING;
             }
             break;
 
-        case 3:
+        case ANALYZE_STEP_OFFER_DETAIL:
             if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V2_0)
                 || !HasAnalyzeData(target->id)) {
-                s_step = -1;
+                s_step = ANALYZE_STEP_CLOSE;
                 return SUBSTATE_RUNNING;
             }
             PrintWindowText(
@@ -611,7 +611,7 @@ i16 RunAnalyzeWindow(void) {
             s_step++;
             return SUBSTATE_RUNNING;
 
-        case 4:
+        case ANALYZE_STEP_RUN_MENU:
             choice = RunMenu(s_menu);
             if (choice == TEXT_EVENT_NONE) {
                 break;
@@ -621,33 +621,33 @@ i16 RunAnalyzeWindow(void) {
             if (choice >= TEXT_EVENT_NONE && g_selectedObjectId >= 0) {
                 break;
             }
-            s_step = -1;
+            s_step = ANALYZE_STEP_CLOSE;
             return SUBSTATE_RUNNING;
 
-        case 5: {
+        case ANALYZE_STEP_SHOW_DETAIL: {
             Character* copy;
 
             s_step++;
-            copy = GetCharacter(15);
+            copy = GetCharacter(ANALYZE_ROSTER_ENTRY);
             // The copy stops short of alignmentA and what follows it.
             memcpy(copy, target, offsetof(Character, alignmentA));
-            s_savedRosterEntry = GetRosterEntry(15);
-            SetRosterEntry(15, copy);
-            SetStatusAnalyzeMode(1);
+            s_savedRosterEntry = GetRosterEntry(ANALYZE_ROSTER_ENTRY);
+            SetRosterEntry(ANALYZE_ROSTER_ENTRY, copy);
+            SetStatusAnalyzeMode(true);
             PushGameState(GAME_STATE_STATUS);
             s_dataPlane = CloseTextWindow(s_dataPlane);
             s_namePlane = CloseTextWindow(s_namePlane);
             return SUBSTATE_RUNNING;
         }
 
-        case 6: {
+        case ANALYZE_STEP_END_DETAIL: {
             Character* copy;
 
-            s_step = -1;
-            SetStatusAnalyzeMode(0);
-            SetRosterEntry(15, s_savedRosterEntry);
+            s_step = ANALYZE_STEP_CLOSE;
+            SetStatusAnalyzeMode(false);
+            SetRosterEntry(ANALYZE_ROSTER_ENTRY, s_savedRosterEntry);
             s_savedRosterEntry = NULL;
-            copy = GetCharacter(15);
+            copy = GetCharacter(ANALYZE_ROSTER_ENTRY);
             InitWordList(GetCharacterSkills(copy), 0);
             break;
         }
@@ -761,18 +761,18 @@ RVA(0x0001b5c0, 0x93)
 void SetItemMenuCharacter(i16 member) {
     i16 ammo;
     i16 group;
-    if (member == -1) {
+    if (member == CHARACTER_ID_NONE) {
         if (s_itemMenuEquipGroup != -1 && s_itemMenu) {
             RequestMenuRedraw(s_itemMenu);
         }
         s_itemMenuEquipGroup = -1;
-        s_itemMenuMember = -1;
+        s_itemMenuMember = CHARACTER_ID_NONE;
         g_itemMenuAmmoType = -1;
         return;
     }
     ammo = GetGunAmmoType(GetCharacterById(member));
     s_itemMenuMember = member;
-    group = ReadObjectRecordField(member, 0x20, 2);
+    group = ReadObjectRecordField(member, offsetof(ObjectRecord, equipGroup), sizeof(i16));
     if (s_itemMenu && (s_itemMenuEquipGroup != group || g_itemMenuAmmoType != ammo)) {
         RequestMenuRedraw(s_itemMenu);
     }
@@ -783,40 +783,45 @@ void SetItemMenuCharacter(i16 member) {
 RVA(0x0001b660, 0xea)
 i16 StepItemBuyMenu(i16* step) {
     switch (*step) {
-        case 0: {
+        case ITEM_MENU_STEP_OPEN: {
             i16 count;
             i16* items = AllocItemMenuStock(GetSceneCellKind(), &count);
             ItemStackList* list = CreateItemMenuEntries(items, count);
             FreeBlock(items);
             s_itemMenu = CreateItemMenu(s_itemMenu, list, count);
-            InitItemMenuContext(s_itemMenu, 1, 0, 0x11);
+            InitItemMenuContext(
+                s_itemMenu,
+                ITEM_PRICE_DIVISOR_BUY,
+                ITEM_MENU_MODE_SHOP,
+                ITEM_MENU_TOTAL_VAR
+            );
             (*step)++;
-            return 0;
+            return SUBSTATE_RUNNING;
         }
-        case 1: {
+        case ITEM_MENU_STEP_RUN: {
             i16 result = RunMenu(s_itemMenu);
             if (result == TEXT_EVENT_CANCEL || result == TEXT_EVENT_NONE) {
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             if (result == TEXT_EVENT_CHOOSE_RIGHT) {
                 result = -1;
             }
-            AdjustItemMenuCount(s_itemMenu, g_hoveredObjectId, result, 99);
-            return 0;
+            AdjustItemMenuCount(s_itemMenu, g_hoveredObjectId, result, ITEM_STACK_MAX);
+            return SUBSTATE_RUNNING;
         }
-        case 2:
+        case ITEM_MENU_STEP_CLOSE:
             s_itemMenu = DestroyMenuBox(s_itemMenu);
-            return -1;
+            return SUBSTATE_FINISHED;
     }
 }
 
 RVA(0x0001b750, 0x6d)
 MenuBox* CreateItemMenu(MenuBox* old, ItemStackList* entries, i16 count) {
     MenuBox* menu;
-    SetItemMenuCharacter(-1);
+    SetItemMenuCharacter(CHARACTER_ID_NONE);
     menu = CreateMenuBox(old, 0x19, 2);
     MoveMenuBox(menu, -8, -22);
-    SetMenuItems(menu, 9, entries, count, ItemMenuHandler);
+    SetMenuItems(menu, ITEM_MENU_ROWS, entries, count, ItemMenuHandler);
     SetTextPlaneCancelEnabled(menu->plane, 0);
     SetTextPlaneFirstSelectableRow(menu->plane, 0, true);
     menu->list->flags |= 2;
@@ -829,7 +834,7 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
     i16 i;
     switch (event) {
         case MENU_EVENT_DESTROY:
-            if (menu->context.item.mode != 2) {
+            if (menu->context.item.mode != ITEM_MENU_MODE_SCRIPT) {
                 ClearPool();
                 for (i = 0; i < menu->itemCount; i++) {
                     if (GetItemStackCount(GetItemListEntry(list, i))) {
@@ -839,7 +844,10 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
                         );
                     }
                 }
-                SetScriptLongVar(0x11, GetItemMenuTotal(list, 1, menu->context.item.priceDivisor));
+                SetScriptLongVar(
+                    ITEM_MENU_TOTAL_VAR,
+                    GetItemMenuTotal(list, 1, menu->context.item.priceDivisor)
+                );
             }
             s_itemMenuLimits = FreeBlock(s_itemMenuLimits);
             menu->items.itemList = FreeBlock(list);
@@ -861,7 +869,8 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
                     MENU_LINE_DISABLED
                 );
             } else {
-                if (menu->context.item.mode == 0 && menu->context.item.priceDivisor == 1) {
+                if (menu->context.item.mode == ITEM_MENU_MODE_SHOP
+                    && menu->context.item.priceDivisor == ITEM_PRICE_DIVISOR_BUY) {
                     if (CompareMacca(-1, price) < 0) {
                         color = TEXT_ATTR_FLAG1 | TEXT_ATTR_OPAQUE
                                 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
@@ -872,19 +881,19 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
                     g_scratchBuffer,
                     color,
                     GetItemStackItem(entry),
-                    menu->context.item.mode == 2
+                    menu->context.item.mode == ITEM_MENU_MODE_SCRIPT
                 );
             }
             break;
         }
         case MENU_EVENT_END_PAGE: {
             i32 total;
-            if (menu->context.item.mode == 2) {
+            if (menu->context.item.mode == ITEM_MENU_MODE_SCRIPT) {
                 total = GetScriptLongVar(menu->context.item.totalVar);
             } else {
                 total = GetItemMenuTotal(list, 1, menu->context.item.priceDivisor);
             }
-            DrawItemMenuTotal(menu->plane, total, 0, index - menu->cursor);
+            DrawItemMenuTotal(menu->plane, total, false, index - menu->cursor);
             break;
         }
     }
@@ -907,8 +916,13 @@ i32 FormatItemMenuEntry(ItemStack entry, i32 numerator, i32 denominator) {
             marker = 'E';
             member = GetCharacterById(s_itemMenuMember);
             record = GetLoadedRecord(GetItemStackItem(&entry));
-            if (record->kind == ITEM_KIND_GUN && GetBattleStatShown(member, 6) > 0) {
-                if (LacksItemRequiredStats(member, record, GetBattleStatShown(member, 6))) {
+            if (record->kind == ITEM_KIND_GUN
+                && GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL) > 0) {
+                if (LacksItemRequiredStats(
+                        member,
+                        record,
+                        GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL)
+                    )) {
                     marker = 'e';
                 }
             } else if (LacksItemRequiredStats(member, record, 0)) {
@@ -969,7 +983,7 @@ i32 GetItemMenuTotal(ItemStackList* list, i32 numerator, i32 denominator) {
 }
 
 RVA(0x0001bbc0, 0xda)
-void DrawItemMenuTotal(i16 plane, i32 total, i16 redraw, i16 line) {
+void DrawItemMenuTotal(i16 plane, i32 total, b16 redraw, i16 line) {
     if (!redraw) {
         if (!s_hideItemMenuTotal) {
             sprintf(g_scratchBuffer, "                \215\207\214\166 %10ld   ", total);
@@ -977,7 +991,7 @@ void DrawItemMenuTotal(i16 plane, i32 total, i16 redraw, i16 line) {
             sprintf(g_scratchBuffer, "                \215\207\214\166 ");
             s_hideItemMenuTotal = false;
         }
-        for (; line < 9; line++) {
+        for (; line < ITEM_MENU_ROWS; line++) {
             AddMenuLine(
                 plane,
                 s_emptyItemLine,
@@ -995,7 +1009,7 @@ void DrawItemMenuTotal(i16 plane, i32 total, i16 redraw, i16 line) {
         );
     } else {
         sprintf(g_scratchBuffer, "\215\207\214\166 %10ld   ", total);
-        SetTextPlaneCursorLine(plane, 16, 9);
+        SetTextPlaneCursorLine(plane, 16, ITEM_MENU_ROWS);
         PrintWindowText(
             plane,
             g_scratchBuffer,
@@ -1027,7 +1041,7 @@ void AdjustItemMenuCount(MenuBox* menu, i16 row, i16 delta, i16 limit) {
         SetMenuLineText(menu->plane, row, g_scratchBuffer);
         PrintWindowText(menu->plane, g_scratchBuffer, attr, 1, true);
         total = GetItemMenuTotal(list, 1, menu->context.item.priceDivisor);
-        DrawItemMenuTotal(menu->plane, total, 1, 9);
+        DrawItemMenuTotal(menu->plane, total, true, ITEM_MENU_ROWS);
     }
 }
 
@@ -1049,18 +1063,18 @@ b16 RunItemBuyMenu(void) {
     i16 step;
     i16 result;
     switch (GetGamePhase()) {
-        case 0:
+        case ITEM_MENU_PHASE_ENTER:
             NextGamePhase();
             break;
-        case 1:
+        case ITEM_MENU_PHASE_RUN:
             step = GetGameStep();
             result = StepItemBuyMenu(&step);
             SetGameStep(step);
-            if (result == -1) {
+            if (result == SUBSTATE_FINISHED) {
                 NextGamePhase();
             }
             break;
-        case 2:
+        case ITEM_MENU_PHASE_RETURN:
             ReturnFromGameState();
             break;
     }
@@ -1071,23 +1085,28 @@ RVA(0x0001be70, 0x110)
 i16 StepItemSellMenu(i16* step) {
     ItemStackList* list;
     switch (*step) {
-        case 0: {
+        case ITEM_MENU_STEP_OPEN: {
             i16 i;
-            s_itemMenuLimits = CopyBagEntries(0, 48, NULL);
-            list = CopyBagEntries(0, 48, NULL);
+            s_itemMenuLimits = CopyBagEntries(0, BAG_ORDINARY_ENTRY_COUNT, NULL);
+            list = CopyBagEntries(0, BAG_ORDINARY_ENTRY_COUNT, NULL);
             for (i = 0; i < GetItemListCount(list); i++) {
                 GetItemListEntry(list, i)->count = 0;
             }
             s_itemMenu = CreateItemMenu(s_itemMenu, list, GetItemListCount(list));
-            InitItemMenuContext(s_itemMenu, 4, 0, 0x11);
+            InitItemMenuContext(
+                s_itemMenu,
+                ITEM_PRICE_DIVISOR_SELL,
+                ITEM_MENU_MODE_SHOP,
+                ITEM_MENU_TOTAL_VAR
+            );
             (*step)++;
-            return 0;
+            return SUBSTATE_RUNNING;
         }
-        case 1: {
+        case ITEM_MENU_STEP_RUN: {
             i16 result;
             result = RunMenu(s_itemMenu);
             if (result == TEXT_EVENT_CANCEL || result == TEXT_EVENT_NONE) {
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             if (result == TEXT_EVENT_CHOOSE_RIGHT) {
                 result = -1;
@@ -1100,11 +1119,11 @@ i16 StepItemSellMenu(i16* step) {
                     GetItemListEntry(s_itemMenuLimits, s_itemMenu->cursor + g_hoveredObjectId)
                 )
             );
-            return 0;
+            return SUBSTATE_RUNNING;
         }
-        case 2:
+        case ITEM_MENU_STEP_CLOSE:
             s_itemMenu = DestroyMenuBox(s_itemMenu);
-            return -1;
+            return SUBSTATE_FINISHED;
     }
 }
 
@@ -1113,18 +1132,18 @@ b16 RunItemSellMenu(void) {
     i16 step;
     i16 result;
     switch (GetGamePhase()) {
-        case 0:
+        case ITEM_MENU_PHASE_ENTER:
             NextGamePhase();
             break;
-        case 1:
+        case ITEM_MENU_PHASE_RUN:
             step = GetGameStep();
             result = StepItemSellMenu(&step);
             SetGameStep(step);
-            if (result == -1) {
+            if (result == SUBSTATE_FINISHED) {
                 NextGamePhase();
             }
             break;
-        case 2:
+        case ITEM_MENU_PHASE_RETURN:
             ReturnFromGameState();
             break;
     }
@@ -1133,7 +1152,12 @@ b16 RunItemSellMenu(void) {
 
 RVA(0x0001bfe0, 0x2a)
 void RefreshScriptItemMenuTotal(void) {
-    DrawItemMenuTotal(s_itemMenu->plane, GetScriptLongVar(s_itemMenu->context.item.totalVar), 1, 9);
+    DrawItemMenuTotal(
+        s_itemMenu->plane,
+        GetScriptLongVar(s_itemMenu->context.item.totalVar),
+        true,
+        ITEM_MENU_ROWS
+    );
 }
 
 RVA(0x0001c010, 0x8b)
@@ -1141,12 +1165,17 @@ void OpenScriptItemMenu(i16 totalVar, i16 selling) {
     ItemStack* entries;
     i16 count;
     ItemStackList* list;
-    SetItemMenuCharacter(-1);
+    SetItemMenuCharacter(CHARACTER_ID_NONE);
     entries = GetPoolEntries();
     count = CountPoolEntries();
     list = CopyItemMenuEntries(entries, count);
     s_itemMenu = CreateItemMenu(s_itemMenu, list, count);
-    InitItemMenuContext(s_itemMenu, selling ? 4 : 1, 2, totalVar);
+    InitItemMenuContext(
+        s_itemMenu,
+        selling ? ITEM_PRICE_DIVISOR_SELL : ITEM_PRICE_DIVISOR_BUY,
+        ITEM_MENU_MODE_SCRIPT,
+        totalVar
+    );
     s_hideItemMenuTotal = true;
     RunMenu(s_itemMenu);
     s_hideItemMenuTotal = false;
@@ -1167,7 +1196,7 @@ ItemStackList* CopyItemMenuEntries(ItemStack* entries, i16 count) {
 
 RVA(0x0001c0e0, 0x19)
 void PollScriptItemMenu(void) {
-    if (s_itemMenu && s_itemMenu->context.item.mode == 2) {
+    if (s_itemMenu && s_itemMenu->context.item.mode == ITEM_MENU_MODE_SCRIPT) {
         RunMenu(s_itemMenu);
     }
 }

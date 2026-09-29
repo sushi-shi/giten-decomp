@@ -1613,7 +1613,7 @@ i16 RunItemPage(i16 sub) {
             SetStatusMenuItemFlag(STATUS_STEP_ITEMS, PANEL_ROW_CHECKED, true);
             s_itemPage.menu = CreateMenuBox(s_itemPage.menu, 0x19, 2);
             MoveMenuBox(s_itemPage.menu, -8, -0x16);
-            s_itemPage.list = CopyBagEntries(0, 64, NULL);
+            s_itemPage.list = CopyBagEntries(0, BAG_ENTRY_COUNT, NULL);
             SetMenuItems(
                 s_itemPage.menu,
                 8,

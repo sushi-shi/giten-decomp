@@ -55,6 +55,8 @@ typedef struct FieldStatus {
 // field stores only when the roster and the field share an object.
 // The party positions and the roster size.
 #define PARTY_SIZE 6
+// Positions below PARTY_ROW_SIZE are the front row, the rest the back row.
+#define PARTY_ROW_SIZE 3
 #define ROSTER_SIZE 32
 // The roster slot of the party leader (GetRosterLeader).
 #define ROSTER_LEADER 0

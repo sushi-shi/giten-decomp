@@ -97,7 +97,7 @@ i16 BuildStatusSlots(void);
 // into `out`; returns `out`.
 char* FormatAlignmentLetter(i16 axis, i16 value, char* out);
 
-void SetStatusAnalyzeMode(i16 on);
+void SetStatusAnalyzeMode(b16 on);
 
 // Pending roster insertion and the script state it resumes.
 extern Character* g_rosterPendingMember;

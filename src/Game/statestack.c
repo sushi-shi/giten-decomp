@@ -247,7 +247,7 @@ b16 g_statusFixedMember = false;
 
 // @identity-TODO: the status screen's analyze mode flag.
 DATA(0x0007be44)
-static i16 s_statusAnalyzeMode = 0;
+static b16 s_statusAnalyzeMode = false;
 
 DATA(0x0007be48)
 static i16 s_stateDepth = 0;
@@ -584,7 +584,7 @@ i16 PickStatusMember(void) {
 }
 
 RVA(0x00016e50, 0xc)
-void SetStatusAnalyzeMode(i16 on) {
+void SetStatusAnalyzeMode(b16 on) {
     s_statusAnalyzeMode = on;
 }
 
@@ -929,7 +929,7 @@ i16 PickDdsSummon(void) {
             }
             break;
         case 1:
-            if (!PollPartySlotSelection(1)) {
+            if (!PollPartySlotSelection(PARTY_SLOT_ANY)) {
                 break;
             }
             ClearPartySlotSelection();
