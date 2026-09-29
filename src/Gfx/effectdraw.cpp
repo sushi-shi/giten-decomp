@@ -128,7 +128,9 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     }
     dest.top = top + s_effectHeightOffsets[GetShotPower()];
     dest.bottom = dest.top + bottom - top;
-    GetBitmapRect(source, bmp);
+    source.left = source.top = 0;
+    source.right = bmp->info.biWidth;
+    source.bottom = bmp->info.biHeight;
     scaleX = static_cast<float>(dest.right - dest.left) / bmp->info.biWidth;
     scaleY = static_cast<float>(dest.bottom - dest.top) / bmp->info.biHeight;
     if (dest.left < 0) {
@@ -189,7 +191,9 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
     }
     CacheEffectFrame(bmp, code);
     GetScriptAnimationPosition(x, y, &screenX, &screenY);
-    GetBitmapRect(source, bmp);
+    source.left = source.top = 0;
+    source.right = bmp->info.biWidth;
+    source.bottom = bmp->info.biHeight;
     dest.left = screenX + GetEffectBitmapOffsetX(bmp) * 8;
     dest.top = (screenY + GetEffectBitmapOffsetY(bmp) - bmp->info.biHeight / 2) * 11 / 10;
     dest.right = dest.left + bmp->info.biWidth;
