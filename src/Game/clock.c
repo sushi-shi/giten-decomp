@@ -519,7 +519,7 @@ void LoadAreaMap(i16 area, i16 level) {
             AreaLevelAt(g_areaMap, 1)->floor = -1;
         }
         ResetLevelEvents();
-        force = 1;
+        force = true;
     }
     SelectAreaLevel(level, force);
 }
@@ -1365,7 +1365,7 @@ b32 TestPanelRowFlags(Panel* panel, i16 row, GZ_ENUM_PARAM(PanelFlags, u16) mask
 
 RVA(0x00022b30, 0x4a)
 void SetPanelRowFlags(Panel* panel, i16 row, GZ_ENUM_PARAM(PanelFlags, u16) mask, i16 on) {
-    if (on == 0) {
+    if (on == false) {
         ClearFlagBits(&GetPanelRow(panel, row)->flags, mask);
         return;
     }

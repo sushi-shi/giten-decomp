@@ -453,7 +453,7 @@ i16 GetFieldBusy(void) {
 
 RVA(0x00012870, 0xc)
 i16 RequestTalk(void) {
-    return g_pendingTalk = 1;
+    return g_pendingTalk = true;
 }
 
 RVA(0x00012880, 0x53)
@@ -594,7 +594,7 @@ void StartBoxScene(TreasureBox* box) {
     PushFieldTextScene(script.script, script.entry);
     CloseFieldWindows();
     OpenTreasureBox(box);
-    g_fieldBattleActive = 0;
+    g_fieldBattleActive = false;
 }
 
 // Runs an NPC's scene script.
@@ -605,7 +605,7 @@ void StartNpcScene(AreaNpc* npc) {
     script = GetNpcScript(npc);
     PushFieldTextScene(script.script, script.entry);
     CloseFieldWindows();
-    g_fieldBattleActive = 0;
+    g_fieldBattleActive = false;
 }
 
 // Runs the pending talk: picks a party member (none: the talk is dropped and
@@ -627,14 +627,14 @@ i16 RunPendingTalk(void) {
         return picked;
     }
     if (picked < 0) {
-        g_pendingTalk = 0;
+        g_pendingTalk = false;
         return -1;
     }
     actor = GetFieldActor(g_selectedObjectId);
     objects = FindLayerOfKind(actor->id);
     CloseMessageWindow();
     StartActorScene(0xe0, 0, objects + 1, actor);
-    g_pendingTalk = 0;
+    g_pendingTalk = false;
     AddTrainingPoints(GetCharacters(), 3, 3);
     return 1;
 }
@@ -850,7 +850,7 @@ b16 RunFieldExploration(void) {
                         RequestFieldRefresh();
                     }
                     ResetRosterStatModifiers();
-                    g_fieldBattleActive = 0;
+                    g_fieldBattleActive = false;
                     s_eventRunning = false;
                     return FlushFieldScreen();
                 }
@@ -995,8 +995,8 @@ void CancelFieldMap(void) {
         CloseFieldWindows();
         PlayLevelMusic();
     }
-    g_fieldBattleActive = 0;
-    g_pendingTalk = 0;
+    g_fieldBattleActive = false;
+    g_pendingTalk = false;
 }
 
 RVA(0x00013640, 0x440)

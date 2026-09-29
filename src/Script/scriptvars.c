@@ -848,9 +848,9 @@ void OpSetMessageHook(void) {
     if (s_messageHookFile == 0xff && s_messageHookEntry == 0xff) {
         s_messageHookFile = -1;
         s_messageHookEntry = -1;
-        g_textState.messageHookEnabled = 0;
+        g_textState.messageHookEnabled = false;
     } else {
-        g_textState.messageHookEnabled = 1;
+        g_textState.messageHookEnabled = true;
     }
 }
 
@@ -1094,7 +1094,7 @@ RVA(0x0003baf0, 0x34)
 // Turning counting on from off restarts the counter at 0.
 i16 SetTickCountOn(i16 on) {
     i16 prev = s_tickCountOn;
-    if (on == 1 && s_tickCountOn == 0) {
+    if (on == true && s_tickCountOn == 0) {
         SetTickCounter(0);
     }
     s_tickCountOn = on;

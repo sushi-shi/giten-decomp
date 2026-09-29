@@ -864,10 +864,10 @@ void SetBagEntry(i16 index, i16 item, i16 attachment) {
     g_bagItems[index].item = item;
     if (attachment != -1) {
         g_bagItems[index].attachment = attachment;
-        g_bagItems[index].hasAttachment = 1;
+        g_bagItems[index].hasAttachment = true;
     } else {
         g_bagItems[index].attachment = 0;
-        g_bagItems[index].hasAttachment = 0;
+        g_bagItems[index].hasAttachment = false;
     }
     g_bagItems[index].count = 0;
     g_bagItems[index].detail = 0;
@@ -1199,7 +1199,7 @@ i16 DetachBagEntryItem(i16 index) {
 
     if (id >= 0) {
         g_bagItems[index].attachment = 0;
-        g_bagItems[index].hasAttachment = 0;
+        g_bagItems[index].hasAttachment = false;
     }
     return id;
 }
@@ -1209,7 +1209,7 @@ i16 AttachBagEntryItem(i16 index, i16 id) {
     i16 previous = DetachBagEntryItem(index);
 
     g_bagItems[index].attachment = id - GetGemItemBase();
-    g_bagItems[index].hasAttachment = 1;
+    g_bagItems[index].hasAttachment = true;
     return previous;
 }
 
@@ -1396,7 +1396,7 @@ void UseRestoreItem(Character* user, Character* target) {
     result = ApplyRestoreEffect(s_usedItem.params[9], hp, target, mp);
     user->lastChange = target->lastChange;
     g_actionResult = result;
-    user->pickNoEffect = 1;
+    user->pickNoEffect = true;
     user->result = result;
     g_pendingCondition = s_usedItem.params[10];
     if (g_pendingCondition != 0 && RestoreEffectAllowsCondition(result)
@@ -1434,8 +1434,8 @@ void UseAttackItem(Character* user, Character* target) {
 static __inline void SetInertItemOutcome(Character* user, Character* target) {
     ResetActionOutcome();
     user->result = 0;
-    user->pickNoEffect = 1;
-    target->pickNoEffect = 1;
+    user->pickNoEffect = true;
+    target->pickNoEffect = true;
 }
 
 RVA(0x00024b20, 0x40)

@@ -52,14 +52,14 @@ RVA(0x00032a90, 0x26)
 i16 EnableTextDelay(void) {
     i16 prev = g_textState.delayOn;
     g_textState.delayLeft = 0;
-    g_textState.delayOn = 1;
+    g_textState.delayOn = true;
     return prev;
 }
 
 RVA(0x00032ac0, 0x1d)
 i16 DisableTextDelay(void) {
     i16 prev = g_textState.delayOn;
-    g_textState.delayOn = 0;
+    g_textState.delayOn = false;
     g_textState.delayRamp = 0;
     return prev;
 }
@@ -88,13 +88,13 @@ i16 EnableTextDelaySkip(void) {
 RVA(0x00032b40, 0x3b)
 void InitTextState(TextState* state) {
     if (!state->delayOn) {
-        state->scrollEnabled = 0;
-        state->timedWait = 0;
+        state->scrollEnabled = false;
+        state->timedWait = false;
         state->inputWait = 1;
     } else {
         state->inputWait = 0;
-        state->scrollEnabled = 1;
-        state->timedWait = 1;
+        state->scrollEnabled = true;
+        state->timedWait = true;
     }
     state->charDelay = 0;
     state->delayLeft = 0;
@@ -102,7 +102,7 @@ void InitTextState(TextState* state) {
     state->waitFrames = 30;
     state->delayRamp = 0;
     state->flag7 = 0;
-    state->messageHookEnabled = 0;
+    state->messageHookEnabled = false;
     state->delaySkipDisabled = 1;
 }
 

@@ -47,7 +47,7 @@ void OpIfEventObjectIs(void) {
     i16 different = ReadScriptValue();
     i32 matches = 0;
     if ((g_actorId == g_targetId && !different) || (g_actorId != g_targetId && different)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -57,8 +57,8 @@ void OpIfBattleResult(void) {
     i16 target = ReadBranchTarget();
     i16 multiple = ReadScriptValue();
     i32 matches = 0;
-    if ((g_targetCount == 1 && multiple == 0) || (g_targetCount >= 2 && multiple == 1)) {
-        matches = 1;
+    if ((g_targetCount == 1 && multiple == false) || (g_targetCount >= 2 && multiple == true)) {
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -81,7 +81,7 @@ void OpIfStatusPositive(i16 invert) {
     i16 target = ReadBranchTarget();
     i32 matches = 0;
     if ((g_statusCondition > 0 && !invert) || (g_statusCondition == 0 && invert)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -94,7 +94,7 @@ void OpIfInBattle(void) {
     i16 invert = ReadScriptValue();
     i32 matches = 0;
     if (ScriptBooleanMatches(g_fieldBattleActive, invert)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }

@@ -473,9 +473,9 @@ i16 ResolveCombatAction(void) {
     }
     ResetActionWait(GetCharacterActionWait(attacker));
     ResetActionOutcome();
-    attacker->pickNoEffect = 0;
+    attacker->pickNoEffect = false;
     if (attacker->pickFlags & PICK_ITEM_SKILL) {
-        attacker->pickCostPaid = 1;
+        attacker->pickCostPaid = true;
     }
 
     if (attacker->pickRole == PICK_ROLE_ATTACK) {
@@ -521,7 +521,7 @@ i16 ResolveCombatAction(void) {
     if (IsSkillAction(attacker)) {
         if (CanAffectCombatant(g_actorId) && !attacker->pickCostPaid) {
             PaySkillCost(g_actorId, attacker->pickTarget);
-            attacker->pickCostPaid = 1;
+            attacker->pickCostPaid = true;
         }
     }
 
@@ -553,7 +553,7 @@ i16 ResolveCombatAction(void) {
         }
     }
 
-    attacker->pickNoEffect = 0;
+    attacker->pickNoEffect = false;
     if (HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE) && g_actionResult == 5) {
         AddCondition(GetCharacterConditions(target), CONDITION_DYING);
     }
@@ -771,7 +771,7 @@ b16 RunBattleAction(void) {
             s_actionPickKept = actor->pickTarget;
             NextGamePhase();
             s_actionRole = actor->pickRole;
-            actor->pickCostPaid = 0;
+            actor->pickCostPaid = false;
             if (actor->pickRole == PICK_ROLE_ITEM) {
                 g_battleOutcome = 0;
                 record = GetLoadedRecord(actor->pickTarget);
@@ -834,7 +834,7 @@ b16 RunBattleAction(void) {
             if (g_actorId >= 0
                 && (actor->pickRole != PICK_ROLE_MAGIC
                     || GetCachedSkill(actor->pickTarget)->parameters.kind != 0x10)) {
-                actor->acting = 1;
+                actor->acting = true;
                 RedrawFieldView();
                 RequestFieldRefresh();
             }
@@ -948,7 +948,7 @@ b16 RunBattleAction(void) {
             }
             NextGamePhase();
             if (g_actorId >= 0) {
-                actor->acting = 0;
+                actor->acting = false;
                 RequestFieldRefresh();
             }
             skipEffects = s_skipEffects;
@@ -1225,7 +1225,7 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
     i16 cost;
     switch (event) {
         case MENU_EVENT_ADD_ROW:
-            disabled = 0;
+            disabled = false;
             style = 0x2450;
             if (GetWord(GetCharacterSkills(character), index) == 0) {
                 AddMenuLine(menu->plane, g_emptySkillMenuLabel, style, 0, MENU_LINE_DISABLED);
@@ -1235,16 +1235,16 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
             skill = GetSkillView(GetWord(GetCharacterSkills(character), index));
             if (blocked == 1) {
                 style = 0x2500;
-                disabled = 1;
+                disabled = true;
             } else if (IsSkillUsableNow(GetSkillUseModes(skill)) < 1) {
                 style = 0x2500;
-                disabled = 1;
+                disabled = true;
             } else if (CheckSkillArea(GetWord(GetCharacterSkills(character), index)) < 1) {
                 style = 0x2500;
-                disabled = 1;
+                disabled = true;
             } else if (CannotPaySkill(character, &skill->parameters)) {
                 style = 0x2650;
-                disabled = 1;
+                disabled = true;
             }
             if (SkillCostsFullPool(&skill->parameters)) {
                 sprintf(g_scratchBuffer, "%-16.16s MAX", skill->name);
@@ -1572,7 +1572,7 @@ void UseRestoreSkill(Character* user, Character* target) {
     user->lastChange = amount;
     result = ApplyRestoreEffect(GetSkillEffectCode(&s_effectSkill), amount, target, 0);
     user->lastChange = target->lastChange;
-    user->pickNoEffect = 1;
+    user->pickNoEffect = true;
     g_actionResult = result;
     user->result = result;
     if (RestoreEffectAllowsCondition(result) && hit > 0
@@ -1585,13 +1585,13 @@ void UseRestoreSkill(Character* user, Character* target) {
 RVA(0x0002cf90, 0xd0)
 void UseBattleTallySkill(Character* user, Character* target) {
     i16 tally;
-    target->pickNoEffect = 1;
-    user->pickNoEffect = 1;
+    target->pickNoEffect = true;
+    user->pickNoEffect = true;
     g_statusCondition = 0;
     g_hpChange = 0;
     g_actionResult = 0;
     user->lastChange = 0;
-    target->pickNoEffect = 1;
+    target->pickNoEffect = true;
     SetFlaggedActionResult(user, 3);
     g_hpChange = 0;
     user->lastChange = 0;
@@ -1610,7 +1610,7 @@ void UseBattleTallySkill(Character* user, Character* target) {
 }
 
 static __inline void PrepareBattleStatSkill(Character* user) {
-    user->pickNoEffect = 1;
+    user->pickNoEffect = true;
     g_statusCondition = 0;
     g_hpChange = 0;
     g_actionResult = 0;
@@ -1690,8 +1690,8 @@ i16 ChangeBattleStat(i16* value, i16 amount, i16 base) {
 }
 
 static __inline void PrepareNonDamageSkill(Character* user, Character* target) {
-    target->pickNoEffect = 1;
-    user->pickNoEffect = 1;
+    target->pickNoEffect = true;
+    user->pickNoEffect = true;
     g_statusCondition = 0;
     g_hpChange = 0;
     user->lastChange = 0;

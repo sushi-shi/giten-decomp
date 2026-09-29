@@ -1214,7 +1214,7 @@ b16 RunFieldEncounter(void) {
                     LockStatusRedraw(false);
                     SetFieldMenuMode(1);
                     s_fieldMarker = true;
-                    g_fieldBattleActive = 1;
+                    g_fieldBattleActive = true;
                     ResetFieldObjects();
                     s_fieldPaletteState = SavePaletteState(s_fieldPaletteState, 3);
                     SaveFieldLayer(0);
@@ -1415,7 +1415,7 @@ b16 RunFieldEncounter(void) {
 // Records how the field map ended and advances the owning state two phases.
 RVA(0x00007a40, 0x23)
 void LeaveFieldMap(i16 result) {
-    g_fieldBattleActive = 0;
+    g_fieldBattleActive = false;
     s_fieldEntryState = result;
     CloseFieldWindows();
     NextGamePhase();
@@ -1451,7 +1451,7 @@ b16 RunFieldState(void) {
                     SetFieldStatusBit0(0);
                     SetFieldStatusBit11(0);
                     SetFieldMenuMode(3);
-                    g_fieldBattleActive = 1;
+                    g_fieldBattleActive = true;
                     ResetFieldScene();
                     s_fieldPaletteState = SavePaletteState(s_fieldPaletteState, 3);
                     ResetFieldObjects();
@@ -1736,7 +1736,7 @@ void TickPartyConditionActions(void) {
 
 RVA(0x000082c0, 0x67)
 void MarkActorActionReady(Character* actor) {
-    GetCharacterActionWait(actor)->ready = 1;
+    GetCharacterActionWait(actor)->ready = true;
     switch (actor->mode) {
         case 1:
             MarkPickDone();

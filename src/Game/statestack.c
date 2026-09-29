@@ -1004,7 +1004,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
                 case 2:
                     if (CountRosterEntries(false)) {
                         attribute = 0x2450;
-                        disabled = 0;
+                        disabled = false;
                     }
                     break;
                 case 1:
@@ -1012,7 +1012,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
                         character = GetPartyCharacter(slot);
                         if (character != NULL && !IsHumanCharacter(character)) {
                             attribute = 0x2450;
-                            disabled = 0;
+                            disabled = false;
                         }
                     }
                     break;
@@ -1022,7 +1022,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
                         if (character != NULL && !IsHumanCharacter(character)
                             && !GetFatalCondition(GetCharacterConditions(character))) {
                             attribute = 0x2450;
-                            disabled = 0;
+                            disabled = false;
                         }
                     }
                     break;
@@ -1313,7 +1313,7 @@ b16 RunCellScene(void) {
             NextGamePhase();
             SaveVideoState(g_sceneVideoState);
             SetSubscreenActive(1);
-            g_fieldRedrawRequest = 1;
+            g_fieldRedrawRequest = true;
             ClearMaskView();
             ResetMask(1);
             s_scenePaletteState = SavePaletteState(s_scenePaletteState, 1);
@@ -1427,7 +1427,7 @@ b16 RunFieldTextScene(void) {
             LockStatusRedraw(false);
             RefreshStatusPanel(1);
             RepaintTextPlane(g_infoPlane, 3);
-            g_fieldRedrawRequest = 1;
+            g_fieldRedrawRequest = true;
             if (g_worldMapRequest < 0) {
                 SetGameState(GAME_STATE_FIELD_EXPLORATION);
                 SetGamePhase(FIELD_PHASE_FADE_TO_RETURN_POINT);
@@ -1462,7 +1462,7 @@ b16 RunFrozenFieldScene(void) {
             LockStatusRedraw(false);
             s_scenePaletteState = RestorePaletteState(s_scenePaletteState, true);
             RefreshStatusPanel(1);
-            g_fieldRedrawRequest = 1;
+            g_fieldRedrawRequest = true;
             if (g_worldMapRequest < 0 || g_worldMapRequest > 0) {
                 SetGameState(GAME_STATE_FIELD_EXPLORATION);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
@@ -1480,7 +1480,7 @@ b16 RunFrozenFieldScene(void) {
             ClearTextPlane(g_infoPlane);
             LockStatusRedraw(true);
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
-            g_fieldRedrawRequest = 1;
+            g_fieldRedrawRequest = true;
             RedrawFieldView();
             break;
     }
@@ -1527,7 +1527,7 @@ b16 RunBackgroundScene(void) {
             s_sceneScreenState = SaveScreenState();
             NextGamePhase();
             SaveVideoState(g_sceneVideoState);
-            g_fieldRedrawRequest = 1;
+            g_fieldRedrawRequest = true;
             ClearMaskView();
             ResetMask(1);
             s_scenePaletteState = SavePaletteState(s_scenePaletteState, 1);
@@ -2292,7 +2292,7 @@ b16 RunWorldMap(void) {
                 return false;
             }
             if (g_fieldRedrawRequest) {
-                g_fieldRedrawRequest = 0;
+                g_fieldRedrawRequest = false;
                 SetGamePhase(WORLD_MAP_PHASE_ENTER);
                 return false;
             }
@@ -2498,7 +2498,7 @@ void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) 
     i16 enabled;
     switch (event) {
         case MENU_EVENT_ADD_ROW:
-            enabled = 1;
+            enabled = true;
             character = GetCharacterById(entries->ids[index]);
             switch (s_partyPickerMode) {
                 case 0:
@@ -2508,7 +2508,7 @@ void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) 
                     break;
                 case 2:
                     if (!IsHumanCharacter(character)) {
-                        enabled = 0;
+                        enabled = false;
                     }
                     break;
             }

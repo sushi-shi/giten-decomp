@@ -100,7 +100,7 @@ i16 SetMessageHold(i16 hold) {
         return s_messageHold;
     }
     if (s_messageWindow == TEXT_PLANE_NONE) {
-        s_messageHold = 1;
+        s_messageHold = true;
         return 1;
     }
     old = s_messageHold;
@@ -114,7 +114,7 @@ i16 RefreshMessageWindow(void) {
         return s_messageWindow;
     }
     RepaintTextPlane(s_messageWindow, -2);
-    s_messageHold = 1;
+    s_messageHold = true;
     return s_messageWindow;
 }
 
@@ -144,7 +144,7 @@ i16 CloseMessageWindow(void) {
 
 RVA(0x00002740, 0x40)
 void TickMessageWindow(void) {
-    if (s_messageWindow != TEXT_PLANE_NONE && s_messageHold == 0 && s_messageLifetime != 0) {
+    if (s_messageWindow != TEXT_PLANE_NONE && s_messageHold == false && s_messageLifetime != 0) {
         if (--s_messageLifetime <= 0) {
             CloseMessageWindow();
         }

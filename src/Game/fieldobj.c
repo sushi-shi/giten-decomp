@@ -435,7 +435,7 @@ void RemoveFieldObject(i16 index, i16 announce) {
     s_objects[index].redraw = 0;
     s_objects[index].anim = 0;
     s_objects[index].script = FreeScriptBlock(s_objects[index].script);
-    s_objects[index].hidden = 0;
+    s_objects[index].hidden = false;
     ClearCondition(GetFieldObjectConditions(&s_objects[index]), CONDITION_ZOMBIE);
     ResetWordList(&s_objects[index].list, 0);
     for (i = 0; i < 16; i++) {
@@ -533,7 +533,7 @@ i16 SpawnFieldObject(
     s_objects[slot].word21d = 0;
     s_objects[slot].word221 = 0;
     s_objects[slot].word21f = 0;
-    s_objects[slot].hidden = 0;
+    s_objects[slot].hidden = false;
     if (alternate != 0) {
         file = OpenDataFile(0x6802, DATA_FILE_SCRIPT, 0);
     } else if (TestModeFlags(MODE_WORLD_MAP)) {
@@ -589,7 +589,7 @@ RVA(0x0000dc70, 0x41)
 i16 GetLiveObject(i16 index) {
     if (s_objectCheckBypass == 0) {
         if (index < 0 || index >= 16 || s_objects[index].layer == -1
-            || s_objects[index].hidden != 0) {
+            || s_objects[index].hidden != false) {
             return -1;
         }
     }
@@ -798,7 +798,7 @@ i16 CheckObjectState(i16 index) {
     if (s_objects[index].layer == -1) {
         return -1;
     }
-    if (s_objects[index].hidden == 0) {
+    if (s_objects[index].hidden == false) {
         return 1;
     }
     if (s_objectRemovalDeferred) {
@@ -829,7 +829,7 @@ RVA(0x0000e2b0, 0xc8)
 i16 FindObjectAt(i16 x, i16 y, i16 start, i16 mode, i16 kind) {
     i16 i;
     for (i = start; i < 16; i++) {
-        if (s_objects[i].layer == -1 || s_objects[i].hidden != 0) {
+        if (s_objects[i].layer == -1 || s_objects[i].hidden != false) {
             continue;
         }
         if (FindLayerOfKind(s_objects[i].kind) < 0) {
@@ -874,9 +874,9 @@ RVA(0x0000e400, 0x48)
 void UpdateFieldObjects(void) {
     i16 i;
     for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && s_objects[i].hidden == 0 && s_objects[i].pos.y >= 4) {
+        if (s_objects[i].layer != -1 && s_objects[i].hidden == false && s_objects[i].pos.y >= 4) {
             ResetObjectAnim(i);
-            s_objects[i].hidden = 1;
+            s_objects[i].hidden = true;
         }
     }
 }
@@ -895,7 +895,7 @@ void ClearObjectStuns(i16* cleared) {
     i16 i;
     for (i = 0; i < 16; i++) {
         cleared[i] = 0;
-        if (s_objects[i].layer != -1 && s_objects[i].hidden != 0) {
+        if (s_objects[i].layer != -1 && s_objects[i].hidden != false) {
             cleared[i] = 1;
             ClearCondition(GetFieldObjectConditions(&s_objects[i]), CONDITION_ASH);
             ClearCondition(GetFieldObjectConditions(&s_objects[i]), CONDITION_DEAD);
@@ -948,7 +948,7 @@ i16 GetObjectImageCode(i16 index) {
         imageCode = 4;
     } else if (object->anim != 0) {
         imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
-    } else if (object->hidden != 0) {
+    } else if (object->hidden != false) {
         imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
     } else if (object->acting) {
         imageCode = 3;
@@ -965,7 +965,7 @@ i16 GetObjectFacingImageCode(i16 index) {
         imageCode = 4;
     } else if (object->anim != 0) {
         imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
-    } else if (object->hidden != 0) {
+    } else if (object->hidden != false) {
         imageCode = 4;
     } else if (object->acting) {
         imageCode = 3;
@@ -978,7 +978,7 @@ i16 CountActiveObjects(void) {
     i16 count = 0;
     i16 i;
     for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && s_objects[i].hidden == 0) {
+        if (s_objects[i].layer != -1 && s_objects[i].hidden == false) {
             count++;
         }
     }
@@ -999,7 +999,7 @@ i16 AdvanceObjectAnims(void) {
                 s_objects[i].anim++;
             }
             if (s_objects[i].anim > 8) {
-                s_objects[i].hidden = 1;
+                s_objects[i].hidden = true;
             }
             RedrawFieldView();
             count++;
@@ -1127,11 +1127,11 @@ void RefreshObjectDraw(
     u32 frame,
     i16 index
 ) {
-    if (force != 0) {
+    if (force != false) {
         RequestRefresh();
         return;
     }
-    if (object->hidden != 0) {
+    if (object->hidden != false) {
         RequestRefresh();
     }
 }
@@ -1460,7 +1460,7 @@ b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
     i16 code;
     i16 turned;
     i16 direction;
-    retried = 0;
+    retried = false;
     if (TestFieldObjectFlag(object, 0x20)) {
         return false;
     }
@@ -1494,7 +1494,7 @@ b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
                 return RefreshIfTurned(visible, 1);
             }
         }
-        if (turn != 0 || retried != 0) {
+        if (turn != 0 || retried != false) {
             return RefreshIfTurned(visible, turned);
         }
         retried = 1;
@@ -2141,7 +2141,7 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
         GetFieldObjectFlags(object)[i] = 0;
     }
     object->byte096 = 1;
-    object->acting = 0;
+    object->acting = false;
     object->word098 = 0x11;
     object->attitude = 4;
     object->triggerRange = (record->bits68 >> 2) & 7;
@@ -2382,7 +2382,7 @@ b16 ClearAnalyzed(void) {
 
 RVA(0x00010e60, 0x2e)
 void SetAnalyzed(i16 id, i16 on) {
-    if (on == 0) {
+    if (on == false) {
         ClearBit(s_analyzed, id);
         return;
     }

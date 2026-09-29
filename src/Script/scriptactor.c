@@ -517,7 +517,7 @@ void OpJumpUnlessActorCanStep(i16 invert, i16 turn) {
         }
     }
     if ((!blocked && !invert) || (blocked && invert)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -557,7 +557,7 @@ void OpJumpUnlessPlayerInLine(i16 invert) {
         );
         if ((offset.x == 0 && offset.y <= 0 && invert == 0)
             || ((offset.x != 0 || offset.y > 0) && invert != 0)) {
-            matches = 1;
+            matches = true;
         }
     }
     ScriptJumpUnless(target, matches);
@@ -1431,7 +1431,7 @@ void OpJumpUnlessFlagSet(void) {
     i16 target = ReadBranchTarget();
     i32 matches = 0;
     if (ReadAndMatchEventFlag()) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -1484,7 +1484,7 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
     i32 won;
 
     ReadContestValues(stat, &own, &other, swap);
-    won = 0;
+    won = false;
     switch (stat) {
         case STAT_INTUITION:
             RollFixedContestValue(other, level);
@@ -1610,10 +1610,10 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
     }
     order = CompareInt(own, other);
     if (!invert && order >= 0) {
-        won = 1;
+        won = true;
     }
     if (invert && order < 0) {
-        won = 1;
+        won = true;
     }
     ScriptJumpUnless(target, won);
 }
@@ -1634,7 +1634,7 @@ void OpJumpUnlessPlayerInView(i16 invert) {
         ((FieldActor*)g_curScript->actor)->pos.x,
         ((FieldActor*)g_curScript->actor)->pos.y
     );
-    if ((seen == 1 && invert == 0) || (seen == 0 && invert == 1)) {
+    if ((seen == true && invert == 0) || (seen == false && invert == 1)) {
         jump = 1;
     }
     ScriptJumpUnless(target, jump);
@@ -2153,7 +2153,7 @@ RVA(0x00035a70, 0x1a)
 void OpClearBagEntry(void) {
     ItemStack* entry = GetBagEntry(ReadScriptValue());
     entry->count = 0;
-    entry->hasAttachment = 0;
+    entry->hasAttachment = false;
     entry->item = -1;
     entry->attachment = 0;
 }
@@ -2378,7 +2378,7 @@ void OpIfBlockedToward(i16 negate, i16 turn) {
         }
     }
     if ((!blocked && !negate) || (blocked && negate)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -2599,9 +2599,9 @@ void OpIfObjectIsAlly(i16 negate) {
             id = -1 - id;
         }
     }
-    matches = 0;
+    matches = false;
     if ((id < 0 && !negate) || (id >= 0 && negate)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -2691,7 +2691,7 @@ char* GetTextToken(GZ_ENUM_PARAM(TextTokenKind, i16) kind, i16 byId, i16 id) {
             return s_tokenText;
         case TEXT_TOKEN_RACE_NAME:
         case TEXT_TOKEN_RACE_NAME_ALIAS:
-            if (byId != 1) {
+            if (byId != true) {
                 object = ResolveScriptObject(id);
                 if (object != NULL) {
                     id = object->id;
@@ -2700,7 +2700,7 @@ char* GetTextToken(GZ_ENUM_PARAM(TextTokenKind, i16) kind, i16 byId, i16 id) {
             text = GetDemonRaceName(id);
             break;
         case TEXT_TOKEN_PANTHEON_NAME:
-            if (byId != 1) {
+            if (byId != true) {
                 object = ResolveScriptObject(id);
                 if (object != NULL) {
                     id = object->id;
@@ -2795,7 +2795,7 @@ char* ReadTextToken(void) {
     s_tokenText[0] = '\0';
     kind = ReadScriptByte();
     id = 0;
-    byId = 0;
+    byId = false;
     switch (kind) {
         case TEXT_TOKEN_FULL_NAME:
             object = ReadScriptObject();

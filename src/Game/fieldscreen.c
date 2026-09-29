@@ -211,7 +211,7 @@ i16 ExchangeViewHold(i16 hold) {
 
 RVA(0x00014750, 0xe)
 void RequestFieldRefresh(void) {
-    g_fieldRedrawRequest = 1;
+    g_fieldRedrawRequest = true;
     RedrawFieldView();
 }
 
@@ -230,7 +230,7 @@ b16 PrepareFieldRedraw(i16 force) {
         UpdateInfoBar();
         return false;
     }
-    g_fieldRedrawRequest = 1;
+    g_fieldRedrawRequest = true;
     ClearMaskView();
     ResetMask(1);
     if (!s_viewHold) {
@@ -448,7 +448,7 @@ i16 FightRowHandler(PanelRow* row, i16 value, i16 op) {
             PlaySoundEffect(1);
             PlayMusic(0xd, true);
         }
-        g_fieldBattleActive = 1;
+        g_fieldBattleActive = true;
         ResetPartyTurnState();
     }
     return value;
@@ -629,7 +629,7 @@ void FightCommand(i16 id) {
         PlayMusic(0xd, true);
         ResetPartyTurnState();
     }
-    g_fieldBattleActive = 1;
+    g_fieldBattleActive = true;
     SetMemberPickRole(id, PICK_ROLE_ATTACK);
 }
 
@@ -648,7 +648,7 @@ void GunCommand(i16 id) {
         PlayMusic(0xd, true);
         ResetPartyTurnState();
     }
-    g_fieldBattleActive = 1;
+    g_fieldBattleActive = true;
     SetMemberPickRole(id, PICK_ROLE_GUN);
 }
 
@@ -660,7 +660,7 @@ void SkillCommand(i16 id) {
             PlaySoundEffect(1);
             PlayMusic(0xd, true);
         }
-        g_fieldBattleActive = 1;
+        g_fieldBattleActive = true;
         PlaySoundEffect(1);
         SetMemberPickRole(id, PICK_ROLE_MAGIC);
         return;
@@ -679,7 +679,7 @@ void ItemCommand(i16 id) {
             PlaySoundEffect(1);
             PlayMusic(0xd, true);
         }
-        g_fieldBattleActive = 1;
+        g_fieldBattleActive = true;
         PlaySoundEffect(1);
         SetMemberPickRole(id, PICK_ROLE_ITEM);
         return;
@@ -738,7 +738,7 @@ void DefenceCommand(i16 id) {
         PlayMusic(0xd, true);
         ResetPartyTurnState();
     }
-    g_fieldBattleActive = 1;
+    g_fieldBattleActive = true;
     SetMemberPickRole(id, PICK_ROLE_DEFENCE);
 }
 
@@ -1164,7 +1164,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
     i16 code;
     MapCoord origin;
     MapCoord cell;
-    center = left = right = leftBlocked = rightBlocked = 0;
+    center = left = right = leftBlocked = rightBlocked = false;
     if (IsDarkCell(g_party.field.pos.x, g_party.field.pos.y)) {
         return;
     }
@@ -1178,7 +1178,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
                 if (code && (center == 0 || along == 0)) {
                     left = DrawFieldMessage(code, TEXT_BAND_LEFT, 1);
                 }
-            } else if (leftBlocked == 0) {
+            } else if (leftBlocked == false) {
                 if (g_leftFrontWalls[-along][0] == 1) {
                     cell = OffsetCoordClamped(origin, direction, -1, along - 1);
                     code = GetEventCellCode(cell.x, cell.y);
@@ -1202,7 +1202,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
                         }
                     }
                 } else if (g_leftFrontWalls[-along][0]) {
-                    leftBlocked = 1;
+                    leftBlocked = true;
                 }
             }
         }
@@ -1213,7 +1213,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
                 if (code && (center == 0 || along == 0)) {
                     right = DrawFieldMessage(code, TEXT_BAND_RIGHT, 1);
                 }
-            } else if (rightBlocked == 0) {
+            } else if (rightBlocked == false) {
                 if (g_rightFrontWalls[-along][0] == 1) {
                     cell = OffsetCoordClamped(origin, direction, 1, along - 1);
                     code = GetEventCellCode(cell.x, cell.y);
@@ -1237,7 +1237,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
                         }
                     }
                 } else if (g_rightFrontWalls[-along][0]) {
-                    rightBlocked = 1;
+                    rightBlocked = true;
                 }
             }
         }

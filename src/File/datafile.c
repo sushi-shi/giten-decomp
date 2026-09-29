@@ -156,7 +156,7 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
     i16 retried;
 
     s_requestedId = id;
-    retried = 0;
+    retried = false;
     sprintf(name, "fc\\fc%.4x.bmp", id);
     fp = fopen(name, "rb");
     for (;;) {
@@ -260,7 +260,7 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
                 s_dataFile = fp;
                 return fp;
         }
-        if (fp != NULL || retried == 1 || fallback == -1) {
+        if (fp != NULL || retried == true || fallback == -1) {
             break;
         }
         id = fallback;

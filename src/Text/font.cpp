@@ -3844,15 +3844,15 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
     p->normalAttr.value = TEXT_ATTR_NORMAL;
     p->accentAttr.value = TEXT_ATTR_ACCENT;
     p->flags.cancelEnabled = 0;
-    p->flags.indentEnabled = 1;
+    p->flags.indentEnabled = true;
     p->flags.savedIndentEnabled = 1;
     p->firstSelectableRow = 1;
     p->highlightY = -1;
     p->highlightX = -1;
     if (kind == TEXT_PLANE_KIND_TWO_COLUMN_MENU) {
-        p->flags.twoColumns = 1;
+        p->flags.twoColumns = true;
     } else {
-        p->flags.twoColumns = 0;
+        p->flags.twoColumns = false;
     }
     p->flags.highlight = TEXT_HIGHLIGHT_MIDDLE;
     p->flags.flag8 = 0;
@@ -4311,7 +4311,7 @@ i16 SetTextPlaneCancelEnabled(i16 plane, i16 on) {
         return 0;
     }
     old = GetTextPlane(plane)->flags.cancelEnabled;
-    GetTextPlane(plane)->flags.cancelEnabled = on != 0;
+    GetTextPlane(plane)->flags.cancelEnabled = on != false;
     return old;
 }
 
@@ -4681,7 +4681,7 @@ i16 SetTextPlaneFlag8(i16 plane, i16 on) {
         return 0;
     }
     old = GetTextPlane(plane)->flags.flag8;
-    GetTextPlane(plane)->flags.flag8 = on != 0;
+    GetTextPlane(plane)->flags.flag8 = on != false;
     return old;
 }
 
@@ -4691,7 +4691,7 @@ i16 GetMenuLineAt(i16 plane, i16 x, i16 y) {
     i16 index;
 
     index = (y - GetTextPlane(plane)->menuY) / GetTextPlane(plane)->lineStep;
-    if (GetTextPlane(plane)->flags.twoColumns != 0) {
+    if (GetTextPlane(plane)->flags.twoColumns != false) {
         index *= 2;
         if (x >= GetTextPlane(plane)->cols / 2) {
             index++;
@@ -4919,7 +4919,7 @@ i16 AdvanceWindowLine(i16 window) {
     }
     p = GetTextPlane(window);
     y = p->cursorY + 1;
-    indent = p->flags.indentEnabled != 0 ? p->indent : 0;
+    indent = p->flags.indentEnabled != false ? p->indent : 0;
     x = p->cols;
     if (indent < x) {
         x = indent;
@@ -5246,7 +5246,7 @@ void HighlightHotspot(i16 plane, i16 id, i16 on) {
     }
     if (plane == 0) {
         if (id >= AREA_KEYPAD_FIRST && id <= AREA_KEYPAD_LAST) {
-            if (on == 1) {
+            if (on == true) {
                 keypad = FindTextPlaneByKind(TEXT_PLANE_KIND_KEYPAD);
                 if (keypad != -1) {
                     i32 x = s_hotspotAreas[id].left - GetTextPlane(keypad)->left;

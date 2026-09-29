@@ -29,10 +29,10 @@ void PrintWindowText(i16 window, const char* text, u16 attr, i16 style, i16 noKi
         activeAttr = GetTextPlaneAttr(window);
     }
     InitTextStateFlags(&state, style, 0);
-    state.messageHookEnabled = 0;
+    state.messageHookEnabled = false;
     state.delayRamp = 0;
-    state.scrollEnabled = 0;
-    state.timedWait = 0;
+    state.scrollEnabled = false;
+    state.timedWait = false;
     state.inputWait = 0;
     savedAttr = SetTextPlaneAttr(window, activeAttr);
     for (pos = 0; text[pos];) {

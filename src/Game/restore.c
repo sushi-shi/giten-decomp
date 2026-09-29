@@ -166,8 +166,8 @@ i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character
     ConditionSet* conditions;
     i16 wasZombie;
     sleep = 0;
-    reportCondition = 1;
-    revival = 0;
+    reportCondition = true;
+    revival = false;
     hpPool = &target->pools.hp;
     mpPool = &target->pools.mp;
     oldHp = hpPool->cur;
@@ -179,11 +179,11 @@ i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character
         case RESTORE_EFFECT_POOLS:
             sleep = 0;
             FillRestorePools(hpPool, mpPool, hp, mp);
-            reportCondition = 0;
+            reportCondition = false;
             break;
         case CONDITION_DEAD:
         case CONDITION_DYING:
-            revival = 1;
+            revival = true;
         case CONDITION_COLLAPSE:
         case CONDITION_STONE:
         case CONDITION_PARALYSIS:
@@ -231,21 +231,21 @@ i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character
         case RESTORE_EFFECT_MP:
             g_mpChange = hp;
             FillPool(mpPool, hp, POOL_FILL_TO_MAX);
-            reportCondition = 0;
+            reportCondition = false;
             break;
         case RESTORE_EFFECT_HP_QUARTER_MP:
             g_hpChange = hp;
             FillPool(hpPool, hp, POOL_FILL_TO_MAX);
             g_mpChange = hp / 4;
             FillPool(mpPool, g_mpChange, POOL_FILL_TO_MAX);
-            reportCondition = 0;
+            reportCondition = false;
             break;
         case RESTORE_EFFECT_MP_QUARTER_HP:
             g_mpChange = hp;
             FillPool(mpPool, hp, POOL_FILL_TO_MAX);
             g_hpChange = hp / 4;
             FillPool(hpPool, g_hpChange, POOL_FILL_TO_MAX);
-            reportCondition = 0;
+            reportCondition = false;
             break;
         case RESTORE_EFFECT_MENTAL:
             ClearEffectConditions(conditions, s_mentalRecoveryConditions);
@@ -272,31 +272,31 @@ i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character
         case RESTORE_EFFECT_FAINT:
             ClearEffectConditions(conditions, s_faintRecoveryConditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
-            revival = 1;
+            revival = true;
             break;
         case RESTORE_EFFECT_DEATH:
             ClearEffectConditions(conditions, s_deathRecoveryConditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
-            revival = 1;
+            revival = true;
             break;
         case RESTORE_EFFECT_DRAIN_MP:
             g_mpChange = -hp;
             DrainPool(mpPool, hp);
             FillPool(mpPool, mp, POOL_FILL_TO_MAX);
             g_mpChange = mp;
-            reportCondition = 0;
+            reportCondition = false;
             break;
         case RESTORE_EFFECT_DRAIN_HP:
             g_hpChange = -hp;
             DrainPool(hpPool, hp);
             FillPool(mpPool, mp, POOL_FILL_TO_MAX);
             g_mpChange = mp;
-            reportCondition = 0;
+            reportCondition = false;
             break;
         case RESTORE_EFFECT_GENERAL:
             ClearEffectConditions(conditions, s_generalRecoveryConditions);
             FillRestorePools(hpPool, mpPool, hp, mp);
-            revival = 1;
+            revival = true;
             break;
         case RESTORE_EFFECT_HEAL_IF_ALIGNMENT_B_ABOVE_NEUTRAL:
             if (GetAlignmentClassB(target) > ALIGNMENT_NEUTRAL) {
@@ -342,7 +342,7 @@ i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character
         g_mpChange = 0;
         g_hpChange = 0;
         target->lastChange = 0;
-        return revival == 1 ? 6 : 2;
+        return revival == true ? 6 : 2;
     }
     if (reportCondition) {
         if (!g_effectCondition) {

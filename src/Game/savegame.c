@@ -332,7 +332,7 @@ static b16 RunDisplayChoice(void) {
                 } else {
                     g_party.status.navigationFixed = g_selectedObjectId;
                 }
-                g_fieldRedrawRequest = 1;
+                g_fieldRedrawRequest = true;
                 SetGamePhase(1);
             }
             s_systemMenu = DestroyMenuBox(s_systemMenu);
@@ -361,7 +361,7 @@ static b16 RunQuitConfirm(void) {
             } else {
                 if (g_selectedObjectId == 0) {
                     g_quitRequest = 1;
-                    g_fieldRedrawRequest = 1;
+                    g_fieldRedrawRequest = true;
                 }
                 SetGamePhase(1);
             }

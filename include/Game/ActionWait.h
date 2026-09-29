@@ -23,13 +23,13 @@ static __inline void DelayActionWait(ActionWait* wait, u16 amount) {
 }
 
 static __inline void ResetActionWait(ActionWait* wait) {
-    wait->ready = 0;
+    wait->ready = false;
     ResetActionWaitDelay(wait);
 }
 
 static __inline void QueueActionWait(ActionWait* wait) {
     wait->remaining = 1;
-    wait->ready = 1;
+    wait->ready = true;
 }
 
 #define ClearActionWait(wait)                                                                      \

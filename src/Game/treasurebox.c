@@ -704,7 +704,7 @@ b16 CheckWorldMapEvent(i16 x, i16 y) {
     block = block * 2 + IsOddMapLayer();
     table = HandleReadPtr(s_events);
     events = OffsetBy(table, table->offsets[block]);
-    marked = 0;
+    marked = false;
     for (index = 0; events[index].x != -1; index++) {
         if (events[index].x >= left && events[index].x <= x && events[index].y >= top
             && events[index].y <= y) {
@@ -714,7 +714,7 @@ b16 CheckWorldMapEvent(i16 x, i16 y) {
             }
             if (events[index].x == s_markedX && events[index].y == s_markedY
                 && block == s_markedLayer) {
-                marked = 1;
+                marked = true;
             } else {
                 SetMarkedWorldMapEvent(block, events[index].x, events[index].y);
                 SetSceneCell(&events[index]);
@@ -1564,7 +1564,7 @@ Panel* ExchangeActivePanel(Panel* panel) {
 // position; clears the right-click mark.
 RVA(0x0001cb10, 0x65)
 b16 CheckPanelLeftClick(Panel* panel) {
-    panel->input.rightClick = 0;
+    panel->input.rightClick = false;
     g_panelClickX = g_mouseLeftClickX;
     g_panelClickY = g_mouseLeftClickY;
     if (!g_mouseLeftClick) {
@@ -1602,7 +1602,7 @@ b16 CheckPanelRightClick(Panel* panel) {
         g_panelClickX = g_mousePosition.x;
         g_panelClickY = g_mousePosition.y;
     }
-    panel->input.rightClick = 1;
+    panel->input.rightClick = true;
     return true;
 }
 
