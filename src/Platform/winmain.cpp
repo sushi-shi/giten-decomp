@@ -2028,10 +2028,10 @@ static i16 s_turnImageCodesLeft[8] = {0, 1, 2, -1, 1, 1, 0, 0};
 // test and `byDistance` shades by distance (else fully lit).
 // @identity-TODO: the flag roles are read from the one call (1, 0, 1) and the
 // body; the lit-frame and 2D-fallback paths are undecoded beyond their data.
-// @early-stop x87 schedule and allocation: the corner stores and height
-// arithmetic, and the loop counters' registers differ. The extra loop-entry
-// branch skips a backedge-only coordinate reload; it is an allocator edge
-// split, not another source predicate.
+// @early-stop x87 schedule: the billboard corner products, the height and the
+// translation stores are scheduled differently (retail stores the far corners
+// first and copies the near z corners through integer moves). Calls, CFG,
+// block placement and the integer code match.
 RVA(0x0004cb30, 0xaec)
 void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
     DATA(0x0008f4d8)
@@ -2096,7 +2096,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     }
                 }
                 coord = GetObjectCoordPtr(i);
-                if (coord->x == x && coord->y == y) {
+                if (x == coord->x && y == coord->y) {
                     objects[found++] = i;
                 }
             }
@@ -2115,11 +2115,11 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     }
                 }
                 if (imageCode < 0) {
-                    imageCode = -imageCode;
                     s_enemy[3].tu = 1.0f;
                     s_enemy[0].tu = 1.0f;
                     s_enemy[2].tu = 0.0f;
                     s_enemy[1].tu = 0.0f;
+                    imageCode = -imageCode;
                 } else {
                     s_enemy[3].tu = 0.0f;
                     s_enemy[0].tu = 0.0f;
@@ -2133,20 +2133,20 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     if (g_renderMode == RENDER_MODE_VIEW_FRAME) {
                         switch (g_viewDirection) {
                             case VIEW_NORTH:
-                                partyY++;
                                 offsetZ = 30;
+                                partyY++;
                                 break;
                             case VIEW_EAST:
-                                partyX--;
                                 offsetX = -30;
+                                partyX--;
                                 break;
                             case VIEW_SOUTH:
-                                partyY--;
                                 offsetZ = -30;
+                                partyY--;
                                 break;
                             case VIEW_WEST:
-                                partyX++;
                                 offsetX = 30;
+                                partyX++;
                                 break;
                         }
                     } else {
@@ -2250,17 +2250,23 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     GetTextureHandle(&g_enemyTextures[layer][imageCode])
                 );
                 if (g_deviceType == D3D_DEVICE_RAMP) {
-                    result = g_d3dDevice->SetLightState(
-                        D3DLIGHTSTATE_MATERIAL,
-                        lit ? GetTextureMaterialHandle(
-                                  &g_enemyTextures[layer][imageCode],
-                                  TEXTURE_SHADE_LIT
-                              )
-                            : GetTextureMaterialHandle(
-                                  &g_enemyTextures[layer][imageCode],
-                                  TEXTURE_SHADE_NORMAL
-                              )
-                    );
+                    if (!lit) {
+                        result = g_d3dDevice->SetLightState(
+                            D3DLIGHTSTATE_MATERIAL,
+                            GetTextureMaterialHandle(
+                                &g_enemyTextures[layer][imageCode],
+                                TEXTURE_SHADE_NORMAL
+                            )
+                        );
+                    } else {
+                        result = g_d3dDevice->SetLightState(
+                            D3DLIGHTSTATE_MATERIAL,
+                            GetTextureMaterialHandle(
+                                &g_enemyTextures[layer][imageCode],
+                                TEXTURE_SHADE_LIT
+                            )
+                        );
+                    }
                     if (result != D3D_OK) {
                         TraceD3DCallError(
                             "lpD3DDev->SetLightState()@RenderEnemy() returns ",
@@ -2290,8 +2296,8 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                             NULL
                         );
                     } else {
-                        rect.top = 214 - s_enemySizes[anim][1] / 2;
                         rect.left = 256 - s_enemySizes[anim][0];
+                        rect.top = 214 - s_enemySizes[anim][1] / 2;
                         rect.right = 640 - rect.left;
                         rect.bottom = s_enemySizes[anim][1] / 2 + 178;
                         g_renderTarget->Blt(
