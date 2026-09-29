@@ -583,7 +583,14 @@ def _review_group(cidx, literal, stack, scope, value, classification):
     if scope == "named-enum-definition":
         return "named-definition", "enumerator value"
     if scope in {"data-initializer-or-extent", "field-or-class-extent"}:
-        return "data-or-extent", scope
+        lists = [node for node in stack if node.kind == cidx.CursorKind.INIT_LIST_EXPR]
+        if not lists:
+            return "data-or-extent", "array extent"
+        outer = lists[0]
+        items = list(outer.get_children())
+        if len(items) == 1 and value == 0 and len(lists) == 1:
+            return "data-or-extent", "zero fill"
+        return "data-or-extent", "table entry"
     if any(node.kind == cidx.CursorKind.INIT_LIST_EXPR for node in stack):
         return "initializer-payload", "initializer list"
 
