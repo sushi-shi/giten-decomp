@@ -2423,17 +2423,24 @@ i16 RunPartyCommandInput(void) {
                 flags = GetSkillTargetFlags(character->pickTarget);
                 if (TargetFlagsSelectSelf(flags)) {
                     result = CurrentMemberCombatantId();
+                    character->pickObject = result;
                     goto target_selected;
                 } else if (TargetFlagsSelectActorGroup(flags)) {
                     result = CurrentMemberCombatantId();
+                    character->pickObject = result;
                     goto target_selected;
                 } else if (flags & TARGET_ACTOR_SIDE) {
                     reach = true;
                 }
             } else if (character->pickRole == 5) {
                 flags = GetItemTargetFlags(GetLoadedRecord(character->pickTarget));
-                if ((TargetFlagsSelectSelf(flags)) || TargetFlagsSelectActorGroup(flags)) {
+                if (TargetFlagsSelectSelf(flags)) {
                     result = CurrentMemberCombatantId();
+                    character->pickObject = result;
+                    goto target_selected;
+                } else if (TargetFlagsSelectActorGroup(flags)) {
+                    result = CurrentMemberCombatantId();
+                    character->pickObject = result;
                     goto target_selected;
                 }
                 if (character->pickTarget == 0x71) {
@@ -2447,9 +2454,8 @@ i16 RunPartyCommandInput(void) {
                 reach = true;
             }
             if (reach == 0 && HasObjectInReach(0, -1, 0)) {
-                result = FindObjectAtParty();
+                character->pickObject = FindObjectAtParty();
             target_selected:
-                character->pickObject = result;
                 s_pickMode++;
                 return g_tickElapsed;
             }
@@ -2497,7 +2503,7 @@ i16 RunPartyCommandInput(void) {
             character->pickObject = g_selectedObjectId;
             s_pickMode++;
             g_tickElapsed = 0;
-            return g_tickElapsed;
+            break;
         case 4:
             character = GetCharacterById(s_pickedIndex);
             if (character != NULL) {
@@ -2507,7 +2513,7 @@ i16 RunPartyCommandInput(void) {
                 if (character->pickRole == 4 && character->pickTarget == 0x7d) {
                     s_pickMode++;
                     g_tickElapsed = 0;
-                    return g_tickElapsed;
+                    break;
                 }
             }
             ResetPartyCommandPick();
