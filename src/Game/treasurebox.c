@@ -419,7 +419,7 @@ b16 RunPartyReorder(void) {
                     return false;
                 }
             }
-            for (slot = 3; slot < 6; slot++) {
+            for (slot = 3; slot < PARTY_SIZE; slot++) {
                 s_reorderFirst = GetPartySlot(slot);
                 if (s_reorderFirst >= 0) {
                     s_reorderFirst = ExchangePartySlot(slot - 3, s_reorderFirst);
@@ -1508,7 +1508,7 @@ void RunCellTrap(i16 mode, i16 x, i16 y) {
     i16 hp;
     u8 alignmentMask;
     if (mode && CopyExitAt(x, y, &cell.exit)) {
-        for (mode = 0; mode < 6; mode++) {
+        for (mode = 0; mode < PARTY_SIZE; mode++) {
             member = GetPartyCharacter(mode);
             if (member) {
                 damage = GetCellTrapDamage(&cell.exit, member->pools.hp.max);

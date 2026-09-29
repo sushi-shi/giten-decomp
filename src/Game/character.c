@@ -13,6 +13,7 @@
 #include <File/DataFileKind.h>
 #include <Game/Alignment.h>
 #include <Game/Character.h>
+#include <Game/CharacterStat.h>
 #include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
@@ -255,7 +256,7 @@ DATA(0x000816a8)
 static FieldObject s_characterLoadObject = {0};
 
 DATA(0x000818e8)
-Character g_characters[16] = {0};
+Character g_characters[CHARACTER_SLOT_COUNT] = {0};
 
 // The roster slots the status screen lists and how many there are.
 DATA(0x00083ad8)
@@ -368,7 +369,7 @@ static __inline void CopyCharacterWithoutSkills(Character* destination, const Ch
 RVA(0x0003ca40, 0x1b9)
 void InitCharacters(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < CHARACTER_SLOT_COUNT; i++) {
         InitEmptyWordList(&g_characters[i].skills);
     }
     InitCharacterSlot(0, 0, "\212\213\217\351", "\216\152\220\154", 1);
@@ -433,7 +434,7 @@ i16 GetCharacterId(i16 slot) {
 RVA(0x0003cdb0, 0x2d)
 i16 FindCharacter(i16 id) {
     i16 slot;
-    for (slot = 0; slot < 16; slot++) {
+    for (slot = 0; slot < CHARACTER_SLOT_COUNT; slot++) {
         if (g_characters[slot].id == id) {
             return slot;
         }
@@ -464,7 +465,7 @@ RVA(0x0003ce20, 0x91)
 void ResetRosterStatModifiers(void) {
     i16 slot;
     Character* character;
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
         if (character) {
             ClearStatModifiers(&character->stats);
@@ -866,7 +867,7 @@ i16 RecalcStatTotals(StatBlock* stats) {
     i16 changed = 0;
     i16 i;
     i16 total;
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < STAT_COUNT; i++) {
         total =
             ClampSum100(stats->base[i], stats->equipment[i] + stats->bonus[i], stats->modifiers[i]);
         if (total != stats->total[i]) {
@@ -882,7 +883,7 @@ RVA(0x0003dcb0, 0x21)
 i16 ClearStatModifiers(StatBlock* stats) {
     i16 count = 0;
     i16 i;
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < STAT_COUNT; i++) {
         if (stats->modifiers[i] != 0) {
             count++;
         }
@@ -898,7 +899,7 @@ RVA(0x0003dce0, 0x1c0)
 b16 ApplyItemStatBonuses(StatBlock* stats, ItemSlot* slots) {
     i16 i;
 
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < STAT_COUNT; i++) {
         stats->bonus[i] = 0;
         stats->equipment[i] = 0;
     }
@@ -938,7 +939,7 @@ RVA(0x0003dee0, 0x3b)
 void UpdateStatTotals(StatBlock* stats) {
     i16 i;
     i16 sum;
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < STAT_COUNT; i++) {
         sum = stats->base[i] + stats->bonus[i] + stats->equipment[i] + stats->modifiers[i];
         stats->total[i] = ClampTo100(sum / 2);
     }
@@ -1068,7 +1069,7 @@ void RedrawPartyStatus(void) {
     i16 slot;
     i16 swapped;
     ClearTextPlane(g_infoPlane);
-    for (slot = 0; slot < 6; slot++) {
+    for (slot = 0; slot < PARTY_SIZE; slot++) {
         if (PartySlotAt(slot) == -1) {
             DrawPartyStatusSlot(slot, NULL);
         } else {
@@ -1837,7 +1838,7 @@ RVA(0x0003f480, 0x2e)
 i16 CountRosterEntries(i16 all) {
     i16 count = 0;
     i16 i;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < ROSTER_SIZE; i++) {
         if (RosterMemberAt(i) != NULL && (all || !IsHumanCharacter(RosterMemberAt(i)))) {
             count++;
         }
@@ -1874,7 +1875,7 @@ i16 TickPartyActionWaits(void) {
     i16 count = 0;
     i16 index;
     Character* actor;
-    for (index = 0; index < 6; index++) {
+    for (index = 0; index < PARTY_SIZE; index++) {
         if (GetPartySlot(index) >= 0) {
             actor = GetPartyEntry(index);
             if (actor) {
@@ -1902,7 +1903,7 @@ RVA(0x0003f5f0, 0x4c)
 i16 FindReadyMember(i16 needMark) {
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && !GetPickState(character)) {
             if (!needMark || IsActionWaitMarked(GetCharacterActionWait(character))) {
@@ -1924,7 +1925,7 @@ PartyMemberList* ListPickableMembers(PartyMemberList* list, i16 max, i16 idleOnl
         list = AllocCleared(1, max * sizeof(list->ids[0]) + offsetof(PartyMemberList, ids));
     }
     list->count = 0;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         if (list->count >= max) {
             break;
         }
@@ -1948,7 +1949,7 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
     i16 slot;
     Character* character;
     i16 pool;
-    for (slot = start; slot < 32; slot++) {
+    for (slot = start; slot < ROSTER_SIZE; slot++) {
         character = RosterMemberAt(slot);
         if (character && FilterPartyMember(slot, mode) != -1) {
             if (pools & POOL_MASK_HP) {
@@ -2038,7 +2039,7 @@ i16 AddToParty(i16 slot) {
     i16 index = FindEmptySlot(1);
     if (index == -1) {
         i16 id = GetRosterId(slot);
-        if (id >= 0 && id < 32) {
+        if (id >= 0 && id < HUMAN_ID_LIMIT) {
             for (index = 0; index < 6; index++) {
                 if (GetPartyRosterId(index) >= 32) {
                     break;
@@ -2079,7 +2080,7 @@ i16 CountPartyMembers(i16 skipDisabled) {
     i16 count = 0;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character) {
             if (!skipDisabled || !GetDisablingCondition(GetCharacterConditions(character))) {
@@ -2097,7 +2098,7 @@ i16 TickPartyConditions(void) {
     i16 recovered = 0;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character) {
             AgeConditions(GetCharacterConditions(character), 1);
@@ -2123,7 +2124,7 @@ i16 DamageParty(i16 percent, i16 skipId13) {
     i16 i;
     i32 amount;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && !GetFatalCondition(GetCharacterConditions(character))) {
             if (skipId13 && character->id == 13) {
@@ -2150,7 +2151,7 @@ i16 HealParty(i16 percent) {
     i16 i;
     i32 amount;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && !GetFatalCondition(GetCharacterConditions(character))) {
             if (percent < 0) {
@@ -2172,7 +2173,7 @@ RVA(0x0003fb30, 0x4a)
 void ResetRosterBattleState(void) {
     i16 slot;
     Character* character;
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
         if (character) {
             ClearBattleConditions(GetCharacterConditions(character));
@@ -2187,7 +2188,7 @@ RVA(0x0003fb80, 0x35)
 void ClearRosterConditions(void) {
     i16 slot;
     Character* character;
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
         if (character) {
             ClearAllConditions(GetCharacterConditions(character));
@@ -2225,7 +2226,7 @@ i16 CountFallenHumans(void) {
     b16 found = false;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character) {
             if (!GetFatalCondition(GetCharacterConditions(character))) {
@@ -2261,7 +2262,7 @@ i16 ProcessPartyCasualties(void) {
     i16 count = 0;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (!character) {
             continue;
@@ -2291,7 +2292,7 @@ i16 TickPartySteps(void) {
     i16 changed = 0;
     i16 index;
     Character* character;
-    for (index = 0; index < 6; index++) {
+    for (index = 0; index < PARTY_SIZE; index++) {
         character = GetPartyCharacter(index);
         if (character) {
             ApplyEquipmentRegen(character);
@@ -2328,7 +2329,7 @@ Character* GetRosterLeader(void) {
 
 RVA(0x0003fe50, 0x1e)
 Character* GetRosterEntry(i16 slot) {
-    if (slot >= 0 && slot < 32) {
+    if (slot >= 0 && slot < ROSTER_SIZE) {
         return RosterMemberAt(slot);
     }
     return NULL;
@@ -2342,7 +2343,7 @@ Character* GetRosterCharacter(i16 slot) {
 RVA(0x0003fe90, 0x20)
 i16 FindPartySlot(i16 slot) {
     i16 i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         if (PartySlotAt(i) == slot) {
             return i;
         }
@@ -2368,7 +2369,7 @@ Character* SetRosterEntry(i16 slot, Character* character) {
 
 RVA(0x0003fef0, 0x21)
 i16 GetPartySlot(i16 index) {
-    if (index >= 0 && index < 6) {
+    if (index >= 0 && index < PARTY_SIZE) {
         return PartySlotAt(index);
     }
     return -1;
@@ -2413,7 +2414,7 @@ i16 GetPartyRosterId(i16 index) {
 RVA(0x0003fff0, 0x2b)
 i16 FindRosterSlotById(i16 id) {
     i16 slot;
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
         if (GetRosterId(slot) == id) {
             return slot;
         }
@@ -2458,9 +2459,9 @@ b16 SortRoster(void) {
     for (i = 0; i < 6; i++) {
         ids[i] = GetPartyRosterId(i);
     }
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < ROSTER_SIZE; i++) {
         id = GetRosterId(i);
-        while (id >= 0 && id < 32) {
+        while (id >= 0 && id < HUMAN_ID_LIMIT) {
             j = 0;
             while (1) {
                 if (j >= i) {
@@ -2985,7 +2986,7 @@ i16 BuildStatusSlots(void) {
     i16 slot;
     Character* character;
     g_statusSlotCount = 0;
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
         if (s_statusColumn != 0) {
             character = GetRosterCharacter(slot);
             if (character == NULL || IsHumanCharacter(character)) {
@@ -3006,7 +3007,7 @@ i16 PayStepUpkeep(void) {
     i16 died = 0;
     Character* hero = GetRosterCharacter(0);
     i16 i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         Character* member = GetPartyCharacter(i);
         i16 whole;
         i16 class;
@@ -3112,7 +3113,7 @@ i16 TickPartyTimers(u16 minutes) {
     if (IsEventFlagSet(1, 0xc) || GetGameState() == GAME_STATE_SCRIPT_SCENE) {
         return -1;
     }
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         if (PartySlotAt(i) != -1 && (character = RosterMemberAt(PartySlotAt(i))) != NULL
             && character->id == 2) {
             if (TestModeFlags(MODE_WORLD_MAP)) {
@@ -3229,7 +3230,7 @@ i16 WriteCharacters(FILE* fp) {
     i16 count = 16;
     i16 i;
     i16 failed = 1 - fwrite(&count, 2, 1, fp);
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < CHARACTER_SLOT_COUNT; i++) {
         failed |= WriteCharacter(fp, &g_characters[i]);
     }
     return failed;

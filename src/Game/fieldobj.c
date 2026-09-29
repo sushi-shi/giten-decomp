@@ -1803,7 +1803,7 @@ b16 ChooseObjectTarget(FieldObject* object) {
         return true;
     }
     count = 0;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         member = GetPartyCharacter(i);
         if (member != NULL && !GetDisablingCondition(GetCharacterConditions(member))
             && TestCharacterFlag(member, 0x21) != true) {
@@ -1811,7 +1811,7 @@ b16 ChooseObjectTarget(FieldObject* object) {
         }
     }
     if (count == 0) {
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < PARTY_SIZE; i++) {
             member = GetPartyCharacter(i);
             if (member != NULL && !GetFatalCondition(GetCharacterConditions(member))) {
                 candidates[count++] = i;
@@ -2556,7 +2556,7 @@ i16 GetPartyEncounterSizeBonus(void) {
     i16 count = 0;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && IsHumanCharacter(character)) {
             count++;

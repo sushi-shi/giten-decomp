@@ -4,6 +4,7 @@
 
 #include <rva.h>
 
+#include <Game/CharacterStat.h>
 #include <Game/StatusScreen.h>
 #include <Input/Mouse.h>
 #include <Text/Font.h>
@@ -93,7 +94,7 @@ void ResetStatusMenu(void) {
 RVA(0x00041a40, 0x29)
 void CheckStatusMenuItem(i16 item) {
     i16 i;
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < STAT_COUNT; i++) {
         if (i != item) {
             SetStatusMenuItemFlag(i, PANEL_ROW_CHECKED, false);
         } else {

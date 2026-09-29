@@ -219,7 +219,7 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
             SetBit(flags, 10);
         }
     }
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (ApplyMoonPhase(character, g_clock.moonPhase)) {
             RecalcCharacterStats(character);

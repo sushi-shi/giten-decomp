@@ -55,10 +55,10 @@ DATA(0x0007fe60)
 ItemStack g_gemItems[16] = {0};
 
 DATA(0x0007fea0)
-ItemStack g_itemPool[64] = {0};
+ItemStack g_itemPool[ITEM_POOL_SIZE] = {0};
 
 DATA(0x0007ffa0)
-ItemStack g_bagItems[64] = {0};
+ItemStack g_bagItems[BAG_ENTRY_COUNT] = {0};
 
 // The record of the item whose effect is being applied.
 DATA(0x000800a0)
@@ -627,7 +627,7 @@ i16 CountPoolEntries(void) {
     i16 count = 0;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             count++;
         }
@@ -639,7 +639,7 @@ RVA(0x00023800, 0x20)
 void ClearPool(void) {
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         GetItemPoolEntry(i)->item = ITEM_ID_EMPTY;
         GetItemPoolEntry(i)->count = 0;
     }
@@ -650,7 +650,7 @@ void AddToPool(i16 item, i16 amount) {
     i16 room;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) == item) {
             if (GetItemStackCount(GetItemPoolEntry(i)) + amount <= 99) {
                 GetItemPoolEntry(i)->count += amount;
@@ -661,7 +661,7 @@ void AddToPool(i16 item, i16 amount) {
             amount -= room;
         }
     }
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) == ITEM_ID_EMPTY) {
             GetItemPoolEntry(i)->item = item;
             GetItemPoolEntry(i)->count = amount;
@@ -674,7 +674,7 @@ RVA(0x00023920, 0x70)
 void TakeFromPool(i16 item, u8 amount) {
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) == item) {
             GetItemPoolEntry(i)->count -= amount;
             if (GetItemStackCount(GetItemPoolEntry(i)) == 0) {
@@ -693,7 +693,7 @@ i16 GivePooledItems(void) {
     i16 amount;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             item = RemapItem(GetItemStackItem(GetItemPoolEntry(i)));
             amount = GetItemStackCount(GetItemPoolEntry(i));
@@ -720,7 +720,7 @@ RVA(0x00023a30, 0x50)
 void TakePooledItems(void) {
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             TakeBagItems(
                 GetItemStackItem(GetItemPoolEntry(i)),
@@ -734,7 +734,7 @@ RVA(0x00023a80, 0x20)
 void ClearBag(void) {
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         ClearItemStack(&g_bagItems[i]);
     }
 }
@@ -851,7 +851,7 @@ i16 CountBagItem(i16 item) {
     i16 total = 0;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) == item) {
             total += GetItemStackCount(&g_bagItems[i]);
         }
@@ -946,7 +946,7 @@ static void CompactBagCore(void) {
 #endif
         ClearItemStack(&scenarioItems[i]);
     }
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY
             && GetItemKind(GetItemStackItem(&g_bagItems[i])) == ITEM_KIND_SCENARIO) {
 #ifdef GITEN_BUGFIX
@@ -959,7 +959,7 @@ static void CompactBagCore(void) {
             ClearItemStack(&g_bagItems[i]);
         }
     }
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             continue;
         }
@@ -972,11 +972,11 @@ static void CompactBagCore(void) {
             TakeFromBagEntry(from, AddToBagEntry(i, GetItemStackCount(&g_bagItems[from]), limit));
         }
     }
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             continue;
         }
-        for (j = i + 1; j < 64; j++) {
+        for (j = i + 1; j < BAG_ENTRY_COUNT; j++) {
             if (GetItemStackItem(&g_bagItems[j]) != ITEM_ID_EMPTY) {
                 g_bagItems[i] = g_bagItems[j];
                 ClearItemStack(&g_bagItems[j]);
@@ -984,7 +984,7 @@ static void CompactBagCore(void) {
             }
         }
     }
-    for (i = 48; i < 64; i++) {
+    for (i = BAG_ORDINARY_ENTRY_COUNT; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             continue;
         }
@@ -1059,7 +1059,7 @@ i16 AddBagItems(i16 item, i16 count, i16 attachment, i16 detail) {
         return AddScenarioBagItems(item, count);
     }
     limit = GetItemStackLimit(item);
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < BAG_ORDINARY_ENTRY_COUNT; i++) {
         count -= FillBagEntry(i, item, count, limit, attachment, detail);
         if (count <= 0) {
             break;
@@ -1073,7 +1073,7 @@ i16 AddScenarioBagItems(i16 item, i16 count) {
     u16 limit = GetItemStackLimit(item);
     i16 i;
 
-    for (i = 48; i < 64; i++) {
+    for (i = BAG_ORDINARY_ENTRY_COUNT; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             SetBagEntry(i, item, -1);
             count -= AddToBagEntry(i, count, limit);
@@ -1105,7 +1105,7 @@ i16 CountBagEntries(void) {
     i16 count = 0;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             count++;
         }
@@ -1121,11 +1121,11 @@ ItemStack* SaveOrRestoreBag(ItemStack* buffer, i16 restore) {
         if (buffer == NULL) {
             buffer = AllocCleared(64, sizeof(ItemStack));
         }
-        for (i = 0; i < 64; i++) {
+        for (i = 0; i < BAG_ENTRY_COUNT; i++) {
             buffer[i] = g_bagItems[i];
         }
     } else if (buffer != NULL) {
-        for (i = 0; i < 64; i++) {
+        for (i = 0; i < BAG_ENTRY_COUNT; i++) {
             g_bagItems[i] = buffer[i];
         }
     }
@@ -1144,7 +1144,7 @@ void CompactBag(void) {
             if (next >= 48) {
                 return;
             }
-            while (next < 48) {
+            while (next < BAG_ORDINARY_ENTRY_COUNT) {
                 if (GetItemStackItem(&g_bagItems[next]) != ITEM_ID_EMPTY) {
                     g_bagItems[i] = g_bagItems[next];
                     SetBagEntry(next, -1, -1);
@@ -2104,7 +2104,7 @@ void RunBagDiscardMenu(void) {
     i16 item;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         item = GetBagItem(i);
         if (item != ITEM_ID_EMPTY && GetItemPrice(item) != 0
             && GetItemKind(item) != ITEM_KIND_SCENARIO) {

@@ -7,6 +7,7 @@
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <Game/Alignment.h>
+#include <Game/CharacterStat.h>
 #include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
@@ -1870,11 +1871,11 @@ i16 BuildPairFusionCandidates(i16 skipCalculation) {
     i16 demon;
     FusionSummary summary;
     s_fusionCandidateCount = 0;
-    for (first = 0; first < 32; first++) {
+    for (first = 0; first < ROSTER_SIZE; first++) {
         if (GetRosterId(first) >= 32) {
             s_fusionSlots[s_fusionCandidateCount++] = first;
         }
-        for (second = 0; second < 32; second++) {
+        for (second = 0; second < ROSTER_SIZE; second++) {
             s_pendingFusionResultId = -1;
             summary.value = -256;
             StoreFusionPairSummary(first, second, &summary);
@@ -1891,7 +1892,7 @@ i16 BuildPairFusionCandidates(i16 skipCalculation) {
         }
     }
     summary.value = -128;
-    for (first = 0; first < 32; first++) {
+    for (first = 0; first < ROSTER_SIZE; first++) {
         demon = GetRosterId(first);
         if (demon >= 32 && IsFusionDemonRestricted(demon)) {
             for (second = 0; second < 32; second++) {
@@ -1919,14 +1920,14 @@ i16 BuildTripleFusionSummaries(i16 third) {
     i16 demon;
     FusionSummary summary;
     summary.value = -256;
-    for (first = 0; first < 32; first++) {
-        for (second = 0; second < 32; second++) {
+    for (first = 0; first < ROSTER_SIZE; first++) {
+        for (second = 0; second < ROSTER_SIZE; second++) {
             StoreFusionPairSummary(first, second, &summary);
         }
     }
-    for (first = 0; first < 32; first++) {
+    for (first = 0; first < ROSTER_SIZE; first++) {
         if (GetRosterId(first) >= 32) {
-            for (second = 0; second < 32; second++) {
+            for (second = 0; second < ROSTER_SIZE; second++) {
                 s_pendingFusionResultId = -1;
                 if (GetRosterId(second) < 32) {
                     summary.fields.kind = -1;
@@ -1944,7 +1945,7 @@ i16 BuildTripleFusionSummaries(i16 third) {
         }
     }
     summary.value = -128;
-    for (first = 0; first < 32; first++) {
+    for (first = 0; first < ROSTER_SIZE; first++) {
         demon = GetRosterId(first);
         if (demon >= 32 && IsFusionDemonRestricted(demon)) {
             for (second = 0; second < 32; second++) {
@@ -2351,7 +2352,7 @@ i16 CompareFusionCharacters(Character* first, Character* second) {
     if (result != -1) {
         return result;
     }
-    for (index = 0; index < 11; index++) {
+    for (index = 0; index < STAT_COUNT; index++) {
         firstStat = GetBaseStat(first, index);
         secondStat = GetBaseStat(second, index);
     }

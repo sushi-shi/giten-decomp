@@ -1008,7 +1008,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
                     }
                     break;
                 case 1:
-                    for (slot = 0; slot < 6; slot++) {
+                    for (slot = 0; slot < PARTY_SIZE; slot++) {
                         character = GetPartyCharacter(slot);
                         if (character != NULL && !IsHumanCharacter(character)) {
                             attribute = 0x2450;
@@ -1017,7 +1017,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
                     }
                     break;
                 case 0:
-                    for (slot = 0; slot < 32; slot++) {
+                    for (slot = 0; slot < ROSTER_SIZE; slot++) {
                         character = GetRosterCharacter(slot);
                         if (character != NULL && !IsHumanCharacter(character)
                             && !GetFatalCondition(GetCharacterConditions(character))) {
@@ -1632,7 +1632,7 @@ i32 ShareExperience(i32 amount) {
     i32 share = amount * 2 / count;
     i32 reached = 0;
     i16 i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         reached += AddExperience(GetPartyCharacter(i), share) >= 0;
     }
     return reached;
@@ -1661,7 +1661,7 @@ RVA(0x00018910, 0x27)
 i16 CountPartyPendingLevels(void) {
     i16 total = 0;
     i16 i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         total += CountPendingLevels(GetPartySlot(i));
     }
     return total;
@@ -1671,7 +1671,7 @@ i16 CountPartyPendingLevels(void) {
 RVA(0x00018940, 0x32)
 i16 FindLevelUpSlot(void) {
     i16 i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         if (CountPendingLevels(GetPartySlot(i)) > 0) {
             return GetPartySlot(i);
         }

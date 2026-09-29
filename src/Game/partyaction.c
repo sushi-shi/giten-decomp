@@ -384,7 +384,7 @@ i16 PickRandomCombatant(u8 sides) {
     i16 index;
     i16 object;
     if (sides & 1) {
-        for (index = 0; index < 6; index++) {
+        for (index = 0; index < PARTY_SIZE; index++) {
             member = GetPartyCharacter(index);
             if (member && !GetDisablingCondition(GetCharacterConditions(member))) {
                 targets[count++] = PartyCombatantId(index);
@@ -441,7 +441,7 @@ b16 DelayActionSide(i16 id) {
     i16 object;
     Character* member;
     if (id < 0) {
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < PARTY_SIZE; i++) {
             member = GetPartyCharacter(i);
             if (member) {
                 DelayActionWait(GetCharacterActionWait(member), 50);
@@ -465,7 +465,7 @@ b16 ResetActionWaits(void) {
     i16 i;
     i16 object;
     Character* member;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         member = GetPartyCharacter(i);
         if (member) {
             ResetActionWaitDelay(GetCharacterActionWait(member));
@@ -844,7 +844,7 @@ RVA(0x00006a00, 0x39)
 b16 ResetPartyTurnState(void) {
     i16 index;
     Character* actor;
-    for (index = 0; index < 6; index++) {
+    for (index = 0; index < PARTY_SIZE; index++) {
         if (PartySlotAt(index) != -1) {
             actor = GetPartyEntry(index);
             ClearActionWait(GetCharacterActionWait(actor));
@@ -1427,7 +1427,7 @@ RVA(0x00007a70, 0x2a)
 void ResetRosterFieldMarks(void) {
     Character* character;
     i16 slot;
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
         if (character != NULL) {
             ClearActionWait(GetCharacterActionWait(character));
@@ -1691,7 +1691,7 @@ RVA(0x000081b0, 0x4b)
 i16 FindAbleHumanMember(void) {
     i16 index;
     Character* member;
-    for (index = 0; index < 6; index++) {
+    for (index = 0; index < PARTY_SIZE; index++) {
         member = GetPartyCharacter(index);
         if (member && (member->id == 38 || member->id == 399 || IsHumanCharacter(member))
             && !GetDisablingCondition(GetCharacterConditions(member))) {
@@ -1706,7 +1706,7 @@ void TickPartyConditionActions(void) {
     i16 index;
     i16 action;
     Character* actor;
-    for (index = 0; index < 6; index++) {
+    for (index = 0; index < PARTY_SIZE; index++) {
         actor = GetPartyCharacter(index);
         if (actor && !GetPickState(actor) && !IsActionWaitMarked(GetCharacterActionWait(actor))) {
             if (!GetActionCondition(actor)) {

@@ -421,7 +421,7 @@ i16 PickEquipmentReward(Character* character) {
     i16 count = 8;
     i16 i;
     i16 pick;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < EQUIP_SLOT_COUNT; i++) {
         items[i] = GetEquipItem(character, i);
     }
     for (;;) {
@@ -2109,7 +2109,7 @@ void OpListBagByCategory(void) {
     i16 i;
     i32 handle;
     i32* list;
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         i16 item = GetBagItem(i);
         if (item < 1) {
             continue;
@@ -2504,7 +2504,7 @@ i16 OpJoinActiveParty(void) {
     if (id < 0) {
         id = ResolveObjectId(id);
     }
-    if (id < 32 && RosterSlotOfId(id) == -1) {
+    if (id < HUMAN_ID_LIMIT && RosterSlotOfId(id) == -1) {
         Character* character = FindCharacterById(id);
         AddScriptCharacterToRoster(character, 3);
         SetAnalyzed(character->id, 1);
@@ -2541,7 +2541,7 @@ i16 OpLeaveActiveParty(void) {
         id = ResolveObjectId(id);
     }
     RemoveFromParty(FindRosterSlotById(id));
-    if (id < 32) {
+    if (id < HUMAN_ID_LIMIT) {
         RemoveFromRoster(RosterSlotOfId(id));
     }
     RequestFieldRefresh();
@@ -2611,7 +2611,7 @@ void OpRebalanceMemberStats(void) {
     Character* character = GetRosterCharacter(ReadScriptValue());
     if (character) {
         i16 i;
-        for (i = 0; i < 11; i++) {
+        for (i = 0; i < STAT_COUNT; i++) {
             i16 sum = character->stats.bonus[i] + character->stats.equipment[i]
                       + GetBaseStat(character, i) + character->stats.modifiers[i];
             if (HasCondition(GetCharacterConditions(character), CONDITION_ZOMBIE)) {
@@ -3560,7 +3560,7 @@ void OpFindMemberWithCondition(i16 all) {
     i16 slot;
     Character* character;
     if (!all) {
-        for (slot = 0; slot < 32; slot++) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != -1) {
                 character = RosterMemberAt(slot);
                 if (character && HasCondition(GetCharacterConditions(character), condition)) {
@@ -3571,7 +3571,7 @@ void OpFindMemberWithCondition(i16 all) {
         }
     } else {
         result = 0;
-        for (slot = 0; slot < 32; slot++) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != -1) {
                 character = RosterMemberAt(slot);
                 if (character && HasCondition(GetCharacterConditions(character), condition)) {
@@ -3592,7 +3592,7 @@ void OpFindMemberByAlignmentA(i16 all) {
     i16 slot;
     Character* character;
     if (!all) {
-        for (slot = 0; slot < 32; slot++) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != -1) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassB(character) == alignment) {
@@ -3603,7 +3603,7 @@ void OpFindMemberByAlignmentA(i16 all) {
         }
     } else {
         result = 0;
-        for (slot = 0; slot < 32; slot++) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != -1) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassB(character) == alignment) {
@@ -3624,7 +3624,7 @@ void OpFindMemberByAlignmentB(i16 all) {
     i16 slot;
     Character* character;
     if (!all) {
-        for (slot = 0; slot < 32; slot++) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != -1) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassA(character) == alignment) {
@@ -3635,7 +3635,7 @@ void OpFindMemberByAlignmentB(i16 all) {
         }
     } else {
         result = 0;
-        for (slot = 0; slot < 32; slot++) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != -1) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassA(character) == alignment) {
@@ -3658,7 +3658,7 @@ void OpCountItemOwned(void) {
     Character* character;
     mode++;
     if (scope == ITEM_COUNT_EQUIPMENT || scope == ITEM_COUNT_BAG_AND_EQUIPMENT) {
-        for (slot = 0; slot < 32; slot++) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != -1) {
                 character = GetRosterCharacter(slot);
                 if (character) {
@@ -3937,7 +3937,7 @@ void OpMaskRosterByKind(void) {
     i16 mode = ReadScriptValue() + 1;
     u32 mask = 0;
     i16 i;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < ROSTER_SIZE; i++) {
         if (FilterPartyMember(i, mode) != -1 && RosterMemberAt(i)
             && race == GetDemonRace(RosterMemberAt(i)->id)) {
             mask |= PowerOfTwo(i);
@@ -3956,7 +3956,7 @@ void OpRecoverRosterPool(GZ_ENUM_PARAM(CharacterPoolMask, i16) pool) {
     i16 i;
     mask = ReadScriptValue();
     amount = ReadScriptValue();
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < ROSTER_SIZE; i++) {
         if (RosterMemberAt(i) && (mask & bit)) {
             if (pool == POOL_MASK_HP) {
                 FillPool(&RosterMemberAt(i)->pools.hp, amount, POOL_FILL_TO_MAX);
@@ -3977,7 +3977,7 @@ void OpCureRosterCondition(void) {
     i16 i;
     mask = ReadScriptValue();
     condition = ReadScriptValue();
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < ROSTER_SIZE; i++) {
         if (mask & bit) {
             Character* character = GetRosterCharacter(i);
             if (character && HasCondition(GetCharacterConditions(character), condition)) {

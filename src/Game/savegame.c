@@ -193,7 +193,7 @@ i16 LoadGame(i16 slot, i16 keepField) {
         );
     }
     CompactBag();
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < ROSTER_SIZE; i++) {
         Character* character = GetRosterCharacter(i);
         if (character) {
             character->equipGroup = ReadObjectRecordField(character->id, 0x20, 2);

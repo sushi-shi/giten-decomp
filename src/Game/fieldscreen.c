@@ -397,7 +397,7 @@ RVA(0x00014b50, 0x3b)
 b16 CanHumanMemberAct(void) {
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && IsHumanCharacter(character)
             && !GetPickBlockingCondition(GetCharacterConditions(character))) {
@@ -709,7 +709,7 @@ RVA(0x00015350, 0x51)
 b16 CanMemberAct(i16 id) {
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && character->id == id) {
             if (!IsHumanCharacter(character)) {

@@ -24,6 +24,9 @@ typedef union ScriptScratchValue {
     u8 byte;
 } ScriptScratchValue;
 
+// The script long variables.
+#define SCRIPT_LONG_VAR_COUNT 26
+
 void ClearScriptLongVars(void);
 
 // The loaded script files, oldest first.

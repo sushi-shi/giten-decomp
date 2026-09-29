@@ -432,7 +432,7 @@ ScriptBlock* NewScriptBlock(void) {
     u16 i;
     block->code = AllocArrayHandle(1, 0x500);
     code = HandleWritePtr(block->code);
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < SCRIPT_ENTRY_COUNT; i++) {
         GetScriptRange(code, i)->offset = i + 0x400;
         GetScriptRange(code, i)->length = 1;
         code->bytes[i] = 0;
@@ -497,7 +497,7 @@ u8* ResizeScriptEntry(ScriptBlock* block, i16 entry, i16 length) {
     }
     code = HandleWritePtr(block->code);
     size = 0x400;
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < SCRIPT_ENTRY_COUNT; i++) {
         size += GetScriptRange(code, i)->length;
     }
     delta = length - GetScriptRange(code, entry)->length;
@@ -529,7 +529,7 @@ void ShiftScriptEntries(ScriptCode* code, i16 entry, i16 delta, u16 size) {
     if (count != 0) {
         memmove(dst, src, count);
         GetScriptRange(code, entry)->length += delta;
-        for (i = entry + 1; i < 256; i++) {
+        for (i = entry + 1; i < SCRIPT_ENTRY_COUNT; i++) {
             GetScriptRange(code, i)->offset += delta;
         }
     }
@@ -1176,7 +1176,7 @@ i16 FindFavouredMember(void) {
     i16 bestId = -1;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && IsHumanCharacter(character) && character->memberClass == 2
             && !GetPickBlockingCondition(GetCharacterConditions(character))) {
@@ -1267,7 +1267,7 @@ i16 AccessScriptReg(i16 write, i16 index, i16 value) {
 RVA(0x0003be70, 0x27)
 void ClearScriptLongVars(void) {
     i16 i;
-    for (i = 0; i < 26; i++) {
+    for (i = 0; i < SCRIPT_LONG_VAR_COUNT; i++) {
         g_scriptLongVars[i] = 0;
         ClearEventFlag(15, i);
     }
@@ -1284,7 +1284,7 @@ void ClearSystemVars(void) {
 
 RVA(0x0003bed0, 0x29)
 void ClearScriptLongVar(i16 index) {
-    if (index >= 0 && index < 26) {
+    if (index >= 0 && index < SCRIPT_LONG_VAR_COUNT) {
         g_scriptLongVars[index] = 0;
         ClearEventFlag(15, index);
     }
@@ -1324,7 +1324,7 @@ u32 SetScriptLongVar(i16 index, u32 value) {
 
 RVA(0x0003bfa0, 0x1e)
 u32 GetScriptLongVar(i16 index) {
-    if (index >= 0 && index < 26) {
+    if (index >= 0 && index < SCRIPT_LONG_VAR_COUNT) {
         return g_scriptLongVars[index];
     }
     return 0;
@@ -1338,7 +1338,7 @@ RVA(0x0003bfc0, 0x79)
 void SwapScriptLongVars(i16 a, i16 b) {
     u32 value;
     i32 changed;
-    if (a >= 0 && a < 26 && b >= 0 && b < 26) {
+    if (a >= 0 && a < SCRIPT_LONG_VAR_COUNT && b >= 0 && b < SCRIPT_LONG_VAR_COUNT) {
         value = g_scriptLongVars[a];
         g_scriptLongVars[a] = g_scriptLongVars[b];
         g_scriptLongVars[b] = value;
@@ -1354,7 +1354,7 @@ void SwapScriptLongVars(i16 a, i16 b) {
 // Copies a variable and its set mark.
 RVA(0x0003c040, 0x59)
 void CopyScriptLongVar(i16 dst, i16 src) {
-    if (dst >= 0 && dst < 26 && src >= 0 && src < 26) {
+    if (dst >= 0 && dst < SCRIPT_LONG_VAR_COUNT && src >= 0 && src < SCRIPT_LONG_VAR_COUNT) {
         g_scriptLongVars[dst] = g_scriptLongVars[src];
         if (!TestEventFlag(15, src)) {
             ClearEventFlag(15, dst);

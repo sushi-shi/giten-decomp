@@ -15,6 +15,7 @@ GZ_ENUM_BEGIN(CharacterStat)
     STAT_DEXTERITY = 8,
     STAT_CHARM = 9,
     STAT_FORTUNE = 10,
+    STAT_COUNT = 11
 GZ_ENUM_END(CharacterStat)
 
 #endif // GITEN_GAME_CHARACTERSTAT_H

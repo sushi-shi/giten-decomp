@@ -336,7 +336,10 @@ static __inline i32 GetSummonMagnetiteCost(const Character* character) {
     return character->levelBonus * character->level;
 }
 
-extern Character g_characters[16];
+// The character table: party members, loaded demons and scratch slots.
+#define CHARACTER_SLOT_COUNT 16
+
+extern Character g_characters[CHARACTER_SLOT_COUNT];
 
 Character* GetCharacter(i16 slot);
 i16 GetCharacterId(i16 slot);

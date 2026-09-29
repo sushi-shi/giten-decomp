@@ -834,7 +834,7 @@ i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
     }
     CompactBag();
     count = 0;
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < BAG_ORDINARY_ENTRY_COUNT; i++) {
         item = GetBagItem(i);
         if (CanEquipItem(character, item) < 0) {
             continue;
@@ -1496,7 +1496,7 @@ static i16 ListAttachEntries(void) {
 
     CompactBag();
     count = 0;
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < BAG_ORDINARY_ENTRY_COUNT; i++) {
         item = GetBagItem(i);
         if (item >= 0 && GetItemStackLimit(item) == 1 && GetItemKind(item) != ITEM_KIND_GUN) {
             s_attachEntries[count].entry = i;
@@ -1955,7 +1955,7 @@ i16 PollEquipPart(i16 member, i16 mode) {
             y = (g_mousePosition.y - 40) / 8 - 3;
             if (y >= 0 && y % 4 != 2 && y % 4 != 3) {
                 part = y / 4;
-                if (part < 8) {
+                if (part < EQUIP_SLOT_COUNT) {
                     if (s_equipPickPart == part) {
                         return -1;
                     }

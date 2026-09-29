@@ -46,8 +46,10 @@ typedef struct ScriptRange {
     u16 length;
 } ScriptRange;
 
+#define SCRIPT_ENTRY_COUNT 256
+
 typedef struct ScriptCode {
-    ScriptRange ranges[256];
+    ScriptRange ranges[SCRIPT_ENTRY_COUNT];
     u8 bytes[1];
 } ScriptCode;
 

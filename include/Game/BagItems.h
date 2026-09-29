@@ -15,7 +15,11 @@
 // and skilluse.c include and whose declaration count their codegen follows.
 
 // The party's 64-entry item bag.
-extern ItemStack g_bagItems[64];
+// The bag: 48 ordinary entries, then the scenario items.
+#define BAG_ENTRY_COUNT 64
+#define BAG_ORDINARY_ENTRY_COUNT 48
+
+extern ItemStack g_bagItems[BAG_ENTRY_COUNT];
 
 // Empties every bag entry.
 void ClearBag(void);
@@ -58,7 +62,9 @@ i16 GetBagEntryDetail(i16 index);
 
 // The item pool the bag is refilled from (<Game/ItemPool.h>).
 // @identity-TODO: what the pool represents is unrecovered.
-extern ItemStack g_itemPool[64];
+#define ITEM_POOL_SIZE 64
+
+extern ItemStack g_itemPool[ITEM_POOL_SIZE];
 
 #define GetItemPoolEntry(index) (&g_itemPool[(index)])
 
