@@ -123,7 +123,7 @@ void PaintMenuBox(MenuBox* menu) {
 }
 
 RVA(0x00020990, 0x46)
-i16 PollMenuBox(MenuBox* menu) {
+GZ_ENUM_RETURN(TextEvent, i16) PollMenuBox(MenuBox* menu) {
     i16 control;
     if (menu == NULL) {
         return TEXT_EVENT_CANCEL;
@@ -174,7 +174,7 @@ b16 HandleMenuControl(MenuBox* menu, i16 control) {
 }
 
 RVA(0x00020a90, 0x32)
-i16 RunMenu(MenuBox* menu) {
+GZ_ENUM_RETURN(TextEvent, i16) RunMenu(MenuBox* menu) {
     if (menu == NULL) {
         return TEXT_EVENT_CANCEL;
     }

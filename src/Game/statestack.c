@@ -546,11 +546,11 @@ RVA(0x00016d30, 0x11c)
 i16 PickStatusMember(void) {
     i16 selected;
     switch (GetGameStep()) {
-        case 2:
+        case PICK_MEMBER_STEP_POLL:
             selected = PollStatusMenu();
-            if (selected == 2 || selected == -2) {
-                CheckStatusMenuItem(2);
-                SetGameStep(0xffff);
+            if (selected == STATUS_STEP_CLOSE || selected == STATUS_COMMAND_CANCEL) {
+                CheckStatusMenuItem(STATUS_STEP_CLOSE);
+                SetGameStep(PICK_MEMBER_STEP_CANCELLED);
             } else {
                 selected = RunStatusListPicker(false);
                 if (selected >= 0) {
@@ -559,8 +559,8 @@ i16 PickStatusMember(void) {
                 }
             }
             break;
-        case 0:
-            SetGameStep(2);
+        case PICK_MEMBER_STEP_OPEN:
+            SetGameStep(PICK_MEMBER_STEP_POLL);
             TakeMouseCancelSound();
             SetStatusMenuItemsHidden(1);
             SetStatusMenuItemFlag(STATUS_STEP_ITEMS, 0x800, !CountBagEntries());
@@ -570,16 +570,16 @@ i16 PickStatusMember(void) {
             SetStatusColumn(0);
             RunStatusListPicker(false);
             break;
-        case 1:
-        case 0xffff:
+        case PICK_MEMBER_STEP_PICKED:
+        case PICK_MEMBER_STEP_CANCELLED:
             SetStatusMenuItemsHidden(0);
             RunStatusListPicker(true);
-            if (GetGameStep() == 0xffff) {
-                return -3;
+            if (GetGameStep() == PICK_MEMBER_STEP_CANCELLED) {
+                return STATUS_COMMAND_CANCEL_FIXED_MEMBER;
             }
             return GetGameSub();
     }
-    return -1;
+    return STATUS_COMMAND_NONE;
 }
 
 RVA(0x00016e50, 0xc)
@@ -596,11 +596,11 @@ RVA(0x00016e70, 0x144)
 b16 RunStatusScreen(void) {
     i16 result;
     switch (GetGamePhase()) {
-        case 0:
+        case STATUS_PHASE_OPEN:
             SetPictureRenderMode();
             HideScreenLayer(SCREEN_LAYER_PANEL);
             CloseMessageWindow();
-            SetGamePhase(2);
+            SetGamePhase(STATUS_PHASE_PICK_MEMBER);
             SetStatusMenuItemsHidden(0);
             EnterStatusScreen(0);
             if (s_statusAnalyzeMode) {
@@ -609,7 +609,7 @@ b16 RunStatusScreen(void) {
                 g_statusFixedMember = true;
             }
             break;
-        case 1:
+        case STATUS_PHASE_CLOSE:
             ReturnFromGameState();
             RunStatusListPicker(true);
             RequestFieldRefresh();
@@ -620,20 +620,20 @@ b16 RunStatusScreen(void) {
             ErasePictureSurface(0x36);
             ClearStatusPicture();
             break;
-        case 2:
+        case STATUS_PHASE_PICK_MEMBER:
             g_statusMember = PickStatusMember();
-            if (g_statusMember == -3) {
+            if (g_statusMember == STATUS_COMMAND_CANCEL_FIXED_MEMBER) {
                 PrevGamePhase();
-            } else if (g_statusMember != -1) {
+            } else if (g_statusMember != STATUS_COMMAND_NONE) {
                 NextGamePhase();
             }
             break;
-        case 3:
+        case STATUS_PHASE_COMMANDS:
             result = RunStatusCommands();
-            if (result == -3) {
+            if (result == STATUS_COMMAND_CANCEL_FIXED_MEMBER) {
                 ErasePictureSurface(0x36);
-                SetGamePhase(1);
-            } else if (result == 7 || result == -2) {
+                SetGamePhase(STATUS_PHASE_CLOSE);
+            } else if (result == STATUS_STEP_EXIT || result == STATUS_COMMAND_CANCEL) {
                 PrevGamePhase();
                 ClearStatusPicture();
                 ErasePictureSurface(0x36);
@@ -1771,7 +1771,7 @@ static __inline void FinishLevelGain(Character* character) {
 static __inline void ApplyPickedStatGain(Character* member) {
     member->stats.base[s_raisedStat]++;
     SaveGameState();
-    SetGamePhase(6);
+    SetGamePhase(LEVEL_UP_PHASE_REDRAW_STAT);
 }
 
 static __inline void ShowRaisedStat(Character* member, i16 highlighted) {

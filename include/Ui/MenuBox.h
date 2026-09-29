@@ -6,6 +6,7 @@
 #include <EnumDomain.h>
 #include <Enums.h>
 #include <Ints.h>
+#include <Text/TextEvent.h>
 
 struct Character;
 struct MenuBox;
@@ -108,11 +109,11 @@ void MoveMenuBox(MenuBox* menu, i16 x, i16 y);
 // A pageRows of -1 keeps the plane's own.
 void SetMenuItems(MenuBox* menu, i16 pageRows, void* items, i16 itemCount, MenuHandler handler);
 
-i16 RunMenu(MenuBox* menu);
+GZ_ENUM_RETURN(TextEvent, i16) RunMenu(MenuBox* menu);
 void DispatchMenuEvent(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 void BuildMenuPage(MenuBox* menu);
 void PaintMenuBox(MenuBox* menu);
-i16 PollMenuBox(MenuBox* menu);
+GZ_ENUM_RETURN(TextEvent, i16) PollMenuBox(MenuBox* menu);
 b16 HandleMenuControl(MenuBox* menu, i16 control);
 
 #endif // GITEN_UI_MENUBOX_H

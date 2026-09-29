@@ -400,11 +400,11 @@ RVA(0x000423e0, 0x6c)
 static b16 ResumeStatusPage(i16 command) {
     u16 step;
 
-    if (command == -1) {
+    if (command == STATUS_COMMAND_NONE) {
         return true;
     }
-    if (command == -2) {
-        step = SetGameStep(1);
+    if (command == STATUS_COMMAND_CANCEL) {
+        step = SetGameStep(STATUS_STEP_POLL);
         HighlightHotspot(0, s_statusCommandHotspots[step], 0);
         return true;
     }

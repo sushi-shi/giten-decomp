@@ -1522,8 +1522,8 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
             break;
         case 1:
             result = RunMenu(s_fusionMenu);
-            if (result != 0) {
-                if (result > 0) {
+            if (result != TEXT_EVENT_NONE) {
+                if (result > TEXT_EVENT_NONE) {
                     g_fusionFirstSlot = g_selectedObjectId;
                     s_selectedFusionIndex = s_fusionMenu->cursor + g_hoveredObjectId;
                 } else {
@@ -2100,7 +2100,7 @@ i16 CreateFusionPreviewCard(i16 window, i16 slot) {
 RVA(0x00029de0, 0x11f)
 i16 RunSecondFusionPicker(i16 step) {
     i16 count;
-    i16 result;
+    GZ_ENUM_LOCAL(TextEvent, i16) result;
     switch (step) {
         case 0:
             count = s_fusionCandidateCount;
@@ -2121,8 +2121,8 @@ i16 RunSecondFusionPicker(i16 step) {
             break;
         case 1:
             result = RunMenu(s_fusionMenu);
-            if (result != 0) {
-                if (result > 0) {
+            if (result != TEXT_EVENT_NONE) {
+                if (result > TEXT_EVENT_NONE) {
                     g_fusionSecondSlot = g_selectedObjectId;
                 } else {
                     g_fusionSecondSlot = -1;
@@ -2140,7 +2140,7 @@ i16 RunSecondFusionPicker(i16 step) {
 RVA(0x00029f00, 0xd4)
 i16 RunThirdFusionPicker(i16 step) {
     i16 count;
-    i16 result;
+    GZ_ENUM_LOCAL(TextEvent, i16) result;
     switch (step) {
         case 0:
             g_fusionThirdSlot = -1;
@@ -2157,8 +2157,8 @@ i16 RunThirdFusionPicker(i16 step) {
             break;
         case 1:
             result = RunMenu(s_fusionMenu);
-            if (result != 0) {
-                if (result > 0) {
+            if (result != TEXT_EVENT_NONE) {
+                if (result > TEXT_EVENT_NONE) {
                     g_fusionThirdSlot = g_selectedObjectId;
                 } else {
                     g_fusionThirdSlot = -1;

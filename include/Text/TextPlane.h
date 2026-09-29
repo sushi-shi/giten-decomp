@@ -8,6 +8,7 @@
 #include <Enums.h>
 #include <Ints.h>
 #include <Text/TextAttr.h>
+#include <Text/TextEvent.h>
 
 #define TEXT_PLANE_COUNT 37
 
@@ -154,19 +155,6 @@ void ToggleTextHighlight(i16 plane, i16 x, i16 y);
 void PaintTextRun(i16 plane, i16 x, i16 y, u16 attr);
 TextPlaneHook SetTextPlaneHook(TextPlaneHook hook);
 void CallTextPlaneHook(i16 plane, i16 event, i16 value);
-
-// The hook's events from PollMenuInput: cancelled, a line chosen by a left or
-// a right click, the highlight taken off and put on (value: the line row).
-// PollMenuInput (and RunMenu through it) returns NONE, CANCEL, CHOOSE or
-// CHOOSE_RIGHT.
-GZ_ENUM_BEGIN(TextEvent)
-    TEXT_EVENT_CANCEL = -1,
-    TEXT_EVENT_NONE = 0,
-    TEXT_EVENT_CHOOSE = 1,
-    TEXT_EVENT_CHOOSE_RIGHT = 2,
-    TEXT_EVENT_UNHIGHLIGHT = 3,
-    TEXT_EVENT_HIGHLIGHT = 4
-GZ_ENUM_END(TextEvent)
 
 i16 ClearTextPlaneLine(i16 plane, i16 row);
 void MoveTextPlaneCursorToPrevLine(i16 plane);

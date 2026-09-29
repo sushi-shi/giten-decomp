@@ -471,7 +471,7 @@ void SetAnalyzeTarget(Character* target) {
 RVA(0x0001ad50, 0x5f0)
 i16 RunAnalyzeWindow(void) {
     Character* target = s_target;
-    i16 choice;
+    GZ_ENUM_LOCAL(TextEvent, i16) choice;
 
     switch (s_step) {
         case -1:
@@ -606,12 +606,12 @@ i16 RunAnalyzeWindow(void) {
 
         case 4:
             choice = RunMenu(s_menu);
-            if (choice == 0) {
+            if (choice == TEXT_EVENT_NONE) {
                 break;
             }
             s_menu = DestroyMenuBox(s_menu);
             s_step++;
-            if (choice >= 0 && g_selectedObjectId >= 0) {
+            if (choice >= TEXT_EVENT_NONE && g_selectedObjectId >= 0) {
                 break;
             }
             s_step = -1;
@@ -788,10 +788,10 @@ i16 StepItemBuyMenu(i16* step) {
         }
         case 1: {
             i16 result = RunMenu(s_itemMenu);
-            if (result == TEXT_EVENT_CANCEL || result == 0) {
+            if (result == TEXT_EVENT_CANCEL || result == TEXT_EVENT_NONE) {
                 return 0;
             }
-            if (result == 2) {
+            if (result == TEXT_EVENT_CHOOSE_RIGHT) {
                 result = -1;
             }
             AdjustItemMenuCount(s_itemMenu, g_hoveredObjectId, result, 99);
@@ -1077,10 +1077,10 @@ i16 StepItemSellMenu(i16* step) {
         case 1: {
             i16 result;
             result = RunMenu(s_itemMenu);
-            if (result == TEXT_EVENT_CANCEL || result == 0) {
+            if (result == TEXT_EVENT_CANCEL || result == TEXT_EVENT_NONE) {
                 return 0;
             }
-            if (result == 2) {
+            if (result == TEXT_EVENT_CHOOSE_RIGHT) {
                 result = -1;
             }
             AdjustItemMenuCount(

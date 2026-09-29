@@ -308,11 +308,11 @@ static void SystemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent,
     }
 }
 
-// Picks free or fixed display for auto-mapping (phase 3) or auto-navigation
-// (phase 4), then asks for a field redraw and closes the system menu.
+// Picks free or fixed display for auto-mapping or auto-navigation, then asks
+// for a field redraw and closes the system menu.
 RVA(0x00004070, 0x100)
 static b16 RunDisplayChoice(void) {
-    i16 pick;
+    GZ_ENUM_LOCAL(TextEvent, i16) pick;
 
     switch (GetGameStep()) {
         case 0:
@@ -321,19 +321,19 @@ static b16 RunDisplayChoice(void) {
             break;
         case 1:
             pick = RunMenu(s_systemMenu);
-            if (pick == 0) {
+            if (pick == TEXT_EVENT_NONE) {
                 break;
             }
             if (pick == TEXT_EVENT_CANCEL) {
-                SetGamePhase(0);
+                SetGamePhase(MENU_STEP_OPEN);
             } else {
-                if (GetGamePhase() == 3) {
+                if (GetGamePhase() == MENU_STEP_PICK_FIRST + SYSTEM_ROW_AUTO_MAPPING) {
                     g_party.status.automapFixed = g_selectedObjectId;
                 } else {
                     g_party.status.navigationFixed = g_selectedObjectId;
                 }
                 g_fieldRedrawRequest = true;
-                SetGamePhase(1);
+                SetGamePhase(MENU_STEP_CLOSE);
             }
             s_systemMenu = DestroyMenuBox(s_systemMenu);
             return false;
@@ -344,7 +344,7 @@ static b16 RunDisplayChoice(void) {
 // Asks whether to quit; "quit" requests the game's end and a field redraw.
 RVA(0x00004170, 0xc0)
 static b16 RunQuitConfirm(void) {
-    i16 pick;
+    GZ_ENUM_LOCAL(TextEvent, i16) pick;
 
     switch (GetGameStep()) {
         case 0:
@@ -353,17 +353,17 @@ static b16 RunQuitConfirm(void) {
             break;
         case 1:
             pick = RunMenu(s_systemMenu);
-            if (pick == 0) {
+            if (pick == TEXT_EVENT_NONE) {
                 break;
             }
             if (pick == TEXT_EVENT_CANCEL) {
-                SetGamePhase(0);
+                SetGamePhase(MENU_STEP_OPEN);
             } else {
                 if (g_selectedObjectId == 0) {
                     g_quitRequest = 1;
                     g_fieldRedrawRequest = true;
                 }
-                SetGamePhase(1);
+                SetGamePhase(MENU_STEP_CLOSE);
             }
             s_systemMenu = DestroyMenuBox(s_systemMenu);
             return false;

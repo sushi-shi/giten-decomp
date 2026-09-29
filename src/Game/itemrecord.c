@@ -2126,7 +2126,7 @@ void RunBagDiscardMenu(void) {
     // StoreBagItem stops trying to store the rest.
     if (count == 0) {
         SetTextPlaneCancelEnabled(menu->plane, 1);
-        while (RunMenu(menu) != -1) {
+        while (RunMenu(menu) != TEXT_EVENT_CANCEL) {
             WaitMenuFrame();
         }
         DestroyMenuBox(menu);
@@ -2134,7 +2134,7 @@ void RunBagDiscardMenu(void) {
     }
 #endif
     SetTextPlaneCancelEnabled(menu->plane, 0);
-    while (RunMenu(menu) != 1) {
+    while (RunMenu(menu) != TEXT_EVENT_CHOOSE) {
         WaitMenuFrame();
     }
     DestroyMenuBox(menu);

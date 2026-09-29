@@ -38,6 +38,23 @@ GZ_ENUM_CONST_BEGIN(StatusCommand)
     STATUS_COMMAND_CANCEL_FIXED_MEMBER = -3
 GZ_ENUM_CONST_END(StatusCommand)
 
+// RunStatusScreen's phases: open, close, pick the member, run the commands.
+GZ_ENUM_BEGIN(StatusScreenPhase)
+    STATUS_PHASE_OPEN = 0,
+    STATUS_PHASE_CLOSE = 1,
+    STATUS_PHASE_PICK_MEMBER = 2,
+    STATUS_PHASE_COMMANDS = 3
+GZ_ENUM_END(StatusScreenPhase)
+
+// PickStatusMember's steps: show the list, finish with a member picked, poll,
+// finish cancelled.
+GZ_ENUM_CONST_BEGIN(PickMemberStep)
+    PICK_MEMBER_STEP_OPEN = 0,
+    PICK_MEMBER_STEP_PICKED = 1,
+    PICK_MEMBER_STEP_POLL = 2,
+    PICK_MEMBER_STEP_CANCELLED = 0xffff
+GZ_ENUM_CONST_END(PickMemberStep)
+
 i16 RunStatusCommands(void);
 i16 GetStatusAnalyzeMode(void);
 
