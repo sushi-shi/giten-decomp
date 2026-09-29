@@ -587,3 +587,34 @@ src/Game/worldtravel.c	ExcludeWorldTravelStep	0	*	*	an excluded cell scores noth
 src/Game/worldtravel.c	*Route	*	*	*	the route queue: read position and capacity reset to 0, grown by one 4-byte point
 src/Game/worldtravel.c	PushRoutePoint	1	call-argument	GrowRoute(*	one more point
 src/Game/worldtravel.c	*WorldMapPlace*	*	*	*	@identity-TODO: no place name shown (-1); the name's 32/40-pixel offset and the block step 2
+src/Game/clock.c	InitClock	*	*	*	the clock's pacing: a tick every 5 frames, 2 minute steps per tick toward 60 per minute, from day 0
+src/Game/clock.c	TickClock	*	*	*	60 minutes per hour, 24 hours per day
+src/Game/clock.c	ApplyClockChanges	*	call-argument	*Bit(*	@identity-TODO: character flags 0x22 (the leader's, cleared) and 10 (each live object's, set) at a new moon phase
+src/Game/clock.c	ClearMoonFlags	*	*	*	the moon flag list: bank and index byte pairs ending at 0xff
+src/Game/clock.c	TickGameClock	*	*	*	24 ticks a round; a frame's tick advances the clock one minute
+src/Game/clock.c	SetAreaFlagPreservation	-1	*	*	-1 keeps the current area or level
+src/Game/clock.c	UnloadAreaMap	-1	*	*	no area loaded
+src/Game/clock.c	SpawnMapObjects	*	*	*	@identity-TODO: two spawn exceptions: Harajuku level 6 skips the spawn at (4, 0), Shan Shan City level 4 moves the one at (9, 2) to y 1; 0xff ends the spawn list; RaiseObjectEvent's clear/raise
+src/Game/clock.c	IsSpawnEnabled	*	*	*	a spawn's flag operand: bank 0xff always spawns; the negate bit and the bank's low bits
+src/Game/clock.c	BuildRoomMap	0	*	*	no room map built
+src/Game/clock.c	RespawnAreaActors	0	call-argument	*	@identity-TODO: room 0 rebuilt on respawn
+src/Game/clock.c	SelectAreaLevel	*	*	*	out-of-range levels select level 0; wall set 0xff keeps the loaded walls; the level-flag preservation is reset
+src/Game/clock.c	LoadAreaMap	*	*	*	the area record buffer size; the area-flag preservation is reset; Shinjuku Tocho's level 1 shows as basement floor 1
+src/Game/clock.c	DecodeAreaMap	*	*	*	area record layout: a word per level after a word header, 28-byte level entries, one-byte copies and the 0x2800-byte map block
+src/Game/clock.c	PlayLevelMusic	5	*	*	@identity-TODO: the five level-music slots
+src/Game/clock.c	GetLevelFloor	0	*	*	no floor number (ground level)
+src/Game/clock.c	GetMapSize	0	*	*	no level loaded: size 0
+src/Game/clock.c	IsCellFlagSet	0	*	*	a clear cell flag byte
+src/Game/clock.c	FindCellKind	0xff	*	*	0xff ends the cell list
+src/Game/clock.c	CheckCellEvent	*	*	*	@identity-TODO: cell event parameters: the field pair (0, 1), layer 0xff (the world map), the world-map request 1, a facing mask of 0, scene script 7/8
+src/Game/clock.c	IsCellBlocked	*	*	*	@identity-TODO: the blocking-cell kinds 3, 6 and 0xb CheckBlockingCell tests, by mode (0 the party); 0 open, 1 blocked
+src/Game/clock.c	CheckBlockingCell	*	*	*	mode 0 is the party; -1 when the cell blocks
+src/Game/clock.c	GetEventCellCode	0	*	*	no event cell code
+src/Game/clock.c	IsStepBarred	*	*	*	@identity-TODO: a cell code's low nibble 0xb bars the step in the direction of its high nibble; 0 when not barred
+src/Game/clock.c	ClampMapCoord	0	*	*	the map's first column or row
+src/Game/clock.c	RevealAreaMapAt	0	*	*	no cell revealed
+src/Game/clock.c	GetWarpCodeAtOffset	0	*	*	no warp code
+src/Game/clock.c	GetCellAtOffset	*	*	*	@identity-TODO: an exception at Shinjuku Tocho level 6 (2, 5) looking west (-1, 0) reads stairs up; 0 when no level or no warp
+src/Game/clock.c	CopyExitAt	7	*	*	@identity-TODO: exit kind 7
+src/Game/clock.c	*Panel*	*	*	*	@identity-TODO: panel images 0x12, 0x110 (13 rows) and 0x112 with their special cases; -1 no image or no selection; the kind's low nibble
+src/Game/clock.c	TestFlagBits	0	*	*	no bit of the mask set

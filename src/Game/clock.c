@@ -472,8 +472,8 @@ void SelectAreaLevel(i16 level, i16 force) {
         ResetFieldMemory();
         g_areaLevel = AreaLevelAt(g_areaMap, level);
         if (!s_preserveLevelFlags) {
-            SetFlagBank(8);
-            ClearFlagBank(0xd);
+            SetFlagBank(EVENT_FLAG_BANK_LEVEL);
+            ClearFlagBank(EVENT_FLAG_BANK_LEVEL_SCRATCH);
         }
         s_preserveLevelFlags = 0;
         ResetFieldObjects();
@@ -494,7 +494,7 @@ void SelectAreaLevel(i16 level, i16 force) {
 }
 
 // Loads area `area` (when it is not the current one: allocating the map,
-// resetting flag banks 9 (unless preserved) and 12, and decoding the data
+// resetting the area flag banks (the first unless preserved), and decoding the data
 // file) and selects level `level`, forced after a load. Area 9's second
 // level is displayed as basement floor 1.
 RVA(0x000213a0, 0xd0)
@@ -506,10 +506,10 @@ void LoadAreaMap(i16 area, i16 level) {
             g_areaMap = AllocCleared(1, 0x2c00);
         }
         if (!s_preserveAreaFlags) {
-            SetFlagBank(9);
+            SetFlagBank(EVENT_FLAG_BANK_AREA);
         }
         s_preserveAreaFlags = 0;
-        SetFlagBank(0xc);
+        SetFlagBank(EVENT_FLAG_BANK_SCRATCH);
         UnloadAreaMap();
         fp = OpenDataFile(area, DATA_FILE_MAP, 0);
         ReadCryptRecord(fp, s_areaRecord);

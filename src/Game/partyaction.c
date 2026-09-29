@@ -334,7 +334,7 @@ i16 PickActorAction(Character* actor) {
     ChangeCharacterFlag(actor, 20, 0);
     ChangeCharacterFlag(actor, 21, 0);
     ChangeCharacterFlag(actor, 22, 0);
-    ClearFlagBank(12);
+    ClearFlagBank(EVENT_FLAG_BANK_SCRATCH);
     StartScript(0xdb, 0, NewScriptContext(0, NULL));
     ClearScriptLongVars();
     do {
@@ -514,7 +514,7 @@ i16 AdjustActorAction(i16 id, i16 action) {
     i16 result;
     Character* actor;
     g_actorId = id;
-    ClearFlagBank(12);
+    ClearFlagBank(EVENT_FLAG_BANK_SCRATCH);
     hold = SetHold(true);
     window = OpenMessageWindow();
     StartScript(0xdb, 1, NewScriptContext(0, NULL));

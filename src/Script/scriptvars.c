@@ -658,7 +658,7 @@ b16 RunScriptScene(void) {
             AdvanceScriptTextWindow(window);
             break;
         case 0:
-            ClearFlagBank(12);
+            ClearFlagBank(EVENT_FLAG_BANK_SCRATCH);
             UnplaceAllSprites();
             NextGameStep();
             NextGameStep();
@@ -803,7 +803,7 @@ b16 RunActorScene(void) {
             case 0:
                 NextGameStep();
                 NextGameStep();
-                ClearFlagBank(12);
+                ClearFlagBank(EVENT_FLAG_BANK_SCRATCH);
             case 2: {
                 i16 result;
                 PollScriptPanels();
