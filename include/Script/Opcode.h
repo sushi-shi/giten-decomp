@@ -6,7 +6,7 @@
 // Selector values name the operations executed by ExecScriptOpcode.
 // Opcodes 1..8 call entry (next byte) of script file 0x7eff + op; the
 // CONTEST_LEVEL_n pairs pass contest level n to OpJumpUnlessStatContest; the
-// ACTOR_MODE_n opcodes set actor mode n; _ALIAS opcodes run the same handler
+// SET_ACTOR_MODE_* opcodes set that ActorMode (3 and 8 set unnamed modes); _ALIAS opcodes run the same handler
 // as their base; IGNORE_* opcodes consume their operands and do nothing, and
 // NEVER_JUMP_n read a branch target and never take it.
 GZ_ENUM_BEGIN_SPLIT(ScriptOpcode, u16)
@@ -74,17 +74,17 @@ GZ_ENUM_BEGIN_SPLIT(ScriptOpcode, u16)
     SCRIPT_OP_SWITCH_ON_ACTOR_ATTR_B_CALL = 286,
     SCRIPT_OP_SET_ACTOR_ATTITUDE = 287,
     SCRIPT_OP_SET_ACTOR_FIELD_STATE = 288,
-    SCRIPT_OP_SET_ACTOR_MODE_1 = 289,
-    SCRIPT_OP_SET_ACTOR_MODE_2 = 290,
+    SCRIPT_OP_SET_ACTOR_MODE_ATTACK = 289,
+    SCRIPT_OP_SET_ACTOR_MODE_FLEE = 290,
     SCRIPT_OP_SET_ACTOR_MODE_3 = 291,
-    SCRIPT_OP_SET_ACTOR_MODE_4 = 292,
-    SCRIPT_OP_SET_ACTOR_MODE_5 = 293,
-    SCRIPT_OP_SET_ACTOR_MODE_6 = 294,
-    SCRIPT_OP_SET_ACTOR_MODE_7 = 295,
+    SCRIPT_OP_SET_ACTOR_MODE_APPROACH = 292,
+    SCRIPT_OP_SET_ACTOR_MODE_CHARGE = 293,
+    SCRIPT_OP_SET_ACTOR_MODE_PURSUE = 294,
+    SCRIPT_OP_SET_ACTOR_MODE_SIDESTEP = 295,
     SCRIPT_OP_SET_ACTOR_MODE_8 = 296,
-    SCRIPT_OP_SET_ACTOR_MODE_9 = 297,
-    SCRIPT_OP_SET_ACTOR_MODE_10 = 298,
-    SCRIPT_OP_SET_ACTOR_MODE_11 = 299,
+    SCRIPT_OP_SET_ACTOR_MODE_WANDER = 297,
+    SCRIPT_OP_SET_ACTOR_MODE_IDLE = 298,
+    SCRIPT_OP_SET_ACTOR_MODE_TALK = 299,
     SCRIPT_OP_RESET_AND_REVERSE_WINDOW_ATTR = 300,
     SCRIPT_OP_RESET_WINDOW_ATTR = 301,
     SCRIPT_OP_REVERSE_WINDOW_ATTR = 302,

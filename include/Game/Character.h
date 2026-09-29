@@ -57,6 +57,23 @@ typedef struct StatBlock {
     i16 total[11];
 } StatBlock;
 
+// What a field actor does on its step (RunObjectStep), as its `mode` and the
+// script's SetActorMode set it: attack, flee, approach (stopping next to the
+// party), charge, pursue (set when a skill turns it), sidestep, wander, idle
+// (it has acted) or talk.
+GZ_ENUM_BEGIN_SPLIT(ActorMode, u8)
+    ACTOR_MODE_NONE = 0,
+    ACTOR_MODE_ATTACK = 1,
+    ACTOR_MODE_FLEE = 2,
+    ACTOR_MODE_APPROACH = 4,
+    ACTOR_MODE_CHARGE = 5,
+    ACTOR_MODE_PURSUE = 6,
+    ACTOR_MODE_SIDESTEP = 7,
+    ACTOR_MODE_WANDER = 9,
+    ACTOR_MODE_IDLE = 10,
+    ACTOR_MODE_TALK = 11
+GZ_ENUM_END_SPLIT(ActorMode)
+
 // A battle command, numbered from its row in the actor command menu
 // (s_commandLabels), as a member's pickRole keeps it; 0 is none.
 GZ_ENUM_BEGIN_SPLIT(PickRole, i8)
@@ -197,7 +214,7 @@ typedef struct Character {
     u8 familiarity;
     u8 attitude;
     u8 fieldState;
-    u8 mode;
+    GZ_ENUM_STORAGE(ActorMode, u8) mode;
     u8 pad1c7;
     u8 personalFlags[32];
     // @identity-TODO: two dwords cleared whenever a record is loaded (runtime

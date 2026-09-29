@@ -72,7 +72,7 @@ b16 OpSaveDataCommand(void) {
 }
 
 RVA(0x0002fe80, 0x24)
-GZ_ENUM_RETURN(ScriptStatus, i16) SetActorMode(i16 mode) {
+GZ_ENUM_RETURN(ScriptStatus, i16) SetActorMode(GZ_ENUM_PARAM(ActorMode, i16) mode) {
     Character* actor = g_curScript->actor;
     if (actor != NULL) {
         actor->mode = (u8)mode;

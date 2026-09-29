@@ -95,7 +95,7 @@ typedef struct FieldObject {
     u8 familiarity;
     u8 attitude;
     u8 fieldState;
-    u8 mode;
+    GZ_ENUM_STORAGE(ActorMode, u8) mode;
     u8 pad1e1;
     u8 personalFlags[32];
     u32 clearedOnLoad[2];

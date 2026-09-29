@@ -354,7 +354,7 @@ i16 PickActorAction(Character* actor) {
 }
 
 static __inline void SetBasicAttackPick(Character* actor, i16 target) {
-    actor->mode = 1;
+    actor->mode = ACTOR_MODE_ATTACK;
     actor->pickRole = PICK_ROLE_ATTACK;
     SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item);
     actor->pickObject = target;
@@ -431,7 +431,7 @@ b16 PickActorDialogue(i16 id) {
     if (id < 0) {
         return false;
     }
-    GetCombatant(id)->mode = 11;
+    GetCombatant(id)->mode = ACTOR_MODE_TALK;
     return true;
 }
 
@@ -536,7 +536,7 @@ i16 AdjustActorAction(i16 id, i16 action) {
     actor = GetCombatant(id);
     switch (action & 15) {
         case 0:
-            actor->mode = 10;
+            actor->mode = ACTOR_MODE_IDLE;
             result = 1;
             break;
         case 1:
@@ -550,7 +550,7 @@ i16 AdjustActorAction(i16 id, i16 action) {
             result = PickRandomAllyAttack(id);
             break;
         case 3:
-            actor->mode = 2;
+            actor->mode = ACTOR_MODE_FLEE;
             result = 1;
             break;
         case 4:
@@ -563,18 +563,18 @@ i16 AdjustActorAction(i16 id, i16 action) {
         case 6:
         case 11:
             result = DelayActionSide(id);
-            actor->mode = 10;
+            actor->mode = ACTOR_MODE_IDLE;
             break;
         case 7:
             result = ResetActionWaits();
-            actor->mode = 10;
+            actor->mode = ACTOR_MODE_IDLE;
             break;
         case 14:
             result = PickRandomAttack(id);
             break;
         case 15:
             SwapPartyRows();
-            actor->mode = 10;
+            actor->mode = ACTOR_MODE_IDLE;
             result = 1;
             break;
     }
@@ -1739,24 +1739,24 @@ RVA(0x000082c0, 0x67)
 void MarkActorActionReady(Character* actor) {
     GetCharacterActionWait(actor)->ready = true;
     switch (actor->mode) {
-        case 1:
+        case ACTOR_MODE_ATTACK:
             MarkPickDone();
             break;
-        case 2:
+        case ACTOR_MODE_FLEE:
             if (!IsHumanCharacter(actor)) {
                 actor->pickRole = PICK_ROLE_RETURN;
                 MarkPickDone();
                 break;
             }
         case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
+        case ACTOR_MODE_APPROACH:
+        case ACTOR_MODE_CHARGE:
+        case ACTOR_MODE_PURSUE:
+        case ACTOR_MODE_SIDESTEP:
         case 8:
-        case 9:
-        case 10:
-        case 11:
+        case ACTOR_MODE_WANDER:
+        case ACTOR_MODE_IDLE:
+        case ACTOR_MODE_TALK:
             actor->pickRole = PICK_ROLE_DEFENCE;
             MarkPickDone();
             break;

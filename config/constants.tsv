@@ -207,3 +207,5 @@ src/Game/character.c	IsPartyMemberFallen	0	existing-symbol	enum	0 from GetFatalC
 *	*	0	trivial-function-literal	0 store i	an index back at the first entry
 *	*	0	trivial-function-literal	0 equality strcmp()	strcmp returns 0 for equal strings
 *	*	*	call-argument	RepaintTextPlane(*argument 2	the repaint mode RepaintTextPlane does not read
+src/Game/clock.c	s_cellKinds	*	data-or-extent	*	cell-kind rows: the kind flags (0 none), the pad byte, and the cell codes still unnamed (@identity-TODO in Game/CellCode.h)
+src/Game/treasurebox.c	s_mapIcons	*	data-or-extent	*	automap icon rows: the icon image index and the cell codes still unnamed (@identity-TODO in Game/CellCode.h)

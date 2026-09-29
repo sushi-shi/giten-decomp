@@ -1676,12 +1676,12 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
         action = AdjustActorAction(index, action);
     }
     switch (object->mode) {
-        case 1:
+        case ACTOR_MODE_ATTACK:
             if (action == 1 || action == 2) {
                 goto attack;
             }
             g_actorId = index;
-            object->mode = 10;
+            object->mode = ACTOR_MODE_IDLE;
             object->pickRole = PICK_ROLE_ATTACK;
             SetFieldObjectPickTarget(
                 object,
@@ -1712,7 +1712,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                         goto attack;
                     }
                 } else {
-                    object->mode = 10;
+                    object->mode = ACTOR_MODE_IDLE;
                     object->pickRole = PICK_ROLE_ATTACK;
                     SetFieldObjectPickTarget(
                         object,
@@ -1740,30 +1740,30 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                 g_targetId = object->pickObject;
             }
             break;
-        case 2:
+        case ACTOR_MODE_FLEE:
             StepObjectTowardParty(object, 2, 0);
             break;
-        case 5:
+        case ACTOR_MODE_CHARGE:
             StepObjectTowardParty(object, 0, 0);
             break;
-        case 4:
-        case 6:
+        case ACTOR_MODE_APPROACH:
+        case ACTOR_MODE_PURSUE:
             StepObjectTowardParty(object, 0, 1);
             break;
-        case 7:
+        case ACTOR_MODE_SIDESTEP:
             StepObjectTowardParty(object, RandomUpTo(1) * 2 + 1, 0);
             break;
-        case 9:
+        case ACTOR_MODE_WANDER:
             StepObjectTowardParty(object, RandomUpTo(3), 0);
             break;
-        case 11:
+        case ACTOR_MODE_TALK:
             scenes[0] = 3;
             scenes[1] = 1;
             scenes[2] = -1;
             scenes[3] = 2;
             scenes[4] = -1;
             if (IsEventFlagSet(2, 7) && IsEventFlagSet(2, 8)) {
-                object->mode = 10;
+                object->mode = ACTOR_MODE_IDLE;
                 break;
             }
             attitude = object->attitude;
@@ -2153,7 +2153,7 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->word098 = 0x11;
     object->attitude = 4;
     object->triggerRange = (record->bits68 >> 2) & 7;
-    object->mode = 0;
+    object->mode = ACTOR_MODE_NONE;
     object->fieldState = 0;
     object->encounterRow = record->encounterRow;
     object->shield = 0;

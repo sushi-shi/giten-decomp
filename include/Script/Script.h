@@ -92,7 +92,7 @@ void OpJumpScript(i16 call);
 i16 ReadJumpTarget(void);
 void OpJump(void);
 
-GZ_ENUM_RETURN(ScriptStatus, i16) SetActorMode(i16 mode);
+GZ_ENUM_RETURN(ScriptStatus, i16) SetActorMode(GZ_ENUM_PARAM(ActorMode, i16) mode);
 
 // Resolves a script object id (negative: party slots; 1000+/2000+/3000+:
 // other ranges; -16..-23: special objects) to its record.

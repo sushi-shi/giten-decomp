@@ -229,28 +229,28 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
             case SCRIPT_OP_SET_ACTOR_FIELD_STATE:
                 OpSetActorFieldState();
                 return SCRIPT_CONTINUE;
-            case SCRIPT_OP_SET_ACTOR_MODE_1:
-                return SetActorMode(1);
-            case SCRIPT_OP_SET_ACTOR_MODE_2:
-                return SetActorMode(2);
+            case SCRIPT_OP_SET_ACTOR_MODE_ATTACK:
+                return SetActorMode(ACTOR_MODE_ATTACK);
+            case SCRIPT_OP_SET_ACTOR_MODE_FLEE:
+                return SetActorMode(ACTOR_MODE_FLEE);
             case SCRIPT_OP_SET_ACTOR_MODE_3:
                 return SetActorMode(3);
-            case SCRIPT_OP_SET_ACTOR_MODE_4:
-                return SetActorMode(4);
-            case SCRIPT_OP_SET_ACTOR_MODE_5:
-                return SetActorMode(5);
-            case SCRIPT_OP_SET_ACTOR_MODE_6:
-                return SetActorMode(6);
-            case SCRIPT_OP_SET_ACTOR_MODE_7:
-                return SetActorMode(7);
+            case SCRIPT_OP_SET_ACTOR_MODE_APPROACH:
+                return SetActorMode(ACTOR_MODE_APPROACH);
+            case SCRIPT_OP_SET_ACTOR_MODE_CHARGE:
+                return SetActorMode(ACTOR_MODE_CHARGE);
+            case SCRIPT_OP_SET_ACTOR_MODE_PURSUE:
+                return SetActorMode(ACTOR_MODE_PURSUE);
+            case SCRIPT_OP_SET_ACTOR_MODE_SIDESTEP:
+                return SetActorMode(ACTOR_MODE_SIDESTEP);
             case SCRIPT_OP_SET_ACTOR_MODE_8:
                 return SetActorMode(8);
-            case SCRIPT_OP_SET_ACTOR_MODE_9:
-                return SetActorMode(9);
-            case SCRIPT_OP_SET_ACTOR_MODE_10:
-                return SetActorMode(10);
-            case SCRIPT_OP_SET_ACTOR_MODE_11:
-                return SetActorMode(11);
+            case SCRIPT_OP_SET_ACTOR_MODE_WANDER:
+                return SetActorMode(ACTOR_MODE_WANDER);
+            case SCRIPT_OP_SET_ACTOR_MODE_IDLE:
+                return SetActorMode(ACTOR_MODE_IDLE);
+            case SCRIPT_OP_SET_ACTOR_MODE_TALK:
+                return SetActorMode(ACTOR_MODE_TALK);
             case SCRIPT_OP_RESET_AND_REVERSE_WINDOW_ATTR:
                 SetWindowReverse(window, WINDOW_ATTR_RESET_AND_REVERSE);
                 return SCRIPT_CONTINUE;

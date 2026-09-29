@@ -368,7 +368,7 @@ void AlertActor(Character* actor, i16 state) {
         }
         SetCharacterFlag(actor, 8);
         SetCharacterFlag(actor, 10);
-        actor->mode = 6;
+        actor->mode = ACTOR_MODE_PURSUE;
     }
 }
 
