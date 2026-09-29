@@ -53,7 +53,7 @@ fieldmain	59	57
 fieldobj	141	137
 fieldscreen	103	102
 fieldview	38	36
-font	150	146
+font	150	144
 fusion	114	111
 gameloop	7	7
 gamestate	7	7
@@ -99,7 +99,7 @@ statusmenu	9	9
 statuspanel	49	47
 surfacecopy	1	1
 textapi	5	5
-textchar	1	0
+textchar	1	1
 textstate	21	20
 treasurebox	147	138
 vec3	10	8
@@ -871,9 +871,9 @@ font	?CreateScreenLayer@@YAHH@Z	100.0000	100.0000	4	e2c1a84d850d	0x551c0	100.000
 font	?DrawPadButton@@YAHPAUIDirectDrawSurface@@HH@Z	100.0000	100.0000	3	fcd73c6c27ad	0x55020	100.0000	
 font	?FindPartyPanel@@YAFFF@Z	100.0000	100.0000	1	2075d924f450	0x54b30	100.0000	
 font	?FreeScreenLayers@@YAXXZ	100.0000	100.0000	2	d9d7006e081d	0x54fd0	100.0000	
-font	?LayerAtPoint@@YAHII@Z	100.0000	100.0000	2	cfa5a6265e3a	0x553d0	100.0000	
+font	?LayerAtPoint@@YAHII@Z	100.0000	96.2255	2	cfa5a6265e3a	0x553d0	100.0000	
 font	?LayerIndexAtPoint@@YAHII@Z	100.0000	100.0000	1	1187ab0ecbd4	0x55520	100.0000	
-font	?PadButtonAtPoint@@YAHII@Z	100.0000	100.0000	2	3aed21698f51	0x55580	100.0000	
+font	?PadButtonAtPoint@@YAHII@Z	100.0000	90.7065	2	3aed21698f51	0x55580	100.0000	
 font	?PaintLayer@@YAHHPAUScreenLayer@@@Z	100.0000	100.0000	4	31b016236b8c	0x55060	100.0000	
 font	?PlaceDraggedLayer@@YAXH@Z	100.0000	100.0000	1	e993720fc0f5	0x558e0	100.0000	
 font	?ReleasePartyPanel@@YAXHH@Z	100.0000	100.0000	3	c589de396cfc	0x55760	100.0000	
@@ -2337,7 +2337,7 @@ textapi	_PaintTextRun	100.0000	100.0000	2	29901dc7a92a	0x452c0	100.0000
 textapi	_RefreshTextPlane	100.0000	100.0000	1	cbd68c234fe5	0x45280	100.0000	
 textapi	_SetTextPlaneHook	100.0000	100.0000	1	9fcbeac9d6ea	0x452f0	100.0000	
 textapi	_ToggleTextHighlight	100.0000	100.0000	1	6fb0a9eaf4d4	0x45290	100.0000	
-textchar	_ReadTextChar	99.5918	99.5918	3	477cb7c60c88	0x1aa0	99.5918	
+textchar	_ReadTextChar	100.0000	100.0000	3	477cb7c60c88	0x1aa0	100.0000	
 textstate	_AdvanceTextDelay	100.0000	100.0000	1	e28d1979d4c7	0x32a40	100.0000	
 textstate	_ClearTextPeriod	100.0000	100.0000	1	426da387d8e3	0x32ca0	100.0000	
 textstate	_DisableTextDelay	100.0000	100.0000	1	2ba59892f991	0x32ac0	100.0000	
