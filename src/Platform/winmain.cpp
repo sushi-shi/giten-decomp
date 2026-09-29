@@ -738,8 +738,15 @@ void WaitFrames(i16 count) {
     }
 }
 
+#ifdef GITEN_COMPAT
+static void PumpMessages(void);
+#endif
+
 RVA(0x00049f30, 0xf)
 void RunFrame(void) {
+#ifdef GITEN_COMPAT
+    PumpMessages();
+#endif
     PollInput();
     LatchMouseClicks();
     RenderFrame();
@@ -3479,6 +3486,37 @@ static void WaitForFrame(void) {
     }
     s_frameClockCount++;
 }
+
+// @bug Retail removes window messages only in WinMain's loop. A nested modal
+// loop that runs frames itself (RunBagDiscardMenu's, through RunFrame) takes
+// none for as long as the player keeps it open: Windows NT marks the window
+// Not Responding and ghosts it, a missed WM_ACTIVATEAPP leaves the input
+// acquired and the cursor confined after switching away, and wrappers such as
+// DxWnd that work through the message queue stall (reported as minutes of
+// delay in the item-discard screen). And while the application is inactive,
+// WinMain's loop spins without waiting, dispatching the last message again on
+// every pass.
+// This removes and dispatches the pending messages as WinMain's loop does and
+// exits on WM_QUIT as it does; while the application is inactive it waits for
+// the next message instead of spinning. Its callers run outside any window
+// procedure, so the dispatch does not re-enter one.
+static void PumpMessages(void) {
+    MSG message;
+
+    for (;;) {
+        if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) {
+            if (message.message == WM_QUIT) {
+                exit(0);
+            }
+            TranslateMessage(&message);
+            DispatchMessage(&message);
+        } else if (s_appActive) {
+            return;
+        } else {
+            WaitMessage();
+        }
+    }
+}
 #endif
 
 // One frame: restores lost surfaces, steps the fade and runs the render mode's
@@ -4969,6 +5007,9 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
     }
     nextTick = 0;
     for (;;) {
+#ifdef GITEN_COMPAT
+        PumpMessages();
+#else
         while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE) || !s_appActive) {
             if (message.message == WM_QUIT) {
                 exit(0);
@@ -4976,6 +5017,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
             TranslateMessage(&message);
             DispatchMessage(&message);
         }
+#endif
         if (timeGetTime() > nextTick) {
             nextTick = timeGetTime() + 1;
             if (g_moveState == 0 && g_fadeMode == 0) {
