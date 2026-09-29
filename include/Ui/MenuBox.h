@@ -103,10 +103,13 @@ MenuBox* DestroyMenuBox(MenuBox* menu);
 
 MenuBox* CreateMenuBox(MenuBox* old, i16 window, i16 panelRows);
 
-// Moves the menu's list to (x, y); -1 keeps a coordinate.
+// MoveMenuBox and SetMenuItems keep a coordinate or the page rows given as
+// MENU_BOX_KEEP.
+#define MENU_BOX_KEEP (-1)
+
+// Moves the menu's list to (x, y).
 void MoveMenuBox(MenuBox* menu, i16 x, i16 y);
 
-// A pageRows of -1 keeps the plane's own.
 void SetMenuItems(MenuBox* menu, i16 pageRows, void* items, i16 itemCount, MenuHandler handler);
 
 GZ_ENUM_RETURN(TextEvent, i16) RunMenu(MenuBox* menu);

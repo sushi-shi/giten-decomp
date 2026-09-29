@@ -149,7 +149,7 @@ DATA(0x00081694)
 static i16 s_countdownEntry = 0;
 
 DATA(0x00081698)
-static i16 s_holdOn = 0;
+static b16 s_holdOn = false;
 
 // The handle of the block that holds generated script text.
 DATA(0x0008169c)
@@ -1365,8 +1365,8 @@ void CopyScriptLongVar(i16 dst, i16 src) {
 }
 
 RVA(0x0003c0a0, 0x12)
-i16 SetHold(i16 on) {
-    i16 prev = s_holdOn;
+b16 SetHold(b16 on) {
+    b16 prev = s_holdOn;
     s_holdOn = on;
     return prev;
 }

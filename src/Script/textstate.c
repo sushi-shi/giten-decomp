@@ -69,7 +69,7 @@ i16 OpReplaceTextCharDelay(void) {
     return ReadTextCharDelay();
 }
 
-static __inline i16 ExchangeTextDelaySkipDisabled(i16 disabled) {
+static __inline b16 ExchangeTextDelaySkipDisabled(b16 disabled) {
     i16 previous = g_textState.delaySkipDisabled;
     g_textState.delaySkipDisabled = disabled;
     return previous;
@@ -77,12 +77,12 @@ static __inline i16 ExchangeTextDelaySkipDisabled(i16 disabled) {
 
 RVA(0x00032b00, 0x1d)
 i16 DisableTextDelaySkip(void) {
-    return ExchangeTextDelaySkipDisabled(1);
+    return ExchangeTextDelaySkipDisabled(true);
 }
 
 RVA(0x00032b20, 0x1d)
 i16 EnableTextDelaySkip(void) {
-    return ExchangeTextDelaySkipDisabled(0);
+    return ExchangeTextDelaySkipDisabled(false);
 }
 
 RVA(0x00032b40, 0x3b)
@@ -90,9 +90,9 @@ void InitTextState(TextState* state) {
     if (!state->delayOn) {
         state->scrollEnabled = false;
         state->timedWait = false;
-        state->inputWait = 1;
+        state->inputWait = true;
     } else {
-        state->inputWait = 0;
+        state->inputWait = false;
         state->scrollEnabled = true;
         state->timedWait = true;
     }
@@ -100,21 +100,21 @@ void InitTextState(TextState* state) {
     state->delayLeft = 0;
     state->delayStep = 0;
     state->waitFrames = 30;
-    state->delayRamp = 0;
-    state->flag7 = 0;
+    state->delayRamp = false;
+    state->flag7 = false;
     state->messageHookEnabled = false;
-    state->delaySkipDisabled = 1;
+    state->delaySkipDisabled = true;
 }
 
 RVA(0x00032b80, 0x20)
 void ResetTextStateInstant(void) {
-    InitTextStateFlags(&g_textState, 0, 0);
+    InitTextStateFlags(&g_textState, false, false);
     InitTextState(&g_textState);
 }
 
 RVA(0x00032ba0, 0x20)
 void ResetTextStateDelayed(void) {
-    InitTextStateFlags(&g_textState, 1, 1);
+    InitTextStateFlags(&g_textState, true, true);
     InitTextState(&g_textState);
 }
 

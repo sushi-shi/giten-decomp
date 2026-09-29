@@ -67,7 +67,7 @@ extern b16 g_inChoices;
 extern i32 g_scriptVars[256];
 
 void SetWindowOption(i16 option);
-i16 SetHold(i16 on);
+b16 SetHold(b16 on);
 
 b16 OpBeginChoices(i16 window);
 

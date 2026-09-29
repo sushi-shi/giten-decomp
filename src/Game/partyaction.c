@@ -509,13 +509,13 @@ b16 SwapPartyRows(void) {
 
 RVA(0x00006180, 0x1bc)
 i16 AdjustActorAction(i16 id, i16 action) {
-    i16 hold;
+    b16 hold;
     i16 window;
     i16 result;
     Character* actor;
     g_actorId = id;
     ClearFlagBank(12);
-    hold = SetHold(1);
+    hold = SetHold(true);
     window = OpenMessageWindow();
     StartScript(0xdb, 1, NewScriptContext(0, NULL));
     ClearScriptLongVars();
@@ -531,7 +531,7 @@ i16 AdjustActorAction(i16 id, i16 action) {
     FreeScriptContext(GetCurrentScript());
     SetHold(hold);
     SetMessageLifetime(60);
-    SetMessageHold(0);
+    SetMessageHold(false);
     result = 0;
     actor = GetCombatant(id);
     switch (action & CONDITION_ACTION_MASK) {

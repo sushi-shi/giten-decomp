@@ -162,7 +162,7 @@ EffectCommand* StepScreenEffectScript(void);
 i16 ExecuteEffectCommand(void);
 
 void InitEffectImageSets(void);
-i16 ExchangeEffectSkipping(i16 skipping);
+b16 ExchangeEffectSkipping(b16 skipping);
 i16 FindEffectImageSet(i16 id);
 void LoadEffectImageSet(i16 slot, i16 id);
 void FreeEffectImageSet(i16 slot);

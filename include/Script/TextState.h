@@ -30,8 +30,8 @@ typedef struct TextState {
     i16 spare; // @identity-TODO: never read on its own; only the 16-byte block copies carry it
 } TextState;
 
-static __inline void InitTextStateFlags(TextState* state, i16 style, i16 delayOn) {
-    state->flag0 = 1;
+static __inline void InitTextStateFlags(TextState* state, b16 style, b16 delayOn) {
+    state->flag0 = true;
     state->flag1 = style;
     state->delayOn = delayOn;
 }

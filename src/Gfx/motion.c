@@ -70,7 +70,7 @@ static i16 s_currentImageSet = 0;
 // @identity-TODO: set by the effect state's first phase (0) and its skip
 // path (1); nothing reads it back.
 DATA(0x0007821c)
-static i16 s_effectSkipping = 0;
+static b16 s_effectSkipping = false;
 
 DATA(0x00078220)
 static i16 s_paletteRefs = 0;
@@ -373,8 +373,8 @@ void InitEffectImageSets(void) {
 }
 
 RVA(0x00004ea0, 0x12)
-i16 ExchangeEffectSkipping(i16 skipping) {
-    i16 old = s_effectSkipping;
+b16 ExchangeEffectSkipping(b16 skipping) {
+    b16 old = s_effectSkipping;
     s_effectSkipping = skipping;
     return old;
 }

@@ -53,10 +53,10 @@ MenuBox* CreateMenuBox(MenuBox* old, i16 window, i16 panelRows) {
 RVA(0x000207d0, 0x2d)
 void MoveMenuBox(MenuBox* menu, i16 x, i16 y) {
     if (menu) {
-        if (x != -1) {
+        if (x != MENU_BOX_KEEP) {
             menu->list->x = x;
         }
-        if (y != -1) {
+        if (y != MENU_BOX_KEEP) {
             menu->list->y = y;
         }
     }
@@ -65,7 +65,7 @@ void MoveMenuBox(MenuBox* menu, i16 x, i16 y) {
 RVA(0x00020800, 0x2f)
 void SetMenuItems(MenuBox* menu, i16 pageRows, void* items, i16 itemCount, MenuHandler handler) {
     if (menu) {
-        if (pageRows != -1) {
+        if (pageRows != MENU_BOX_KEEP) {
             menu->pageRows = pageRows;
         }
         menu->itemCount = itemCount;
@@ -129,7 +129,7 @@ GZ_ENUM_RETURN(TextEvent, i16) PollMenuBox(MenuBox* menu) {
         return TEXT_EVENT_CANCEL;
     }
     control = RunPanelInput(menu->list);
-    if (control == -2) {
+    if (control == PANEL_INPUT_CANCELLED) {
         return TEXT_EVENT_CANCEL;
     }
     if (control >= 0) {

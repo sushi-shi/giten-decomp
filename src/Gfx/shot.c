@@ -219,7 +219,7 @@ RVA(0x000059d0, 0x60)
 b16 RunShotState(void) {
     i16 result;
     if (GetGamePhase() == 0) {
-        ExchangeEffectSkipping(0);
+        ExchangeEffectSkipping(false);
         NextGamePhase();
     }
     result = StepShot();
@@ -240,7 +240,7 @@ b16 RunShotState(void) {
 RVA(0x00005a30, 0x50)
 b16 RunClosingEffectState(void) {
     if (GetEffectScript() != NULL) {
-        ExchangeEffectSkipping(1);
+        ExchangeEffectSkipping(true);
         StepEffectScript();
         if (GetEffectScript() != NULL) {
             return false;

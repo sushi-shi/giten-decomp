@@ -371,3 +371,25 @@ src/Game/debugmenu.c	RunDebugMenu	*	arithmetic	operator + MENU_STEP_PICK_FIRST	d
 src/Game/debugmenu.c	RunDebugMenu	*	call-argument	StartDebugScene(*argument 1	@identity-TODO: the debug script files 0xaf and 0xd1 the rows run (disc scripts)
 src/Game/debugmenu.c	RunDebugMenu	0	call-argument	MoveMapCoord(*argument 3	the shot flies straight ahead (no sideways offset)
 src/Game/debugmenu.c	RunDebugMenu	0	call-argument	LaunchShot(*argument 2	@identity-TODO: LaunchShot's second argument, 0 for the test shot
+src/Ui/message.c	*	0	call-argument	PrintWindowText(*argument 3	attribute 0: print in the plane's own attribute
+src/Ui/message.c	RunTextWindowState	[01]	trivial-function-literal	[01] case	the text-window state's sub-steps: repaint, then close
+src/Ui/message.c	RunTextWindowState	1	call-argument	TestFeatureMask(*	@identity-TODO: feature bit 1, tested for no effect after the repaint
+src/Ui/message.c	SetMessageLifetime	*	*	*	a lifetime under one tick falls back to 15 ticks
+src/Ui/message.c	TickMessageWindow	0	*	*	no ticks left
+src/Ui/menubox.c	*	0	call-argument	DispatchMenuEvent(*argument 2	page-level menu events carry no row (index 0)
+src/Ui/menubox.c	DestroyMenuBox	1	call-argument	ReleasePanel(*argument 2	the panel block is freed too
+src/Ui/menubox.c	CreateMenuBox	-1	call-argument	CreatePositionedPanel(*	@identity-TODO: -1, -1 position the list panel by the window
+src/Ui/menubox.c	CreateMenuBox	0	*	*value	an empty menu context
+src/Ui/menubox.c	CreateMenuBox	-2	store	*repaintMode	@identity-TODO: repaint mode -2 of a new menu (RepaintTextPlane mode)
+src/Ui/menubox.c	BuildMenuPage	0	*	*	the page flags start clear; row 0 has no previous page
+src/Script/textstate.c	TickTextDelay	*	*	*	the per-character delay countdown: counts down by 2 per tick, finishing at 0
+src/Script/textstate.c	InitTextState	0	*	*charDelay	no per-character delay
+src/Script/textstate.c	InitTextState	30	store	*waitFrames	a timed wait lasts 30 frames by default
+src/Script/textstate.c	*TextPeriod	*	*	*	the text period countdown: 0 while running, -1 once it has elapsed
+src/Gfx/shot.c	SetShotPath	*	*	*	shot geometry: from and to the centre subcell 4 of their cells, lifted 1 and 2 units, depth never 0; no slope without depth
+src/Gfx/shot.c	StepShot	[01]	trivial-function-literal	[01] return	0 once the shot arrives, 1 while it flies
+src/Gfx/shot.c	GetShotScaledPosition	*	*	*	dead: the shot position scaled from the 320-unit field to 450x373, depth never 0
+src/Gfx/shot.c	RunShotState	0	*	*	phase 0 starts the shot; StepShot's 0 means it arrived
+src/Gfx/shot.c	RunClosingEffectState	0	call-argument	*	the effect's image set and record slot 0
+src/Text/windowtext.c	PrintWindowText	0	*	*inputWait	printed text waits for no input
+src/Text/windowtext.c	PutTextChar	*	*	*	a character's cell width (1 or 2, 8 pixels per cell), the slack its punctuation may use at the line end (0, -2 or -4), and -2 when the character is deferred to the next line

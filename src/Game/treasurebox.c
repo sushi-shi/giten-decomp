@@ -2006,9 +2006,9 @@ b16 RunAutomapState(void) {
             break;
         case 2:
             input = RunPanelInput(s_mapPanel);
-            if (input == -2) {
+            if (input == PANEL_INPUT_CANCELLED) {
                 NextGamePhase();
-            } else if (input != -1) {
+            } else if (input != PANEL_INPUT_NONE) {
                 savedState = SaveDrawState();
                 switch (input) {
                     case 0:

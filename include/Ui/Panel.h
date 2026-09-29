@@ -82,6 +82,13 @@ Panel* ReleasePanel(Panel* panel, i16 freePanel);
 i16 PanelRowHandlerDefault(PanelRow* row, i16 value, i16 op);
 void SetPanelRowState(Panel* panel, i16 index, GZ_ENUM_PARAM(PanelFlags, u16) flags);
 void PaintPanel(Panel* panel, i16 mode);
+// What RunPanelInput returns when no row was picked and when the panel was
+// cancelled (a right click); otherwise the picked row.
+GZ_ENUM_CONST_BEGIN(PanelInput)
+    PANEL_INPUT_NONE = -1,
+    PANEL_INPUT_CANCELLED = -2
+GZ_ENUM_CONST_END(PanelInput)
+
 i16 RunPanelInput(Panel* panel);
 
 // Keep separate panel evaluation and coordinate-store order.

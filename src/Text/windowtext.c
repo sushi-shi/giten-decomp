@@ -28,9 +28,9 @@ void PrintWindowText(i16 window, const char* text, u16 attr, i16 style, i16 noKi
     if (!activeAttr) {
         activeAttr = GetTextPlaneAttr(window);
     }
-    InitTextStateFlags(&state, style, 0);
+    InitTextStateFlags(&state, style, false);
     state.messageHookEnabled = false;
-    state.delayRamp = 0;
+    state.delayRamp = false;
     state.scrollEnabled = false;
     state.timedWait = false;
     state.inputWait = 0;

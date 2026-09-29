@@ -1319,18 +1319,18 @@ RVA(0x00022a20, 0x6d)
 i16 RunPanelInput(Panel* panel) {
     i16 result;
     if (panel == NULL) {
-        return -1;
+        return PANEL_INPUT_NONE;
     }
     ExchangeActivePanel(panel);
     if (!(panel->flags & PANEL_ALLOW_RIGHT_CLICK) && TakeMouseCancelSound()) {
         g_hoveredObjectId = g_selectedObjectId = -1;
         ExchangeActivePanel(NULL);
-        return -2;
+        return PANEL_INPUT_CANCELLED;
     }
     result = PollPanel(panel);
     // Codegen constraint: preserve the explicit no-selection result assignment.
-    if (result == -1) {
-        result = -1;
+    if (result == PANEL_INPUT_NONE) {
+        result = PANEL_INPUT_NONE;
     }
     ExchangeActivePanel(NULL);
     return result;

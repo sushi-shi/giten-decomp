@@ -21,7 +21,7 @@ DATA(0x00068300)
 static i16 s_messageWindow = TEXT_PLANE_NONE;
 
 DATA(0x000716f0)
-static i16 s_textStateRefreshPending = 0;
+static b16 s_textStateRefreshPending = false;
 
 DATA(0x000716f4)
 static i16 s_messageLifetime = 0;
@@ -38,7 +38,7 @@ void PushTextWindowState(const char* text) {
     plane = CreateTextPlane(15, 0x4000);
     PrintWindowText(plane, text, 0, 0, true);
     SetGamePhase(plane);
-    s_textStateRefreshPending = 0;
+    s_textStateRefreshPending = false;
 }
 
 RVA(0x00002550, 0x70)
@@ -57,7 +57,7 @@ b16 RunTextWindowState(void) {
             break;
     }
     if (s_textStateRefreshPending) {
-        s_textStateRefreshPending = 0;
+        s_textStateRefreshPending = false;
         return UpdateFieldScreen(true);
     }
     return false;
@@ -96,12 +96,12 @@ void SetMessageLifetime(i16 ticks) {
 RVA(0x00002650, 0x35)
 i16 SetMessageHold(i16 hold) {
     i16 old;
-    if (hold == -1) {
+    if (hold == MESSAGE_HOLD_QUERY) {
         return s_messageHold;
     }
     if (s_messageWindow == TEXT_PLANE_NONE) {
         s_messageHold = true;
-        return 1;
+        return true;
     }
     old = s_messageHold;
     s_messageHold = hold;
@@ -119,7 +119,7 @@ i16 RefreshMessageWindow(void) {
 }
 
 RVA(0x000026c0, 0x30)
-i16 StartMessageTimer(i16 ticks, i16 hold) {
+i16 StartMessageTimer(i16 ticks, b16 hold) {
     RefreshMessageWindow();
     SetMessageLifetime(ticks);
     SetMessageHold(hold);
@@ -130,7 +130,7 @@ RVA(0x000026f0, 0x30)
 void ShowMessage(const char* text, i16 ticks) {
     OpenMessageWindow();
     PrintWindowText(s_messageWindow, text, 0, 1, true);
-    StartMessageTimer(ticks, 0);
+    StartMessageTimer(ticks, false);
 }
 
 RVA(0x00002720, 0x20)
@@ -157,13 +157,13 @@ void RunMessageScene(i16 scene, i16 entry, i16 ticks) {
     SetGamePhase(ticks);
     OpenMessageWindow();
     RefreshMessageWindow();
-    SetMessageHold(1);
+    SetMessageHold(true);
     StartDebugScene(scene, entry, s_messageWindow);
 }
 
 RVA(0x000027d0, 0x30)
 b16 FinishMessageScene(void) {
-    SetMessageHold(0);
+    SetMessageHold(false);
     SetMessageLifetime(GetGamePhase());
     ReturnFromGameState();
     return false;
@@ -171,20 +171,20 @@ b16 FinishMessageScene(void) {
 
 RVA(0x00002800, 0x50)
 void RunMessageScript(i16 script, i16 entry, i16 ticks) {
-    i16 hold;
+    b16 hold;
     OpenMessageWindow();
-    hold = SetHold(1);
+    hold = SetHold(true);
     RunScript(script, entry, s_messageWindow);
     SetHold(hold);
-    StartMessageTimer(ticks, 0);
+    StartMessageTimer(ticks, false);
 }
 
 RVA(0x00002850, 0x50)
 void RunMessageTextScript(i16 script, i16 entry, i16 ticks) {
-    i16 hold;
+    b16 hold;
     OpenMessageText();
-    hold = SetHold(1);
+    hold = SetHold(true);
     RunScript(script, entry, s_messageWindow);
     SetHold(hold);
-    StartMessageTimer(ticks, 0);
+    StartMessageTimer(ticks, false);
 }

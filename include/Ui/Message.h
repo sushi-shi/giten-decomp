@@ -9,9 +9,12 @@ void PushTextWindowState(const char* text);
 b16 RunTextWindowState(void);
 
 void SetMessageLifetime(i16 ticks);
+// SetMessageHold with MESSAGE_HOLD_QUERY only reads the hold.
+#define MESSAGE_HOLD_QUERY (-1)
+
 i16 SetMessageHold(i16 hold);
 i16 RefreshMessageWindow(void);
-i16 StartMessageTimer(i16 ticks, i16 hold);
+i16 StartMessageTimer(i16 ticks, b16 hold);
 i16 OpenMessageText(void);
 void TickMessageWindow(void);
 b16 FinishMessageScene(void);
