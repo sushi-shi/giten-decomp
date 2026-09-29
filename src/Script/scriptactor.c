@@ -3943,15 +3943,14 @@ void OpMaskRosterByKind(void) {
 
 // Fills pool `pool` (1: HP, else MP) by `amount` for each roster slot in the
 // mask.
-// @early-stop: retail loads the mask into a register before testing it
-// against the bit; no spelling of the test reproduces that (the permuter's
-// search is flat).
 RVA(0x000382b0, 0x67)
 void OpRecoverRosterPool(i16 pool) {
+    u32 mask;
     u32 bit = 1;
-    u32 mask = ReadScriptValue();
-    i16 amount = ReadScriptValue();
+    i16 amount;
     i16 i;
+    mask = ReadScriptValue();
+    amount = ReadScriptValue();
     for (i = 0; i < 32; i++) {
         if (RosterMemberAt(i) && (mask & bit)) {
             if (pool == 1) {
@@ -3965,13 +3964,14 @@ void OpRecoverRosterPool(i16 pool) {
 }
 
 // Clears condition `condition` from each roster slot in the mask that has it.
-// @early-stop: the same mask load as OpRecoverRosterPool.
 RVA(0x00038320, 0x5f)
 void OpCureRosterCondition(void) {
+    u32 mask;
     u32 bit = 1;
-    u32 mask = ReadScriptValue();
-    i16 condition = ReadScriptValue();
+    i16 condition;
     i16 i;
+    mask = ReadScriptValue();
+    condition = ReadScriptValue();
     for (i = 0; i < 32; i++) {
         if (mask & bit) {
             Character* character = GetRosterCharacter(i);
