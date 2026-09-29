@@ -90,7 +90,7 @@ scriptswitch	10	10
 scripttext	59	57
 scriptvars	108	106
 scriptvm	2	2
-shot	15	14
+shot	15	15
 skillattack	5	4
 skilluse	53	50
 sprite	7	6
@@ -99,7 +99,7 @@ statusmenu	9	9
 statuspanel	49	47
 surfacecopy	1	1
 textapi	5	5
-textchar	1	1
+textchar	1	0
 textstate	21	20
 treasurebox	147	138
 vec3	10	8
@@ -2079,7 +2079,7 @@ shot	_SetShotPosition	100.0000	100.0000	1	5d47141a5196	0x58d0	100.0000
 shot	_SetShotPower	100.0000	100.0000	1	5b0b36881851	0x5900	100.0000	
 shot	_ShotRelativePoint	100.0000	100.0000	1	e278fd21aefe	0x57c0	100.0000	
 shot	_StartShot	100.0000	100.0000	3	0762ead00fee	0x5620	100.0000	
-shot	_StepShot	90.1077	90.1077	2	3a51a63fe14c	0x56e0	90.1077	
+shot	_StepShot	100.0000	100.0000	2	3a51a63fe14c	0x56e0	100.0000	
 shot	_StopShot	100.0000	100.0000	1	eb752c1ebfec	0x5800	100.0000	
 skillattack	_ApplySkillResistanceOutcome	100.0000	100.0000	1	1909e14736cc	0xaf70	100.0000	
 skillattack	_ComputeSkillDamage	100.0000	98.4266	7	a90e460c0181	0xac50	100.0000	
@@ -2337,7 +2337,7 @@ textapi	_PaintTextRun	100.0000	100.0000	2	29901dc7a92a	0x452c0	100.0000
 textapi	_RefreshTextPlane	100.0000	100.0000	1	cbd68c234fe5	0x45280	100.0000	
 textapi	_SetTextPlaneHook	100.0000	100.0000	1	9fcbeac9d6ea	0x452f0	100.0000	
 textapi	_ToggleTextHighlight	100.0000	100.0000	1	6fb0a9eaf4d4	0x45290	100.0000	
-textchar	_ReadTextChar	100.0000	100.0000	3	477cb7c60c88	0x1aa0	100.0000	
+textchar	_ReadTextChar	100.0000	99.5918	3	477cb7c60c88	0x1aa0	100.0000	
 textstate	_AdvanceTextDelay	100.0000	100.0000	1	e28d1979d4c7	0x32a40	100.0000	
 textstate	_ClearTextPeriod	100.0000	100.0000	1	426da387d8e3	0x32ca0	100.0000	
 textstate	_DisableTextDelay	100.0000	100.0000	1	2ba59892f991	0x32ac0	100.0000	
