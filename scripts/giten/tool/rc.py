@@ -1,15 +1,16 @@
 """giten.tool.rc - the era resource compiler (.rc -> .res).
 
-    giten tool rc --out <res> --src <rc>
+    giten tool rc --out <res> --src <rc> [--include <dir>]...
 
 In-process (same function):
     from giten.tool import rc
     rc.compile(rc_path, res_path)
 
 RC.EXE (toolchain r2+, from VS97 SHAREDIDE/BIN) is a thin driver over
-RCDLL.DLL. Repo include/ and the source's own directory are passed as /i;
-system resource headers (winres/afxres) resolve via the wine registry INCLUDE.
-The success signal is the produced .res.
+RCDLL.DLL. The source's own directory, repo include/ and each `--include` are
+passed as /i; RC searches them for #include files and for the payload files
+resource statements name. System resource headers (winres/afxres) resolve via
+the wine registry INCLUDE. The success signal is the produced .res.
 """
 
 from __future__ import annotations
@@ -47,11 +48,14 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", required=True)
     ap.add_argument("--src", required=True)
+    ap.add_argument("--include", action="append", default=[], type=Path,
+                    help="an extra /i directory (repeatable)")
     ap.add_argument("flags", nargs=argparse.REMAINDER)
     a = ap.parse_args()
     flags = a.flags[1:] if a.flags and a.flags[0] == "--" else a.flags
     try:
-        compile(a.src, a.out, flags=flags)
+        compile(a.src, a.out, flags=flags,
+                extra_includes=[d.resolve() for d in a.include])
     except (ToolError, OSError) as e:
         print(f"[rc] {e}", file=sys.stderr)
         return 1

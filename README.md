@@ -3,7 +3,8 @@
 Binary-matching reconstruction of **Giten Megami Tensei: Tokyo Mokushiroku**
 (偽典・女神転生 東京黙示録; ASCII / Yū-Kikaku), the 1999 Windows `DDS.EXE`.
 The build compares reconstructed C and platform C++ with retail using MSVC 5.0 SP3.
-The optional candidate EXE uses resources extracted from your local original EXE.
+Resources: the resource script and IDs are recovered source; the bitmap, WAVE,
+cursor and icon payloads come from your original disc's `DDS.EXE` and are never tracked.
 Correct rendering and gameplay have not been validated.
 `giten play` builds a playable image with retail bug fixes and starts it under Wine;
 see [Playing](docs/play.md).
@@ -58,12 +59,12 @@ _CUR / MAX / HIST: 2,540 / 2,577 / 2,584 exact &middot; 98.77% / 98.89% / 98.94%
 
 ## Local candidate and resources
 
-`giten link` reads the original EXE named by `GITEN_RETAIL_EXE`, writes an
-ignored `build/gen/retail.res`, and links those resources into
-`build/exe/DDS.candidate.EXE`. All 446 resource identities and payloads were
-verified against the local original. The generated resource file is ignored;
-no resource payload is tracked. The candidate also needs any game files stored
-outside the EXE.
+`giten link` compiles the recovered resource script `src/Giten/Giten.rc` with
+the era RC.EXE and links it into `build/exe/DDS.candidate.EXE`. The payload
+files the script names are written from the original EXE named by
+`GITEN_RETAIL_EXE` into ignored `build/gen/rsrc/`; no payload is tracked.
+`giten rsrc check` compares the linked `.rsrc` with the original's. The
+candidate also needs any game files stored outside the EXE.
 
 To build it, set the original EXE path before entering the shell:
 

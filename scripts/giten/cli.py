@@ -25,6 +25,8 @@
                                      fingerprints
     giten lsp <verb>                clangd-backed refs / hover / rename (the
                                      type-aware bulk member renamer)
+    giten rsrc <verb>               the resource payloads from the original
+                                     (extract) and the candidate .rsrc check
     giten codecs --disc <DDSWIN.BIN> retail/candidate/Rust resource execution
     giten play [--disc DDSWIN.BIN]   build the bug-fixed image (GITEN_BUGFIX)
                                      and start the game under Wine/gamescope
@@ -73,7 +75,7 @@ def _dispatch(argv: list[str]) -> int:
              "delink": "giten.delink.run", "compare": "giten.compare.run"}[cmd])
         sys.argv = [f"giten {cmd}", *rest]
         return mod.main()
-    if cmd in ("sema", "walls", "ghidra", "verify", "lsp", "branch"):
+    if cmd in ("sema", "walls", "ghidra", "verify", "lsp", "branch", "rsrc"):
         import importlib
         return importlib.import_module(f"giten.{cmd}").main(rest)
     if cmd == "permute":

@@ -37,9 +37,8 @@ def toolchain_repinned() -> bool:
 
     The generator edge cannot answer this: ninja reruns it from FILES, and the
     toolchain is environment. So the driver checks it before handing over. A
-    re-pin must reconfigure rather than merely rebuild, because whether the
-    `rc` edge exists at all is decided at configure time - that is how a
-    pre-r3 shell silently produced a candidate with no `.rsrc`.
+    re-pin must reconfigure rather than merely rebuild, because the toolchain
+    identity is a declared input of every compiler edge.
     """
     from giten.graph.emit import toolchain_id
     path = REPO / graph.TOOLCHAIN_ID
@@ -152,8 +151,8 @@ def print_data_debt() -> None:
 def manifest_targets() -> set[str]:
     """Every output the emitted manifest declares an edge for.
 
-    Asked of the manifest so direct-link experiments request the generated
-    retail .res only when the configured graph has its edge.
+    Asked of the manifest so direct-link experiments request the compiled
+    resource .res only when the configured graph has its edge.
     """
     out: set[str] = set()
     try:

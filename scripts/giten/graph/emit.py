@@ -23,8 +23,9 @@ is the DEFAULT target; `verify_check` runs only for the `verify` target
     verify_readme report x ledger -> README's score block (write-if-changed)
     verify_check the MAX gate + the fast+normal tiers -> a stamp; FATAL;
                 opt-in (`giten build verify`)
-    retail_res / link   PHASE 2, opt-in (`ninja candidate`): base objs + .res ->
-                the candidate image + .map for the link-order study
+    rsrc_payloads / rc / link   PHASE 2, opt-in (`ninja candidate`): the
+                original's payload files + Giten.rc -> .res; base objs + .res
+                -> the candidate image + .map for the link-order study
     play        opt-in (`giten play`): the units whose source or headers test
                 a play flag, again with the bug-fix defines -> build/play/obj;
                 those + every other unit's base obj + the .res ->
@@ -322,16 +323,26 @@ def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str], retail: str) -
     cross-TU = object link order). A normal build never links, so this stays
     out of the default target and behind `ninja candidate` / `giten link`.
 
-    The resource payloads come from the locally supplied retail image. The
-    ignored .res is rebuilt by the graph and passed to the era linker; nothing
-    from .rsrc enters the tracked source tree.
+    The .rsrc compiles from the tracked resource script with the era RC.EXE.
+    The payload files it names are written from the locally supplied original
+    into an ignored build directory; nothing from .rsrc enters the tracked
+    source tree. `giten rsrc check` compares the linked .rsrc with retail's.
     """
     w.comment("=== PHASE 2: link -> candidate .EXE + .map (opt-in: `ninja candidate`) ===")
-    w.rule("retail_res",
-           command="$py -m giten.rsrc.retail_res --exe $in --out $out",
-           description="copy local retail resources -> $out", restat=True)
-    w.build(graph.RESOURCE_RES, "retail_res", inputs=retail,
-            implicit=_mods("rsrc/retail_res.py", "core/pe.py", "core/paths.py"))
+    w.rule("rsrc_payloads",
+           command=(f"$py -m giten.rsrc.payloads --exe $in "
+                    f"--out {graph.RESOURCE_PAYLOADS} --stamp $out"),
+           description="write the original's resource payloads -> $out", restat=True)
+    w.build(graph.RESOURCE_PAYLOAD_LIST, "rsrc_payloads", inputs=retail,
+            implicit=_mods("rsrc/payloads.py", "rsrc/tree.py", "core/pe.py",
+                           "core/paths.py"))
+    w.rule("rc",
+           command=(f"$py -m giten.tool.rc --out $out --src $in "
+                    f"--include {graph.RESOURCE_PAYLOADS}"),
+           description="rc $out")
+    w.build(graph.RESOURCE_RES, "rc", inputs=graph.RESOURCE_SCRIPT,
+            implicit=[graph.RESOURCE_HEADER, graph.RESOURCE_PAYLOAD_LIST,
+                      graph.TOOLCHAIN_ID, *_mods("tool/rc.py"), *TOOL_MODS])
     w.rule("link",
            command=(f"$py -m giten.graph.link --out {graph.CANDIDATE_EXE} "
                     f"--objs-dir {graph.BASE_DIR} --res {graph.RESOURCE_RES}"),
