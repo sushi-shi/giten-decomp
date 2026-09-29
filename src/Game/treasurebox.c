@@ -2745,8 +2745,7 @@ static __inline i16 RestoreRoomRegions(i16 width, i16 height) {
     i16 changed = 0;
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-            i16 now = GetRoomRegion(x, y);
-            changed |= now - GetPrevRegion(x, y);
+            changed |= GetRoomRegion(x, y) - GetPrevRegion(x, y);
             SetRoomRegion(x, y, GetPrevRegion(x, y));
         }
     }
@@ -2755,7 +2754,8 @@ static __inline i16 RestoreRoomRegions(i16 width, i16 height) {
 
 // Whether re-marking the rooms would change any cell's region (the grid is
 // left as it was).
-// @early-stop register allocation: width and height swap ebx/ebp.
+// @early-stop TU state: retail reads the room region before the previous one;
+// cl 5.0 orders these two equal-cost calls by translation-unit symbol state.
 RVA(0x0001ed70, 0xb9)
 i16 RoomRegionsChanged(u8* rooms, u8* doors, i16 width, i16 height) {
     SaveRoomRegions(width, height);
