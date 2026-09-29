@@ -70,7 +70,7 @@ menuresult	2	2
 message	15	15
 midistream	35	34
 modeflags	4	3
-motion	43	43
+motion	43	42
 mouse	10	9
 nibble	4	3
 objecttexture	2	2
@@ -105,7 +105,7 @@ textstate	21	20
 treasurebox	147	137
 vec3	10	8
 videostate	5	5
-vram	44	41
+vram	44	39
 vramaccess	12	11
 vramcell	14	14
 waitstate	7	7
@@ -146,7 +146,7 @@ bitmapio	_LoadBitmapToSurface16	100.0000	100.0000	11	be5062d3ed2b	0x56bd0	100.00
 bitmapio	_LoadBitmapToSurface8	100.0000	100.0000	9	c04638f551a1	0x56de0	100.0000	
 bitmapio	_LoadPictureFile	100.0000	100.0000	2	0b958e4657a9	0x57520	100.0000	
 bitmapio	_LoadScenePicture	100.0000	100.0000	3	9ad636e017b5	0x57b90	100.0000	
-bitmapio	_LoadTexture	100.0000	100.0000	9	8ff424257a41	0x577a0	100.0000	
+bitmapio	_LoadTexture	100.0000	100.0000	10	80756706e3a1	0x577a0	100.0000	
 bitmapio	_LoadWorldMapOverlay	100.0000	100.0000	4	3190f91a5ff1	0x57d80	100.0000	
 bitmapio	_LoadWorldMapTile	100.0000	100.0000	4	118cac5f0ece	0x57c70	100.0000	
 bitmapio	_OpenTextureBitmap	100.0000	100.0000	7	ada19514827b	0x57a70	100.0000	
@@ -1405,7 +1405,7 @@ motion	_ReleaseEffectPalettes	100.0000	100.0000	1	23d9d7efa281	0x5460	100.0000
 motion	_RequestPaletteRefresh	100.0000	100.0000	3	fcaad05a9349	0x49b0	100.0000	
 motion	_ResetSceneInput	100.0000	100.0000	1	b2a72da8dee1	0x4940	100.0000	
 motion	_SetEffectPalette	100.0000	100.0000	2	92ba4bd2243b	0x5410	100.0000	
-motion	_SetSceneFlags	100.0000	100.0000	2	e043b37f0ccf	0x4920	100.0000	
+motion	_SetSceneFlags	100.0000	46.0000	2	e043b37f0ccf	0x4920	100.0000	
 motion	_SkipLegacyMotionReset	100.0000	100.0000	1	86ad98bcc031	0x49f0	100.0000	
 motion	_SkipLegacyPaletteRefresh	100.0000	100.0000	1	095cb8d633d7	0x49d0	100.0000	
 motion	_SkipLegacyPaletteWait	100.0000	100.0000	1	b6af0c8f8e55	0x49e0	100.0000	
@@ -2543,15 +2543,15 @@ vram	_LoadImageKind1	100.0000	100.0000	2	ce15307a6b50	0x3270	100.0000
 vram	_LoadImageRequest	100.0000	100.0000	2	4623e6a68211	0x31f0	100.0000	
 vram	_LoadImageVariant	100.0000	100.0000	2	65b91f06ebb0	0x3190	100.0000	
 vram	_LoadMask	100.0000	100.0000	1	f3b03adbcae7	0x2bf0	100.0000	
-vram	_MarkPaletteDirty	100.0000	100.0000	2	856ced79a515	0x3010	100.0000	
-vram	_QueuePaletteUpload	100.0000	100.0000	2	4f5101a7ffe0	0x3070	100.0000	
+vram	_MarkPaletteDirty	100.0000	35.0000	2	856ced79a515	0x3010	100.0000	
+vram	_QueuePaletteUpload	100.0000	41.6667	2	4f5101a7ffe0	0x3070	100.0000	
 vram	_ReadImageBlockHandle	100.0000	100.0000	2	bf7fcfbd5d9b	0x3370	100.0000	
 vram	_ReadMaskColumn	100.0000	100.0000	1	1ee8fc525aed	0x2db0	100.0000	
 vram	_ReleaseImageBlockHandle	100.0000	100.0000	1	449027966b29	0x33d0	100.0000	
 vram	_ReleaseImagePalette	100.0000	100.0000	1	13ee5242d335	0x30d0	100.0000	
 vram	_ReleasePaletteEntry	100.0000	100.0000	1	950683ad5512	0x2fe0	100.0000	
 vram	_ResetMask	100.0000	100.0000	1	edc9613600ae	0x2b70	100.0000	
-vram	_ResetUpperPalette	76.5833	76.5833	2	c5e66b996516	0x2ec0	76.5833	
+vram	_ResetUpperPalette	76.5833	74.0833	2	c5e66b996516	0x2ec0	76.5833	
 vram	_RestorePaletteState	100.0000	100.0000	2	d95d954f5697	0x2f00	100.0000	
 vram	_RetainPaletteEntry	100.0000	100.0000	1	4e675d47be27	0x2f20	100.0000	
 vram	_SavePaletteState	100.0000	100.0000	2	11516123a575	0x2ef0	100.0000	
