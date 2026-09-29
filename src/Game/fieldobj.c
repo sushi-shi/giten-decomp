@@ -1947,11 +1947,10 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     SetItemSlotItem(&GetFieldObjectEquipment(object)[6], record->items[6]);
     SetItemSlotItem(&GetFieldObjectEquipment(object)[7], record->items[7]);
     if (GetFieldObjectEquipment(object)[6].item < 1) {
-        GetFieldObjectEquipment(object)[7].item = -1;
-        SetItemSlotItem(&GetFieldObjectEquipment(object)[6], -1);
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[6]);
+        GetFieldObjectEquipment(object)[6].attachment = -1;
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
         GetFieldObjectEquipment(object)[7].attachment = -1;
-        GetFieldObjectEquipment(object)[6].quantity = 0;
-        GetFieldObjectEquipment(object)[7].quantity = 0;
     } else if (GetFieldObjectEquipment(object)[7].item < 1) {
         EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
         GetFieldObjectEquipment(object)[7].attachment = -1;
