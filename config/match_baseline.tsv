@@ -54,7 +54,7 @@ fieldobj	141	137
 fieldscreen	103	102
 fieldview	38	36
 font	150	144
-fusion	114	111
+fusion	114	112
 gameloop	7	7
 gamestate	7	7
 handle	33	32
@@ -77,11 +77,11 @@ partyaction	103	100
 playtime	4	4
 pool	6	6
 range	25	25
-recordcache	43	41
+recordcache	43	42
 restore	3	3
 savegame	14	14
 screensave	9	9
-scriptactor	202	200
+scriptactor	202	201
 scriptctx	35	35
 scriptfield	9	6
 scriptop	3	3
@@ -1052,7 +1052,7 @@ fusion	_FreeFusionTables	100.0000	100.0000	1	d86b6d64dd93	0x27e70	100.0000
 fusion	_FusionListMenuHandler	100.0000	100.0000	4	f2a4b0c86d62	0x291b0	100.0000	
 fusion	_FusionSelectionTextHook	100.0000	100.0000	1	ab8e6e18c3ef	0x29350	100.0000	
 fusion	_GetFirstFusionSlot	100.0000	100.0000	1	1c1e90934a80	0x288a0	100.0000	
-fusion	_GetFusionClassPair	97.3125	97.3125	4	e007b0979059	0x282b0	97.3125	
+fusion	_GetFusionClassPair	100.0000	100.0000	4	e007b0979059	0x282b0	100.0000	
 fusion	_GetFusionDemonPair	100.0000	100.0000	2	fb44ec66b61f	0x28060	100.0000	
 fusion	_GetFusionFallbackEntry	100.0000	100.0000	1	0c3bb9cc8ed7	0x281a0	100.0000	
 fusion	_GetFusionGrowthBonus	100.0000	100.0000	2	9f9dbbaac047	0x26da0	100.0000	
@@ -1599,7 +1599,7 @@ recordcache	_InitWordList	100.0000	100.0000	2	b504194fc8f7	0x2dbf0	100.0000
 recordcache	_KeepFirstSixWords	100.0000	100.0000	3	a5c0e88a6438	0x2dee0	100.0000	
 recordcache	_LearnLevelSkill	100.0000	100.0000	8	4c1680fb28be	0x2e000	100.0000	
 recordcache	_LoadSkillFiles	100.0000	100.0000	1	82be74112064	0x2e3a0	100.0000	
-recordcache	_MoveWord	91.0364	91.0364	2	ebb667ac449c	0x2dd80	91.0364	
+recordcache	_MoveWord	100.0000	100.0000	3	8c806b0e895b	0x2dd80	100.0000	
 recordcache	_RemoveLowestAffiliatedSkill	100.0000	100.0000	4	7556d539572d	0x2e110	100.0000	
 recordcache	_RemoveWord	100.0000	100.0000	3	8f16537e0dc6	0x2de10	100.0000	
 recordcache	_ResetRecordCache	100.0000	100.0000	1	4e9679d530da	0x2e820	100.0000	
@@ -1801,7 +1801,7 @@ scriptactor	_OpStoreActorDistance	100.0000	100.0000	1	1400a3016e5b	0x32d80	100.0
 scriptactor	_OpSubLongVar	100.0000	100.0000	1	31cef2f6f130	0x336d0	100.0000	
 scriptactor	_OpSwapLongVars	100.0000	100.0000	1	4b948a44f8eb	0x33940	100.0000	
 scriptactor	_OpSwitchOnMoonPhase	100.0000	100.0000	1	1f20651327a0	0x36610	100.0000	
-scriptactor	_OpTakeDropSlot	99.0625	99.0625	4	cf4e138bf036	0x35a90	99.0625	
+scriptactor	_OpTakeDropSlot	100.0000	100.0000	5	3325717b6305	0x35a90	100.0000	
 scriptactor	_OpTakeItem	100.0000	100.0000	1	11891eb1b1cf	0x356d0	100.0000	
 scriptactor	_OpUnsetLongVar	100.0000	100.0000	1	aed4f90da436	0x33980	100.0000	
 scriptactor	_OpXorLongVar	100.0000	100.0000	1	99f16500aff8	0x33760	100.0000	
@@ -2239,7 +2239,7 @@ statestack	_RunDdsSummon	100.0000	100.0000	2	46831843a62d	0x174b0	100.0000
 statestack	_RunDismissMenuState	100.0000	100.0000	2	4efa1f87e4eb	0x17030	100.0000	
 statestack	_RunFieldTextScene	100.0000	100.0000	2	4ac77940835a	0x18230	100.0000	
 statestack	_RunFrozenFieldScene	100.0000	100.0000	7	33d0e6107c62	0x18340	100.0000	
-statestack	_RunItemUse	97.3596	97.3596	12	ab4ab98d7d16	0x1a400	97.3596	
+statestack	_RunItemUse	97.7705	97.7705	13	5034f6eda327	0x1a400	97.7705	
 statestack	_RunLevelUp	100.0000	100.0000	14	625f98be8b19	0x18b60	100.0000	
 statestack	_RunPartyPicker	100.0000	100.0000	2	7924a963a700	0x19ea0	100.0000	
 statestack	_RunPickerMenu	100.0000	100.0000	1	b402da452484	0x19e60	100.0000	
@@ -2414,7 +2414,7 @@ treasurebox	_GetAreaNpcCount	100.0000	100.0000	1	1f59d2c052de	0x1f420	100.0000
 treasurebox	_GetAreaNpcTextureSlot	100.0000	100.0000	2	0f869bbaa423	0x1f480	100.0000	
 treasurebox	_GetCellObjectTable	100.0000	100.0000	2	0163ea789db6	0x1efb0	100.0000	
 treasurebox	_GetCellSpawnRate	100.0000	100.0000	2	9d2b206eb775	0x1eef0	100.0000	
-treasurebox	_GetCellTrapDamage	100.0000	100.0000	4	873bac125595	0x1c920	100.0000	
+treasurebox	_GetCellTrapDamage	100.0000	98.8571	4	873bac125595	0x1c920	100.0000	
 treasurebox	_GetGridByte	100.0000	100.0000	3	f153c34f43c6	0x1eba0	100.0000	
 treasurebox	_GetItemMenuStock	100.0000	100.0000	2	15e85dbbc6a5	0x1c120	100.0000	
 treasurebox	_GetItemMenuTotal	100.0000	100.0000	6	cbbea6898335	0x1bb60	100.0000	
@@ -2477,7 +2477,7 @@ treasurebox	_RoomRegionsChanged	100.0000	99.6835	4	bbe3537e51cf	0x1ed70	100.0000
 treasurebox	_RotateAutomapRegion	100.0000	100.0000	2	ab3938b51a6e	0x1d210	100.0000	
 treasurebox	_RunAnalyzeWindow	100.0000	100.0000	11	775a7e57d96f	0x1ad50	100.0000	
 treasurebox	_RunAutomapState	100.0000	100.0000	7	5dc6282471d3	0x1d530	100.0000	
-treasurebox	_RunCellTrap	99.9024	99.9024	4	5a10f8b6df26	0x1c9f0	99.9024	
+treasurebox	_RunCellTrap	100.0000	100.0000	5	c939189125e6	0x1c9f0	100.0000	
 treasurebox	_RunFieldEffect	100.0000	100.0000	1	676b46c8c5f3	0x1f700	100.0000	
 treasurebox	_RunItemBuyMenu	100.0000	100.0000	2	391f52cb9f5a	0x1be10	100.0000	
 treasurebox	_RunItemSellMenu	100.0000	100.0000	2	6c6f525bb5d8	0x1bf80	100.0000	
@@ -2502,7 +2502,7 @@ treasurebox	_StoreAutomapLevel	100.0000	100.0000	7	646d85ac94c0	0x1cfc0	100.0000
 treasurebox	_TakeLearnableSkill	100.0000	100.0000	3	1291de355438	0x1c330	100.0000	
 treasurebox	_TrainingThreshold	100.0000	100.0000	1	466d0a0b0508	0x1c650	100.0000	
 treasurebox	_TransformAutomapPoint	100.0000	100.0000	1	2aff8df87c47	0x1d380	100.0000	
-treasurebox	_UpdateAutomapScrollPanel	100.0000	96.9930	3	cd918d158742	0x1d890	100.0000	
+treasurebox	_UpdateAutomapScrollPanel	100.0000	98.1469	3	cd918d158742	0x1d890	100.0000	
 treasurebox	_UpdateCurrentRoom	100.0000	100.0000	2	f36ff1157c00	0x1f070	100.0000	
 treasurebox	_UpdateInfoBar	100.0000	100.0000	3	0e067f87e574	0x1ea50	100.0000	
 treasurebox	_WriteAutomapAreas	100.0000	100.0000	7	ac8dc06a41f0	0x1e3c0	100.0000	
