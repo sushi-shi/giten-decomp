@@ -847,3 +847,31 @@ src/Game/character.c	*FieldState	*	*	*	the field state record: six party slots, 
 src/Game/character.c	WriteCharacters	16	*	*	the sixteen character slots (CHARACTER_SLOT_COUNT)
 src/Game/character.c	LoadCharacter	*	*	*	@identity-TODO: the two words cleared when a character loads
 src/Game/character.c	UnequipPart	1	*	*	item quantities start at 1; SetEquipSlot's fourth argument 1 (@identity-TODO)
+src/Game/statuspanel.c	*	0x800	call-argument	SetStatusMenuItemFlag(*argument 2	@identity-TODO: panel row flag 0x800, which no claimed code tests
+src/Game/statuspanel.c	DrawStatusScreen	*	*	*	status screen layout: the text-cell positions of the name, capacity, conditions, equipment lines and portrait; the first member; two or more roster entries for the next-member command; the equipment list's first pass (1)
+src/Game/statuspanel.c	Run*Screen	*	*	*	@identity-TODO: the equip and attach screens' sub-steps (3..9), picks (-1 none, -2 cancelled), quantities from 1 and the preview's before/after (0/1); one item moved between bag and slot (StoreBagItem's -1)
+src/Game/statuspanel.c	DrawEquipPanel	*	*	*	equip panel layout: rows every 0x18 pixels from 0x28, four stat columns at 5-cell spacing, panel images 7, 0x10 and 0x19
+src/Game/statuspanel.c	PollEquipPart	*	*	*	equip-part hit test: 8-pixel cells from column 0x37 (0x15 wide) and row 40, four rows per part; -1 when no part is hit
+src/Game/statuspanel.c	DrawStat[!u]*	*	*	*	stat display layout: bar segments of 50, twelve-cell bars, the ten stats before fortune, list rows every 2 lines; -1 when nothing is drawn; compare columns
+src/Game/statuspanel.c	DrawBattleStat*	*	*	*	battle-stat panel layout: rows every 3 lines, six-cell columns, the fourth group (3, @identity-TODO in BattleStat.h) shown for humans, ammo under the gun column (13), icons shifted by 4 when hidden, human ids below 32
+src/Game/statuspanel.c	DrawEquipLine*	*	*	*	equipment line layout: column 3, item ids from 1, gem attachments up to 15
+src/Game/statuspanel.c	DrawEquipPickRow	*	*	*	pick-row layout: column 0x37; item ids from 1; no attachment (-1)
+src/Game/statuspanel.c	*EquipChange	*	*	*	@identity-TODO: the preview's scratch character slot 14, a quantity of 1, empty skills, SetEquipSlot's 0, the stat totals at column 3; no pick (-1) and the equip sub-step 1
+src/Game/statuspanel.c	ClearEquipPreview	*	*	*	the stat totals at column 3, row 0x19
+src/Game/statuspanel.c	RunStatusCommands	*	*	*	the first member; the stat totals at column 3
+src/Game/statuspanel.c	Run*Page	*	*	*	@identity-TODO: status pages: sub-step 3/4, commands 5 and 10, picks and resumes (-2 cancelled), the bag copy's start 0, marks kept (1)
+src/Game/statuspanel.c	ResumeStatusPage	0	*	*	@identity-TODO: hotspot plane 0
+src/Game/statuspanel.c	s_*Page	-1	data-or-extent	*	a page with no pick yet ({-1, -1})
+src/Game/statuspanel.c	s_attach	*	data-or-extent	*	an empty attach state (no picks, -1)
+src/Game/statuspanel.c	s_battleStatIcons	*	data-or-extent	*	@identity-TODO: battle-stat icon images
+src/Game/statuspanel.c	SkillListHandler	*	*	*	skill ids from 1; marks dropped (0)
+src/Game/statuspanel.c	*Attach*	*	*	*	@identity-TODO: the attach menus: 16 rows, text plane flag 8 set, an empty list, stackable items (limit 1 means not)
+src/Game/statuspanel.c	OpenEquipMenu	*	*	*	@identity-TODO: the equipment list's second pass (0) and text plane flag 8 set
+src/Game/statuspanel.c	OpenStatListWindow	-1	*	*	no window
+src/Game/statuspanel.c	ListEquipCandidates	*	*	*	item ids from 1; no candidates
+src/Game/statuspanel.c	AlignmentChartCell	*	*	*	the alignment chart: levels -128..127 scaled to 24 cells, origin 23
+src/Game/statuspanel.c	DrawStatusConditions	*	*	*	the conditions list: column 2 and at most 18 entries
+src/Game/statuspanel.c	DrawStatusExperience	*	*	*	experience to the next level: none at level 99; ExperienceForLevel's 1
+src/Game/statuspanel.c	DrawStatusMemberPortrait	*	*	*	@identity-TODO: portraits 0x4000 + picture index (0x4001 before the event flag), variant 0, mode 1
+src/Game/statuspanel.c	DrawStatusName	*	*	*	the name buffer (36 bytes), an empty name, two lines down
+src/Game/statuspanel.c	DrawStatusVitals	*	call-argument	*	vitals layout: text column 3, the battle panel at 52

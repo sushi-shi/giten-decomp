@@ -34,7 +34,7 @@ void SortShortPair(i16* lo, i16* hi);
 
 // A copy of `text` in a static buffer: '＠' ends the text when `keepMarks`
 // is clear, and is skipped when it is set.
-char* FilterTextMarks(const char* text, i16 keepMarks);
+char* FilterTextMarks(const char* text, b16 keepMarks);
 
 // The 256-byte filter buffer.
 extern char g_filteredText[256];

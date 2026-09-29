@@ -248,7 +248,7 @@ void SortShortPair(i16* lo, i16* hi) {
 }
 
 RVA(0x0000bc30, 0x92)
-char* FilterTextMarks(const char* text, i16 keepMarks) {
+char* FilterTextMarks(const char* text, b16 keepMarks) {
     char* output;
     u16 ch;
     g_filteredText[0] = '\0';

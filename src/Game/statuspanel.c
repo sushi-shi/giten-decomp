@@ -1866,7 +1866,7 @@ i16 RunSkillPage(i16 sub) {
             ClearTextPlane(s_skillPage.plane);
             PrintWindowText(
                 s_skillPage.plane,
-                FilterTextMarks(GetSkillDescription(s_skillPage.pick), 1),
+                FilterTextMarks(GetSkillDescription(s_skillPage.pick), true),
                 TEXT_ATTR_DEFAULT,
                 0,
                 true
@@ -1942,7 +1942,7 @@ static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     "%-16.16sMAX%s %-26.26s",
                     view->name,
                     unit,
-                    FilterTextMarks(view->description, 0)
+                    FilterTextMarks(view->description, false)
                 );
             } else {
                 unit = GetSkillParameterCost(&view->parameters) < 0 ? "hp" : "mp";
@@ -1952,7 +1952,7 @@ static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     view->name,
                     abs(GetSkillParameterCost(&view->parameters)),
                     unit,
-                    FilterTextMarks(view->description, 0)
+                    FilterTextMarks(view->description, false)
                 );
             }
             AddMenuLine(
@@ -1968,7 +1968,11 @@ static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
 
 static __inline void UnhighlightEquipPart(i16 member) {
     if (s_equipPickPart >= 0) {
-        DrawEquipPickRow(member, s_equipPickPart, 0x1400);
+        DrawEquipPickRow(
+            member,
+            s_equipPickPart,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
     }
 }
 
@@ -2007,7 +2011,17 @@ i16 PollEquipPart(i16 member, i16 mode) {
                             )) {
                             UnhighlightEquipPart(member);
                             s_equipPickPart = part;
-                            if (DrawEquipPickRow(member, part, 0x1600) < 1) {
+                            if (DrawEquipPickRow(
+                                    member,
+                                    part,
+                                    TEXT_ATTR_OPAQUE
+                                        | TEXT_ATTR(
+                                            TEXT_COLOR_GREEN,
+                                            TEXT_COLOR_BLACK,
+                                            TEXT_COLOR_BLACK
+                                        )
+                                )
+                                < 1) {
                                 s_equipPickPart = -1;
                             }
                             return -1;
