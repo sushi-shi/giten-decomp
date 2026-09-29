@@ -1547,7 +1547,7 @@ void UseAttackSkill(Character* user, Character* target) {
     if (RollSkillHit(user, target, 0) <= 0) {
         return;
     }
-    AddTrainingPoints(user, 2, 3);
+    AddTrainingPoints(user, BATTLE_GROUP_MAGIC, 3);
     g_statusCondition = GetSkillInflictedCondition(&s_effectSkill);
     switch (ApplySkillResistanceOutcome(user, 0)) {
         case 0:

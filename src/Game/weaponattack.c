@@ -95,9 +95,9 @@ i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result) {
         amount *= 1.2;
     }
     facing = GetCombatantFacingDifference(g_actorId, g_targetId);
-    if (facing == 2) {
+    if (facing == FACING_FROM_BEHIND) {
         amount *= 1.5;
-    } else if (facing != 0) {
+    } else if (facing != FACING_FACE_TO_FACE) {
         amount *= 1.2;
     }
     if (result == 2) {
@@ -128,7 +128,7 @@ b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance) {
         SetActionResult(attacker, 3);
         return true;
     }
-    if (GetCombatantFacingDifference(g_actorId, g_targetId) == 2) {
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) == FACING_FROM_BEHIND) {
         SetActionResult(attacker, 3);
         return true;
     }
@@ -143,7 +143,7 @@ b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance) {
     if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
         attack *= 2;
     }
-    if (GetCombatantFacingDifference(g_actorId, g_targetId) != 0) {
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) != FACING_FACE_TO_FACE) {
         defense = evasion * 75;
     } else {
         defense = evasion * 100;
@@ -212,18 +212,18 @@ b16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode) {
     ResetActionOutcome();
     g_hpChange = 0;
     g_attackAttribute = GetPickedAttackAttribute(attacker, &g_attackCondition);
-    g_attackResistance = GetActionResistance(target, g_attackAttribute, 1, 1, 0);
+    g_attackResistance = GetActionResistance(target, g_attackAttribute, ATTACK_WEAPON, true, false);
     g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, g_attackAttribute);
     result = RollExceptionalWeaponAttack(attacker, target, mode, g_attackResistance);
     if (result != 0) {
-        AddTrainingPoints(attacker, 0, 1);
+        AddTrainingPoints(attacker, BATTLE_GROUP_WEAPON, 1);
     }
     if (result < 5) {
         if (result == 0) {
             result = RollWeaponHit(attacker, target, g_attackResistance);
             attacker->resultFlag = result;
             if (result != 0) {
-                AddTrainingPoints(attacker, 0, 1);
+                AddTrainingPoints(attacker, BATTLE_GROUP_WEAPON, 1);
             }
         } else {
             SetCharacterResult(attacker, result, 1);
@@ -234,7 +234,7 @@ b16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode) {
         amount = 0x7fff;
         SetCharacterChanges(attacker, amount, 0);
         SetFlaggedActionResult(attacker, 5);
-        AddTrainingPoints(attacker, 0, 1);
+        AddTrainingPoints(attacker, BATTLE_GROUP_WEAPON, 1);
     }
     ApplyResistanceOutcome(attacker, g_attackResistance, amount);
     return RollWeaponCondition(attacker, target, g_attackResistance, g_attackCondition, mode);

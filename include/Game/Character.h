@@ -326,8 +326,9 @@ static __inline void SetCharacterChanges(Character* character, i32 targetChange,
 
 #define GetBattleStatShown(character, stat) ((character)->battleStatsShown[(stat)])
 
-static __inline i16* GetBattleStatGroup(Character* character, i16 group) {
-    return &character->battleStatsShown[group * 6];
+static __inline i16*
+GetBattleStatGroup(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) group) {
+    return &character->battleStatsShown[group * BATTLE_STATS_PER_GROUP];
 }
 
 #define GetTrainingPoints(character, kind) ((character)->trainingPoints[(kind)])

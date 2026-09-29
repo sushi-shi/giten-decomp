@@ -865,20 +865,25 @@ i32 ScaleActionValue(i32 value, i16 resistance, i16 multiplier) {
 }
 
 RVA(0x00006a80, 0x21a)
-i16 CheckBattleProtection(Character* actor, i16 attribute, i16 mode, i16 report) {
+i16 CheckBattleProtection(
+    Character* actor,
+    i16 attribute,
+    GZ_ENUM_PARAM(AttackMode, i16) mode,
+    b16 report
+) {
     if (GetCharacterBattleTallies(actor)[13]) {
         ReportBattleTally(actor, 13, report);
         return 0;
     }
-    if (GetCharacterBattleTallies(actor)[14] && (mode == 0 || mode == 2)) {
+    if (GetCharacterBattleTallies(actor)[14] && (mode == ATTACK_MAGIC || mode == ATTACK_GUN)) {
         ReportBattleTally(actor, 14, report);
         return 0;
     }
-    if (GetCharacterBattleTallies(actor)[0] && mode == 0) {
+    if (GetCharacterBattleTallies(actor)[0] && mode == ATTACK_MAGIC) {
         ReportBattleTally(actor, 0, report);
         return 0;
     }
-    if (GetCharacterBattleTallies(actor)[7] && mode == 2) {
+    if (GetCharacterBattleTallies(actor)[7] && mode == ATTACK_GUN) {
         ReportBattleTally(actor, 7, report);
         return 0;
     }
@@ -902,11 +907,11 @@ i16 CheckBattleProtection(Character* actor, i16 attribute, i16 mode, i16 report)
         ReportBattleTally(actor, 12, report);
         return 0;
     }
-    if (GetCharacterBattleTallies(actor)[1] && mode == 0) {
+    if (GetCharacterBattleTallies(actor)[1] && mode == ATTACK_MAGIC) {
         ReportBattleTally(actor, 1, report);
         return -4;
     }
-    if (GetCharacterBattleTallies(actor)[2] && mode == 0) {
+    if (GetCharacterBattleTallies(actor)[2] && mode == ATTACK_MAGIC) {
         ReportBattleTally(actor, 2, report);
         return -5;
     }
@@ -918,7 +923,7 @@ i16 CheckBattleProtection(Character* actor, i16 attribute, i16 mode, i16 report)
         ReportBattleTally(actor, 6, report);
         return -4;
     }
-    if (GetCharacterBattleTallies(actor)[3] && mode == 0) {
+    if (GetCharacterBattleTallies(actor)[3] && mode == ATTACK_MAGIC) {
         ReportBattleTally(actor, 3, report);
         return -3;
     }
@@ -926,7 +931,13 @@ i16 CheckBattleProtection(Character* actor, i16 attribute, i16 mode, i16 report)
 }
 
 RVA(0x00006ca0, 0xcd)
-i16 GetActionResistance(Character* actor, i16 attribute, i16 mode, i16 report, i16 sameSide) {
+i16 GetActionResistance(
+    Character* actor,
+    i16 attribute,
+    GZ_ENUM_PARAM(AttackMode, i16) mode,
+    b16 report,
+    b16 sameSide
+) {
     i16 result;
     if (!actor) {
         return 0;
@@ -963,7 +974,7 @@ i16 GetActionResistance(Character* actor, i16 attribute, i16 mode, i16 report, i
 }
 
 RVA(0x00006d70, 0x4d)
-i16 GetSkillResistance(Character* actor, i16 skill, i16 report, i16 sameSide, i16* attribute) {
+i16 GetSkillResistance(Character* actor, i16 skill, b16 report, b16 sameSide, i16* attribute) {
     *attribute = GetSkillAttackAttribute(GetCachedSkill(skill));
     return GetActionResistance(
         actor,
@@ -975,9 +986,9 @@ i16 GetSkillResistance(Character* actor, i16 skill, i16 report, i16 sameSide, i1
 }
 
 RVA(0x00006dc0, 0x34)
-i16 GetItemResistance(Character* actor, i16 item, i16 report, i16 sameSide, i16* attribute) {
+i16 GetItemResistance(Character* actor, i16 item, b16 report, b16 sameSide, i16* attribute) {
     *attribute = GetLoadedRecord(item)->params[0xf];
-    return GetActionResistance(actor, *attribute, 0, report, sameSide);
+    return GetActionResistance(actor, *attribute, ATTACK_MAGIC, report, sameSide);
 }
 
 RVA(0x00006e00, 0x114)
@@ -1926,7 +1937,7 @@ b16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
         SetActionResult(attacker, 3);
         return true;
     }
-    if (GetCombatantFacingDifference(g_actorId, g_targetId) == 2) {
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) == FACING_FROM_BEHIND) {
         SetActionResult(attacker, 3);
         return true;
     }
@@ -1944,7 +1955,7 @@ b16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
     if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
         attack *= 2;
     }
-    if (GetCombatantFacingDifference(g_actorId, g_targetId) != 0) {
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) != FACING_FACE_TO_FACE) {
         defense = evasion * 75;
     } else {
         defense = evasion * 100;
@@ -2018,9 +2029,9 @@ i32 ComputeGunDamage(Character* attacker, Character* target, i16 result) {
         amount *= 1.2;
     }
     facing = GetCombatantFacingDifference(g_actorId, g_targetId);
-    if (facing == 2) {
+    if (facing == FACING_FROM_BEHIND) {
         amount *= 1.5;
-    } else if (facing != 0) {
+    } else if (facing != FACING_FACE_TO_FACE) {
         amount *= 1.2;
     }
     if (result == 2) {
@@ -2087,18 +2098,18 @@ b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode) {
     ResetActionOutcome();
     g_hpChange = 0;
     g_attackAttribute = GetPickedAttackAttribute(attacker, &g_attackCondition);
-    g_attackResistance = GetActionResistance(target, g_attackAttribute, 2, 1, 0);
+    g_attackResistance = GetActionResistance(target, g_attackAttribute, ATTACK_GUN, true, false);
     g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, g_attackAttribute);
     result = RollExceptionalAttack(attacker, target, mode, g_attackResistance);
     if (result != 0) {
-        AddTrainingPoints(attacker, 1, 1);
+        AddTrainingPoints(attacker, BATTLE_GROUP_GUN, 1);
     }
     if (result < 5) {
         if (result == 0) {
             result = RollGunHit(attacker, target, g_attackResistance);
             attacker->resultFlag = result;
             if (result != 0) {
-                AddTrainingPoints(attacker, 1, 1);
+                AddTrainingPoints(attacker, BATTLE_GROUP_GUN, 1);
             }
         } else {
             SetCharacterResult(attacker, result, 1);
@@ -2109,7 +2120,7 @@ b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode) {
         amount = 0x7fff;
         SetCharacterChanges(attacker, amount, 0);
         SetFlaggedActionResult(attacker, 5);
-        AddTrainingPoints(attacker, 1, 1);
+        AddTrainingPoints(attacker, BATTLE_GROUP_GUN, 1);
     }
     ApplyResistanceOutcome(attacker, g_attackResistance, amount);
     return RollGunCondition(attacker, target, g_attackResistance, g_attackCondition);

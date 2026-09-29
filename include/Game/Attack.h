@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Game/Condition.h>
 #include <Ints.h>
@@ -56,6 +57,13 @@ b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance);
 i16 RollExceptionalWeaponAttack(Character* attacker, Character* target, i16 mode, i16 resistance);
 
 i16 GetEquipmentHitModifier(Character* attacker, Character* target);
+// GetCombatantFacingDifference: face to face, or `first` behind `second` (both
+// facing the same way); the other two values are side-on.
+GZ_ENUM_CONST_BEGIN(CombatFacing)
+    FACING_FACE_TO_FACE = 0,
+    FACING_FROM_BEHIND = 2
+GZ_ENUM_CONST_END(CombatFacing)
+
 i16 GetCombatantFacingDifference(i16 first, i16 second);
 i16 GetCombatantDistance(i16 first, i16 second);
 i16 GetCombatantAttackRange(i16 id);

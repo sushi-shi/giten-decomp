@@ -3,6 +3,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/AttackMode.h>
 #include <Game/Character.h>
 #include <Ui/MenuBox.h>
 
@@ -73,11 +74,22 @@ void FillCharacterCommands(i16* list, i16 id);
 i32 ScaleActionValue(i32 value, i16 resistance, i16 multiplier);
 // @identity-TODO: attribute and mode are the skill/item attack domains;
 // negative results encode special resistance outcomes whose names are unproven.
-i16 CheckBattleProtection(Character* actor, i16 attribute, i16 mode, i16 report);
-i16 GetActionResistance(Character* actor, i16 attribute, i16 mode, i16 report, i16 sameSide);
+i16 CheckBattleProtection(
+    Character* actor,
+    i16 attribute,
+    GZ_ENUM_PARAM(AttackMode, i16) mode,
+    b16 report
+);
+i16 GetActionResistance(
+    Character* actor,
+    i16 attribute,
+    GZ_ENUM_PARAM(AttackMode, i16) mode,
+    b16 report,
+    b16 sameSide
+);
 
-i16 GetSkillResistance(Character* actor, i16 skill, i16 report, i16 sameSide, i16* attribute);
-i16 GetItemResistance(Character* actor, i16 item, i16 report, i16 sameSide, i16* attribute);
+i16 GetSkillResistance(Character* actor, i16 skill, b16 report, b16 sameSide, i16* attribute);
+i16 GetItemResistance(Character* actor, i16 item, b16 report, b16 sameSide, i16* attribute);
 i16 GetPickedAttackAttribute(Character* actor, i16* condition);
 void ApplyResistanceOutcome(Character* actor, i16 resistance, i32 amount);
 

@@ -1806,9 +1806,9 @@ void DrawFusionCharacterDetails(i16 plane, Character* character) {
         g_scratchBuffer,
         TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
     );
-    DrawFusionStatGroup(plane, 240, GetBattleStatGroup(character, 0));
-    DrawFusionStatGroup(plane, 384, GetBattleStatGroup(character, 1));
-    DrawFusionStatGroup(plane, 528, GetBattleStatGroup(character, 2));
+    DrawFusionStatGroup(plane, 240, GetBattleStatGroup(character, BATTLE_GROUP_WEAPON));
+    DrawFusionStatGroup(plane, 384, GetBattleStatGroup(character, BATTLE_GROUP_GUN));
+    DrawFusionStatGroup(plane, 528, GetBattleStatGroup(character, BATTLE_GROUP_MAGIC));
 }
 
 RVA(0x00029590, 0xca)

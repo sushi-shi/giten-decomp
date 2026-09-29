@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/BattleStat.h>
 #include <Game/GameState.h>
 #include <Game/ViewDirection.h>
 #include <Ints.h>
@@ -90,7 +91,7 @@ void SetAnalyzeTarget(Character* target);
 void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor);
 
 // @identity-TODO: label-only; the cap (0x41c650(99)) is unrecovered.
-u32 AddTrainingPoints(Character* character, i16 kind, i16 amount);
+u32 AddTrainingPoints(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind, i16 amount);
 
 // The object index under the selected hotspot, -1 for none.
 // @identity-TODO: label-only; the hotspot table 0x48802c is Ui/Hotspot's.

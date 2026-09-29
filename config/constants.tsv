@@ -449,7 +449,6 @@ include/Game/Clock.h	ResetClockPhaseAndTime	0	*	*	the clock restarts at moon pha
 include/Game/Character.h	ClearItemSlot	0	*	*quantity	an empty item slot holds none
 include/Game/Character.h	SetCharacterPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
 include/Game/FieldObject.h	SetFieldObjectPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
-include/Game/Character.h	GetBattleStatGroup	6	*	*	six battle stats per group
 src/Ui/hotspotclick.cpp	ClickHotspotAt	-1	*	*	no hotspot hit
 src/Game/statusmenu.c	DrawStatusLine	2	*	*	two pixels below the line top
 src/Game/statusmenu.c	SetStatusMenuItemsHidden	-1	*	*	@identity-TODO: -1 marks an unswitched status-menu item
@@ -510,3 +509,25 @@ src/Script/scriptctx.c	RunScript	0	call-argument	NewScriptContext(*	@identity-TO
 src/Script/scriptctx.c	RunScriptStep	0	*	*	@identity-TODO: RunScriptStep's result 0
 src/Script/scriptctx.c	TickScript	0	*	*	no delay skip; 0 while the script runs on
 src/Script/scriptctx.c	RetakeDeferredChar	*	*	*	PutTextChar's -2 (deferred) and no character
+src/Game/*.c	*	*	call-argument	Set*Result(*	@identity-TODO: action-result and resistance-result codes, reported to the battle message scripts through GetActionValue; their meanings are in the disc's message scripts (files 0xdd/0xdf), which have no decoder yet
+src/Game/*.c	*	*	*	*g_actionResult*	@identity-TODO: action-result codes (see SetActionResult's row): the message scripts name them
+src/Game/*.c	*	*	*	*g_attackResistance*	@identity-TODO: GetActionResistance's special results -1..-6 (resistance bytes 251..255, and -6 when protected); the message scripts name them
+src/Game/*attack.c	*	*	*	*resistance	@identity-TODO: GetActionResistance's special results -1..-6; the message scripts name them
+src/Game/*attack.c	*	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
+src/Game/*attack.c	*	*	comparison-or-bound	*amount	a damage amount below zero is none
+src/Game/*attack.c	*	*	store	*amount	a damage amount below zero is none; 0x7fff for an overkill
+src/Game/*attack.c	*	*	call-argument	ClampInt(*	damage as a percentage of the rolled value, clamped to 0..0x7fffffff
+src/Game/*attack.c	*	*	call-argument	RoundToInt(*	percent scaling (100 or 1/100)
+src/Game/*attack.c	*	2	call-argument	ScaleByMoonValue(*argument 3	@identity-TODO: ScaleByMoonValue's third argument, 2 for damage
+src/Game/*attack.c	*	*	call-argument	ScaleActionValue(*argument 1	value scales (4 for the hit roll, 10 for the condition roll)
+src/Game/*attack.c	*	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
+src/Game/*attack.c	*	0	trivial-function-literal	0 return	no damage
+src/Game/*attack.c	*	0	trivial-function-literal	0 equality damage	no damage
+src/Game/*attack.c	*	0	trivial-function-literal	0 store hit	no hit
+src/Game/*attack.c	*	0	trivial-function-literal	0 equality result	the hit roll's result 0 (a miss)
+src/Game/*attack.c	*	*	comparison-or-bound	*== result	the exceptional-attack roll's results (2, 4, 5)
+src/Game/*attack.c	*	*	comparison-or-bound	*< result	the exceptional-attack roll's results (2, 4, 5)
+src/Game/*attack.c	Run*Attack	0	call-argument	Resolve*Attack(*argument 3	a plain attack (mode 0)
+src/Game/skillattack.c	ResolveSkillAttack	0	call-argument	*argument 3	@identity-TODO: the weapon and gun attacks' mode, and RollSkillHit's sameSide, 0 against the enemy side
+src/Game/skillattack.c	ApplySkillResistanceOutcome	-1	*	*	-1 when the action was reflected (result 7), else whether it hit
+src/Game/*.c	*	0	call-argument	SetCharacterChanges(*	no change to that side (target or self)

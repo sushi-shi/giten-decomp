@@ -25,7 +25,8 @@ b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
     i32 itemValue;
     i16 value;
     i32 roll;
-    g_attackResistance = GetItemResistance(target, attacker->pickTarget, 1, sameSide, &attribute);
+    g_attackResistance =
+        GetItemResistance(target, attacker->pickTarget, true, sameSide, &attribute);
     g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, attribute);
     if (g_attackResistance == -6) {
         SetResistanceResult(attacker, -6, 10);
@@ -38,7 +39,7 @@ b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
     if (GetPickBlockingCondition(GetCharacterConditions(target))) {
         return true;
     }
-    if (GetCombatantFacingDifference(g_actorId, g_targetId) == 2) {
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) == FACING_FROM_BEHIND) {
         return true;
     }
     accuracy = GetRecordValue();
@@ -50,7 +51,7 @@ b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
         accuracy *= 100;
     }
     defense *= 100;
-    if (GetCombatantFacingDifference(g_actorId, g_targetId) != 0) {
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) != FACING_FACE_TO_FACE) {
         accuracy = accuracy * 150 / 100;
     }
     itemValue = GetLoadedRecord(attacker->pickTarget)->params[0xc];
@@ -97,9 +98,9 @@ i32 ComputeItemDamage(Character* attacker, Character* target, i16 hit) {
         amount *= 1.2;
     }
     facing = GetCombatantFacingDifference(g_actorId, g_targetId);
-    if (facing == 2) {
+    if (facing == FACING_FROM_BEHIND) {
         amount *= 1.5;
-    } else if (facing != 0) {
+    } else if (facing != FACING_FACE_TO_FACE) {
         amount *= 1.2;
     }
     if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
@@ -165,7 +166,7 @@ b16 RunItemAttack(Character* attacker, Character* target) {
     i32 damage;
     hit = ResolveItemAttack(attacker, target, 0);
     if (hit) {
-        AddTrainingPoints(attacker, 2, 3);
+        AddTrainingPoints(attacker, BATTLE_GROUP_MAGIC, 3);
     }
     damage = ComputeItemDamage(attacker, target, hit);
     if (hit && !damage) {

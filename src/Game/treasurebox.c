@@ -1363,7 +1363,11 @@ u32 TrainingThreshold(i16 level) {
 // Adds `amount` to training counter `kind`, capped at level 99's threshold;
 // returns the new count.
 RVA(0x0001c690, 0x2c)
-u32 AddTrainingPointsRaw(Character* character, i16 kind, u32 amount) {
+u32 AddTrainingPointsRaw(
+    Character* character,
+    GZ_ENUM_PARAM(BattleStatGroup, i16) kind,
+    u32 amount
+) {
     u32* points = &character->trainingPoints[kind];
     u32 limit;
     amount += *points;
@@ -1374,8 +1378,8 @@ u32 AddTrainingPointsRaw(Character* character, i16 kind, u32 amount) {
 }
 
 RVA(0x0001c6c0, 0x24)
-u32 AddTrainingPoints(Character* character, i16 kind, i16 amount) {
-    if (kind >= 0 && kind < 4) {
+u32 AddTrainingPoints(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind, i16 amount) {
+    if (kind >= 0 && kind < BATTLE_GROUP_COUNT) {
         return AddTrainingPointsRaw(character, kind, amount);
     }
 }
@@ -1392,27 +1396,27 @@ u32 AddTrainingPoints(Character* character, i16 kind, i16 amount) {
 // its counter covers the next level's threshold; returns the levels gained.
 // @identity-TODO: what the four training kinds measure is unrecovered.
 RVA(0x0001c6f0, 0x140)
-i16 ApplyTraining(Character* character, i16 kind) {
+i16 ApplyTraining(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind) {
     i16 raised = 0;
     switch (kind) {
-        case 0:
+        case BATTLE_GROUP_WEAPON:
             RaiseTrainedLevel(
-                GetBattleStatBase(character, 0),
-                GetTrainingPoints(character, 0),
+                GetBattleStatBase(character, BATTLE_STAT_WEAPON_LEVEL),
+                GetTrainingPoints(character, BATTLE_GROUP_WEAPON),
                 raised
             );
             break;
-        case 1:
+        case BATTLE_GROUP_GUN:
             RaiseTrainedLevel(
-                GetBattleStatBase(character, 6),
-                GetTrainingPoints(character, 1),
+                GetBattleStatBase(character, BATTLE_STAT_GUN_LEVEL),
+                GetTrainingPoints(character, BATTLE_GROUP_GUN),
                 raised
             );
             break;
-        case 2:
+        case BATTLE_GROUP_MAGIC:
             RaiseTrainedLevel(
-                GetBattleStatBase(character, 12),
-                GetTrainingPoints(character, 2),
+                GetBattleStatBase(character, BATTLE_STAT_MAGIC_LEVEL),
+                GetTrainingPoints(character, BATTLE_GROUP_MAGIC),
                 raised
             );
             break;

@@ -665,11 +665,29 @@ void DrawBattleStatsPanel(i16 x, i16 y, Character* member, i16 hideIcons) {
             y = DrawStatusLabel(x, y, label);
         }
     }
-    x = DrawBattleStatColumn(x + 6, startY, GetBattleStatGroup(member, 0), icon, member->id);
+    x = DrawBattleStatColumn(
+        x + 6,
+        startY,
+        GetBattleStatGroup(member, BATTLE_GROUP_WEAPON),
+        icon,
+        member->id
+    );
     gunX = x;
-    x = DrawBattleStatColumn(x, startY, GetBattleStatGroup(member, 1), icon + 1, member->id);
+    x = DrawBattleStatColumn(
+        x,
+        startY,
+        GetBattleStatGroup(member, BATTLE_GROUP_GUN),
+        icon + 1,
+        member->id
+    );
     DrawStatusNumber(gunX, startY + 13, GetCharacterEquipment(member)[EQUIP_SLOT_AMMO].quantity);
-    x = DrawBattleStatColumn(x, startY, GetBattleStatGroup(member, 2), icon + 2, member->id);
+    x = DrawBattleStatColumn(
+        x,
+        startY,
+        GetBattleStatGroup(member, BATTLE_GROUP_MAGIC),
+        icon + 2,
+        member->id
+    );
     if (icon >= 0 && IsHumanCharacter(member)) {
         DrawBattleStatColumn(x, startY, GetBattleStatGroup(member, 3), icon + 3, member->id);
     }
@@ -1172,13 +1190,28 @@ void DrawEquipPanel(Character* member, Character* preview) {
         y += 0x18;
     }
     if (preview == NULL) {
-        x = DrawStatColumn(5, 5, GetBattleStatGroup(member, 0), NULL);
-        x = DrawStatColumn(x, 5, GetBattleStatGroup(member, 1), NULL);
-        DrawStatColumn(x, 5, GetBattleStatGroup(member, 2), NULL);
+        x = DrawStatColumn(5, 5, GetBattleStatGroup(member, BATTLE_GROUP_WEAPON), NULL);
+        x = DrawStatColumn(x, 5, GetBattleStatGroup(member, BATTLE_GROUP_GUN), NULL);
+        DrawStatColumn(x, 5, GetBattleStatGroup(member, BATTLE_GROUP_MAGIC), NULL);
     } else {
-        x = DrawStatColumn(5, 5, GetBattleStatGroup(member, 0), GetBattleStatGroup(preview, 0));
-        x = DrawStatColumn(x, 5, GetBattleStatGroup(member, 1), GetBattleStatGroup(preview, 1));
-        DrawStatColumn(x, 5, GetBattleStatGroup(member, 2), GetBattleStatGroup(preview, 2));
+        x = DrawStatColumn(
+            5,
+            5,
+            GetBattleStatGroup(member, BATTLE_GROUP_WEAPON),
+            GetBattleStatGroup(preview, BATTLE_GROUP_WEAPON)
+        );
+        x = DrawStatColumn(
+            x,
+            5,
+            GetBattleStatGroup(member, BATTLE_GROUP_GUN),
+            GetBattleStatGroup(preview, BATTLE_GROUP_GUN)
+        );
+        DrawStatColumn(
+            x,
+            5,
+            GetBattleStatGroup(member, BATTLE_GROUP_MAGIC),
+            GetBattleStatGroup(preview, BATTLE_GROUP_MAGIC)
+        );
     }
     DrawPlaneImage(s_equipPage.panelPlane, 7, 1, 0);
     DrawPlaneImage(s_equipPage.panelPlane, 0x10, 1, 1);

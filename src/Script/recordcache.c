@@ -541,7 +541,7 @@ i32 GetSkillKind(i16 id) {
 }
 
 RVA(0x0002e740, 0x18)
-u16 GetSkillMode(i16 id) {
+GZ_ENUM_RETURN(AttackMode, u16) GetSkillMode(i16 id) {
     return GetCachedSkill(id)->parameters.mode;
 }
 
