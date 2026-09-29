@@ -1123,9 +1123,6 @@ i16 TickEnemySpawnTimer(void) {
 
 // Traces the sight lines from x/y along `direction` row by row (up to three
 // steps back) until a cell blocks it.
-// @early-stop register residue: retail keeps direction in esi and the step
-// in edi; this build swaps them. The call, branch and relocation shapes match,
-// and a 32-island compiler-state search stayed in one state.
 RVA(0x0000ee70, 0x80)
 void TraceSight(i16 x, i16 y, i16 direction) {
     i16 step;
@@ -1133,6 +1130,7 @@ void TraceSight(i16 x, i16 y, i16 direction) {
     i16 left;
     i16 cellX;
     i16 cellY;
+    i16 blocked;
     left = -3;
     right = 3;
     for (step = 0; step >= -3; step--) {
@@ -1140,7 +1138,8 @@ void TraceSight(i16 x, i16 y, i16 direction) {
         cellX = x;
         cellY = y;
         OffsetMapCoord(&cellX, &cellY, direction, 0, step);
-        if (GetMapWallKind(cellX, cellY, direction)) {
+        blocked = GetMapWallKind(cellX, cellY, direction);
+        if (blocked) {
             break;
         }
     }
