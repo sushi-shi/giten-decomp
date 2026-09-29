@@ -51,7 +51,7 @@ equipeffect	2	2
 eventflags	28	28
 fieldmain	59	57
 fieldobj	141	137
-fieldscreen	103	103
+fieldscreen	103	102
 fieldview	38	36
 font	150	142
 fusion	114	111
@@ -60,8 +60,8 @@ gamestate	7	7
 handle	33	32
 hotspot	6	6
 hotspotclick	1	0
-itemattack	4	3
-itemrecord	109	104
+itemattack	4	4
+itemrecord	109	106
 joystick	2	2
 layertexture	2	2
 list	6	6
@@ -74,7 +74,7 @@ motion	43	42
 mouse	10	9
 nibble	4	3
 objecttexture	2	2
-partyaction	103	99
+partyaction	103	100
 playtime	4	4
 pool	6	6
 range	25	25
@@ -92,7 +92,7 @@ scripttext	59	57
 scriptvars	108	106
 scriptvm	2	2
 shot	15	14
-skillattack	5	3
+skillattack	5	4
 skilluse	53	50
 sprite	7	6
 statestack	127	123
@@ -102,7 +102,7 @@ surfacecopy	1	1
 textapi	5	5
 textchar	1	0
 textstate	21	20
-treasurebox	147	136
+treasurebox	147	139
 vec3	10	8
 videostate	5	5
 vram	44	39
@@ -197,11 +197,11 @@ character	_AttachEquipItem	100.0000	99.4828	2	29991f88d029	0x40590	100.0000
 character	_BuildStatusSlots	100.0000	100.0000	2	5432bba1200a	0x40f40	100.0000	
 character	_CalcGunAccuracyStat	100.0000	100.0000	3	67bdc428b06f	0x3d2c0	100.0000	
 character	_CalcGunEvasionStat	100.0000	100.0000	3	39915b3c5fcb	0x3d340	100.0000	
-character	_CalcMagicAccuracyStat	100.0000	100.0000	3	833b1b3c5cde	0x3d4d0	100.0000	
-character	_CalcMagicDefenseStat	100.0000	99.8461	4	6df12c7428d4	0x3d530	100.0000	
-character	_CalcMagicEvasionStat	100.0000	99.8182	3	5dec2476bff6	0x3d510	100.0000	
+character	_CalcMagicAccuracyStat	100.0000	99.8182	3	833b1b3c5cde	0x3d4d0	100.0000	
+character	_CalcMagicDefenseStat	100.0000	100.0000	4	6df12c7428d4	0x3d530	100.0000	
+character	_CalcMagicEvasionStat	100.0000	100.0000	3	5dec2476bff6	0x3d510	100.0000	
 character	_CalcMagicPowerStat	100.0000	100.0000	3	f5c725b233b2	0x3d4f0	100.0000	
-character	_CalcMaxHp	100.0000	100.0000	1	3d565d96e5f7	0x3cec0	100.0000	
+character	_CalcMaxHp	100.0000	99.9583	1	3d565d96e5f7	0x3cec0	100.0000	
 character	_CalcMaxMp	100.0000	99.9487	5	63a32e7117aa	0x3cf70	100.0000	
 character	_CalcPhysicalDefenseStat	100.0000	100.0000	3	e138d9ed0d1e	0x3d240	100.0000	
 character	_CalcWeaponAccuracyStat	100.0000	100.0000	3	de42b2daba86	0x3d390	100.0000	
@@ -309,7 +309,7 @@ character	_NormalizeItemSlot	100.0000	100.0000	4	a5b916bd5345	0x408b0	100.0000
 character	_PartyAlignmentClass	100.0000	100.0000	3	738fd3bf3440	0x3e100	100.0000	
 character	_PayStepUpkeep	100.0000	100.0000	5	99985a6d99de	0x40fa0	100.0000	
 character	_PollPartySlotSelection	100.0000	100.0000	2	1aec1e85b36a	0x3e590	100.0000	
-character	_PollTextPartySlotSelection	99.4558	96.2585	3	ae8caaf37efc	0x3e3c0	99.4558	
+character	_PollTextPartySlotSelection	99.4558	99.4558	3	ae8caaf37efc	0x3e3c0	99.4558	
 character	_PoolState	100.0000	100.0000	1	f11518e8ea29	0x3d030	100.0000	
 character	_ProcessPartyCasualties	100.0000	100.0000	3	febd638b3eae	0x3fce0	100.0000	
 character	_RecalcCharacterStats	100.0000	100.0000	8	a3aa03a51175	0x3c8b0	100.0000	
@@ -735,7 +735,7 @@ fieldscreen	_CanRevealAutomapNorth	100.0000	100.0000	5	5dea7ab9ef9c	0x157b0	100.
 fieldscreen	_CanRevealAutomapSouth	100.0000	100.0000	5	a6ac176fc278	0x15730	100.0000	
 fieldscreen	_ClearEncounterPending	100.0000	100.0000	2	c6a8532d1c67	0x154b0	100.0000	
 fieldscreen	_ClearFieldPanelSelection	100.0000	100.0000	3	f0a02c9b9580	0x169c0	100.0000	
-fieldscreen	_ClearPanel	100.0000	100.0000	4	2db25cd2f54e	0x159e0	100.0000	
+fieldscreen	_ClearPanel	100.0000	99.8750	4	2db25cd2f54e	0x159e0	100.0000	
 fieldscreen	_ClearPanelRow	100.0000	100.0000	4	ae3a8aeb3147	0x15a40	100.0000	
 fieldscreen	_ClearWorldMapBlock	100.0000	100.0000	1	a5d8fc14e6a1	0x163c0	100.0000	
 fieldscreen	_CommandRowHandler	100.0000	100.0000	1	6930d4e748ea	0x158e0	100.0000	
@@ -1185,13 +1185,13 @@ hotspot	_HasHotspotTo	100.0000	100.0000	3	a39dfd28d54f	0x585f0	100.0000
 hotspot	_SetSelectedHotspot	100.0000	100.0000	1	6705892db754	0x58590	100.0000	
 hotspotclick	_ClickHotspotAt	95.2963	95.2963	8	21279ab9c0fb	0x59180	95.2963	
 itemattack	_ComputeItemDamage	100.0000	100.0000	9	7e73a48865f3	0xb320	100.0000	
-itemattack	_ResolveItemAttack	98.7027	98.7027	7	85fffcf3d02f	0xb0f0	98.7027	
+itemattack	_ResolveItemAttack	100.0000	100.0000	8	08d23fef514a	0xb0f0	100.0000	
 itemattack	_RollItemCondition	100.0000	100.0000	8	a4eb6413d547	0xb4d0	100.0000	
 itemattack	_RunItemAttack	100.0000	100.0000	3	6d050b825c25	0xb620	100.0000	
 itemrecord	_AddBagItems	100.0000	100.0000	4	9416d202bbf2	0x24190	100.0000	
 itemrecord	_AddDropSlot	100.0000	100.0000	3	70c555ea5192	0x23c20	100.0000	
 itemrecord	_AddGemItems	100.0000	100.0000	4	29d65917dc7a	0x246f0	100.0000	
-itemrecord	_AddGemItemsAt	100.0000	100.0000	6	e9a089967812	0x245b0	100.0000	
+itemrecord	_AddGemItemsAt	100.0000	100.0000	7	e53e4f481517	0x245b0	100.0000	
 itemrecord	_AddItemRegen	100.0000	100.0000	3	24a7e3eede1b	0x25600	100.0000	
 itemrecord	_AddItemStatBonuses	100.0000	100.0000	15	79eb6d38a973	0x24d50	100.0000	
 itemrecord	_AddItemStatPoints	100.0000	100.0000	5	05eda694a218	0x24ba0	100.0000	
@@ -1206,7 +1206,7 @@ itemrecord	_ClearBag	100.0000	100.0000	2	4b475a866c3d	0x23a80	100.0000
 itemrecord	_ClearDropSlots	100.0000	100.0000	2	c8a75ee6b882	0x23c00	100.0000	
 itemrecord	_ClearPool	100.0000	100.0000	2	369499095041	0x23800	100.0000	
 itemrecord	_CompactBag	100.0000	100.0000	2	08218b04fc30	0x24310	100.0000	
-itemrecord	_CompactBagCore	97.9530	97.9530	6	a89b832ab6ca	0x23f20	97.9530	
+itemrecord	_CompactBagCore	98.3557	98.3557	7	c73af37422ab	0x23f20	98.3557	
 itemrecord	_CopyBagEntries	100.0000	100.0000	3	1bed7adcff0a	0x23aa0	100.0000	
 itemrecord	_CountBagEntries	100.0000	100.0000	2	d04cca30c352	0x24280	100.0000	
 itemrecord	_CountBagItem	100.0000	100.0000	3	defb22949944	0x23d10	100.0000	
@@ -1248,7 +1248,7 @@ itemrecord	_GetLoadedRecord	100.0000	100.0000	2	de208465bd7c	0x23460	100.0000
 itemrecord	_GetLoadedRecordName	100.0000	100.0000	2	addef98b00f8	0x233a0	100.0000	
 itemrecord	_GetPoolEntries	100.0000	100.0000	1	0a4d50c442f3	0x237c0	100.0000	
 itemrecord	_GiftMenuHandler	100.0000	100.0000	3	f42dcafde335	0x25fb0	100.0000	
-itemrecord	_GivePooledItems	97.6786	97.6786	4	49ed4e4c89e2	0x23990	97.6786	
+itemrecord	_GivePooledItems	100.0000	100.0000	5	c070b1be5252	0x23990	100.0000	
 itemrecord	_InflictCondition	100.0000	100.0000	5	a358ad5c9b89	0x25840	100.0000	
 itemrecord	_IsConditionResisted	100.0000	100.0000	2	d53fa6477ef0	0x258c0	100.0000	
 itemrecord	_IsEquipCurseActive	100.0000	100.0000	3	c2ce19065d5e	0x235a0	100.0000	
@@ -1288,7 +1288,7 @@ itemrecord	_TakeBagItemsFromEnd	100.0000	100.0000	2	b0bdfc6f2b3b	0x240f0	100.000
 itemrecord	_TakeFromBagEntry	99.6552	99.6552	4	56ab65424958	0x23e10	99.6552	
 itemrecord	_TakeFromPool	100.0000	100.0000	4	839a9aa94385	0x23920	100.0000	
 itemrecord	_TakeGemItems	100.0000	100.0000	4	cadc405b2d5e	0x24720	100.0000	
-itemrecord	_TakeGemItemsAt	95.6000	95.6000	4	325174fd552a	0x24660	95.6000	
+itemrecord	_TakeGemItemsAt	100.0000	100.0000	4	325174fd552a	0x24660	100.0000	
 itemrecord	_TakePooledItems	100.0000	100.0000	4	2893edca478b	0x23a30	100.0000	
 itemrecord	_UseAttackItem	100.0000	100.0000	5	b117398c7f54	0x24a50	100.0000	
 itemrecord	_UseInertItem	100.0000	100.0000	2	6dc820de9ede	0x24b60	100.0000	
@@ -1474,7 +1474,7 @@ partyaction	_GetFieldMap	100.0000	100.0000	1	802dcd5f06f5	0x71f0	100.0000
 partyaction	_GetFieldMarker	100.0000	100.0000	1	ab0764191ae9	0x7160	100.0000	
 partyaction	_GetGunAttackPower	100.0000	100.0000	3	1aba1c1775cc	0x8b20	100.0000	
 partyaction	_GetGunBurstRounds	100.0000	100.0000	4	5e1b6fead023	0x9050	100.0000	
-partyaction	_GetGunRequirementPenalty	100.0000	91.5625	1	9d271a629c5c	0x91b0	100.0000	
+partyaction	_GetGunRequirementPenalty	100.0000	100.0000	1	9d271a629c5c	0x91b0	100.0000	
 partyaction	_GetItemResistance	100.0000	100.0000	1	888c31715c58	0x6dc0	100.0000	
 partyaction	_GetMemberPanelState	100.0000	100.0000	10	df7156abf656	0x5b80	100.0000	
 partyaction	_GetMemberPickRange	100.0000	100.0000	7	87d780750965	0x9c20	100.0000	
@@ -1512,7 +1512,7 @@ partyaction	_ResetPartyTurnState	100.0000	100.0000	5	a0dc4aba07eb	0x6a00	100.000
 partyaction	_ResetRosterFieldMarks	100.0000	100.0000	3	68e8cd44f176	0x7a70	100.0000	
 partyaction	_ResolveGunAttack	100.0000	100.0000	8	1416f2287295	0x8e60	100.0000	
 partyaction	_RestoreSwappedMember	100.0000	100.0000	1	1d1590f8a48b	0x9dc0	100.0000	
-partyaction	_RollExceptionalAttack	100.0000	99.4183	5	cec84366749b	0x8700	100.0000	
+partyaction	_RollExceptionalAttack	100.0000	99.4314	5	cec84366749b	0x8700	100.0000	
 partyaction	_RollGunCondition	100.0000	100.0000	10	c992f81ace81	0x8d30	100.0000	
 partyaction	_RollGunHit	100.0000	100.0000	9	4dde76569003	0x8910	100.0000	
 partyaction	_RollProximityEvent	100.0000	100.0000	5	f09f53b9298c	0x7f80	100.0000	
@@ -2086,7 +2086,7 @@ skillattack	_ApplySkillResistanceOutcome	100.0000	100.0000	1	1909e14736cc	0xaf70
 skillattack	_ComputeSkillDamage	100.0000	98.4266	7	a90e460c0181	0xac50	100.0000	
 skillattack	_ResolveSkillAttack	100.0000	100.0000	5	2d1d82fd3b44	0xafb0	100.0000	
 skillattack	_RollSkillCondition	100.0000	100.0000	9	435432e658e6	0xae20	100.0000	
-skillattack	_RollSkillHit	98.6216	98.6216	10	bcbfbfc325fc	0xaa20	98.6216	
+skillattack	_RollSkillHit	100.0000	100.0000	11	5ab940d41207	0xaa20	100.0000	
 skilluse	_AddCombatTarget	100.0000	100.0000	2	c2fc496e8a58	0x2aa50	100.0000	
 skilluse	_AddObjectTargetsAtCell	100.0000	100.0000	1	1460f0b364cd	0x2caa0	100.0000	
 skilluse	_AddPartyTargetsAtCell	100.0000	100.0000	2	cebb7606f2e9	0x2cb00	100.0000	
@@ -2406,7 +2406,7 @@ treasurebox	_FindCellObject	100.0000	100.0000	2	91126080368e	0x1f1d0	100.0000
 treasurebox	_FindPanelRowAt	100.0000	100.0000	7	60040418cba4	0x1cc00	100.0000	
 treasurebox	_FindRegionData	100.0000	99.5833	1	e9eabe193cee	0x1ecc0	100.0000	
 treasurebox	_FinishDoorStep	100.0000	100.0000	2	dbfce01ed5f0	0x1f130	100.0000	
-treasurebox	_FormatItemMenuEntry	99.9390	99.9390	8	797b70f0709a	0x1b960	99.9390	
+treasurebox	_FormatItemMenuEntry	100.0000	100.0000	9	d65d8f86cc80	0x1b960	100.0000	
 treasurebox	_FreeAutomap	100.0000	100.0000	5	a00d12096cd3	0x1cf40	100.0000	
 treasurebox	_FreeWorldMapEvents	100.0000	100.0000	1	e999aaefc86a	0x1b390	100.0000	
 treasurebox	_GetAreaNpc	100.0000	100.0000	2	4a8cb1a35d6d	0x1f4a0	100.0000	
@@ -2415,7 +2415,7 @@ treasurebox	_GetAreaNpcCount	100.0000	100.0000	1	1f59d2c052de	0x1f420	100.0000
 treasurebox	_GetAreaNpcTextureSlot	100.0000	100.0000	2	0f869bbaa423	0x1f480	100.0000	
 treasurebox	_GetCellObjectTable	100.0000	100.0000	2	0163ea789db6	0x1efb0	100.0000	
 treasurebox	_GetCellSpawnRate	100.0000	100.0000	2	9d2b206eb775	0x1eef0	100.0000	
-treasurebox	_GetCellTrapDamage	100.0000	98.8571	4	873bac125595	0x1c920	100.0000	
+treasurebox	_GetCellTrapDamage	100.0000	100.0000	4	873bac125595	0x1c920	100.0000	
 treasurebox	_GetGridByte	100.0000	100.0000	3	f153c34f43c6	0x1eba0	100.0000	
 treasurebox	_GetItemMenuStock	100.0000	100.0000	2	15e85dbbc6a5	0x1c120	100.0000	
 treasurebox	_GetItemMenuTotal	100.0000	100.0000	6	cbbea6898335	0x1bb60	100.0000	
@@ -2455,7 +2455,7 @@ treasurebox	_MarkRegionList	100.0000	99.6923	3	14ca732094a9	0x1ec10	100.0000
 treasurebox	_MarkRoomRegions	100.0000	100.0000	1	99db59ebe46b	0x1ed20	100.0000	
 treasurebox	_MarkWorldMapEventSpot	100.0000	100.0000	2	b3dce3b77d3f	0x1b3e0	100.0000	
 treasurebox	_NextNpcSlot	100.0000	100.0000	1	e4293f3a61cc	0x1f250	100.0000	
-treasurebox	_NormalizeAffiliations	100.0000	82.0441	2	f118670abb71	0x1c830	100.0000	
+treasurebox	_NormalizeAffiliations	100.0000	84.5588	2	f118670abb71	0x1c830	100.0000	
 treasurebox	_NotifyEncounterEnd	100.0000	100.0000	1	73fdb9352997	0x1f530	100.0000	
 treasurebox	_NotifyEncounterStart	100.0000	100.0000	1	f0391215057f	0x1f520	100.0000	
 treasurebox	_OpenScriptItemMenu	100.0000	100.0000	3	475bcf67c4a6	0x1c010	100.0000	
@@ -2474,7 +2474,7 @@ treasurebox	_ReleaseNpcTextures	100.0000	100.0000	1	59f9ff5479eb	0x1f540	100.000
 treasurebox	_ResetFieldScene	100.0000	100.0000	1	c97f57cd7790	0x1ef30	100.0000	
 treasurebox	_ReturnToLeaderMark	100.0000	100.0000	4	74901ea6b1cc	0x1fa70	100.0000	
 treasurebox	_ReturnToLeaderWarp	100.0000	100.0000	3	fda3584008d9	0x1fa30	100.0000	
-treasurebox	_RoomRegionsChanged	99.6835	99.6835	4	bbe3537e51cf	0x1ed70	99.6835	
+treasurebox	_RoomRegionsChanged	100.0000	100.0000	4	bbe3537e51cf	0x1ed70	100.0000	
 treasurebox	_RotateAutomapRegion	100.0000	100.0000	2	ab3938b51a6e	0x1d210	100.0000	
 treasurebox	_RunAnalyzeWindow	100.0000	100.0000	11	775a7e57d96f	0x1ad50	100.0000	
 treasurebox	_RunAutomapState	100.0000	100.0000	7	5dc6282471d3	0x1d530	100.0000	
@@ -2503,7 +2503,7 @@ treasurebox	_StoreAutomapLevel	100.0000	100.0000	7	646d85ac94c0	0x1cfc0	100.0000
 treasurebox	_TakeLearnableSkill	100.0000	100.0000	3	1291de355438	0x1c330	100.0000	
 treasurebox	_TrainingThreshold	100.0000	100.0000	1	466d0a0b0508	0x1c650	100.0000	
 treasurebox	_TransformAutomapPoint	100.0000	100.0000	1	2aff8df87c47	0x1d380	100.0000	
-treasurebox	_UpdateAutomapScrollPanel	100.0000	98.1469	3	cd918d158742	0x1d890	100.0000	
+treasurebox	_UpdateAutomapScrollPanel	100.0000	96.9930	3	cd918d158742	0x1d890	100.0000	
 treasurebox	_UpdateCurrentRoom	100.0000	100.0000	2	f36ff1157c00	0x1f070	100.0000	
 treasurebox	_UpdateInfoBar	100.0000	100.0000	3	0e067f87e574	0x1ea50	100.0000	
 treasurebox	_WriteAutomapAreas	100.0000	100.0000	7	ac8dc06a41f0	0x1e3c0	100.0000	
