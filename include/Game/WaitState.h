@@ -19,14 +19,14 @@ GZ_ENUM_END_SPLIT(WaitMode)
 // other callers pass -1. The Windows body never reads it.
 void PushWaitState(GZ_ENUM_STORAGE(WaitMode, i16) mode, u16 inputMask, u16 frames, i16 unused);
 
-static __inline void StartScreenFadeAndWait(i16 kind, i16 speed) {
+static __inline void StartScreenFadeAndWait(GZ_ENUM_PARAM(ScreenFadeMode, i16) kind, i16 speed) {
     StartScreenFade(kind, speed);
     PushWaitState(WAIT_FADE, 0, 0, -1);
 }
 
-void PushScreenFade(i16 kind, i16 speed);
+void PushScreenFade(GZ_ENUM_PARAM(ScreenFadeMode, i16) kind, i16 speed);
 
-void FadeScreenAndWait(i16 kind, i16 speed);
+void FadeScreenAndWait(GZ_ENUM_PARAM(ScreenFadeMode, i16) kind, i16 speed);
 
 // Opens a text plane and pushes the state that waits for input, then closes it.
 i16 PushMessageBox(i16 window, const char* text);

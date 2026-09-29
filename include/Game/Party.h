@@ -58,9 +58,9 @@ GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(Character* character, i16 item);
 void NormalizeEquipSlots(Character* character);
 void NormalizeItemSlot(ItemSlot* slot);
 
-ItemSlot GetRosterEquipSlot(i16 slot, i16 part);
+ItemSlot GetRosterEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part);
 
-ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, i16* result);
+ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, GZ_ENUM_STORAGE(EquipPart, i16) * result);
 // @identity-TODO: `count` is ReadBagEntry's count; for ammunition it is kept
 // in the character's `ammoCounts` entry.
 ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index);

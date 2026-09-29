@@ -384,8 +384,17 @@ static b16 ResumeStatusPage(i16 command) {
     return false;
 }
 
-static i16 DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, i16 band);
-static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16 mark, i16 band);
+static i16
+DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, GZ_ENUM_PARAM(StatBarRows, i16) band);
+static i16 DrawStatBarSegment(
+    i16 first,
+    i16 last,
+    i16 x,
+    i16 y,
+    i16 offset,
+    GZ_ENUM_PARAM(StatBarMark, i16) mark,
+    GZ_ENUM_PARAM(StatBarRows, i16) band
+);
 
 RVA(0x00042450, 0xc3)
 static i16 DrawStatList(i16 plane, Character* member) {
@@ -418,7 +427,14 @@ static i16 DrawStatList(i16 plane, Character* member) {
 }
 
 RVA(0x00042520, 0x9e)
-static i16 DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, i16 band) {
+static i16 DrawStatBar(
+    i16 x,
+    i16 y,
+    i16 base,
+    i16 bonus,
+    i16 equipment,
+    GZ_ENUM_PARAM(StatBarRows, i16) band
+) {
     i32 total = ClampSum100(base, bonus, equipment);
     i16 offset;
 
@@ -434,7 +450,15 @@ static i16 DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, i16 ban
 }
 
 RVA(0x000425c0, 0xaa)
-static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16 mark, i16 band) {
+static i16 DrawStatBarSegment(
+    i16 first,
+    i16 last,
+    i16 x,
+    i16 y,
+    i16 offset,
+    GZ_ENUM_PARAM(StatBarMark, i16) mark,
+    GZ_ENUM_PARAM(StatBarRows, i16) band
+) {
     i16 row;
     i16 column;
 
@@ -972,7 +996,7 @@ i16 RunEquipScreen(i16 key) {
     return -1;
 }
 
-static void EquipMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x00043530, 0x6a)
 MenuBox* OpenEquipMenu(i16 member, MenuBox* old) {
@@ -1332,7 +1356,7 @@ i16 RunAttachScreen(i16 sub) {
     return -1;
 }
 
-static void AttachItemMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void AttachItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x000442f0, 0x49)
 static MenuBox* CreateAttachItemMenu(MenuBox* old) {
@@ -1452,7 +1476,7 @@ static void AttachTextHook(i16 plane, i16 event, i16 value) {
     RepaintTextPlane(s_attach.plane, -2);
 }
 
-static void ItemListHandler(MenuBox* menu, i16 index, i16 event);
+static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x00044650, 0x1e0)
 i16 RunItemPage(i16 sub) {
@@ -1725,7 +1749,7 @@ i16 RunSkillPage(i16 sub) {
     return -1;
 }
 
-static void SkillListHandler(MenuBox* menu, i16 index, i16 event);
+static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x00044df0, 0x55)
 static MenuBox* CreateSkillMenu(i16 member, MenuBox* old) {

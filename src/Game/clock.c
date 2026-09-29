@@ -269,7 +269,7 @@ void ClearMoonFlags(void) {
 // minuteStep to the minute accumulator and each minuteLimit of it advances
 // the clock a minute. Returns 1 on a tick, else 0 (or AdvanceClock's bits).
 RVA(0x00020e90, 0x90)
-GZ_ENUM_STORAGE(ClockUpdate, i16) TickGameClock(i16 paused) {
+GZ_ENUM_RETURN(ClockUpdate, i16) TickGameClock(i16 paused) {
     s_turnElapsed = false;
     if (--g_clock.frames != 0) {
         return CLOCK_UPDATE_NONE;
@@ -690,7 +690,7 @@ const CellKind* FindCellKind(const CellHead* cell) {
 // Finds the event of cell x/y on `level`, latches its destination and scene
 // record, and returns its kind (0 for none).
 RVA(0x00021880, 0x49d)
-i16 CheckCellEvent(i16 x, i16 y, i16 level) {
+GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
     WarpCell* warp;
     BattleCell* battle;
     LinkCell* link;
@@ -1361,7 +1361,7 @@ b32 TestFlagBits(u16* flags, u16 mask) {
 }
 
 RVA(0x00022b00, 0x21)
-b32 TestPanelRowFlags(Panel* panel, i16 row, u16 mask) {
+b32 TestPanelRowFlags(Panel* panel, i16 row, GZ_ENUM_PARAM(PanelFlags, u16) mask) {
     return TestFlagBits(&GetPanelRow(panel, row)->flags, mask);
 }
 

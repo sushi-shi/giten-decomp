@@ -2034,7 +2034,7 @@ i16 ExpireSpecialItems(void) {
     return expired;
 }
 
-static void DiscardMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void DiscardMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x00025cb0, 0xe0)
 void RunBagDiscardMenu(void) {

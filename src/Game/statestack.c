@@ -1681,7 +1681,7 @@ b16 ApplyLevelStatGrowth(Character* character) {
 
 // Nonzero when one more point would take `stat` past its cap.
 RVA(0x000189d0, 0x24)
-i16 IsStatCapped(Character* character, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
+i16 IsStatCapped(Character* character, i16 stat) {
     i16 raised = GetBaseStat(character, stat) + 1;
     return raised - ClampTo100(raised);
 }

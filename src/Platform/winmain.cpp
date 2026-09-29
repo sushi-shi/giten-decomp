@@ -759,9 +759,10 @@ static BOOL (*s_moveCommands[8])(i16 nextPhase) = {
 // Hides layer 1's panel and runs move command `command` (0..7).
 RVA(0x00049f50, 0x45)
 BOOL RunMoveCommand(i16 command, i16 nextPhase) {
-    if (g_screenLayers[1]->visible) {
-        g_screenLayers[1]->visible = FALSE;
-        g_screenLayers[1]->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+    if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
+        g_screenLayers[SCREEN_LAYER_PANEL]->visible = FALSE;
+        g_screenLayers[SCREEN_LAYER_PANEL]
+            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
     }
     return s_moveCommands[command & 7](nextPhase);
 }

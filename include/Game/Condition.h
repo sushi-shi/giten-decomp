@@ -14,7 +14,8 @@ typedef struct ConditionSet {
     u8 ages[35];
 } ConditionSet;
 
-static __inline void ClearCondition(ConditionSet* conditions, i16 condition) {
+static __inline void
+ClearCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     ClearBit(conditions->bits, condition);
 }
 
@@ -31,15 +32,15 @@ static __inline void ClearCondition(ConditionSet* conditions, i16 condition) {
 // +0xd of the cached skill by 0x42db90); its role is unrecovered.
 extern i16 g_statusCondition;
 
-const char* GetConditionName(i16 bit);
+const char* GetConditionName(GZ_ENUM_PARAM(ConditionId, i16) bit);
 b16 HasCondition(ConditionSet* conditions, i16 condition);
 i16 ConditionKindApplies(i16 kind, ConditionSet* conditions);
 
 // The physical ailments selected by restoration kind 57.
 extern const i16 g_physicalRecoveryConditions[8];
 i16 AddCondition(ConditionSet* conditions, i16 condition);
-i16 LastConditionIn(ConditionSet* conditions, const i16* list);
-void ClearConditionList(ConditionSet* conditions, const i16* list);
+i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
+void ClearConditionList(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
 i16 GetDisablingCondition(ConditionSet* conditions);
 void ClearBattleConditions(ConditionSet* conditions);
 void ClearLeaveConditions(ConditionSet* conditions);
@@ -52,6 +53,6 @@ GZ_ENUM_RETURN(ConditionId, i16) GetFatalCondition(ConditionSet* conditions);
 i16 EaseSleep(ConditionSet* conditions);
 const char* GetFirstConditionName(ConditionSet* conditions);
 
-i16 GetPickBlockingCondition(ConditionSet* conditions);
+GZ_ENUM_RETURN(ConditionId, i16) GetPickBlockingCondition(ConditionSet* conditions);
 
 #endif // GITEN_GAME_CONDITION_H

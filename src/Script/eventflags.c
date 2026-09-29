@@ -183,7 +183,7 @@ b16 ReadAndMatchEventFlag(void) {
 RVA(0x00039560, 0x2b)
 void OpModifyEventFlagByValue(void) {
     i32 flag = ReadScriptValue();
-    GZ_ENUM_LOCAL(BitChangeMode, i32) op = ReadScriptValue();
+    i32 op = ReadScriptValue();
     i8 bank = flag;
     flag >>= 8;
     ChangeEventFlag(bank & 0xff, flag & 0xff, op);
@@ -218,7 +218,7 @@ void OpModifyEventFlag(void) {
     Character* object = ReadScriptObject();
     u16 bank;
     u16 index;
-    GZ_ENUM_LOCAL(BitChangeMode, i32) op;
+    i32 op;
     ReadFlagOperand(&bank, &index);
     op = ReadScriptValue();
     if (bank != 14) {

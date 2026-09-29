@@ -43,9 +43,9 @@ static __inline void ResetClockPhaseAndTime(GameClock* clock) {
 
 extern GameClock g_clock;
 
-GZ_ENUM_STORAGE(ClockUpdate, i16) AdvanceClock(u16 minutes);
-GZ_ENUM_STORAGE(ClockUpdate, i16) TickClock(u16 minutes);
-void ApplyClockChanges(GZ_ENUM_STORAGE(ClockUpdate, i16) changed);
+GZ_ENUM_RETURN(ClockUpdate, i16) AdvanceClock(u16 minutes);
+GZ_ENUM_RETURN(ClockUpdate, i16) TickClock(u16 minutes);
+void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed);
 void ClearMoonFlags(void);
 GZ_ENUM_RETURN(ClockUpdate, i16) TickGameClock(i16 paused);
 

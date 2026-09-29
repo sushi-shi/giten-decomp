@@ -73,7 +73,7 @@ void ClearMouseClicks(void);
 i16 TakeMouseCancel(i16 clearSelection);
 i16 TakeMouseCancelSound(void);
 i16 TakeMouseLeftClick(void);
-void SetMouseState(i16 buttons, i16 x, i16 y);
+void SetMouseState(GZ_ENUM_PARAM(MouseButtonBits, i16) buttons, i16 x, i16 y);
 i16 GetMouseX(void);
 i16 GetMouseY(void);
 i16 GetMouseRightClick(void);

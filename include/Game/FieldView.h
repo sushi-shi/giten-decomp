@@ -118,7 +118,7 @@ GZ_ENUM_BEGIN(WallStopMode)
     WALL_STOP_MOVEMENT = 1
 GZ_ENUM_END(WallStopMode)
 
-u8 WallStops(i16 wall, i16 mode);
+u8 WallStops(i16 wall, GZ_ENUM_PARAM(WallStopMode, i16) mode);
 i16 GetCellWallStop(i16 direction, i16 turn, u16 cell);
 i16 GetWallStopCode(u16 cell, GZ_ENUM_PARAM(WallStopMode, i16) mode);
 i32 GetFacingBit(void);

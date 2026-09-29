@@ -117,7 +117,7 @@ i16 DistanceFromParty(i16 x, i16 y) {
 // side `dir` (east/west move the column, north/south the row).
 RVA(0x0000be80, 0x46)
 i16 StepViewCell(i16 col, i16 row, i32 dir, i16 axis) {
-    if (axis == 0) {
+    if (axis == VIEW_CELL_COLUMN) {
         switch (dir) {
             case VIEW_EAST:
                 col++;

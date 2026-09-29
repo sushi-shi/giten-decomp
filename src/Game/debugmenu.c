@@ -85,8 +85,8 @@ static const MenuEntry s_magicEntries[8] = {
 DATA(0x00068050)
 static i16 s_shotRise = 3;
 
-static void DebugMenuHandler(MenuBox* menu, i16 index, i16 event);
-static void MagicMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void DebugMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
+static void MagicMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 // The debug menu's game state (step 0 opens it, 1 closes it, 2 runs it,
 // 3.. run the picked row; row 2's magic test runs by sub-state).

@@ -5,11 +5,13 @@
 #include <Game/Character.h>
 #include <Ints.h>
 
-static __inline u8 GetConditionAge(ConditionSet* conditions, i16 condition) {
+static __inline u8
+GetConditionAge(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     return conditions->ages[condition];
 }
 
-static __inline void SetConditionAge(ConditionSet* conditions, i16 condition, u8 age) {
+static __inline void
+SetConditionAge(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition, u8 age) {
     conditions->ages[condition] = age;
 }
 

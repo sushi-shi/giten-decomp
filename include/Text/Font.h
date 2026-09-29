@@ -34,7 +34,7 @@ GZ_ENUM_BEGIN(StatBarMark)
 GZ_ENUM_END(StatBarMark);
 // clang-format on
 
-void DrawStatBarMark(i16 x, i16 y, i16 index, i16 plane);
+void DrawStatBarMark(i16 x, i16 y, GZ_ENUM_PARAM(StatBarMark, i16) index, i16 plane);
 void DrawStatusImage(i16 x, i16 y, i16 index);
 i16 FindTextPlaneByKind(i16 kind);
 i16 GetActiveTextPlaneIndent(i16 plane);

@@ -1520,7 +1520,7 @@ GZ_ENUM_RETURN(ConditionId, i16) GetFatalCondition(ConditionSet* conditions) {
 }
 
 RVA(0x0003edf0, 0x43)
-i16 LastConditionIn(ConditionSet* conditions, const i16* list) {
+i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list) {
     i16 found = 0;
     i16 i;
     for (i = 0; list[i] != -1; i++) {
@@ -2554,7 +2554,7 @@ GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(ItemRecord* item) {
 }
 
 RVA(0x00040310, 0x90)
-ItemSlot GetEquipSlot(Character* character, i16 part) {
+ItemSlot GetEquipSlot(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
     ItemSlot none = {-1, -1, 0};
     if (character != NULL) {
         switch (part) {

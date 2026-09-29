@@ -2766,7 +2766,7 @@ b16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
 }
 
 RVA(0x0000a0b0, 0x69)
-i16 PickPartySlotTarget(i16 minimumRange, GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
+i16 PickPartySlotTarget(i16 minimumRange, i16 mode) {
     i16 result = PollPartySlotSelection(mode);
     if (result == 0) {
         ClearMouseClicks();

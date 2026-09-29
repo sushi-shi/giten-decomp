@@ -427,7 +427,7 @@ i16 PickReorderSlot(void) {
     return g_selectedObjectId;
 }
 
-static void AnalyzeMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void AnalyzeMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x0001ad40, 0x10)
 void SetAnalyzeTarget(Character* target) {

@@ -80,7 +80,7 @@ Panel* CreateSequentialPanel(Panel* panel, i16 image, i16 count);
 Panel* CreatePositionedPanel(Panel* panel, i16 x, i16 y, i16 count, i16 kind);
 Panel* ReleasePanel(Panel* panel, i16 freePanel);
 i16 PanelRowHandlerDefault(PanelRow* row, i16 value, i16 op);
-void SetPanelRowState(Panel* panel, i16 index, u16 flags);
+void SetPanelRowState(Panel* panel, i16 index, GZ_ENUM_PARAM(PanelFlags, u16) flags);
 void PaintPanel(Panel* panel, i16 mode);
 i16 RunPanelInput(Panel* panel);
 
@@ -91,7 +91,8 @@ static __inline i16 WasPanelRightClicked(const Panel* panel) {
     return panel->input.rightClick;
 }
 
-static __inline void AssignPanelRowState(Panel* panel, i16 index, u16 flags) {
+static __inline void
+AssignPanelRowState(Panel* panel, i16 index, GZ_ENUM_PARAM(PanelFlags, u16) flags) {
     GetPanelRow(panel, index)->flags = flags;
 }
 
@@ -102,17 +103,17 @@ static __inline void InitPanelRow(Panel* panel, i16 index, i16 id, PanelRowHandl
     AssignPanelRowState(panel, index, 0);
 }
 
-void SetFlagBits(u16* flags, u16 mask);
-void ClearFlagBits(u16* flags, u16 mask);
+void SetFlagBits(GZ_ENUM_STORAGE(PanelFlags, u16) * flags, GZ_ENUM_PARAM(PanelFlags, u16) mask);
+void ClearFlagBits(GZ_ENUM_STORAGE(PanelFlags, u16) * flags, GZ_ENUM_PARAM(PanelFlags, u16) mask);
 
 static __inline void ClearPanelRowCheck(PanelRow* row) {
     ClearFlagBits(&row->flags, PANEL_ROW_CHECKED);
 }
 
-i16 ToggleFlagBits(u16* flags, u16 mask);
+i16 ToggleFlagBits(GZ_ENUM_STORAGE(PanelFlags, u16) * flags, GZ_ENUM_PARAM(PanelFlags, u16) mask);
 b32 TestFlagBits(u16* flags, u16 mask);
-b32 TestPanelRowFlags(Panel* panel, i16 row, u16 mask);
-void SetPanelRowFlags(Panel* panel, i16 row, u16 mask, i16 on);
+b32 TestPanelRowFlags(Panel* panel, i16 row, GZ_ENUM_PARAM(PanelFlags, u16) mask);
+void SetPanelRowFlags(Panel* panel, i16 row, GZ_ENUM_PARAM(PanelFlags, u16) mask, i16 on);
 b32 IsPanelRowChecked(Panel* panel, i16 row);
 void ClearPanelChecks(Panel* panel);
 void ClearPanelChecksAgain(Panel* panel);

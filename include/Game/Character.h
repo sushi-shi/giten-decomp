@@ -316,11 +316,13 @@ static __inline i16* GetBattleStatGroup(Character* character, i16 group) {
         sizeof((character)->battleStats)                                                           \
     )
 
-static __inline i16 GetBaseStat(const Character* character, i16 stat) {
+static __inline i16
+GetBaseStat(const Character* character, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
     return character->stats.base[stat];
 }
 
-static __inline i32 GetStatBonus(const Character* character, i16 stat) {
+static __inline i32
+GetStatBonus(const Character* character, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
     return character->stats.bonus[stat] + character->stats.modifiers[stat];
 }
 

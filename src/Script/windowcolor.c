@@ -13,7 +13,7 @@
 // Mode 1 resets the window's attribute and reverses it, 0 only resets it, -1
 // only reverses it.
 RVA(0x0002ea80, 0x46)
-void SetWindowReverse(i16 window, i16 mode) {
+void SetWindowReverse(i16 window, GZ_ENUM_PARAM(WindowReverseMode, i16) mode) {
     switch (mode) {
         case WINDOW_ATTR_RESET_AND_REVERSE:
             ResetTextPlaneAttr(window);

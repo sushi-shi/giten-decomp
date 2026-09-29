@@ -1504,7 +1504,7 @@ void AcquireInput(BOOL acquire) {
 // The mouse buttons' state and edges: bit 0 left down, 1 left was down, 2 left
 // pressed, 3 left released; bits 4-7 the same for the right button.
 RVA(0x00048e60, 0xbb)
-u8 PollMouseButtons(void) {
+GZ_ENUM_RETURN(MouseButtonBits, u8) PollMouseButtons(void) {
     DIMOUSESTATE state;
     HRESULT result;
     GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = MOUSE_UP;

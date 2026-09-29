@@ -61,7 +61,7 @@ GZ_ENUM_BEGIN(MenuControl)
     MENU_CONTROL_NEXT_ROW = 3
 GZ_ENUM_END(MenuControl)
 
-typedef void (*MenuHandler)(struct MenuBox* menu, i16 index, i16 event);
+typedef void (*MenuHandler)(struct MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 // A menu owns a text plane and a panel of paging controls. cursor is the
 // first displayed item. Script menus retain a packed file/entry reference.
