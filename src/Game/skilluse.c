@@ -1442,10 +1442,10 @@ i16 AddRelatedCombatTargets(i16 x, i16 y, i16 flags, i16 target, i16 actor) {
 RVA(0x0002caa0, 0x60)
 i16 AddObjectTargetsAtCell(i16 x, i16 y) {
     i16 count = CountCombatTargets();
-    i16 object = FindObjectAt(x, y, 0, 0, 0);
+    i16 object = FindObjectAt(x, y, 0, OBJECT_MATCH_ANY, 0);
     while (object != -1) {
         count = AddCombatTarget(object, 0);
-        object = FindObjectAt(x, y, object + 1, 0, 0);
+        object = FindObjectAt(x, y, object + 1, OBJECT_MATCH_ANY, 0);
     }
     return count;
 }

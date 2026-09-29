@@ -299,15 +299,19 @@ DATA(0x000788c0)
 u8 g_worldEncounterGroupSlots[16] = {0};
 
 // @identity-TODO: nine cumulative weights per encounter row (data file 5).
+#define ENCOUNTER_ROW_SLOTS 9
 DATA(0x000788d0)
 static u8 s_encounterBuffer[0x100] = {0};
 
 DATA(0x000789d0)
 static FieldObject s_objects[FIELD_OBJECT_COUNT] = {0};
 
-// The 7x7 sight grid around the object being stepped (1: seen).
+// The sight grid around the object being stepped (1: seen), SIGHT_RADIUS
+// cells each way.
+#define SIGHT_RADIUS 3
+#define SIGHT_WIDTH (2 * SIGHT_RADIUS + 1)
 DATA(0x0007ada0)
-static u8 s_sight[7][7] = {0};
+static u8 s_sight[SIGHT_WIDTH][SIGHT_WIDTH] = {0};
 
 // @identity-TODO: a count per id (0..255) whose eighth is the familiarity.
 DATA(0x0007add8)
@@ -387,10 +391,10 @@ DATA(0x0007b0f4)
 static u16 s_spawnInterval = 0;
 
 DATA(0x0007b0f8)
-static FieldLayer s_layers[2] = {0};
+static FieldLayer s_layers[FIELD_LAYER_COUNT] = {0};
 
 DATA(0x0007b2f8)
-static FieldLayer s_savedLayers[2] = {0};
+static FieldLayer s_savedLayers[FIELD_LAYER_COUNT] = {0};
 
 // The object script block (data file 0x6800), loaded on first use.
 DATA(0x0007b4f4)
@@ -418,12 +422,15 @@ b16 InitFieldObjects(void) {
 // event flag and queues its event; the level is marked when the last object
 // with an event goes.
 RVA(0x0000d7f0, 0x145)
-void RemoveFieldObject(i16 index, i16 announce) {
+void RemoveFieldObject(i16 index, b16 announce) {
     b16 queued = false;
     i16 i;
-    if (announce != 0 && s_objects[index].layer != FIELD_LAYER_NONE) {
+    if (announce != false && s_objects[index].layer != FIELD_LAYER_NONE) {
         if (!(s_objects[index].flagBank == 0 && s_objects[index].flagIndex == 0)
-            && !(s_objects[index].flagBank == 0xff && s_objects[index].flagIndex == 0xff)) {
+            && !(
+                s_objects[index].flagBank == FIELD_OBJECT_NO_FLAG
+                && s_objects[index].flagIndex == FIELD_OBJECT_NO_FLAG
+            )) {
             ModifyEventFlag(
                 s_objects[index].flagBank,
                 s_objects[index].flagIndex,
@@ -457,7 +464,7 @@ RVA(0x0000d940, 0x31)
 b16 ResetFieldObjects(void) {
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
-        RemoveFieldObject(i, 0);
+        RemoveFieldObject(i, false);
     }
     ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_SET);
     s_objectsFrozen = false;
@@ -514,11 +521,11 @@ i16 SpawnFieldObject(
     i16 y,
     i16 direction,
     i16 kind,
-    i16 alternate,
+    b16 alternate,
     i8 event,
-    i16 fresh
+    b16 fresh
 ) {
-    i16 slot = FindObjectOnLayer(-1);
+    i16 slot = FindObjectOnLayer(FIELD_LAYER_NONE);
     FILE* file;
     if (slot == -1) {
         return slot;
@@ -538,7 +545,7 @@ i16 SpawnFieldObject(
     s_objects[slot].word221 = 0;
     s_objects[slot].word21f = 0;
     s_objects[slot].hidden = false;
-    if (alternate != 0) {
+    if (alternate != false) {
         file = OpenDataFile(0x6802, DATA_FILE_SCRIPT, 0);
     } else if (TestModeFlags(MODE_WORLD_MAP)) {
         file = OpenDataFile(0x6801, DATA_FILE_SCRIPT, 0);
@@ -546,13 +553,13 @@ i16 SpawnFieldObject(
         file = OpenDataFile(0x6800, DATA_FILE_SCRIPT, 0);
     }
     s_objects[slot].script = ReadScriptBlock(s_objects[slot].script, file);
-    s_objects[slot].script->id = 0xff;
+    s_objects[slot].script->id = SCRIPT_BLOCK_OBJECT;
     CloseDataFile(file);
     SetBit(GetFieldObjectFlags(&s_objects[slot]), ACTOR_FLAG_NOTICED);
-    if (alternate != 0) {
+    if (alternate != false) {
         SetBit(GetFieldObjectFlags(&s_objects[slot]), 0x20);
     }
-    if (fresh != 0) {
+    if (fresh != false) {
         s_objects[slot].macca = 0;
         s_objects[slot].magnetite = 0;
         s_objects[slot].pickItem = 0;
@@ -560,7 +567,7 @@ i16 SpawnFieldObject(
         s_objects[slot].pools.hp.cur = s_objects[slot].rank;
         s_objects[slot].experience = s_objects[slot].rank;
     }
-    SetObjectEventFlag(slot, 0xff, 0xff);
+    SetObjectEventFlag(slot, FIELD_OBJECT_NO_FLAG, FIELD_OBJECT_NO_FLAG);
     ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_CLEAR);
     return slot;
 }
@@ -585,7 +592,7 @@ i16 SpawnMapObject(i16 layer, i16 x, i16 y, i16 direction, i8 event) {
     if (kind < 0x20 || kind >= 0x2020) {
         return -1;
     }
-    return SpawnFieldObject(layer, x, y, direction, kind, 0, event, 0);
+    return SpawnFieldObject(layer, x, y, direction, kind, false, event, false);
 }
 
 // `index` when it names a live, visible object (or checks are bypassed), else -1.
@@ -602,7 +609,7 @@ i16 GetLiveObject(i16 index) {
 
 // Spawns a copy of object `index` at its place; returns the new slot or -1.
 RVA(0x0000dcc0, 0x99)
-i16 RespawnFieldObject(i16 index, i16 alternate, i8 event, i16 fresh) {
+i16 RespawnFieldObject(i16 index, b16 alternate, i8 event, b16 fresh) {
     i16 live = GetLiveObject(index);
     i16 layer;
     i16 slot;
@@ -624,7 +631,7 @@ i16 RespawnFieldObject(i16 index, i16 alternate, i8 event, i16 fresh) {
         fresh
     );
     if (slot >= 0) {
-        RequestObjectRedraw(live, -1, -1);
+        RequestObjectRedraw(live, MAP_COORD_NONE, MAP_COORD_NONE);
     }
     return slot;
 }
@@ -661,7 +668,7 @@ void MarkObjectsOnMap(void) {
     if (s_objectsFrozen == false) {
         for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             if (s_objects[i].layer != FIELD_LAYER_NONE) {
-                MarkMapCell(5, s_objects[i].pos.x, s_objects[i].pos.y);
+                MarkMapCell(MAP_MARK_OBJECT, s_objects[i].pos.x, s_objects[i].pos.y);
             }
         }
     }
@@ -782,13 +789,13 @@ void DrawFieldObjects(void) {
     i16 drawn;
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
-        if (CheckObjectState(i) >= 1) {
+        if (CheckObjectState(i) >= OBJECT_SLOT_LIVE) {
             total += GetObjectLifeState(&s_objects[i]);
         }
     }
     drawn = 0;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
-        if (CheckObjectState(i) >= 1) {
+        if (CheckObjectState(i) >= OBJECT_SLOT_LIVE) {
             drawn +=
                 DrawFieldObject(&s_objects[i], GetLayerImage(s_objects[i].layer), i, total, drawn);
         }
@@ -798,27 +805,27 @@ void DrawFieldObjects(void) {
 // -1 for a free slot, 1 for an object still in play; a hidden object is
 // removed (0) unless removal is deferred.
 RVA(0x0000e1e0, 0x65)
-i16 CheckObjectState(i16 index) {
+GZ_ENUM_RETURN(ObjectSlotState, i16) CheckObjectState(i16 index) {
     if (s_objects[index].layer == FIELD_LAYER_NONE) {
-        return -1;
+        return OBJECT_SLOT_FREE;
     }
     if (s_objects[index].hidden == false) {
-        return 1;
+        return OBJECT_SLOT_LIVE;
     }
     if (s_objectRemovalDeferred) {
         DeferObjectRemoval();
-        return 1;
+        return OBJECT_SLOT_LIVE;
     }
-    RemoveFieldObject(index, 1);
-    RequestObjectRedraw(index, -1, -1);
-    return 0;
+    RemoveFieldObject(index, true);
+    RequestObjectRedraw(index, MAP_COORD_NONE, MAP_COORD_NONE);
+    return OBJECT_SLOT_REMOVED;
 }
 
 RVA(0x0000e250, 0x60)
 void RunFieldIdle(void) {
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
-        if (CheckObjectState(i) >= 1) {
+        if (CheckObjectState(i) >= OBJECT_SLOT_LIVE) {
             BuildSightGrid(s_objects[i].pos.x, s_objects[i].pos.y, s_objects[i].direction);
             if (RunObjectStep(&s_objects[i], i)) {
                 return;
@@ -827,10 +834,10 @@ void RunFieldIdle(void) {
     }
 }
 
-// The first live object from `start` at x/y; `mode` 1 wants record `kind`,
-// mode 2 any other record. -1 when none.
+// The first live object from `start` at x/y whose record `mode` accepts; -1
+// when none.
 RVA(0x0000e2b0, 0xc8)
-i16 FindObjectAt(i16 x, i16 y, i16 start, i16 mode, i16 kind) {
+i16 FindObjectAt(i16 x, i16 y, i16 start, GZ_ENUM_PARAM(ObjectKindMatch, i16) mode, i16 kind) {
     i16 i;
     for (i = start; i < FIELD_OBJECT_COUNT; i++) {
         if (s_objects[i].layer == FIELD_LAYER_NONE || s_objects[i].hidden != false) {
@@ -845,10 +852,10 @@ i16 FindObjectAt(i16 x, i16 y, i16 start, i16 mode, i16 kind) {
         if (x != s_objects[i].pos.x || y != s_objects[i].pos.y) {
             continue;
         }
-        if (mode == 1 && kind != s_objects[i].kind) {
+        if (mode == OBJECT_MATCH_KIND && kind != s_objects[i].kind) {
             continue;
         }
-        if (mode == 2 && kind == s_objects[i].kind) {
+        if (mode == OBJECT_MATCH_OTHER_KIND && kind == s_objects[i].kind) {
             continue;
         }
         return i;
@@ -857,7 +864,7 @@ i16 FindObjectAt(i16 x, i16 y, i16 start, i16 mode, i16 kind) {
 }
 
 RVA(0x0000e380, 0x4a)
-i16 CountObjectsAt(i16 x, i16 y, i16 mode, i16 kind) {
+i16 CountObjectsAt(i16 x, i16 y, GZ_ENUM_PARAM(ObjectKindMatch, i16) mode, i16 kind) {
     i16 count = 0;
     i16 i = FindObjectAt(x, y, count, mode, kind);
     while (i != -1) {
@@ -871,7 +878,7 @@ RVA(0x0000e3d0, 0x24)
 i16 FindObjectAtParty(void) {
     MapCoord coord;
     coord = GetMapCoord();
-    return FindObjectAt(coord.x, coord.y, 0, 0, 0);
+    return FindObjectAt(coord.x, coord.y, 0, OBJECT_MATCH_ANY, 0);
 }
 
 RVA(0x0000e400, 0x48)
@@ -1035,7 +1042,7 @@ void SaveFieldLayer(i16 layer) {
     i16 i;
     s_savedLayers[layer] = s_layers[layer];
     s_layers[layer].image = 0;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < FIELD_LAYER_SCRIPT_COUNT; i++) {
         s_layers[layer].scripts[i] = NULL;
     }
 }
@@ -1045,7 +1052,7 @@ void RestoreFieldLayer(i16 layer) {
     i16 i;
     s_layers[layer] = s_savedLayers[layer];
     s_savedLayers[layer].image = 0;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < FIELD_LAYER_SCRIPT_COUNT; i++) {
         s_savedLayers[layer].scripts[i] = NULL;
     }
 }
@@ -1099,7 +1106,7 @@ ScriptEntry FindLayerScriptEntry(i16 layerSlot, i16 file, i16 entry) {
         return none;
     }
     layer = layerSlot - 1;
-    if (file == 0xff) {
+    if (file == SCRIPT_BLOCK_OBJECT) {
         if (s_objectScripts == NULL) {
             fp = OpenDataFile(0x6800, DATA_FILE_SCRIPT, 0);
             s_objectScripts = ReadScriptBlock(s_objectScripts, fp);
@@ -1110,7 +1117,7 @@ ScriptEntry FindLayerScriptEntry(i16 layerSlot, i16 file, i16 entry) {
     if (GetLayerScript(&s_layers[layer], 0) == NULL) {
         LoadLayerScriptSet(&s_layers[layer], s_layers[layer].record.scriptSet);
     }
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < FIELD_LAYER_SCRIPT_COUNT; i++) {
         if (GetScriptBlockId(GetLayerScript(&s_layers[layer], i)) == file) {
             return MakeScriptEntry(GetLayerScript(&s_layers[layer], i), entry);
         }
@@ -1149,7 +1156,7 @@ u32 GetLayerImage(i16 layer) {
 RVA(0x0000eaa0, 0x29)
 i16 FindLayerOfKind(i16 kind) {
     i16 i;
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < FIELD_LAYER_COUNT; i++) {
         if (s_layers[i].record.id == kind) {
             return i;
         }
@@ -1161,7 +1168,7 @@ RVA(0x0000ead0, 0x2b)
 void FreeLayerScripts(FieldLayer* layer) {
     i16 i;
     if (layer != NULL) {
-        for (i = 31; i >= 0; i--) {
+        for (i = FIELD_LAYER_SCRIPT_COUNT - 1; i >= 0; i--) {
             layer->scripts[i] = FreeScriptBlock(GetLayerScript(layer, i));
         }
     }
@@ -1170,7 +1177,13 @@ void FreeLayerScripts(FieldLayer* layer) {
 // Reads script blocks first..end-1 of data file `file` into the layer; each
 // block starts in state (index - 32).
 RVA(0x0000eb00, 0x6a)
-void LoadLayerScripts(FieldLayer* layer, i16 file, i16 kind, i16 first, i16 end) {
+void LoadLayerScripts(
+    FieldLayer* layer,
+    i16 file,
+    GZ_ENUM_PARAM(DataFileKind, i16) kind,
+    i16 first,
+    i16 end
+) {
     FILE* fp = OpenDataFile(file, kind, 0);
     i16 i;
     if (fp != NULL) {
@@ -1193,17 +1206,17 @@ void LoadLayerScriptSet(FieldLayer* layer, i16 set) {
         s_scriptSets = s_scriptSetBuffer;
         CloseDataFile(fp);
     }
-    LoadLayerScripts(layer, 0x6000, 9, 0, 0x10);
+    LoadLayerScripts(layer, 0x6000, DATA_FILE_SCRIPT, 0, 0x10);
     if (GetScriptSetFile(set, 0) != 0xff) {
-        LoadLayerScripts(layer, GetScriptSetFile(set, 0) + 0x6000, 9, 0, 0x10);
+        LoadLayerScripts(layer, GetScriptSetFile(set, 0) + 0x6000, DATA_FILE_SCRIPT, 0, 0x10);
     }
     if (GetScriptSetFile(set, 1) != 0xff) {
-        LoadLayerScripts(layer, GetScriptSetFile(set, 1) + 0x6000, 9, 0, 0x10);
+        LoadLayerScripts(layer, GetScriptSetFile(set, 1) + 0x6000, DATA_FILE_SCRIPT, 0, 0x10);
     }
     if (GetScriptSetFile(set, 2) != 0xff) {
-        LoadLayerScripts(layer, GetScriptSetFile(set, 2) + 0x6100, 9, 0, 0x10);
+        LoadLayerScripts(layer, GetScriptSetFile(set, 2) + 0x6100, DATA_FILE_SCRIPT, 0, 0x10);
     }
-    LoadLayerScripts(layer, layer->record.id, 14, 0, 0x10);
+    LoadLayerScripts(layer, layer->record.id, DATA_FILE_OBJECT_SCRIPT, 0, 0x10);
 }
 
 MapCoord RandomNearOffset(void);
@@ -1246,7 +1259,7 @@ i16 SpawnRandomEnemy(void) {
             return -1;
         }
     }
-    if (FindObjectOnLayer(-1) < 0) {
+    if (FindObjectOnLayer(FIELD_LAYER_NONE) < 0) {
         return -1;
     }
     for (tries = 0; tries < 10; tries++) {
@@ -1255,7 +1268,8 @@ i16 SpawnRandomEnemy(void) {
         y = offset.y + g_party.field.pos.y;
         x = WrapMapCoord(x, width);
         y = WrapMapCoord(y, height);
-        if (!IsCellBlocked(g_party.field.pos.level, 1, x, y) && GetMapCellCode(x, y) == code) {
+        if (!IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y)
+            && GetMapCellCode(x, y) == code) {
             break;
         }
     }
@@ -1263,7 +1277,7 @@ i16 SpawnRandomEnemy(void) {
         return -1;
     }
     RequestFieldRefresh();
-    return SpawnMapObject(layer, x, y, RandomAverage(0, 3, 0), -1);
+    return SpawnMapObject(layer, x, y, RandomAverage(0, 3, 0), FIELD_OBJECT_NO_EVENT);
 }
 
 RVA(0x0000edf0, 0x2d)
@@ -1302,9 +1316,9 @@ void TraceSight(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     i16 cellX;
     i16 cellY;
     i16 blocked;
-    left = -3;
-    right = 3;
-    for (step = 0; step >= -3; step--) {
+    left = -SIGHT_RADIUS;
+    right = SIGHT_RADIUS;
+    for (step = 0; step >= -SIGHT_RADIUS; step--) {
         ScanSightRow(x, y, step, direction, &left, &right);
         cellX = x;
         cellY = y;
@@ -1318,8 +1332,8 @@ void TraceSight(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
 
 #define MarkSightCell(x0, y0, x, y)                                                                \
     do {                                                                                           \
-        (x) += 3 - (x0);                                                                           \
-        (y) += 3 - (y0);                                                                           \
+        (x) += SIGHT_RADIUS - (x0);                                                                \
+        (y) += SIGHT_RADIUS - (y0);                                                                \
         if ((y) >= 0 && (x) >= 0) {                                                                \
             s_sight[(y)][(x)] = 1;                                                                 \
         }                                                                                          \
@@ -1380,9 +1394,9 @@ void BuildSightGrid(i16 x, i16 y, i16 facing) {
 // The sight-grid cell for x/y around an object at x0/y0 (0 outside).
 RVA(0x0000f0c0, 0x53)
 i16 GetSightCell(i16 x0, i16 y0, i16 x, i16 y) {
-    x += 3 - x0;
-    y += 3 - y0;
-    if (x >= 0 && x < 7 && y >= 0 && y < 7) {
+    x += SIGHT_RADIUS - x0;
+    y += SIGHT_RADIUS - y0;
+    if (x >= 0 && x < SIGHT_WIDTH && y >= 0 && y < SIGHT_WIDTH) {
         return s_sight[y][x];
     }
     return 0;
@@ -1404,7 +1418,7 @@ i16 DirectionToParty(i16 x, i16 y) {
     coord = GetMapCoord();
     direction = RelativeDirection(x, y, coord.x, coord.y, VIEW_NORTH);
     if (x == coord.x && y == coord.y) {
-        direction = TurnDirection(g_party.field.pos.direction, 2);
+        direction = TurnDirection(g_party.field.pos.direction, MOVE_BACK);
     }
     return direction;
 }
@@ -1422,8 +1436,8 @@ RVA(0x0000f1e0, 0x35)
 i16 RollEncounterSlot(i16 row) {
     u8 roll = RandomUpTo(0xff);
     i16 i;
-    for (i = 0; i < 9; i++) {
-        if (roll <= s_fieldEncounterWeights[row * 9 + i]) {
+    for (i = 0; i < ENCOUNTER_ROW_SLOTS; i++) {
+        if (roll <= s_fieldEncounterWeights[row * ENCOUNTER_ROW_SLOTS + i]) {
             break;
         }
     }
@@ -1431,8 +1445,8 @@ i16 RollEncounterSlot(i16 row) {
 }
 
 RVA(0x0000f220, 0x1e)
-b16 RefreshIfTurned(i16 visible, i16 turned) {
-    if (visible != 0 && turned != 0) {
+b16 RefreshIfTurned(b16 visible, b16 turned) {
+    if (visible != false && turned != false) {
         RequestFieldRefresh();
         return true;
     }
@@ -1468,10 +1482,10 @@ RVA(0x0000f290, 0x24d)
 b16 StepObjectTowardParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) turn, i16 mode) {
     i16 x;
     i16 y;
-    i16 visible;
-    i16 retried;
+    b16 visible;
+    b16 retried;
     i16 code;
-    i16 turned;
+    b16 turned;
     i16 direction;
     retried = false;
     if (TestFieldObjectFlag(object, 0x20)) {
@@ -1483,7 +1497,7 @@ b16 StepObjectTowardParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) t
     for (;;) {
         x = object->pos.x;
         y = object->pos.y;
-        turned = 0;
+        turned = false;
         direction = DirectionToParty(x, y);
         direction = TurnDirection(direction, turn);
         SetObjectDirection(object, direction, turned);
@@ -1493,7 +1507,8 @@ b16 StepObjectTowardParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) t
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
             StepMapCoord(&x, &y, object->direction, MOVE_FORWARD);
             WrapMapPosition(&x, &y);
-            if (!CellCodeDiffers(code, x, y) && !IsCellBlocked(g_party.field.pos.level, 1, x, y)) {
+            if (!CellCodeDiffers(code, x, y)
+                && !IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y)) {
                 visible |= GetPartyView(x, y);
                 object->pos.y = y;
                 object->pos.x = x;
@@ -1504,13 +1519,13 @@ b16 StepObjectTowardParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) t
                 if (GetGameState() == GAME_STATE_FIELD) {
                     ClearSelectedHotspot();
                 }
-                return RefreshIfTurned(visible, 1);
+                return RefreshIfTurned(visible, true);
             }
         }
         if (turn != MOVE_FORWARD || retried != false) {
             return RefreshIfTurned(visible, turned);
         }
-        retried = 1;
+        retried = true;
         turn = GetPartySide(object->pos.x, object->pos.y, direction);
     }
 }
@@ -1520,8 +1535,8 @@ RVA(0x0000f4e0, 0x66)
 void FaceObjectToParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) turn) {
     i16 x = object->pos.x;
     i16 y = object->pos.y;
-    i16 turned = 0;
-    i16 view = GetPartyView(x, y);
+    b16 turned = false;
+    b16 view = GetPartyView(x, y);
     i16 direction = DirectionToParty(x, y);
     direction = TurnDirection(direction, turn);
     SetObjectDirection(object, direction, turned);
@@ -1562,14 +1577,14 @@ b16 IsWithinRange(i16 range) {
 // was picked.
 RVA(0x0000f620, 0x26c)
 i16 UseObjectSkill(FieldObject* object, i16 skill) {
-    FieldSkillCandidate best, candidates[16];
+    FieldSkillCandidate best, candidates[FIELD_OBJECT_COUNT];
     Character* actor = (Character*)&object->kind;
     FieldObject* target;
     MapCoord coord;
-    i16 picked;
+    b16 picked;
     i16 count;
     i16 i;
-    picked = 0;
+    picked = false;
     if (CanUseSkill(skill, actor) <= 0) {
         return -1;
     }
@@ -1616,7 +1631,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
             return -1;
         }
         object->pickObject = best.index;
-        picked = 1;
+        picked = true;
         g_targetId = object->pickObject;
     }
     if (!GetFieldMarker() && !IsWithinRange(GetSkillAttackRange(skill))) {
@@ -1625,7 +1640,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     if (IsSkillIdBlocked(actor, skill) == true) {
         return -1;
     }
-    return picked != 0;
+    return picked != false;
 }
 
 b16 ChooseObjectTarget(FieldObject* object);
@@ -1696,7 +1711,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             tries = 0;
             for (;;) {
                 slot = RollEncounterSlot(object->encounterRow);
-                if (slot >= 1 && slot <= 8) {
+                if (slot >= 1 && slot <= OBJECT_SKILL_COUNT) {
                     g_actionId = object->skills[slot - 1];
                     object->pickTarget = g_actionId;
                     object->pickTargetHigh = 1;
@@ -1795,7 +1810,7 @@ b16 BeginPartyTargetSkill(Character* character);
 RVA(0x0000fd20, 0x171)
 b16 ChooseObjectTarget(FieldObject* object) {
     Character* member;
-    i16 candidates[6];
+    i16 candidates[PARTY_SIZE];
     i16 count;
     i16 i;
     i16 target;
@@ -2098,7 +2113,7 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     i16 i;
     memset(object, 0, sizeof(FieldObject));
     object->kind = record->id;
-    strncpy(object->namePrefix, record->name, 17);
+    strncpy(object->namePrefix, record->name, sizeof(object->namePrefix));
     object->macca = record->macca;
     object->magnetite = record->magnetite;
     object->rank = record->level;
@@ -2163,7 +2178,7 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->fieldState = 0;
     object->encounterRow = record->encounterRow;
     object->shield = 0;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < sizeof(object->resistance); i++) {
         object->resistance[i] = record->resistance[i];
     }
     object->moonRow = record->moonRow;
@@ -2172,17 +2187,17 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->pickFlags = (object->pickFlags & ~6) | ((record->bits68 >> 5) & 2);
     object->dropChance = record->dropChance;
     object->pickItem = record->pickItem;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < sizeof(object->affiliation); i++) {
         SetCharacterAffiliation(object, i, record->affiliation[i]);
     }
-    ResetWordList(&object->list, 8);
-    for (i = 0; i < 8; i++) {
+    ResetWordList(&object->list, OBJECT_SKILL_COUNT);
+    for (i = 0; i < OBJECT_SKILL_COUNT; i++) {
         SetWord(&object->list, i, record->skills[i]);
         object->skills[i] = record->skills[i];
     }
-    object->battleStats[0] = 0;
-    object->battleStats[6] = 0;
-    object->battleStats[12] = 0;
+    object->battleStats[BATTLE_STAT_WEAPON_LEVEL] = 0;
+    object->battleStats[BATTLE_STAT_GUN_LEVEL] = 0;
+    object->battleStats[BATTLE_STAT_MAGIC_LEVEL] = 0;
     object->battleStats[18] = 0;
     RecalcObjectStats(object);
     InitCurMax(&object->pools.hp, record->hp);
@@ -2665,9 +2680,9 @@ void PrepareFieldRandom(void) {
             y,
             OppositeDirection(g_party.field.pos.direction),
             s_encounterGroups[g_worldEncounterGroupSlots[i]],
-            0,
-            -1,
-            0
+            false,
+            FIELD_OBJECT_NO_EVENT,
+            false
         );
         actor = GetFieldActor(i);
         AlertActor(actor, ATTITUDE_VERY_HOSTILE);

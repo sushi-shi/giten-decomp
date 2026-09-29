@@ -78,6 +78,10 @@ i16 GetMapCellCode(i16 x, i16 y);
 i16 IsObjectCell(i16 code);
 
 // Marks map cell x/y with `kind` on the automap.
+// Map marks 0-3 are the party arrow by ViewDirection; these mark an area NPC
+// and a field object.
+#define MAP_MARK_NPC 4
+#define MAP_MARK_OBJECT 5
 void MarkMapCell(i16 kind, i16 x, i16 y);
 
 // @identity-TODO: sets the flag 0x480d10 (instead of removing a hidden object).
@@ -88,6 +92,6 @@ u32 DropLayerImage(u32 image);
 
 // @identity-TODO: requests a redraw of the area of object `index`.
 RVA_DECL(0x00049fe0)
-void RequestObjectRedraw(i16 index, i16 a, i16 b);
+void RequestObjectRedraw(i16 index, i16 x, i16 y);
 
 #endif // GITEN_GAME_FIELDSUPPORT_H

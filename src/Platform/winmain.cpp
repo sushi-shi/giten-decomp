@@ -803,11 +803,11 @@ void OpenTreasureBox(TreasureBox* box) {
 }
 
 RVA(0x00049fe0, 0x51)
-void RequestObjectRedraw(i16 index, i16 a, i16 b) {
+void RequestObjectRedraw(i16 index, i16 x, i16 y) {
     if (g_renderMode == RENDER_MODE_VIEW) {
         s_viewDirty = true;
         s_viewChanged = true;
-        if (g_hotspotObject == index && (g_hotspotCellX != a || g_hotspotCellY != b)) {
+        if (g_hotspotObject == index && (g_hotspotCellX != x || g_hotspotCellY != y)) {
             g_selectedHotspot = HOTSPOT_NONE;
         }
         DrawFieldView();

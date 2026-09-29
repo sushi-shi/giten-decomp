@@ -1182,8 +1182,8 @@ void SpawnSecondGroupActor(i16 x, i16 y, i16 battle) {
         OppositeDirection(g_party.field.pos.direction),
         s_fieldParamSecond,
         battle,
-        -1,
-        0
+        FIELD_OBJECT_NO_EVENT,
+        false
     );
 }
 
@@ -1241,9 +1241,9 @@ b16 RunFieldEncounter(void) {
                                 g_party.field.pos.y,
                                 (g_party.field.pos.direction - 2) & 3,
                                 s_fieldMap,
-                                1,
-                                -1,
-                                0
+                                true,
+                                FIELD_OBJECT_NO_EVENT,
+                                false
                             );
                         }
                         if (s_fieldParamSecond >= 0) {
@@ -1269,9 +1269,9 @@ b16 RunFieldEncounter(void) {
                                 y,
                                 (g_party.field.pos.direction - 2) & 3,
                                 s_fieldMap,
-                                1,
-                                -1,
-                                0
+                                true,
+                                FIELD_OBJECT_NO_EVENT,
+                                false
                             );
                         }
                         if (s_fieldParamSecond >= 0) {
@@ -1655,7 +1655,7 @@ b16 HasObjectInReach(i16 mode, i16 first, i16 second) {
                 if (pos.x != object->pos.x || pos.y == object->pos.y) {
                     return false;
                 }
-            } else if (!CountObjectsAt(pos.x, pos.y, 0, 0)) {
+            } else if (!CountObjectsAt(pos.x, pos.y, OBJECT_MATCH_ANY, 0)) {
                 return false;
             }
             break;

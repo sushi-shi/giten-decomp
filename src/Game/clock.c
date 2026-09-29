@@ -911,7 +911,7 @@ b16 IsRoomCell(i16 x, i16 y) {
 // there, else its wall or room bit. With `mode` 0, draws each enabled cell's
 // automap icon instead and returns 0.
 RVA(0x00021ed0, 0x1d3)
-i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
+i16 IsCellBlocked(i16 level, GZ_ENUM_PARAM(CellScanMode, i16) mode, i16 x, i16 y) {
     WarpCell* warp;
     BattleCell* battle;
     LinkCell* link;
@@ -956,7 +956,7 @@ i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
             return hit;
         }
     }
-    if (mode == 0) {
+    if (mode == CELL_SCAN_DRAW_ICONS) {
         return 0;
     }
     y = AreaLevelAt(g_areaMap, level)->width * y + x;
@@ -966,15 +966,21 @@ i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
     return TestBit(AreaLevelAt(g_areaMap, level)->roomBits, y);
 }
 
-// With `mode` set, 1 when the cell is at x/y. With `mode` 0, draws the cell's
+// With CELL_SCAN_TEST, 1 when the cell is at x/y. With CELL_SCAN_DRAW_ICONS, draws the cell's
 // automap icon unless its flag at `flagOffset` is set, and returns -1.
 // @early-stop scheduling: retail loads each cell byte just before its
 // subtraction (reusing edx) and the icon arguments into eax/ecx/dl; the
 // difference test (or/neg/sbb) spelled `!(a | b)`, `(a | b) == 0`, with a dy
 // local or as a compare pair keeps an extra register.
 RVA(0x000220b0, 0x62)
-i16 CheckBlockingCell(const CellHead* cell, i16 mode, i16 flagOffset, i16 x, i16 y) {
-    if (mode != 0) {
+i16 CheckBlockingCell(
+    const CellHead* cell,
+    GZ_ENUM_PARAM(CellScanMode, i16) mode,
+    i16 flagOffset,
+    i16 x,
+    i16 y
+) {
+    if (mode != CELL_SCAN_DRAW_ICONS) {
         return !((y - cell->y) | (x - cell->x));
     }
     if (!IsCellFlagSet(cell, flagOffset)) {

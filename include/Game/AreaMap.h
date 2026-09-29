@@ -305,8 +305,21 @@ i16 GetLevelFloor(void);
 b16 IsDarkCell(i16 x, i16 y);
 b16 IsCellCommandBlocked(i16 x, i16 y);
 b16 IsRoomCell(i16 x, i16 y);
-i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y);
-i16 CheckBlockingCell(const CellHead* cell, i16 mode, i16 flagOffset, i16 x, i16 y);
+// What IsCellBlocked and CheckBlockingCell do with a level's cells: draw
+// their automap icons, or test whether one blocks x/y.
+GZ_ENUM_BEGIN_SPLIT(CellScanMode, i16)
+    CELL_SCAN_DRAW_ICONS = 0,
+    CELL_SCAN_TEST = 1
+GZ_ENUM_END_SPLIT(CellScanMode)
+
+i16 IsCellBlocked(i16 level, GZ_ENUM_PARAM(CellScanMode, i16) mode, i16 x, i16 y);
+i16 CheckBlockingCell(
+    const CellHead* cell,
+    GZ_ENUM_PARAM(CellScanMode, i16) mode,
+    i16 flagOffset,
+    i16 x,
+    i16 y
+);
 i16 GetEventCellCode(i16 x, i16 y);
 // Returns the barring door's code (0: none) for a step from x/y facing
 // `direction`, move `turn`.

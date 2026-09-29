@@ -274,9 +274,9 @@ void PlaceScriptActor(void) {
             ((FieldActor*)g_curScript->actor)->pos.y,
             ((FieldActor*)g_curScript->actor)->direction,
             g_curScript->actor->id,
-            0,
-            -1,
-            0
+            false,
+            FIELD_OBJECT_NO_EVENT,
+            false
         );
     } else {
         layer = FindCellObject(
@@ -522,7 +522,7 @@ void OpJumpUnlessActorCanStep(
         blocked = GetMapWallKind(x, y, (direction + turn) & 3);
         if (!blocked) {
             StepMapCoord(&x, &y, direction, turn);
-            blocked = IsCellBlocked(g_party.field.pos.level, 1, x, y);
+            blocked = IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y);
         }
     }
     if ((!blocked && !invert) || (blocked && invert)) {
@@ -2397,7 +2397,7 @@ void OpIfBlockedToward(
     }
     if (!blocked) {
         StepMapCoord(&x, &y, direction, turn);
-        blocked = IsCellBlocked(g_party.field.pos.level, 1, x, y);
+        blocked = IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y);
         if (!blocked && g_curScript->actor != NULL) {
             blocked = DistanceToParty((FieldActor*)g_curScript->actor) == 0;
         }

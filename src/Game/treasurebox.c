@@ -2165,7 +2165,7 @@ void DrawAutomapRegion(i16 x, i16 y, i16 width, i16 height, i16 across, i16 alon
             DrawAutomapTile(tile, cell.x, cell.y);
         }
     }
-    IsCellBlocked(s_mapPosition.level, 0, 0, 0);
+    IsCellBlocked(s_mapPosition.level, CELL_SCAN_DRAW_ICONS, 0, 0);
     if (s_mapPosition.level == g_party.field.pos.level) {
         DrawAutomapMark(
             TurnDirection(g_party.field.pos.direction, -s_mapDirection),
@@ -2405,7 +2405,7 @@ void DrawMapOverlay(MapPosition position) {
             DrawMapOverlayTile(tile, cell.x, cell.y);
         }
     }
-    IsCellBlocked(g_party.field.pos.level, 0, 0, 0);
+    IsCellBlocked(g_party.field.pos.level, CELL_SCAN_DRAW_ICONS, 0, 0);
     if (s_mapDetail >= AUTOMAP_DETAIL_NPCS) {
         MarkAreaNpcs();
     }
@@ -3141,7 +3141,7 @@ void MarkAreaNpcs(void) {
     i16 i;
     for (i = 0; i < s_npcCount; i++) {
         if (!IsEventFlagSet(s_npcs[i].flagBank, s_npcs[i].flagIndex)) {
-            MarkMapCell(4, s_npcs[i].x, s_npcs[i].y);
+            MarkMapCell(MAP_MARK_NPC, s_npcs[i].x, s_npcs[i].y);
         }
     }
 }
@@ -3308,7 +3308,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBack(i16 who) {
         if (CellCodeDiffers(code, x, y)) {
             return FIELD_EFFECT_FAILED;
         }
-        if (IsCellBlocked(g_party.field.pos.level, 1, x, y)) {
+        if (IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y)) {
             return FIELD_EFFECT_FAILED;
         }
     }
@@ -3333,7 +3333,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) ShieldTarget(void) {
         target->shield = target->pools.hp.max / 10;
         return FIELD_EFFECT_DONE;
     }
-    return RespawnFieldObject(g_targetId, 0, -1, 1);
+    return RespawnFieldObject(g_targetId, false, FIELD_OBJECT_NO_EVENT, true);
 }
 
 RVA(0x0001f990, 0x2d)

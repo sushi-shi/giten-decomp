@@ -32,7 +32,28 @@ GZ_ENUM_END(FieldObjectImageCode);
 // magazine size.
 // The field object table, and the layer of an unused object slot.
 #define FIELD_OBJECT_COUNT 16
+// The skills an object record lists (a field object rolls them by slot).
+#define OBJECT_SKILL_COUNT 8
 #define FIELD_LAYER_NONE (-1)
+// An object with no event to queue, and the bank and index of an object
+// with no event flag.
+#define FIELD_OBJECT_NO_EVENT (-1)
+#define FIELD_OBJECT_NO_FLAG 0xff
+
+// Which records FindObjectAt and CountObjectsAt accept: any, only `kind`, or
+// any but `kind`.
+GZ_ENUM_BEGIN_SPLIT(ObjectKindMatch, i16)
+    OBJECT_MATCH_ANY = 0,
+    OBJECT_MATCH_KIND = 1,
+    OBJECT_MATCH_OTHER_KIND = 2
+GZ_ENUM_END_SPLIT(ObjectKindMatch)
+
+// CheckObjectState's result for a slot.
+GZ_ENUM_BEGIN_SPLIT(ObjectSlotState, i16)
+    OBJECT_SLOT_FREE = -1,
+    OBJECT_SLOT_REMOVED = 0,
+    OBJECT_SLOT_LIVE = 1
+GZ_ENUM_END_SPLIT(ObjectSlotState)
 
 typedef struct FieldObject {
     u8 pad000[0x14];
@@ -117,7 +138,7 @@ typedef struct FieldObject {
     u8 flagIndex;
     // @identity-TODO: skill words 1..8 a field actor rolls from (index 0 overlaps
     // flagBank/flagIndex).
-    i16 skills[8];
+    i16 skills[OBJECT_SKILL_COUNT];
     ScriptBlock* script;
     i8 slot;
     i8 event;
@@ -131,7 +152,7 @@ static __inline void SetFieldObjectPickTarget(FieldObject* actor, i16 target) {
 #define SetObjectDirection(object, facing, changed)                                                \
     do {                                                                                           \
         if ((facing) != (object)->direction) {                                                     \
-            (changed) = 1;                                                                         \
+            (changed) = true;                                                                      \
             (object)->direction = (facing);                                                        \
         }                                                                                          \
     } while (0)
@@ -155,7 +176,7 @@ static __inline b32 TestFieldObjectFlag(FieldObject* object, i16 index) {
 }
 
 b16 InitFieldObjects(void);
-void RemoveFieldObject(i16 index, i16 announce);
+void RemoveFieldObject(i16 index, b16 announce);
 b16 ResetFieldObjects(void);
 b16 ExchangeObjectsFrozen(b16 frozen);
 i16 FindObjectOnLayer(i16 layer);
@@ -166,13 +187,13 @@ i16 SpawnFieldObject(
     i16 y,
     i16 direction,
     i16 kind,
-    i16 alternate,
+    b16 alternate,
     i8 event,
-    i16 fresh
+    b16 fresh
 );
 i16 SpawnMapObject(i16 layer, i16 x, i16 y, i16 direction, i8 event);
 i16 GetLiveObject(i16 index);
-i16 RespawnFieldObject(i16 index, i16 alternate, i8 event, i16 fresh);
+i16 RespawnFieldObject(i16 index, b16 alternate, i8 event, b16 fresh);
 void ResetObjectAnims(void);
 void ResetObjectAnim(i16 index);
 FieldObject* GetFieldObject(i16 index);
@@ -192,10 +213,10 @@ b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 dr
 MapCoord GetApproachOffset(i16 scale, i16 step);
 
 void DrawFieldObjects(void);
-i16 CheckObjectState(i16 index);
+GZ_ENUM_RETURN(ObjectSlotState, i16) CheckObjectState(i16 index);
 void RunFieldIdle(void);
-i16 FindObjectAt(i16 x, i16 y, i16 start, i16 mode, i16 kind);
-i16 CountObjectsAt(i16 x, i16 y, i16 mode, i16 kind);
+i16 FindObjectAt(i16 x, i16 y, i16 start, GZ_ENUM_PARAM(ObjectKindMatch, i16) mode, i16 kind);
+i16 CountObjectsAt(i16 x, i16 y, GZ_ENUM_PARAM(ObjectKindMatch, i16) mode, i16 kind);
 i16 FindObjectAtParty(void);
 void UpdateFieldObjects(void);
 i16 ExchangeObjectRemovalDeferred(i16 deferred);

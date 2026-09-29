@@ -25,7 +25,7 @@ typedef struct ObjectRecord {
     i32 magnetite;
     i16 hp;
     i16 mp;
-    i16 skills[8];
+    i16 skills[OBJECT_SKILL_COUNT];
     i16 equipGroup;
     i16 items[8];
     i16 pickItem;
