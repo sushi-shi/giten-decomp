@@ -229,3 +229,32 @@ src/Platform/d3dapp.cpp	MapSoundEffectId	*	*	*	a sound number the platform layer
 src/Platform/d3dapp.cpp	ZBufferDepth	*	*	*	a z-buffer bit depth
 src/Platform/d3dapp.cpp	*	*	store	store to operator()()	a D3DMATRIX element value
 src/Platform/d3dapp.cpp	*	*	store	store to g_*Loss	the bits a colour channel loses in the pixel format
+src/Text/font.cpp	s_identityMatrix	*	data-or-extent	*	the identity MAT2 GetGlyphOutline takes
+src/Text/font.cpp	s_padGrid	*	data-or-extent	*	the navigation pad's button under each 32x32 cell
+src/Text/font.cpp	s_scrollStripRect	*	data-or-extent	*	the strip each scroll clears, in pixels
+src/Text/font.cpp	s_glyphInfo	*	data-or-extent	*	the glyph DIB header: width, height, planes and bits per pixel
+src/Text/font.cpp	PaintLayer	*	arithmetic	*SCREEN_LAYER_FIRST_PANEL	the party panel number after SCREEN_LAYER_FIRST_PANEL
+src/Text/font.cpp	BlitGlyph	*	*	*	glyph bitmap arithmetic: bit positions, pixel masks and row offsets
+src/Text/font.cpp	RenderGlyph	*	*	*	glyph bitmap arithmetic: bit positions, pixel masks and row offsets
+src/Text/font.cpp	DrawBandText	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	DrawLayerText	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	DrawPlaneText	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	DrawStatusText	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	DrawTextCell	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	RepaintTextPlane	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	ScrollPlaneMapDown	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	ScrollPlaneMapLeft	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	ScrollPlaneMapRight	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	ScrollPlaneMapUp	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	ScrollTextPlaneSurface	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	TextPlaneCellAt	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	DrawBandText	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawLayerGauge	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawLayerText	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawPlaneIconKeyed	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawPlaneText	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawStatusPortrait	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawStatusText	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawTextCell	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	ScrollTextPlaneSurface	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	ScrollTextPlaneText	*	store	*	text-plane pixel geometry: rectangle edges

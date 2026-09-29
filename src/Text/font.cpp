@@ -3802,20 +3802,20 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
     desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
     desc.ddpfPixelFormat = primary.ddpfPixelFormat;
     if (g_ddraw->CreateSurface(&desc, &p->surface, NULL) != DD_OK) {
-        return -1;
+        return TEXT_PLANE_NONE;
     }
     if (kind == TEXT_PLANE_KIND_ANALYZE_NAME && GetFieldBattleActive()) {
         if (!BlitImage(p->surface, ANALYZE_NAME_EXPLORING_IMAGE, 0, 0)) {
             ReleaseComObject(p->surface);
-            return -1;
+            return TEXT_PLANE_NONE;
         }
     } else if (!BlitImage(p->surface, g_textPlaneImages[kind], 0, 0)) {
         ReleaseComObject(p->surface);
-        return -1;
+        return TEXT_PLANE_NONE;
     }
     if (g_ddraw->CreateSurface(&desc, &p->glyphSurface, NULL) != DD_OK) {
         ReleaseComObject(p->surface);
-        return -1;
+        return TEXT_PLANE_NONE;
     }
     ZeroMemory(&key, sizeof(key));
     p->glyphSurface->SetColorKey(DDCKEY_SRCBLT, &key);
