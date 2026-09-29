@@ -960,7 +960,7 @@ font	_PollMenuInput	100.0000	100.0000	6	c3c0733134cb	0x53910	100.0000
 font	_PrintMenuLines	100.0000	100.0000	3	bebf8834db30	0x53e80	100.0000	
 font	_RedrawTextPlane	100.0000	100.0000	3	ad00f7cd3e9c	0x51d80	100.0000	
 font	_RedrawTextRun	81.7167	81.7167	4	f8ed373aa0ec	0x51e40	81.7167	
-font	_RenderGlyph	100.0000	100.0000	2	b2b59a984be6	0x51230	100.0000	
+font	_RenderGlyph	100.0000	100.0000	3	7974662ac456	0x51230	100.0000	
 font	_RepaintTextPlane	100.0000	100.0000	6	d6934af72ad0	0x51b20	100.0000	
 font	_ReserveTextPlaneCells	100.0000	100.0000	1	838f00aaad65	0x53c50	100.0000	
 font	_ResetTextPlaneAccentAttr	100.0000	100.0000	3	8c9600e95c27	0x525c0	100.0000	
@@ -1194,7 +1194,7 @@ itemrecord	_AddGemItemsAt	100.0000	100.0000	7	e53e4f481517	0x245b0	100.0000
 itemrecord	_AddItemRegen	100.0000	100.0000	3	24a7e3eede1b	0x25600	100.0000	
 itemrecord	_AddItemStatBonuses	100.0000	100.0000	15	79eb6d38a973	0x24d50	100.0000	
 itemrecord	_AddItemStatPoints	100.0000	100.0000	5	05eda694a218	0x24ba0	100.0000	
-itemrecord	_AddScenarioBagItems	100.0000	100.0000	2	6b31e0076768	0x24210	100.0000	
+itemrecord	_AddScenarioBagItems	100.0000	100.0000	3	122e5bb561ef	0x24210	100.0000	
 itemrecord	_AddToBagEntry	100.0000	100.0000	2	1a3d450a6efe	0x23dc0	100.0000	
 itemrecord	_AddToPool	100.0000	100.0000	4	650e50b404f3	0x23820	100.0000	
 itemrecord	_ApplyEquipmentRegen	100.0000	100.0000	5	86fc24560290	0x254b0	100.0000	
@@ -1205,7 +1205,7 @@ itemrecord	_ClearBag	100.0000	100.0000	2	4b475a866c3d	0x23a80	100.0000
 itemrecord	_ClearDropSlots	100.0000	100.0000	2	c8a75ee6b882	0x23c00	100.0000	
 itemrecord	_ClearPool	100.0000	100.0000	2	369499095041	0x23800	100.0000	
 itemrecord	_CompactBag	100.0000	100.0000	2	08218b04fc30	0x24310	100.0000	
-itemrecord	_CompactBagCore	98.3557	98.3557	7	c73af37422ab	0x23f20	98.3557	
+itemrecord	_CompactBagCore	98.3557	98.3557	8	54eb759058ad	0x23f20	98.3557	
 itemrecord	_CopyBagEntries	100.0000	100.0000	3	1bed7adcff0a	0x23aa0	100.0000	
 itemrecord	_CountBagEntries	100.0000	100.0000	2	d04cca30c352	0x24280	100.0000	
 itemrecord	_CountBagItem	100.0000	100.0000	3	defb22949944	0x23d10	100.0000	
@@ -1217,7 +1217,7 @@ itemrecord	_CountPoolEntries	100.0000	100.0000	3	d64c2ff9ae33	0x237d0	100.0000
 itemrecord	_CreateGiftMenu	100.0000	100.0000	2	b54899d54a47	0x25f60	100.0000	
 itemrecord	_DecodeItemRecord	97.3803	97.3803	7	e37dae01ea18	0x22d40	97.3803	
 itemrecord	_DetachBagEntryItem	100.0000	100.0000	2	64c397adf892	0x244a0	100.0000	
-itemrecord	_DiscardMenuHandler	100.0000	100.0000	2	7f528ad54f82	0x25db0	100.0000	
+itemrecord	_DiscardMenuHandler	100.0000	100.0000	3	daf2c680e25a	0x25db0	100.0000	
 itemrecord	_ExpireSpecialItem	100.0000	100.0000	1	55e7b25dcfd5	0x25be0	100.0000	
 itemrecord	_ExpireSpecialItems	100.0000	100.0000	1	20decf33629a	0x25c60	100.0000	
 itemrecord	_FillBagEntry	100.0000	100.0000	3	f2a0edf1c02c	0x23eb0	100.0000	
@@ -1270,7 +1270,7 @@ itemrecord	_ResolveInflictedCondition	100.0000	100.0000	2	ffc59ac80d57	0x25680	1
 itemrecord	_RestoreBagEntries	100.0000	100.0000	2	c29ed7502fc7	0x23b10	100.0000	
 itemrecord	_RestoreGemItems	100.0000	100.0000	3	394465d7781b	0x24800	100.0000	
 itemrecord	_RollItemAmount	100.0000	100.0000	1	e312d7e6251e	0x23540	100.0000	
-itemrecord	_RunBagDiscardMenu	100.0000	100.0000	3	0d99c10d3252	0x25cb0	100.0000	
+itemrecord	_RunBagDiscardMenu	100.0000	100.0000	4	914781ca9faa	0x25cb0	100.0000	
 itemrecord	_RunGemItemGift	100.0000	100.0000	3	8ef1f5ceeb0f	0x25e70	100.0000	
 itemrecord	_SaveGemItems	100.0000	100.0000	4	d78e5d76e83c	0x247c0	100.0000	
 itemrecord	_SaveOrRestoreBag	100.0000	100.0000	1	bca2233b8646	0x242b0	100.0000	
@@ -1279,7 +1279,7 @@ itemrecord	_SetBagEntry	100.0000	100.0000	2	0ca366e64793	0x23d50	100.0000
 itemrecord	_SetBagEntryDetail	100.0000	100.0000	1	b7c4a40a4535	0x23e70	100.0000	
 itemrecord	_SetBagQuiet	100.0000	100.0000	2	8b7c526dda08	0x23690	100.0000	
 itemrecord	_StampSpecialItem	100.0000	100.0000	1	a05bfd2bcea1	0x25ba0	100.0000	
-itemrecord	_StoreBagItem	100.0000	100.0000	4	b358e80401c7	0x236e0	100.0000	
+itemrecord	_StoreBagItem	100.0000	100.0000	5	a332ca1bac5e	0x236e0	100.0000	
 itemrecord	_SumEquippedMagicDefenseBonus	100.0000	100.0000	3	2349e4a9242f	0x24f40	100.0000	
 itemrecord	_TakeBagItems	100.0000	100.0000	2	a4df7a2e9765	0x23780	100.0000	
 itemrecord	_TakeBagItemsAt	100.0000	100.0000	2	f56b5fd54ee3	0x24390	100.0000	
@@ -1871,7 +1871,7 @@ scriptctx	_RunScriptStep	100.0000	100.0000	1	3946609f3ab3	0x39120	100.0000
 scriptctx	_SetCurrentScript	100.0000	100.0000	1	3a48df27407a	0x38d60	100.0000	
 scriptctx	_StartScript	100.0000	100.0000	1	0fedffac5f79	0x38d70	100.0000	
 scriptctx	_StartScriptInCode	100.0000	100.0000	2	d253aea0d34c	0x38d90	100.0000	
-scriptctx	_StepScript	100.0000	100.0000	1	6ad8d96c6cde	0x39020	100.0000	
+scriptctx	_StepScript	100.0000	100.0000	2	1fc5e6891085	0x39020	100.0000	
 scriptctx	_TickScript	100.0000	100.0000	1	eab86a13cb6f	0x39150	100.0000	
 scriptfield	_OpCountObjectsAt	100.0000	100.0000	1	a0fe0c3dd12f	0x325f0	100.0000	
 scriptfield	_OpEnterFieldMap	100.0000	100.0000	1	5a679c1b4aa3	0x324b0	100.0000	
@@ -2648,7 +2648,7 @@ winmain	?DrawStairs@@YAXXZ	100.0000	100.0000	10	8d144836c05e	0x4da30	100.0000
 winmain	?Enable@CIme@@QAEHPAXH@Z	100.0000	100.0000	1	cpp:6513158aaf51	0x51210	100.0000	
 winmain	?FreeMesh@@YAXPAUMesh@@@Z	100.0000	100.0000	1	469ee8015621	0x4f3b0	100.0000	
 winmain	?GetFrameCount@@YAFXZ	100.0000	100.0000	1	5abad0cad2d7	0x49820	100.0000	
-winmain	?HandleInput@@YAXE@Z	100.0000	100.0000	7	9f6da989cba7	0x50540	100.0000	
+winmain	?HandleInput@@YAXE@Z	100.0000	100.0000	8	75f40e9a544d	0x50540	100.0000	
 winmain	?InitDirectX@@YAHXZ	100.0000	100.0000	2	257f425e879c	0x4a4f0	100.0000	
 winmain	?LoadGraphics@@YAHXZ	100.0000	100.0000	6	62a5f9158665	0x50ac0	100.0000	
 winmain	?MainWindowProc@@YGJPAXIIJ@Z	100.0000	100.0000	1	ce30e7b6b7b9	0x4fe90	100.0000	
@@ -2667,7 +2667,7 @@ winmain	?RenderEnemy@@YAXHHH@Z	96.3467	96.3467	33	3f8c3556d74e	0x4cb30	96.3467
 winmain	?RenderEventMode@@YAXH@Z	100.0000	100.0000	5	3cfbf4ce8a13	0x4e910	100.0000	
 winmain	?RenderFieldMode@@YAXH@Z	100.0000	100.0000	4	d0ca88baa9c1	0x4ef30	100.0000	
 winmain	?RenderFieldView@@YAXH@Z	100.0000	100.0000	9	1b7fa84ab5d5	0x4ea90	100.0000	
-winmain	?RenderFrame@@YAXXZ	100.0000	100.0000	2	4a2fe617a52b	0x4f140	100.0000	
+winmain	?RenderFrame@@YAXXZ	100.0000	100.0000	3	ee2428ac8799	0x4f140	100.0000	
 winmain	?RenderLayersMode@@YAXH@Z	100.0000	100.0000	1	2b7b4382fad1	0x4f100	100.0000	
 winmain	?RenderNPC@@YAXH@Z	96.3814	96.3814	27	2b76f92656b1	0x4c3c0	96.3814	
 winmain	?RenderNothing@@YAXH@Z	100.0000	100.0000	1	88c3c57d2781	0x4f130	100.0000	
@@ -2728,7 +2728,7 @@ winmain	_ResetRenderMode	100.0000	100.0000	3	3a2917717e91	0x49b90	100.0000
 winmain	_ResetSprites	100.0000	100.0000	1	a8500278e6bd	0x497d0	100.0000	
 winmain	_RestoreScreenMode	100.0000	100.0000	4	68c0f0dff83e	0x49c80	100.0000	
 winmain	_RotateByDirection	100.0000	100.0000	1	b908fb4eb223	0x4a040	100.0000	
-winmain	_RunFrame	100.0000	100.0000	1	e204e777b452	0x49f30	100.0000	
+winmain	_RunFrame	100.0000	100.0000	2	a32a83b6de36	0x49f30	100.0000	
 winmain	_RunMoveCommand	100.0000	100.0000	2	855eeebecdc1	0x49f50	100.0000	
 winmain	_SaveScreenMode	100.0000	100.0000	3	26637999f301	0x49c50	100.0000	
 winmain	_SetBlankRenderMode	100.0000	100.0000	3	90ea51127e9d	0x49ce0	100.0000	
@@ -2746,7 +2746,7 @@ winmain	_StepBlankRenderMode	100.0000	100.0000	3	a70ea22d10db	0x49d10	100.0000
 winmain	_StepScreenFade	91.2500	91.2500	6	285a6d61b71d	0x49dd0	91.2500	
 winmain	_StopMusic	100.0000	100.0000	1	bb07e3270123	0x49a50	100.0000	
 winmain	_WaitFrames	100.0000	100.0000	3	83c25cea8b9c	0x49f00	100.0000	
-winmain	_WinMain@16	98.4286	98.4286	4	4616433d1cdb	0x50f50	98.4286	
+winmain	_WinMain@16	98.4286	98.4286	5	aeeca5e66801	0x50f50	98.4286	
 worldmapgfx	_DrawWorldMapCursor	100.0000	100.0000	2	1a2259009483	0x583f0	100.0000	
 worldmapgfx	_HitTestWorldMap	100.0000	100.0000	2	170763bd2a03	0x581b0	100.0000	
 worldmapgfx	_IsWorldMapMarkerNearEdge	100.0000	100.0000	3	fdb7cb90b52e	0x582c0	100.0000	
