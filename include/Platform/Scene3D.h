@@ -380,6 +380,7 @@ void ReleaseGraphics(void);
 // which AnimateDoor opens instead (ahead, back, left, right).
 extern u32 g_moveState;
 
+#define MOVE_STATE_NONE 0
 #define MOVE_STATE_STEP 1
 #define MOVE_STATE_BACK 2
 #define MOVE_STATE_LEFT 3

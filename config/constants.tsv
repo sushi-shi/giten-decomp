@@ -258,3 +258,49 @@ src/Text/font.cpp	DrawStatusText	*	store	*	text-plane pixel geometry: rectangle 
 src/Text/font.cpp	DrawTextCell	*	store	*	text-plane pixel geometry: rectangle edges
 src/Text/font.cpp	ScrollTextPlaneSurface	*	store	*	text-plane pixel geometry: rectangle edges
 src/Text/font.cpp	ScrollTextPlaneText	*	store	*	text-plane pixel geometry: rectangle edges
+src/Platform/winmain.cpp	AllocWallMesh	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	AnimateMove	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	BuildQuadMesh	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	BuildRoomGeometry	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	BuildRoomMesh	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawDebugText	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawDragOutline	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawHotspotMarks	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawMouseCursor	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawSceneSprites	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawScreenFade	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawSprites	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawStairs	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	FinishScreenFade	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	GetWallCode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderBlankMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderEnemy	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderEventMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderFieldMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderFieldView	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderLayersMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderNPC	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderPanelMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderPictureMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderSceneMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderStatusMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderTBox	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderViewMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	ResetCamera	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RestoreTextures	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RotateByDirection	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	ShadeMesh	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	StartScreenFade	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	StepScreenFade	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	TurnAroundStep	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	TurnLeftStep	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	TurnRightStep	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	CreateMainWindow	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	GetSavePath	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	LoadGraphics	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	MainWindowProc	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	PlayMusic	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	ReleaseGraphics	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	ResetDisplayGlobals	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	RestoreScreenMode	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	WinMain	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume

@@ -1347,7 +1347,7 @@ b32 AnimateMove(void) {
         if (s_moveSteps[g_moveState & MOVE_STATE_KIND](&s_moveProgress)) {
             PressPadButton(s_movePadButtons[g_moveState & 7], false);
             DrawFieldView();
-            g_moveState = 0;
+            g_moveState = MOVE_STATE_NONE;
             s_doorOpening = false;
             g_selectedHotspot = -1;
             MapPosition* position = GetMapPosition();
@@ -2097,7 +2097,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
     position = GetMapPosition();
     partyX = position->x;
     partyY = position->y;
-    if (g_moveState == 0) {
+    if (g_moveState == MOVE_STATE_NONE) {
         UpdateViewCells(partyX, partyY);
     }
     for (x = partyX - 3; x <= partyX + 3; x++) {
@@ -3074,7 +3074,7 @@ void RenderViewMode(BOOL draw) {
         }
         BlitFieldBackground();
         DrawHotspotMarks();
-        if (g_moveState == 0) {
+        if (g_moveState == MOVE_STATE_NONE) {
             position = GetMapPosition();
             UpdateFieldHud(position->x, position->y, position->direction);
         }
@@ -5265,7 +5265,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
 #endif
         if (timeGetTime() > nextTick) {
             nextTick = timeGetTime() + 1;
-            if (g_moveState == 0 && g_fadeMode == SCREEN_FADE_NONE) {
+            if (g_moveState == MOVE_STATE_NONE && g_fadeMode == SCREEN_FADE_NONE) {
                 buttons = PollInput();
                 if (StepGame()) {
                     ReleaseGraphics();
