@@ -1063,13 +1063,28 @@ def _eh_funclet_owners(
             continue
         out.setdefault(target.index, eh_band.registration_symbol(owner))
         if base_side:
-            index = 0
-            for symbol in labels[target.section]:
-                if symbol.value >= target.value:
-                    break
-                out.setdefault(symbol.index, eh_band.unwind_symbol(owner, index))
-                index += 1
             stubs.append((owner, target))
+
+    # Without /Gy every /GX function of a TU shares ONE `.text$x` section, so a
+    # group's unwind funclets are only the labels between the previous group's
+    # registration stub and its own.
+    stub_values: dict[int, list[int]] = {}
+    for _owner, stub in stubs:
+        stub_values.setdefault(stub.section, []).append(stub.value)
+    for values in stub_values.values():
+        values.sort()
+    for owner, stub in stubs:
+        values = stub_values[stub.section]
+        position = bisect.bisect_left(values, stub.value)
+        floor = values[position - 1] if position > 0 else -1
+        index = 0
+        for symbol in labels[stub.section]:
+            if symbol.value >= stub.value:
+                break
+            if symbol.value <= floor:
+                continue
+            out.setdefault(symbol.index, eh_band.unwind_symbol(owner, index))
+            index += 1
     return out
 
 
