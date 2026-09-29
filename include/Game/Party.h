@@ -24,7 +24,7 @@ static __inline b32 RosterContainsId(i16 id) {
 i16 RosterSlotOfId(i16 id);
 b16 SortRoster(void);
 i16 FilterPartyMember(i16 slot, i16 mode);
-i16 DamageParty(i16 percent, i16 skipId13);
+i16 DamageParty(i16 percent, b16 skipNewton);
 i16 HealParty(i16 percent);
 Character* CopyCharacter(Character* src, Character* dst);
 i32 AddMacca(Character* character, i32 amount);

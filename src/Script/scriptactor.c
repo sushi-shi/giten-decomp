@@ -15,9 +15,9 @@
 #include <Game/AreaNpc.h>
 #include <Game/BagItems.h>
 #include <Game/BattleEffect.h>
+#include <Game/CharInfo.h>
 #include <Game/Character.h>
 #include <Game/CharacterStat.h>
-#include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
@@ -37,6 +37,7 @@
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
 #include <Game/Growth.h>
+#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
@@ -3501,7 +3502,7 @@ void OpSetObjectField(void) {
         case SCRIPT_OPERAND_OBJECT_AFFILIATION_1:
         case SCRIPT_OPERAND_OBJECT_AFFILIATION_2:
             SetCharacterAffiliation(object, kind - SCRIPT_OPERAND_OBJECT_AFFILIATION_0, value);
-            if (object->id == 0) {
+            if (object->id == HUMAN_KATSURAGI) {
                 RaiseAffiliationLevels(object);
                 if (value == 3) {
                     LearnAllSkills(object, kind - SCRIPT_OPERAND_OBJECT_AFFILIATION_0);

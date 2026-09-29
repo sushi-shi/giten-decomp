@@ -1166,7 +1166,7 @@ b16 FireCountdownEvent(void) {
     return true;
 }
 
-// The party position of the class-2 human member with the highest
+// The party position of the female human member with the highest
 // familiarity (on a tie, the lowest id) who is free to be picked; -1 when
 // none.
 RVA(0x0003bc70, 0x7b)
@@ -1178,7 +1178,7 @@ i16 FindFavouredMember(void) {
     Character* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
-        if (character && IsHumanCharacter(character) && character->memberClass == 2
+        if (character && IsHumanCharacter(character) && character->gender == GENDER_FEMALE
             && !GetPickBlockingCondition(GetCharacterConditions(character))) {
             if (best != -1) {
                 if (character->familiarity < bestFamiliarity) {

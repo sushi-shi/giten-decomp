@@ -20,6 +20,7 @@
 #include <Game/FieldSupport.h>
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
+#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemUse.h>
 #include <Game/PartyPick.h>
@@ -817,7 +818,8 @@ void OpenAutomap(void) {
 RVA(0x00015530, 0x56)
 b16 CanCharacterOpenAutomap(Character* character) {
     if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) != true && character != NULL
-        && (character->id == 0 || character->id == 10 || character->id == 11)
+        && (character->id == HUMAN_KATSURAGI || character->id == HUMAN_YAMASE
+            || character->id == HUMAN_KIRISHIMA)
         && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }

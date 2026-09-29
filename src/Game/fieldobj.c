@@ -2193,7 +2193,7 @@ void CopyLeaderIntoObject(FieldObject* object) {
     Character* leader = GetCharacters();
     object->rank = leader->level;
     object->title = leader->title;
-    object->memberClass = object->byte083 = leader->byte069;
+    object->gender = object->byte083 = leader->byte069;
     object->stats = leader->stats;
     GetFieldObjectActionWait(object)->remaining = GetCharacterActionWait(leader)->remaining;
     RecalcObjectStats(object);

@@ -58,7 +58,7 @@ typedef struct FieldObject {
     u8 pad07f[3];
     u8 pantheon;
     u8 byte083;
-    u8 memberClass;
+    GZ_ENUM_STORAGE(Gender, u8) gender;
     u8 rank;
     u8 title;
     u8 triggerRange;

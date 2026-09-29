@@ -7,8 +7,8 @@
 
 #include <Game/Alignment.h>
 #include <Game/BagItems.h>
-#include <Game/Character.h>
 #include <Game/CharInfo.h>
+#include <Game/Character.h>
 #include <Game/ClickWait.h>
 #include <Game/ConditionAge.h>
 #include <Game/DemonTable.h>
@@ -18,6 +18,7 @@
 #include <Game/FieldSight.h>
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
+#include <Game/HumanId.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
 #include <Game/ItemRecord.h>
@@ -223,12 +224,12 @@ static void DrawStatusMemberPortrait(i16 x, i16 y, Character* member) {
     if (IsHumanCharacter(member)) {
         file = picture.index + 0x4000;
         mode = picture.variant;
-        if (member->id == 0) {
+        if (member->id == HUMAN_KATSURAGI) {
             if (!IsEventFlagSet(1, 0x5e)) {
                 file = 0x4001;
                 mode = 1;
             }
-        } else if (member->id == 2) {
+        } else if (member->id == HUMAN_TACHIBANA) {
             if (!IsEventFlagSet(1, 0x75)) {
                 file = 0x4002;
                 mode = 1;

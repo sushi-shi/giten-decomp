@@ -12,9 +12,9 @@
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <Game/Alignment.h>
+#include <Game/CharInfo.h>
 #include <Game/Character.h>
 #include <Game/CharacterStat.h>
-#include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
@@ -29,6 +29,7 @@
 #include <Game/FieldSupport.h>
 #include <Game/GameState.h>
 #include <Game/Guest.h>
+#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
@@ -44,8 +45,8 @@
 #include <Game/Pool.h>
 #include <Game/SaveGame.h>
 #include <Game/SkillUse.h>
-#include <Game/Stats.h>
 #include <Game/StatUpdate.h>
+#include <Game/Stats.h>
 #include <Game/StatusDraw.h>
 #include <Game/StatusScreen.h>
 #include <Game/WorldMap.h>
@@ -373,30 +374,42 @@ void InitCharacters(void) {
     for (i = 0; i < CHARACTER_SLOT_COUNT; i++) {
         InitEmptyWordList(&g_characters[i].skills);
     }
-    InitCharacterSlot(0, 0, "\212\213\217\351", "\216\152\220\154", 1);
-    InitCharacterSlot(1, 2, "\213\153", "\227\122\211\106\215\201", 2);
-    InitCharacterSlot(2, 4, "\224\362\222\271", "\237\243", 2);
-    InitCharacterSlot(3, 5, "\220\274\226\354", "\213\140\227\131", 1);
-    InitCharacterSlot(4, 6, "\221\201\215\342", "\222\102\226\347", 1);
-    InitCharacterSlot(5, 10, "\216\122\220\243", "\227\105", 1);
-    InitCharacterSlot(6, 11, "\213\313\223\207", "\211\160\224\374", 2);
-    InitCharacterSlot(7, 13, "\203\152\203\205\201\133\203\147\203\223", s_emptyCharacterName, 0);
-    InitCharacterSlot(8, 14, "\216\122\223\143", "\203\112\203\131\203\176", 1);
-    InitCharacterSlot(9, 15, "\227\247\220\354", "\221\171\214\265", 1);
-    InitCharacterSlot(10, 7, "\211\200\223\143", "\223\116\226\347", 1);
-    InitCharacterSlot(11, 8, "\217\343\211\315", "\214\366\213\120", 1);
-    InitCharacterSlot(12, 9, "\221\212\224\156", "\216\117\216\154\230\131", 1);
+    InitCharacterSlot(0, HUMAN_KATSURAGI, "\212\213\217\351", "\216\152\220\154", GENDER_MALE);
+    InitCharacterSlot(1, HUMAN_TACHIBANA, "\213\153", "\227\122\211\106\215\201", GENDER_FEMALE);
+    InitCharacterSlot(2, HUMAN_ASUKA, "\224\362\222\271", "\237\243", GENDER_FEMALE);
+    InitCharacterSlot(3, HUMAN_NISHINO, "\220\274\226\354", "\213\140\227\131", GENDER_MALE);
+    InitCharacterSlot(4, HUMAN_HAYASAKA, "\221\201\215\342", "\222\102\226\347", GENDER_MALE);
+    InitCharacterSlot(5, HUMAN_YAMASE, "\216\122\220\243", "\227\105", GENDER_MALE);
+    InitCharacterSlot(6, HUMAN_KIRISHIMA, "\213\313\223\207", "\211\160\224\374", GENDER_FEMALE);
+    InitCharacterSlot(
+        7,
+        HUMAN_NEWTON,
+        "\203\152\203\205\201\133\203\147\203\223",
+        s_emptyCharacterName,
+        GENDER_NONE
+    );
+    InitCharacterSlot(8, HUMAN_YAMADA, "\216\122\223\143", "\203\112\203\131\203\176", GENDER_MALE);
+    InitCharacterSlot(9, HUMAN_TACHIKAWA, "\227\247\220\354", "\221\171\214\265", GENDER_MALE);
+    InitCharacterSlot(10, HUMAN_SONODA, "\211\200\223\143", "\223\116\226\347", GENDER_MALE);
+    InitCharacterSlot(11, HUMAN_KAMIKAWA, "\217\343\211\315", "\214\366\213\120", GENDER_MALE);
+    InitCharacterSlot(12, HUMAN_SOUMA, "\221\212\224\156", "\216\117\216\154\230\131", GENDER_MALE);
     CopyCharacterWithoutSkills(&g_characters[13], &g_characters[0]);
     CopyCharacterWithoutSkills(&g_characters[14], &g_characters[0]);
     CopyCharacterWithoutSkills(&g_characters[15], &g_characters[0]);
 }
 
 RVA(0x0003cc00, 0x15c)
-void InitCharacterSlot(i16 slot, i16 id, const char* prefix, const char* name, i16 memberClass) {
+void InitCharacterSlot(
+    i16 slot,
+    i16 id,
+    const char* prefix,
+    const char* name,
+    GZ_ENUM_PARAM(Gender, i16) gender
+) {
     LoadCharacterCore(id, &g_characters[slot]);
     NormalizeAffiliations(&g_characters[slot]);
-    g_characters[slot].byte069 = memberClass;
-    g_characters[slot].memberClass = memberClass;
+    g_characters[slot].byte069 = gender;
+    g_characters[slot].gender = gender;
     g_characters[slot].id = id;
     memset(g_characters[slot].namePrefix, 0, sizeof(g_characters[slot].namePrefix));
     memset(g_characters[slot].name, 0, sizeof(g_characters[slot].name));
@@ -2117,10 +2130,9 @@ static __inline i32 PoolPercentAmount(const CurMax* pool, i16 percent) {
 
 // Takes `percent` of each living member's maximum HP (at least 1; a negative
 // `percent` takes that many points), then applies what an empty pool brings.
-// With `skipId13`, character 13 is spared. Returns how many were hit.
-// @identity-TODO: who character 13 is is unrecovered.
+// With `skipNewton`, Newton is spared. Returns how many were hit.
 RVA(0x0003f9f0, 0xa1)
-i16 DamageParty(i16 percent, i16 skipId13) {
+i16 DamageParty(i16 percent, b16 skipNewton) {
     i16 hit = 0;
     i16 i;
     i32 amount;
@@ -2128,7 +2140,7 @@ i16 DamageParty(i16 percent, i16 skipId13) {
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && !GetFatalCondition(GetCharacterConditions(character))) {
-            if (skipId13 && character->id == 13) {
+            if (skipNewton && character->id == HUMAN_NEWTON) {
                 continue;
             }
             if (percent < 0) {
@@ -2298,7 +2310,7 @@ i16 TickPartySteps(void) {
         if (character) {
             ApplyEquipmentRegen(character);
             ApplyEquipmentEffects(character, EQUIP_EFFECT_STEP_TICK);
-            if (character->id != 13) {
+            if (character->id != HUMAN_NEWTON) {
                 if (HasCondition(GetCharacterConditions(character), CONDITION_SEVERE_POISON)
                     && !IsConditionResisted(character, 32)) {
                     changed |= 1;
@@ -3117,7 +3129,8 @@ i16 TickPartyTimers(u16 minutes) {
     }
     for (i = 0; i < PARTY_SIZE; i++) {
         if (PartySlotAt(i) != PARTY_SLOT_EMPTY
-            && (character = RosterMemberAt(PartySlotAt(i))) != NULL && character->id == 2) {
+            && (character = RosterMemberAt(PartySlotAt(i))) != NULL
+            && character->id == HUMAN_TACHIBANA) {
             if (TestModeFlags(MODE_WORLD_MAP)) {
                 s_timerMinutes += minutes;
                 count = s_timerMinutes / 240;

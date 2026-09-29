@@ -20,8 +20,8 @@
 #include <Game/BagItems.h>
 #include <Game/Battle.h>
 #include <Game/BattleEffect.h>
-#include <Game/Character.h>
 #include <Game/CharInfo.h>
+#include <Game/Character.h>
 #include <Game/Clock.h>
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
@@ -39,6 +39,7 @@
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
 #include <Game/Growth.h>
+#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemId.h>
 #include <Game/ItemMenu.h>
@@ -2082,7 +2083,7 @@ i16 CollectLearnableSkills(Character* character, i16 source) {
     i16 count;
     if (source == -1) {
         count = AppendLearnableSkills(character, 0, 0);
-        if (character->id != 0) {
+        if (character->id != HUMAN_KATSURAGI) {
             return count;
         }
         count = AppendLearnableSkills(character, count, 1);

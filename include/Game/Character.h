@@ -74,6 +74,13 @@ GZ_ENUM_BEGIN_SPLIT(ActorMode, u8)
     ACTOR_MODE_TALK = 11
 GZ_ENUM_END_SPLIT(ActorMode)
 
+// A human member's gender as InitCharacters gives it by name; Newton has none.
+GZ_ENUM_BEGIN_SPLIT(Gender, u8)
+    GENDER_NONE = 0,
+    GENDER_MALE = 1,
+    GENDER_FEMALE = 2
+GZ_ENUM_END_SPLIT(Gender)
+
 // A battle command, numbered from its row in the actor command menu
 // (s_commandLabels), as a member's pickRole keeps it; 0 is none.
 GZ_ENUM_BEGIN_SPLIT(PickRole, i8)
@@ -157,9 +164,7 @@ typedef struct Character {
     i16 shield;
     u8 pad065[4];
     u8 byte069; // @identity-TODO: copied to both object bytes +0x83/+0x84 (0x410930)
-    // @identity-TODO: FindFavouredMember (0x43bc70) only weighs human members
-    // with class 2; what the classes are is unrecovered.
-    u8 memberClass;
+    GZ_ENUM_STORAGE(Gender, u8) gender;
     u8 level;
     u8 title;
     // @identity-TODO: the distance at which a field actor's script range
@@ -370,7 +375,13 @@ void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part);
 void FullyRestoreCharacter(Character* character);
 
 void InitCharacters(void);
-void InitCharacterSlot(i16 slot, i16 id, const char* prefix, const char* name, i16 memberClass);
+void InitCharacterSlot(
+    i16 slot,
+    i16 id,
+    const char* prefix,
+    const char* name,
+    GZ_ENUM_PARAM(Gender, i16) gender
+);
 
 Character* CopyCharacterCore(Character* source, Character* destination);
 Character* LoadCharacterCore(i16 id, Character* destination);

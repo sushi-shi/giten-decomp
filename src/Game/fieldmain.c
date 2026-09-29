@@ -657,7 +657,7 @@ b16 TickStepDamage(void) {
     }
     if (++s_damageSteps >= 3) {
         s_damageSteps = 0;
-        DamageParty(-1, 1);
+        DamageParty(-1, true);
         return true;
     }
     return false;
