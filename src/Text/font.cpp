@@ -3637,15 +3637,10 @@ void RedrawTextRun(i16 plane, i16 x, i16 y, i16 count) {
     }
 }
 
-// @early-stop prologue residue: retail saves ebx/ebp/esi/edi before the
-// plane == -1 test; here only the live index register is saved before it.
-// The loop body, calls and stores match byte for byte. Initializing the
-// index at entry moves its save across the guard; loop-local row and
-// attribute declarations leave the remaining prologue difference unchanged.
 RVA(0x00051ef0, 0xa0)
 i16 ToggleTextRunHighlight(i16 plane, i16 x, i16 y) {
     TextPlane* p;
-    i16 i = x;
+    i16 i;
     TextAttr* row;
     u16 attr;
 
@@ -3653,9 +3648,9 @@ i16 ToggleTextRunHighlight(i16 plane, i16 x, i16 y) {
         return 0;
     }
     p = GetTextPlane(plane);
-    for (; i < p->cols; i++) {
+    for (i = x; i < p->cols; i++) {
         if (TextPlaneTextRow(p, y)[i] == 0) {
-            break;
+            return i - x;
         }
         row = TextPlaneAttrRow(p, y);
         attr = row[i].value;
