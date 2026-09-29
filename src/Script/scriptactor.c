@@ -2498,7 +2498,7 @@ i16 OpJoinActiveParty(void) {
     }
     if (ref == -17 || ref == -19) {
         id = GetScriptActorId();
-        if (id == -1) {
+        if (id == CHARACTER_ID_NONE) {
             return -1;
         }
     }
@@ -2534,7 +2534,7 @@ i16 OpLeaveActiveParty(void) {
     }
     if (ref == -17 || ref == -19) {
         id = GetScriptActorId();
-        if (id == -1) {
+        if (id == CHARACTER_ID_NONE) {
             return -1;
         }
     }
@@ -3543,7 +3543,7 @@ void OpFindMemberByPoolState(i16 all, i16 pools) {
         result = 0;
         while (slot >= 0 && slot < 32) {
             slot = FindMemberByPoolState(slot, mode, state, pools);
-            if (slot != -1) {
+            if (slot != ROSTER_SLOT_NONE) {
                 result |= PowerOfTwo(slot);
                 slot++;
             }
@@ -3562,7 +3562,7 @@ void OpFindMemberWithCondition(i16 all) {
     Character* character;
     if (!all) {
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = RosterMemberAt(slot);
                 if (character && HasCondition(GetCharacterConditions(character), condition)) {
                     result = slot;
@@ -3573,7 +3573,7 @@ void OpFindMemberWithCondition(i16 all) {
     } else {
         result = 0;
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = RosterMemberAt(slot);
                 if (character && HasCondition(GetCharacterConditions(character), condition)) {
                     result |= PowerOfTwo(slot);
@@ -3594,7 +3594,7 @@ void OpFindMemberByAlignmentA(i16 all) {
     Character* character;
     if (!all) {
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassB(character) == alignment) {
                     result = slot;
@@ -3605,7 +3605,7 @@ void OpFindMemberByAlignmentA(i16 all) {
     } else {
         result = 0;
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassB(character) == alignment) {
                     result |= PowerOfTwo(slot);
@@ -3626,7 +3626,7 @@ void OpFindMemberByAlignmentB(i16 all) {
     Character* character;
     if (!all) {
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassA(character) == alignment) {
                     result = slot;
@@ -3637,7 +3637,7 @@ void OpFindMemberByAlignmentB(i16 all) {
     } else {
         result = 0;
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassA(character) == alignment) {
                     result |= PowerOfTwo(slot);
@@ -3660,7 +3660,7 @@ void OpCountItemOwned(void) {
     mode++;
     if (scope == ITEM_COUNT_EQUIPMENT || scope == ITEM_COUNT_BAG_AND_EQUIPMENT) {
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = GetRosterCharacter(slot);
                 if (character) {
                     count += CountItemInSlots(item, GetCharacterEquipment(character));
@@ -3939,7 +3939,7 @@ void OpMaskRosterByKind(void) {
     u32 mask = 0;
     i16 i;
     for (i = 0; i < ROSTER_SIZE; i++) {
-        if (FilterPartyMember(i, mode) != -1 && RosterMemberAt(i)
+        if (FilterPartyMember(i, mode) != ROSTER_SLOT_NONE && RosterMemberAt(i)
             && race == GetDemonRace(RosterMemberAt(i)->id)) {
             mask |= PowerOfTwo(i);
         }

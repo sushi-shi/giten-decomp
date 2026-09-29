@@ -427,7 +427,7 @@ RVA(0x0003cd90, 0x1a)
 i16 GetCharacterId(i16 slot) {
     Character* character = GetCharacter(slot);
     if (character == NULL) {
-        return -1;
+        return CHARACTER_ID_NONE;
     }
     return character->id;
 }
@@ -1810,8 +1810,8 @@ Character* FreeCharacterRecord(Character* character) {
 RVA(0x0003f3f0, 0x31)
 i16 FindRosterSlotIn(i16 id, i16 inParty) {
     i16 slot = FindRosterSlotById(id);
-    if (inParty && FindPartySlot(slot) == -1) {
-        return -1;
+    if (inParty && FindPartySlot(slot) == PARTY_POSITION_NONE) {
+        return ROSTER_SLOT_NONE;
     }
     return slot;
 }
@@ -1912,7 +1912,7 @@ i16 FindReadyMember(i16 needMark) {
             }
         }
     }
-    return -1;
+    return PARTY_POSITION_NONE;
 }
 
 // Lists (count, then ids) up to `max` party members not blocked by a
@@ -1952,7 +1952,7 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
     i16 pool;
     for (slot = start; slot < ROSTER_SIZE; slot++) {
         character = RosterMemberAt(slot);
-        if (character && FilterPartyMember(slot, mode) != -1) {
+        if (character && FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
             if (pools & POOL_MASK_HP) {
                 pool = PoolState(&character->pools.hp);
                 if (pool == state) {
@@ -1973,7 +1973,7 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
             }
         }
     }
-    return -1;
+    return ROSTER_SLOT_NONE;
 }
 
 // Returns `slot` when it is in the party and `mode` bit 0 is set, or when it is
@@ -1981,13 +1981,13 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
 RVA(0x0003f780, 0x38)
 i16 FilterPartyMember(i16 slot, i16 mode) {
     i16 index = FindPartySlot(slot);
-    if (index != -1 && (mode & 1)) {
+    if (index != PARTY_POSITION_NONE && (mode & 1)) {
         return slot;
     }
-    if (index == -1 && (mode & 2)) {
+    if (index == PARTY_POSITION_NONE && (mode & 2)) {
         return slot;
     }
-    return -1;
+    return ROSTER_SLOT_NONE;
 }
 
 // Installs `character` in a free roster slot; a human member (id below 32)
@@ -1997,7 +1997,7 @@ RVA(0x0003f7c0, 0x8a)
 i16 AddToRoster(Character* character) {
     i16 slot;
     if (!IsHumanCharacter(character) && CountRosterEntries(false) >= 26) {
-        return -1;
+        return ROSTER_SLOT_NONE;
     }
     slot = FindEmptySlot(0);
     if (slot != -1) {
@@ -2021,7 +2021,7 @@ i16 RemoveFromRoster(i16 slot) {
     i16 index;
     Character* character = GetRosterEntry(slot);
     if (!character) {
-        return -1;
+        return ROSTER_SLOT_NONE;
     }
     index = FindPartySlot(slot);
     SetPartySlot(index, -1);
@@ -2349,14 +2349,14 @@ i16 FindPartySlot(i16 slot) {
             return i;
         }
     }
-    return -1;
+    return PARTY_POSITION_NONE;
 }
 
 RVA(0x0003feb0, 0x1a)
 i16 GetRosterId(i16 slot) {
     Character* character = GetRosterCharacter(slot);
     if (character == NULL) {
-        return -1;
+        return CHARACTER_ID_NONE;
     }
     return character->id;
 }
@@ -2420,7 +2420,7 @@ i16 FindRosterSlotById(i16 id) {
             return slot;
         }
     }
-    return -1;
+    return ROSTER_SLOT_NONE;
 }
 
 RVA(0x00040020, 0x18)
@@ -2914,7 +2914,7 @@ i16 FormatStatusLine(i16 slot, i16 row) {
     sprintf(
         g_scratchBuffer,
         "%c%2d %-17.17s ",
-        FindPartySlot(slot) != -1 ? '*' : ' ',
+        FindPartySlot(slot) != PARTY_POSITION_NONE ? '*' : ' ',
         row + 1,
         FormatFullName(text, member)
     );
@@ -2935,7 +2935,7 @@ i16 FormatStatusLine(i16 slot, i16 row) {
             cost = GetSummonMagnetiteCost(member);
             sprintf(text, " %6ld", cost);
             strcat(g_scratchBuffer, text);
-            if (FindPartySlot(slot) != -1) {
+            if (FindPartySlot(slot) != PARTY_POSITION_NONE) {
                 return -1;
             }
             if (GetFatalCondition(GetCharacterConditions(member))) {
@@ -2946,7 +2946,7 @@ i16 FormatStatusLine(i16 slot, i16 row) {
             }
             break;
         case 2:
-            if (FindPartySlot(slot) != -1) {
+            if (FindPartySlot(slot) != PARTY_POSITION_NONE) {
                 return -1;
             }
             if (TestCharacterFlag(member, 0x40)) {
@@ -2959,7 +2959,7 @@ i16 FormatStatusLine(i16 slot, i16 row) {
             }
             break;
         case 4:
-            if (FindPartySlot(slot) != -1) {
+            if (FindPartySlot(slot) != PARTY_POSITION_NONE) {
                 return -1;
             }
             break;

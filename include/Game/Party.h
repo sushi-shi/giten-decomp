@@ -18,7 +18,7 @@ i16 CountPartyMembers(i16 skipDisabled);
 i16 FindRosterSlotById(i16 id);
 
 static __inline b32 RosterContainsId(i16 id) {
-    return FindRosterSlotById(id) != -1;
+    return FindRosterSlotById(id) != ROSTER_SLOT_NONE;
 }
 
 i16 RosterSlotOfId(i16 id);

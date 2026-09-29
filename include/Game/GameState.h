@@ -51,6 +51,11 @@ typedef struct FieldStatus {
 #define ROSTER_SIZE 32
 // A party position holding no roster member.
 #define PARTY_SLOT_EMPTY (-1)
+// What the finders return when there is no such roster slot, party position
+// or character id.
+#define ROSTER_SLOT_NONE (-1)
+#define PARTY_POSITION_NONE (-1)
+#define CHARACTER_ID_NONE (-1)
 // Character ids below this are human members.
 #define HUMAN_ID_LIMIT 32
 
