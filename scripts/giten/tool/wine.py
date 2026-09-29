@@ -206,20 +206,28 @@ def ensure_link_deps() -> None:
                     "re-pin the r3+ toolchain release")
 
 
+def boot_prefix(force: bool = False, env: dict[str, str] | None = None) -> bool:
+    """Create and boot `env`'s WINEPREFIX (default: ours) unless it exists;
+    True when it booted. Waits for the prefix's wineserver to finish."""
+    prefix = Path((env or os.environ).get("WINEPREFIX") or Path.home() / ".wine")
+    if not force and (prefix / "drive_c").is_dir():
+        return False
+    prefix.mkdir(parents=True, exist_ok=True)
+    try:
+        subprocess.run([require("wineboot"), "--init"], check=True, env=env)
+    except subprocess.CalledProcessError as e:
+        raise ToolError(f"wineboot --init failed (rc={e.returncode}) for "
+                        f"prefix {prefix}") from e
+    subprocess.run([require("wineserver"), "--wait"], check=False, env=env)
+    return True
+
+
 def init_prefix(force: bool = False) -> None:
     """Boot the prefix and set PATH/INCLUDE/LIB in the wine registry so era
     tools find binaries/headers/libs. DX6 comes FIRST in INCLUDE/LIB: VC5
     ships DirectX 3-era DDRAW.H/DPLAY.H which would shadow the DX6 SDK's
     (IID_IDirectPlay4A would not resolve)."""
-    prefix = Path(os.environ.get("WINEPREFIX") or Path.home() / ".wine")
-    if force or not (prefix / "drive_c").is_dir():
-        prefix.mkdir(parents=True, exist_ok=True)
-        try:
-            subprocess.run([require("wineboot"), "--init"], check=True)
-        except subprocess.CalledProcessError as e:
-            raise ToolError(f"wineboot --init failed (rc={e.returncode}) for "
-                            f"prefix {prefix}") from e
-        subprocess.run([require("wineserver"), "--wait"], check=False)
+    boot_prefix(force)
 
     msvc = toolchain_root()
     try:

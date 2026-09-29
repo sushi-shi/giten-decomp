@@ -2,7 +2,8 @@
 
     giten play [--disc DDSWIN.BIN] [--output WxH | --window] [--no-launch]
 
-1. `ninja play`: every unit recompiled with GITEN_BUGFIX, linked with the
+1. `ninja play`: the units that test GITEN_COMPAT or GITEN_BUGFIX recompiled
+   with GITEN_BUGFIX, linked with the other units' matching objects and the
    retail resources into build/play/DDS.EXE.
 2. The disc's DDSWIN/ game files are extracted into build/play/DDSWIN (the
    disc is not needed afterwards; --disc naming another image re-extracts).
@@ -31,7 +32,7 @@ from giten import graph
 from giten.core.paths import REPO
 from giten.play import font
 from giten.tool import ToolError
-from giten.tool.wine import require, winepath
+from giten.tool.wine import boot_prefix, require, winepath
 
 PLAY = REPO / graph.PLAY_DIR
 GAME_DIR = PLAY / "DDSWIN"
@@ -135,15 +136,22 @@ def build_font() -> str:
     return stamp
 
 
+def run_checked(argv: list[str], env: dict[str, str], what: str, **kwargs) -> None:
+    """Run a Wine tool; a failure is a ToolError naming `what`."""
+    try:
+        subprocess.run(argv, env=env, check=True, **kwargs)
+    except subprocess.CalledProcessError as e:
+        raise ToolError(f"{what} failed (rc={e.returncode}) in {PREFIX}") from e
+
+
 def prepare_prefix() -> None:
     """Create PREFIX if missing and (re)apply the game's configuration and
     font whenever PREFIX_VERSION or the font stamp changes."""
     stamp = PREFIX / ".giten-play"
     env = wine_env()
-    if not (PREFIX / "system.reg").exists():
-        print(f"[play] creating Wine prefix {PREFIX}")
-        PREFIX.mkdir(parents=True, exist_ok=True)
-        subprocess.run([require("wineboot"), "-i"], env=env, check=True)
+    if not (PREFIX / "drive_c").is_dir():
+        print(f"[play] creating Wine prefix {PREFIX}", flush=True)
+    boot_prefix(env=env)
     config = f"{PREFIX_VERSION}\n{build_font()}\n"
     fonts = PREFIX / "drive_c/windows/Fonts"
     if stamp.exists() and stamp.read_text() == config and (fonts / FONT.name).exists():
@@ -152,9 +160,9 @@ def prepare_prefix() -> None:
     shutil.copyfile(FONT, fonts / FONT.name)
     reg = PLAY / "giten-play.reg"
     reg.write_bytes(b"\xff\xfe" + registry().encode("utf-16le"))
-    subprocess.run([require("wine"), "reg", "import", winepath(reg, env)],
-                   env=env, check=True, stdout=subprocess.DEVNULL)
-    subprocess.run([require("wineserver"), "-w"], env=env, check=True)
+    run_checked([require("wine"), "reg", "import", winepath(reg, env)], env,
+                "wine reg import", stdout=subprocess.DEVNULL)
+    run_checked([require("wineserver"), "-w"], env, "wineserver -w")
     stamp.write_text(config)
     print("[play] prefix configured (DevConfig, X11 driver, Giten Gothic)")
 
@@ -168,14 +176,20 @@ def size_arg(spec: str) -> tuple[int, int]:
 
 
 def output_size() -> tuple[int, int] | None:
-    """niri's focused output, the default to scale to."""
+    """The physical size of niri's focused output, the default to scale to:
+    its current mode, rotated as the output's transform rotates it."""
     if shutil.which("niri"):
         try:
             out = json.loads(subprocess.check_output(
                 ["niri", "msg", "--json", "focused-output"], text=True,
                 stderr=subprocess.DEVNULL))
-            return int(out["logical"]["width"]), int(out["logical"]["height"])
-        except (subprocess.CalledProcessError, ValueError, KeyError, TypeError):
+            mode = out["modes"][out["current_mode"]]
+            width, height = int(mode["width"]), int(mode["height"])
+            if out["logical"]["transform"].endswith(("90", "270")):
+                width, height = height, width
+            return width, height
+        except (subprocess.CalledProcessError, ValueError, KeyError, TypeError,
+                IndexError, AttributeError):
             pass
     return None
 
@@ -203,7 +217,8 @@ def main(argv: list[str] | None = None) -> int:
                          "another image (default $GITEN_DISC or build/local/DDSWIN.BIN)")
     screen = ap.add_mutually_exclusive_group()
     screen.add_argument("--output", metavar="WxH", type=size_arg,
-                        help="output size to scale to (default: niri's focused output)")
+                        help="output size to scale to (default: the physical size "
+                             "of niri's focused output)")
     screen.add_argument("--window", action="store_true",
                         help="run under plain Wine instead of gamescope")
     ap.add_argument("--no-launch", action="store_true",

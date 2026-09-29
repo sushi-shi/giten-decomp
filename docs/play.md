@@ -70,9 +70,12 @@ The prefix is configured the way the original setup would configure Windows:
   explains the fit). The font and the prefix configuration carry stamps, so
   a changed build or configuration is re-applied on the next run.
 - gamescope gives the game a real 640x480 screen and scales it by an integer
-  factor. The game hides the system cursor, confines it to 640x480 and draws
-  its own sprite at `GetCursorPos`, so a Wine-emulated mode change leaves the
-  sprite and the pointer disagreeing.
+  factor to the output: the current mode of niri's focused output, rotated
+  with it, unless `--output WxH` names one (1280x960 in a window without
+  either). `--window` runs plain Wine instead. The game hides the system
+  cursor, confines it to 640x480 and draws its own sprite at `GetCursorPos`,
+  so a Wine-emulated mode change leaves the sprite and the pointer
+  disagreeing.
 
 The dev shell provides gamescope, the locale archive and the source font
 through `GITEN_PLAY_*` variables.
