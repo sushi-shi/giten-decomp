@@ -8,6 +8,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataTableId.h>
 #include <Game/FieldScreen.h>
 #include <Game/FieldView.h>
 #include <Game/InfoBar.h>
@@ -419,7 +420,7 @@ i16 IsRouteActive(void) {
 
 RVA(0x00012020, 0x41)
 void LoadWorldMapPlaces(void) {
-    FILE* fp = OpenDataFile(13, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_WORLD_PLACES, 12, 0);
     s_placeGrid = ReadCryptHandle(fp);
     s_placeNames = ReadCryptHandle(fp);
     CloseDataFile(fp);

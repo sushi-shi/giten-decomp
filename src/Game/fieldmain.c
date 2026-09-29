@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataTableId.h>
 #include <Game/Analyze.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
@@ -1273,7 +1274,7 @@ i16 LoadFieldMemory(FILE* fp) {
 // Loads the field event table (data file 10).
 RVA(0x00013d10, 0x2a)
 void LoadFieldEventTable(void) {
-    FILE* fp = OpenDataFile(10, 0xc, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_EVENTS, 0xc, 0);
     s_eventTable = ReadRawHandle(fp);
     CloseDataFile(fp);
 }

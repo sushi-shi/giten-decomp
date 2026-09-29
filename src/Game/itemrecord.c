@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataTableId.h>
 #include <Game/Alignment.h>
 #include <Game/AlignmentSide.h>
 #include <Game/BagItems.h>
@@ -367,7 +368,7 @@ void LoadItemFiles(void) {
     s_itemDataHandle = ReadCryptHandle(fp);
     CloseDataFile(fp);
 
-    fp = OpenDataFile(0x100, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_ITEM_INDEX, 12, 0);
     s_itemIndexHandle = ReadRawHandle(fp);
     g_itemRemapHandle = ReadRawHandle(fp);
     CloseDataFile(fp);

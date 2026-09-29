@@ -10,6 +10,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataTableId.h>
 #include <Game/ActionMark.h>
 #include <Game/Actor.h>
 #include <Game/Alignment.h>
@@ -1020,7 +1021,7 @@ RVA(0x0000eb70, 0xea)
 void LoadLayerScriptSet(FieldLayer* layer, i16 set) {
     FILE* fp;
     if (s_scriptSets == NULL) {
-        fp = OpenDataFile(7, 12, 0);
+        fp = OpenDataFile(DATA_TABLE_OBJECT_SCRIPT_SETS, 12, 0);
         ReadRawBlock(fp, s_scriptSetBuffer);
         s_scriptSets = s_scriptSetBuffer;
         CloseDataFile(fp);
@@ -1236,7 +1237,7 @@ i16 DirectionToParty(i16 x, i16 y) {
 
 RVA(0x0000f1a0, 0x34)
 void LoadEncounterWeights(void) {
-    FILE* fp = OpenDataFile(5, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_ENCOUNTER_WEIGHTS, 12, 0);
     ReadRawBlock(fp, s_encounterBuffer);
     s_fieldEncounterWeights = s_encounterBuffer;
     CloseDataFile(fp);
@@ -1682,7 +1683,7 @@ static __inline const DemonTable* ReadDemonTable(void) {
 
 RVA(0x0000ff30, 0x70)
 void LoadDemonTables(void) {
-    FILE* fp = OpenDataFile(0, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_DEMONS, 12, 0);
     s_demonRecords = ReadCryptHandle(fp);
     s_raceClasses = ReadCryptHandle(fp);
     s_raceNames = ReadCryptHandle(fp);
@@ -2252,11 +2253,11 @@ RVA(0x00010fc0, 0x67)
 void LoadEncounterTables(void) {
     FILE* fp;
     FreeEncounterTables();
-    fp = OpenDataFile(0x21, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_WORLD_ENCOUNTERS, 12, 0);
     s_encounterChoices = ReadRawHandle(fp);
     s_encounterWeights = ReadRawHandle(fp);
     CloseDataFile(fp);
-    fp = OpenDataFile(0x10ff, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, 12, 0);
     s_fieldTable = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -2437,7 +2438,7 @@ void LoadFieldTable(void) {
     FILE* fp = NULL;
     EncounterFieldImage* images;
     if (s_fieldTable == 0) {
-        fp = OpenDataFile(0x10ff, 12, 0);
+        fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, 12, 0);
         s_fieldTable = ReadRawHandle(fp);
         CloseDataFile(fp);
     }
