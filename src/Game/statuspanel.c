@@ -453,7 +453,7 @@ static i16 DrawStatList(i16 plane, Character* member) {
             GetBaseStat(member, stat),
             GetStatBonus(member, stat),
             GetStatEquipment(member, stat),
-            0
+            STAT_BAR_ROWS_BOTH
         );
         y += 2;
     }
@@ -601,7 +601,7 @@ void DrawStatLine(Character* member, i16 stat, i16 highlight, i16 window) {
             GetBaseStat(member, stat),
             GetStatBonus(member, stat),
             GetStatEquipment(member, stat),
-            0
+            STAT_BAR_ROWS_BOTH
         );
         sprintf(g_scratchBuffer, "%-6.6s %3d", g_statusStatNames[stat], GetStatTotal(member, stat));
         SetTextPlaneCursorLine(window, 0, stat);

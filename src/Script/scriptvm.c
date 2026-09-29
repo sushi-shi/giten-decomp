@@ -35,7 +35,7 @@
 #include <Text/TextWindow.h>
 
 DATA(0x00081228)
-GZ_ENUM_STORAGE(ScriptOpcode, u16) g_scriptOpcode = 0;
+GZ_ENUM_STORAGE(ScriptOpcode, u16) g_scriptOpcode = SCRIPT_OP_END;
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).

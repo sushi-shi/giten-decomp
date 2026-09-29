@@ -1540,7 +1540,7 @@ RVA(0x0003edf0, 0x43)
 i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list) {
     i16 found = 0;
     i16 i;
-    for (i = 0; list[i] != -1; i++) {
+    for (i = 0; list[i] != CONDITION_LIST_END; i++) {
         if (HasCondition(conditions, list[i])) {
             found = list[i];
         }

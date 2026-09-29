@@ -282,7 +282,7 @@ DATA(0x0007d600)
 static b16 s_mapActive = false;
 
 DATA(0x0007d604)
-static GZ_ENUM_STORAGE(AutomapDetail, i16) s_mapDetail = 0;
+static GZ_ENUM_STORAGE(AutomapDetail, i16) s_mapDetail = AUTOMAP_DETAIL_NONE;
 
 DATA(0x0007d608)
 static Panel* s_mapPanel = NULL;

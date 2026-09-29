@@ -1018,7 +1018,7 @@ void CallTextScript(const char* text) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b940, 0x18)
 void CallFirstMemberName(void) {
-    CallTextScript(GetTextToken(0, 0, -1));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, -1));
 }
 
 // @dead-code
@@ -1026,7 +1026,7 @@ void CallFirstMemberName(void) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b960, 0x18)
 void CallSecondMemberName(void) {
-    CallTextScript(GetTextToken(0, 0, -2));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, -2));
 }
 
 // @dead-code
@@ -1034,7 +1034,7 @@ void CallSecondMemberName(void) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b980, 0x18)
 void CallSelectedMemberName(void) {
-    CallTextScript(GetTextToken(0, 0, -16));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, -16));
 }
 
 // @dead-code
@@ -1042,7 +1042,7 @@ void CallSelectedMemberName(void) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b9a0, 0x18)
 void CallActorName(void) {
-    CallTextScript(GetTextToken(0, 0, -17));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, 0, -17));
 }
 
 RVA(0x0003b9c0, 0x5e)

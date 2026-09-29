@@ -284,7 +284,16 @@ def _semantic_type_role(cidx, ty):
     return None
 
 
-def _typed_value_classification(cidx, value, ty, null_available, reason):
+def _typed_value_classification(cidx, value, ty, null_available, reason,
+                                enum_values=None):
+    canonical = ty.get_canonical()
+    if (enum_values is not None and value is not None
+            and canonical.kind == cidx.TypeKind.ENUM):
+        spelling = canonical.spelling.replace("enum ", "")
+        names = enum_values.get(spelling, {}).get(value, set())
+        if len(names) == 1:
+            return ("enum", next(iter(names)), spelling,
+                    f"{reason} is {spelling}; value has one enumerator")
     role = _semantic_type_role(cidx, ty)
     if value == 0 and role == "pointer":
         if not null_available:
@@ -407,7 +416,7 @@ def _classify(cidx, literal, stack, value, enum_values, null_available):
     if expected is not None:
         ty, reason = expected
         typed = _typed_value_classification(
-            cidx, value, ty, null_available, reason)
+            cidx, value, ty, null_available, reason, enum_values)
         if typed is not None:
             return typed
 
@@ -616,14 +625,22 @@ def _scan_entry(payload):
         _require_cl_mode(args)
     except RuntimeError as exc:
         return [], f"{path}: {exc}"
-    try:
-        tu = cidx.Index.create().parse(
-            str(path), args=args,
-            options=cidx.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD)
-    except cidx.TranslationUnitLoadError as exc:
-        return [], f"{path}: libclang could not load TU: {exc}"
-    errors = [d for d in tu.diagnostics if d.severity >= cidx.Diagnostic.Error]
-    if errors:
+    tu = None
+    # The strict-enum view types domain-annotated storage, parameters and
+    # returns with their enums, so literals meeting them can be named; a unit
+    # that does not parse in it falls back to the retail view.
+    for extra in (["/DGZ_STRICT_ENUMS"], []):
+        try:
+            candidate = cidx.Index.create().parse(
+                str(path), args=args + extra,
+                options=cidx.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD)
+        except cidx.TranslationUnitLoadError as exc:
+            return [], f"{path}: libclang could not load TU: {exc}"
+        errors = [d for d in candidate.diagnostics if d.severity >= cidx.Diagnostic.Error]
+        if not errors:
+            tu = candidate
+            break
+    if tu is None:
         return [], f"{path}: parse error: {errors[0]}"
 
     enum_values = _enum_values(cidx, tu.cursor)
@@ -937,8 +954,10 @@ def main(argv=None) -> int:
         print(f"[constants] FATAL: {len(errors)} translation unit(s) did not parse")
         return 2
     if args.fix:
+        keeps, _floor, _errors = load_worklist()
+        remaining, _stale = open_sites(sites, keeps)
         try:
-            applied = apply_proven(sites, repo=REPO)
+            applied = apply_proven(remaining, repo=REPO)
         except (OSError, RuntimeError) as exc:
             print(f"[constants] FATAL: {exc}")
             return 2

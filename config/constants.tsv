@@ -28,24 +28,24 @@ src/Platform/winmain.cpp	g_layerImages	0	data-or-extent	*	entry with no bitmap r
 src/Platform/winmain.cpp	g_panelImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
 src/Text/font.cpp	s_hotspotImages	0	data-or-extent	*	hotspot with no bitmap resource (0 = none)
 *	*	0	trivial-function-literal	0 for-init	a for loop's counter starts at zero
-*	*	*	call-argument	RandomAverage(i16, i16, i16) argument 1	the low bound of a random roll
-*	*	*	call-argument	RandomAverage(i16, i16, i16) argument 2	the high bound of a random roll
-*	*	*	call-argument	RandomAverage(i16, i16, i16) argument 3	how many rolls are averaged (0 for one uniform roll)
-*	*	*	call-argument	RandomUpTo(u8) argument 1	the exclusive upper bound of a random roll
-*	*	*	call-argument	RandomPercent(i32, i32, i32) argument 2	the low percentage of a random scaling
-*	*	*	call-argument	RandomPercent(i32, i32, i32) argument 3	the high percentage of a random scaling
+*	*	*	call-argument	RandomAverage(*argument 1	the low bound of a random roll
+*	*	*	call-argument	RandomAverage(*argument 2	the high bound of a random roll
+*	*	*	call-argument	RandomAverage(*argument 3	how many rolls are averaged (0 for one uniform roll)
+*	*	*	call-argument	RandomUpTo(*argument 1	the exclusive upper bound of a random roll
+*	*	*	call-argument	RandomPercent(*argument 2	the low percentage of a random scaling
+*	*	*	call-argument	RandomPercent(*argument 3	the high percentage of a random scaling
 *	*	*	call-argument	memset(void *, int, size_t) argument 2	the fill byte
 *	*	*	call-argument	memset(void *, int, size_t) argument 3	the byte count
 *	*	*	call-argument	fread(void *, size_t, size_t, FILE *) argument 2	the element size of a file read
 *	*	*	call-argument	fread(void *, size_t, size_t, FILE *) argument 3	the element count of a file read
 *	*	*	call-argument	fwrite(const void *, size_t, size_t, FILE *) argument 2	the element size of a file write
 *	*	*	call-argument	fwrite(const void *, size_t, size_t, FILE *) argument 3	the element count of a file write
-*	*	*	call-argument	BltFast(DWORD, DWORD, LPDIRECTDRAWSURFACE, LPRECT, DWORD) argument 1	the destination x in pixels
-*	*	*	call-argument	BltFast(DWORD, DWORD, LPDIRECTDRAWSURFACE, LPRECT, DWORD) argument 2	the destination y in pixels
-*	*	*	call-argument	BlitImage(LPDIRECTDRAWSURFACE, u16, i32, i32) argument 3	the destination x in pixels
-*	*	*	call-argument	BlitImage(LPDIRECTDRAWSURFACE, u16, i32, i32) argument 4	the destination y in pixels
-*	*	*	call-argument	AllocCleared(u16, u16) argument 1	the element count of an allocation
-*	*	*	call-argument	AllocCleared(u16, u16) argument 2	the element size of an allocation
+*	*	*	call-argument	BltFast(*argument 1	the destination x in pixels
+*	*	*	call-argument	BltFast(*argument 2	the destination y in pixels
+*	*	*	call-argument	BlitImage(*argument 3	the destination x in pixels
+*	*	*	call-argument	BlitImage(*argument 4	the destination y in pixels
+*	*	*	call-argument	AllocCleared(*argument 1	the element count of an allocation
+*	*	*	call-argument	AllocCleared(*argument 2	the element size of an allocation
 *	*	*	call-argument	sprintf(char *, const char *, ...) argument 3	a value formatted into the text
 *	*	*	call-argument	sprintf(char *, const char *, ...) argument 4	a value formatted into the text
 src/Platform/winmain.cpp	*	*	*	*array*[ ]vertices	vertex slot of a fixed quad or strip mesh
@@ -64,10 +64,10 @@ src/Game/fieldview.c	*	*	*	*array*[ ]s_view*	row and column of the 4x7 view-cell
 *	*	0	trivial-function-literal	0 initializer*	an accumulator or counter declared at zero
 *	*	1	trivial-function-literal	1 arithmetic*	a one-step offset: the next index, element or count
 *	*	1	trivial-function-literal	1 compound-assignment*	a one-step increment or decrement
-*	*	*	call-argument	operator()(int, int) argument 2	D3DMATRIX element row
-*	*	*	call-argument	operator()(int, int) argument 3	D3DMATRIX element column
-*	*	*	call-argument	PlaceSprite(i16, i16, i16, i16, i16) argument 4	sprite x in pixels
-*	*	*	call-argument	PlaceSprite(i16, i16, i16, i16, i16) argument 5	sprite y in pixels
+*	*	*	call-argument	operator(*argument 2	D3DMATRIX element row
+*	*	*	call-argument	operator(*argument 3	D3DMATRIX element column
+*	*	*	call-argument	PlaceSprite(*argument 4	sprite x in pixels
+*	*	*	call-argument	PlaceSprite(*argument 5	sprite y in pixels
 *	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 2	picture width in pixels
 *	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 3	picture height in pixels
 *	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 4	surface width in pixels
@@ -81,7 +81,7 @@ src/Game/fieldview.c	*	*	*	*array*[ ]s_view*	row and column of the 4x7 view-cell
 *	*	*	call-argument	ReadSurfaceWord*argument 3	surface x in pixels
 *	*	*	call-argument	ReadSurfaceWord*argument 4	surface y in pixels
 *	*	*	call-argument	ShowMessage(const char *, i16) argument 2	how many ticks the message stays (-1 until dismissed)
-*	*	*	call-argument	PushWaitState(i16, u16, u16, i16) argument 3	how many frames to wait
+*	*	*	call-argument	PushWaitState(*argument 3	how many frames to wait
 *	*	*	call-argument	SetMenuItems(*argument 2	rows per menu page
 *	*	*	call-argument	CreateMenuBox(MenuBox *, i16, i16) argument 3	rows of the menu box panel
 *	*	*	call-argument	ScalePercent999(*argument 2	a percentage
@@ -164,21 +164,23 @@ src/Platform/winmain.cpp	HandleInput	*	arithmetic	*SCREEN_LAYER_FIRST_PANEL	the 
 src/Script/scriptactor.c	OpLoadRecord	*	*	*	a shop script (file 0x7f) entry and its keeper sprite (slot 0x1f, image number and position) or map location, as the developer trace beside each names; files 0xe0..0xff are skipped
 src/Script/scriptactor.c	OpJumpUnlessStatContest	*	*	*switch on level	the contest level 0..3 (0 compares the target's own value, 1..3 roll wider ranges)
 src/Script/scriptactor.c	OpJumpUnlessStatContest	[01]	trivial-function-literal	[01] case	the contest level 0..3 (0 compares the target's own value, 1..3 roll wider ranges)
-*	*	*	call-argument	PlaySoundEffect(i16) argument 1	a sound effect number (sound n plays IDR_SOUND_n; the sounds have no names)
-*	*	*	call-argument	IsEventFlagSet(u16, u16) argument 1	a scenario event-flag bank (the flags have no names)
-*	*	*	call-argument	IsEventFlagSet(u16, u16) argument 2	a scenario event-flag index (the flags have no names)
+*	*	*	call-argument	PlaySoundEffect(*argument 1	a sound effect number (sound n plays IDR_SOUND_n; the sounds have no names)
+*	*	*	call-argument	IsEventFlagSet(*argument 1	a scenario event-flag bank (the flags have no names)
+*	*	*	call-argument	IsEventFlagSet(*argument 2	a scenario event-flag index (the flags have no names)
 *	*	*	call-argument	ModifyEventFlag(*argument 1	a scenario event-flag bank (the flags have no names)
 *	*	*	call-argument	ModifyEventFlag(*argument 2	a scenario event-flag index (the flags have no names)
-*	*	*	call-argument	LoadSpriteImage(i16, i16, i16) argument 1	a sprite slot
-*	*	*	call-argument	LoadSpriteImage(i16, i16, i16) argument 2	a sprite image number in the image data files
-*	*	*	call-argument	LoadSpriteImage(i16, i16, i16) argument 3	the sprite load argument
-*	*	*	call-argument	PlaceSprite(i16, i16, i16, i16, i16) argument 1	a sprite id
-*	*	*	call-argument	PlaceSprite(i16, i16, i16, i16, i16) argument 2	a sprite slot
-*	*	*	call-argument	PlaceSprite(i16, i16, i16, i16, i16) argument 3	a sprite frame
-*	*	*	call-argument	OpenDataFile(i16, i32, i16) argument 1	a record number within the data file
-*	*	*	call-argument	OpenDataFile(i16, i32, i16) argument 3	the file variant (0 is the base file)
+*	*	*	call-argument	LoadSpriteImage(*argument 1	a sprite slot
+*	*	*	call-argument	LoadSpriteImage(*argument 2	a sprite image number in the image data files
+*	*	*	call-argument	LoadSpriteImage(*argument 3	the sprite load argument
+*	*	*	call-argument	PlaceSprite(*argument 1	a sprite id
+*	*	*	call-argument	PlaceSprite(*argument 2	a sprite slot
+*	*	*	call-argument	PlaceSprite(*argument 3	a sprite frame
+*	*	*	call-argument	OpenDataFile(*argument 1	a record number within the data file
+*	*	*	call-argument	OpenDataFile(*argument 3	the file variant (0 is the base file)
 *	*	*	call-argument	PlayMusic(*argument 1	a music track number (the sound data files' tracks have no names)
-*	*	*	call-argument	CreateTextPlane(u16, i16) argument 1	a text-plane kind (its layout is s_planeLayouts[kind]; the kinds have no names)
-*	*	*	call-argument	CreateTextPlane(u16, i16) argument 2	the text-plane creation argument
+*	*	*	call-argument	CreateTextPlane(*argument 1	a text-plane kind (its layout is s_planeLayouts[kind]; the kinds have no names)
+*	*	*	call-argument	CreateTextPlane(*argument 2	the text-plane creation argument
 src/Game/statestack.c	RunLevelUp	*	*	*GetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
 src/Game/statestack.c	RunLevelUp	*	call-argument	SetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
+src/Game/fieldobj.c	GetObjectLifeState	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
+src/Game/itemrecord.c	ApplyEquipmentRegen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
