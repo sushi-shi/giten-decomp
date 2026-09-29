@@ -411,7 +411,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_GRANT_ACTOR_PICK_ITEM:
             case SCRIPT_OP_GRANT_ACTOR_PICK_ITEM_ALIAS:
-                GrantActorReward(3);
+                GrantActorReward(ACTOR_REWARD_PICK_ITEM);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_GRANT_ACTOR_MACCA:
                 GrantActorSpoil(ACTOR_SPOIL_MACCA);
@@ -420,22 +420,22 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 GrantActorSpoil(ACTOR_SPOIL_MAGNETITE);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_GRANT_ACTOR_SECOND_ITEM:
-                GrantActorReward(1);
+                GrantActorReward(ACTOR_REWARD_SECOND_ITEM);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_GRANT_ACTOR_FIRST_ITEM:
-                GrantActorReward(0);
+                GrantActorReward(ACTOR_REWARD_FIRST_ITEM);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_GRANT_ACTOR_GEM:
-                GrantActorReward(2);
+                GrantActorReward(ACTOR_REWARD_GEM);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_GRANT_ACTOR_EXPERIENCE:
                 GrantActorSpoil(ACTOR_SPOIL_EXPERIENCE);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_GRANT_RANDOM_ACTOR_REWARD:
-                GrantActorReward(7);
+                GrantActorReward(ACTOR_REWARD_RANDOM);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_GRANT_RANDOM_ACTOR_REWARD_B:
-                GrantActorReward(8);
+                GrantActorReward(ACTOR_REWARD_RANDOM_B);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_ROLL_ACTOR_MAGNETITE:
                 OpRollActorMagnetite();

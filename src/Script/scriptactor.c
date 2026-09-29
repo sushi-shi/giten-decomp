@@ -294,21 +294,22 @@ void PlaceScriptActor(void) {
     RequestFieldRefresh();
 }
 
-static __inline void GrantAdjustedActorSpoil(i16 kind, i16 adjustment) {
+static __inline void
+GrantAdjustedActorSpoil(GZ_ENUM_PARAM(ActorSpoilKind, i16) kind, i16 adjustment) {
     s_spoilAdjustment = adjustment;
     GrantActorSpoil(kind);
 }
 
 RVA(0x00032ea0, 0x2b8)
-void GrantActorReward(i16 kind) {
+void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind) {
     u16 reward = 0;
     for (;;) {
         switch (kind) {
-            case 0:
-            case 1:
+            case ACTOR_REWARD_FIRST_ITEM:
+            case ACTOR_REWARD_SECOND_ITEM:
                 reward = GetItemRewardAt(kind);
                 break;
-            case 2: {
+            case ACTOR_REWARD_GEM: {
                 i16 roll = RandomAverage(0, 100, 100);
                 if (g_curScript->actor != NULL) {
                     roll += g_curScript->actor->level;
@@ -319,47 +320,47 @@ void GrantActorReward(i16 kind) {
                         break;
                     }
                 }
-                kind = 2;
+                kind = ACTOR_REWARD_GEM;
                 if (!reward) {
                     reward = GetGemItemBase();
                 }
                 break;
             }
-            case 3:
+            case ACTOR_REWARD_PICK_ITEM:
                 if (g_curScript->actor == NULL) {
                     return;
                 }
                 reward = g_curScript->actor->pickItem;
                 break;
-            case 4:
-            case 5:
-            case 6:
-                GrantActorSpoil(kind - 4);
+            case ACTOR_REWARD_SPOIL_MACCA:
+            case ACTOR_REWARD_SPOIL_MAGNETITE:
+            case ACTOR_REWARD_SPOIL_EXPERIENCE:
+                GrantActorSpoil(kind - ACTOR_REWARD_SPOIL_MACCA);
                 reward = 0;
                 break;
-            case 7: {
+            case ACTOR_REWARD_RANDOM: {
                 i16 roll = RandomAverage(1, 100, 0);
                 if (roll <= 20) {
-                    GrantAdjustedActorSpoil(0, 2);
+                    GrantAdjustedActorSpoil(ACTOR_SPOIL_MACCA, 2);
                     reward = 0;
                 } else if (roll <= 40) {
-                    GrantAdjustedActorSpoil(1, 2);
+                    GrantAdjustedActorSpoil(ACTOR_SPOIL_MAGNETITE, 2);
                     reward = 0;
                 } else if (roll <= 58) {
-                    kind = 1;
+                    kind = ACTOR_REWARD_SECOND_ITEM;
                     continue;
                 } else if (roll <= 66) {
-                    kind = 0;
+                    kind = ACTOR_REWARD_FIRST_ITEM;
                     continue;
                 } else if (roll <= 74) {
-                    kind = 2;
+                    kind = ACTOR_REWARD_GEM;
                     continue;
                 } else if (roll <= 84) {
                     if (g_curScript->actor == NULL) {
                         return;
                     }
                     reward = PickEquipmentReward(g_curScript->actor);
-                    kind = 3;
+                    kind = ACTOR_REWARD_PICK_ITEM;
                     if (reward < 1) {
                         continue;
                     }
@@ -368,28 +369,28 @@ void GrantActorReward(i16 kind) {
                         return;
                     }
                     reward = g_curScript->actor->id;
-                    kind = 7;
+                    kind = ACTOR_REWARD_HEALED;
                     HealParty(reward);
                     RequestFieldRefresh();
                 } else {
-                    kind = 3;
+                    kind = ACTOR_REWARD_PICK_ITEM;
                     continue;
                 }
                 break;
             }
-            case 8: {
+            case ACTOR_REWARD_RANDOM_B: {
                 i16 roll = RandomAverage(1, 100, 0);
                 if (roll <= 20) {
-                    GrantAdjustedActorSpoil(0, 1);
+                    GrantAdjustedActorSpoil(ACTOR_SPOIL_MACCA, 1);
                     reward = 0;
                 } else if (roll <= 40) {
-                    GrantAdjustedActorSpoil(0, 3);
+                    GrantAdjustedActorSpoil(ACTOR_SPOIL_MACCA, 3);
                     reward = 0;
                 } else if (roll <= 60) {
-                    GrantAdjustedActorSpoil(1, 3);
+                    GrantAdjustedActorSpoil(ACTOR_SPOIL_MAGNETITE, 3);
                     reward = 0;
                 } else if (roll <= 70) {
-                    kind = 1;
+                    kind = ACTOR_REWARD_SECOND_ITEM;
                     continue;
                 } else if (roll <= 80) {
                     if (g_curScript->actor == NULL) {
@@ -454,28 +455,28 @@ i16 PickEquipmentReward(Character* character) {
     } while (0)
 
 RVA(0x00033210, 0x110)
-void GrantActorSpoil(i16 kind) {
+void GrantActorSpoil(GZ_ENUM_PARAM(ActorSpoilKind, i16) kind) {
     if (g_curScript->actor != NULL) {
         i32 amount = 0;
         switch (kind) {
-            case 2:
+            case ACTOR_SPOIL_EXPERIENCE:
                 amount = g_curScript->actor->experience;
                 g_rewardExperience += amount;
                 MarkRewardsPending();
                 break;
-            case 1:
+            case ACTOR_SPOIL_MAGNETITE:
                 amount = g_curScript->actor->magnetite;
                 AdjustActorSpoilAmount(amount);
                 AddMagnetite(GetRosterCharacter(0), amount);
                 break;
-            case 0:
+            case ACTOR_SPOIL_MACCA:
                 amount = g_curScript->actor->macca;
                 AdjustActorSpoilAmount(amount);
                 AddMacca(GetRosterCharacter(0), amount);
                 break;
         }
         CallScript(0xdf, 2);
-        SetScriptLongVar(18, kind + 4);
+        SetScriptLongVar(18, kind + ACTOR_REWARD_SPOIL_MACCA);
         SetScriptLongVar(19, amount);
     }
 }

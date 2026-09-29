@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <Enums.h>
+#include <Script/ActorSpoilKind.h>
 #include <Script/ScriptPanel.h>
 #include <Script/ScriptStatus.h>
 #include <Script/WindowReverseMode.h>
@@ -175,13 +176,29 @@ void OpStoreActorDistance(void);
 RVA_DECL(0x00032dc0)
 void PlaceScriptActor(void);
 
-void GrantActorReward(i16 kind);
+// What GrantActorReward gives the party from the script actor. The kind it
+// reports to the reward script names what was given; a random-table roll
+// reports the kind it resolved to, or ACTOR_REWARD_HEALED.
+GZ_ENUM_BEGIN(ActorRewardKind)
+    ACTOR_REWARD_FIRST_ITEM = 0,
+    ACTOR_REWARD_SECOND_ITEM = 1,
+    ACTOR_REWARD_GEM = 2,
+    ACTOR_REWARD_PICK_ITEM = 3,
+    ACTOR_REWARD_SPOIL_MACCA = 4,
+    ACTOR_REWARD_SPOIL_MAGNETITE = 5,
+    ACTOR_REWARD_SPOIL_EXPERIENCE = 6,
+    ACTOR_REWARD_RANDOM = 7,
+    ACTOR_REWARD_HEALED = 7,
+    ACTOR_REWARD_RANDOM_B = 8
+GZ_ENUM_END(ActorRewardKind)
+
+void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind);
 
 struct Character;
 i16 PickEquipmentReward(struct Character* character);
 
 RVA_DECL(0x00033210)
-void GrantActorSpoil(i16 kind);
+void GrantActorSpoil(GZ_ENUM_PARAM(ActorSpoilKind, i16) kind);
 
 // @identity-TODO: The 0x78878 bitmap meaning (object gone/defeated) is inferred from 0x36080;
 // confirm via its readers.
