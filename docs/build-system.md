@@ -32,6 +32,12 @@ its `[[unit]]` entry, shared declarations, source definitions and labels, then b
 
 Producers write only changed content. A code edit with unchanged labels reuses
 the retail targets; a label change rebuilds the model and affected targets.
+Label extraction reruns when its unit's source, header closure, base object,
+clang database or extractor changes, and the unchanged fragment stops the
+cascade. No content key skips it: a function body can change a claim (a
+`DATA` static local, a C local sharing a global's name, a `DATA_COMPGEN`
+payload, a clang-only error). Instead the libclang probes share one parse, and
+clang's IR and AST passes run beside it.
 The delink also reads the base objects' data topology, so a compile that moves
 only data identity (a COMMON becoming `.bss`, a string or vtable COMDAT)
 re-delinks through `gen/data_ids.tsv` without a label change.

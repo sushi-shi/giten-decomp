@@ -8,6 +8,8 @@ Four probes over one TU, all under the MSVC-compat flag set:
     annotated_decls()  pylibclang - annotated declarations in repo files (the
                 label-only RVA_DECL channel)
 
+The pylibclang probes accept one shared `parse()` of the TU.
+
 Per-TU flags come from the clangd compdb (`/imsvc` lowercase-mirror include
 dirs that make header lookup work on case-sensitive Linux), falling back to
 the bare MS flag set. clang's mangled name is a PROPOSAL in one narrow sense
@@ -17,6 +19,7 @@ core/msvc_names.
 
 from __future__ import annotations
 
+import functools
 import json
 import os
 import subprocess
@@ -134,13 +137,15 @@ def ast_dump(tu: str, cl_flags: list[str] | None) -> dict | None:
         return None
 
 
-def function_definition_extents(tu: str, cl_flags: list[str] | None) -> dict[str, list[dict]] | None:
-    """Exact mangled function definitions and their spelling-file byte extents.
+#: realpath per cursor dominates a walk; a file's answer cannot change mid-run
+_realpath = functools.lru_cache(maxsize=None)(os.path.realpath)
 
-    Unlike documentSymbol, this includes definitions in headers. Declarations,
-    cross-file extents and invalid parses provide no source-body evidence.
-    File ownership and hashing are the consumer's policy.
-    """
+
+def parse(tu: str, cl_flags: list[str] | None):
+    """One pylibclang parse under the probes' flag set, or None when
+    pylibclang is missing or the TU does not parse cleanly. The libclang
+    probes below share it: a second parse of the same TU and flags can only
+    repeat the first."""
     try:
         import clang.cindex as cidx
     except ImportError:
@@ -154,6 +159,41 @@ def function_definition_extents(tu: str, cl_flags: list[str] | None) -> dict[str
         return None
     if any(d.severity >= cidx.Diagnostic.Error for d in parsed.diagnostics):
         return None
+    return parsed
+
+
+def preorder(parsed, kinds) -> list:
+    """The cursors of `kinds`, in `walk_preorder()` order, from ONE native
+    recursive visit. walk_preorder builds a Python child list per node, which
+    costs seconds over a TU that includes the SDK; recursing inside libclang
+    and filtering on the raw kind id visits the same cursors in the same
+    order."""
+    from clang.cindex import conf, cursor_visit_callback
+    ids = {k.value for k in kinds}
+    root = parsed.cursor
+    out = [root] if root._kind_id in ids else []
+
+    def visit(child, _parent, acc):
+        if child._kind_id in ids:
+            child._tu = parsed          # keep the TU alive, as get_children does
+            acc.append(child)
+        return 2                        # CXChildVisit_Recurse
+
+    conf.lib.clang_visitChildren(root, cursor_visit_callback(visit), out)
+    return out
+
+
+def function_definition_extents(tu: str, cl_flags: list[str] | None) -> dict[str, list[dict]] | None:
+    """Exact mangled function definitions and their spelling-file byte extents.
+
+    Unlike documentSymbol, this includes definitions in headers. Declarations,
+    cross-file extents and invalid parses provide no source-body evidence.
+    File ownership and hashing are the consumer's policy.
+    """
+    parsed = parse(tu, cl_flags)
+    if parsed is None:
+        return None
+    import clang.cindex as cidx
     kinds = {cidx.CursorKind.FUNCTION_DECL, cidx.CursorKind.CXX_METHOD,
              cidx.CursorKind.CONSTRUCTOR, cidx.CursorKind.DESTRUCTOR}
     out: dict[str, list[dict]] = {}
@@ -172,7 +212,7 @@ def function_definition_extents(tu: str, cl_flags: list[str] | None) -> dict[str
     return out
 
 
-def var_facts(tu: str, cl_flags: list[str] | None) -> dict[str, dict] | None:
+def var_facts(tu: str, cl_flags: list[str] | None, parsed=None) -> dict[str, dict] | None:
     """{mangled VarDecl name: {'size': bytes, 'internal': bool, 'defined': bool}} for main-file
     globals - THE DATA-extent authority (laid out under the TU's real
     i386/MSVC flags) and the storage a claim's cl 5.0 spelling depends on.
@@ -182,27 +222,18 @@ def var_facts(tu: str, cl_flags: list[str] | None) -> dict[str, dict] | None:
     a file static, a namespace-scope `const`, and a function-local static (no
     linkage at all) alike. None when pylibclang could not parse cleanly;
     incomplete types (negative get_size) and cross-decl size conflicts are
-    omitted."""
-    try:
-        import clang.cindex as cidx
-    except ImportError:
+    omitted. `parsed` reuses a `parse()` of the same TU and flags."""
+    parsed = parsed if parsed is not None else parse(tu, cl_flags)
+    if parsed is None:
         return None
-    args = (["--driver-mode=cl", "/DGITEN_EMIT_META", *cl_flags, *inc_cl()]
-            if cl_flags is not None
-            else ["-DGITEN_EMIT_META", *MS_FLAGS, *inc_gcc()])
-    try:
-        parsed = cidx.Index.create().parse(tu, args=args)
-    except cidx.LibclangError:
-        return None
-    if any(d.severity >= cidx.Diagnostic.Error for d in parsed.diagnostics):
-        return None
+    import clang.cindex as cidx
     main_real = os.path.realpath(tu)
     facts: dict[str, dict] = {}
     conflicts = set()
-    for cursor in parsed.cursor.walk_preorder():
-        if cursor.kind != cidx.CursorKind.VAR_DECL or cursor.location.file is None:
+    for cursor in preorder(parsed, {cidx.CursorKind.VAR_DECL}):
+        if cursor.location.file is None:
             continue
-        if os.path.realpath(cursor.location.file.name) != main_real:
+        if _realpath(cursor.location.file.name) != main_real:
             continue
         name, size = cursor.mangled_name, cursor.type.get_size()
         if not name or size < 0:
@@ -219,7 +250,7 @@ def var_facts(tu: str, cl_flags: list[str] | None) -> dict[str, dict] | None:
     return facts
 
 
-def annotated_decls(tu: str, cl_flags: list[str] | None) -> list[dict] | None:
+def annotated_decls(tu: str, cl_flags: list[str] | None, parsed=None) -> list[dict] | None:
     """Every annotated function/variable declaration the TU sees in a repo
     file (the TU itself or a project header), one record per redeclaration:
     {'kind': 'func'|'var', 'name': libclang's mangled name, 'annotations':
@@ -229,24 +260,19 @@ def annotated_decls(tu: str, cl_flags: list[str] | None) -> list[dict] | None:
     channel (`RVA_DECL`) reads it here. Only namespace/record/linkage scopes
     are descended (never a function body), and a cursor outside the repo
     (SDK, CRT) is skipped before its children are read. None when pylibclang
-    could not parse cleanly."""
-    try:
-        import clang.cindex as cidx
-    except ImportError:
+    could not parse cleanly; `parsed` reuses a `parse()` of the same TU."""
+    parsed = parsed if parsed is not None else parse(tu, cl_flags)
+    if parsed is None:
         return None
-    args = (["--driver-mode=cl", "/DGITEN_EMIT_META", *cl_flags, *inc_cl()]
-            if cl_flags is not None
-            else ["-DGITEN_EMIT_META", *MS_FLAGS, *inc_gcc()])
-    try:
-        parsed = cidx.Index.create().parse(tu, args=args)
-    except cidx.LibclangError:
-        return None
-    if any(d.severity >= cidx.Diagnostic.Error for d in parsed.diagnostics):
-        return None
+    import clang.cindex as cidx
+    from clang.cindex import conf, cursor_visit_callback
     K = cidx.CursorKind
-    scopes = {K.NAMESPACE, K.CLASS_DECL, K.STRUCT_DECL, K.UNION_DECL,
-              K.LINKAGE_SPEC, K.UNEXPOSED_DECL}
-    funcs = {K.FUNCTION_DECL, K.CXX_METHOD, K.CONSTRUCTOR, K.DESTRUCTOR}
+    scopes = {k.value for k in (K.NAMESPACE, K.CLASS_DECL, K.STRUCT_DECL,
+                                K.UNION_DECL, K.LINKAGE_SPEC, K.UNEXPOSED_DECL)}
+    funcs = {k.value for k in (K.FUNCTION_DECL, K.CXX_METHOD, K.CONSTRUCTOR,
+                               K.DESTRUCTOR)}
+    decls = funcs | {K.VAR_DECL.value}
+    annotate = K.ANNOTATE_ATTR.value
     repo = os.path.realpath(REPO) + os.sep
     real: dict[str, str] = {}
     out: list[dict] = []
@@ -260,26 +286,33 @@ def annotated_decls(tu: str, cl_flags: list[str] | None) -> list[dict] | None:
             path = real[f.name] = os.path.realpath(f.name)
         return path if path.startswith(repo) else None
 
-    def visit(parent):
-        for cursor in parent.get_children():
-            if cursor.kind in scopes:
-                visit(cursor)
-                continue
-            if cursor.kind not in funcs and cursor.kind != K.VAR_DECL:
-                continue
-            path = in_repo(cursor)
-            if path is None:
-                continue
-            anns = [c.spelling for c in cursor.get_children()
-                    if c.kind == K.ANNOTATE_ATTR]
-            if not anns:
-                continue
-            out.append({"kind": "func" if cursor.kind in funcs else "var",
-                        "name": cursor.mangled_name,
-                        "annotations": anns,
-                        "defined": cursor.is_definition(),
-                        "file": path,
-                        "internal": cursor.linkage != cidx.LinkageKind.EXTERNAL})
+    # One native visit (see preorder): scopes recurse, a declaration is taken
+    # with its direct ANNOTATE_ATTR children, anything else is not descended.
+    found: list[tuple] = []
 
-    visit(parsed.cursor)
+    def visit(child, parent, acc):
+        if parent._kind_id in decls:            # a declaration's own children
+            if child._kind_id == annotate:
+                child._tu = parsed
+                acc[-1][1].append(child)
+            return 1                            # CXChildVisit_Continue
+        if child._kind_id in scopes:
+            return 2                            # CXChildVisit_Recurse
+        if child._kind_id in decls:
+            child._tu = parsed
+            acc.append((child, []))
+            return 2
+        return 1
+
+    conf.lib.clang_visitChildren(parsed.cursor, cursor_visit_callback(visit), found)
+    for cursor, attrs in found:
+        path = in_repo(cursor)
+        if path is None or not attrs:
+            continue
+        out.append({"kind": "func" if cursor._kind_id in funcs else "var",
+                    "name": cursor.mangled_name,
+                    "annotations": [c.spelling for c in attrs],
+                    "defined": cursor.is_definition(),
+                    "file": path,
+                    "internal": cursor.linkage != cidx.LinkageKind.EXTERNAL})
     return out

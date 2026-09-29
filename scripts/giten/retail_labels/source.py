@@ -493,6 +493,7 @@ def collect_vars(ast: dict, main_file: str) -> list[tuple[str, int, str]]:
     main_real = os.path.realpath(main_file)
     out: list[tuple[str, int, str]] = []
     state = {"in_main": True}
+    is_main: dict[str, bool] = {}      # realpath is the walk's dominant cost
 
     def visit(node):
         if not isinstance(node, dict):
@@ -500,7 +501,9 @@ def collect_vars(ast: dict, main_file: str) -> list[tuple[str, int, str]]:
         for loc in (node.get("loc"), (node.get("range") or {}).get("begin")):
             f = _loc_file(loc)
             if f is not None:
-                state["in_main"] = os.path.realpath(f) == main_real
+                if f not in is_main:
+                    is_main[f] = os.path.realpath(f) == main_real
+                state["in_main"] = is_main[f]
         if (state["in_main"] and node.get("kind") == "VarDecl"
                 and "mangledName" in node and not node.get("isImplicit")):
             off = (node.get("loc") or {}).get("offset")
@@ -534,10 +537,22 @@ def data_claims(text: str, ast: dict, main_file: str) -> list[tuple[int, str | N
 
 
 def extract_unit(unit: str, source: str, compdb: dict) -> tuple[list[list[str]], list[str]]:
-    """(fragment rows, problems). Empty rows for a vendored (macro-free) TU."""
+    """(fragment rows, problems). Empty rows for a vendored (macro-free) TU.
+
+    The clang subprocesses (IR, then the AST when the DATA fallback will read
+    it) run on one worker beside the in-process libclang parse and walks, all
+    of which share that one parse. Results are consumed in the original
+    order, so a failure still reports exactly as before."""
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        return _extract_unit(unit, source, compdb, pool)
+
+
+def _extract_unit(unit: str, source: str, compdb: dict, pool) -> tuple[list[list[str]], list[str]]:
     src_path = REPO / source
     text = src_path.read_text(errors="replace")
-    if not LABELED_TU_RE.search(blank_comments(text)):
+    blanked = blank_comments(text)
+    if not LABELED_TU_RE.search(blanked):
         return [], []
 
     problems: list[str] = []
@@ -548,8 +563,11 @@ def extract_unit(unit: str, source: str, compdb: dict) -> tuple[list[list[str]],
         rows.append([f"0x{rva:08x}", f"0x{size:x}" if size is not None else "",
                      name, kind, channel, qtype])
 
+    ir_job = pool.submit(clang.emit_ir, str(src_path), cl_flags)
+    parsed = clang.parse(str(src_path), cl_flags)
+    ir = ir_job.result()
+
     # functions via IR
-    ir = clang.emit_ir(str(src_path), cl_flags)
     if ir is None:
         errors = [ln for ln in clang.LAST_IR_ERROR.splitlines() if "error:" in ln]
         detail = ("; clang: " + " | ".join(errors[:3])) if errors else ""
@@ -558,10 +576,15 @@ def extract_unit(unit: str, source: str, compdb: dict) -> tuple[list[list[str]],
     ir_funcs, ir_datas = ir_claims(ir)
     for rva, name, size in ir_funcs:
         emit(rva, size, name, "func", "src")
+    # the DATA fallback's condition below: more DATA() sites than IR covers
+    ast_job = (pool.submit(clang.ast_dump, str(src_path), cl_flags)
+               if len(DATA_MACRO_RE.findall(blanked)) > len({r for r, _ in ir_datas})
+               else None)
 
     # label-only claims from prototypes: no IR carrier, read off the
     # declaration cursors
-    decls = clang.annotated_decls(str(src_path), cl_flags)
+    decls = None if parsed is None else clang.annotated_decls(
+        str(src_path), cl_flags, parsed)
     if decls is None:
         return rows, [f"{unit}: pylibclang could not parse this TU - every "
                       f"RVA_DECL label it sees would silently vanish (FATAL)"]
@@ -571,7 +594,6 @@ def extract_unit(unit: str, source: str, compdb: dict) -> tuple[list[list[str]],
         emit(rva, None, name, "func", "src_decl")
 
     # compiler-generated bodies, name verbatim
-    blanked = blank_comments(text)
     for m in RVA_COMPGEN_RE.finditer(blanked):
         rva, size = int(m.group(1), 16), int(m.group(2), 0)
         emit(rva, size or None, m.group(3), "func", "src_compgen")
@@ -600,7 +622,7 @@ def extract_unit(unit: str, source: str, compdb: dict) -> tuple[list[list[str]],
     # pylibclang gives every extent and, for that fallback, the linkage the
     # spelling depends on.
     if DATA_MACRO_RE.search(blanked) or DATA_MESSAGE_MAP_RE.search(blanked) or ir_datas:
-        facts = clang.var_facts(str(src_path), cl_flags)
+        facts = clang.var_facts(str(src_path), cl_flags, parsed)
         if facts is None:
             problems.append(f"{unit}: pylibclang could not lay this TU out - "
                             f"every DATA() extent would vanish")
@@ -621,7 +643,7 @@ def extract_unit(unit: str, source: str, compdb: dict) -> tuple[list[list[str]],
             emit(rva, sizes.get(name), name, "data", "src")
         site_count = len(DATA_MACRO_RE.findall(blanked))
         if site_count > len(covered):
-            ast = clang.ast_dump(str(src_path), cl_flags)
+            ast = ast_job.result()
             if ast is None:
                 problems.append(f"{unit}: clang produced no AST - extern "
                                 f"DATA() labels of this TU would vanish (FATAL)")
