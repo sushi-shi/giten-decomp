@@ -29,7 +29,7 @@ DATA(0x00078370)
 static ShotTable s_shotTableData = {0};
 
 DATA(0x00078470)
-static ShotTable* s_shotTable = 0;
+static ShotTable* s_shotTable = NULL;
 
 // Sideways drift per unit of depth travelled.
 DATA(0x00078478)

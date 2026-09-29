@@ -5,3 +5,6 @@
 # never rises (`--update-floor` lowers it). Columns (tab-separated; `*` matches
 # anything, `file` takes a glob): file owner spelling group detail reason.
 # group/detail are the census' review_group/review_context columns.
+#floor	22765
+src/Game/character.c	CalcMaxHp	1	existing-symbol	boolean	TestBit result compared with true; the body is banked exact but the enum headers dip it to 99.96, so editing it would reset MAX - spell it true once the TU is restored
+src/Game/character.c	CalcMaxMp	1	existing-symbol	boolean	TestCharacterFlag result compared with true; the body is banked exact but the enum headers dip it to 99.95, so editing it would reset MAX - spell it true once the TU is restored

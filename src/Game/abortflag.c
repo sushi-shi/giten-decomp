@@ -229,7 +229,7 @@ void DrawSceneObjects(i16 x, i16 y, i16 across, i16 along) {
 }
 
 static __inline b32 IsSceneObjectVisible(FieldObject* object, i16 kind) {
-    return (kind != SCENE_HOTSPOT_OBJECT || TestFieldObjectFlag(object, 33) != 1)
+    return (kind != SCENE_HOTSPOT_OBJECT || TestFieldObjectFlag(object, 33) != true)
            && !GetObjectsHidden();
 }
 

@@ -225,10 +225,10 @@ static i16 s_targetHpBefore = 0;
 // The action's actor and target, and the actor's role and pick, kept until
 // the action ends.
 DATA(0x00080d20)
-static Character* s_actionActor = 0;
+static Character* s_actionActor = NULL;
 
 DATA(0x00080d24)
-static Character* s_actionTarget = 0;
+static Character* s_actionTarget = NULL;
 
 DATA(0x00080d28)
 static i16 s_actionRoleKept = 0;
@@ -238,7 +238,7 @@ static i16 s_actionPickKept = 0;
 
 // The picker or skill list menu.
 DATA(0x00080d30)
-static MenuBox* s_fieldMenu = 0;
+static MenuBox* s_fieldMenu = NULL;
 
 DATA(0x00080d34)
 char g_emptySkillMenuLabel[4] = {0};

@@ -491,7 +491,7 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
     // Preserve the interface output address across surface creation.
     source = &texture->source;
     if (IDirectDraw_CreateSurface(g_ddraw, &sourceDesc, &texture->sourceSurface, NULL) != DD_OK) {
-        if (fromFile == TRUE) {
+        if (fromFile == true) {
             FreeBitmap(&bmp);
         }
         return false;
@@ -517,19 +517,19 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
     }
     result = IDirectDraw_CreateSurface(g_ddraw, &desc, &texture->surface, NULL);
     if (result != DD_OK) {
-        if (fromFile == TRUE) {
+        if (fromFile == true) {
             FreeBitmap(&bmp);
         }
         return false;
     }
     if (IsPalettizedSurface(desc)
         && IDirectDrawSurface_SetPalette(texture->surface, texture->ddPalette) != DD_OK) {
-        if (fromFile == TRUE) {
+        if (fromFile == true) {
             FreeBitmap(&bmp);
         }
         return false;
     }
-    if (fromFile == TRUE) {
+    if (fromFile == true) {
         FreeBitmap(&bmp);
     }
     if (IDirectDrawSurface_QueryInterface(
@@ -560,7 +560,7 @@ BmpFile* OpenTextureBitmap(Texture* texture, const char* name, b32 fromFile) {
     if (HasTextureHandle(texture)) {
         return NULL;
     }
-    if (fromFile == TRUE) {
+    if (fromFile == true) {
         bmp = ReadBitmapFile(name);
         if (bmp == NULL) {
             return NULL;
@@ -610,7 +610,7 @@ void RestoreTexture(Texture* texture) {
 
 RVA(0x00057b80, 0xb)
 void ShowScenePicture(void) {
-    g_scenePicture.visible = TRUE;
+    g_scenePicture.visible = true;
 }
 
 RVA(0x00057b90, 0x59)
@@ -619,7 +619,7 @@ void LoadScenePicture(BmpFile* bmp, u16 id) {
         LoadBitmapToSurface16(bmp, &g_scenePicture.surface, NULL);
         g_scenePicture.id = id;
         GetBitmapRect(g_scenePicture.rect, bmp);
-        g_scenePicture.visible = TRUE;
+        g_scenePicture.visible = true;
     }
 }
 
@@ -627,15 +627,15 @@ RVA(0x00057bf0, 0x4b)
 void ClearSceneSurfaces(void) {
     ClearDisplaySurface(g_scenePicture.surface, NULL);
     ClearDisplaySurface(g_viewCachePicture.surface, NULL);
-    GetTextPlane(0)->visible = FALSE;
-    g_scenePicture.visible = FALSE;
+    GetTextPlane(0)->visible = false;
+    g_scenePicture.visible = false;
 }
 
 RVA(0x00057c40, 0x30)
 void ClearScenePicture(void) {
     ClearDisplaySurface(g_scenePicture.surface, NULL);
-    GetTextPlane(0)->visible = FALSE;
-    g_scenePicture.visible = FALSE;
+    GetTextPlane(0)->visible = false;
+    g_scenePicture.visible = false;
 }
 
 static __inline void GetWorldMapBlitRects(i16 slot, RECT* dest, RECT* source) {
@@ -662,7 +662,7 @@ void LoadWorldMapTile(BmpFile* bmp, i16 slot) {
             bmp->info.biHeight,
             bmp->info.biWidth,
             bmp->info.biHeight,
-            TRUE
+            true
         );
         LoadBitmapToSurface16(bmp, &tile.surface, NULL);
         GetWorldMapBlitRects(slot, &dest, &source);
@@ -678,7 +678,7 @@ void LoadWorldMapTile(BmpFile* bmp, i16 slot) {
         g_scenePicture.rect.top = 0;
         g_scenePicture.rect.right = 640;
         g_scenePicture.rect.bottom = 328;
-        g_scenePicture.visible = FALSE;
+        g_scenePicture.visible = false;
     }
 }
 
@@ -695,7 +695,7 @@ void LoadWorldMapOverlay(BmpFile* bmp, i16 slot) {
             bmp->info.biHeight,
             bmp->info.biWidth,
             bmp->info.biHeight,
-            TRUE
+            true
         );
         LoadBitmapToSurface16(bmp, &tile.surface, NULL);
         GetWorldMapBlitRects(slot, &dest, &source);

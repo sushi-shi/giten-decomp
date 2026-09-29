@@ -31,10 +31,10 @@ static MaskGrid s_maskData = {0};
 
 // The mask as loaded from its data file, and the working copy drawn against.
 DATA(0x00075f00)
-static MaskGrid* s_savedMask = 0;
+static MaskGrid* s_savedMask = NULL;
 
 DATA(0x00075f04)
-static MaskGrid* s_mask = 0;
+static MaskGrid* s_mask = NULL;
 
 // The 16 analog palette entries (0xGRB) and how many users hold each one.
 // Nothing in this image reads the colours back.

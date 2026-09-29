@@ -44,14 +44,14 @@ DATA(0x00081018)
 char g_textLine[0x100] = {0};
 
 DATA(0x00081118)
-static ScriptPanel* s_scriptPanels = 0;
+static ScriptPanel* s_scriptPanels = NULL;
 
 DATA(0x00081120)
 char g_capturedText[0x100] = {0};
 
 // The script's stacked windows, newest last.
 DATA(0x00081220)
-static ScriptWindowNode* s_windowStack = 0;
+static ScriptWindowNode* s_windowStack = NULL;
 
 // While set, printable script text is appended to the captured-text buffer
 // instead of being drawn.

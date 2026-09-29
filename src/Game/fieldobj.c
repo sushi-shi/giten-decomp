@@ -211,7 +211,7 @@ DATA(0x0007b0e8)
 static u32 s_lastEncounterMinute = 0;
 
 DATA(0x0007b0ec)
-static u8* s_fieldEncounterWeights = 0;
+static u8* s_fieldEncounterWeights = NULL;
 
 // The countdown (in ticks) to the next random spawn and the spawn interval
 // in seconds.
@@ -229,11 +229,11 @@ static FieldLayer s_savedLayers[2] = {0};
 
 // The object script block (data file 0x6800), loaded on first use.
 DATA(0x0007b4f4)
-static ScriptBlock* s_objectScripts = 0;
+static ScriptBlock* s_objectScripts = NULL;
 
 // The script-set table: three data-file numbers per set (0xff: none).
 DATA(0x0007b4f8)
-static u8* s_scriptSets = 0;
+static u8* s_scriptSets = NULL;
 
 RVA(0x0000d790, 0x52)
 b16 InitFieldObjects(void) {
@@ -1448,7 +1448,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     if (!GetFieldMarker() && !IsWithinRange(GetSkillAttackRange(skill))) {
         return -1;
     }
-    if (IsSkillIdBlocked(actor, skill) == 1) {
+    if (IsSkillIdBlocked(actor, skill) == true) {
         return -1;
     }
     return picked != 0;
@@ -1636,7 +1636,7 @@ b16 ChooseObjectTarget(FieldObject* object) {
     for (i = 0; i < 6; i++) {
         member = GetPartyCharacter(i);
         if (member != NULL && !GetDisablingCondition(GetCharacterConditions(member))
-            && TestCharacterFlag(member, 0x21) != 1) {
+            && TestCharacterFlag(member, 0x21) != true) {
             candidates[count++] = i;
         }
     }
@@ -2274,7 +2274,7 @@ i16 RollWorldMapEncounter(i16 x, i16 y) {
     i16 variant;
     WorldEncounterCell* cells;
     Character* leader = GetRosterCharacter(0);
-    if (TestCharacterFlag(leader, 0x22) == 1) {
+    if (TestCharacterFlag(leader, 0x22) == true) {
         return -1;
     }
     if (CheckWorldEncounterInterval() < 1) {

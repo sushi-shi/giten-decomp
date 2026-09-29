@@ -25,7 +25,7 @@
 // The open menu, the skill the magic test launches, and how many skills
 // there are.
 DATA(0x00071170)
-static MenuBox* s_debugMenu = 0;
+static MenuBox* s_debugMenu = NULL;
 
 DATA(0x00071174)
 static i16 s_testSkill = 0;

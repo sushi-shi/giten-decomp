@@ -66,7 +66,7 @@ DATA(0x00076050)
 i16 g_loadedBefore = 0;
 
 DATA(0x00076054)
-static MenuBox* s_systemMenu = 0;
+static MenuBox* s_systemMenu = NULL;
 
 static void SystemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 static b16 RunDisplayChoice(void);

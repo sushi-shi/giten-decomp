@@ -3370,9 +3370,9 @@ b32 CreateGlyphSurface(void) {
         0,
         0,
         FW_THIN,
-        FALSE,
-        FALSE,
-        FALSE,
+        false,
+        false,
+        false,
         DEFAULT_CHARSET,
         OUT_DEFAULT_PRECIS,
         CLIP_EMBEDDED,
@@ -3572,7 +3572,7 @@ void RepaintTextPlane(i16 plane, i16 mode) {
     }
     px = 0;
     if (plane == 0) {
-        GetTextPlane(0)->visible = TRUE;
+        GetTextPlane(0)->visible = true;
     }
     p = GetTextPlane(plane);
     p->glyphSurface->GetDC(&dc);
@@ -3619,7 +3619,7 @@ i16 DrawTextCell(i16 plane, u16 code, u16 attr, i16 px, i16 y) {
         return 0;
     }
     if (plane == 0) {
-        GetTextPlane(plane)->visible = 1;
+        GetTextPlane(plane)->visible = true;
     }
     GetTextPlane(plane)->glyphSurface->GetDC(&dc);
     SetStretchBltMode(dc, COLORONCOLOR);
@@ -3875,7 +3875,7 @@ void ResetTextPlanes(void) {
 
     for (i = 0; i < TEXT_PLANE_COUNT; i++) {
         GetTextPlane(i)->kind = -1;
-        GetTextPlane(i)->visible = FALSE;
+        GetTextPlane(i)->visible = false;
         GetTextPlane(i)->surface = NULL;
         GetTextPlane(i)->glyphSurface = NULL;
     }
@@ -3900,7 +3900,7 @@ i16 FreeTextPlane(u16 plane) {
     ReleaseComObject(GetTextPlane(plane)->glyphSurface);
     memset(GetTextPlane(plane), 0, sizeof(TextPlane));
     GetTextPlane(plane)->kind = TEXT_PLANE_FREE;
-    GetTextPlane(plane)->visible = FALSE;
+    GetTextPlane(plane)->visible = false;
     return -1;
 }
 
@@ -3911,7 +3911,7 @@ i16 CloseTextWindow(i16 window) {
         return window;
     }
     if (window == 0) {
-        GetTextPlane(0)->visible = FALSE;
+        GetTextPlane(0)->visible = false;
         return window;
     }
     return FreeTextPlane(window);
@@ -4813,7 +4813,7 @@ i16 PollMenuInput(i16 plane) {
     p = GetTextPlane(plane);
     cancelEnabled = IsTextPlaneCancelEnabled(plane);
     if (cancelEnabled) {
-        if (TakeMouseCancel(TRUE)) {
+        if (TakeMouseCancel(true)) {
             CallTextPlaneHook(plane, TEXT_EVENT_CANCEL, 0);
             return -1;
         }
@@ -5034,8 +5034,8 @@ void PrintMenuLines(i16 plane) {
          line = static_cast<MenuLine*>(ListNext(line)), i++) {
         pos = GetMenuLinePos(plane, i);
         SetTextPlaneCursor(plane, pos.x, pos.y);
-        PrintWindowText(plane, line->text, line->attr, 0, TRUE);
-        PrintWindowText(plane, "\n", line->attr, 0, TRUE);
+        PrintWindowText(plane, line->text, line->attr, 0, true);
+        PrintWindowText(plane, "\n", line->attr, 0, true);
     }
 }
 
@@ -5249,7 +5249,7 @@ void HighlightHotspot(i16 plane, i16 id, i16 on) {
             g_screenLayers[SCREEN_LAYER_PANEL]
                 ->surface->Blt(&rect, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
         }
-        g_screenLayers[SCREEN_LAYER_PANEL]->visible = TRUE;
+        g_screenLayers[SCREEN_LAYER_PANEL]->visible = true;
         return;
     }
     i32 x = s_hotspotAreas[id].left - GetTextPlane(plane)->left;
@@ -5294,7 +5294,7 @@ void ErasePictureSurface(i16 picture) {
     } else if (picture == TITLE_MENU_NEW_GAME_AREA || picture == TITLE_MENU_CONTINUE_AREA) {
         g_titleMenuPicture.surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
     } else {
-        g_screenLayers[SCREEN_LAYER_PANEL]->visible = FALSE;
+        g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
         g_screenLayers[SCREEN_LAYER_PANEL]
             ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
     }
@@ -5307,15 +5307,15 @@ i16 IsPanelLayerVisible(void) {
 
 RVA(0x00054360, 0x26)
 void ShowScreenLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i16) layer) {
-    g_screenLayers[layer]->visible = TRUE;
+    g_screenLayers[layer]->visible = true;
     if (layer > SCREEN_LAYER_NONPARTY_LAST) {
-        GetTextPlane(0)->visible = FALSE;
+        GetTextPlane(0)->visible = false;
     }
 }
 
 RVA(0x00054390, 0x3a)
 void HideScreenLayer(i16 layer) {
-    g_screenLayers[layer]->visible = FALSE;
+    g_screenLayers[layer]->visible = false;
     if (layer == SCREEN_LAYER_PANEL) {
         g_screenLayers[SCREEN_LAYER_PANEL]
             ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
@@ -5644,7 +5644,7 @@ i16 LoadScreenLayers(FILE* file) {
         g_screenLayers[i]->x = s_savedScreenLayers[i].x;
         g_screenLayers[i]->y = s_savedScreenLayers[i].y;
     }
-    g_screenLayers[SCREEN_LAYER_PANEL]->visible = FALSE;
+    g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
     return result;
 }
 
@@ -5877,10 +5877,10 @@ static b32 PaintLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, ScreenLayer* lay
             }
             break;
         case SCREEN_LAYER_NAVIGATION:
-            DrawPadButton(layer->surface, PAD_FORWARD, FALSE);
-            DrawPadButton(layer->surface, PAD_BACK, FALSE);
-            DrawPadButton(layer->surface, PAD_LEFT, FALSE);
-            DrawPadButton(layer->surface, PAD_RIGHT, FALSE);
+            DrawPadButton(layer->surface, PAD_FORWARD, false);
+            DrawPadButton(layer->surface, PAD_BACK, false);
+            DrawPadButton(layer->surface, PAD_LEFT, false);
+            DrawPadButton(layer->surface, PAD_RIGHT, false);
             if (!BlitImage(layer->surface, g_compassImages[VIEW_NORTH], 32, 32)) {
                 return false;
             }
@@ -5939,7 +5939,7 @@ b32 CreateScreenLayer(i32 slot) {
     layer->visible =
         slot > SCREEN_LAYER_DEFAULT_VISIBLE_BEGIN - 1 && slot < SCREEN_LAYER_DEFAULT_VISIBLE_END;
     if (slot == SCREEN_LAYER_TEXT) {
-        layer->visible = TRUE;
+        layer->visible = true;
     }
     layer->slot = slot;
     layer->x = s_layerOrigin[slot].x;
@@ -6054,7 +6054,7 @@ void UpdateLayers(void) {}
 
 RVA(0x000556b0, 0x16)
 i16 GetShownPanelCharacter(void) {
-    if (g_screenLayers[SCREEN_LAYER_PANEL]->visible == TRUE) {
+    if (g_screenLayers[SCREEN_LAYER_PANEL]->visible == true) {
         return s_shownCharacter;
     }
     return -1;
@@ -6115,7 +6115,7 @@ void ReleasePartyPanel(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, b32 dragged) {
                 line * PANEL_LINE_HEIGHT
             );
         }
-        g_screenLayers[SCREEN_LAYER_PANEL]->visible = TRUE;
+        g_screenLayers[SCREEN_LAYER_PANEL]->visible = true;
         return;
     }
     if (g_dragRect.left < 0) {

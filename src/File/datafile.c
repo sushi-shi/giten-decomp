@@ -23,10 +23,10 @@ DATA(0x000714d8)
 static char s_nestedFileBuffer[0x200] = {0};
 
 DATA(0x000716d8)
-static FILE* s_dataFile = 0;
+static FILE* s_dataFile = NULL;
 
 DATA(0x000716dc)
-static FILE* s_prevDataFile = 0;
+static FILE* s_prevDataFile = NULL;
 
 // The id last asked for, and the id actually opened (after any fallback).
 DATA(0x000716e0)

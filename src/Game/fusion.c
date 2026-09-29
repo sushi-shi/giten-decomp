@@ -114,7 +114,7 @@ DATA(0x000809a0)
 static FusionSummary s_fusionSummary = {0};
 
 DATA(0x000809a4)
-static struct BmpFile* s_animationImage = 0;
+static struct BmpFile* s_animationImage = NULL;
 
 DATA(0x000809a8)
 static i16 s_fusionSlots[32] = {0};
@@ -123,22 +123,22 @@ DATA(0x000809e8)
 static u32 s_fusionSelectionImage = 0;
 
 DATA(0x000809ec)
-static MenuBox* s_fusionMenu = 0;
+static MenuBox* s_fusionMenu = NULL;
 
 DATA(0x000809f0)
-static TextPlaneHook s_previousFusionTextHook = 0;
+static TextPlaneHook s_previousFusionTextHook = NULL;
 
 DATA(0x000809f4)
 static i16 s_fusionColumnOffset = 0;
 
 DATA(0x000809f8)
-static Panel* s_fusionPager = 0;
+static Panel* s_fusionPager = NULL;
 
 DATA(0x000809fc)
 static FusionSummary s_cachedFusionSummary = {0};
 
 DATA(0x00080a00)
-static PaletteState* s_fusionSelectionPaletteState = 0;
+static PaletteState* s_fusionSelectionPaletteState = NULL;
 
 DATA(0x00080a04)
 static i16 s_fusionResultId = 0;
@@ -147,19 +147,19 @@ DATA(0x00080a08)
 static i16 s_fusionCandidateCount = 0;
 
 DATA(0x00080a0c)
-static Character* s_savedFusionCharacter = 0;
+static Character* s_savedFusionCharacter = NULL;
 
 DATA(0x00080a10)
 u8 g_fusionPreviewSave[16] = {0};
 
 DATA(0x00080a20)
-PaletteState* g_fusionPaletteState = 0;
+PaletteState* g_fusionPaletteState = NULL;
 
 DATA(0x00080a24)
-static FusionSummary* s_fusionSummaryTable = 0;
+static FusionSummary* s_fusionSummaryTable = NULL;
 
 DATA(0x00080a28)
-static u8* s_animationScript = 0;
+static u8* s_animationScript = NULL;
 
 DATA(0x00080a2c)
 static i16 s_animationResource = 0;

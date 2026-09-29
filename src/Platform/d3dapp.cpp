@@ -858,7 +858,7 @@ b32 InitDirectDraw(void) {
     if (g_ddraw->QueryInterface(IID_IDirectDraw2, reinterpret_cast<void**>(&g_ddraw2)) != DD_OK) {
         return false;
     }
-    if (g_deviceSettings.caps.hardwareOnly == TRUE) {
+    if (g_deviceSettings.caps.hardwareOnly == true) {
         g_deviceType = D3D_DEVICE_HAL;
     } else {
         QueryD3DDevices();
@@ -1207,32 +1207,32 @@ b32 InitDirect3D(void) {
     g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &g_viewMatrix);
     SetProjectionMatrix(g_projectionMatrix, 160.0f, 160.0f, 1281.0f);
     g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_PROJECTION, &g_projectionMatrix);
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, true);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
     if (g_deviceSettings.caps.blendMode[static_cast<i32>(g_deviceType)] == BLEND_MODE_ALPHA) {
-        SetDeviceAlphaBlend(g_d3dDevice, TRUE);
+        SetDeviceAlphaBlend(g_d3dDevice, true);
     } else {
-        SetDeviceAlphaBlend(g_d3dDevice, FALSE);
+        SetDeviceAlphaBlend(g_d3dDevice, false);
     }
     if (g_deviceType != D3D_DEVICE_MMX) {
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
     } else {
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_CCW);
     }
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, TRUE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, true);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL);
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZVISIBLE, FALSE);
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, TRUE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZVISIBLE, false);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, true);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD);
     if (g_deviceSettings.caps.dither[static_cast<i32>(g_deviceType)]) {
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE, TRUE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE, true);
     } else {
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE, FALSE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE, false);
     }
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, TRUE);
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ANTIALIAS, FALSE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, false);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, true);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ANTIALIAS, false);
     if (g_bilinearFiltering) {
         SetTextureFiltering(D3DFILTER_LINEAR);
     } else {
@@ -1242,21 +1242,21 @@ b32 InitDirect3D(void) {
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAFUNC, D3DCMP_NEVER);
     if (g_deviceType == D3D_DEVICE_HAL) {
         g_screenDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
-        g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);
+        g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, true);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
         if (g_deviceSettings.caps.blendMode[static_cast<i32>(g_deviceType)] == BLEND_MODE_ALPHA) {
-            SetDeviceAlphaBlend(g_screenDevice, TRUE);
+            SetDeviceAlphaBlend(g_screenDevice, true);
         } else {
-            SetDeviceAlphaBlend(g_screenDevice, FALSE);
+            SetDeviceAlphaBlend(g_screenDevice, false);
         }
     } else {
-        g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);
+        g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, true);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_FLAT);
-        g_screenDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, FALSE);
+        g_screenDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, false);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, D3DTBLEND_DECAL);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_ALPHAFUNC, D3DCMP_NEVER);
-        g_screenDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
+        g_screenDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, false);
     }
     ZeroMemory(&g_textureFormat, sizeof(g_textureFormat));
     g_d3dDevice->EnumTextureFormats(ChooseTextureFormat, &g_textureFormat);

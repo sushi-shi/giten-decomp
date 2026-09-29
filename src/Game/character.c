@@ -293,14 +293,14 @@ DATA(0x00083b1c)
 static b16 s_statusRedrawPending = false;
 
 DATA(0x00083b20)
-Character* g_panelMembers[6] = {0};
+Character* g_panelMembers[6] = {NULL};
 
 // Per character group, the 40-bit set of items the group can equip.
 DATA(0x00083b38)
 static i32 s_equipTable = 0;
 
 DATA(0x00083b3c)
-static MenuBox* s_statusListMenu = 0;
+static MenuBox* s_statusListMenu = NULL;
 
 // Which of the five status-line columns the character status line shows.
 DATA(0x00083b40)
@@ -826,7 +826,7 @@ i16 SumArmorDefenseBonus(Character* character) {
 // are unrecovered.
 RVA(0x0003da90, 0x14b)
 void ApplyStatFlags(Character* character) {
-    if (TestCharacterFlag(character, 0x24) == 1) {
+    if (TestCharacterFlag(character, 0x24) == true) {
         character->battleStatsShown[BATTLE_STAT_WEAPON_ACCURACY] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_ACCURACY), 50);
         character->battleStatsShown[BATTLE_STAT_WEAPON_EVASION] =
@@ -836,7 +836,7 @@ void ApplyStatFlags(Character* character) {
         character->battleStatsShown[BATTLE_STAT_GUN_EVASION] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 50);
     }
-    if (TestCharacterFlag(character, 0x23) == 1) {
+    if (TestCharacterFlag(character, 0x23) == true) {
         character->battleStatsShown[BATTLE_STAT_WEAPON_ACCURACY] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_ACCURACY), 150);
         character->battleStatsShown[BATTLE_STAT_WEAPON_EVASION] =
@@ -846,7 +846,7 @@ void ApplyStatFlags(Character* character) {
         character->battleStatsShown[BATTLE_STAT_GUN_EVASION] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 150);
     }
-    if (TestCharacterFlag(character, 0x25) == 1) {
+    if (TestCharacterFlag(character, 0x25) == true) {
         character->battleStatsShown[BATTLE_STAT_WEAPON_POWER] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_POWER), 150);
         character->battleStatsShown[BATTLE_STAT_WEAPON_DEFENSE] =
@@ -2514,7 +2514,7 @@ b16 CanGroupEquip(i16 group, i16 item) {
         return false;
     }
     table = HandleReadPtr(s_equipTable);
-    return TestBit(table + group * 5, item) != 0;
+    return TestBit(table + group * 5, item) != false;
 }
 
 RVA(0x00040290, 0x74)
@@ -3122,21 +3122,21 @@ i16 ApplyMoonPhase(Character* character, i16 keep) {
     if (character == NULL) {
         return 0;
     }
-    if (TestBit(flags, 0x24) == 1) {
+    if (TestBit(flags, 0x24) == true) {
         changed = 1;
         ClearBit(flags, 0x24);
     }
-    if (TestBit(flags, 0x23) == 1) {
+    if (TestBit(flags, 0x23) == true) {
         changed++;
         ClearBit(flags, 0x23);
         SetBit(flags, 0x24);
     }
     if (keep == 0) {
-        if (TestBit(flags, 0x25) == 1) {
+        if (TestBit(flags, 0x25) == true) {
             changed++;
             ClearBit(flags, 0x25);
         }
-        if (TestBit(flags, 0x26) == 1) {
+        if (TestBit(flags, 0x26) == true) {
             changed++;
             ClearBit(flags, 0x26);
             AddCondition(GetCharacterConditions(character), CONDITION_ASH);

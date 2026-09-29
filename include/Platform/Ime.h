@@ -35,7 +35,7 @@ public:
         if (m_enable != NULL) {
             return m_enable(window, enable);
         }
-        return FALSE;
+        return false;
     }
 
 private:

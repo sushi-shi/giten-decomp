@@ -23,7 +23,7 @@ typedef struct TreasureBoxCell {
 } TreasureBoxCell;
 
 static __inline b32 IsTreasureBoxOpen(TreasureBox* box) {
-    return IsEventFlagSet(box->flagBank, box->flagIndex) != 0;
+    return IsEventFlagSet(box->flagBank, box->flagIndex) != false;
 }
 
 void PrepareViewedTreasureBox(void);

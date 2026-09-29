@@ -140,18 +140,18 @@ DATA(0x00078510)
 static b16 s_fieldRefresh = false;
 
 DATA(0x00078514)
-static MenuBox* s_commandMenu = 0;
+static MenuBox* s_commandMenu = NULL;
 
 // The palette snapshot held while an encounter runs.
 DATA(0x00078518)
-static PaletteState* s_fieldPaletteState = 0;
+static PaletteState* s_fieldPaletteState = NULL;
 
 DATA(0x0007851c)
 static i32 s_gunDistribution = 0;
 
 // The list menu a picked member acts through (NULL: none open).
 DATA(0x00078520)
-static MenuBox* s_pickMenu = 0;
+static MenuBox* s_pickMenu = NULL;
 
 DATA(0x00078528)
 u8 g_pickScreenSave[16] = {0};

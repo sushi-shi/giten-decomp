@@ -39,9 +39,9 @@ void LoadWallTextures(i16 wallSet, i16 variant) {
         level = GetMapLevel();
         if ((area == WALL_OVERRIDE_UPPER_AREA && level > 1)
             || (area == WALL_OVERRIDE_LOWER_AREA && level < 4)) {
-            LoadTexture(&g_roomTexture, "w\\wall11_0.bmp", TRUE);
+            LoadTexture(&g_roomTexture, "w\\wall11_0.bmp", true);
             return;
         }
     }
-    LoadTexture(&g_roomTexture, s_wallTextureNames[wallSet & 0xf][variant & 3], TRUE);
+    LoadTexture(&g_roomTexture, s_wallTextureNames[wallSet & 0xf][variant & 3], true);
 }

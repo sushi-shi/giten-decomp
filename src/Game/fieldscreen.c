@@ -93,7 +93,7 @@ DATA(0x0007b804)
 static u32 s_overlayImage = 0;
 
 DATA(0x0007b808)
-static void* s_backdropBlock = 0;
+static void* s_backdropBlock = NULL;
 
 DATA(0x0007b80c)
 static i32 s_fieldMessages = 0;

@@ -229,17 +229,17 @@ DATA(0x0007d5b4)
 static MapPosition s_boxPosition = {0};
 
 DATA(0x0007d5c0)
-static ItemStackList* s_itemMenuLimits = 0;
+static ItemStackList* s_itemMenuLimits = NULL;
 
 DATA(0x0007d5c8)
 static i32 s_events = 0;
 
 // The yes/no menu of the "analyze in detail?" prompt.
 DATA(0x0007d5cc)
-static MenuBox* s_menu = 0;
+static MenuBox* s_menu = NULL;
 
 DATA(0x0007d5d0)
-static Character* s_target = 0;
+static Character* s_target = NULL;
 
 // The window's step; -1 closes it.
 DATA(0x0007d5d4)
@@ -247,13 +247,13 @@ static i16 s_step = 0;
 
 // Roster entry 15 while the detailed analysis borrows it.
 DATA(0x0007d5d8)
-static Character* s_savedRosterEntry = 0;
+static Character* s_savedRosterEntry = NULL;
 
 DATA(0x0007d5dc)
 static i16 s_npcCount = 0;
 
 DATA(0x0007d5e0)
-static i32* s_areas = 0;
+static i32* s_areas = NULL;
 
 DATA(0x0007d5e4)
 static i16 s_mapDirection = 0;
@@ -283,14 +283,14 @@ DATA(0x0007d604)
 static GZ_ENUM_STORAGE(AutomapDetail, i16) s_mapDetail = 0;
 
 DATA(0x0007d608)
-static Panel* s_mapPanel = 0;
+static Panel* s_mapPanel = NULL;
 
 DATA(0x0007d60c)
-static AutomapBitmap* s_levelBitmap = 0;
+static AutomapBitmap* s_levelBitmap = NULL;
 
 // The panel being polled (NULL outside a poll).
 DATA(0x0007d610)
-static Panel* s_activePanel = 0;
+static Panel* s_activePanel = NULL;
 
 // While set, a row click plays no sound.
 DATA(0x0007d614)
@@ -306,7 +306,7 @@ DATA(0x0007d620)
 static i32 s_itemMenuStock = 0;
 
 DATA(0x0007d624)
-static MenuBox* s_itemMenu = 0;
+static MenuBox* s_itemMenu = NULL;
 
 DATA(0x0007d628)
 static b16 s_hideItemMenuTotal = false;
@@ -1801,7 +1801,8 @@ i16 IsAutomapCellHidden(i16 x, i16 y, i16 area, i16 level) {
     u8* bits;
     i16 index;
     if (s_levelArea == area && s_levelIndex == level) {
-        return TestBit(s_levelBitmap->bits, AutomapCellIndex(s_levelBitmap, x, y)) != 1 ? 0x100 : 0;
+        return TestBit(s_levelBitmap->bits, AutomapCellIndex(s_levelBitmap, x, y)) != true ? 0x100
+                                                                                           : 0;
     } else {
         if (s_areas == NULL) {
             return 0x100;
@@ -1827,7 +1828,7 @@ i16 IsAutomapCellHidden(i16 x, i16 y, i16 area, i16 level) {
         bits = data->bits;
         index = AutomapCellIndex(data, x, y);
     }
-    return TestBit(bits, index) != 1 ? 0x100 : 0;
+    return TestBit(bits, index) != true ? 0x100 : 0;
 }
 
 RVA(0x0001d210, 0xd4)
@@ -3362,10 +3363,10 @@ i16 RaiseTargetFlag23(void) {
     if (!target) {
         return -1;
     }
-    if (TestCharacterFlag(target, 0x23) == 1) {
+    if (TestCharacterFlag(target, 0x23) == true) {
         return -1;
     }
-    if (TestCharacterFlag(target, 0x24) == 1) {
+    if (TestCharacterFlag(target, 0x24) == true) {
         return -1;
     }
     SetCharacterFlag(target, 0x23);
@@ -3384,7 +3385,7 @@ i16 RaiseTargetFlag25(void) {
     if (!target) {
         return -1;
     }
-    if (TestCharacterFlag(target, 0x25) == 1) {
+    if (TestCharacterFlag(target, 0x25) == true) {
         return -1;
     }
     SetCharacterFlag(target, 0x25);
@@ -3402,7 +3403,7 @@ i16 RaiseTargetFlag26(void) {
     if (!target) {
         return -1;
     }
-    if (TestCharacterFlag(target, 0x26) == 1) {
+    if (TestCharacterFlag(target, 0x26) == true) {
         return -1;
     }
     SetCharacterFlag(target, 0x26);

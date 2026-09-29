@@ -169,11 +169,11 @@ DATA(0x0007b818)
 i16 g_sceneFramePositions[32][2] = {0};
 
 DATA(0x0007b898)
-static u8* s_sceneSpriteStream = 0;
+static u8* s_sceneSpriteStream = NULL;
 
 // The script the cell event runs (NULL: none).
 DATA(0x0007b89c)
-static u8* s_cellScript = 0;
+static u8* s_cellScript = NULL;
 
 // The points of each stat raised this level.
 DATA(0x0007b8a0)
@@ -265,7 +265,7 @@ DATA(0x0007be68)
 static i16 s_mapLayer = 0;
 
 DATA(0x0007be6c)
-static MenuBox* s_partyPicker = 0;
+static MenuBox* s_partyPicker = NULL;
 
 // Set while the party travels towards a picked destination.
 DATA(0x0007be70)
@@ -311,20 +311,20 @@ DATA(0x0007be9c)
 static i16 s_savedMusic = 0;
 
 DATA(0x0007bea0)
-static PaletteState* s_scenePaletteState = 0;
+static PaletteState* s_scenePaletteState = NULL;
 
 DATA(0x0007bea4)
-static PaletteState* s_statusPaletteState = 0;
+static PaletteState* s_statusPaletteState = NULL;
 
 // The item list menu.
 DATA(0x0007bea8)
-static MenuBox* s_itemMenu = 0;
+static MenuBox* s_itemMenu = NULL;
 
 DATA(0x0007beac)
-static u8* s_moonTable = 0;
+static u8* s_moonTable = NULL;
 
 DATA(0x0007beb0)
-static MenuBox* s_ddsMenu = 0;
+static MenuBox* s_ddsMenu = NULL;
 
 // @identity-TODO: the screen area kept while the level-up screen is open; its
 // layout is not recovered (the Windows build's save/restore bodies are empty).
@@ -332,7 +332,7 @@ DATA(0x0007beb8)
 static u8 s_screenSave[16] = {0};
 
 DATA(0x0007bec8)
-Character* g_rosterPendingMember = 0;
+Character* g_rosterPendingMember = NULL;
 
 DATA(0x0007becc)
 i16 g_rosterReturnState = 0;

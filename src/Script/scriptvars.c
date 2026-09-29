@@ -99,7 +99,7 @@ DATA(0x0008165c)
 static i16 s_pendingSceneEntry = 0;
 
 DATA(0x00081660)
-static ScriptChoice* s_choices = 0;
+static ScriptChoice* s_choices = NULL;
 
 DATA(0x00081664)
 static i16 s_choiceIndex = 0;
@@ -131,7 +131,7 @@ static i16 s_objectsWereFrozen = 0;
 
 // The loaded script files, oldest first.
 DATA(0x00081688)
-ScriptFileEntry* g_scriptFiles = 0;
+ScriptFileEntry* g_scriptFiles = NULL;
 
 // @identity-TODO: a script-set countdown that other code draws down; the
 // script fires its pending event once it reaches zero.

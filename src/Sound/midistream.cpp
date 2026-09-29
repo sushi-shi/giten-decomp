@@ -13,15 +13,15 @@ RVA(0x00055a00, 0x79)
 CMidiStream::CMidiStream()
     : m_stream(NULL),
       m_device(MIDI_MAPPER),
-      m_playing(FALSE),
-      m_looping(FALSE),
-      m_prepared(FALSE),
+      m_playing(false),
+      m_looping(false),
+      m_prepared(false),
       m_state(MIDI_STATE_EMPTY),
       m_reserved1(0),
       m_reserved3(0),
       m_volume(0),
       m_channelVolumes(NULL),
-      m_restart(FALSE) {
+      m_restart(false) {
     int i;
 
     m_part = MIDI_PART_INTRO;
@@ -38,15 +38,15 @@ RVA(0x00055a80, 0x8e)
 CMidiStream::CMidiStream(LPCSTR intro, LPCSTR loop)
     : m_stream(NULL),
       m_device(MIDI_MAPPER),
-      m_playing(FALSE),
-      m_looping(FALSE),
-      m_prepared(FALSE),
+      m_playing(false),
+      m_looping(false),
+      m_prepared(false),
       m_state(MIDI_STATE_EMPTY),
       m_reserved1(0),
       m_reserved3(0),
       m_volume(0),
       m_channelVolumes(NULL),
-      m_restart(FALSE) {
+      m_restart(false) {
     int i;
 
     m_part = MIDI_PART_INTRO;
@@ -88,9 +88,9 @@ b32 CMidiStream::CloseStream() {
 RVA(0x00055bb0, 0x53)
 b32 CMidiStream::Stop() {
     if (m_playing) {
-        m_playing = FALSE;
-        m_prepared = FALSE;
-        m_restart = FALSE;
+        m_playing = false;
+        m_prepared = false;
+        m_restart = false;
         m_state = MIDI_STATE_STOPPED;
         if (midiStreamStop(m_stream) == MMSYSERR_NOERROR) {
             CloseStream();
@@ -422,7 +422,7 @@ b32 CMidiStream::Play(
         }
         m_looping = looping;
         m_state = MIDI_STATE_PLAYING;
-        m_playing = TRUE;
+        m_playing = true;
         m_volume = volume;
         m_channelVolumes = channelVolumes;
         if (!SetVolume(volume, channelVolumes)) {
@@ -444,7 +444,7 @@ b32 CMidiStream::Replay(BOOL looping, DWORD volume, DWORD* channelVolumes) {
         }
         m_looping = looping;
         m_state = MIDI_STATE_PLAYING;
-        m_playing = TRUE;
+        m_playing = true;
         m_volume = volume;
         m_channelVolumes = channelVolumes;
         if (!SetVolume(volume, channelVolumes)) {
@@ -473,7 +473,7 @@ b32 CMidiStream::Restore() {
             Open(files[MIDI_PART_INTRO], files[MIDI_PART_LOOP]);
             Prepare();
             m_doneCount = 0;
-            m_prepared = TRUE;
+            m_prepared = true;
             break;
         case MIDI_STATE_PLAYING:
             Open(files[MIDI_PART_INTRO], files[MIDI_PART_LOOP]);
@@ -516,7 +516,7 @@ void CMidiStream::OnMessage(HMIDIOUT out, UINT msg, DWORD param1, DWORD param2) 
     if (++m_doneCount < m_bufferCounts[m_part] || !m_playing) {
         return;
     }
-    m_playing = FALSE;
+    m_playing = false;
     if (m_part == MIDI_PART_INTRO && m_files[MIDI_PART_LOOP][0] != '\0') {
         m_part = MIDI_PART_LOOP;
     } else if (!m_looping) {
@@ -528,7 +528,7 @@ void CMidiStream::OnMessage(HMIDIOUT out, UINT msg, DWORD param1, DWORD param2) 
     m_doneCount = 0;
     if (midiStreamRestart(m_stream) == MMSYSERR_NOERROR) {
         m_state = MIDI_STATE_PLAYING;
-        m_playing = TRUE;
+        m_playing = true;
         if (SetVolume(m_volume, m_channelVolumes)) {
             return;
         }

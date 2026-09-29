@@ -830,7 +830,7 @@ def main(argv=None) -> int:
                 print(f"{site.file}:{site.line}:{site.column}\t{site.function}\t"
                       f"{site.spelling}\t{site.review_group}\t"
                       f"{site.review_context}{note}")
-    bad = findings(sites)
+    bad = findings(remaining)
     legacy_booleans = legacy_boolean_spellings(repo=REPO)
     if args.verbose:
         for finding in bad + legacy_booleans:

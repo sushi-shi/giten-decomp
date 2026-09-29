@@ -451,7 +451,7 @@ i16 PlayMusic(i16 track, i16 loop) {
         if (track < 24 && s_musicFiles[track] != NULL) {
             g_midiStream = new CMidiStream;
             if (g_midiStream != NULL) {
-                g_midiStream->Play(s_musicFiles[track], NULL, TRUE, 100, NULL);
+                g_midiStream->Play(s_musicFiles[track], NULL, true, 100, NULL);
             }
         }
     }
@@ -485,7 +485,7 @@ void SetViewRenderMode(void) {
 RVA(0x00049bb0, 0x15)
 void SetPanelRenderMode(void) {
     g_renderMode = RENDER_MODE_PANEL;
-    g_screenLayers[7]->visible = FALSE;
+    g_screenLayers[7]->visible = false;
 }
 
 RVA(0x00049bd0, 0xa)
@@ -730,7 +730,7 @@ RVA(0x00049f00, 0x30)
 void WaitFrames(i16 count) {
     i16 frame;
 
-    GetTextPlane(0)->visible = FALSE;
+    GetTextPlane(0)->visible = false;
     ResetRenderMode();
     for (frame = 0; frame <= count - 1; frame++) {
         PollInput();
@@ -775,7 +775,7 @@ static BOOL (*s_moveCommands[8])(i16 nextPhase) = {
 RVA(0x00049f50, 0x45)
 BOOL RunMoveCommand(i16 command, i16 nextPhase) {
     if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
-        g_screenLayers[SCREEN_LAYER_PANEL]->visible = FALSE;
+        g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
         g_screenLayers[SCREEN_LAYER_PANEL]
             ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
     }
@@ -786,7 +786,7 @@ RVA(0x00049fa0, 0x1e)
 void RedrawFieldView(void) {
     if (g_renderMode == RENDER_MODE_VIEW) {
         s_viewDirty = true;
-        s_viewChanged = TRUE;
+        s_viewChanged = true;
         DrawFieldView();
     }
 }
@@ -795,7 +795,7 @@ void RedrawFieldView(void) {
 RVA(0x00049fc0, 0x1e)
 void OpenTreasureBox(TreasureBox* box) {
     s_viewDirty = true;
-    s_viewChanged = TRUE;
+    s_viewChanged = true;
     g_boxOpening = true;
     g_openingBox = box;
 }
@@ -804,7 +804,7 @@ RVA(0x00049fe0, 0x51)
 void RequestObjectRedraw(i16 index, i16 a, i16 b) {
     if (g_renderMode == RENDER_MODE_VIEW) {
         s_viewDirty = true;
-        s_viewChanged = TRUE;
+        s_viewChanged = true;
         if (g_hotspotObject == index && (g_hotspotCellX != a || g_hotspotCellY != b)) {
             g_selectedHotspot = -1;
         }
@@ -843,7 +843,7 @@ void ClearPendingKey(void) {
 
 RVA(0x0004a0a0, 0x17)
 void HideTextPlane(i16 plane) {
-    GetTextPlane(plane)->visible = FALSE;
+    GetTextPlane(plane)->visible = false;
 }
 
 // The joystick bits of this frame and the last, and those newly set.
@@ -1343,7 +1343,7 @@ b32 AnimateMove(void) {
             s_moveProgress = 0.0f;
         }
         if (s_moveSteps[g_moveState & MOVE_STATE_KIND](&s_moveProgress)) {
-            PressPadButton(s_movePadButtons[g_moveState & 7], FALSE);
+            PressPadButton(s_movePadButtons[g_moveState & 7], false);
             DrawFieldView();
             g_moveState = 0;
             s_doorOpening = false;
@@ -1672,11 +1672,11 @@ void DrawScreenFade(void) {
     if (g_screenDevice == NULL) {
         g_d3dDevice->BeginScene();
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, FALSE);
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, FALSE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, false);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, false);
         DrawScreenQuad(g_d3dDevice, s_quad);
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, TRUE);
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, TRUE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, true);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, true);
         g_d3dDevice->EndScene();
     } else {
         g_screenDevice->BeginScene();
@@ -1734,9 +1734,9 @@ void RenderTBox(void) {
     position = GetMapPosition();
     partyX = position->x;
     partyY = position->y;
-    textureSet = FALSE;
+    textureSet = false;
     for (; box->head.x != TREASURE_BOX_END; box++) {
-        facing = FALSE;
+        facing = false;
         cellX = box->head.x;
         cellY = box->head.y;
         if (cellX < partyX - 3 || cellX > partyX + 3 || cellY < partyY - 3 || cellY > partyY + 3) {
@@ -1745,22 +1745,22 @@ void RenderTBox(void) {
         switch (g_viewDirection) {
             case VIEW_NORTH:
                 if (cellX == partyX && cellY == partyY - 1) {
-                    facing = TRUE;
+                    facing = true;
                 }
                 break;
             case VIEW_EAST:
                 if (cellY == partyY && cellX == partyX + 1) {
-                    facing = TRUE;
+                    facing = true;
                 }
                 break;
             case VIEW_SOUTH:
                 if (cellX == partyX && cellY == partyY + 1) {
-                    facing = TRUE;
+                    facing = true;
                 }
                 break;
             case VIEW_WEST:
                 if (cellY == partyY && cellX == partyX - 1) {
-                    facing = TRUE;
+                    facing = true;
                 }
                 break;
         }
@@ -1772,9 +1772,9 @@ void RenderTBox(void) {
                 D3DRENDERSTATE_TEXTUREHANDLE,
                 GetTextureHandle(&g_textBoxTexture)
             );
-            textureSet = TRUE;
+            textureSet = true;
         }
-        frame = IsEventFlagSet(box->flagBank, box->flagIndex) != 0;
+        frame = IsEventFlagSet(box->flagBank, box->flagIndex) != false;
         if (!frame && g_boxOpening && g_openingBox == box) {
             frame = 1;
         }
@@ -2290,7 +2290,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                         );
                     }
                 } else if (lit) {
-                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, TRUE);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, true);
                 }
                 info = &g_enemyTextures[layer][imageCode].image->info;
                 if (info->biWidth > 256) {
@@ -2328,7 +2328,7 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     DrawLitQuad(s_enemy);
                 }
                 if (lit) {
-                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
+                    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, false);
                 }
                 if (visible) {
                     if (g_hotspotCount >= 64) {
@@ -2391,10 +2391,10 @@ void DrawHotspotMarks(void) {
     u32 y;
 
     if (g_selectedHotspot == -1 || s_markedCount != g_hotspotCount) {
-        anyTarget = TRUE;
+        anyTarget = true;
         s_markedCount = g_hotspotCount;
         if (AnyObjectInReach()) {
-            anyTarget = FALSE;
+            anyTarget = false;
         }
         for (i = g_hotspotCount - 1; i >= 0; i--) {
             if (GetHotspot(i)->kind == HOTSPOT_TARGET
@@ -2694,7 +2694,7 @@ i32 DrawSprites(void) {
                 &rect,
                 DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY
             );
-            g_scenePicture.visible = FALSE;
+            g_scenePicture.visible = false;
             g_renderTarget->BltFast(
                 204,
                 112,
@@ -2703,7 +2703,7 @@ i32 DrawSprites(void) {
                 DDBLTFAST_SRCCOLORKEY
             );
         } else if (image == SPRITE_IMAGE_CACHED_OVERLAY) {
-            g_scenePicture.visible = FALSE;
+            g_scenePicture.visible = false;
             g_renderTarget->BltFast(
                 204,
                 112,
@@ -2713,7 +2713,7 @@ i32 DrawSprites(void) {
             );
         } else {
             if (image != SPRITE_IMAGE_CACHED_BACKDROP) {
-                g_scenePicture.visible = TRUE;
+                g_scenePicture.visible = true;
                 if (g_spritePicture.id) {
                     ClearDisplaySurface(g_spritePicture.surface, &rect);
                     g_spritePicture.id = 0;
@@ -3003,8 +3003,8 @@ void RenderViewMode(BOOL draw) {
         g_hotspotCount = 0;
         memset(g_hotspots, 0, sizeof(g_hotspots));
         RenderTBox();
-        RenderNPC(FALSE);
-        RenderEnemy(TRUE, FALSE, TRUE);
+        RenderNPC(false);
+        RenderEnemy(true, false, true);
         if (!moved) {
             g_viewCachePicture.surface->BltFast(0, 0, g_renderTarget, &g_viewCachePicture.rect, 0);
             s_viewDirty = false;
@@ -3056,7 +3056,7 @@ void RenderViewMode(BOOL draw) {
                 g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_LINEAR);
                 g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_LINEAR);
             }
-            RenderNPC(TRUE);
+            RenderNPC(true);
         }
         if (moved) {
             s_viewDirty = true;
@@ -3183,7 +3183,7 @@ void RenderFieldView(BOOL draw) {
     g_d3dDevice->BeginScene();
     memset(g_hotspots, 0, sizeof(g_hotspots));
     g_hotspotCount = 0;
-    RenderEnemy(TRUE, FALSE, TRUE);
+    RenderEnemy(true, false, true);
     g_d3dDevice->EndScene();
     BlitFieldBackground();
     DrawHotspotMarks();
@@ -3356,7 +3356,7 @@ void RenderFieldMode(BOOL draw) {
         }
         memset(g_hotspots, 0, sizeof(g_hotspots));
         g_hotspotCount = 0;
-        RenderEnemy(TRUE, FALSE, FALSE);
+        RenderEnemy(true, false, false);
         g_d3dDevice->EndScene();
         BlitFieldBackground();
         DrawHotspotMarks();
@@ -3489,7 +3489,7 @@ static void WaitForFrame(void) {
     if (!s_frameClockStarted) {
         // Sleep otherwise rounds up to the system tick, about 15.6 ms.
         timeBeginPeriod(1);
-        s_frameClockStarted = TRUE;
+        s_frameClockStarted = true;
     }
     now = timeGetTime();
     if (s_frameClockCount == REFRESH_RATE) {
@@ -3543,17 +3543,17 @@ static void PumpMessages(void) {
 // and shows the frame (a flip on the HAL device, else a copy to the primary).
 RVA(0x0004f140, 0x11f)
 void RenderFrame(void) {
-    BOOL draw = TRUE;
+    BOOL draw = true;
     DWORD now;
     HRESULT result;
 
     if (s_directXReady && s_appActive) {
-        RestoreSurfaces(TRUE);
+        RestoreSurfaces(true);
         StepScreenFade();
         now = timeGetTime();
         if ((g_renderMode & RENDER_MODE_MASK) && now - s_lastDrawTime < FRAME_INTERVAL
             && !s_viewChanged) {
-            draw = FALSE;
+            draw = false;
         } else {
             s_lastDrawTime = now;
         }
@@ -3561,7 +3561,7 @@ void RenderFrame(void) {
         if (draw && (g_fadeMode != SCREEN_FADE_NONE || s_screenCovered)) {
             DrawScreenFade();
         }
-        s_viewChanged = FALSE;
+        s_viewChanged = false;
         DrawMouseCursor();
 #ifdef GITEN_COMPAT
         WaitForFrame();
@@ -3953,16 +3953,16 @@ void RepeatPadMove(BOOL turn) {
                 case PAD_RELEASED:
                     break;
                 case PAD_FORWARD:
-                    MoveForwardCommand(TRUE);
+                    MoveForwardCommand(true);
                     break;
                 case PAD_BACK:
-                    TurnAroundCommand(TRUE);
+                    TurnAroundCommand(true);
                     break;
                 case PAD_LEFT:
-                    TurnLeftCommand(TRUE);
+                    TurnLeftCommand(true);
                     break;
                 case PAD_RIGHT:
-                    TurnRightCommand(TRUE);
+                    TurnRightCommand(true);
                     break;
             }
         } else {
@@ -3970,16 +3970,16 @@ void RepeatPadMove(BOOL turn) {
                 case PAD_RELEASED:
                     break;
                 case PAD_FORWARD:
-                    MoveForwardCommand(TRUE);
+                    MoveForwardCommand(true);
                     break;
                 case PAD_BACK:
-                    MoveBackCommand(TRUE);
+                    MoveBackCommand(true);
                     break;
                 case PAD_LEFT:
-                    MoveLeftCommand(TRUE);
+                    MoveLeftCommand(true);
                     break;
                 case PAD_RIGHT:
-                    MoveRightCommand(TRUE);
+                    MoveRightCommand(true);
                     break;
             }
         }
@@ -4110,7 +4110,7 @@ i32 ClickMenuBar(u32 x, u32 y) {
             if (button >= 0 && button < MENU_BUTTON_AUTOMAP) {
                 if (g_renderMode == RENDER_MODE_PANEL
                     && button + MENU_LAYER_OFFSET == SCREEN_LAYER_NAVIGATION) {
-                    g_screenLayers[SCREEN_LAYER_NAVIGATION]->visible = FALSE;
+                    g_screenLayers[SCREEN_LAYER_NAVIGATION]->visible = false;
                 } else {
                     g_screenLayers[button + MENU_LAYER_OFFSET]->visible =
                         !g_screenLayers[button + MENU_LAYER_OFFSET]->visible;
@@ -4125,7 +4125,7 @@ i32 ClickMenuBar(u32 x, u32 y) {
                     g_menuButtonX[MENU_BUTTON_AUTOMAP],
                     MENU_BAR_TOP
                 );
-                g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible = FALSE;
+                g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible = false;
             } else if (button == MENU_BUTTON_FIELD_MENU) {
                 OpenFieldMenu();
                 BlitImage(
@@ -4134,7 +4134,7 @@ i32 ClickMenuBar(u32 x, u32 y) {
                     g_menuButtonX[MENU_BUTTON_FIELD_MENU],
                     MENU_BAR_TOP
                 );
-                g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible = FALSE;
+                g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible = false;
             }
             return button + MENU_LAYER_OFFSET;
         }
@@ -4253,7 +4253,7 @@ void ResetDisplayGlobals(void) {
     g_windowRect.top = 0;
     g_viewClearRect.x1 = 0;
     g_viewClearRect.y1 = 0;
-    s_appActive = TRUE;
+    s_appActive = true;
     g_viewClearRect.x2 = g_windowRect.right = 640;
     g_viewClearRect.y2 = g_windowRect.bottom = 480;
     srand(timeGetTime());
@@ -4301,7 +4301,7 @@ b32 CreateMainWindow(HINSTANCE instance) {
     if (g_mainWindow == NULL) {
         return false;
     }
-    g_ime.Enable(g_mainWindow, FALSE);
+    g_ime.Enable(g_mainWindow, false);
     return true;
 }
 
@@ -4344,7 +4344,7 @@ b32 MoveForwardCommand(i16 nextPhase) {
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_STEP : MOVE_STATE_DOOR_AHEAD;
         moved = true;
-        PressPadButton(PAD_FORWARD, TRUE);
+        PressPadButton(PAD_FORWARD, true);
     }
     return moved;
 }
@@ -4360,7 +4360,7 @@ b32 TurnAroundCommand(i16 nextPhase) {
         g_viewDirection = GetMapPosition()->direction;
         moved = true;
         g_moveState = MOVE_STATE_TURN_AROUND;
-        PressPadButton(PAD_BACK, TRUE);
+        PressPadButton(PAD_BACK, true);
     }
     return moved;
 }
@@ -4379,7 +4379,7 @@ b32 MoveBackCommand(i16 nextPhase) {
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_BACK : MOVE_STATE_DOOR_BACK;
         moved = true;
-        PressPadButton(PAD_BACK, TRUE);
+        PressPadButton(PAD_BACK, true);
     }
     return moved;
 }
@@ -4395,7 +4395,7 @@ b32 TurnLeftCommand(i16 nextPhase) {
         g_viewDirection = GetMapPosition()->direction;
         moved = true;
         g_moveState = MOVE_STATE_TURN_LEFT;
-        PressPadButton(PAD_LEFT, TRUE);
+        PressPadButton(PAD_LEFT, true);
     }
     return moved;
 }
@@ -4414,7 +4414,7 @@ b32 MoveLeftCommand(i16 nextPhase) {
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_LEFT : MOVE_STATE_DOOR_LEFT;
         moved = true;
-        PressPadButton(PAD_LEFT, TRUE);
+        PressPadButton(PAD_LEFT, true);
     }
     return moved;
 }
@@ -4430,7 +4430,7 @@ b32 TurnRightCommand(i16 nextPhase) {
         g_viewDirection = GetMapPosition()->direction;
         moved = true;
         g_moveState = MOVE_STATE_TURN_RIGHT;
-        PressPadButton(PAD_RIGHT, TRUE);
+        PressPadButton(PAD_RIGHT, true);
     }
     return moved;
 }
@@ -4449,7 +4449,7 @@ b32 MoveRightCommand(i16 nextPhase) {
         g_viewDirection = GetMapPosition()->direction;
         g_moveState = step == STEP_WALK ? MOVE_STATE_RIGHT : MOVE_STATE_DOOR_RIGHT;
         moved = true;
-        PressPadButton(PAD_RIGHT, TRUE);
+        PressPadButton(PAD_RIGHT, true);
     }
     return moved;
 }
@@ -4462,24 +4462,24 @@ b32 RunJoystickMove(void) {
 
     if (!s_screenSaved) {
         if (s_joystickBits & JOY_UP) {
-            moved = MoveForwardCommand(TRUE);
+            moved = MoveForwardCommand(true);
         } else if (s_joystickBits & JOY_DOWN) {
             if (s_joystickBits & JOY_SIDESTEP) {
-                moved = MoveBackCommand(TRUE);
+                moved = MoveBackCommand(true);
             } else {
-                moved = TurnAroundCommand(TRUE);
+                moved = TurnAroundCommand(true);
             }
         } else if (s_joystickBits & JOY_LEFT) {
             if (s_joystickBits & JOY_SIDESTEP) {
-                moved = MoveLeftCommand(TRUE);
+                moved = MoveLeftCommand(true);
             } else {
-                moved = TurnLeftCommand(TRUE);
+                moved = TurnLeftCommand(true);
             }
         } else if (s_joystickBits & JOY_RIGHT) {
             if (s_joystickBits & JOY_SIDESTEP) {
-                moved = MoveRightCommand(TRUE);
+                moved = MoveRightCommand(true);
             } else {
-                moved = TurnRightCommand(TRUE);
+                moved = TurnRightCommand(true);
             }
         } else {
             return false;
@@ -4666,7 +4666,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
         }
     }
 #endif
-    busy = FALSE;
+    busy = false;
     switch (buttons & MOUSE_STATE_MASK) {
         case MOUSE_UP:
             if (s_layerDragging) {
@@ -4690,7 +4690,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
             } else if (s_pressedLayer == SCREEN_LAYER_NAVIGATION) {
                 s_padHeld = PadButtonAtPoint(g_cursorPos.x, g_cursorPos.y);
                 if (s_padHeld) {
-                    RepeatPadMove(TRUE);
+                    RepeatPadMove(true);
                 }
             }
             return;
@@ -4712,7 +4712,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                 if (s_pressedLayer == SCREEN_LAYER_PANEL) {
                     s_clickedButton = ClickPanelCommand(g_cursorPos.y);
                     if (s_clickedButton > 0) {
-                        g_screenLayers[SCREEN_LAYER_PANEL]->visible = FALSE;
+                        g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
                         g_screenLayers[SCREEN_LAYER_PANEL]
                             ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
                     }
@@ -4725,7 +4725,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                     return;
                 case SCREEN_LAYER_PANEL:
                     if (s_clickedButton > 0) {
-                        g_screenLayers[SCREEN_LAYER_PANEL]->visible = FALSE;
+                        g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
                         g_screenLayers[SCREEN_LAYER_PANEL]
                             ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
                     }
@@ -4737,7 +4737,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                 case SCREEN_LAYER_NAVIGATION:
                     s_dragMoved = false;
                     s_layerDragging = false;
-                    RepeatPadMove(TRUE);
+                    RepeatPadMove(true);
                     if (g_heldPadButton != PAD_RELEASED) {
                         s_padHeld = true;
                         return;
@@ -4806,10 +4806,10 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
             if (!g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
                 if (g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible) {
                     if (g_cursorPos.y > MENU_BAR_HIDE_Y) {
-                        g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible = FALSE;
+                        g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible = false;
                     }
                 } else if (g_cursorPos.y <= 0) {
-                    g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible = TRUE;
+                    g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible = true;
                 }
             }
             break;
@@ -4823,14 +4823,14 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
             if (!s_dragMoved && s_rightPressedLayer == SCREEN_LAYER_NAVIGATION) {
                 s_padHeld = PadButtonAtPoint(g_cursorPos.x, g_cursorPos.y);
                 if (s_padHeld) {
-                    RepeatPadMove(FALSE);
+                    RepeatPadMove(false);
                 }
             }
             break;
         case MOUSE_CLICK:
             s_rightPressedLayer = LayerAtPoint(g_cursorPos.x, g_cursorPos.y);
             if (s_rightPressedLayer == SCREEN_LAYER_NAVIGATION) {
-                RepeatPadMove(FALSE);
+                RepeatPadMove(false);
                 if (g_heldPadButton != PAD_RELEASED) {
                     s_padHeld = true;
                 }
@@ -4840,7 +4840,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
             break;
         case MOUSE_LET_GO:
             if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
-                g_screenLayers[SCREEN_LAYER_PANEL]->visible = FALSE;
+                g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
                 g_screenLayers[SCREEN_LAYER_PANEL]
                     ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
             } else {
@@ -4928,7 +4928,7 @@ b32 LoadGraphics(void) {
     b32 failed;
 
     ClearHandleTable();
-    CreatePicture(&g_scenePicture, 640, 480, 640, 480, TRUE);
+    CreatePicture(&g_scenePicture, 640, 480, 640, 480, true);
     if (StartGame()) {
         return false;
     }
@@ -4938,24 +4938,24 @@ b32 LoadGraphics(void) {
     BuildRoomMesh(&g_roomMesh, ROOM_SPAN, ROOM_SPAN);
     AllocWallMesh(&g_wallMesh);
     BuildQuadMesh(&g_doorMesh);
-    CreatePicture(&g_viewCachePicture, 640, 328, 640, 328, TRUE);
-    CreatePicture(&g_targetPicture, MARK_SIZE, MARK_SIZE, MARK_SIZE, MARK_SIZE, FALSE);
+    CreatePicture(&g_viewCachePicture, 640, 328, 640, 328, true);
+    CreatePicture(&g_targetPicture, MARK_SIZE, MARK_SIZE, MARK_SIZE, MARK_SIZE, false);
     LoadPictureFile(&g_targetPicture, "w\\target.bmp");
-    CreatePicture(&g_fightBannerPicture, 224, 48, 224, 48, FALSE);
+    CreatePicture(&g_fightBannerPicture, 224, 48, 224, 48, false);
     LoadPictureFile(&g_fightBannerPicture, "w\\fight.bmp");
-    CreatePicture(&g_titleMenuPicture, 128, 56, 128, 56, FALSE);
-    CreatePicture(&g_statusPortraitPicture, 256, 256, 256, 256, FALSE);
-    CreatePicture(&g_commandBarPicture, 608, 24, 608, 24, FALSE);
-    CreatePicture(&g_statusPicture, 640, 440, 640, 440, FALSE);
-    CreatePicture(&g_leftFieldMessagePicture, 176, 16, 176, 16, FALSE);
-    CreatePicture(&g_centerFieldMessagePicture, 176, 16, 176, 16, FALSE);
-    CreatePicture(&g_rightFieldMessagePicture, 176, 16, 176, 16, FALSE);
-    CreatePicture(&g_iconStagingPicture, 24, 16, 24, 16, FALSE);
-    CreatePicture(&g_backdropPicture, 640, 480, 640, 480, TRUE);
-    CreatePicture(&g_effectFramePicture, 640, 328, 640, 328, FALSE);
-    CreatePicture(&g_whitePicture, 640, 328, 640, 328, FALSE);
+    CreatePicture(&g_titleMenuPicture, 128, 56, 128, 56, false);
+    CreatePicture(&g_statusPortraitPicture, 256, 256, 256, 256, false);
+    CreatePicture(&g_commandBarPicture, 608, 24, 608, 24, false);
+    CreatePicture(&g_statusPicture, 640, 440, 640, 440, false);
+    CreatePicture(&g_leftFieldMessagePicture, 176, 16, 176, 16, false);
+    CreatePicture(&g_centerFieldMessagePicture, 176, 16, 176, 16, false);
+    CreatePicture(&g_rightFieldMessagePicture, 176, 16, 176, 16, false);
+    CreatePicture(&g_iconStagingPicture, 24, 16, 24, 16, false);
+    CreatePicture(&g_backdropPicture, 640, 480, 640, 480, true);
+    CreatePicture(&g_effectFramePicture, 640, 328, 640, 328, false);
+    CreatePicture(&g_whitePicture, 640, 328, 640, 328, false);
     LoadPictureFile(&g_whitePicture, "w\\white.bmp");
-    CreatePicture(&g_mapMarkerPicture, 6, 6, 6, 6, FALSE);
+    CreatePicture(&g_mapMarkerPicture, 6, 6, 6, 6, false);
     DrawResourceBitmap(g_mapMarkerPicture.surface, MARKER_BITMAP_FIRST);
     g_markerColors[0].color = ReadSurfaceWord(g_mapMarkerPicture.surface, 0, 0, 6);
     DrawResourceBitmap(g_mapMarkerPicture.surface, MARKER_BITMAP_FIRST + 1);
@@ -4965,21 +4965,21 @@ b32 LoadGraphics(void) {
     DrawResourceBitmap(g_mapMarkerPicture.surface, MARKER_BITMAP_FIRST + 3);
     g_markerColors[1].color = ReadSurfaceWord(g_mapMarkerPicture.surface, 0, 0, 6);
     DrawResourceBitmap(g_mapMarkerPicture.surface, MARKER_BITMAP_PARTY);
-    CreatePicture(&g_cursorPicture, 32, 32, 32, 32, FALSE);
+    CreatePicture(&g_cursorPicture, 32, 32, 32, 32, false);
     BlitImage(g_cursorPicture.surface, CURSOR_IMAGE, 0, 0);
-    CreatePicture(&g_busyCursorPicture, 32, 32, 32, 32, FALSE);
+    CreatePicture(&g_busyCursorPicture, 32, 32, 32, 32, false);
     BlitImage(g_busyCursorPicture.surface, BUSY_CURSOR_IMAGE, 0, 0);
-    CreatePicture(&g_spritePicture, 640, 400, 640, 400, FALSE);
+    CreatePicture(&g_spritePicture, 640, 400, 640, 400, false);
     for (i = 0; i < ENEMY_PICTURE_COUNT; i++) {
-        CreatePicture(&g_enemyPictures[i], 512, 256, 512, 256, FALSE);
+        CreatePicture(&g_enemyPictures[i], 512, 256, 512, 256, false);
     }
-    LoadTexture(&g_textBoxTexture, "w\\txrtbox.bmp", TRUE);
-    LoadTexture(&g_stairsUpTexture, "w\\up.bmp", TRUE);
-    LoadTexture(&g_stairsDownTexture, "w\\dn.bmp", TRUE);
-    LoadTexture(&g_darkWallTexture, "w\\darkwall.bmp", TRUE);
-    LoadTexture(&g_npcTexture, "w\\npc.bmp", TRUE);
+    LoadTexture(&g_textBoxTexture, "w\\txrtbox.bmp", true);
+    LoadTexture(&g_stairsUpTexture, "w\\up.bmp", true);
+    LoadTexture(&g_stairsDownTexture, "w\\dn.bmp", true);
+    LoadTexture(&g_darkWallTexture, "w\\darkwall.bmp", true);
+    LoadTexture(&g_npcTexture, "w\\npc.bmp", true);
     ResetRenderMode();
-    failed = FALSE;
+    failed = false;
     for (layer = 0; layer < SCREEN_LAYER_COUNT; layer++) {
         failed |= CreateScreenLayer(layer);
     }
@@ -5022,7 +5022,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
     if (!LoadDeviceSettings(&g_deviceSettings)) {
         return 0;
     }
-    g_deviceType = g_deviceSettings.caps.hardwareOnly == TRUE ? D3D_DEVICE_HAL : D3D_DEVICE_MMX;
+    g_deviceType = g_deviceSettings.caps.hardwareOnly == true ? D3D_DEVICE_HAL : D3D_DEVICE_MMX;
     g_instance = instance;
     if (!CreateMainWindow(instance)) {
         return 1;

@@ -110,13 +110,13 @@ DATA(0x00081338)
 static i16 s_choiceCancelMode = 0;
 
 DATA(0x0008133c)
-static ScriptChoice* s_highlightedChoice = 0;
+static ScriptChoice* s_highlightedChoice = NULL;
 
 DATA(0x00081340)
-static ScriptChoice* s_choiceMenu = 0;
+static ScriptChoice* s_choiceMenu = NULL;
 
 DATA(0x00081344)
-static ScriptChoice* s_hitChoice = 0;
+static ScriptChoice* s_hitChoice = NULL;
 
 // The slot ReadScriptOperand returns.
 DATA(0x00081348)

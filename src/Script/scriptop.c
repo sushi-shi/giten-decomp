@@ -95,7 +95,7 @@ void OpIfFlags(i16 all) {
         if (invert == -1 && bank == 0x7f) {
             break;
         }
-        matched = (TestEventFlag(bank, index) != 0) ^ (invert & 1);
+        matched = (TestEventFlag(bank, index) != false) ^ (invert & 1);
         any |= matched;
         every &= matched;
     }

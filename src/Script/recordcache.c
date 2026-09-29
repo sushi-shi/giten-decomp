@@ -42,7 +42,7 @@ static char s_skillViewDescription[0x100] = {0};
 
 // The stacked script states, newest first.
 DATA(0x00080ff0)
-static SavedScriptState* s_savedScripts = 0;
+static SavedScriptState* s_savedScripts = NULL;
 
 // The handle of the loaded skill file.
 DATA(0x00080ff4)
@@ -50,7 +50,7 @@ static i32 s_skillTable = 0;
 
 // One byte per map area; bit 0 allows skills 0x79..0x7b there.
 DATA(0x00080ff8)
-static u8* s_areaSkillFlags = 0;
+static u8* s_areaSkillFlags = NULL;
 
 DATA(0x00080ffc)
 static i16 s_skillCount = 0;

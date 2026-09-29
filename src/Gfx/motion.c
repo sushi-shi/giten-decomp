@@ -85,19 +85,19 @@ DATA(0x0007822c)
 static i16 s_effectDelay = 0;
 
 DATA(0x00078230)
-static EffectPalette* s_palettes = 0;
+static EffectPalette* s_palettes = NULL;
 
 DATA(0x00078234)
-static u8* s_effectScriptBase = 0;
+static u8* s_effectScriptBase = NULL;
 
 DATA(0x00078238)
-static MotionPath* s_motionPath = 0;
+static MotionPath* s_motionPath = NULL;
 
 DATA(0x0007823c)
-static EffectCommand* s_effectScript = 0;
+static EffectCommand* s_effectScript = NULL;
 
 DATA(0x00078240)
-static MotionTable* s_motionTable = 0;
+static MotionTable* s_motionTable = NULL;
 
 DATA(0x00078244)
 static u16 s_motionStep = 0;
@@ -298,7 +298,7 @@ i16 ExecuteEffectCommand(void) {
 
 RVA(0x00004d50, 0xb)
 void StopEffectScript(void) {
-    s_effectScript = 0;
+    s_effectScript = NULL;
 }
 
 RVA(0x00004d60, 0x6)

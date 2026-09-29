@@ -29,7 +29,7 @@ b16 DecodeLayerImage(BmpFile* data, i16 layer, i32 size) {
                 &g_enemyTextures[layer][frame],
                 // API-forced: borrowed BMP input, selected by fromFile = FALSE.
                 reinterpret_cast<const char*>(bmp),
-                FALSE
+                false
             )) { // API-forced: borrowed BMP input.
             loaded = false;
         }
@@ -74,7 +74,7 @@ void DecodeLayerImageAlt(BmpFile* data, i16 layer, i32 size) {
             &g_enemyTextures[layer][frame],
             // API-forced: borrowed BMP input, selected by fromFile = FALSE.
             reinterpret_cast<const char*>(bmp),
-            FALSE
+            false
         ); // API-forced: borrowed BMP input.
         // Byte-forced: packed complete BMP files advance by bfSize.
         bmp = reinterpret_cast<BmpFile*>(

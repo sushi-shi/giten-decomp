@@ -19,7 +19,7 @@ RVA(0x000043d0, 0x1f)
 void ClearHandleTable(void) {
     i16 handle;
     for (handle = 0; handle < HANDLE_COUNT; handle++) {
-        SetHandleEntry(handle, 0, 0, 0);
+        SetHandleEntry(handle, NULL, 0, 0);
     }
 }
 
@@ -130,7 +130,7 @@ b32 FreeHandle(i32 handle) {
 
 RVA(0x00004650, 0x16)
 b32 ClearHandle(i32 handle) {
-    SetHandleEntry(handle, 0, 0, 0);
+    SetHandleEntry(handle, NULL, 0, 0);
     return false;
 }
 

@@ -117,11 +117,11 @@ DATA(0x0007fe50)
 static i32 s_moonFlags = 0;
 
 DATA(0x0007fe54)
-AreaMap* g_areaMap = 0;
+AreaMap* g_areaMap = NULL;
 
 // The level of the area map the party is on (NULL without a map).
 DATA(0x0007fe58)
-AreaLevel* g_areaLevel = 0;
+AreaLevel* g_areaLevel = NULL;
 
 // The name returned without an area map.
 DATA(0x0007fe5c)
@@ -348,7 +348,7 @@ void SpawnMapObjects(i16 cellCode) {
     i16 layer;
     i16 object;
     SetSpawnInterval(GetCellSpawnRate(cellCode));
-    if (TestLevelEvent(g_party.field.pos.level) == 1) {
+    if (TestLevelEvent(g_party.field.pos.level) == true) {
         return;
     }
     if (!g_areaLevel) {
@@ -1395,11 +1395,11 @@ void SavePanelChecks(Panel* panel) {
     for (i = 0; i < GetPanelRowCount(panel); i++) {
         row = GetPanelRow(panel, i);
         ClearFlagBits(&row->flags, PANEL_ROW_SAVED_CHECK);
-        if (TestFlagBits(&row->flags, PANEL_ROW_CHECKED) == 1) {
+        if (TestFlagBits(&row->flags, PANEL_ROW_CHECKED) == true) {
             SetFlagBits(&row->flags, PANEL_ROW_SAVED_CHECK);
         }
         ClearFlagBits(&row->flags, PANEL_ROW_SAVED_INPUT_DISABLED);
-        if (TestFlagBits(&row->flags, PANEL_INPUT_DISABLED) == 1) {
+        if (TestFlagBits(&row->flags, PANEL_INPUT_DISABLED) == true) {
             SetFlagBits(&row->flags, PANEL_ROW_SAVED_INPUT_DISABLED);
         }
     }
@@ -1416,11 +1416,11 @@ void RestorePanelChecks(Panel* panel) {
     for (i = 0; i < GetPanelRowCount(panel); i++) {
         row = GetPanelRow(panel, i);
         ClearPanelRowCheck(row);
-        if (TestFlagBits(&row->flags, PANEL_ROW_SAVED_CHECK) == 1) {
+        if (TestFlagBits(&row->flags, PANEL_ROW_SAVED_CHECK) == true) {
             SetFlagBits(&row->flags, PANEL_ROW_CHECKED);
         }
         ClearFlagBits(&row->flags, PANEL_INPUT_DISABLED);
-        if (TestFlagBits(&row->flags, PANEL_ROW_SAVED_INPUT_DISABLED) == 1) {
+        if (TestFlagBits(&row->flags, PANEL_ROW_SAVED_INPUT_DISABLED) == true) {
             SetFlagBits(&row->flags, PANEL_INPUT_DISABLED);
         }
     }

@@ -74,10 +74,10 @@ i32 g_itemRemapHandle = 0;
 
 // Shared text buffers for the decoded item name and description.
 DATA(0x000800f4)
-char* g_itemNameText = 0;
+char* g_itemNameText = NULL;
 
 DATA(0x000800f8)
-char* g_itemDescriptionText = 0;
+char* g_itemDescriptionText = NULL;
 
 // Nonzero while bag stores are quiet (see SetBagQuiet).
 DATA(0x000800fc)
@@ -94,7 +94,7 @@ DATA(0x00080104)
 static i16 s_giftItemBase = 0;
 
 DATA(0x00080108)
-static MenuBox* s_giftMenu = 0;
+static MenuBox* s_giftMenu = NULL;
 
 // The event flag each timed item clears when it expires.
 DATA(0x00068f38)
