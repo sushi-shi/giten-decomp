@@ -197,15 +197,15 @@ def function_definition_extents(tu: str, cl_flags: list[str] | None) -> dict[str
     kinds = {cidx.CursorKind.FUNCTION_DECL, cidx.CursorKind.CXX_METHOD,
              cidx.CursorKind.CONSTRUCTOR, cidx.CursorKind.DESTRUCTOR}
     out: dict[str, list[dict]] = {}
-    for cursor in parsed.cursor.walk_preorder():
-        if cursor.kind not in kinds or not cursor.is_definition():
+    for cursor in preorder(parsed, kinds):
+        if not cursor.is_definition():
             continue
         name = cursor.mangled_name
         start, end = cursor.extent.start, cursor.extent.end
         if not name or start.file is None or end.file is None:
             continue
-        path = os.path.realpath(start.file.name)
-        if path != os.path.realpath(end.file.name) or end.offset <= start.offset:
+        path = _realpath(start.file.name)
+        if path != _realpath(end.file.name) or end.offset <= start.offset:
             continue
         out.setdefault(name, []).append({"file": path, "start": start.offset,
                                         "end": end.offset})

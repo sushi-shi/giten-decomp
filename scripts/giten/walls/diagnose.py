@@ -304,7 +304,7 @@ def prior_class_note(row, fresh: bool, wall: str) -> str | None:
 def _prior_class(rva: int, wall: str) -> None:
     try:
         from giten.walls.reviews import current as _cur, load as _load
-        row, fresh = _load().get(rva), rva in set(_cur())
+        row, fresh = _load().get(rva), rva in _cur([rva])
     except Exception:
         return
     note = prior_class_note(row, fresh, wall)
