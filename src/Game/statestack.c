@@ -562,7 +562,7 @@ i16 PickStatusMember(void) {
             SetGameStep(2);
             TakeMouseCancelSound();
             SetStatusMenuItemsHidden(1);
-            SetStatusMenuItemFlag(3, 0x800, !CountBagEntries());
+            SetStatusMenuItemFlag(STATUS_STEP_ITEMS, 0x800, !CountBagEntries());
             RedrawPartyStatus();
             RepaintTextPlane(g_infoPlane, 1);
             ClearStatusMenu();

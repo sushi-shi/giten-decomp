@@ -126,7 +126,6 @@ src/Gfx/bitmapio.cpp	s_textureDiffuse	*	data-or-extent	*	texture diffuse colour 
 src/Platform/winmain.cpp	s_cellCorner	*	data-or-extent	*	room cell corner offsets in world units
 src/Platform/winmain.cpp	s_cameraOffsets	*	data-or-extent	*	camera offset per facing in world units
 src/Platform/winmain.cpp	s_billboardAxes	*	data-or-extent	*	billboard axis per facing
-src/Game/statusmenu.c	s_switchedItems	*	data-or-extent	*	status menu items switched together (@identity-TODO)
 src/Game/treasurebox.c	s_unusedWordTable	*	data-or-extent	*	unread words (@identity-TODO)
 src/Gfx/vram.c	g_pixelMasks	*	data-or-extent	*	bit of each pixel in a byte, most significant first
 src/Platform/winmain.cpp	s_turnImageCodesRight	*	data-or-extent	*	image variant per turn step (negative mirrors)
@@ -210,3 +209,18 @@ src/Game/character.c	IsPartyMemberFallen	0	existing-symbol	enum	0 from GetFatalC
 src/Game/clock.c	s_cellKinds	*	data-or-extent	*	cell-kind rows: the kind flags (0 none), the pad byte, and the cell codes still unnamed (@identity-TODO in Game/CellCode.h)
 src/Game/treasurebox.c	s_mapIcons	*	data-or-extent	*	automap icon rows: the icon image index and the cell codes still unnamed (@identity-TODO in Game/CellCode.h)
 *	*	*	call-argument	LatchCellDestination(*argument [2-6]	a byte offset of a destination field within the cell record
+*	*	*	call-argument	SetPanelRowFlags(*argument 2	a row of the panel (its position in the panel's row table)
+*	*	*	call-argument	PrintWindowText(*argument 4	the text style flag (TextState.flag1; its effect is unproven, @identity-TODO in Text/WindowText.h)
+*	*	*	call-argument	AddMenuLine(*argument 4	the value the menu line yields when chosen (-1 none)
+*	*	*	call-argument	PushWaitState(*argument 2	the input mask that ends the wait
+*	*	*	call-argument	PushWaitState(*argument 4	the text window scripts pass (-1 otherwise); the Windows body never reads it
+*	*	*	call-argument	StartScreenFadeAndWait(*argument 2	the fade speed
+*	*	*	call-argument	IsCellFlagSet(*argument 2	a byte offset of a flag within the cell record
+*	*	*	call-argument	ViewCellHasWall(*argument 4	a view-grid column
+*	*	*	call-argument	SwapWorldMapBlocks(*argument [12]	a world-map screen block (0..5)
+*	*	*	call-argument	SetScriptLongVar(*argument 1	a script long-variable index
+*	*	*	call-argument	CreateMenuBox(*argument 2	the text-plane kind of the menu window
+*	*	*	call-argument	SetTextPlaneFirstSelectableRow(*argument 2	a text-plane row
+*	*	*	call-argument	OffsetMapCoord(*argument 4	an offset across the facing, in cells
+*	*	*	call-argument	OffsetMapCoord(*argument 5	an offset along the facing, in cells
+*	*	*	call-argument	GetCellWallStop(*argument 2	a quarter-turn count from the facing
