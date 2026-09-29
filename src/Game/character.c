@@ -430,8 +430,8 @@ void InitCharacterSlot(
 // Out-of-range slots fall back to the last record.
 RVA(0x0003cd60, 0x29)
 Character* GetCharacter(i16 slot) {
-    if (slot < 0 || slot >= 16) {
-        slot = 15;
+    if (slot < 0 || slot >= CHARACTER_SLOT_COUNT) {
+        slot = CHARACTER_SLOT_COUNT - 1;
     }
     return &g_characters[slot];
 }
@@ -503,9 +503,9 @@ void ResetRosterStatModifiers(void) {
 RVA(0x0003cec0, 0xa3)
 i32 CalcMaxHp(Character* character) {
     double value = character->level;
-    value *= character->stats.total[6];
+    value *= character->stats.total[STAT_VITALITY];
     value *= 0.5;
-    value += character->stats.total[4] + character->stats.total[10] + 5;
+    value += character->stats.total[STAT_PROTECTION] + character->stats.total[STAT_FORTUNE] + 5;
     if (TestBit(character->personalFlags, 37) == true) {
         value += value;
     }
@@ -917,22 +917,22 @@ b16 ApplyItemStatBonuses(StatBlock* stats, ItemSlot* slots) {
         stats->bonus[i] = 0;
         stats->equipment[i] = 0;
     }
-    AddItemStatPoints(slots[0].item, stats->bonus);
-    AddItemStatPoints(slots[1].item, stats->bonus);
-    AddItemStatPoints(slots[2].item, stats->bonus);
-    AddItemStatPoints(slots[3].item, stats->bonus);
-    AddItemStatPoints(slots[4].item, stats->bonus);
-    AddItemStatPoints(slots[5].item, stats->bonus);
-    AddItemStatPoints(slots[6].item, stats->bonus);
-    AddItemStatPoints(slots[7].item, stats->bonus);
-    AddItemStatPoints(GemItemId(slots[0].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[1].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[2].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[3].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[4].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[5].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[6].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[7].attachment), stats->equipment);
+    AddItemStatPoints(slots[EQUIP_SLOT_HEAD].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_BODY].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_ARMS].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_LEGS].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_ACCESSORY].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_WEAPON].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_GUN].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_AMMO].item, stats->bonus);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_HEAD].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_BODY].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_ARMS].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_LEGS].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_ACCESSORY].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_WEAPON].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_GUN].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_AMMO].attachment), stats->equipment);
     return false;
 }
 
@@ -1565,7 +1565,7 @@ i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId,
 RVA(0x0003ee40, 0x32)
 void ClearConditionList(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list) {
     i16 i;
-    for (i = 0; list[i] != -1; i++) {
+    for (i = 0; list[i] != CONDITION_LIST_END; i++) {
         ClearCondition(conditions, list[i]);
     }
 }
@@ -2059,7 +2059,7 @@ i16 AddToParty(i16 slot) {
                     break;
                 }
             }
-            if (index == 6) {
+            if (index == PARTY_SIZE) {
                 index = -1;
             }
         } else {
@@ -2312,12 +2312,12 @@ i16 TickPartySteps(void) {
             ApplyEquipmentEffects(character, EQUIP_EFFECT_STEP_TICK);
             if (character->id != HUMAN_NEWTON) {
                 if (HasCondition(GetCharacterConditions(character), CONDITION_SEVERE_POISON)
-                    && !IsConditionResisted(character, 32)) {
+                    && !IsConditionResisted(character, CONDITION_SEVERE_POISON)) {
                     changed |= 1;
                     DrainPool(&character->pools.hp, 4);
                 }
                 if (HasCondition(GetCharacterConditions(character), CONDITION_POISON)
-                    && !IsConditionResisted(character, 15)) {
+                    && !IsConditionResisted(character, CONDITION_POISON)) {
                     changed |= 1;
                     DrainPool(&character->pools.hp, 1);
                 }
@@ -2403,10 +2403,10 @@ Character* GetPartyCharacter(i16 index) {
 RVA(0x0003ff60, 0x6b)
 void SetPartySlot(i16 index, i16 slot) {
     Character* character;
-    if (index < 0 || index >= 6) {
+    if (index < 0 || index >= PARTY_SIZE) {
         return;
     }
-    if (slot < -1 || slot >= 32) {
+    if (slot < -1 || slot >= ROSTER_SIZE) {
         return;
     }
     if (PartySlotAt(index) != PARTY_SLOT_EMPTY) {
@@ -2464,7 +2464,7 @@ i16 FindPartyPositionOfId(i16 id) {
 // `goto next`; as a for loop cl rotates it and the layout differs.
 RVA(0x00040090, 0xcd)
 b16 SortRoster(void) {
-    i16 ids[6];
+    i16 ids[PARTY_SIZE];
     i16 i;
     i16 j;
     i16 id;
@@ -2555,29 +2555,29 @@ GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(ItemRecord* item) {
     i16 kind = item->kind;
     kind -= ITEM_KIND_WEAPON;
     switch (kind) {
-        case 0:
+        case ITEM_KIND_WEAPON - ITEM_KIND_WEAPON:
             part = EQUIP_PART_WEAPON;
             break;
-        case 1:
+        case ITEM_KIND_GUN - ITEM_KIND_WEAPON:
             part = EQUIP_PART_GUN;
             break;
-        case 2:
+        case ITEM_KIND_AMMO - ITEM_KIND_WEAPON:
             part = EQUIP_PART_AMMO;
             break;
-        case 4:
+        case ITEM_KIND_HEAD_ARMOR - ITEM_KIND_WEAPON:
             part = EQUIP_PART_HEAD;
             break;
-        case 3:
-        case 5:
+        case ITEM_KIND_FULL_BODY_ARMOR - ITEM_KIND_WEAPON:
+        case ITEM_KIND_BODY_ARMOR - ITEM_KIND_WEAPON:
             part = EQUIP_PART_BODY;
             break;
-        case 6:
+        case ITEM_KIND_ARM_ARMOR - ITEM_KIND_WEAPON:
             part = EQUIP_PART_ARMS;
             break;
-        case 7:
+        case ITEM_KIND_LEG_ARMOR - ITEM_KIND_WEAPON:
             part = EQUIP_PART_LEGS;
             break;
-        case 8:
+        case ITEM_KIND_ACCESSORY - ITEM_KIND_WEAPON:
             part = EQUIP_PART_ACCESSORY;
             break;
     }

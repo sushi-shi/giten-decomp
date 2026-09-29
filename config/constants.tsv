@@ -778,3 +778,72 @@ src/Game/itemrecord.c	*SpecialItem*	*	*	*	@identity-TODO: the eight timed specia
 src/Game/itemrecord.c	RunBagDiscardMenu	*	*	*	@identity-TODO: priceless items (0); menu flags 0x1e; the cancel flag cleared; SetBagEntry's (-1, -1) clears
 src/Game/itemrecord.c	RunGemItemGift	*	call-argument	*	familiarity stays within 0..63; one gem given
 src/Game/itemrecord.c	GiftMenuHandler	0	*	*	the menu's origin (0, 0); no gems held
+src/Game/character.c	ComputeActionSpeed	*	*	*	action speed formula: 4 times the root (at least 1), a quarter of the burden, a speed of at least 1
+src/Game/character.c	InitCharacterSlot	*	*	*	@identity-TODO: the never-read value (10000) and bytes (0, 1) a new character gets
+src/Game/character.c	Find*	-1	*	*	no such character or slot
+src/Game/character.c	Calc*	*	*	*	derived-stat formulas: stat weights and fractions, level thresholds, caps of 999 or 9999, doubling by personal flags 37 and 38 (@identity-TODO)
+src/Game/character.c	LowPoolMask	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
+src/Game/character.c	PoolState	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
+src/Game/character.c	EmptyPoolMask	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
+src/Game/character.c	DrainPool	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
+src/Game/character.c	FillPool	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
+src/Game/character.c	StatBlend*	*	*	*	derived-stat blend weights
+src/Game/character.c	ScalePercent999	100	*	*	percent scaling
+src/Game/character.c	*StatModifiers	0	*	*	a cleared stat modifier
+src/Game/character.c	ApplyItemStatBonuses	0	*	*	bonuses cleared before they are summed
+src/Game/character.c	GemItemId	-1	*	*	no gem attached
+src/Game/character.c	UpdateStatTotals	2	*	*	@identity-TODO: ClampTo100's argument 2
+src/Game/character.c	*Alignment*	*	*	*	alignment: levels within -127..127 and classes split at -42 and 42 (-1, 0, 1); the affinity's sides and sums
+src/Game/character.c	*PartySlotSelection	*	*	*	@identity-TODO: party-slot polls: 1 picked, -1 cancelled, 0 still open; the text plane's highlight mode 0, columns 0 and 39, three columns per slot
+src/Game/character.c	*SelectedPartySlot	-1	*	*	no selected party slot
+src/Game/character.c	RedrawPartyStatus	*	*	*	@identity-TODO: no swap (-1) or a swap (-2) pending; no selected slot
+src/Game/character.c	DrawPartyStatusSlot	*	*	*	the name buffer (36 bytes) and the HP/MP gauges (1, 0)
+src/Game/character.c	AddCondition	0	call-argument	*	a new condition's age starts at 0
+src/Game/character.c	AgeCondition*	*	*	*	condition ages: no recovery chance, ages clamped to 0..0xff
+src/Game/character.c	RecoverCondition	*	*	*	@identity-TODO: recovery: no chance, the age's high bits (>> 3), one point drained from each pool
+src/Game/character.c	*Condition	*	trivial-function-literal	*	@identity-TODO: EscalateCondition/EaseCondition's results (0 unchanged, 1 changed, 2 removed or added)
+src/Game/character.c	EscalateCondition	2	return	*	@identity-TODO: EscalateCondition's result 2
+src/Game/character.c	EaseCondition	2	return	*	@identity-TODO: EaseCondition's result 2
+src/Game/character.c	*ConditionName*	*	*	*	the condition-name list's first entry; -1 once exhausted
+src/Game/character.c	GetFirstConditionIndex	*	*	*	the condition-name list's first entry; -1 when none is held
+src/Game/character.c	GetRankScore	10	*	*	ten rank points per level
+src/Game/character.c	TickActionWait	*	*	*	the action wait: 0 once it runs out; a new wait of 2 x a roll + 5 ticks
+src/Game/character.c	GetPickState	*	*	*	@identity-TODO: pick states 0..2
+src/Game/character.c	FilterPartyMember	*	*	*	@identity-TODO: filter mode bits 1 and 2
+src/Game/character.c	AddToRoster	*	*	*	@identity-TODO: at most 26 demons in the roster; FindEmptySlot's 0 (roster)
+src/Game/character.c	AddToParty	*	*	*	FindEmptySlot's 1 (party); no free position (-1)
+src/Game/character.c	TickPartyConditions	1	call-argument	*	@identity-TODO: AgeConditions' second argument 1
+src/Game/character.c	*Fallen*	-1	*	*	no member shown or found
+src/Game/character.c	TickPartySteps	*	call-argument	DrainPool(*	the poison drains per step (4 severe, 1 ordinary)
+src/Game/character.c	GetPartySlot	-1	*	*	an empty party position (PARTY_SLOT_EMPTY)
+src/Game/character.c	SetPartySlot	-1	*	*	PARTY_SLOT_EMPTY is allowed
+src/Game/character.c	*OfId	-1	*	*	no such character
+src/Game/character.c	SortRoster	0	*	*	the sort's first index
+src/Game/character.c	PayStepUpkeep	*	*	*	@identity-TODO: step upkeep: demon classes 10, 12 and 13 cost HP or MP (the pool fill mode 2, eight steps) instead of magnetite; the money counters redraw (1)
+src/Game/character.c	TickPartyTimers	*	*	*	@identity-TODO: party timers every 240 and 60 minutes, the moon phases up to the full moon (14); 1/-1 results
+src/Game/character.c	ApplyMoonPhase	*	*	*	@identity-TODO: the character flags 0x23..0x26 a moon phase sets and clears
+src/Game/character.c	RecalcDerivedStats	*	*	*	@identity-TODO: battle-stat words 1, 7, 13 and 18..23 (the fourth group) and their floors of 1; the bonus buffer (24 words); the magic-defence groups (3)
+src/Game/character.c	SumArmorDefenseBonus	24	*	*	the 24 battle-stat words
+src/Game/character.c	ApplyEmptyPools	*	*	*	@identity-TODO: the outcome of empty pools (0..4): none and the conditions it brings
+src/Game/character.c	FindMemberByPoolState	*	*	*	@identity-TODO: pool state 1 of pool 0
+src/Game/character.c	PoolPercentAmount	100	*	*	percent scaling
+src/Game/character.c	SortRoster	*	*	*	the sort's first index and the loop's run flag; human ids below 32 (HUMAN_ID_LIMIT) stay first
+src/Game/character.c	SwapPartySlots	*	*	*	the six party positions (PARTY_SIZE)
+src/Game/character.c	CanGroupEquip	5	call-argument	*	@identity-TODO: TestBit's first argument 5
+src/Game/character.c	GetEquipSlot	*	initializer-payload	*	an empty equipment slot {-1, -1, 0}
+src/Game/character.c	*Equip*	1	*	*	item ids and quantities start at 1
+src/Game/character.c	UnequipPart	0	*	*	no item
+src/Game/character.c	*EquipItem	0	call-argument	*	@identity-TODO: SetEquipSlot's fourth argument 0
+src/Game/character.c	GetGunAmmoType	*	*	*	-1 when no gun is equipped; item ids from 1
+src/Game/character.c	EquipItem	13	*	*	@identity-TODO: ammunition (item kind 13)
+src/Game/character.c	NormalizeItemSlot	1	*	*	item ids and quantities start at 1
+src/Game/character.c	Add*	*	*	*	money: added within 0..9999999; nothing when no character
+src/Game/character.c	CompareMacca	-1	*	*	fewer macca
+src/Game/character.c	StatusListMenuHandler	-1	*	*	@identity-TODO: no result
+src/Game/character.c	FormatStatusLine	*	*	*	@identity-TODO: the status list's columns 0..4 (name, alignment letters, HP and MP widths 4 and 3); -1 and -2 for no line
+src/Game/character.c	BuildStatusSlots	0	*	*	@identity-TODO: status column 0
+src/Game/character.c	DrainUpkeep	*	*	*	upkeep: nothing yet; costs of at least 1; an emptied pool
+src/Game/character.c	*FieldState	*	*	*	the field state record: six party slots, the 32 roster ids (0x20 humans), -1 for none
+src/Game/character.c	WriteCharacters	16	*	*	the sixteen character slots (CHARACTER_SLOT_COUNT)
+src/Game/character.c	LoadCharacter	*	*	*	@identity-TODO: the two words cleared when a character loads
+src/Game/character.c	UnequipPart	1	*	*	item quantities start at 1; SetEquipSlot's fourth argument 1 (@identity-TODO)
