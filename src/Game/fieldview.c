@@ -8,6 +8,7 @@
 #include <Game/FieldSight.h>
 #include <Game/FieldView.h>
 #include <Game/TreasureBox.h>
+#include <Game/ViewCellAxis.h>
 #include <Input/Mouse.h>
 #include <Platform/PlatformApi.h>
 #include <Util/PixelMask.h>
@@ -116,22 +117,22 @@ i16 DistanceFromParty(i16 x, i16 y) {
 // side `dir` (east/west move the column, north/south the row).
 RVA(0x0000be80, 0x46)
 i16 StepViewCell(i16 col, i16 row, i32 dir, i16 axis) {
-    if (axis == 0) {
+    if (axis == VIEW_CELL_COLUMN) {
         switch (dir) {
-            case 1:
+            case VIEW_EAST:
                 col++;
                 break;
-            case 3:
+            case VIEW_WEST:
                 col--;
                 break;
         }
         return col;
     }
     switch (dir) {
-        case 0:
+        case VIEW_NORTH:
             row--;
             break;
-        case 2:
+        case VIEW_SOUTH:
             row++;
             break;
     }
@@ -264,8 +265,8 @@ void FloodViewCells(
     }
     if (!GetWallAt(x, y, dir & 3, width, height) && CanFloodViewCell(col, row, VIEW_NORTH)) {
         FloodViewCells(
-            StepViewCell(x, y, dir, 0),
-            StepViewCell(x, y, dir, 1),
+            StepViewCell(x, y, dir, VIEW_CELL_COLUMN),
+            StepViewCell(x, y, dir, VIEW_CELL_ROW),
             dir,
             col,
             row - 1,
@@ -748,7 +749,7 @@ i16 StepMapCoord(i16* x, i16* y, i16 dir, i16 turn) {
 
 // The rendered geometry or movement-blocking class of a wall kind.
 RVA(0x0000d1f0, 0x14)
-u8 WallStops(i16 wall, i16 mode) {
+u8 WallStops(i16 wall, GZ_ENUM_PARAM(WallStopMode, i16) mode) {
     return s_wallStops[(u8)wall & 0xf][mode];
 }
 
@@ -762,7 +763,7 @@ i16 GetCellWallStop(i16 direction, i16 turn, u16 cell) {
 // The four sides' stop codes (mode `mode`; doors and partial walls folded to
 // 1/2) as one base-3 number.
 RVA(0x0000d240, 0x5d)
-i16 GetWallStopCode(u16 cell, i16 mode) {
+i16 GetWallStopCode(u16 cell, GZ_ENUM_PARAM(WallStopMode, i16) mode) {
     i16 code = 0;
     i16 i;
     i16 stop;

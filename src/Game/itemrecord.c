@@ -4,20 +4,27 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/Alignment.h>
+#include <Game/AlignmentSide.h>
 #include <Game/BagItems.h>
 #include <Game/BattleEffect.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Game/DemonTable.h>
 #include <Game/DropTable.h>
+#include <Game/DropTableEncoding.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/Field.h>
 #include <Game/FieldSight.h>
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
+#include <Game/ItemCurse.h>
 #include <Game/ItemEffect.h>
+#include <Game/ItemId.h>
 #include <Game/ItemPool.h>
 #include <Game/ItemRecord.h>
 #include <Game/Pool.h>
@@ -25,6 +32,7 @@
 #include <Game/StateStack.h>
 #include <Game/StatUpdate.h>
 #include <Input/Mouse.h>
+#include <Input/MouseClickState.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
 #include <Platform/PlatformApi.h>
@@ -34,6 +42,7 @@
 #include <Text/TextWindow.h>
 #include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
+#include <Util/BitChangeMode.h>
 #include <Util/Range.h>
 #include <Util/Scratch.h>
 
@@ -105,7 +114,7 @@ DATA(0x00064650)
 static const i16 s_giftFamiliarity[16] = {2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60};
 
 DATA(0x000919a0)
-DropSlot g_dropSlots[16];
+DropSlot g_dropSlots[DROP_SLOT_COUNT];
 
 DATA(0x000911c0)
 ItemRecord g_loadedItem;
@@ -357,11 +366,11 @@ void LoadItemFiles(void) {
     i16 count;
     i16 id;
 
-    fp = OpenDataFile(1, 11, 0);
+    fp = OpenDataFile(DATA_TABLE_ITEM_RECORDS, DATA_FILE_ITEM_RECORDS, 0);
     s_itemDataHandle = ReadCryptHandle(fp);
     CloseDataFile(fp);
 
-    fp = OpenDataFile(0x100, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_ITEM_INDEX, 12, 0);
     s_itemIndexHandle = ReadRawHandle(fp);
     g_itemRemapHandle = ReadRawHandle(fp);
     CloseDataFile(fp);
@@ -391,7 +400,7 @@ char* GetLoadedRecordName(i16 id) {
 }
 
 RVA(0x000233c0, 0x1b)
-i16 GetItemKind(i16 id) {
+GZ_ENUM_RETURN(ItemKind, i16) GetItemKind(i16 id) {
     DecodeItemRecord(&g_loadedItem, id);
     return g_loadedItem.kind;
 }
@@ -499,14 +508,14 @@ b16 IsEquipCurseActive(Character* character, i16 part) {
         return false;
     }
     record = GetLoadedRecord(slot.item);
-    if (GetItemCurse(record) == 0) {
+    if (GetItemCurse(record) == ITEM_CURSE_NONE) {
         return false;
     }
     return GetItemCurseLevel(record) > character->level;
 }
 
 RVA(0x000235f0, 0xa0)
-i16 GetItemCategory(i16 id) {
+GZ_ENUM_RETURN(EquipPart, i16) GetItemCategory(i16 id) {
     DecodeItemRecord(&g_loadedItem, id);
     switch (g_loadedItem.kind) {
         case ITEM_KIND_RESTORATIVE:
@@ -617,7 +626,7 @@ i16 CountPoolEntries(void) {
     i16 i;
 
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(GetItemPoolEntry(i)) != -1) {
+        if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             count++;
         }
     }
@@ -629,7 +638,7 @@ void ClearPool(void) {
     i16 i;
 
     for (i = 0; i < 64; i++) {
-        GetItemPoolEntry(i)->item = -1;
+        GetItemPoolEntry(i)->item = ITEM_ID_EMPTY;
         GetItemPoolEntry(i)->count = 0;
     }
 }
@@ -651,7 +660,7 @@ void AddToPool(i16 item, i16 amount) {
         }
     }
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(GetItemPoolEntry(i)) == -1) {
+        if (GetItemStackItem(GetItemPoolEntry(i)) == ITEM_ID_EMPTY) {
             GetItemPoolEntry(i)->item = item;
             GetItemPoolEntry(i)->count = amount;
             return;
@@ -668,7 +677,7 @@ void TakeFromPool(i16 item, u8 amount) {
             GetItemPoolEntry(i)->count -= amount;
             if (GetItemStackCount(GetItemPoolEntry(i)) == 0) {
                 GetItemPoolEntry(i)->count = 0;
-                GetItemPoolEntry(i)->item = -1;
+                GetItemPoolEntry(i)->item = ITEM_ID_EMPTY;
             }
             return;
         }
@@ -683,7 +692,7 @@ i16 GivePooledItems(void) {
     i16 i;
 
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(GetItemPoolEntry(i)) != -1) {
+        if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             item = RemapItem(GetItemStackItem(GetItemPoolEntry(i)));
             amount = GetItemStackCount(GetItemPoolEntry(i));
             if (item != 0) {
@@ -710,7 +719,7 @@ void TakePooledItems(void) {
     i16 i;
 
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(GetItemPoolEntry(i)) != -1) {
+        if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             TakeBagItems(
                 GetItemStackItem(GetItemPoolEntry(i)),
                 GetItemStackCount(GetItemPoolEntry(i))
@@ -741,7 +750,7 @@ ItemStackList* CopyBagEntries(i16 first, i16 count, ItemStackList* list) {
         count = 64;
     }
     for (i = first; i < count; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1) {
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             *GetItemListEntry(list, copied++) = g_bagItems[i];
         }
     }
@@ -899,7 +908,7 @@ i16 SetBagEntryDetail(i16 index, i16 detail) {
 
 RVA(0x00023eb0, 0x70)
 i16 FillBagEntry(i16 index, i16 item, u16 amount, u16 limit, i16 attachment, i16 detail) {
-    if (GetItemStackItem(&g_bagItems[index]) == -1) {
+    if (GetItemStackItem(&g_bagItems[index]) == ITEM_ID_EMPTY) {
         SetBagEntry(index, item, attachment);
     } else if (GetItemStackItem(&g_bagItems[index]) != item) {
         return 0;
@@ -936,7 +945,7 @@ static void CompactBagCore(void) {
         ClearItemStack(&scenarioItems[i]);
     }
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY
             && GetItemKind(GetItemStackItem(&g_bagItems[i])) == ITEM_KIND_SCENARIO) {
 #ifdef GITEN_BUGFIX
             scenarioItems[kept++] = g_bagItems[i];
@@ -949,7 +958,7 @@ static void CompactBagCore(void) {
         }
     }
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) == -1) {
+        if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             continue;
         }
         limit = GetItemStackLimit(GetItemStackItem(&g_bagItems[i]));
@@ -962,11 +971,11 @@ static void CompactBagCore(void) {
         }
     }
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1) {
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             continue;
         }
         for (j = i + 1; j < 64; j++) {
-            if (GetItemStackItem(&g_bagItems[j]) != -1) {
+            if (GetItemStackItem(&g_bagItems[j]) != ITEM_ID_EMPTY) {
                 g_bagItems[i] = g_bagItems[j];
                 ClearItemStack(&g_bagItems[j]);
                 break;
@@ -974,7 +983,7 @@ static void CompactBagCore(void) {
         }
     }
     for (i = 48; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1) {
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             continue;
         }
 #ifdef GITEN_BUGFIX
@@ -982,7 +991,7 @@ static void CompactBagCore(void) {
 #else
         for (j = 0; j < 16; j++) {
 #endif
-            if (GetItemStackItem(&scenarioItems[j]) != -1) {
+            if (GetItemStackItem(&scenarioItems[j]) != ITEM_ID_EMPTY) {
                 g_bagItems[i] = scenarioItems[j];
                 ClearItemStack(&scenarioItems[j]);
                 break;
@@ -1063,7 +1072,7 @@ i16 AddScenarioBagItems(i16 item, i16 count) {
     i16 i;
 
     for (i = 48; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) == -1) {
+        if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             SetBagEntry(i, item, -1);
             count -= AddToBagEntry(i, count, limit);
             if (count <= 0) {
@@ -1095,7 +1104,7 @@ i16 CountBagEntries(void) {
     i16 i;
 
     for (i = 0; i < 64; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1) {
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             count++;
         }
     }
@@ -1128,13 +1137,13 @@ void CompactBag(void) {
 
     CompactBagCore();
     for (i = 0; i < 47; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) == -1) {
+        if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             next = i + 1;
             if (next >= 48) {
                 return;
             }
             while (next < 48) {
-                if (GetItemStackItem(&g_bagItems[next]) != -1) {
+                if (GetItemStackItem(&g_bagItems[next]) != ITEM_ID_EMPTY) {
                     g_bagItems[i] = g_bagItems[next];
                     SetBagEntry(next, -1, -1);
                     break;
@@ -1441,7 +1450,7 @@ RVA(0x00024ba0, 0x1b0)
 void AddItemStatPoints(i16 item, i16* stats) {
     i16 code;
 
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1527,10 +1536,10 @@ void AddItemStatPoints(i16 item, i16* stats) {
 // and a duplicated body cross-jumps with the blocks in the other order.
 RVA(0x00024d50, 0x1f0)
 void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
-    if (indexed && item != -1) {
+    if (indexed && item != ITEM_ID_EMPTY) {
         item += GetGemItemBase();
     }
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1612,23 +1621,24 @@ RVA(0x00024f40, 0x100)
 i16 SumEquippedMagicDefenseBonus(Character* character, u8 groups) {
     i16 total = 0;
     if (groups & 1) {
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[0].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[1].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[2].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[3].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[4].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item);
+        total +=
+            GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item);
     }
     if (groups & 2) {
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[5].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[6].item);
-        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[7].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item);
+        total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item);
     }
     return total;
 }
 
 RVA(0x00025040, 0x30)
 i16 GetItemMagicDefenseBonus(i16 item) {
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return 0;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1637,7 +1647,7 @@ i16 GetItemMagicDefenseBonus(i16 item) {
 
 RVA(0x00025070, 0x30)
 i16 GetItemMagicAccuracyBonus(i16 item) {
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordMagicAccuracyBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1645,7 +1655,7 @@ i16 GetItemMagicAccuracyBonus(i16 item) {
 
 RVA(0x000250a0, 0x30)
 i16 GetItemPhysicalEvasionBonus(i16 item) {
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordPhysicalEvasionBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1653,7 +1663,7 @@ i16 GetItemPhysicalEvasionBonus(i16 item) {
 
 RVA(0x000250d0, 0x30)
 i16 GetItemMagicPowerBonus(i16 item) {
-    if (item == 0 || item == -1) {
+    if (item == 0 || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordMagicPowerBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1706,14 +1716,14 @@ i16 ScaleDamageByEquipment(Character* character, i16 damage, i16 element) {
     for (i = 0; i < 10; i++) {
         ratios[i] = 100;
     }
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[0].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[1].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[2].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[3].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[4].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[5].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[6].item, ratios);
-    ApplyItemDamageRatio(GetCharacterEquipment(character)[7].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, ratios);
+    ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, ratios);
     value = ratios[element] * damage / 100;
     if (value < -0x8000) {
         value = -0x8000;
@@ -1745,14 +1755,16 @@ i16 CountElementGuards(Character* character, i16 element) {
     if (element < 0 || element >= 10) {
         return 0;
     }
-    count = IsItemGuardingElement(GetCharacterEquipment(character)[0].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[1].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[2].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[3].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[4].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[5].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[6].item, element);
-    count += IsItemGuardingElement(GetCharacterEquipment(character)[7].item, element);
+    count = IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, element);
+    count += IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, element);
+    count += IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, element);
+    count += IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, element);
+    count +=
+        IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, element);
+    count +=
+        IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item, element);
+    count += IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, element);
+    count += IsItemGuardingElement(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, element);
     return count;
 }
 
@@ -1762,14 +1774,14 @@ PoolRegen ApplyEquipmentRegen(Character* character) {
 
     regen.hp = 0;
     regen.mp = 0;
-    AddItemRegen(GetCharacterEquipment(character)[0].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[1].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[2].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[3].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[4].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[5].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[6].item, &regen);
-    AddItemRegen(GetCharacterEquipment(character)[7].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, &regen);
+    AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, &regen);
     if (GetFatalCondition(GetCharacterConditions(character)) == 0) {
         FillPool(&character->pools.hp, regen.hp, POOL_FILL_TO_DOUBLE_MAX);
         FillPool(&character->pools.mp, regen.mp, POOL_FILL_TO_DOUBLE_MAX);
@@ -1850,7 +1862,7 @@ i16 ResolveInflictedCondition(i16 code, Character* target) {
             condition = code;
             break;
         case 57:
-            if (GetAlignmentClassB(target) <= 0) {
+            if (GetAlignmentClassB(target) <= ALIGNMENT_NEUTRAL) {
                 condition = 0x11;
             }
             break;
@@ -1889,7 +1901,7 @@ i16 ResolveInflictedCondition(i16 code, Character* target) {
             }
             break;
         case 65:
-            if (GetAlignmentClassB(target) != -1) {
+            if (GetAlignmentClassB(target) != ALIGNMENT_NEGATIVE) {
                 condition = 0xe;
             }
             break;
@@ -1920,14 +1932,20 @@ i16 IsConditionResisted(Character* target, i16 code) {
     if (condition < 1) {
         return 1;
     }
-    resisted = ItemResistsCondition(GetCharacterEquipment(target)[0].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[1].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[2].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[3].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[4].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[5].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[6].item, condition);
-    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[7].item, condition);
+    resisted = ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_HEAD].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_BODY].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_ARMS].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_LEGS].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_ACCESSORY].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_WEAPON].item, condition);
+    resisted |= ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_GUN].item, condition);
+    resisted |=
+        ItemResistsCondition(GetCharacterEquipment(target)[EQUIP_SLOT_AMMO].item, condition);
     return resisted;
 }
 
@@ -2037,7 +2055,11 @@ i16 ExpireSpecialItem(i16 item) {
         if (s_timedItemFlags[item].bank < 0) {
             return item;
         }
-        ModifyEventFlag(s_timedItemFlags[item].bank, s_timedItemFlags[item].index, 0);
+        ModifyEventFlag(
+            s_timedItemFlags[item].bank,
+            s_timedItemFlags[item].index,
+            BIT_CHANGE_CLEAR
+        );
         return item;
     }
     return -1;
@@ -2066,7 +2088,7 @@ i16 ExpireSpecialItems(void) {
     return expired;
 }
 
-static void DiscardMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void DiscardMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x00025cb0, 0xe0)
 #ifdef GITEN_BUGFIX
@@ -2082,7 +2104,8 @@ void RunBagDiscardMenu(void) {
 
     for (i = 0; i < 64; i++) {
         item = GetBagItem(i);
-        if (item != -1 && GetItemPrice(item) != 0 && GetItemKind(item) != ITEM_KIND_SCENARIO) {
+        if (item != ITEM_ID_EMPTY && GetItemPrice(item) != 0
+            && GetItemKind(item) != ITEM_KIND_SCENARIO) {
             entries[count++] = i;
         }
     }
@@ -2118,13 +2141,13 @@ void RunBagDiscardMenu(void) {
 
 RVA(0x00025d90, 0x20)
 void WaitMenuFrame(void) {
-    g_mouseLeftClick = 0;
-    g_mouseRightClick = 0;
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
+    g_mouseRightClick = MOUSE_CLICK_NONE;
     RunFrame();
 }
 
 RVA(0x00025db0, 0xc0)
-static void DiscardMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void DiscardMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     i16* entries = menu->items.entries;
 
     switch (event) {
@@ -2161,7 +2184,7 @@ static void DiscardMenuHandler(MenuBox* menu, i16 index, i16 event) {
 }
 
 static MenuBox* CreateGiftMenu(MenuBox* old);
-static void GiftMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void GiftMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x00025e70, 0xf0)
 b16 RunGemItemGift(void) {
@@ -2210,7 +2233,7 @@ static MenuBox* CreateGiftMenu(MenuBox* old) {
 }
 
 RVA(0x00025fb0, 0xc0)
-static void GiftMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void GiftMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     i16 count;
 
     switch (event) {

@@ -11,6 +11,7 @@
 - [Playing](play.md): the bug-fixed image and its Wine runtime; [bugs](bugs.md): the retail defects and their fixes.
 - [Generated branches](branches.md): the `source`, `classic` and `port` branches.
 - [Permutation experiments](permuter.md) and [compiler patterns](patterns/INDEX.md).
+- [Enum domains](enum-domains.md): declaring and typing proven value domains.
 - [Source markers](comment-markers.md), [todo ledgers](todos/README.md), and [configuration](../config/README.md).
 
 Keep command options in `--help`, schemas beside their implementation, inputs

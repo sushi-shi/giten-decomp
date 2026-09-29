@@ -14,7 +14,7 @@ i32 ClampSum100(i16 a, i16 b, i16 c);
 
 void DrainPool(CurMax* pool, i32 amount);
 
-i16 FillPool(CurMax* pool, i32 amount, GZ_ENUM_STORAGE(PoolFillMode, i16) mode);
+i16 FillPool(CurMax* pool, i32 amount, GZ_ENUM_PARAM(PoolFillMode, i16) mode);
 i16 EmptyPoolMask(CharacterPools* pools);
 
 void RecalcDerivedStats(Character* character);

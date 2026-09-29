@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/BattleEffect.h>
 #include <Game/Character.h>
 #include <Game/Condition.h>
@@ -31,7 +32,8 @@ i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp);
 #define RestoreEffectAllowsCondition(result) ((result) >= 3 && (result) <= 5)
 
 // Clears a restoration group and records the last condition that was present.
-static __inline void ClearEffectConditions(ConditionSet* conditions, const i16* list) {
+static __inline void
+ClearEffectConditions(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list) {
     g_effectCondition = LastConditionIn(conditions, list);
     ClearConditionList(conditions, list);
 }

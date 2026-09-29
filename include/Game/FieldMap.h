@@ -3,6 +3,8 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+
 // Field-map events around an encounter.
 
 // @identity-TODO: the body is a bare ret; the name comes only from its single call site (battle

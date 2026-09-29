@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/Field.h>
 #include <Game/GameLoop.h>
 #include <Game/PartyAction.h>

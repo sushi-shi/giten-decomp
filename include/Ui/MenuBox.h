@@ -3,6 +3,8 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Enums.h>
 #include <Ints.h>
 
 struct Character;
@@ -40,7 +42,7 @@ typedef struct SystemMenuEntry {
     char* label;
 } SystemMenuEntry;
 
-typedef enum MenuEvent {
+GZ_ENUM_BEGIN(MenuEvent)
     MENU_EVENT_DESTROY = -1,
     MENU_EVENT_BEGIN_PAGE = 0,
     MENU_EVENT_ADD_ROW = 1,
@@ -50,16 +52,16 @@ typedef enum MenuEvent {
     MENU_EVENT_AFTER_TEXT = 5,
     MENU_EVENT_BEFORE_PANEL = 6,
     MENU_EVENT_AFTER_PANEL = 7
-} MenuEvent;
+GZ_ENUM_END(MenuEvent)
 
-typedef enum MenuControl {
+GZ_ENUM_BEGIN(MenuControl)
     MENU_CONTROL_PREVIOUS_PAGE = 0,
     MENU_CONTROL_NEXT_PAGE = 1,
     MENU_CONTROL_PREVIOUS_ROW = 2,
     MENU_CONTROL_NEXT_ROW = 3
-} MenuControl;
+GZ_ENUM_END(MenuControl)
 
-typedef void (*MenuHandler)(struct MenuBox* menu, i16 index, i16 event);
+typedef void (*MenuHandler)(struct MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 // A menu owns a text plane and a panel of paging controls. cursor is the
 // first displayed item. Script menus retain a packed file/entry reference.
@@ -107,7 +109,7 @@ void MoveMenuBox(MenuBox* menu, i16 x, i16 y);
 void SetMenuItems(MenuBox* menu, i16 pageRows, void* items, i16 itemCount, MenuHandler handler);
 
 i16 RunMenu(MenuBox* menu);
-void DispatchMenuEvent(MenuBox* menu, i16 index, i16 event);
+void DispatchMenuEvent(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 void BuildMenuPage(MenuBox* menu);
 void PaintMenuBox(MenuBox* menu);
 i16 PollMenuBox(MenuBox* menu);

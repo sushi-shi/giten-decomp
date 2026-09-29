@@ -3,8 +3,11 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Gfx/DDError.h>
+#include <Gfx/ScreenLayer.h>
 #include <Gfx/Sprite.h>
+#include <Input/Mouse.h>
 #include <Platform/D3DApp.h>
 #include <Platform/D3DMath.h>
 #include <Platform/Direct3D.h>
@@ -151,7 +154,7 @@ void RenderFieldMode(BOOL draw);
 // Pumps the joystick and mouse; returns the key state byte of 0x448e60.
 // @identity-TODO: the returned byte's meaning is unrecovered.
 RVA_DECL(0x000501e0)
-u8 PollInput(void);
+GZ_ENUM_RETURN(MouseButtonBits, u8) PollInput(void);
 
 // The object and cell of the hotspot the cursor last moved to.
 extern i32 g_hotspotObject;
@@ -343,12 +346,12 @@ b32 LoadGraphics(void);
 b32 CreateScreenLayer(i32 slot);
 void FreeScreenLayers(void);
 void UpdateLayerPanels(void);
-i32 LayerAtPoint(u32 x, u32 y);
+GZ_ENUM_RETURN(ScreenLayerSlot, i32) LayerAtPoint(u32 x, u32 y);
 i32 LayerIndexAtPoint(u32 x, u32 y);
 b32 PadButtonAtPoint(u32 x, u32 y);
 b32 ClickPanelCommand(u32 y);
-void ReleasePartyPanel(i32 slot, b32 dragged);
-void PlaceDraggedLayer(i32 slot);
+void ReleasePartyPanel(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, b32 dragged);
+void PlaceDraggedLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot);
 
 // The screen, the 3D view's height, the navigation pad (96x96 in 32x32
 // cells), the character panel's eight 24-pixel lines, and the drop areas of
@@ -373,7 +376,7 @@ extern POINT g_cursorPos;
 extern POINT g_dragOffset;
 
 // Handles this frame's mouse input (PollInput's bits).
-void HandleInput(u8 buttons);
+void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons);
 
 // Releases every surface, texture and mesh of the display and the DirectX
 // objects.

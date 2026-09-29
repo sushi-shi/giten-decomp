@@ -4,10 +4,11 @@
 #include <rva.h>
 
 #include <Input/Mouse.h>
+#include <Input/MouseClickState.h>
 #include <Sound/Sound.h>
 
 DATA(0x00091540)
-i16 g_mouseLeftClick;
+GZ_ENUM_STORAGE(MouseClickState, i16) g_mouseLeftClick;
 
 DATA(0x00091982)
 i16 g_mouseLeftClickX;
@@ -31,12 +32,18 @@ DATA(0x000919ee)
 i16 g_selectedObjectId;
 
 DATA(0x000919fa)
-i16 g_mouseRightClick;
+GZ_ENUM_STORAGE(MouseClickState, i16) g_mouseRightClick;
 
-static __inline void
-LatchMouseButtonClick(i16 pressed, i16 x, i16 y, i16* click, i16* clickX, i16* clickY) {
-    if (pressed && *click == 0) {
-        *click = -1;
+static __inline void LatchMouseButtonClick(
+    GZ_ENUM_PARAM(MouseButtonBits, i16) pressed,
+    i16 x,
+    i16 y,
+    GZ_ENUM_STORAGE(MouseClickState, i16) * click,
+    i16* clickX,
+    i16* clickY
+) {
+    if (pressed && *click == MOUSE_CLICK_NONE) {
+        *click = MOUSE_CLICK_PRESENT;
         *clickX = x;
         *clickY = y;
     }
@@ -44,7 +51,7 @@ LatchMouseButtonClick(i16 pressed, i16 x, i16 y, i16* click, i16* clickX, i16* c
 
 RVA(0x00002a00, 0x5d)
 void LatchMouseClicks(void) {
-    u8 buttons = g_mousePosition.buttons;
+    GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = g_mousePosition.buttons;
     i16 y = g_mousePosition.y;
     i16 x = g_mousePosition.x;
     LatchMouseButtonClick(
@@ -67,20 +74,20 @@ void LatchMouseClicks(void) {
 
 RVA(0x00002a60, 0xf)
 void ClearMouseClicks(void) {
-    g_mouseLeftClick = 0;
-    g_mouseRightClick = 0;
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
+    g_mouseRightClick = MOUSE_CLICK_NONE;
 }
 
 // A pending right-click cancels: consume the clicks, optionally drop the
 // hovered and selected objects, and play the cancel sound.
 RVA(0x00002a70, 0x40)
-i16 TakeMouseCancel(i16 clearSelection) {
-    if (g_mouseRightClick == 0) {
-        return 0;
+GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancel(i16 clearSelection) {
+    if (g_mouseRightClick == MOUSE_CLICK_NONE) {
+        return MOUSE_CLICK_NONE;
     }
     ClearMouseClicks();
     if (clearSelection == 0) {
-        return 0;
+        return MOUSE_CLICK_NONE;
     }
     ClearMouseSelection();
     PlaySoundEffect(2);
@@ -88,9 +95,9 @@ i16 TakeMouseCancel(i16 clearSelection) {
 }
 
 RVA(0x00002ab0, 0x22)
-i16 TakeMouseCancelSound(void) {
-    if (g_mouseRightClick == 0) {
-        return 0;
+GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancelSound(void) {
+    if (g_mouseRightClick == MOUSE_CLICK_NONE) {
+        return MOUSE_CLICK_NONE;
     }
     ClearMouseClicks();
     PlaySoundEffect(2);
@@ -98,8 +105,8 @@ i16 TakeMouseCancelSound(void) {
 }
 
 RVA(0x00002ae0, 0x18)
-i16 TakeMouseLeftClick(void) {
-    if (g_mouseLeftClick != 0) {
+GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseLeftClick(void) {
+    if (g_mouseLeftClick != MOUSE_CLICK_NONE) {
         ClearMouseClicks();
         return -1;
     }
@@ -107,7 +114,7 @@ i16 TakeMouseLeftClick(void) {
 }
 
 RVA(0x00002b00, 0x24)
-void SetMouseState(i16 buttons, i16 x, i16 y) {
+void SetMouseState(GZ_ENUM_PARAM(MouseButtonBits, i16) buttons, i16 x, i16 y) {
     g_mousePosition.buttons = buttons;
     g_mousePosition.x = x;
     g_mousePosition.y = y;
@@ -128,11 +135,11 @@ i16 GetMouseY(void) {
 }
 
 RVA(0x00002b50, 0x7)
-i16 GetMouseRightClick(void) {
+GZ_ENUM_RETURN(MouseClickState, i16) GetMouseRightClick(void) {
     return g_mouseRightClick;
 }
 
 RVA(0x00002b60, 0x7)
-i16 GetMouseLeftClick(void) {
+GZ_ENUM_RETURN(MouseClickState, i16) GetMouseLeftClick(void) {
     return g_mouseLeftClick;
 }

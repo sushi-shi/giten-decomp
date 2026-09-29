@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <Util/BitChangeMode.h>
 #include <Util/BitSet.h>
 #include <Util/PixelMask.h>
 
@@ -39,7 +40,7 @@ b32 ChangeBit(u8* bits, u16 index, i16 op) {
     if (op < 0) {
         return ToggleBit(bits, index);
     }
-    if (op > 0) {
+    if (op > BIT_CHANGE_CLEAR) {
         return SetBit(bits, index);
     }
     return ClearBit(bits, index);

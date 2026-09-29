@@ -9,16 +9,20 @@
 #include <stdio.h>
 
 GZ_ENUM_BEGIN_SPLIT(ClockUpdate, i16)
-CLOCK_UPDATE_NONE = 0, CLOCK_UPDATE_TICK = 1, CLOCK_UPDATE_MINUTE = 2, CLOCK_UPDATE_HOUR = 4,
-                       CLOCK_UPDATE_DAY = 8, CLOCK_UPDATE_MOON = 16,
-                       GZ_ENUM_END_SPLIT(ClockUpdate)
+    CLOCK_UPDATE_NONE = 0,
+    CLOCK_UPDATE_TICK = 1,
+    CLOCK_UPDATE_MINUTE = 2,
+    CLOCK_UPDATE_HOUR = 4,
+    CLOCK_UPDATE_DAY = 8,
+    CLOCK_UPDATE_MOON = 16,
+GZ_ENUM_END_SPLIT(ClockUpdate)
 
-    // The game clock, saved and loaded as one record: days, the moon's ticks
-    // (0x5f0 a phase) and phase (0..27: the column of the moon table and the
-    // value OpSwitchOnMoonPhase switches on), the time of day, and the tick
-    // pacing (a tick every framesPerTick frames; minuteStep per tick toward
-    // minuteLimit per minute).
-    typedef struct GameClock {
+// The game clock, saved and loaded as one record: days, the moon's ticks
+// (0x5f0 a phase) and phase (0..27: the column of the moon table and the
+// value OpSwitchOnMoonPhase switches on), the time of day, and the tick
+// pacing (a tick every framesPerTick frames; minuteStep per tick toward
+// minuteLimit per minute).
+typedef struct GameClock {
     i32 days;
     u16 moonTicks;
     u8 moonPhase;
@@ -39,11 +43,11 @@ static __inline void ResetClockPhaseAndTime(GameClock* clock) {
 
 extern GameClock g_clock;
 
-GZ_ENUM_STORAGE(ClockUpdate, i16) AdvanceClock(u16 minutes);
-GZ_ENUM_STORAGE(ClockUpdate, i16) TickClock(u16 minutes);
-void ApplyClockChanges(GZ_ENUM_STORAGE(ClockUpdate, i16) changed);
+GZ_ENUM_RETURN(ClockUpdate, i16) AdvanceClock(u16 minutes);
+GZ_ENUM_RETURN(ClockUpdate, i16) TickClock(u16 minutes);
+void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed);
 void ClearMoonFlags(void);
-GZ_ENUM_STORAGE(ClockUpdate, i16) TickGameClock(i16 paused);
+GZ_ENUM_RETURN(ClockUpdate, i16) TickGameClock(i16 paused);
 
 // Steps a character's moon-driven personal flags; the count changed.
 i16 ApplyMoonPhase(struct Character* character, i16 keep);

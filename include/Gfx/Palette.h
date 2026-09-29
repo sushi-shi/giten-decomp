@@ -1,11 +1,12 @@
 #ifndef GITEN_GFX_PALETTE_H
 #define GITEN_GFX_PALETTE_H
 
+#include <EnumDomain.h>
 #include <Ints.h>
 #include <Enums.h>
 
 // clang-format off
-GZ_ENUM_BEGIN(PaletteUpdateFlags)
+GZ_ENUM_FLAGS_BEGIN(PaletteUpdateFlags, u8)
     PALETTE_UPDATE_DIRTY = 0x40,
     PALETTE_UPDATE_QUEUED = 0x80
 GZ_ENUM_END(PaletteUpdateFlags);

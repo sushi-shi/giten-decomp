@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/FieldSight.h>
 #include <Game/PlayTime.h>
 #include <Game/ScreenEffect.h>
@@ -14,6 +15,7 @@
 #include <Gfx/Vram.h>
 #include <Gfx/VramAccess.h>
 #include <Input/Mouse.h>
+#include <Input/MouseClickState.h>
 #include <Math/Vec3.h>
 #include <Mem/Alloc.h>
 #include <Sound/Sound.h>
@@ -118,8 +120,8 @@ RVA(0x00004940, 0x34)
 void ResetSceneInput(void) {
     ResetPlayTime();
     InitCheckerPatterns();
-    g_mouseLeftClick = 0;
-    g_mouseRightClick = 0;
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
+    g_mouseRightClick = MOUSE_CLICK_NONE;
     s_sceneInputPending = 0;
     s_sceneInputFirst = 0;
     s_sceneInputSecond = 0;
@@ -499,7 +501,7 @@ RVA(0x000051c0, 0x49)
 void LoadEffectRecord(i16 slot, i16 id) {
     FILE* fp;
     s_effectSlots[slot].id = id;
-    fp = OpenDataFile((id + 0x600) * 16, 2, 0);
+    fp = OpenDataFile((id + 0x600) * 16, DATA_FILE_EFFECT, 0);
     s_effectSlots[slot].record = ReadRawAlloc(fp);
     CloseDataFile(fp);
 }

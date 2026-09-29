@@ -2610,7 +2610,7 @@ void OpRebalanceMemberStats(void) {
         for (i = 0; i < 11; i++) {
             i16 sum = character->stats.bonus[i] + character->stats.equipment[i]
                       + GetBaseStat(character, i) + character->stats.modifiers[i];
-            if (HasCondition(GetCharacterConditions(character), 8)) {
+            if (HasCondition(GetCharacterConditions(character), CONDITION_ZOMBIE)) {
                 sum /= 2;
             }
             character->stats.base[i] += GetStatTotal(character, i) - sum;
@@ -3751,7 +3751,7 @@ void OpClearObjectCondition(void) {
 }
 
 RVA(0x00037f00, 0x20)
-i32 GetObjectStatTotal(i16 ref, i16 stat) {
+i32 GetObjectStatTotal(i16 ref, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
     Character* object = ResolveScriptObject(ref);
     if (!object) {
         return 0;
@@ -3944,7 +3944,7 @@ void OpMaskRosterByKind(void) {
 // Fills pool `pool` (1: HP, else MP) by `amount` for each roster slot in the
 // mask.
 RVA(0x000382b0, 0x67)
-void OpRecoverRosterPool(i16 pool) {
+void OpRecoverRosterPool(GZ_ENUM_PARAM(CharacterPoolMask, i16) pool) {
     u32 mask;
     u32 bit = 1;
     i16 amount;
@@ -3953,7 +3953,7 @@ void OpRecoverRosterPool(i16 pool) {
     amount = ReadScriptValue();
     for (i = 0; i < 32; i++) {
         if (RosterMemberAt(i) && (mask & bit)) {
-            if (pool == 1) {
+            if (pool == POOL_MASK_HP) {
                 FillPool(&RosterMemberAt(i)->pools.hp, amount, POOL_FILL_TO_MAX);
             } else {
                 FillPool(&RosterMemberAt(i)->pools.mp, amount, POOL_FILL_TO_MAX);

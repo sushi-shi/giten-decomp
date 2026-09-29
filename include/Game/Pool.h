@@ -1,6 +1,7 @@
 #ifndef GITEN_GAME_POOL_H
 #define GITEN_GAME_POOL_H
 
+#include <EnumDomain.h>
 #include <Ints.h>
 #include <Util/CurMax.h>
 #include <Game/PoolFillMode.h>
@@ -24,6 +25,6 @@ void ChangePool(CurMax* pool, i32 amount);
 // Refills a pool (mode 0 up to its maximum, 1 without a cap, 2 up to twice
 // its maximum). Also declared in <Game/Stats.h>, which itemrecord.c cannot
 // include: it shifts SetBagEntry there.
-i16 FillPool(CurMax* pool, i32 amount, GZ_ENUM_STORAGE(PoolFillMode, i16) mode);
+i16 FillPool(CurMax* pool, i32 amount, GZ_ENUM_PARAM(PoolFillMode, i16) mode);
 
 #endif // GITEN_GAME_POOL_H

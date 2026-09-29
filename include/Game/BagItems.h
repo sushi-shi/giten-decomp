@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Game/ItemStack.h>
 #include <Ints.h>
@@ -71,7 +72,7 @@ b16 IsEquipCurseActive(Character* character, i16 part);
 
 // The item category of `id`'s kind: 0..7 for kinds 11..19, -1 otherwise.
 // @identity-TODO: what the categories name is unrecovered.
-i16 GetItemCategory(i16 id);
+GZ_ENUM_RETURN(EquipPart, i16) GetItemCategory(i16 id);
 
 // How many of `id` are held (in the gem table or the bag).
 i16 CountHeldItem(i16 id);

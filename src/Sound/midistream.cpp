@@ -408,7 +408,8 @@ b32 CMidiStream::Play(
     DWORD volume,
     DWORD* channelVolumes
 ) {
-    if (strcmp(m_files[0], intro) != 0 || (loop != NULL && strcmp(m_files[1], loop) != 0)) {
+    if (strcmp(m_files[MIDI_PART_INTRO], intro) != 0
+        || (loop != NULL && strcmp(m_files[MIDI_PART_LOOP], loop) != 0)) {
         if (!Open(intro, loop)) {
             return false;
         }
@@ -459,7 +460,7 @@ b32 CMidiStream::Replay(BOOL looping, DWORD volume, DWORD* channelVolumes) {
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00056640, 0xf0)
 b32 CMidiStream::Restore() {
-    char files[2][MAX_PATH];
+    char files[MIDI_PART_COUNT][MAX_PATH];
     int i;
 
     for (i = 0; i < MIDI_PART_COUNT; i++) {
@@ -469,13 +470,13 @@ b32 CMidiStream::Restore() {
         case MIDI_STATE_EMPTY:
             break;
         case MIDI_STATE_STOPPED:
-            Open(files[0], files[1]);
+            Open(files[MIDI_PART_INTRO], files[MIDI_PART_LOOP]);
             Prepare();
             m_doneCount = 0;
             m_prepared = TRUE;
             break;
         case MIDI_STATE_PLAYING:
-            Open(files[0], files[1]);
+            Open(files[MIDI_PART_INTRO], files[MIDI_PART_LOOP]);
             Replay(m_looping, m_volume, m_channelVolumes);
             return true;
         default:

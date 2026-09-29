@@ -10,6 +10,8 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataTableId.h>
+#include <Game/ActionMark.h>
 #include <Game/Actor.h>
 #include <Game/Alignment.h>
 #include <Game/AnalyzeData.h>
@@ -23,6 +25,7 @@
 #include <Game/ConditionAge.h>
 #include <Game/DemonTable.h>
 #include <Game/DoorRegion.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/Familiarity.h>
 #include <Game/Field.h>
 #include <Game/FieldActor.h>
@@ -52,6 +55,7 @@
 #include <Gfx/ScreenSave.h>
 #include <Gfx/Vram.h>
 #include <Input/Mouse.h>
+#include <Math/FieldSubcell.h>
 #include <Math/Vec3.h>
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
@@ -69,7 +73,7 @@
 // @identity-TODO: the floor cell of the n-th of up to ten objects drawn
 // together, far rows and the near row.
 DATA(0x00064328)
-static const i16 s_farCells[10][9] = {
+static const GZ_ENUM_STORAGE(FieldSubcell, i16) s_farCells[10][9] = {
     {4, 4, 4, 4, 4, 4, 4, 4, 4},
     {4, 3, 5, 1, 2, 0, 7, 8, 6},
     {3, 5, 4, 1, 2, 0, 7, 8, 6},
@@ -83,7 +87,7 @@ static const i16 s_farCells[10][9] = {
 };
 
 DATA(0x000643e0)
-static const i16 s_nearCells[10][9] = {
+static const GZ_ENUM_STORAGE(FieldSubcell, i16) s_nearCells[10][9] = {
     {4, 4, 4, 4, 4, 4, 4, 4, 4},
     {4, 3, 5, 1, 2, 0, 0, 1, 2},
     {3, 5, 4, 1, 2, 0, 0, 1, 2},
@@ -587,7 +591,7 @@ b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 dr
     facing = RelativeFacing(g_viewFacing, object->direction);
     point = GetApproachOffset(g_viewLateral, g_viewDepth);
     sprite = s_facingSprite[facing];
-    CellToField(g_viewLateral, g_viewDepth, 4, &cell);
+    CellToField(g_viewLateral, g_viewDepth, FIELD_SUBCELL_CENTER, &cell);
     frame = GetLayerFrame(image, 0, cell.z);
     redraw = object->redraw != 0;
     if (g_viewDepth == 0) {
@@ -1018,7 +1022,7 @@ RVA(0x0000eb70, 0xea)
 void LoadLayerScriptSet(FieldLayer* layer, i16 set) {
     FILE* fp;
     if (s_scriptSets == NULL) {
-        fp = OpenDataFile(7, 12, 0);
+        fp = OpenDataFile(DATA_TABLE_OBJECT_SCRIPT_SETS, 12, 0);
         ReadRawBlock(fp, s_scriptSetBuffer);
         s_scriptSets = s_scriptSetBuffer;
         CloseDataFile(fp);
@@ -1234,7 +1238,7 @@ i16 DirectionToParty(i16 x, i16 y) {
 
 RVA(0x0000f1a0, 0x34)
 void LoadEncounterWeights(void) {
-    FILE* fp = OpenDataFile(5, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_ENCOUNTER_WEIGHTS, 12, 0);
     ReadRawBlock(fp, s_encounterBuffer);
     s_fieldEncounterWeights = s_encounterBuffer;
     CloseDataFile(fp);
@@ -1509,7 +1513,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             }
             g_actorId = index;
             object->mode = 10;
-            object->pickRole = 1;
+            object->pickRole = PICK_ROLE_ATTACK;
             SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
             g_actionId = 1;
             tries = 0;
@@ -1519,14 +1523,14 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                     g_actionId = object->skills[slot - 1];
                     object->pickTarget = g_actionId;
                     object->pickTargetHigh = 1;
-                    object->pickRole = 4;
+                    object->pickRole = PICK_ROLE_MAGIC;
                     result = UseObjectSkill(object, g_actionId);
                     if (result < 0) {
                         if (++tries < 4) {
                             continue;
                         }
                         g_actionId = 1;
-                        object->pickRole = 1;
+                        object->pickRole = PICK_ROLE_ATTACK;
                         SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
                     } else if (result != 0) {
                         action = 2;
@@ -1534,7 +1538,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                     }
                 } else {
                     object->mode = 10;
-                    object->pickRole = 1;
+                    object->pickRole = PICK_ROLE_ATTACK;
                     SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
                     g_actionId = 1;
                 }
@@ -1549,7 +1553,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             break;
         attack:
             FaceObjectToParty(object, 0);
-            GetFieldObjectActionWait(object)->ready = 0;
+            GetFieldObjectActionWait(object)->ready = ACTION_UNMARKED;
             if (action < 2) {
                 ChooseObjectTarget(object);
                 break;
@@ -1660,7 +1664,7 @@ b16 ChooseObjectTarget(FieldObject* object) {
 RVA(0x0000fea0, 0x88)
 b16 BeginPartyTargetSkill(Character* character) {
     i16 flags;
-    if (character->pickRole != 4) {
+    if (character->pickRole != PICK_ROLE_MAGIC) {
         return false;
     }
     flags = GetSkillTargetFlags(character->pickTarget);
@@ -1680,7 +1684,7 @@ static __inline const DemonTable* ReadDemonTable(void) {
 
 RVA(0x0000ff30, 0x70)
 void LoadDemonTables(void) {
-    FILE* fp = OpenDataFile(0, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_DEMONS, 12, 0);
     s_demonRecords = ReadCryptHandle(fp);
     s_raceClasses = ReadCryptHandle(fp);
     s_raceNames = ReadCryptHandle(fp);
@@ -1934,7 +1938,7 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->stats.base[STAT_CHARM] = record->stats[STAT_CHARM];
     object->stats.base[STAT_FORTUNE] = record->stats[STAT_FORTUNE];
     object->actionSpeed = record->actionSpeed;
-    GetFieldObjectActionWait(object)->remaining = 0xff - RandomAverage(0, 100, 0);
+    GetFieldObjectActionWait(object)->remaining = ACTION_WAIT_RESET - RandomAverage(0, 100, 0);
     for (i = 0; i < sizeof(object->battleTally); i++) {
         object->battleTally[i] = 0;
     }
@@ -1955,8 +1959,9 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
         EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
         GetFieldObjectEquipment(object)[7].attachment = -1;
     } else {
-        GetFieldObjectEquipment(object)[7].quantity =
-            GetGunMagazineSize(GetLoadedRecord(GetFieldObjectEquipment(object)[6].item));
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].quantity = GetGunMagazineSize(
+            GetLoadedRecord(GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item)
+        );
     }
     NormalizeEquipSlots((Character*)&object->kind);
     for (i = 0; i < sizeof(object->conditions.bits); i++) {
@@ -2254,11 +2259,11 @@ RVA(0x00010fc0, 0x67)
 void LoadEncounterTables(void) {
     FILE* fp;
     FreeEncounterTables();
-    fp = OpenDataFile(0x21, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_WORLD_ENCOUNTERS, 12, 0);
     s_encounterChoices = ReadRawHandle(fp);
     s_encounterWeights = ReadRawHandle(fp);
     CloseDataFile(fp);
-    fp = OpenDataFile(0x10ff, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, 12, 0);
     s_fieldTable = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -2439,7 +2444,7 @@ void LoadFieldTable(void) {
     FILE* fp = NULL;
     EncounterFieldImage* images;
     if (s_fieldTable == 0) {
-        fp = OpenDataFile(0x10ff, 12, 0);
+        fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, 12, 0);
         s_fieldTable = ReadRawHandle(fp);
         CloseDataFile(fp);
     }

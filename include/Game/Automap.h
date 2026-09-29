@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Enums.h>
 #include <Game/GameState.h>
 
 // Marks a cell explored in the bitmap saved for its area and level.
@@ -20,13 +21,14 @@ void UpdateAutomapScrollPanel(void);
 b16 RunAutomapState(void);
 
 // Detail gates include NPC markers at level two and object markers at level three.
+// The map's current level is a word and an icon's minimum level a byte.
 // clang-format off
-GZ_ENUM_BEGIN_SPLIT(AutomapDetail, u8)
+GZ_ENUM_BEGIN(AutomapDetail)
     AUTOMAP_DETAIL_NONE = 0,
     AUTOMAP_DETAIL_BASIC = 1,
     AUTOMAP_DETAIL_NPCS = 2,
     AUTOMAP_DETAIL_OBJECTS = 3,
-GZ_ENUM_END_SPLIT(AutomapDetail)
+GZ_ENUM_END(AutomapDetail)
 
 typedef struct AutomapIcon {
     u8 code;

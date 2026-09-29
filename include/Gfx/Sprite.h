@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Gfx/Picture.h>
 #include <Ints.h>
@@ -72,8 +73,8 @@ extern "C" {
     // Clears the scene picture and image groups, selecting the layers drawn over sprites.
     // The mode remains a signed word across the game/platform boundary.
     RVA_DECL(0x000497d0)
-    void ResetSprites(i16 mode);
-    i16 GetSpriteMode(void);
+    void ResetSprites(GZ_ENUM_PARAM(SpriteLayerMode, i16) mode);
+    GZ_ENUM_RETURN(SpriteLayerMode, i16) GetSpriteMode(void);
 
     // Marks every sprite slot unplaced.
     // @identity-TODO: also clears the 16-entry table 0x48f588 to -1, whose role

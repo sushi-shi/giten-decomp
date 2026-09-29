@@ -8,6 +8,7 @@
 #include <Script/Script.h>
 #include <Script/ScriptOps.h>
 #include <Script/ScriptVars.h>
+#include <Util/BitChangeMode.h>
 #include <Util/BitSet.h>
 
 #include <stddef.h>
@@ -43,7 +44,7 @@ b32 ChangeEventFlag(u16 bank, u16 index, i16 op) {
 
 RVA(0x00039250, 0x15)
 b32 ClearEventFlag(u16 bank, u16 index) {
-    return ChangeEventFlag(bank, index, 0);
+    return ChangeEventFlag(bank, index, BIT_CHANGE_CLEAR);
 }
 
 // Sets every flag, then clears banks 4, 14 and 15 and flag 0.
@@ -83,12 +84,12 @@ b32 ModifyEventFlag(u16 bank, u16 index, i16 op) {
 
 RVA(0x00039350, 0x15)
 b32 SetEventFlag(u16 bank, u16 index) {
-    return ChangeEventFlag(bank, index, 1);
+    return ChangeEventFlag(bank, index, BIT_CHANGE_SET);
 }
 
 RVA(0x00039370, 0x15)
 b32 ToggleEventFlag(u16 bank, u16 index) {
-    return ChangeEventFlag(bank, index, -1);
+    return ChangeEventFlag(bank, index, BIT_CHANGE_TOGGLE);
 }
 
 RVA(0x00039390, 0x6)

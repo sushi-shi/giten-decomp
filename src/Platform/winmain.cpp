@@ -158,7 +158,7 @@ DATA(0x0008fb08)
 static b32 s_layerDragging;
 
 DATA(0x00090abc)
-static i16 s_spriteMode;
+static GZ_ENUM_STORAGE(SpriteLayerMode, i16) s_spriteMode;
 
 DATA(0x00090ac0)
 static i16 s_frameCount;
@@ -300,18 +300,18 @@ void InvalidateSelectedHotspot(void) {
 }
 
 RVA(0x000497d0, 0x25)
-void ResetSprites(i16 mode) {
+void ResetSprites(GZ_ENUM_PARAM(SpriteLayerMode, i16) mode) {
     i16 slot;
 
     s_spriteMode = mode;
     ClearScenePicture();
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < SPRITE_GROUP_COUNT; slot++) {
         FreeSpriteImages(slot);
     }
 }
 
 RVA(0x00049800, 0x7)
-i16 GetSpriteMode(void) {
+GZ_ENUM_RETURN(SpriteLayerMode, i16) GetSpriteMode(void) {
     return s_spriteMode;
 }
 
@@ -597,7 +597,7 @@ static b16 s_pendingKey;
 
 // The running fade's mode (0 = none).
 DATA(0x0008f1d4)
-i16 g_fadeMode;
+GZ_ENUM_STORAGE(ScreenFadeMode, i16) g_fadeMode;
 
 DATA(0x0008f2cc)
 D3DVALUE g_billboardX;
@@ -644,8 +644,8 @@ static i16 s_fadeSteps;
 // opaque, even modes out to opaque; modes above 4 fade through white. Ignored
 // while a fade runs or, for fades out, while the screen is already covered.
 RVA(0x00049d60, 0x6a)
-void StartScreenFade(i16 mode, i16 steps) {
-    if (g_fadeMode != 0) {
+void StartScreenFade(GZ_ENUM_PARAM(ScreenFadeMode, i16) mode, i16 steps) {
+    if (g_fadeMode != SCREEN_FADE_NONE) {
         return;
     }
     if (s_screenCovered && !IsScreenFadeIn(mode)) {
@@ -677,7 +677,7 @@ RVA(0x00049dd0, 0xb3)
 void StepScreenFade(void) {
     i32 alpha;
 
-    if (g_fadeMode == 0) {
+    if (g_fadeMode == SCREEN_FADE_NONE) {
         return;
     }
     if (--s_fadeCountdown != 0) {
@@ -687,13 +687,13 @@ void StepScreenFade(void) {
     s_fadeCountdown = s_fadeSteps;
     if (IsScreenFadeIn(g_fadeMode)) {
         if (s_fadeAlpha <= 0) {
-            g_fadeMode = 0;
+            g_fadeMode = SCREEN_FADE_NONE;
             return;
         }
         alpha = s_fadeAlpha - 17;
     } else {
         if (s_fadeAlpha >= 0xff) {
-            g_fadeMode = 0;
+            g_fadeMode = SCREEN_FADE_NONE;
             s_screenCovered = true;
             SetScreenFadeAlpha(0xff);
             if (g_renderMode == RENDER_MODE_VIEW && g_scenePicture.visible) {
@@ -707,7 +707,7 @@ void StepScreenFade(void) {
 }
 
 RVA(0x00049e90, 0x7)
-i16 GetScreenFade(void) {
+GZ_ENUM_RETURN(ScreenFadeMode, i16) GetScreenFade(void) {
     return g_fadeMode;
 }
 
@@ -715,13 +715,13 @@ i16 GetScreenFade(void) {
 // target.
 RVA(0x00049ea0, 0x57)
 void FinishScreenFade(void) {
-    while (g_fadeMode != 0) {
+    while (g_fadeMode != SCREEN_FADE_NONE) {
         RenderFrame();
     }
     s_screenCovered = false;
     PollInput();
     ClearMouseClicks();
-    SetMouseState(0, 0, 0);
+    SetMouseState(MOUSE_UP, 0, 0);
     ClearDisplaySurface(g_renderTarget, NULL);
 }
 
@@ -774,9 +774,10 @@ static BOOL (*s_moveCommands[8])(i16 nextPhase) = {
 // Hides layer 1's panel and runs move command `command` (0..7).
 RVA(0x00049f50, 0x45)
 BOOL RunMoveCommand(i16 command, i16 nextPhase) {
-    if (g_screenLayers[1]->visible) {
-        g_screenLayers[1]->visible = FALSE;
-        g_screenLayers[1]->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+    if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
+        g_screenLayers[SCREEN_LAYER_PANEL]->visible = FALSE;
+        g_screenLayers[SCREEN_LAYER_PANEL]
+            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
     }
     return s_moveCommands[command & 7](nextPhase);
 }
@@ -2822,7 +2823,7 @@ static i32 s_layerOrder[8] = {14, 8, 9, 10, 11, 12, 13, 0};
 RVA(0x0004e1d0, 0xfd)
 void BlitScreenLayers(i32 first, i32 last, u32 flags) {
     i32 i;
-    i32 index;
+    GZ_ENUM_LOCAL(ScreenLayerSlot, i32) index;
 
     if (flags & BLIT_LAYERS_ORDERED) {
         for (i = first; i < last; i++) {
@@ -3557,7 +3558,7 @@ void RenderFrame(void) {
             s_lastDrawTime = now;
         }
         s_renderModes[g_renderMode & RENDER_MODE_MASK](draw);
-        if (draw && (g_fadeMode != 0 || s_screenCovered)) {
+        if (draw && (g_fadeMode != SCREEN_FADE_NONE || s_screenCovered)) {
             DrawScreenFade();
         }
         s_viewChanged = FALSE;
@@ -3654,7 +3655,7 @@ static u16 s_ceilingIndices[6] = {0, 3, 2, 0, 2, 1};
 // matching ceiling cells.
 RVA(0x0004f3f0, 0x270)
 void BuildRoomMesh(Mesh* mesh, i32 cols, i32 rows) {
-    i32 layer;
+    GZ_ENUM_STORAGE(ScreenLayerSlot, i32) layer;
     i32 col;
     i32 row;
     i32 k;
@@ -4311,13 +4312,13 @@ POINT g_cursorPos;
 // Reads the mouse buttons and position and the joystick for this frame;
 // returns PollMouseButtons' bits.
 RVA(0x000501e0, 0x3c)
-u8 PollInput(void) {
-    u8 buttons = PollMouseButtons();
+GZ_ENUM_RETURN(MouseButtonBits, u8) PollInput(void) {
+    GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = PollMouseButtons();
 
     GetCursorPos(&g_cursorPos);
     // the pun: this layer's prototype of SetMouseState takes the buttons as a
     // byte and the position as LONGs (0x450203 pushes the byte's dword slot).
-    reinterpret_cast<void (*)(u8, LONG, LONG)>(SetMouseState)(
+    reinterpret_cast<void (*)(GZ_ENUM_PARAM(MouseButtonBits, u8), LONG, LONG)>(SetMouseState)(
         buttons,
         g_cursorPos.x,
         g_cursorPos.y
@@ -4619,7 +4620,7 @@ static void ReleasePartyPanelOnTick(i32 slot, b32 dragged) {
 // navigation pad and layer dragging; the 3D view's hotspots get the other
 // clicks.
 RVA(0x00050540, 0x580)
-void HandleInput(u8 buttons) {
+void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
     ScreenLayer* layer;
     b32 busy;
     i32 i;
@@ -4923,7 +4924,7 @@ Texture g_textBoxTexture;
 RVA(0x00050ac0, 0x48e)
 b32 LoadGraphics(void) {
     i32 i;
-    i32 layer;
+    GZ_ENUM_STORAGE(ScreenLayerSlot, i32) layer;
     b32 failed;
 
     ClearHandleTable();
@@ -5012,7 +5013,7 @@ RVA(0x00050f50, 0x1ad)
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int show) {
     MSG message;
     DWORD nextTick;
-    u8 buttons;
+    GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons;
 
     if (FindWindow("CLASSSDDSWIN", "DDSWIN")) {
         return 0;
@@ -5065,7 +5066,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
 #endif
         if (timeGetTime() > nextTick) {
             nextTick = timeGetTime() + 1;
-            if (g_moveState == 0 && g_fadeMode == 0) {
+            if (g_moveState == 0 && g_fadeMode == SCREEN_FADE_NONE) {
                 buttons = PollInput();
                 if (StepGame()) {
                     ReleaseGraphics();

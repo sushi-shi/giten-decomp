@@ -587,7 +587,7 @@ void DrainPool(CurMax* pool, i32 amount) {
 // Refills a pool: mode 0 up to its maximum, 1 without a cap, 2 up to twice
 // its maximum; other modes do nothing and return 0.
 RVA(0x0003d090, 0x97)
-i16 FillPool(CurMax* pool, i32 amount, GZ_ENUM_STORAGE(PoolFillMode, i16) mode) {
+i16 FillPool(CurMax* pool, i32 amount, GZ_ENUM_PARAM(PoolFillMode, i16) mode) {
     u16 limit;
     switch (mode) {
         case POOL_FILL_TO_MAX:
@@ -678,8 +678,8 @@ i32 CalcWeaponAccuracyStat(i16* stats, i16 bonus) {
 
 RVA(0x0003d3f0, 0x80)
 i32 CalcWeaponPowerStat(i16* stats, i16 bonus, i16 level, i16 penalty) {
-    double value = stats[5];
-    value += stats[6];
+    double value = stats[STAT_STRENGTH];
+    value += stats[STAT_VITALITY];
     value *= 0.2;
     value += bonus;
     if (level >= 0x20) {
@@ -703,7 +703,7 @@ i32 CalcWeaponEvasionStat(i16* stats, i16 bonus) {
 // as retail does; in this unit cl loads stats[STAT_MAGIC] first (commutative order).
 RVA(0x0003d4d0, 0x1e)
 i32 CalcMagicAccuracyStat(i16* stats, i16 bonus) {
-    i16 sum = stats[3] + stats[2];
+    i16 sum = stats[STAT_INTELLIGENCE] + stats[STAT_MAGIC];
     return ClampTo999(sum / 2);
 }
 
@@ -1101,7 +1101,7 @@ RVA(0x0003e1f0, 0x164)
 void DrawPartyStatusSlot(i16 slot, Character* character) {
     char name[36];
     i16 partySlot = slot;
-    slot += 8;
+    slot += SCREEN_LAYER_FIRST_PANEL;
     if (character == NULL) {
         g_panelMembers[partySlot] = NULL;
         ClearLayerSurface(slot);
@@ -1189,7 +1189,7 @@ i16 PollTextPartySlotSelection(i16 mode) {
 }
 
 RVA(0x0003e590, 0xc9)
-i16 PollPartySlotSelection(i16 mode) {
+i16 PollPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
     i16 slot;
     if (g_mouseLeftClick) {
         CommitPartySlotSelection();
@@ -1514,12 +1514,12 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
 }
 
 RVA(0x0003edd0, 0x13)
-i16 GetFatalCondition(ConditionSet* conditions) {
+GZ_ENUM_RETURN(ConditionId, i16) GetFatalCondition(ConditionSet* conditions) {
     return LastConditionIn(conditions, s_fatalConditions);
 }
 
 RVA(0x0003edf0, 0x43)
-i16 LastConditionIn(ConditionSet* conditions, const i16* list) {
+i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list) {
     i16 found = 0;
     i16 i;
     for (i = 0; list[i] != -1; i++) {
@@ -1531,7 +1531,7 @@ i16 LastConditionIn(ConditionSet* conditions, const i16* list) {
 }
 
 RVA(0x0003ee40, 0x32)
-void ClearConditionList(ConditionSet* conditions, const i16* list) {
+void ClearConditionList(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list) {
     i16 i;
     for (i = 0; list[i] != -1; i++) {
         ClearCondition(conditions, list[i]);
@@ -1539,7 +1539,7 @@ void ClearConditionList(ConditionSet* conditions, const i16* list) {
 }
 
 RVA(0x0003ee80, 0x13)
-i16 GetPickBlockingCondition(ConditionSet* conditions) {
+GZ_ENUM_RETURN(ConditionId, i16) GetPickBlockingCondition(ConditionSet* conditions) {
     return LastConditionIn(conditions, s_pickBlockingConditions);
 }
 
@@ -1555,7 +1555,7 @@ b16 IsFieldConditionRestricted(i16 condition) {
 }
 
 RVA(0x0003eee0, 0x13)
-i16 GetDisablingCondition(ConditionSet* conditions) {
+GZ_ENUM_RETURN(ConditionId, i16) GetDisablingCondition(ConditionSet* conditions) {
     return LastConditionIn(conditions, s_disablingConditions);
 }
 
@@ -1578,7 +1578,7 @@ void ClearAllConditions(ConditionSet* conditions) {
 RVA(0x0003ef60, 0x37)
 i16 AgeConditions(ConditionSet* conditions, i16 amount) {
     i16 aged = 0;
-    i16 i;
+    GZ_ENUM_LOCAL(ConditionId, i16) i;
     if (!amount) {
         return 0;
     }
@@ -1684,7 +1684,11 @@ i16 ApplyEmptyPools(Character* character) {
 // Escalates `mild` to `severe`: 0 when `severe` is held, 1 when `mild` was
 // added, 2 when `mild` became `severe`.
 RVA(0x0003f1c0, 0x60)
-i16 EscalateCondition(ConditionSet* conditions, i16 mild, i16 severe) {
+i16 EscalateCondition(
+    ConditionSet* conditions,
+    GZ_ENUM_PARAM(ConditionId, i16) mild,
+    GZ_ENUM_PARAM(ConditionId, i16) severe
+) {
     if (HasCondition(conditions, severe)) {
         return 0;
     }
@@ -1699,7 +1703,11 @@ i16 EscalateCondition(ConditionSet* conditions, i16 mild, i16 severe) {
 
 // Eases `severe` to `mild` (2), or clears `mild` (1); 0 when neither is held.
 RVA(0x0003f220, 0x6c)
-i16 EaseCondition(ConditionSet* conditions, i16 mild, i16 severe) {
+i16 EaseCondition(
+    ConditionSet* conditions,
+    GZ_ENUM_PARAM(ConditionId, i16) mild,
+    GZ_ENUM_PARAM(ConditionId, i16) severe
+) {
     if (HasCondition(conditions, severe)) {
         ClearCondition(conditions, severe);
         ClearCondition(conditions, mild);
@@ -1745,7 +1753,7 @@ const char* NextConditionName(ConditionSet* conditions, i16* cursor) {
 }
 
 RVA(0x0003f350, 0x30)
-const char* GetConditionName(i16 bit) {
+const char* GetConditionName(GZ_ENUM_PARAM(ConditionId, i16) bit) {
     i16 i;
     for (i = 0; i < sizeof(s_conditionNames) / sizeof(s_conditionNames[0]); i++) {
         if (s_conditionNames[i].bit == bit) {
@@ -2213,7 +2221,7 @@ i16 CountFallenHumans(void) {
         }
     }
     if (shown != -1 && !found) {
-        HideScreenLayer(1);
+        HideScreenLayer(SCREEN_LAYER_PANEL);
     }
     return fallen;
 }
@@ -2510,8 +2518,8 @@ b16 CanGroupEquip(i16 group, i16 item) {
 }
 
 RVA(0x00040290, 0x74)
-i16 EquipPartOfItem(ItemRecord* item) {
-    i16 part;
+GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(ItemRecord* item) {
+    GZ_ENUM_LOCAL(EquipPart, i16) part;
     i16 kind = item->kind;
     kind -= ITEM_KIND_WEAPON;
     switch (kind) {
@@ -2545,7 +2553,7 @@ i16 EquipPartOfItem(ItemRecord* item) {
 }
 
 RVA(0x00040310, 0x90)
-ItemSlot GetEquipSlot(Character* character, i16 part) {
+ItemSlot GetEquipSlot(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
     ItemSlot none = {-1, -1, 0};
     if (character != NULL) {
         switch (part) {
@@ -2571,17 +2579,17 @@ ItemSlot GetEquipSlot(Character* character, i16 part) {
 }
 
 RVA(0x000403a0, 0x1c)
-ItemSlot GetRosterEquipSlot(i16 slot, i16 part) {
+ItemSlot GetRosterEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part) {
     return GetEquipSlot(GetRosterCharacter(slot), part);
 }
 
 RVA(0x000403c0, 0x1b)
-i16 GetEquipItem(Character* character, i16 part) {
+i16 GetEquipItem(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
     return GetEquipSlot(character, part).item;
 }
 
 RVA(0x000403e0, 0x110)
-i16 SetEquipSlot(i16 slot, i16 part, ItemSlot item, i16 check) {
+GZ_ENUM_RETURN(EquipPart, i16) SetEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part, ItemSlot item, i16 check) {
     Character* character = GetRosterCharacter(slot);
     if (!character) {
         return -1;
@@ -2621,7 +2629,7 @@ i16 SetEquipSlot(i16 slot, i16 part, ItemSlot item, i16 check) {
 }
 
 RVA(0x000404f0, 0x93)
-void UnequipPart(i16 slot, i16 part) {
+void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part) {
     ItemSlot empty;
     ItemSlot item;
     ClearItemSlot(&empty);
@@ -2662,7 +2670,7 @@ i16 GetGunAmmoType(Character* character) {
 // -1. Ammunition (kind 13) must match the equipped gun; anything else must be
 // allowed for the character's equipment group.
 RVA(0x00040620, 0x82)
-i16 CanEquipItem(Character* character, i16 item) {
+GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(Character* character, i16 item) {
     ItemRecord* record;
     i16 part;
     if (item < 1) {
@@ -2689,8 +2697,8 @@ i16 CanEquipItem(Character* character, i16 item) {
 // Puts `item` on its equipment part of roster member `slot` (SetEquipSlot's
 // result in `*result`) and returns the item slot it replaces.
 RVA(0x000406b0, 0x52)
-ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, i16* result) {
-    i16 part = EquipPartOfItem(GetLoadedRecord(item.item));
+ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, GZ_ENUM_STORAGE(EquipPart, i16) * result) {
+    GZ_ENUM_LOCAL(EquipPart, i16) part = EquipPartOfItem(GetLoadedRecord(item.item));
     ItemSlot old = GetRosterEquipSlot(slot, part);
     *result = SetEquipSlot(slot, part, item, 1);
     return old;
@@ -2702,7 +2710,7 @@ ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, i16* result) {
 // parts 3, 5 and 6.
 RVA(0x00040710, 0x11a)
 ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
-    i16 result;
+    GZ_ENUM_STORAGE(EquipPart, i16) result;
     ItemSlot old = SwapEquipSlot(slot, item, &result);
     if (result != -1) {
         Character* character = GetRosterCharacter(slot);
@@ -2827,7 +2835,7 @@ MenuBox* CreateStatusListMenu(MenuBox* parent) {
 }
 
 RVA(0x00040a80, 0xa8)
-void StatusListMenuHandler(MenuBox* menu, i16 index, i16 event) {
+void StatusListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     i16 slot = g_statusSlots[index];
     i16 result;
     switch (event) {
@@ -2838,11 +2846,11 @@ void StatusListMenuHandler(MenuBox* menu, i16 index, i16 event) {
         case MENU_EVENT_ADD_ROW:
             result = FormatStatusLine(slot, index);
             if (result == -1) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2500, slot, 1);
+                AddMenuLine(menu->plane, g_scratchBuffer, 0x2500, slot, MENU_LINE_DISABLED);
             } else if (result >= 0) {
                 AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, slot, 0);
             } else {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2500, slot, 1);
+                AddMenuLine(menu->plane, g_scratchBuffer, 0x2500, slot, MENU_LINE_DISABLED);
             }
             break;
     }

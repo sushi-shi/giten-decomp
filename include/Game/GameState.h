@@ -1,6 +1,7 @@
 #ifndef GITEN_GAME_GAMESTATE_H
 #define GITEN_GAME_GAMESTATE_H
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Game/MapCoord.h>
 #include <Ints.h>
@@ -72,7 +73,7 @@ MapCoord GetMapCoord(void);
 Character* AsCharacter(Character* character);
 Character* GetRosterCharacter(i16 slot);
 i16 FindPartySlot(i16 slot);
-ItemSlot GetEquipSlot(Character* character, i16 part);
+ItemSlot GetEquipSlot(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part);
 Character* GetRosterEntry(i16 slot);
 i16 GetPartySlot(i16 index);
 

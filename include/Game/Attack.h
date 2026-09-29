@@ -13,14 +13,14 @@ extern i16 g_attackAttribute;
 extern i16 g_attackCondition;
 
 static __inline double GetExceptionalAttackLuck(Character* actor) {
-    double value = GetStatTotal(actor, 0);
+    double value = GetStatTotal(actor, STAT_INTUITION);
     value *= 0.5;
-    value += GetStatTotal(actor, 10);
+    value += GetStatTotal(actor, STAT_FORTUNE);
     return value;
 }
 
 static __inline i32 GetExceptionalAttackBase(Character* actor) {
-    return GetStatTotal(actor, 4) + GetStatTotal(actor, 0);
+    return GetStatTotal(actor, STAT_PROTECTION) + GetStatTotal(actor, STAT_INTUITION);
 }
 
 #define ApplyAttackAccuracyConditions(character, accuracy)                                         \

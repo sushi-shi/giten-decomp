@@ -3,6 +3,8 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+
 // Script text capture and the formatted text line.
 
 // A node of the script's window stack.

@@ -3,6 +3,7 @@
 
 #include <Win32.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Gfx/Bitmap.h>
 #include <Text/TextAttr.h>
@@ -33,7 +34,7 @@ GZ_ENUM_BEGIN(StatBarMark)
 GZ_ENUM_END(StatBarMark);
 // clang-format on
 
-void DrawStatBarMark(i16 x, i16 y, i16 index, i16 plane);
+void DrawStatBarMark(i16 x, i16 y, GZ_ENUM_PARAM(StatBarMark, i16) index, i16 plane);
 void DrawStatusImage(i16 x, i16 y, i16 index);
 i16 FindTextPlaneByKind(i16 kind);
 i16 GetActiveTextPlaneIndent(i16 plane);
@@ -123,22 +124,23 @@ typedef struct SavedLayer {
     i32 y;
 } SavedLayer;
 
-typedef enum HotspotImageGroup {
+// A row of s_hotspotImages, named from the button bitmaps it shows.
+GZ_ENUM_BEGIN(HotspotImageGroup)
     HOTSPOT_IMAGES_NONE = 0,
     HOTSPOT_IMAGES_ARROW_UP = 1,
     HOTSPOT_IMAGES_ARROW_DOWN = 2,
     HOTSPOT_IMAGES_NEW_GAME = 3,
     HOTSPOT_IMAGES_CONTINUE = 4,
-    HOTSPOT_IMAGES_PANEL_ARM = 5,
+    HOTSPOT_IMAGES_PANEL_BUY = 5,
     HOTSPOT_IMAGES_PANEL_SELL = 6,
-    HOTSPOT_IMAGES_PANEL_HEAL = 7,
-    HOTSPOT_IMAGES_PANEL_CURE = 8,
-    HOTSPOT_IMAGES_PANEL_CANCEL = 9,
+    HOTSPOT_IMAGES_PANEL_LEAVE = 7,
+    HOTSPOT_IMAGES_PANEL_HEAL = 8,
+    HOTSPOT_IMAGES_PANEL_CURE = 9,
     HOTSPOT_IMAGES_PANEL_CONSULT = 10,
     HOTSPOT_IMAGES_PANEL_OK = 11,
     HOTSPOT_IMAGES_PANEL_EXIT = 12,
-    HOTSPOT_IMAGES_PANEL_BUY = 13,
-    HOTSPOT_IMAGES_PANEL_LEAVE = 14,
+    HOTSPOT_IMAGES_PANEL_CANCEL = 13,
+    HOTSPOT_IMAGES_PANEL_ARM = 14,
     HOTSPOT_IMAGES_MODE_EXIT = 15,
     HOTSPOT_IMAGES_MODE_ITEM = 16,
     HOTSPOT_IMAGES_MODE_MAGIC = 17,
@@ -162,7 +164,7 @@ typedef enum HotspotImageGroup {
     HOTSPOT_IMAGES_KEYPAD_9 = 35,
     HOTSPOT_IMAGES_KEYPAD_CLEAR = 36,
     HOTSPOT_IMAGES_KEYPAD_OK = 37
-} HotspotImageGroup;
+GZ_ENUM_END(HotspotImageGroup)
 
 // A hotspot area: its screen rectangle and image pair (HighlightHotspot).
 typedef struct HotspotArea {
@@ -170,7 +172,7 @@ typedef struct HotspotArea {
     i32 top;
     i32 right;
     i32 bottom;
-    i32 images;
+    GZ_ENUM_STORAGE(HotspotImageGroup, i32) images;
 } HotspotArea;
 
 // Hotspot areas by where they are drawn: below AREA_PANEL_LIMIT on their

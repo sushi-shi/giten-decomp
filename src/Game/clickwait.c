@@ -5,6 +5,7 @@
 
 #include <Game/ClickWait.h>
 #include <Input/Mouse.h>
+#include <Input/MouseClickState.h>
 
 // @identity-TODO: -1 for the key code -2, otherwise whether a left click was
 // taken; the key-code convention of its callers is unrecovered.
@@ -13,5 +14,5 @@ i16 TakeClickUnlessCancel(i16 key) {
     if (key == -2) {
         return -1;
     }
-    return TakeMouseLeftClick() != 0;
+    return TakeMouseLeftClick() != MOUSE_CLICK_NONE;
 }

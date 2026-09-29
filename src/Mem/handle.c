@@ -24,7 +24,7 @@ void ClearHandleTable(void) {
 }
 
 RVA(0x000043f0, 0x2a)
-i32 SetHandleEntry(i32 handle, void* ptr, u16 size, u16 flags) {
+i32 SetHandleEntry(i32 handle, void* ptr, u16 size, GZ_ENUM_PARAM(HandleFlags, u16) flags) {
     GetHandleEntry(handle)->ptr = ptr;
     GetHandleEntry(handle)->size = size;
     GetHandleEntry(handle)->flags = flags;

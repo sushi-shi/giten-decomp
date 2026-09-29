@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/ActionWait.h>
 #include <Game/Alignment.h>
 #include <Game/BattleStat.h>
@@ -55,6 +56,19 @@ typedef struct StatBlock {
     i16 equipment[11];
     i16 total[11];
 } StatBlock;
+
+// A battle command, numbered from its row in the actor command menu
+// (s_commandLabels), as a member's pickRole keeps it; 0 is none.
+// Codegen constraint: an enum here renumbers the declarations of every unit
+// including this header and loses exact matches (see rule-exceptions.tsv).
+#define PICK_ROLE_ATTACK 1
+#define PICK_ROLE_GUN 2
+#define PICK_ROLE_COMP 3
+#define PICK_ROLE_MAGIC 4
+#define PICK_ROLE_ITEM 5
+#define PICK_ROLE_EXTRA 6
+#define PICK_ROLE_RETURN 7
+#define PICK_ROLE_DEFENCE 8
 
 // @identity-TODO: a party member's 0x21f-byte record (the 16-entry table of
 // them, the script objects resolved from negative ids, and the objects whose
@@ -152,8 +166,7 @@ typedef struct Character {
     // encounter's notes read them as a ready-to-act flag (0x43f5f0 finds the first
     // member with it set) and an action wait (OpSetActorAlert clamps it).
     ActionWait actionWait;
-    // @identity-TODO: what the member does while picked on the field (set by the
-    // picker 0x4095f0; 0, 7 and 8 show nothing) and the record it uses.
+    // The battle command the member picked (a PICK_ROLE_*), and the record it uses.
     i8 pickRole;
     i16 pickTarget : 15;
     i16 pickTargetHigh : 1;
@@ -242,7 +255,7 @@ static __inline u8* GetCharacterBattleTallies(Character* character) {
     } while (0)
 
 static __inline b32 IsSkillAction(const Character* character) {
-    return character->pickRole == 4 || character->pickRole == 6;
+    return character->pickRole == PICK_ROLE_MAGIC || character->pickRole == PICK_ROLE_EXTRA;
 }
 
 #define GetCharacterActionWait(character) (&(character)->actionWait)
@@ -303,11 +316,13 @@ static __inline i16* GetBattleStatGroup(Character* character, i16 group) {
         sizeof((character)->battleStats)                                                           \
     )
 
-static __inline i16 GetBaseStat(const Character* character, i16 stat) {
+static __inline i16
+GetBaseStat(const Character* character, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
     return character->stats.base[stat];
 }
 
-static __inline i32 GetStatBonus(const Character* character, i16 stat) {
+static __inline i32
+GetStatBonus(const Character* character, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
     return character->stats.bonus[stat] + character->stats.modifiers[stat];
 }
 
@@ -329,7 +344,7 @@ i16 GetCharacterId(i16 slot);
 void RecalcCharacterStats(Character* character);
 
 RVA_DECL(0x000404f0)
-void UnequipPart(i16 slot, i16 part);
+void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part);
 
 void FullyRestoreCharacter(Character* character);
 

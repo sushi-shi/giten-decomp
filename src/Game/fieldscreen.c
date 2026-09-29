@@ -5,6 +5,8 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/AreaMap.h>
 #include <Game/Automap.h>
 #include <Game/AutomapData.h>
@@ -624,7 +626,7 @@ void FightCommand(i16 id) {
         ResetPartyTurnState();
     }
     g_fieldBattleActive = 1;
-    SetMemberPickRole(id, 1);
+    SetMemberPickRole(id, PICK_ROLE_ATTACK);
 }
 
 RVA(0x000151d0, 0x58)
@@ -643,7 +645,7 @@ void GunCommand(i16 id) {
         ResetPartyTurnState();
     }
     g_fieldBattleActive = 1;
-    SetMemberPickRole(id, 2);
+    SetMemberPickRole(id, PICK_ROLE_GUN);
 }
 
 // A skill: picked in an encounter, else from the field skill screen.
@@ -656,7 +658,7 @@ void SkillCommand(i16 id) {
         }
         g_fieldBattleActive = 1;
         PlaySoundEffect(1);
-        SetMemberPickRole(id, 4);
+        SetMemberPickRole(id, PICK_ROLE_MAGIC);
         return;
     }
     PlaySoundEffect(1);
@@ -675,7 +677,7 @@ void ItemCommand(i16 id) {
         }
         g_fieldBattleActive = 1;
         PlaySoundEffect(1);
-        SetMemberPickRole(id, 5);
+        SetMemberPickRole(id, PICK_ROLE_ITEM);
         return;
     }
     if (!CanMemberAct(id)) {
@@ -733,14 +735,14 @@ void DefenceCommand(i16 id) {
         ResetPartyTurnState();
     }
     g_fieldBattleActive = 1;
-    SetMemberPickRole(id, 8);
+    SetMemberPickRole(id, PICK_ROLE_DEFENCE);
 }
 
 // Returns the selected companion from the active party.
 RVA(0x00015410, 0x1a)
 void ReturnCommand(i16 id) {
     PlaySoundEffect(1);
-    SetMemberPickRole(id, 7);
+    SetMemberPickRole(id, PICK_ROLE_RETURN);
 }
 
 RVA(0x00015430, 0x3e)
@@ -1141,7 +1143,7 @@ void PlayWallEffect(void) {
 
 RVA(0x00015d10, 0x2d)
 void LoadFieldMessages(void) {
-    FILE* fp = OpenDataFile(0x101, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_MESSAGES, DATA_FILE_TABLE, 0);
     s_fieldMessages = ReadCryptHandle(fp);
     CloseDataFile(fp);
 }

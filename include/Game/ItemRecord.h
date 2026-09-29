@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
 #include <Game/SkillMessage.h>
 #include <Game/ItemKind.h>
@@ -192,7 +193,7 @@ u8* ReadItemValueRangeAlt(ItemRecord* item, u8* src);
 
 // Accessors that decode item `id` into the shared record first.
 char* GetLoadedRecordName(i16 id);
-i16 GetItemKind(i16 id);
+GZ_ENUM_RETURN(ItemKind, i16) GetItemKind(i16 id);
 char* GetItemDescription(i16 id);
 i32 GetItemPrice(i16 id);
 i16 GetItemValueHigh(i16 id);

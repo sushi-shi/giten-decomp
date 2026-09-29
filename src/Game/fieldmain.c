@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataTableId.h>
 #include <Game/Analyze.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
@@ -21,6 +22,7 @@
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
 #include <Game/LevelUp.h>
+#include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
 #include <Game/Party.h>
@@ -45,6 +47,7 @@
 #include <Sound/Sound.h>
 #include <Ui/Hotspot.h>
 #include <Ui/Message.h>
+#include <Util/BitChangeMode.h>
 #include <Util/BitSet.h>
 #include <Util/Debug.h>
 #include <Util/Range.h>
@@ -678,7 +681,7 @@ b16 RunFieldExploration(void) {
     i16 count;
 
     if (GetGamePhase() != 0) {
-        if (GetRenderMode() == 5 && g_worldMapRequest == 1) {
+        if (GetRenderMode() == RENDER_MODE_PANEL && g_worldMapRequest == 1) {
             SetPanelRenderMode();
         } else {
             SetViewRenderMode();
@@ -688,10 +691,10 @@ b16 RunFieldExploration(void) {
         case 0:
             s_eventRunning = false;
             SetModeFlags(MODE_FIELD);
-            ShowScreenLayer(7);
+            ShowScreenLayer(SCREEN_LAYER_NAVIGATION);
             if (g_worldMapRequest > 0) {
-                if (GetRenderMode() == 5) {
-                    HideScreenLayer(7);
+                if (GetRenderMode() == RENDER_MODE_PANEL) {
+                    HideScreenLayer(SCREEN_LAYER_NAVIGATION);
                 }
                 SetGamePhase(10);
                 return false;
@@ -721,7 +724,7 @@ b16 RunFieldExploration(void) {
                 g_party.field.pos.x,
                 g_party.field.pos.y
             );
-            if (!ModifyEventFlag(0xf, 0xff, 1)
+            if (!ModifyEventFlag(0xf, 0xff, BIT_CHANGE_SET)
                 && CheckCellEvent(g_party.field.pos.x, g_party.field.pos.y, g_party.field.pos.level)
                        == CELL_EVENT_SCRIPT) {
                 CloseMessageWindow();
@@ -794,7 +797,7 @@ b16 RunFieldExploration(void) {
                     s_eventRunning = false;
                     return false;
                 }
-                if (g_party.field.pos.area == 0x82
+                if (g_party.field.pos.area == MAP_AREA_HATSUDAI
                     && (g_party.field.pos.level == 0xc || g_party.field.pos.level == 0xd
                         || g_party.field.pos.level == 0xe)) {
                     CloseMessageWindow();
@@ -944,7 +947,7 @@ b16 RunFieldExploration(void) {
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             return FlushFieldScreen();
         case 11:
-            ClearLayerSurface(6);
+            ClearLayerSurface(SCREEN_LAYER_AUTOMAP);
             s_eventRunning = false;
             CloseMessageWindow();
             ResetFieldObjects();
@@ -997,7 +1000,7 @@ void CancelFieldMap(void) {
 
 RVA(0x00013640, 0x440)
 void RunCellEvent(void) {
-    i16 kind;
+    GZ_ENUM_LOCAL(CellEventKind, i16) kind;
     i16 command;
     i16 map;
     u16 step;
@@ -1273,7 +1276,7 @@ i16 LoadFieldMemory(FILE* fp) {
 // Loads the field event table (data file 10).
 RVA(0x00013d10, 0x2a)
 void LoadFieldEventTable(void) {
-    FILE* fp = OpenDataFile(10, 0xc, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_EVENTS, 0xc, 0);
     s_eventTable = ReadRawHandle(fp);
     CloseDataFile(fp);
 }

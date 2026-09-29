@@ -340,7 +340,7 @@ i16 PickActorAction(Character* actor) {
 
 static __inline void SetBasicAttackPick(Character* actor, i16 target) {
     actor->mode = 1;
-    actor->pickRole = 1;
+    actor->pickRole = PICK_ROLE_ATTACK;
     SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[5].item);
     actor->pickObject = target;
 }
@@ -580,7 +580,7 @@ MenuBox* OpenActorCommandMenu(i16 id) {
 }
 
 RVA(0x00006390, 0xaf)
-void ActorCommandMenuHandler(MenuBox* menu, i16 index, i16 event) {
+void ActorCommandMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     Character* actor = menu->items.character;
     switch (event) {
         case MENU_EVENT_DESTROY:
@@ -588,12 +588,18 @@ void ActorCommandMenuHandler(MenuBox* menu, i16 index, i16 event) {
             break;
         case MENU_EVENT_BEGIN_PAGE:
             FormatFullName(g_scratchBuffer, actor);
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x2460, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, 0x2460, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             if (index < 8) {
                 if (!s_commandLabels[index](actor)) {
-                    AddMenuLine(menu->plane, g_unavailableCommandText, 0x2500, index + 1, 1);
+                    AddMenuLine(
+                        menu->plane,
+                        g_unavailableCommandText,
+                        0x2500,
+                        index + 1,
+                        MENU_LINE_DISABLED
+                    );
                 } else {
                     AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, index + 1, 0);
                 }
@@ -749,22 +755,22 @@ i16 PrepareMemberPickTarget(i16 id) {
     Character* actor = GetCharacterById(id);
     if (actor) {
         switch (actor->pickRole) {
-            case 1:
+            case PICK_ROLE_ATTACK:
                 SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[5].item);
                 return 1;
-            case 2:
+            case PICK_ROLE_GUN:
                 SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[6].item);
                 return 1;
-            case 4:
-            case 6:
+            case PICK_ROLE_MAGIC:
+            case PICK_ROLE_EXTRA:
                 actor->pickTargetHigh = -1;
                 return 0;
-            case 3:
-            case 5:
+            case PICK_ROLE_COMP:
+            case PICK_ROLE_ITEM:
                 actor->pickTargetHigh = 0;
                 return 0;
-            case 7:
-            case 8:
+            case PICK_ROLE_RETURN:
+            case PICK_ROLE_DEFENCE:
                 SetCharacterPickTarget(actor, 0);
                 return 4;
         }
@@ -797,7 +803,7 @@ void FillCharacterCommands(i16* list, i16 id) {
             list[count++] = 6;
         }
         list[count++] = 7;
-        if (GetRenderMode() == 6) {
+        if (GetRenderMode() == RENDER_MODE_FIELD) {
             list[count++] = 8;
         }
         while (count < 8) {
@@ -948,7 +954,7 @@ i16 GetItemResistance(Character* actor, i16 item, i16 report, i16 sameSide, i16*
 RVA(0x00006e00, 0x114)
 i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
     switch (actor->pickRole) {
-        case 1:
+        case PICK_ROLE_ATTACK:
             *condition = 0;
             if (GetCharacterEquipment(actor)[5].item != -1) {
                 *condition = GetEquipmentInflictedCondition(
@@ -957,11 +963,11 @@ i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
                 return GetEquipmentAttribute(GetLoadedRecord(GetCharacterEquipment(actor)[5].item));
             }
             break;
-        case 4:
+        case PICK_ROLE_MAGIC:
             *condition = GetSkillInflictedCondition(GetCachedSkill(actor->pickTarget));
             return GetSkillAttackAttribute(GetCachedSkill(actor->pickTarget));
-        case 2:
-        case 5:
+        case PICK_ROLE_GUN:
+        case PICK_ROLE_ITEM:
             *condition = GetEquipmentInflictedCondition(GetLoadedRecord(actor->pickTarget));
             return GetEquipmentAttribute(GetLoadedRecord(actor->pickTarget));
     }
@@ -1326,7 +1332,7 @@ b16 RunFieldEncounter(void) {
                 PushScreenFade(SCREEN_FADE_FROM_BLACK, 1);
                 PushGameState(0x1b);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
-                PushWaitState(2, 0xffff, 0x50, -1);
+                PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, 0x50, -1);
                 MarkRewardsPending();
                 FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
                 ShowMessage(g_scratchBuffer, 0x3c);
@@ -1472,7 +1478,7 @@ b16 RunFieldState(void) {
             if (!GetEncounterPending()) {
                 break;
             }
-            HideScreenLayer(1);
+            HideScreenLayer(SCREEN_LAYER_PANEL);
             if (RollProximityEvent() > 0) {
                 LeaveFieldMap(0);
                 s_fieldLeftEarly = true;
@@ -1707,7 +1713,7 @@ void MarkActorActionReady(Character* actor) {
             break;
         case 2:
             if (!IsHumanCharacter(actor)) {
-                actor->pickRole = 7;
+                actor->pickRole = PICK_ROLE_RETURN;
                 MarkPickDone();
                 break;
             }
@@ -1720,7 +1726,7 @@ void MarkActorActionReady(Character* actor) {
         case 9:
         case 10:
         case 11:
-            actor->pickRole = 8;
+            actor->pickRole = PICK_ROLE_DEFENCE;
             MarkPickDone();
             break;
     }
@@ -2028,9 +2034,11 @@ b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16
         return false;
     }
     roll = RandomAverage(0, 40, 0);
-    defense = GetBattleStatShown(target, 11);
+    defense = GetBattleStatShown(target, BATTLE_STAT_GUN_DEFENSE);
     defense *= roll;
-    if (ScaleActionValue(GetBattleStatShown(attacker, 9) * 10, resistance, 2) - defense <= 0) {
+    if (ScaleActionValue(GetBattleStatShown(attacker, BATTLE_STAT_GUN_POWER) * 10, resistance, 2)
+            - defense
+        <= 0) {
         return false;
     }
     if (IsConditionResisted(target, g_attackCondition)) {
@@ -2301,13 +2309,13 @@ i16 RunMemberPickMenu(i16 id) {
     }
     if (s_pickMenu == NULL) {
         switch (character->pickRole) {
-            case 3:
+            case PICK_ROLE_COMP:
                 return 1;
-            case 4:
-            case 6:
+            case PICK_ROLE_MAGIC:
+            case PICK_ROLE_EXTRA:
                 s_pickMenu = OpenMemberSkillMenu(id);
                 break;
-            case 5:
+            case PICK_ROLE_ITEM:
                 s_pickMenu = OpenItemListMenu();
                 break;
             default:
@@ -2342,7 +2350,7 @@ static __inline i16 CurrentMemberCombatantId(void) {
 }
 
 static __inline i16 PickMemberActionTarget(Character* character, i16 flags, i16 range) {
-    if (character->pickRole == 4) {
+    if (character->pickRole == PICK_ROLE_MAGIC) {
         if (character->pickTarget == 0x10e) {
             return RunPickTargetWindow(0, range, 1, 0);
         }
@@ -2412,16 +2420,16 @@ i16 RunPartyCommandInput(void) {
                 ResetPartyCommandPick();
                 return g_tickElapsed;
             }
-            if (character->pickRole == 5) {
+            if (character->pickRole == PICK_ROLE_ITEM) {
                 kind = GetLoadedRecord(character->pickTarget)->kind;
                 if (kind == 0xb || kind == 0x13) {
                     character->pickFlags |= 4;
                     character->pickItem = character->pickTarget;
-                    character->pickRole = 4;
+                    character->pickRole = PICK_ROLE_MAGIC;
                     character->pickTarget = GetItemSkillId(GetLoadedRecord(character->pickTarget));
                 }
             }
-            if (character->pickRole == 4) {
+            if (character->pickRole == PICK_ROLE_MAGIC) {
                 flags = GetSkillTargetFlags(character->pickTarget);
                 if (TargetFlagsSelectSelf(flags)) {
                     result = CurrentMemberCombatantId();
@@ -2434,7 +2442,7 @@ i16 RunPartyCommandInput(void) {
                 } else if (flags & TARGET_ACTOR_SIDE) {
                     reach = true;
                 }
-            } else if (character->pickRole == 5) {
+            } else if (character->pickRole == PICK_ROLE_ITEM) {
                 flags = GetItemTargetFlags(GetLoadedRecord(character->pickTarget));
                 if (TargetFlagsSelectSelf(flags)) {
                     result = CurrentMemberCombatantId();
@@ -2482,11 +2490,11 @@ i16 RunPartyCommandInput(void) {
                     s_pickMode = 1;
                 }
                 if (character->pickFlags & 4) {
-                    character->pickRole = 5;
+                    character->pickRole = PICK_ROLE_ITEM;
                 }
             }
             if (result < 1) {
-                if (character->pickRole != 1) {
+                if (character->pickRole != PICK_ROLE_ATTACK) {
                     break;
                 }
                 ResetPartyCommandPick();
@@ -2512,7 +2520,7 @@ i16 RunPartyCommandInput(void) {
                 if (!GetPickBlockingCondition(GetCharacterConditions(character))) {
                     QueueActionWait(GetCharacterActionWait(character));
                 }
-                if (character->pickRole == 4 && character->pickTarget == 0x7d) {
+                if (character->pickRole == PICK_ROLE_MAGIC && character->pickTarget == 0x7d) {
                     s_pickMode++;
                     g_tickElapsed = 0;
                     break;
@@ -2528,7 +2536,7 @@ i16 RunPartyCommandInput(void) {
                 RestoreSwappedMember();
                 s_pickMode = 3;
                 if (character->pickFlags & 4) {
-                    character->pickRole = 5;
+                    character->pickRole = PICK_ROLE_ITEM;
                 }
             }
             if (result < 1) {
@@ -2727,9 +2735,9 @@ i16 RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
     }
     if (kind & 2) {
         if (kind == 2) {
-            result = PickPartySlotTarget(minimumRange, 2);
+            result = PickPartySlotTarget(minimumRange, PARTY_SLOT_EXCLUDE_HUMANS);
         } else {
-            result = PickPartySlotTarget(minimumRange, 0);
+            result = PickPartySlotTarget(minimumRange, PARTY_SLOT_REQUIRE_OCCUPIED);
         }
         if (result) {
             ClearPartySlotSelection();

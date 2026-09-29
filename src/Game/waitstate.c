@@ -47,7 +47,7 @@ b16 StepWaitState(void) {
             }
             break;
         case WAIT_FADE:
-            if (GetScreenFade() <= 0) {
+            if (GetScreenFade() <= SCREEN_FADE_NONE) {
                 ReturnFromGameState();
             }
             break;
@@ -65,7 +65,7 @@ void PushWaitState(GZ_ENUM_STORAGE(WaitMode, i16) mode, u16 inputMask, u16 frame
 
 RVA(0x0001a960, 0x25)
 b16 RunScreenFadeState(void) {
-    i16 kind = GetGamePhase();
+    GZ_ENUM_LOCAL(ScreenFadeMode, i16) kind = GetGamePhase();
     i16 speed = GetGameStep();
     ReturnFromGameState();
     StartScreenFade(kind, speed);
@@ -73,7 +73,7 @@ b16 RunScreenFadeState(void) {
 }
 
 RVA(0x0001a990, 0x30)
-void PushScreenFade(i16 kind, i16 speed) {
+void PushScreenFade(GZ_ENUM_PARAM(ScreenFadeMode, i16) kind, i16 speed) {
     PushWaitState(WAIT_FADE, 0, 0, -1);
     PushGameState(13);
     SetGamePhase(kind);
@@ -81,7 +81,7 @@ void PushScreenFade(i16 kind, i16 speed) {
 }
 
 RVA(0x0001a9c0, 0x23)
-void FadeScreenAndWait(i16 kind, i16 speed) {
+void FadeScreenAndWait(GZ_ENUM_PARAM(ScreenFadeMode, i16) kind, i16 speed) {
     PushWaitState(WAIT_FADE, 0, 0, -1);
     StartScreenFade(kind, speed);
 }

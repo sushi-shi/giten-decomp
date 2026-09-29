@@ -1,17 +1,18 @@
 #ifndef GITEN_MEM_HANDLE_H
 #define GITEN_MEM_HANDLE_H
 
+#include <EnumDomain.h>
 #include <Ints.h>
 
 // Numbered memory blocks: handle 0 is "none"; 1..1023 index the table.
 #define HANDLE_COUNT 1024
 
-typedef enum HandleFlags {
+GZ_ENUM_FLAGS_BEGIN(HandleFlags, u16)
     HANDLE_IN_USE = 1
-} HandleFlags;
+GZ_ENUM_FLAGS_END(HandleFlags)
 
 typedef struct HandleEntry {
-    u16 flags;
+    GZ_ENUM_STORAGE(HandleFlags, u16) flags;
     u16 size;
     void* ptr;
 } HandleEntry;
@@ -24,7 +25,7 @@ typedef struct ListLink {
 } ListLink;
 
 void ClearHandleTable(void);
-i32 SetHandleEntry(i32 handle, void* ptr, u16 size, u16 flags);
+i32 SetHandleEntry(i32 handle, void* ptr, u16 size, GZ_ENUM_PARAM(HandleFlags, u16) flags);
 u32 HandleSize(i32 handle);
 u32 GetHandleSize(i32 handle);
 i32 NewHandle(void* ptr, u32 size);

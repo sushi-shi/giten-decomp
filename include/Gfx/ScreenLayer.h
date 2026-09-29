@@ -5,6 +5,7 @@
 
 #include <Win32.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 
 #define SCREEN_LAYER_COUNT 15
@@ -36,7 +37,7 @@ GZ_ENUM_END(ScreenLayerSlot);
 // that have one, a second work surface drawn over it.
 typedef struct ScreenLayer {
     b32 visible;
-    i32 slot;
+    GZ_ENUM_STORAGE(ScreenLayerSlot, i32) slot;
     i32 x;
     i32 y;
     DWORD bltFlags;
@@ -91,12 +92,12 @@ void ErasePictureSurface(i16 picture);
 // @identity-TODO: The layers of table 0x48fb10 (layer 7 = compass per 0x4f6e0) are otherwise
 // unnamed.
 RVA_DECL(0x00054360)
-void ShowScreenLayer(i16 layer);
+void ShowScreenLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i16) layer);
 
 // @identity-TODO: Which of a layer's two surfaces (+0x24 loaded by 0x57290, +0x28 here) is the
 // canvas is unproven.
 RVA_DECL(0x000543d0)
-void ClearLayerSurface(i16 layer);
+void ClearLayerSurface(GZ_ENUM_PARAM(ScreenLayerSlot, i16) layer);
 
 // @identity-TODO: That surface 0x490aa4 is the status-screen picture is inferred from the
 // mode-8 handler 0x4f0b0 blitting it.

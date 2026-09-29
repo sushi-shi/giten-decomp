@@ -1,6 +1,7 @@
 #ifndef GITEN_GAME_PARTYACTION_H
 #define GITEN_GAME_PARTYACTION_H
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Ui/MenuBox.h>
 
@@ -27,7 +28,7 @@ i16 AdjustActorAction(i16 id, i16 action);
 extern char g_unavailableCommandText[8];
 
 MenuBox* OpenActorCommandMenu(i16 id);
-void ActorCommandMenuHandler(MenuBox* menu, i16 index, i16 event);
+void ActorCommandMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 i16 PollActorCommandMenu(MenuBox* menu);
 i16 RunActorCommandMenu(i16 id);
 b16 FormatAttackCommand(Character* actor);

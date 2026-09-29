@@ -68,7 +68,7 @@ i16 g_loadedBefore = 0;
 DATA(0x00076054)
 static MenuBox* s_systemMenu = 0;
 
-static void SystemMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void SystemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 static b16 RunDisplayChoice(void);
 static b16 RunQuitConfirm(void);
 
@@ -266,7 +266,7 @@ b16 RunSystemMenu(void) {
 // Heads the menu with "<SYSTEM>" and the picked row's label, and lists the
 // rows of the table the menu shows.
 RVA(0x00003f70, 0x100)
-static void SystemMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void SystemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     i16 phase = GetGamePhase();
     SystemMenuEntry* entries = menu->items.systemTable;
 

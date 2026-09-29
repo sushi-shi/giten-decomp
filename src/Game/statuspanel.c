@@ -24,6 +24,7 @@
 #include <Game/ObjectRecord.h>
 #include <Game/Party.h>
 #include <Game/Skill.h>
+#include <Game/StatBarRows.h>
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
 #include <Game/StatusScreen.h>
@@ -383,8 +384,17 @@ static b16 ResumeStatusPage(i16 command) {
     return false;
 }
 
-static i16 DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, i16 band);
-static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16 mark, i16 band);
+static i16
+DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, GZ_ENUM_PARAM(StatBarRows, i16) band);
+static i16 DrawStatBarSegment(
+    i16 first,
+    i16 last,
+    i16 x,
+    i16 y,
+    i16 offset,
+    GZ_ENUM_PARAM(StatBarMark, i16) mark,
+    GZ_ENUM_PARAM(StatBarRows, i16) band
+);
 
 RVA(0x00042450, 0xc3)
 static i16 DrawStatList(i16 plane, Character* member) {
@@ -417,7 +427,14 @@ static i16 DrawStatList(i16 plane, Character* member) {
 }
 
 RVA(0x00042520, 0x9e)
-static i16 DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, i16 band) {
+static i16 DrawStatBar(
+    i16 x,
+    i16 y,
+    i16 base,
+    i16 bonus,
+    i16 equipment,
+    GZ_ENUM_PARAM(StatBarRows, i16) band
+) {
     i32 total = ClampSum100(base, bonus, equipment);
     i16 offset;
 
@@ -433,7 +450,15 @@ static i16 DrawStatBar(i16 x, i16 y, i16 base, i16 bonus, i16 equipment, i16 ban
 }
 
 RVA(0x000425c0, 0xaa)
-static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16 mark, i16 band) {
+static i16 DrawStatBarSegment(
+    i16 first,
+    i16 last,
+    i16 x,
+    i16 y,
+    i16 offset,
+    GZ_ENUM_PARAM(StatBarMark, i16) mark,
+    GZ_ENUM_PARAM(StatBarRows, i16) band
+) {
     i16 row;
     i16 column;
 
@@ -441,7 +466,8 @@ static i16 DrawStatBarSegment(i16 first, i16 last, i16 x, i16 y, i16 offset, i16
         row = offset / 50;
         column = offset % 50;
         if (row < 2) {
-            if (band == 0 || (band == -1 && row == 0) || (band == 1 && row == 1)) {
+            if (band == STAT_BAR_ROWS_BOTH || (band == STAT_BAR_ROWS_FIRST && row == 0)
+                || (band == STAT_BAR_ROWS_SECOND && row == 1)) {
                 DrawStatBarMark(x + column, y, mark, s_statPage.plane);
             }
         }
@@ -526,7 +552,7 @@ void DrawStatLine(Character* member, i16 stat, i16 highlight, i16 window) {
                 GetBaseStat(member, stat),
                 GetStatBonus(member, stat),
                 GetStatEquipment(member, stat),
-                -1
+                STAT_BAR_ROWS_FIRST
             );
         }
     } else {
@@ -970,7 +996,7 @@ i16 RunEquipScreen(i16 key) {
     return -1;
 }
 
-static void EquipMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x00043530, 0x6a)
 MenuBox* OpenEquipMenu(i16 member, MenuBox* old) {
@@ -985,7 +1011,7 @@ MenuBox* OpenEquipMenu(i16 member, MenuBox* old) {
 }
 
 RVA(0x000435a0, 0x278)
-static void EquipMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     Character* member;
     ItemRecord* record;
     i16 item;
@@ -995,8 +1021,8 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, i16 event) {
         case MENU_EVENT_DESTROY:
             break;
         case MENU_EVENT_BEGIN_PAGE:
-            AddMenuLine(menu->plane, s_equipHeaderA, 0x400, 0, 1);
-            AddMenuLine(menu->plane, s_equipHeaderB, 0x400, 0, 1);
+            AddMenuLine(menu->plane, s_equipHeaderA, 0x400, 0, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_equipHeaderB, 0x400, 0, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             item = GetBagItem(s_equipEntries[index]);
@@ -1009,7 +1035,7 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, i16 event) {
             );
             member = GetRosterCharacter(g_statusMember);
             if (member != NULL) {
-                i16 category = GetItemCategory(item);
+                GZ_ENUM_LOCAL(EquipPart, i16) category = GetItemCategory(item);
                 if (IsEquipCurseActive(member, category)) {
                     AddMenuLine(menu->plane, g_scratchBuffer, 0x560, s_equipEntries[index], 1);
                     return;
@@ -1021,21 +1047,39 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, i16 event) {
                     cursed |= IsEquipCurseActive(member, EQUIP_PART_ARMS);
                     cursed |= IsEquipCurseActive(member, EQUIP_PART_LEGS);
                     if (cursed) {
-                        AddMenuLine(menu->plane, g_scratchBuffer, 0x560, s_equipEntries[index], 1);
+                        AddMenuLine(
+                            menu->plane,
+                            g_scratchBuffer,
+                            0x560,
+                            s_equipEntries[index],
+                            MENU_LINE_DISABLED
+                        );
                         return;
                     }
                     record = GetLoadedRecord(item);
                 }
                 if (record->kind == ITEM_KIND_GUN && GetBattleStatShown(member, 6) > 0) {
                     if (LacksItemRequiredStats(member, record, GetBattleStatShown(member, 6))) {
-                        AddMenuLine(menu->plane, g_scratchBuffer, 0x760, s_equipEntries[index], 1);
+                        AddMenuLine(
+                            menu->plane,
+                            g_scratchBuffer,
+                            0x760,
+                            s_equipEntries[index],
+                            MENU_LINE_DISABLED
+                        );
                         return;
                     }
                     AddMenuLine(menu->plane, g_scratchBuffer, 0x460, s_equipEntries[index], 0);
                     return;
                 }
                 if (LacksItemRequiredStats(member, record, 0)) {
-                    AddMenuLine(menu->plane, g_scratchBuffer, 0x760, s_equipEntries[index], 1);
+                    AddMenuLine(
+                        menu->plane,
+                        g_scratchBuffer,
+                        0x760,
+                        s_equipEntries[index],
+                        MENU_LINE_DISABLED
+                    );
                     return;
                 }
             }
@@ -1117,7 +1161,7 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
     Character* saved;
     ItemSlot slot;
     i16 count;
-    i16 result;
+    GZ_ENUM_STORAGE(EquipPart, i16) result;
     i16 kind;
     i16 gun;
 
@@ -1312,7 +1356,7 @@ i16 RunAttachScreen(i16 sub) {
     return -1;
 }
 
-static void AttachItemMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void AttachItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x000442f0, 0x49)
 static MenuBox* CreateAttachItemMenu(MenuBox* old) {
@@ -1325,7 +1369,7 @@ static MenuBox* CreateAttachItemMenu(MenuBox* old) {
 }
 
 RVA(0x00044340, 0x86)
-static void AttachItemMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void AttachItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     i16 count;
 
     switch (event) {
@@ -1340,7 +1384,13 @@ static void AttachItemMenuHandler(MenuBox* menu, i16 index, i16 event) {
                 count
             );
             if (count == 0) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x560, index + s_attach.itemBase, 2);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    0x560,
+                    index + s_attach.itemBase,
+                    MENU_LINE_UNCHOOSABLE
+                );
             } else {
                 AddMenuLine(menu->plane, g_scratchBuffer, 0x460, index + s_attach.itemBase, 0);
             }
@@ -1349,7 +1399,7 @@ static void AttachItemMenuHandler(MenuBox* menu, i16 index, i16 event) {
 }
 
 static i16 ListAttachEntries(void);
-static void AttachEntryMenuHandler(MenuBox* menu, i16 index, i16 event);
+static void AttachEntryMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x000443d0, 0x69)
 static MenuBox* CreateAttachEntryMenu(MenuBox* old) {
@@ -1384,13 +1434,13 @@ static i16 ListAttachEntries(void) {
 }
 
 RVA(0x000444b0, 0xda)
-static void AttachEntryMenuHandler(MenuBox* menu, i16 index, i16 event) {
+static void AttachEntryMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     switch (event) {
         case MENU_EVENT_DESTROY:
             break;
         case MENU_EVENT_BEGIN_PAGE:
-            AddMenuLine(menu->plane, s_attachHeaderA, 0x400, 0, 1);
-            AddMenuLine(menu->plane, s_attachHeaderB, 0x400, 0, 1);
+            AddMenuLine(menu->plane, s_attachHeaderA, 0x400, 0, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_attachHeaderB, 0x400, 0, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             sprintf(
@@ -1411,14 +1461,14 @@ static void AttachTextHook(i16 plane, i16 event, i16 value) {
         return;
     }
     switch (event) {
-        case -1:
-        case 1:
-        case 2:
+        case TEXT_EVENT_CANCEL:
+        case TEXT_EVENT_CHOOSE:
+        case TEXT_EVENT_CHOOSE_RIGHT:
             return;
-        case 3:
+        case TEXT_EVENT_UNHIGHLIGHT:
             ClearTextPlane(s_attach.plane);
             break;
-        case 4:
+        case TEXT_EVENT_HIGHLIGHT:
             strcpy(g_scratchBuffer, GetItemDescription(value + s_attach.itemBase));
             PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 0);
             break;
@@ -1426,7 +1476,7 @@ static void AttachTextHook(i16 plane, i16 event, i16 value) {
     RepaintTextPlane(s_attach.plane, -2);
 }
 
-static void ItemListHandler(MenuBox* menu, i16 index, i16 event);
+static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x00044650, 0x1e0)
 i16 RunItemPage(i16 sub) {
@@ -1491,7 +1541,7 @@ i16 RunItemPage(i16 sub) {
 }
 
 RVA(0x00044830, 0x109)
-static void ItemListHandler(MenuBox* menu, i16 index, i16 event) {
+static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     i16 item;
 
     switch (event) {
@@ -1699,7 +1749,7 @@ i16 RunSkillPage(i16 sub) {
     return -1;
 }
 
-static void SkillListHandler(MenuBox* menu, i16 index, i16 event);
+static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x00044df0, 0x55)
 static MenuBox* CreateSkillMenu(i16 member, MenuBox* old) {
@@ -1718,7 +1768,7 @@ static MenuBox* CreateSkillMenu(i16 member, MenuBox* old) {
 }
 
 RVA(0x00044e50, 0x156)
-static void SkillListHandler(MenuBox* menu, i16 index, i16 event) {
+static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     i16* skills = menu->items.entries;
     SkillView* view;
     char* unit;
@@ -1734,14 +1784,14 @@ static void SkillListHandler(MenuBox* menu, i16 index, i16 event) {
                 "%-16.16s  MP  \214\370\211\312",
                 "\226\202\226\100\226\274\217\314"
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
-            AddMenuLine(menu->plane, s_skillHeaderLine, 0x400, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_skillHeaderLine, 0x400, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             skill = skills[index];
             view = GetSkillView(skill);
             if (skill < 1) {
-                AddMenuLine(menu->plane, s_emptySkillLabel, 0x460, skill, 1);
+                AddMenuLine(menu->plane, s_emptySkillLabel, 0x460, skill, MENU_LINE_DISABLED);
                 return;
             }
             if (SkillCostsFullPool(&view->parameters)) {
@@ -1826,7 +1876,7 @@ i16 PollEquipPart(i16 member, i16 mode) {
 }
 
 RVA(0x00045130, 0x9a)
-i16 DrawEquipPickRow(i16 member, i16 part, i32 attr) {
+i16 DrawEquipPickRow(i16 member, GZ_ENUM_PARAM(EquipPart, i16) part, i32 attr) {
     ItemSlot slot = GetRosterEquipSlot(member, part);
     char mark;
 

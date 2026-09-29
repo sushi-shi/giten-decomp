@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Game/StateStack.h>
 #include <Ints.h>
@@ -48,7 +49,7 @@ i16 SetStatusColumn(i16 column);
 i16 RunStatusListPicker(i16 close);
 i16 PickStatusMember(void);
 MenuBox* CreateStatusListMenu(MenuBox* parent);
-void StatusListMenuHandler(MenuBox* menu, i16 index, i16 event);
+void StatusListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 i16 BuildStatusSlots(void);
 
 // Writes the letter of `value`'s alignment class on axis `axis` (0 CNL, 1 DNL)

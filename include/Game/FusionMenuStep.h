@@ -1,0 +1,17 @@
+#ifndef GITEN_GAME_FUSIONMENUSTEP_H
+#define GITEN_GAME_FUSIONMENUSTEP_H
+
+#include <EnumDomain.h>
+
+// Selection or commit requested from the active fusion-menu phase.
+GZ_ENUM_BEGIN_SPLIT(FusionMenuStep, i16)
+    FUSION_MENU_PAIR_FIRST = 0,
+    FUSION_MENU_PAIR_SECOND = 1,
+    FUSION_MENU_PAIR_COMMIT = 3,
+    FUSION_MENU_TRIPLE_THIRD = 16,
+    FUSION_MENU_TRIPLE_FIRST = 17,
+    FUSION_MENU_TRIPLE_SECOND = 18,
+    FUSION_MENU_TRIPLE_COMMIT = 20
+GZ_ENUM_END_SPLIT(FusionMenuStep)
+
+#endif // GITEN_GAME_FUSIONMENUSTEP_H

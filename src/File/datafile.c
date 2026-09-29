@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/ObjectRecord.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
@@ -161,7 +162,7 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
     for (;;) {
         fallback = -1;
         switch (kind) {
-            case 15:
+            case DATA_FILE_IMAGE_VARIANT:
                 sprintf(name, "fc\\fc%.4x%01d.bin", id, variant);
                 fp = fopen(name, "rb");
                 if (fp == NULL) {
@@ -169,7 +170,7 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
                     fp = fopen(name, "rb");
                 }
                 break;
-            case 0:
+            case DATA_FILE_IMAGE:
                 if (id >= 0x2000 && id <= 0x3fff) {
                     fallback = (id & 0xf) + 0x2000;
                 } else if (id >= 0x4000 && id <= 0x4fff) {
@@ -186,73 +187,73 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
                     fp = fopen(name, "rb");
                 }
                 break;
-            case 1:
+            case DATA_FILE_IMAGE_FCH:
                 sprintf(name, "fc\\fch%.4x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 2:
+            case DATA_FILE_EFFECT:
                 if (id >= 0x2000 && id <= 0x3fff) {
                     fallback = 0x2000;
                 }
                 sprintf(name, "et\\ca%.4x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 3:
+            case DATA_FILE_MAP:
                 fallback = 0;
                 sprintf(name, "m\\m%.4x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 4:
+            case DATA_FILE_ET_A:
                 sprintf(name, "et\\a%.4x.bin", id);
                 fp = fopen(name, "rb");
                 s_prevDataFile = s_dataFile;
                 s_dataFile = fp;
                 return fp;
-            case 5:
+            case DATA_FILE_SOUND_SM:
                 fallback = 1;
                 sprintf(name, "s\\sm%.3x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 6:
+            case DATA_FILE_SOUND_SB:
                 fallback = 1;
                 sprintf(name, "s\\sb%.3x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 7:
+            case DATA_FILE_SOUND_ST:
                 sprintf(name, "s\\st%.3x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 8:
+            case DATA_FILE_SOUND_SE:
                 sprintf(name, "s\\se%.3x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 9:
+            case DATA_FILE_SCRIPT:
                 if (id >= 0 && id <= 0xdf) {
                     fallback = 1;
                 }
                 sprintf(name, "m\\ms%.4x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 10:
+            case DATA_FILE_OBJECT:
                 if (id >= 0x2000 && id <= 0x3fff) {
                     fallback = 0x2020;
                 }
                 sprintf(name, "p\\p%.4x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 11:
+            case DATA_FILE_ITEM_RECORDS:
                 sprintf(name, "et\\et%.4x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 12:
+            case DATA_FILE_TABLE:
                 sprintf(name, "et\\et%.4x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 13:
+            case DATA_FILE_GD:
                 sprintf(name, "gd%.4x.bin", id);
                 fp = fopen(name, "rb");
                 break;
-            case 14:
+            case DATA_FILE_OBJECT_SCRIPT:
                 sprintf(name, "et\\id%.4x.bin", id);
                 fp = fopen(name, "rb");
                 s_prevDataFile = s_dataFile;

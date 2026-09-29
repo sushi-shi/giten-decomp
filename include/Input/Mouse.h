@@ -1,10 +1,11 @@
 #ifndef GITEN_INPUT_MOUSE_H
 #define GITEN_INPUT_MOUSE_H
 
+#include <EnumDomain.h>
 #include <Ints.h>
 
 // Mouse button bits as polled from DirectInput each frame.
-typedef enum MouseButtonBits {
+GZ_ENUM_FLAGS_BEGIN(MouseButtonBits, i16)
     MOUSE_LEFT_DOWN = 0x01,
     MOUSE_LEFT_WAS_DOWN = 0x02,
     MOUSE_LEFT_PRESSED = 0x04,
@@ -13,7 +14,7 @@ typedef enum MouseButtonBits {
     MOUSE_RIGHT_WAS_DOWN = 0x20,
     MOUSE_RIGHT_PRESSED = 0x40,
     MOUSE_RIGHT_RELEASED = 0x80
-} MouseButtonBits;
+GZ_ENUM_FLAGS_END(MouseButtonBits)
 
 // One button's state in its nibble of those bits (the right button's shifted
 // down by MOUSE_RIGHT_SHIFT): up, held, just pressed, just let go.
@@ -43,7 +44,7 @@ typedef enum MouseButtonBits {
 typedef struct MousePosition {
     i16 x;
     i16 y;
-    i16 buttons;
+    GZ_ENUM_STORAGE(MouseButtonBits, i16) buttons;
 } MousePosition;
 
 // A click latch is -1 from the press until a consumer clears it, and keeps
@@ -72,7 +73,7 @@ void ClearMouseClicks(void);
 i16 TakeMouseCancel(i16 clearSelection);
 i16 TakeMouseCancelSound(void);
 i16 TakeMouseLeftClick(void);
-void SetMouseState(i16 buttons, i16 x, i16 y);
+void SetMouseState(GZ_ENUM_PARAM(MouseButtonBits, i16) buttons, i16 x, i16 y);
 i16 GetMouseX(void);
 i16 GetMouseY(void);
 i16 GetMouseRightClick(void);

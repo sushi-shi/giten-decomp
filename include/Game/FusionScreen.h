@@ -37,7 +37,7 @@ i16 BuildTripleFusionSummaries(i16 third);
 void StoreFusionPairSummary(i16 first, i16 second, const FusionSummary* summary);
 FusionSummary* GetFusionPairSummaryCell(i16 first, i16 second);
 i16 CreateFusionList(i16 window, i16 count);
-void FusionListMenuHandler(MenuBox* menu, i16 index, i16 event);
+void FusionListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 void FusionSelectionTextHook(i16 plane, i16 event, i16 value);
 i32 CloseFusionPicker(i16 selection);
 i16 CreateFusionInfoPlane(i16 unused);

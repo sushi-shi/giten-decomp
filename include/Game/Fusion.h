@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Game/DemonTable.h>
 #include <Game/Party.h>
@@ -39,7 +40,11 @@ SetFusionSummaryKind(FusionSummary* summary, i16 kind, i16 resultLevel, i16 sour
 }
 
 void InheritFusionStats(Character* first, Character* second, Character* result);
-void InheritFusionStat(Character* source, Character* result, i16 stat);
+void InheritFusionStat(
+    Character* source,
+    Character* result,
+    GZ_ENUM_PARAM(CharacterStat, i16) stat
+);
 
 i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third);
 i16 ResolveSpecialRaceTripleFusion(i16 first, i16 second, i16 third);

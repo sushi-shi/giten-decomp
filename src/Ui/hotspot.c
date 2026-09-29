@@ -49,7 +49,7 @@ RVA(0x000585f0, 0x48)
 b16 HasHotspotTo(i16 x, i16 y) {
     u32 i;
     for (i = 0; i < g_hotspotCount; i++) {
-        if (GetHotspot(i)->kind == 1 && GetHotspot(i)->targetX == x
+        if (GetHotspot(i)->kind == HOTSPOT_TARGET && GetHotspot(i)->targetX == x
             && GetHotspot(i)->targetY == y) {
             return true;
         }

@@ -3,23 +3,24 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
 
 // Panel input policy; hidden, locked and disabled also apply to rows.
-typedef enum PanelFlags {
+GZ_ENUM_FLAGS_BEGIN(PanelFlags, u16)
     PANEL_ALLOW_RIGHT_CLICK = 0x0002,
     PANEL_IGNORE_RIGHT_CLICK = 0x0004,
     PANEL_HIDDEN = 0x1000,
     PANEL_HANDLER_LOCKED = 0x2000,
     PANEL_HELD_BUTTON_INPUT = 0x4000,
     PANEL_INPUT_DISABLED = 0x8000
-} PanelFlags;
+GZ_ENUM_FLAGS_END(PanelFlags)
 
-typedef enum PanelRowFlags {
+GZ_ENUM_FLAGS_BEGIN(PanelRowFlags, u16)
     PANEL_ROW_CHECKED = 0x0001,
     PANEL_ROW_SAVED_CHECK = 0x0010,
     PANEL_ROW_SAVED_INPUT_DISABLED = 0x0080
-} PanelRowFlags;
+GZ_ENUM_FLAGS_END(PanelRowFlags)
 
 // A menu panel: a flags word, a row count and a picture handle, then a table
 // of 10-byte rows. Each row has a flags word (bit 0 checked, bit 4 saved
@@ -34,7 +35,7 @@ struct PanelRow;
 typedef i16 (*PanelRowHandler)(struct PanelRow* row, i16 value, i16 op);
 
 typedef struct PanelRow {
-    u16 flags;
+    GZ_ENUM_STORAGE(PanelFlags, u16) flags;
     i16 id;
     i16 word04;
     PanelRowHandler handler;
@@ -79,7 +80,7 @@ Panel* CreateSequentialPanel(Panel* panel, i16 image, i16 count);
 Panel* CreatePositionedPanel(Panel* panel, i16 x, i16 y, i16 count, i16 kind);
 Panel* ReleasePanel(Panel* panel, i16 freePanel);
 i16 PanelRowHandlerDefault(PanelRow* row, i16 value, i16 op);
-void SetPanelRowState(Panel* panel, i16 index, u16 flags);
+void SetPanelRowState(Panel* panel, i16 index, GZ_ENUM_PARAM(PanelFlags, u16) flags);
 void PaintPanel(Panel* panel, i16 mode);
 i16 RunPanelInput(Panel* panel);
 
@@ -90,7 +91,8 @@ static __inline i16 WasPanelRightClicked(const Panel* panel) {
     return panel->input.rightClick;
 }
 
-static __inline void AssignPanelRowState(Panel* panel, i16 index, u16 flags) {
+static __inline void
+AssignPanelRowState(Panel* panel, i16 index, GZ_ENUM_PARAM(PanelFlags, u16) flags) {
     GetPanelRow(panel, index)->flags = flags;
 }
 
@@ -101,24 +103,24 @@ static __inline void InitPanelRow(Panel* panel, i16 index, i16 id, PanelRowHandl
     AssignPanelRowState(panel, index, 0);
 }
 
-void SetFlagBits(u16* flags, u16 mask);
-void ClearFlagBits(u16* flags, u16 mask);
+void SetFlagBits(GZ_ENUM_STORAGE(PanelFlags, u16) * flags, GZ_ENUM_PARAM(PanelFlags, u16) mask);
+void ClearFlagBits(GZ_ENUM_STORAGE(PanelFlags, u16) * flags, GZ_ENUM_PARAM(PanelFlags, u16) mask);
 
 static __inline void ClearPanelRowCheck(PanelRow* row) {
     ClearFlagBits(&row->flags, PANEL_ROW_CHECKED);
 }
 
-i16 ToggleFlagBits(u16* flags, u16 mask);
+i16 ToggleFlagBits(GZ_ENUM_STORAGE(PanelFlags, u16) * flags, GZ_ENUM_PARAM(PanelFlags, u16) mask);
 b32 TestFlagBits(u16* flags, u16 mask);
-b32 TestPanelRowFlags(Panel* panel, i16 row, u16 mask);
-void SetPanelRowFlags(Panel* panel, i16 row, u16 mask, i16 on);
+b32 TestPanelRowFlags(Panel* panel, i16 row, GZ_ENUM_PARAM(PanelFlags, u16) mask);
+void SetPanelRowFlags(Panel* panel, i16 row, GZ_ENUM_PARAM(PanelFlags, u16) mask, i16 on);
 b32 IsPanelRowChecked(Panel* panel, i16 row);
 void ClearPanelChecks(Panel* panel);
 void ClearPanelChecksAgain(Panel* panel);
 void SavePanelChecks(Panel* panel);
 void RestorePanelChecks(Panel* panel);
-void SetPanelFlags(Panel* panel, u16 mask);
-void ClearPanelFlags(Panel* panel, u16 mask);
+void SetPanelFlags(Panel* panel, GZ_ENUM_PARAM(PanelFlags, u16) mask);
+void ClearPanelFlags(Panel* panel, GZ_ENUM_PARAM(PanelFlags, u16) mask);
 
 // The shared row handler body: op -1 toggles the row's check, 0 clears it,
 // 1 sets it; returns whether it is now set.

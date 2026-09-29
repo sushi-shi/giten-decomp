@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Ints.h>
 #include <Enums.h>
@@ -40,7 +41,7 @@ void PreviewEquipChange(i16 index, i16 fromEquipped);
 // Opens a window with the name and description of `item`; returns it.
 i16 OpenItemInfoPlane(i16 item);
 
-i16 DrawEquipPickRow(i16 member, i16 part, i32 attr);
+i16 DrawEquipPickRow(i16 member, GZ_ENUM_PARAM(EquipPart, i16) part, i32 attr);
 
 // The game step the status screen last ran; RunStatusCommands redraws the
 // stat totals when it leaves step 8.
