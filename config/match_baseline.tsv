@@ -53,7 +53,7 @@ fieldmain	59	57
 fieldobj	141	137
 fieldscreen	103	102
 fieldview	38	36
-font	150	142
+font	150	143
 fusion	114	111
 gameloop	7	7
 gamestate	7	7
@@ -72,7 +72,7 @@ midistream	35	34
 modeflags	4	3
 motion	43	42
 mouse	10	9
-nibble	4	3
+nibble	4	4
 objecttexture	2	2
 partyaction	103	100
 playtime	4	4
@@ -894,7 +894,7 @@ font	_ClearTextPlaneRight	100.0000	100.0000	3	e94c0a9653b0	0x54930	100.0000
 font	_ClearTextPlaneText	100.0000	100.0000	3	641b9c3f365f	0x53dc0	100.0000	
 font	_CloseTextWindow	100.0000	100.0000	3	426e1485b17d	0x52510	100.0000	
 font	_CreateGlyphSurface	100.0000	100.0000	2	915503f168d3	0x51540	100.0000	
-font	_CreateTextPlane	98.5170	98.5170	9	d5b71ef1ee04	0x520b0	98.5170	
+font	_CreateTextPlane	100.0000	100.0000	10	78570e221523	0x520b0	100.0000	
 font	_DrawBandText	100.0000	100.0000	6	7f16609cc2f8	0x51950	100.0000	
 font	_DrawIconLayerImage	100.0000	100.0000	1	42108c24a2af	0x54c80	100.0000	
 font	_DrawLayerGauge	100.0000	100.0000	2	41c1b2cc60e3	0x549a0	100.0000	
@@ -1429,7 +1429,7 @@ mouse	_TakeMouseCancel	100.0000	100.0000	2	0fd3a218ec54	0x2a70	100.0000
 mouse	_TakeMouseCancelSound	100.0000	100.0000	1	0d458945019b	0x2ab0	100.0000	
 mouse	_TakeMouseLeftClick	100.0000	100.0000	1	d97b193cc8eb	0x2ae0	100.0000	
 nibble	_SpreadLowNibble	100.0000	100.0000	1	465e3c608b92	0x451d0	100.0000	
-nibble	_SwapLowNibbles	100.0000	44.4545	2	0c26d0acf526	0x45260	100.0000	
+nibble	_SwapLowNibbles	100.0000	100.0000	2	0c26d0acf526	0x45260	100.0000	
 nibble	_SwapMiddleNibbles	100.0000	100.0000	4	9b3b66fb4c56	0x45230	100.0000	
 nibble	_SwapOuterNibbles	100.0000	100.0000	2	5095aabbb197	0x45200	100.0000	
 objecttexture	_LoadObjectTexture	100.0000	100.0000	1	a04c9ca9b80c	0x58110	100.0000	
