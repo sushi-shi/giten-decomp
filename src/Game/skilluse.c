@@ -48,6 +48,7 @@
 #include <Script/EventFlags.h>
 #include <Sound/Sound.h>
 #include <Text/TextAttr.h>
+#include <Text/TextPlane.h>
 #include <Text/TextWindow.h>
 #include <Ui/FieldMenus.h>
 #include <Ui/Menu.h>
@@ -1227,7 +1228,7 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
             disabled = 0;
             style = 0x2450;
             if (GetWord(GetCharacterSkills(character), index) == 0) {
-                AddMenuLine(menu->plane, g_emptySkillMenuLabel, style, 0, 1);
+                AddMenuLine(menu->plane, g_emptySkillMenuLabel, style, 0, MENU_LINE_DISABLED);
                 return;
             }
             blocked = IsSkillIdBlocked(character, GetWord(GetCharacterSkills(character), index));
@@ -1275,7 +1276,7 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                 g_scratchBuffer,
                 TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                 0,
-                1
+                MENU_LINE_DISABLED
             );
             break;
         case MENU_EVENT_DESTROY:

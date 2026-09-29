@@ -1091,7 +1091,7 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                         g_scratchBuffer,
                         TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                         s_equipEntries[index],
-                        1
+                        MENU_LINE_DISABLED
                     );
                     return;
                 }
@@ -1637,7 +1637,7 @@ static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                 "\217\212\216\235\203\101\203\103\203\145\203\200 %1d/8",
                 menu->cursor / 8 + 1
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             item = GetItemStackItem(GetItemListEntry(s_itemPage.list, index));

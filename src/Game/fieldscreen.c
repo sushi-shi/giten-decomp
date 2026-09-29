@@ -553,38 +553,38 @@ b32 IsFieldPanelRowChecked(i16 row) {
 // in mode 3. Rows 0, 1, 4 and 8 are always enabled.
 RVA(0x00014f20, 0x1f0)
 void SetFieldMenuMode(i16 mode) {
-    SetPanelRowFlags(&s_fieldPanel.panel, 0, PANEL_INPUT_DISABLED, 0);
-    SetPanelRowFlags(&s_fieldPanel.panel, 1, PANEL_INPUT_DISABLED, 0);
-    SetPanelRowFlags(&s_fieldPanel.panel, 8, PANEL_INPUT_DISABLED, 0);
-    SetPanelRowFlags(&s_fieldPanel.panel, 4, PANEL_INPUT_DISABLED, 0);
+    SetPanelRowFlags(&s_fieldPanel.panel, 0, PANEL_INPUT_DISABLED, false);
+    SetPanelRowFlags(&s_fieldPanel.panel, 1, PANEL_INPUT_DISABLED, false);
+    SetPanelRowFlags(&s_fieldPanel.panel, 8, PANEL_INPUT_DISABLED, false);
+    SetPanelRowFlags(&s_fieldPanel.panel, 4, PANEL_INPUT_DISABLED, false);
     switch (mode) {
         case 0:
-            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, 0);
+            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, false);
             break;
         case 1:
-            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, 0);
+            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, false);
             break;
         case 2:
-            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, 1);
+            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, true);
             break;
         case 3:
-            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, 1);
+            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, true);
             break;
     }
 }

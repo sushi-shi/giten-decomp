@@ -16,6 +16,7 @@
 #include <Platform/PlatformApi.h>
 #include <Script/ScriptVars.h>
 #include <Text/TextAttr.h>
+#include <Text/TextPlane.h>
 #include <Text/TextWindow.h>
 #include <Ui/MenuBox.h>
 #include <Ui/MenuStep.h>
@@ -236,7 +237,7 @@ static void DebugMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                 g_scratchBuffer,
                 "<\203\146\203\157\203\142\203\117\203\201\203\152\203\205\201\133>"
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             entry = &entries[index];
@@ -246,7 +247,7 @@ static void DebugMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     entry->label,
                     TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
                     index,
-                    1
+                    MENU_LINE_DISABLED
                 );
             } else {
                 AddMenuLine(
@@ -274,7 +275,7 @@ static void MagicMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
         case MENU_EVENT_BEGIN_PAGE:
             // "<魔法デバッグ>" (magic debug)
             sprintf(g_scratchBuffer, "<\226\202\226\100\203\146\203\157\203\142\203\117>");
-            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             return;
         case MENU_EVENT_ADD_ROW:
             if (index == 6) {
@@ -297,7 +298,7 @@ static void MagicMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                         TEXT_ATTR_FLAG1
                             | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                         index,
-                        1
+                        MENU_LINE_DISABLED
                     );
                     return;
                 }
@@ -312,7 +313,7 @@ static void MagicMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
             return;
         case MENU_EVENT_END_PAGE:
             sprintf(g_scratchBuffer, "%3d %s", s_testSkill, GetSkillName(s_testSkill));
-            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, index, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, index, MENU_LINE_DISABLED);
             return;
     }
 }

@@ -40,6 +40,7 @@
 #include <Script/Script.h>
 #include <Script/ScriptVars.h>
 #include <Text/TextAttr.h>
+#include <Text/TextPlane.h>
 #include <Text/TextWindow.h>
 #include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
@@ -2157,7 +2158,7 @@ static void DiscardMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent
         case MENU_EVENT_BEGIN_PAGE:
             // "アイテム削除" (delete item)
             sprintf(g_scratchBuffer, "\203\101\203\103\203\145\203\200\215\355\217\234");
-            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
 #ifdef GITEN_BUGFIX
             if (menu->itemCount == 0) {
                 // "アイテムを持ちきれません" (the item cannot be carried)
@@ -2263,7 +2264,7 @@ static void GiftMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                     g_scratchBuffer,
                     TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                     index,
-                    2
+                    MENU_LINE_UNCHOOSABLE
                 );
             } else {
                 AddMenuLine(
