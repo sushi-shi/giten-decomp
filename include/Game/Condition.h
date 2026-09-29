@@ -4,9 +4,10 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
-#include <Ints.h>
+#include <Enums.h>
 #include <Game/ConditionId.h>
 #include <Game/RestoreEffect.h>
+#include <Ints.h>
 #include <Util/BitSet.h>
 
 // Status conditions are bits 0..34, followed by their individual ages.
@@ -39,7 +40,17 @@ i16 ConditionKindApplies(GZ_ENUM_PARAM(RestoreEffect, i16) kind, ConditionSet* c
 
 // The physical ailments selected by restoration kind 57.
 extern const i16 g_physicalRecoveryConditions[8];
-i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
+// What AddCondition did: the condition was already held, was blocked (a
+// fatal or overriding condition), was added, or instead cleared the opposing
+// condition it cancels.
+GZ_ENUM_BEGIN(ConditionAddResult)
+    CONDITION_ADD_ALREADY_HELD = -1,
+    CONDITION_ADD_BLOCKED = 0,
+    CONDITION_ADD_ADDED = 1,
+    CONDITION_ADD_CANCELLED_OPPOSITE = 2
+GZ_ENUM_END(ConditionAddResult)
+
+GZ_ENUM_RETURN(ConditionAddResult, i16) AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
 i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
 void ClearConditionList(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
 GZ_ENUM_RETURN(ConditionId, i16) GetDisablingCondition(ConditionSet* conditions);

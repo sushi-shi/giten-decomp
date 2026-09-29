@@ -1266,7 +1266,7 @@ b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
 // case 5's here; instructions, calls and branch counts are identical. Loop
 // form (for/goto), nested-if returns, case 33/34 spelling and order were tried.
 RVA(0x0003e6d0, 0x700)
-i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
+GZ_ENUM_RETURN(ConditionAddResult, i16) AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     i16 blocked;
     i16 i;
 
@@ -1276,12 +1276,12 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
         switch (condition) {
             case CONDITION_POISON:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 blocked |= HasCondition(conditions, CONDITION_STONE);
                 blocked |= HasCondition(conditions, CONDITION_SEVERE_POISON);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 if (!HasCondition(conditions, CONDITION_POISON)) {
                     break;
@@ -1290,12 +1290,12 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
                 continue;
             case CONDITION_ICE:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 blocked |= HasCondition(conditions, CONDITION_STONE);
                 blocked |= HasCondition(conditions, CONDITION_FREEZE);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 if (!HasCondition(conditions, CONDITION_ICE)) {
                     break;
@@ -1304,13 +1304,13 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
                 continue;
             case CONDITION_DOZE:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, CONDITION_STUN);
                 blocked |= HasCondition(conditions, CONDITION_SLEEP);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 if (!HasCondition(conditions, CONDITION_DOZE)) {
                     break;
@@ -1319,12 +1319,12 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
                 continue;
             case CONDITION_TIPSY:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, CONDITION_DRUNK);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 if (!HasCondition(conditions, CONDITION_TIPSY)) {
                     break;
@@ -1333,7 +1333,7 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
                 continue;
             case CONDITION_ASH:
                 if (HasCondition(conditions, condition)) {
-                    return -1;
+                    return CONDITION_ADD_ALREADY_HELD;
                 }
                 for (i = 0; i < CONDITION_COUNT; i++) {
                     ClearCondition(conditions, i);
@@ -1342,10 +1342,10 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
             case CONDITION_DEAD:
             case CONDITION_DYING:
                 if (HasCondition(conditions, condition)) {
-                    return -1;
+                    return CONDITION_ADD_ALREADY_HELD;
                 }
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 for (i = 0; i < CONDITION_COUNT; i++) {
                     ClearCondition(conditions, i);
@@ -1353,13 +1353,13 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
                 break;
             case CONDITION_COLLAPSE:
                 if (HasCondition(conditions, condition)) {
-                    return -1;
+                    return CONDITION_ADD_ALREADY_HELD;
                 }
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 if (HasCondition(conditions, CONDITION_BERSERK)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 ClearCondition(conditions, CONDITION_STUN);
                 ClearCondition(conditions, CONDITION_SLEEP);
@@ -1375,10 +1375,10 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
             case CONDITION_CURSE:
             case CONDITION_MAGIC_SEAL:
                 if (HasCondition(conditions, condition)) {
-                    return -1;
+                    return CONDITION_ADD_ALREADY_HELD;
                 }
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
             case CONDITION_PARALYSIS:
@@ -1388,16 +1388,16 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
             case CONDITION_SHOCK:
             case CONDITION_HAPPY:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
             case CONDITION_BERSERK:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, CONDITION_PARALYSIS);
@@ -1407,46 +1407,46 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
                 blocked |= HasCondition(conditions, CONDITION_SLEEP);
                 blocked |= HasCondition(conditions, CONDITION_DOZE);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
             case CONDITION_DRUNK:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 ClearCondition(conditions, CONDITION_TIPSY);
                 break;
             case CONDITION_SEVERE_POISON:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 ClearCondition(conditions, CONDITION_POISON);
                 break;
             case CONDITION_VAMPIRE:
             case CONDITION_INJURY:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
             case CONDITION_FREEZE:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 blocked |= HasCondition(conditions, CONDITION_STONE);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 if (HasCondition(conditions, CONDITION_BURN)) {
                     ClearCondition(conditions, CONDITION_BURN);
-                    return 2;
+                    return CONDITION_ADD_CANCELLED_OPPOSITE;
                 }
                 ClearCondition(conditions, CONDITION_ICE);
                 break;
@@ -1455,36 +1455,36 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
             case CONDITION_SUFFOCATION:
             case CONDITION_SLIME:
                 if (HasCondition(conditions, condition)) {
-                    return -1;
+                    return CONDITION_ADD_ALREADY_HELD;
                 }
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 if (HasCondition(conditions, CONDITION_STONE)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
             case CONDITION_STUN:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, CONDITION_BERSERK);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 ClearCondition(conditions, CONDITION_SLEEP);
                 ClearCondition(conditions, CONDITION_DOZE);
                 break;
             case CONDITION_SLEEP:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, CONDITION_STUN);
                 blocked |= HasCondition(conditions, CONDITION_BERSERK);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 ClearCondition(conditions, CONDITION_DOZE);
                 break;
@@ -1493,35 +1493,35 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
             case CONDITION_CONFUSION:
             case CONDITION_HIGH:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 blocked |= HasCondition(conditions, CONDITION_BERSERK);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 ClearCondition(conditions, CONDITION_DOZE);
                 break;
             case CONDITION_BURN:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 blocked |= HasCondition(conditions, CONDITION_STONE);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 if (HasCondition(conditions, CONDITION_FREEZE)) {
                     ClearCondition(conditions, CONDITION_FREEZE);
-                    return 2;
+                    return CONDITION_ADD_CANCELLED_OPPOSITE;
                 }
                 break;
             case CONDITION_BLIND:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 blocked |= HasCondition(conditions, CONDITION_STONE);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
         }
@@ -1529,7 +1529,7 @@ i16 AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
     }
     SetBit(conditions->bits, condition);
     SetConditionAge(conditions, condition, 0);
-    return 1;
+    return CONDITION_ADD_ADDED;
 }
 
 RVA(0x0003edd0, 0x13)
