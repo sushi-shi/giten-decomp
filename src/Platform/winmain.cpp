@@ -22,6 +22,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+// The battle input fixes read the game clock. The matching build must not
+// include another header: it perturbs MSVC 5's register allocation.
+#ifdef GITEN_BUGFIX
+extern "C" {
+#include <Game/Clock.h>
+}
+#endif
+
 // Billboard brightness remains full within two cells, then attenuates by distance.
 #define SetDistanceLight(light, distance)                                                                                                         \
     do {                                                                                                                                          \
@@ -4461,6 +4469,71 @@ static i32 s_clickedButton;
 DATA(0x0008f560)
 RECT g_dragRect;
 
+#ifdef GITEN_BUGFIX
+// The joystick's direction bits.
+#define JOY_DIRECTIONS (JOY_UP | JOY_DOWN | JOY_LEFT | JOY_RIGHT)
+
+// A left click released in place on a party panel in battle, held until a
+// pass on which a tick passes (SCREEN_LAYER_COUNT for none).
+static i32 s_heldPanelRelease = SCREEN_LAYER_COUNT;
+
+// Set when the left button went down while no command was being entered.
+static b32 s_pressedOutsidePick;
+
+// The joystick bits of a battle pass the move gate turned away (0 for none).
+static u32 s_heldJoystickBits;
+
+// Whether this pass's TickGameClock (StepGame, before HandleInput) passed a
+// tick: it reloads the frame countdown on one.
+static b32 ClockTickedThisPass(void) {
+    return g_clock.frames == g_clock.framesPerTick;
+}
+
+// Opens the held party panel release's command panel on the first pass a tick
+// passes, through ReleasePartyPanel's gate as retail would have on that pass;
+// drops it once the battle ends or a command is being entered.
+static void ApplyHeldPanelRelease(void) {
+    i32 slot = s_heldPanelRelease;
+
+    if (slot == SCREEN_LAYER_COUNT) {
+        return;
+    }
+    if (!GetFieldBattleActive() || GetPickMode() != 0) {
+        s_heldPanelRelease = SCREEN_LAYER_COUNT;
+        return;
+    }
+    if (!ClockTickedThisPass()) {
+        return;
+    }
+    s_heldPanelRelease = SCREEN_LAYER_COUNT;
+    ReleasePartyPanel(slot, false);
+}
+
+// @bug In battle ReleasePartyPanel opens a member's command panel only when
+// GetTickElapsed is set, and StepGame sets it only on the one pass in
+// framesPerTick (5) on which the game clock ticks. The release is a one-pass
+// event, so about four clicks in five on a party panel do nothing. The gate
+// also refuses the click while the command machine has stopped the clock
+// (RunPartyCommandInput clears GetTickElapsed while it runs): removing it
+// lets a click that picks an ally as a target open that ally's panel in the
+// middle of the pick (the XP patch tool's "battle click fix"). Retail lets
+// that through too on a tick pass after the pick completes, since the pick
+// is taken on the press and the machine is idle again by the release.
+// A release in battle is kept only when neither its press nor its release
+// came while a command was being entered, and then waits for the next pass
+// on which a tick passes and goes through the retail gate there.
+static void ReleasePartyPanelOnTick(i32 slot, b32 dragged) {
+    if (dragged || !GetFieldBattleActive()) {
+        ReleasePartyPanel(slot, dragged);
+        return;
+    }
+    if (s_pressedOutsidePick && GetPickMode() == 0) {
+        s_heldPanelRelease = slot;
+        ApplyHeldPanelRelease();
+    }
+}
+#endif
+
 // Handles this frame's mouse (PollInput's bits): the joystick's move when
 // no layer is in the way, the menu bar's auto-hide and the right button's
 // pad turns and cancel, and the left button's menu bar, character panel,
@@ -4475,6 +4548,31 @@ void HandleInput(u8 buttons) {
     if (!s_immediateInput && GetFrameCount() < INPUT_DELAY_FRAMES) {
         return;
     }
+#ifdef GITEN_BUGFIX
+    ApplyHeldPanelRelease();
+    // @bug In battle the stick (and the arrow keys standing in for it) moves
+    // only on a pass with GetTickElapsed set, one in framesPerTick (5), so a
+    // tap let go before the next tick is lost. A tap turned away on a pass
+    // without a tick, while no command is being entered, is held and stands in
+    // for the stick's bits on the next pass the gate lets through if the
+    // stick is let go by then; a tick pass the gate refuses drops it.
+    if (s_layerDragging || g_renderMode != RENDER_MODE_VIEW
+        || g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
+        s_heldJoystickBits = 0;
+    } else if (!GetFieldBattleActive() || GetTickElapsed()) {
+        if (s_heldJoystickBits != 0 && !(s_joystickBits & JOY_DIRECTIONS)) {
+            s_joystickBits = s_heldJoystickBits;
+        }
+        s_heldJoystickBits = 0;
+        if (RunJoystickMove()) {
+            return;
+        }
+    } else if (ClockTickedThisPass() || GetPickMode() != 0) {
+        s_heldJoystickBits = 0;
+    } else if (s_joystickBits & JOY_DIRECTIONS) {
+        s_heldJoystickBits = s_joystickBits;
+    }
+#else
     if (!s_layerDragging && g_renderMode == RENDER_MODE_VIEW
         && !g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
         if (!GetFieldBattleActive() || GetTickElapsed()) {
@@ -4483,6 +4581,7 @@ void HandleInput(u8 buttons) {
             }
         }
     }
+#endif
     busy = FALSE;
     switch (buttons & MOUSE_STATE_MASK) {
         case MOUSE_UP:
@@ -4518,6 +4617,10 @@ void HandleInput(u8 buttons) {
                 PostQuitMessage(0);
                 return;
             }
+#ifdef GITEN_BUGFIX
+            s_heldPanelRelease = SCREEN_LAYER_COUNT;
+            s_pressedOutsidePick = GetPickMode() == 0;
+#endif
             s_dragMoved = false;
             s_layerDragging = false;
             s_pressedLayer = LayerAtPoint(g_cursorPos.x, g_cursorPos.y);
@@ -4598,7 +4701,11 @@ void HandleInput(u8 buttons) {
                 }
             } else if (s_layerDragging && s_pressedLayer < SCREEN_LAYER_COUNT) {
                 if (s_pressedLayer > SCREEN_LAYER_NONPARTY_LAST) {
+#ifdef GITEN_BUGFIX
+                    ReleasePartyPanelOnTick(s_pressedLayer, s_dragMoved);
+#else
                     ReleasePartyPanel(s_pressedLayer, s_dragMoved);
+#endif
                 } else {
                     PlaceDraggedLayer(s_pressedLayer);
                 }
