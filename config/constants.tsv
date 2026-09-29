@@ -778,4 +778,3 @@ src/Game/itemrecord.c	*SpecialItem*	*	*	*	@identity-TODO: the eight timed specia
 src/Game/itemrecord.c	RunBagDiscardMenu	*	*	*	@identity-TODO: priceless items (0); menu flags 0x1e; the cancel flag cleared; SetBagEntry's (-1, -1) clears
 src/Game/itemrecord.c	RunGemItemGift	*	call-argument	*	familiarity stays within 0..63; one gem given
 src/Game/itemrecord.c	GiftMenuHandler	0	*	*	the menu's origin (0, 0); no gems held
-src/Game/itemrecord.c	CreateGiftMenu	16	call-argument	SetMenuItems(*argument 2	the gift menu shows 16 rows a page
