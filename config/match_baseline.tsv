@@ -90,7 +90,7 @@ scriptswitch	10	10
 scripttext	59	57
 scriptvars	108	106
 scriptvm	2	2
-shot	15	15
+shot	15	14
 skillattack	5	4
 skilluse	53	50
 sprite	7	6
@@ -111,7 +111,7 @@ waitstate	7	7
 walltexture	1	1
 weaponattack	5	4
 windowcolor	13	13
-windowtext	2	1
+windowtext	2	2
 winmain	128	120
 worldmapgfx	4	4
 worldtravel	24	22
@@ -2079,7 +2079,7 @@ shot	_SetShotPosition	100.0000	100.0000	1	5d47141a5196	0x58d0	100.0000
 shot	_SetShotPower	100.0000	100.0000	1	5b0b36881851	0x5900	100.0000	
 shot	_ShotRelativePoint	100.0000	100.0000	1	e278fd21aefe	0x57c0	100.0000	
 shot	_StartShot	100.0000	100.0000	3	0762ead00fee	0x5620	100.0000	
-shot	_StepShot	100.0000	100.0000	2	3a51a63fe14c	0x56e0	100.0000	
+shot	_StepShot	100.0000	90.1077	2	3a51a63fe14c	0x56e0	100.0000	
 shot	_StopShot	100.0000	100.0000	1	eb752c1ebfec	0x5800	100.0000	
 skillattack	_ApplySkillResistanceOutcome	100.0000	100.0000	1	1909e14736cc	0xaf70	100.0000	
 skillattack	_ComputeSkillDamage	100.0000	98.4266	7	a90e460c0181	0xac50	100.0000	
@@ -2617,7 +2617,7 @@ windowcolor	_RestoreWindowAttr	100.0000	100.0000	2	4b64ccf22e99	0x2eb90	100.0000
 windowcolor	_SetWindowReverse	100.0000	100.0000	1	28f319f2440e	0x2ea80	100.0000	
 windowcolor	_StashWindowColor	100.0000	100.0000	1	39fcf2b9a35a	0x2eaf0	100.0000	
 windowcolor	_SwitchWindowAttr	100.0000	100.0000	2	f9697dae5b3e	0x2eb20	100.0000	
-windowtext	_PrintWindowText	93.2192	93.2192	5	d5e9f1bcde25	0x45340	93.2192	
+windowtext	_PrintWindowText	100.0000	100.0000	5	d5e9f1bcde25	0x45340	100.0000	
 windowtext	_PutTextChar	100.0000	100.0000	4	5ed9c2ac81fe	0x45410	100.0000	
 winmain	??0CIme@@QAE@XZ	100.0000	100.0000	1	cpp:cb01e3a51116	0x51100	100.0000	
 winmain	??0_D3DLVERTEX@@QAE@ABU_D3DVECTOR@@KKMM@Z	100.0000	100.0000	1	header:fa9afff5ee6c	0x511a0	100.0000	
