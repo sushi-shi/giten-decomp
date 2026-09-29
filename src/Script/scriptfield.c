@@ -45,7 +45,7 @@ RVA(0x00032560, 0x44)
 void OpIfEventObjectIs(void) {
     i16 target = ReadBranchTarget();
     i16 different = ReadScriptValue();
-    i32 matches = 0;
+    b32 matches = false;
     if ((g_actorId == g_targetId && !different) || (g_actorId != g_targetId && different)) {
         matches = true;
     }
@@ -56,7 +56,7 @@ RVA(0x000325b0, 0x3e)
 void OpIfBattleResult(void) {
     i16 target = ReadBranchTarget();
     i16 multiple = ReadScriptValue();
-    i32 matches = 0;
+    b32 matches = false;
     if ((g_targetCount == 1 && multiple == false) || (g_targetCount >= 2 && multiple == true)) {
         matches = true;
     }
@@ -79,7 +79,7 @@ i16 OpCountObjectsAt(void) {
 RVA(0x00032660, 0x39)
 void OpIfStatusPositive(i16 invert) {
     i16 target = ReadBranchTarget();
-    i32 matches = 0;
+    b32 matches = false;
     if ((g_statusCondition > 0 && !invert) || (g_statusCondition == 0 && invert)) {
         matches = true;
     }
@@ -92,7 +92,7 @@ RVA(0x000326a0, 0x3b)
 void OpIfInBattle(void) {
     i16 target = ReadBranchTarget();
     i16 invert = ReadScriptValue();
-    i32 matches = 0;
+    b32 matches = false;
     if (ScriptBooleanMatches(g_fieldBattleActive, invert)) {
         matches = true;
     }

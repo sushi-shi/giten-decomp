@@ -550,7 +550,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(i16 level) {
 
 RVA(0x00033510, 0x87)
 void OpJumpUnlessPlayerInLine(i16 invert) {
-    i32 matches = 0;
+    b32 matches = false;
     i16 target = ReadBranchTarget();
     FieldActor* actor = (FieldActor*)g_curScript->actor;
     if (actor != NULL) {
@@ -1435,7 +1435,7 @@ void OpJumpUnlessEventFlag(ScriptFlagAction action, i32 expect) {
 RVA(0x00034880, 0x27)
 void OpJumpUnlessFlagSet(void) {
     i16 target = ReadBranchTarget();
-    i32 matches = 0;
+    b32 matches = false;
     if (ReadAndMatchEventFlag()) {
         matches = true;
     }
@@ -1628,7 +1628,7 @@ void OpJumpUnlessStatContest(i16 level, GZ_ENUM_PARAM(ScriptTestPolarity, i16) i
 // unless it is not).
 RVA(0x00034dd0, 0x81)
 void OpJumpUnlessPlayerInView(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 seen;
     BuildSightGrid(
@@ -1641,7 +1641,7 @@ void OpJumpUnlessPlayerInView(i16 invert) {
         ((FieldActor*)g_curScript->actor)->pos.y
     );
     if ((seen == true && invert == false) || (seen == false && invert == true)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1675,7 +1675,7 @@ void OpJumpUnlessHpQuarterRoll(ComparisonOperator op) {
 // Jumps unless the party stands within 4 cells in front of the actor.
 RVA(0x00034f40, 0xab)
 void OpJumpUnlessPlayerNearFront(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     MapCoord coord = GetMapCoord();
     if (GridDistance(
@@ -1686,7 +1686,7 @@ void OpJumpUnlessPlayerNearFront(i16 invert) {
         )
         > 4) {
         if (invert != false) {
-            jump = 1;
+            jump = true;
         }
     } else {
         i16 side = RelativeDirection(
@@ -1697,7 +1697,7 @@ void OpJumpUnlessPlayerNearFront(i16 invert) {
             ((FieldActor*)g_curScript->actor)->direction
         );
         if ((side == 0 && invert == false) || (side != 0 && invert == true)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1707,7 +1707,7 @@ void OpJumpUnlessPlayerNearFront(i16 invert) {
 // inverted, while the field marker is set).
 RVA(0x00034ff0, 0x7a)
 void OpJumpUnlessPlayerAtRange(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 range = g_curScript->actor->triggerRange;
     i16 target = ReadBranchTarget();
     if (GetFieldMarker()) {
@@ -1715,7 +1715,7 @@ void OpJumpUnlessPlayerAtRange(i16 invert) {
     } else {
         i16 distance = DistanceToParty((FieldActor*)g_curScript->actor);
         if ((range != distance && invert) || (range == distance && !invert)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1723,7 +1723,7 @@ void OpJumpUnlessPlayerAtRange(i16 invert) {
 
 RVA(0x00035070, 0x7b)
 void OpJumpUnlessActorVisible(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     if (GetFieldMarker()) {
         jump = invert == false;
@@ -1733,7 +1733,7 @@ void OpJumpUnlessActorVisible(i16 invert) {
             ((FieldActor*)g_curScript->actor)->pos.y
         );
         if ((invert == false && view) || (invert == true && !view)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1741,11 +1741,11 @@ void OpJumpUnlessActorVisible(i16 invert) {
 
 RVA(0x000350f0, 0x44)
 void OpJumpUnlessInRoster(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 slot = RosterSlotOfId(ReadObjectId());
     if ((slot >= 0 && !invert) || (slot < 0 && invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1753,12 +1753,12 @@ void OpJumpUnlessInRoster(i16 invert) {
 // Jumps unless the roster holds the roster capacity less 6 entries or more.
 RVA(0x00035140, 0x4c)
 void OpJumpUnlessRosterFull(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 count = CountRosterEntries(true);
     i16 limit = GetRosterCapacity() - 6;
     if ((count >= limit && !invert) || (count < limit && invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1766,11 +1766,11 @@ void OpJumpUnlessRosterFull(i16 invert) {
 // Jumps unless the object's alignment agrees with the leader's.
 RVA(0x00035190, 0x44)
 void OpJumpUnlessAlignmentMatch(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 conflict = AlignmentConflicts(ReadScriptObject());
     if (ScriptBooleanMatches(!conflict, invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1779,7 +1779,7 @@ void OpJumpUnlessAlignmentMatch(i16 invert) {
 RVA(0x000351e0, 0x5b)
 void OpJumpUnlessCanAfford(i16 invert) {
     i32 price = 0x7fffffff;
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     Character* object = ReadScriptObject();
     if (object) {
@@ -1787,29 +1787,29 @@ void OpJumpUnlessCanAfford(i16 invert) {
     }
     price -= GetObjectMacca(-1);
     if ((price <= 0 && !invert) || (price > 0 && invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
 
 RVA(0x00035240, 0x44)
 void OpJumpUnlessInParty(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 position = FindPartyPositionOfId(ReadObjectId());
     if ((position >= 0 && !invert) || (position < 0 && invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
 
 RVA(0x00035290, 0x3f)
 void OpJumpUnlessRosterHasNoDemons(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 demons = CountRosterEntries(false);
     if (ScriptBooleanMatches(!demons, invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1819,17 +1819,17 @@ void OpJumpUnlessRosterHasNoDemons(i16 invert) {
 RVA(0x000352d0, 0x62)
 void OpJumpUnlessHealthy(i16 invert) {
     i16 conditions = 0;
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     Character* object = ReadScriptObject();
     if (!object && invert) {
-        jump = 1;
+        jump = true;
     } else {
         if (object) {
             AccumulateConditionBits(GetCharacterConditions(object), conditions);
         }
         if (ScriptBooleanMatches(!conditions, invert)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1842,12 +1842,12 @@ static __inline Character* GetResolvedPartyCharacter(i16 id) {
 // The same for the first of the companions -2, -3 and -7 in the roster.
 // @early-stop: with no companion and no invert, retail re-zeroes the jump
 // flag in its register before a duplicated call. A single call after an
-// `else if (!companion) jump = 0;` arm is exact, but that assignment repeats
+// `else if (!companion) jump = false;` arm is exact, but that assignment repeats
 // the initializer; the early return here passes the known-zero pointer.
 RVA(0x00035340, 0xb5)
 void OpJumpUnlessCompanionHealthy(i16 invert) {
     i16 conditions = 0;
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     Character* companion = GetResolvedPartyCharacter(-2);
     if (!companion) {
@@ -1857,7 +1857,7 @@ void OpJumpUnlessCompanionHealthy(i16 invert) {
         companion = GetResolvedPartyCharacter(-7);
     }
     if (!companion && invert) {
-        jump = 1;
+        jump = true;
     } else {
         if (!companion) {
             ScriptJumpUnless(target, jump);
@@ -1865,7 +1865,7 @@ void OpJumpUnlessCompanionHealthy(i16 invert) {
         }
         AccumulateConditionBits(GetCharacterConditions(companion), conditions);
         if (ScriptBooleanMatches(!conditions, invert)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1874,12 +1874,12 @@ void OpJumpUnlessCompanionHealthy(i16 invert) {
 // Jumps unless the player has an item in equipment slot 6.
 RVA(0x00035400, 0x4d)
 void OpJumpUnlessHeroEquipped(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     Character* player = ResolveScriptObject(-1);
     if ((GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item != ITEM_ID_EMPTY && !invert)
         || (GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item == ITEM_ID_EMPTY && invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1890,13 +1890,13 @@ void OpJumpUnlessHeroEquipped(i16 invert) {
 RVA(0x00035450, 0x4a)
 void OpIfNoActor(i16 negate) {
     i16 state = 0;
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     if (GetScriptActor()) {
         state = 3;
     }
     if ((state < 2 && !negate) || (state > 2 && negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1904,12 +1904,12 @@ void OpIfNoActor(i16 negate) {
 // Jumps unless the party faces the operand's direction.
 RVA(0x000354a0, 0x45)
 void OpIfFacing(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 direction = ReadScriptValue() & 3;
     if ((direction == g_party.field.pos.direction && !negate)
         || (direction != g_party.field.pos.direction && negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1918,16 +1918,16 @@ void OpIfFacing(i16 negate) {
 // saved, only when negated).
 RVA(0x000354f0, 0x64)
 void OpIfReturnFacing(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 direction = ReadScriptValue() & 3;
     if (g_party.savedDirection == -1) {
         if (negate) {
-            jump = 1;
+            jump = true;
         }
     } else if ((direction == g_party.savedDirection && !negate)
                || (direction != g_party.savedDirection && negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1936,18 +1936,18 @@ void OpIfReturnFacing(i16 negate) {
 // lacking it).
 RVA(0x00035560, 0x63)
 void OpIfObjectHasCondition(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     Character* object = ReadScriptObject();
     i16 has = ReadScriptValue();
     if (!object && negate) {
-        jump = 1;
+        jump = true;
     } else {
         if (object) {
             has = HasCondition(GetCharacterConditions(object), has);
         }
         if (ScriptBooleanMatches(has, negate)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1956,11 +1956,11 @@ void OpIfObjectHasCondition(i16 negate) {
 // Jumps unless the party holds the item.
 RVA(0x000355d0, 0x44)
 void OpIfHasItem(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 held = CountHeldItem(ReadScriptValue());
     if (ScriptBooleanMatches(held, negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1971,7 +1971,7 @@ RVA(0x00035620, 0x67)
 void OpIfHasAllItems(i16 negate) {
     i16 all = -1;
     i16 any = 0;
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 item;
     for (item = ReadScriptValue(); item != ITEM_ID_EMPTY; item = ReadScriptValue()) {
@@ -1980,7 +1980,7 @@ void OpIfHasAllItems(i16 negate) {
         any |= held;
     }
     if ((!negate && all) || (negate && !any)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -2031,22 +2031,22 @@ void OpRedrawItemListTotal(void) {
 
 RVA(0x00035780, 0x3b)
 void OpIfPoolHasItems(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 count = CountPoolEntries();
     if (ScriptBooleanMatches(count, negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
 
 RVA(0x000357c0, 0x3b)
 void OpIfBagHasEntries(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 count = CountBagEntries();
     if (ScriptBooleanMatches(count, negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -2598,7 +2598,7 @@ RVA(0x000364c0, 0x92)
 void OpIfObjectIsAlly(i16 negate) {
     i16 target = ReadBranchTarget();
     i16 id = ReadObjectRef();
-    i32 matches;
+    b32 matches;
     if (id == -20) {
         id = g_actorId;
     } else if (id == -21) {
@@ -3717,7 +3717,7 @@ i16 CountItemInSlots(i16 item, ItemSlot* slots) {
 // `expect` set, lacks it); no member counts as lacking it only with `expect`.
 RVA(0x00037e10, 0x6e)
 void OpIfMemberHasCondition(void) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 expect = ReadScriptValue();
     Character* character = GetRosterCharacter(ReadScriptValue());
@@ -3725,13 +3725,13 @@ void OpIfMemberHasCondition(void) {
     // read).
     i16 has = ReadScriptValue();
     if (!character && expect) {
-        jump = 1;
+        jump = true;
     } else {
         if (character) {
             has = HasCondition(GetCharacterConditions(character), has);
         }
         if (ScriptBooleanMatches(has, expect)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
