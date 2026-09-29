@@ -1467,26 +1467,23 @@ done:
     return damage / 100;
 }
 
-// @early-stop stack layout: retail reserves sixteen bytes while the local
-// ten-byte ExitCell needs twelve. All operations and register assignments
-// agree; the record stride and CopyExitAt forbid padding the cell type.
 RVA(0x0001c9f0, 0xee)
 void RunCellTrap(i16 mode, i16 x, i16 y) {
-    ExitCell cell;
+    MapCell cell;
     Character* member;
     i32 damage;
     i16 hp;
     u8 alignmentMask;
-    if (mode && CopyExitAt(x, y, &cell)) {
+    if (mode && CopyExitAt(x, y, &cell.exit)) {
         for (mode = 0; mode < 6; mode++) {
             member = GetPartyCharacter(mode);
             if (member) {
-                damage = GetCellTrapDamage(&cell, member->pools.hp.max);
+                damage = GetCellTrapDamage(&cell.exit, member->pools.hp.max);
                 hp = member->pools.hp.cur;
-                if (cell.head.code >= 0x68 && cell.head.code <= 0x6e) {
+                if (cell.exit.head.code >= 0x68 && cell.exit.head.code <= 0x6e) {
                     alignmentMask = 4;
                     alignmentMask >>= GetAlignmentClassB(member) + 1;
-                    if (!(cell.trap.alignmentMask & alignmentMask)) {
+                    if (!(cell.exit.trap.alignmentMask & alignmentMask)) {
                         continue;
                     }
                 }
@@ -1496,7 +1493,7 @@ void RunCellTrap(i16 mode, i16 x, i16 y) {
                 }
             }
         }
-        if (cell.head.code == CELL_CHUTE) {
+        if (cell.exit.head.code == CELL_CHUTE) {
             PlaySoundEffect(0x57);
         } else {
             PlaySoundEffect(0x60);
