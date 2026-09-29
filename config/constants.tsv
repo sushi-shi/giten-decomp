@@ -498,3 +498,15 @@ src/Game/savegame.c	Run*	[01]	trivial-function-literal	[01] case	a system sub-me
 src/Game/savegame.c	Run*	2	call-argument	OpenSystemMenu(*	the two rows of the display and quit choices
 src/Game/savegame.c	RunQuitConfirm	*	*	*	row 0 of the quit choice quits; g_quitRequest 1 asks StepGame to end
 src/Game/savegame.c	ReadSaveSummary	0	*	*g_scratchBuffer*	an empty floor text
+src/Script/scriptctx.c	ResolveObjectId	*	comparison-or-bound	*== slot	the special refs' slot forms: slot 16 (ref -17) through 23 (ref -24) run one past ResolveScriptObject's refs (-16..-23), as retail compares them
+src/Script/scriptctx.c	*	-1	call-argument	GetCharacter(*	the last character slot (out-of-range slots fall back to it), where the fusion result loads
+src/Script/scriptctx.c	ResolveScriptObject	14	call-argument	GetCharacter(*	@identity-TODO: character slot 14, the scratch slot a character id loads into
+src/Script/scriptctx.c	OpConvertCharacterRef	-15	store	*	@identity-TODO: -15 (slot 14's ref) when the character is not loaded
+src/Script/scriptctx.c	GetObject*	0	*	*	no such object: no macca or magnetite
+src/Script/scriptctx.c	NewScriptContext	0	*	*	a new context has no call stack
+src/Script/scriptctx.c	Read*	*	*	*	script code decoding: little-endian bytes and words; 0 at the end of the code
+src/Script/scriptctx.c	StepScript	*	*	*	@identity-TODO: StepScript's -1 result and 0 return
+src/Script/scriptctx.c	RunScript	0	call-argument	NewScriptContext(*	@identity-TODO: NewScriptContext's first argument, 0 for RunScript
+src/Script/scriptctx.c	RunScriptStep	0	*	*	@identity-TODO: RunScriptStep's result 0
+src/Script/scriptctx.c	TickScript	0	*	*	no delay skip; 0 while the script runs on
+src/Script/scriptctx.c	RetakeDeferredChar	*	*	*	PutTextChar's -2 (deferred) and no character
