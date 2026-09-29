@@ -136,12 +136,12 @@ automap	_ScreenToAutomapCell	100.0000	100.0000	1	f9ff95d2ab3a	0x58500	100.0000
 bitmapio	_BlitImage	100.0000	100.0000	2	c3e84fc06546	0x57290	100.0000	
 bitmapio	_ClearScenePicture	100.0000	100.0000	4	b265a69dea3e	0x57c40	100.0000	
 bitmapio	_ClearSceneSurfaces	100.0000	100.0000	5	3a8e44e031ed	0x57bf0	100.0000	
-bitmapio	_CopyResourceBitmap16	99.6558	88.7922	6	44c451fd87d9	0x56f30	100.0000	
+bitmapio	_CopyResourceBitmap16	100.0000	100.0000	6	44c451fd87d9	0x56f30	100.0000	
 bitmapio	_CopyResourceBitmap8	100.0000	100.0000	7	aa9f9567e742	0x57120	100.0000	
 bitmapio	_CreatePicture	100.0000	100.0000	5	adc9011ef101	0x57380	100.0000	
 bitmapio	_DrawResourceBitmap	100.0000	100.0000	4	3cc185ba23e9	0x572e0	100.0000	
 bitmapio	_FreeBitmap	100.0000	100.0000	1	e2ab5bf88c4d	0x56ae0	100.0000	
-bitmapio	_LoadBitmapToSurface16	100.0000	100.0000	11	be5062d3ed2b	0x56bd0	100.0000	
+bitmapio	_LoadBitmapToSurface16	100.0000	93.2601	11	be5062d3ed2b	0x56bd0	100.0000	
 bitmapio	_LoadBitmapToSurface8	100.0000	100.0000	9	c04638f551a1	0x56de0	100.0000	
 bitmapio	_LoadPictureFile	100.0000	100.0000	2	0b958e4657a9	0x57520	100.0000	
 bitmapio	_LoadScenePicture	100.0000	100.0000	3	9ad636e017b5	0x57b90	100.0000	
