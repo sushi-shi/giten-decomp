@@ -330,6 +330,103 @@ src/Game/fieldobj.c	LoadFieldTable	0	*	*	no handle loaded
 src/Game/fieldobj.c	LoadFieldTable	0x5000	*	*	the field images start at image file 0x5000
 src/Game/fieldobj.c	PrepareFieldRandom	*	call-argument	LoadEnemyGroupSlot*	layers 0 and 1 and their groups
 src/Game/fieldobj.c	AnyObjectInReach	*	call-argument	HasObjectInReach*	@identity-TODO: reach mode 1 from the party (-1)
+src/Game/treasurebox.c	*	0	call-argument	FindTreasureBoxAt(*argument 3	find the box without making it the scene cell
+src/Game/treasurebox.c	IsHotspotTreasureOpen	*	*	*	@identity-TODO: dead code; box codes 0x4f and 0x89 (and TREASURE_BOX_LOWER) pick the box texture frame, two frames apart; frame 1 is an open box
+src/Game/treasurebox.c	CheckWorldMapEvent	2	*	*	an event triggers within two pixels of its spot; a world block has two layers (block * 2 + odd layer)
+src/Game/treasurebox.c	CheckWorldMapEvent	-1	*	*	a world event list ends at x -1
+src/Game/treasurebox.c	CheckWorldMapEvent	*	call-argument	SetSceneScriptByIndex*	the scene cell's bytes 7 and 8 name its script (file, entry)
+src/Game/treasurebox.c	SetItemMenuCharacter	-1	*	*	no equipment group or ammunition type (no member chosen)
+src/Game/treasurebox.c	FormatItemMenuEntry	-1	*	*	no equipment group (no member chosen)
+src/Game/treasurebox.c	*	1	call-argument	*ItemMenuTotal(*argument 2	prices scale by 1/priceDivisor (numerator 1)
+src/Game/treasurebox.c	*	1	call-argument	FormatItemMenuEntry(*argument 2	prices scale by 1/priceDivisor (numerator 1)
+src/Game/treasurebox.c	FormatItemMenuEntry	1	call-argument	ScaleItemPrice*	the price of one item
+src/Game/treasurebox.c	ItemMenuHandler	-1	call-argument	CompareMacca*	@identity-TODO: CompareMacca's -1 compares the party's money
+src/Game/treasurebox.c	StepItem*Menu	-1	*	*	TEXT_EVENT_CHOOSE_RIGHT (a right click) takes one away
+src/Game/treasurebox.c	StepItemSellMenu	0	call-argument	CopyBagEntries*	from the first bag entry
+src/Game/treasurebox.c	CreateItemMenu	0	call-argument	SetTextPlaneCancelEnabled*	the item menu ignores the cancel button
+src/Game/treasurebox.c	CreateItemMenu	2	*	*	@identity-TODO: menu list flag 2
+src/Game/treasurebox.c	DrawItemMenuTotal	16	*	*	the total's text column
+src/Game/treasurebox.c	AdjustItemMenuCount	10	*	*	ammunition counts go in tens
+src/Game/treasurebox.c	AdjustItemMenuCount	0	call-argument	AddClampShort*	counts start at zero
+src/Game/treasurebox.c	AdjustItemMenuCount	0	call-argument	SetTextPlaneCursorLine*	text column 0
+src/Game/treasurebox.c	GetItemMenuStock	16	*	*	@identity-TODO: an out-of-range stock index falls back to list 16
+src/Game/treasurebox.c	GetLearnableSkillList	-1	*	*	the protagonist's lists are keyed -1 - affiliation, below every character key
+src/Game/treasurebox.c	TakeLearnableSkill	-1	*	*	no requirement entry found
+src/Game/treasurebox.c	TakeLearnableSkill	0	*	*	the list's first slot
+src/Game/treasurebox.c	PickGrowthStats	*	*	*	affiliation slots 0-2 and their picks; returns 3 (three affiliations), 2 (two, alternating by turn), 1 (one, both its stats) or 0 (none); each affiliation's stat pair 0/1 (one picked at random)
+src/Game/treasurebox.c	DropTopStatPicks	*	*	*	a pick on the character's highest stat is dropped one time in four (-1: no pick)
+src/Game/treasurebox.c	TrainingThreshold	*	*	*	training level n needs 3 (n - 1)^2 + 7 points, levels clamped to 0..99
+src/Game/treasurebox.c	AddTrainingPointsRaw	99	*	*	the counter caps at training level 99's threshold
+src/Game/treasurebox.c	ApplyTraining	3	*	*	@identity-TODO: the fourth training kind (talking, analyzing, summoning) has no name
+src/Game/treasurebox.c	GetCellTrapDamage	0x6b	call-argument	*	a sound effect number (the sounds have no names)
+src/Game/treasurebox.c	GetCellTrapDamage	*	case-label	*	alignment trap codes between CELL_ALIGNMENT_TRAP_FIRST and _LAST (their masks, not their codes, differ)
+src/Game/treasurebox.c	GetCellTrapDamage	*	trivial-function-literal	*	no damage below 1%; alignment traps keep the percentage in disableFlag[1]
+src/Game/treasurebox.c	GetCellTrapDamage	100	*	*	damage is a percentage of the maximum HP
+src/Game/treasurebox.c	RunCellTrap	4	*	*	an alignment trap's mask has bit 2 for the negative side, 1 neutral, 0 positive (4 >> (side + 1))
+src/Game/treasurebox.c	FindPanelRowAt	0x0800	*	*	@identity-TODO: panel/row flag 0x800 also refuses hits
+src/Game/treasurebox.c	FindPanelRowAt	-1	*	*	no row
+src/Game/treasurebox.c	ClickPanel	-1	trivial-function-literal	*	no row
+src/Game/treasurebox.c	ClickPanel	-1	call-argument	*	a click runs the row with op -1 (BIT_CHANGE_TOGGLE for a check row)
+src/Game/treasurebox.c	PollPanel	-1	*	*	no click
+src/Game/treasurebox.c	ApplyRowCheck	1	*	*	the row is checked
+src/Game/treasurebox.c	AllocAutomapLevels	*	arithmetic	*	one bit per cell, rounded up to bytes
+src/Game/treasurebox.c	*Automap*	1	call-argument	CreateArrayHandle(*argument 2	byte-sized elements
+src/Game/treasurebox.c	IsAutomapCellHidden	0	*	*	explored
+src/Game/treasurebox.c	StoreAutomapLevel	-1	*	*	no level unpacked
+src/Game/treasurebox.c	WriteAutomapAreas	4	*	*	an empty area table is written as four 256-byte blocks of zeros (MAP_AREA_COUNT handles of 4 bytes)
+src/Game/treasurebox.c	WriteAutomapAreas	256	*	*	an empty area table is written as four 256-byte blocks of zeros (MAP_AREA_COUNT handles of 4 bytes)
+src/Game/treasurebox.c	*	15	comparison-or-bound	operator == level	@identity-TODO: Hatsudai level 15 draws the automap two or three cells in (its map is offset)
+src/Game/treasurebox.c	MarkMapCell	*	*	*	@identity-TODO: Hatsudai level 15 draws the automap two or three cells in (its map is offset), by the party's facing
+src/Game/treasurebox.c	DrawMapOverlayTile	*	*	*	@identity-TODO: Hatsudai level 15 draws the automap two or three cells in (its map is offset), by the party's facing
+src/Game/treasurebox.c	Draw*	0	call-argument	IsCellBlocked(*	CELL_SCAN_DRAW_ICONS ignores the cell
+src/Game/treasurebox.c	DrawAutomapRegion	0	call-argument	GetRotatedWallAtOffset*	the wall of the cell itself
+src/Game/treasurebox.c	DrawAutomapViewport	*	*	*	the viewport centres on the party: half its width and height each way
+src/Game/treasurebox.c	DrawMapOverlay	8	*	*	text rows are 8 pixels high
+src/Game/treasurebox.c	DrawMapOverlay	*	*	*	the overlay centres on the party: half its size each way
+src/Game/treasurebox.c	RunAutomapState	*	call-argument	DrawAutomapRegion*	a one-cell strip along the edge scrolled into view
+src/Game/treasurebox.c	RunAutomapState	*	call-argument	CreateKindPanel*	@identity-TODO: the scroll panel's kind 4 on text plane 31
+src/Game/treasurebox.c	UpdateAutomapScrollPanel	0	*	*	the map's first row or column
+src/Game/treasurebox.c	DrawMoneyCounters	*	*	*	magnetite in row 8, macca in row 11 (currency 0 and 1)
+src/Game/treasurebox.c	DrawMoneyCounter	1	*	*	a value below 1 draws in the empty colour
+src/Game/treasurebox.c	DrawAreaInfo	*	*	*	the location layer's floor text at x 176 (184 below floor -10)
+src/Game/treasurebox.c	RefreshInfoBar	1	*	*	@identity-TODO: info bar layout 1
+src/Game/treasurebox.c	UpdateInfoBar	*	*	*	@identity-TODO: info bar layout 0 on a field redraw, 1 on a moon change
+src/Game/treasurebox.c	IsRegionFlagOn	*	*	*	an entry's flag pair is bank then index; the byte after it inverts the test
+src/Game/treasurebox.c	MarkRegionList	0xff	*	*	a marker entry starts with 0xff; the list ends with 0xff 0xff
+src/Game/treasurebox.c	MarkRegionList	*	call-argument	FillRegionRect*	the entry's rectangle bytes x0, y0, x1, y1
+src/Game/treasurebox.c	MarkRegionList	*	*	*	a rectangle entry's flag pair follows its four bytes; a marker entry's follows its 0xff and is 3 bytes shorter
+src/Game/treasurebox.c	FindRegionData	0xff	*	*	a marker entry starts with 0xff; the list ends with 0xff 0xff
+src/Game/treasurebox.c	FindRegionData	*	*	*	an entry's data follows its four rectangle bytes (or its 0xff marker); a marker entry is 3 bytes shorter
+src/Game/treasurebox.c	MarkRoomRegions	*	*	*	the whole grid (0..REGION_GRID_SIZE - 1); rooms number their regions from 0
+src/Game/treasurebox.c	Get*	1	call-argument	FindRegionData*	a region's index within its list (REGION_DOOR - 1 masks the door bit)
+src/Game/treasurebox.c	GetCellSpawnRate	0	*	*	no door data: no spawns
+src/Game/treasurebox.c	ResetFieldScene	*	call-argument	ResetFieldLayer*	layers 1 and 0
+src/Game/treasurebox.c	ResetFieldScene	-1	*	*	no current room
+src/Game/treasurebox.c	LookupCellObject	1	*	*	layers 0 and 1
+src/Game/treasurebox.c	LookupCellObject	0x20	*	*	@identity-TODO: a door without data returns object kind HUMAN_ID_LIMIT
+src/Game/treasurebox.c	EnterRoom	-1	*	*	no region
+src/Game/treasurebox.c	*	*	call-argument	LookupCellObject*	layers 0 and 1
+src/Game/treasurebox.c	EnterRoom	*	call-argument	LoadEnemyGroupSlot*	layers 0 and 1
+src/Game/treasurebox.c	FindCellObject	*	*	*	-1 no door or not its object; else layer 0 or 1
+src/Game/treasurebox.c	FinishDoorStep	*	*	*	the cell one step behind the party
+src/Game/treasurebox.c	ReturnToLeaderMark	*	*	*	the cell one step behind
+src/Game/treasurebox.c	UpdateCurrentRoom	*	*	*	@identity-TODO: area 0x85 (a second map file named 新宿都庁) level 3 swaps NPC texture 0 to picture 0x53 at (3, 4) and 0x4c at (3, 5)
+src/Game/treasurebox.c	LoadNpcTexture	*	*	*	@identity-TODO: two spots swap NPC pictures (Hatsudai level 8 cells (11, 7) and (12, 6): 0x2b to 0x24; area 0x85 level 3 below row 4: 0x53 to 0x4c); pictures are image files from 0x4000, mode bit 7 selects the request flags 3/4
+src/Game/treasurebox.c	LoadNpcPalette	*	*	*	NPC_TEXTURE_SLOTS palette colours from entry 8
+src/Game/treasurebox.c	LoadAreaNpcImages	*	*	*	@identity-TODO: the NPC record's palette follows 3 header bytes; then (code, mode) pairs, mode 0xff for an empty slot
+src/Game/treasurebox.c	AddAreaNpc	1	*	*	the texture slot follows the entry byte
+src/Game/treasurebox.c	GetNpcImageOfCode	4	*	*	@identity-TODO: retail indexes the physical recovery list from its fifth entry
+src/Game/treasurebox.c	GetNpcTexture	0	*	*	no texture
+src/Game/treasurebox.c	NextNpcSlot	-1	*	*	no free slot
+src/Game/treasurebox.c	DrawNpcAt	*	*	*	only depths 0 and -1 draw an NPC
+src/Game/treasurebox.c	IsReservedObjectCell	*	*	*	@identity-TODO: cell codes 0x48..0x4e (the NPC codes the automap icons list)
+src/Game/treasurebox.c	ShieldTarget	10	*	*	a shield of a tenth of the maximum HP
+src/Game/treasurebox.c	ScatterObjects	0x22	*	*	@identity-TODO: the leader's actor flag 0x22 also stops world-map encounters (the flag table names no bit 0x22)
+src/Game/treasurebox.c	*	*	call-argument	HasObjectInReach(*	@identity-TODO: reach mode (1 from the party, 0 its own cell) and the party's combatant -1
+src/Game/treasurebox.c	SpawnActorGroup	-1	*	*	@identity-TODO: the second group spawns with alternate value -1 (nonzero: the alternate script)
+src/Game/treasurebox.c	RunAnalyzeWindow	0	call-argument	SetTextPlaneCursor*	the plane's top left
+src/Game/treasurebox.c	RunAnalyzeWindow	2	*	*	the yes/no menu's two rows
+src/Game/treasurebox.c	RunAnalyzeWindow	0	call-argument	InitWordList*	an empty word list
 src/Game/itemrecord.c	ApplyEquipmentRegen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
 src/Game/character.c	AgeConditions	0	existing-symbol	enum	a loop over every condition starts at condition 0
 src/Game/character.c	IsPartyMemberFallen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
@@ -523,7 +620,6 @@ src/Ui/message.c	RunTextWindowState	1	call-argument	TestFeatureMask(*	@identity-
 src/Ui/message.c	SetMessageLifetime	*	*	*	a lifetime under one tick falls back to 15 ticks
 src/Ui/message.c	TickMessageWindow	0	*	*	no ticks left
 src/Ui/menubox.c	*	0	call-argument	DispatchMenuEvent(*argument 2	page-level menu events carry no row (index 0)
-src/Ui/menubox.c	DestroyMenuBox	1	call-argument	ReleasePanel(*argument 2	the panel block is freed too
 src/Ui/menubox.c	CreateMenuBox	-1	call-argument	CreatePositionedPanel(*	@identity-TODO: -1, -1 position the list panel by the window
 src/Ui/menubox.c	CreateMenuBox	0	*	*value	an empty menu context
 src/Ui/menubox.c	CreateMenuBox	-2	store	*repaintMode	@identity-TODO: repaint mode -2 of a new menu (RepaintTextPlane mode)
@@ -617,7 +713,6 @@ include/Game/ActionWait.h	QueueActionWait	1	*	*remaining	a queued wait runs at l
 src/Script/scriptop.c	OpSaveDataCommand	1	*	*result	reading the summary always succeeds (script result 1)
 src/Script/scriptop.c	SetActorMode	*	*	*g_scriptRegs*	@identity-TODO: script register 0 set to 1 when an actor's mode changes
 src/Script/scriptop.c	OpIfFlags	*	*	*	a flag list ends with the operand (bank 0x7f, invert -1); `every` starts as all bits and the low bit of invert negates a flag
-src/Script/scripttext.c	DestroyScriptPanel	1	call-argument	ReleasePanel(*	the panel block is freed too
 src/Script/scripttext.c	CreateScriptPanel	0	call-argument	CreateImagePanel(*	@identity-TODO: CreateImagePanel's unused fourth argument
 src/Script/scripttext.c	OpOpenScriptPanel	0x113	*	*	@identity-TODO: opening panel image 0x113 first clears the element pool
 src/Script/scripttext.c	PollScriptPanels	*	*	*	panels are polled from the last one down; the long vars 0x16..0x19 the panel script reads (count, right click, checked, row)
@@ -857,6 +952,7 @@ src/Game/fieldmain.c	MarkVisibleFieldCells	*	*	*	the 3D view's occlusion: 4-cell
 src/Game/fieldmain.c	RunFieldExploration	*	*	*	@identity-TODO: exploration's special cases and parameters: the world-map request 1, scene scripts (7, 8), field text scenes (0x1a/6, 0x59/6, 0x16/0xd, 0x2a/0), battle-message scene 0xdd/0x59, script register 1, Chiyoda Line level 3 (5, 0), Hatsudai levels 0xc..0xe, fade speeds 1 and the room rebuild 1
 src/Game/fieldmain.c	RunCellEvent	*	*	*	@identity-TODO: cell event parameters: scene scripts (7, 8) and (5, 6), the stairs' script 0x7f04/7 and sound 4, forced-move steps and turns, traps (1), field maps entered at rates 100 and a map id packed as y << 8 | x
 src/Game/treasurebox.c	DrawMoneyCounter	0xffffb*	store	*attr	a half-width, flag-1, opaque attribute (white or red text) held sign-extended in an i32
+src/Game/treasurebox.c	RunAutomapState	*	call-argument	RunFieldPanelRow*	@identity-TODO: field panel row 7 with no op or flag changes (the automap command row)
 src/Game/skilluse.c	AddCombatTarget	270	*	*	@identity-TODO: the target list's 270 slots
 src/Game/skilluse.c	NextTarget	*	*	*	the first target of a non-empty list
 src/Game/skilluse.c	FlashHitObject	*	*	*	@identity-TODO: no change; redraw mode 2

@@ -1568,7 +1568,7 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
             }
             break;
         case 2:
-            s_fusionPager = ReleasePanel(s_fusionPager, 1);
+            s_fusionPager = ReleasePanel(s_fusionPager, true);
             step = CloseFusionPicker(g_fusionFirstSlot);
             break;
         case 3:

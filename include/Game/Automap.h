@@ -17,6 +17,14 @@
 #define MAP_OVERLAY_X 1
 #define MAP_OVERLAY_Y 14
 
+// RunAutomapState's phases: open the window, draw the map, scroll it, close.
+GZ_ENUM_BEGIN_SPLIT(AutomapPhase, i16)
+    AUTOMAP_PHASE_OPEN = 0,
+    AUTOMAP_PHASE_DRAW = 1,
+    AUTOMAP_PHASE_SCROLL = 2,
+    AUTOMAP_PHASE_CLOSE = 3
+GZ_ENUM_END_SPLIT(AutomapPhase)
+
 // The automap's scroll panel rows (its input is the row clicked), and the
 // bits UpdateAutomapScrollPanel sets for the directions the map cannot scroll.
 GZ_ENUM_BEGIN_SPLIT(AutomapScroll, i16)

@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Ints.h>
+#include <Util/BitChangeMode.h>
 
 // Panel input policy; hidden, locked and disabled also apply to rows.
 GZ_ENUM_FLAGS_BEGIN(PanelFlags, u16)
@@ -79,7 +80,7 @@ Panel* CreateImagePanel(Panel* panel, i16 image, i16 count, i16 unused);
 Panel* CreateKindPanel(Panel* panel, i16 image, i16 count, i16 kind);
 Panel* CreateSequentialPanel(Panel* panel, i16 image, i16 count);
 Panel* CreatePositionedPanel(Panel* panel, i16 x, i16 y, i16 count, i16 kind);
-Panel* ReleasePanel(Panel* panel, i16 freePanel);
+Panel* ReleasePanel(Panel* panel, b16 freePanel);
 i16 PanelRowHandlerDefault(PanelRow* row, i16 value, i16 op);
 void SetPanelRowState(Panel* panel, i16 index, GZ_ENUM_PARAM(PanelFlags, u16) flags);
 void PaintPanel(Panel* panel, i16 mode);
@@ -132,7 +133,7 @@ void ClearPanelFlags(Panel* panel, GZ_ENUM_PARAM(PanelFlags, u16) mask);
 
 // The shared row handler body: op -1 toggles the row's check, 0 clears it,
 // 1 sets it; returns whether it is now set.
-i16 ApplyRowCheck(PanelRow* row, i16 value, i16 op);
+i16 ApplyRowCheck(PanelRow* row, i16 value, GZ_ENUM_PARAM(BitChangeMode, i16) op);
 
 // @identity-TODO: the hotspot helpers the panels use (0x453fd0 draws or
 // highlights hotspot `id` in `mode`; 0x454230 tests x/y against it).

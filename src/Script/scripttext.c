@@ -73,7 +73,7 @@ void DestroyScriptPanel(ScriptPanel* node) {
     FreeBlock(node->jumps);
     node->flags.drawn = false;
     ErasePanelPictures(node->panel);
-    ReleasePanel(node->panel, 1);
+    ReleasePanel(node->panel, true);
     FreeBlock(node);
 }
 

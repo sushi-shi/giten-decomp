@@ -1307,7 +1307,7 @@ Panel* CreatePositionedPanel(Panel* panel, i16 x, i16 y, i16 count, i16 kind) {
 }
 
 RVA(0x00022980, 0x3c)
-Panel* ReleasePanel(Panel* panel, i16 freePanel) {
+Panel* ReleasePanel(Panel* panel, b16 freePanel) {
     if (panel == NULL) {
         return NULL;
     }

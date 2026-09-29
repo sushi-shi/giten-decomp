@@ -1730,17 +1730,17 @@ i16 PollPanel(Panel* panel) {
 }
 
 RVA(0x0001cd80, 0x5f)
-i16 ApplyRowCheck(PanelRow* row, i16 value, i16 op) {
+i16 ApplyRowCheck(PanelRow* row, i16 value, GZ_ENUM_PARAM(BitChangeMode, i16) op) {
     i16 result = 0;
     switch (op) {
-        case -1:
+        case BIT_CHANGE_TOGGLE:
             g_mouseLeftClick = MOUSE_CLICK_NONE;
             result = ToggleFlagBits(&row->flags, PANEL_ROW_CHECKED);
             break;
-        case 0:
+        case BIT_CHANGE_CLEAR:
             ClearPanelRowCheck(row);
             break;
-        case 1:
+        case BIT_CHANGE_SET:
             SetFlagBits(&row->flags, PANEL_ROW_CHECKED);
             result = 1;
             break;
@@ -2026,7 +2026,7 @@ b16 RunAutomapState(void) {
     }
     SetLayersRenderMode();
     switch (GetGamePhase()) {
-        case 0:
+        case AUTOMAP_PHASE_OPEN:
             NextGamePhase();
             s_mapActive = true;
             RestoreDrawState(SaveDrawState());
@@ -2041,17 +2041,17 @@ b16 RunAutomapState(void) {
                 s_mapDetail = AUTOMAP_DETAIL_NPCS;
             }
             if (s_mapDetail < AUTOMAP_DETAIL_BASIC) {
-                SetGamePhase(3);
+                SetGamePhase(AUTOMAP_PHASE_CLOSE);
             }
             break;
-        case 1:
+        case AUTOMAP_PHASE_DRAW:
             NextGamePhase();
             savedState = SaveDrawState();
             DrawAutomapViewport(s_mapPosition);
             UpdateAutomapScrollPanel();
             RestoreDrawState(savedState);
             break;
-        case 2:
+        case AUTOMAP_PHASE_SCROLL:
             input = RunPanelInput(s_mapPanel);
             if (input == PANEL_INPUT_CANCELLED) {
                 NextGamePhase();
@@ -2097,9 +2097,9 @@ b16 RunAutomapState(void) {
                 RestoreDrawState(savedState);
             }
             break;
-        case 3:
+        case AUTOMAP_PHASE_CLOSE:
             CloseTextWindow(s_mapPlane);
-            s_mapPanel = ReleasePanel(s_mapPanel, 1);
+            s_mapPanel = ReleasePanel(s_mapPanel, true);
             RequestFieldRefresh();
             RunFieldPanelRow(7, 0, 0, 0);
             ReturnFromGameState();

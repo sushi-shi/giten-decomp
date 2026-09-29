@@ -18,7 +18,7 @@ MenuBox* DestroyMenuBox(MenuBox* menu) {
         return NULL;
     }
     DispatchMenuEvent(menu, 0, MENU_EVENT_DESTROY);
-    menu->list = ReleasePanel(menu->list, 1);
+    menu->list = ReleasePanel(menu->list, true);
     CloseTextWindow(menu->plane);
     return FreeBlock(menu);
 }
