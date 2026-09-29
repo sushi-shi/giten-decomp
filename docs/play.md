@@ -24,10 +24,25 @@ The `play` target compiles every unit again with its own flag profile plus
 matching objects in `build/objdiff/base` never see the define, so scores are
 unaffected.
 
-A fix for a defect in the original behavior goes under `#ifdef GITEN_BUGFIX`
-beside the retail spelling, which stays in the `#else` branch. Its comment
-states the retail defect and the condition that triggers it. Only fixes go
-there, not reconstruction guesses or matching experiments.
+Fixes go under one of two flags, beside the retail spelling, which stays in
+the `#else` branch:
+
+- `GITEN_COMPAT`: undefined behaviour, crashes, hangs, differences between
+  operating systems, drivers or Wine, and frame pacing.
+- `GITEN_BUGFIX`: defects in the game's logic, such as dropped input, soft-locks
+  and data errors. It implies `GITEN_COMPAT`.
+
+`include/Ints.h`, which every unit reaches, defines `GITEN_COMPAT` when
+`GITEN_BUGFIX` is defined. The matching build must stay byte-identical, so it
+may see no new header or macro: an extra `#include` or `#define` in every unit
+changes MSVC 5's register allocation and temporary numbering. The play build
+defines only `GITEN_BUGFIX`.
+
+A fix's comment starts with `// @bug` and states the retail defect, the
+condition that triggers it and its consequence. Only fixes go there, not
+reconstruction guesses, matching experiments or quality-of-life changes
+(tempo, extra keys), which stay out of both flags. [Bugs](bugs.md) catalogues
+every known defect, fixed or not.
 
 ## Runtime
 

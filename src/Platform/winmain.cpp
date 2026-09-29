@@ -3429,7 +3429,7 @@ static DWORD s_lastDrawTime;
 // The minimum time between drawn frames of an animated mode, in ms.
 #define FRAME_INTERVAL 50
 
-#ifdef GITEN_BUGFIX
+#ifdef GITEN_COMPAT
 // The display refresh the game was paced for, in passes of the main loop a second.
 #define REFRESH_RATE 60
 // One pass at REFRESH_RATE, in ms, rounded up.
@@ -3441,7 +3441,7 @@ static BOOL s_frameClockStarted;
 static DWORD s_frameClockStart;
 static DWORD s_frameClockCount;
 
-// Retail paces the main loop, one game step per pass, on the vertical blank
+// @bug Retail paces the main loop, one game step per pass, on the vertical blank
 // alone, so the game's speed follows the display's refresh rate: a 120 Hz
 // display runs it twice as fast, and under Wine, whose WaitForVerticalBlank
 // returns at once, it runs as fast as the host allows. Called after that wait,
@@ -3500,7 +3500,7 @@ void RenderFrame(void) {
         s_viewChanged = FALSE;
         DrawMouseCursor();
         g_ddraw->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL);
-#ifdef GITEN_BUGFIX
+#ifdef GITEN_COMPAT
         WaitForFrame();
 #endif
         if (draw) {

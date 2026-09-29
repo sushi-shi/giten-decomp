@@ -3194,8 +3194,8 @@ u8* RenderGlyph(u16 code, u8* glyph) {
             glyph[i * 2 + 1] = 0;
         }
     } else {
-#ifdef GITEN_BUGFIX
-        // Retail passes 64 of the buffer's 128 bytes and ignores the result. GDI
+#ifdef GITEN_COMPAT
+        // @bug Retail passes 64 of the buffer's 128 bytes and ignores the result. GDI
         // fails for an empty glyph (U+3000) or a bitmap larger than the buffer
         // (more than 16 rows; 32 with the whole buffer) and leaves `metrics` unset,
         // so the row lookup below indexed with stack garbage. Cleared metrics
@@ -3223,9 +3223,11 @@ u8* RenderGlyph(u16 code, u8* glyph) {
             }
         }
         if (code != SJIS_LOW_LINE) {
-#ifdef GITEN_BUGFIX
-            // Retail indexes the table with the glyph top unchecked. MS Gothic keeps
-            // the top within it; another font need not.
+#ifdef GITEN_COMPAT
+            // @bug Retail indexes the table with the glyph top unchecked. MS Gothic
+            // keeps the top within it; another font need not, and a top outside
+            // the table reads a row offset from neighbouring memory that the rows
+            // are then copied at.
             const LONG tops =
                 static_cast<LONG>(sizeof(s_glyphRowOffset) / sizeof(s_glyphRowOffset[0]));
             if (metrics.gmptGlyphOrigin.y < 0) {
