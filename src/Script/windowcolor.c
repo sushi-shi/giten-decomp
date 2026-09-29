@@ -5,6 +5,7 @@
 
 #include <Script/ScriptOps.h>
 #include <Script/TextState.h>
+#include <Script/WindowReverseMode.h>
 #include <Text/TextPlane.h>
 #include <Text/TextPlaneAttr.h>
 #include <Text/TextWindow.h>
@@ -14,12 +15,12 @@
 RVA(0x0002ea80, 0x46)
 void SetWindowReverse(i16 window, i16 mode) {
     switch (mode) {
-        case 1:
+        case WINDOW_ATTR_RESET_AND_REVERSE:
             ResetTextPlaneAttr(window);
-        case -1:
+        case WINDOW_ATTR_REVERSE:
             ReverseTextPlaneAttr(window);
             break;
-        case 0:
+        case WINDOW_ATTR_RESET:
             ResetTextPlaneAttr(window);
             break;
     }

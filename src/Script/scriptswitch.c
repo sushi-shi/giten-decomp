@@ -9,18 +9,20 @@
 #include <Script/Script.h>
 #include <Script/ScriptCmd.h>
 #include <Script/ScriptOps.h>
+#include <Script/ScriptSwitchEncoding.h>
 #include <Util/Range.h>
 
 RVA(0x00032740, 0x79)
 void SwitchOnValue(u8 value, i16 call, i16 exactMatch) {
     i16 entry;
+    // The parameter's word is reused as the selected target after its mode is read.
     i16 selected = ReadScriptSwitch(value, &exactMatch, &entry, exactMatch);
-    if (selected > 255) {
+    if (selected > SCRIPT_SWITCH_END) {
         if (call) {
             PushCallFrame(g_curScript, 0);
         }
         ScriptJump(exactMatch);
-    } else if (selected != 255) {
+    } else if (selected != SCRIPT_SWITCH_END) {
         if (!call) {
             GotoScript(exactMatch, entry);
         } else {
@@ -50,12 +52,12 @@ i16 ReadScriptSwitch(u8 value, i16* target, i16* entry, i16 exactMatch) {
             }
         }
         if (localJump) {
-            selected |= 256;
+            selected |= SCRIPT_SWITCH_LOCAL_JUMP;
         }
         return selected;
     } else {
-        for (key = ReadScriptByte(); key != 255; key = ReadScriptByte()) {
-            if (value <= key && selected == 255) {
+        for (key = ReadScriptByte(); key != SCRIPT_SWITCH_END; key = ReadScriptByte()) {
+            if (value <= key && selected == SCRIPT_SWITCH_END) {
                 localJump = ReadScriptByte();
                 if (localJump) {
                     *target = ReadJumpTarget();
@@ -70,7 +72,7 @@ i16 ReadScriptSwitch(u8 value, i16* target, i16* entry, i16 exactMatch) {
         }
     }
     if (localJump) {
-        selected |= 256;
+        selected |= SCRIPT_SWITCH_LOCAL_JUMP;
     }
     return selected;
 }

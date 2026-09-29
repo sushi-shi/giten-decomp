@@ -13,6 +13,7 @@
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
 #include <Script/LongVar.h>
+#include <Script/ObjectRef.h>
 #include <Script/Script.h>
 #include <Script/ScriptOperand.h>
 #include <Script/ScriptOps.h>
@@ -151,16 +152,16 @@ Character* ResolveScriptObject(i16 id) {
     if (id < 0) {
         return AsCharacter(GetCharacter(ObjectSlotOfId(id)));
     }
-    if (id >= 3000) {
+    if (id >= SCRIPT_REF_CHARACTER_BASE) {
         Character* character = GetCharacter(14);
-        LoadCharacterCore(id - 3000, character);
+        LoadCharacterCore(id - SCRIPT_REF_CHARACTER_BASE, character);
         return character;
     }
-    if (id >= 2000) {
-        return GetRosterCharacter(id - 2000);
+    if (id >= SCRIPT_REF_ROSTER_BASE) {
+        return GetRosterCharacter(id - SCRIPT_REF_ROSTER_BASE);
     }
-    if (id >= 1000) {
-        return GetPartyCharacter(id - 1000);
+    if (id >= SCRIPT_REF_PARTY_BASE) {
+        return GetPartyCharacter(id - SCRIPT_REF_PARTY_BASE);
     }
     return GetFieldActor(id);
 }
@@ -170,7 +171,8 @@ MapCoord ResolveScriptObjectCoord(i16 id) {
     MapCoord point;
     point.x = 0;
     point.y = 0;
-    if (id >= 1000 || id == -18 || (id < 0 && id >= -16) || id == -22 || id == -23) {
+    if (id >= SCRIPT_REF_PARTY_BASE || id == -18 || (id < 0 && id >= -16) || id == -22
+        || id == -23) {
         return GetMapCoord();
     }
     if (id == -17 || id == -19) {
@@ -194,14 +196,14 @@ i32 ReadObjectRef(void) {
     i16 kind = ReadScriptByte();
     i32 value = ReadScriptValue();
     switch (kind) {
-        case 0:
+        case OBJECT_REF_DIRECT:
             break;
-        case 1:
-            return value + 3000;
-        case 2:
-            return value + 1000;
-        case 3:
-            return value + 2000;
+        case OBJECT_REF_CHARACTER_ID:
+            return value + SCRIPT_REF_CHARACTER_BASE;
+        case OBJECT_REF_PARTY_SLOT:
+            return value + SCRIPT_REF_PARTY_BASE;
+        case OBJECT_REF_ROSTER_SLOT:
+            return value + SCRIPT_REF_ROSTER_BASE;
     }
     return value;
 }
