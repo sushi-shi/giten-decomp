@@ -1230,7 +1230,7 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
     switch (event) {
         case MENU_EVENT_ADD_ROW:
             disabled = false;
-            style = 0x2450;
+            style = TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
             if (GetWord(GetCharacterSkills(character), index) == 0) {
                 AddMenuLine(menu->plane, g_emptySkillMenuLabel, style, 0, MENU_LINE_DISABLED);
                 return;
@@ -1238,16 +1238,20 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
             blocked = IsSkillIdBlocked(character, GetWord(GetCharacterSkills(character), index));
             skill = GetSkillView(GetWord(GetCharacterSkills(character), index));
             if (blocked == 1) {
-                style = 0x2500;
+                style =
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
                 disabled = true;
             } else if (IsSkillUsableNow(GetSkillUseModes(skill)) < 1) {
-                style = 0x2500;
+                style =
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
                 disabled = true;
             } else if (CheckSkillArea(GetWord(GetCharacterSkills(character), index)) < 1) {
-                style = 0x2500;
+                style =
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
                 disabled = true;
             } else if (CannotPaySkill(character, &skill->parameters)) {
-                style = 0x2650;
+                style =
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_GREEN, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
                 disabled = true;
             }
             if (SkillCostsFullPool(&skill->parameters)) {

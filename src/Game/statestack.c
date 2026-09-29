@@ -1000,12 +1000,13 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
     items = menu->items.text;
     switch (event) {
         case MENU_EVENT_ADD_ROW:
-            attribute = 0x500;
+            attribute = TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
             disabled = MENU_LINE_DISABLED;
             switch (index) {
                 case 2:
                     if (CountRosterEntries(false)) {
-                        attribute = 0x2450;
+                        attribute = TEXT_ATTR_FLAG1
+                                    | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
                         disabled = false;
                     }
                     break;
@@ -1013,7 +1014,9 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
                     for (slot = 0; slot < PARTY_SIZE; slot++) {
                         character = GetPartyCharacter(slot);
                         if (character != NULL && !IsHumanCharacter(character)) {
-                            attribute = 0x2450;
+                            attribute =
+                                TEXT_ATTR_FLAG1
+                                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
                             disabled = false;
                         }
                     }
@@ -1023,7 +1026,9 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
                         character = GetRosterCharacter(slot);
                         if (character != NULL && !IsHumanCharacter(character)
                             && !GetFatalCondition(GetCharacterConditions(character))) {
-                            attribute = 0x2450;
+                            attribute =
+                                TEXT_ATTR_FLAG1
+                                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
                             disabled = false;
                         }
                     }

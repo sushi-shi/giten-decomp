@@ -567,11 +567,14 @@ i16 DrawStatTotals(i16 x, i16 y, Character* member, Character* compare) {
                 TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
             );
         } else {
-            attr = 0x1400;
+            attr =
+                TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
             if (GetStatTotal(member, stat) < GetStatTotal(compare, stat)) {
-                attr = 0x1600;
+                attr = TEXT_ATTR_OPAQUE
+                       | TEXT_ATTR(TEXT_COLOR_GREEN, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
             } else if (GetStatTotal(member, stat) > GetStatTotal(compare, stat)) {
-                attr = 0x1500;
+                attr = TEXT_ATTR_OPAQUE
+                       | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
             }
             y = DrawStatusLine(x, y, g_scratchBuffer, attr);
         }
@@ -1238,16 +1241,16 @@ static i16 DrawStatColumn(i16 x, i16 y, i16* stats, i16* preview) {
 
 RVA(0x00043a20, 0x93)
 static u16 DrawStatCompare(i16 x, i16 y, i16 value, i16 newValue) {
-    i32 attr = 0x400;
+    i32 attr = TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
 
     if (newValue < 0) {
         sprintf(g_scratchBuffer, "  %3d    ", value);
     } else {
         sprintf(g_scratchBuffer, "  %3d>%3d", value, newValue);
         if (value < newValue) {
-            attr = 0x600;
+            attr = TEXT_ATTR(TEXT_COLOR_GREEN, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
         } else if (value > newValue) {
-            attr = 0x500;
+            attr = TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
         }
     }
     DrawPlaneText(s_equipPage.panelPlane, x * 8, y * 8, g_scratchBuffer, attr);

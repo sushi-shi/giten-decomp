@@ -841,7 +841,8 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
             break;
         case MENU_EVENT_ADD_ROW: {
             ItemStack* entry = GetItemListEntry(list, index);
-            i32 color = 0x3450;
+            i32 color = TEXT_ATTR_FLAG1 | TEXT_ATTR_OPAQUE
+                        | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
             i32 price = FormatItemMenuEntry(*entry, 1, menu->context.item.priceDivisor);
             ItemRecord* record = GetLoadedRecord(GetItemStackItem(entry));
             if (!GetItemRecordPrice(record)) {
@@ -856,7 +857,8 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
             } else {
                 if (menu->context.item.mode == 0 && menu->context.item.priceDivisor == 1) {
                     if (CompareMacca(-1, price) < 0) {
-                        color = 0x3500;
+                        color = TEXT_ATTR_FLAG1 | TEXT_ATTR_OPAQUE
+                                | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
                     }
                 }
                 AddMenuLine(

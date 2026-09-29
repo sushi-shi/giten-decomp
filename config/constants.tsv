@@ -708,3 +708,4 @@ src/Game/fieldmain.c	VisitVisibleCellWalls	*	*	*	the 3D view's occlusion nibbles
 src/Game/fieldmain.c	MarkVisibleFieldCells	*	*	*	the 3D view's occlusion: 4-cell rows from -3, 0xff for unoccluded, the centre column 0
 src/Game/fieldmain.c	RunFieldExploration	*	*	*	@identity-TODO: exploration's special cases and parameters: the world-map request 1, scene scripts (7, 8), field text scenes (0x1a/6, 0x59/6, 0x16/0xd, 0x2a/0), battle-message scene 0xdd/0x59, script register 1, Chiyoda Line level 3 (5, 0), Hatsudai levels 0xc..0xe, fade speeds 1 and the room rebuild 1
 src/Game/fieldmain.c	RunCellEvent	*	*	*	@identity-TODO: cell event parameters: scene scripts (7, 8) and (5, 6), the stairs' script 0x7f04/7 and sound 4, forced-move steps and turns, traps (1), field maps entered at rates 100 and a map id packed as y << 8 | x
+src/Game/treasurebox.c	DrawMoneyCounter	0xffffb*	store	*attr	a half-width, flag-1, opaque attribute (white or red text) held sign-extended in an i32
