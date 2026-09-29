@@ -723,7 +723,7 @@ fieldobj	_TestWorldEncounterChance	100.0000	100.0000	4	c4599ebfbf7f	0x11220	100.
 fieldobj	_TickEnemySpawnTimer	100.0000	100.0000	3	27ea2f3f1a75	0xee20	100.0000	
 fieldobj	_TraceSight	100.0000	100.0000	3	bde15fa1e0c9	0xee70	100.0000	
 fieldobj	_UpdateFieldObjects	100.0000	100.0000	1	62f41f6a320d	0xe400	100.0000	
-fieldobj	_UseObjectSkill	98.4444	98.4444	12	040f4328e76e	0xf620	98.4444	
+fieldobj	_UseObjectSkill	99.8213	99.8213	12	040f4328e76e	0xf620	99.8213	
 fieldscreen	_AllocLayerImage	100.0000	100.0000	1	984e16cb6225	0x168d0	100.0000	
 fieldscreen	_AreObjectsHidden	100.0000	100.0000	2	967e2fe56608	0x15cb0	100.0000	
 fieldscreen	_CanCharacterOpenAutomap	100.0000	100.0000	4	842f9802d86c	0x15530	100.0000	
