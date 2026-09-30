@@ -602,7 +602,7 @@ void ResolveKnockout(i16 previousHp, i16 id) {
     if (!combatant) {
         return;
     }
-    if (!TestCharacterFlag(combatant, 63)) {
+    if (!TestCharacterFlag(combatant, ACTOR_FLAG_DESAMAN)) {
         if (previousHp == 0) {
             return;
         }
@@ -616,7 +616,7 @@ void ResolveKnockout(i16 previousHp, i16 id) {
             }
         }
     }
-    if (!TestCharacterFlag(combatant, 63)) {
+    if (!TestCharacterFlag(combatant, ACTOR_FLAG_DESAMAN)) {
         combatant->pools.hp.cur = 0;
         s_knockedOut = id;
         if (id >= 0) {
@@ -641,7 +641,7 @@ void ResolveKnockout(i16 previousHp, i16 id) {
             RemoveCombatTarget(id);
             return;
         }
-        ClearCharacterFlag(combatant, 63);
+        ClearCharacterFlag(combatant, ACTOR_FLAG_DESAMAN);
     }
     ResetObjectAnim(id);
     RunFieldIdle();

@@ -3298,9 +3298,9 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectC
             return SealTarget();
         case FIELD_EFFECT_CODE_RAISE_ACCURACY_EVASION:
             return RaiseTargetFlag23();
-        case FIELD_EFFECT_CODE_RAISE_WEAPON_POWER_DEFENSE:
+        case FIELD_EFFECT_CODE_DOUBLE_MAX_HP_RAISE_WEAPON_STATS:
             return RaiseTargetFlag25();
-        case FIELD_EFFECT_CODE_MARK_ASH_AT_NEW_MOON:
+        case FIELD_EFFECT_CODE_DOUBLE_MAX_POOLS_THEN_ASH:
             return RaiseTargetFlag26();
         case 0x23:
             return FIELD_EFFECT_DONE;
@@ -3513,10 +3513,10 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void) {
     if (!target) {
         return FIELD_EFFECT_FAILED;
     }
-    if (TestCharacterFlag(target, ACTOR_FLAG_MOON_WEAPON_POWER_DEFENSE_UP) == true) {
+    if (TestCharacterFlag(target, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
         return FIELD_EFFECT_FAILED;
     }
-    SetCharacterFlag(target, ACTOR_FLAG_MOON_WEAPON_POWER_DEFENSE_UP);
+    SetCharacterFlag(target, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST);
     RecalcCharacterStats(target);
     return FIELD_EFFECT_DONE;
 }
@@ -3531,10 +3531,10 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag26(void) {
     if (!target) {
         return FIELD_EFFECT_FAILED;
     }
-    if (TestCharacterFlag(target, ACTOR_FLAG_MOON_ASH_PENDING) == true) {
+    if (TestCharacterFlag(target, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
         return FIELD_EFFECT_FAILED;
     }
-    SetCharacterFlag(target, ACTOR_FLAG_MOON_ASH_PENDING);
+    SetCharacterFlag(target, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING);
     RecalcCharacterStats(target);
     return FIELD_EFFECT_DONE;
 }

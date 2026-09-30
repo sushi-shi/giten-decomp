@@ -210,9 +210,6 @@ GZ_ENUM_RETURN(ClockUpdate, i16) TickClock(u16 minutes) {
     return changed;
 }
 
-// On a new moon phase: clears the Core Shield and Estoma flags, sets
-// flag 10 of every live object, applies the phase to the party and the
-// objects, and handles the full and new moons and the phase after the full moon.
 RVA(0x00020cf0, 0x149)
 void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
     i16 i;
@@ -228,7 +225,7 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
         i16 object = GetLiveObject(i);
         if (object >= 0) {
             flags = GetCharacterFlags(GetCombatant(object));
-            SetBit(flags, 10);
+            SetBit(flags, ACTOR_FLAG_NOTICED);
         }
     }
     for (i = 0; i < PARTY_SIZE; i++) {

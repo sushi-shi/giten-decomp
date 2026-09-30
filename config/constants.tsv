@@ -833,7 +833,6 @@ src/Game/worldtravel.c	PushRoutePoint	1	call-argument	GrowRoute(*	one more point
 src/Game/worldtravel.c	*WorldMapPlace*	*	*	*	@identity-TODO: no place name shown (-1); the name's 32/40-pixel offset and the block step 2
 src/Game/clock.c	InitClock	*	*	*	the clock's pacing: a tick every 5 frames, 2 minute steps per tick toward 60 per minute, from day 0
 src/Game/clock.c	TickClock	*	*	*	60 minutes per hour, 24 hours per day
-src/Game/clock.c	ApplyClockChanges	*	call-argument	*Bit(*	@identity-TODO: character flag 10 (set on each live object) at a new moon phase
 src/Game/clock.c	ClearMoonFlags	*	*	*	the moon flag list: bank and index byte pairs ending at 0xff
 src/Game/clock.c	TickGameClock	*	*	*	24 ticks a round; a frame's tick advances the clock one minute
 src/Game/clock.c	SetAreaFlagPreservation	-1	*	*	-1 keeps the current area or level
@@ -1025,7 +1024,7 @@ src/Game/itemrecord.c	GiftMenuHandler	0	*	*	the menu's origin (0, 0); no gems he
 src/Game/character.c	ComputeActionSpeed	*	*	*	action speed formula: 4 times the root (at least 1), a quarter of the burden, a speed of at least 1
 src/Game/character.c	InitCharacterSlot	*	*	*	@identity-TODO: the never-read value (10000) and bytes (0, 1) a new character gets
 src/Game/character.c	Find*	-1	*	*	no such character or slot
-src/Game/character.c	Calc*	*	*	*	derived-stat formulas: stat weights and fractions, level thresholds, caps of 999 or 9999, doubling by personal flags 37 and 38 (@identity-TODO)
+src/Game/character.c	Calc*	*	*	*	derived-stat formulas: stat weights and fractions, level thresholds, caps of 999 or 9999
 src/Game/character.c	LowPoolMask	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
 src/Game/character.c	EmptyPoolMask	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
 src/Game/character.c	DrainPool	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled

@@ -501,18 +501,16 @@ void ResetRosterStatModifiers(void) {
     }
 }
 
-// Maximum HP: level * vitality / 2 + protection and fortune + 5, doubled by personal
-// flag 37 and again by flag 38, at most 9999.
 RVA(0x0003cec0, 0xa3)
 i32 CalcMaxHp(Character* character) {
     double value = character->level;
     value *= character->stats.total[STAT_VITALITY];
     value *= 0.5;
     value += character->stats.total[STAT_PROTECTION] + character->stats.total[STAT_FORTUNE] + 5;
-    if (TestBit(character->personalFlags, 37) == true) {
+    if (TestBit(character->personalFlags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
         value += value;
     }
-    if (TestBit(character->personalFlags, 38) == true) {
+    if (TestBit(character->personalFlags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
         value += value;
     }
     if (value > 9999.0) {
@@ -521,8 +519,6 @@ i32 CalcMaxHp(Character* character) {
     return (i32)value;
 }
 
-// Maximum MP: (charm and mental strength) / 2 + sqrt(level) * magic * 1.5, doubled by
-// personal flag 38, at most 999.
 RVA(0x0003cf70, 0x8c)
 i32 CalcMaxMp(Character* character) {
     double scaled = sqrt(character->level);
@@ -531,7 +527,7 @@ i32 CalcMaxMp(Character* character) {
     scaled *= GetStatTotal(character, 2);
     scaled *= 1.5;
     value += scaled;
-    if (TestCharacterFlag(character, 38) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
         value += value;
     }
     if (value > 999.0) {
@@ -849,7 +845,7 @@ void ApplyStatFlags(Character* character) {
         character->battleStatsShown[BATTLE_STAT_GUN_EVASION] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 150);
     }
-    if (TestCharacterFlag(character, ACTOR_FLAG_MOON_WEAPON_POWER_DEFENSE_UP) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
         character->battleStatsShown[BATTLE_STAT_WEAPON_POWER] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_POWER), 150);
         character->battleStatsShown[BATTLE_STAT_WEAPON_DEFENSE] =
@@ -3182,13 +3178,13 @@ i16 ApplyMoonPhase(Character* character, i16 moonPhase) {
         SetBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
     }
     if (moonPhase == MOON_PHASE_NEW) {
-        if (TestBit(flags, ACTOR_FLAG_MOON_WEAPON_POWER_DEFENSE_UP) == true) {
+        if (TestBit(flags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
             changed++;
-            ClearBit(flags, ACTOR_FLAG_MOON_WEAPON_POWER_DEFENSE_UP);
+            ClearBit(flags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST);
         }
-        if (TestBit(flags, ACTOR_FLAG_MOON_ASH_PENDING) == true) {
+        if (TestBit(flags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
             changed++;
-            ClearBit(flags, ACTOR_FLAG_MOON_ASH_PENDING);
+            ClearBit(flags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING);
             AddCondition(GetCharacterConditions(character), CONDITION_ASH);
         }
     }
