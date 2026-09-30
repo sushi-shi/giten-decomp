@@ -47,6 +47,15 @@ GZ_ENUM_FLAGS_BEGIN(CellKindFlags, u8)
     CELL_KIND_CHECK_FACING = 1
 GZ_ENUM_FLAGS_END(CellKindFlags)
 
+// Exit-cell trap mask: AlignmentClass's Chaos (-1), Neutral (0), and Law
+// (+1) classes select bits 2, 1, and 0 respectively.
+GZ_ENUM_FLAGS_BEGIN(CellTrapAlignmentMask, u8)
+    CELL_TRAP_AFFECTS_LAW = 1,
+    CELL_TRAP_AFFECTS_NEUTRAL = 2,
+    CELL_TRAP_AFFECTS_CHAOS = 4,
+    CELL_TRAP_AFFECTS_ALL = 7
+GZ_ENUM_FLAGS_END(CellTrapAlignmentMask)
+
 // A code's entry in the cell-kind table: `kind` is what CheckCellEvent returns
 // (RunCellEvent's case).
 // @identity-TODO: CELL_INERT's authored role is unrecovered; its mapped event
@@ -108,7 +117,7 @@ typedef struct ExitCell {
     u8 disableFlag[2];
     union {
         u8 damagePercent;
-        u8 alignmentMask;
+        GZ_ENUM_STORAGE(CellTrapAlignmentMask, u8) alignmentMask;
     } trap;
     u8 secondaryDamagePercent;
 } ExitCell;

@@ -227,6 +227,20 @@ Automap marks:
   that menu. The two 0x7b links and one 0x40 link in M0000 have no direct
   script-file referent in their link records.
 
+Alignment traps:
+
+- `RunCellTrap` computes `4 >> (GetAlignmentClassB(member) + 1)` and applies
+  damage only when that bit is in the exit record's alignment mask. The class
+  labels `CNL` establish mask bits 4 = Chaos, 2 = Neutral and 1 = Law.
+- All seven code-0x6c exit records in the Windows map have mask 5, all four
+  code-0x6d records have mask 6, and all 145 code-0x6e records have mask 7.
+  The PC-98 maps independently have the same seven and four records with
+  masks 5 and 6, and 151 code-0x6e records with mask 7. These identify the
+  Chaos/Law, Chaos/Neutral and all-alignment trap codes; the mask byte has a
+  `CellTrapAlignmentMask` flag domain. Neither disc has an exit record for
+  codes 0x68..0x6b, so those code identities remain unnamed apart from the
+  first range bound.
+
 Object record names:
 
 - File: `P/Pxxxx.BIN`, where `xxxx` is `0x2000 + record id`.

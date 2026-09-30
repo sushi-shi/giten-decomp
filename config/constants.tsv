@@ -342,10 +342,9 @@ src/Game/treasurebox.c	DropTopStatPicks	*	*	*	a pick on the character's highest 
 src/Game/treasurebox.c	TrainingThreshold	*	*	*	training level n needs 3 (n - 1)^2 + 7 points, levels clamped to 0..99
 src/Game/treasurebox.c	AddTrainingPointsRaw	99	*	*	the counter caps at training level 99's threshold
 src/Game/treasurebox.c	GetCellTrapDamage	0x6b	call-argument	*	a sound effect number (the sounds have no names)
-src/Game/treasurebox.c	GetCellTrapDamage	*	case-label	*	alignment trap codes between CELL_ALIGNMENT_TRAP_FIRST and _LAST (their masks, not their codes, differ)
+src/Game/treasurebox.c	GetCellTrapDamage	*	case-label	*	alignment trap codes 0x69..0x6b have no area-map records in either original disc; the recorded 0x6c..0x6e variants carry matching mask values 5..7
 src/Game/treasurebox.c	GetCellTrapDamage	*	trivial-function-literal	*	no damage below 1%; alignment traps keep the percentage in disableFlag[1]
 src/Game/treasurebox.c	GetCellTrapDamage	100	*	*	damage is a percentage of the maximum HP
-src/Game/treasurebox.c	RunCellTrap	4	*	*	an alignment trap's mask has bit 2 for the negative side, 1 neutral, 0 positive (4 >> (side + 1))
 src/Game/treasurebox.c	FindPanelRowAt	0x0800	*	*	@identity-TODO: panel/row flag 0x800 also refuses hits
 src/Game/treasurebox.c	FindPanelRowAt	-1	*	*	no row
 src/Game/treasurebox.c	ClickPanel	-1	trivial-function-literal	*	no row

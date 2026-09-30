@@ -7,8 +7,9 @@
 // party toward a direction (code - CELL_FORCED_MOVE_NORTH) or back the way it
 // came, the spinners turn it, and the dark and command-blocked cells are
 // properties the field code tests. The traps take a share of each member's HP;
-// the alignment traps (CELL_ALIGNMENT_TRAP_FIRST..LAST) spare the alignment
-// sides their mask leaves out. Cell-code tables end with CELL_CODE_TABLE_END;
+// the alignment traps (CELL_ALIGNMENT_TRAP_FIRST..LAST) affect the alignment
+// sides selected by their record mask. The three recorded codes 0x6c..0x6e
+// carry masks 5..7 respectively. Cell-code tables end with CELL_CODE_TABLE_END;
 // cell-record lists instead end at x == CELL_LIST_X_END.
 // NPC codes select four-direction masks in GetNpcImageOfCode; the Windows
 // renderer uses the record's texture slot instead of that legacy mask.
@@ -49,7 +50,10 @@ GZ_ENUM_BEGIN(CellCode)
     CELL_INERT = 0x65,
     CELL_WARP_HIDING_OBJECTS = 0x67,
     CELL_ALIGNMENT_TRAP_FIRST = 0x68,
-    CELL_ALIGNMENT_TRAP_LAST = 0x6e,
+    CELL_ALIGNMENT_TRAP_CHAOS_LAW = 0x6c,
+    CELL_ALIGNMENT_TRAP_CHAOS_NEUTRAL = 0x6d,
+    CELL_ALIGNMENT_TRAP_ALL = 0x6e,
+    CELL_ALIGNMENT_TRAP_LAST = CELL_ALIGNMENT_TRAP_ALL,
     CELL_FORCED_MOVE_NORTH = 0x70,
     CELL_FORCED_MOVE_EAST = 0x71,
     CELL_FORCED_MOVE_SOUTH = 0x72,

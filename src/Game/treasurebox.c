@@ -1542,9 +1542,9 @@ i32 GetCellTrapDamage(ExitCell* cell, i16 maxHp) {
         case 0x69:
         case 0x6a:
         case 0x6b:
-        case 0x6c:
-        case 0x6d:
-        case CELL_ALIGNMENT_TRAP_LAST:
+        case CELL_ALIGNMENT_TRAP_CHAOS_LAW:
+        case CELL_ALIGNMENT_TRAP_CHAOS_NEUTRAL:
+        case CELL_ALIGNMENT_TRAP_ALL:
             // Alignment traps reuse the flag-index byte as the damage percentage.
             if (cell->disableFlag[1] < 1) {
                 return 0;
@@ -1574,7 +1574,7 @@ void RunCellTrap(i16 mode, i16 x, i16 y) {
                 hp = member->pools.hp.cur;
                 if (cell.exit.head.code >= CELL_ALIGNMENT_TRAP_FIRST
                     && cell.exit.head.code <= CELL_ALIGNMENT_TRAP_LAST) {
-                    alignmentMask = 4;
+                    alignmentMask = CELL_TRAP_AFFECTS_CHAOS;
                     alignmentMask >>= GetAlignmentClassB(member) + 1;
                     if (!(cell.exit.trap.alignmentMask & alignmentMask)) {
                         continue;
