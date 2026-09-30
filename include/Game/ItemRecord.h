@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/AttackAttribute.h>
 #include <Game/ItemId.h>
 #include <Game/ItemKind.h>
 #include <Game/SkillMessage.h>
@@ -137,7 +138,9 @@ static __inline u8 GetEquipmentInflictedCondition(const ItemRecord* record) {
     return record->params[0x24];
 }
 
-static __inline u8 GetEquipmentAttribute(const ItemRecord* record) {
+static __inline GZ_ENUM_RETURN(AttackAttribute, u8) GetEquipmentAttribute(
+    const ItemRecord* record
+) {
     return record->params[0x21];
 }
 

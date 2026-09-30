@@ -3,6 +3,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/AttackAttribute.h>
 #include <Game/AttackMode.h>
 #include <Game/Character.h>
 #include <Ui/MenuBox.h>
@@ -174,7 +175,7 @@ i16 GetActionResistance(
 
 i16 GetSkillResistance(Character* actor, i16 skill, b16 report, b16 sameSide, i16* attribute);
 i16 GetItemResistance(Character* actor, i16 item, b16 report, b16 sameSide, i16* attribute);
-i16 GetPickedAttackAttribute(Character* actor, i16* condition);
+GZ_ENUM_RETURN(AttackAttribute, i16) GetPickedAttackAttribute(Character* actor, i16* condition);
 void ApplyResistanceOutcome(Character* actor, i16 resistance, i32 amount);
 
 // -1 for two party combatants, 1 for two field objects, otherwise zero.

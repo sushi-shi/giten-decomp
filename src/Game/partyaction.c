@@ -1019,7 +1019,7 @@ i16 GetItemResistance(Character* actor, i16 item, b16 report, b16 sameSide, i16*
 }
 
 RVA(0x00006e00, 0x114)
-i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
+GZ_ENUM_RETURN(AttackAttribute, i16) GetPickedAttackAttribute(Character* actor, i16* condition) {
     switch (actor->pickRole) {
         case PICK_ROLE_ATTACK:
             *condition = 0;
