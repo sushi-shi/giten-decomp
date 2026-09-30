@@ -104,7 +104,7 @@ static i16 s_hoveredChoice = -1;
 
 // "Ａ", "Ｂ", "ＡＢ", "Ｏ".
 DATA(0x00069138)
-static char* s_bloodTypes[4] = {"\202`", "\202a", "\202`\202a", "\202n"};
+static char* s_bloodTypes[BLOOD_TYPE_COUNT] = {"\202`", "\202a", "\202`\202a", "\202n"};
 
 // The expansion of the last text token.
 DATA(0x00081230)

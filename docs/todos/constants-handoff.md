@@ -529,6 +529,10 @@ The fifth ET0000 block gives seven human titles (愚者, 異能者, 覚醒者, �
 導師, 神人, 神). `Character.title` selects that table for human status names;
 field objects copy the title from their leader. `HumanTitle` types those
 bytes and the name lookup's index.
+The script's four blood-type labels are Ａ, Ｂ, ＡＢ and Ｏ in that order;
+`Character.bloodType` indexes them and now has a `BloodType` domain. The
+adjacent twelve sign-name buffers are empty and never written, so their
+individual sign identities are not established by this table.
 
 ## Event-flag banks
 

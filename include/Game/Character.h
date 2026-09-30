@@ -8,6 +8,7 @@
 #include <Game/Alignment.h>
 #include <Game/Attitude.h>
 #include <Game/BattleStat.h>
+#include <Game/BloodType.h>
 #include <Game/CharacterPools.h>
 #include <Game/CharacterStat.h>
 #include <Game/Condition.h>
@@ -152,7 +153,7 @@ typedef struct Character {
     // the roster leader and field effect 0x16 returns to (one cell in front);
     // skill 0x7a is blocked while no area is marked.
     SavedMapPosition markPosition;
-    u8 bloodType;
+    GZ_ENUM_STORAGE(BloodType, u8) bloodType;
     u8 sign;
     u8 pad037;
     // Per-attribute resistance; the special attribute beyond this array uses 50.
