@@ -473,6 +473,13 @@ Kept as rows until there is evidence:
   6 and 7 have distinct record meanings still unproven. The gun
   path uses 7; ET0001 also gives 7 to items 110, 111, 116 (kind 5) and
   140 (software), so it is not gun-specific.
+  ET0001 gives code 4 to sixteen items: eleven stat incenses (56..66),
+  three temporary enhancers (67..69), the Necronomicon (122) and a pearl
+  (168). All sixteen also have target flags 2, target count 1 and range 0,
+  so those fields cannot separate code 4's meaning. Its only code-2 item is
+  the Core Shield (113). No item record uses codes 3, 5 or 17. The item
+  records show code 4 is authored, despite its absence from ET0004, but
+  they do not identify a distinct target geometry.
   In ET0004, code 3 has 34 mostly close-range attacks, code 5 has only two
   spear attacks, and code 17 has only six single-target remedy/revival skills.
   The records' own descriptions confirm these groupings: code-5 skills 294
