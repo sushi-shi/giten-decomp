@@ -2733,10 +2733,6 @@ ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, GZ_ENUM_STORAGE(EquipPart, i16) 
     return old;
 }
 
-// Equips `item` from bag entry `index` on roster member `slot`, taking it out
-// of the bag and putting the replaced item back; returns the replaced slot.
-// Ammunition (kind 13) records `count` for the character; kind 14 clears
-// parts 3, 5 and 6.
 RVA(0x00040710, 0x11a)
 ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
     GZ_ENUM_STORAGE(EquipPart, i16) result;
@@ -2745,7 +2741,7 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
         Character* character = GetRosterCharacter(slot);
         if (item.item != ITEM_ID_EMPTY) {
             i16 kind = GetItemKind(item.item);
-            if (kind != 13) {
+            if (kind != ITEM_KIND_AMMO) {
                 TakeBagItemsAt(index, item.item, item.quantity);
                 if (kind == ITEM_KIND_FULL_BODY_ARMOR) {
                     UnequipPart(slot, EQUIP_PART_HEAD);

@@ -1069,7 +1069,6 @@ src/Game/character.c	GetEquipSlot	*	initializer-payload	*	an empty equipment slo
 src/Game/character.c	*Equip*	1	*	*	item ids and quantities start at 1
 src/Game/character.c	*EquipItem	0	call-argument	*	@identity-TODO: SetEquipSlot's fourth argument 0
 src/Game/character.c	GetGunAmmoType	*	*	*	-1 when no gun is equipped; item ids from 1
-src/Game/character.c	EquipItem	13	*	*	@identity-TODO: ammunition (item kind 13)
 src/Game/character.c	NormalizeItemSlot	1	*	*	item ids and quantities start at 1
 src/Game/character.c	Add*	*	*	*	money: added within 0..9999999; nothing when no character
 src/Game/character.c	CompareMacca	-1	*	*	fewer macca
