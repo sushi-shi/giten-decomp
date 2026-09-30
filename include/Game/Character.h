@@ -13,6 +13,7 @@
 #include <Game/Condition.h>
 #include <Game/EquipPart.h>
 #include <Game/MapCoord.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/PickFlags.h>
 #include <Game/SavedMapPosition.h>
 #include <Ints.h>
@@ -134,7 +135,7 @@ GZ_ENUM_END_SPLIT(PickRole)
 #define AFFILIATION_NONE (-1)
 
 typedef struct Character {
-    i16 id;
+    GZ_ENUM_STORAGE(ObjectRecordId, i16) id;
     char namePrefix[17];
     char name[17];
     // @identity-TODO: bag-entry details copied during equipment preview;

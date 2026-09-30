@@ -9,6 +9,7 @@
 #include <Game/FieldLayerIndex.h>
 #include <Game/FieldSupport.h>
 #include <Game/GameState.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/ViewDirection.h>
 #include <Ints.h>
 
@@ -70,7 +71,7 @@ typedef struct FieldObject {
     i16 layer;
     i16 redraw;
     i16 anim;
-    i16 kind;
+    GZ_ENUM_STORAGE(ObjectRecordId, i16) kind;
     char namePrefix[17];
     u8 pad02d[0x25];
     u8 resistance[10];

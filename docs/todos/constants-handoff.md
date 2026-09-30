@@ -77,6 +77,8 @@ Object record names:
 - Decode: `n = u16(data, 0)`, then `r = decrypt(data[2:2 + n])`.
 - `ObjectRecord.name` starts at `r[54]` and is cp932. Records 0x22,
   0x36, 0xce and 0x117 name Marduk, Pyankara, Primrose and Doppelganger.
+- `ObjectRecord.id`, `FieldObject.kind` and `Character.id` share this
+  record-ID domain and retain their retail signed-word storage.
 
 Item record names:
 

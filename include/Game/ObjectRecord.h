@@ -3,8 +3,10 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/FieldObject.h>
 #include <Game/GameState.h>
+#include <Game/ObjectRecordId.h>
 #include <Ints.h>
 
 #include <stdio.h>
@@ -29,7 +31,7 @@ typedef struct ObjectRecord {
     i16 equipGroup;
     i16 items[8];
     i16 pickItem;
-    i16 id;
+    GZ_ENUM_STORAGE(ObjectRecordId, i16) id;
     char name[17];
     u8 level;
     u8 alignB[2];
