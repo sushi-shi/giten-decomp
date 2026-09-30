@@ -278,9 +278,9 @@ Kept as rows until there is evidence:
   Their distinct identities are still unknown; the combat code shares the
   first two's handler and the field-effect code shares kind 14's handler
   with kinds 12 and 13.
-- Target-area codes 1, 3..7 and 17. The collector proves selected-only
-  (0), line (2) and weapon-hit (0xff) behavior. Codes 6 and 7 scan the same
-  visible grid, but their distinct record meanings are unproven. The gun
+- Target-area codes 1, 3..5, 6..7 and 17. The collector proves selected-only
+  (0), line (2), visible-grid (6..7) and weapon-hit (0xff) behavior. Codes
+  6 and 7 have distinct record meanings still unproven. The gun
   path uses 7; ET0001 also gives 7 to items 110, 111, 116 (kind 5) and
   140 (software), so it is not gun-specific.
 - Field-effect codes 0x1a and 0x23. The dispatcher proves

@@ -815,8 +815,10 @@ b16 RunBattleAction(void) {
             } else if (actor->pickRole == PICK_ROLE_GUN) {
                 g_battleOutcome = 0;
                 ClearCombatTargets();
-                count =
-                    FilterGunTargets(actor, CollectTargets(7, 0xa, 0xf1, g_targetId, g_actorId));
+                count = FilterGunTargets(
+                    actor,
+                    CollectTargets(TARGET_AREA_VISIBLE_LAST, 0xa, 0xf1, g_targetId, g_actorId)
+                );
                 s_targetListCount = count;
             } else if (actor->pickRole == PICK_ROLE_ATTACK) {
                 g_battleOutcome = 0;
@@ -1346,8 +1348,8 @@ i16 CollectTargets(
     switch (area) {
         case TARGET_AREA_LINE:
             return CollectTargetsAlongLine(area, flags, range, target, actor);
-        case 6:
-        case 7:
+        case TARGET_AREA_VISIBLE_FIRST:
+        case TARGET_AREA_VISIBLE_LAST:
             return CollectTargetsInView(area, flags, range, target, actor);
         case 3:
         case 4:
