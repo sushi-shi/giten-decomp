@@ -12,7 +12,7 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 223 declared domains. The retail
+`giten verify enum-domains` passes with 224 declared domains. The retail
 compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
 
 ## Batch workflow
@@ -140,6 +140,9 @@ Kept as rows until there is evidence:
   Their distinct identities are still unknown; the combat code shares the
   first two's handler and the field-effect code shares kind 14's handler
   with kinds 12 and 13.
+- Target-area codes 1, 3..7 and 17. The collector proves selected-only
+  (0), line (2) and weapon-hit (0xff) behavior. Codes 6 and 7 scan the same
+  visible grid, but their distinct record meanings are unproven.
 - Field-effect codes 0, 1, 0x1a and 0x20..0x23. ET0004 identifies
   illusion (3), invisibility (0x11), Estoma (0x14), Traesto (0x15),
   Traport (0x16), Trafuri (0x17), Sabatoma (0x19) and Desaman (0x1b).

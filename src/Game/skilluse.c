@@ -826,7 +826,7 @@ b16 RunBattleAction(void) {
                 } else {
                     record = GetLoadedRecord(actor->pickTarget);
                     count = CollectTargets(
-                        0xff,
+                        TARGET_AREA_WEAPON_HITS,
                         GetWeaponMinHits(record),
                         GetWeaponMaxHits(record),
                         g_targetId,
@@ -1334,10 +1334,16 @@ i16 CountUsableMemberSkills(Character* character, i16 checkCost) {
 }
 
 RVA(0x0002c740, 0xc0)
-i16 CollectTargets(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
+i16 CollectTargets(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor
+) {
     MapCoord point;
     switch (area) {
-        case 2:
+        case TARGET_AREA_LINE:
             return CollectTargetsAlongLine(area, flags, range, target, actor);
         case 6:
         case 7:
@@ -1364,7 +1370,15 @@ i16 CollectTargets(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
     } while (0)
 
 RVA(0x0002c800, 0x1e0)
-i16 CollectTargetsAtCell(i16 area, i16 flags, i16 range, i16 target, i16 actor, i16 x, i16 y) {
+i16 CollectTargetsAtCell(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor,
+    i16 x,
+    i16 y
+) {
     i16 targets[128];
     i16 hits;
     i16 mode;
@@ -1374,13 +1388,13 @@ i16 CollectTargetsAtCell(i16 area, i16 flags, i16 range, i16 target, i16 actor, 
     i16 i;
     i16 repeat;
     i16 result;
-    if (area == 255) {
+    if (area == TARGET_AREA_WEAPON_HITS) {
         mode = range;
         selected = 1;
         hits = RandomAverage(flags, range, 0);
         AddCombatTarget(target, 0);
     } else {
-        if (area == 0) {
+        if (area == TARGET_AREA_SELECTED_ONLY) {
             result = AddCombatTarget(target, 0);
         } else {
             result = AddRelatedCombatTargets(x, y, flags, target, actor);
@@ -1485,7 +1499,13 @@ i16 AddPartyTargetsAtCell(i16 x, i16 y) {
 }
 
 RVA(0x0002cb60, 0x120)
-i16 CollectTargetsAlongLine(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
+i16 CollectTargetsAlongLine(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor
+) {
     MapCoord origin;
     MapCoord offset;
     i16 direction;
@@ -1519,7 +1539,13 @@ i16 CollectTargetsAlongLine(i16 area, i16 flags, i16 range, i16 target, i16 acto
 }
 
 RVA(0x0002cc80, 0x100)
-i16 CollectTargetsInView(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
+i16 CollectTargetsInView(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor
+) {
     MapCoord origin;
     i16 count = 0;
     i16 direction = g_party.field.pos.direction;

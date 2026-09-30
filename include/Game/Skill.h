@@ -10,6 +10,7 @@
 #include <Ints.h>
 
 #include <Game/SkillMessage.h>
+#include <Game/TargetArea.h>
 
 // clang-format off
 GZ_ENUM_BEGIN(SkillUseModes)
@@ -53,7 +54,7 @@ typedef struct SkillParameters {
     u8 level;  // FindSkill takes skills up to a given level
     i8 cost;   // negative: HP, positive: MP (see HpMpLeftAfterCost)
     GZ_ENUM_STORAGE(SkillUseModes, u8) usable;
-    u8 targetArea; // @identity-TODO: CollectTargets' area code
+    GZ_ENUM_STORAGE(TargetArea, u8) targetArea;
     // @identity-TODO: target-picker combinations 0x10/0x11/0x30 remain unnamed.
     u8 targetFlags;
     u8 targetCounts; // Low nibble: hits; high nibble: target count or selection mode.

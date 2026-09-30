@@ -8,6 +8,7 @@
 #include <Game/Character.h>
 #include <Game/GameState.h>
 #include <Game/Skill.h>
+#include <Game/TargetArea.h>
 #include <Ints.h>
 
 #include <string.h>
@@ -52,13 +53,39 @@ i16 NextTarget(void);
 
 // Fills the action's target list from its area `area`, `flags` and `range`
 // around `target` (for `actor`); returns the count.
-// @identity-TODO: the area/flag/range codes (the skill header bytes +5..+7,
-// the item record bytes +0xa..+0xc) are undecoded.
-i16 CollectTargets(i16 area, i16 flags, i16 range, i16 target, i16 actor);
+// @identity-TODO: the remaining area/flag/range codes (the skill header
+// bytes +5..+7 and item record bytes +0xa..+0xc) need identities.
+i16 CollectTargets(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor
+);
 
-i16 CollectTargetsAlongLine(i16 area, i16 flags, i16 range, i16 target, i16 actor);
-i16 CollectTargetsInView(i16 area, i16 flags, i16 range, i16 target, i16 actor);
-i16 CollectTargetsAtCell(i16 area, i16 flags, i16 range, i16 target, i16 actor, i16 x, i16 y);
+i16 CollectTargetsAlongLine(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor
+);
+i16 CollectTargetsInView(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor
+);
+i16 CollectTargetsAtCell(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor,
+    i16 x,
+    i16 y
+);
 i16 AddRelatedCombatTargets(i16 x, i16 y, i16 flags, i16 target, i16 actor);
 i16 AddObjectTargetsAtCell(i16 x, i16 y);
 i16 AddPartyTargetsAtCell(i16 x, i16 y);

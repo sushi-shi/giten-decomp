@@ -8,6 +8,7 @@
 #include <Game/ItemId.h>
 #include <Game/ItemKind.h>
 #include <Game/SkillMessage.h>
+#include <Game/TargetArea.h>
 #include <Ints.h>
 
 typedef struct ItemTable {
@@ -85,7 +86,7 @@ static __inline u8 GetItemShotId(const ItemRecord* record) {
     return record->params[0x32];
 }
 
-static __inline u8 GetItemTargetArea(const ItemRecord* record) {
+static __inline GZ_ENUM_RETURN(TargetArea, u8) GetItemTargetArea(const ItemRecord* record) {
     return record->params[3];
 }
 
