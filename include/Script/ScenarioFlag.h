@@ -3,7 +3,7 @@
 
 #include <EnumDomain.h>
 
-// Scenario flags the code tests or sets, named after the developers'
+// Scenario flags the code tests or sets, mostly named after the developers'
 // event-flag name table on the disc (ET0018), which numbers them on through
 // bank EVENT_FLAG_BANK_SCENARIO into EVENT_FLAG_BANK_SCENARIO_2. A new game
 // starts with every flag set; the event clears its flag (AdvanceClock clears
@@ -21,10 +21,12 @@ GZ_ENUM_CONST_BEGIN(ScenarioFlag)
     SCENARIO_WITHERED_LOVER_ABDOMEN = 142
 GZ_ENUM_CONST_END(ScenarioFlag)
 
-// Flags of bank EVENT_FLAG_BANK_SCENARIO_2 from the same table.
+// Flags of bank EVENT_FLAG_BANK_SCENARIO_2; the head flag comes from the
+// timed-item table's correspondence with ItemId.
 GZ_ENUM_CONST_BEGIN(ScenarioFlag2)
     SCENARIO_2_HEROINE_REVIVAL_1 = 0xc,
-    SCENARIO_2_RAINBOW_BRIDGE = 13
+    SCENARIO_2_RAINBOW_BRIDGE = 13,
+    SCENARIO_2_WITHERED_LOVER_HEAD = 93
 GZ_ENUM_CONST_END(ScenarioFlag2)
 
 #endif // GITEN_SCRIPT_SCENARIOFLAG_H

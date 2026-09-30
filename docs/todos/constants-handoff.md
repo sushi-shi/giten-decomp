@@ -231,8 +231,9 @@ Coverage:
   not used.
 - Bank 0 bits 137..142 name the six withered lover's limbs and torso parts;
   `s_timedItemFlags` clears them when their corresponding items expire.
-  The lover's head uses bank 1 bit 93, beyond this name table's coverage;
-  the heart has no expiry flag.
+  The lover's head uses bank 1 bit 93, beyond this name table's coverage.
+  Its identity follows from the seventh row's index relative to
+  `ITEM_LOVER_RIGHT_LEG`; the heart has no expiry flag.
 
 Polarity:
 
