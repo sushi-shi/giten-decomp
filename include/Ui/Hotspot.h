@@ -5,7 +5,19 @@
 
 #include <Win32.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
+
+// Destination, NPC and treasure-box hotspots in the Windows view. NPCs on
+// the party's cell or directly ahead temporarily use 14/15 while rendering
+// orders the nearest billboards, then become ordinary NPC hotspots.
+GZ_ENUM_BEGIN_SPLIT(UiHotspotKind, u32)
+    HOTSPOT_TARGET = 1,
+    HOTSPOT_NPC = 2,
+    HOTSPOT_BOX = 3,
+    HOTSPOT_NPC_HERE = 14,
+    HOTSPOT_NPC_AHEAD = 15
+GZ_ENUM_END_SPLIT(UiHotspotKind)
 
 // A clickable area of the current screen: its kind (the list is kept sorted by
 // kind; kind 1 areas lead somewhere), its rectangle, the value it reports and
@@ -14,7 +26,7 @@
 // The data pointer carries the object record selected by kind.
 struct Texture;
 typedef struct Hotspot {
-    u32 kind;
+    GZ_ENUM_STORAGE(UiHotspotKind, u32) kind;
     RECT rect;
     struct Texture* texture;
     void* data;
@@ -22,15 +34,6 @@ typedef struct Hotspot {
     i32 targetX;
     i32 targetY;
 } Hotspot;
-
-// Hotspot kinds: an object or place the area leads to, an NPC, a treasure
-// box, and (while the 3D view sorts them) an NPC on the party's cell or in
-// front of it.
-#define HOTSPOT_TARGET 1
-#define HOTSPOT_NPC 2
-#define HOTSPOT_BOX 3
-#define HOTSPOT_NPC_HERE 14
-#define HOTSPOT_NPC_AHEAD 15
 
 extern Hotspot g_hotspots[64];
 

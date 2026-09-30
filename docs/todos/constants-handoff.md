@@ -463,6 +463,15 @@ The same label order identifies modes five through seven as 間合に一歩 (ste
 range), 一歩近づく (step closer) and 周り込み (circle around). Their former
 charge/pursue/sidestep names were less faithful to those labels.
 
+## Windows view hotspots
+
+The active Windows `Hotspot.kind` stores destination (1), NPC (2) or treasure
+box (3). `RenderNPC` temporarily assigns 14 to an NPC on the party's cell
+and 15 to one directly ahead to order nearby billboards, then changes both
+to 2. These values form `UiHotspotKind` in the record's retail `u32` slot.
+The older `SceneHotspotKind` also has 2 and 3, but its other values occur only
+in the unused scene-hotspot path and are not identified by the Windows UI.
+
 ## Attack attribute columns
 
 Retail object records P2029 (Urd) and P2042 (Heqet) store resistance bytes

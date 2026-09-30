@@ -1875,7 +1875,7 @@ void RenderNPC(BOOL ownCellOnly) {
     i16 partyY;
     i16 count;
     i16 npc;
-    u32 kind;
+    GZ_ENUM_LOCAL(UiHotspotKind, u32) kind;
     i16* cell;
     i16 cellX;
     i16 cellY;
