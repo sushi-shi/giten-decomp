@@ -268,7 +268,7 @@ DATA(0x0007be58)
 static i16 s_subscreenActive = 0;
 
 DATA(0x0007be5c)
-static i16 s_partyPickerMode = 0;
+static GZ_ENUM_STORAGE(PartyPickerMode, i16) s_partyPickerMode = PARTY_PICKER_ALL;
 
 // The spot marked when the world map is entered with a request.
 DATA(0x0007be60)
@@ -2448,7 +2448,7 @@ i16 RunPickerMenu(MenuBox* menu) {
 
 RVA(0x00019e80, 0x17)
 MenuBox* ClosePickerMenu(MenuBox* menu) {
-    s_partyPickerMode = 0;
+    s_partyPickerMode = PARTY_PICKER_ALL;
     return DestroyMenuBox(menu);
 }
 
@@ -2483,7 +2483,7 @@ i16 RunPartyPicker(i16 command) {
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00019f40, 0xc)
-void SetPartyPickerMode(i16 mode) {
+void SetPartyPickerMode(GZ_ENUM_PARAM(PartyPickerMode, i16) mode) {
     s_partyPickerMode = mode;
 }
 
@@ -2492,7 +2492,7 @@ MenuBox* OpenPartyPicker(PartyMemberList* entries) {
     MenuBox* menu = CreateMenuBox(NULL, 5, 2);
     SetMenuItems(menu, 7, entries, entries->count, PartyPickerHandler);
     SetTextPlaneFirstSelectableRow(menu->plane, 0, true);
-    if (!s_partyPickerMode) {
+    if (s_partyPickerMode == PARTY_PICKER_ALL) {
         menu->list->flags |= 2;
     }
     menu->flags |= 0x1e;
@@ -2509,12 +2509,12 @@ void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) 
             enabled = true;
             character = GetCharacterById(entries->ids[index]);
             switch (s_partyPickerMode) {
-                case 0:
+                case PARTY_PICKER_ALL:
                     break;
-                case 1:
-                    enabled = CountUsableMemberSkills(character, 1);
+                case PARTY_PICKER_USABLE_SKILLS:
+                    enabled = CountUsableMemberSkills(character, true);
                     break;
-                case 2:
+                case PARTY_PICKER_HUMANS:
                     if (!IsHumanCharacter(character)) {
                         enabled = false;
                     }

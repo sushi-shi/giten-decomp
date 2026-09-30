@@ -1283,7 +1283,6 @@ src/Game/statestack.c	ItemListMenuHandler	*	*	*	@identity-TODO: items 0x21 and 0
 src/Game/statestack.c	LoadSpriteImage	*	*	*	@identity-TODO: sprite images: -1 none, human portraits 0x4000 + id (0x401d remapped to 0x40fd), demons 0x2000..0x2fff with variant bits (& 15 == 4, & 13 | 2)
 src/Game/statestack.c	OpenItemListMenu	*	*	*	the whole bag copied (0, 64 entries); menu flags 0x1e
 src/Game/statestack.c	OpenPartyPicker	*	*	*	@identity-TODO: menu flags 0x1e and 2
-src/Game/statestack.c	PartyPickerHandler	*	*	*	@identity-TODO: picker modes 0..2; CountUsableMemberSkills' 1
 src/Game/statestack.c	PickStatusMember	*	*	*	@identity-TODO: the status menu items hidden (1, 0), status column 0, panel row flag 0x800
 src/Game/statestack.c	PollRewardClick	*	*	*	the reward window's hit box (0xea..0x192, 0xc0..0xf6); 2 on a click, 0 outside, -1 cancelled
 src/Game/statestack.c	ReturnDdsMember	*	*	*	@identity-TODO: returned (1), not (0), cancelled (-1)
@@ -1297,7 +1296,6 @@ src/Game/statestack.c	ShowStatPointPrompt	-1	*	*	no prompt shown
 src/Game/statestack.c	SwapSceneCellParams	*	*	*	@identity-TODO: scene-cell parameter words 9, 10, 12 and 13 swapped
 src/Game/statestack.c	TickStepCounter	*	*	*	idle after 50 ticks; the counter reset
 src/Game/statestack.c	CancelItemTargetMenu	-1	*	*	no command picked
-src/Game/statestack.c	ClosePickerMenu	0	*	*	@identity-TODO: picker mode 0
 src/Game/statestack.c	GrantBattleRewards	*	*	*	the rewards cleared once granted; the info bar's layout 0; 0 when none
 src/Game/statestack.c	*Experience*	*	*	*	experience: the level cap (99, 100), the cube formula (4, 6, 5) and demon ids from 0x20; ExperienceToLevel's 1; 0 or -1 when no level is gained
 src/Game/statestack.c	*Scene*	*	*	*	@identity-TODO: scene cells and sprites: the sixteen cells, cell kind at index 5, the 32 entries and sprite slots (31 the last), streams ending at 0xff and packed 16 at a time, frames (-1 none) at (40, 112)

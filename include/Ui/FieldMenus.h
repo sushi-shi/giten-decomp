@@ -12,8 +12,14 @@
 // The open party picker's text plane, or -1 when closed.
 i16 GetPickerSelection(void);
 
+GZ_ENUM_BEGIN_SPLIT(PartyPickerMode, i16)
+    PARTY_PICKER_ALL = 0,
+    PARTY_PICKER_USABLE_SKILLS = 1,
+    PARTY_PICKER_HUMANS = 2
+GZ_ENUM_END_SPLIT(PartyPickerMode)
+
 i16 RunPartyPicker(i16 command);
-void SetPartyPickerMode(i16 mode);
+void SetPartyPickerMode(GZ_ENUM_PARAM(PartyPickerMode, i16) mode);
 struct PartyMemberList;
 MenuBox* OpenPartyPicker(struct PartyMemberList* entries);
 void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
