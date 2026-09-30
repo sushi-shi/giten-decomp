@@ -962,7 +962,10 @@ src/Game/fieldmain.c	TickFieldSteps	*	*	*	three steps between field ticks
 src/Game/fieldmain.c	PollFieldCommand	*	*	*	@identity-TODO: no move (-1); RunMoveCommand's next phase 1
 src/Game/fieldmain.c	ReturnToCurrentCell	1	*	*	@identity-TODO: both flag banks preserved
 src/Game/fieldmain.c	*FieldMemory	*	*	*	field memory: 0x100 event bytes and 0x40 state words (0x20 bytes)
-src/Game/fieldmain.c	*ObjectEvent*	*	*	*	@identity-TODO: object event states 0..3 (raised, queued) for events below 0x100
+src/Game/fieldmain.c	RaiseObjectEvent	0	trivial-function-literal	0 store event	out-of-range event ids fall back to the first event
+src/Game/fieldmain.c	QueueObjectEvent	0	trivial-function-literal	0 store event	out-of-range event ids fall back to the first event
+src/Game/fieldmain.c	HasQueuedObjectEvents	0	trivial-function-literal	0 equality i	stops after scanning the event-state byte buffer
+src/Game/fieldmain.c	*ObjectEvent*	0x100	*	*	object event ids stay below the 0x100-byte state buffer
 src/Game/fieldmain.c	*View*	*	*	*	the 3D view's occlusion: 4-cell rows (along -3..0, across -3..3), 4-bit occlusion nibbles per side, 0xff for unoccluded
 src/Game/fieldmain.c	*FieldImageCache	-1	*	*	no cached field image
 src/Game/fieldmain.c	SelectFieldImageCache	*	*	*	@identity-TODO: the cache key packs 0x100 | id with the variant in bits 4 and up

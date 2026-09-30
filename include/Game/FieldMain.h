@@ -48,6 +48,13 @@ void MovePartyTo(i16 x, i16 y, i16 direction);
 i16 ExchangeSceneHold(i16 hold);
 void MarkSceneDirty(void);
 
+GZ_ENUM_BEGIN_SPLIT(ObjectEventState, u8)
+    OBJECT_EVENT_IDLE = 0,
+    OBJECT_EVENT_RAISED = 1,
+    OBJECT_EVENT_DONE = 2,
+    OBJECT_EVENT_QUEUED = 3
+GZ_ENUM_END_SPLIT(ObjectEventState)
+
 i16 AdvancePartyMove(i16 command);
 void ResetLevelEvents(void);
 b32 TestLevelEvent(i16 level);

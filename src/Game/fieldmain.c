@@ -1212,13 +1212,13 @@ b16 RaiseObjectEvent(i16 event, i16 queued) {
         event = 0;
     }
     state = (u8*)HandleWritePtr(s_eventStates) + event;
-    if (*state == 2) {
+    if (*state == OBJECT_EVENT_DONE) {
         return false;
     }
     if (queued) {
-        *state = 3;
+        *state = OBJECT_EVENT_QUEUED;
     } else {
-        *state = 1;
+        *state = OBJECT_EVENT_RAISED;
     }
     return true;
 }
@@ -1234,8 +1234,8 @@ void QueueObjectEvent(i16 event) {
         event = 0;
     }
     state = (u8*)HandleWritePtr(s_eventStates) + event;
-    if (*state == 3) {
-        *state = 2;
+    if (*state == OBJECT_EVENT_QUEUED) {
+        *state = OBJECT_EVENT_DONE;
     }
 }
 
@@ -1251,7 +1251,7 @@ i16 HasQueuedObjectEvents(void) {
     count = 0;
     state = HandleWritePtr(s_eventStates);
     for (i = 0x100; i != 0; i--) {
-        if (*state == 3) {
+        if (*state == OBJECT_EVENT_QUEUED) {
             count++;
         }
         state++;
