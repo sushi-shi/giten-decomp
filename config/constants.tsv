@@ -264,7 +264,7 @@ src/Game/fieldobj.c	RunObjectStep	0	call-argument	Run*	text window 0
 src/Game/fieldobj.c	RunObjectStep	0	call-argument	RetakeDeferredChar*	text window 0
 src/Game/fieldobj.c	RunObjectStep	2	store	store to action	@identity-TODO: PickActorAction's result 2, a skill
 src/Game/fieldobj.c	RunObjectStep	1	trivial-function-literal	1 store g_actionId	@identity-TODO: action 1 goes with the weapon attack (PICK_ROLE_ATTACK)
-src/Game/fieldobj.c	RunObjectStep	*	*	* action	@identity-TODO: PickActorAction's result: 1 attack, 2 skill (the action-result codes need the message-script decoder)
+src/Game/fieldobj.c	RunObjectStep	*	*	* action	@identity-TODO: PickActorAction result 1 attacks, 2 uses a skill; this is an actor-choice domain distinct from battle outcome messages
 src/Game/fieldobj.c	RunObjectStep	0	trivial-function-literal	0 equality result	UseObjectSkill picked no target
 src/Game/fieldobj.c	RunObjectStep	0	trivial-function-literal	0 store tries	no tries yet
 src/Game/fieldobj.c	RunObjectStep	1	trivial-function-literal	1 bound slot	encounter slot 0 attacks; slots 1..OBJECT_SKILL_COUNT pick a skill
@@ -560,21 +560,14 @@ src/Game/partyaction.c	CheckBattleProtection	*	call-argument	ReportBattleTally*	
 src/Game/partyaction.c	CheckBattleProtection	*	trivial-function-literal	*array-index	@identity-TODO: battle-tally slots 0 and 1 need the message-script decoder
 src/Game/partyaction.c	CheckBattleProtection	*	comparison-or-bound	*attribute	@identity-TODO: the attack-attribute numbers paired with tally slots need the item/skill and message-script decoder
 src/Game/partyaction.c	CheckBattleProtection	*	trivial-function-literal	*attribute	@identity-TODO: attack attributes 0 and 1 are encoded values without recovered names
-src/Game/partyaction.c	CheckBattleProtection	-*	return	*	@identity-TODO: negative protection outcomes are special resistance codes named by battle messages in scripts 0xdd and 0xdf
 src/Game/partyaction.c	GetActionResistance	*	comparison-or-bound	*attribute	@identity-TODO: attack attributes 6 and 10 are encoded item/skill values without recovered names
-src/Game/partyaction.c	GetActionResistance	*	comparison-or-bound	*result	@identity-TODO: resistance bytes 251..255 encode special outcomes; their identities require battle message scripts 0xdd and 0xdf
 src/Game/partyaction.c	GetActionResistance	50	return	*	a same-side attack takes half resistance
 src/Game/partyaction.c	GetActionResistance	50	store	*	attribute 10 takes a 50-percent resistance value
 src/Game/partyaction.c	GetActionResistance	100	return	*	zombie resistance to attribute 6 is 100 percent
-src/Game/partyaction.c	GetActionResistance	-*	return	*	@identity-TODO: negative decoded resistance outcomes need the battle message-script decoder
-src/Game/partyaction.c	GetActionResistance	-1	trivial-function-literal	*return	@identity-TODO: resistance byte 251 decodes to the special outcome -1
 src/Game/partyaction.c	GetActionResistance	0	trivial-function-literal	0 return	no actor has no resistance value
 src/Game/partyaction.c	GetActionResistance	1	trivial-function-literal	1 bound result	positive protection-check results proceed to the resistance byte
-src/Game/partyaction.c	ApplyResistanceOutcome	*	case-label	*	@identity-TODO: special resistance outcomes -6..-2 need their battle-message identities
-src/Game/partyaction.c	ApplyResistanceOutcome	-1	trivial-function-literal	*case	@identity-TODO: special resistance outcome -1 needs its battle-message identity
 src/Game/partyaction.c	ApplyResistanceOutcome	0	trivial-function-literal	*case	resistance zero applies no damage and records a separate action result
 src/Game/partyaction.c	ApplyResistanceOutcome	2	call-argument	SetCharacterChanges*	half the amount is assigned to each of the HP and MP changes
-src/Game/partyaction.c	ApplyResistanceOutcome	6	store	*	@identity-TODO: the action-result code for zero resistance needs the battle-message decoder
 src/Game/partyaction.c	ReadActionResultFlags	*	*	*	@identity-TODO: bank 15 bits 26..31 form an action-result bitmap; the message-script decoder is needed to name the bits
 src/Game/partyaction.c	PickActorAction	-1	trivial-function-literal	*return	no condition is active, so no condition action was picked
 src/Game/partyaction.c	PickActorAction	0xdb	call-argument	StartScript*	script file 0xdb supplies the condition-action result; its disc identity is not decoded
@@ -722,7 +715,6 @@ include/Input/Mouse.h	ClearMouseSelection	-1	*	*	no hovered or selected object
 include/Game/DropTable.h	ClearDropSlot	0	*	*amount	an empty drop slot
 include/Game/DropTable.h	RollDropAmount	1	call-argument	RollItemAmount(*argument 3	@identity-TODO: RollItemAmount's third argument, 1 for a drop
 include/Game/CombatantId.h	*	-1	*	*	party combatant ids count down from -1 (position 0)
-include/Game/BattleEffect.h	ResetActionOutcome	0	*	*g_actionResult	no action result yet
 include/Game/BattleEffect.h	GetConditionDamageThreshold	2	*	*	half the target's level
 include/Game/AutomapData.h	GetAutomapLevelTableSize	4	*	*	four bytes per automap level entry after a 4-byte header
 src/Platform/devicesettings.cpp	LoadDeviceSettings	0	call-argument	RegOpenKeyExA(*	RegOpenKeyEx's reserved options (0)
@@ -772,10 +764,10 @@ src/Script/scriptctx.c	RunScript	0	call-argument	NewScriptContext(*	@identity-TO
 src/Script/scriptctx.c	RunScriptStep	0	*	*	@identity-TODO: RunScriptStep's result 0
 src/Script/scriptctx.c	TickScript	0	*	*	no delay skip; 0 while the script runs on
 src/Script/scriptctx.c	RetakeDeferredChar	*	*	*	PutTextChar's -2 (deferred) and no character
-src/Game/*.c	*	*	call-argument	Set*Result(*	@identity-TODO: action-result and resistance-result codes, reported to the battle message scripts through GetActionValue; their meanings are in the disc's message scripts (files 0xdd/0xdf), which have no decoder yet
-src/Game/*.c	*	*	*	*g_actionResult*	@identity-TODO: action-result codes (see SetActionResult's row): the message scripts name them
-src/Game/*.c	*	*	*	*g_attackResistance*	@identity-TODO: GetActionResistance's special results -1..-6 (resistance bytes 251..255, and -6 when protected); the message scripts name them
-src/Game/*attack.c	*	*	*	*resistance	@identity-TODO: GetActionResistance's special results -1..-6; the message scripts name them
+src/Game/*.c	*	*	call-argument	Set*Result(*	@identity-TODO: mixed action-result codes outside the base combat outcomes; they are sent through GetActionValue to the message scripts
+src/Game/*.c	*	*	*	*g_actionResult*	@identity-TODO: the shared result word also holds restoration and field-effect codes and drain tags
+src/Game/*.c	*	*	*	*g_attackResistance*	@identity-TODO: GetActionResistance also holds ordinary damage rates alongside its named special results
+src/Game/*attack.c	*	*	*	*resistance	@identity-TODO: the attack formulas also use positive resistance rates and named special results
 src/Game/*attack.c	*	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
 src/Game/*attack.c	*	*	comparison-or-bound	*amount	a damage amount below zero is none
 src/Game/*attack.c	*	*	store	*amount	a damage amount below zero is none; 0x7fff for an overkill
@@ -788,7 +780,6 @@ src/Game/*attack.c	*	0	trivial-function-literal	0 return	no damage
 src/Game/*attack.c	*	0	trivial-function-literal	0 equality damage	no damage
 src/Game/*attack.c	*	0	trivial-function-literal	0 store hit	no hit
 src/Game/*attack.c	*	0	trivial-function-literal	0 equality result	the hit roll's result 0 (a miss)
-src/Game/*attack.c	*	*	comparison-or-bound	*== result	the exceptional-attack roll's results (2, 4, 5)
 src/Game/*attack.c	*	*	comparison-or-bound	*< result	the exceptional-attack roll's results (2, 4, 5)
 src/Game/*attack.c	Run*Attack	0	call-argument	Resolve*Attack(*argument 3	a plain attack (mode 0)
 src/Game/skillattack.c	ResolveSkillAttack	0	call-argument	*argument 3	@identity-TODO: the weapon and gun attacks' mode, and RollSkillHit's sameSide, 0 against the enemy side
@@ -978,7 +969,7 @@ src/Game/treasurebox.c	RunAutomapState	*	call-argument	RunFieldPanelRow*	@identi
 src/Game/skilluse.c	AddCombatTarget	270	*	*	@identity-TODO: the target list's 270 slots
 src/Game/skilluse.c	NextTarget	*	*	*	the first target of a non-empty list
 src/Game/skilluse.c	FlashHitObject	*	*	*	@identity-TODO: no change; redraw mode 2
-src/Game/skilluse.c	ApplyCombatDamage	*	*	*	@identity-TODO: damage kinds 5..8 (shield, drains), items below 1 are none, item kinds 0x86 and 0x87
+src/Game/skilluse.c	ApplyCombatDamage	*	*	*	@identity-TODO: items below 1 are none; item passive codes 0x86 and 0x87 also drain pools
 src/Game/skilluse.c	ResolveCombatAction	*	*	*	@identity-TODO: knockout sentinel 0x7fff, demon ids 0x22/0xce/0x36 and Noelem's special pair (-2, -2), resistance results -1..-6 (see SetActionResult's row), the reply alert bits 0x40/0x80 and alert level 2, the counter-attack kinds
 src/Game/skilluse.c	ResolveKnockout	*	*	*	a knocked-out combatant's HP 0; analyzed (1) and one drop added
 src/Game/skilluse.c	*BattleTall*	*	*	*	@identity-TODO: battle tallies (14 of them, indices from the message scripts); -1 for none reported; the tally modes 1 and -1
@@ -999,14 +990,14 @@ src/Game/skilluse.c	UseAttackSkill	*	*	*	@identity-TODO: the resistance outcome'
 src/Game/skilluse.c	UseRestoreSkill	0	call-argument	ApplyRestoreEffect(*	@identity-TODO: ApplyRestoreEffect's fourth argument 0
 src/Game/skilluse.c	UseBattleStatSkill	*	*	*	@identity-TODO: the effect's percent scaling and action-result codes (3 for a hit, 1 for no stat change)
 src/Game/skilluse.c	ChangeBattleStat	*	*	*	@identity-TODO: a battle stat doubled or halved, clamped to 999 (4 digits)
-src/Game/skilluse.c	ApplySkillEffect	*	*	*	@identity-TODO: skill effect kinds 2..16 and skill 250's type 2
+src/Game/skilluse.c	ApplySkillEffect	*	*	*	@identity-TODO: the unnamed skill kinds 9, 10 and 14, and skill 250's type override
 src/Game/skilluse.c	CancelFieldTargetMenu	-1	*	*	no command picked
 src/Game/skilluse.c	LocateFieldSkillUser	1	*	*	@identity-TODO: FindRosterSlotIn's 1
 src/Game/skilluse.c	RunFieldSkillUse	*	*	*	@identity-TODO: target flags 0x10, 0x11 and 0x30 and the pick windows (5, 4, 6, 3) they open; user -2; no pick (-1); screen layer 1 hidden
 src/Game/skilluse.c	PrepareSkillAction	0	*	*	@identity-TODO: the skill action's reset value 0
 src/Game/skilluse.c	RunBattleAction	*	*	*	@identity-TODO: battle-action parameters: the outcome flags 0/1, the target collections (7, 0xa, 0xf1) and 0xff, one bag item used, the effect stages, the battle-message script 0xdf entry 3, the kept pick cleared
 src/Game/skilluse.c	PlayActionEffect	*	*	*	@identity-TODO: the action message scripts 0xdd/0xde and their entries (3, 4, 5, 0x44), the before/after message (0/1), weapons from 1
-src/Game/itemrecord.c	*	[56]	case-label	switch on kind	@identity-TODO: item kinds 5 and 6 have no recovered items (see ItemKind)
+src/Game/itemrecord.c	*	[56]	case-label	switch on kind	@identity-TODO: item kinds 5 and 6 have records, but their category names remain unsupported
 src/Game/itemrecord.c	DecodeItemRecord	*	*	*	@identity-TODO: item record decoding: absent params (0xff), message pairs (1, 1)/(1, 0), params[] 11, the name copy after the leading byte
 src/Game/itemrecord.c	AddItemStatPoints	*	arithmetic	*	the points a fixed stat change adds or takes
 src/Game/itemrecord.c	AddItemStatPoints	0	*	*	no item
@@ -1390,16 +1381,14 @@ src/Game/partyaction.c	GetEquipmentHitModifier	1	trivial-function-literal	1 boun
 src/Game/partyaction.c	GetCombatantFacingDifference	0	trivial-function-literal	0 return	zero means no facing difference when both combatants are party members
 src/Game/partyaction.c	GetCombatantAttackRange	1	trivial-function-literal	1 bound pickTarget	a missing attack item uses one grid cell of reach
 src/Game/partyaction.c	GetCombatantAttackRange	1	trivial-function-literal	1 return	a missing attack item uses one grid cell of reach
-src/Game/partyaction.c	RollExceptionalAttack	13	arithmetic	operator + moonPhase	@identity-TODO: moon-cycle formula, resistance exceptions and action-result codes 4/5; decimal factors convert percent rolls
-src/Game/partyaction.c	RollExceptionalAttack	14	arithmetic	operator %	@identity-TODO: moon-cycle formula, resistance exceptions and action-result codes 4/5; decimal factors convert percent rolls
-src/Game/partyaction.c	RollExceptionalAttack	4	arithmetic	operator /	@identity-TODO: moon-cycle formula, resistance exceptions and action-result codes 4/5; decimal factors convert percent rolls
-src/Game/partyaction.c	RollExceptionalAttack	0	trivial-function-literal	0 equality resistance	@identity-TODO: moon-cycle formula, resistance exceptions and action-result codes 4/5; decimal factors convert percent rolls
-src/Game/partyaction.c	RollExceptionalAttack	-6	comparison-or-bound	operator != resistance	@identity-TODO: moon-cycle formula, resistance exceptions and action-result codes 4/5; decimal factors convert percent rolls
-src/Game/partyaction.c	RollExceptionalAttack	0.01	arithmetic	compound assignment to value	@identity-TODO: moon-cycle formula, resistance exceptions and action-result codes 4/5; decimal factors convert percent rolls
-src/Game/partyaction.c	RollExceptionalAttack	0.01	call-argument	RoundToInt(double) argument 1	@identity-TODO: moon-cycle formula, resistance exceptions and action-result codes 4/5; decimal factors convert percent rolls
-src/Game/partyaction.c	RollExceptionalAttack	5	return	return value	@identity-TODO: moon-cycle formula, resistance exceptions and action-result codes 4/5; decimal factors convert percent rolls
-src/Game/partyaction.c	RollExceptionalAttack	4	return	return value	@identity-TODO: moon-cycle formula, resistance exceptions and action-result codes 4/5; decimal factors convert percent rolls
-src/Game/partyaction.c	RollExceptionalAttack	0	trivial-function-literal	0 return	@identity-TODO: moon-cycle formula, resistance exceptions and action-result codes 4/5; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	13	arithmetic	operator + moonPhase	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	14	arithmetic	operator %	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	4	arithmetic	operator /	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	0	trivial-function-literal	0 equality resistance	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	-6	comparison-or-bound	operator != resistance	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	0.01	arithmetic	compound assignment to value	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	0.01	call-argument	RoundToInt(double) argument 1	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	0	trivial-function-literal	0 return	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
 src/Game/partyaction.c	RollGunHit	2	arithmetic	compound assignment to evasion	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
 src/Game/partyaction.c	RollGunHit	50	arithmetic	operator * accuracy	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
 src/Game/partyaction.c	RollGunHit	100	arithmetic	operator * accuracy	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
@@ -1409,30 +1398,27 @@ src/Game/partyaction.c	RollGunHit	75	arithmetic	operator * evasion	gun hit chanc
 src/Game/partyaction.c	RollGunHit	100	arithmetic	operator * evasion	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
 src/Game/partyaction.c	RollGunHit	8	arithmetic	compound assignment to attack	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
 src/Game/partyaction.c	GetGunAttackPower	0	trivial-function-literal	0 array-index s_gunPower	burst power slot zero holds the current shot, with fallback to the actor stat
-src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 return	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	0.2	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	0.0	comparison-or-bound	operator < amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	0.0	store	store to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	2.2	arithmetic	compound assignment to ratio	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	1.0	arithmetic	compound assignment to ratio	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	4	comparison-or-bound	operator == result	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	5	arithmetic	operator + level	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	1.2	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	1.5	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	2	comparison-or-bound	operator == result	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	0.25	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 equality GetCombatantDistance()	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	100.0	call-argument	RoundToInt(double) argument 1	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	2	call-argument	ScaleByMoonValue(i32, i16, i16) argument 3	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	100	call-argument	ClampInt(i32, i32, i32) argument 1	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	0	call-argument	ClampInt(i32, i32, i32) argument 2	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	0x7fffffff	call-argument	ClampInt(i32, i32, i32) argument 3	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
-src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 equality damage	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps; result codes 2/4 await the battle-message decoder
+src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 return	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0.2	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0.0	comparison-or-bound	operator < amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0.0	store	store to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	2.2	arithmetic	compound assignment to ratio	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	1.0	arithmetic	compound assignment to ratio	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	5	arithmetic	operator + level	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	1.2	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	1.5	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0.25	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 equality GetCombatantDistance()	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	100.0	call-argument	RoundToInt(double) argument 1	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	2	call-argument	ScaleByMoonValue(i32, i16, i16) argument 3	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	100	call-argument	ClampInt(i32, i32, i32) argument 1	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0	call-argument	ClampInt(i32, i32, i32) argument 2	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0x7fffffff	call-argument	ClampInt(i32, i32, i32) argument 3	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 equality damage	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
 src/Game/partyaction.c	RollGunCondition	10	call-argument	ScaleActionValue(i32, i16, i16) argument 1	gun condition roll scales base power by ten before resistance and defense
-src/Game/partyaction.c	ResolveGunAttack	0	trivial-function-literal	0 equality result	@identity-TODO: gun attack outcome codes 0/5 and maximum short damage 0x7fff require battle-message decoding
-src/Game/partyaction.c	ResolveGunAttack	5	comparison-or-bound	operator < result	@identity-TODO: gun attack outcome codes 0/5 and maximum short damage 0x7fff require battle-message decoding
-src/Game/partyaction.c	ResolveGunAttack	5	comparison-or-bound	operator == result	@identity-TODO: gun attack outcome codes 0/5 and maximum short damage 0x7fff require battle-message decoding
-src/Game/partyaction.c	ResolveGunAttack	0x7fff	store	store to amount	@identity-TODO: gun attack outcome codes 0/5 and maximum short damage 0x7fff require battle-message decoding
+src/Game/partyaction.c	ResolveGunAttack	0	trivial-function-literal	0 equality result	@identity-TODO: zero means no exceptional hit; 0x7fff saturates lethal damage
+src/Game/partyaction.c	ResolveGunAttack	5	comparison-or-bound	operator < result	@identity-TODO: zero means no exceptional hit; 0x7fff saturates lethal damage
+src/Game/partyaction.c	ResolveGunAttack	0x7fff	store	store to amount	@identity-TODO: zero means no exceptional hit; 0x7fff saturates lethal damage
 src/Game/partyaction.c	FilterGunTargets	1	trivial-function-literal	1 bound rounds	at least one round is required; zero targets are assigned when no rounds remain
 src/Game/partyaction.c	FilterGunTargets	0	trivial-function-literal	0 return	at least one round is required; zero targets are assigned when no rounds remain
 src/Game/partyaction.c	GetGunBurstRounds	1	trivial-function-literal	1 bound item	equipped item ids start at one; field enemies use 255 as an effectively unlimited round count

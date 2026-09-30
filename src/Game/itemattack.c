@@ -29,10 +29,10 @@ b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
         GetItemResistance(target, attacker->pickTarget, true, sameSide, &attribute);
     g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, attribute);
     if (g_attackResistance == -6) {
-        SetResistanceResult(attacker, -6, 10);
+        SetResistanceResult(attacker, -6, BATTLE_ACTION_PROTECTED);
         return false;
     }
-    SetActionResult(attacker, 3);
+    SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
     if (g_attackResistance <= -4) {
         return true;
     }
@@ -68,7 +68,7 @@ b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
     if (accuracy > roll) {
         return true;
     }
-    SetActionResult(attacker, 0);
+    SetActionResult(attacker, BATTLE_ACTION_MISSED);
     return false;
 }
 
@@ -112,7 +112,7 @@ i32 ComputeItemDamage(Character* attacker, Character* target, i16 hit) {
     damage = RandomPercent(damage, -20, 20);
     damage = ClampInt(damage / 100, 0, 0x7fffffff);
     if (damage == 0) {
-        SetActionResult(attacker, 1);
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
     }
     return damage;
 }
@@ -131,7 +131,7 @@ b16 RollItemCondition(Character* attacker, Character* target, i16 resistance, i1
     if (attacker->lastChange < GetConditionDamageThreshold(target)) {
         return false;
     }
-    if (g_actionResult >= 7) {
+    if (g_actionResult >= BATTLE_ACTION_REFLECTED) {
         return false;
     }
     if (g_targetId >= 0 && IsFieldModeAtLeast(false) && IsFieldConditionRestricted(condition)) {

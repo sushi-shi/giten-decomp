@@ -3469,7 +3469,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void) {
     Character* target;
     GZ_ENUM_LOCAL(DemonRace, i16) race;
     if (g_targetId >= 0 && GetFieldMarker()) {
-        SetActionResult(actor, 6);
+        SetActionResult(actor, BATTLE_ACTION_IMMUNE);
         return FIELD_EFFECT_NONE;
     }
     target = GetCombatant(g_targetId);
@@ -3485,7 +3485,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void) {
         || race == RACE_HEISHI || race == RACE_HITO || race == RACE_INU) {
         return FIELD_EFFECT_NONE;
     }
-    SetActionResult(actor, 3);
+    SetActionResult(actor, BATTLE_ACTION_SUCCESS);
     SetCharacterFlag(target, 0x3f);
     return FIELD_EFFECT_DONE;
 }

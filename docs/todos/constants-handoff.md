@@ -12,7 +12,7 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 213 declared domains. The retail
+`giten verify enum-domains` passes with 216 declared domains. The retail
 compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
 
 ## Batch workflow
@@ -103,8 +103,12 @@ Polarity:
 
 Kept as rows until there is evidence:
 
-- Action-result, resistance and battle-tally codes. These need a decoder for
-  message-script files 0xdd and 0xdf.
+- Battle-tally slot names and the shared result word's noncombat encodings.
+  MS00DD entry 5 dispatches base action results 0..10 to entries 10..19 and
+  97; the messages and combat resolver identify miss, no effect, graze,
+  success, critical, lethal, immune, reflect, HP/MP absorb and protection.
+  The resistance bytes 251..255 map to reflected or absorbed damage. The
+  tally effects still need their script and record relationships decoded.
 - Skill kinds 9, 10 and 14 have no records in the current ET0004 skill table.
   Their distinct identities are still unknown; the combat code shares the
   first two's handler and the field-effect code shares kind 14's handler

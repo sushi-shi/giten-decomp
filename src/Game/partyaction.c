@@ -924,23 +924,23 @@ GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
     }
     if (GetCharacterBattleTallies(actor)[1] && mode == ATTACK_MAGIC) {
         ReportBattleTally(actor, 1, report);
-        return -4;
+        return BATTLE_PROTECTION_REFLECT;
     }
     if (GetCharacterBattleTallies(actor)[2] && mode == ATTACK_MAGIC) {
         ReportBattleTally(actor, 2, report);
-        return -5;
+        return BATTLE_PROTECTION_REFLECT_HALF;
     }
     if (GetCharacterBattleTallies(actor)[5] && attribute == 0) {
         ReportBattleTally(actor, 5, report);
-        return -4;
+        return BATTLE_PROTECTION_REFLECT;
     }
     if (GetCharacterBattleTallies(actor)[6] && attribute == 1) {
         ReportBattleTally(actor, 6, report);
-        return -4;
+        return BATTLE_PROTECTION_REFLECT;
     }
     if (GetCharacterBattleTallies(actor)[3] && mode == ATTACK_MAGIC) {
         ReportBattleTally(actor, 3, report);
-        return -3;
+        return BATTLE_PROTECTION_ABSORB_MP;
     }
     return BATTLE_PROTECTION_NORMAL;
 }
@@ -962,27 +962,27 @@ i16 GetActionResistance(
     }
     result = CheckBattleProtection(actor, attribute, mode, report);
     if (!result) {
-        return -6;
+        return ATTACK_RESIST_PROTECTED;
     }
     if (result >= 1) {
         if (HasCondition(GetCharacterConditions(actor), CONDITION_ZOMBIE) && attribute == 6) {
             return 100;
         }
         result = attribute == 10 ? 50 : actor->resistance[attribute];
-        if (result == 255) {
-            return -5;
+        if (result == ATTACK_RESIST_BYTE_REFLECT_HALF) {
+            return ATTACK_RESIST_REFLECT_HALF;
         }
-        if (result == 254) {
-            return -4;
+        if (result == ATTACK_RESIST_BYTE_REFLECT) {
+            return ATTACK_RESIST_REFLECT;
         }
-        if (result == 253) {
-            return -3;
+        if (result == ATTACK_RESIST_BYTE_ABSORB_MP) {
+            return ATTACK_RESIST_ABSORB_MP;
         }
-        if (result == 252) {
-            return -2;
+        if (result == ATTACK_RESIST_BYTE_ABSORB_HP_HALF) {
+            return ATTACK_RESIST_ABSORB_HP_HALF;
         }
-        if (result == 251) {
-            return -1;
+        if (result == ATTACK_RESIST_BYTE_ABSORB_HP) {
+            return ATTACK_RESIST_ABSORB_HP;
         }
     }
     return result;
@@ -1034,33 +1034,33 @@ i16 GetPickedAttackAttribute(Character* actor, i16* condition) {
 RVA(0x00006f20, 0x1a4)
 void ApplyResistanceOutcome(Character* actor, i16 resistance, i32 amount) {
     switch (resistance) {
-        case -6:
+        case ATTACK_RESIST_PROTECTED:
             SetCharacterChanges(actor, 0, 0);
-            SetResistanceResult(actor, -6, 10);
+            SetResistanceResult(actor, -6, BATTLE_ACTION_PROTECTED);
             break;
-        case -5:
+        case ATTACK_RESIST_REFLECT_HALF:
             SetCharacterChanges(actor, amount / 2, amount / 2);
-            SetResistanceResult(actor, -4, 7);
+            SetResistanceResult(actor, -4, BATTLE_ACTION_REFLECTED);
             break;
-        case -4:
+        case ATTACK_RESIST_REFLECT:
             SetCharacterChanges(actor, 0, amount);
-            SetResistanceResult(actor, -5, 7);
+            SetResistanceResult(actor, -5, BATTLE_ACTION_REFLECTED);
             break;
-        case -3:
+        case ATTACK_RESIST_ABSORB_MP:
             SetCharacterChanges(actor, amount, 0);
-            SetResistanceResult(actor, -3, 9);
+            SetResistanceResult(actor, -3, BATTLE_ACTION_MP_ABSORBED);
             break;
-        case -2:
+        case ATTACK_RESIST_ABSORB_HP_HALF:
             SetCharacterChanges(actor, amount / 2, amount / 2);
-            SetResistanceResult(actor, -1, 8);
+            SetResistanceResult(actor, -1, BATTLE_ACTION_HP_ABSORBED);
             break;
-        case -1:
+        case ATTACK_RESIST_ABSORB_HP:
             SetCharacterChanges(actor, amount, 0);
-            SetResistanceResult(actor, -2, 8);
+            SetResistanceResult(actor, -2, BATTLE_ACTION_HP_ABSORBED);
             break;
         case 0:
             SetCharacterChanges(actor, 0, 0);
-            actor->result = 6;
+            actor->result = BATTLE_ACTION_IMMUNE;
             break;
         default:
             SetCharacterChanges(actor, amount, 0);
@@ -1936,8 +1936,8 @@ i16 RollExceptionalAttack(Character* attacker, Character* target, i16 mode, i16 
             value = GetExceptionalAttackLuck(target);
             defense = RoundToInt(value * RandomAverage(100, 200, 0) * 0.01);
             if (attack > defense) {
-                SetActionResult(attacker, 5);
-                return 5;
+                SetActionResult(attacker, BATTLE_ACTION_LETHAL);
+                return BATTLE_ACTION_LETHAL;
             }
         }
         attack = GetExceptionalAttackBase(attacker);
@@ -1945,10 +1945,10 @@ i16 RollExceptionalAttack(Character* attacker, Character* target, i16 mode, i16 
         defense = GetExceptionalAttackBase(target);
         defense += RandomUpTo(31);
         if (modifier + attack > defense) {
-            SetActionResult(attacker, 4);
-            return 4;
+            SetActionResult(attacker, BATTLE_ACTION_CRITICAL);
+            return BATTLE_ACTION_CRITICAL;
         }
-        SetActionResult(attacker, 0);
+        SetActionResult(attacker, BATTLE_ACTION_MISSED);
     }
     return 0;
 }
@@ -1961,11 +1961,11 @@ b16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
     i32 defense;
     i32 roll;
     if (GetPickBlockingCondition(GetCharacterConditions(target))) {
-        SetActionResult(attacker, 3);
+        SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
         return true;
     }
     if (GetCombatantFacingDifference(g_actorId, g_targetId) == FACING_FROM_BEHIND) {
-        SetActionResult(attacker, 3);
+        SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
         return true;
     }
     accuracy = GetBattleStatShown(attacker, BATTLE_STAT_GUN_ACCURACY);
@@ -1991,23 +1991,23 @@ b16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
         roll = defense * RandomAverage(-2, 12, 1);
         attack *= 8;
         if (attack >= roll) {
-            SetActionResult(attacker, 3);
+            SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
             return true;
         }
     } else {
         roll = defense * RandomAverage(0, 15, 0);
         attack *= 8;
         if (attack >= roll) {
-            SetActionResult(attacker, 3);
+            SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
             return true;
         }
     }
     roll = defense * RandomAverage(0, 7, 0);
     if (attack >= roll) {
-        SetActionResult(attacker, 2);
+        SetActionResult(attacker, BATTLE_ACTION_GRAZED);
         return true;
     }
-    SetActionResult(attacker, 0);
+    SetActionResult(attacker, BATTLE_ACTION_MISSED);
     return false;
 }
 
@@ -2049,7 +2049,7 @@ i32 ComputeGunDamage(Character* attacker, Character* target, i16 result) {
         ratio += 1.0;
     }
     amount = sqrt(amount) * ratio;
-    if (result == 4) {
+    if (result == BATTLE_ACTION_CRITICAL) {
         amount += attacker->level + 5;
     }
     if (GetPickBlockingCondition(GetCharacterConditions(target))) {
@@ -2061,7 +2061,7 @@ i32 ComputeGunDamage(Character* attacker, Character* target, i16 result) {
     } else if (facing != FACING_FACE_TO_FACE) {
         amount *= 1.2;
     }
-    if (result == 2) {
+    if (result == BATTLE_ACTION_GRAZED) {
         amount *= 0.25;
     }
     if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
@@ -2073,7 +2073,7 @@ i32 ComputeGunDamage(Character* attacker, Character* target, i16 result) {
     damage = RandomPercent(damage, -20, 20);
     damage = ClampInt(damage / 100, 0, 0x7fffffff);
     if (damage == 0) {
-        SetActionResult(attacker, 1);
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
     }
     return damage;
 }
@@ -2090,7 +2090,7 @@ b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16
     if (attacker->lastChange < GetConditionDamageThreshold(target)) {
         return false;
     }
-    if (g_actionResult >= 7) {
+    if (g_actionResult >= BATTLE_ACTION_REFLECTED) {
         return false;
     }
     if (g_targetId >= 0 && IsFieldModeAtLeast(false) && IsFieldConditionRestricted(condition)) {
@@ -2143,10 +2143,10 @@ b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode) {
         }
         amount = ComputeGunDamage(attacker, target, attacker->result);
         SetCharacterChanges(attacker, amount, 0);
-    } else if (result == 5) {
+    } else if (result == BATTLE_ACTION_LETHAL) {
         amount = 0x7fff;
         SetCharacterChanges(attacker, amount, 0);
-        SetFlaggedActionResult(attacker, 5);
+        SetFlaggedActionResult(attacker, BATTLE_ACTION_LETHAL);
         AddTrainingPoints(attacker, BATTLE_GROUP_GUN, 1);
     }
     ApplyResistanceOutcome(attacker, g_attackResistance, amount);

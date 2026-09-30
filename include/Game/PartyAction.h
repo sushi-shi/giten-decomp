@@ -124,14 +124,39 @@ GZ_ENUM_END_SPLIT(PanelCommandId)
 void FillCharacterCommands(i16* list, i16 id);
 
 i32 ScaleActionValue(i32 value, i16 resistance, i16 multiplier);
-// @identity-TODO: attribute and mode are the skill/item attack domains;
-// negative results encode special resistance outcomes whose names are unproven.
-// The protection check either blocks the attack or allows normal resistance
-// handling. Its negative special outcomes still need the battle message table.
+// A temporary battle protection can block, reflect or absorb an attack.
+// clang-format off
 GZ_ENUM_BEGIN_SPLIT(BattleProtectionResult, i16)
+    BATTLE_PROTECTION_REFLECT_HALF = -5,
+    BATTLE_PROTECTION_REFLECT = -4,
+    BATTLE_PROTECTION_ABSORB_MP = -3,
     BATTLE_PROTECTION_BLOCKED = 0,
     BATTLE_PROTECTION_NORMAL = 1
 GZ_ENUM_END_SPLIT(BattleProtectionResult)
+// clang-format on
+
+// Special resistance outcomes; positive values are ordinary damage rates.
+// clang-format off
+GZ_ENUM_CONST_BEGIN(AttackResistanceSpecial)
+    ATTACK_RESIST_PROTECTED = -6,
+    ATTACK_RESIST_REFLECT_HALF = -5,
+    ATTACK_RESIST_REFLECT = -4,
+    ATTACK_RESIST_ABSORB_MP = -3,
+    ATTACK_RESIST_ABSORB_HP_HALF = -2,
+    ATTACK_RESIST_ABSORB_HP = -1
+GZ_ENUM_CONST_END(AttackResistanceSpecial)
+// clang-format on
+
+// The five record bytes that encode special resistance outcomes.
+// clang-format off
+GZ_ENUM_CONST_BEGIN(AttackResistanceEncoding)
+    ATTACK_RESIST_BYTE_ABSORB_HP = 251,
+    ATTACK_RESIST_BYTE_ABSORB_HP_HALF = 252,
+    ATTACK_RESIST_BYTE_ABSORB_MP = 253,
+    ATTACK_RESIST_BYTE_REFLECT = 254,
+    ATTACK_RESIST_BYTE_REFLECT_HALF = 255
+GZ_ENUM_CONST_END(AttackResistanceEncoding)
+// clang-format on
 
 GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
     Character* actor,

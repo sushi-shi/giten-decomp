@@ -506,15 +506,15 @@ i16 ResolveCombatAction(void) {
     hit = attacker->lastChange != 0;
     attacker->lastChange = ScaleByFieldRate(g_actorId, attacker->pickObject, attacker->lastChange);
     if (hit && attacker->lastChange == 0) {
-        SetActionResult(attacker, 1);
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
     }
     TickFieldCount(g_actorId, false);
     g_hpChange = attacker->lastChange;
     if (g_hpChange >= 0x7fff) {
-        g_actionResult = 5;
+        g_actionResult = BATTLE_ACTION_LETHAL;
     }
     if (fatal && GetFatalCondition(GetCharacterConditions(target))) {
-        SetActionResult(attacker, 1);
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
         g_statusCondition = INFLICT_NONE;
         attacker->lastChange = 0;
         ResetPoolChanges();
@@ -529,7 +529,7 @@ i16 ResolveCombatAction(void) {
     }
 
     if (CanAffectCombatant(g_targetId) && !attacker->pickNoEffect) {
-        if (g_actionResult >= 2 && g_actionResult != 6) {
+        if (g_actionResult >= BATTLE_ACTION_GRAZED && g_actionResult != BATTLE_ACTION_IMMUNE) {
             if (s_actionOutcome == ACTION_OUTCOME_DEFAULT) {
                 PlaySoundEffect(0x10);
             } else if (s_actionOutcome == ACTION_OUTCOME_CONDITION) {
@@ -557,7 +557,8 @@ i16 ResolveCombatAction(void) {
     }
 
     attacker->pickNoEffect = false;
-    if (HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE) && g_actionResult == 5) {
+    if (HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE)
+        && g_actionResult == BATTLE_ACTION_LETHAL) {
         AddCondition(GetCharacterConditions(target), CONDITION_DYING);
     }
     ApplyEmptyPools(attacker);
@@ -921,7 +922,7 @@ b16 RunBattleAction(void) {
                 break;
             }
             if (s_reportedTally != -1) {
-                if (g_actionResult >= 2) {
+                if (g_actionResult >= BATTLE_ACTION_GRAZED) {
                     Character* target = GetCombatant(g_targetId);
                     ReportBattleTally(target, s_reportedTally, -1);
                 }
@@ -1602,7 +1603,7 @@ void UseBattleTallySkill(Character* user, Character* target) {
     g_actionResult = 0;
     user->lastChange = 0;
     target->pickNoEffect = true;
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
     g_hpChange = 0;
     user->lastChange = 0;
     g_statusCondition = GetSkillInflictedCondition(&s_effectSkill);
@@ -1645,7 +1646,7 @@ void UseBattleStatSkill(Character* user, Character* target) {
             return;
         }
     }
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
     user->lastChange = amount;
     g_hpChange = amount;
     switch (GetSkillEffectCode(&s_effectSkill) & BATTLE_STAT_EFFECT_KIND_MASK) {
@@ -1677,7 +1678,7 @@ void UseBattleStatSkill(Character* user, Character* target) {
             break;
     }
     if (!changed) {
-        g_actionResult = 1;
+        g_actionResult = BATTLE_ACTION_NO_EFFECT;
         user->result = 1;
     }
 }
@@ -1710,7 +1711,7 @@ static __inline void PrepareNonDamageSkill(Character* user, Character* target) {
 RVA(0x0002d390, 0x70)
 void UseClearBattleTallySkill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
     if (RollSkillHit(user, target, false) > 0) {
         ClearAllBattleTallies(target);
     }
@@ -1719,7 +1720,7 @@ void UseClearBattleTallySkill(Character* user, Character* target) {
 RVA(0x0002d400, 0x80)
 void UseResetBattleStatsSkill(Character* user, Character* target) {
     PrepareBattleStatSkill(user);
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
     RecalcDerivedStats(target);
     ResetBattleStatsToBase(target);
     ClearAllBattleTallies(target);
@@ -1774,21 +1775,21 @@ RVA(0x0002d5e0, 0x60)
 void UseKind12Skill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
     RunFieldEffect(GetSkillEffectCode(&s_effectSkill));
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 RVA(0x0002d640, 0x60)
 void UseKind13Skill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
     RunFieldEffect(GetSkillEffectCode(&s_effectSkill));
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 RVA(0x0002d6a0, 0x60)
 void UseKind14Skill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
     RunFieldEffect(GetSkillEffectCode(&s_effectSkill));
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 RVA(0x0002d700, 0x50)
@@ -1800,7 +1801,7 @@ void UseFieldEffectSkill(Character* user, Character* target) {
 RVA(0x0002d750, 0x50)
 void UseInertSkill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 // @identity-TODO: PrepareSkillAction only clears this word; no reader survives.

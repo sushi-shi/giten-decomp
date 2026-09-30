@@ -28,10 +28,10 @@ b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
         GetSkillResistance(target, attacker->pickTarget, true, sameSide, &attribute);
     g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, attribute);
     if (g_attackResistance == -6) {
-        SetResistanceResult(attacker, -6, 10);
+        SetResistanceResult(attacker, -6, BATTLE_ACTION_PROTECTED);
         return false;
     }
-    SetActionResult(attacker, 3);
+    SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
     if (g_attackResistance <= -4) {
         return true;
     }
@@ -67,7 +67,7 @@ b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
     if (accuracy > roll) {
         return true;
     }
-    SetActionResult(attacker, 0);
+    SetActionResult(attacker, BATTLE_ACTION_MISSED);
     return false;
 }
 
@@ -114,7 +114,7 @@ i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
     damage = RandomPercent(damage, -20, 20);
     damage = ClampInt(damage / 100, 0, 0x7fffffff);
     if (damage == 0) {
-        SetActionResult(attacker, 1);
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
     }
     return damage;
 }
@@ -133,7 +133,7 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
     if (attacker->lastChange < GetConditionDamageThreshold(target)) {
         return false;
     }
-    if (g_actionResult >= 7) {
+    if (g_actionResult >= BATTLE_ACTION_REFLECTED) {
         return false;
     }
     if (g_targetId >= 0 && IsFieldModeAtLeast(false) && IsFieldConditionRestricted(condition)) {
@@ -165,10 +165,10 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
 RVA(0x0000af70, 0x38)
 i16 ApplySkillResistanceOutcome(Character* attacker, i32 amount) {
     ApplyResistanceOutcome(attacker, g_attackResistance, amount);
-    if (g_actionResult == 7) {
+    if (g_actionResult == BATTLE_ACTION_REFLECTED) {
         return -1;
     }
-    return g_actionResult < 8;
+    return g_actionResult < BATTLE_ACTION_HP_ABSORBED;
 }
 
 RVA(0x0000afb0, 0x13e)
