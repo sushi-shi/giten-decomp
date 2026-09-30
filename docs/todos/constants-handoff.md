@@ -192,6 +192,10 @@ Skill family names:
   inflict conditions. Codes 23, 27, 28, 29, 30 and 33 group ice gas/breath,
   songs, eye blinding and needle attacks, sword techniques, martial arts
   and arrows.
+  Codes 19, 20 and 21 group beast-style attacks (growl, bite, scratch,
+  body slam and howl), aerial attacks (shriek, claw, wingbeat and tornado),
+  and body attacks (crush, rampage and tail). The groups describe the moves;
+  the object records also assign some of them to human and mechanical actors.
   `SkillParameters.family` retains its retail byte storage; mixed families
   still need individual identities.
 
