@@ -965,7 +965,7 @@ i16 GetObjectImageCode(i16 index) {
     } else if (object->hidden != false) {
         imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
     } else if (object->acting) {
-        imageCode = 3;
+        imageCode = FIELD_OBJECT_IMAGE_ACTING;
     }
     return imageCode;
 }
@@ -982,7 +982,7 @@ i16 GetObjectFacingImageCode(i16 index) {
     } else if (object->hidden != false) {
         imageCode = 4;
     } else if (object->acting) {
-        imageCode = 3;
+        imageCode = FIELD_OBJECT_IMAGE_ACTING;
     }
     return imageCode;
 }

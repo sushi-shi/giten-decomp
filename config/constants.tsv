@@ -218,7 +218,7 @@ src/Game/fieldobj.c	FindObjectAtParty	0	*	*	search from slot 0; OBJECT_MATCH_ANY
 src/Game/fieldobj.c	UpdateFieldObjects	4	*	*	@identity-TODO: objects at map y 4 and beyond are hidden
 src/Game/fieldobj.c	ClearObjectStuns	*	*	*	cleared[] is a per-slot yes/no word array the caller passes on to ApplyObjectConditions
 src/Game/fieldobj.c	ApplyObjectConditions	0	*	*	marked[] is a per-slot yes/no word array
-src/Game/fieldobj.c	GetObject*ImageCode	*	*	*	@identity-TODO: image codes 3 (acting) and 4 (redrawn/animating/hidden) select sprite rows; 0-2 face the party
+src/Game/fieldobj.c	GetObject*ImageCode	*	*	*	@identity-TODO: image code 4 serves redraw, animation and hidden states; 0-2 select facing rows
 src/Game/fieldobj.c	GetScriptSetFile	3	*	*	a script set lists three script files
 src/Game/fieldobj.c	SaveFieldLayer	0	*	*	the layer's picture moves to the saved copy
 src/Game/fieldobj.c	RestoreFieldLayer	0	*	*	the saved copy's picture moves back to the layer
