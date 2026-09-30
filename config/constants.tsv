@@ -574,7 +574,6 @@ src/Script/*.c	*	[0-2]	call-argument	*Script(*argument 2	an entry of script file
 src/Script/scriptactor.c	GrantActorReward	0	existing-symbol	*	the loop reuses `kind` as the gem index
 src/Script/scriptactor.c	GrantActorReward	*	comparison-or-bound	operator <= roll	percent thresholds of the random reward tables
 src/Script/scriptactor.c	GrantActorReward	[1-3]	call-argument	GrantAdjustedActorSpoil(*argument 2	the spoil amount adjustment the random reward table applies
-src/Script/scriptactor.c	GrantActorReward	[89]	*	*	reward kinds 8 and 9 (reward is the actor's level) that only the reward script interprets; unrecovered
 src/Script/scriptactor.c	GrantActorReward	1	trivial-function-literal	1 bound reward	an equipment reward below item 1 means none was picked
 src/Game/character.c	InitCharacters	*	call-argument	InitCharacterSlot(*argument 1	the g_characters slots, filled in order
 src/Game/character.c	InitCharacters	*	call-argument	CopyCharacterWithoutSkills(*	slots 13..15 start as copies of slot 0's record

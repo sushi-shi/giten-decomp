@@ -400,13 +400,13 @@ void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind) {
                     if (g_curScript->actor == NULL) {
                         return;
                     }
-                    kind = 8;
+                    kind = ACTOR_REWARD_BOMB_ATTACK;
                     reward = g_curScript->actor->level;
                 } else {
                     if (g_curScript->actor == NULL) {
                         return;
                     }
-                    kind = 9;
+                    kind = ACTOR_REWARD_PUNCH_ATTACK;
                     reward = g_curScript->actor->level;
                 }
                 break;

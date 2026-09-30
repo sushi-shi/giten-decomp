@@ -171,6 +171,12 @@ Polarity:
 The actor flag at bit 0x20 is anchored: SpawnFieldObject sets it for
 alternate-script objects, and pursuit and knockback refuse to move one.
 
+`MS00DF` entry 2 dispatches the reward kind in script long variable 18. Its
+branches for kinds 8 and 9 print a bomb throw and a punch, respectively, then
+run the HP-change opcode using a value derived from the actor's level in long
+variable 19. Kind 8 also selects the second random reward table when passed
+into `GrantActorReward`, so the enum keeps both names for that value.
+
 ## Deferred identities
 
 Kept as rows until there is evidence:

@@ -189,9 +189,6 @@ void OpStoreActorDistance(void);
 RVA_DECL(0x00032dc0)
 void PlaceScriptActor(void);
 
-// What GrantActorReward gives the party from the script actor. The kind it
-// reports to the reward script names what was given; a random-table roll
-// reports the kind it resolved to, or ACTOR_REWARD_HEALED.
 GZ_ENUM_BEGIN(ActorRewardKind)
     ACTOR_REWARD_FIRST_ITEM = 0,
     ACTOR_REWARD_SECOND_ITEM = 1,
@@ -202,7 +199,9 @@ GZ_ENUM_BEGIN(ActorRewardKind)
     ACTOR_REWARD_SPOIL_EXPERIENCE = 6,
     ACTOR_REWARD_RANDOM = 7,
     ACTOR_REWARD_HEALED = 7,
-    ACTOR_REWARD_RANDOM_B = 8
+    ACTOR_REWARD_RANDOM_B = 8,
+    ACTOR_REWARD_BOMB_ATTACK = 8,
+    ACTOR_REWARD_PUNCH_ATTACK = 9
 GZ_ENUM_END(ActorRewardKind)
 
 void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind);
