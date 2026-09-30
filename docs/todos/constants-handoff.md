@@ -75,6 +75,10 @@ Map area names:
 - Area 0x85 is a separate ten-level Tocho map with different wall layouts;
   the Bael Castle map (0x35) warps into its level 7. Its enum name marks
   it as the alternate Tocho map without assigning a story phase.
+- M0028 and M0030 both display 渋谷 and have the same five wall layouts, but
+  their decoded records differ in events and other level data. The code tests
+  0x30 as Shibuya, so 0x28 is named its alternate map without a story-phase
+  claim.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
