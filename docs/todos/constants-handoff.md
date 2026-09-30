@@ -372,7 +372,7 @@ placement behavior rather than a shop type.
 
 Kept as rows until there is evidence:
 
-- Attack attributes 0/1, 9 and 10, and the shared
+- Attack attributes 0/1 and 9, and the shared
   result word's noncombat encodings. ET0004 kind-3 skills select tally slots
   0, 1, 4, 5 and 7..14; the other named slots have direct reader evidence.
   Attribute 1 is not simply the gun category: ET0001 gives it to 21 melee
@@ -392,8 +392,9 @@ Kept as rows until there is evidence:
   remaining tally effects still need their script and record relationships decoded.
   The combat resolver identifies result-word tags 0x50, 0x70 and 0x80
   for HP, MP and experience draining skills.
-  Attribute 10 bypasses the resistance array with a fixed value of 50;
-  the current ET0004 skills and ET0001 attack items do not use it.
+  Attribute 10 bypasses the resistance array with a fixed value of 50, so it
+  has a behavior-based enum member. The current ET0004 skills and ET0001
+  attack items do not use it.
 - Skill kinds 9, 10 and 14 have no records in the current ET0004 skill table.
   Their distinct identities are still unknown; the combat code shares the
   first two's handler and the field-effect code shares kind 14's handler

@@ -544,9 +544,8 @@ src/Script/scriptvm.c	ExecScriptOpcode	[12]	call-argument	OpIfDemonCount(*argume
 src/Script/scriptvm.c	ExecScriptOpcode	[38]	call-argument	SetActorMode(*argument 1	actor modes 3 and 8 have no step behaviour (RunObjectStep has no case for them); their meaning is unrecovered
 src/Game/partyaction.c	*	[38]	case-label	*	actor modes 3 and 8 have no step behaviour (RunObjectStep has no case for them); their meaning is unrecovered
 src/Game/partyaction.c	CheckBattleProtection	*	trivial-function-literal	*attribute	@identity-TODO: attack attributes 0 and 1 are encoded values without recovered names
-src/Game/partyaction.c	GetActionResistance	*	comparison-or-bound	*attribute	@identity-TODO: attack attribute 10 is an encoded item/skill value without a recovered name
 src/Game/partyaction.c	GetActionResistance	50	return	*	a same-side attack takes half resistance
-src/Game/partyaction.c	GetActionResistance	50	store	*	attribute 10 takes a 50-percent resistance value
+src/Game/partyaction.c	GetActionResistance	50	store	*	ATTACK_ATTRIBUTE_FIXED_HALF_RESISTANCE takes a 50-percent resistance value
 src/Game/partyaction.c	GetActionResistance	100	return	*	zombie resistance to attribute 6 is 100 percent
 src/Game/partyaction.c	GetActionResistance	0	trivial-function-literal	0 return	no actor has no resistance value
 src/Game/partyaction.c	GetActionResistance	1	trivial-function-literal	1 bound result	positive protection-check results proceed to the resistance byte

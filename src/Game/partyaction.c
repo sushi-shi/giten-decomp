@@ -976,7 +976,9 @@ i16 GetActionResistance(
             && attribute == ATTACK_ATTRIBUTE_EXPEL) {
             return 100;
         }
-        result = attribute == 10 ? 50 : actor->resistance[attribute];
+        result = attribute == ATTACK_ATTRIBUTE_FIXED_HALF_RESISTANCE
+                     ? 50
+                     : actor->resistance[attribute];
         if (result == ATTACK_RESIST_BYTE_REFLECT_HALF) {
             return ATTACK_RESIST_REFLECT_HALF;
         }
