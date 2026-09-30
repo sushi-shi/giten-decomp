@@ -1150,8 +1150,13 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     }
                     record = GetLoadedRecord(item);
                 }
-                if (record->kind == ITEM_KIND_GUN && GetBattleStatShown(member, 6) > 0) {
-                    if (LacksItemRequiredStats(member, record, GetBattleStatShown(member, 6))) {
+                if (record->kind == ITEM_KIND_GUN
+                    && GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL) > 0) {
+                    if (LacksItemRequiredStats(
+                            member,
+                            record,
+                            GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL)
+                        )) {
                         AddMenuLine(
                             menu->plane,
                             g_scratchBuffer,

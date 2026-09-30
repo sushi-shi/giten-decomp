@@ -83,8 +83,10 @@ i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
         return 0;
     }
     skill = GetCachedSkill(attacker->pickTarget);
-    power = WearSkillValue(GetSkillValueB(skill) + GetBattleStatShown(attacker, 15));
-    defense = GetBattleStatShown(target, 17);
+    power = WearSkillValue(
+        GetSkillValueB(skill) + GetBattleStatShown(attacker, BATTLE_STAT_MAGIC_POWER)
+    );
+    defense = GetBattleStatShown(target, BATTLE_STAT_MAGIC_DEFENSE);
     amount = power;
     if (power < defense) {
         amount *= 0.8;
@@ -146,7 +148,7 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
         return false;
     }
     roll = RandomAverage(0, 30, 0);
-    defense = GetBattleStatShown(target, 5);
+    defense = GetBattleStatShown(target, BATTLE_STAT_WEAPON_DEFENSE);
     defense *= roll;
     value = GetSkillValueA(GetCachedSkill(attacker->pickTarget));
     value += GetRecordValue();

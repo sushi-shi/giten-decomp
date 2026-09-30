@@ -144,7 +144,7 @@ b16 RollItemCondition(Character* attacker, Character* target, i16 resistance, i1
         return false;
     }
     roll = RandomAverage(0, 30, 0);
-    defense = GetBattleStatShown(target, 5);
+    defense = GetBattleStatShown(target, BATTLE_STAT_WEAPON_DEFENSE);
     defense *= roll;
     value = GetItemHitPower(GetLoadedRecord(attacker->pickTarget));
     value += GetRecordValue();
