@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Game/Fusion.h>
 #include <Gfx/Palette.h>
@@ -28,6 +29,15 @@ i16 GetFirstFusionSlot(void);
 i16 GetSecondFusionSlot(void);
 i16 GetThirdFusionSlot(void);
 i16 GetFusionResultKind(void);
+GZ_ENUM_BEGIN_SPLIT(FusionPickerState, i16)
+    FUSION_PICKER_CANCELLED = -2,
+    FUSION_PICKER_SELECTED = -1,
+    FUSION_PICKER_OPEN = 0,
+    FUSION_PICKER_POLL = 1,
+    FUSION_PICKER_CLOSE = 2,
+    FUSION_PICKER_PREVIEW = 3
+GZ_ENUM_END_SPLIT(FusionPickerState)
+
 i16 RunFirstFusionPicker(i16 step, i16 triple);
 i16 RunSecondFusionPicker(i16 step);
 i16 RunThirdFusionPicker(i16 step);

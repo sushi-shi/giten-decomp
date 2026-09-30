@@ -1499,13 +1499,13 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
     i16 result;
     i16 oldOffset;
     switch (step) {
-        case 0:
-            g_fusionFirstSlot = -1;
-            g_fusionSecondSlot = -1;
+        case FUSION_PICKER_OPEN:
+            g_fusionFirstSlot = ROSTER_SLOT_NONE;
+            g_fusionSecondSlot = ROSTER_SLOT_NONE;
             CountRosterEntries(true);
             s_fusionInfoPlane = CreateFusionInfoPlane(6);
             if (!triple) {
-                g_fusionThirdSlot = -1;
+                g_fusionThirdSlot = ROSTER_SLOT_NONE;
                 count = BuildPairFusionCandidates(0);
             } else {
                 count = BuildTripleFusionSummaries(g_fusionThirdSlot);
@@ -1521,14 +1521,14 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
             }
             ++step;
             break;
-        case 1:
+        case FUSION_PICKER_POLL:
             result = RunMenu(s_fusionMenu);
             if (result != TEXT_EVENT_NONE) {
                 if (result > TEXT_EVENT_NONE) {
                     g_fusionFirstSlot = g_selectedObjectId;
                     s_selectedFusionIndex = s_fusionMenu->cursor + g_hoveredObjectId;
                 } else {
-                    g_fusionFirstSlot = -1;
+                    g_fusionFirstSlot = ROSTER_SLOT_NONE;
                 }
                 ++step;
             } else {
@@ -1561,20 +1561,20 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
                     if (result == PANEL_INPUT_NONE) {
                         s_fusionPreviewPlane = OpenFusionPreviewOnClick();
                         if (s_fusionPreviewPlane >= 0) {
-                            step = 3;
+                            step = FUSION_PICKER_PREVIEW;
                         }
                     }
                 }
             }
             break;
-        case 2:
+        case FUSION_PICKER_CLOSE:
             s_fusionPager = ReleasePanel(s_fusionPager, true);
             step = CloseFusionPicker(g_fusionFirstSlot);
             break;
-        case 3:
+        case FUSION_PICKER_PREVIEW:
             s_fusionPreviewPlane = CloseFusionPreviewOnClick(s_fusionPreviewPlane);
             if (s_fusionPreviewPlane < 0) {
-                step = 1;
+                step = FUSION_PICKER_POLL;
             }
             break;
     }
@@ -1862,7 +1862,7 @@ i32 CloseFusionPicker(i16 selection) {
     s_previousFusionTextHook = NULL;
     s_fusionMenu = DestroyMenuBox(s_fusionMenu);
     s_fusionInfoPlane = CloseTextWindow(s_fusionInfoPlane);
-    return selection == -1 ? -2 : -1;
+    return selection == ROSTER_SLOT_NONE ? FUSION_PICKER_CANCELLED : FUSION_PICKER_SELECTED;
 }
 
 RVA(0x000296f0, 0x134)
@@ -2103,16 +2103,16 @@ i16 RunSecondFusionPicker(i16 step) {
     i16 count;
     GZ_ENUM_LOCAL(TextEvent, i16) result;
     switch (step) {
-        case 0:
+        case FUSION_PICKER_OPEN:
             count = s_fusionCandidateCount;
-            g_fusionSecondSlot = -1;
+            g_fusionSecondSlot = ROSTER_SLOT_NONE;
             s_fusionInfoPlane = CreateFusionInfoPlane(6);
             s_fusionPageRows = 1;
             CreateFusionList(4, count);
             s_fusionColumnCount = s_selectedFusionIndex + 1;
             s_fusionColumnOffset = s_selectedFusionIndex;
             PaintMenuBox(s_fusionMenu);
-            if (g_fusionThirdSlot == -1) {
+            if (g_fusionThirdSlot == ROSTER_SLOT_NONE) {
                 s_firstFusionDetailPlane = CreateFusionPreviewCard(7, g_fusionFirstSlot);
             } else {
                 s_firstFusionDetailPlane = CreateFusionPreviewCard(7, g_fusionThirdSlot);
@@ -2120,18 +2120,18 @@ i16 RunSecondFusionPicker(i16 step) {
             }
             ++step;
             break;
-        case 1:
+        case FUSION_PICKER_POLL:
             result = RunMenu(s_fusionMenu);
             if (result != TEXT_EVENT_NONE) {
                 if (result > TEXT_EVENT_NONE) {
                     g_fusionSecondSlot = g_selectedObjectId;
                 } else {
-                    g_fusionSecondSlot = -1;
+                    g_fusionSecondSlot = ROSTER_SLOT_NONE;
                 }
                 ++step;
             }
             break;
-        case 2:
+        case FUSION_PICKER_CLOSE:
             step = CloseFusionPicker(g_fusionSecondSlot);
             break;
     }
@@ -2143,10 +2143,10 @@ i16 RunThirdFusionPicker(i16 step) {
     i16 count;
     GZ_ENUM_LOCAL(TextEvent, i16) result;
     switch (step) {
-        case 0:
-            g_fusionThirdSlot = -1;
-            g_fusionFirstSlot = -1;
-            g_fusionSecondSlot = -1;
+        case FUSION_PICKER_OPEN:
+            g_fusionThirdSlot = ROSTER_SLOT_NONE;
+            g_fusionFirstSlot = ROSTER_SLOT_NONE;
+            g_fusionSecondSlot = ROSTER_SLOT_NONE;
             CountRosterEntries(true);
             s_fusionInfoPlane = CreateFusionInfoPlane(6);
             count = BuildPairFusionCandidates(1);
@@ -2156,18 +2156,18 @@ i16 RunThirdFusionPicker(i16 step) {
             PaintMenuBox(s_fusionMenu);
             ++step;
             break;
-        case 1:
+        case FUSION_PICKER_POLL:
             result = RunMenu(s_fusionMenu);
             if (result != TEXT_EVENT_NONE) {
                 if (result > TEXT_EVENT_NONE) {
                     g_fusionThirdSlot = g_selectedObjectId;
                 } else {
-                    g_fusionThirdSlot = -1;
+                    g_fusionThirdSlot = ROSTER_SLOT_NONE;
                 }
                 ++step;
             }
             break;
-        case 2:
+        case FUSION_PICKER_CLOSE:
             step = CloseFusionPicker(g_fusionThirdSlot);
             break;
     }
