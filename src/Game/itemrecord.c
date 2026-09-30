@@ -1878,7 +1878,7 @@ GZ_ENUM_RETURN(ConditionId, i16) ResolveInflictedCondition(GZ_ENUM_PARAM(Inflict
             }
             break;
         case INFLICT_PARALYSIS_OR_TIPSY:
-            if (GetDemonClass(target->id) == 8) {
+            if (GetDemonClass(target->id) == DEMON_CLASS_KIZOKU) {
                 condition = CONDITION_PARALYSIS;
             } else if (RandomUpTo(100) < 50) {
                 condition = CONDITION_TIPSY;

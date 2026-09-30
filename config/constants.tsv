@@ -982,7 +982,7 @@ src/Game/itemrecord.c	ApplyItemDamageRatio	*	*	*	@identity-TODO: item damage rat
 src/Game/itemrecord.c	ScaleDamageByEquipment	*	*	*	@identity-TODO: the ten element ratios (100 percent each), damage from 1
 src/Game/itemrecord.c	CountElementGuards	*	*	*	@identity-TODO: the ten elements; no guards
 src/Game/itemrecord.c	*Regen	*	*	*	regeneration: none yet; item ids from 1; the regeneration amounts
-src/Game/itemrecord.c	ResolveInflictedCondition	*	*	*	@identity-TODO: the inflict codes' chances (50, 75 percent), demon class 8 and the roll's two outcomes
+src/Game/itemrecord.c	ResolveInflictedCondition	*	*	*	@identity-TODO: the inflict codes' chances (50, 75 percent) and the roll's two outcomes; the demon class is named
 src/Game/itemrecord.c	*Condition*	1	trivial-function-literal	1 bound condition	condition codes start at 1 (0 is none)
 src/Game/itemrecord.c	IsConditionResisted	1	*	*	resisted
 src/Game/itemrecord.c	*SpecialItem*	*	*	*	the eight lover's body-part items, their event flags from 0xd0, a 42560-minute (four-week) lifetime; -1 when not one
@@ -1024,7 +1024,7 @@ src/Game/character.c	GetPartySlot	-1	*	*	an empty party position (PARTY_SLOT_EMP
 src/Game/character.c	SetPartySlot	-1	*	*	PARTY_SLOT_EMPTY is allowed
 src/Game/character.c	*OfId	-1	*	*	no such character
 src/Game/character.c	SortRoster	0	*	*	the sort's first index
-src/Game/character.c	PayStepUpkeep	*	*	*	@identity-TODO: step upkeep: demon classes 10, 12 and 13 cost HP or MP (the pool fill mode 2, eight steps) instead of magnetite; the money counters redraw (1)
+src/Game/character.c	PayStepUpkeep	*	*	*	@identity-TODO: step upkeep: named demon classes cost HP or MP (the pool fill mode 2, eight steps) instead of magnetite; the money counters redraw (1)
 src/Game/character.c	TickPartyTimers	*	*	*	@identity-TODO: party timers every 240 and 60 minutes, the moon phases up to the full moon (14); 1/-1 results
 src/Game/character.c	ApplyMoonPhase	[01]	trivial-function-literal	*	the count of changed flags starts at zero and increments by one
 src/Game/character.c	RecalcDerivedStats	*	*	*	@identity-TODO: battle-stat words 1, 7, 13 and 18..23 (the fourth group) and their floors of 1; the bonus buffer (24 words); the magic-defence groups (3)

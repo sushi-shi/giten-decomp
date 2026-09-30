@@ -3019,7 +3019,7 @@ i16 PayStepUpkeep(void) {
         if (member == NULL || GetFatalCondition(GetCharacterConditions(member))) {
             continue;
         }
-        if (GetDemonClass(member->id) == 10) {
+        if (GetDemonClass(member->id) == DEMON_CLASS_JAREI) {
             whole = AddHundredths(member, member->levelBonus);
             if (whole == 0) {
                 continue;
@@ -3028,7 +3028,7 @@ i16 PayStepUpkeep(void) {
             died += DrainUpkeep(hero, member, whole * 8, i);
         } else if (HasCondition(GetCharacterConditions(member), CONDITION_ZOMBIE)) {
             class = GetDemonClass(member->id);
-            if (class == 12 || class == 13) {
+            if (class == DEMON_CLASS_HITO || class == DEMON_CLASS_MAJIN) {
                 rate = member->level;
             } else {
                 rate = member->levelBonus;
@@ -3041,7 +3041,7 @@ i16 PayStepUpkeep(void) {
             died += DrainUpkeep(hero, member, whole * 8, i);
         } else {
             class = GetDemonClass(member->id);
-            if (class == 12 || class == 13) {
+            if (class == DEMON_CLASS_HITO || class == DEMON_CLASS_MAJIN) {
                 continue;
             }
             whole = AddHundredths(member, member->levelBonus);

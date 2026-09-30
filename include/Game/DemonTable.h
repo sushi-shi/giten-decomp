@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/DemonClass.h>
 #include <Game/DemonRace.h>
 #include <Ints.h>
 

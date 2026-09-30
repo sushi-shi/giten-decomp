@@ -613,7 +613,7 @@ i16 SelectRandomFusionDemon(void) {
         if (GetFusionRestrictedClass(demon)) {
             continue;
         }
-        if (GetDemonClass(demon) == 14) {
+        if (GetDemonClass(demon) == DEMON_CLASS_MUSEIBUTSU) {
             continue;
         }
         if (IsFusionDemonRestricted(demon)) {

@@ -512,6 +512,15 @@ groups and their combined search named.
 0 and poll it at step 1. Their independently stored game steps have separate
 local enum domains.
 
+## Demon classes
+
+ET0000 has six encrypted blocks. Its second block maps each of the 51 demon
+races to a major class; the sixth block names all sixteen classes in order.
+`GetRaceClass` reads the map, and `GetDemonClassName` indexes the name block
+with the resulting class. `DemonClass` follows those names. The observed
+checks select 鬼族系 (8) for one inflicted condition, 邪霊系 (10) and 人系/魔人系
+(12/13) for step upkeep, and 無生物 (14) for random fusion exclusion.
+
 ## Event-flag banks
 
 The saved flag block has sixteen 256-bit banks. Source readers and resets
