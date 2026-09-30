@@ -59,6 +59,10 @@ Tools:
 - `RunLevelUp` has distinct close, human-growth, demon-growth and redraw step
   domains within its named phases. The human and demon `GetGameSub` limits are
   iteration counts, not members of those step domains.
+- `StepForMode`'s input values directly select positive, neutral and negative
+  alignment steps and have their own `AlignmentStepMode` domain. The two
+  script opcodes remap an operand of 1 to helper mode 2 before calling it;
+  their operand domain remains separate.
 
 ## Evidence sources
 
@@ -184,6 +188,11 @@ Automap marks:
   values. Entry 13's branch can reach the Hagenti encounter asking for the
   Kusanagi sword, but the same code 0x86 also uses entries 8..12. The icon
   and that encounter do not establish separate names for the codes.
+  Across the current map records, code 0x85 occurs in four links, 0x86 in
+  thirteen and 0x87 in five. M0081 (会話チェック, "conversation check") places
+  the three codes in adjacent cells at (12,15), (13,15) and (14,15). This
+  confirms that the map data distinguishes them even in one location, but
+  does not explain what the three variants mean.
 - Cell code 0x7d uses the stairs-down mark and occurs in 25 station links,
   all calling MS0044 entries 3..28. That script describes stairs leading
   down to a subway platform and offers the platform route.

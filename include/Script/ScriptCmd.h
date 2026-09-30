@@ -59,7 +59,13 @@ i32 GetObjectStatTotal(i16 ref, GZ_ENUM_PARAM(CharacterStat, i16) stat);
 i32 GetObjectLevel(i16 ref);
 i32 GetObjectAlignmentLevelB(i16 ref);
 i32 GetObjectAlignmentLevelA(i16 ref);
-GZ_ENUM_RETURN(AlignmentSide, i16) StepForMode(i16 mode);
+GZ_ENUM_BEGIN_SPLIT(AlignmentStepMode, i16)
+    ALIGNMENT_STEP_TO_POSITIVE = 0,
+    ALIGNMENT_STEP_TO_NEUTRAL = 1,
+    ALIGNMENT_STEP_TO_NEGATIVE = 2
+GZ_ENUM_END_SPLIT(AlignmentStepMode)
+
+GZ_ENUM_RETURN(AlignmentSide, i16) StepForMode(GZ_ENUM_PARAM(AlignmentStepMode, i16) mode);
 void OpShiftPlayerAlignmentB(void);
 void OpShiftPlayerAlignmentA(void);
 b16 OpLevelUpMember(void);
