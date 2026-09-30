@@ -822,7 +822,7 @@ b16 RunBattleAction(void) {
                 g_battleOutcome = 0;
                 ClearCombatTargets();
                 if (actor->pickTarget < 1) {
-                    skill = GetCachedSkill(1);
+                    skill = GetCachedSkill(SKILL_SWORD_ATTACK);
                     count = CollectCurrentSkillTargets(&skill->parameters);
                 } else {
                     record = GetLoadedRecord(actor->pickTarget);
@@ -871,8 +871,11 @@ b16 RunBattleAction(void) {
                 }
                 shot = GetItemShotId(record);
             } else if (actor->pickRole == PICK_ROLE_ATTACK) {
-                CacheSkill(1, GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY));
-                shot = GetSkillShotId(1);
+                CacheSkill(
+                    SKILL_SWORD_ATTACK,
+                    GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY)
+                );
+                shot = GetSkillShotId(SKILL_SWORD_ATTACK);
             } else {
                 CacheSkill(
                     actor->pickTarget,

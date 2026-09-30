@@ -6,6 +6,7 @@
 // Skills the code singles out, named after their names in the skill file
 // (GetSkillName).
 GZ_ENUM_CONST_BEGIN(SkillId)
+    SKILL_SWORD_ATTACK = 1,
     SKILL_AGI = 0x10,
     SKILL_MAHOROGI = 0x57,
     SKILL_NOELEM = 0x5d,
