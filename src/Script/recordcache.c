@@ -417,13 +417,12 @@ char* GetSkillName(i16 id) {
     return GetSkillRecordText(GetSkill(id));
 }
 
-// An out-of-range id reads record 16.
 RVA(0x0002e430, 0x43)
 SkillHeader* GetSkill(i16 id) {
     SkillTable* table = HandleReadPtr(s_skillTable);
     if (id < 0 || id >= table->count) {
         table = HandleReadPtr(s_skillTable);
-        id = 16;
+        id = SKILL_AGI;
     }
     return OffsetBy(table, table->offsets[id]);
 }

@@ -133,7 +133,7 @@ RVA(0x00022d10, 0x2b)
 u8* GetItemRecordData(i16 id) {
     ItemTable* table = GetItemTableData();
     if (id >= table->count || id < 0) {
-        id = 1;
+        id = ITEM_WOUND_MEDICINE;
     }
     return OffsetBy(table, table->offsets[id]);
 }

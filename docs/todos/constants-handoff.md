@@ -84,10 +84,10 @@ Object record names:
 
 Item record names:
 
-- `ET0001` is a decrypted count and offset table; item records 0x21, 0x24
-  and 0x71 name Kushinada's Jar, Soma Cup and Core Shield. Kind-1 names
-  begin at record +21; kind-5 names begin at +17. In item-use code,
-  these were previously mistaken for equal-valued skill ids.
+- `ET0001` is a decrypted count and offset table; item records 1, 0x21,
+  0x24 and 0x71 name Wound Medicine, Kushinada's Jar, Soma Cup and Core
+  Shield. Kind-1 names begin at record +21; kind-5 names begin at +17. In
+  item-use code, these were previously mistaken for equal-valued skill ids.
 - `ItemId` now includes the empty slot (-1) and no-item record (0);
   equipment, bag, drop and decoded-record storage retain their retail widths.
 - Their bank-7 flags 0xff, 0xfe and 0xfd respectively mark Kushinada's Jar
