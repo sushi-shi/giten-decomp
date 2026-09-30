@@ -318,7 +318,7 @@ i16 ResolveFusionDemonPair(i16 first, i16 second) {
     }
     if (result >= 1000) {
         result -= 1000;
-        return SetFusionResult(result, 8);
+        return SetFusionResult(result, FUSION_SUMMARY_DIRECT_DEMON);
     }
     level = GetFusionLevel(first, second);
     demon = FindStrongestOfRace(level, result);
@@ -415,7 +415,7 @@ i16 ResolveSameRaceFusion(i16 first, i16 second) {
     }
     if (GetDemonFlagLow(GetRosterId(first)) != -1) {
         demon = GetFusionRacePair(first, second);
-        return SetFusionResult(demon, 8);
+        return SetFusionResult(demon, FUSION_SUMMARY_DIRECT_DEMON);
     }
     race = GetSameRaceFusionRace(first);
     level = GetFusionLevel(first, second);
@@ -1403,7 +1403,7 @@ i16 GetFusionResultKind(void) {
         case 0:
         case 3:
         case 4:
-        case 8:
+        case FUSION_SUMMARY_DIRECT_DEMON:
         case FUSION_SUMMARY_FALLBACK:
         case 10:
         case 11:
