@@ -174,6 +174,11 @@ Automap marks:
   show the pattern. MS003B's menus omit the current floor from their
   destinations. M0028 uses 0x45 at three floors for a disabled elevator;
   its MS0006 entry 38 says the elevator is destroyed.
+- Codes 0x85..0x87 share the spring icon with 0x56. Their map links call
+  MS003A: 0x85 uses entries 2..4, 0x87 uses 6..7, and 0x86 uses 8..13.
+  Each entry sets script long variable 0 before entering the shared entry
+  27; entries 8..13 also set other variables. The script branches by those
+  values, so the icon alone does not establish separate names for the codes.
 - Cell code 0x7d uses the stairs-down mark and occurs in 25 station links,
   all calling MS0044 entries 3..28. That script describes stairs leading
   down to a subway platform and offers the platform route.
