@@ -22,6 +22,16 @@ GZ_ENUM_BEGIN(SkillUseModes)
 GZ_ENUM_END(SkillUseModes);
 // clang-format on
 
+// Traesto, Traport and Trafuri can be blocked by the current field marker
+// or forbidden by the area's skill flag.
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(SkillAreaAvailability, i16)
+    SKILL_AREA_FORBIDDEN = -1,
+    SKILL_AREA_FIELD_MARKED = 0,
+    SKILL_AREA_ALLOWED = 1
+GZ_ENUM_END_SPLIT(SkillAreaAvailability);
+// clang-format on
+
 // The low six bits of a skill record's first byte select its effect family.
 // clang-format off
 GZ_ENUM_BEGIN_SPLIT(SkillKind, u8)
@@ -147,7 +157,7 @@ i16 GetRecordValue(void);
 i16 HpMpLeftAfterCost(i16 cost, struct Character* character);
 SkillView* GetSkillView(i16 id);
 void LoadSkillFiles(void);
-i16 CheckSkillArea(i16 id);
+GZ_ENUM_RETURN(SkillAreaAvailability, i16) CheckSkillArea(i16 id);
 i16 CanUseSkill(i16 id, struct Character* character);
 GZ_ENUM_RETURN(SkillKind, i32) GetSkillKind(i16 id);
 GZ_ENUM_RETURN(AttackMode, u16) GetSkillMode(i16 id);

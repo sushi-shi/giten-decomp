@@ -473,15 +473,13 @@ SkillHeader* CopySkillHeader(i16 id, SkillHeader* dst) {
     return dst;
 }
 
-// Traesto, Traport and Trafuri work only where the area allows them (and never while the
-// field marker is set): 1 when usable here, -1 when the area forbids it.
 RVA(0x0002e580, 0x42)
-i16 CheckSkillArea(i16 id) {
+GZ_ENUM_RETURN(SkillAreaAvailability, i16) CheckSkillArea(i16 id) {
     if (id != SKILL_TRAESTO && id != SKILL_TRAPORT && id != SKILL_TRAFURI) {
-        return 1;
+        return SKILL_AREA_ALLOWED;
     }
     if (GetFieldMarker()) {
-        return 0;
+        return SKILL_AREA_FIELD_MARKED;
     }
     return (s_areaSkillFlags[g_party.field.pos.area] & 1) * 2 - 1;
 }

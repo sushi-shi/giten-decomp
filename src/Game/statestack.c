@@ -2661,7 +2661,7 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
             if (ItemUseInvokesSkill(record->kind)) {
                 event = GetSkillUseModes(GetSkillView(GetItemSkillId(record)));
             }
-            if (CheckSkillArea(GetItemSkillId(record)) != 1) {
+            if (CheckSkillArea(GetItemSkillId(record)) != SKILL_AREA_ALLOWED) {
                 AddItemUseMenuLine(
                     menu,
                     GetItemStackItem(GetItemListEntry(entries, index)),

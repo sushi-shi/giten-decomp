@@ -243,6 +243,11 @@ Skill family names:
   that record when it has no equipped weapon item.
 - Record 250 names Self Recovery. `ApplySkillEffect` changes its combined
   kind/mode byte to 2 before dispatching it as a restore skill.
+- `CheckSkillArea` has a separate three-value result for Traesto, Traport and
+  Trafuri: allowed (1), blocked by the current field marker (0), and forbidden
+  by the area's skill flag (-1). Other skills always return allowed. Its
+  caller `CanUseSkill` also returns 0 for an unpaid cost and -1 for a wrong
+  game mode, so that broader result retains its own numeric type.
 - ET0004 kind 0 contains only the sixteen built-in attack records (including
   the no-attack entry); kind 1 contains the ordinary attack-skill records.
   Both use the default attack handler in `ApplySkillEffect`.

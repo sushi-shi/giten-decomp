@@ -1270,7 +1270,8 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                 style =
                     TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
                 disabled = true;
-            } else if (CheckSkillArea(GetWord(GetCharacterSkills(character), index)) < 1) {
+            } else if (CheckSkillArea(GetWord(GetCharacterSkills(character), index))
+                       < SKILL_AREA_ALLOWED) {
                 style =
                     TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
                 disabled = true;

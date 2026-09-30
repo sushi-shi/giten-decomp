@@ -795,7 +795,7 @@ src/Script/recordcache.c	RemoveLowestAffiliatedSkill	*	*	*	the lowest level star
 src/Script/recordcache.c	FindSkillAffiliation	*	*	*	a skill's three affiliation codes; -1 when none matches
 src/Script/recordcache.c	HighestAffiliatedSkillLevel	-1	*	*	below any level before a skill is found
 src/Script/recordcache.c	BuildLearnableSkillRanks	*	*	*	skill ids from 1; -1 ends the list; no learnable skills (0); rank 0
-src/Script/recordcache.c	CheckSkillArea	*	*	*	@identity-TODO: skills 0x79..0x7b work only where the area allows (see the function comment); 1 usable, 0 under the field marker, -1 forbidden
+src/Script/recordcache.c	CheckSkillArea	*	*	*	the area flag's bit 0 is converted arithmetically to the named allowed/forbidden results
 src/Script/recordcache.c	HpMpLeftAfterCost	*	*	*	-1 with the pool already empty, else what is left (0 when spent)
 src/Script/recordcache.c	CanUseSkill	*	*	*	-1 when unusable, else 0
 src/Script/recordcache.c	FindSkill	-1	*	*	no skill found
