@@ -87,6 +87,9 @@ Map area names:
   so 0x12 is its alternate map.
 - M0016 displays 御茶ﾉ水ｼｪﾙﾀｰ (Ochanomizu Shelter), distinct from M008A's
   御茶ﾉ水 (Ochanomizu). Its map has fifteen levels.
+- M0011 and M0018 both display ミレニアム　総本山 and share seven wall layouts,
+  but their decoded records differ. Source area checks use 0x18 as Millennium
+  Headquarters; 0x11 is the alternate map.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
