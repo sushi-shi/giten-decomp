@@ -440,7 +440,7 @@ column 0 occurs on 98 melee weapons and seven ammunition records in ET0001.
 
 ## Deferred identities
 
-Kept as rows until there is evidence:
+Unresolved identities and behavior-only names:
 
 - The shared result word's other noncombat encodings. ET0004 kind-3 skills
   select tally slots 0, 1, 4, 5 and 7..14; the other named slots have direct
@@ -502,9 +502,9 @@ Kept as rows until there is evidence:
   picker in `RunPartyCommandInput`; that picker reads the flags, not the area.
   `CollectTargets` sends area 17 through the same default cell collector as
   areas 1, 3, 4 and 5. Their distinct selection meanings remain unproven.
-- Field-effect code 0x1a shares Sabatoma's actor-group handler, but its
-  distinct identity remains unknown. Neither version's 309 ET0004 skill
-  records selects 0x1a, so their names cannot identify it.
+- Field-effect code 0x1a is named for its observed `SpawnActorGroup` behavior,
+  shared with Sabatoma (0x19). Neither version's 309 ET0004 skill records
+  selects 0x1a, so its authored skill identity remains unknown.
   Code 0x23 returns `FIELD_EFFECT_DONE`
   directly without changing state, so its name describes that behavior.
   The dispatcher also proves
