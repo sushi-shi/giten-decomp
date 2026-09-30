@@ -3272,7 +3272,7 @@ u32 DrawNpcAt(i16 x, i16 y, i16 depth, AreaNpc* npc, i16 index) {
 }
 
 // Runs a skill's field effect and returns the handler result.
-// @identity-TODO: codes 0x1a and 0x23 remain unnamed.
+// @identity-TODO: code 0x1a shares Sabatoma's handler, but its distinct role is unknown.
 RVA(0x0001f700, 0xcc)
 GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectCode, i16) effect) {
     switch (effect) {
@@ -3303,7 +3303,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectC
             return RaiseTargetFlag25();
         case FIELD_EFFECT_CODE_DOUBLE_MAX_POOLS_THEN_ASH:
             return RaiseTargetFlag26();
-        case 0x23:
+        case FIELD_EFFECT_CODE_SUCCEED_WITHOUT_ACTION:
             return FIELD_EFFECT_DONE;
     }
     return FIELD_EFFECT_NONE;

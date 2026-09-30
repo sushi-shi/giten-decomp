@@ -393,7 +393,10 @@ Kept as rows until there is evidence:
   In ET0004, code 3 has 34 mostly close-range attacks, code 5 has only two
   spear attacks, and code 17 has only six single-target remedy/revival skills.
   Their distinct selection meanings are not established by the collector.
-- Field-effect codes 0x1a and 0x23. The dispatcher proves
+- Field-effect code 0x1a shares Sabatoma's actor-group handler, but its
+  distinct identity remains unknown. Code 0x23 returns `FIELD_EFFECT_DONE`
+  directly without changing state, so its name describes that behavior.
+  The dispatcher also proves
   no effect (0), knockback (1), raised accuracy/evasion (0x20), doubled
   maximum HP and raised weapon power/defense (0x21), and doubled maximum
   HP/MP followed by Ash at the next new moon (0x22). Actor flags 0x23..0x26

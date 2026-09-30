@@ -572,7 +572,7 @@ src/Script/scriptactor.c	GrantActorReward	[1-3]	call-argument	GrantAdjustedActor
 src/Script/scriptactor.c	GrantActorReward	1	trivial-function-literal	1 bound reward	an equipment reward below item 1 means none was picked
 src/Game/character.c	InitCharacters	*	call-argument	InitCharacterSlot(*argument 1	the g_characters slots, filled in order
 src/Game/character.c	InitCharacters	*	call-argument	CopyCharacterWithoutSkills(*	slots 13..15 start as copies of slot 0's record
-src/Game/treasurebox.c	RunFieldEffect	*	case-label	switch on effect	field-effect codes 0x1a and 0x23 have no proven individual skill identity
+src/Game/treasurebox.c	RunFieldEffect	*	case-label	switch on effect	field-effect code 0x1a has no proven individual skill identity
 src/Game/treasurebox.c	KnockBack	[01]	*	*at	x and y of the pushed position (`at` points at its x)
 src/Game/treasurebox.c	KnockBack	[01]	call-argument	*argument [12]	x and y of the pushed position (`at` points at its x)
 *	*	0	trivial-function-literal	0 store z	a coordinate reset to the origin
