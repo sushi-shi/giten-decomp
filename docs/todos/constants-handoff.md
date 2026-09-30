@@ -404,6 +404,10 @@ Kept as rows until there is evidence:
   ET0004 identifies
   illusion (3), invisibility (0x11), Estoma (0x14), Traesto (0x15),
   Traport (0x16), Trafuri (0x17), Sabatoma (0x19) and Desaman (0x1b).
+- Cell code 0x8a selects the lower half of the treasure-box texture in
+  `RenderTBox`. The dead `IsHotspotTreasureOpen` frame arithmetic also gives
+  it the third open/closed frame pair, so it is a `CellCode` enumerator rather
+  than a separate treasure-box constant.
 - Field-object image codes -1 and 0..4 name the mirrored side, facing rows,
   acting row and reaction frame. The fifth frame of the disc's five-BMP actor
   images is a distinct reaction pose. `FlashHitObject` selects it after a pool

@@ -320,7 +320,7 @@ src/Game/fieldobj.c	LoadFieldTable	0	*	*	no handle loaded
 src/Game/fieldobj.c	LoadFieldTable	0x5000	*	*	the field images start at image file 0x5000
 src/Game/fieldobj.c	AnyObjectInReach	*	call-argument	HasObjectInReach*	@identity-TODO: reach mode 1 from the party (-1)
 src/Game/treasurebox.c	*	0	call-argument	FindTreasureBoxAt(*argument 3	find the box without making it the scene cell
-src/Game/treasurebox.c	IsHotspotTreasureOpen	*	*	*	@identity-TODO: dead code; box codes 0x4f and 0x89 (and TREASURE_BOX_LOWER) pick the box texture frame, two frames apart; frame 1 is an open box
+src/Game/treasurebox.c	IsHotspotTreasureOpen	*	*	*	@identity-TODO: dead code; box codes 0x4f and 0x89 (and CELL_TREASURE_BOX_LOWER_TEXTURE_HALF) pick the box texture frame, two frames apart; frame 1 is an open box
 src/Game/treasurebox.c	CheckWorldMapEvent	2	*	*	an event triggers within two pixels of its spot; a world block has two layers (block * 2 + odd layer)
 src/Game/treasurebox.c	CheckWorldMapEvent	-1	*	*	a world event list ends at x -1
 src/Game/treasurebox.c	CheckWorldMapEvent	*	call-argument	SetSceneScriptByIndex*	the scene cell's bytes 7 and 8 name its script (file, entry)

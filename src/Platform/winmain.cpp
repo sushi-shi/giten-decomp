@@ -1690,8 +1690,8 @@ void DrawScreenFade(void) {
 // The atexit callback of DrawScreenFade's vertex table (nothing to destroy).
 RVA_DYNINIT(0x0004bdc0, 0x1, DrawScreenFade)
 
-// The texture coordinates of the four box frames (closed, open, and the two
-// frames of kind-0x8a boxes), clockwise from the top left.
+// Texture coordinates for the normal and lower-half treasure-box frames,
+// closed then open, clockwise from the top left.
 DATA(0x0006bb58)
 static D3DVALUE s_boxUV[4][4][2] = {
     {{0.01f, 0.01f}, {0.49f, 0.01f}, {0.49f, 0.49f}, {0.01f, 0.49f}},
@@ -1780,7 +1780,7 @@ void RenderTBox(void) {
         if (!frame && g_boxOpening && g_openingBox == box) {
             frame = 1;
         }
-        if (box->head.code == TREASURE_BOX_LOWER) {
+        if (box->head.code == CELL_TREASURE_BOX_LOWER_TEXTURE_HALF) {
             frame = (frame - 2) & 3;
         }
         dx = (cellX - partyX) * 320;

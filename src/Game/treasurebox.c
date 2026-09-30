@@ -387,7 +387,7 @@ void IsHotspotTreasureOpen(i32 index) {
     switch (box->head.code) {
         case 0x4f:
             frame += 2;
-        case TREASURE_BOX_LOWER:
+        case CELL_TREASURE_BOX_LOWER_TEXTURE_HALF:
             frame += 2;
         case 0x89:
             frame += 2;
