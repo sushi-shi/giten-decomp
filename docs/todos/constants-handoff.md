@@ -126,6 +126,14 @@ Map area names:
   use code 0x7b to run MS0043 entry 0, which offers ARM terminal connection;
   M0063 and M0067 use code 0x40 to run MS003C entries 8 and 13, which load
   a keeper record and open entry 16's service-terminal menu.
+- M0002 and M0086 both display 亜空間 (Subspace). MS0064 entry 2 opens a
+  shrine's Subspace entrance and travels to M0002; M0002 has a warp to
+  Kishimojin (M0089) and a link to MS0064 entry 3's Hariti encounter.
+  MS005F entry 5 enters M0086 while the protagonist sleeps and dreams;
+  MS006C entry 7 also enters it after Adonis administers an initiation
+  drink and the protagonist's consciousness fades. M0086 links to MS006D
+  entries 38 and 39's vision dialogue. The distinct route and vision roles
+  identify the two Subspace maps.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
