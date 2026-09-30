@@ -28,6 +28,12 @@ void ResetThirdFusionSlot(void);
 i16 GetFirstFusionSlot(void);
 i16 GetSecondFusionSlot(void);
 i16 GetThirdFusionSlot(void);
+// Exceptional results sent to the fusion script; nonnegative results use
+// FusionSummaryKind values.
+GZ_ENUM_BEGIN_SPLIT(FusionResultStatus, i16)
+    FUSION_RESULT_OVER_LEVEL = -3,
+    FUSION_RESULT_ALREADY_IN_ROSTER = -2
+GZ_ENUM_END_SPLIT(FusionResultStatus)
 i16 GetFusionResultKind(void);
 GZ_ENUM_BEGIN_SPLIT(FusionPickerState, i16)
     FUSION_PICKER_CANCELLED = -2,

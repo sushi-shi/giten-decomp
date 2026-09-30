@@ -279,6 +279,11 @@ Demon fusion flags:
 
 Fusion summary kind:
 
+- `GetFusionResultKind` sends `FUSION_RESULT_OVER_LEVEL` when the summary's
+  over-level bit is set, or `FUSION_RESULT_ALREADY_IN_ROSTER` when the result
+  demon is already present for a summary kind that checks roster membership.
+  Otherwise it sends the `FusionSummaryKind` value. These two negative
+  statuses are separate from the stored summary-kind domain.
 - Kind 0 leaves the result kind unspecified. `SetFusionSummaryKind` derives
   higher, lower or equal from source and result levels when it receives 0;
   a zero-initialized summary also remains 0 before a result is available.

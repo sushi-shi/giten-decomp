@@ -1400,7 +1400,7 @@ i16 GetThirdFusionSlot(void) {
 RVA(0x000288d0, 0x75)
 i16 GetFusionResultKind(void) {
     if (s_fusionSummary.fields.overLevel) {
-        return -3;
+        return FUSION_RESULT_OVER_LEVEL;
     }
     switch (s_fusionSummary.fields.kind) {
         case FUSION_SUMMARY_UNSPECIFIED:
@@ -1412,7 +1412,7 @@ i16 GetFusionResultKind(void) {
         case FUSION_SUMMARY_LEVEL_LOWER:
         case FUSION_SUMMARY_LEVEL_EQUAL:
             if (RosterContainsId(s_fusionResultId)) {
-                return -2;
+                return FUSION_RESULT_ALREADY_IN_ROSTER;
             }
             break;
         case FUSION_SUMMARY_GAIN_ONE_LEVEL:
