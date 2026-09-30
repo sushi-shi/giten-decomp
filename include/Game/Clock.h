@@ -34,7 +34,8 @@ GZ_ENUM_END_SPLIT(PartyTimerOutcome)
 #define MOON_PHASE_TICKS 0x5f0
 GZ_ENUM_BEGIN_SPLIT(MoonPhase, u8)
     MOON_PHASE_NEW = 0,
-    MOON_PHASE_FULL = 14
+    MOON_PHASE_FULL = 14,
+    MOON_PHASE_AFTER_FULL = 15
 GZ_ENUM_END_SPLIT(MoonPhase)
 
 typedef struct GameClock {
@@ -65,7 +66,7 @@ void ClearMoonFlags(void);
 GZ_ENUM_RETURN(ClockUpdate, i16) TickGameClock(i16 paused);
 
 // Steps a character's moon-driven personal flags; the count changed.
-i16 ApplyMoonPhase(struct Character* character, i16 moonPhase);
+i16 ApplyMoonPhase(struct Character* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase);
 
 // The party's periodic HP and MP cost for `minutes`.
 GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes);
@@ -73,7 +74,7 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes);
 // scriptvars' countdown.
 void DrawDownCountdown(u16 amount);
 
-i16 GetMoonPhase(void);
+GZ_ENUM_RETURN(MoonPhase, i16) GetMoonPhase(void);
 
 // The clock as minutes since day 0.
 u32 GetClockMinutes(void);

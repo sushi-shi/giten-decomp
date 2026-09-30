@@ -559,10 +559,11 @@ Both retail ET0018 tables contain 613 names, covering only banks 0, 1, 2,
 ## Moon phases
 
 `GameClock.moonPhase` is a saved byte cycling through 0..27. `AdvanceClock`
-and `ApplyClockChanges` identify phase 0 as new moon and 14 as full moon; the
-other phase numbers have no separate names in the current source. `MoonPhase`
-types the saved byte while the 28-phase count and tick duration remain
-numeric extents.
+and `ApplyClockChanges` identify phase 0 as new moon and 14 as full moon.
+Phase 15 is immediately after full moon and triggers `ClearMoonFlags`.
+`MoonPhase` types the saved byte, `GetMoonPhase` result, and `ApplyMoonPhase`
+input. The other phase numbers have no separate names in the current source;
+the 28-phase count and tick duration remain numeric extents.
 
 ## Script scratch transfer
 

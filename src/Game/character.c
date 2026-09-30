@@ -3159,7 +3159,7 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
 // initialising it at the declaration hoists the lea (direct field use,
 // if-wrapped body and return-variable spellings tried).
 RVA(0x000413f0, 0xb6)
-i16 ApplyMoonPhase(Character* character, i16 moonPhase) {
+i16 ApplyMoonPhase(Character* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
     u8* flags = GetCharacterFlags(character);
     i16 changed = 0;
     if (character == NULL) {

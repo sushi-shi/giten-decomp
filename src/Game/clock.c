@@ -257,7 +257,7 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
         );
         ModifyEventFlag(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_SOMA_CUP_USED, BIT_CHANGE_CLEAR);
     }
-    if (g_clock.moonPhase == MOON_PHASE_FULL + 1) {
+    if (g_clock.moonPhase == MOON_PHASE_AFTER_FULL) {
         ClearMoonFlags();
     }
 }

@@ -1105,7 +1105,7 @@ u16 TimeUntilMoonPhase(i16 phase) {
 }
 
 RVA(0x00017990, 0x9)
-i16 GetMoonPhase(void) {
+GZ_ENUM_RETURN(MoonPhase, i16) GetMoonPhase(void) {
     return g_clock.moonPhase;
 }
 
