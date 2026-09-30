@@ -121,6 +121,13 @@ Skill family names:
   `SkillParameters.family` retains its retail byte storage; mixed families
   still need individual identities.
 
+Training group:
+
+- `BattleStatGroup` index 3 is trained for the player by analyzing a field
+  actor, talking to one, and summoning. `ApplyTraining` raises battle-stat
+  word 18 from that counter, and the group's affiliation growth uses
+  Intelligence and Charm. The other three groups train weapon, gun and magic.
+
 ### Event-flag names (ET0018)
 
 `ET0018` is the developers' event-flag name table.

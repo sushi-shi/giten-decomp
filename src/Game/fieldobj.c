@@ -2205,7 +2205,7 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->battleStats[BATTLE_STAT_WEAPON_LEVEL] = 0;
     object->battleStats[BATTLE_STAT_GUN_LEVEL] = 0;
     object->battleStats[BATTLE_STAT_MAGIC_LEVEL] = 0;
-    object->battleStats[18] = 0;
+    object->battleStats[BATTLE_STAT_DEMON_INTERACTION_LEVEL] = 0;
     RecalcObjectStats(object);
     InitCurMax(&object->pools.hp, record->hp);
     InitCurMax(&object->pools.mp, record->mp);

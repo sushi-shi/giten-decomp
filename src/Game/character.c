@@ -722,7 +722,7 @@ i32 CalcMagicDefenseStat(i16* stats, i32 amount) {
 RVA(0x0003d560, 0x3e0)
 void RecalcDerivedStats(Character* character) {
     i16 kept12 = GetBattleStatBase(character, 12);
-    i16 kept18 = GetBattleStatBase(character, 18);
+    i16 kept18 = GetBattleStatBase(character, BATTLE_STAT_DEMON_INTERACTION_LEVEL);
     i16 level = GetBattleStatBase(character, 0);
     i16 kept6 = GetBattleStatBase(character, 6);
     i16 bonuses[24];
@@ -792,7 +792,7 @@ void RecalcDerivedStats(Character* character) {
     );
     character->battleStats[BATTLE_STAT_MAGIC_DEFENSE] =
         CalcMagicDefenseStat(stats, SumEquippedMagicDefenseBonus(character, 3));
-    character->battleStats[18] = kept18;
+    character->battleStats[BATTLE_STAT_DEMON_INTERACTION_LEVEL] = kept18;
     character->battleStats[19] = 1;
     character->battleStats[21] = 1;
     character->battleStats[20] = 1;

@@ -900,7 +900,7 @@ b16 RunDdsSummon(void) {
             if (result) {
                 NextGameStep();
                 if (result > 0) {
-                    AddTrainingPoints(GetCharacters(), 3, 8);
+                    AddTrainingPoints(GetCharacters(), BATTLE_GROUP_DEMON_INTERACTION, 8);
                 }
             }
             break;

@@ -1435,7 +1435,6 @@ u32 AddTrainingPoints(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) 
 
 // Raises training level `kind` (the battle-stat words 0, 6, 12 and 18) while
 // its counter covers the next level's threshold; returns the levels gained.
-// @identity-TODO: what the four training kinds measure is unrecovered.
 RVA(0x0001c6f0, 0x140)
 i16 ApplyTraining(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind) {
     i16 raised = 0;
@@ -1461,10 +1460,10 @@ i16 ApplyTraining(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind
                 raised
             );
             break;
-        case 3:
+        case BATTLE_GROUP_DEMON_INTERACTION:
             RaiseTrainedLevel(
-                GetBattleStatBase(character, 18),
-                GetTrainingPoints(character, 3),
+                GetBattleStatBase(character, BATTLE_STAT_DEMON_INTERACTION_LEVEL),
+                GetTrainingPoints(character, BATTLE_GROUP_DEMON_INTERACTION),
                 raised
             );
             break;

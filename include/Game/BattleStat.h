@@ -4,19 +4,19 @@
 #include <Enums.h>
 
 // The derived-stat array's four groups of six words, and the training kind
-// that raises each group's level (its first word). The fourth, human-only
-// group is trained by analyzing, talking and summoning; its identity is
-// unrecovered.
+// that raises each group's level (its first word). Analyzing, talking and
+// summoning train the fourth, human-only group.
 GZ_ENUM_BEGIN(BattleStatGroup)
     BATTLE_GROUP_WEAPON = 0,
     BATTLE_GROUP_GUN = 1,
     BATTLE_GROUP_MAGIC = 2,
+    BATTLE_GROUP_DEMON_INTERACTION = 3,
     BATTLE_GROUP_COUNT = 4
 GZ_ENUM_END(BattleStatGroup)
 
 #define BATTLE_STATS_PER_GROUP 6
 
-// Known combat outputs in the 24-entry derived-stat array.
+// Known indices in the 24-entry derived-stat array.
 // clang-format off
 GZ_ENUM_BEGIN(BattleStatIndex)
     BATTLE_STAT_WEAPON_LEVEL = 0,
@@ -34,6 +34,7 @@ GZ_ENUM_BEGIN(BattleStatIndex)
     BATTLE_STAT_MAGIC_POWER = 15,
     BATTLE_STAT_MAGIC_EVASION = 16,
     BATTLE_STAT_MAGIC_DEFENSE = 17,
+    BATTLE_STAT_DEMON_INTERACTION_LEVEL = 18,
 GZ_ENUM_END(BattleStatIndex);
 // clang-format on
 

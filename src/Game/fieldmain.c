@@ -547,8 +547,8 @@ GZ_ENUM_RETURN(ViewDirection, i16) FindExitDirection(i16 x, i16 y) {
 }
 
 // With a key pending and the automap allowed, makes the object under the
-// selected hotspot the analyze target (a training point of kind 3 for the
-// player); returns its index, else -1.
+// selected hotspot the analyze target (one demon-interaction training point
+// for the player); returns its index, else -1.
 RVA(0x00012a80, 0x78)
 i16 PickAnalyzeTarget(void) {
     i16 index;
@@ -570,7 +570,7 @@ i16 PickAnalyzeTarget(void) {
     }
     ClearPendingKey();
     SetAnalyzeTarget(target);
-    AddTrainingPoints(GetCharacters(), 3, 1);
+    AddTrainingPoints(GetCharacters(), BATTLE_GROUP_DEMON_INTERACTION, 1);
     return index;
 }
 
@@ -642,7 +642,7 @@ i16 RunPendingTalk(void) {
     CloseMessageWindow();
     StartActorScene(0xe0, 0, objects + 1, actor);
     g_pendingTalk = false;
-    AddTrainingPoints(GetCharacters(), 3, 3);
+    AddTrainingPoints(GetCharacters(), BATTLE_GROUP_DEMON_INTERACTION, 3);
     return 1;
 }
 
