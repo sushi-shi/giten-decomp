@@ -79,6 +79,8 @@ Object record names:
   0x36, 0xce and 0x117 name Marduk, Pyankara, Primrose and Doppelganger.
 - `ObjectRecord.id`, `FieldObject.kind` and `Character.id` share this
   record-ID domain and retain their retail signed-word storage.
+- Records 0x26 and 0x18f name Ishtar and Hell Dog. `FindAbleHumanMember`
+  accepts these two alongside the ordinary human IDs.
 
 Item record names:
 

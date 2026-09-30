@@ -36,6 +36,7 @@
 #include <Game/ItemId.h>
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/PartyAction.h>
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
@@ -1738,7 +1739,9 @@ i16 FindAbleHumanMember(void) {
     Character* member;
     for (index = 0; index < PARTY_SIZE; index++) {
         member = GetPartyCharacter(index);
-        if (member && (member->id == 38 || member->id == 399 || IsHumanCharacter(member))
+        if (member
+            && (member->id == OBJECT_RECORD_ISHTAR || member->id == OBJECT_RECORD_HELL_DOG
+                || IsHumanCharacter(member))
             && !GetDisablingCondition(GetCharacterConditions(member))) {
             return index;
         }

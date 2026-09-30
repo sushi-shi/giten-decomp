@@ -101,8 +101,6 @@ void MarkActorActionReady(struct Character* actor);
 // The tick argument is retained for the retail caller ABI but is unused.
 i16 RunPartyTurn(i16 ticks);
 
-// @identity-TODO: Which characters ids 0x26 and 0x18f are (counted as human alongside ids <
-// 0x20) is unrecovered; name them from the roster/character data.
 i16 FindAbleHumanMember(void);
 
 b32 IsPartyAt(i32 x, i32 y);

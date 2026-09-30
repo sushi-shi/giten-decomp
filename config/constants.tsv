@@ -1355,8 +1355,6 @@ src/Game/partyaction.c	RollProximityEvent	0x7fff	store	store to index	nearest-ob
 src/Game/partyaction.c	RollProximityEvent	1	trivial-function-literal	1 case	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
 src/Game/partyaction.c	RollProximityEvent	2	case-label	switch on nearest	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
 src/Game/partyaction.c	HasObjectInReach	0	call-argument	CountObjectsAt(i16, i16, ObjectKindMatch, i16) argument 4	CountObjectsAt argument 4 selects index zero for objects on the party cell
-src/Game/partyaction.c	FindAbleHumanMember	38	comparison-or-bound	operator == id	@identity-TODO: character ids 38 and 399 are accepted alongside human ids, but their character names are undecoded
-src/Game/partyaction.c	FindAbleHumanMember	399	comparison-or-bound	operator == id	@identity-TODO: character ids 38 and 399 are accepted alongside human ids, but their character names are undecoded
 src/Game/partyaction.c	TickPartyConditionActions	36	comparison-or-bound	operator >= conditionActionTicks	36 ticks trigger a condition action; positive action codes are actionable and zero means none
 src/Game/partyaction.c	TickPartyConditionActions	1	trivial-function-literal	1 bound action	36 ticks trigger a condition action; positive action codes are actionable and zero means none
 src/Game/partyaction.c	RunPartyTurn	-1	trivial-function-literal	-1 return	@identity-TODO: party turn result and prompt parameters: -1 waits for command input, zero yields, positive is party slot plus one; action id 1 is set before resolution
