@@ -932,8 +932,8 @@ i16 RunEquipScreen(i16 key) {
 
     if (key != STATUS_COMMAND_NONE && key != STATUS_COMMAND_CANCEL) {
         SetGameSub(MENU_STEP_CLOSE);
-        s_equipPage.pick = -2;
-        if (key != 8) {
+        s_equipPage.pick = STATUS_COMMAND_CANCEL;
+        if (key != STATUS_STEP_EQUIPMENT) {
             s_equipPage.pick = key;
         }
     }
@@ -958,7 +958,7 @@ i16 RunEquipScreen(i16 key) {
             }
             SetStatusMenuItemFlag(STATUS_STEP_EQUIPMENT, PANEL_ROW_CHECKED, false);
             PollEquipPart(g_statusMember, EQUIP_PICK_CLEAR);
-            if (s_equipPage.pick != -1) {
+            if (s_equipPage.pick != STATUS_COMMAND_NONE) {
                 return s_equipPage.pick;
             }
             PrevGameSub();
@@ -974,7 +974,7 @@ i16 RunEquipScreen(i16 key) {
                 part = PollEquipPart(g_statusMember, EQUIP_PICK_PART);
                 if (part == -2) {
                     PrevGameSub();
-                    s_equipPage.pick = -2;
+                    s_equipPage.pick = STATUS_COMMAND_CANCEL;
                     return STATUS_COMMAND_NONE;
                 }
                 if (part == -1) {
@@ -1321,8 +1321,8 @@ RVA(0x00043d10, 0x5e0)
 i16 RunAttachScreen(i16 sub) {
     if (sub != STATUS_COMMAND_NONE && sub != STATUS_COMMAND_CANCEL) {
         SetGameSub(MENU_STEP_CLOSE);
-        s_attach.resume = -2;
-        if (sub != 9) {
+        s_attach.resume = STATUS_COMMAND_CANCEL;
+        if (sub != STATUS_STEP_ATTACH) {
             s_attach.resume = sub;
         }
     }
@@ -1348,7 +1348,7 @@ i16 RunAttachScreen(i16 sub) {
                 s_attach.redraw = false;
             }
             SetStatusMenuItemFlag(STATUS_STEP_ATTACH, PANEL_ROW_CHECKED, false);
-            if (s_attach.resume == -1) {
+            if (s_attach.resume == STATUS_COMMAND_NONE) {
                 PrevGameSub();
                 return STATUS_COMMAND_NONE;
             }
@@ -1356,7 +1356,7 @@ i16 RunAttachScreen(i16 sub) {
         case MENU_STEP_RUN:
             if (sub == STATUS_COMMAND_CANCEL) {
                 PrevGameSub();
-                s_attach.resume = -2;
+                s_attach.resume = STATUS_COMMAND_CANCEL;
                 return STATUS_COMMAND_NONE;
             }
             if (RunListMenu(s_attach.itemMenu) == LIST_MENU_OPEN || g_selectedObjectId < 0) {
@@ -1369,22 +1369,22 @@ i16 RunAttachScreen(i16 sub) {
             s_attach.itemMenu = DestroyMenuBox(s_attach.itemMenu);
             s_attach.item = g_selectedObjectId;
             return STATUS_COMMAND_NONE;
-        case 3:
+        case ATTACH_STEP_OPEN_TARGET_LIST:
             NextGameSub();
             s_attach.entryMenu = CreateAttachEntryMenu(s_attach.entryMenu);
             PollEquipPart(g_statusMember, EQUIP_PICK_RESET);
             return STATUS_COMMAND_NONE;
-        case 4:
+        case ATTACH_STEP_PICK_TARGET:
             if (sub == STATUS_COMMAND_CANCEL) {
                 SetGameSub(MENU_STEP_CLOSE);
-                s_attach.resume = -2;
+                s_attach.resume = STATUS_COMMAND_CANCEL;
                 return STATUS_COMMAND_NONE;
             }
             if (RunListMenu(s_attach.entryMenu) == LIST_MENU_OPEN) {
                 sub = PollEquipPart(g_statusMember, EQUIP_PICK_ATTACH_TARGET);
                 if (sub == STATUS_COMMAND_CANCEL) {
                     SetGameSub(MENU_STEP_CLOSE);
-                    s_attach.resume = -2;
+                    s_attach.resume = STATUS_COMMAND_CANCEL;
                     return STATUS_COMMAND_NONE;
                 }
                 if (sub == STATUS_COMMAND_NONE) {
@@ -1392,14 +1392,14 @@ i16 RunAttachScreen(i16 sub) {
                 }
                 s_attach.target = sub;
                 s_attach.entryMenu = DestroyMenuBox(s_attach.entryMenu);
-                SetGameSub(7);
+                SetGameSub(ATTACH_STEP_APPLY_EQUIPPED_ITEM);
                 return STATUS_COMMAND_NONE;
             }
             NextGameSub();
             s_attach.target = g_selectedObjectId;
             s_attach.entryMenu = DestroyMenuBox(s_attach.entryMenu);
             return STATUS_COMMAND_NONE;
-        case 5:
+        case ATTACH_STEP_APPLY_BAG_ITEM:
             NextGameSub();
             s_attach.plane = CreateTextPlane(0x12, 0);
             sprintf(g_scratchBuffer, "%s", GetLoadedRecordName(s_attach.item));
@@ -1422,12 +1422,12 @@ i16 RunAttachScreen(i16 sub) {
             RepaintTextPlane(s_attach.plane, -2);
             PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
             return STATUS_COMMAND_NONE;
-        case 6:
+        case ATTACH_STEP_FINISH_BAG_ITEM:
             SetGameSub(MENU_STEP_CLOSE);
             s_attach.plane = CloseTextWindow(s_attach.plane);
-            s_attach.resume = -1;
+            s_attach.resume = STATUS_COMMAND_NONE;
             return STATUS_COMMAND_NONE;
-        case 7:
+        case ATTACH_STEP_APPLY_EQUIPPED_ITEM:
             NextGameSub();
             s_attach.plane = CreateTextPlane(0x12, 0);
             sprintf(g_scratchBuffer, "%s", GetLoadedRecordName(s_attach.item));
@@ -1452,12 +1452,12 @@ i16 RunAttachScreen(i16 sub) {
             RepaintTextPlane(s_attach.plane, -2);
             PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
             return STATUS_COMMAND_NONE;
-        case 8:
+        case ATTACH_STEP_FINISH_EQUIPPED_ITEM:
             SetGameSub(MENU_STEP_CLOSE);
             s_attach.plane = CloseTextWindow(s_attach.plane);
             RecalcCharacterStats(GetRosterCharacter(g_statusMember));
             s_attach.redraw = true;
-            s_attach.resume = -1;
+            s_attach.resume = STATUS_COMMAND_NONE;
             return STATUS_COMMAND_NONE;
     }
     return STATUS_COMMAND_NONE;

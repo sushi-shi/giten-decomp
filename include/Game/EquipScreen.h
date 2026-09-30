@@ -67,6 +67,15 @@ i16 PollEquipPart(i16 member, i16 mode);
 // The status screen's attach page: fits a gem item into a bag entry or an
 // equipped part (sub-state 0 opens it, 1 closes it; 2..8 pick the item, the
 // target and report the result); returns the sub-state to resume or -1.
+GZ_ENUM_BEGIN_SPLIT(AttachScreenStep, i16)
+    ATTACH_STEP_OPEN_TARGET_LIST = 3,
+    ATTACH_STEP_PICK_TARGET = 4,
+    ATTACH_STEP_APPLY_BAG_ITEM = 5,
+    ATTACH_STEP_FINISH_BAG_ITEM = 6,
+    ATTACH_STEP_APPLY_EQUIPPED_ITEM = 7,
+    ATTACH_STEP_FINISH_EQUIPPED_ITEM = 8
+GZ_ENUM_END_SPLIT(AttachScreenStep)
+
 i16 RunAttachScreen(i16 sub);
 
 // The attach page's state: the text hook it displaced, its two menus (the

@@ -1109,7 +1109,7 @@ src/Game/character.c	LoadCharacter	*	*	*	@identity-TODO: the two words cleared w
 src/Game/character.c	UnequipPart	1	*	*	item quantities start at 1; SetEquipSlot's fourth argument 1 (@identity-TODO)
 src/Game/statuspanel.c	*	0x800	call-argument	SetStatusMenuItemFlag(*argument 2	@identity-TODO: panel row flag 0x800, which no claimed code tests
 src/Game/statuspanel.c	DrawStatusScreen	*	*	*	status screen layout: the text-cell positions of the name, capacity, conditions, equipment lines and portrait; the first member; two or more roster entries for the next-member command; the equipment list's first pass (1)
-src/Game/statuspanel.c	Run*Screen	*	*	*	@identity-TODO: the equip and attach screens' sub-steps (3..9), picks (-1 none, -2 cancelled), quantities from 1 and the preview's before/after (0/1); one item moved between bag and slot (StoreBagItem's -1)
+src/Game/statuspanel.c	Run*Screen	*	*	*	@identity-TODO: the equip picker's results (-1 none, -2 cancelled), quantities from 1 and the preview's before/after (0/1); one item moved between bag and slot (StoreBagItem's -1)
 src/Game/statuspanel.c	DrawEquipPanel	*	*	*	equip panel layout: rows every 0x18 pixels from 0x28, four stat columns at 5-cell spacing, panel images 7, 0x10 and 0x19
 src/Game/statuspanel.c	PollEquipPart	*	*	*	equip-part hit test: 8-pixel cells from column 0x37 (0x15 wide) and row 40, four rows per part; -1 when no part is hit
 src/Game/statuspanel.c	DrawStat[!u]*	*	*	*	stat display layout: bar segments of 50, twelve-cell bars, the ten stats before fortune, list rows every 2 lines; -1 when nothing is drawn; compare columns
