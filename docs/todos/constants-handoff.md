@@ -234,12 +234,15 @@ Kept as rows until there is evidence:
   ET0004 identifies
   illusion (3), invisibility (0x11), Estoma (0x14), Traesto (0x15),
   Traport (0x16), Trafuri (0x17), Sabatoma (0x19) and Desaman (0x1b).
-- Field-object image codes -1 and 0..3 now name the mirrored side,
-  facing rows and acting row. Code 4 serves redraw, animation and hidden states;
-  its distinct sprite-row identity remains unproven.
+- Field-object image codes -1 and 0..4 name the mirrored side, facing rows,
+  acting row and reaction frame. The fifth frame of the disc's five-BMP actor
+  images is a distinct reaction pose. `FlashHitObject` selects it after a pool
+  change; the vanish animation and hidden state reuse it, with the lit bit
+  selecting the animation lighting path.
 - Wall kind 6. The wall-stop table gives it movement class 0 and geometry
-  class 3; `GetWallAt` treats it as absent when flooding the visible cells.
-  The map record or renderer still needs to establish its in-game identity.
+  class 3; `GetWallAt` treats it as absent when flooding the visible cells,
+  and `BuildRoomGeometry` draws no quad for it. Its geometry-class result
+  still needs reconciling with that open behavior before naming the kind.
 - The identity of area 0x85.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,
   incense, a shield, dummy items and apparent scenario items; its one kind-6

@@ -964,11 +964,11 @@ i16 GetObjectImageCode(i16 index) {
     FieldObject* object = &s_objects[index];
     i16 imageCode = 0;
     if (object->redraw != false) {
-        imageCode = 4;
+        imageCode = FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->anim != 0) {
-        imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
+        imageCode = FIELD_OBJECT_IMAGE_LIT | FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->hidden != false) {
-        imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
+        imageCode = FIELD_OBJECT_IMAGE_LIT | FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->acting) {
         imageCode = FIELD_OBJECT_IMAGE_ACTING;
     }
@@ -981,11 +981,11 @@ i16 GetObjectFacingImageCode(i16 index) {
     i16 imageCode =
         s_facingImageCodes[RelativeFacing(g_party.field.pos.direction, object->direction)];
     if (object->redraw != false) {
-        imageCode = 4;
+        imageCode = FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->anim != 0) {
-        imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
+        imageCode = FIELD_OBJECT_IMAGE_LIT | FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->hidden != false) {
-        imageCode = 4;
+        imageCode = FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->acting) {
         imageCode = FIELD_OBJECT_IMAGE_ACTING;
     }
