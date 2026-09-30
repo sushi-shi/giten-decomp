@@ -955,7 +955,7 @@ src/Game/treasurebox.c	RunAutomapState	*	call-argument	RunFieldPanelRow*	@identi
 src/Game/skilluse.c	AddCombatTarget	270	*	*	@identity-TODO: the target list's 270 slots
 src/Game/skilluse.c	NextTarget	*	*	*	the first target of a non-empty list
 src/Game/skilluse.c	FlashHitObject	*	*	*	@identity-TODO: no change; redraw mode 2
-src/Game/skilluse.c	ApplyCombatDamage	*	*	*	@identity-TODO: items below 1 are none; item passive codes 0x86 and 0x87 also drain pools
+src/Game/skilluse.c	ApplyCombatDamage	*	*	*	item ids below 1 are absent; the named weapon passives return HP or MP to the attacker on hit
 src/Game/skilluse.c	ResolveCombatAction	*	*	*	@identity-TODO: knockout sentinel 0x7fff, Noelem's special pair (-2, -2), resistance results -1..-6 (see SetActionResult's row), the reply alert bits 0x40/0x80 and alert level 2, the counter-attack kinds
 src/Game/skilluse.c	ResolveKnockout	*	*	*	a knocked-out combatant's HP 0; analyzed (1) and one drop added
 src/Game/skilluse.c	*BattleTall*	*	*	*	@identity-TODO: unidentified tally slots and -1 for none reported; the tally modes 1 and -1

@@ -430,9 +430,9 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
         kind = GetItemPassiveEffectCode(
             GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_WEAPON].item)
         );
-        if (kind == 0x86) {
+        if (kind == ITEM_PASSIVE_WEAPON_HP_DRAIN) {
             ChangePool(&attacker->pools.hp, attacker->lastChange);
-        } else if (kind == 0x87) {
+        } else if (kind == ITEM_PASSIVE_WEAPON_MP_DRAIN) {
             ChangePool(&attacker->pools.mp, attacker->lastChange);
         }
     }

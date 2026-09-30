@@ -172,7 +172,8 @@ static __inline i16 GetItemRecordMagicDefenseBonus(const ItemRecord* record) {
 // number is the bonus), HP or MP regeneration per
 // turn (AddItemRegen), or resistance to conditions (ItemResistsCondition:
 // mental is confusion, happy and hallucination; intoxication is high,
-// berserk and tipsy; fire and ice is burn, freeze and ice).
+// berserk and tipsy; fire and ice is burn, freeze and ice), or HP/MP
+// returned to the attacker after a weapon hit.
 GZ_ENUM_BEGIN(ItemPassiveEffect)
     ITEM_PASSIVE_INTUITION_POINT = 1,
     ITEM_PASSIVE_MENTAL_STRENGTH_POINT = 2,
@@ -232,7 +233,9 @@ GZ_ENUM_BEGIN(ItemPassiveEffect)
     ITEM_PASSIVE_RESIST_BURN = 0x82,
     ITEM_PASSIVE_RESIST_MAGIC_SEAL = 0x83,
     ITEM_PASSIVE_RESIST_INTOXICATION = 0x84,
-    ITEM_PASSIVE_RESIST_FIRE_AND_ICE = 0x85
+    ITEM_PASSIVE_RESIST_FIRE_AND_ICE = 0x85,
+    ITEM_PASSIVE_WEAPON_HP_DRAIN = 0x86,
+    ITEM_PASSIVE_WEAPON_MP_DRAIN = 0x87
 GZ_ENUM_END(ItemPassiveEffect)
 
 // Selects the equipped item's stat, resistance, regeneration or drain effect.
