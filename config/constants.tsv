@@ -897,7 +897,7 @@ src/Script/scriptvars.c	OpWaitMessage	*	*	*	@identity-TODO: wait kinds: frames f
 src/Script/scriptvars.c	*CallFrame*	*	*	*	call frames: one element, unlinked (0), an empty stack, discard 0/1
 src/Script/scriptvars.c	OpShowBackground	*	*	*	@identity-TODO: background image 0x31 with arg 4 by default; images 0x4c and 7 unplace sprites 0x1f and 0
 src/Script/scriptvars.c	OpShow*Picture	*	*	*	@identity-TODO: event pictures 0x5000 + n: the ranges that wait, the 10-frame pause, and 0x505c/0x506e's special cases
-src/Script/scriptvars.c	OpSaveRestoreScreen	*	*	*	@identity-TODO: the save/restore flag bits 1 and 2 and the 80-byte rows
+src/Script/scriptvars.c	OpSaveRestoreScreen	*	*	*	the saved screen's 80-byte rows, empty draw-state token and handle initialization; the operation flags are named
 src/Script/scriptvars.c	ClearSystemVars	0	*	*	a cleared variable reads 0
 src/Script/scriptvars.c	SetScriptLongVar	-1	*	*	no variable (ReadLongVarIndex's -1)
 src/Script/scriptvars.c	Call*Name	*	call-argument	GetTextToken(*	the second member is slot 1's ref (SCRIPT_REF_SLOT_BASE - 1)

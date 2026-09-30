@@ -506,6 +506,11 @@ operations select a script register instead of a scratch transfer, so the two
 negative operations are named constants within a mixed operand rather than
 declaring the whole operand to be a closed enum.
 
+`OpSaveRestoreScreen` interprets its next operand as flags. Bit 0 allocates a
+new screen save and bit 1 skips saving and restoring the draw state around
+either operation. When bit 0 is clear, it restores from and frees the handle
+in the script long variable. These are the local `ScriptScreenSaveFlags`.
+
 ## Script tick counter
 
 The script tick counter has three states: -1 pauses it, 0 stops it, and 1

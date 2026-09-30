@@ -1613,10 +1613,17 @@ void OpShowEventPicture(void) {
     }
 }
 
+// The script's screen save/restore operand: allocate a new save for bit 0,
+// and skip the draw-state pair around either operation for bit 1.
+GZ_ENUM_FLAGS_BEGIN(ScriptScreenSaveFlags, i16)
+    SCRIPT_SCREEN_SAVE_ALLOCATE = 1,
+    SCRIPT_SCREEN_SAVE_SKIP_DRAW_STATE = 2
+GZ_ENUM_FLAGS_END(ScriptScreenSaveFlags)
+
 RVA(0x0003c5a0, 0xfd)
 void OpSaveRestoreScreen(void) {
     i16 index = ReadLongVarIndex();
-    i16 flags = ReadScriptValue();
+    GZ_ENUM_LOCAL(ScriptScreenSaveFlags, i16) flags = ReadScriptValue();
     i16 x = ReadScriptValue();
     i16 y = ReadScriptValue();
     i16 width = ReadScriptValue();
@@ -1624,25 +1631,25 @@ void OpSaveRestoreScreen(void) {
     i16 state = 0;
     i32 handle;
     ScreenSaveHeader* save;
-    if (flags & 1) {
+    if (flags & SCRIPT_SCREEN_SAVE_ALLOCATE) {
         handle = AllocScreenSaveHandle(width, height);
         save = HandleWritePtr(handle);
-        if (!(flags & 2)) {
+        if (!(flags & SCRIPT_SCREEN_SAVE_SKIP_DRAW_STATE)) {
             state = SaveDrawState();
         }
         SetTextCursorOffset(&save->offset, x, y);
-        if (!(flags & 2)) {
+        if (!(flags & SCRIPT_SCREEN_SAVE_SKIP_DRAW_STATE)) {
             RestoreDrawState(state);
         }
     } else {
         handle = GetScriptLongVar(index);
         save = HandleWritePtr(handle);
         save->offset = y * 80 + x;
-        if (!(flags & 2)) {
+        if (!(flags & SCRIPT_SCREEN_SAVE_SKIP_DRAW_STATE)) {
             state = SaveDrawState();
         }
         ApplyTextCursor(save);
-        if (!(flags & 2)) {
+        if (!(flags & SCRIPT_SCREEN_SAVE_SKIP_DRAW_STATE)) {
             RestoreDrawState(state);
         }
         handle = FreeHandle(handle);
