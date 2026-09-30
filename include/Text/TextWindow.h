@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Text/MenuLineFlags.h>
+#include <Text/TextEvent.h>
 
 // Per-window text attributes and cursor of the window table.
 
@@ -69,7 +70,7 @@ i16 SetTextPlaneCancelEnabled(i16 plane, i16 on);
 void DrawStatusImage(i16 x, i16 y, i16 index);
 void DrawPlaneImage(i16 plane, i16 x, i16 y, i16 index);
 
-i16 PollMenuInput(i16 plane);
+GZ_ENUM_RETURN(TextEvent, i16) PollMenuInput(i16 plane);
 
 RVA_DECL(0x00053cd0)
 void EraseTextPlaneText(i16 plane);

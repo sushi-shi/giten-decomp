@@ -93,6 +93,7 @@
 #include <Script/ScriptVars.h>
 #include <Sound/Sound.h>
 #include <Text/Font.h>
+#include <Text/TextEvent.h>
 #include <Text/TextPlane.h>
 #include <Text/TextWindow.h>
 #include <Text/WindowText.h>
@@ -1794,7 +1795,7 @@ static __inline void ShowRaisedStat(Character* member, i16 highlighted) {
 RVA(0x00018b60, 0x780)
 b16 RunLevelUp(void) {
     Character* member;
-    i16 key;
+    GZ_ENUM_LOCAL(TextEvent, i16) key;
     i16 skill;
 
     SetStatusRenderMode();
@@ -1891,17 +1892,18 @@ b16 RunLevelUp(void) {
                     return false;
                 case LEVEL_UP_HUMAN_DISTRIBUTE_POINTS:
                     key = PollMenuInput(s_statWindow);
-                    if (key == 0) {
+                    if (key == TEXT_EVENT_NONE) {
                         break;
                     }
-                    if (key == 1 && !IsStatCapped(member, g_selectedObjectId)) {
+                    if (key == TEXT_EVENT_CHOOSE && !IsStatCapped(member, g_selectedObjectId)) {
                         s_statPicks[g_selectedObjectId]++;
                         member->stats.base[g_selectedObjectId]++;
                         s_remaining--;
                         if (s_pointPrompt != -1) {
                             ShowStatPointPrompt(s_remaining);
                         }
-                    } else if (key == 2 && s_statPicks[g_selectedObjectId] > 0) {
+                    } else if (key == TEXT_EVENT_CHOOSE_RIGHT
+                               && s_statPicks[g_selectedObjectId] > 0) {
                         s_statPicks[g_selectedObjectId]--;
                         member->stats.base[g_selectedObjectId]--;
                         s_remaining++;

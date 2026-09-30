@@ -466,6 +466,11 @@ Kept as rows until there is evidence:
   140 (software), so it is not gun-specific.
   In ET0004, code 3 has 34 mostly close-range attacks, code 5 has only two
   spear attacks, and code 17 has only six single-target remedy/revival skills.
+  The records' own descriptions confirm these groupings: code-5 skills 294
+  and 296 describe spear attacks; code-17 skills 108..113 cure poison,
+  paralysis, petrification and curses or revive the fallen. Code-3 skill 198
+  says it hits four enemies, while code-1 skill 169 says it panics all enemies,
+  so neither code 1 nor 3 alone identifies a single-versus-group target.
   Their distinct selection meanings are not established by the collector.
 - Field-effect code 0x1a shares Sabatoma's actor-group handler, but its
   distinct identity remains unknown. None of the 309 skill records in the

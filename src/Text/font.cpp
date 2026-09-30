@@ -4807,7 +4807,7 @@ i16 TextPlaneCellAt(i16 plane, i16 x, i16 y, i16* col, i16* row) {
 // highlight follows the cursor. Returns -1 cancelled, 1 or 2 chosen (left,
 // right), 0 otherwise.
 RVA(0x00053910, 0x1a2)
-i16 PollMenuInput(i16 plane) {
+GZ_ENUM_RETURN(TextEvent, i16) PollMenuInput(i16 plane) {
     TextPlane* p;
     i16 cancelEnabled;
     i16 x;
