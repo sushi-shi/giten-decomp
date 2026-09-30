@@ -565,5 +565,8 @@ Kept as rows until there is evidence:
   decoded bytes do not establish a skill-book role. The kind-5 descriptions
   promise distinct effects for talismans 107/108, incense 110/111/118 and
   the Core Shield 113. Items 115..117 and 121 are dummies or undescribed.
-  The shared no-effect handler does not recover those intended effects or
-  either category name.
+  Fourteen kind-5 records use MS00DE entry 53, a generic use message. The
+  Guardian Set (114) instead uses entry 51, which tests and changes event
+  flag bank 1, index 4 while displaying its uniform message. That script
+  side effect does not identify the whole kind. The shared no-effect handler
+  does not recover the other intended effects or either category name.
