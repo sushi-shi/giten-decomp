@@ -13,6 +13,7 @@
 #include <Game/Attack.h>
 #include <Game/Battle.h>
 #include <Game/BattleEffect.h>
+#include <Game/BattleStat.h>
 #include <Game/Character.h>
 #include <Game/CharInfo.h>
 #include <Game/CombatantId.h>
@@ -1631,7 +1632,7 @@ void UseBattleStatSkill(Character* user, Character* target) {
     double power = sqrt(GetStatTotal(user, STAT_MAGIC)) + GetSkillValueB(&s_effectSkill);
     i32 changed = 0;
     i16 amount = RoundToShort(RandomAverage(80, 120, 0) * power * 0.01);
-    if (GetSkillEffectCode(&s_effectSkill) & 0x80) {
+    if (GetSkillEffectCode(&s_effectSkill) & BATTLE_STAT_EFFECT_LOWER) {
         amount = -amount;
     }
     PrepareBattleStatSkill(user);
@@ -1647,32 +1648,32 @@ void UseBattleStatSkill(Character* user, Character* target) {
     SetFlaggedActionResult(user, 3);
     user->lastChange = amount;
     g_hpChange = amount;
-    switch (GetSkillEffectCode(&s_effectSkill) & 0x7f) {
-        case 0:
-            changed = ChangeCharacterBattleStat(target, 3, amount);
-            changed += ChangeCharacterBattleStat(target, 9, amount);
+    switch (GetSkillEffectCode(&s_effectSkill) & BATTLE_STAT_EFFECT_KIND_MASK) {
+        case BATTLE_STAT_EFFECT_WEAPON_GUN_POWER:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_WEAPON_POWER, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_GUN_POWER, amount);
             break;
-        case 1:
-            changed = ChangeCharacterBattleStat(target, 2, amount);
-            changed += ChangeCharacterBattleStat(target, 8, amount);
+        case BATTLE_STAT_EFFECT_WEAPON_GUN_ACCURACY:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_WEAPON_ACCURACY, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_GUN_ACCURACY, amount);
             break;
-        case 2:
-            changed = ChangeCharacterBattleStat(target, 5, amount);
-            changed += ChangeCharacterBattleStat(target, 11, amount);
+        case BATTLE_STAT_EFFECT_WEAPON_GUN_DEFENSE:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_WEAPON_DEFENSE, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_GUN_DEFENSE, amount);
             break;
-        case 3:
-            changed = ChangeCharacterBattleStat(target, 15, amount);
-            changed += ChangeCharacterBattleStat(target, 14, amount);
+        case BATTLE_STAT_EFFECT_MAGIC_ATTACK:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_POWER, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_ACCURACY, amount);
             break;
-        case 4:
-            changed = ChangeCharacterBattleStat(target, 16, amount);
-            changed += ChangeCharacterBattleStat(target, 17, amount);
+        case BATTLE_STAT_EFFECT_MAGIC_DEFENSE:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_EVASION, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_DEFENSE, amount);
             break;
-        case 5:
-            changed = ChangeCharacterBattleStat(target, 15, amount);
-            changed += ChangeCharacterBattleStat(target, 14, amount);
-            changed += ChangeCharacterBattleStat(target, 16, amount);
-            changed += ChangeCharacterBattleStat(target, 17, amount);
+        case BATTLE_STAT_EFFECT_MAGIC_ALL:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_POWER, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_ACCURACY, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_EVASION, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_DEFENSE, amount);
             break;
     }
     if (!changed) {

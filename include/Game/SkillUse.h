@@ -69,6 +69,20 @@ extern char g_emptySkillMenuLabel[];
 void UseAttackSkill(Character* user, Character* target);
 void UseRestoreSkill(Character* user, Character* target);
 void UseBattleTallySkill(Character* user, Character* target);
+GZ_ENUM_BEGIN_SPLIT(BattleStatEffectKind, u8)
+    BATTLE_STAT_EFFECT_WEAPON_GUN_POWER = 0,
+    BATTLE_STAT_EFFECT_WEAPON_GUN_ACCURACY = 1,
+    BATTLE_STAT_EFFECT_WEAPON_GUN_DEFENSE = 2,
+    BATTLE_STAT_EFFECT_MAGIC_ATTACK = 3,
+    BATTLE_STAT_EFFECT_MAGIC_DEFENSE = 4,
+    BATTLE_STAT_EFFECT_MAGIC_ALL = 5
+GZ_ENUM_END_SPLIT(BattleStatEffectKind)
+
+GZ_ENUM_CONST_BEGIN(BattleStatEffectEncoding)
+    BATTLE_STAT_EFFECT_LOWER = 0x80,
+    BATTLE_STAT_EFFECT_KIND_MASK = 0x7f
+GZ_ENUM_CONST_END(BattleStatEffectEncoding)
+
 void UseBattleStatSkill(Character* user, Character* target);
 i16 ChangeBattleStat(i16* value, i16 amount, i16 base);
 

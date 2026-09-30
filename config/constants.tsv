@@ -998,7 +998,7 @@ src/Game/skilluse.c	CollectTargetsAlongLine	*	*	*	the line's step (-1 or 0) and 
 src/Game/skilluse.c	CollectTargetsInView	*	*	*	the 3D view's 7-cell grid and its six-cell reach
 src/Game/skilluse.c	UseAttackSkill	*	*	*	@identity-TODO: the resistance outcome's amount 0; the hit results 0 and -1
 src/Game/skilluse.c	UseRestoreSkill	0	call-argument	ApplyRestoreEffect(*	@identity-TODO: ApplyRestoreEffect's fourth argument 0
-src/Game/skilluse.c	UseBattleStatSkill	*	*	*	@identity-TODO: the effect code's raise bit 0x80 and its six battle-stat kinds 0..5; percent scaling
+src/Game/skilluse.c	UseBattleStatSkill	*	*	*	@identity-TODO: the effect's percent scaling and action-result codes (3 for a hit, 1 for no stat change)
 src/Game/skilluse.c	ChangeBattleStat	*	*	*	@identity-TODO: a battle stat doubled or halved, clamped to 999 (4 digits)
 src/Game/skilluse.c	ApplySkillEffect	*	*	*	@identity-TODO: skill effect kinds 2..16 and skill 250's type 2
 src/Game/skilluse.c	CancelFieldTargetMenu	-1	*	*	no command picked
