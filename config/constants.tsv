@@ -195,8 +195,6 @@ src/Game/fieldobj.c	RemoveFieldObject	7	call-argument	ModifyEventFlag*	shifts th
 src/Game/fieldobj.c	FindObjectOnLayer	-1	*	*	no slot
 src/Game/fieldobj.c	SpawnFieldObject	-1	*	*	no free slot
 src/Game/fieldobj.c	SpawnFieldObject	0	trivial-function-literal	0 store *	a fresh slot starts with these fields clear
-src/Game/fieldobj.c	SpawnFieldObject	0x20	call-argument	SetBit*	@identity-TODO: actor flag 0x20 marks an object on its alternate script; StepObjectTowardParty keeps such objects still (the flag table names no bit 0x20)
-src/Game/fieldobj.c	StepObjectTowardParty	0x20	call-argument	TestFieldObjectFlag*	@identity-TODO: actor flag 0x20 (set for an alternate-script object) keeps it from stepping
 src/Game/fieldobj.c	SpawnMapObject	-1	*	*	a map cell code of -1 holds nothing; -1 is the no-object result
 src/Game/fieldobj.c	GetLiveObject	0	*	*	the object checks are not bypassed
 src/Game/fieldobj.c	GetLiveObject	-1	*	*	no live object

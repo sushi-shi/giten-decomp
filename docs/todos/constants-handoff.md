@@ -106,6 +106,9 @@ Polarity:
 - A scenario or owned flag means "happened" or "held" when it is **clear**.
 - Check each use before writing a comment.
 
+The actor flag at bit 0x20 is anchored: SpawnFieldObject sets it for
+alternate-script objects, and pursuit and knockback refuse to move one.
+
 ## Deferred identities
 
 Kept as rows until there is evidence:
@@ -122,7 +125,6 @@ Kept as rows until there is evidence:
   Their distinct identities are still unknown; the combat code shares the
   first two's handler and the field-effect code shares kind 14's handler
   with kinds 12 and 13.
-- Actor flag 0x20.
 - Field-effect codes 0, 1, 0x1a and 0x20..0x23. ET0004 identifies
   illusion (3), invisibility (0x11), Estoma (0x14), Traesto (0x15),
   Traport (0x16), Trafuri (0x17), Sabatoma (0x19) and Desaman (0x1b).

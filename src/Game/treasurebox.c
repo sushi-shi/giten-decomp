@@ -3331,7 +3331,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBack(i16 who) {
         }
         actor = GetFieldActor(object);
         at = &((FieldActor*)GetFieldActor(object))->pos.x;
-        if (TestCharacterFlag(actor, 0x20)) {
+        if (TestCharacterFlag(actor, ACTOR_FLAG_ANCHORED)) {
             return FIELD_EFFECT_FAILED;
         }
         code = GetMapCellCode(at[0], at[1]);

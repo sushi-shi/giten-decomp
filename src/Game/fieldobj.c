@@ -561,7 +561,7 @@ i16 SpawnFieldObject(
     CloseDataFile(file);
     SetBit(GetFieldObjectFlags(&s_objects[slot]), ACTOR_FLAG_NOTICED);
     if (alternate != false) {
-        SetBit(GetFieldObjectFlags(&s_objects[slot]), 0x20);
+        SetBit(GetFieldObjectFlags(&s_objects[slot]), ACTOR_FLAG_ANCHORED);
     }
     if (fresh != false) {
         s_objects[slot].macca = 0;
@@ -1490,7 +1490,7 @@ b16 StepObjectTowardParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) t
     b16 turned;
     i16 direction;
     retried = false;
-    if (TestFieldObjectFlag(object, 0x20)) {
+    if (TestFieldObjectFlag(object, ACTOR_FLAG_ANCHORED)) {
         return false;
     }
     code = GetMapCellCode(object->pos.x, object->pos.y);
