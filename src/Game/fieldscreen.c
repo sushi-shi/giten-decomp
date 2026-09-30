@@ -950,8 +950,8 @@ void FreeCommandMenuImage(void) {
 
 RVA(0x00015870, 0x35)
 b16 SetFieldStatusBit11(b16 on) {
-    b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, 0x800);
-    SetPanelRowFlags(&s_commandPanel.panel, 1, 0x800, on);
+    b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, PANEL_SKIP_HIT_TEST);
+    SetPanelRowFlags(&s_commandPanel.panel, 1, PANEL_SKIP_HIT_TEST, on);
     return old;
 }
 

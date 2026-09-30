@@ -489,6 +489,14 @@ to 2. These values form `UiHotspotKind` in the record's retail `u32` slot.
 The older `SceneHotspotKind` also has 2 and 3, but its other values occur only
 in the unused scene-hotspot path and are not identified by the Windows UI.
 
+## Panel hit-test flag
+
+`FindPanelRowAt` rejects a panel or row with flag bit `0x0800` before testing
+its hotspot. The status screen sets this bit on unavailable commands and on
+commands excluded in fixed-member mode; the field command panel sets it on
+its status row. The observed behavior supports `PANEL_SKIP_HIT_TEST` in the
+shared `PanelFlags` domain without assigning a visual style to the bit.
+
 ## Event-flag banks
 
 The saved flag block has sixteen 256-bit banks. Source readers and resets

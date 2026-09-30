@@ -297,29 +297,29 @@ void DrawStatusScreen(i16 slot) {
         g_statusMember = 0;
     }
     if (!g_statusFixedMember && ListEquipCandidates(g_statusMember, 1)) {
-        SetStatusMenuItemFlag(STATUS_STEP_EQUIPMENT, 0x800, false);
+        SetStatusMenuItemFlag(STATUS_STEP_EQUIPMENT, PANEL_SKIP_HIT_TEST, false);
     } else {
-        SetStatusMenuItemFlag(STATUS_STEP_EQUIPMENT, 0x800, true);
+        SetStatusMenuItemFlag(STATUS_STEP_EQUIPMENT, PANEL_SKIP_HIT_TEST, true);
     }
     member = GetRosterCharacter(g_statusMember);
     if (!GetWordCount(GetCharacterSkills(member))) {
-        SetStatusMenuItemFlag(STATUS_STEP_SKILLS, 0x800, true);
+        SetStatusMenuItemFlag(STATUS_STEP_SKILLS, PANEL_SKIP_HIT_TEST, true);
     } else {
-        SetStatusMenuItemFlag(STATUS_STEP_SKILLS, 0x800, false);
+        SetStatusMenuItemFlag(STATUS_STEP_SKILLS, PANEL_SKIP_HIT_TEST, false);
     }
     if (!g_statusFixedMember && CountRosterEntries(true) >= 2) {
-        SetStatusMenuItemFlag(STATUS_STEP_NEXT_MEMBER, 0x800, false);
+        SetStatusMenuItemFlag(STATUS_STEP_NEXT_MEMBER, PANEL_SKIP_HIT_TEST, false);
     } else {
-        SetStatusMenuItemFlag(STATUS_STEP_NEXT_MEMBER, 0x800, true);
+        SetStatusMenuItemFlag(STATUS_STEP_NEXT_MEMBER, PANEL_SKIP_HIT_TEST, true);
     }
     if (g_statusFixedMember) {
-        SetStatusMenuItemFlag(STATUS_STEP_EXIT, 0x800, true);
-        SetStatusMenuItemFlag(STATUS_STEP_ATTACH, 0x800, true);
-        SetStatusMenuItemFlag(STATUS_STEP_ITEMS, 0x800, true);
+        SetStatusMenuItemFlag(STATUS_STEP_EXIT, PANEL_SKIP_HIT_TEST, true);
+        SetStatusMenuItemFlag(STATUS_STEP_ATTACH, PANEL_SKIP_HIT_TEST, true);
+        SetStatusMenuItemFlag(STATUS_STEP_ITEMS, PANEL_SKIP_HIT_TEST, true);
     } else {
-        SetStatusMenuItemFlag(STATUS_STEP_EXIT, 0x800, false);
-        SetStatusMenuItemFlag(STATUS_STEP_ATTACH, 0x800, false);
-        SetStatusMenuItemFlag(STATUS_STEP_ITEMS, 0x800, false);
+        SetStatusMenuItemFlag(STATUS_STEP_EXIT, PANEL_SKIP_HIT_TEST, false);
+        SetStatusMenuItemFlag(STATUS_STEP_ATTACH, PANEL_SKIP_HIT_TEST, false);
+        SetStatusMenuItemFlag(STATUS_STEP_ITEMS, PANEL_SKIP_HIT_TEST, false);
     }
     ClearStatusMenu();
     member = GetRosterCharacter(slot);

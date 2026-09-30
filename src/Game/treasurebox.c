@@ -1672,12 +1672,12 @@ RVA(0x0001cc00, 0x78)
 i16 FindPanelRowAt(Panel* panel, i16 x, i16 y) {
     i16 i;
     u16 flags;
-    if (panel->flags & (PANEL_HIDDEN | PANEL_INPUT_DISABLED | 0x0800)) {
+    if (panel->flags & (PANEL_HIDDEN | PANEL_INPUT_DISABLED | PANEL_SKIP_HIT_TEST)) {
         return -1;
     }
     for (i = 0; i < GetPanelRowCount(panel); i++) {
         flags = GetPanelRow(panel, i)->flags;
-        if (flags & (PANEL_HIDDEN | PANEL_INPUT_DISABLED | 0x0800)) {
+        if (flags & (PANEL_HIDDEN | PANEL_INPUT_DISABLED | PANEL_SKIP_HIT_TEST)) {
             continue;
         }
         if (WasPanelRightClicked(panel) && (flags & PANEL_IGNORE_RIGHT_CLICK)) {

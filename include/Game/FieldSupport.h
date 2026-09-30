@@ -36,12 +36,10 @@ void ClearEncounterPending(void);
 
 i16 GetEncounterPending(void);
 
-// Sets bit 11 / bit 0 of the flags of item 1 of the list 0x468858; returns the
-// old bit.
-// @identity-TODO: that the list is the field command menu (drawn by 0x15940)
-// is inferred; what the two bits mean is unrecovered.
+// Sets field command panel row 1's hit-test skip flag; returns its old state.
 b16 SetFieldStatusBit11(b16 on);
 
+// Sets field command panel row 1's checked flag; returns its old state.
 b16 SetFieldStatusBit0(b16 on);
 
 RVA_DECL(0x00049cb0)

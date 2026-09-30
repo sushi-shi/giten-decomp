@@ -149,8 +149,8 @@ void LeaveStatusScreen(i16 nested);
 
 void DrawStatusVitals(i16 slot);
 
-// @identity-TODO: The roles of menu items 3/4/6/7/8/9 enabled via 0x419c0(item,0x800,on) are
-// unrecovered.
+// Draws the status page and sets which commands can be picked based on
+// equipment, skills, roster size and whether the member is fixed.
 void DrawStatusScreen(i16 slot);
 
 i16 OpenStatListWindow(Character* character);

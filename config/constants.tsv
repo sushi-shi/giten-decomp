@@ -345,7 +345,6 @@ src/Game/treasurebox.c	GetCellTrapDamage	0x6b	call-argument	*	a sound effect num
 src/Game/treasurebox.c	GetCellTrapDamage	*	case-label	*	alignment trap codes 0x69..0x6b have no area-map records in either original disc; the recorded 0x6c..0x6e variants carry matching mask values 5..7
 src/Game/treasurebox.c	GetCellTrapDamage	*	trivial-function-literal	*	no damage below 1%; alignment traps keep the percentage in disableFlag[1]
 src/Game/treasurebox.c	GetCellTrapDamage	100	*	*	damage is a percentage of the maximum HP
-src/Game/treasurebox.c	FindPanelRowAt	0x0800	*	*	@identity-TODO: panel/row flag 0x800 also refuses hits
 src/Game/treasurebox.c	FindPanelRowAt	-1	*	*	no row
 src/Game/treasurebox.c	ClickPanel	-1	trivial-function-literal	*	no row
 src/Game/treasurebox.c	ClickPanel	-1	call-argument	*	a click runs the row with op -1 (BIT_CHANGE_TOGGLE for a check row)
@@ -844,7 +843,7 @@ src/Game/fieldscreen.c	RunFieldPanelRow	1	call-argument	*	@identity-TODO: RunPan
 src/Game/fieldscreen.c	RevealAutomap*	*	*	*	automap reveal: one cell ahead; a hidden cell is 0
 src/Game/fieldscreen.c	CanRevealAutomap*	0	*	*	a hidden automap cell is 0
 src/Game/fieldscreen.c	LoadCommandMenuImage	0x11	*	*	@identity-TODO: menu image 0x11
-src/Game/fieldscreen.c	SetFieldStatusBit*	*	*	*	@identity-TODO: field panel row 1's status bits 0 and 11 (0x800)
+src/Game/fieldscreen.c	SetFieldStatusBit*	*	*	*	field command panel row 1; the checked and hit-test flags are named
 src/Game/fieldscreen.c	LoadMenuImage	0	*	*	no menu image
 src/Game/fieldscreen.c	*PanelRow	*	call-argument	*Hotspot(*	panel rows are hotspots of the first plane, unhighlighted (0), hit tests with the flag 1
 src/Game/fieldscreen.c	Update*Palette	*	call-argument	*	@identity-TODO: the palette modes 0 and 1 the view and area switch between; the cell one step ahead (0, -1)
@@ -1052,7 +1051,6 @@ src/Game/character.c	*FieldState	*	*	*	the field state record: six party slots, 
 src/Game/character.c	WriteCharacters	16	*	*	the sixteen character slots (CHARACTER_SLOT_COUNT)
 src/Game/character.c	LoadCharacter	*	*	*	@identity-TODO: the two words cleared when a character loads
 src/Game/character.c	UnequipPart	1	*	*	item quantities start at 1; SetEquipSlot's fourth argument 1 (@identity-TODO)
-src/Game/statuspanel.c	*	0x800	call-argument	SetStatusMenuItemFlag(*argument 2	@identity-TODO: panel row flag 0x800, which no claimed code tests
 src/Game/statuspanel.c	DrawStatusScreen	*	*	*	status screen layout: the text-cell positions of the name, capacity, conditions, equipment lines and portrait; the first member; two or more roster entries for the next-member command; the equipment list's first pass (1)
 src/Game/statuspanel.c	Run*Screen	*	*	*	@identity-TODO: the equip picker's results (-1 none, -2 cancelled), quantities from 1 and the preview's before/after (0/1); one item moved between bag and slot (StoreBagItem's -1)
 src/Game/statuspanel.c	DrawEquipPanel	*	*	*	equip panel layout: rows every 0x18 pixels from 0x28, four stat columns at 5-cell spacing, panel images 7, 0x10 and 0x19
@@ -1225,7 +1223,7 @@ src/Game/statestack.c	ItemListMenuHandler	*	*	*	item-use availability tests and 
 src/Game/statestack.c	LoadSpriteImage	*	*	*	@identity-TODO: sprite images: -1 none, human portraits 0x4000 + id (0x401d remapped to 0x40fd), demons 0x2000..0x2fff with variant bits (& 15 == 4, & 13 | 2)
 src/Game/statestack.c	OpenItemListMenu	*	*	*	the whole bag copied (0, 64 entries); menu flags 0x1e
 src/Game/statestack.c	OpenPartyPicker	*	*	*	@identity-TODO: menu flags 0x1e and 2
-src/Game/statestack.c	PickStatusMember	*	*	*	@identity-TODO: the status menu items hidden (1, 0), status column 0, panel row flag 0x800
+src/Game/statestack.c	PickStatusMember	*	*	*	@identity-TODO: the status menu items hidden (1, 0) and status column 0; the hit-test flag is named
 src/Game/statestack.c	PollRewardClick	*	*	*	the reward window's hit box (0xea..0x192, 0xc0..0xf6)
 src/Game/statestack.c	RunItemUse	*	*	*	@identity-TODO: item use: screen layer 1 hidden, no user (-1), target flags (0x10, 0x11, 0x30) and their pick windows (5, 4, 6, 3)
 src/Game/statestack.c	RunLevelUp	*	*	*	@identity-TODO: level-up screen parameters: fades (1), the status screen entered and left (0), picture surface 0x36, reward experience cleared

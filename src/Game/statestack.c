@@ -566,7 +566,7 @@ i16 PickStatusMember(void) {
             SetGameStep(PICK_MEMBER_STEP_POLL);
             TakeMouseCancelSound();
             SetStatusMenuItemsHidden(1);
-            SetStatusMenuItemFlag(STATUS_STEP_ITEMS, 0x800, !CountBagEntries());
+            SetStatusMenuItemFlag(STATUS_STEP_ITEMS, PANEL_SKIP_HIT_TEST, !CountBagEntries());
             RedrawPartyStatus();
             RepaintTextPlane(g_infoPlane, 1);
             ClearStatusMenu();
