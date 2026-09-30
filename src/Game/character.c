@@ -2739,7 +2739,7 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
     if (result != EQUIP_PART_NONE) {
         Character* character = GetRosterCharacter(slot);
         if (item.item != ITEM_ID_EMPTY) {
-            i16 kind = GetItemKind(item.item);
+            GZ_ENUM_LOCAL(ItemKind, i16) kind = GetItemKind(item.item);
             if (kind != ITEM_KIND_AMMO) {
                 TakeBagItemsAt(index, item.item, item.quantity);
                 if (kind == ITEM_KIND_FULL_BODY_ARMOR) {

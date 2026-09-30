@@ -573,4 +573,7 @@ Kept as rows until there is evidence:
   Guardian Set (114) instead uses entry 51, which tests and changes event
   flag bank 1, index 4 while displaying its uniform message. That script
   side effect does not identify the whole kind. The shared no-effect handler
-  does not recover the other intended effects or either category name.
+  does not recover the other intended effects or either category name. The
+  only two `OpListBagByCategory` calls in each version's scripts (MS000B/4
+  and MS00D8/10) both request category 21, all priced non-scenario items;
+  neither script selects kind 5 or 6 by its category number.

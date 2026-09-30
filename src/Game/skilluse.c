@@ -396,7 +396,7 @@ static __inline void ApplyReflectedDamage(Character* actor) {
     } while (0)
 
 static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
-    i16 kind;
+    GZ_ENUM_LOCAL(SkillKind, i16) kind;
     if (IsSkillAction(attacker)) {
         kind = GetSkillKind(attacker->pickTarget);
         switch (kind) {

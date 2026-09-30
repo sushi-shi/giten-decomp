@@ -863,7 +863,7 @@ i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
     Character* character = GetRosterCharacter(member);
     i16 count;
     i16 item;
-    i16 kind;
+    GZ_ENUM_LOCAL(ItemKind, i16) kind;
     i16 i;
 
     if (character == NULL) {
@@ -1281,7 +1281,7 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
     ItemSlot slot;
     i16 count;
     GZ_ENUM_STORAGE(EquipPart, i16) result;
-    i16 kind;
+    GZ_ENUM_LOCAL(ItemKind, i16) kind;
     i16 gun;
 
     if (!member) {
