@@ -308,8 +308,9 @@ Skill family names:
   has five elemental attacks (fire, lightning, ice, holy and dark) and three
   demon expulsion, charm or destruction powers. These composite names record
   their mixed members without treating any one subset as the whole family.
-  `SkillParameters.family` retains its retail byte storage; mixed families
-  still need individual identities.
+  `SkillParameters.family` retains its retail byte storage. All family values
+  in the retail skill tables now have members; the composite names describe
+  their records, while authored school labels remain unproven.
 
 Battle tally names:
 
