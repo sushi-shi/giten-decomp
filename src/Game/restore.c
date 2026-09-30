@@ -165,14 +165,14 @@ RVA(0x0001fe90, 0x6f0)
 i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* target, i16 mp) {
     i16 reportCondition;
     i16 revival;
-    i16 sleep;
+    GZ_ENUM_LOCAL(ConditionChangeResult, i16) sleep;
     CurMax* hpPool;
     CurMax* mpPool;
     u16 oldHp;
     u16 oldMp;
     ConditionSet* conditions;
     i16 wasZombie;
-    sleep = 0;
+    sleep = CONDITION_CHANGE_NONE;
     reportCondition = true;
     revival = false;
     hpPool = &target->pools.hp;
@@ -184,7 +184,7 @@ i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character
     wasZombie = HasCondition(conditions, CONDITION_ZOMBIE);
     switch (kind) {
         case RESTORE_EFFECT_POOLS:
-            sleep = 0;
+            sleep = CONDITION_CHANGE_NONE;
             FillRestorePools(hpPool, mpPool, hp, mp);
             reportCondition = false;
             break;
@@ -353,9 +353,9 @@ i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character
     }
     if (reportCondition) {
         if (!g_effectCondition) {
-            if (sleep == 2) {
+            if (sleep == CONDITION_CHANGE_SEVERE) {
                 g_effectCondition = CONDITION_SLEEP;
-            } else if (sleep == 1) {
+            } else if (sleep == CONDITION_CHANGE_MILD) {
                 g_effectCondition = CONDITION_DOZE;
             }
         }

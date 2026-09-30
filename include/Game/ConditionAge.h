@@ -22,7 +22,12 @@ b16 AgeCondition(i16 amount, ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId
 i16 RecoverConditions(Character* character);
 b16 RecoverCondition(Character* character, GZ_ENUM_PARAM(ConditionId, i16) condition);
 i16 ApplyEmptyPools(Character* character);
-i16 EaseCondition(
+GZ_ENUM_RETURN(ConditionChangeResult, i16) EscalateCondition(
+    ConditionSet* conditions,
+    GZ_ENUM_PARAM(ConditionId, i16) mild,
+    GZ_ENUM_PARAM(ConditionId, i16) severe
+);
+GZ_ENUM_RETURN(ConditionChangeResult, i16) EaseCondition(
     ConditionSet* conditions,
     GZ_ENUM_PARAM(ConditionId, i16) mild,
     GZ_ENUM_PARAM(ConditionId, i16) severe

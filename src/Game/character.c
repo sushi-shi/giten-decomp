@@ -1718,26 +1718,26 @@ i16 ApplyEmptyPools(Character* character) {
 // Escalates `mild` to `severe`: 0 when `severe` is held, 1 when `mild` was
 // added, 2 when `mild` became `severe`.
 RVA(0x0003f1c0, 0x60)
-i16 EscalateCondition(
+GZ_ENUM_RETURN(ConditionChangeResult, i16) EscalateCondition(
     ConditionSet* conditions,
     GZ_ENUM_PARAM(ConditionId, i16) mild,
     GZ_ENUM_PARAM(ConditionId, i16) severe
 ) {
     if (HasCondition(conditions, severe)) {
-        return 0;
+        return CONDITION_CHANGE_NONE;
     }
     if (!HasCondition(conditions, mild)) {
         AddCondition(conditions, mild);
-        return 1;
+        return CONDITION_CHANGE_MILD;
     }
     ClearCondition(conditions, mild);
     AddCondition(conditions, severe);
-    return 2;
+    return CONDITION_CHANGE_SEVERE;
 }
 
 // Eases `severe` to `mild` (2), or clears `mild` (1); 0 when neither is held.
 RVA(0x0003f220, 0x6c)
-i16 EaseCondition(
+GZ_ENUM_RETURN(ConditionChangeResult, i16) EaseCondition(
     ConditionSet* conditions,
     GZ_ENUM_PARAM(ConditionId, i16) mild,
     GZ_ENUM_PARAM(ConditionId, i16) severe
@@ -1746,18 +1746,18 @@ i16 EaseCondition(
         ClearCondition(conditions, severe);
         ClearCondition(conditions, mild);
         AddCondition(conditions, mild);
-        return 2;
+        return CONDITION_CHANGE_SEVERE;
     }
     if (HasCondition(conditions, mild)) {
         ClearCondition(conditions, mild);
-        return 1;
+        return CONDITION_CHANGE_MILD;
     }
-    return 0;
+    return CONDITION_CHANGE_NONE;
 }
 
 // Eases sleep (13) to doze (25).
 RVA(0x0003f290, 0x12)
-i16 EaseSleep(ConditionSet* conditions) {
+GZ_ENUM_RETURN(ConditionChangeResult, i16) EaseSleep(ConditionSet* conditions) {
     return EaseCondition(conditions, CONDITION_DOZE, CONDITION_SLEEP);
 }
 

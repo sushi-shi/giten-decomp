@@ -62,7 +62,15 @@ void ClearAllConditions(ConditionSet* conditions);
 // LastConditionIn over the list {0, 1, 2}.
 GZ_ENUM_RETURN(ConditionId, i16) GetFatalCondition(ConditionSet* conditions);
 
-i16 EaseSleep(ConditionSet* conditions);
+// Escalating or easing a condition changes nothing, changes the mild state,
+// or changes the severe state. The direction depends on the operation.
+GZ_ENUM_BEGIN_SPLIT(ConditionChangeResult, i16)
+    CONDITION_CHANGE_NONE = 0,
+    CONDITION_CHANGE_MILD = 1,
+    CONDITION_CHANGE_SEVERE = 2
+GZ_ENUM_END_SPLIT(ConditionChangeResult)
+
+GZ_ENUM_RETURN(ConditionChangeResult, i16) EaseSleep(ConditionSet* conditions);
 const char* GetFirstConditionName(ConditionSet* conditions);
 
 GZ_ENUM_RETURN(ConditionId, i16) GetPickBlockingCondition(ConditionSet* conditions);
