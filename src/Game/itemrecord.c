@@ -2048,7 +2048,7 @@ b16 ItemResistsCondition(i16 item, GZ_ENUM_PARAM(ConditionId, i16) condition) {
 
 RVA(0x00025ba0, 0x40)
 i16 StampSpecialItem(i16 item) {
-    item -= 0xad;
+    item -= ITEM_LOVER_RIGHT_LEG;
     if (item >= 0 && item < 8) {
         g_scriptVars[0xd0 + item] = GetClockMinutes() + 42560;
         return item;
@@ -2058,7 +2058,7 @@ i16 StampSpecialItem(i16 item) {
 
 RVA(0x00025be0, 0x50)
 i16 ExpireSpecialItem(i16 item) {
-    item -= 0xad;
+    item -= ITEM_LOVER_RIGHT_LEG;
     if (item >= 0 && item < 8) {
         if (s_timedItemFlags[item].bank < 0) {
             return item;
@@ -2075,7 +2075,7 @@ i16 ExpireSpecialItem(i16 item) {
 
 RVA(0x00025c30, 0x30)
 i16 IsSpecialItemExpired(i16 item) {
-    item -= 0xad;
+    item -= ITEM_LOVER_RIGHT_LEG;
     if (item >= 0 && item < 8) {
         return GetClockMinutes() >= g_scriptVars[0xd0 + item];
     }
@@ -2088,8 +2088,9 @@ i16 ExpireSpecialItems(void) {
     i16 i;
 
     for (i = 0; i < 8; i++) {
-        if (CountHeldItem(0xad + i) > 0 && IsSpecialItemExpired(0xad + i) >= 1) {
-            ExpireSpecialItem(0xad + i);
+        if (CountHeldItem(ITEM_LOVER_RIGHT_LEG + i) > 0
+            && IsSpecialItemExpired(ITEM_LOVER_RIGHT_LEG + i) >= 1) {
+            ExpireSpecialItem(ITEM_LOVER_RIGHT_LEG + i);
             expired++;
         }
     }

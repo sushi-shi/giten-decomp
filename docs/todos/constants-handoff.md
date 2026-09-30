@@ -94,6 +94,9 @@ Item record names:
   and Soma Cup used until the full moon, and Core Shield active until the
   next moon phase. The menu disables the first two while marked; field traps
   are ignored while the last is marked.
+- Item IDs 0xad..0xb4 are the lover's right and left legs, right and left
+  arms, chest, abdomen, head and heart. They are the eight timed scenario
+  items whose expiry is tracked by `StampSpecialItem`.
 
 ### Event-flag names (ET0018)
 

@@ -3,10 +3,9 @@
 
 #include <Ints.h>
 
-// The eight timed items 0xad..0xb4: obtaining one stamps an expiry time (a
+// The eight lover's body-part items: obtaining one stamps an expiry time (a
 // moon cycle of 42560 clock minutes later) into script variables 0xd0..0xd7;
 // once a held one expires, the clock clears its event flag.
-// @identity-TODO: what the items are is unrecovered.
 
 // The event flag (bank, index) a timed item clears when it expires; a bank of
 // -1 clears none.

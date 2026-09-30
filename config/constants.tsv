@@ -1019,7 +1019,7 @@ src/Game/itemrecord.c	*Regen	*	*	*	regeneration: none yet; item ids from 1; the 
 src/Game/itemrecord.c	ResolveInflictedCondition	*	*	*	@identity-TODO: the inflict codes' chances (50, 75 percent), demon class 8 and the roll's two outcomes
 src/Game/itemrecord.c	*Condition*	1	trivial-function-literal	1 bound condition	condition codes start at 1 (0 is none)
 src/Game/itemrecord.c	IsConditionResisted	1	*	*	resisted
-src/Game/itemrecord.c	*SpecialItem*	*	*	*	@identity-TODO: the eight timed special items from item 0xad, their event flags from 0xd0, a 42560-minute (four-week) lifetime; -1 when not one
+src/Game/itemrecord.c	*SpecialItem*	*	*	*	the eight lover's body-part items, their event flags from 0xd0, a 42560-minute (four-week) lifetime; -1 when not one
 src/Game/itemrecord.c	RunBagDiscardMenu	*	*	*	@identity-TODO: priceless items (0); menu flags 0x1e; the cancel flag cleared; SetBagEntry's (-1, -1) clears
 src/Game/itemrecord.c	RunGemItemGift	*	call-argument	*	familiarity stays within 0..63; one gem given
 src/Game/itemrecord.c	GiftMenuHandler	0	*	*	the menu's origin (0, 0); no gems held
