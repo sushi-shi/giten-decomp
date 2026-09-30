@@ -2763,21 +2763,21 @@ b16 RunItemUse(void) {
                 SelectItemUserAsTarget();
                 return false;
             }
-            if (flags == 0x10) {
+            if (flags == TARGET_SELECT_FIELD_OR_ROSTER) {
                 picked = RunPickTargetWindow(
                     0,
                     range,
                     TARGET_PICK_FIELD_OBJECT | TARGET_PICK_ROSTER_LIST,
                     GetPartyRosterId(s_usePosition)
                 );
-            } else if (flags == 0x11) {
+            } else if (flags == TARGET_SELECT_ROSTER_ONLY) {
                 picked = RunPickTargetWindow(
                     0,
                     range,
                     TARGET_PICK_ROSTER_LIST,
                     GetPartyRosterId(s_usePosition)
                 );
-            } else if (flags == 0x30) {
+            } else if (flags == TARGET_SELECT_PARTY_OR_ROSTER) {
                 picked = RunPickTargetWindow(
                     0,
                     range,

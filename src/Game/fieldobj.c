@@ -1700,7 +1700,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
     }
     switch (object->mode) {
         case ACTOR_MODE_ATTACK:
-            if (action == 1 || action == 2) {
+            if (action == ACTOR_ACTION_HANDLED || action == ACTOR_ACTION_ATTACK_QUEUED) {
                 goto attack;
             }
             g_actorId = index;

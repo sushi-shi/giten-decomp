@@ -7,37 +7,15 @@ numeric. The floor in that file only goes down.
 
 ## State
 
-- Branch `match/constants` (PR #28). Last commit: `3106043e`.
-- The last pushed floor is 1032. The commits after it are local.
-- The open count is about 807, or about 523 once the uncommitted work below is
-  committed.
-- `src/Game/fieldobj.c` is done. `src/Game/treasurebox.c` is nearly done.
-- After that, only `src/Game/partyaction.c` (about 518) remains.
+The constants work list is complete: `giten verify constants --gate` reports
+zero open literals and no stale review rows. The floor is zero. Values with
+unproven identities remain numeric in narrowly matched `config/constants.tsv`
+rows; the evidence needed to name them is listed below.
 
-### Uncommitted when stopped
-
-Built, 0 REGRESS:
-
-- `AutomapPhase` in `include/Game/Automap.h`, used by `RunAutomapState`.
-- `ApplyRowCheck` takes a `BitChangeMode` op. `include/Ui/Panel.h` includes
-  `Util/BitChangeMode.h`.
-- About 99 treasurebox rows, inserted after the last fieldobj row. The stale
-  `ApplyTraining 18` row is removed.
-
-Not built yet:
-
-- `ReleasePanel(Panel*, b16 freePanel)` in `Panel.h` and `clock.c`, with the
-  callers in treasurebox, fusion, scripttext and menubox changed to `true`.
-- That change makes two rows stale; delete them:
-  - `src/Ui/menubox.c DestroyMenuBox 1 … ReleasePanel`
-  - `src/Script/scripttext.c DestroyScriptPanel 1 … ReleasePanel`
-
-Still missing:
-
-- A row for treasurebox `RunAutomapState` `RunFieldPanelRow(7, 0, 0, 0)`:
-  field panel row 7, with no op or flag changes.
-
-Then run the batch workflow below.
+`giten verify enum-domains` passes with 172 declared domains. The retail
+compile reports zero REGRESS and zero RESET. The strict-enum view still warns
+that `src/Game/fieldobj.c` does not parse; that is separate from the retail
+compile and constants gate.
 
 ## Batch workflow
 
@@ -123,33 +101,7 @@ Polarity:
 - A scenario or owned flag means "happened" or "held" when it is **clear**.
 - Check each use before writing a comment.
 
-## Left
-
-### partyaction.c
-
-Handle it as fieldobj and treasurebox were.
-
-Name the phase enums, boolean parameters (`b16`), list terminators, and counts
-taken from arrays.
-
-Reuse these names where they fit:
-
-- `MoveCommand`
-- `ViewDirection`
-- `Attitude`
-- `ActorFlag`
-- `OwnedFlag`
-- `FIELD_OBJECT_*`
-- `SUBSTATE_*`
-- `HANDLE_NONE`
-- `CHARACTER_ID_NONE`
-- `PARTY_ROW_SIZE`
-
-Also handle `SetMenuItems(menu, 9, actor, 8, …)`, the actor command menu.
-
-Row the rest per function, with `@identity-TODO` where the meaning is unproven.
-
-### Deferred
+## Deferred identities
 
 Kept as rows until there is evidence:
 

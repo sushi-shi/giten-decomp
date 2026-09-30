@@ -43,9 +43,17 @@ GZ_ENUM_FLAGS_END(CombatantSide)
 #define RANDOM_COMBATANT_NONE (-100)
 
 i16 PickRandomCombatant(GZ_ENUM_PARAM(CombatantSide, u8) sides);
-i16 PickRandomOpponentAttack(i16 id);
-i16 PickRandomAllyAttack(i16 id);
-i16 PickRandomAttack(i16 id);
+// A condition action either does nothing, handles the actor immediately, or
+// queues an attack against a picked target.
+GZ_ENUM_BEGIN_SPLIT(ActorActionAdjustResult, i16)
+    ACTOR_ACTION_NONE = 0,
+    ACTOR_ACTION_HANDLED = 1,
+    ACTOR_ACTION_ATTACK_QUEUED = 2
+GZ_ENUM_END_SPLIT(ActorActionAdjustResult)
+
+GZ_ENUM_RETURN(ActorActionAdjustResult, i16) PickRandomOpponentAttack(i16 id);
+GZ_ENUM_RETURN(ActorActionAdjustResult, i16) PickRandomAllyAttack(i16 id);
+GZ_ENUM_RETURN(ActorActionAdjustResult, i16) PickRandomAttack(i16 id);
 
 b16 PickActorDialogue(i16 id);
 b16 DelayActionSide(i16 id);
@@ -78,7 +86,7 @@ GZ_ENUM_END(ConditionAction)
 #define CONDITION_ACTION_MASK 0xf
 #define CONDITION_ACTION_FLAGS_MASK 0xf0
 
-i16 AdjustActorAction(i16 id, i16 action);
+GZ_ENUM_RETURN(ActorActionAdjustResult, i16) AdjustActorAction(i16 id, i16 action);
 
 // @identity-TODO: text shown for unavailable commands; storage extent is unproven.
 extern char g_unavailableCommandText[8];
@@ -145,6 +153,14 @@ i16 GetPickedAttackAttribute(Character* actor, i16* condition);
 void ApplyResistanceOutcome(Character* actor, i16 resistance, i32 amount);
 
 // -1 for two party combatants, 1 for two field objects, otherwise zero.
-i16 GetCombatantSideRelation(void);
+// Which sides the current actor and target occupy: two party members, a
+// mixed pair, or two field actors.
+GZ_ENUM_BEGIN_SPLIT(CombatantSideRelation, i16)
+    COMBATANT_RELATION_PARTY_PAIR = -1,
+    COMBATANT_RELATION_MIXED = 0,
+    COMBATANT_RELATION_FIELD_PAIR = 1
+GZ_ENUM_END_SPLIT(CombatantSideRelation)
+
+GZ_ENUM_RETURN(CombatantSideRelation, i16) GetCombatantSideRelation(void);
 
 #endif // GITEN_GAME_PARTYACTION_H

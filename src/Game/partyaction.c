@@ -262,11 +262,11 @@ GZ_ENUM_RETURN(PartyMemberPickResult, i16) PickPartyMember(i16 index) {
 RVA(0x00005b10, 0x31)
 i16 FindPickablePartyMember(i16 index) {
     for (; index < PARTY_SIZE; index++) {
-        if (PickPartyMember(index) > 0) {
+        if (PickPartyMember(index) > PARTY_MEMBER_UNAVAILABLE) {
             return index;
         }
     }
-    return -1;
+    return PARTY_POSITION_NONE;
 }
 
 RVA(0x00005b50, 0x26)
@@ -370,7 +370,7 @@ static __inline void SetBasicAttackPick(Character* actor, i16 target) {
 }
 
 RVA(0x00005dc0, 0x83)
-i16 PickRandomOpponentAttack(i16 id) {
+GZ_ENUM_RETURN(ActorActionAdjustResult, i16) PickRandomOpponentAttack(i16 id) {
     Character* actor = GetCombatant(id);
     i16 target;
     if (id < 0) {
@@ -379,10 +379,10 @@ i16 PickRandomOpponentAttack(i16 id) {
         target = PickRandomCombatant(COMBATANT_SIDE_PARTY);
     }
     if (target == RANDOM_COMBATANT_NONE) {
-        return 0;
+        return ACTOR_ACTION_NONE;
     }
     SetBasicAttackPick(actor, target);
-    return 2;
+    return ACTOR_ACTION_ATTACK_QUEUED;
 }
 
 RVA(0x00005e50, 0xda)
@@ -420,7 +420,7 @@ i16 PickRandomCombatant(GZ_ENUM_PARAM(CombatantSide, u8) sides) {
 }
 
 RVA(0x00005f30, 0x83)
-i16 PickRandomAllyAttack(i16 id) {
+GZ_ENUM_RETURN(ActorActionAdjustResult, i16) PickRandomAllyAttack(i16 id) {
     Character* actor = GetCombatant(id);
     i16 target;
     if (id < 0) {
@@ -429,10 +429,10 @@ i16 PickRandomAllyAttack(i16 id) {
         target = PickRandomCombatant(COMBATANT_SIDE_FIELD);
     }
     if (target == RANDOM_COMBATANT_NONE) {
-        return 0;
+        return ACTOR_ACTION_NONE;
     }
     SetBasicAttackPick(actor, target);
-    return 2;
+    return ACTOR_ACTION_ATTACK_QUEUED;
 }
 
 RVA(0x00005fc0, 0x22)
@@ -492,14 +492,14 @@ b16 ResetActionWaits(void) {
 }
 
 RVA(0x000060c0, 0x77)
-i16 PickRandomAttack(i16 id) {
+GZ_ENUM_RETURN(ActorActionAdjustResult, i16) PickRandomAttack(i16 id) {
     Character* actor = GetCombatant(id);
     i16 target = PickRandomCombatant(COMBATANT_SIDE_BOTH);
     if (target == RANDOM_COMBATANT_NONE) {
-        return 0;
+        return ACTOR_ACTION_NONE;
     }
     SetBasicAttackPick(actor, target);
-    return 2;
+    return ACTOR_ACTION_ATTACK_QUEUED;
 }
 
 RVA(0x00006140, 0x34)
@@ -517,7 +517,7 @@ b16 SwapPartyRows(void) {
 }
 
 RVA(0x00006180, 0x1bc)
-i16 AdjustActorAction(i16 id, i16 action) {
+GZ_ENUM_RETURN(ActorActionAdjustResult, i16) AdjustActorAction(i16 id, i16 action) {
     b16 hold;
     i16 window;
     i16 result;
@@ -541,12 +541,12 @@ i16 AdjustActorAction(i16 id, i16 action) {
     SetHold(hold);
     SetMessageLifetime(60);
     SetMessageHold(false);
-    result = 0;
+    result = ACTOR_ACTION_NONE;
     actor = GetCombatant(id);
     switch (action & CONDITION_ACTION_MASK) {
         case CONDITION_ACTION_IDLE:
             actor->mode = ACTOR_MODE_IDLE;
-            result = 1;
+            result = ACTOR_ACTION_HANDLED;
             break;
         case CONDITION_ACTION_ATTACK_OPPONENT:
         case CONDITION_ACTION_ATTACK_OPPONENT_ALIAS_1:
@@ -560,11 +560,11 @@ i16 AdjustActorAction(i16 id, i16 action) {
             break;
         case CONDITION_ACTION_FLEE:
             actor->mode = ACTOR_MODE_FLEE;
-            result = 1;
+            result = ACTOR_ACTION_HANDLED;
             break;
         case CONDITION_ACTION_NONE:
         case CONDITION_ACTION_NONE_ALIAS:
-            result = 0;
+            result = ACTOR_ACTION_NONE;
             break;
         case CONDITION_ACTION_TALK:
             result = PickActorDialogue(id);
@@ -584,7 +584,7 @@ i16 AdjustActorAction(i16 id, i16 action) {
         case CONDITION_ACTION_SWAP_ROWS:
             SwapPartyRows();
             actor->mode = ACTOR_MODE_IDLE;
-            result = 1;
+            result = ACTOR_ACTION_HANDLED;
             break;
     }
     return result;
@@ -676,10 +676,10 @@ i16 RunActorCommandMenu(i16 id) {
             s_commandMenu = OpenActorCommandMenu(id);
         }
         result = PollActorCommandMenu(s_commandMenu);
-        if (result == -1) {
+        if (result == LIST_MENU_OPEN) {
             return result;
         }
-        if (result == -2) {
+        if (result == LIST_MENU_CANCELLED) {
             CloseActorCommandMenu();
             return result;
         }
@@ -688,7 +688,7 @@ i16 RunActorCommandMenu(i16 id) {
         return g_selectedObjectId;
     }
     CloseActorCommandMenu();
-    return -2;
+    return LIST_MENU_CANCELLED;
 }
 
 RVA(0x00006500, 0xaa)
@@ -1260,7 +1260,7 @@ b16 RunFieldEncounter(void) {
                                 FIELD_LAYER_FIRST,
                                 g_party.field.pos.x,
                                 g_party.field.pos.y,
-                                (g_party.field.pos.direction - 2) & 3,
+                                OppositeDirection(g_party.field.pos.direction),
                                 s_fieldMap,
                                 true,
                                 FIELD_OBJECT_NO_EVENT,
@@ -1292,7 +1292,7 @@ b16 RunFieldEncounter(void) {
                                 FIELD_LAYER_FIRST,
                                 x,
                                 y,
-                                (g_party.field.pos.direction - 2) & 3,
+                                OppositeDirection(g_party.field.pos.direction),
                                 s_fieldMap,
                                 true,
                                 FIELD_OBJECT_NO_EVENT,
@@ -1334,7 +1334,7 @@ b16 RunFieldEncounter(void) {
             if (!AdvanceObjectAnims()) {
                 AllowImmediateInput();
             }
-            allFallen = 1;
+            allFallen = true;
             for (i = 0; i < s_fieldParamThird + s_fieldParamFirst; i++) {
                 allFallen &= GetFatalCondition(GetCharacterConditions(GetFieldActor(i)));
             }
@@ -1346,7 +1346,7 @@ b16 RunFieldEncounter(void) {
                 LeaveFieldMap(FIELD_MAP_WON);
                 break;
             }
-            if (FindFirstAblePartyMember() == -1) {
+            if (FindFirstAblePartyMember() == PARTY_POSITION_NONE) {
                 LeaveFieldMap(FIELD_MAP_LOST);
                 break;
             }
@@ -1362,7 +1362,7 @@ b16 RunFieldEncounter(void) {
                 SetGamePhase(FIELD_ENCOUNTER_PHASE_ANALYZE);
                 break;
             }
-            SetFieldBusy(0);
+            SetFieldBusy(false);
             if (RunPartyTurn(g_tickElapsed)) {
                 break;
             }
@@ -1521,7 +1521,7 @@ b16 RunFieldState(void) {
                 s_fieldLeftEarly = true;
                 return FlushFieldScreen();
             }
-            if (FindFirstAblePartyMember() == -1) {
+            if (FindFirstAblePartyMember() == PARTY_POSITION_NONE) {
                 LeaveFieldMap(FIELD_MAP_LOST);
                 return FlushFieldScreen();
             }
@@ -1535,7 +1535,7 @@ b16 RunFieldState(void) {
                     return FlushFieldScreen();
                 }
             }
-            SetFieldBusy(0);
+            SetFieldBusy(false);
             if (!RunPartyTurn(g_tickElapsed)) {
                 RunFieldIdle();
             }
@@ -1722,7 +1722,7 @@ i16 FindFirstAblePartyMember(void) {
             return index;
         }
     }
-    return -1;
+    return PARTY_POSITION_NONE;
 }
 
 RVA(0x000081b0, 0x4b)
@@ -1736,7 +1736,7 @@ i16 FindAbleHumanMember(void) {
             return index;
         }
     }
-    return -1;
+    return PARTY_POSITION_NONE;
 }
 
 RVA(0x00008200, 0xbc)
@@ -1756,11 +1756,12 @@ void TickPartyConditionActions(void) {
                     g_actorId = PartyCombatantId(index);
                     action = PickActorAction(actor);
                     if (action >= 1) {
-                        if ((action & 15) == 4) {
-                            action = (action & 0xf0) | 1;
+                        if ((action & CONDITION_ACTION_MASK) == CONDITION_ACTION_NONE) {
+                            action = (action & CONDITION_ACTION_FLAGS_MASK)
+                                     | CONDITION_ACTION_ATTACK_OPPONENT;
                         }
                         action = AdjustActorAction(PartyCombatantId(index), action);
-                        if (action != 0) {
+                        if (action != ACTOR_ACTION_NONE) {
                             ChangeCharacterFlag(actor, 32, 1);
                             MarkActorActionReady(actor);
                         }
@@ -1840,14 +1841,14 @@ i16 RunPartyTurn(i16 ticks) {
 }
 
 RVA(0x00008450, 0x2f)
-i16 GetCombatantSideRelation(void) {
+GZ_ENUM_RETURN(CombatantSideRelation, i16) GetCombatantSideRelation(void) {
     if (g_targetId < 0 && g_actorId < 0) {
-        return -1;
+        return COMBATANT_RELATION_PARTY_PAIR;
     }
     if (g_targetId >= 0 && g_actorId >= 0) {
-        return 1;
+        return COMBATANT_RELATION_FIELD_PAIR;
     }
-    return 0;
+    return COMBATANT_RELATION_MIXED;
 }
 
 static __inline void AddArmorSlotHitModifier(ItemSlot* slot, i16* modifier) {
@@ -2374,7 +2375,7 @@ i16 RunMemberPickMenu(i16 id) {
     i16 result;
     if (character == NULL || GetPickBlockingCondition(GetCharacterConditions(character))) {
         s_pickMenu = CloseListMenu(s_pickMenu);
-        return -2;
+        return LIST_MENU_CANCELLED;
     }
     if (s_pickMenu == NULL) {
         switch (character->pickRole) {
@@ -2427,7 +2428,7 @@ static __inline i16 PickMemberActionTarget(Character* character, i16 flags, i16 
             return RunPickTargetWindow(0, range, 0x82, 0);
         }
     }
-    if (flags == 1) {
+    if (flags == TARGET_ACTOR_SIDE) {
         return RunPickTargetWindow(0, range, 0x12, 0);
     } else {
         return RunPickTargetWindow(0, range, TARGET_PICK_FIELD_OBJECT | TARGET_PICK_PARTY_SLOT, 0);
@@ -2454,14 +2455,14 @@ i16 RunPartyCommandInput(void) {
             if (s_pickedIndex < 0) {
                 break;
             }
-            SetFieldBusy(1);
+            SetFieldBusy(true);
             s_pickMode++;
             g_tickElapsed = 0;
             HideScreenLayer(SCREEN_LAYER_PANEL);
             return g_tickElapsed;
         case PARTY_COMMAND_PREPARE_MEMBER:
             GetCharacterById(s_pickedIndex)->conditionActionTicks = 0;
-            SetFieldBusy(1);
+            SetFieldBusy(true);
             s_pickMode++;
             g_tickElapsed = 0;
             s_pickMode += PrepareMemberPickTarget(s_pickedIndex);
@@ -2471,10 +2472,10 @@ i16 RunPartyCommandInput(void) {
             break;
         case PARTY_COMMAND_PICK_ACTION:
             GetCharacterById(s_pickedIndex)->conditionActionTicks = 0;
-            SetFieldBusy(1);
+            SetFieldBusy(true);
             g_tickElapsed = 0;
             result = RunMemberPickMenu(s_pickedIndex);
-            if (result == -2) {
+            if (result == LIST_MENU_CANCELLED) {
                 ResetPartyCommandPick();
             }
             if (result < 0) {
@@ -2491,7 +2492,7 @@ i16 RunPartyCommandInput(void) {
             }
             if (character->pickRole == PICK_ROLE_ITEM) {
                 kind = GetLoadedRecord(character->pickTarget)->kind;
-                if (kind == 0xb || kind == 0x13) {
+                if (kind == ITEM_KIND_WEAPON || kind == ITEM_KIND_ACCESSORY) {
                     character->pickFlags |= PICK_ITEM_SKILL;
                     character->pickItem = character->pickTarget;
                     character->pickRole = PICK_ROLE_MAGIC;
@@ -2529,7 +2530,8 @@ i16 RunPartyCommandInput(void) {
                     reach = true;
                 }
             }
-            if (flags == 0x10 || flags == 0x11 || flags == 0x30) {
+            if (flags == TARGET_SELECT_FIELD_OR_ROSTER || flags == TARGET_SELECT_ROSTER_ONLY
+                || flags == TARGET_SELECT_PARTY_OR_ROSTER) {
                 reach = true;
             }
             if (reach == false && HasObjectInReach(0, -1, 0)) {
@@ -2539,16 +2541,16 @@ i16 RunPartyCommandInput(void) {
                 return g_tickElapsed;
             }
             range = GetMemberPickRange(s_pickedIndex);
-            if (flags == 0x10) {
+            if (flags == TARGET_SELECT_FIELD_OR_ROSTER) {
                 result = RunPickTargetWindow(
                     0,
                     range,
                     TARGET_PICK_FIELD_OBJECT | TARGET_PICK_ROSTER_LIST,
                     0
                 );
-            } else if (flags == 0x11) {
+            } else if (flags == TARGET_SELECT_ROSTER_ONLY) {
                 result = RunPickTargetWindow(0, range, TARGET_PICK_ROSTER_LIST, 0);
-            } else if (flags == 0x30) {
+            } else if (flags == TARGET_SELECT_PARTY_OR_ROSTER) {
                 result = RunPickTargetWindow(
                     0,
                     range,
@@ -2786,7 +2788,7 @@ GZ_ENUM_RETURN(TargetPickResult, i16) RunPickTargetWindow(i16 minimumRange, i16 
             SetStatusColumn(STATUS_LIST_ALL);
         }
         result = RunStatusListPicker(false);
-        if (result == -1) {
+        if (result == LIST_MENU_OPEN) {
             return TARGET_PICK_WAITING;
         }
         RunStatusListPicker(true);
