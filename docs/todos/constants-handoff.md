@@ -96,6 +96,10 @@ Map area names:
 - M0023 and M0024 both display 御花屋敷 (Ohanayashiki), but their one-level
   wall layouts differ. `OpLoadSprite` checks 0x24 as Ohanayashiki; 0x23 is
   the alternate map.
+- M0007 and M0008 both display 新宿地下道 (Shinjuku Underground Passage).
+  Their warps connect to M0006 (新宿地下街, Shinjuku Underground Mall) level 1
+  at y=4/6 and y=25/26 respectively. Since map north is decreasing y, these
+  are the north and south passage maps.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
