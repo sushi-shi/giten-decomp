@@ -21,18 +21,18 @@ void PrintWindowText(i16 window, const char* text, u16 attr, i16 style, i16 noKi
     u16 activeAttr;
     i16 pos;
 
-    if (window == -1) {
+    if (window == TEXT_PLANE_NONE) {
         return;
     }
     activeAttr = attr;
     if (!activeAttr) {
         activeAttr = GetTextPlaneAttr(window);
     }
-    InitTextStateFlags(&state, style, 0);
-    state.messageHookEnabled = 0;
-    state.delayRamp = 0;
-    state.scrollEnabled = 0;
-    state.timedWait = 0;
+    InitTextStateFlags(&state, style, false);
+    state.messageHookEnabled = false;
+    state.delayRamp = false;
+    state.scrollEnabled = false;
+    state.timedWait = false;
     state.inputWait = 0;
     savedAttr = SetTextPlaneAttr(window, activeAttr);
     for (pos = 0; text[pos];) {

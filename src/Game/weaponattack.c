@@ -26,14 +26,14 @@ b16 RollWeaponCondition(
     i16 roll;
     i16 defense;
     i32 power;
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     if (!condition) {
         return false;
     }
     if (attacker->lastChange < GetConditionDamageThreshold(target)) {
         return false;
     }
-    if (g_actionResult >= 7) {
+    if (g_actionResult >= BATTLE_ACTION_REFLECTED) {
         return false;
     }
     if (mode && IsFieldConditionRestricted(condition)) {
@@ -88,19 +88,19 @@ i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result) {
         power += 1.0;
     }
     amount = sqrt(amount) * power;
-    if (result == 4) {
+    if (result == BATTLE_ACTION_CRITICAL) {
         amount += attacker->level + 5;
     }
     if (GetPickBlockingCondition(GetCharacterConditions(target))) {
         amount *= 1.2;
     }
     facing = GetCombatantFacingDifference(g_actorId, g_targetId);
-    if (facing == 2) {
+    if (facing == FACING_FROM_BEHIND) {
         amount *= 1.5;
-    } else if (facing != 0) {
+    } else if (facing != FACING_FACE_TO_FACE) {
         amount *= 1.2;
     }
-    if (result == 2) {
+    if (result == BATTLE_ACTION_GRAZED) {
         amount *= 0.25;
     }
     if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
@@ -112,7 +112,7 @@ i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result) {
     damage = RandomPercent(damage, -20, 20);
     damage = ClampInt(damage / 100, 0, 0x7fffffff);
     if (damage <= 0) {
-        SetActionResult(attacker, 1);
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
     }
     return damage;
 }
@@ -125,11 +125,11 @@ b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance) {
     i32 defense;
     i32 roll;
     if (GetPickBlockingCondition(GetCharacterConditions(target))) {
-        SetActionResult(attacker, 3);
+        SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
         return true;
     }
-    if (GetCombatantFacingDifference(g_actorId, g_targetId) == 2) {
-        SetActionResult(attacker, 3);
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) == FACING_FROM_BEHIND) {
+        SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
         return true;
     }
     accuracy = GetBattleStatShown(attacker, BATTLE_STAT_WEAPON_ACCURACY);
@@ -143,7 +143,7 @@ b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance) {
     if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
         attack *= 2;
     }
-    if (GetCombatantFacingDifference(g_actorId, g_targetId) != 0) {
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) != FACING_FACE_TO_FACE) {
         defense = evasion * 75;
     } else {
         defense = evasion * 100;
@@ -152,23 +152,23 @@ b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance) {
         roll = defense * RandomAverage(-2, 12, 1);
         attack *= 8;
         if (attack >= roll) {
-            SetActionResult(attacker, 3);
+            SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
             return true;
         }
     } else {
         roll = defense * RandomAverage(0, 15, 0);
         attack *= 8;
         if (attack >= roll) {
-            SetActionResult(attacker, 3);
+            SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
             return true;
         }
     }
     roll = defense * RandomAverage(0, 7, 0);
     if (attack >= roll) {
-        SetActionResult(attacker, 2);
+        SetActionResult(attacker, BATTLE_ACTION_GRAZED);
         return true;
     }
-    SetActionResult(attacker, 0);
+    SetActionResult(attacker, BATTLE_ACTION_MISSED);
     return false;
 }
 
@@ -190,7 +190,7 @@ i16 RollExceptionalWeaponAttack(Character* attacker, Character* target, i16 mode
             value = GetExceptionalAttackLuck(target);
             defense = RoundToInt(value * RandomAverage(100, 200, 0) * 0.01);
             if (attack > defense) {
-                return SetActionResult(attacker, 5);
+                return SetActionResult(attacker, BATTLE_ACTION_LETHAL);
             }
         }
         attack = GetExceptionalAttackBase(attacker);
@@ -198,9 +198,9 @@ i16 RollExceptionalWeaponAttack(Character* attacker, Character* target, i16 mode
         defense = GetExceptionalAttackBase(target);
         defense += RandomUpTo(31);
         if (modifier + attack > defense) {
-            return SetActionResult(attacker, 4);
+            return SetActionResult(attacker, BATTLE_ACTION_CRITICAL);
         }
-        SetActionResult(attacker, 0);
+        SetActionResult(attacker, BATTLE_ACTION_MISSED);
     }
     return 0;
 }
@@ -212,29 +212,29 @@ b16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode) {
     ResetActionOutcome();
     g_hpChange = 0;
     g_attackAttribute = GetPickedAttackAttribute(attacker, &g_attackCondition);
-    g_attackResistance = GetActionResistance(target, g_attackAttribute, 1, 1, 0);
+    g_attackResistance = GetActionResistance(target, g_attackAttribute, ATTACK_WEAPON, true, false);
     g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, g_attackAttribute);
     result = RollExceptionalWeaponAttack(attacker, target, mode, g_attackResistance);
     if (result != 0) {
-        AddTrainingPoints(attacker, 0, 1);
+        AddTrainingPoints(attacker, BATTLE_GROUP_WEAPON, 1);
     }
     if (result < 5) {
         if (result == 0) {
             result = RollWeaponHit(attacker, target, g_attackResistance);
             attacker->resultFlag = result;
             if (result != 0) {
-                AddTrainingPoints(attacker, 0, 1);
+                AddTrainingPoints(attacker, BATTLE_GROUP_WEAPON, 1);
             }
         } else {
             SetCharacterResult(attacker, result, 1);
         }
         amount = ComputeWeaponDamage(attacker, target, attacker->result);
         SetCharacterChanges(attacker, amount, 0);
-    } else if (result == 5) {
+    } else if (result == BATTLE_ACTION_LETHAL) {
         amount = 0x7fff;
         SetCharacterChanges(attacker, amount, 0);
-        SetFlaggedActionResult(attacker, 5);
-        AddTrainingPoints(attacker, 0, 1);
+        SetFlaggedActionResult(attacker, BATTLE_ACTION_LETHAL);
+        AddTrainingPoints(attacker, BATTLE_GROUP_WEAPON, 1);
     }
     ApplyResistanceOutcome(attacker, g_attackResistance, amount);
     return RollWeaponCondition(attacker, target, g_attackResistance, g_attackCondition, mode);

@@ -3,13 +3,15 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Game/AttackAttribute.h>
 #include <Game/Character.h>
 #include <Game/Condition.h>
 #include <Ints.h>
 
 // Shared state of the attack being resolved, defined in Game/attack.c.
 extern i16 g_attackResistance;
-extern i16 g_attackAttribute;
+extern GZ_ENUM_STORAGE(AttackAttribute, i16) g_attackAttribute;
 extern i16 g_attackCondition;
 
 static __inline double GetExceptionalAttackLuck(Character* actor) {
@@ -25,7 +27,7 @@ static __inline i32 GetExceptionalAttackBase(Character* actor) {
 
 #define ApplyAttackAccuracyConditions(character, accuracy)                                         \
     do {                                                                                           \
-        if (HasCondition(GetCharacterConditions(character), 23)) {                                 \
+        if (HasCondition(GetCharacterConditions(character), CONDITION_BLIND)) {                    \
             (accuracy) /= 4;                                                                       \
             if ((accuracy) < 1) {                                                                  \
                 (accuracy) = 1;                                                                    \
@@ -36,10 +38,10 @@ static __inline i32 GetExceptionalAttackBase(Character* actor) {
 // Both integer condition rolls and floating-point damage apply these boosts.
 #define ApplyWeaponPowerConditions(character, power)                                               \
     do {                                                                                           \
-        if (HasCondition(GetCharacterConditions(character), 19)) {                                 \
+        if (HasCondition(GetCharacterConditions(character), CONDITION_DANCE)) {                    \
             (power) *= 2;                                                                          \
         }                                                                                          \
-        if (HasCondition(GetCharacterConditions(character), 26)) {                                 \
+        if (HasCondition(GetCharacterConditions(character), CONDITION_BERSERK)) {                  \
             (power) *= 2;                                                                          \
         }                                                                                          \
     } while (0)
@@ -56,6 +58,13 @@ b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance);
 i16 RollExceptionalWeaponAttack(Character* attacker, Character* target, i16 mode, i16 resistance);
 
 i16 GetEquipmentHitModifier(Character* attacker, Character* target);
+// GetCombatantFacingDifference: face to face, or `first` behind `second` (both
+// facing the same way); the other two values are side-on.
+GZ_ENUM_CONST_BEGIN(CombatFacing)
+    FACING_FACE_TO_FACE = 0,
+    FACING_FROM_BEHIND = 2
+GZ_ENUM_CONST_END(CombatFacing)
+
 i16 GetCombatantFacingDifference(i16 first, i16 second);
 i16 GetCombatantDistance(i16 first, i16 second);
 i16 GetCombatantAttackRange(i16 id);
@@ -77,10 +86,20 @@ b16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode);
 // An attack with the gun (slot 6) and its ammunition (slot 7).
 b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode);
 
-b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide);
+b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide);
 i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit);
 b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
-i16 ApplySkillResistanceOutcome(Character* attacker, i32 amount);
+
+// Whether a resistance result suppresses the follow-up, reflects it to the
+// user, or leaves it for the target.
+GZ_ENUM_BEGIN_SPLIT(ResistanceFollowup, i16)
+    RESISTANCE_FOLLOWUP_REFLECT = -1,
+    RESISTANCE_FOLLOWUP_SUPPRESS = 0,
+    RESISTANCE_FOLLOWUP_TARGET = 1
+GZ_ENUM_END_SPLIT(ResistanceFollowup)
+
+GZ_ENUM_RETURN(ResistanceFollowup, i16)
+ApplySkillResistanceOutcome(Character* attacker, i32 amount);
 b16 ResolveSkillAttack(Character* attacker, Character* target);
 
 // Spends the rounds a party member's gun attack used.

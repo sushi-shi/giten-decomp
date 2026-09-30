@@ -52,14 +52,14 @@ RVA(0x00032a90, 0x26)
 i16 EnableTextDelay(void) {
     i16 prev = g_textState.delayOn;
     g_textState.delayLeft = 0;
-    g_textState.delayOn = 1;
+    g_textState.delayOn = true;
     return prev;
 }
 
 RVA(0x00032ac0, 0x1d)
 i16 DisableTextDelay(void) {
     i16 prev = g_textState.delayOn;
-    g_textState.delayOn = 0;
+    g_textState.delayOn = false;
     g_textState.delayRamp = 0;
     return prev;
 }
@@ -69,7 +69,7 @@ i16 OpReplaceTextCharDelay(void) {
     return ReadTextCharDelay();
 }
 
-static __inline i16 ExchangeTextDelaySkipDisabled(i16 disabled) {
+static __inline b16 ExchangeTextDelaySkipDisabled(b16 disabled) {
     i16 previous = g_textState.delaySkipDisabled;
     g_textState.delaySkipDisabled = disabled;
     return previous;
@@ -77,44 +77,44 @@ static __inline i16 ExchangeTextDelaySkipDisabled(i16 disabled) {
 
 RVA(0x00032b00, 0x1d)
 i16 DisableTextDelaySkip(void) {
-    return ExchangeTextDelaySkipDisabled(1);
+    return ExchangeTextDelaySkipDisabled(true);
 }
 
 RVA(0x00032b20, 0x1d)
 i16 EnableTextDelaySkip(void) {
-    return ExchangeTextDelaySkipDisabled(0);
+    return ExchangeTextDelaySkipDisabled(false);
 }
 
 RVA(0x00032b40, 0x3b)
 void InitTextState(TextState* state) {
     if (!state->delayOn) {
-        state->scrollEnabled = 0;
-        state->timedWait = 0;
-        state->inputWait = 1;
+        state->scrollEnabled = false;
+        state->timedWait = false;
+        state->inputWait = true;
     } else {
-        state->inputWait = 0;
-        state->scrollEnabled = 1;
-        state->timedWait = 1;
+        state->inputWait = false;
+        state->scrollEnabled = true;
+        state->timedWait = true;
     }
     state->charDelay = 0;
     state->delayLeft = 0;
     state->delayStep = 0;
     state->waitFrames = 30;
-    state->delayRamp = 0;
-    state->flag7 = 0;
-    state->messageHookEnabled = 0;
-    state->delaySkipDisabled = 1;
+    state->delayRamp = false;
+    state->flag7 = false;
+    state->messageHookEnabled = false;
+    state->delaySkipDisabled = true;
 }
 
 RVA(0x00032b80, 0x20)
 void ResetTextStateInstant(void) {
-    InitTextStateFlags(&g_textState, 0, 0);
+    InitTextStateFlags(&g_textState, false, false);
     InitTextState(&g_textState);
 }
 
 RVA(0x00032ba0, 0x20)
 void ResetTextStateDelayed(void) {
-    InitTextStateFlags(&g_textState, 1, 1);
+    InitTextStateFlags(&g_textState, true, true);
     InitTextState(&g_textState);
 }
 

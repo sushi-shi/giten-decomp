@@ -5,6 +5,8 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/CellCode.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 // The loaded area map (LoadAreaMap reads it into a 0x2c00-byte buffer) and the
@@ -13,22 +15,15 @@
 // bytes are addressed by offset: an event-flag pair (bank, index) that
 // disables the cell, and the destination bytes LatchCellDestination copies.
 
-GZ_ENUM_BEGIN(CellCode)
-    CELL_EXIT = 0x41,
-    CELL_STAIRS_UP = 0x42,
-    CELL_STAIRS_DOWN = 0x43,
-    CELL_CHUTE = 0x47
-GZ_ENUM_END(CellCode)
-
 typedef struct CellHead {
     u8 x;
     u8 y;
     u8 code;
 } CellHead;
 
-// A cell list ends at an x of CELL_LIST_END.
-#define CELL_LIST_END 0xff
-#define IsCellListEnd(cell) ((cell)->x == CELL_LIST_END)
+// A cell list ends at an x of CELL_LIST_X_END.
+#define CELL_LIST_X_END 0xff
+#define IsCellListEnd(cell) ((cell)->x == CELL_LIST_X_END)
 
 GZ_ENUM_BEGIN(CellEventKind)
     CELL_EVENT_NONE = 0,
@@ -41,7 +36,10 @@ GZ_ENUM_BEGIN(CellEventKind)
     CELL_EVENT_CHUTE = 7,
     CELL_EVENT_STAIRS = 8,
     CELL_EVENT_FORCED_MOVE = 9,
+    CELL_EVENT_FLOOR_PROPERTY = 10,
     CELL_EVENT_TRAP = 11,
+    CELL_EVENT_FADE_SCENE = 12,
+    CELL_EVENT_INERT = 13,
     CELL_EVENT_MARKED_WARP = 14
 GZ_ENUM_END(CellEventKind)
 
@@ -49,12 +47,22 @@ GZ_ENUM_FLAGS_BEGIN(CellKindFlags, u8)
     CELL_KIND_CHECK_FACING = 1
 GZ_ENUM_FLAGS_END(CellKindFlags)
 
+// Exit-cell trap mask: AlignmentClass's Chaos (-1), Neutral (0), and Law
+// (+1) classes select bits 2, 1, and 0 respectively.
+GZ_ENUM_FLAGS_BEGIN(CellTrapAlignmentMask, u8)
+    CELL_TRAP_AFFECTS_LAW = 1,
+    CELL_TRAP_AFFECTS_NEUTRAL = 2,
+    CELL_TRAP_AFFECTS_CHAOS = 4,
+    CELL_TRAP_AFFECTS_ALL = 7
+GZ_ENUM_FLAGS_END(CellTrapAlignmentMask)
+
 // A code's entry in the cell-kind table: `kind` is what CheckCellEvent returns
 // (RunCellEvent's case).
-// @identity-TODO: event kinds 10, 12 and 13 remain unnamed.
+// @identity-TODO: CELL_INERT's authored role is unrecovered; its mapped event
+// kind takes no action in either version's event dispatcher.
 typedef struct CellKind {
-    u8 code;
-    u8 kind;
+    GZ_ENUM_STORAGE(CellCode, u8) code;
+    GZ_ENUM_STORAGE(CellEventKind, u8) kind;
     GZ_ENUM_STORAGE(CellKindFlags, u8) flags;
     u8 pad03;
 } CellKind;
@@ -109,7 +117,7 @@ typedef struct ExitCell {
     u8 disableFlag[2];
     union {
         u8 damagePercent;
-        u8 alignmentMask;
+        GZ_ENUM_STORAGE(CellTrapAlignmentMask, u8) alignmentMask;
     } trap;
     u8 secondaryDamagePercent;
 } ExitCell;
@@ -151,8 +159,8 @@ typedef struct LevelMusicSet {
     LevelMusic choices[5];
 } LevelMusicSet;
 
-// A door cell: facing (high nibble) and kind (low nibble; 0xb is not a
-// door) in the code byte, disabled by the flag at +3.
+// A door cell: facing (high nibble) and wall kind (low nibble) in the code
+// byte, disabled by the flag at +3. Kind 11 does not bar a step.
 typedef struct DoorCell {
     CellHead head;
     u8 disableFlag[2];
@@ -272,7 +280,7 @@ extern AreaLevel* g_areaLevel;
 // 0x70..0x76 of a kind-9 cell are is unrecovered.
 extern i16 g_cellX;
 extern i16 g_cellY;
-extern u8 g_cellCode;
+extern GZ_ENUM_STORAGE(CellCode, u8) g_cellCode;
 extern u8 g_cellDestDirection;
 extern i16 g_cellDestX;
 extern i16 g_cellDestY;
@@ -285,9 +293,13 @@ const CellKind* FindCellKind(const CellHead* cell);
 
 // Latches the cell and the destination bytes at the given offsets (x, y, then
 // direction, level and area where the offset is not -1) for RunCellEvent.
+// LatchCellDestination's field arguments are byte offsets into the cell record;
+// CELL_FIELD_NONE marks a field the cell does not have.
+#define CELL_FIELD_NONE (-1)
+
 void LatchCellDestination(const CellHead* cell, i16 x, i16 y, i16 direction, i16 level, i16 area);
 
-// @identity-TODO: what the codes 0x48..0x4e are is unrecovered.
+// Codes 0x48..0x4e select the legacy NPC direction mask.
 b16 IsReservedObjectCell(const CellHead* cell);
 
 // Decodes an area-map record into `map` (header, levels and their lists).
@@ -304,12 +316,25 @@ i16 GetLevelFloor(void);
 b16 IsDarkCell(i16 x, i16 y);
 b16 IsCellCommandBlocked(i16 x, i16 y);
 b16 IsRoomCell(i16 x, i16 y);
-i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y);
-i16 CheckBlockingCell(const CellHead* cell, i16 mode, i16 flagOffset, i16 x, i16 y);
-i16 GetEventCellCode(i16 x, i16 y);
+// What IsCellBlocked and CheckBlockingCell do with a level's cells: draw
+// their automap icons, or test whether one blocks x/y.
+GZ_ENUM_BEGIN_SPLIT(CellScanMode, i16)
+    CELL_SCAN_DRAW_ICONS = 0,
+    CELL_SCAN_TEST = 1
+GZ_ENUM_END_SPLIT(CellScanMode)
+
+i16 IsCellBlocked(i16 level, GZ_ENUM_PARAM(CellScanMode, i16) mode, i16 x, i16 y);
+i16 CheckBlockingCell(
+    const CellHead* cell,
+    GZ_ENUM_PARAM(CellScanMode, i16) mode,
+    i16 flagOffset,
+    i16 x,
+    i16 y
+);
+GZ_ENUM_RETURN(CellCode, i16) GetEventCellCode(i16 x, i16 y);
 // Returns the barring door's code (0: none) for a step from x/y facing
 // `direction`, move `turn`.
-i16 IsStepBarred(i16 x, i16 y, i16 direction, i16 turn);
+i16 IsStepBarred(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn);
 i16 WrapMapCoord(i16 value, i16 size);
 i16 ClampMapCoord(i16 value, i16 size);
 i16 RevealAreaMapAt(i16 x, i16 y);
@@ -317,7 +342,12 @@ void WrapMapPosition(i16* x, i16* y);
 void ClampMapPosition(i16* x, i16* y);
 i16 GetWarpCodeAtOffset(i16 dx, i16 dy);
 i16 GetCellAtOffset(i16 dx, i16 dy);
-u8* GetLevelList(i16 which);
+// GetLevelList's lists: the level's rooms or its doors.
+GZ_ENUM_BEGIN_SPLIT(LevelListKind, i16)
+    LEVEL_LIST_ROOMS = 0,
+    LEVEL_LIST_DOORS = 1
+GZ_ENUM_END_SPLIT(LevelListKind)
+u8* GetLevelList(GZ_ENUM_PARAM(LevelListKind, i16) which);
 b16 IsLevelMapRevealed(void);
 ExitCell* CopyExitAt(i16 x, i16 y, ExitCell* out);
 

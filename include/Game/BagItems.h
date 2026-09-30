@@ -15,7 +15,20 @@
 // and skilluse.c include and whose declaration count their codegen follows.
 
 // The party's 64-entry item bag.
-extern ItemStack g_bagItems[64];
+// The bag: 48 ordinary entries, then the scenario items.
+#define BAG_ENTRY_COUNT 64
+#define BAG_ORDINARY_ENTRY_COUNT 48
+#define BAG_SCENARIO_ENTRY_COUNT (BAG_ENTRY_COUNT - BAG_ORDINARY_ENTRY_COUNT)
+// The most items a stack holds.
+#define ITEM_STACK_MAX 99
+
+// Which way the script's temporary item-list transfer copies the bag.
+GZ_ENUM_BEGIN_SPLIT(ItemStashAction, i16)
+    ITEM_STASH_SAVE = 0,
+    ITEM_STASH_RESTORE = 1
+GZ_ENUM_END_SPLIT(ItemStashAction)
+
+extern ItemStack g_bagItems[BAG_ENTRY_COUNT];
 
 // Empties every bag entry.
 void ClearBag(void);
@@ -46,9 +59,9 @@ i16 GetBagEntryCount(i16 index);
 // The number of non-empty bag entries.
 i16 CountBagEntries(void);
 
-// Copies the bag into `buffer` (allocated when NULL), or with `restore` set
-// back from it (a NULL buffer does nothing); returns `buffer`.
-ItemStack* SaveOrRestoreBag(ItemStack* buffer, i16 restore);
+// Saves the bag into `buffer` (allocated when NULL), or restores it from
+// `buffer` (a NULL buffer does nothing); returns `buffer`.
+ItemStack* SaveOrRestoreBag(ItemStack* buffer, GZ_ENUM_PARAM(ItemStashAction, i16) action);
 
 // Takes `amount` of `item` from entry `index` first, then from the end of the
 // bag; returns how many could not be taken.
@@ -58,7 +71,9 @@ i16 GetBagEntryDetail(i16 index);
 
 // The item pool the bag is refilled from (<Game/ItemPool.h>).
 // @identity-TODO: what the pool represents is unrecovered.
-extern ItemStack g_itemPool[64];
+#define ITEM_POOL_SIZE 64
+
+extern ItemStack g_itemPool[ITEM_POOL_SIZE];
 
 #define GetItemPoolEntry(index) (&g_itemPool[(index)])
 
@@ -101,7 +116,13 @@ i16 AddScenarioBagItems(i16 item, i16 count);
 
 // The last bag entry holding `item` among the first 48 (bit 0 of `groups`)
 // or the last sixteen (bit 1), else -1.
-i16 FindBagItem(i16 item, u8 groups);
+GZ_ENUM_FLAGS_BEGIN(BagSearchGroup, u8)
+    BAG_SEARCH_ORDINARY = 1,
+    BAG_SEARCH_SCENARIO = 2,
+    BAG_SEARCH_ALL = BAG_SEARCH_ORDINARY | BAG_SEARCH_SCENARIO
+GZ_ENUM_FLAGS_END(BagSearchGroup)
+
+i16 FindBagItem(i16 item, GZ_ENUM_PARAM(BagSearchGroup, u8) groups);
 
 // Adds `amount` to entry `index` up to `limit`; returns the amount added.
 i16 AddToBagEntry(i16 index, u16 amount, u16 limit);

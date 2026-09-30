@@ -9,19 +9,22 @@
 #include <rva.h>
 
 #include <Game/Actor.h>
+#include <Game/ActionMark.h>
 #include <Game/Alignment.h>
 #include <Game/AnalyzeData.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
 #include <Game/BagItems.h>
 #include <Game/BattleEffect.h>
-#include <Game/Character.h>
 #include <Game/CharInfo.h>
+#include <Game/Character.h>
+#include <Game/CharacterStat.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
 #include <Game/DemonTable.h>
 #include <Game/DropTable.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/Familiarity.h>
 #include <Game/Field.h>
 #include <Game/FieldMain.h>
@@ -35,19 +38,23 @@
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
 #include <Game/Growth.h>
+#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
+#include <Game/ItemId.h>
 #include <Game/ItemMenu.h>
 #include <Game/ItemPool.h>
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
+#include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
 #include <Game/SaveGame.h>
 #include <Game/Scene.h>
 #include <Game/Skill.h>
+#include <Game/SkillId.h>
 #include <Game/SkillList.h>
 #include <Game/SkillUse.h>
 #include <Game/StateStack.h>
@@ -56,12 +63,15 @@
 #include <Game/StatusScreen.h>
 #include <Game/WorldMap.h>
 #include <Gfx/Sprite.h>
+#include <Giten/Resource.h>
 #include <Input/Mouse.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
 #include <Script/LongVar.h>
+#include <Script/ObjectRef.h>
+#include <Script/OwnedFlag.h>
 #include <Script/Script.h>
 #include <Script/ScriptBlock.h>
 #include <Script/ScriptCmd.h>
@@ -86,7 +96,7 @@
 #include <string.h>
 
 DATA(0x000646c8)
-static const i16 s_rewardLevelThresholds[16] =
+static const i16 s_rewardLevelThresholds[GEM_ITEM_COUNT] =
     {20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140};
 
 DATA(0x00069130)
@@ -94,7 +104,7 @@ static i16 s_hoveredChoice = -1;
 
 // "Ａ", "Ｂ", "ＡＢ", "Ｏ".
 DATA(0x00069138)
-static char* s_bloodTypes[4] = {"\202`", "\202a", "\202`\202a", "\202n"};
+static char* s_bloodTypes[BLOOD_TYPE_COUNT] = {"\202`", "\202a", "\202`\202a", "\202n"};
 
 // The expansion of the last text token.
 DATA(0x00081230)
@@ -110,13 +120,13 @@ DATA(0x00081338)
 static i16 s_choiceCancelMode = 0;
 
 DATA(0x0008133c)
-static ScriptChoice* s_highlightedChoice = 0;
+static ScriptChoice* s_highlightedChoice = NULL;
 
 DATA(0x00081340)
-static ScriptChoice* s_choiceMenu = 0;
+static ScriptChoice* s_choiceMenu = NULL;
 
 DATA(0x00081344)
-static ScriptChoice* s_hitChoice = 0;
+static ScriptChoice* s_hitChoice = NULL;
 
 // The slot ReadScriptOperand returns.
 DATA(0x00081348)
@@ -228,15 +238,15 @@ void RetireScriptActor(void) {
 }
 
 RVA(0x00032d30, 0x41)
-i16 StepScriptActor(i16 turn) {
+GZ_ENUM_RETURN(ScriptStatus, i16) StepScriptActor(GZ_ENUM_PARAM(MoveCommand, i16) turn) {
     FieldActor* actor = (FieldActor*)g_curScript->actor;
     if (actor == NULL) {
-        return 0;
+        return SCRIPT_CONTINUE;
     }
     StepMapCoord(&actor->pos.x, &actor->pos.y, actor->direction, turn);
     InvalidateSelectedHotspot();
     RequestFieldRefresh();
-    return -3;
+    return SCRIPT_YIELD;
 }
 
 RVA(0x00032d80, 0x3b)
@@ -265,9 +275,9 @@ void PlaceScriptActor(void) {
             ((FieldActor*)g_curScript->actor)->pos.y,
             ((FieldActor*)g_curScript->actor)->direction,
             g_curScript->actor->id,
-            0,
-            -1,
-            0
+            false,
+            FIELD_OBJECT_NO_EVENT,
+            false
         );
     } else {
         layer = FindCellObject(
@@ -289,72 +299,73 @@ void PlaceScriptActor(void) {
     RequestFieldRefresh();
 }
 
-static __inline void GrantAdjustedActorSpoil(i16 kind, i16 adjustment) {
+static __inline void
+GrantAdjustedActorSpoil(GZ_ENUM_PARAM(ActorSpoilKind, i16) kind, i16 adjustment) {
     s_spoilAdjustment = adjustment;
     GrantActorSpoil(kind);
 }
 
 RVA(0x00032ea0, 0x2b8)
-void GrantActorReward(i16 kind) {
+void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind) {
     u16 reward = 0;
     for (;;) {
         switch (kind) {
-            case 0:
-            case 1:
+            case ACTOR_REWARD_FIRST_ITEM:
+            case ACTOR_REWARD_SECOND_ITEM:
                 reward = GetItemRewardAt(kind);
                 break;
-            case 2: {
+            case ACTOR_REWARD_GEM: {
                 i16 roll = RandomAverage(0, 100, 100);
                 if (g_curScript->actor != NULL) {
                     roll += g_curScript->actor->level;
                 }
-                for (kind = 0; kind < 16; kind++) {
+                for (kind = 0; kind < GEM_ITEM_COUNT; kind++) {
                     if (roll <= s_rewardLevelThresholds[kind]) {
                         reward = GetGemItemBase() + kind;
                         break;
                     }
                 }
-                kind = 2;
+                kind = ACTOR_REWARD_GEM;
                 if (!reward) {
                     reward = GetGemItemBase();
                 }
                 break;
             }
-            case 3:
+            case ACTOR_REWARD_PICK_ITEM:
                 if (g_curScript->actor == NULL) {
                     return;
                 }
                 reward = g_curScript->actor->pickItem;
                 break;
-            case 4:
-            case 5:
-            case 6:
-                GrantActorSpoil(kind - 4);
+            case ACTOR_REWARD_SPOIL_MACCA:
+            case ACTOR_REWARD_SPOIL_MAGNETITE:
+            case ACTOR_REWARD_SPOIL_EXPERIENCE:
+                GrantActorSpoil(kind - ACTOR_REWARD_SPOIL_MACCA);
                 reward = 0;
                 break;
-            case 7: {
+            case ACTOR_REWARD_RANDOM: {
                 i16 roll = RandomAverage(1, 100, 0);
                 if (roll <= 20) {
-                    GrantAdjustedActorSpoil(0, 2);
+                    GrantAdjustedActorSpoil(ACTOR_SPOIL_MACCA, 2);
                     reward = 0;
                 } else if (roll <= 40) {
-                    GrantAdjustedActorSpoil(1, 2);
+                    GrantAdjustedActorSpoil(ACTOR_SPOIL_MAGNETITE, 2);
                     reward = 0;
                 } else if (roll <= 58) {
-                    kind = 1;
+                    kind = ACTOR_REWARD_SECOND_ITEM;
                     continue;
                 } else if (roll <= 66) {
-                    kind = 0;
+                    kind = ACTOR_REWARD_FIRST_ITEM;
                     continue;
                 } else if (roll <= 74) {
-                    kind = 2;
+                    kind = ACTOR_REWARD_GEM;
                     continue;
                 } else if (roll <= 84) {
                     if (g_curScript->actor == NULL) {
                         return;
                     }
                     reward = PickEquipmentReward(g_curScript->actor);
-                    kind = 3;
+                    kind = ACTOR_REWARD_PICK_ITEM;
                     if (reward < 1) {
                         continue;
                     }
@@ -363,40 +374,40 @@ void GrantActorReward(i16 kind) {
                         return;
                     }
                     reward = g_curScript->actor->id;
-                    kind = 7;
+                    kind = ACTOR_REWARD_HEALED;
                     HealParty(reward);
                     RequestFieldRefresh();
                 } else {
-                    kind = 3;
+                    kind = ACTOR_REWARD_PICK_ITEM;
                     continue;
                 }
                 break;
             }
-            case 8: {
+            case ACTOR_REWARD_RANDOM_B: {
                 i16 roll = RandomAverage(1, 100, 0);
                 if (roll <= 20) {
-                    GrantAdjustedActorSpoil(0, 1);
+                    GrantAdjustedActorSpoil(ACTOR_SPOIL_MACCA, 1);
                     reward = 0;
                 } else if (roll <= 40) {
-                    GrantAdjustedActorSpoil(0, 3);
+                    GrantAdjustedActorSpoil(ACTOR_SPOIL_MACCA, 3);
                     reward = 0;
                 } else if (roll <= 60) {
-                    GrantAdjustedActorSpoil(1, 3);
+                    GrantAdjustedActorSpoil(ACTOR_SPOIL_MAGNETITE, 3);
                     reward = 0;
                 } else if (roll <= 70) {
-                    kind = 1;
+                    kind = ACTOR_REWARD_SECOND_ITEM;
                     continue;
                 } else if (roll <= 80) {
                     if (g_curScript->actor == NULL) {
                         return;
                     }
-                    kind = 8;
+                    kind = ACTOR_REWARD_BOMB_ATTACK;
                     reward = g_curScript->actor->level;
                 } else {
                     if (g_curScript->actor == NULL) {
                         return;
                     }
-                    kind = 9;
+                    kind = ACTOR_REWARD_PUNCH_ATTACK;
                     reward = g_curScript->actor->level;
                 }
                 break;
@@ -417,7 +428,7 @@ i16 PickEquipmentReward(Character* character) {
     i16 count = 8;
     i16 i;
     i16 pick;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < EQUIP_SLOT_COUNT; i++) {
         items[i] = GetEquipItem(character, i);
     }
     for (;;) {
@@ -449,28 +460,28 @@ i16 PickEquipmentReward(Character* character) {
     } while (0)
 
 RVA(0x00033210, 0x110)
-void GrantActorSpoil(i16 kind) {
+void GrantActorSpoil(GZ_ENUM_PARAM(ActorSpoilKind, i16) kind) {
     if (g_curScript->actor != NULL) {
         i32 amount = 0;
         switch (kind) {
-            case 2:
+            case ACTOR_SPOIL_EXPERIENCE:
                 amount = g_curScript->actor->experience;
                 g_rewardExperience += amount;
                 MarkRewardsPending();
                 break;
-            case 1:
+            case ACTOR_SPOIL_MAGNETITE:
                 amount = g_curScript->actor->magnetite;
                 AdjustActorSpoilAmount(amount);
-                AddMagnetite(GetRosterCharacter(0), amount);
+                AddMagnetite(GetRosterCharacter(ROSTER_LEADER), amount);
                 break;
-            case 0:
+            case ACTOR_SPOIL_MACCA:
                 amount = g_curScript->actor->macca;
                 AdjustActorSpoilAmount(amount);
-                AddMacca(GetRosterCharacter(0), amount);
+                AddMacca(GetRosterCharacter(ROSTER_LEADER), amount);
                 break;
         }
         CallScript(0xdf, 2);
-        SetScriptLongVar(18, kind + 4);
+        SetScriptLongVar(18, kind + ACTOR_REWARD_SPOIL_MACCA);
         SetScriptLongVar(19, amount);
     }
 }
@@ -486,7 +497,7 @@ void DismissTalkTarget(void) {
     if (g_targetId < 0) {
         return;
     }
-    if (g_actionId == 0x10e) {
+    if (g_actionId == SKILL_FUSION) {
         FlashHitObject(g_targetId, 0x37);
         ResetObjectAnim(g_targetId);
     } else {
@@ -496,8 +507,11 @@ void DismissTalkTarget(void) {
 }
 
 RVA(0x00033390, 0xf6)
-void OpJumpUnlessActorCanStep(i16 invert, i16 turn) {
-    i32 matches = 0;
+void OpJumpUnlessActorCanStep(
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+) {
+    b32 matches = false;
     i16 blocked = 1;
     i16 target = ReadBranchTarget();
     if (g_curScript->actor != NULL) {
@@ -509,38 +523,38 @@ void OpJumpUnlessActorCanStep(i16 invert, i16 turn) {
         blocked = GetMapWallKind(x, y, (direction + turn) & 3);
         if (!blocked) {
             StepMapCoord(&x, &y, direction, turn);
-            blocked = IsCellBlocked(g_party.field.pos.level, 1, x, y);
+            blocked = IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y);
         }
     }
     if ((!blocked && !invert) || (blocked && invert)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
 
 RVA(0x00033490, 0x76)
-i16 OpSetActorAlert(i16 level) {
+GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(GZ_ENUM_PARAM(ActorAlertMode, i16) level) {
     ReadScriptValue();
     if (g_curScript->actor != NULL) {
-        if (level != 2) {
-            AlertActor(g_curScript->actor, 2);
+        if (level != ACTOR_ALERT_DELAY) {
+            AlertActor(g_curScript->actor, ATTITUDE_VERY_HOSTILE);
         }
-        if (level == 1) {
-            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining > 1) {
-                GetCharacterActionWait(g_curScript->actor)->remaining = 1;
+        if (level == ACTOR_ALERT_IMMEDIATE) {
+            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining > ACTION_WAIT_QUEUED) {
+                GetCharacterActionWait(g_curScript->actor)->remaining = ACTION_WAIT_QUEUED;
             }
-        } else if (level == 2) {
-            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining < 0x200) {
-                GetCharacterActionWait(g_curScript->actor)->remaining = 0x200;
+        } else if (level == ACTOR_ALERT_DELAY) {
+            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining < ACTION_WAIT_EXTENDED) {
+                GetCharacterActionWait(g_curScript->actor)->remaining = ACTION_WAIT_EXTENDED;
             }
         }
     }
-    return -1;
+    return SCRIPT_END;
 }
 
 RVA(0x00033510, 0x87)
 void OpJumpUnlessPlayerInLine(i16 invert) {
-    i32 matches = 0;
+    b32 matches = false;
     i16 target = ReadBranchTarget();
     FieldActor* actor = (FieldActor*)g_curScript->actor;
     if (actor != NULL) {
@@ -551,9 +565,9 @@ void OpJumpUnlessPlayerInLine(i16 invert) {
             g_party.field.pos.x,
             g_party.field.pos.y
         );
-        if ((offset.x == 0 && offset.y <= 0 && invert == 0)
-            || ((offset.x != 0 || offset.y > 0) && invert != 0)) {
-            matches = 1;
+        if ((offset.x == 0 && offset.y <= 0 && invert == false)
+            || ((offset.x != 0 || offset.y > 0) && invert != false)) {
+            matches = true;
         }
     }
     ScriptJumpUnless(target, matches);
@@ -831,7 +845,7 @@ b16 StoreFrameLocals(void) {
     if (!frame) {
         return false;
     }
-    TransferFrameVars(frame, 0);
+    TransferFrameVars(frame, false);
     return true;
 }
 
@@ -842,7 +856,7 @@ b16 LoadFrameLocals(void) {
     if (!frame) {
         return false;
     }
-    TransferFrameVars(frame, 1);
+    TransferFrameVars(frame, true);
     return true;
 }
 
@@ -858,12 +872,12 @@ b16 SwapFrameLocals(void) {
     }
     saved = NewCallFrame();
     loaded = NewCallFrame();
-    TransferFrameVars(saved, 0);
-    TransferFrameVars(frame, 1);
-    TransferFrameVars(loaded, 0);
-    TransferFrameVars(saved, 1);
-    TransferFrameVars(frame, 0);
-    TransferFrameVars(loaded, 1);
+    TransferFrameVars(saved, false);
+    TransferFrameVars(frame, true);
+    TransferFrameVars(loaded, false);
+    TransferFrameVars(saved, true);
+    TransferFrameVars(frame, false);
+    TransferFrameVars(loaded, true);
     FreeCallFrames(loaded);
     FreeCallFrames(saved);
     return true;
@@ -926,7 +940,8 @@ void GotoScript(i16 file, i16 entry) {
     } else if (file == 0x2c && entry == 4) {
         ResetSprites(SPRITE_LAYERS_PARTY_AND_TEXT);
     } else if (file == 0x5b && entry == 0x22 && g_party.field.pos.x == 1 && g_party.field.pos.y == 4
-               && g_party.field.pos.level == 1 && g_party.field.pos.area == 0x83) {
+               && g_party.field.pos.level == 1
+               && g_party.field.pos.area == MAP_AREA_RESISTANCE_FRONTLINE_BASE) {
         LoadSpriteImage(0, 0x42, 0);
         PlaceSprite(0, 0, 0, 40, 240);
     }
@@ -968,7 +983,7 @@ void OpJump(void) {
 
 // Jumps to `pc` when `condition` is zero; passes `condition` through.
 RVA(0x00033ef0, 0x1a)
-i32 ScriptJumpUnless(i16 pc, i32 condition) {
+b32 ScriptJumpUnless(i16 pc, b32 condition) {
     if (!condition) {
         ScriptJump(pc);
     }
@@ -1066,7 +1081,9 @@ void OpLoadRecord(void) {
                 "\226\330\202\314\216\360\217\352\202\305\202\310\202\242\217\352\215\207\202\315"
                 "\230A\227\215\202\265\202\304\211\272\202\263\202\242\201BTakubo\012"
             );
-        } else if (entry == 0x100 || (entry == 0x101 && g_party.field.pos.area == 0x83)) {
+        } else if (entry == 0x100
+                   || (entry == 0x101
+                       && g_party.field.pos.area == MAP_AREA_RESISTANCE_FRONTLINE_BASE)) {
             LoadSpriteImage(0x1f, 0x79, 0);
             PlaceSprite(0x1f, 0x1f, 0, 0x28, 0xd3);
             // 初台以外の道具屋＆レジスタンス前線基地の薬屋でない場合は連絡して下さい。Takubo
@@ -1077,7 +1094,8 @@ void OpLoadRecord(void) {
                 "\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304\211\272\202\263\202"
                 "\242\201BTakubo\012"
             );
-        } else if (entry == 0x101 && g_party.field.pos.area == 0x2e && g_party.field.pos.x == 7) {
+        } else if (entry == 0x101 && g_party.field.pos.area == MAP_AREA_ROPPONGI
+                   && g_party.field.pos.x == 7) {
             LoadSpriteImage(0x1f, 0xc7, 1);
             PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xe1);
             // 六本木の防具屋でない場合は連絡して下さい。Takubo
@@ -1088,18 +1106,23 @@ void OpLoadRecord(void) {
             );
         } else if (entry == 0x101) {
             LoadSpriteImage(0x1f, 0x79, 1);
-            if ((g_party.field.pos.area == 0x06 && g_party.field.pos.y == 0x12)
-                || (g_party.field.pos.area == 0x0a && g_party.field.pos.y == 0x0d)
-                || (g_party.field.pos.area == 0x13 && g_party.field.pos.y == 0x01)
-                || (g_party.field.pos.area == 0x1b && g_party.field.pos.y == 0x05)
-                || (g_party.field.pos.area == 0x8a && g_party.field.pos.y == 0x02)
-                || (g_party.field.pos.area == 0x1f && g_party.field.pos.level == 2)
-                || (g_party.field.pos.area == 0x1a && g_party.field.pos.x == 0x0a)
-                || (g_party.field.pos.area == 0x34 && g_party.field.pos.level == 0)
-                || g_party.field.pos.area == 0x2e
-                || (g_party.field.pos.area == 0x25 && g_party.field.pos.level == 0)
-                || (g_party.field.pos.area == 0x21 && g_party.field.pos.y == 0x09)
-                || (g_party.field.pos.area == 0x30 && g_party.field.pos.y == 0x0b)) {
+            if ((g_party.field.pos.area == MAP_AREA_SHINJUKU_UNDERGROUND
+                 && g_party.field.pos.y == 0x12)
+                || (g_party.field.pos.area == MAP_AREA_MY_CITY && g_party.field.pos.y == 0x0d)
+                || (g_party.field.pos.area == MAP_AREA_SHANSHAN_CITY && g_party.field.pos.y == 0x01)
+                || (g_party.field.pos.area == MAP_AREA_KANDA_UNDERGROUND
+                    && g_party.field.pos.y == 0x05)
+                || (g_party.field.pos.area == MAP_AREA_OCHANOMIZU && g_party.field.pos.y == 0x02)
+                || (g_party.field.pos.area == MAP_AREA_AKIHABARA_STATION_BUILDING
+                    && g_party.field.pos.level == 2)
+                || (g_party.field.pos.area == MAP_AREA_GINZA_UNDERGROUND
+                    && g_party.field.pos.x == 0x0a)
+                || (g_party.field.pos.area == MAP_AREA_EBISU_GARDEN && g_party.field.pos.level == 0)
+                || g_party.field.pos.area == MAP_AREA_ROPPONGI
+                || (g_party.field.pos.area == MAP_AREA_ASAKUSA_SUBWAY_BUILDING
+                    && g_party.field.pos.level == 0)
+                || (g_party.field.pos.area == MAP_AREA_AMEYA_PLAZA && g_party.field.pos.y == 0x09)
+                || (g_party.field.pos.area == MAP_AREA_SHIBUYA && g_party.field.pos.y == 0x0b)) {
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xda);
                 // 臨海コロシアム以外の武器屋でない場合は連絡して下さい。Takubo
                 DebugTrace(
@@ -1118,7 +1141,8 @@ void OpLoadRecord(void) {
                 );
             }
         } else if (entry == 0x102 || entry == 0x104) {
-            if (g_party.field.pos.area == 0x1a && g_party.field.pos.level == 3) {
+            if (g_party.field.pos.area == MAP_AREA_GINZA_UNDERGROUND
+                && g_party.field.pos.level == 3) {
                 LoadSpriteImage(0x1f, 0x4f, 1);
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xd4);
                 // 銀座地下街秘密区の薬屋でない場合は連絡して下さい。Takubo
@@ -1127,8 +1151,10 @@ void OpLoadRecord(void) {
                     "\211\256\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202\265"
                     "\202\304\211\272\202\263\202\242\201BTakubo\012"
                 );
-            } else if (g_party.field.pos.area == 0x06 || g_party.field.pos.area == 0x1b
-                       || g_party.field.pos.area == 0x34 || g_party.field.pos.area == 0x25) {
+            } else if (g_party.field.pos.area == MAP_AREA_SHINJUKU_UNDERGROUND
+                       || g_party.field.pos.area == MAP_AREA_KANDA_UNDERGROUND
+                       || g_party.field.pos.area == MAP_AREA_EBISU_GARDEN
+                       || g_party.field.pos.area == MAP_AREA_ASAKUSA_SUBWAY_BUILDING) {
                 LoadSpriteImage(0x1f, 0x79, 2);
                 PlaceSprite(0x1f, 0x1f, 2, 0x28, 0xda);
                 // 新宿地下街・神田地下街・恵比寿ガーデン・浅草地下鉄ビルの薬屋でない場合は連絡して下さい。Takubo
@@ -1139,7 +1165,7 @@ void OpLoadRecord(void) {
                     "\362\211\256\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202"
                     "\265\202\304\211\272\202\263\202\242\201BTakubo\012"
                 );
-            } else if (g_party.field.pos.area == 0x56) {
+            } else if (g_party.field.pos.area == MAP_AREA_RINKAI_COLISEUM) {
                 LoadSpriteImage(0x1f, 0x2b, 3);
                 PlaceSprite(0x1f, 0x1f, 3, 0x28, 0xd4);
                 // 臨海コロシアムの薬屋でない場合は連絡して下さい。Takubo
@@ -1183,7 +1209,7 @@ void OpLoadRecord(void) {
                 "\215\202\265\202\304\211\272\202\263\202\242\201BTakubo\012"
             );
         } else if (entry == 0x105) {
-            if (g_party.field.pos.area == 0x21) {
+            if (g_party.field.pos.area == MAP_AREA_AMEYA_PLAZA) {
                 LoadSpriteImage(0x1f, 0x79, 2);
                 PlaceSprite(0x1f, 0x1f, 2, 0x28, 0xda);
                 // アメ屋プラザ２階の薬屋でない場合は連絡して下さい。Takubo
@@ -1244,7 +1270,7 @@ void OpLoadRecord(void) {
                 "\272\202\263\202\242\201BTakubo\012"
             );
         } else if (entry == 0x115) {
-            if (g_party.field.pos.area == 0x21) {
+            if (g_party.field.pos.area == MAP_AREA_AMEYA_PLAZA) {
                 LoadSpriteImage(0x1f, 0x2c, 1);
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xf0);
                 // アメ屋プラザの病院でない場合は連絡して下さい。Takubo
@@ -1253,7 +1279,7 @@ void OpLoadRecord(void) {
                     "\202\305\202\310\202\242\217\352\215\207\202\315\230A\227\215\202\265\202\304"
                     "\211\272\202\263\202\242\201BTakubo\012"
                 );
-            } else if (g_party.field.pos.area == 0x56) {
+            } else if (g_party.field.pos.area == MAP_AREA_RINKAI_COLISEUM) {
                 LoadSpriteImage(0x1f, 0x76, 1);
                 PlaceSprite(0x1f, 0x1f, 1, 0x28, 0xf0);
                 // 臨海コロシアムの病院でない場合は連絡して下さい。Takubo
@@ -1298,13 +1324,19 @@ void OpChangeMp(i16 sign) {
     RequestFieldRefresh();
 }
 
+GZ_ENUM_BEGIN_SPLIT(ScriptPoolBoostMode, i16)
+    SCRIPT_POOL_BOOST_NORMAL = 0,
+    SCRIPT_POOL_BOOST_DOUBLE_MAX = 1,
+    SCRIPT_POOL_BOOST_SIGNED_MAX = 2
+GZ_ENUM_END_SPLIT(ScriptPoolBoostMode)
+
 // Retail uses the MP pair as the input even when writing the HP result.
 RVA(0x00034610, 0x6b)
 void OpBoostPool(void) {
     Character* character = ReadScriptObject();
     i16 which = ReadScriptValue();
     i16 amount = ReadScriptValue();
-    i16 mode = ReadScriptValue();
+    GZ_ENUM_LOCAL(ScriptPoolBoostMode, i16) mode = ReadScriptValue();
     i16 limit;
     i16 current;
     if (which == 0) {
@@ -1314,9 +1346,9 @@ void OpBoostPool(void) {
         limit = character->pools.mp.max;
         current = character->pools.mp.cur;
     }
-    if (mode == 1) {
+    if (mode == SCRIPT_POOL_BOOST_DOUBLE_MAX) {
         limit *= 2;
-    } else if (mode == 2) {
+    } else if (mode == SCRIPT_POOL_BOOST_SIGNED_MAX) {
         limit = 0x7fff;
     }
     current = AddClampShort(current, amount, 0, limit);
@@ -1425,9 +1457,9 @@ void OpJumpUnlessEventFlag(ScriptFlagAction action, i32 expect) {
 RVA(0x00034880, 0x27)
 void OpJumpUnlessFlagSet(void) {
     i16 target = ReadBranchTarget();
-    i32 matches = 0;
+    b32 matches = false;
     if (ReadAndMatchEventFlag()) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -1435,15 +1467,15 @@ void OpJumpUnlessFlagSet(void) {
 #define RollFixedContestValue(value, level)                                                        \
     do {                                                                                           \
         switch (level) {                                                                           \
-            case 0:                                                                                \
+            case STAT_CONTEST_LEVEL_0:                                                             \
                 break;                                                                             \
-            case 1:                                                                                \
+            case STAT_CONTEST_LEVEL_1:                                                             \
                 (value) = RandomAverage(5, 15, 0);                                                 \
                 break;                                                                             \
-            case 2:                                                                                \
+            case STAT_CONTEST_LEVEL_2:                                                             \
                 (value) = RandomAverage(12, 22, 0);                                                \
                 break;                                                                             \
-            case 3:                                                                                \
+            case STAT_CONTEST_LEVEL_3:                                                             \
                 (value) = RandomAverage(20, 40, 0);                                                \
                 break;                                                                             \
         }                                                                                          \
@@ -1452,15 +1484,15 @@ void OpJumpUnlessFlagSet(void) {
 #define RollRelativeContestValue(value, level)                                                     \
     do {                                                                                           \
         switch (level) {                                                                           \
-            case 0:                                                                                \
+            case STAT_CONTEST_LEVEL_0:                                                             \
                 break;                                                                             \
-            case 1:                                                                                \
+            case STAT_CONTEST_LEVEL_1:                                                             \
                 (value) = RandomPercent((value), -20, 20);                                         \
                 break;                                                                             \
-            case 2:                                                                                \
+            case STAT_CONTEST_LEVEL_2:                                                             \
                 (value) = RandomPercent((value), 0, 30);                                           \
                 break;                                                                             \
-            case 3:                                                                                \
+            case STAT_CONTEST_LEVEL_3:                                                             \
                 (value) = RandomPercent((value), 10, 40);                                          \
                 break;                                                                             \
         }                                                                                          \
@@ -1471,7 +1503,11 @@ void OpJumpUnlessFlagSet(void) {
 // value, a random spread around it, or a fixed random range chosen by the
 // stat and the contest `level` (0..3); `swap` exchanges the sides.
 RVA(0x000348b0, 0x520)
-void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
+void OpJumpUnlessStatContest(
+    GZ_ENUM_PARAM(StatContestLevel, i16) level,
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert,
+    b16 swap
+) {
     i16 target = ReadBranchTarget();
     i16 stat = ReadScriptValue();
     i32 own;
@@ -1480,125 +1516,125 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
     i32 won;
 
     ReadContestValues(stat, &own, &other, swap);
-    won = 0;
+    won = false;
     switch (stat) {
-        case 0:
+        case STAT_INTUITION:
             RollFixedContestValue(other, level);
             break;
-        case 1:
+        case STAT_MENTAL_STRENGTH:
             RollFixedContestValue(other, level);
             break;
-        case 2:
+        case STAT_MAGIC:
             RollRelativeContestValue(other, level);
             break;
-        case 3:
+        case STAT_INTELLIGENCE:
             switch (level) {
-                case 0:
+                case STAT_CONTEST_LEVEL_0:
                     break;
-                case 1:
+                case STAT_CONTEST_LEVEL_1:
                     other = RandomPercent(other, -20, 20);
                     break;
-                case 2:
+                case STAT_CONTEST_LEVEL_2:
                     other = RandomPercent(other, 10, 30);
                     break;
-                case 3:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomPercent(other, 10, 40);
                     break;
             }
             break;
-        case 4:
+        case STAT_PROTECTION:
             RollFixedContestValue(other, level);
             break;
-        case 5:
+        case STAT_STRENGTH:
             switch (level) {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
+                case STAT_CONTEST_LEVEL_0:
+                case STAT_CONTEST_LEVEL_1:
+                case STAT_CONTEST_LEVEL_2:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomAverage(0, 40, 2);
                     break;
             }
             break;
-        case 6:
+        case STAT_VITALITY:
             RollRelativeContestValue(other, level);
             break;
-        case 7:
+        case STAT_AGILITY:
             RollRelativeContestValue(other, level);
             break;
-        case 8:
+        case STAT_DEXTERITY:
             RollFixedContestValue(other, level);
             break;
-        case 9:
+        case STAT_CHARM:
             RollFixedContestValue(other, level);
             break;
-        case 10:
+        case STAT_FORTUNE:
             RollFixedContestValue(other, level);
             break;
-        case 11:
+        case CONTEST_LEVEL:
             switch (level) {
-                case 0: {
-                    i32 ownAgility;
-                    i32 otherAgility;
+                case STAT_CONTEST_LEVEL_0: {
+                    i32 ownProtection;
+                    i32 otherProtection;
 
-                    ReadContestValues(4, &ownAgility, &otherAgility, swap);
-                    other = -sqrt(otherAgility);
+                    ReadContestValues(STAT_PROTECTION, &ownProtection, &otherProtection, swap);
+                    other = -sqrt(otherProtection);
                     break;
                 }
-                case 1:
+                case STAT_CONTEST_LEVEL_1:
                     other = RandomPercent(other, 10, 25);
                     break;
-                case 2:
+                case STAT_CONTEST_LEVEL_2:
                     other = RandomPercent(other, 25, 50);
                     break;
-                case 3:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomPercent(other, -20, 20);
                     break;
             }
             break;
-        case 12:
+        case CONTEST_LEVEL_GAP:
             switch (level) {
-                case 0:
+                case STAT_CONTEST_LEVEL_0:
                     other = RandomAverage(0, 7, 0);
                     break;
-                case 1:
+                case STAT_CONTEST_LEVEL_1:
                     other = RandomAverage(7, 10, 0);
                     break;
-                case 2:
+                case STAT_CONTEST_LEVEL_2:
                     other = RandomAverage(6, 13, 0);
                     break;
-                case 3:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomAverage(10, 17, 0);
                     break;
             }
             break;
-        case 13:
+        case CONTEST_FAMILIARITY:
             switch (level) {
-                case 0:
+                case STAT_CONTEST_LEVEL_0:
                     other = RandomAverage(0, 7, 0);
                     break;
-                case 1:
+                case STAT_CONTEST_LEVEL_1:
                     other = RandomAverage(7, 10, 0);
                     break;
-                case 2:
+                case STAT_CONTEST_LEVEL_2:
                     other = RandomAverage(6, 13, 0);
                     break;
-                case 3:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomAverage(11, 18, 0);
                     break;
             }
             break;
-        case 14:
+        case CONTEST_FAMILIARITY_COUNT:
             switch (level) {
-                case 0:
+                case STAT_CONTEST_LEVEL_0:
                     other = RandomAverage(35, 70, 0);
                     break;
-                case 1:
+                case STAT_CONTEST_LEVEL_1:
                     other = RandomAverage(60, 91, 0);
                     break;
-                case 2:
+                case STAT_CONTEST_LEVEL_2:
                     other = RandomAverage(85, 116, 0);
                     break;
-                case 3:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomAverage(120, 135, 0);
                     break;
             }
@@ -1606,10 +1642,10 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
     }
     order = CompareInt(own, other);
     if (!invert && order >= 0) {
-        won = 1;
+        won = true;
     }
     if (invert && order < 0) {
-        won = 1;
+        won = true;
     }
     ScriptJumpUnless(target, won);
 }
@@ -1618,7 +1654,7 @@ void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap) {
 // unless it is not).
 RVA(0x00034dd0, 0x81)
 void OpJumpUnlessPlayerInView(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 seen;
     BuildSightGrid(
@@ -1630,8 +1666,8 @@ void OpJumpUnlessPlayerInView(i16 invert) {
         ((FieldActor*)g_curScript->actor)->pos.x,
         ((FieldActor*)g_curScript->actor)->pos.y
     );
-    if ((seen == 1 && invert == 0) || (seen == 0 && invert == 1)) {
-        jump = 1;
+    if ((seen == true && invert == false) || (seen == false && invert == true)) {
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1665,7 +1701,7 @@ void OpJumpUnlessHpQuarterRoll(ComparisonOperator op) {
 // Jumps unless the party stands within 4 cells in front of the actor.
 RVA(0x00034f40, 0xab)
 void OpJumpUnlessPlayerNearFront(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     MapCoord coord = GetMapCoord();
     if (GridDistance(
@@ -1675,8 +1711,8 @@ void OpJumpUnlessPlayerNearFront(i16 invert) {
             coord.y
         )
         > 4) {
-        if (invert != 0) {
-            jump = 1;
+        if (invert != false) {
+            jump = true;
         }
     } else {
         i16 side = RelativeDirection(
@@ -1686,8 +1722,8 @@ void OpJumpUnlessPlayerNearFront(i16 invert) {
             coord.y,
             ((FieldActor*)g_curScript->actor)->direction
         );
-        if ((side == 0 && invert == 0) || (side != 0 && invert == 1)) {
-            jump = 1;
+        if ((side == 0 && invert == false) || (side != 0 && invert == true)) {
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1697,15 +1733,15 @@ void OpJumpUnlessPlayerNearFront(i16 invert) {
 // inverted, while the field marker is set).
 RVA(0x00034ff0, 0x7a)
 void OpJumpUnlessPlayerAtRange(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 range = g_curScript->actor->triggerRange;
     i16 target = ReadBranchTarget();
     if (GetFieldMarker()) {
-        jump = invert == 0;
+        jump = invert == false;
     } else {
         i16 distance = DistanceToParty((FieldActor*)g_curScript->actor);
         if ((range != distance && invert) || (range == distance && !invert)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1713,17 +1749,17 @@ void OpJumpUnlessPlayerAtRange(i16 invert) {
 
 RVA(0x00035070, 0x7b)
 void OpJumpUnlessActorVisible(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     if (GetFieldMarker()) {
-        jump = invert == 0;
+        jump = invert == false;
     } else {
         b16 view = GetPartyView(
             ((FieldActor*)g_curScript->actor)->pos.x,
             ((FieldActor*)g_curScript->actor)->pos.y
         );
-        if ((invert == 0 && view) || (invert == 1 && !view)) {
-            jump = 1;
+        if ((invert == false && view) || (invert == true && !view)) {
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1731,11 +1767,11 @@ void OpJumpUnlessActorVisible(i16 invert) {
 
 RVA(0x000350f0, 0x44)
 void OpJumpUnlessInRoster(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 slot = RosterSlotOfId(ReadObjectId());
     if ((slot >= 0 && !invert) || (slot < 0 && invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1743,12 +1779,12 @@ void OpJumpUnlessInRoster(i16 invert) {
 // Jumps unless the roster holds the roster capacity less 6 entries or more.
 RVA(0x00035140, 0x4c)
 void OpJumpUnlessRosterFull(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
-    i16 count = CountRosterEntries(1);
+    i16 count = CountRosterEntries(true);
     i16 limit = GetRosterCapacity() - 6;
     if ((count >= limit && !invert) || (count < limit && invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1756,11 +1792,11 @@ void OpJumpUnlessRosterFull(i16 invert) {
 // Jumps unless the object's alignment agrees with the leader's.
 RVA(0x00035190, 0x44)
 void OpJumpUnlessAlignmentMatch(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 conflict = AlignmentConflicts(ReadScriptObject());
     if (ScriptBooleanMatches(!conflict, invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1769,7 +1805,7 @@ void OpJumpUnlessAlignmentMatch(i16 invert) {
 RVA(0x000351e0, 0x5b)
 void OpJumpUnlessCanAfford(i16 invert) {
     i32 price = 0x7fffffff;
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     Character* object = ReadScriptObject();
     if (object) {
@@ -1777,29 +1813,29 @@ void OpJumpUnlessCanAfford(i16 invert) {
     }
     price -= GetObjectMacca(-1);
     if ((price <= 0 && !invert) || (price > 0 && invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
 
 RVA(0x00035240, 0x44)
 void OpJumpUnlessInParty(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 position = FindPartyPositionOfId(ReadObjectId());
     if ((position >= 0 && !invert) || (position < 0 && invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
 
 RVA(0x00035290, 0x3f)
 void OpJumpUnlessRosterHasNoDemons(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
-    i16 demons = CountRosterEntries(0);
+    i16 demons = CountRosterEntries(false);
     if (ScriptBooleanMatches(!demons, invert)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1809,17 +1845,17 @@ void OpJumpUnlessRosterHasNoDemons(i16 invert) {
 RVA(0x000352d0, 0x62)
 void OpJumpUnlessHealthy(i16 invert) {
     i16 conditions = 0;
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     Character* object = ReadScriptObject();
     if (!object && invert) {
-        jump = 1;
+        jump = true;
     } else {
         if (object) {
             AccumulateConditionBits(GetCharacterConditions(object), conditions);
         }
         if (ScriptBooleanMatches(!conditions, invert)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1832,12 +1868,12 @@ static __inline Character* GetResolvedPartyCharacter(i16 id) {
 // The same for the first of the companions -2, -3 and -7 in the roster.
 // @early-stop: with no companion and no invert, retail re-zeroes the jump
 // flag in its register before a duplicated call. A single call after an
-// `else if (!companion) jump = 0;` arm is exact, but that assignment repeats
+// `else if (!companion) jump = false;` arm is exact, but that assignment repeats
 // the initializer; the early return here passes the known-zero pointer.
 RVA(0x00035340, 0xb5)
 void OpJumpUnlessCompanionHealthy(i16 invert) {
     i16 conditions = 0;
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     Character* companion = GetResolvedPartyCharacter(-2);
     if (!companion) {
@@ -1847,7 +1883,7 @@ void OpJumpUnlessCompanionHealthy(i16 invert) {
         companion = GetResolvedPartyCharacter(-7);
     }
     if (!companion && invert) {
-        jump = 1;
+        jump = true;
     } else {
         if (!companion) {
             ScriptJumpUnless(target, jump);
@@ -1855,7 +1891,7 @@ void OpJumpUnlessCompanionHealthy(i16 invert) {
         }
         AccumulateConditionBits(GetCharacterConditions(companion), conditions);
         if (ScriptBooleanMatches(!conditions, invert)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1864,12 +1900,12 @@ void OpJumpUnlessCompanionHealthy(i16 invert) {
 // Jumps unless the player has an item in equipment slot 6.
 RVA(0x00035400, 0x4d)
 void OpJumpUnlessHeroEquipped(i16 invert) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
-    Character* player = ResolveScriptObject(-1);
-    if ((GetCharacterEquipment(player)[6].item != -1 && !invert)
-        || (GetCharacterEquipment(player)[6].item == -1 && invert)) {
-        jump = 1;
+    Character* player = ResolveScriptObject(SCRIPT_REF_SLOT_BASE);
+    if ((GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item != ITEM_ID_EMPTY && !invert)
+        || (GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item == ITEM_ID_EMPTY && invert)) {
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1880,13 +1916,13 @@ void OpJumpUnlessHeroEquipped(i16 invert) {
 RVA(0x00035450, 0x4a)
 void OpIfNoActor(i16 negate) {
     i16 state = 0;
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     if (GetScriptActor()) {
         state = 3;
     }
     if ((state < 2 && !negate) || (state > 2 && negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1894,12 +1930,12 @@ void OpIfNoActor(i16 negate) {
 // Jumps unless the party faces the operand's direction.
 RVA(0x000354a0, 0x45)
 void OpIfFacing(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 direction = ReadScriptValue() & 3;
     if ((direction == g_party.field.pos.direction && !negate)
         || (direction != g_party.field.pos.direction && negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1908,16 +1944,16 @@ void OpIfFacing(i16 negate) {
 // saved, only when negated).
 RVA(0x000354f0, 0x64)
 void OpIfReturnFacing(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 direction = ReadScriptValue() & 3;
     if (g_party.savedDirection == -1) {
         if (negate) {
-            jump = 1;
+            jump = true;
         }
     } else if ((direction == g_party.savedDirection && !negate)
                || (direction != g_party.savedDirection && negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1926,18 +1962,18 @@ void OpIfReturnFacing(i16 negate) {
 // lacking it).
 RVA(0x00035560, 0x63)
 void OpIfObjectHasCondition(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     Character* object = ReadScriptObject();
     i16 has = ReadScriptValue();
     if (!object && negate) {
-        jump = 1;
+        jump = true;
     } else {
         if (object) {
             has = HasCondition(GetCharacterConditions(object), has);
         }
         if (ScriptBooleanMatches(has, negate)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -1946,11 +1982,11 @@ void OpIfObjectHasCondition(i16 negate) {
 // Jumps unless the party holds the item.
 RVA(0x000355d0, 0x44)
 void OpIfHasItem(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 held = CountHeldItem(ReadScriptValue());
     if (ScriptBooleanMatches(held, negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1961,16 +1997,16 @@ RVA(0x00035620, 0x67)
 void OpIfHasAllItems(i16 negate) {
     i16 all = -1;
     i16 any = 0;
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 item;
-    for (item = ReadScriptValue(); item != -1; item = ReadScriptValue()) {
+    for (item = ReadScriptValue(); item != ITEM_ID_EMPTY; item = ReadScriptValue()) {
         i16 held = CountHeldItem(item) ? -1 : 0;
         all &= held;
         any |= held;
     }
     if ((!negate && all) || (negate && !any)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -1998,7 +2034,7 @@ RVA(0x000356f0, 0x55)
 void OpOpenItemListWindow(void) {
     i16 totalVar = ReadScriptValue();
     i16 selling = ReadScriptValue();
-    ScriptPanel* node = CreateScriptPanel(0x118, 8, 0, 0);
+    ScriptPanel* node = CreateScriptPanel(IDB_BITMAP56, 8, 0, 0);
     i16 i;
     node->panel->flags |= PANEL_ALLOW_RIGHT_CLICK;
     node->panel->flags &= ~PANEL_IGNORE_RIGHT_CLICK;
@@ -2021,22 +2057,22 @@ void OpRedrawItemListTotal(void) {
 
 RVA(0x00035780, 0x3b)
 void OpIfPoolHasItems(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 count = CountPoolEntries();
     if (ScriptBooleanMatches(count, negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
 
 RVA(0x000357c0, 0x3b)
 void OpIfBagHasEntries(i16 negate) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 count = CountBagEntries();
     if (ScriptBooleanMatches(count, negate)) {
-        jump = 1;
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -2054,17 +2090,17 @@ void OpGetItemPrice(void) {
 // the bag.
 RVA(0x00035830, 0x7d)
 void OpStashItemLists(void) {
-    i16 restore = ReadScriptValue();
+    GZ_ENUM_STORAGE(ItemStashAction, i16) action = ReadScriptValue();
     i16 var = ReadScriptValue();
     var = min(var, 0xb0);
-    if (!restore) {
+    if (action == ITEM_STASH_SAVE) {
         SaveGemItems((ItemStack*)&g_scriptVars[var]);
         ResetGemItems(GetGemItemBase());
-        SaveOrRestoreBag((ItemStack*)&g_scriptVars[var + 16], 0);
+        SaveOrRestoreBag((ItemStack*)&g_scriptVars[var + 16], ITEM_STASH_SAVE);
         ClearBag();
     } else {
         RestoreGemItems((ItemStack*)&g_scriptVars[var]);
-        SaveOrRestoreBag((ItemStack*)&g_scriptVars[var + 16], 1);
+        SaveOrRestoreBag((ItemStack*)&g_scriptVars[var + 16], ITEM_STASH_RESTORE);
     }
 }
 
@@ -2089,15 +2125,16 @@ void OpAdjustItemCount(void) {
     SetScriptLongVar(index, moved);
 }
 
-// Lists the bag entries holding items of `category` (0: any; 1..19 an item
-// kind; 20 excludes scenario items, 21 also requires a price, 22 is priceless items)
+// Lists the bag entries holding items of `category` (1..19 selects an item
+// kind; the other selectors choose all, non-scenario, priced non-scenario or
+// zero-price items)
 // into a new array handle, with `spare` extra entries; stores the handle and
 // the count.
 RVA(0x00035920, 0x11a)
 void OpListBagByCategory(void) {
     i16 listVar = ReadLongVarIndex();
     i16 countVar = ReadLongVarIndex();
-    i16 category = ReadScriptValue();
+    GZ_ENUM_LOCAL(ScriptBagCategory, i16) category = ReadScriptValue();
     i16 spare = ReadScriptValue();
     // Retail's frame holds more than the bag's 64 entries (65 words fit).
     i16 entries[65];
@@ -2105,23 +2142,25 @@ void OpListBagByCategory(void) {
     i16 i;
     i32 handle;
     i32* list;
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         i16 item = GetBagItem(i);
         if (item < 1) {
             continue;
         }
-        if (category >= 0 && category <= 19) {
-            if (category != 0 && GetItemKind(item) != category) {
+        if (category >= SCRIPT_BAG_CATEGORY_ALL && category <= ITEM_KIND_ACCESSORY) {
+            if (category != SCRIPT_BAG_CATEGORY_ALL && GetItemKind(item) != category) {
                 continue;
             }
         } else {
-            if ((category == 20 || category == 21) && GetItemKind(item) == ITEM_KIND_SCENARIO) {
+            if ((category == SCRIPT_BAG_CATEGORY_NON_SCENARIO
+                 || category == SCRIPT_BAG_CATEGORY_PRICED_NON_SCENARIO)
+                && GetItemKind(item) == ITEM_KIND_SCENARIO) {
                 continue;
             }
-            if (category == 21 && GetItemPrice(item) == 0) {
+            if (category == SCRIPT_BAG_CATEGORY_PRICED_NON_SCENARIO && GetItemPrice(item) == 0) {
                 continue;
             }
-            if (category == 22 && GetItemPrice(item) != 0) {
+            if (category == SCRIPT_BAG_CATEGORY_ZERO_PRICE && GetItemPrice(item) != 0) {
                 continue;
             }
         }
@@ -2149,8 +2188,8 @@ RVA(0x00035a70, 0x1a)
 void OpClearBagEntry(void) {
     ItemStack* entry = GetBagEntry(ReadScriptValue());
     entry->count = 0;
-    entry->hasAttachment = 0;
-    entry->item = -1;
+    entry->hasAttachment = false;
+    entry->item = ITEM_ID_EMPTY;
     entry->attachment = 0;
 }
 
@@ -2176,9 +2215,9 @@ void OpTakeDropSlot(void) {
 }
 
 RVA(0x00035b20, 0xf)
-i16 OpCallSubScene(void) {
-    PushGameState(0x26);
-    return -3;
+GZ_ENUM_RETURN(ScriptStatus, i16) OpCallSubScene(void) {
+    PushGameState(GAME_STATE_GEM_ITEM_GIFT);
+    return SCRIPT_YIELD;
 }
 
 // Stores in a long variable a handle to a copy of the item's decoded record
@@ -2196,12 +2235,12 @@ void OpCopyItemRecord(void) {
 }
 
 RVA(0x00035b90, 0x14)
-void OpOpenFusionScreen(i16 kind) {
+void OpOpenFusionScreen(GZ_ENUM_PARAM(FusionMenuStep, i16) kind) {
     PushFusionMenu(kind, ReadLongVarIndex());
 }
 
 RVA(0x00035bb0, 0x1c)
-void OpRunFusion(i16 triple) {
+void OpRunFusion(b16 triple) {
     SetBlankStep(1);
     if (!triple) {
         RunPairFusion();
@@ -2217,11 +2256,11 @@ void OpEndFusion(void) {
 
 // Jumps unless `cond` is zero.
 RVA(0x00035be0, 0x20)
-void OpJumpIf(i16 cond) {
-    i32 jump = 0;
+void OpJumpIf(b16 cond) {
+    b32 jump = false;
     i16 target = ReadBranchTarget();
-    if (cond == 0) {
-        jump = 1;
+    if (!cond) {
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -2229,18 +2268,19 @@ void OpJumpIf(i16 cond) {
 RVA(0x00035c00, 0x11)
 void OpSkipJumpTarget(i16 unused) {
     i16 target = ReadBranchTarget();
-    ScriptJumpUnless(target, 1);
+    ScriptJumpUnless(target, true);
 }
 
 // Jumps unless the roster's demon count is above `limit` (mode 0) or at most
 // `limit` (mode 1).
 RVA(0x00035c20, 0x45)
-void OpIfDemonCount(i16 mode, i16 limit) {
-    i32 jump = 0;
+void OpIfDemonCount(GZ_ENUM_PARAM(ScriptTestPolarity, i16) mode, i16 limit) {
+    b32 jump = false;
     i16 target = ReadBranchTarget();
-    i16 demons = CountRosterEntries(0);
-    if ((mode == 0 && demons > limit) || (mode == 1 && demons <= limit)) {
-        jump = 1;
+    i16 demons = CountRosterEntries(false);
+    if ((mode == SCRIPT_TEST_NORMAL && demons > limit)
+        || (mode == SCRIPT_TEST_INVERTED && demons <= limit)) {
+        jump = true;
     }
     ScriptJumpUnless(target, jump);
 }
@@ -2253,13 +2293,13 @@ void OpGetFusionResult(void) {
 
 RVA(0x00035c90, 0x2c)
 void OpAddMagnetite(i16 sign) {
-    AddMagnetite(ResolveScriptObject(-1), ReadScriptValue() * sign);
+    AddMagnetite(ResolveScriptObject(SCRIPT_REF_SLOT_BASE), ReadScriptValue() * sign);
     DrawMoneyCounters(1);
 }
 
 RVA(0x00035cc0, 0x2c)
 void OpAddMacca(i16 sign) {
-    AddMacca(ResolveScriptObject(-1), ReadScriptValue() * sign);
+    AddMacca(ResolveScriptObject(SCRIPT_REF_SLOT_BASE), ReadScriptValue() * sign);
     DrawMoneyCounters(1);
 }
 
@@ -2280,9 +2320,9 @@ void OpQueueAutoMoves(void) {
     i = 0;
     move = ReadScriptByte();
     while (move != 0xff) {
-        if (i == 0 && g_party.field.pos.area == 0x82 && g_party.field.pos.level == 5
+        if (i == 0 && g_party.field.pos.area == MAP_AREA_HATSUDAI && g_party.field.pos.level == 5
             && g_party.field.pos.x == 4 && g_party.field.pos.y == 9
-            && g_party.field.pos.direction == 3 && move == 3) {
+            && g_party.field.pos.direction == VIEW_WEST && move == 3) {
             move = 1;
         }
         PushAutoMove(move);
@@ -2354,8 +2394,11 @@ void OpSetPlayerPosition(void) {
 }
 
 RVA(0x00035f20, 0xe8)
-void OpIfBlockedToward(i16 negate, i16 turn) {
-    i32 matches = 0;
+void OpIfBlockedToward(
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) negate,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+) {
+    b32 matches = false;
     i16 target = ReadBranchTarget();
     i16 x = g_party.field.pos.x;
     i16 y = g_party.field.pos.y;
@@ -2368,32 +2411,32 @@ void OpIfBlockedToward(i16 negate, i16 turn) {
     }
     if (!blocked) {
         StepMapCoord(&x, &y, direction, turn);
-        blocked = IsCellBlocked(g_party.field.pos.level, 1, x, y);
+        blocked = IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y);
         if (!blocked && g_curScript->actor != NULL) {
             blocked = DistanceToParty((FieldActor*)g_curScript->actor) == 0;
         }
     }
     if ((!blocked && !negate) || (blocked && negate)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
 
 // Runs move command `effect` as a screen transition and refreshes the field.
 RVA(0x00036010, 0x19)
-i16 PlayScreenTransition(i16 effect) {
+GZ_ENUM_RETURN(ScriptStatus, i16) PlayScreenTransition(i16 effect) {
     RunMoveCommand(effect, 0);
     RequestFieldRefresh();
-    return -3;
+    return SCRIPT_YIELD;
 }
 
 // Plays a screen transition, then redraws the field screen in one long frame
 // with the status redraw locked.
 RVA(0x00036030, 0x41)
-i16 OpScreenTransition(void) {
+GZ_ENUM_RETURN(ScriptStatus, i16) OpScreenTransition(void) {
     i16 result = PlayScreenTransition(ReadScriptValue());
-    i16 lock = LockStatusRedraw(1);
-    UpdateFieldScreen(0);
+    i16 lock = LockStatusRedraw(true);
+    UpdateFieldScreen(false);
     SetLongFrame(1);
     LockStatusRedraw(lock);
     return result;
@@ -2406,12 +2449,12 @@ static __inline void LoadScriptCharacterToRoster(i16 id) {
 }
 
 RVA(0x00036080, 0xd7)
-i16 OpAddToRoster(void) {
+GZ_ENUM_RETURN(ScriptStatus, i16) OpAddToRoster(void) {
     i16 ref = ReadObjectRef();
     i16 id = ref;
     Character* character;
-    if (ref >= 3000) {
-        id = ref - 3000;
+    if (ref >= SCRIPT_REF_CHARACTER_BASE) {
+        id = ref - SCRIPT_REF_CHARACTER_BASE;
     }
     if (ref == -17 || ref == -19) {
         id = GetScriptActorId();
@@ -2419,11 +2462,11 @@ i16 OpAddToRoster(void) {
             DespawnScriptActor();
             LoadScriptCharacterToRoster(id);
         }
-        return -1;
+        return SCRIPT_END;
     }
     if (id >= 0) {
         LoadScriptCharacterToRoster(id);
-        return 0;
+        return SCRIPT_CONTINUE;
     }
     character = GetCharacter(ObjectSlotOfId(ref));
     if (RosterSlotOfId(character->id) == -1) {
@@ -2431,7 +2474,7 @@ i16 OpAddToRoster(void) {
         SetAnalyzed(character->id, 1);
         SortRoster();
     }
-    return 0;
+    return SCRIPT_CONTINUE;
 }
 
 RVA(0x00036160, 0x50)
@@ -2439,8 +2482,8 @@ void AddScriptCharacterToRoster(Character* character, i16 unused) {
     if (AddToRoster(character) < 0) {
         g_rosterPendingMember = character;
         SaveRosterReturnState();
-        SetGameState(0x28);
-        SetGamePhase(0);
+        SetGameState(GAME_STATE_REPLACE_ROSTER_MEMBER);
+        SetGamePhase(ROSTER_REPLACEMENT_OPEN_LIST);
     }
 }
 
@@ -2448,13 +2491,13 @@ RVA(0x000361b0, 0x97)
 i16 OpRemoveFromRoster(void) {
     i16 ref = ReadObjectRef();
     i16 id = ref;
-    if (id >= 3000) {
-        id = ref - 3000;
-    } else if (id >= 2000) {
-        RemoveFromRoster(id - 2000);
+    if (id >= SCRIPT_REF_CHARACTER_BASE) {
+        id = ref - SCRIPT_REF_CHARACTER_BASE;
+    } else if (id >= SCRIPT_REF_ROSTER_BASE) {
+        RemoveFromRoster(id - SCRIPT_REF_ROSTER_BASE);
         return 0;
-    } else if (id >= 1000) {
-        i16 slot = GetPartySlot(id - 1000);
+    } else if (id >= SCRIPT_REF_PARTY_BASE) {
+        i16 slot = GetPartySlot(id - SCRIPT_REF_PARTY_BASE);
         if (slot != -1) {
             RemoveFromRoster(slot);
         }
@@ -2482,25 +2525,25 @@ i16 OpJoinActiveParty(void) {
     i16 ref = ReadObjectRef();
     i16 id = ref;
     i16 slot;
-    if (ref >= 3000) {
-        id = ref - 3000;
+    if (ref >= SCRIPT_REF_CHARACTER_BASE) {
+        id = ref - SCRIPT_REF_CHARACTER_BASE;
     }
-    if (id >= 2000) {
-        id = GetRosterId(id - 2000);
+    if (id >= SCRIPT_REF_ROSTER_BASE) {
+        id = GetRosterId(id - SCRIPT_REF_ROSTER_BASE);
         if (id < 0) {
             return -1;
         }
     }
     if (ref == -17 || ref == -19) {
         id = GetScriptActorId();
-        if (id == -1) {
+        if (id == CHARACTER_ID_NONE) {
             return -1;
         }
     }
     if (id < 0) {
         id = ResolveObjectId(id);
     }
-    if (id < 32 && RosterSlotOfId(id) == -1) {
+    if (id < HUMAN_ID_LIMIT && RosterSlotOfId(id) == -1) {
         Character* character = FindCharacterById(id);
         AddScriptCharacterToRoster(character, 3);
         SetAnalyzed(character->id, 1);
@@ -2518,18 +2561,18 @@ RVA(0x00036330, 0xa0)
 i16 OpLeaveActiveParty(void) {
     i16 ref = ReadObjectRef();
     i16 id = ref;
-    if (ref >= 3000) {
-        id = ref - 3000;
+    if (ref >= SCRIPT_REF_CHARACTER_BASE) {
+        id = ref - SCRIPT_REF_CHARACTER_BASE;
     }
-    if (id >= 2000) {
-        id = GetRosterId(id - 2000);
+    if (id >= SCRIPT_REF_ROSTER_BASE) {
+        id = GetRosterId(id - SCRIPT_REF_ROSTER_BASE);
         if (id < 0) {
             return -1;
         }
     }
     if (ref == -17 || ref == -19) {
         id = GetScriptActorId();
-        if (id == -1) {
+        if (id == CHARACTER_ID_NONE) {
             return -1;
         }
     }
@@ -2537,7 +2580,7 @@ i16 OpLeaveActiveParty(void) {
         id = ResolveObjectId(id);
     }
     RemoveFromParty(FindRosterSlotById(id));
-    if (id < 32) {
+    if (id < HUMAN_ID_LIMIT) {
         RemoveFromRoster(RosterSlotOfId(id));
     }
     RequestFieldRefresh();
@@ -2569,9 +2612,9 @@ RVA(0x00036440, 0x7b)
 i16 OpGetCombatantId(void) {
     i16 index = ReadLongVarIndex();
     i16 id = ReadObjectRef();
-    if (id == -20) {
+    if (id == SCRIPT_REF_BATTLE_ACTOR) {
         id = g_actorId;
-    } else if (id == -21) {
+    } else if (id == SCRIPT_REF_BATTLE_TARGET) {
         id = g_targetId;
     } else {
         id = -1;
@@ -2584,8 +2627,8 @@ RVA(0x000364c0, 0x92)
 void OpIfObjectIsAlly(i16 negate) {
     i16 target = ReadBranchTarget();
     i16 id = ReadObjectRef();
-    i32 matches;
-    if (id == -20) {
+    b32 matches;
+    if (id == SCRIPT_REF_BATTLE_ACTOR) {
         id = g_actorId;
     } else if (id == -21) {
         id = g_targetId;
@@ -2595,9 +2638,9 @@ void OpIfObjectIsAlly(i16 negate) {
             id = -1 - id;
         }
     }
-    matches = 0;
+    matches = false;
     if ((id < 0 && !negate) || (id >= 0 && negate)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -2607,7 +2650,7 @@ void OpRebalanceMemberStats(void) {
     Character* character = GetRosterCharacter(ReadScriptValue());
     if (character) {
         i16 i;
-        for (i = 0; i < 11; i++) {
+        for (i = 0; i < STAT_COUNT; i++) {
             i16 sum = character->stats.bonus[i] + character->stats.equipment[i]
                       + GetBaseStat(character, i) + character->stats.modifiers[i];
             if (HasCondition(GetCharacterConditions(character), CONDITION_ZOMBIE)) {
@@ -2631,7 +2674,7 @@ void OpAddMemberSkill(void) {
 
 RVA(0x00036610, 0x18)
 void OpSwitchOnMoonPhase(i16 call) {
-    SwitchOnValue(GetMoonPhase() + 1, call, 0);
+    SwitchOnValue(GetMoonPhase() + 1, call, false);
 }
 
 // @identity-TODO: what table 0x47beac (28 bytes per row, row = actor byte +0x1f8, column =
@@ -2673,21 +2716,21 @@ void OpGetTimeOfDay(void) {
 // escape selects each is unrecovered. `byId` makes kinds 1/2 take `id` as a
 // character id instead of a script object id.
 RVA(0x00036700, 0x218)
-char* GetTextToken(i16 kind, i16 byId, i16 id) {
+char* GetTextToken(GZ_ENUM_PARAM(TextTokenKind, i16) kind, b16 byId, i16 id) {
     const char* text = NULL;
     Character* object;
     s_tokenText[0] = '\0';
     switch (kind) {
-        case 0:
+        case TEXT_TOKEN_FULL_NAME:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
             }
             FormatFullName(s_tokenText, object);
             return s_tokenText;
-        case 1:
-        case 2:
-            if (byId != 1) {
+        case TEXT_TOKEN_RACE_NAME:
+        case TEXT_TOKEN_RACE_NAME_ALIAS:
+            if (byId != true) {
                 object = ResolveScriptObject(id);
                 if (object != NULL) {
                     id = object->id;
@@ -2695,8 +2738,8 @@ char* GetTextToken(i16 kind, i16 byId, i16 id) {
             }
             text = GetDemonRaceName(id);
             break;
-        case 3:
-            if (byId != 1) {
+        case TEXT_TOKEN_PANTHEON_NAME:
+            if (byId != true) {
                 object = ResolveScriptObject(id);
                 if (object != NULL) {
                     id = object->id;
@@ -2704,17 +2747,17 @@ char* GetTextToken(i16 kind, i16 byId, i16 id) {
             }
             text = GetDemonPantheonName(id);
             break;
-        case 4:
+        case TEXT_TOKEN_RECORD_NAME:
             text = GetLoadedRecordName(id);
             break;
-        case 7:
+        case TEXT_TOKEN_NAME_PREFIX:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
             }
             text = object->namePrefix;
             break;
-        case 8:
+        case TEXT_TOKEN_NONHUMAN_NAME_PREFIX:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
@@ -2725,49 +2768,49 @@ char* GetTextToken(i16 kind, i16 byId, i16 id) {
                 text = object->name;
             }
             break;
-        case 9:
+        case TEXT_TOKEN_BLOOD_TYPE:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
             }
             text = s_bloodTypes[object->bloodType];
             break;
-        case 10:
+        case TEXT_TOKEN_SIGN:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
             }
             text = s_signNames[object->sign];
             break;
-        case 11:
+        case TEXT_TOKEN_AFFILIATION:
             object = ResolveScriptObject(id);
             if (object == NULL) {
                 return s_tokenText;
             }
             text = s_affiliationNames[GetCharacterAffiliation(object, 0)];
             break;
-        case 12:
+        case TEXT_TOKEN_STATUS_CONDITION:
             text = GetConditionName(g_statusCondition);
             break;
-        case 15:
+        case TEXT_TOKEN_RECORD_NAME_ALIAS:
             text = GetLoadedRecordName(id);
             break;
-        case 16:
+        case TEXT_TOKEN_DEMON_CLASS:
             text = GetDemonClassName(id);
             break;
-        case 17:
+        case TEXT_TOKEN_SKILL_NAME:
             text = GetSkillName(id);
             break;
-        case 18:
+        case TEXT_TOKEN_CONDITION_NAME:
             text = GetConditionName(id);
             break;
-        case 19:
+        case TEXT_TOKEN_STATUS_CONDITION_ALIAS:
             text = GetConditionName(g_statusCondition);
             break;
-        case 5:
-        case 6:
-        case 13:
-        case 14:
+        case TEXT_TOKEN_EMPTY_5:
+        case TEXT_TOKEN_EMPTY_6:
+        case TEXT_TOKEN_EMPTY_13:
+        case TEXT_TOKEN_EMPTY_14:
             break;
         default:
             return s_tokenText;
@@ -2791,41 +2834,41 @@ char* ReadTextToken(void) {
     s_tokenText[0] = '\0';
     kind = ReadScriptByte();
     id = 0;
-    byId = 0;
+    byId = false;
     switch (kind) {
-        case 0:
+        case TEXT_TOKEN_FULL_NAME:
             object = ReadScriptObject();
             if (object) {
                 FormatFullName(s_tokenText, object);
             }
             ExchangeObjectCheckBypass(bypass);
             return s_tokenText;
-        case 1:
+        case TEXT_TOKEN_RACE_NAME:
             goto readIndexedToken;
-        case 2:
+        case TEXT_TOKEN_RACE_NAME_ALIAS:
             goto readIndexedToken;
-        case 3:
+        case TEXT_TOKEN_PANTHEON_NAME:
             goto readIndexedToken;
-        case 7:
+        case TEXT_TOKEN_NAME_PREFIX:
             goto readIndexedToken;
-        case 8:
+        case TEXT_TOKEN_NONHUMAN_NAME_PREFIX:
             goto readIndexedToken;
-        case 9:
+        case TEXT_TOKEN_BLOOD_TYPE:
             goto readIndexedToken;
-        case 10:
+        case TEXT_TOKEN_SIGN:
             goto readIndexedToken;
-        case 11:
+        case TEXT_TOKEN_AFFILIATION:
         readIndexedToken:
             byId = ReadScriptByte();
             id = ReadScriptValue();
             break;
-        case 4:
+        case TEXT_TOKEN_RECORD_NAME:
             id = ReadScriptValue();
             if (id == 0) {
                 id = GetScriptLongVar(11);
             }
             break;
-        case 15:
+        case TEXT_TOKEN_RECORD_NAME_ALIAS:
             ReadScriptValue();
             id = g_actionId;
             object = GetCombatant(g_actorId);
@@ -2833,10 +2876,10 @@ char* ReadTextToken(void) {
                 id = object->pickItem;
             }
             break;
-        case 16:
+        case TEXT_TOKEN_DEMON_CLASS:
             id = ReadObjectId();
             break;
-        case 17:
+        case TEXT_TOKEN_SKILL_NAME:
             ReadScriptValue();
             id = g_actionId;
             object = GetCombatant(g_actorId);
@@ -2844,20 +2887,20 @@ char* ReadTextToken(void) {
                 id = object->pickItem;
             }
             break;
-        case 18:
+        case TEXT_TOKEN_CONDITION_NAME:
             id = GetFirstConditionIndex(ReadScriptObject());
             break;
-        case 5:
+        case TEXT_TOKEN_EMPTY_5:
             goto readTokenValue;
-        case 6:
+        case TEXT_TOKEN_EMPTY_6:
             goto readTokenValue;
-        case 12:
+        case TEXT_TOKEN_STATUS_CONDITION:
             goto readTokenValue;
-        case 13:
+        case TEXT_TOKEN_EMPTY_13:
             goto readTokenValue;
-        case 14:
+        case TEXT_TOKEN_EMPTY_14:
             goto readTokenValue;
-        case 19:
+        case TEXT_TOKEN_STATUS_CONDITION_ALIAS:
         readTokenValue:
             id = ReadScriptValue();
             break;
@@ -2900,406 +2943,406 @@ void OpRollActorMacca(void) {
 // 75-79). Unknown kinds leave the slot unchanged.
 RVA(0x00036b00, 0x8e0)
 i32* ReadScriptOperand(void) {
-    i16 kind = ReadScriptByte();
+    GZ_ENUM_LOCAL(ScriptOperandKind, i16) kind = ReadScriptByte();
     Character* object;
     i8 byteValue;
     i16 wordValue;
 
     switch (kind) {
-        case 0:
+        case SCRIPT_OPERAND_BYTE:
             s_operand = ReadScriptByte();
             return &s_operand;
-        case 2:
+        case SCRIPT_OPERAND_LONG:
             s_operand = ReadScriptLong();
             return &s_operand;
-        case 3:
+        case SCRIPT_OPERAND_LONG_VAR:
             s_operand = GetScriptLongVar(ReadScriptByte());
             return &s_operand;
-        case 4:
+        case SCRIPT_OPERAND_SIGNED_BYTE:
             byteValue = ReadScriptByte();
             s_operand = byteValue;
             return &s_operand;
-        case 5:
+        case SCRIPT_OPERAND_SIGNED_WORD:
             wordValue = ReadScriptWord();
             s_operand = wordValue;
             return &s_operand;
-        case 6:
+        case SCRIPT_OPERAND_ITEM_PRICE:
             s_operand = GetItemPrice(ReadScriptValue());
             return &s_operand;
-        case 7:
+        case SCRIPT_OPERAND_ITEM_SELL_PRICE:
             s_operand = GetItemPrice(ReadScriptValue()) / 4;
             return &s_operand;
-        case 9:
+        case SCRIPT_OPERAND_ROLLED_MACCA:
             ReadScriptWord();
             s_operand = g_rolledMacca;
             return &s_operand;
-        case 10:
+        case SCRIPT_OPERAND_OBJECT_MACCA:
             s_operand = GetObjectMacca(ReadObjectRef());
             return &s_operand;
-        case 11:
+        case SCRIPT_OPERAND_ROLLED_MAGNETITE:
             ReadScriptWord();
             s_operand = g_rolledMagnetite;
             return &s_operand;
-        case 12:
+        case SCRIPT_OPERAND_OBJECT_MAGNETITE:
             s_operand = GetObjectMagnetite(ReadObjectRef());
             return &s_operand;
-        case 1:
-        case 13:
-        case 14:
-        case 15:
-        case 16:
-        case 17:
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 24:
+        case SCRIPT_OPERAND_WORD:
+        case SCRIPT_OPERAND_WORD_ALIAS_1:
+        case SCRIPT_OPERAND_WORD_ALIAS_2:
+        case SCRIPT_OPERAND_WORD_ALIAS_3:
+        case SCRIPT_OPERAND_WORD_ALIAS_4:
+        case SCRIPT_OPERAND_WORD_ALIAS_5:
+        case SCRIPT_OPERAND_WORD_ALIAS_6:
+        case SCRIPT_OPERAND_WORD_ALIAS_7:
+        case SCRIPT_OPERAND_WORD_ALIAS_8:
+        case SCRIPT_OPERAND_WORD_ALIAS_9:
+        case SCRIPT_OPERAND_WORD_ALIAS_10:
+        case SCRIPT_OPERAND_WORD_ALIAS_11:
+        case SCRIPT_OPERAND_WORD_ALIAS_12:
             s_operand = ReadScriptWord();
             return &s_operand;
-        case 25:
-        case 26:
-        case 27:
-        case 28:
-        case 29:
-        case 30:
-        case 31:
-        case 32:
-        case 33:
-        case 34:
-        case 35:
-            s_operand = GetObjectStatTotal(ReadObjectRef(), kind - 25);
+        case SCRIPT_OPERAND_OBJECT_STAT_0:
+        case SCRIPT_OPERAND_OBJECT_STAT_1:
+        case SCRIPT_OPERAND_OBJECT_STAT_2:
+        case SCRIPT_OPERAND_OBJECT_STAT_3:
+        case SCRIPT_OPERAND_OBJECT_STAT_4:
+        case SCRIPT_OPERAND_OBJECT_STAT_5:
+        case SCRIPT_OPERAND_OBJECT_STAT_6:
+        case SCRIPT_OPERAND_OBJECT_STAT_7:
+        case SCRIPT_OPERAND_OBJECT_STAT_8:
+        case SCRIPT_OPERAND_OBJECT_STAT_9:
+        case SCRIPT_OPERAND_OBJECT_STAT_10:
+            s_operand = GetObjectStatTotal(ReadObjectRef(), kind - SCRIPT_OPERAND_OBJECT_STAT_0);
             return &s_operand;
-        case 36:
+        case SCRIPT_OPERAND_OBJECT_LEVEL:
             s_operand = GetObjectLevel(ReadObjectRef());
             return &s_operand;
-        case 37:
+        case SCRIPT_OPERAND_OBJECT_LEVEL_GAP:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->levelGap;
             return &s_operand;
-        case 38:
+        case SCRIPT_OPERAND_OBJECT_FAMILIARITY:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->familiarity;
-            if (IsEventFlagSet(2, 8)) {
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
                 break;
             }
             s_operand += 2;
             return &s_operand;
-        case 39:
+        case SCRIPT_OPERAND_OBJECT_FAMILIARITY_COUNT:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetFamiliarityCount(object->id);
             return &s_operand;
-        case 40:
+        case SCRIPT_OPERAND_ROLLED_MACCA_WITH_UNIT:
             ReadScriptByte();
             s_operand = g_rolledMacca;
             strcpy(g_numberUnit, "\203}\203b\203J"); // マッカ
             return &s_operand;
-        case 41:
+        case SCRIPT_OPERAND_ROLLED_MAGNETITE_WITH_UNIT:
             ReadScriptByte();
             s_operand = g_rolledMagnetite;
             strcpy(g_numberUnit, "\202l\202`\202f"); // ＭＡＧ
             return &s_operand;
-        case 42:
+        case SCRIPT_OPERAND_IGNORED_WORD:
             ReadScriptWord();
             return &s_operand;
-        case 43:
+        case SCRIPT_OPERAND_OBJECT_HP:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->pools.hp.cur;
             return &s_operand;
-        case 44:
+        case SCRIPT_OPERAND_OBJECT_MP:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->pools.mp.cur;
             return &s_operand;
-        case 45:
+        case SCRIPT_OPERAND_OBJECT_MAX_HP:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->pools.hp.max;
             return &s_operand;
-        case 46:
+        case SCRIPT_OPERAND_OBJECT_MAX_MP:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->pools.mp.max;
             return &s_operand;
-        case 47:
+        case SCRIPT_OPERAND_OBJECT_ALIGNMENT_B:
             s_operand = GetObjectAlignmentLevelB(ReadObjectRef());
             return &s_operand;
-        case 48:
+        case SCRIPT_OPERAND_OBJECT_ALIGNMENT_A:
             s_operand = GetObjectAlignmentLevelA(ReadObjectRef());
             return &s_operand;
-        case 49:
+        case SCRIPT_OPERAND_STATUS_CONDITION:
             s_operand = g_statusCondition;
             return &s_operand;
-        case 56:
+        case SCRIPT_OPERAND_OBJECT_ID:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->id;
             return &s_operand;
-        case 57:
+        case SCRIPT_OPERAND_OBJECT_WEAPON_DEFENSE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetBattleStatShown(object, BATTLE_STAT_WEAPON_DEFENSE);
             return &s_operand;
-        case 58:
+        case SCRIPT_OPERAND_OBJECT_FOURTH_GROUP_BASE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetBattleStatBase(object, 18);
+            s_operand = GetBattleStatBase(object, BATTLE_STAT_DEMON_INTERACTION_LEVEL);
             return &s_operand;
-        case 59:
+        case SCRIPT_OPERAND_OBJECT_WEAPON:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[5].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].item;
             return &s_operand;
-        case 60:
+        case SCRIPT_OPERAND_OBJECT_GUN:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[6].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item;
             return &s_operand;
-        case 61:
+        case SCRIPT_OPERAND_OBJECT_AMMO:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[7].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].item;
             return &s_operand;
-        case 62:
+        case SCRIPT_OPERAND_OBJECT_RACE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = GetDemonRace(object->id);
             return &s_operand;
-        case 63:
+        case SCRIPT_OPERAND_OBJECT_WEAPON_GROUP_BASE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetBattleStatBase(object, 0);
+            s_operand = GetBattleStatBase(object, BATTLE_STAT_WEAPON_LEVEL);
             return &s_operand;
-        case 64:
+        case SCRIPT_OPERAND_OBJECT_GUN_GROUP_BASE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetBattleStatBase(object, 6);
+            s_operand = GetBattleStatBase(object, BATTLE_STAT_GUN_LEVEL);
             return &s_operand;
-        case 65:
+        case SCRIPT_OPERAND_OBJECT_MAGIC_GROUP_BASE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetBattleStatBase(object, 12);
+            s_operand = GetBattleStatBase(object, BATTLE_STAT_MAGIC_LEVEL);
             return &s_operand;
-        case 66:
+        case SCRIPT_OPERAND_OBJECT_HEAD:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[0].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].item;
             return &s_operand;
-        case 67:
+        case SCRIPT_OPERAND_OBJECT_BODY:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[1].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_BODY].item;
             return &s_operand;
-        case 68:
+        case SCRIPT_OPERAND_OBJECT_ARMS:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[2].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].item;
             return &s_operand;
-        case 69:
+        case SCRIPT_OPERAND_OBJECT_LEGS:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[3].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].item;
             return &s_operand;
-        case 70:
+        case SCRIPT_OPERAND_OBJECT_ACCESSORY:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[4].item;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].item;
             return &s_operand;
-        case 71:
-        case 72:
-        case 73:
-        case 74:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_0:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_1:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_2:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_3:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetTrainingPoints(object, kind - 71);
+            s_operand = GetTrainingPoints(object, kind - SCRIPT_OPERAND_OBJECT_TRAINING_0);
             return &s_operand;
-        case 75:
+        case SCRIPT_OPERAND_ACTION_VALUE:
             s_operand = GetActionValue(ReadScriptValue());
             return &s_operand;
-        case 76:
+        case SCRIPT_OPERAND_HP_CHANGE:
             ReadScriptValue();
             s_operand = g_hpChange;
             return &s_operand;
-        case 77:
+        case SCRIPT_OPERAND_MP_CHANGE:
             ReadScriptValue();
             s_operand = g_mpChange;
             return &s_operand;
-        case 78:
+        case SCRIPT_OPERAND_EFFECT_CONDITION:
             if (ReadScriptValue() == 0) {
                 s_operand = g_statusCondition;
                 return &s_operand;
             }
             s_operand = g_effectCondition;
             return &s_operand;
-        case 79:
+        case SCRIPT_OPERAND_BATTLE_RESULT_VALUE:
             s_operand = GetBattleResultValue(ReadScriptValue());
             return &s_operand;
-        case 80:
+        case SCRIPT_OPERAND_OBJECT_EXPERIENCE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->experience;
             return &s_operand;
-        case 81:
+        case SCRIPT_OPERAND_OBJECT_LEVEL_BONUS:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->levelBonus;
             return &s_operand;
-        case 82:
-        case 83:
-        case 84:
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_0:
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_1:
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_2:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterAffiliation(object, kind - 82);
+            s_operand = GetCharacterAffiliation(object, kind - SCRIPT_OPERAND_OBJECT_AFFILIATION_0);
             return &s_operand;
-        case 85:
+        case SCRIPT_OPERAND_OBJECT_TITLE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
             s_operand = object->title;
             return &s_operand;
-        case 86:
+        case SCRIPT_OPERAND_OBJECT_WEAPON_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[5].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].value;
             return &s_operand;
-        case 87:
+        case SCRIPT_OPERAND_OBJECT_GUN_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[6].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_GUN].value;
             return &s_operand;
-        case 88:
+        case SCRIPT_OPERAND_OBJECT_AMMO_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[7].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].value;
             return &s_operand;
-        case 89:
+        case SCRIPT_OPERAND_OBJECT_HEAD_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[0].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].value;
             return &s_operand;
-        case 90:
+        case SCRIPT_OPERAND_OBJECT_BODY_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[1].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_BODY].value;
             return &s_operand;
-        case 91:
+        case SCRIPT_OPERAND_OBJECT_ARMS_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[2].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].value;
             return &s_operand;
-        case 92:
+        case SCRIPT_OPERAND_OBJECT_LEGS_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[3].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].value;
             return &s_operand;
-        case 93:
+        case SCRIPT_OPERAND_OBJECT_ACCESSORY_VALUE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetCharacterEquipment(object)[4].value;
+            s_operand = GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].value;
             break;
     }
     return &s_operand;
 }
 
 RVA(0x000373e0, 0x54)
-i32 GetBattleResultValue(i16 which) {
+i32 GetBattleResultValue(GZ_ENUM_PARAM(ScriptBattleResultSelector, i16) which) {
     switch (which) {
-        case 0:
+        case SCRIPT_BATTLE_RESULT_MACCA:
             return g_rewardMacca;
-        case 1:
+        case SCRIPT_BATTLE_RESULT_MAGNETITE:
             return g_rewardMagnetite;
-        case 2:
+        case SCRIPT_BATTLE_RESULT_EXPERIENCE_PER_MEMBER:
             return 2u * g_rewardExperience / CountPartyMembers(1);
-        case 3:
+        case SCRIPT_BATTLE_RESULT_FIRST_DROP_ITEM:
             return GetDropSlot(0)->item;
     }
     return 0;
 }
 
 RVA(0x00037440, 0x44)
-i32 GetActionValue(i16 which) {
+i32 GetActionValue(GZ_ENUM_PARAM(ScriptActionValueSelector, i16) which) {
     switch (which) {
-        case 0:
+        case SCRIPT_ACTION_VALUE_RESULT:
             return g_actionResult;
-        case 1:
+        case SCRIPT_ACTION_VALUE_HP_CHANGE:
             return g_hpChange;
-        case 2:
+        case SCRIPT_ACTION_VALUE_MP_CHANGE:
             return g_mpChange;
-        case 3:
+        case SCRIPT_ACTION_VALUE_DRAIN_AMOUNT:
             return g_drainAmount;
     }
     return 0;
@@ -3315,31 +3358,31 @@ i32 ReadScriptValue(void) {
 // 12..14 the target's level gap, familiarity and familiarity count against -1;
 // `swap` exchanges the sides.
 RVA(0x000374a0, 0x110)
-void ReadContestValues(i16 stat, i32* own, i32* other, i16 swap) {
+void ReadContestValues(GZ_ENUM_PARAM(ContestStat, i16) stat, i32* own, i32* other, i16 swap) {
     Character* object;
     i32 kept;
 
     switch (stat) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-            *own = GetObjectStatTotal(-1, stat);
-            *other = GetObjectStatTotal(-17, stat);
+        case STAT_INTUITION:
+        case STAT_MENTAL_STRENGTH:
+        case STAT_MAGIC:
+        case STAT_INTELLIGENCE:
+        case STAT_PROTECTION:
+        case STAT_STRENGTH:
+        case STAT_VITALITY:
+        case STAT_AGILITY:
+        case STAT_DEXTERITY:
+        case STAT_CHARM:
+        case STAT_FORTUNE:
+            *own = GetObjectStatTotal(SCRIPT_REF_SLOT_BASE, stat);
+            *other = GetObjectStatTotal(SCRIPT_REF_ACTOR, stat);
             break;
-        case 11:
-            *own = GetObjectLevel(-1);
-            *other = GetObjectLevel(-17);
+        case CONTEST_LEVEL:
+            *own = GetObjectLevel(SCRIPT_REF_SLOT_BASE);
+            *other = GetObjectLevel(SCRIPT_REF_ACTOR);
             break;
-        case 12:
-            object = ResolveScriptObject(-17);
+        case CONTEST_LEVEL_GAP:
+            object = ResolveScriptObject(SCRIPT_REF_ACTOR);
             if (object == NULL) {
                 *own = 0;
             } else {
@@ -3347,8 +3390,8 @@ void ReadContestValues(i16 stat, i32* own, i32* other, i16 swap) {
             }
             *other = -1;
             break;
-        case 13:
-            object = ResolveScriptObject(-17);
+        case CONTEST_FAMILIARITY:
+            object = ResolveScriptObject(SCRIPT_REF_ACTOR);
             if (object == NULL) {
                 *own = 0;
             } else {
@@ -3356,8 +3399,8 @@ void ReadContestValues(i16 stat, i32* own, i32* other, i16 swap) {
             }
             *other = -1;
             break;
-        case 14:
-            object = ResolveScriptObject(-17);
+        case CONTEST_FAMILIARITY_COUNT:
+            object = ResolveScriptObject(SCRIPT_REF_ACTOR);
             if (object == NULL) {
                 *own = 0;
             } else {
@@ -3380,146 +3423,147 @@ void ReadContestValues(i16 stat, i32* own, i32* other, i16 swap) {
 RVA(0x000375b0, 0x3a0)
 void OpSetObjectField(void) {
     Character* object = ReadScriptObject();
-    i16 kind = ReadScriptByte();
+    GZ_ENUM_LOCAL(ScriptOperandKind, i16) kind = ReadScriptByte();
     i32 value = ReadScriptValue();
 
     if (object == NULL) {
         return;
     }
     switch (kind) {
-        case 10:
+        case SCRIPT_OPERAND_OBJECT_MACCA:
             object->macca = value;
             return;
-        case 12:
+        case SCRIPT_OPERAND_OBJECT_MAGNETITE:
             object->magnetite = value;
             return;
-        case 25:
-        case 26:
-        case 27:
-        case 28:
-        case 29:
-        case 30:
-        case 31:
-        case 32:
-        case 33:
-        case 34:
-        case 35:
-            SetStatTotal(object, kind - 25, value);
+        case SCRIPT_OPERAND_OBJECT_STAT_0:
+        case SCRIPT_OPERAND_OBJECT_STAT_1:
+        case SCRIPT_OPERAND_OBJECT_STAT_2:
+        case SCRIPT_OPERAND_OBJECT_STAT_3:
+        case SCRIPT_OPERAND_OBJECT_STAT_4:
+        case SCRIPT_OPERAND_OBJECT_STAT_5:
+        case SCRIPT_OPERAND_OBJECT_STAT_6:
+        case SCRIPT_OPERAND_OBJECT_STAT_7:
+        case SCRIPT_OPERAND_OBJECT_STAT_8:
+        case SCRIPT_OPERAND_OBJECT_STAT_9:
+        case SCRIPT_OPERAND_OBJECT_STAT_10:
+            SetStatTotal(object, kind - SCRIPT_OPERAND_OBJECT_STAT_0, value);
             return;
-        case 36:
+        case SCRIPT_OPERAND_OBJECT_LEVEL:
             object->level = value;
             return;
-        case 37:
+        case SCRIPT_OPERAND_OBJECT_LEVEL_GAP:
             object->levelGap = value;
             return;
-        case 38:
+        case SCRIPT_OPERAND_OBJECT_FAMILIARITY:
             object->familiarity = value;
             return;
-        case 43:
+        case SCRIPT_OPERAND_OBJECT_HP:
             object->pools.hp.cur = value;
             return;
-        case 44:
+        case SCRIPT_OPERAND_OBJECT_MP:
             object->pools.mp.cur = value;
             return;
-        case 45:
+        case SCRIPT_OPERAND_OBJECT_MAX_HP:
             object->pools.hp.max = value;
             return;
-        case 46:
+        case SCRIPT_OPERAND_OBJECT_MAX_MP:
             object->pools.mp.max = value;
             return;
-        case 47:
+        case SCRIPT_OPERAND_OBJECT_ALIGNMENT_B:
             object->alignmentLevelB = value;
             return;
-        case 48:
+        case SCRIPT_OPERAND_OBJECT_ALIGNMENT_A:
             object->alignmentLevelA = value;
             return;
-        case 56:
+        case SCRIPT_OPERAND_OBJECT_ID:
             object->id = value;
             return;
-        case 57:
+        case SCRIPT_OPERAND_OBJECT_WEAPON_DEFENSE:
             object->battleStatsShown[BATTLE_STAT_WEAPON_DEFENSE] = value;
             return;
-        case 58:
+        case SCRIPT_OPERAND_OBJECT_FOURTH_GROUP_BASE:
             object->battleStats[18] = value;
             return;
-        case 59:
-            GetCharacterEquipment(object)[5].item = value;
+        case SCRIPT_OPERAND_OBJECT_WEAPON:
+            GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].item = value;
             return;
-        case 60:
-            GetCharacterEquipment(object)[6].item = value;
+        case SCRIPT_OPERAND_OBJECT_GUN:
+            GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item = value;
             return;
-        case 61:
-            GetCharacterEquipment(object)[7].item = value;
-            GetCharacterEquipment(object)[7].quantity =
-                GetGunMagazineSize(GetLoadedRecord(GetCharacterEquipment(object)[6].item));
+        case SCRIPT_OPERAND_OBJECT_AMMO:
+            GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].item = value;
+            GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].quantity = GetGunMagazineSize(
+                GetLoadedRecord(GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item)
+            );
             return;
-        case 63:
-            object->battleStats[0] = value;
+        case SCRIPT_OPERAND_OBJECT_WEAPON_GROUP_BASE:
+            object->battleStats[BATTLE_STAT_WEAPON_LEVEL] = value;
             return;
-        case 64:
+        case SCRIPT_OPERAND_OBJECT_GUN_GROUP_BASE:
             object->battleStats[6] = value;
             return;
-        case 65:
+        case SCRIPT_OPERAND_OBJECT_MAGIC_GROUP_BASE:
             object->battleStats[12] = value;
             return;
-        case 66:
-            GetCharacterEquipment(object)[0].item = value;
+        case SCRIPT_OPERAND_OBJECT_HEAD:
+            GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].item = value;
             return;
-        case 67:
-            GetCharacterEquipment(object)[1].item = value;
+        case SCRIPT_OPERAND_OBJECT_BODY:
+            GetCharacterEquipment(object)[EQUIP_SLOT_BODY].item = value;
             return;
-        case 68:
-            GetCharacterEquipment(object)[2].item = value;
+        case SCRIPT_OPERAND_OBJECT_ARMS:
+            GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].item = value;
             return;
-        case 69:
-            GetCharacterEquipment(object)[3].item = value;
+        case SCRIPT_OPERAND_OBJECT_LEGS:
+            GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].item = value;
             return;
-        case 70:
-            GetCharacterEquipment(object)[4].item = value;
+        case SCRIPT_OPERAND_OBJECT_ACCESSORY:
+            GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].item = value;
             return;
-        case 71:
-        case 72:
-        case 73:
-        case 74:
-            object->trainingPoints[kind - 71] = (i16)value;
+        case SCRIPT_OPERAND_OBJECT_TRAINING_0:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_1:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_2:
+        case SCRIPT_OPERAND_OBJECT_TRAINING_3:
+            object->trainingPoints[kind - SCRIPT_OPERAND_OBJECT_TRAINING_0] = (i16)value;
             return;
-        case 82:
-        case 83:
-        case 84:
-            SetCharacterAffiliation(object, kind - 82, value);
-            if (object->id == 0) {
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_0:
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_1:
+        case SCRIPT_OPERAND_OBJECT_AFFILIATION_2:
+            SetCharacterAffiliation(object, kind - SCRIPT_OPERAND_OBJECT_AFFILIATION_0, value);
+            if (object->id == HUMAN_KATSURAGI) {
                 RaiseAffiliationLevels(object);
                 if (value == 3) {
-                    LearnAllSkills(object, kind - 82);
+                    LearnAllSkills(object, kind - SCRIPT_OPERAND_OBJECT_AFFILIATION_0);
                 }
             }
             return;
-        case 85:
+        case SCRIPT_OPERAND_OBJECT_TITLE:
             object->title = value;
             return;
-        case 86:
-            GetCharacterEquipment(object)[5].value = value;
+        case SCRIPT_OPERAND_OBJECT_WEAPON_VALUE:
+            GetCharacterEquipment(object)[EQUIP_SLOT_WEAPON].value = value;
             return;
-        case 87:
-            GetCharacterEquipment(object)[6].value = value;
+        case SCRIPT_OPERAND_OBJECT_GUN_VALUE:
+            GetCharacterEquipment(object)[EQUIP_SLOT_GUN].value = value;
             return;
-        case 88:
-            GetCharacterEquipment(object)[7].value = value;
+        case SCRIPT_OPERAND_OBJECT_AMMO_VALUE:
+            GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].value = value;
             return;
-        case 89:
-            GetCharacterEquipment(object)[0].value = value;
+        case SCRIPT_OPERAND_OBJECT_HEAD_VALUE:
+            GetCharacterEquipment(object)[EQUIP_SLOT_HEAD].value = value;
             return;
-        case 90:
-            GetCharacterEquipment(object)[1].value = value;
+        case SCRIPT_OPERAND_OBJECT_BODY_VALUE:
+            GetCharacterEquipment(object)[EQUIP_SLOT_BODY].value = value;
             return;
-        case 91:
-            GetCharacterEquipment(object)[2].value = value;
+        case SCRIPT_OPERAND_OBJECT_ARMS_VALUE:
+            GetCharacterEquipment(object)[EQUIP_SLOT_ARMS].value = value;
             return;
-        case 92:
-            GetCharacterEquipment(object)[3].value = value;
+        case SCRIPT_OPERAND_OBJECT_LEGS_VALUE:
+            GetCharacterEquipment(object)[EQUIP_SLOT_LEGS].value = value;
             return;
-        case 93:
-            GetCharacterEquipment(object)[4].value = value;
+        case SCRIPT_OPERAND_OBJECT_ACCESSORY_VALUE:
+            GetCharacterEquipment(object)[EQUIP_SLOT_ACCESSORY].value = value;
             return;
     }
 }
@@ -3535,9 +3579,9 @@ void OpFindMemberByPoolState(i16 all, i16 pools) {
         result = FindMemberByPoolState(slot, mode, state, pools);
     } else {
         result = 0;
-        while (slot >= 0 && slot < 32) {
+        while (slot >= 0 && slot < ROSTER_SIZE) {
             slot = FindMemberByPoolState(slot, mode, state, pools);
-            if (slot != -1) {
+            if (slot != ROSTER_SLOT_NONE) {
                 result |= PowerOfTwo(slot);
                 slot++;
             }
@@ -3555,8 +3599,8 @@ void OpFindMemberWithCondition(i16 all) {
     i16 slot;
     Character* character;
     if (!all) {
-        for (slot = 0; slot < 32; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = RosterMemberAt(slot);
                 if (character && HasCondition(GetCharacterConditions(character), condition)) {
                     result = slot;
@@ -3566,8 +3610,8 @@ void OpFindMemberWithCondition(i16 all) {
         }
     } else {
         result = 0;
-        for (slot = 0; slot < 32; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = RosterMemberAt(slot);
                 if (character && HasCondition(GetCharacterConditions(character), condition)) {
                     result |= PowerOfTwo(slot);
@@ -3587,8 +3631,8 @@ void OpFindMemberByAlignmentA(i16 all) {
     i16 slot;
     Character* character;
     if (!all) {
-        for (slot = 0; slot < 32; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassB(character) == alignment) {
                     result = slot;
@@ -3598,8 +3642,8 @@ void OpFindMemberByAlignmentA(i16 all) {
         }
     } else {
         result = 0;
-        for (slot = 0; slot < 32; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassB(character) == alignment) {
                     result |= PowerOfTwo(slot);
@@ -3619,8 +3663,8 @@ void OpFindMemberByAlignmentB(i16 all) {
     i16 slot;
     Character* character;
     if (!all) {
-        for (slot = 0; slot < 32; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassA(character) == alignment) {
                     result = slot;
@@ -3630,8 +3674,8 @@ void OpFindMemberByAlignmentB(i16 all) {
         }
     } else {
         result = 0;
-        for (slot = 0; slot < 32; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = GetRosterCharacter(slot);
                 if (character && GetAlignmentClassA(character) == alignment) {
                     result |= PowerOfTwo(slot);
@@ -3653,8 +3697,8 @@ void OpCountItemOwned(void) {
     Character* character;
     mode++;
     if (scope == ITEM_COUNT_EQUIPMENT || scope == ITEM_COUNT_BAG_AND_EQUIPMENT) {
-        for (slot = 0; slot < 32; slot++) {
-            if (FilterPartyMember(slot, mode) != -1) {
+        for (slot = 0; slot < ROSTER_SIZE; slot++) {
+            if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
                 character = GetRosterCharacter(slot);
                 if (character) {
                     count += CountItemInSlots(item, GetCharacterEquipment(character));
@@ -3702,7 +3746,7 @@ i16 CountItemInSlots(i16 item, ItemSlot* slots) {
 // `expect` set, lacks it); no member counts as lacking it only with `expect`.
 RVA(0x00037e10, 0x6e)
 void OpIfMemberHasCondition(void) {
-    i32 jump = 0;
+    b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 expect = ReadScriptValue();
     Character* character = GetRosterCharacter(ReadScriptValue());
@@ -3710,13 +3754,13 @@ void OpIfMemberHasCondition(void) {
     // read).
     i16 has = ReadScriptValue();
     if (!character && expect) {
-        jump = 1;
+        jump = true;
     } else {
         if (character) {
             has = HasCondition(GetCharacterConditions(character), has);
         }
         if (ScriptBooleanMatches(has, expect)) {
-            jump = 1;
+            jump = true;
         }
     }
     ScriptJumpUnless(target, jump);
@@ -3786,19 +3830,17 @@ i32 GetObjectAlignmentLevelA(i16 ref) {
     return object->alignmentLevelA;
 }
 
-// @identity-TODO: maps a script mode operand 0/1/2 to the step +1/0/-1 the
-// caller passes on; the mode's meaning is unrecovered.
 RVA(0x00037f80, 0x22)
-i16 StepForMode(i16 mode) {
+GZ_ENUM_RETURN(AlignmentSide, i16) StepForMode(GZ_ENUM_PARAM(AlignmentStepMode, i16) mode) {
     switch (mode) {
-        case 0:
-            return 1;
-        case 1:
-            return 0;
-        case 2:
-            return -1;
+        case ALIGNMENT_STEP_TO_POSITIVE:
+            return ALIGNMENT_POSITIVE;
+        case ALIGNMENT_STEP_TO_NEUTRAL:
+            return ALIGNMENT_NEUTRAL;
+        case ALIGNMENT_STEP_TO_NEGATIVE:
+            return ALIGNMENT_NEGATIVE;
     }
-    return 0;
+    return ALIGNMENT_NEUTRAL;
 }
 
 // Shifts the player's alignment B by an amount, towards the side the mode
@@ -3932,8 +3974,8 @@ void OpMaskRosterByKind(void) {
     i16 mode = ReadScriptValue() + 1;
     u32 mask = 0;
     i16 i;
-    for (i = 0; i < 32; i++) {
-        if (FilterPartyMember(i, mode) != -1 && RosterMemberAt(i)
+    for (i = 0; i < ROSTER_SIZE; i++) {
+        if (FilterPartyMember(i, mode) != ROSTER_SLOT_NONE && RosterMemberAt(i)
             && race == GetDemonRace(RosterMemberAt(i)->id)) {
             mask |= PowerOfTwo(i);
         }
@@ -3951,7 +3993,7 @@ void OpRecoverRosterPool(GZ_ENUM_PARAM(CharacterPoolMask, i16) pool) {
     i16 i;
     mask = ReadScriptValue();
     amount = ReadScriptValue();
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < ROSTER_SIZE; i++) {
         if (RosterMemberAt(i) && (mask & bit)) {
             if (pool == POOL_MASK_HP) {
                 FillPool(&RosterMemberAt(i)->pools.hp, amount, POOL_FILL_TO_MAX);
@@ -3972,7 +4014,7 @@ void OpCureRosterCondition(void) {
     i16 i;
     mask = ReadScriptValue();
     condition = ReadScriptValue();
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < ROSTER_SIZE; i++) {
         if (mask & bit) {
             Character* character = GetRosterCharacter(i);
             if (character && HasCondition(GetCharacterConditions(character), condition)) {
@@ -4016,7 +4058,7 @@ PrintScriptChoice(i16 window, ScriptChoice** head, const char* text, i16 value, 
     choice->width = strlen(text);
     choice->value = value;
     choice->disabled = disabled;
-    PrintWindowText(window, text, 0x400, 0, 1);
+    PrintWindowText(window, text, TEXT_ATTR_DEFAULT, 0, true);
     return choice;
 }
 
@@ -4041,7 +4083,7 @@ SetScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode)
 RVA(0x00038460, 0x39)
 ScriptChoice* PushScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode) {
     SetScriptChoiceMenu(choices, window, keep, cancelMode);
-    PushGameState(6);
+    PushGameState(GAME_STATE_SCRIPT_CHOICE);
     return NULL;
 }
 
@@ -4049,7 +4091,7 @@ RVA(0x000384a0, 0x4c)
 void InitScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode) {
     SetScriptChoiceMenu(choices, window, keep, cancelMode);
     if (g_mouseLeftClick) {
-        g_mouseLeftClick = 0;
+        g_mouseLeftClick = MOUSE_CLICK_NONE;
     }
     s_hoveredChoice = -1;
     s_highlightedChoice = NULL;
@@ -4143,10 +4185,10 @@ i16 FindScriptChoiceAtMouse(void) {
 RVA(0x00038790, 0x53)
 b16 RunScriptChoiceState(void) {
     switch (GetGameSub()) {
-        case 0:
+        case SCRIPT_CHOICE_SUBSTEP_INITIALIZE:
             NextGameSub();
             InitScriptChoiceMenu(s_choiceMenu, s_choiceWindow, s_keepChoices, s_choiceCancelMode);
-        case 1:
+        case SCRIPT_CHOICE_SUBSTEP_POLL:
             if (PollScriptChoiceMenu()) {
                 ReturnFromGameState();
             }

@@ -5,10 +5,16 @@
 
 #include <Win32.h>
 
+#include <Enums.h>
 #include <Ints.h>
 #include <Text/TextAttr.h>
+#include <Text/MenuLineFlags.h>
+#include <Text/TextEvent.h>
 
 #define TEXT_PLANE_COUNT 37
+
+// No text plane: CreateTextPlane's failure result and a closed plane handle.
+#define TEXT_PLANE_NONE (-1)
 
 void SaveAndResetTextPlaneAttrs(i16 plane);
 void ForgetTextPlaneAttr(i16 plane);
@@ -50,13 +56,8 @@ typedef struct MenuLine {
     char* text;
     i16 attr;
     i16 value;
-    i16 flags;
+    GZ_ENUM_STORAGE(MenuLineFlags, i16) flags;
 } MenuLine;
-
-// Disabled lines cannot be highlighted. Unchoosable lines can be highlighted
-// but yield no selected value.
-#define MENU_LINE_DISABLED 0x1
-#define MENU_LINE_UNCHOOSABLE 0x2
 
 // A cell position or extent on a text plane, returned by value.
 typedef struct TextPoint {
@@ -67,7 +68,7 @@ typedef struct TextPoint {
 // One text window: a grid of Shift-JIS cells with per-cell attributes
 // rendered through two DirectDraw surfaces.
 typedef struct TextPlane {
-    u16 kind; // 0xffff marks a free slot
+    u16 kind; // TEXT_PLANE_FREE marks a free slot
     i16 arg;
     i16 cols;
     i16 rows;
@@ -150,14 +151,6 @@ void ToggleTextHighlight(i16 plane, i16 x, i16 y);
 void PaintTextRun(i16 plane, i16 x, i16 y, u16 attr);
 TextPlaneHook SetTextPlaneHook(TextPlaneHook hook);
 void CallTextPlaneHook(i16 plane, i16 event, i16 value);
-
-// The hook's events from PollMenuInput: cancelled, a line chosen by a left or
-// a right click, the highlight taken off and put on (value: the line row).
-#define TEXT_EVENT_CANCEL (-1)
-#define TEXT_EVENT_CHOOSE 1
-#define TEXT_EVENT_CHOOSE_RIGHT 2
-#define TEXT_EVENT_UNHIGHLIGHT 3
-#define TEXT_EVENT_HIGHLIGHT 4
 
 i16 ClearTextPlaneLine(i16 plane, i16 row);
 void MoveTextPlaneCursorToPrevLine(i16 plane);

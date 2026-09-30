@@ -3,8 +3,10 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
 #include <Script/ScriptBlock.h>
+#include <Script/ScriptStatus.h>
 
 // An entry of the loaded script-file cache. `holds` counts the nested holds
 // taken while it was loaded; a purge keeps the preloaded files and the held
@@ -21,6 +23,13 @@ typedef union ScriptScratchValue {
     u16 word;
     u8 byte;
 } ScriptScratchValue;
+
+// The script long variables.
+#define SCRIPT_LONG_VAR_COUNT 26
+// The system variables (the last eight): saved and restored as a block, and
+// where the game reports results to scripts.
+#define SCRIPT_SYSTEM_VAR_FIRST 18
+#define SCRIPT_SYSTEM_VAR_COUNT 8
 
 void ClearScriptLongVars(void);
 
@@ -62,7 +71,7 @@ extern b16 g_inChoices;
 extern i32 g_scriptVars[256];
 
 void SetWindowOption(i16 option);
-i16 SetHold(i16 on);
+b16 SetHold(b16 on);
 
 b16 OpBeginChoices(i16 window);
 
@@ -109,6 +118,15 @@ void StartDebugScene(i16 scene, i16 arg, i16 phase);
 void OpSetMessageHook(void);
 void RunMessageHook(void);
 
+GZ_ENUM_BEGIN_SPLIT(ScriptSceneStep, i16)
+    SCRIPT_SCENE_STEP_START = 0,
+    SCRIPT_SCENE_STEP_ADVANCE_TEXT = 1,
+    SCRIPT_SCENE_STEP_RUN = 2,
+    SCRIPT_SCENE_STEP_END = 3,
+    SCRIPT_SCENE_STEP_RESUME_FIELD_MAP = 4,
+    SCRIPT_SCENE_STEP_WAIT_PERIOD = 5
+GZ_ENUM_END_SPLIT(ScriptSceneStep)
+
 void WaitForScriptText(i16 window);
 void AdvanceScriptTextWindow(i16 window);
 b16 RunActorScene(void);
@@ -145,7 +163,7 @@ RVA_DECL(0x0003bd40)
 void OpPeekPokeScratch(void);
 
 // @identity-TODO: The meaning of game state 1 and of its type byte 0/1/2 is unrecovered.
-i16 OpWaitMessage(i16 window);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpWaitMessage(i16 window);
 
 i16 AccessScriptReg(i16 write, i16 index, i16 value);
 

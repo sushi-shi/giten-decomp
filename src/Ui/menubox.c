@@ -18,7 +18,7 @@ MenuBox* DestroyMenuBox(MenuBox* menu) {
         return NULL;
     }
     DispatchMenuEvent(menu, 0, MENU_EVENT_DESTROY);
-    menu->list = ReleasePanel(menu->list, 1);
+    menu->list = ReleasePanel(menu->list, true);
     CloseTextWindow(menu->plane);
     return FreeBlock(menu);
 }
@@ -53,10 +53,10 @@ MenuBox* CreateMenuBox(MenuBox* old, i16 window, i16 panelRows) {
 RVA(0x000207d0, 0x2d)
 void MoveMenuBox(MenuBox* menu, i16 x, i16 y) {
     if (menu) {
-        if (x != -1) {
+        if (x != MENU_BOX_KEEP) {
             menu->list->x = x;
         }
-        if (y != -1) {
+        if (y != MENU_BOX_KEEP) {
             menu->list->y = y;
         }
     }
@@ -65,7 +65,7 @@ void MoveMenuBox(MenuBox* menu, i16 x, i16 y) {
 RVA(0x00020800, 0x2f)
 void SetMenuItems(MenuBox* menu, i16 pageRows, void* items, i16 itemCount, MenuHandler handler) {
     if (menu) {
-        if (pageRows != -1) {
+        if (pageRows != MENU_BOX_KEEP) {
             menu->pageRows = pageRows;
         }
         menu->itemCount = itemCount;
@@ -83,7 +83,7 @@ void BuildMenuPage(MenuBox* menu) {
     if (menu == NULL) {
         return;
     }
-    previous = next = 0;
+    previous = next = PANEL_FLAGS_NONE;
     FreeMenuLines(menu->plane);
     DispatchMenuEvent(menu, 0, MENU_EVENT_BEGIN_PAGE);
     index = menu->cursor;
@@ -119,18 +119,18 @@ void PaintMenuBox(MenuBox* menu) {
     ClearPanelChecksAgain(menu->list);
     PaintPanel(menu->list, menu->plane);
     DispatchMenuEvent(menu, 0, MENU_EVENT_AFTER_PANEL);
-    menu->flagBits.redraw = 0;
+    menu->flagBits.redraw = false;
 }
 
 RVA(0x00020990, 0x46)
-i16 PollMenuBox(MenuBox* menu) {
+GZ_ENUM_RETURN(TextEvent, i16) PollMenuBox(MenuBox* menu) {
     i16 control;
     if (menu == NULL) {
-        return -1;
+        return TEXT_EVENT_CANCEL;
     }
     control = RunPanelInput(menu->list);
-    if (control == -2) {
-        return -1;
+    if (control == PANEL_INPUT_CANCELLED) {
+        return TEXT_EVENT_CANCEL;
     }
     if (control >= 0) {
         return HandleMenuControl(menu, control);
@@ -174,9 +174,9 @@ b16 HandleMenuControl(MenuBox* menu, i16 control) {
 }
 
 RVA(0x00020a90, 0x32)
-i16 RunMenu(MenuBox* menu) {
+GZ_ENUM_RETURN(TextEvent, i16) RunMenu(MenuBox* menu) {
     if (menu == NULL) {
-        return -1;
+        return TEXT_EVENT_CANCEL;
     }
     if (menu->flagBits.redraw) {
         BuildMenuPage(menu);

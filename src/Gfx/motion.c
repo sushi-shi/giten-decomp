@@ -70,7 +70,7 @@ static i16 s_currentImageSet = 0;
 // @identity-TODO: set by the effect state's first phase (0) and its skip
 // path (1); nothing reads it back.
 DATA(0x0007821c)
-static i16 s_effectSkipping = 0;
+static b16 s_effectSkipping = false;
 
 DATA(0x00078220)
 static i16 s_paletteRefs = 0;
@@ -85,19 +85,19 @@ DATA(0x0007822c)
 static i16 s_effectDelay = 0;
 
 DATA(0x00078230)
-static EffectPalette* s_palettes = 0;
+static EffectPalette* s_palettes = NULL;
 
 DATA(0x00078234)
-static u8* s_effectScriptBase = 0;
+static u8* s_effectScriptBase = NULL;
 
 DATA(0x00078238)
-static MotionPath* s_motionPath = 0;
+static MotionPath* s_motionPath = NULL;
 
 DATA(0x0007823c)
-static EffectCommand* s_effectScript = 0;
+static EffectCommand* s_effectScript = NULL;
 
 DATA(0x00078240)
-static MotionTable* s_motionTable = 0;
+static MotionTable* s_motionTable = NULL;
 
 DATA(0x00078244)
 static u16 s_motionStep = 0;
@@ -298,7 +298,7 @@ i16 ExecuteEffectCommand(void) {
 
 RVA(0x00004d50, 0xb)
 void StopEffectScript(void) {
-    s_effectScript = 0;
+    s_effectScript = NULL;
 }
 
 RVA(0x00004d60, 0x6)
@@ -363,23 +363,23 @@ void InitEffectImageSets(void) {
     i16 i;
     i16 frame;
     for (i = 0; i < EFFECT_IMAGE_SETS; i++) {
-        s_imageSets[i].id = -1;
+        s_imageSets[i].id = EFFECT_ID_NONE;
         for (frame = 0; frame < EFFECT_FRAMES; frame++) {
             s_imageSets[i].frames[frame].size = 0;
             s_imageSets[i].frames[frame].image = NULL;
         }
     }
-    s_currentImageSet = -1;
+    s_currentImageSet = EFFECT_ID_NONE;
 }
 
 RVA(0x00004ea0, 0x12)
-i16 ExchangeEffectSkipping(i16 skipping) {
-    i16 old = s_effectSkipping;
+b16 ExchangeEffectSkipping(b16 skipping) {
+    b16 old = s_effectSkipping;
     s_effectSkipping = skipping;
     return old;
 }
 
-// The image set slot holding `id` (-1: none).
+// The image set slot holding `id`, or EFFECT_ID_NONE.
 RVA(0x00004ec0, 0x28)
 i16 FindEffectImageSet(i16 id) {
     i16 i;
@@ -388,7 +388,7 @@ i16 FindEffectImageSet(i16 id) {
             return i;
         }
     }
-    return -1;
+    return EFFECT_ID_NONE;
 }
 
 // Loads the frames of image set `id` (pictures 0x6000 + id * 16 + frame) into
@@ -416,7 +416,7 @@ void FreeEffectImageSet(i16 slot) {
             FreeImageFile(s_imageSets[slot].frames[frame].image);
     }
     ClearEffectLayer(0);
-    s_imageSets[slot].id = -1;
+    s_imageSets[slot].id = EFFECT_ID_NONE;
 }
 
 // Makes image set `id` current, loading it into a free slot (else slot 0)
@@ -431,8 +431,8 @@ i16 AcquireEffectImageSet(i16 id) {
         s_imageSets[slot - 1] = swap;
         slot--;
     } else if (slot < 0) {
-        slot = FindEffectImageSet(-1);
-        if (slot == -1) {
+        slot = FindEffectImageSet(EFFECT_ID_NONE);
+        if (slot == EFFECT_ID_NONE) {
             slot = 0;
             FreeEffectImageSet(slot);
         }
@@ -482,7 +482,7 @@ void InitEffectSlots(void) {
     i16 i;
     for (i = 0; i < EFFECT_SLOTS; i++) {
         s_effectSlots[i].record = NULL;
-        s_effectSlots[i].id = -1;
+        s_effectSlots[i].id = EFFECT_ID_NONE;
     }
 }
 
@@ -494,7 +494,7 @@ i16 FindEffectSlot(i16 id) {
             return i;
         }
     }
-    return -1;
+    return EFFECT_ID_NONE;
 }
 
 RVA(0x000051c0, 0x49)
@@ -509,7 +509,7 @@ void LoadEffectRecord(i16 slot, i16 id) {
 RVA(0x00005210, 0x2b)
 void FreeEffectRecord(i16 slot) {
     s_effectSlots[slot].record = FreeBlock(s_effectSlots[slot].record);
-    s_effectSlots[slot].id = -1;
+    s_effectSlots[slot].id = EFFECT_ID_NONE;
 }
 
 // Makes effect `id` current, like AcquireEffectImageSet.
@@ -523,8 +523,8 @@ i16 AcquireEffectRecord(i16 id) {
         s_effectSlots[slot - 1] = swap;
         slot--;
     } else if (slot < 0) {
-        slot = FindEffectSlot(-1);
-        if (slot == -1) {
+        slot = FindEffectSlot(EFFECT_ID_NONE);
+        if (slot == EFFECT_ID_NONE) {
             slot = 0;
             FreeEffectRecord(slot);
         }

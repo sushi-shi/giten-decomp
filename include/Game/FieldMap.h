@@ -4,6 +4,8 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/AreaMap.h>
+#include <Game/ViewDirection.h>
 
 // Field-map events around an encounter.
 
@@ -24,13 +26,19 @@ void RespawnAreaActors(void);
 
 // Marks the cell (area, level, x, y, facing) the party must leave before a
 // cell event there runs again.
-void SetCellMark(i16 area, i16 level, i16 x, i16 y, i16 direction);
+void SetCellMark(i16 area, i16 level, i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 void SaveFieldPosition(void);
 
 // -1 off the marked cell, else 0 (or, with `checkDirection`, 1 when facing
 // another way).
-i16 IsOnCellMark(i16 checkDirection);
+GZ_ENUM_BEGIN_SPLIT(CellMarkMatch, i16)
+    CELL_MARK_OFF_CELL = -1,
+    CELL_MARK_MATCH = 0,
+    CELL_MARK_FACING_DIFFERS = 1
+GZ_ENUM_END_SPLIT(CellMarkMatch)
+
+GZ_ENUM_RETURN(CellMarkMatch, i16) IsOnCellMark(i16 checkDirection);
 
 // The region code the field last entered (EnterRoom sets it).
 i16 GetCurrentRoomCode(void);
@@ -50,8 +58,7 @@ void UnloadAreaMap(void);
 // @identity-TODO: Same room-region inference as UpdateCurrentRoom.
 i16 BuildRoomMap(i16 detectChanges);
 
-// @identity-TODO: What the kinds 0x48..0x4e (0x1f350) of the level's 8-byte object list +0x14
-// are is unrecovered.
+// Places NPC records whose cell code selects a four-direction mask.
 void SpawnLevelObjects(void);
 
 void LoadAreaMap(i16 area, i16 level);
@@ -61,6 +68,6 @@ void PlayLevelMusic(void);
 // @identity-TODO: The meaning of each returned event kind (3 leads to SaveFieldPosition and
 // phase 1; 2, 0xb and record bytes are others) is unrecovered.
 RVA_DECL(0x00021880)
-i16 CheckCellEvent(i16 x, i16 y, i16 level);
+GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level);
 
 #endif // GITEN_GAME_FIELDMAP_H

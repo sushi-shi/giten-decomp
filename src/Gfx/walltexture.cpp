@@ -1,6 +1,7 @@
 #include <rva.h>
 
 #include <Game/AreaLevel.h>
+#include <Game/MapArea.h>
 #include <Gfx/Texture.h>
 #include <Platform/GameApi.h>
 #include <Platform/Scene3D.h>
@@ -27,7 +28,7 @@ static const char* s_wallTextureNames[16][4] = {
 
 RVA(0x00057e80, 0x94)
 void LoadWallTextures(i16 wallSet, i16 variant) {
-    u8 area;
+    GZ_ENUM_LOCAL(MapAreaId, u8) area;
     u8 level;
     ReleaseTexture(&g_roomTexture);
     g_fixedLighting = false;
@@ -37,11 +38,11 @@ void LoadWallTextures(i16 wallSet, i16 variant) {
     if (wallSet == WALL_TEXTURE_MAP_OVERRIDE) {
         area = GetMapArea();
         level = GetMapLevel();
-        if ((area == WALL_OVERRIDE_UPPER_AREA && level > 1)
-            || (area == WALL_OVERRIDE_LOWER_AREA && level < 4)) {
-            LoadTexture(&g_roomTexture, "w\\wall11_0.bmp", TRUE);
+        if ((area == MAP_AREA_CHIYODA_LINE && level > 1)
+            || (area == MAP_AREA_HIBIYA_LINE && level < 4)) {
+            LoadTexture(&g_roomTexture, "w\\wall11_0.bmp", true);
             return;
         }
     }
-    LoadTexture(&g_roomTexture, s_wallTextureNames[wallSet & 0xf][variant & 3], TRUE);
+    LoadTexture(&g_roomTexture, s_wallTextureNames[wallSet & 0xf][variant & 3], true);
 }

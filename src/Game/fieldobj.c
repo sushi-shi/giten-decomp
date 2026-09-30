@@ -10,15 +10,19 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <File/DataTableId.h>
 #include <Game/ActionMark.h>
 #include <Game/Actor.h>
+#include <Game/ActorFlag.h>
 #include <Game/Alignment.h>
+#include <Game/AlignmentSide.h>
 #include <Game/AnalyzeData.h>
 #include <Game/AreaMap.h>
+#include <Game/Attitude.h>
 #include <Game/BattleEffect.h>
-#include <Game/Character.h>
 #include <Game/CharInfo.h>
+#include <Game/Character.h>
 #include <Game/Clock.h>
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
@@ -38,17 +42,20 @@
 #include <Game/FieldSupport.h>
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
+#include <Game/HumanId.h>
 #include <Game/ItemRecord.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/Party.h>
 #include <Game/PartyAction.h>
 #include <Game/PartyCommand.h>
+#include <Game/RoomRegion.h>
 #include <Game/Skill.h>
 #include <Game/SkillUse.h>
+#include <Game/StatUpdate.h>
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
-#include <Game/StatUpdate.h>
 #include <Game/TargetFlags.h>
 #include <Game/WorldMap.h>
 #include <Gfx/ScreenMode.h>
@@ -60,12 +67,14 @@
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
 #include <Script/EventFlags.h>
+#include <Script/OwnedFlag.h>
 #include <Script/Script.h>
 #include <Ui/Hotspot.h>
 #include <Util/BitSet.h>
 #include <Util/Range.h>
 #include <Util/WordList.h>
 
+#include <limits.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
@@ -74,30 +83,190 @@
 // together, far rows and the near row.
 DATA(0x00064328)
 static const GZ_ENUM_STORAGE(FieldSubcell, i16) s_farCells[10][9] = {
-    {4, 4, 4, 4, 4, 4, 4, 4, 4},
-    {4, 3, 5, 1, 2, 0, 7, 8, 6},
-    {3, 5, 4, 1, 2, 0, 7, 8, 6},
-    {0, 2, 4, 3, 5, 1, 7, 8, 6},
-    {0, 2, 6, 8, 4, 3, 5, 1, 7},
-    {0, 2, 4, 6, 8, 3, 5, 1, 7},
-    {0, 2, 3, 5, 6, 8, 4, 1, 7},
-    {0, 2, 3, 5, 4, 6, 8, 1, 7},
-    {0, 2, 1, 3, 5, 4, 6, 8, 7},
-    {0, 2, 1, 3, 5, 4, 6, 8, 7},
+    {FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER},
+    {FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW2_COL1,
+     FIELD_SUBCELL_ROW2_COL2,
+     FIELD_SUBCELL_ROW2_COL0},
+    {FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW2_COL1,
+     FIELD_SUBCELL_ROW2_COL2,
+     FIELD_SUBCELL_ROW2_COL0},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW2_COL1,
+     FIELD_SUBCELL_ROW2_COL2,
+     FIELD_SUBCELL_ROW2_COL0},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW2_COL0,
+     FIELD_SUBCELL_ROW2_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW2_COL1},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW2_COL0,
+     FIELD_SUBCELL_ROW2_COL2,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW2_COL1},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_ROW2_COL0,
+     FIELD_SUBCELL_ROW2_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW2_COL1},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW2_COL0,
+     FIELD_SUBCELL_ROW2_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW2_COL1},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW2_COL0,
+     FIELD_SUBCELL_ROW2_COL2,
+     FIELD_SUBCELL_ROW2_COL1},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW2_COL0,
+     FIELD_SUBCELL_ROW2_COL2,
+     FIELD_SUBCELL_ROW2_COL1},
 };
 
 DATA(0x000643e0)
 static const GZ_ENUM_STORAGE(FieldSubcell, i16) s_nearCells[10][9] = {
-    {4, 4, 4, 4, 4, 4, 4, 4, 4},
-    {4, 3, 5, 1, 2, 0, 0, 1, 2},
-    {3, 5, 4, 1, 2, 0, 0, 1, 2},
-    {0, 2, 4, 3, 5, 1, 0, 1, 2},
-    {0, 2, 4, 5, 4, 3, 5, 1, 0},
-    {0, 2, 4, 1, 0, 3, 5, 1, 2},
-    {0, 2, 3, 5, 0, 2, 4, 1, 1},
-    {0, 2, 3, 5, 4, 0, 2, 1, 1},
-    {0, 2, 1, 3, 5, 4, 0, 2, 1},
-    {0, 2, 1, 3, 5, 4, 0, 2, 1},
+    {FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_CENTER},
+    {FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL2},
+    {FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL2},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL2},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL0},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL2},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL1},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW0_COL1},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL1},
+    {FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL1,
+     FIELD_SUBCELL_ROW1_COL0,
+     FIELD_SUBCELL_ROW1_COL2,
+     FIELD_SUBCELL_CENTER,
+     FIELD_SUBCELL_ROW0_COL0,
+     FIELD_SUBCELL_ROW0_COL2,
+     FIELD_SUBCELL_ROW0_COL1},
 };
 
 // @identity-TODO: the screen rise per view depth (0..-4).
@@ -118,7 +287,12 @@ static i16 s_facingSprite[4] = {0, 1, 2, -1};
 
 // Image codes by facing relative to the party; negative mirrors the side image.
 DATA(0x00068608)
-static i16 s_facingImageCodes[4] = {0, 1, 2, -1};
+static i16 s_facingImageCodes[4] = {
+    FIELD_OBJECT_IMAGE_FRONT,
+    FIELD_OBJECT_IMAGE_SIDE,
+    FIELD_OBJECT_IMAGE_BACK,
+    FIELD_OBJECT_IMAGE_SIDE_MIRRORED
+};
 
 DATA(0x00068610)
 static i16 s_encounterSpread[4] = {0, 0, 1, 2};
@@ -128,21 +302,25 @@ DATA(0x00078878)
 static u8 s_analyzed[0x40] = {0};
 
 DATA(0x000788b8)
-static i16 s_encounterGroups[2] = {0};
+static i16 s_encounterGroups[FIELD_LAYER_COUNT] = {0};
 
 DATA(0x000788c0)
-u8 g_worldEncounterGroupSlots[16] = {0};
+u8 g_worldEncounterGroupSlots[FIELD_OBJECT_COUNT] = {0};
 
 // @identity-TODO: nine cumulative weights per encounter row (data file 5).
+#define ENCOUNTER_ROW_SLOTS 9
 DATA(0x000788d0)
 static u8 s_encounterBuffer[0x100] = {0};
 
 DATA(0x000789d0)
-static FieldObject s_objects[16] = {0};
+static FieldObject s_objects[FIELD_OBJECT_COUNT] = {0};
 
-// The 7x7 sight grid around the object being stepped (1: seen).
+// The sight grid around the object being stepped (1: seen), SIGHT_RADIUS
+// cells each way.
+#define SIGHT_RADIUS 3
+#define SIGHT_WIDTH (2 * SIGHT_RADIUS + 1)
 DATA(0x0007ada0)
-static u8 s_sight[7][7] = {0};
+static u8 s_sight[SIGHT_WIDTH][SIGHT_WIDTH] = {0};
 
 // @identity-TODO: a count per id (0..255) whose eighth is the familiarity.
 DATA(0x0007add8)
@@ -171,7 +349,7 @@ static i16 s_objectRemovalDeferred = 0;
 
 // While set, the objects are not marked on the automap.
 DATA(0x0007b0b8)
-static i16 s_objectsFrozen = 0;
+static b16 s_objectsFrozen = false;
 
 DATA(0x0007b0bc)
 static i16 s_encounterChanceBonus = 0;
@@ -211,7 +389,7 @@ DATA(0x0007b0e8)
 static u32 s_lastEncounterMinute = 0;
 
 DATA(0x0007b0ec)
-static u8* s_fieldEncounterWeights = 0;
+static u8* s_fieldEncounterWeights = NULL;
 
 // The countdown (in ticks) to the next random spawn and the spawn interval
 // in seconds.
@@ -222,30 +400,30 @@ DATA(0x0007b0f4)
 static u16 s_spawnInterval = 0;
 
 DATA(0x0007b0f8)
-static FieldLayer s_layers[2] = {0};
+static FieldLayer s_layers[FIELD_LAYER_COUNT] = {0};
 
 DATA(0x0007b2f8)
-static FieldLayer s_savedLayers[2] = {0};
+static FieldLayer s_savedLayers[FIELD_LAYER_COUNT] = {0};
 
 // The object script block (data file 0x6800), loaded on first use.
 DATA(0x0007b4f4)
-static ScriptBlock* s_objectScripts = 0;
+static ScriptBlock* s_objectScripts = NULL;
 
 // The script-set table: three data-file numbers per set (0xff: none).
 DATA(0x0007b4f8)
-static u8* s_scriptSets = 0;
+static u8* s_scriptSets = NULL;
 
 RVA(0x0000d790, 0x52)
 b16 InitFieldObjects(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
-        s_objects[i].layer = -1;
-        s_objects[i].redraw = 0;
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        s_objects[i].layer = FIELD_LAYER_NONE;
+        s_objects[i].redraw = false;
         s_objects[i].anim = 0;
         s_objects[i].script = NULL;
         InitWordList(&s_objects[i].list, 0);
     }
-    ModifyEventFlag(8, 0, 1);
+    ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_SET);
     return false;
 }
 
@@ -253,12 +431,15 @@ b16 InitFieldObjects(void) {
 // event flag and queues its event; the level is marked when the last object
 // with an event goes.
 RVA(0x0000d7f0, 0x145)
-void RemoveFieldObject(i16 index, i16 announce) {
+void RemoveFieldObject(i16 index, b16 announce) {
     b16 queued = false;
     i16 i;
-    if (announce != 0 && s_objects[index].layer != -1) {
+    if (announce != false && s_objects[index].layer != FIELD_LAYER_NONE) {
         if (!(s_objects[index].flagBank == 0 && s_objects[index].flagIndex == 0)
-            && !(s_objects[index].flagBank == 0xff && s_objects[index].flagIndex == 0xff)) {
+            && !(
+                s_objects[index].flagBank == FIELD_OBJECT_NO_FLAG
+                && s_objects[index].flagIndex == FIELD_OBJECT_NO_FLAG
+            )) {
             ModifyEventFlag(
                 s_objects[index].flagBank,
                 s_objects[index].flagIndex,
@@ -270,20 +451,20 @@ void RemoveFieldObject(i16 index, i16 announce) {
             queued = true;
         }
     }
-    s_objects[index].layer = -1;
-    s_objects[index].redraw = 0;
+    s_objects[index].layer = FIELD_LAYER_NONE;
+    s_objects[index].redraw = false;
     s_objects[index].anim = 0;
     s_objects[index].script = FreeScriptBlock(s_objects[index].script);
-    s_objects[index].hidden = 0;
+    s_objects[index].hidden = false;
     ClearCondition(GetFieldObjectConditions(&s_objects[index]), CONDITION_ZOMBIE);
     ResetWordList(&s_objects[index].list, 0);
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE) {
             return;
         }
     }
-    ModifyEventFlag(8, 0, 1);
-    if (queued != 0 && !HasQueuedObjectEvents()) {
+    ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_SET);
+    if (queued != false && !HasQueuedObjectEvents()) {
         MarkLevelEvent(g_party.field.pos.level);
     }
 }
@@ -291,11 +472,11 @@ void RemoveFieldObject(i16 index, i16 announce) {
 RVA(0x0000d940, 0x31)
 b16 ResetFieldObjects(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
-        RemoveFieldObject(i, 0);
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        RemoveFieldObject(i, false);
     }
-    ModifyEventFlag(8, 0, 1);
-    s_objectsFrozen = 0;
+    ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_SET);
+    s_objectsFrozen = false;
     return false;
 }
 
@@ -304,7 +485,7 @@ b16 ResetFieldObjects(void) {
 RVA(0x0000d980, 0x30)
 b16 IsFieldActor(const void* actor) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         if (&s_objects[i].kind == actor) {
             return true;
         }
@@ -313,8 +494,8 @@ b16 IsFieldActor(const void* actor) {
 }
 
 RVA(0x0000d9b0, 0x12)
-i16 ExchangeObjectsFrozen(i16 frozen) {
-    i16 old = s_objectsFrozen;
+b16 ExchangeObjectsFrozen(b16 frozen) {
+    b16 old = s_objectsFrozen;
     s_objectsFrozen = frozen;
     return old;
 }
@@ -323,7 +504,7 @@ i16 ExchangeObjectsFrozen(i16 frozen) {
 RVA(0x0000d9d0, 0x2a)
 i16 FindObjectOnLayer(i16 layer) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         if (s_objects[i].layer == layer) {
             return i;
         }
@@ -333,7 +514,7 @@ i16 FindObjectOnLayer(i16 layer) {
 
 RVA(0x0000da00, 0x33)
 void SetObjectEventFlag(i16 index, u8 bank, u8 flag) {
-    if (index >= 0 && index < 16) {
+    if (index >= 0 && index < FIELD_OBJECT_COUNT) {
         s_objects[index].flagBank = bank;
         s_objects[index].flagIndex = flag;
     }
@@ -349,11 +530,11 @@ i16 SpawnFieldObject(
     i16 y,
     i16 direction,
     i16 kind,
-    i16 alternate,
+    b16 alternate,
     i8 event,
-    i16 fresh
+    b16 fresh
 ) {
-    i16 slot = FindObjectOnLayer(-1);
+    i16 slot = FindObjectOnLayer(FIELD_LAYER_NONE);
     FILE* file;
     if (slot == -1) {
         return slot;
@@ -361,7 +542,7 @@ i16 SpawnFieldObject(
     LoadObjectRecord(kind, &s_objects[slot]);
     s_objects[slot].slot = slot;
     s_objects[slot].event = event;
-    s_objects[slot].redraw = 0;
+    s_objects[slot].redraw = false;
     s_objects[slot].anim = 0;
     s_objects[slot].layer = layer;
     s_objects[slot].byte21a = 0;
@@ -372,22 +553,22 @@ i16 SpawnFieldObject(
     s_objects[slot].word21d = 0;
     s_objects[slot].word221 = 0;
     s_objects[slot].word21f = 0;
-    s_objects[slot].hidden = 0;
-    if (alternate != 0) {
-        file = OpenDataFile(0x6802, 9, 0);
+    s_objects[slot].hidden = false;
+    if (alternate != false) {
+        file = OpenDataFile(0x6802, DATA_FILE_SCRIPT, 0);
     } else if (TestModeFlags(MODE_WORLD_MAP)) {
-        file = OpenDataFile(0x6801, 9, 0);
+        file = OpenDataFile(0x6801, DATA_FILE_SCRIPT, 0);
     } else {
-        file = OpenDataFile(0x6800, 9, 0);
+        file = OpenDataFile(0x6800, DATA_FILE_SCRIPT, 0);
     }
     s_objects[slot].script = ReadScriptBlock(s_objects[slot].script, file);
-    s_objects[slot].script->id = 0xff;
+    s_objects[slot].script->id = SCRIPT_BLOCK_OBJECT;
     CloseDataFile(file);
-    SetBit(GetFieldObjectFlags(&s_objects[slot]), 10);
-    if (alternate != 0) {
-        SetBit(GetFieldObjectFlags(&s_objects[slot]), 0x20);
+    SetBit(GetFieldObjectFlags(&s_objects[slot]), ACTOR_FLAG_NOTICED);
+    if (alternate != false) {
+        SetBit(GetFieldObjectFlags(&s_objects[slot]), ACTOR_FLAG_ANCHORED);
     }
-    if (fresh != 0) {
+    if (fresh != false) {
         s_objects[slot].macca = 0;
         s_objects[slot].magnetite = 0;
         s_objects[slot].pickItem = 0;
@@ -395,8 +576,8 @@ i16 SpawnFieldObject(
         s_objects[slot].pools.hp.cur = s_objects[slot].rank;
         s_objects[slot].experience = s_objects[slot].rank;
     }
-    SetObjectEventFlag(slot, 0xff, 0xff);
-    ModifyEventFlag(8, 0, 0);
+    SetObjectEventFlag(slot, FIELD_OBJECT_NO_FLAG, FIELD_OBJECT_NO_FLAG);
+    ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_CLEAR);
     return slot;
 }
 
@@ -406,7 +587,7 @@ i16 SpawnMapObject(i16 layer, i16 x, i16 y, i16 direction, i8 event) {
     i16 code = GetMapCellCode(x, y);
     DoorRegionData* table;
     i16 kind;
-    if (code == 0xff || code == -1) {
+    if (code == REGION_NONE || code == -1) {
         return -1;
     }
     if (!IsObjectCell(code)) {
@@ -417,18 +598,18 @@ i16 SpawnMapObject(i16 layer, i16 x, i16 y, i16 direction, i8 event) {
         return -1;
     }
     kind = LookupCellObject(table, layer);
-    if (kind < 0x20 || kind >= 0x2020) {
+    if (kind < HUMAN_ID_LIMIT || kind >= OBJECT_KIND_END) {
         return -1;
     }
-    return SpawnFieldObject(layer, x, y, direction, kind, 0, event, 0);
+    return SpawnFieldObject(layer, x, y, direction, kind, false, event, false);
 }
 
 // `index` when it names a live, visible object (or checks are bypassed), else -1.
 RVA(0x0000dc70, 0x41)
 i16 GetLiveObject(i16 index) {
     if (s_objectCheckBypass == 0) {
-        if (index < 0 || index >= 16 || s_objects[index].layer == -1
-            || s_objects[index].hidden != 0) {
+        if (index < 0 || index >= FIELD_OBJECT_COUNT || s_objects[index].layer == FIELD_LAYER_NONE
+            || s_objects[index].hidden != false) {
             return -1;
         }
     }
@@ -437,7 +618,7 @@ i16 GetLiveObject(i16 index) {
 
 // Spawns a copy of object `index` at its place; returns the new slot or -1.
 RVA(0x0000dcc0, 0x99)
-i16 RespawnFieldObject(i16 index, i16 alternate, i8 event, i16 fresh) {
+i16 RespawnFieldObject(i16 index, b16 alternate, i8 event, b16 fresh) {
     i16 live = GetLiveObject(index);
     i16 layer;
     i16 slot;
@@ -459,7 +640,7 @@ i16 RespawnFieldObject(i16 index, i16 alternate, i8 event, i16 fresh) {
         fresh
     );
     if (slot >= 0) {
-        RequestObjectRedraw(live, -1, -1);
+        RequestObjectRedraw(live, MAP_COORD_NONE, MAP_COORD_NONE);
     }
     return slot;
 }
@@ -467,7 +648,7 @@ i16 RespawnFieldObject(i16 index, i16 alternate, i8 event, i16 fresh) {
 RVA(0x0000dd60, 0x15)
 void ResetObjectAnims(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         ResetObjectAnim(i);
     }
 }
@@ -493,10 +674,10 @@ Character* GetFieldActor(i16 index) {
 RVA(0x0000dde0, 0x43)
 void MarkObjectsOnMap(void) {
     i16 i;
-    if (s_objectsFrozen == 0) {
-        for (i = 0; i < 16; i++) {
-            if (s_objects[i].layer != -1) {
-                MarkMapCell(5, s_objects[i].pos.x, s_objects[i].pos.y);
+    if (s_objectsFrozen == false) {
+        for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+            if (s_objects[i].layer != FIELD_LAYER_NONE) {
+                MarkMapCell(MAP_MARK_OBJECT, s_objects[i].pos.x, s_objects[i].pos.y);
             }
         }
     }
@@ -526,9 +707,9 @@ RVA(0x0000dea0, 0x3d)
 i16 FlushObjectRedraws(void) {
     i16 drawn = 0;
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && s_objects[i].redraw != 0) {
-            s_objects[i].redraw = 0;
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].redraw != false) {
+            s_objects[i].redraw = false;
             RedrawFieldView();
             drawn |= 1;
         }
@@ -536,20 +717,18 @@ i16 FlushObjectRedraws(void) {
     return drawn;
 }
 
-// 0 for no object (or one whose layer is gone), 2 when it has a fatal
-// condition, else 1.
 RVA(0x0000dee0, 0x4a)
-i16 GetObjectLifeState(FieldObject* object) {
+GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeState(FieldObject* object) {
     if (object == NULL) {
-        return 0;
+        return OBJECT_LIFE_ABSENT;
     }
-    if (object->layer == -1) {
-        return 0;
+    if (object->layer == FIELD_LAYER_NONE) {
+        return OBJECT_LIFE_ABSENT;
     }
     if (FindLayerOfKind(object->kind) < 0) {
-        return 0;
+        return OBJECT_LIFE_ABSENT;
     }
-    return (GetFatalCondition(GetFieldObjectConditions(object)) != 0) + 1;
+    return (GetFatalCondition(GetFieldObjectConditions(object)) != 0) + OBJECT_LIFE_ACTIVE;
 }
 
 RVA(0x0000df30, 0x11)
@@ -593,7 +772,7 @@ b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 dr
     sprite = s_facingSprite[facing];
     CellToField(g_viewLateral, g_viewDepth, FIELD_SUBCELL_CENTER, &cell);
     frame = GetLayerFrame(image, 0, cell.z);
-    redraw = object->redraw != 0;
+    redraw = object->redraw != false;
     if (g_viewDepth == 0) {
         CellToField(g_viewLateral, 0, s_nearCells[total][drawn], &cell);
     } else {
@@ -607,7 +786,7 @@ b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 dr
         point.y = cell.y;
     }
     RefreshObjectDraw(sprite, point.x, point.y, g_viewDepth, redraw, object, frame, index);
-    object->redraw = 0;
+    object->redraw = false;
     return true;
 }
 
@@ -616,14 +795,14 @@ void DrawFieldObjects(void) {
     i16 total = 0;
     i16 drawn;
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (CheckObjectState(i) >= 1) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (CheckObjectState(i) >= OBJECT_SLOT_LIVE) {
             total += GetObjectLifeState(&s_objects[i]);
         }
     }
     drawn = 0;
-    for (i = 0; i < 16; i++) {
-        if (CheckObjectState(i) >= 1) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (CheckObjectState(i) >= OBJECT_SLOT_LIVE) {
             drawn +=
                 DrawFieldObject(&s_objects[i], GetLayerImage(s_objects[i].layer), i, total, drawn);
         }
@@ -633,27 +812,27 @@ void DrawFieldObjects(void) {
 // -1 for a free slot, 1 for an object still in play; a hidden object is
 // removed (0) unless removal is deferred.
 RVA(0x0000e1e0, 0x65)
-i16 CheckObjectState(i16 index) {
-    if (s_objects[index].layer == -1) {
-        return -1;
+GZ_ENUM_RETURN(ObjectSlotState, i16) CheckObjectState(i16 index) {
+    if (s_objects[index].layer == FIELD_LAYER_NONE) {
+        return OBJECT_SLOT_FREE;
     }
-    if (s_objects[index].hidden == 0) {
-        return 1;
+    if (s_objects[index].hidden == false) {
+        return OBJECT_SLOT_LIVE;
     }
     if (s_objectRemovalDeferred) {
         DeferObjectRemoval();
-        return 1;
+        return OBJECT_SLOT_LIVE;
     }
-    RemoveFieldObject(index, 1);
-    RequestObjectRedraw(index, -1, -1);
-    return 0;
+    RemoveFieldObject(index, true);
+    RequestObjectRedraw(index, MAP_COORD_NONE, MAP_COORD_NONE);
+    return OBJECT_SLOT_REMOVED;
 }
 
 RVA(0x0000e250, 0x60)
 void RunFieldIdle(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (CheckObjectState(i) >= 1) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (CheckObjectState(i) >= OBJECT_SLOT_LIVE) {
             BuildSightGrid(s_objects[i].pos.x, s_objects[i].pos.y, s_objects[i].direction);
             if (RunObjectStep(&s_objects[i], i)) {
                 return;
@@ -662,13 +841,13 @@ void RunFieldIdle(void) {
     }
 }
 
-// The first live object from `start` at x/y; `mode` 1 wants record `kind`,
-// mode 2 any other record. -1 when none.
+// The first live object from `start` at x/y whose record `mode` accepts; -1
+// when none.
 RVA(0x0000e2b0, 0xc8)
-i16 FindObjectAt(i16 x, i16 y, i16 start, i16 mode, i16 kind) {
+i16 FindObjectAt(i16 x, i16 y, i16 start, GZ_ENUM_PARAM(ObjectKindMatch, i16) mode, i16 kind) {
     i16 i;
-    for (i = start; i < 16; i++) {
-        if (s_objects[i].layer == -1 || s_objects[i].hidden != 0) {
+    for (i = start; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer == FIELD_LAYER_NONE || s_objects[i].hidden != false) {
             continue;
         }
         if (FindLayerOfKind(s_objects[i].kind) < 0) {
@@ -680,10 +859,10 @@ i16 FindObjectAt(i16 x, i16 y, i16 start, i16 mode, i16 kind) {
         if (x != s_objects[i].pos.x || y != s_objects[i].pos.y) {
             continue;
         }
-        if (mode == 1 && kind != s_objects[i].kind) {
+        if (mode == OBJECT_MATCH_KIND && kind != s_objects[i].kind) {
             continue;
         }
-        if (mode == 2 && kind == s_objects[i].kind) {
+        if (mode == OBJECT_MATCH_OTHER_KIND && kind == s_objects[i].kind) {
             continue;
         }
         return i;
@@ -692,7 +871,7 @@ i16 FindObjectAt(i16 x, i16 y, i16 start, i16 mode, i16 kind) {
 }
 
 RVA(0x0000e380, 0x4a)
-i16 CountObjectsAt(i16 x, i16 y, i16 mode, i16 kind) {
+i16 CountObjectsAt(i16 x, i16 y, GZ_ENUM_PARAM(ObjectKindMatch, i16) mode, i16 kind) {
     i16 count = 0;
     i16 i = FindObjectAt(x, y, count, mode, kind);
     while (i != -1) {
@@ -706,16 +885,17 @@ RVA(0x0000e3d0, 0x24)
 i16 FindObjectAtParty(void) {
     MapCoord coord;
     coord = GetMapCoord();
-    return FindObjectAt(coord.x, coord.y, 0, 0, 0);
+    return FindObjectAt(coord.x, coord.y, 0, OBJECT_MATCH_ANY, 0);
 }
 
 RVA(0x0000e400, 0x48)
 void UpdateFieldObjects(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && s_objects[i].hidden == 0 && s_objects[i].pos.y >= 4) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].hidden == false
+            && s_objects[i].pos.y >= 4) {
             ResetObjectAnim(i);
-            s_objects[i].hidden = 1;
+            s_objects[i].hidden = true;
         }
     }
 }
@@ -732,9 +912,9 @@ i16 ExchangeObjectRemovalDeferred(i16 deferred) {
 RVA(0x0000e470, 0x6f)
 void ClearObjectStuns(i16* cleared) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         cleared[i] = 0;
-        if (s_objects[i].layer != -1 && s_objects[i].hidden != 0) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].hidden != false) {
             cleared[i] = 1;
             ClearCondition(GetFieldObjectConditions(&s_objects[i]), CONDITION_ASH);
             ClearCondition(GetFieldObjectConditions(&s_objects[i]), CONDITION_DEAD);
@@ -747,8 +927,8 @@ void ClearObjectStuns(i16* cleared) {
 RVA(0x0000e4e0, 0x40)
 void ApplyObjectConditions(i16* marked) {
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && marked[i] != 0) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && marked[i] != 0) {
             AddCondition(GetFieldObjectConditions(&s_objects[i]), CONDITION_DEAD);
         }
     }
@@ -760,7 +940,7 @@ i16 GetObjectsFrozen(void) {
 }
 
 RVA(0x0000e530, 0x1e)
-i16 GetObjectLifeStateAt(i16 index) {
+GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeStateAt(i16 index) {
     return GetObjectLifeState(&s_objects[index]);
 }
 
@@ -783,14 +963,14 @@ RVA(0x0000e5b0, 0x4f)
 i16 GetObjectImageCode(i16 index) {
     FieldObject* object = &s_objects[index];
     i16 imageCode = 0;
-    if (object->redraw != 0) {
-        imageCode = 4;
+    if (object->redraw != false) {
+        imageCode = FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->anim != 0) {
-        imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
-    } else if (object->hidden != 0) {
-        imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
+        imageCode = FIELD_OBJECT_IMAGE_LIT | FIELD_OBJECT_IMAGE_REACTION;
+    } else if (object->hidden != false) {
+        imageCode = FIELD_OBJECT_IMAGE_LIT | FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->acting) {
-        imageCode = 3;
+        imageCode = FIELD_OBJECT_IMAGE_ACTING;
     }
     return imageCode;
 }
@@ -800,14 +980,14 @@ i16 GetObjectFacingImageCode(i16 index) {
     FieldObject* object = &s_objects[index];
     i16 imageCode =
         s_facingImageCodes[RelativeFacing(g_party.field.pos.direction, object->direction)];
-    if (object->redraw != 0) {
-        imageCode = 4;
+    if (object->redraw != false) {
+        imageCode = FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->anim != 0) {
-        imageCode = FIELD_OBJECT_IMAGE_LIT | 4;
-    } else if (object->hidden != 0) {
-        imageCode = 4;
+        imageCode = FIELD_OBJECT_IMAGE_LIT | FIELD_OBJECT_IMAGE_REACTION;
+    } else if (object->hidden != false) {
+        imageCode = FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->acting) {
-        imageCode = 3;
+        imageCode = FIELD_OBJECT_IMAGE_ACTING;
     }
     return imageCode;
 }
@@ -816,8 +996,8 @@ RVA(0x0000e680, 0x2b)
 i16 CountActiveObjects(void) {
     i16 count = 0;
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && s_objects[i].hidden == 0) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].hidden == false) {
             count++;
         }
     }
@@ -830,15 +1010,15 @@ RVA(0x0000e6b0, 0x65)
 i16 AdvanceObjectAnims(void) {
     i32 count = 0;
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (s_objects[i].layer != -1 && s_objects[i].anim != 0) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].anim != 0) {
             if (s_objects[i].anim == -1) {
                 s_objects[i].anim = 1;
             } else {
                 s_objects[i].anim++;
             }
             if (s_objects[i].anim > 8) {
-                s_objects[i].hidden = 1;
+                s_objects[i].hidden = true;
             }
             RedrawFieldView();
             count++;
@@ -850,7 +1030,7 @@ i16 AdvanceObjectAnims(void) {
 RVA(0x0000e720, 0x15)
 void CheckAllObjects(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         CheckObjectState(i);
     }
 }
@@ -865,27 +1045,27 @@ static __inline u8 GetScriptSetFile(i16 set, i16 index) {
 }
 
 RVA(0x0000e760, 0x3f)
-void SaveFieldLayer(i16 layer) {
+void SaveFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer) {
     i16 i;
     s_savedLayers[layer] = s_layers[layer];
     s_layers[layer].image = 0;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < FIELD_LAYER_SCRIPT_COUNT; i++) {
         s_layers[layer].scripts[i] = NULL;
     }
 }
 
 RVA(0x0000e7a0, 0x3f)
-void RestoreFieldLayer(i16 layer) {
+void RestoreFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer) {
     i16 i;
     s_layers[layer] = s_savedLayers[layer];
     s_savedLayers[layer].image = 0;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < FIELD_LAYER_SCRIPT_COUNT; i++) {
         s_savedLayers[layer].scripts[i] = NULL;
     }
 }
 
 RVA(0x0000e7e0, 0x3c)
-void ResetFieldLayer(i16 layer) {
+void ResetFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer) {
     s_layers[layer].image = DropLayerImage(s_layers[layer].image);
     FreeLayerScripts(&s_layers[layer]);
     s_layers[layer].record.id = -1;
@@ -893,7 +1073,7 @@ void ResetFieldLayer(i16 layer) {
 
 // Loads record `kind` and its picture into layer `layer` (-1 empties it).
 RVA(0x0000e820, 0xcb)
-void LoadEnemyGroupSlot(i16 layer, i16 kind) {
+void LoadEnemyGroupSlot(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer, i16 kind) {
     ImageRequest request;
     i32 size;
     struct BmpFile* data;
@@ -933,9 +1113,9 @@ ScriptEntry FindLayerScriptEntry(i16 layerSlot, i16 file, i16 entry) {
         return none;
     }
     layer = layerSlot - 1;
-    if (file == 0xff) {
+    if (file == SCRIPT_BLOCK_OBJECT) {
         if (s_objectScripts == NULL) {
-            fp = OpenDataFile(0x6800, 9, 0);
+            fp = OpenDataFile(0x6800, DATA_FILE_SCRIPT, 0);
             s_objectScripts = ReadScriptBlock(s_objectScripts, fp);
             CloseDataFile(fp);
         }
@@ -944,7 +1124,7 @@ ScriptEntry FindLayerScriptEntry(i16 layerSlot, i16 file, i16 entry) {
     if (GetLayerScript(&s_layers[layer], 0) == NULL) {
         LoadLayerScriptSet(&s_layers[layer], s_layers[layer].record.scriptSet);
     }
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < FIELD_LAYER_SCRIPT_COUNT; i++) {
         if (GetScriptBlockId(GetLayerScript(&s_layers[layer], i)) == file) {
             return MakeScriptEntry(GetLayerScript(&s_layers[layer], i), entry);
         }
@@ -966,11 +1146,11 @@ void RefreshObjectDraw(
     u32 frame,
     i16 index
 ) {
-    if (force != 0) {
+    if (force != false) {
         RequestRefresh();
         return;
     }
-    if (object->hidden != 0) {
+    if (object->hidden != false) {
         RequestRefresh();
     }
 }
@@ -983,7 +1163,7 @@ u32 GetLayerImage(i16 layer) {
 RVA(0x0000eaa0, 0x29)
 i16 FindLayerOfKind(i16 kind) {
     i16 i;
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < FIELD_LAYER_COUNT; i++) {
         if (s_layers[i].record.id == kind) {
             return i;
         }
@@ -995,7 +1175,7 @@ RVA(0x0000ead0, 0x2b)
 void FreeLayerScripts(FieldLayer* layer) {
     i16 i;
     if (layer != NULL) {
-        for (i = 31; i >= 0; i--) {
+        for (i = FIELD_LAYER_SCRIPT_COUNT - 1; i >= 0; i--) {
             layer->scripts[i] = FreeScriptBlock(GetLayerScript(layer, i));
         }
     }
@@ -1004,7 +1184,13 @@ void FreeLayerScripts(FieldLayer* layer) {
 // Reads script blocks first..end-1 of data file `file` into the layer; each
 // block starts in state (index - 32).
 RVA(0x0000eb00, 0x6a)
-void LoadLayerScripts(FieldLayer* layer, i16 file, i16 kind, i16 first, i16 end) {
+void LoadLayerScripts(
+    FieldLayer* layer,
+    i16 file,
+    GZ_ENUM_PARAM(DataFileKind, i16) kind,
+    i16 first,
+    i16 end
+) {
     FILE* fp = OpenDataFile(file, kind, 0);
     i16 i;
     if (fp != NULL) {
@@ -1022,22 +1208,22 @@ RVA(0x0000eb70, 0xea)
 void LoadLayerScriptSet(FieldLayer* layer, i16 set) {
     FILE* fp;
     if (s_scriptSets == NULL) {
-        fp = OpenDataFile(DATA_TABLE_OBJECT_SCRIPT_SETS, 12, 0);
+        fp = OpenDataFile(DATA_TABLE_OBJECT_SCRIPT_SETS, DATA_FILE_TABLE, 0);
         ReadRawBlock(fp, s_scriptSetBuffer);
         s_scriptSets = s_scriptSetBuffer;
         CloseDataFile(fp);
     }
-    LoadLayerScripts(layer, 0x6000, 9, 0, 0x10);
+    LoadLayerScripts(layer, 0x6000, DATA_FILE_SCRIPT, 0, 0x10);
     if (GetScriptSetFile(set, 0) != 0xff) {
-        LoadLayerScripts(layer, GetScriptSetFile(set, 0) + 0x6000, 9, 0, 0x10);
+        LoadLayerScripts(layer, GetScriptSetFile(set, 0) + 0x6000, DATA_FILE_SCRIPT, 0, 0x10);
     }
     if (GetScriptSetFile(set, 1) != 0xff) {
-        LoadLayerScripts(layer, GetScriptSetFile(set, 1) + 0x6000, 9, 0, 0x10);
+        LoadLayerScripts(layer, GetScriptSetFile(set, 1) + 0x6000, DATA_FILE_SCRIPT, 0, 0x10);
     }
     if (GetScriptSetFile(set, 2) != 0xff) {
-        LoadLayerScripts(layer, GetScriptSetFile(set, 2) + 0x6100, 9, 0, 0x10);
+        LoadLayerScripts(layer, GetScriptSetFile(set, 2) + 0x6100, DATA_FILE_SCRIPT, 0, 0x10);
     }
-    LoadLayerScripts(layer, layer->record.id, 14, 0, 0x10);
+    LoadLayerScripts(layer, layer->record.id, DATA_FILE_OBJECT_SCRIPT, 0, 0x10);
 }
 
 MapCoord RandomNearOffset(void);
@@ -1080,7 +1266,7 @@ i16 SpawnRandomEnemy(void) {
             return -1;
         }
     }
-    if (FindObjectOnLayer(-1) < 0) {
+    if (FindObjectOnLayer(FIELD_LAYER_NONE) < 0) {
         return -1;
     }
     for (tries = 0; tries < 10; tries++) {
@@ -1089,7 +1275,8 @@ i16 SpawnRandomEnemy(void) {
         y = offset.y + g_party.field.pos.y;
         x = WrapMapCoord(x, width);
         y = WrapMapCoord(y, height);
-        if (!IsCellBlocked(g_party.field.pos.level, 1, x, y) && GetMapCellCode(x, y) == code) {
+        if (!IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y)
+            && GetMapCellCode(x, y) == code) {
             break;
         }
     }
@@ -1097,7 +1284,7 @@ i16 SpawnRandomEnemy(void) {
         return -1;
     }
     RequestFieldRefresh();
-    return SpawnMapObject(layer, x, y, RandomAverage(0, 3, 0), -1);
+    return SpawnMapObject(layer, x, y, RandomAverage(0, 3, 0), FIELD_OBJECT_NO_EVENT);
 }
 
 RVA(0x0000edf0, 0x2d)
@@ -1109,7 +1296,7 @@ MapCoord RandomNearOffset(void) {
 }
 
 // Counts the spawn timer down; when it runs out it restarts and, unless
-// objects are barred (event flag 8/0), spawns a random enemy.
+// the level has no enemies (LEVEL_FLAG_NO_ENEMIES), spawns a random enemy.
 RVA(0x0000ee20, 0x45)
 i16 TickEnemySpawnTimer(void) {
     i32 timer = s_spawnTimer;
@@ -1119,7 +1306,7 @@ i16 TickEnemySpawnTimer(void) {
     }
     if (timer == 0) {
         RestartEnemySpawnTimer();
-        if (!IsEventFlagSet(8, 0)) {
+        if (!IsEventFlagSet(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES)) {
             return SpawnRandomEnemy();
         }
     }
@@ -1129,16 +1316,16 @@ i16 TickEnemySpawnTimer(void) {
 // Traces the sight lines from x/y along `direction` row by row (up to three
 // steps back) until a cell blocks it.
 RVA(0x0000ee70, 0x80)
-void TraceSight(i16 x, i16 y, i16 direction) {
+void TraceSight(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     i16 step;
     i16 right;
     i16 left;
     i16 cellX;
     i16 cellY;
     i16 blocked;
-    left = -3;
-    right = 3;
-    for (step = 0; step >= -3; step--) {
+    left = -SIGHT_RADIUS;
+    right = SIGHT_RADIUS;
+    for (step = 0; step >= -SIGHT_RADIUS; step--) {
         ScanSightRow(x, y, step, direction, &left, &right);
         cellX = x;
         cellY = y;
@@ -1152,8 +1339,8 @@ void TraceSight(i16 x, i16 y, i16 direction) {
 
 #define MarkSightCell(x0, y0, x, y)                                                                \
     do {                                                                                           \
-        (x) += 3 - (x0);                                                                           \
-        (y) += 3 - (y0);                                                                           \
+        (x) += SIGHT_RADIUS - (x0);                                                                \
+        (y) += SIGHT_RADIUS - (y0);                                                                \
         if ((y) >= 0 && (x) >= 0) {                                                                \
             s_sight[(y)][(x)] = 1;                                                                 \
         }                                                                                          \
@@ -1162,7 +1349,14 @@ void TraceSight(i16 x, i16 y, i16 direction) {
 // Marks the cells of sight row `step` seen from x/y facing `direction`, out
 // to the left and right bounds; a blocking cell narrows its bound.
 RVA(0x0000eef0, 0x179)
-void ScanSightRow(i16 x, i16 y, i16 step, i16 direction, i16* left, i16* right) {
+void ScanSightRow(
+    i16 x,
+    i16 y,
+    i16 step,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16* left,
+    i16* right
+) {
     i16 side;
     i16 i;
     i16 cellX;
@@ -1207,9 +1401,9 @@ void BuildSightGrid(i16 x, i16 y, i16 facing) {
 // The sight-grid cell for x/y around an object at x0/y0 (0 outside).
 RVA(0x0000f0c0, 0x53)
 i16 GetSightCell(i16 x0, i16 y0, i16 x, i16 y) {
-    x += 3 - x0;
-    y += 3 - y0;
-    if (x >= 0 && x < 7 && y >= 0 && y < 7) {
+    x += SIGHT_RADIUS - x0;
+    y += SIGHT_RADIUS - y0;
+    if (x >= 0 && x < SIGHT_WIDTH && y >= 0 && y < SIGHT_WIDTH) {
         return s_sight[y][x];
     }
     return 0;
@@ -1229,16 +1423,16 @@ i16 DirectionToParty(i16 x, i16 y) {
     MapCoord coord;
     i16 direction;
     coord = GetMapCoord();
-    direction = RelativeDirection(x, y, coord.x, coord.y, 0);
+    direction = RelativeDirection(x, y, coord.x, coord.y, VIEW_NORTH);
     if (x == coord.x && y == coord.y) {
-        direction = TurnDirection(g_party.field.pos.direction, 2);
+        direction = TurnDirection(g_party.field.pos.direction, MOVE_BACK);
     }
     return direction;
 }
 
 RVA(0x0000f1a0, 0x34)
 void LoadEncounterWeights(void) {
-    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_ENCOUNTER_WEIGHTS, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_ENCOUNTER_WEIGHTS, DATA_FILE_TABLE, 0);
     ReadRawBlock(fp, s_encounterBuffer);
     s_fieldEncounterWeights = s_encounterBuffer;
     CloseDataFile(fp);
@@ -1249,8 +1443,8 @@ RVA(0x0000f1e0, 0x35)
 i16 RollEncounterSlot(i16 row) {
     u8 roll = RandomUpTo(0xff);
     i16 i;
-    for (i = 0; i < 9; i++) {
-        if (roll <= s_fieldEncounterWeights[row * 9 + i]) {
+    for (i = 0; i < ENCOUNTER_ROW_SLOTS; i++) {
+        if (roll <= s_fieldEncounterWeights[row * ENCOUNTER_ROW_SLOTS + i]) {
             break;
         }
     }
@@ -1258,8 +1452,8 @@ i16 RollEncounterSlot(i16 row) {
 }
 
 RVA(0x0000f220, 0x1e)
-b16 RefreshIfTurned(i16 visible, i16 turned) {
-    if (visible != 0 && turned != 0) {
+b16 RefreshIfTurned(b16 visible, b16 turned) {
+    if (visible != false && turned != false) {
         RequestFieldRefresh();
         return true;
     }
@@ -1269,14 +1463,15 @@ b16 RefreshIfTurned(i16 visible, i16 turned) {
 // The side (1 or 3) the party is on seen from x/y facing `direction`; a
 // random side when straight ahead or behind.
 RVA(0x0000f240, 0x48)
-i16 GetPartySide(i16 x, i16 y, i16 direction) {
+GZ_ENUM_RETURN(MoveCommand, i16)
+GetPartySide(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     MapCoord offset;
-    i16 side;
+    GZ_ENUM_LOCAL(MoveCommand, i16) side;
     offset = RelativeOffset(x, y, direction, g_party.field.pos.x, g_party.field.pos.y);
     if (offset.x < 0) {
-        side = 3;
+        side = MOVE_LEFT;
     } else if (offset.x > 0) {
-        side = 1;
+        side = MOVE_RIGHT;
     } else {
         side = RandomUpTo(1) * 2 + 1;
     }
@@ -1286,21 +1481,26 @@ i16 GetPartySide(i16 x, i16 y, i16 direction) {
 // Turns an object towards the party (plus `turn` quarter turns) and steps it
 // one cell forward when the way is free; when blocked and not already turned
 // aside, retries once towards the party's side. Returns whether a visible
-// change was refreshed. `mode` 1 stops next to the party.
+// change was refreshed. The stop mode keeps an object already on the party's
+// cell from stepping away.
 // @early-stop tail merge: the two visible/turned refresh exits coalesce here;
 // retail keeps them separate. Shared loop breaks retain that merge, while
 // routing the successful move through the same exit merges all three sites.
 RVA(0x0000f290, 0x24d)
-b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
+b16 StepObjectTowardParty(
+    FieldObject* object,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn,
+    GZ_ENUM_PARAM(ObjectPartyCellStop, i16) stop
+) {
     i16 x;
     i16 y;
-    i16 visible;
-    i16 retried;
+    b16 visible;
+    b16 retried;
     i16 code;
-    i16 turned;
+    b16 turned;
     i16 direction;
-    retried = 0;
-    if (TestFieldObjectFlag(object, 0x20)) {
+    retried = false;
+    if (TestFieldObjectFlag(object, ACTOR_FLAG_ANCHORED)) {
         return false;
     }
     code = GetMapCellCode(object->pos.x, object->pos.y);
@@ -1309,17 +1509,18 @@ b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
     for (;;) {
         x = object->pos.x;
         y = object->pos.y;
-        turned = 0;
+        turned = false;
         direction = DirectionToParty(x, y);
         direction = TurnDirection(direction, turn);
         SetObjectDirection(object, direction, turned);
-        if (!DistanceFromParty(x, y) && mode == 1) {
+        if (!DistanceFromParty(x, y) && stop == OBJECT_PARTY_CELL_STOP) {
             return RefreshIfTurned(visible, turned);
         }
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
-            StepMapCoord(&x, &y, object->direction, 0);
+            StepMapCoord(&x, &y, object->direction, MOVE_FORWARD);
             WrapMapPosition(&x, &y);
-            if (!CellCodeDiffers(code, x, y) && !IsCellBlocked(g_party.field.pos.level, 1, x, y)) {
+            if (!CellCodeDiffers(code, x, y)
+                && !IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y)) {
                 visible |= GetPartyView(x, y);
                 object->pos.y = y;
                 object->pos.x = x;
@@ -1327,27 +1528,27 @@ b16 StepObjectTowardParty(FieldObject* object, i16 turn, i16 mode) {
                 if (!DistanceFromParty(x, y)) {
                     InvalidateSelectedHotspot();
                 }
-                if (GetGameState() == 0x22) {
+                if (GetGameState() == GAME_STATE_FIELD) {
                     ClearSelectedHotspot();
                 }
-                return RefreshIfTurned(visible, 1);
+                return RefreshIfTurned(visible, true);
             }
         }
-        if (turn != 0 || retried != 0) {
+        if (turn != MOVE_FORWARD || retried != false) {
             return RefreshIfTurned(visible, turned);
         }
-        retried = 1;
+        retried = true;
         turn = GetPartySide(object->pos.x, object->pos.y, direction);
     }
 }
 
 // Faces the party plus `turn` quarter turns; refreshes when turned in view.
 RVA(0x0000f4e0, 0x66)
-void FaceObjectToParty(FieldObject* object, i16 turn) {
+void FaceObjectToParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) turn) {
     i16 x = object->pos.x;
     i16 y = object->pos.y;
-    i16 turned = 0;
-    i16 view = GetPartyView(x, y);
+    b16 turned = false;
+    b16 view = GetPartyView(x, y);
     i16 direction = DirectionToParty(x, y);
     direction = TurnDirection(direction, turn);
     SetObjectDirection(object, direction, turned);
@@ -1388,24 +1589,24 @@ b16 IsWithinRange(i16 range) {
 // was picked.
 RVA(0x0000f620, 0x26c)
 i16 UseObjectSkill(FieldObject* object, i16 skill) {
-    FieldSkillCandidate best, candidates[16];
+    FieldSkillCandidate best, candidates[FIELD_OBJECT_COUNT];
     Character* actor = (Character*)&object->kind;
     FieldObject* target;
     MapCoord coord;
-    i16 picked;
+    b16 picked;
     i16 count;
     i16 i;
-    picked = 0;
+    picked = false;
     if (CanUseSkill(skill, actor) <= 0) {
         return -1;
     }
-    if ((i16)GetSkillKind(skill) == 2) {
+    if (GetSkillKind(skill) == SKILL_KIND_RESTORE) {
         count = 0;
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             InitFieldSkillCandidate(&candidates[i]);
         }
         if (GetSkillValueB(GetCachedSkill(skill))) {
-            for (i = 0; i < 16; i++) {
+            for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
                 if (GetLiveObject(i) >= 0) {
                     target = GetFieldObject(i);
                     coord = GetObjectCoord(i);
@@ -1417,7 +1618,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
                 }
             }
         } else {
-            for (i = 0; i < 16; i++) {
+            for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
                 if (GetLiveObject(i) >= 0) {
                     target = GetFieldObject(i);
                     coord = GetObjectCoord(i);
@@ -1442,16 +1643,16 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
             return -1;
         }
         object->pickObject = best.index;
-        picked = 1;
+        picked = true;
         g_targetId = object->pickObject;
     }
     if (!GetFieldMarker() && !IsWithinRange(GetSkillAttackRange(skill))) {
         return -1;
     }
-    if (IsSkillIdBlocked(actor, skill) == 1) {
+    if (IsSkillIdBlocked(actor, skill) == true) {
         return -1;
     }
-    return picked != 0;
+    return picked != false;
 }
 
 b16 ChooseObjectTarget(FieldObject* object);
@@ -1464,13 +1665,13 @@ b16 ChooseObjectTarget(FieldObject* object);
 // Inlining that tail at each exit prevents the retail tail merge.
 RVA(0x0000f890, 0x490)
 b16 RunObjectStep(FieldObject* object, i16 index) {
-    i16 scenes[5];
+    i16 scenes[ATTITUDE_COUNT];
     Character* actor;
     i16 action;
     i16 tries;
     i16 slot;
     i16 result;
-    i16 attitude;
+    GZ_ENUM_LOCAL(Attitude, i16) attitude;
     i16 scene;
     if (g_tickElapsed == 0) {
         return false;
@@ -1489,7 +1690,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
     SetFieldBusy(1);
     actor = (Character*)&object->kind;
     if (!DistanceToParty((FieldActor*)actor)) {
-        AlertActor(actor, 2);
+        AlertActor(actor, ATTITUDE_VERY_HOSTILE);
     }
     StartScriptInCode(object->script->code, 0xff, 0, NewScriptContext(1, actor));
     do {
@@ -1501,25 +1702,28 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
     g_actorId = index;
     action = PickActorAction(actor);
     if (action > 0) {
-        if ((action & 0xf) == 4) {
-            action = (action & 0xf0) | 1;
+        if ((action & CONDITION_ACTION_MASK) == CONDITION_ACTION_NONE) {
+            action = (action & CONDITION_ACTION_FLAGS_MASK) | CONDITION_ACTION_ATTACK_OPPONENT;
         }
         action = AdjustActorAction(index, action);
     }
     switch (object->mode) {
-        case 1:
-            if (action == 1 || action == 2) {
+        case ACTOR_MODE_ATTACK:
+            if (action == ACTOR_ACTION_HANDLED || action == ACTOR_ACTION_ATTACK_QUEUED) {
                 goto attack;
             }
             g_actorId = index;
-            object->mode = 10;
+            object->mode = ACTOR_MODE_IDLE;
             object->pickRole = PICK_ROLE_ATTACK;
-            SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
+            SetFieldObjectPickTarget(
+                object,
+                GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON].item
+            );
             g_actionId = 1;
             tries = 0;
             for (;;) {
                 slot = RollEncounterSlot(object->encounterRow);
-                if (slot >= 1 && slot <= 8) {
+                if (slot >= 1 && slot <= OBJECT_SKILL_COUNT) {
                     g_actionId = object->skills[slot - 1];
                     object->pickTarget = g_actionId;
                     object->pickTargetHigh = 1;
@@ -1531,28 +1735,34 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                         }
                         g_actionId = 1;
                         object->pickRole = PICK_ROLE_ATTACK;
-                        SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
+                        SetFieldObjectPickTarget(
+                            object,
+                            GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON].item
+                        );
                     } else if (result != 0) {
                         action = 2;
                         goto attack;
                     }
                 } else {
-                    object->mode = 10;
+                    object->mode = ACTOR_MODE_IDLE;
                     object->pickRole = PICK_ROLE_ATTACK;
-                    SetFieldObjectPickTarget(object, GetFieldObjectEquipment(object)[5].item);
+                    SetFieldObjectPickTarget(
+                        object,
+                        GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON].item
+                    );
                     g_actionId = 1;
                 }
                 if (GetFieldMarker() || IsWithinRange(GetSkillAttackRange(g_actionId))) {
                     goto attack;
                 }
                 if (++tries >= 4) {
-                    StepObjectTowardParty(object, 0, 1);
+                    StepObjectTowardParty(object, MOVE_FORWARD, OBJECT_PARTY_CELL_STOP);
                     break;
                 }
             }
             break;
         attack:
-            FaceObjectToParty(object, 0);
+            FaceObjectToParty(object, MOVE_FORWARD);
             GetFieldObjectActionWait(object)->ready = ACTION_UNMARKED;
             if (action < 2) {
                 ChooseObjectTarget(object);
@@ -1562,35 +1772,36 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                 g_targetId = object->pickObject;
             }
             break;
-        case 2:
-            StepObjectTowardParty(object, 2, 0);
+        case ACTOR_MODE_FLEE:
+            StepObjectTowardParty(object, MOVE_BACK, OBJECT_PARTY_CELL_CONTINUE);
             break;
-        case 5:
-            StepObjectTowardParty(object, 0, 0);
+        case ACTOR_MODE_STEP_INTO_RANGE:
+            StepObjectTowardParty(object, MOVE_FORWARD, OBJECT_PARTY_CELL_CONTINUE);
             break;
-        case 4:
-        case 6:
-            StepObjectTowardParty(object, 0, 1);
+        case ACTOR_MODE_APPROACH:
+        case ACTOR_MODE_STEP_CLOSER:
+            StepObjectTowardParty(object, MOVE_FORWARD, OBJECT_PARTY_CELL_STOP);
             break;
-        case 7:
-            StepObjectTowardParty(object, RandomUpTo(1) * 2 + 1, 0);
+        case ACTOR_MODE_CIRCLE_AROUND:
+            StepObjectTowardParty(object, RandomUpTo(1) * 2 + 1, OBJECT_PARTY_CELL_CONTINUE);
             break;
-        case 9:
-            StepObjectTowardParty(object, RandomUpTo(3), 0);
+        case ACTOR_MODE_WANDER:
+            StepObjectTowardParty(object, RandomUpTo(3), OBJECT_PARTY_CELL_CONTINUE);
             break;
-        case 11:
-            scenes[0] = 3;
-            scenes[1] = 1;
-            scenes[2] = -1;
-            scenes[3] = 2;
-            scenes[4] = -1;
-            if (IsEventFlagSet(2, 7) && IsEventFlagSet(2, 8)) {
-                object->mode = 10;
+        case ACTOR_MODE_TALK:
+            scenes[ATTITUDE_PLEADING] = 3;
+            scenes[ATTITUDE_FRIENDLY] = 1;
+            scenes[ATTITUDE_VERY_HOSTILE] = -1;
+            scenes[ATTITUDE_HOSTILE] = 2;
+            scenes[ATTITUDE_NORMAL] = -1;
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_V1_0)
+                && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
+                object->mode = ACTOR_MODE_IDLE;
                 break;
             }
             attitude = object->attitude;
-            if (attitude < 0 || attitude > 4) {
-                attitude = 3;
+            if (attitude < ATTITUDE_PLEADING || attitude > ATTITUDE_NORMAL) {
+                attitude = ATTITUDE_HOSTILE;
             }
             scene = scenes[attitude];
             if (scene == -1) {
@@ -1611,12 +1822,12 @@ b16 BeginPartyTargetSkill(Character* character);
 RVA(0x0000fd20, 0x171)
 b16 ChooseObjectTarget(FieldObject* object) {
     Character* member;
-    i16 candidates[6];
+    i16 candidates[PARTY_SIZE];
     i16 count;
     i16 i;
     i16 target;
-    if (object->kind == 0xce) {
-        target = FindPartyPositionOfId(0x22);
+    if (object->kind == OBJECT_RECORD_PRIMROSE) {
+        target = FindPartyPositionOfId(OBJECT_RECORD_MARDUK);
         if (target != -1) {
             if (PushPromptState(0, 0, 200, 450, 0)) {
                 return true;
@@ -1633,15 +1844,15 @@ b16 ChooseObjectTarget(FieldObject* object) {
         return true;
     }
     count = 0;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         member = GetPartyCharacter(i);
         if (member != NULL && !GetDisablingCondition(GetCharacterConditions(member))
-            && TestCharacterFlag(member, 0x21) != 1) {
+            && TestCharacterFlag(member, ACTOR_FLAG_INVISIBLE) != true) {
             candidates[count++] = i;
         }
     }
     if (count == 0) {
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < PARTY_SIZE; i++) {
             member = GetPartyCharacter(i);
             if (member != NULL && !GetFatalCondition(GetCharacterConditions(member))) {
                 candidates[count++] = i;
@@ -1684,7 +1895,7 @@ static __inline const DemonTable* ReadDemonTable(void) {
 
 RVA(0x0000ff30, 0x70)
 void LoadDemonTables(void) {
-    FILE* fp = OpenDataFile(DATA_TABLE_DEMONS, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_DEMONS, DATA_FILE_TABLE, 0);
     s_demonRecords = ReadCryptHandle(fp);
     s_raceClasses = ReadCryptHandle(fp);
     s_raceNames = ReadCryptHandle(fp);
@@ -1695,12 +1906,12 @@ void LoadDemonTables(void) {
 }
 
 RVA(0x0000ffa0, 0x1a)
-i16 GetDemonRace(i16 id) {
+GZ_ENUM_RETURN(DemonRace, i16) GetDemonRace(i16 id) {
     return ReadDemonTable()->entries[id].race;
 }
 
 RVA(0x0000ffc0, 0x1a)
-i16 GetDemonPantheon(i16 id) {
+GZ_ENUM_RETURN(DemonPantheon, i16) GetDemonPantheon(i16 id) {
     return ReadDemonTable()->entries[id].pantheon;
 }
 
@@ -1711,22 +1922,22 @@ i16 GetDemonLevel(i16 id) {
 
 // -1 when flag bit 2 is set, else flag bit 0.
 RVA(0x00010000, 0x27)
-i16 GetDemonFlagLow(i16 id) {
+GZ_ENUM_RETURN(FusionFlagValue, i16) GetDemonFlagLow(i16 id) {
     u8 flags = ReadDemonTable()->entries[id].flags;
-    if (flags & 4) {
-        return -1;
+    if (flags & DEMON_FLAG_LOW_UNAVAILABLE) {
+        return FUSION_FLAG_UNAVAILABLE;
     }
-    return (u8)(flags & 1);
+    return (u8)(flags & DEMON_FLAG_LOW_VALUE);
 }
 
 // -1 when flag bit 6 is set, else flag bit 4.
 RVA(0x00010030, 0x2a)
-i16 GetDemonFlagHigh(i16 id) {
+GZ_ENUM_RETURN(FusionFlagValue, i16) GetDemonFlagHigh(i16 id) {
     u8 flags = ReadDemonTable()->entries[id].flags;
-    if (flags & 0x40) {
-        return -1;
+    if (flags & DEMON_FLAG_HIGH_UNAVAILABLE) {
+        return FUSION_FLAG_UNAVAILABLE;
     }
-    return (u8)((flags >> 4) & 1);
+    return (u8)((flags & DEMON_FLAG_HIGH_VALUE) >> 4);
 }
 
 RVA(0x00010060, 0x12)
@@ -1735,13 +1946,13 @@ i16 GetDemonCount(void) {
 }
 
 RVA(0x00010080, 0x19)
-i16 GetRaceClass(i16 race) {
+GZ_ENUM_RETURN(DemonClass, i16) GetRaceClass(GZ_ENUM_PARAM(DemonRace, i16) race) {
     u8* classes = HandleReadPtr(s_raceClasses);
     return classes[race];
 }
 
 RVA(0x000100a0, 0x17)
-i16 GetDemonClass(i16 id) {
+GZ_ENUM_RETURN(DemonClass, i16) GetDemonClass(i16 id) {
     return GetRaceClass(GetDemonRace(id));
 }
 
@@ -1758,18 +1969,18 @@ char* GetDemonRaceName(i16 id) {
 
 RVA(0x00010100, 0x33)
 char* GetDemonClassName(i16 id) {
-    i16 cls = GetDemonClass(id);
+    GZ_ENUM_LOCAL(DemonClass, i16) cls = GetDemonClass(id);
     return ReadDemonName(s_classNames, cls);
 }
 
 RVA(0x00010140, 0x33)
 char* GetDemonPantheonName(i16 id) {
-    i16 index = GetDemonPantheon(id);
+    GZ_ENUM_LOCAL(DemonPantheon, i16) index = GetDemonPantheon(id);
     return ReadDemonName(s_pantheonNames, index);
 }
 
 RVA(0x00010180, 0x23)
-char* GetHumanTitleName(i16 index) {
+char* GetHumanTitleName(GZ_ENUM_PARAM(HumanTitle, i16) index) {
     return ReadDemonName(s_humanTitles, index);
 }
 
@@ -1783,13 +1994,13 @@ char* CopyObjectRecordName(i16 id, char* destination) {
 
 // The highest-level demon of `race` at or below `maxLevel` (-1: none).
 RVA(0x000101f0, 0x52)
-i16 FindStrongestOfRace(i16 maxLevel, i16 race) {
+i16 FindStrongestOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race) {
     i16 count = GetDemonCount();
     i16 i;
     i16 bestLevel = -1;
     i16 best = -1;
     i16 level;
-    for (i = 32; i < count; i++) {
+    for (i = HUMAN_ID_LIMIT; i < count; i++) {
         if (GetDemonRace(i) == race) {
             level = GetDemonLevel(i);
             if (level <= maxLevel && bestLevel < level) {
@@ -1803,7 +2014,7 @@ i16 FindStrongestOfRace(i16 maxLevel, i16 race) {
 
 // The strongest of `race` at or below `maxLevel`, else its weakest.
 RVA(0x00010250, 0x65)
-i16 FindDemonOfRace(i16 maxLevel, i16 race) {
+i16 FindDemonOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race) {
     i16 best = FindStrongestOfRace(maxLevel, race);
     i16 count;
     i16 i;
@@ -1815,7 +2026,7 @@ i16 FindDemonOfRace(i16 maxLevel, i16 race) {
     count = GetDemonCount();
     best = -1;
     bestLevel = 500;
-    for (i = 32; i < count; i++) {
+    for (i = HUMAN_ID_LIMIT; i < count; i++) {
         if (GetDemonRace(i) == race) {
             level = GetDemonLevel(i);
             if (bestLevel > level) {
@@ -1830,16 +2041,16 @@ i16 FindDemonOfRace(i16 maxLevel, i16 race) {
 // The highest-level demon of race class `cls` at or below `maxLevel` whose
 // low flag is not -1.
 RVA(0x000102c0, 0x69)
-i16 FindStrongestOfClass(i16 maxLevel, i16 cls) {
+i16 FindStrongestOfClass(i16 maxLevel, GZ_ENUM_PARAM(DemonClass, i16) cls) {
     i16 count = GetDemonCount();
     i16 i;
     i16 bestLevel = -1;
     i16 best = -1;
     i16 level;
-    for (i = 32; i < count; i++) {
+    for (i = HUMAN_ID_LIMIT; i < count; i++) {
         level = GetDemonLevel(i);
-        if (level <= maxLevel && GetDemonFlagLow(i) != -1 && GetDemonClass(i) == cls
-            && bestLevel < level) {
+        if (level <= maxLevel && GetDemonFlagLow(i) != FUSION_FLAG_UNAVAILABLE
+            && GetDemonClass(i) == cls && bestLevel < level) {
             bestLevel = level;
             best = i;
         }
@@ -1858,7 +2069,7 @@ i16 FindNextOfRace(i16 id, i16 wrap) {
     i16 level = GetDemonLevel(id);
     i16 i;
     i16 other;
-    for (i = 32; i < count; i++) {
+    for (i = HUMAN_ID_LIMIT; i < count; i++) {
         other = GetDemonLevel(i);
         if (other > level && GetDemonRace(i) == race && bestLevel > other) {
             bestLevel = other;
@@ -1873,7 +2084,7 @@ i16 FindNextOfRace(i16 id, i16 wrap) {
     }
     bestLevel = 0x7fff;
     best = 0x7fff;
-    for (i = 32; i < count; i++) {
+    for (i = HUMAN_ID_LIMIT; i < count; i++) {
         other = GetDemonLevel(i);
         if (other > -1 && GetDemonRace(i) == race && bestLevel > other) {
             bestLevel = other;
@@ -1908,13 +2119,13 @@ static __inline void RecalcObjectStats(FieldObject* object) {
 
 // Builds object `object` from its record: identity, pools, stats, item slots
 // (an empty gun clears its ammunition, else the ammunition count is the gun's
-// magazine size) and skills; kind 0x117 then mirrors the first party member.
+// magazine size) and skills; Doppelganger then mirrors the first party member.
 RVA(0x00010470, 0x4b1)
 void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     i16 i;
     memset(object, 0, sizeof(FieldObject));
     object->kind = record->id;
-    strncpy(object->namePrefix, record->name, 17);
+    strncpy(object->namePrefix, record->name, sizeof(object->namePrefix));
     object->macca = record->macca;
     object->magnetite = record->magnetite;
     object->rank = record->level;
@@ -1942,22 +2153,22 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     for (i = 0; i < sizeof(object->battleTally); i++) {
         object->battleTally[i] = 0;
     }
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[0], record->items[0]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[1], record->items[1]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[2], record->items[2]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[3], record->items[3]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[4], record->items[4]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[5], record->items[5]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[6], record->items[6]);
-    SetItemSlotItem(&GetFieldObjectEquipment(object)[7], record->items[7]);
-    if (GetFieldObjectEquipment(object)[6].item < 1) {
-        EmptyItemSlot(&GetFieldObjectEquipment(object)[6]);
-        GetFieldObjectEquipment(object)[6].attachment = -1;
-        EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
-        GetFieldObjectEquipment(object)[7].attachment = -1;
-    } else if (GetFieldObjectEquipment(object)[7].item < 1) {
-        EmptyItemSlot(&GetFieldObjectEquipment(object)[7]);
-        GetFieldObjectEquipment(object)[7].attachment = -1;
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_HEAD], record->items[0]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_BODY], record->items[1]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_ARMS], record->items[2]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_LEGS], record->items[3]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_ACCESSORY], record->items[4]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON], record->items[5]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN], record->items[6]);
+    SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO], record->items[7]);
+    if (GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item < 1) {
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN]);
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].attachment = -1;
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO]);
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].attachment = -1;
+    } else if (GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].item < 1) {
+        EmptyItemSlot(&GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO]);
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].attachment = -1;
     } else {
         GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].quantity = GetGunMagazineSize(
             GetLoadedRecord(GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item)
@@ -1971,15 +2182,15 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
         GetFieldObjectFlags(object)[i] = 0;
     }
     object->byte096 = 1;
-    object->acting = 0;
+    object->acting = false;
     object->word098 = 0x11;
-    object->attitude = 4;
+    object->attitude = ATTITUDE_NORMAL;
     object->triggerRange = (record->bits68 >> 2) & 7;
-    object->mode = 0;
+    object->mode = ACTOR_MODE_NONE;
     object->fieldState = 0;
     object->encounterRow = record->encounterRow;
     object->shield = 0;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < sizeof(object->resistance); i++) {
         object->resistance[i] = record->resistance[i];
     }
     object->moonRow = record->moonRow;
@@ -1988,34 +2199,34 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     object->pickFlags = (object->pickFlags & ~6) | ((record->bits68 >> 5) & 2);
     object->dropChance = record->dropChance;
     object->pickItem = record->pickItem;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < AFFILIATION_COUNT; i++) {
         SetCharacterAffiliation(object, i, record->affiliation[i]);
     }
-    ResetWordList(&object->list, 8);
-    for (i = 0; i < 8; i++) {
+    ResetWordList(&object->list, OBJECT_SKILL_COUNT);
+    for (i = 0; i < OBJECT_SKILL_COUNT; i++) {
         SetWord(&object->list, i, record->skills[i]);
         object->skills[i] = record->skills[i];
     }
-    object->battleStats[0] = 0;
-    object->battleStats[6] = 0;
-    object->battleStats[12] = 0;
-    object->battleStats[18] = 0;
+    object->battleStats[BATTLE_STAT_WEAPON_LEVEL] = 0;
+    object->battleStats[BATTLE_STAT_GUN_LEVEL] = 0;
+    object->battleStats[BATTLE_STAT_MAGIC_LEVEL] = 0;
+    object->battleStats[BATTLE_STAT_DEMON_INTERACTION_LEVEL] = 0;
     RecalcObjectStats(object);
     InitCurMax(&object->pools.hp, record->hp);
     InitCurMax(&object->pools.mp, record->mp);
-    if (object->kind == 0x117) {
+    if (object->kind == OBJECT_RECORD_DOPPELGANGER) {
         CopyLeaderIntoObject(object);
     }
 }
 
-// @identity-TODO: object kind 0x117 takes over the first party member's
+// Doppelganger takes over the first party member's
 // level, title, the bytes +0x69 (twice), stats, fieldMarkValue and full pools.
 RVA(0x00010930, 0xcb)
 void CopyLeaderIntoObject(FieldObject* object) {
     Character* leader = GetCharacters();
     object->rank = leader->level;
     object->title = leader->title;
-    object->memberClass = object->byte083 = leader->byte069;
+    object->gender = object->byte083 = leader->byte069;
     object->stats = leader->stats;
     GetFieldObjectActionWait(object)->remaining = GetCharacterActionWait(leader)->remaining;
     RecalcObjectStats(object);
@@ -2032,7 +2243,7 @@ void LoadObjectRecord(i16 kind, FieldObject* object) {
 
 RVA(0x00010a20, 0x32)
 void ReadObjectRecord(i16 kind) {
-    FILE* fp = OpenDataFile(kind + 0x2000, 10, 0);
+    FILE* fp = OpenDataFile(kind + 0x2000, DATA_FILE_OBJECT, 0);
     ReadCryptRecord(fp, &s_record);
     CloseDataFile(fp);
 }
@@ -2083,7 +2294,7 @@ void ReadRecordIfWanted(FILE* fp, void* out) {
 RVA(0x00010b20, 0x7d)
 i32 ReadObjectRecordField(i16 kind, i16 offset, i16 size) {
     u8 buffer[sizeof(ObjectRecord)];
-    FILE* fp = OpenDataFile(kind + 0x2000, 10, 0);
+    FILE* fp = OpenDataFile(kind + 0x2000, DATA_FILE_OBJECT, 0);
     ReadCryptRecord(fp, buffer);
     CloseDataFile(fp);
     if (size < 2) {
@@ -2097,7 +2308,7 @@ i32 ReadObjectRecordField(i16 kind, i16 offset, i16 size) {
 
 RVA(0x00010ba0, 0x20)
 void SetFamiliarityCount(i16 id, i16 count) {
-    s_familiarityCounts[id] = ClampShort(count, 0, 0xff);
+    s_familiarityCounts[id] = ClampShort(count, 0, UCHAR_MAX);
 }
 
 RVA(0x00010bc0, 0xe)
@@ -2116,21 +2327,21 @@ RVA(0x00010bf0, 0x7b)
 void RefreshFamiliarity(Character* character) {
     i16 value;
     i16 leaderLevel;
-    if (TestCharacterFlag(character, 0)) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_POINTS_READY)) {
         return;
     }
     value = GetFamiliarityCount(character->id) / 8;
-    character->familiarity = ClampShort(value, 0, 0x3f);
+    character->familiarity = ClampShort(value, 0, FAMILIARITY_MAX);
     leaderLevel = GetRosterLeader()->level;
     value = leaderLevel - character->level;
-    character->levelGap = ClampShort(value, 0, 0xff);
-    SetCharacterFlag(character, 0);
+    character->levelGap = ClampShort(value, 0, UCHAR_MAX);
+    SetCharacterFlag(character, ACTOR_FLAG_POINTS_READY);
 }
 
 RVA(0x00010c70, 0x2a)
 void SetLevelGap(Character* character, i16 gap) {
     RefreshFamiliarity(character);
-    character->levelGap = ClampShort(gap, 0, 0xff);
+    character->levelGap = ClampShort(gap, 0, UCHAR_MAX);
 }
 
 RVA(0x00010ca0, 0x28)
@@ -2139,13 +2350,14 @@ void AddLevelGap(Character* character, i16 delta) {
     SetLevelGap(character, character->levelGap + delta);
 }
 
-// The familiarity, two more unless event flag 2/8 is set.
+// The familiarity, two more once the DCS Mabudachi is held (its owned flag
+// cleared).
 RVA(0x00010cd0, 0x2e)
 i16 GetFamiliarity(Character* character) {
     i16 familiarity;
     RefreshFamiliarity(character);
     familiarity = character->familiarity;
-    if (!IsEventFlagSet(2, 8)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
         familiarity += 2;
     }
     return familiarity;
@@ -2154,7 +2366,7 @@ i16 GetFamiliarity(Character* character) {
 RVA(0x00010d00, 0x27)
 void SetFamiliarity(Character* character, i16 familiarity) {
     RefreshFamiliarity(character);
-    character->familiarity = ClampShort(familiarity, 0, 0x3f);
+    character->familiarity = ClampShort(familiarity, 0, FAMILIARITY_MAX);
 }
 
 RVA(0x00010d30, 0x20)
@@ -2193,12 +2405,13 @@ i16 AlignmentConflicts(Character* character) {
     }
     leaderClass = GetAlignmentClassA(GetRosterLeader());
     characterClass = GetAlignmentClassA(character);
-    if ((characterClass < 0 && leaderClass >= 0) || (characterClass >= 0 && leaderClass < 0)) {
+    if ((characterClass < ALIGNMENT_NEUTRAL && leaderClass >= ALIGNMENT_NEUTRAL)
+        || (characterClass >= ALIGNMENT_NEUTRAL && leaderClass < ALIGNMENT_NEUTRAL)) {
         return -1;
     }
     leaderClass = GetAlignmentClassB(GetRosterLeader());
     characterClass = GetAlignmentClassB(character);
-    if (characterClass + leaderClass == 0 && leaderClass != 0) {
+    if (characterClass + leaderClass == 0 && leaderClass != ALIGNMENT_NEUTRAL) {
         return -1;
     }
     return 0;
@@ -2212,7 +2425,7 @@ b16 ClearAnalyzed(void) {
 
 RVA(0x00010e60, 0x2e)
 void SetAnalyzed(i16 id, i16 on) {
-    if (on == 0) {
+    if (on == false) {
         ClearBit(s_analyzed, id);
         return;
     }
@@ -2228,23 +2441,25 @@ b16 HasAnalyzeData(i16 id) {
 // fell short (0 on success).
 RVA(0x00010eb0, 0x24)
 i16 SaveFamiliarityCounts(FILE* fp) {
-    return 0x200 - fwrite(s_familiarityCounts, 1, 0x200, fp);
+    return sizeof(s_familiarityCounts)
+           - fwrite(s_familiarityCounts, 1, sizeof(s_familiarityCounts), fp);
 }
 
 RVA(0x00010ee0, 0x24)
 i16 LoadFamiliarityCounts(FILE* fp) {
-    return 0x200 - fread(s_familiarityCounts, 1, 0x200, fp);
+    return sizeof(s_familiarityCounts)
+           - fread(s_familiarityCounts, 1, sizeof(s_familiarityCounts), fp);
 }
 
 RVA(0x00010f10, 0x21)
 i16 SaveAnalyzed(FILE* fp) {
-    return 0x40 - fwrite(s_analyzed, 1, 0x40, fp);
+    return sizeof(s_analyzed) - fwrite(s_analyzed, 1, sizeof(s_analyzed), fp);
 }
 
 RVA(0x00010f40, 0x26)
 i16 LoadAnalyzed(FILE* fp) {
     ClearAnalyzed();
-    return 0x40 - fread(s_analyzed, 1, 0x40, fp);
+    return sizeof(s_analyzed) - fread(s_analyzed, 1, sizeof(s_analyzed), fp);
 }
 
 RVA(0x00010f70, 0x4f)
@@ -2259,11 +2474,11 @@ RVA(0x00010fc0, 0x67)
 void LoadEncounterTables(void) {
     FILE* fp;
     FreeEncounterTables();
-    fp = OpenDataFile(DATA_TABLE_WORLD_ENCOUNTERS, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_WORLD_ENCOUNTERS, DATA_FILE_TABLE, 0);
     s_encounterChoices = ReadRawHandle(fp);
     s_encounterWeights = ReadRawHandle(fp);
     CloseDataFile(fp);
-    fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, DATA_FILE_TABLE, 0);
     s_fieldTable = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -2273,8 +2488,8 @@ i16 RollWorldMapEncounter(i16 x, i16 y) {
     i16 cell;
     i16 variant;
     WorldEncounterCell* cells;
-    Character* leader = GetRosterCharacter(0);
-    if (TestCharacterFlag(leader, 0x22) == 1) {
+    Character* leader = GetRosterCharacter(ROSTER_LEADER);
+    if (TestCharacterFlag(leader, ACTOR_FLAG_ESTOMA) == true) {
         return -1;
     }
     if (CheckWorldEncounterInterval() < 1) {
@@ -2323,17 +2538,17 @@ i16 LoadWorldEncounterBlock(i16 x, i16 y) {
     i16 block = GetWorldMapBlock(x, y);
     FILE* fp;
     s_encounterBlock = FreeHandle(s_encounterBlock);
-    fp = OpenDataFile(block + 0x1000, 12, 0);
+    fp = OpenDataFile(block + DATA_TABLE_WORLD_ENCOUNTER_BLOCKS_BEGIN, DATA_FILE_TABLE, 0);
     s_encounterBlock = ReadRawHandle(fp);
     CloseDataFile(fp);
     if (IsOddMapLayer()) {
-        return 45;
+        return WORLD_ENCOUNTER_CELLS;
     }
     x = GetWorldBlockX(x);
     y = GetWorldBlockY(y);
-    x /= 32;
-    y /= 40;
-    x += y * 9;
+    x /= WORLD_ENCOUNTER_CELL_WIDTH;
+    y /= WORLD_ENCOUNTER_CELL_HEIGHT;
+    x += y * WORLD_ENCOUNTER_COLUMNS;
     return x;
 }
 
@@ -2342,7 +2557,7 @@ b16 TestWorldEncounterChance(i16 chance) {
     i16 totalChance = chance + s_encounterChanceBonus;
     if (totalChance < RandomAverage(1, 100, 2)) {
         s_encounterChanceBonus++;
-        if (RosterContainsId(4)) {
+        if (RosterContainsId(HUMAN_ASUKA)) {
             s_encounterChanceBonus++;
         }
         return false;
@@ -2370,12 +2585,12 @@ i16 PrepareWorldEncounter(i16 weights, i16 choices, i16 maximum) {
 
 RVA(0x00011300, 0x2f)
 i16 GetWorldEncounterMaximum(i16 maximum) {
-    if (RosterContainsId(4)) {
+    if (RosterContainsId(HUMAN_ASUKA)) {
         maximum += 2;
     }
     maximum += GetPartyEncounterSizeBonus();
-    if (maximum >= 16) {
-        maximum = 16;
+    if (maximum >= FIELD_OBJECT_COUNT) {
+        maximum = FIELD_OBJECT_COUNT;
     }
     return maximum;
 }
@@ -2386,7 +2601,7 @@ i16 GetPartyEncounterSizeBonus(void) {
     i16 count = 0;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && IsHumanCharacter(character)) {
             count++;
@@ -2411,11 +2626,11 @@ i16 PickWorldEncounterGroup(i16 weights, i16 choices) {
     i16 roll = RandomAverage(1, 100, 0);
     i16 total;
     i16 i;
-    if (RosterContainsId(4)) {
+    if (RosterContainsId(HUMAN_ASUKA)) {
         roll += 10;
     }
     total = 0;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < WORLD_ENCOUNTER_GROUPS; i++) {
         total += table[weights].weights[i];
         if (roll < total) {
             groups = HandleReadPtr(s_encounterChoices);
@@ -2444,7 +2659,7 @@ void LoadFieldTable(void) {
     FILE* fp = NULL;
     EncounterFieldImage* images;
     if (s_fieldTable == 0) {
-        fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, 12, 0);
+        fp = OpenDataFile(DATA_TABLE_WORLD_FIELD_INDEX, DATA_FILE_TABLE, 0);
         s_fieldTable = ReadRawHandle(fp);
         CloseDataFile(fp);
     }
@@ -2481,15 +2696,15 @@ void PrepareFieldRandom(void) {
             y,
             OppositeDirection(g_party.field.pos.direction),
             s_encounterGroups[g_worldEncounterGroupSlots[i]],
-            0,
-            -1,
-            0
+            false,
+            FIELD_OBJECT_NO_EVENT,
+            false
         );
         actor = GetFieldActor(i);
-        AlertActor(actor, 2);
+        AlertActor(actor, ATTITUDE_VERY_HOSTILE);
     }
-    LoadEnemyGroupSlot(0, s_encounterGroups[0]);
-    LoadEnemyGroupSlot(1, s_encounterGroups[1]);
+    LoadEnemyGroupSlot(FIELD_LAYER_FIRST, s_encounterGroups[FIELD_LAYER_FIRST]);
+    LoadEnemyGroupSlot(FIELD_LAYER_SECOND, s_encounterGroups[FIELD_LAYER_SECOND]);
 }
 
 RVA(0x00011620, 0x37)
@@ -2497,9 +2712,9 @@ b32 AnyObjectInReach(void) {
     b32 found = false;
     i16 i;
     i16 object;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         object = GetLiveObject(i);
-        if (object >= 0 && HasObjectInReach(1, -1, object)) {
+        if (object >= 0 && HasObjectInReach(REACH_SHARED_PARTY_CELL, -1, object)) {
             found = true;
         }
     }

@@ -5,6 +5,8 @@
 
 #include <EnumDomain.h>
 #include <Game/GameState.h>
+#include <Game/SceneHotspotKind.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 #include <Ui/Panel.h>
 
@@ -69,13 +71,13 @@ MapCoord GetPanelSize(Panel* panel);
 
 void FlushPlaneUpdates(void);
 
-void RedrawFieldAt(i16 x, i16 y, i16 direction);
+void RedrawFieldAt(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 // @identity-TODO: callees of the field commands: the number of hotspots of `kind`
 // (0x445680; kind 2 with a pending abort and `consume` set gives -1 and
 // clears the abort), requesting the talk (0x412870 sets g_pendingTalk) and
 // setting the item user (SetUseMemberId in ItemUse.h).
-i16 CountHotspotsOfKind(i16 kind, i16 consume);
+i16 CountHotspotsOfKind(GZ_ENUM_PARAM(SceneHotspotKind, i16) kind, b16 consume);
 
 i16 RequestTalk(void);
 

@@ -3,8 +3,10 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/FieldObject.h>
 #include <Game/GameState.h>
+#include <Game/ObjectRecordId.h>
 #include <Ints.h>
 
 #include <stdio.h>
@@ -25,11 +27,11 @@ typedef struct ObjectRecord {
     i32 magnetite;
     i16 hp;
     i16 mp;
-    i16 skills[8];
+    i16 skills[OBJECT_SKILL_COUNT];
     i16 equipGroup;
     i16 items[8];
     i16 pickItem;
-    i16 id;
+    GZ_ENUM_STORAGE(ObjectRecordId, i16) id;
     char name[17];
     u8 level;
     u8 alignB[2];
@@ -38,7 +40,7 @@ typedef struct ObjectRecord {
     u8 levelBonus;
     i8 moonRow;
     u8 resistance[10];
-    i8 affiliation[3];
+    i8 affiliation[AFFILIATION_COUNT];
     u8 actionSpeed;
     u8 dropChance;
     u8 bits68;

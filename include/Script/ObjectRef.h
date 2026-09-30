@@ -18,4 +18,22 @@ GZ_ENUM_CONST_BEGIN(ObjectRefEncoding)
     SCRIPT_REF_CHARACTER_BASE = 3000
 GZ_ENUM_CONST_END(ObjectRefEncoding)
 
+// The negative references ResolveScriptObject understands: character slot n is
+// SCRIPT_REF_SLOT_BASE - n (ObjectSlotOfId), and the rest name the favoured
+// party member, the script actor, the battle actor and target, and the fusion
+// result; GetObjectMacca and GetObjectMagnetite read SCRIPT_REF_ROLLED_SPOILS
+// as the rolled battle spoils.
+GZ_ENUM_CONST_BEGIN(ScriptSpecialRef)
+    SCRIPT_REF_SLOT_BASE = -1,
+    SCRIPT_REF_FAVOURED_MEMBER = -16,
+    SCRIPT_REF_ACTOR = -17,
+    SCRIPT_REF_ACTOR_BY_ID = -18,
+    SCRIPT_REF_ACTOR_ALIAS = -19,
+    SCRIPT_REF_BATTLE_ACTOR = -20,
+    SCRIPT_REF_BATTLE_TARGET = -21,
+    SCRIPT_REF_FUSION_RESULT = -22,
+    SCRIPT_REF_FUSION_RESULT_ALIAS = -23,
+    SCRIPT_REF_ROLLED_SPOILS = -24
+GZ_ENUM_CONST_END(ScriptSpecialRef)
+
 #endif // GITEN_SCRIPT_OBJECTREF_H

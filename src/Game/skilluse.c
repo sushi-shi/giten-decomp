@@ -8,10 +8,12 @@
 
 #include <Game/ActionOutcome.h>
 #include <Game/Actor.h>
+#include <Game/ActorFlag.h>
 #include <Game/AreaNpc.h>
 #include <Game/Attack.h>
 #include <Game/Battle.h>
 #include <Game/BattleEffect.h>
+#include <Game/BattleStat.h>
 #include <Game/Character.h>
 #include <Game/CharInfo.h>
 #include <Game/CombatantId.h>
@@ -30,23 +32,30 @@
 #include <Game/Growth.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemEffect.h>
+#include <Game/ItemId.h>
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
 #include <Game/ModeFlags.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
 #include <Game/Skill.h>
+#include <Game/SkillId.h>
 #include <Game/SkillUse.h>
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
+#include <Game/TargetCountMode.h>
 #include <Game/TargetFlags.h>
 #include <Gfx/ScreenMode.h>
 #include <Gfx/Shot.h>
 #include <Input/Mouse.h>
 #include <Math/Vec3.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Sound/Sound.h>
+#include <Text/TextAttr.h>
+#include <Text/TextPlane.h>
 #include <Text/TextWindow.h>
 #include <Ui/FieldMenus.h>
 #include <Ui/Menu.h>
@@ -66,10 +75,12 @@
 // The conditions that block a skill as they would a spell: severe poison and
 // sealed magic.
 DATA(0x00064678)
-static const i16 s_skillBlockingConditions[] = {11, 24, -1};
+static const i16 s_skillBlockingConditions[] =
+    {CONDITION_SUFFOCATION, CONDITION_MAGIC_SEAL, CONDITION_LIST_END};
 
 DATA(0x00064680)
-static const i16 s_skillIdBlockingConditions[] = {11, 24, -1};
+static const i16 s_skillIdBlockingConditions[] =
+    {CONDITION_SUFFOCATION, CONDITION_MAGIC_SEAL, CONDITION_LIST_END};
 
 DATA(0x00064688)
 static const u8 s_targetCellDistance[7][7] = {
@@ -104,13 +115,11 @@ static i16 s_promptSub = -1;
 DATA(0x000690dc)
 static i16 s_knockedOut = 0x7fff;
 
-// @identity-TODO: the battle byte ReportBattleTally last reported (-1 for
-// none) and a message flag checked with it after the action (-1 for none).
 DATA(0x000690e0)
-static i16 s_reportedTally = -1;
+static GZ_ENUM_STORAGE(BattleTallyIndex, i16) s_reportedTally = BATTLE_TALLY_NONE;
 
 DATA(0x000690e4)
-static i16 s_tallyMessage = -1;
+static GZ_ENUM_STORAGE(BattleTallyIndex, i16) s_tallyMessage = BATTLE_TALLY_NONE;
 
 DATA(0x00091542)
 i16 g_battleOutcome;
@@ -146,7 +155,7 @@ DATA(0x00091998)
 i16 g_hpChange;
 
 DATA(0x0009199a)
-i16 g_statusCondition;
+GZ_ENUM_STORAGE(InflictCode, i16) g_statusCondition;
 
 DATA(0x000919f0)
 i16 g_targetCount;
@@ -225,10 +234,10 @@ static i16 s_targetHpBefore = 0;
 // The action's actor and target, and the actor's role and pick, kept until
 // the action ends.
 DATA(0x00080d20)
-static Character* s_actionActor = 0;
+static Character* s_actionActor = NULL;
 
 DATA(0x00080d24)
-static Character* s_actionTarget = 0;
+static Character* s_actionTarget = NULL;
 
 DATA(0x00080d28)
 static i16 s_actionRoleKept = 0;
@@ -238,7 +247,7 @@ static i16 s_actionPickKept = 0;
 
 // The picker or skill list menu.
 DATA(0x00080d30)
-static MenuBox* s_fieldMenu = 0;
+static MenuBox* s_fieldMenu = NULL;
 
 DATA(0x00080d34)
 char g_emptySkillMenuLabel[4] = {0};
@@ -312,7 +321,7 @@ b16 PushPromptState(i16 sub, i16 x, i16 y, i16 z, i16 mode) {
     if (s_promptPending) {
         return true;
     }
-    PushGameState(0x18);
+    PushGameState(GAME_STATE_BATTLE_ACTION);
     s_promptX = x;
     s_promptY = y;
     s_promptZ = z;
@@ -357,18 +366,20 @@ b16 FlashHitObject(i16 object, i32 change) {
 }
 
 RVA(0x0002ac50, 0x40)
-void AlertActor(Character* actor, i16 state) {
+void AlertActor(Character* actor, GZ_ENUM_PARAM(Attitude, i16) state) {
     if (actor) {
         if (state >= 0) {
             actor->attitude = state;
         }
-        SetCharacterFlag(actor, 8);
-        SetCharacterFlag(actor, 10);
-        actor->mode = 6;
+        SetCharacterFlag(actor, ACTOR_FLAG_BATTLE);
+        SetCharacterFlag(actor, ACTOR_FLAG_NOTICED);
+        actor->mode = ACTOR_MODE_STEP_CLOSER;
     }
 }
 
-#define CanAffectCombatant(id) (!IsEventFlagSet(1, 0x2d) || (id) >= 0)
+#define CanAffectCombatant(id)                                                                     \
+    (!IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_PARTY_COMBAT_EFFECTS_SUPPRESSED)       \
+     || (id) >= 0)
 
 static __inline void ApplyReflectedDamage(Character* actor) {
     g_hpChange = actor->selfChange;
@@ -385,31 +396,31 @@ static __inline void ApplyReflectedDamage(Character* actor) {
     } while (0)
 
 static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
-    i16 kind;
+    GZ_ENUM_LOCAL(SkillKind, i16) kind;
     if (IsSkillAction(attacker)) {
         kind = GetSkillKind(attacker->pickTarget);
         switch (kind) {
-            case 6:
+            case SKILL_KIND_MP_DAMAGE:
                 if (target->shield == 0) {
                     ChangePool(&target->pools.mp, -attacker->lastChange);
                 }
                 g_mpChange = attacker->lastChange;
                 return;
-            case 5:
+            case SKILL_KIND_HP_DRAIN:
                 ChangePool(&attacker->pools.hp, attacker->lastChange);
-                g_actionResult |= 0x50;
+                g_actionResult |= ACTION_DRAIN_HP;
                 break;
-            case 7:
+            case SKILL_KIND_MP_DRAIN:
                 ChangePool(&attacker->pools.mp, attacker->lastChange);
                 ChangePool(&target->pools.mp, -attacker->lastChange);
-                g_actionResult |= 0x70;
+                g_actionResult |= ACTION_DRAIN_MP;
                 g_mpChange = attacker->lastChange;
                 return;
-            case 8:
+            case SKILL_KIND_EXPERIENCE_DRAIN:
                 attacker->lastChange = min(target->experience, attacker->lastChange);
                 target->experience -= attacker->lastChange;
                 attacker->experience += attacker->lastChange;
-                g_actionResult |= 0x80;
+                g_actionResult |= ACTION_DRAIN_EXPERIENCE;
                 g_drainAmount = attacker->lastChange;
                 return;
         }
@@ -420,9 +431,9 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
         kind = GetItemPassiveEffectCode(
             GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_WEAPON].item)
         );
-        if (kind == 0x86) {
+        if (kind == ITEM_PASSIVE_WEAPON_HP_DRAIN) {
             ChangePool(&attacker->pools.hp, attacker->lastChange);
-        } else if (kind == 0x87) {
+        } else if (kind == ITEM_PASSIVE_WEAPON_MP_DRAIN) {
             ChangePool(&attacker->pools.mp, attacker->lastChange);
         }
     }
@@ -460,31 +471,31 @@ i16 ResolveCombatAction(void) {
     s_targetHpBefore = target->pools.hp.cur;
     targetHp = &target->pools.hp;
     fatal = GetFatalCondition(GetCharacterConditions(target));
-    if (attacker->id == 0x22 && target->id == 0xce) {
+    if (attacker->id == OBJECT_RECORD_MARDUK && target->id == OBJECT_RECORD_PRIMROSE) {
         SetFieldCounts(-2, -2);
     }
-    if (target->id == 0x36 && attacker->pickRole == PICK_ROLE_ITEM
-        && attacker->pickTarget == 0x5d) {
+    if (target->id == OBJECT_RECORD_PYANKARA && attacker->pickRole == PICK_ROLE_ITEM
+        && attacker->pickTarget == SKILL_NOELEM) {
         SetFieldCounts(-2, -2);
     }
     ResetActionWait(GetCharacterActionWait(attacker));
     ResetActionOutcome();
-    attacker->pickNoEffect = 0;
+    attacker->pickNoEffect = false;
     if (attacker->pickFlags & PICK_ITEM_SKILL) {
-        attacker->pickCostPaid = 1;
+        attacker->pickCostPaid = true;
     }
 
     if (attacker->pickRole == PICK_ROLE_ATTACK) {
         attacker->pickTarget = GetCharacterEquipment(attacker)[EQUIP_SLOT_WEAPON].item;
         if (g_targetId >= 0) {
-            ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(0));
+            ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(false));
         } else {
             ResolveWeaponAttack(attacker, target, 0);
         }
     } else if (attacker->pickRole == PICK_ROLE_GUN) {
         attacker->pickTarget = GetCharacterEquipment(attacker)[EQUIP_SLOT_AMMO].item;
         if (g_targetId >= 0) {
-            ResolveGunAttack(attacker, target, IsFieldModeAtLeast(0));
+            ResolveGunAttack(attacker, target, IsFieldModeAtLeast(false));
         } else {
             ResolveGunAttack(attacker, target, 0);
         }
@@ -499,16 +510,16 @@ i16 ResolveCombatAction(void) {
     hit = attacker->lastChange != 0;
     attacker->lastChange = ScaleByFieldRate(g_actorId, attacker->pickObject, attacker->lastChange);
     if (hit && attacker->lastChange == 0) {
-        SetActionResult(attacker, 1);
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
     }
-    TickFieldCount(g_actorId, 0);
+    TickFieldCount(g_actorId, false);
     g_hpChange = attacker->lastChange;
     if (g_hpChange >= 0x7fff) {
-        g_actionResult = 5;
+        g_actionResult = BATTLE_ACTION_LETHAL;
     }
     if (fatal && GetFatalCondition(GetCharacterConditions(target))) {
-        SetActionResult(attacker, 1);
-        g_statusCondition = 0;
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
+        g_statusCondition = INFLICT_NONE;
         attacker->lastChange = 0;
         ResetPoolChanges();
         s_targetHpBefore = max(1, s_targetHpBefore);
@@ -517,12 +528,12 @@ i16 ResolveCombatAction(void) {
     if (IsSkillAction(attacker)) {
         if (CanAffectCombatant(g_actorId) && !attacker->pickCostPaid) {
             PaySkillCost(g_actorId, attacker->pickTarget);
-            attacker->pickCostPaid = 1;
+            attacker->pickCostPaid = true;
         }
     }
 
     if (CanAffectCombatant(g_targetId) && !attacker->pickNoEffect) {
-        if (g_actionResult >= 2 && g_actionResult != 6) {
+        if (g_actionResult >= BATTLE_ACTION_GRAZED && g_actionResult != BATTLE_ACTION_IMMUNE) {
             if (s_actionOutcome == ACTION_OUTCOME_DEFAULT) {
                 PlaySoundEffect(0x10);
             } else if (s_actionOutcome == ACTION_OUTCOME_CONDITION) {
@@ -549,8 +560,9 @@ i16 ResolveCombatAction(void) {
         }
     }
 
-    attacker->pickNoEffect = 0;
-    if (HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE) && g_actionResult == 5) {
+    attacker->pickNoEffect = false;
+    if (HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE)
+        && g_actionResult == BATTLE_ACTION_LETHAL) {
         AddCondition(GetCharacterConditions(target), CONDITION_DYING);
     }
     ApplyEmptyPools(attacker);
@@ -567,7 +579,7 @@ i16 ResolveCombatAction(void) {
     }
     if (g_targetId >= 0) {
         GetFieldActor(g_targetId)->facing = OppositeDirection(g_party.field.pos.direction);
-        AlertActor(target, 2);
+        AlertActor(target, ATTITUDE_VERY_HOSTILE);
         GetCharacterFlags(target)[1] |= 0x40;
         if (attacker->pickRole == PICK_ROLE_MAGIC) {
             kind = GetCachedSkill(attacker->pickTarget)->parameters.type;
@@ -591,7 +603,7 @@ void ResolveKnockout(i16 previousHp, i16 id) {
     if (!combatant) {
         return;
     }
-    if (!TestCharacterFlag(combatant, 63)) {
+    if (!TestCharacterFlag(combatant, ACTOR_FLAG_DESAMAN)) {
         if (previousHp == 0) {
             return;
         }
@@ -605,7 +617,7 @@ void ResolveKnockout(i16 previousHp, i16 id) {
             }
         }
     }
-    if (!TestCharacterFlag(combatant, 63)) {
+    if (!TestCharacterFlag(combatant, ACTOR_FLAG_DESAMAN)) {
         combatant->pools.hp.cur = 0;
         s_knockedOut = id;
         if (id >= 0) {
@@ -630,7 +642,7 @@ void ResolveKnockout(i16 previousHp, i16 id) {
             RemoveCombatTarget(id);
             return;
         }
-        ClearCharacterFlag(combatant, 63);
+        ClearCharacterFlag(combatant, ACTOR_FLAG_DESAMAN);
     }
     ResetObjectAnim(id);
     RunFieldIdle();
@@ -638,17 +650,21 @@ void ResolveKnockout(i16 previousHp, i16 id) {
 }
 
 RVA(0x0002b5f0, 0x82)
-i16 ReportBattleTally(Character* combatant, i16 index, i16 mode) {
-    i16 tally;
+i16 ReportBattleTally(
+    Character* combatant,
+    GZ_ENUM_PARAM(BattleTallyIndex, i16) index,
+    GZ_ENUM_PARAM(BattleTallyReportMode, i16) mode
+) {
+    GZ_ENUM_LOCAL(BattleTallyIndex, i16) tally;
     u8* value;
     if (combatant == NULL) {
         return 0;
     }
-    if (mode == 1) {
+    if (mode == BATTLE_TALLY_REMEMBER) {
         s_reportedTally = index;
         return GetCharacterBattleTallies(combatant)[index];
     }
-    tally = mode == -1 ? s_reportedTally : index;
+    tally = mode == BATTLE_TALLY_TEST_REMEMBERED ? s_reportedTally : index;
     if (tally < 0) {
         return -1;
     }
@@ -706,8 +722,8 @@ static __inline void RefreshAfterDeferredRemoval(void) {
 // to the next living target, 8 ends the action (the summoning skill swaps its
 // demon into the command position).
 static __inline void ResetReportedBattleTally(void) {
-    s_tallyMessage = -1;
-    s_reportedTally = -1;
+    s_tallyMessage = BATTLE_TALLY_NONE;
+    s_reportedTally = BATTLE_TALLY_NONE;
 }
 
 // Codegen constraint: keep next-target success outside the phase switch;
@@ -732,14 +748,14 @@ b16 RunBattleAction(void) {
         default:
             skipEffects = s_skipEffects;
             goto complete;
-        case 0:
+        case BATTLE_ACTION_PHASE_COLLECT_TARGETS:
             ResetReportedBattleTally();
             if (actor == NULL) {
                 CancelPendingAction();
                 return false;
             }
             if (actor->pickRole == PICK_ROLE_DEFENCE) {
-                TickFieldCount(g_actorId, 0);
+                TickFieldCount(g_actorId, false);
                 ClearPendingAction();
                 ReturnFromGameState();
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
@@ -747,10 +763,10 @@ b16 RunBattleAction(void) {
                 return false;
             }
             if (actor->pickRole == PICK_ROLE_RETURN && g_actorId < 0) {
-                TickFieldCount(g_actorId, 0);
+                TickFieldCount(g_actorId, false);
                 ResetActionWaitDelay(GetCharacterActionWait(actor));
                 CheckPickTarget(CombatantPartyPosition(g_actorId));
-                SetPartySlot(CombatantPartyPosition(g_actorId), -1);
+                SetPartySlot(CombatantPartyPosition(g_actorId), PARTY_SLOT_EMPTY);
                 RequestFieldRefresh();
                 CancelPendingAction();
                 PlaySoundEffect(0x55);
@@ -767,7 +783,7 @@ b16 RunBattleAction(void) {
             s_actionPickKept = actor->pickTarget;
             NextGamePhase();
             s_actionRole = actor->pickRole;
-            actor->pickCostPaid = 0;
+            actor->pickCostPaid = false;
             if (actor->pickRole == PICK_ROLE_ITEM) {
                 g_battleOutcome = 0;
                 record = GetLoadedRecord(actor->pickTarget);
@@ -779,32 +795,46 @@ b16 RunBattleAction(void) {
                     g_targetId,
                     g_actorId
                 );
-                if (actor->pickTarget == 0x71) {
-                    ModifyEventFlag(7, 0xfd, BIT_CHANGE_SET);
+                if (actor->pickTarget == ITEM_CORE_SHIELD) {
+                    ModifyEventFlag(
+                        EVENT_FLAG_BANK_ITEM_EFFECTS,
+                        ITEM_EFFECT_CORE_SHIELD,
+                        BIT_CHANGE_SET
+                    );
                 }
-                if (actor->pickTarget == 0x21) {
-                    ModifyEventFlag(7, 0xff, BIT_CHANGE_SET);
-                } else if (actor->pickTarget == 0x24) {
-                    ModifyEventFlag(7, 0xfe, BIT_CHANGE_SET);
+                if (actor->pickTarget == ITEM_KUSHINADA_JAR) {
+                    ModifyEventFlag(
+                        EVENT_FLAG_BANK_ITEM_EFFECTS,
+                        ITEM_EFFECT_KUSHINADA_JAR_USED,
+                        BIT_CHANGE_SET
+                    );
+                } else if (actor->pickTarget == ITEM_SOMA_CUP) {
+                    ModifyEventFlag(
+                        EVENT_FLAG_BANK_ITEM_EFFECTS,
+                        ITEM_EFFECT_SOMA_CUP_USED,
+                        BIT_CHANGE_SET
+                    );
                 } else if (GetItemValueHigh(actor->pickTarget)) {
                     TakeBagItems(actor->pickTarget, 1);
                 }
             } else if (actor->pickRole == PICK_ROLE_GUN) {
                 g_battleOutcome = 0;
                 ClearCombatTargets();
-                count =
-                    FilterGunTargets(actor, CollectTargets(7, 0xa, 0xf1, g_targetId, g_actorId));
+                count = FilterGunTargets(
+                    actor,
+                    CollectTargets(TARGET_AREA_VISIBLE_LAST, 0xa, 0xf1, g_targetId, g_actorId)
+                );
                 s_targetListCount = count;
             } else if (actor->pickRole == PICK_ROLE_ATTACK) {
                 g_battleOutcome = 0;
                 ClearCombatTargets();
                 if (actor->pickTarget < 1) {
-                    skill = GetCachedSkill(1);
+                    skill = GetCachedSkill(SKILL_SWORD_ATTACK);
                     count = CollectCurrentSkillTargets(&skill->parameters);
                 } else {
                     record = GetLoadedRecord(actor->pickTarget);
                     count = CollectTargets(
-                        0xff,
+                        TARGET_AREA_WEAPON_HITS,
                         GetWeaponMinHits(record),
                         GetWeaponMaxHits(record),
                         g_targetId,
@@ -829,8 +859,8 @@ b16 RunBattleAction(void) {
             g_targetCount = count;
             if (g_actorId >= 0
                 && (actor->pickRole != PICK_ROLE_MAGIC
-                    || GetCachedSkill(actor->pickTarget)->parameters.kind != 0x10)) {
-                actor->acting = 1;
+                    || GetCachedSkill(actor->pickTarget)->parameters.kind != SKILL_KIND_INERT)) {
+                actor->acting = true;
                 RedrawFieldView();
                 RequestFieldRefresh();
             }
@@ -848,8 +878,11 @@ b16 RunBattleAction(void) {
                 }
                 shot = GetItemShotId(record);
             } else if (actor->pickRole == PICK_ROLE_ATTACK) {
-                CacheSkill(1, GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY));
-                shot = GetSkillShotId(1);
+                CacheSkill(
+                    SKILL_SWORD_ATTACK,
+                    GetBattleStatShown(actor, BATTLE_STAT_MAGIC_ACCURACY)
+                );
+                shot = GetSkillShotId(SKILL_SWORD_ATTACK);
             } else {
                 CacheSkill(
                     actor->pickTarget,
@@ -869,13 +902,13 @@ b16 RunBattleAction(void) {
             LaunchShot(shot, s_promptSub, to.y - from.y, from.x, from.y, to.x, to.y);
             break;
 
-        case 1:
+        case BATTLE_ACTION_PHASE_PROMPT:
             NextGamePhase();
-            PushGameState(0xc);
+            PushGameState(GAME_STATE_CLOSING_EFFECT);
             SetGameSub(s_promptSub);
             break;
 
-        case 2:
+        case BATTLE_ACTION_PHASE_RESOLVE:
             NextGamePhase();
             s_removalDeferred = false;
             s_savedRemovalDeferred = ExchangeObjectRemovalDeferred(1);
@@ -883,7 +916,7 @@ b16 RunBattleAction(void) {
             ClearObjectStuns(s_objectMarks);
             break;
 
-        case 3:
+        case BATTLE_ACTION_PHASE_APPLY_EFFECT:
             NextGamePhase();
             ApplyObjectConditions(s_objectMarks);
             PlayActionEffect(1);
@@ -895,37 +928,37 @@ b16 RunBattleAction(void) {
             ClearObjectStuns(s_objectMarks);
             break;
 
-        case 4:
+        case BATTLE_ACTION_PHASE_APPLY_CONDITIONS:
             NextGamePhase();
             RefreshAfterDeferredRemoval();
             ApplyObjectConditions(s_objectMarks);
             break;
 
-        case 5:
+        case BATTLE_ACTION_PHASE_SHOW_KNOCKOUTS:
             NextGamePhase();
             ExchangeObjectRemovalDeferred(s_savedRemovalDeferred);
             ShowKnockoutMessage();
             RefreshAfterDeferredRemoval();
             break;
 
-        case 6:
+        case BATTLE_ACTION_PHASE_REPORT:
             NextGamePhase();
             if (actor == NULL) {
                 break;
             }
-            if (s_reportedTally != -1) {
-                if (g_actionResult >= 2) {
+            if (s_reportedTally != BATTLE_TALLY_NONE) {
+                if (g_actionResult >= BATTLE_ACTION_GRAZED) {
                     Character* target = GetCombatant(g_targetId);
-                    ReportBattleTally(target, s_reportedTally, -1);
+                    ReportBattleTally(target, s_reportedTally, BATTLE_TALLY_TEST_REMEMBERED);
                 }
-                if (s_tallyMessage != -1) {
+                if (s_tallyMessage != BATTLE_TALLY_NONE) {
                     RunMessageScript(0xdf, 3, -1);
                 }
             }
             ResetReportedBattleTally();
             break;
 
-        case 7:
+        case BATTLE_ACTION_PHASE_NEXT_TARGET:
             if (actor == NULL) {
                 NextGamePhase();
                 while (NextTarget() != TARGET_LIST_END) {
@@ -944,25 +977,28 @@ b16 RunBattleAction(void) {
             }
             NextGamePhase();
             if (g_actorId >= 0) {
-                actor->acting = 0;
+                actor->acting = false;
                 RequestFieldRefresh();
             }
             skipEffects = s_skipEffects;
             goto complete;
 
-        case 8:
+        case BATTLE_ACTION_PHASE_END:
             s_promptPending = false;
             ResetRecordCache();
             RestoreSwappedMember();
             ReturnFromGameState();
             if (actor != NULL) {
-                if (s_actionRoleKept == PICK_ROLE_MAGIC && s_actionPickKept == 0x7d) {
+                if (s_actionRoleKept == PICK_ROLE_MAGIC && s_actionPickKept == SKILL_SABBATMA) {
                     slot = ExchangePartySlot(
                         g_commandPosition,
                         FindRosterSlotById(s_actionTarget->id)
                     );
                     ClearActionWait(GetCharacterActionWait(s_actionTarget));
-                    AddMagnetite(GetRosterCharacter(0), -GetSummonMagnetiteCost(s_actionTarget));
+                    AddMagnetite(
+                        GetRosterCharacter(ROSTER_LEADER),
+                        -GetSummonMagnetiteCost(s_actionTarget)
+                    );
                     ResetBattleTally(s_actionTarget);
                     s_actionTarget = GetRosterCharacter(slot);
                     if (s_actionTarget != NULL) {
@@ -993,10 +1029,10 @@ complete:
     if (skipEffects) {
         return false;
     }
-    return UpdateFieldScreen(0);
+    return UpdateFieldScreen(false);
 
 nextTarget:
-    SetGamePhase(2);
+    SetGamePhase(BATTLE_ACTION_PHASE_RESOLVE);
     g_targetId = slot;
     actor = GetCombatant(g_actorId);
     actor->pickObject = slot;
@@ -1064,7 +1100,7 @@ void PlayActionEffect(i16 stage) {
             RunMessageScript(before.script, before.entry, -1);
         }
     } else if (after.script) {
-        if (g_actionId >= 0x79 && g_actionId <= 0x7b) {
+        if (g_actionId >= SKILL_TRAESTO && g_actionId <= SKILL_TRAFURI) {
             RunMessageTextScript(after.script, after.entry, -1);
         } else {
             RunMessageScript(after.script, after.entry, -1);
@@ -1092,9 +1128,9 @@ void DropFlaggedMember(i16 id) {
     Character* character;
     if (id < 0) {
         character = GetCombatant(id);
-        if (character && TestCharacterFlag(character, 63)) {
-            ClearCharacterFlag(character, 63);
-            SetPartySlot(CombatantPartyPosition(id), -1);
+        if (character && TestCharacterFlag(character, ACTOR_FLAG_DESAMAN)) {
+            ClearCharacterFlag(character, ACTOR_FLAG_DESAMAN);
+            SetPartySlot(CombatantPartyPosition(id), PARTY_SLOT_EMPTY);
             RequestFieldRefresh();
         }
     }
@@ -1126,7 +1162,7 @@ b32 IsSkillBlocked(Character* character, SkillParameters* skill) {
         return true;
     }
     if (!skill->mode) {
-        if (GetCharacterBattleTallies(character)[0]) {
+        if (GetCharacterBattleTallies(character)[BATTLE_TALLY_MAGIC_SEAL]) {
             return true;
         }
         if (LastConditionIn(GetCharacterConditions(character), s_skillBlockingConditions)) {
@@ -1136,33 +1172,30 @@ b32 IsSkillBlocked(Character* character, SkillParameters* skill) {
     return false;
 }
 
-// The same check by skill id; skill 0x7a is also blocked while the first
+// The same check by skill id; Traport is also blocked while the first
 // roster member's byte +0x30 is clear.
 RVA(0x0002c350, 0x69)
 b32 IsSkillIdBlocked(Character* character, i16 id) {
     if (GetSkillMode(id)) {
         return false;
     }
-    if (GetCharacterBattleTallies(character)[0]) {
+    if (GetCharacterBattleTallies(character)[BATTLE_TALLY_MAGIC_SEAL]) {
         return true;
     }
     if (LastConditionIn(GetCharacterConditions(character), s_skillIdBlockingConditions)) {
         return true;
     }
-    if (id == 0x7a && !GetRosterCharacter(0)->markPosition.area) {
+    if (id == SKILL_TRAPORT && !GetRosterCharacter(ROSTER_LEADER)->markPosition.area) {
         return true;
     }
     return false;
 }
 
-// Takes the skill's cost from `who`: MP for a positive cost, HP for a
-// negative one; 0x7f (MP) and -0x80 (HP) take the whole pool. Ids below 16 are
-// free.
 RVA(0x0002c3c0, 0x71)
 void PaySkillCost(i16 who, i16 skill) {
     Character* character;
     i16 cost;
-    if (skill < 0x10) {
+    if (skill < SKILL_AGI) {
         return;
     }
     character = GetCombatant(who);
@@ -1207,7 +1240,7 @@ MenuBox* OpenMemberSkillMenu(i16 id) {
         GetWordCount(GetCharacterSkills(character)),
         MemberSkillMenuHandler
     );
-    SetTextPlaneFirstSelectableRow(menu->plane, 1, 1);
+    SetTextPlaneFirstSelectableRow(menu->plane, 1, true);
     return menu;
 }
 
@@ -1221,26 +1254,31 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
     i16 cost;
     switch (event) {
         case MENU_EVENT_ADD_ROW:
-            disabled = 0;
-            style = 0x2450;
+            disabled = false;
+            style = TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
             if (GetWord(GetCharacterSkills(character), index) == 0) {
-                AddMenuLine(menu->plane, g_emptySkillMenuLabel, style, 0, 1);
+                AddMenuLine(menu->plane, g_emptySkillMenuLabel, style, 0, MENU_LINE_DISABLED);
                 return;
             }
             blocked = IsSkillIdBlocked(character, GetWord(GetCharacterSkills(character), index));
             skill = GetSkillView(GetWord(GetCharacterSkills(character), index));
             if (blocked == 1) {
-                style = 0x2500;
-                disabled = 1;
+                style =
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
+                disabled = true;
             } else if (IsSkillUsableNow(GetSkillUseModes(skill)) < 1) {
-                style = 0x2500;
-                disabled = 1;
-            } else if (CheckSkillArea(GetWord(GetCharacterSkills(character), index)) < 1) {
-                style = 0x2500;
-                disabled = 1;
+                style =
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
+                disabled = true;
+            } else if (CheckSkillArea(GetWord(GetCharacterSkills(character), index))
+                       < SKILL_AREA_ALLOWED) {
+                style =
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
+                disabled = true;
             } else if (CannotPaySkill(character, &skill->parameters)) {
-                style = 0x2650;
-                disabled = 1;
+                style =
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_GREEN, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
+                disabled = true;
             }
             if (SkillCostsFullPool(&skill->parameters)) {
                 sprintf(g_scratchBuffer, "%-16.16s MAX", skill->name);
@@ -1267,7 +1305,13 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
             break;
         case MENU_EVENT_BEGIN_PAGE:
             FormatFullName(g_scratchBuffer, character);
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x2460, 0, 1);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                0,
+                MENU_LINE_DISABLED
+            );
             break;
         case MENU_EVENT_DESTROY:
             menu->items.character = NULL;
@@ -1299,13 +1343,19 @@ i16 CountUsableMemberSkills(Character* character, i16 checkCost) {
 }
 
 RVA(0x0002c740, 0xc0)
-i16 CollectTargets(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
+i16 CollectTargets(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor
+) {
     MapCoord point;
     switch (area) {
-        case 2:
+        case TARGET_AREA_LINE:
             return CollectTargetsAlongLine(area, flags, range, target, actor);
-        case 6:
-        case 7:
+        case TARGET_AREA_VISIBLE_FIRST:
+        case TARGET_AREA_VISIBLE_LAST:
             return CollectTargetsInView(area, flags, range, target, actor);
         case 3:
         case 4:
@@ -1329,7 +1379,15 @@ i16 CollectTargets(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
     } while (0)
 
 RVA(0x0002c800, 0x1e0)
-i16 CollectTargetsAtCell(i16 area, i16 flags, i16 range, i16 target, i16 actor, i16 x, i16 y) {
+i16 CollectTargetsAtCell(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor,
+    i16 x,
+    i16 y
+) {
     i16 targets[128];
     i16 hits;
     i16 mode;
@@ -1339,26 +1397,26 @@ i16 CollectTargetsAtCell(i16 area, i16 flags, i16 range, i16 target, i16 actor, 
     i16 i;
     i16 repeat;
     i16 result;
-    if (area == 255) {
+    if (area == TARGET_AREA_WEAPON_HITS) {
         mode = range;
         selected = 1;
         hits = RandomAverage(flags, range, 0);
         AddCombatTarget(target, 0);
     } else {
-        if (area == 0) {
+        if (area == TARGET_AREA_SELECTED_ONLY) {
             result = AddCombatTarget(target, 0);
         } else {
             result = AddRelatedCombatTargets(x, y, flags, target, actor);
         }
-        hits = range & 15;
+        hits = range & TARGET_COUNT_NIBBLE_MASK;
         if (hits < 1) {
             hits = 1;
         }
-        mode = (range >> 4) & 15;
+        mode = (range >> TARGET_COUNT_MODE_SHIFT) & TARGET_COUNT_NIBBLE_MASK;
         selected = mode;
-        if (mode == 15) {
+        if (mode == TARGET_COUNT_ALL_TARGETS) {
             selected = result;
-        } else if (mode == 0) {
+        } else if (mode == TARGET_COUNT_RANDOM_TARGETS) {
             selected = RandomPercent(hits, -20, 20);
         }
     }
@@ -1366,7 +1424,7 @@ i16 CollectTargetsAtCell(i16 area, i16 flags, i16 range, i16 target, i16 actor, 
     while ((id = NextTarget()) != TARGET_LIST_END) {
         targets[count++] = id;
     }
-    if (mode == 0) {
+    if (mode == TARGET_COUNT_RANDOM_TARGETS) {
         result = 0;
         for (i = 0; i < selected; i++) {
             id = RandomUpTo(count - 1);
@@ -1374,7 +1432,7 @@ i16 CollectTargetsAtCell(i16 area, i16 flags, i16 range, i16 target, i16 actor, 
         }
         ReturnCombatTargetsOrDefault(result, target);
     }
-    if (mode == 15 || selected > count) {
+    if (mode == TARGET_COUNT_ALL_TARGETS || selected > count) {
         selected = count;
     }
     result = 0;
@@ -1423,10 +1481,10 @@ i16 AddRelatedCombatTargets(i16 x, i16 y, i16 flags, i16 target, i16 actor) {
 RVA(0x0002caa0, 0x60)
 i16 AddObjectTargetsAtCell(i16 x, i16 y) {
     i16 count = CountCombatTargets();
-    i16 object = FindObjectAt(x, y, 0, 0, 0);
+    i16 object = FindObjectAt(x, y, 0, OBJECT_MATCH_ANY, 0);
     while (object != -1) {
         count = AddCombatTarget(object, 0);
-        object = FindObjectAt(x, y, object + 1, 0, 0);
+        object = FindObjectAt(x, y, object + 1, OBJECT_MATCH_ANY, 0);
     }
     return count;
 }
@@ -1450,7 +1508,13 @@ i16 AddPartyTargetsAtCell(i16 x, i16 y) {
 }
 
 RVA(0x0002cb60, 0x120)
-i16 CollectTargetsAlongLine(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
+i16 CollectTargetsAlongLine(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor
+) {
     MapCoord origin;
     MapCoord offset;
     i16 direction;
@@ -1484,7 +1548,13 @@ i16 CollectTargetsAlongLine(i16 area, i16 flags, i16 range, i16 target, i16 acto
 }
 
 RVA(0x0002cc80, 0x100)
-i16 CollectTargetsInView(i16 area, i16 flags, i16 range, i16 target, i16 actor) {
+i16 CollectTargetsInView(
+    GZ_ENUM_PARAM(TargetArea, i16) area,
+    i16 flags,
+    i16 range,
+    i16 target,
+    i16 actor
+) {
     MapCoord origin;
     i16 count = 0;
     i16 direction = g_party.field.pos.direction;
@@ -1524,23 +1594,23 @@ void UseAttackSkill(Character* user, Character* target) {
         ResolveSkillAttack(user, target);
         return;
     }
-    if (g_targetId >= 0 && IsFieldModeAtLeast(0)
+    if (g_targetId >= 0 && IsFieldModeAtLeast(false)
         && IsFieldConditionRestricted(GetSkillInflictedCondition(&s_effectSkill))) {
         return;
     }
     if (IsConditionResisted(target, GetSkillInflictedCondition(&s_effectSkill))) {
         return;
     }
-    if (RollSkillHit(user, target, 0) <= 0) {
+    if (RollSkillHit(user, target, false) <= 0) {
         return;
     }
-    AddTrainingPoints(user, 2, 3);
+    AddTrainingPoints(user, BATTLE_GROUP_MAGIC, 3);
     g_statusCondition = GetSkillInflictedCondition(&s_effectSkill);
     switch (ApplySkillResistanceOutcome(user, 0)) {
-        case 0:
-            g_statusCondition = 0;
+        case RESISTANCE_FOLLOWUP_SUPPRESS:
+            g_statusCondition = INFLICT_NONE;
             break;
-        case -1:
+        case RESISTANCE_FOLLOWUP_REFLECT:
             SetActionOutcome(ACTION_OUTCOME_CONDITION);
             InflictCondition(GetSkillInflictedCondition(&s_effectSkill), user);
             break;
@@ -1555,14 +1625,14 @@ RVA(0x0002ceb0, 0xe0)
 void UseRestoreSkill(Character* user, Character* target) {
     i16 hit;
     i16 amount;
-    i16 result;
-    g_statusCondition = 0;
-    hit = RollSkillHit(user, target, 1);
+    GZ_ENUM_LOCAL(RestoreResult, i16) result;
+    g_statusCondition = INFLICT_NONE;
+    hit = RollSkillHit(user, target, true);
     amount = ComputeRestoreAmount(GetSkillValueB(&s_effectSkill), user, target->pools.hp.max);
     user->lastChange = amount;
     result = ApplyRestoreEffect(GetSkillEffectCode(&s_effectSkill), amount, target, 0);
     user->lastChange = target->lastChange;
-    user->pickNoEffect = 1;
+    user->pickNoEffect = true;
     g_actionResult = result;
     user->result = result;
     if (RestoreEffectAllowsCondition(result) && hit > 0
@@ -1575,33 +1645,33 @@ void UseRestoreSkill(Character* user, Character* target) {
 RVA(0x0002cf90, 0xd0)
 void UseBattleTallySkill(Character* user, Character* target) {
     i16 tally;
-    target->pickNoEffect = 1;
-    user->pickNoEffect = 1;
-    g_statusCondition = 0;
+    target->pickNoEffect = true;
+    user->pickNoEffect = true;
+    g_statusCondition = INFLICT_NONE;
     g_hpChange = 0;
     g_actionResult = 0;
     user->lastChange = 0;
-    target->pickNoEffect = 1;
-    SetFlaggedActionResult(user, 3);
+    target->pickNoEffect = true;
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
     g_hpChange = 0;
     user->lastChange = 0;
     g_statusCondition = GetSkillInflictedCondition(&s_effectSkill);
     tally = GetSkillEffectCode(&s_effectSkill);
     if (tally < 0 || tally > 15) {
-        tally = 13;
+        tally = BATTLE_TALLY_ALL_BLOCK;
     }
     GetCharacterBattleTallies(target)[tally] = GetSkillValueA(&s_effectSkill);
-    if (tally == 8) {
-        GetCharacterBattleTallies(target)[9] = 0;
-    } else if (tally == 9) {
-        GetCharacterBattleTallies(target)[8] = 0;
+    if (tally == BATTLE_TALLY_FIRE_BLOCK) {
+        GetCharacterBattleTallies(target)[BATTLE_TALLY_ICE_BLOCK] = 0;
+    } else if (tally == BATTLE_TALLY_ICE_BLOCK) {
+        GetCharacterBattleTallies(target)[BATTLE_TALLY_FIRE_BLOCK] = 0;
     }
     SetActionOutcome(ACTION_OUTCOME_BATTLE_TALLY);
 }
 
 static __inline void PrepareBattleStatSkill(Character* user) {
-    user->pickNoEffect = 1;
-    g_statusCondition = 0;
+    user->pickNoEffect = true;
+    g_statusCondition = INFLICT_NONE;
     g_hpChange = 0;
     g_actionResult = 0;
     SetCharacterResult(user, 0, 0);
@@ -1612,52 +1682,52 @@ void UseBattleStatSkill(Character* user, Character* target) {
     double power = sqrt(GetStatTotal(user, STAT_MAGIC)) + GetSkillValueB(&s_effectSkill);
     i32 changed = 0;
     i16 amount = RoundToShort(RandomAverage(80, 120, 0) * power * 0.01);
-    if (GetSkillEffectCode(&s_effectSkill) & 0x80) {
+    if (GetSkillEffectCode(&s_effectSkill) & BATTLE_STAT_EFFECT_LOWER) {
         amount = -amount;
     }
     PrepareBattleStatSkill(user);
     if (amount < 0) {
-        if (RollSkillHit(user, target, 0) <= 0) {
+        if (RollSkillHit(user, target, false) <= 0) {
             return;
         }
     } else {
-        if (RollSkillHit(user, target, 1) <= 0) {
+        if (RollSkillHit(user, target, true) <= 0) {
             return;
         }
     }
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
     user->lastChange = amount;
     g_hpChange = amount;
-    switch (GetSkillEffectCode(&s_effectSkill) & 0x7f) {
-        case 0:
-            changed = ChangeCharacterBattleStat(target, 3, amount);
-            changed += ChangeCharacterBattleStat(target, 9, amount);
+    switch (GetSkillEffectCode(&s_effectSkill) & BATTLE_STAT_EFFECT_KIND_MASK) {
+        case BATTLE_STAT_EFFECT_WEAPON_GUN_POWER:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_WEAPON_POWER, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_GUN_POWER, amount);
             break;
-        case 1:
-            changed = ChangeCharacterBattleStat(target, 2, amount);
-            changed += ChangeCharacterBattleStat(target, 8, amount);
+        case BATTLE_STAT_EFFECT_WEAPON_GUN_ACCURACY:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_WEAPON_ACCURACY, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_GUN_ACCURACY, amount);
             break;
-        case 2:
-            changed = ChangeCharacterBattleStat(target, 5, amount);
-            changed += ChangeCharacterBattleStat(target, 11, amount);
+        case BATTLE_STAT_EFFECT_WEAPON_GUN_DEFENSE:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_WEAPON_DEFENSE, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_GUN_DEFENSE, amount);
             break;
-        case 3:
-            changed = ChangeCharacterBattleStat(target, 15, amount);
-            changed += ChangeCharacterBattleStat(target, 14, amount);
+        case BATTLE_STAT_EFFECT_MAGIC_ATTACK:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_POWER, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_ACCURACY, amount);
             break;
-        case 4:
-            changed = ChangeCharacterBattleStat(target, 16, amount);
-            changed += ChangeCharacterBattleStat(target, 17, amount);
+        case BATTLE_STAT_EFFECT_MAGIC_DEFENSE:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_EVASION, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_DEFENSE, amount);
             break;
-        case 5:
-            changed = ChangeCharacterBattleStat(target, 15, amount);
-            changed += ChangeCharacterBattleStat(target, 14, amount);
-            changed += ChangeCharacterBattleStat(target, 16, amount);
-            changed += ChangeCharacterBattleStat(target, 17, amount);
+        case BATTLE_STAT_EFFECT_MAGIC_ALL:
+            changed = ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_POWER, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_ACCURACY, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_EVASION, amount);
+            changed += ChangeCharacterBattleStat(target, BATTLE_STAT_MAGIC_DEFENSE, amount);
             break;
     }
     if (!changed) {
-        g_actionResult = 1;
+        g_actionResult = BATTLE_ACTION_NO_EFFECT;
         user->result = 1;
     }
 }
@@ -1680,9 +1750,9 @@ i16 ChangeBattleStat(i16* value, i16 amount, i16 base) {
 }
 
 static __inline void PrepareNonDamageSkill(Character* user, Character* target) {
-    target->pickNoEffect = 1;
-    user->pickNoEffect = 1;
-    g_statusCondition = 0;
+    target->pickNoEffect = true;
+    user->pickNoEffect = true;
+    g_statusCondition = INFLICT_NONE;
     g_hpChange = 0;
     user->lastChange = 0;
 }
@@ -1690,8 +1760,8 @@ static __inline void PrepareNonDamageSkill(Character* user, Character* target) {
 RVA(0x0002d390, 0x70)
 void UseClearBattleTallySkill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
-    SetFlaggedActionResult(user, 3);
-    if (RollSkillHit(user, target, 0) > 0) {
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
+    if (RollSkillHit(user, target, false) > 0) {
         ClearAllBattleTallies(target);
     }
 }
@@ -1699,7 +1769,7 @@ void UseClearBattleTallySkill(Character* user, Character* target) {
 RVA(0x0002d400, 0x80)
 void UseResetBattleStatsSkill(Character* user, Character* target) {
     PrepareBattleStatSkill(user);
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
     RecalcDerivedStats(target);
     ResetBattleStatsToBase(target);
     ClearAllBattleTallies(target);
@@ -1709,39 +1779,39 @@ RVA(0x0002d480, 0x160)
 void ApplySkillEffect(i16 skill, Character* user, Character* target) {
     CopySkillHeader(skill, &s_effectSkill);
     s_effectSkillId = skill;
-    if (skill == 250) {
+    if (skill == SKILL_SELF_RECOVERY) {
         s_effectSkill.parameters.type = 2;
     }
     switch (s_effectSkill.parameters.kind) {
-        case 2:
+        case SKILL_KIND_RESTORE:
             UseRestoreSkill(user, target);
             break;
-        case 3:
+        case SKILL_KIND_BATTLE_TALLY:
             UseBattleTallySkill(user, target);
             break;
-        case 4:
+        case SKILL_KIND_BATTLE_STAT:
             UseBattleStatSkill(user, target);
             break;
-        case 9:
-        case 10:
+        case SKILL_KIND_CLEAR_BATTLE_TALLIES:
+        case SKILL_KIND_CLEAR_BATTLE_TALLIES_ALIAS:
             UseClearBattleTallySkill(user, target);
             break;
-        case 11:
+        case SKILL_KIND_RESET_BATTLE_STATS:
             UseResetBattleStatsSkill(user, target);
             break;
-        case 12:
+        case SKILL_KIND_FIELD_TRAVEL:
             UseKind12Skill(user, target);
             break;
-        case 13:
+        case SKILL_KIND_SUMMON:
             UseKind13Skill(user, target);
             break;
-        case 14:
+        case SKILL_KIND_FIELD_EFFECT_REPORT_SUCCESS:
             UseKind14Skill(user, target);
             break;
-        case 15:
+        case SKILL_KIND_FIELD_EFFECT:
             UseFieldEffectSkill(user, target);
             break;
-        case 16:
+        case SKILL_KIND_INERT:
             UseInertSkill(user, target);
             break;
         default:
@@ -1754,21 +1824,21 @@ RVA(0x0002d5e0, 0x60)
 void UseKind12Skill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
     RunFieldEffect(GetSkillEffectCode(&s_effectSkill));
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 RVA(0x0002d640, 0x60)
 void UseKind13Skill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
     RunFieldEffect(GetSkillEffectCode(&s_effectSkill));
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 RVA(0x0002d6a0, 0x60)
 void UseKind14Skill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
     RunFieldEffect(GetSkillEffectCode(&s_effectSkill));
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 RVA(0x0002d700, 0x50)
@@ -1780,7 +1850,7 @@ void UseFieldEffectSkill(Character* user, Character* target) {
 RVA(0x0002d750, 0x50)
 void UseInertSkill(Character* user, Character* target) {
     PrepareNonDamageSkill(user, target);
-    SetFlaggedActionResult(user, 3);
+    SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 // @identity-TODO: PrepareSkillAction only clears this word; no reader survives.
@@ -1809,22 +1879,22 @@ b16 RunFieldSkillUse(void) {
     i16 picked;
 
     switch (GetGamePhase()) {
-        case 0:
+        case SKILL_USE_PHASE_START:
             HideScreenLayer(1);
             if (s_skillUser < 0) {
-                SetGamePhase(8);
+                SetGamePhase(SKILL_USE_PHASE_END);
                 return false;
             }
             LocateFieldSkillUser();
-            SetGamePhase(3);
+            SetGamePhase(SKILL_USE_PHASE_OPEN_SKILL_LIST);
             return false;
 
-        case 1:
+        case SKILL_USE_PHASE_CLOSE_MEMBER_PICKER:
             s_fieldMenu = ClosePickerMenu(s_fieldMenu);
-            SetGamePhase(8);
+            SetGamePhase(SKILL_USE_PHASE_END);
             return false;
 
-        case 2:
+        case SKILL_USE_PHASE_PICK_MEMBER:
             s_skillUser = RunPickerMenu(s_fieldMenu);
             if (s_skillUser == -2) {
                 PrevGamePhase();
@@ -1837,20 +1907,20 @@ b16 RunFieldSkillUse(void) {
             s_fieldMenu = ClosePickerMenu(s_fieldMenu);
             return false;
 
-        case 3:
+        case SKILL_USE_PHASE_OPEN_SKILL_LIST:
             NextGamePhase();
             NextGamePhase();
             s_fieldMenu = OpenMemberSkillMenu(s_skillUser);
             return false;
 
-        case 4:
-            SetGamePhase(8);
+        case SKILL_USE_PHASE_CLOSE_SKILL_LIST:
+            SetGamePhase(SKILL_USE_PHASE_END);
             s_fieldMenu = CloseListMenu(s_fieldMenu);
             return false;
 
-        case 5:
+        case SKILL_USE_PHASE_PICK_SKILL:
             s_skillPicked = RunListMenu(s_fieldMenu);
-            if (s_skillPicked == -2) {
+            if (s_skillPicked == LIST_MENU_CANCELLED) {
                 PrevGamePhase();
             }
             if (s_skillPicked < 0) {
@@ -1861,7 +1931,7 @@ b16 RunFieldSkillUse(void) {
             g_actionId = s_skillPicked;
             return false;
 
-        case 6:
+        case SKILL_USE_PHASE_PICK_TARGET:
             flags = GetSkillTargetFlags(s_skillPicked);
             if (TargetFlagsSelectSelf(flags)) {
                 g_targetId = PartyCombatantId(s_userPosition);
@@ -1874,20 +1944,35 @@ b16 RunFieldSkillUse(void) {
                 return false;
             }
             s_pickRange = GetSkillAttackRange(g_actionId);
-            if (flags == 0x10) {
-                picked = RunPickTargetWindow(0, s_pickRange, 5, 0);
-            } else if (flags == 0x11) {
-                picked = RunPickTargetWindow(0, s_pickRange, 4, 0);
-            } else if (flags == 0x30) {
-                picked = RunPickTargetWindow(0, s_pickRange, 6, 0);
+            if (flags == TARGET_SELECT_FIELD_OR_ROSTER) {
+                picked = RunPickTargetWindow(
+                    0,
+                    s_pickRange,
+                    TARGET_PICK_FIELD_OBJECT | TARGET_PICK_ROSTER_LIST,
+                    0
+                );
+            } else if (flags == TARGET_SELECT_ROSTER_ONLY) {
+                picked = RunPickTargetWindow(0, s_pickRange, TARGET_PICK_ROSTER_LIST, 0);
+            } else if (flags == TARGET_SELECT_PARTY_OR_ROSTER) {
+                picked = RunPickTargetWindow(
+                    0,
+                    s_pickRange,
+                    TARGET_PICK_PARTY_SLOT | TARGET_PICK_ROSTER_LIST,
+                    0
+                );
             } else {
                 flags = 0;
-                picked = RunPickTargetWindow(0, s_pickRange, 3, 0);
+                picked = RunPickTargetWindow(
+                    0,
+                    s_pickRange,
+                    TARGET_PICK_FIELD_OBJECT | TARGET_PICK_PARTY_SLOT,
+                    0
+                );
             }
-            if (picked == -1) {
-                SetGamePhase(3);
+            if (picked == TARGET_PICK_CANCELLED) {
+                SetGamePhase(SKILL_USE_PHASE_OPEN_SKILL_LIST);
             }
-            if (picked <= 0) {
+            if (picked <= TARGET_PICK_WAITING) {
                 break;
             }
             if (flags) {
@@ -1897,7 +1982,7 @@ b16 RunFieldSkillUse(void) {
             NextGamePhase();
             return false;
 
-        case 7:
+        case SKILL_USE_PHASE_PROMPT_ACTION:
             NextGamePhase();
             g_actorId = PartyCombatantId(s_userPosition);
             SetSkillPick(s_userPosition);
@@ -1905,7 +1990,7 @@ b16 RunFieldSkillUse(void) {
             PushFieldUsePrompt();
             return false;
 
-        case 8:
+        case SKILL_USE_PHASE_END:
             RestoreSwappedMember();
             ReturnFromGameState();
             break;

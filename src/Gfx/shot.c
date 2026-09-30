@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/GameState.h>
 #include <Game/StateStack.h>
 #include <Gfx/Motion.h>
@@ -29,7 +30,7 @@ DATA(0x00078370)
 static ShotTable s_shotTableData = {0};
 
 DATA(0x00078470)
-static ShotTable* s_shotTable = 0;
+static ShotTable* s_shotTable = NULL;
 
 // Sideways drift per unit of depth travelled.
 DATA(0x00078478)
@@ -198,7 +199,7 @@ void LoadEffectTables(void) {
     FILE* fp;
     InitEffectSlots();
     InitEffectImageSets();
-    fp = OpenDataFile(0x10, 2, 0);
+    fp = OpenDataFile(0x10, DATA_FILE_EFFECT, 0);
     LoadMotionTable(fp);
     LoadShotTable(fp);
     LoadEffectPalettes(fp);
@@ -208,7 +209,7 @@ void LoadEffectTables(void) {
 RVA(0x00005980, 0x42)
 void LaunchShot(i16 effect, i16 mode, i16 rise, i16 fromX, i16 fromY, i16 toX, i16 toY) {
     i16 strength;
-    PushGameState(9);
+    PushGameState(GAME_STATE_SHOT);
     strength = SetShotPath(fromX, fromY, toX, toY);
     StartEffect(effect, strength);
     SetShotPower(strength);
@@ -218,7 +219,7 @@ RVA(0x000059d0, 0x60)
 b16 RunShotState(void) {
     i16 result;
     if (GetGamePhase() == 0) {
-        ExchangeEffectSkipping(0);
+        ExchangeEffectSkipping(false);
         NextGamePhase();
     }
     result = StepShot();
@@ -239,7 +240,7 @@ b16 RunShotState(void) {
 RVA(0x00005a30, 0x50)
 b16 RunClosingEffectState(void) {
     if (GetEffectScript() != NULL) {
-        ExchangeEffectSkipping(1);
+        ExchangeEffectSkipping(true);
         StepEffectScript();
         if (GetEffectScript() != NULL) {
             return false;

@@ -29,34 +29,39 @@
 #include <Game/ItemRecord.h>
 #include <Game/Pool.h>
 #include <Game/SpecialItems.h>
-#include <Game/StateStack.h>
 #include <Game/StatUpdate.h>
+#include <Game/StateStack.h>
 #include <Input/Mouse.h>
 #include <Input/MouseClickState.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Script/Script.h>
 #include <Script/ScriptVars.h>
+#include <Text/TextAttr.h>
+#include <Text/TextPlane.h>
 #include <Text/TextWindow.h>
 #include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
+#include <Ui/MenuStep.h>
 #include <Util/BitChangeMode.h>
 #include <Util/Range.h>
 #include <Util/Scratch.h>
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
 DATA(0x0007fe60)
-ItemStack g_gemItems[16] = {0};
+ItemStack g_gemItems[GEM_ITEM_COUNT] = {0};
 
 DATA(0x0007fea0)
-ItemStack g_itemPool[64] = {0};
+ItemStack g_itemPool[ITEM_POOL_SIZE] = {0};
 
 DATA(0x0007ffa0)
-ItemStack g_bagItems[64] = {0};
+ItemStack g_bagItems[BAG_ENTRY_COUNT] = {0};
 
 // The record of the item whose effect is being applied.
 DATA(0x000800a0)
@@ -74,10 +79,10 @@ i32 g_itemRemapHandle = 0;
 
 // Shared text buffers for the decoded item name and description.
 DATA(0x000800f4)
-char* g_itemNameText = 0;
+char* g_itemNameText = NULL;
 
 DATA(0x000800f8)
-char* g_itemDescriptionText = 0;
+char* g_itemDescriptionText = NULL;
 
 // Nonzero while bag stores are quiet (see SetBagQuiet).
 DATA(0x000800fc)
@@ -94,18 +99,18 @@ DATA(0x00080104)
 static i16 s_giftItemBase = 0;
 
 DATA(0x00080108)
-static MenuBox* s_giftMenu = 0;
+static MenuBox* s_giftMenu = NULL;
 
 // The event flag each timed item clears when it expires.
 DATA(0x00068f38)
 static TimedItemFlag s_timedItemFlags[8] = {
-    {0, 140},
-    {0, 139},
-    {0, 138},
-    {0, 137},
-    {0, 141},
-    {0, 142},
-    {1, 93},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_RIGHT_LEG},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_LEFT_LEG},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_RIGHT_ARM},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_LEFT_ARM},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_CHEST},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_ABDOMEN},
+    {EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_WITHERED_LOVER_HEAD},
     {-1, -1},
 };
 
@@ -128,7 +133,7 @@ RVA(0x00022d10, 0x2b)
 u8* GetItemRecordData(i16 id) {
     ItemTable* table = GetItemTableData();
     if (id >= table->count || id < 0) {
-        id = 1;
+        id = ITEM_WOUND_MEDICINE;
     }
     return OffsetBy(table, table->offsets[id]);
 }
@@ -370,7 +375,7 @@ void LoadItemFiles(void) {
     s_itemDataHandle = ReadCryptHandle(fp);
     CloseDataFile(fp);
 
-    fp = OpenDataFile(DATA_TABLE_ITEM_INDEX, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_ITEM_INDEX, DATA_FILE_TABLE, 0);
     s_itemIndexHandle = ReadRawHandle(fp);
     g_itemRemapHandle = ReadRawHandle(fp);
     CloseDataFile(fp);
@@ -446,16 +451,16 @@ u16 GetItemStackLimit(i16 id) {
         case 6:
         case ITEM_KIND_SOFTWARE:
         case ITEM_KIND_KEYCARD:
-            return 99;
+            return ITEM_STACK_MAX;
         case ITEM_KIND_GEM:
-            return 99;
+            return ITEM_STACK_MAX;
         case ITEM_KIND_SCENARIO:
-            return 99;
+            return ITEM_STACK_MAX;
         case ITEM_KIND_WEAPON:
         case ITEM_KIND_GUN:
             return 1;
         case ITEM_KIND_AMMO:
-            return 99;
+            return ITEM_STACK_MAX;
         case ITEM_KIND_FULL_BODY_ARMOR:
         case ITEM_KIND_HEAD_ARMOR:
         case ITEM_KIND_BODY_ARMOR:
@@ -463,7 +468,7 @@ u16 GetItemStackLimit(i16 id) {
         case ITEM_KIND_LEG_ARMOR:
             return 1;
         case ITEM_KIND_ACCESSORY:
-            return 99;
+            return ITEM_STACK_MAX;
     }
     return 1;
 }
@@ -528,7 +533,7 @@ GZ_ENUM_RETURN(EquipPart, i16) GetItemCategory(i16 id) {
         case ITEM_KIND_KEYCARD:
         case ITEM_KIND_GEM:
         case ITEM_KIND_SCENARIO:
-            return -1;
+            return EQUIP_PART_NONE;
         case ITEM_KIND_WEAPON:
             return EQUIP_PART_WEAPON;
         case ITEM_KIND_GUN:
@@ -548,7 +553,7 @@ GZ_ENUM_RETURN(EquipPart, i16) GetItemCategory(i16 id) {
         case ITEM_KIND_ACCESSORY:
             return EQUIP_PART_ACCESSORY;
     }
-    return -1;
+    return EQUIP_PART_NONE;
 }
 
 RVA(0x00023690, 0x20)
@@ -625,7 +630,7 @@ i16 CountPoolEntries(void) {
     i16 count = 0;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             count++;
         }
@@ -637,7 +642,7 @@ RVA(0x00023800, 0x20)
 void ClearPool(void) {
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         GetItemPoolEntry(i)->item = ITEM_ID_EMPTY;
         GetItemPoolEntry(i)->count = 0;
     }
@@ -648,18 +653,18 @@ void AddToPool(i16 item, i16 amount) {
     i16 room;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) == item) {
-            if (GetItemStackCount(GetItemPoolEntry(i)) + amount <= 99) {
+            if (GetItemStackCount(GetItemPoolEntry(i)) + amount <= ITEM_STACK_MAX) {
                 GetItemPoolEntry(i)->count += amount;
                 return;
             }
-            room = 99 - GetItemStackCount(GetItemPoolEntry(i));
+            room = ITEM_STACK_MAX - GetItemStackCount(GetItemPoolEntry(i));
             GetItemPoolEntry(i)->count += room;
             amount -= room;
         }
     }
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) == ITEM_ID_EMPTY) {
             GetItemPoolEntry(i)->item = item;
             GetItemPoolEntry(i)->count = amount;
@@ -672,7 +677,7 @@ RVA(0x00023920, 0x70)
 void TakeFromPool(i16 item, u8 amount) {
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) == item) {
             GetItemPoolEntry(i)->count -= amount;
             if (GetItemStackCount(GetItemPoolEntry(i)) == 0) {
@@ -691,11 +696,11 @@ i16 GivePooledItems(void) {
     i16 amount;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             item = RemapItem(GetItemStackItem(GetItemPoolEntry(i)));
             amount = GetItemStackCount(GetItemPoolEntry(i));
-            if (item != 0) {
+            if (item != ITEM_ID_NONE) {
                 amount = RollItemAmount(
                     GetItemStackItem(GetItemPoolEntry(i)),
                     GetItemStackCount(GetItemPoolEntry(i)),
@@ -718,7 +723,7 @@ RVA(0x00023a30, 0x50)
 void TakePooledItems(void) {
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < ITEM_POOL_SIZE; i++) {
         if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             TakeBagItems(
                 GetItemStackItem(GetItemPoolEntry(i)),
@@ -732,7 +737,7 @@ RVA(0x00023a80, 0x20)
 void ClearBag(void) {
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         ClearItemStack(&g_bagItems[i]);
     }
 }
@@ -746,8 +751,8 @@ ItemStackList* CopyBagEntries(i16 first, i16 count, ItemStackList* list) {
         list = AllocCleared(1, count * sizeof(ItemStack) + sizeof(list->count));
     }
     count += first;
-    if (count > 64) {
-        count = 64;
+    if (count > BAG_ENTRY_COUNT) {
+        count = BAG_ENTRY_COUNT;
     }
     for (i = first; i < count; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
@@ -774,7 +779,7 @@ i16 RestoreBagEntries(ItemStackList* list) {
 RVA(0x00023b40, 0xb1)
 b32 PooledItemsFit(void) {
     i16 previousQuiet = SetBagQuiet(1);
-    ItemStackList* savedBag = CopyBagEntries(0, 64, NULL);
+    ItemStackList* savedBag = CopyBagEntries(0, BAG_ENTRY_COUNT, NULL);
     ItemStack* savedGems = SaveGemItems(NULL);
     i16 left = GivePooledItems();
     i16 i;
@@ -795,7 +800,7 @@ RVA(0x00023c00, 0x20)
 void ClearDropSlots(void) {
     i16 i;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < DROP_SLOT_COUNT; i++) {
         ClearDropSlot(i);
     }
 }
@@ -813,7 +818,7 @@ i16 AddDropSlot(i16 item, i16 amount) {
         amount = RollDropAmount(item, amount);
         item = remap;
     }
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < DROP_SLOT_COUNT; i++) {
         if (GetDropSlot(i)->item < 1 || GetDropSlot(i)->item == item) {
             GetDropSlot(i)->item = item;
             GetDropSlot(i)->amount += amount;
@@ -824,18 +829,18 @@ i16 AddDropSlot(i16 item, i16 amount) {
 }
 
 RVA(0x00023ca0, 0x70)
-i16 FindBagItem(i16 item, u8 groups) {
+i16 FindBagItem(i16 item, GZ_ENUM_PARAM(BagSearchGroup, u8) groups) {
     i16 i;
 
-    if (groups & 1) {
-        for (i = 47; i >= 0; i--) {
+    if (groups & BAG_SEARCH_ORDINARY) {
+        for (i = BAG_ORDINARY_ENTRY_COUNT - 1; i >= 0; i--) {
             if (GetItemStackItem(&g_bagItems[i]) == item) {
                 return i;
             }
         }
     }
-    if (groups & 2) {
-        for (i = 63; i >= 48; i--) {
+    if (groups & BAG_SEARCH_SCENARIO) {
+        for (i = BAG_ENTRY_COUNT - 1; i >= BAG_ORDINARY_ENTRY_COUNT; i--) {
             if (GetItemStackItem(&g_bagItems[i]) == item) {
                 return i;
             }
@@ -849,7 +854,7 @@ i16 CountBagItem(i16 item) {
     i16 total = 0;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) == item) {
             total += GetItemStackCount(&g_bagItems[i]);
         }
@@ -862,10 +867,10 @@ void SetBagEntry(i16 index, i16 item, i16 attachment) {
     g_bagItems[index].item = item;
     if (attachment != -1) {
         g_bagItems[index].attachment = attachment;
-        g_bagItems[index].hasAttachment = 1;
+        g_bagItems[index].hasAttachment = true;
     } else {
         g_bagItems[index].attachment = 0;
-        g_bagItems[index].hasAttachment = 0;
+        g_bagItems[index].hasAttachment = false;
     }
     g_bagItems[index].count = 0;
     g_bagItems[index].detail = 0;
@@ -922,14 +927,14 @@ i16 FillBagEntry(i16 index, i16 item, u16 amount, u16 limit, i16 attachment, i16
 RVA(0x00023f20, 0x1d0)
 static void CompactBagCore(void) {
 #ifdef GITEN_BUGFIX
-    // @bug Retail keeps the first 16 scenario entries it finds and clears the
+    // @bug Retail keeps the first BAG_SCENARIO_ENTRY_COUNT scenario entries it finds and clears the
     // rest, which AddScenarioBagItems's overflow into the normal entries would
     // lose on the next compaction. Every scenario entry is kept: the scenario
-    // range takes the first 16 again and the rest go to the free normal
+    // range takes the first BAG_SCENARIO_ENTRY_COUNT again and the rest go to the free normal
     // entries, which the other entries' compaction leaves at its end.
     ItemStack scenarioItems[64];
 #else
-    ItemStack scenarioItems[16];
+    ItemStack scenarioItems[BAG_SCENARIO_ENTRY_COUNT];
 #endif
     i16 kept = 0;
     i16 limit;
@@ -940,41 +945,41 @@ static void CompactBagCore(void) {
 #ifdef GITEN_BUGFIX
     for (i = 0; i < 64; i++) {
 #else
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < BAG_SCENARIO_ENTRY_COUNT; i++) {
 #endif
         ClearItemStack(&scenarioItems[i]);
     }
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY
             && GetItemKind(GetItemStackItem(&g_bagItems[i])) == ITEM_KIND_SCENARIO) {
 #ifdef GITEN_BUGFIX
             scenarioItems[kept++] = g_bagItems[i];
 #else
-            if (kept < 16) {
+            if (kept < BAG_SCENARIO_ENTRY_COUNT) {
                 scenarioItems[kept++] = g_bagItems[i];
             }
 #endif
             ClearItemStack(&g_bagItems[i]);
         }
     }
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             continue;
         }
         limit = GetItemStackLimit(GetItemStackItem(&g_bagItems[i]));
         while (GetItemStackCount(&g_bagItems[i]) < limit) {
-            from = FindBagItem(GetItemStackItem(&g_bagItems[i]), 3);
+            from = FindBagItem(GetItemStackItem(&g_bagItems[i]), BAG_SEARCH_ALL);
             if (from <= i) {
                 break;
             }
             TakeFromBagEntry(from, AddToBagEntry(i, GetItemStackCount(&g_bagItems[from]), limit));
         }
     }
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             continue;
         }
-        for (j = i + 1; j < 64; j++) {
+        for (j = i + 1; j < BAG_ENTRY_COUNT; j++) {
             if (GetItemStackItem(&g_bagItems[j]) != ITEM_ID_EMPTY) {
                 g_bagItems[i] = g_bagItems[j];
                 ClearItemStack(&g_bagItems[j]);
@@ -982,14 +987,14 @@ static void CompactBagCore(void) {
             }
         }
     }
-    for (i = 48; i < 64; i++) {
+    for (i = BAG_ORDINARY_ENTRY_COUNT; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             continue;
         }
 #ifdef GITEN_BUGFIX
         for (j = 0; j < kept; j++) {
 #else
-        for (j = 0; j < 16; j++) {
+        for (j = 0; j < BAG_SCENARIO_ENTRY_COUNT; j++) {
 #endif
             if (GetItemStackItem(&scenarioItems[j]) != ITEM_ID_EMPTY) {
                 g_bagItems[i] = scenarioItems[j];
@@ -1018,7 +1023,7 @@ RVA(0x000240f0, 0x50)
 i16 TakeBagItemsFromEnd(i16 item, i16 amount) {
     i16 i;
 
-    for (i = 63; i >= 0; i--) {
+    for (i = BAG_ENTRY_COUNT - 1; i >= 0; i--) {
         if (GetItemStackItem(&g_bagItems[i]) == item) {
             amount -= TakeFromBagEntry(i, amount);
             if (amount <= 0) {
@@ -1057,7 +1062,7 @@ i16 AddBagItems(i16 item, i16 count, i16 attachment, i16 detail) {
         return AddScenarioBagItems(item, count);
     }
     limit = GetItemStackLimit(item);
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < BAG_ORDINARY_ENTRY_COUNT; i++) {
         count -= FillBagEntry(i, item, count, limit, attachment, detail);
         if (count <= 0) {
             break;
@@ -1071,7 +1076,7 @@ i16 AddScenarioBagItems(i16 item, i16 count) {
     u16 limit = GetItemStackLimit(item);
     i16 i;
 
-    for (i = 48; i < 64; i++) {
+    for (i = BAG_ORDINARY_ENTRY_COUNT; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             SetBagEntry(i, item, -1);
             count -= AddToBagEntry(i, count, limit);
@@ -1103,7 +1108,7 @@ i16 CountBagEntries(void) {
     i16 count = 0;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             count++;
         }
@@ -1112,18 +1117,18 @@ i16 CountBagEntries(void) {
 }
 
 RVA(0x000242b0, 0x60)
-ItemStack* SaveOrRestoreBag(ItemStack* buffer, i16 restore) {
+ItemStack* SaveOrRestoreBag(ItemStack* buffer, GZ_ENUM_PARAM(ItemStashAction, i16) action) {
     i16 i;
 
-    if (!restore) {
+    if (action == ITEM_STASH_SAVE) {
         if (buffer == NULL) {
             buffer = AllocCleared(64, sizeof(ItemStack));
         }
-        for (i = 0; i < 64; i++) {
+        for (i = 0; i < BAG_ENTRY_COUNT; i++) {
             buffer[i] = g_bagItems[i];
         }
     } else if (buffer != NULL) {
-        for (i = 0; i < 64; i++) {
+        for (i = 0; i < BAG_ENTRY_COUNT; i++) {
             g_bagItems[i] = buffer[i];
         }
     }
@@ -1136,13 +1141,13 @@ void CompactBag(void) {
     i16 next;
 
     CompactBagCore();
-    for (i = 0; i < 47; i++) {
+    for (i = 0; i < BAG_ORDINARY_ENTRY_COUNT - 1; i++) {
         if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
             next = i + 1;
-            if (next >= 48) {
+            if (next >= BAG_ORDINARY_ENTRY_COUNT) {
                 return;
             }
-            while (next < 48) {
+            while (next < BAG_ORDINARY_ENTRY_COUNT) {
                 if (GetItemStackItem(&g_bagItems[next]) != ITEM_ID_EMPTY) {
                     g_bagItems[i] = g_bagItems[next];
                     SetBagEntry(next, -1, -1);
@@ -1150,7 +1155,7 @@ void CompactBag(void) {
                 }
                 next++;
             }
-            if (next >= 48) {
+            if (next >= BAG_ORDINARY_ENTRY_COUNT) {
                 return;
             }
         }
@@ -1197,7 +1202,7 @@ i16 DetachBagEntryItem(i16 index) {
 
     if (id >= 0) {
         g_bagItems[index].attachment = 0;
-        g_bagItems[index].hasAttachment = 0;
+        g_bagItems[index].hasAttachment = false;
     }
     return id;
 }
@@ -1207,18 +1212,18 @@ i16 AttachBagEntryItem(i16 index, i16 id) {
     i16 previous = DetachBagEntryItem(index);
 
     g_bagItems[index].attachment = id - GetGemItemBase();
-    g_bagItems[index].hasAttachment = 1;
+    g_bagItems[index].hasAttachment = true;
     return previous;
 }
 
 RVA(0x00024520, 0x30)
 i16 WriteBag(FILE* fp) {
-    return 64 - fwrite(g_bagItems, sizeof(ItemStack), 64, fp);
+    return BAG_ENTRY_COUNT - fwrite(g_bagItems, sizeof(ItemStack), BAG_ENTRY_COUNT, fp);
 }
 
 RVA(0x00024550, 0x30)
 i16 ReadBag(FILE* fp) {
-    return 64 - fread(g_bagItems, sizeof(ItemStack), 64, fp);
+    return BAG_ENTRY_COUNT - fread(g_bagItems, sizeof(ItemStack), BAG_ENTRY_COUNT, fp);
 }
 
 RVA(0x00024580, 0x30)
@@ -1233,7 +1238,7 @@ RVA(0x000245b0, 0xb0)
 i16 AddGemItemsAt(i16 index, u16 amount) {
     u16 total;
 
-    if (index < 0 || index >= 16) {
+    if (index < 0 || index >= GEM_ITEM_COUNT) {
         return -1;
     }
     total = GetGemItemEntry(index)->count + amount;
@@ -1247,7 +1252,7 @@ i16 AddGemItemsAt(i16 index, u16 amount) {
 
 RVA(0x00024660, 0x50)
 i16 TakeGemItemsAt(i16 index, i16 amount) {
-    if (index < 0 || index >= 16) {
+    if (index < 0 || index >= GEM_ITEM_COUNT) {
         return -1;
     }
     if (amount > GetItemStackCount(GetGemItemEntry(index))) {
@@ -1262,7 +1267,7 @@ void ResetGemItems(i16 base) {
     i16 i;
 
     s_gemItemBase = base;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < GEM_ITEM_COUNT; i++) {
         GetGemItemEntry(i)->item = i + base;
         GetGemItemEntry(i)->count = 0;
     }
@@ -1271,7 +1276,7 @@ void ResetGemItems(i16 base) {
 RVA(0x000246f0, 0x30)
 i16 AddGemItems(i16 id, u16 amount) {
     i16 index = id - s_gemItemBase;
-    if (index >= 0 && index < 16) {
+    if (index >= 0 && index < GEM_ITEM_COUNT) {
         return AddGemItemsAt(index, amount);
     }
     return -1;
@@ -1280,7 +1285,7 @@ i16 AddGemItems(i16 id, u16 amount) {
 RVA(0x00024720, 0x30)
 i16 TakeGemItems(i16 id, i16 amount) {
     i16 index = id - s_gemItemBase;
-    if (index >= 0 && index < 16) {
+    if (index >= 0 && index < GEM_ITEM_COUNT) {
         return TakeGemItemsAt(index, amount);
     }
     return -1;
@@ -1288,7 +1293,7 @@ i16 TakeGemItems(i16 id, i16 amount) {
 
 RVA(0x00024750, 0x30)
 i16 CountGemItemsAt(i16 index) {
-    if (index >= 0 && index < 16) {
+    if (index >= 0 && index < GEM_ITEM_COUNT) {
         return GetItemStackCount(GetGemItemEntry(index));
     }
     return -1;
@@ -1297,7 +1302,7 @@ i16 CountGemItemsAt(i16 index) {
 RVA(0x00024780, 0x30)
 i16 CountGemItems(i16 id) {
     i16 index = id - s_gemItemBase;
-    if (index >= 0 && index < 16) {
+    if (index >= 0 && index < GEM_ITEM_COUNT) {
         return CountGemItemsAt(index);
     }
     return -1;
@@ -1315,7 +1320,7 @@ ItemStack* SaveGemItems(ItemStack* buffer) {
     if (buffer == NULL) {
         buffer = AllocCleared(1, sizeof(g_gemItems));
     }
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < GEM_ITEM_COUNT; i++) {
         buffer[i] = *GetGemItemEntry(i);
     }
     return buffer;
@@ -1326,7 +1331,7 @@ ItemStack* RestoreGemItems(ItemStack* buffer) {
     i16 i;
 
     if (buffer != NULL) {
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < GEM_ITEM_COUNT; i++) {
             *GetGemItemEntry(i) = buffer[i];
         }
     }
@@ -1335,12 +1340,12 @@ ItemStack* RestoreGemItems(ItemStack* buffer) {
 
 RVA(0x00024830, 0x30)
 i16 WriteGemItems(FILE* fp) {
-    return 16 - fwrite(g_gemItems, sizeof(ItemStack), 16, fp);
+    return GEM_ITEM_COUNT - fwrite(g_gemItems, sizeof(ItemStack), GEM_ITEM_COUNT, fp);
 }
 
 RVA(0x00024860, 0x30)
 i16 ReadGemItems(FILE* fp) {
-    return 16 - fread(g_gemItems, sizeof(ItemStack), 16, fp);
+    return GEM_ITEM_COUNT - fread(g_gemItems, sizeof(ItemStack), GEM_ITEM_COUNT, fp);
 }
 
 RVA(0x00024890, 0xc0)
@@ -1379,9 +1384,9 @@ RVA(0x00024950, 0x100)
 void UseRestoreItem(Character* user, Character* target) {
     i16 mp;
     i16 hp;
-    i16 result;
+    GZ_ENUM_LOCAL(RestoreResult, i16) result;
 
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     mp = ComputeRestoreAmount(s_usedItem.params[8], user, target->pools.mp.max);
     g_mpChange = mp;
     hp = ComputeRestoreAmount(s_usedItem.params[7], user, target->pools.hp.max);
@@ -1394,7 +1399,7 @@ void UseRestoreItem(Character* user, Character* target) {
     result = ApplyRestoreEffect(s_usedItem.params[9], hp, target, mp);
     user->lastChange = target->lastChange;
     g_actionResult = result;
-    user->pickNoEffect = 1;
+    user->pickNoEffect = true;
     user->result = result;
     g_pendingCondition = s_usedItem.params[10];
     if (g_pendingCondition != 0 && RestoreEffectAllowsCondition(result)
@@ -1410,7 +1415,7 @@ void UseAttackItem(Character* user, Character* target) {
     ResetActionOutcome();
     if (GetItemDamagePower(&s_usedItem) == 0) {
         user->lastChange = 0;
-        if (g_targetId >= 0 && IsFieldModeAtLeast(0)) {
+        if (g_targetId >= 0 && IsFieldModeAtLeast(false)) {
             if (GetItemInflictedCondition(&s_usedItem) >= 0x21
                 || IsFieldConditionRestricted(GetItemInflictedCondition(&s_usedItem))) {
                 return;
@@ -1418,7 +1423,7 @@ void UseAttackItem(Character* user, Character* target) {
         }
         if (ResolveItemAttack(user, target, 0) > 0) {
             g_statusCondition = GetItemInflictedCondition(&s_usedItem);
-            if (g_statusCondition != 0) {
+            if (g_statusCondition != INFLICT_NONE) {
                 InflictCondition(g_statusCondition, target);
             }
         }
@@ -1432,8 +1437,8 @@ void UseAttackItem(Character* user, Character* target) {
 static __inline void SetInertItemOutcome(Character* user, Character* target) {
     ResetActionOutcome();
     user->result = 0;
-    user->pickNoEffect = 1;
-    target->pickNoEffect = 1;
+    user->pickNoEffect = true;
+    target->pickNoEffect = true;
 }
 
 RVA(0x00024b20, 0x40)
@@ -1450,7 +1455,7 @@ RVA(0x00024ba0, 0x1b0)
 void AddItemStatPoints(i16 item, i16* stats) {
     i16 code;
 
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1460,72 +1465,72 @@ void AddItemStatPoints(i16 item, i16* stats) {
     code = g_loadedItem.kind != ITEM_KIND_GEM ? GetItemPassiveEffectCode(&g_loadedItem)
                                               : g_loadedItem.params[0xb];
     switch (code) {
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
+        case ITEM_PASSIVE_INTUITION_POINT:
+        case ITEM_PASSIVE_MENTAL_STRENGTH_POINT:
+        case ITEM_PASSIVE_MAGIC_POINT:
+        case ITEM_PASSIVE_INTELLIGENCE_POINT:
+        case ITEM_PASSIVE_PROTECTION_POINT:
+        case ITEM_PASSIVE_STRENGTH_POINT:
+        case ITEM_PASSIVE_VITALITY_POINT:
+        case ITEM_PASSIVE_AGILITY_POINT:
+        case ITEM_PASSIVE_DEXTERITY_POINT:
+        case ITEM_PASSIVE_CHARM_POINT:
+        case ITEM_PASSIVE_FORTUNE_POINT:
             stats[g_loadedItem.params[0xb] - 1]++;
             break;
-        case 12:
+        case ITEM_PASSIVE_STRENGTH_CHARM_POINTS:
             stats[STAT_STRENGTH]++;
             stats[STAT_CHARM]++;
             break;
-        case 13:
+        case ITEM_PASSIVE_VITALITY_MENTAL_STRENGTH_POINTS:
             stats[STAT_VITALITY]++;
             stats[STAT_MENTAL_STRENGTH]++;
             break;
-        case 14:
+        case ITEM_PASSIVE_INTUITION_AGILITY_POINTS:
             stats[STAT_INTUITION]++;
             stats[STAT_AGILITY]++;
             break;
-        case 15:
+        case ITEM_PASSIVE_MAGIC_PROTECTION_POINTS:
             stats[STAT_MAGIC]++;
             stats[STAT_PROTECTION]++;
             break;
-        case 16:
+        case ITEM_PASSIVE_INTELLIGENCE_DEXTERITY_POINTS:
             stats[STAT_INTELLIGENCE]++;
             stats[STAT_DEXTERITY]++;
             break;
-        case 17:
+        case ITEM_PASSIVE_STRENGTH_VITALITY_MENTAL_STRENGTH_POINTS:
             stats[STAT_STRENGTH]++;
             stats[STAT_VITALITY]++;
             stats[STAT_MENTAL_STRENGTH]++;
             break;
-        case 32:
+        case ITEM_PASSIVE_MENTAL_STRENGTH_PLUS_4:
             stats[STAT_MENTAL_STRENGTH] += 4;
             break;
-        case 33:
+        case ITEM_PASSIVE_INTELLIGENCE_PLUS_3:
             stats[STAT_INTELLIGENCE] += 3;
             break;
-        case 34:
+        case ITEM_PASSIVE_PROTECTION_PLUS_1:
             stats[STAT_PROTECTION]++;
             break;
-        case 35:
+        case ITEM_PASSIVE_PROTECTION_PLUS_2:
             stats[STAT_PROTECTION] += 2;
             break;
-        case 36:
+        case ITEM_PASSIVE_AGILITY_MINUS_10:
             stats[STAT_AGILITY] -= 10;
             break;
-        case 37:
+        case ITEM_PASSIVE_CHARM_PLUS_2:
             stats[STAT_CHARM] += 2;
             break;
-        case 38:
+        case ITEM_PASSIVE_CHARM_PLUS_4:
             stats[STAT_CHARM] += 4;
             break;
-        case 39:
+        case ITEM_PASSIVE_CHARM_MINUS_3:
             stats[STAT_CHARM] -= 3;
             break;
-        case 40:
+        case ITEM_PASSIVE_INTUITION_PLUS_1:
             stats[STAT_INTUITION]++;
             break;
-        case 41:
+        case ITEM_PASSIVE_AGILITY_PLUS_3:
             stats[STAT_AGILITY] += 3;
             break;
     }
@@ -1539,7 +1544,7 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
     if (indexed && item != ITEM_ID_EMPTY) {
         item += GetGemItemBase();
     }
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1575,43 +1580,43 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
             break;
     }
     switch (GetItemPassiveEffectCode(&g_loadedItem)) {
-        case 0x30:
+        case ITEM_PASSIVE_WEAPON_POWER_5:
             bonuses[BATTLE_STAT_WEAPON_POWER] += 5;
             break;
-        case 0x31:
+        case ITEM_PASSIVE_WEAPON_POWER_10:
             bonuses[BATTLE_STAT_WEAPON_POWER] += 10;
             break;
-        case 0x32:
+        case ITEM_PASSIVE_WEAPON_POWER_20:
             bonuses[BATTLE_STAT_WEAPON_POWER] += 20;
             break;
-        case 0x33:
+        case ITEM_PASSIVE_WEAPON_POWER_30:
             bonuses[BATTLE_STAT_WEAPON_POWER] += 30;
             break;
-        case 0x34:
+        case ITEM_PASSIVE_WEAPON_ACCURACY_20:
             bonuses[BATTLE_STAT_WEAPON_ACCURACY] += 20;
             break;
-        case 0x35:
+        case ITEM_PASSIVE_GUN_ACCURACY_20:
             bonuses[BATTLE_STAT_GUN_ACCURACY] += 20;
             break;
-        case 0x36:
+        case ITEM_PASSIVE_WEAPON_ACCURACY_BONUS:
             bonuses[BATTLE_STAT_WEAPON_ACCURACY] +=
                 GetItemRecordPhysicalAccuracyBonus(&g_loadedItem);
             break;
-        case 0x37:
+        case ITEM_PASSIVE_MAGIC_EVASION_4:
             bonuses[BATTLE_STAT_MAGIC_EVASION] += 4;
             break;
-        case 0x38:
+        case ITEM_PASSIVE_MAGIC_EVASION_20:
             bonuses[BATTLE_STAT_MAGIC_EVASION] += 20;
             break;
-        case 0x39:
+        case ITEM_PASSIVE_DEFENSE_10:
             bonuses[BATTLE_STAT_WEAPON_DEFENSE] += 10;
             bonuses[BATTLE_STAT_GUN_DEFENSE] += 10;
             break;
-        case 0x3a:
+        case ITEM_PASSIVE_DEFENSE_20:
             bonuses[BATTLE_STAT_WEAPON_DEFENSE] += 20;
             bonuses[BATTLE_STAT_GUN_DEFENSE] += 20;
             break;
-        case 0x3b:
+        case ITEM_PASSIVE_MAGIC_DEFENSE_15:
             bonuses[BATTLE_STAT_MAGIC_DEFENSE] += 15;
             break;
     }
@@ -1638,7 +1643,7 @@ i16 SumEquippedMagicDefenseBonus(Character* character, u8 groups) {
 
 RVA(0x00025040, 0x30)
 i16 GetItemMagicDefenseBonus(i16 item) {
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return 0;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1647,7 +1652,7 @@ i16 GetItemMagicDefenseBonus(i16 item) {
 
 RVA(0x00025070, 0x30)
 i16 GetItemMagicAccuracyBonus(i16 item) {
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordMagicAccuracyBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1655,7 +1660,7 @@ i16 GetItemMagicAccuracyBonus(i16 item) {
 
 RVA(0x000250a0, 0x30)
 i16 GetItemPhysicalEvasionBonus(i16 item) {
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordPhysicalEvasionBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1663,7 +1668,7 @@ i16 GetItemPhysicalEvasionBonus(i16 item) {
 
 RVA(0x000250d0, 0x30)
 i16 GetItemMagicPowerBonus(i16 item) {
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordMagicPowerBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1693,10 +1698,10 @@ void ApplyItemDamageRatio(i16 item, i16* ratios) {
         step++;
     }
     value = (i16)(step * 50) * ratios[slot] / 100;
-    if (value < -0x8000) {
-        value = -0x8000;
-    } else if (value > 0x7fff) {
-        value = 0x7fff;
+    if (value < SHRT_MIN) {
+        value = SHRT_MIN;
+    } else if (value > SHRT_MAX) {
+        value = SHRT_MAX;
     }
     ratios[slot] = value;
 }
@@ -1725,10 +1730,10 @@ i16 ScaleDamageByEquipment(Character* character, i16 damage, i16 element) {
     ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, ratios);
     ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, ratios);
     value = ratios[element] * damage / 100;
-    if (value < -0x8000) {
-        value = -0x8000;
-    } else if (value > 0x7fff) {
-        value = 0x7fff;
+    if (value < SHRT_MIN) {
+        value = SHRT_MIN;
+    } else if (value > SHRT_MAX) {
+        value = SHRT_MAX;
     }
     return value;
 }
@@ -1742,7 +1747,8 @@ b16 IsItemGuardingElement(i16 item, i16 element) {
     if (GetItemEquipCode(&g_loadedItem) < 0) {
         return false;
     }
-    if (element >= 2 && element <= 5 && element == GetEquipmentAttribute(&g_loadedItem)) {
+    if (element >= ATTACK_ATTRIBUTE_FIRE && element <= ATTACK_ATTRIBUTE_ELECTRIC
+        && element == GetEquipmentAttribute(&g_loadedItem)) {
         return true;
     }
     return false;
@@ -1799,110 +1805,110 @@ void AddItemRegen(i16 item, PoolRegen* regen) {
         return;
     }
     switch (GetItemPassiveEffectCode(&g_loadedItem)) {
-        case 0x70:
+        case ITEM_PASSIVE_HP_REGEN_1:
             regen->hp += 1;
             break;
-        case 0x71:
+        case ITEM_PASSIVE_HP_REGEN_2:
             regen->hp += 2;
             break;
-        case 0x72:
+        case ITEM_PASSIVE_HP_REGEN_3:
             regen->hp += 3;
             break;
-        case 0x73:
+        case ITEM_PASSIVE_HP_REGEN_5:
             regen->hp += 5;
             break;
-        case 0x74:
+        case ITEM_PASSIVE_MP_REGEN_1:
             regen->mp += 1;
             break;
     }
 }
 
 RVA(0x00025680, 0x1c0)
-i16 ResolveInflictedCondition(i16 code, Character* target) {
-    i16 condition = -1;
+GZ_ENUM_RETURN(ConditionId, i16) ResolveInflictedCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target) {
+    GZ_ENUM_LOCAL(ConditionId, i16) condition = CONDITION_NONE;
     i16 roll;
 
     switch (code) {
-        case 0:
+        case INFLICT_NONE:
             break;
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-        case 16:
-        case 17:
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 24:
-        case 25:
-        case 26:
-        case 27:
-        case 28:
-        case 29:
-        case 30:
-        case 31:
-        case 32:
-        case 33:
-        case 34:
+        case CONDITION_DEAD:
+        case CONDITION_DYING:
+        case CONDITION_COLLAPSE:
+        case CONDITION_STONE:
+        case CONDITION_PARALYSIS:
+        case CONDITION_FREEZE:
+        case CONDITION_POSSESSION:
+        case CONDITION_ZOMBIE:
+        case CONDITION_CURSE:
+        case CONDITION_STUN:
+        case CONDITION_SUFFOCATION:
+        case CONDITION_BIND:
+        case CONDITION_SLEEP:
+        case CONDITION_PANIC:
+        case CONDITION_POISON:
+        case CONDITION_HALLUCINATION:
+        case CONDITION_CHARM:
+        case CONDITION_CONFUSION:
+        case CONDITION_DANCE:
+        case CONDITION_SHOCK:
+        case CONDITION_ICE:
+        case CONDITION_BURN:
+        case CONDITION_BLIND:
+        case CONDITION_MAGIC_SEAL:
+        case CONDITION_DOZE:
+        case CONDITION_BERSERK:
+        case CONDITION_HIGH:
+        case CONDITION_HAPPY:
+        case CONDITION_TIPSY:
+        case CONDITION_DRUNK:
+        case CONDITION_SLIME:
+        case CONDITION_SEVERE_POISON:
+        case CONDITION_VAMPIRE:
+        case CONDITION_INJURY:
             condition = code;
             break;
-        case 57:
+        case INFLICT_CHARM_UNLESS_ALIGNED_B_POSITIVE:
             if (GetAlignmentClassB(target) <= ALIGNMENT_NEUTRAL) {
-                condition = 0x11;
+                condition = CONDITION_CHARM;
             }
             break;
-        case 58:
+        case INFLICT_TIPSY_BY_HALF:
             if (RandomUpTo(100) < 50) {
-                condition = 0x1d;
+                condition = CONDITION_TIPSY;
             }
             break;
-        case 59:
-            if (GetDemonClass(target->id) == 8) {
-                condition = 5;
+        case INFLICT_PARALYSIS_OR_TIPSY:
+            if (GetDemonClass(target->id) == DEMON_CLASS_KIZOKU) {
+                condition = CONDITION_PARALYSIS;
             } else if (RandomUpTo(100) < 50) {
-                condition = 0x1d;
+                condition = CONDITION_TIPSY;
             }
             break;
-        case 60:
+        case INFLICT_HIGH_HALLUCINATION_OR_BERSERK:
             roll = RandomUpTo(3);
             if (roll <= 1) {
-                condition = 0x1b;
+                condition = CONDITION_HIGH;
             } else {
-                condition = roll == 2 ? 0x10 : 0x1a;
+                condition = roll == 2 ? CONDITION_HALLUCINATION : CONDITION_BERSERK;
             }
             break;
-        case 61:
-            condition = RandomUpTo(100) >= 75 ? 0x1e : 0x1d;
+        case INFLICT_DRUNK_OR_TIPSY:
+            condition = RandomUpTo(100) >= 75 ? CONDITION_DRUNK : CONDITION_TIPSY;
             break;
-        case 62:
-            condition = RandomUpTo(100) < 75 ? 2 : 1;
+        case INFLICT_DYING_OR_DEAD:
+            condition = RandomUpTo(100) < 75 ? CONDITION_DYING : CONDITION_DEAD;
             break;
-        case 63:
-            condition = RandomUpTo(100) < 75 ? 0x1b : 0;
+        case INFLICT_HIGH_OR_ASH:
+            condition = RandomUpTo(100) < 75 ? CONDITION_HIGH : CONDITION_ASH;
             break;
-        case 64:
+        case INFLICT_DEAD_BY_HALF:
             if (RandomUpTo(100) < 50) {
-                condition = 1;
+                condition = CONDITION_DEAD;
             }
             break;
-        case 65:
+        case INFLICT_PANIC_UNLESS_ALIGNED_B_NEGATIVE:
             if (GetAlignmentClassB(target) != ALIGNMENT_NEGATIVE) {
-                condition = 0xe;
+                condition = CONDITION_PANIC;
             }
             break;
     }
@@ -1910,7 +1916,7 @@ i16 ResolveInflictedCondition(i16 code, Character* target) {
 }
 
 RVA(0x00025840, 0x7c)
-void InflictCondition(i16 code, Character* target) {
+void InflictCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target) {
     b16 had = HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE);
     i16 condition = ResolveInflictedCondition(code, target);
 
@@ -1950,7 +1956,7 @@ i16 IsConditionResisted(Character* target, i16 code) {
 }
 
 RVA(0x000259d0, 0x1c4)
-b16 ItemResistsCondition(i16 item, i16 condition) {
+b16 ItemResistsCondition(i16 item, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     if (item < 1) {
         return false;
     }
@@ -1959,78 +1965,81 @@ b16 ItemResistsCondition(i16 item, i16 condition) {
         return false;
     }
     switch (GetItemPassiveEffectCode(&g_loadedItem)) {
-        case 0x77:
-            if (condition == 4) {
+        case ITEM_PASSIVE_RESIST_STONE:
+            if (condition == CONDITION_STONE) {
                 return true;
             }
             break;
-        case 0x78:
-            if (condition == 5) {
+        case ITEM_PASSIVE_RESIST_PARALYSIS:
+            if (condition == CONDITION_PARALYSIS) {
                 return true;
             }
             break;
-        case 0x79:
-            if (condition == 6 || condition == 0x15) {
+        case ITEM_PASSIVE_RESIST_FREEZE_ICE:
+            if (condition == CONDITION_FREEZE || condition == CONDITION_ICE) {
                 return true;
             }
             break;
-        case 0x7a:
-            if (condition == 0xc) {
+        case ITEM_PASSIVE_RESIST_BIND:
+            if (condition == CONDITION_BIND) {
                 return true;
             }
             break;
-        case 0x7b:
-            if (condition == 0x19 || condition == 0xd) {
+        case ITEM_PASSIVE_RESIST_SLEEP:
+            if (condition == CONDITION_DOZE || condition == CONDITION_SLEEP) {
                 return true;
             }
             break;
-        case 0x7c:
-            if (condition == 0x12 || condition == 0x1c || condition == 0x10) {
+        case ITEM_PASSIVE_RESIST_MENTAL:
+            if (condition == CONDITION_CONFUSION || condition == CONDITION_HAPPY
+                || condition == CONDITION_HALLUCINATION) {
                 return true;
             }
             break;
-        case 0x7d:
-            if (condition == 0x1c) {
+        case ITEM_PASSIVE_RESIST_HAPPY:
+            if (condition == CONDITION_HAPPY) {
                 return true;
             }
             break;
-        case 0x7e:
-            if (condition == 0x10) {
+        case ITEM_PASSIVE_RESIST_HALLUCINATION:
+            if (condition == CONDITION_HALLUCINATION) {
                 return true;
             }
             break;
-        case 0x7f:
-            if (condition == 0xe) {
+        case ITEM_PASSIVE_RESIST_PANIC:
+            if (condition == CONDITION_PANIC) {
                 return true;
             }
             break;
-        case 0x80:
-            if (condition == 0xf || condition == 0x20) {
+        case ITEM_PASSIVE_RESIST_POISON:
+            if (condition == CONDITION_POISON || condition == CONDITION_SEVERE_POISON) {
                 return true;
             }
             break;
-        case 0x81:
-            if (condition == 0x14) {
+        case ITEM_PASSIVE_RESIST_SHOCK:
+            if (condition == CONDITION_SHOCK) {
                 return true;
             }
             break;
-        case 0x82:
-            if (condition == 0x16) {
+        case ITEM_PASSIVE_RESIST_BURN:
+            if (condition == CONDITION_BURN) {
                 return true;
             }
             break;
-        case 0x83:
-            if (condition == 0x18) {
+        case ITEM_PASSIVE_RESIST_MAGIC_SEAL:
+            if (condition == CONDITION_MAGIC_SEAL) {
                 return true;
             }
             break;
-        case 0x84:
-            if (condition == 0x1b || condition == 0x1a || condition == 0x1d) {
+        case ITEM_PASSIVE_RESIST_INTOXICATION:
+            if (condition == CONDITION_HIGH || condition == CONDITION_BERSERK
+                || condition == CONDITION_TIPSY) {
                 return true;
             }
             break;
-        case 0x85:
-            if (condition == 0x16 || condition == 6 || condition == 0x15) {
+        case ITEM_PASSIVE_RESIST_FIRE_AND_ICE:
+            if (condition == CONDITION_BURN || condition == CONDITION_FREEZE
+                || condition == CONDITION_ICE) {
                 return true;
             }
             break;
@@ -2040,7 +2049,7 @@ b16 ItemResistsCondition(i16 item, i16 condition) {
 
 RVA(0x00025ba0, 0x40)
 i16 StampSpecialItem(i16 item) {
-    item -= 0xad;
+    item -= ITEM_LOVER_RIGHT_LEG;
     if (item >= 0 && item < 8) {
         g_scriptVars[0xd0 + item] = GetClockMinutes() + 42560;
         return item;
@@ -2050,7 +2059,7 @@ i16 StampSpecialItem(i16 item) {
 
 RVA(0x00025be0, 0x50)
 i16 ExpireSpecialItem(i16 item) {
-    item -= 0xad;
+    item -= ITEM_LOVER_RIGHT_LEG;
     if (item >= 0 && item < 8) {
         if (s_timedItemFlags[item].bank < 0) {
             return item;
@@ -2067,7 +2076,7 @@ i16 ExpireSpecialItem(i16 item) {
 
 RVA(0x00025c30, 0x30)
 i16 IsSpecialItemExpired(i16 item) {
-    item -= 0xad;
+    item -= ITEM_LOVER_RIGHT_LEG;
     if (item >= 0 && item < 8) {
         return GetClockMinutes() >= g_scriptVars[0xd0 + item];
     }
@@ -2080,8 +2089,9 @@ i16 ExpireSpecialItems(void) {
     i16 i;
 
     for (i = 0; i < 8; i++) {
-        if (CountHeldItem(0xad + i) > 0 && IsSpecialItemExpired(0xad + i) >= 1) {
-            ExpireSpecialItem(0xad + i);
+        if (CountHeldItem(ITEM_LOVER_RIGHT_LEG + i) > 0
+            && IsSpecialItemExpired(ITEM_LOVER_RIGHT_LEG + i) >= 1) {
+            ExpireSpecialItem(ITEM_LOVER_RIGHT_LEG + i);
             expired++;
         }
     }
@@ -2096,13 +2106,13 @@ b32 RunBagDiscardMenu(void) {
 #else
 void RunBagDiscardMenu(void) {
 #endif
-    i16 entries[64];
+    i16 entries[BAG_ENTRY_COUNT];
     i16 count = 0;
     MenuBox* menu;
     i16 item;
     i16 i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         item = GetBagItem(i);
         if (item != ITEM_ID_EMPTY && GetItemPrice(item) != 0
             && GetItemKind(item) != ITEM_KIND_SCENARIO) {
@@ -2121,7 +2131,7 @@ void RunBagDiscardMenu(void) {
     // StoreBagItem stops trying to store the rest.
     if (count == 0) {
         SetTextPlaneCancelEnabled(menu->plane, 1);
-        while (RunMenu(menu) != -1) {
+        while (RunMenu(menu) != TEXT_EVENT_CANCEL) {
             WaitMenuFrame();
         }
         DestroyMenuBox(menu);
@@ -2129,7 +2139,7 @@ void RunBagDiscardMenu(void) {
     }
 #endif
     SetTextPlaneCancelEnabled(menu->plane, 0);
-    while (RunMenu(menu) != 1) {
+    while (RunMenu(menu) != TEXT_EVENT_CHOOSE) {
         WaitMenuFrame();
     }
     DestroyMenuBox(menu);
@@ -2156,7 +2166,7 @@ static void DiscardMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent
         case MENU_EVENT_BEGIN_PAGE:
             // "アイテム削除" (delete item)
             sprintf(g_scratchBuffer, "\203\101\203\103\203\145\203\200\215\355\217\234");
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
 #ifdef GITEN_BUGFIX
             if (menu->itemCount == 0) {
                 // "アイテムを持ちきれません" (the item cannot be carried)
@@ -2178,7 +2188,13 @@ static void DiscardMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent
                 GetLoadedRecordName(GetBagItem(entries[index])),
                 GetBagEntryCount(entries[index])
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, index, 0);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                index,
+                MENU_LINE_NORMAL
+            );
             break;
     }
 }
@@ -2192,22 +2208,22 @@ b16 RunGemItemGift(void) {
     Character* actor;
 
     switch (GetGamePhase()) {
-        case 0:
-            SetGamePhase(2);
+        case MENU_STEP_OPEN:
+            SetGamePhase(MENU_STEP_RUN);
             s_giftItemBase = GetGemItemBase();
             s_giftMenu = CreateGiftMenu(s_giftMenu);
             break;
-        case 1:
+        case MENU_STEP_CLOSE:
             s_giftMenu = DestroyMenuBox(s_giftMenu);
             ReturnFromGameState();
             break;
-        case 2:
+        case MENU_STEP_RUN:
             pick = RunListMenu(s_giftMenu);
-            if (pick == -1) {
+            if (pick == LIST_MENU_OPEN) {
                 break;
             }
             PrevGamePhase();
-            if (pick == -2) {
+            if (pick == LIST_MENU_CANCELLED) {
                 break;
             }
             actor = GetScriptActor();
@@ -2226,9 +2242,9 @@ RVA(0x00025f60, 0x50)
 static MenuBox* CreateGiftMenu(MenuBox* old) {
     MenuBox* menu = CreateMenuBox(old, 0x15, 2);
 
-    SetMenuItems(menu, 16, NULL, 16, GiftMenuHandler);
+    SetMenuItems(menu, 16, NULL, GEM_ITEM_COUNT, GiftMenuHandler);
     MoveMenuBox(menu, 0x2a, 0x50);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 0);
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, false);
     return menu;
 }
 
@@ -2251,9 +2267,21 @@ static void GiftMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                 count
             );
             if (count == 0) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x560, index, 2);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                    index,
+                    MENU_LINE_UNCHOOSABLE
+                );
             } else {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x460, index, 0);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                    index,
+                    MENU_LINE_NORMAL
+                );
             }
             break;
     }

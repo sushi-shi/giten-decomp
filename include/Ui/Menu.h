@@ -3,11 +3,18 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
 #include <Ui/MenuBox.h>
 
-// Runs the list menu one frame: > 0 the selected object id, -1 still open,
-// -2 cancelled.
+// What RunListMenu returns while the menu stays open and once it is
+// cancelled; otherwise the selected object id.
+GZ_ENUM_CONST_BEGIN(ListMenuResult)
+    LIST_MENU_OPEN = -1,
+    LIST_MENU_CANCELLED = -2
+GZ_ENUM_CONST_END(ListMenuResult)
+
+// Runs the list menu one frame.
 i16 RunListMenu(MenuBox* menu);
 
 // Closes the list menu; returns the handle to store back (NULL).

@@ -22,44 +22,44 @@ i16 g_scriptRegs[16];
 
 RVA(0x0002fd00, 0x174)
 b16 OpSaveDataCommand(void) {
-    i16 savedPoint[5];
-    i16 point[5];
-    i16 operation = ReadScriptValue();
+    ReturnPoint savedPoint;
+    ReturnPoint point;
+    GZ_ENUM_LOCAL(SaveDataOperation, i16) operation = ReadScriptValue();
     i16 slot = ReadScriptValue();
     i16 variable = ReadLongVarIndex();
     i16 field = ReadScriptValue();
     i16 result = 0;
     switch (operation) {
-        case 0:
+        case SAVE_DATA_SUMMARY:
             ReadSaveSummary(slot, field);
             result = 1;
             break;
-        case 1:
-            if (GetReturnPoint(point) >= 0) {
+        case SAVE_DATA_SAVE:
+            if (GetReturnPoint(&point) >= 0) {
                 result = SaveGame(slot);
             } else {
-                savedPoint[0] = g_party.field.pos.area;
-                savedPoint[1] = g_party.field.pos.level;
-                savedPoint[2] = g_party.field.pos.x;
-                savedPoint[3] = g_party.field.pos.y;
-                savedPoint[4] = g_party.field.pos.direction;
-                g_party.field.pos.area = point[0];
-                g_party.field.pos.level = point[1];
-                g_party.field.pos.x = point[2];
-                g_party.field.pos.y = point[3];
-                g_party.field.pos.direction = point[4];
+                savedPoint.area = g_party.field.pos.area;
+                savedPoint.level = g_party.field.pos.level;
+                savedPoint.x = g_party.field.pos.x;
+                savedPoint.y = g_party.field.pos.y;
+                savedPoint.direction = g_party.field.pos.direction;
+                g_party.field.pos.area = point.area;
+                g_party.field.pos.level = point.level;
+                g_party.field.pos.x = point.x;
+                g_party.field.pos.y = point.y;
+                g_party.field.pos.direction = point.direction;
                 result = SaveGame(slot);
-                g_party.field.pos.area = savedPoint[0];
-                g_party.field.pos.level = savedPoint[1];
-                g_party.field.pos.x = savedPoint[2];
-                g_party.field.pos.y = savedPoint[3];
-                g_party.field.pos.direction = savedPoint[4];
+                g_party.field.pos.area = savedPoint.area;
+                g_party.field.pos.level = savedPoint.level;
+                g_party.field.pos.x = savedPoint.x;
+                g_party.field.pos.y = savedPoint.y;
+                g_party.field.pos.direction = savedPoint.direction;
             }
             break;
-        case 2:
-            result = LoadGame(slot, 1);
+        case SAVE_DATA_LOAD:
+            result = LoadGame(slot, true);
             break;
-        case 3:
+        case SAVE_DATA_SUMMARY_TEXT:
             EndSaveRenderMode();
             result = ReadSaveSummary(slot, field);
             if (result >= 0) {
@@ -72,40 +72,40 @@ b16 OpSaveDataCommand(void) {
 }
 
 RVA(0x0002fe80, 0x24)
-i16 SetActorMode(i16 mode) {
+GZ_ENUM_RETURN(ScriptStatus, i16) SetActorMode(GZ_ENUM_PARAM(ActorMode, i16) mode) {
     Character* actor = g_curScript->actor;
     if (actor != NULL) {
         actor->mode = (u8)mode;
         g_scriptRegs[0] = 1;
     }
-    return -1;
+    return SCRIPT_END;
 }
 
 RVA(0x0002feb0, 0x82)
-void OpIfFlags(i16 all) {
+void OpIfFlags(b16 all) {
     u16 bank, index;
     i16 target = ReadBranchTarget();
     i16 every = -1;
     i16 any = 0;
     i16 invert;
     i16 matched;
-    i32 skip;
+    b32 skip;
     for (;;) {
         invert = ReadFlagOperand(&bank, &index);
-        if (invert == -1 && bank == 0x7f) {
+        if (invert == -1 && bank == FLAG_BANK_MASK) {
             break;
         }
-        matched = (TestEventFlag(bank, index) != 0) ^ (invert & 1);
+        matched = (TestEventFlag(bank, index) != false) ^ (invert & 1);
         any |= matched;
         every &= matched;
     }
-    skip = 0;
+    skip = false;
     if (all) {
         if (!every) {
-            skip = 1;
+            skip = true;
         }
     } else if (!any) {
-        skip = 1;
+        skip = true;
     }
     ScriptJumpUnless(target, skip);
 }

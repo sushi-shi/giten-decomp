@@ -4,6 +4,7 @@
 
 #include <rva.h>
 
+#include <Game/CharacterStat.h>
 #include <Game/StatusScreen.h>
 #include <Input/Mouse.h>
 #include <Text/Font.h>
@@ -37,7 +38,17 @@ static struct {
 
 // @identity-TODO: the items SetStatusMenuItemsHidden switches together.
 DATA(0x00064988)
-static const i16 s_switchedItems[] = {4, 5, 6, 7, 8, 9, 10, 3, -1};
+static const i16 s_switchedItems[] = {
+    STATUS_STEP_SKILLS,
+    STATUS_STEP_STATS,
+    STATUS_STEP_NEXT_MEMBER,
+    STATUS_STEP_EXIT,
+    STATUS_STEP_EQUIPMENT,
+    STATUS_STEP_ATTACH,
+    STATUS_STEP_ALIGNMENT,
+    STATUS_STEP_ITEMS,
+    STATUS_COMMAND_NONE
+};
 
 RVA(0x00041910, 0x22)
 i16 DrawStatusLine(i16 x, i16 y, const char* text, i32 attr) {
@@ -47,7 +58,7 @@ i16 DrawStatusLine(i16 x, i16 y, const char* text, i32 attr) {
 
 RVA(0x00041940, 0x1d)
 i16 DrawStatusLabel(i16 x, i16 y, const char* text) {
-    return DrawStatusLine(x, y, text, 0x400);
+    return DrawStatusLine(x, y, text, TEXT_ATTR_DEFAULT);
 }
 
 RVA(0x00041960, 0x1d)
@@ -66,11 +77,11 @@ RVA(0x00041990, 0x26)
 i16 PollStatusMenu(void) {
     i16 item;
     if (TakeMouseCancelSound()) {
-        return -2;
+        return STATUS_COMMAND_CANCEL;
     }
     item = PollPanel(&s_statusMenu.panel);
-    if (item == -1) {
-        return -1;
+    if (item == STATUS_COMMAND_NONE) {
+        return STATUS_COMMAND_NONE;
     }
     return item;
 }
@@ -83,21 +94,21 @@ void SetStatusMenuItemFlag(i16 item, i16 flag, i16 on) {
 RVA(0x000419e0, 0x52)
 void ResetStatusMenu(void) {
     ClearPanelChecks(&s_statusMenu.panel);
-    SetStatusMenuItemFlag(6, PANEL_HIDDEN, 0);
-    SetStatusMenuItemFlag(7, PANEL_HIDDEN, 0);
-    SetStatusMenuItemFlag(8, PANEL_HIDDEN, 0);
-    SetStatusMenuItemFlag(9, PANEL_HIDDEN, 0);
+    SetStatusMenuItemFlag(STATUS_STEP_NEXT_MEMBER, PANEL_HIDDEN, false);
+    SetStatusMenuItemFlag(STATUS_STEP_EXIT, PANEL_HIDDEN, false);
+    SetStatusMenuItemFlag(STATUS_STEP_EQUIPMENT, PANEL_HIDDEN, false);
+    SetStatusMenuItemFlag(STATUS_STEP_ATTACH, PANEL_HIDDEN, false);
 }
 
 // Checks item `item` and unchecks the others.
 RVA(0x00041a40, 0x29)
 void CheckStatusMenuItem(i16 item) {
     i16 i;
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < STAT_COUNT; i++) {
         if (i != item) {
-            SetStatusMenuItemFlag(i, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(i, PANEL_ROW_CHECKED, false);
         } else {
-            SetStatusMenuItemFlag(i, PANEL_ROW_CHECKED, 1);
+            SetStatusMenuItemFlag(i, PANEL_ROW_CHECKED, true);
         }
     }
 }

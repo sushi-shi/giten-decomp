@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/MapArea.h>
 #include <Ints.h>
 
 struct MapSpawn;
@@ -17,13 +18,6 @@ GZ_ENUM_BEGIN(WallTextureKind)
     WALL_TEXTURE_UNLIT = 6,
     WALL_TEXTURE_MAP_OVERRIDE = 10
 GZ_ENUM_END(WallTextureKind)
-
-// @identity-TODO: these areas use alternate walls above/below a floor cutoff;
-// their geographical names remain unrecovered.
-GZ_ENUM_BEGIN(WallOverrideArea)
-    WALL_OVERRIDE_UPPER_AREA = 0x3d,
-    WALL_OVERRIDE_LOWER_AREA = 0x43
-GZ_ENUM_END(WallOverrideArea)
 
 #ifdef __cplusplus
 extern "C" {

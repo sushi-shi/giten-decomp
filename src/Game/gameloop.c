@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <Game/AreaMap.h>
 #include <Game/Attack.h>
 #include <Game/AutomapData.h>
 #include <Game/BagItems.h>
@@ -50,7 +51,7 @@ DATA(0x000712a8)
 i16 g_cellY = 0;
 
 DATA(0x000712ac)
-u8 g_cellCode = 0;
+GZ_ENUM_STORAGE(CellCode, u8) g_cellCode = CELL_NONE;
 
 DATA(0x000712b0)
 u8 g_cellDestDirection = 0;
@@ -98,7 +99,7 @@ RVA(0x00001870, 0xa1)
 b16 InitGameData(void) {
     ClearScriptVars();
     ResetSceneInput();
-    PlayMusic(5, 1);
+    PlayMusic(5, true);
     ResetSubscreen();
     ResetTextPlanes();
     g_infoPlane = CreateTextPlane(0, 0x4001);
@@ -158,9 +159,9 @@ RVA(0x000019a0, 0x26)
 b16 StartGame(void) {
     InitGameData();
     ResetGameSession();
-    g_mouseLeftClick = 0;
-    g_mouseRightClick = 0;
-    SetGameState(0x27);
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
+    g_mouseRightClick = MOUSE_CLICK_NONE;
+    SetGameState(GAME_STATE_PICTURE_TRANSITION);
     return false;
 }
 
@@ -176,8 +177,8 @@ i16 StepGame(void) {
     TickGameTasks();
     state |= s_longFrame;
     s_longFrame = 0;
-    g_mouseLeftClick = 0;
-    g_mouseRightClick = 0;
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
+    g_mouseRightClick = MOUSE_CLICK_NONE;
     AdvancePlayTime(state ? 31 : 24);
     if (g_party.field.pos.area == s_quitArea && g_party.field.pos.level == s_quitLevel
         && g_party.field.pos.x == s_quitX && g_party.field.pos.y == s_quitY

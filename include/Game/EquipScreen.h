@@ -4,9 +4,9 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Enums.h>
 #include <Game/Character.h>
 #include <Ints.h>
-#include <Enums.h>
 #include <Text/TextPlane.h>
 #include <Ui/MenuBox.h>
 
@@ -20,6 +20,15 @@ GZ_ENUM_END(EquipPickMode);
 // clang-format on
 
 // The status screen's equipment page.
+
+// The equipment page's steps past MenuStateStep's open, close and run:
+// preview and equip a bag item, preview and remove an equipped one.
+GZ_ENUM_BEGIN(EquipScreenStep)
+    EQUIP_STEP_PREVIEW_EQUIP = 3,
+    EQUIP_STEP_EQUIP = 4,
+    EQUIP_STEP_PREVIEW_REMOVE = 5,
+    EQUIP_STEP_REMOVE = 6
+GZ_ENUM_END(EquipScreenStep)
 
 i16 RunEquipScreen(i16 key);
 
@@ -58,6 +67,15 @@ i16 PollEquipPart(i16 member, i16 mode);
 // The status screen's attach page: fits a gem item into a bag entry or an
 // equipped part (sub-state 0 opens it, 1 closes it; 2..8 pick the item, the
 // target and report the result); returns the sub-state to resume or -1.
+GZ_ENUM_BEGIN_SPLIT(AttachScreenStep, i16)
+    ATTACH_STEP_OPEN_TARGET_LIST = 3,
+    ATTACH_STEP_PICK_TARGET = 4,
+    ATTACH_STEP_APPLY_BAG_ITEM = 5,
+    ATTACH_STEP_FINISH_BAG_ITEM = 6,
+    ATTACH_STEP_APPLY_EQUIPPED_ITEM = 7,
+    ATTACH_STEP_FINISH_EQUIPPED_ITEM = 8
+GZ_ENUM_END_SPLIT(AttachScreenStep)
+
 i16 RunAttachScreen(i16 sub);
 
 // The attach page's state: the text hook it displaced, its two menus (the
@@ -94,6 +112,11 @@ typedef struct EquipSkillPage {
 // gem item) and opens the picked item's description (sub-state 0 opens
 // it, 1 closes it, 2 picks, 3..4 show the description until a click); returns
 // the sub-state to resume or -1.
+GZ_ENUM_BEGIN_SPLIT(ItemPageDetailStep, i16)
+    ITEM_PAGE_SHOW_DESCRIPTION = 3,
+    ITEM_PAGE_WAIT_DESCRIPTION = 4
+GZ_ENUM_END_SPLIT(ItemPageDetailStep)
+
 i16 RunItemPage(i16 sub);
 
 // Draws `character`'s eight equipped parts (the three hand parts first) as
@@ -104,6 +127,11 @@ void DrawEquipLines(Character* character, i16 x, i16 y);
 // and opens the picked skill's description (sub-state 0 opens it, 1 closes it,
 // 2 picks, 3..4 show the description until a click); returns the sub-state to
 // resume or -1.
+GZ_ENUM_BEGIN_SPLIT(SkillPageDetailStep, i16)
+    SKILL_PAGE_SHOW_DESCRIPTION = 3,
+    SKILL_PAGE_WAIT_DESCRIPTION = 4
+GZ_ENUM_END_SPLIT(SkillPageDetailStep)
+
 i16 RunSkillPage(i16 sub);
 
 // A bag entry that can take a gem item, and how many it holds.

@@ -17,15 +17,31 @@ GZ_ENUM_BEGIN_SPLIT(ClockUpdate, i16)
     CLOCK_UPDATE_MOON = 16,
 GZ_ENUM_END_SPLIT(ClockUpdate)
 
+// TickPartyTimers reports whether the timed party cost was applied.
+GZ_ENUM_BEGIN_SPLIT(PartyTimerOutcome, i16)
+    PARTY_TIMER_INACTIVE = -1,
+    PARTY_TIMER_UNCHANGED = 0,
+    PARTY_TIMER_APPLIED = 1
+GZ_ENUM_END_SPLIT(PartyTimerOutcome)
+
 // The game clock, saved and loaded as one record: days, the moon's ticks
 // (0x5f0 a phase) and phase (0..27: the column of the moon table and the
 // value OpSwitchOnMoonPhase switches on), the time of day, and the tick
 // pacing (a tick every framesPerTick frames; minuteStep per tick toward
 // minuteLimit per minute).
+// The moon's 28 phases, each MOON_PHASE_TICKS minutes long.
+#define MOON_PHASE_COUNT 28
+#define MOON_PHASE_TICKS 0x5f0
+GZ_ENUM_BEGIN_SPLIT(MoonPhase, u8)
+    MOON_PHASE_NEW = 0,
+    MOON_PHASE_FULL = 14,
+    MOON_PHASE_AFTER_FULL = 15
+GZ_ENUM_END_SPLIT(MoonPhase)
+
 typedef struct GameClock {
     i32 days;
     u16 moonTicks;
-    u8 moonPhase;
+    GZ_ENUM_STORAGE(MoonPhase, u8) moonPhase;
     u8 hour;
     u8 minute;
     u8 frames;
@@ -36,7 +52,7 @@ typedef struct GameClock {
 } GameClock;
 
 static __inline void ResetClockPhaseAndTime(GameClock* clock) {
-    clock->moonPhase = 0;
+    clock->moonPhase = MOON_PHASE_NEW;
     clock->hour = 0;
     clock->minute = 0;
 }
@@ -50,15 +66,15 @@ void ClearMoonFlags(void);
 GZ_ENUM_RETURN(ClockUpdate, i16) TickGameClock(i16 paused);
 
 // Steps a character's moon-driven personal flags; the count changed.
-i16 ApplyMoonPhase(struct Character* character, i16 keep);
+i16 ApplyMoonPhase(struct Character* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase);
 
-// The party's hourly timers for `minutes` (-1 when off).
-i16 TickPartyTimers(u16 minutes);
+// The party's periodic HP and MP cost for `minutes`.
+GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes);
 
 // scriptvars' countdown.
 void DrawDownCountdown(u16 amount);
 
-i16 GetMoonPhase(void);
+GZ_ENUM_RETURN(MoonPhase, i16) GetMoonPhase(void);
 
 // The clock as minutes since day 0.
 u32 GetClockMinutes(void);
@@ -72,7 +88,7 @@ u16 TimeUntilMoonPhase(i16 phase);
 i16 GetMoonValue(i16 row);
 i32 ScaleByMoonValue(i32 value, i16 row, i16 percent);
 
-// @identity-TODO: What 0x181e0 (stores two words at 0x47be78/0x47be7c) plus PushGameState(0x15)
+// @identity-TODO: What 0x181e0 (stores two words at 0x47be78/0x47be7c) plus PushGameState(GAME_STATE_FIELD_TEXT_SCENE)
 // do with the script position OpStartCountdown saved at 0x81690/0x81694 is unproven; decoding
 // 0x181e0 and state 0x15 would confirm it runs the handler. It is scriptvars.c's function.
 b16 FireCountdownEvent(void);

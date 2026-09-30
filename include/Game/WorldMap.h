@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <Game/FieldObject.h>
 #include <Game/FieldView.h>
 #include <Ints.h>
 
@@ -24,13 +25,32 @@ extern i16 g_fieldRedrawRequest;
 extern i16 g_infoPlane;
 
 #include <Game/GameState.h>
+#include <Enums.h>
+
+// The world map is laid out in blocks of WORLD_BLOCK_WIDTH x WORLD_BLOCK_HEIGHT
+// pixels, WORLD_BLOCK_COLUMNS to a row and WORLD_BLOCK_ROWS rows.
+#define WORLD_BLOCK_WIDTH 288
+#define WORLD_BLOCK_HEIGHT 200
+#define WORLD_BLOCK_COLUMNS 8
+#define WORLD_BLOCK_ROWS 11
+
+// A world encounter table weighs WORLD_ENCOUNTER_GROUPS enemy groups. A world
+// block's encounter file holds one cell per WORLD_ENCOUNTER_CELL_WIDTH x
+// WORLD_ENCOUNTER_CELL_HEIGHT pixels of the block, row by row, then the cell
+// for the odd map layer.
+#define WORLD_ENCOUNTER_GROUPS 6
+#define WORLD_ENCOUNTER_CELL_WIDTH 32
+#define WORLD_ENCOUNTER_CELL_HEIGHT 40
+#define WORLD_ENCOUNTER_COLUMNS (WORLD_BLOCK_WIDTH / WORLD_ENCOUNTER_CELL_WIDTH)
+#define WORLD_ENCOUNTER_CELLS                                                                      \
+    (WORLD_ENCOUNTER_COLUMNS * (WORLD_BLOCK_HEIGHT / WORLD_ENCOUNTER_CELL_HEIGHT))
 
 typedef struct WorldEncounterChoices {
-    i16 groups[6];
+    i16 groups[WORLD_ENCOUNTER_GROUPS];
 } WorldEncounterChoices;
 
 typedef struct WorldEncounterWeights {
-    u8 weights[6];
+    u8 weights[WORLD_ENCOUNTER_GROUPS];
 } WorldEncounterWeights;
 
 typedef struct WorldEncounterVariant {
@@ -70,9 +90,8 @@ i16 GetWorldEncounterMaximum(i16 maximum);
 i16 GetPartyEncounterSizeBonus(void);
 i16 AssignWorldEncounterGroups(i16 count);
 // Group selection for each member of an encounter, capped at sixteen.
-extern u8 g_worldEncounterGroupSlots[16];
+extern u8 g_worldEncounterGroupSlots[FIELD_OBJECT_COUNT];
 
-// @identity-TODO: What leader personal flag 0x22 is (it suppresses encounters) is unrecovered.
 i16 RollWorldMapEncounter(i16 x, i16 y);
 
 // @identity-TODO: What word 0x47be68 (passed as layer; bit 0 picks surface 0x48f5e4 vs 0x48d714
@@ -229,6 +248,24 @@ void LoadWorldMapEvents(void);
 void MarkWorldMapEventSpot(i16 x, i16 y);
 
 b16 CheckWorldMapEvent(i16 x, i16 y);
+
+// The phases of the world map state (RunWorldMap): load it, save the video
+// state, enter, load the view blocks, scroll the view, wait for a destination,
+// travel, fade out and close, leave for the state held in the step (an event
+// or an encounter), and re-enter after it.
+GZ_ENUM_BEGIN(WorldMapPhase)
+    WORLD_MAP_PHASE_LOAD = 0,
+    WORLD_MAP_PHASE_SAVE_VIDEO = 1,
+    WORLD_MAP_PHASE_ENTER = 2,
+    WORLD_MAP_PHASE_LOAD_BLOCKS = 3,
+    WORLD_MAP_PHASE_SCROLL_VIEW = 4,
+    WORLD_MAP_PHASE_WAIT_DESTINATION = 5,
+    WORLD_MAP_PHASE_TRAVEL = 6,
+    WORLD_MAP_PHASE_FADE_OUT = 7,
+    WORLD_MAP_PHASE_CLOSE = 8,
+    WORLD_MAP_PHASE_LEAVE_FOR_STATE = 9,
+    WORLD_MAP_PHASE_REENTER = 10
+GZ_ENUM_END(WorldMapPhase)
 
 b16 RunWorldMap(void);
 

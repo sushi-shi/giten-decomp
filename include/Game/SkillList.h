@@ -6,7 +6,10 @@
 #include <Game/Character.h>
 #include <Util/WordList.h>
 
-// The sentinel-terminated list of skills available for `id` and `source`.
+// Skill lists (and the learning requirement table) end with SKILL_LIST_END.
+#define SKILL_LIST_END (-1)
+
+// The list of skills available for `id` and `source`.
 // For id zero, source selects one of the roster leader's affiliations.
 i16* GetLearnableSkillList(i16 id, i16 source);
 
@@ -31,8 +34,11 @@ b16 RollSkillLearning(Character* character, i16 skill);
 
 i16 AddSkill(WordList* list, i16 skill);
 
+// The skills a character can know.
+#define SKILL_LIST_CAPACITY 30
+
 static __inline b32 IsSkillListFull(WordList* list) {
-    return GetWordCount(list) >= 30;
+    return GetWordCount(list) >= SKILL_LIST_CAPACITY;
 }
 
 i16 LearnLevelSkill(Character* character);

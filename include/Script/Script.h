@@ -7,7 +7,9 @@
 #include <Game/Character.h>
 #include <Game/GameState.h>
 #include <Ints.h>
+#include <Script/ObjectRef.h>
 #include <Script/ScriptBlock.h>
+#include <Script/ScriptStatus.h>
 
 // @identity-TODO: a running script's context; the word at +0x0e is the script
 // position that jumps and calls rewrite, relative to the code block (a memory
@@ -53,7 +55,7 @@ i16 GetScriptActorId(void);
 i16 ObjectSlotOfId(i16 id);
 
 static __inline i16 ScriptObjectRefFromSlot(i16 slot) {
-    return -1 - slot;
+    return SCRIPT_REF_SLOT_BASE - slot;
 }
 
 ScriptContext* SetCurrentScript(ScriptContext* script);
@@ -61,7 +63,7 @@ ScriptContext* GetCurrentScript(void);
 #define ScriptBooleanMatches(value, negate) (((value) && !(negate)) || (!(value) && (negate)))
 
 void ScriptJump(i16 pc);
-i32 ScriptJumpUnless(i16 pc, i32 condition);
+b32 ScriptJumpUnless(i16 pc, b32 condition);
 b16 ScriptJumpTo(u32 codeBase, i16 pc);
 i32 PushCallFrame(ScriptContext* script, i16 keepVars);
 i32 TopCallFrame(ScriptContext* script);
@@ -91,7 +93,7 @@ void OpJumpScript(i16 call);
 i16 ReadJumpTarget(void);
 void OpJump(void);
 
-i16 SetActorMode(i16 mode);
+GZ_ENUM_RETURN(ScriptStatus, i16) SetActorMode(GZ_ENUM_PARAM(ActorMode, i16) mode);
 
 // Resolves a script object id (negative: party slots; 1000+/2000+/3000+:
 // other ranges; -16..-23: special objects) to its record.

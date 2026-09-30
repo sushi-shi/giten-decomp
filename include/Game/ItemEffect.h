@@ -4,9 +4,12 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/AttackAttribute.h>
 #include <Game/BattleEffect.h>
 #include <Game/Character.h>
 #include <Game/Condition.h>
+#include <Game/InflictCode.h>
+#include <Game/RestoreEffect.h>
 #include <Ints.h>
 
 // The condition a restorative item or a skill inflicts once its effect lands.
@@ -25,9 +28,10 @@ void UseInertItem(Character* user, Character* target);
 // 0xfd a quarter, else scaled by `user`.
 i16 ComputeRestoreAmount(i16 code, Character* user, u16 max);
 
-// Applies an HP/MP restoration of kind `kind` to `target`; returns the result
-// code (3..5 let a condition follow).
-i16 ApplyRestoreEffect(i16 kind, i16 hp, Character* target, i16 mp);
+// Applies an HP/MP restoration of kind `kind` to `target`; a reported effect
+// lets a condition follow.
+GZ_ENUM_RETURN(RestoreResult, i16)
+ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* target, i16 mp);
 
 #define RestoreEffectAllowsCondition(result) ((result) >= 3 && (result) <= 5)
 
@@ -41,16 +45,16 @@ ClearEffectConditions(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionI
 // The condition an inflict code gives `target`: codes 1..34 are conditions
 // themselves, 57..65 pick one by chance, alignment or demon class; -1 none.
 // @identity-TODO: what the coded conditions name is unrecovered.
-i16 ResolveInflictedCondition(i16 code, Character* target);
+GZ_ENUM_RETURN(ConditionId, i16) ResolveInflictedCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target);
 
 // Gives `target` the condition of inflict code `code` (recomputing its stats
 // when it newly gains condition 8).
-void InflictCondition(i16 code, Character* target);
+void InflictCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target);
 
 // Whether `target` resists inflict code `code` (1 when it gives no condition):
 // whether an equipped item's resistance code (0x77..0x85) covers it.
 i16 IsConditionResisted(Character* target, i16 code);
-b16 ItemResistsCondition(i16 item, i16 condition);
+b16 ItemResistsCondition(i16 item, GZ_ENUM_PARAM(ConditionId, i16) condition);
 
 // Rolls whether the item attack hits, recording resistance and action result.
 b16 ResolveItemAttack(Character* user, Character* target, i16 sameSide);
@@ -93,6 +97,6 @@ void RecalcDerivedStats(Character* character);
 // Whether field-mode attacks suppress this condition on field actors.
 // Codegen constraint: declared here; in <Game/Condition.h> it shifts
 // fieldobj's TU state (RelativeFacing).
-b16 IsFieldConditionRestricted(i16 condition);
+b16 IsFieldConditionRestricted(GZ_ENUM_PARAM(ConditionId, i16) condition);
 
 #endif // GITEN_GAME_ITEMEFFECT_H

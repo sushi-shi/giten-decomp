@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <Game/AbortFlag.h>
+#include <Game/ActorFlag.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
 #include <Game/FieldHud.h>
@@ -26,7 +27,7 @@ static i16 s_hotspotCount = 0;
 // (0x45680) returns -1 instead and clears it; callers set it around nested
 // work.
 DATA(0x000840e4)
-static i16 s_abortPending = 0;
+static b16 s_abortPending = false;
 
 DATA(0x00091240)
 i16 g_viewLateral;
@@ -65,12 +66,12 @@ DATA(0x000912dc)
 i16 g_spriteClipTop;
 
 RVA(0x00045550, 0x7)
-i16 IsAbortPending(void) {
+b16 IsAbortPending(void) {
     return s_abortPending;
 }
 
 RVA(0x00045560, 0xc)
-void SetAbortPending(i16 pending) {
+void SetAbortPending(b16 pending) {
     s_abortPending = pending;
 }
 
@@ -94,8 +95,8 @@ i16 AddSceneHotspot(void* object, GZ_ENUM_PARAM(SceneHotspotKind, i16) kind, Sce
     switch (kind) {
         case 0:
         case 1:
-        case 2:
-        case 3:
+        case SCENE_HOTSPOT_OBJECT:
+        case SCENE_HOTSPOT_BOX:
         case 4:
         case 5:
             s_hotspots[s_hotspotCount].sprite = *sprite;
@@ -109,14 +110,14 @@ i16 AddSceneHotspot(void* object, GZ_ENUM_PARAM(SceneHotspotKind, i16) kind, Sce
 }
 
 RVA(0x00045660, 0x12)
-i16 ExchangeAbortPending(i16 pending) {
-    i16 prev = s_abortPending;
+b16 ExchangeAbortPending(b16 pending) {
+    b16 prev = s_abortPending;
     s_abortPending = pending;
     return prev;
 }
 
 RVA(0x00045680, 0x59)
-i16 CountHotspotsOfKind(i16 kind, i16 consume) {
+i16 CountHotspotsOfKind(GZ_ENUM_PARAM(SceneHotspotKind, i16) kind, b16 consume) {
     i32 count;
     i16 i;
     if (kind == SCENE_HOTSPOT_OBJECT && s_abortPending && consume) {
@@ -129,7 +130,7 @@ i16 CountHotspotsOfKind(i16 kind, i16 consume) {
             }
         }
     }
-    s_abortPending = 0;
+    s_abortPending = false;
     return count;
 }
 
@@ -229,7 +230,8 @@ void DrawSceneObjects(i16 x, i16 y, i16 across, i16 along) {
 }
 
 static __inline b32 IsSceneObjectVisible(FieldObject* object, i16 kind) {
-    return (kind != SCENE_HOTSPOT_OBJECT || TestFieldObjectFlag(object, 33) != 1)
+    return (kind != SCENE_HOTSPOT_OBJECT
+            || TestFieldObjectFlag(object, ACTOR_FLAG_INVISIBLE) != true)
            && !GetObjectsHidden();
 }
 

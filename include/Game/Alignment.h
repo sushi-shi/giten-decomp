@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <Game/AlignmentSide.h>
 #include <Ints.h>
 
 // A character alignment value (-127..127), the last eight sides (-1/0/1)
@@ -33,19 +34,28 @@ typedef struct AlignmentInfo {
         (info)->positiveMoves = 0;                                                                 \
     } while (0)
 
-i16 MoveAlignment(AlignmentInfo* info, i16 weight, i16 side);
-i16 GetAlignmentAffinity(AlignmentInfo* info, i16 side);
-i16 AlignmentClass(i16 value);
+GZ_ENUM_RETURN(AlignmentSide, i16)
+MoveAlignment(AlignmentInfo* info, i16 weight, GZ_ENUM_PARAM(AlignmentSide, i16) side);
+i16 GetAlignmentAffinity(AlignmentInfo* info, GZ_ENUM_PARAM(AlignmentSide, i16) side);
+GZ_ENUM_RETURN(AlignmentSide, i16) AlignmentClass(i16 value);
 i16 AlignmentChartCell(i16 value);
 
 struct Character;
 
 // Moves alignment B by `amount` towards `step`'s side and copies its value
 // to `alignmentLevelB`.
-void ShiftAlignmentB(struct Character* character, i16 amount, i16 step);
+void ShiftAlignmentB(
+    struct Character* character,
+    i16 amount,
+    GZ_ENUM_PARAM(AlignmentSide, i16) step
+);
 
 // The same for alignment A and `alignmentLevelA`.
-void ShiftAlignmentA(struct Character* character, i16 amount, i16 step);
+void ShiftAlignmentA(
+    struct Character* character,
+    i16 amount,
+    GZ_ENUM_PARAM(AlignmentSide, i16) step
+);
 
 // Nonzero (-1) when `character`'s alignment classes conflict with the roster
 // leader's (opposite sides on A, or opposite nonzero classes on B); also for

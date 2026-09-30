@@ -7,16 +7,18 @@
 
 #include <Game/Alignment.h>
 #include <Game/BagItems.h>
-#include <Game/Character.h>
 #include <Game/CharInfo.h>
+#include <Game/Character.h>
 #include <Game/ClickWait.h>
 #include <Game/ConditionAge.h>
 #include <Game/DemonTable.h>
 #include <Game/EquipRequirements.h>
 #include <Game/EquipScreen.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/FieldSight.h>
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
+#include <Game/HumanId.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
 #include <Game/ItemRecord.h>
@@ -36,6 +38,7 @@
 #include <Ints.h>
 #include <Mem/Alloc.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Script/ScriptOps.h>
 #include <Text/Font.h>
 #include <Text/TextPlane.h>
@@ -43,6 +46,7 @@
 #include <Text/WindowText.h>
 #include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
+#include <Ui/MenuStep.h>
 #include <Ui/Panel.h>
 #include <Util/Range.h>
 #include <Util/Scratch.h>
@@ -116,7 +120,12 @@ static i16 DrawStatusExperience(i16 x, i16 y, Character* member) {
     i32 remaining;
 
     sprintf(g_scratchBuffer, "EXP %10ld", member->experience);
-    y = DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    y = DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     if (member->level >= 99) {
         strcpy(g_scratchBuffer, "\215\305\215\202\203\214\203\170\203\213\202\305\202\267");
     } else {
@@ -126,21 +135,41 @@ static i16 DrawStatusExperience(i16 x, i16 y, Character* member) {
         }
         sprintf(g_scratchBuffer, "NEXT %9ld", remaining);
     }
-    return DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    return DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
 }
 
 RVA(0x00041ba0, 0x89)
 static i16 DrawStatusPools(i16 x, i16 y, Character* member) {
     sprintf(g_scratchBuffer, "HP  %4d\201\136%4d", member->pools.hp.cur, member->pools.hp.max);
-    y = DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    y = DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "MP    %3d\201\136%3d", member->pools.mp.cur, member->pools.mp.max);
-    return DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    return DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
 }
 
 RVA(0x00041c30, 0xb3)
 static i16 DrawStatusLevel(i16 x, i16 y, Character* member) {
     sprintf(g_scratchBuffer, "LEVEL %8d", member->level);
-    y = DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    y = DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     if (IsHumanCharacter(member)) {
         strcpy(g_scratchBuffer, GetHumanTitleName(member->title));
     } else {
@@ -196,13 +225,19 @@ static void DrawStatusMemberPortrait(i16 x, i16 y, Character* member) {
     if (IsHumanCharacter(member)) {
         file = picture.index + 0x4000;
         mode = picture.variant;
-        if (member->id == 0) {
-            if (!IsEventFlagSet(1, 0x5e)) {
+        if (member->id == HUMAN_KATSURAGI) {
+            if (!IsEventFlagSet(
+                    EVENT_FLAG_BANK_SCENARIO_2,
+                    SCENARIO_2_KATSURAGI_CIVILIAN_PORTRAIT
+                )) {
                 file = 0x4001;
                 mode = 1;
             }
-        } else if (member->id == 2) {
-            if (!IsEventFlagSet(1, 0x75)) {
+        } else if (member->id == HUMAN_TACHIBANA) {
+            if (!IsEventFlagSet(
+                    EVENT_FLAG_BANK_SCENARIO_2,
+                    SCENARIO_2_TACHIBANA_CIVILIAN_PORTRAIT
+                )) {
                 file = 0x4002;
                 mode = 1;
             }
@@ -227,7 +262,7 @@ static i16 DrawStatusCapacity(i16 x, i16 y, Character* member) {
         sprintf(
             g_scratchBuffer,
             "\222\207\226\202 %5d\201\136%2d",
-            CountRosterEntries(0),
+            CountRosterEntries(false),
             GetRosterCapacity() - 6
         );
     } else {
@@ -262,29 +297,29 @@ void DrawStatusScreen(i16 slot) {
         g_statusMember = 0;
     }
     if (!g_statusFixedMember && ListEquipCandidates(g_statusMember, 1)) {
-        SetStatusMenuItemFlag(8, 0x800, 0);
+        SetStatusMenuItemFlag(STATUS_STEP_EQUIPMENT, PANEL_SKIP_HIT_TEST, false);
     } else {
-        SetStatusMenuItemFlag(8, 0x800, 1);
+        SetStatusMenuItemFlag(STATUS_STEP_EQUIPMENT, PANEL_SKIP_HIT_TEST, true);
     }
     member = GetRosterCharacter(g_statusMember);
     if (!GetWordCount(GetCharacterSkills(member))) {
-        SetStatusMenuItemFlag(4, 0x800, 1);
+        SetStatusMenuItemFlag(STATUS_STEP_SKILLS, PANEL_SKIP_HIT_TEST, true);
     } else {
-        SetStatusMenuItemFlag(4, 0x800, 0);
+        SetStatusMenuItemFlag(STATUS_STEP_SKILLS, PANEL_SKIP_HIT_TEST, false);
     }
-    if (!g_statusFixedMember && CountRosterEntries(1) >= 2) {
-        SetStatusMenuItemFlag(6, 0x800, 0);
+    if (!g_statusFixedMember && CountRosterEntries(true) >= 2) {
+        SetStatusMenuItemFlag(STATUS_STEP_NEXT_MEMBER, PANEL_SKIP_HIT_TEST, false);
     } else {
-        SetStatusMenuItemFlag(6, 0x800, 1);
+        SetStatusMenuItemFlag(STATUS_STEP_NEXT_MEMBER, PANEL_SKIP_HIT_TEST, true);
     }
     if (g_statusFixedMember) {
-        SetStatusMenuItemFlag(7, 0x800, 1);
-        SetStatusMenuItemFlag(9, 0x800, 1);
-        SetStatusMenuItemFlag(3, 0x800, 1);
+        SetStatusMenuItemFlag(STATUS_STEP_EXIT, PANEL_SKIP_HIT_TEST, true);
+        SetStatusMenuItemFlag(STATUS_STEP_ATTACH, PANEL_SKIP_HIT_TEST, true);
+        SetStatusMenuItemFlag(STATUS_STEP_ITEMS, PANEL_SKIP_HIT_TEST, true);
     } else {
-        SetStatusMenuItemFlag(7, 0x800, 0);
-        SetStatusMenuItemFlag(9, 0x800, 0);
-        SetStatusMenuItemFlag(3, 0x800, 0);
+        SetStatusMenuItemFlag(STATUS_STEP_EXIT, PANEL_SKIP_HIT_TEST, false);
+        SetStatusMenuItemFlag(STATUS_STEP_ATTACH, PANEL_SKIP_HIT_TEST, false);
+        SetStatusMenuItemFlag(STATUS_STEP_ITEMS, PANEL_SKIP_HIT_TEST, false);
     }
     ClearStatusMenu();
     member = GetRosterCharacter(slot);
@@ -304,78 +339,79 @@ RVA(0x00042200, 0x1d4)
 i16 RunStatusCommands(void) {
     i16 command;
 
-    if (GetGameStep() >= 1) {
+    if (GetGameStep() >= STATUS_STEP_POLL) {
         command = PollStatusMenu();
     } else {
-        command = -1;
+        command = STATUS_COMMAND_NONE;
     }
     if (g_previousStatusStep != GetGameStep()) {
-        if (g_previousStatusStep == 8) {
+        if (g_previousStatusStep == STATUS_STEP_EQUIPMENT) {
             DrawStatTotals(3, 25, GetRosterCharacter(g_statusMember), NULL);
         }
         g_previousStatusStep = GetGameStep();
     }
     switch (GetGameStep()) {
-        case 0:
+        case STATUS_STEP_DRAW:
             NextGameStep();
             DrawStatusScreen(g_statusMember);
             break;
-        case 1:
-            if (command == -2) {
-                return g_statusFixedMember ? -3 : -2;
+        case STATUS_STEP_POLL:
+            if (command == STATUS_COMMAND_CANCEL) {
+                return g_statusFixedMember ? STATUS_COMMAND_CANCEL_FIXED_MEMBER
+                                           : STATUS_COMMAND_CANCEL;
             }
-            if (command != -1) {
+            if (command != STATUS_COMMAND_NONE) {
                 SetGameStep(command);
             }
             break;
-        case 2:
-            return -3;
-        case 4:
+        case STATUS_STEP_CLOSE:
+            return STATUS_COMMAND_CANCEL_FIXED_MEMBER;
+        case STATUS_STEP_SKILLS:
             ResumeStatusPage(RunSkillPage(command));
             break;
-        case 5:
+        case STATUS_STEP_STATS:
             ResumeStatusPage(RunStatPage(command));
             break;
-        case 6:
+        case STATUS_STEP_NEXT_MEMBER:
             do {
                 g_statusMember++;
-                if (g_statusMember >= 32) {
+                if (g_statusMember >= ROSTER_SIZE) {
                     g_statusMember = 0;
                 }
             } while (!GetRosterEntry(g_statusMember));
-            SetGameStep(0);
+            SetGameStep(STATUS_STEP_DRAW);
             ClearStatusPicture();
             break;
-        case 7:
-            return 7;
-        case 8:
+        case STATUS_STEP_EXIT:
+            return STATUS_STEP_EXIT;
+        case STATUS_STEP_EQUIPMENT:
             ResumeStatusPage(RunEquipScreen(command));
             break;
-        case 9:
+        case STATUS_STEP_ATTACH:
             ResumeStatusPage(RunAttachScreen(command));
             break;
-        case 10:
+        case STATUS_STEP_ALIGNMENT:
             ResumeStatusPage(RunAlignmentPage(command));
             break;
-        case 3:
+        case STATUS_STEP_ITEMS:
             if (!GetStatusAnalyzeMode()) {
                 command = RunItemPage(command);
             }
             ResumeStatusPage(command);
             break;
     }
-    return -1;
+    return STATUS_COMMAND_NONE;
 }
 
 RVA(0x000423e0, 0x6c)
 static b16 ResumeStatusPage(i16 command) {
     u16 step;
 
-    if (command == -1) {
+    if (command == STATUS_COMMAND_NONE) {
         return true;
     }
-    if (command == -2) {
-        step = SetGameStep(1);
+    if (command == STATUS_COMMAND_CANCEL) {
+        step = SetGameStep(STATUS_STEP_POLL);
         HighlightHotspot(0, s_statusCommandHotspots[step], 0);
         return true;
     }
@@ -407,7 +443,13 @@ static i16 DrawStatList(i16 plane, Character* member) {
     for (stat = 0; stat < 10; stat++) {
         SetTextPlaneCursorLine(plane, 0, stat);
         sprintf(g_scratchBuffer, "%-6.6s %3d", g_statusStatNames[stat], GetStatTotal(member, stat));
-        PrintWindowText(plane, g_scratchBuffer, 0x1400, 0, 1);
+        PrintWindowText(
+            plane,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+            0,
+            true
+        );
     }
     RepaintTextPlane(plane, -2);
     s_statPage.plane = plane;
@@ -419,7 +461,7 @@ static i16 DrawStatList(i16 plane, Character* member) {
             GetBaseStat(member, stat),
             GetStatBonus(member, stat),
             GetStatEquipment(member, stat),
-            0
+            STAT_BAR_ROWS_BOTH
         );
         y += 2;
     }
@@ -490,31 +532,31 @@ i16 OpenStatListWindow(Character* character) {
 
 RVA(0x000426a0, 0xd4)
 i16 RunStatPage(i16 command) {
-    if (command != -1 && command != -2) {
-        SetGameSub(1);
-        s_statPage.resume = -2;
-        if (command != 5) {
+    if (command != STATUS_COMMAND_NONE && command != STATUS_COMMAND_CANCEL) {
+        SetGameSub(MENU_STEP_CLOSE);
+        s_statPage.resume = STATUS_COMMAND_CANCEL;
+        if (command != STATUS_STEP_STATS) {
             s_statPage.resume = command;
         }
     }
     switch (GetGameSub()) {
-        case 0:
-            SetGameSub(2);
-            SetStatusMenuItemFlag(5, PANEL_ROW_CHECKED, 1);
+        case MENU_STEP_OPEN:
+            SetGameSub(MENU_STEP_RUN);
+            SetStatusMenuItemFlag(STATUS_STEP_STATS, PANEL_ROW_CHECKED, true);
             s_statPage.plane = OpenStatListWindow(GetRosterCharacter(g_statusMember));
             break;
-        case 1:
+        case MENU_STEP_CLOSE:
             s_statPage.plane = CloseTextWindow(s_statPage.plane);
-            SetStatusMenuItemFlag(5, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(STATUS_STEP_STATS, PANEL_ROW_CHECKED, false);
             return s_statPage.resume;
-        case 2:
+        case MENU_STEP_RUN:
             if (TakeClickUnlessCancel(command)) {
                 PrevGameSub();
-                s_statPage.resume = -2;
+                s_statPage.resume = STATUS_COMMAND_CANCEL;
             }
             break;
     }
-    return -1;
+    return STATUS_COMMAND_NONE;
 }
 
 RVA(0x00042780, 0xa5)
@@ -525,13 +567,21 @@ i16 DrawStatTotals(i16 x, i16 y, Character* member, Character* compare) {
     for (stat = 0; stat < 10; stat++) {
         sprintf(g_scratchBuffer, "%-6.6s %7d", g_statusStatNames[stat], GetStatTotal(member, stat));
         if (!compare) {
-            y = DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+            y = DrawStatusLine(
+                x,
+                y,
+                g_scratchBuffer,
+                TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+            );
         } else {
-            attr = 0x1400;
+            attr =
+                TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
             if (GetStatTotal(member, stat) < GetStatTotal(compare, stat)) {
-                attr = 0x1600;
+                attr = TEXT_ATTR_OPAQUE
+                       | TEXT_ATTR(TEXT_COLOR_GREEN, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
             } else if (GetStatTotal(member, stat) > GetStatTotal(compare, stat)) {
-                attr = 0x1500;
+                attr = TEXT_ATTR_OPAQUE
+                       | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
             }
             y = DrawStatusLine(x, y, g_scratchBuffer, attr);
         }
@@ -562,11 +612,17 @@ void DrawStatLine(Character* member, i16 stat, i16 highlight, i16 window) {
             GetBaseStat(member, stat),
             GetStatBonus(member, stat),
             GetStatEquipment(member, stat),
-            0
+            STAT_BAR_ROWS_BOTH
         );
         sprintf(g_scratchBuffer, "%-6.6s %3d", g_statusStatNames[stat], GetStatTotal(member, stat));
         SetTextPlaneCursorLine(window, 0, stat);
-        PrintWindowText(window, g_scratchBuffer, 0x1400, 0, 1);
+        PrintWindowText(
+            window,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+            0,
+            true
+        );
     }
 }
 
@@ -595,7 +651,12 @@ static i16 DrawBattleStatColumn(i16 x, i16 y, i16* stats, i16 icon, i16 id) {
 RVA(0x000429c0, 0x35)
 static i16 DrawStatusNumber(i16 x, i16 y, i16 value) {
     sprintf(g_scratchBuffer, "%3d", value);
-    return DrawStatusLine(x, y, g_scratchBuffer, 0x1400);
+    return DrawStatusLine(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
 }
 
 RVA(0x00042a00, 0xf3)
@@ -614,13 +675,37 @@ void DrawBattleStatsPanel(i16 x, i16 y, Character* member, i16 hideIcons) {
             y = DrawStatusLabel(x, y, label);
         }
     }
-    x = DrawBattleStatColumn(x + 6, startY, GetBattleStatGroup(member, 0), icon, member->id);
+    x = DrawBattleStatColumn(
+        x + 6,
+        startY,
+        GetBattleStatGroup(member, BATTLE_GROUP_WEAPON),
+        icon,
+        member->id
+    );
     gunX = x;
-    x = DrawBattleStatColumn(x, startY, GetBattleStatGroup(member, 1), icon + 1, member->id);
-    DrawStatusNumber(gunX, startY + 13, GetCharacterEquipment(member)[7].quantity);
-    x = DrawBattleStatColumn(x, startY, GetBattleStatGroup(member, 2), icon + 2, member->id);
+    x = DrawBattleStatColumn(
+        x,
+        startY,
+        GetBattleStatGroup(member, BATTLE_GROUP_GUN),
+        icon + 1,
+        member->id
+    );
+    DrawStatusNumber(gunX, startY + 13, GetCharacterEquipment(member)[EQUIP_SLOT_AMMO].quantity);
+    x = DrawBattleStatColumn(
+        x,
+        startY,
+        GetBattleStatGroup(member, BATTLE_GROUP_MAGIC),
+        icon + 2,
+        member->id
+    );
     if (icon >= 0 && IsHumanCharacter(member)) {
-        DrawBattleStatColumn(x, startY, GetBattleStatGroup(member, 3), icon + 3, member->id);
+        DrawBattleStatColumn(
+            x,
+            startY,
+            GetBattleStatGroup(member, BATTLE_GROUP_DEMON_INTERACTION),
+            icon + 3,
+            member->id
+        );
     }
 }
 
@@ -628,34 +713,34 @@ static void DrawAlignmentMarker(i16 slot, Character* member);
 
 RVA(0x00042b00, 0x108)
 i16 RunAlignmentPage(i16 command) {
-    if (command != -1 && command != -2) {
-        SetGameSub(1);
-        s_alignmentPage.resume = -2;
-        if (command != 10) {
+    if (command != STATUS_COMMAND_NONE && command != STATUS_COMMAND_CANCEL) {
+        SetGameSub(MENU_STEP_CLOSE);
+        s_alignmentPage.resume = STATUS_COMMAND_CANCEL;
+        if (command != STATUS_STEP_ALIGNMENT) {
             s_alignmentPage.resume = command;
         }
     }
     switch (GetGameSub()) {
-        case 0:
-            SetGameSub(2);
-            SetStatusMenuItemFlag(10, PANEL_ROW_CHECKED, 1);
+        case MENU_STEP_OPEN:
+            SetGameSub(MENU_STEP_RUN);
+            SetStatusMenuItemFlag(STATUS_STEP_ALIGNMENT, PANEL_ROW_CHECKED, true);
             s_alignmentPage.plane = CreateTextPlane(6, 0);
             ResetTextPlaneLineStep(s_alignmentPage.plane, 1);
             DrawAlignmentMarker(g_statusMember, GetRosterCharacter(g_statusMember));
             RepaintTextPlane(s_alignmentPage.plane, -2);
             break;
-        case 1:
+        case MENU_STEP_CLOSE:
             s_alignmentPage.plane = CloseTextWindow(s_alignmentPage.plane);
-            SetStatusMenuItemFlag(10, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(STATUS_STEP_ALIGNMENT, PANEL_ROW_CHECKED, false);
             return s_alignmentPage.resume;
-        case 2:
+        case MENU_STEP_RUN:
             if (TakeClickUnlessCancel(command)) {
                 PrevGameSub();
-                s_alignmentPage.resume = -2;
+                s_alignmentPage.resume = STATUS_COMMAND_CANCEL;
             }
             break;
     }
-    return -1;
+    return STATUS_COMMAND_NONE;
 }
 
 RVA(0x00042c10, 0x88)
@@ -670,7 +755,7 @@ static void DrawAlignmentMarker(i16 slot, Character* member) {
     y = AlignmentChartCell(member->alignmentLevelA);
     SetTextPlaneCursorLine(s_alignmentPage.plane, x, y);
     sprintf(g_scratchBuffer, "%s", g_statusNumberLabels[slot + 1]);
-    DrawPlaneText(s_alignmentPage.plane, x * 8, y * 8, g_scratchBuffer, 0x700);
+    DrawPlaneText(s_alignmentPage.plane, x * 8, y * 8, g_scratchBuffer, TEXT_ATTR_NORMAL);
 }
 
 // Maps a signed alignment byte (-128..127) onto the 24-cell alignment chart,
@@ -778,7 +863,7 @@ i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
     Character* character = GetRosterCharacter(member);
     i16 count;
     i16 item;
-    i16 kind;
+    GZ_ENUM_LOCAL(ItemKind, i16) kind;
     i16 i;
 
     if (character == NULL) {
@@ -786,13 +871,14 @@ i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
     }
     CompactBag();
     count = 0;
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < BAG_ORDINARY_ENTRY_COUNT; i++) {
         item = GetBagItem(i);
         if (CanEquipItem(character, item) < 0) {
             continue;
         }
-        if (GetCharacterEquipment(character)[1].item >= 1
-            && GetItemKind(GetCharacterEquipment(character)[1].item) == ITEM_KIND_FULL_BODY_ARMOR) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item >= 1
+            && GetItemKind(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item)
+                   == ITEM_KIND_FULL_BODY_ARMOR) {
             kind = GetItemKind(item);
             if (kind == ITEM_KIND_HEAD_ARMOR || kind == ITEM_KIND_ARM_ARMOR
                 || kind == ITEM_KIND_LEG_ARMOR) {
@@ -802,28 +888,28 @@ i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
         s_equipEntries[count++] = i;
     }
     if (count == 0 && anyEquipped) {
-        if (GetCharacterEquipment(character)[0].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[1].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[2].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[3].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[4].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[5].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item >= 1) {
             return 1;
         }
-        if (GetCharacterEquipment(character)[6].item >= 1) {
+        if (GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item >= 1) {
             return 1;
         }
-        return GetCharacterEquipment(character)[7].item >= 1;
+        return GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item >= 1;
     }
     return count;
 }
@@ -837,7 +923,7 @@ static __inline void ClearEquipPreview(void) {
 static __inline i16 FinishEquipChange(void) {
     RecalcCharacterStats(GetRosterCharacter(g_statusMember));
     s_equipPage.changed = true;
-    SetGameSub(1);
+    SetGameSub(MENU_STEP_CLOSE);
     s_equipPage.pick = -1;
     return -1;
 }
@@ -857,25 +943,25 @@ i16 RunEquipScreen(i16 key) {
     i16 part;
     ItemSlot loaded;
 
-    if (key != -1 && key != -2) {
-        SetGameSub(1);
-        s_equipPage.pick = -2;
-        if (key != 8) {
+    if (key != STATUS_COMMAND_NONE && key != STATUS_COMMAND_CANCEL) {
+        SetGameSub(MENU_STEP_CLOSE);
+        s_equipPage.pick = STATUS_COMMAND_CANCEL;
+        if (key != STATUS_STEP_EQUIPMENT) {
             s_equipPage.pick = key;
         }
     }
     switch (GetGameSub()) {
-        case 0:
-            SetGameSub(2);
-            SetStatusMenuItemFlag(8, PANEL_ROW_CHECKED, 1);
+        case MENU_STEP_OPEN:
+            SetGameSub(MENU_STEP_RUN);
+            SetStatusMenuItemFlag(STATUS_STEP_EQUIPMENT, PANEL_ROW_CHECKED, true);
             s_equipPage.menu = OpenEquipMenu(g_statusMember, s_equipPage.menu);
             s_equipPage.panelPlane = CreateTextPlane(0x12, 0);
             ResetTextPlaneLineStep(s_equipPage.panelPlane, 3);
             DrawEquipPanel(GetRosterCharacter(g_statusMember), NULL);
             PollEquipPart(g_statusMember, EQUIP_PICK_RESET);
-            return -1;
+            return STATUS_COMMAND_NONE;
 
-        case 1:
+        case MENU_STEP_CLOSE:
             s_equipPage.infoPlane = CloseTextWindow(s_equipPage.infoPlane);
             s_equipPage.panelPlane = CloseTextWindow(s_equipPage.panelPlane);
             s_equipPage.menu = DestroyMenuBox(s_equipPage.menu);
@@ -883,52 +969,52 @@ i16 RunEquipScreen(i16 key) {
                 DrawStatusScreen(g_statusMember);
                 s_equipPage.changed = false;
             }
-            SetStatusMenuItemFlag(8, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(STATUS_STEP_EQUIPMENT, PANEL_ROW_CHECKED, false);
             PollEquipPart(g_statusMember, EQUIP_PICK_CLEAR);
-            if (s_equipPage.pick != -1) {
+            if (s_equipPage.pick != STATUS_COMMAND_NONE) {
                 return s_equipPage.pick;
             }
             PrevGameSub();
-            return -1;
+            return STATUS_COMMAND_NONE;
 
-        case 2:
-            if (key == -2) {
+        case MENU_STEP_RUN:
+            if (key == STATUS_COMMAND_CANCEL) {
                 PrevGameSub();
                 s_equipPage.pick = key;
-                return -1;
+                return STATUS_COMMAND_NONE;
             }
-            if (RunListMenu(s_equipPage.menu) == -1) {
+            if (RunListMenu(s_equipPage.menu) == LIST_MENU_OPEN) {
                 part = PollEquipPart(g_statusMember, EQUIP_PICK_PART);
                 if (part == -2) {
                     PrevGameSub();
-                    s_equipPage.pick = -2;
-                    return -1;
+                    s_equipPage.pick = STATUS_COMMAND_CANCEL;
+                    return STATUS_COMMAND_NONE;
                 }
                 if (part == -1) {
-                    return -1;
+                    return STATUS_COMMAND_NONE;
                 }
                 s_equipPage.pick = part;
-                SetGameSub(5);
-                return -1;
+                SetGameSub(EQUIP_STEP_PREVIEW_REMOVE);
+                return STATUS_COMMAND_NONE;
             }
             NextGameSub();
             s_equipPage.pick = g_selectedObjectId;
-            return -1;
+            return STATUS_COMMAND_NONE;
 
-        case 3:
+        case EQUIP_STEP_PREVIEW_EQUIP:
             NextGameSub();
             PreviewEquipChange(s_equipPage.pick, 0);
             s_equipPage.infoPlane = OpenItemInfoPlane(GetBagItem(s_equipPage.pick));
-            return -1;
+            return STATUS_COMMAND_NONE;
 
-        case 4:
-            if (key == -2) {
-                SetGameSub(2);
+        case EQUIP_STEP_EQUIP:
+            if (key == STATUS_COMMAND_CANCEL) {
+                SetGameSub(MENU_STEP_RUN);
                 ClearEquipPreview();
-                return -1;
+                return STATUS_COMMAND_NONE;
             }
             if (TakeClickUnlessCancel(key) <= 0) {
-                return -1;
+                return STATUS_COMMAND_NONE;
             }
             ReadBagEntry(s_equipPage.pick, &slot, &count);
             if (GetItemKind(slot.item) == ITEM_KIND_AMMO) {
@@ -942,8 +1028,8 @@ i16 RunEquipScreen(i16 key) {
                     if (slot.quantity < 0) {
                         slot.quantity = 0;
                     }
-                    GetCharacterEquipment(GetRosterCharacter(g_statusMember))[7].quantity +=
-                        slot.quantity;
+                    GetCharacterEquipment(GetRosterCharacter(g_statusMember))[EQUIP_SLOT_AMMO]
+                        .quantity += slot.quantity;
                     TakeBagItems(slot.item, slot.quantity);
                     return FinishEquipChange();
                 }
@@ -954,22 +1040,22 @@ i16 RunEquipScreen(i16 key) {
             EquipItem(g_statusMember, slot, count, s_equipPage.pick);
             return FinishEquipChange();
 
-        case 5:
+        case EQUIP_STEP_PREVIEW_REMOVE:
             NextGameSub();
             PreviewEquipChange(s_equipPage.pick, 1);
             slot = GetRosterEquipSlot(g_statusMember, s_equipPage.pick);
             s_equipPage.infoPlane = OpenItemInfoPlane(slot.item);
-            return -1;
+            return STATUS_COMMAND_NONE;
 
-        case 6:
-            if (key == -2) {
-                SetGameSub(2);
+        case EQUIP_STEP_REMOVE:
+            if (key == STATUS_COMMAND_CANCEL) {
+                SetGameSub(MENU_STEP_RUN);
                 ClearEquipPreview();
                 PollEquipPart(g_statusMember, EQUIP_PICK_CLEAR);
-                return -1;
+                return STATUS_COMMAND_NONE;
             }
             if (TakeClickUnlessCancel(key) <= 0) {
-                return -1;
+                return STATUS_COMMAND_NONE;
             }
             if (s_equipPage.pick != EQUIP_PART_AMMO) {
                 slot = GetRosterEquipSlot(g_statusMember, s_equipPage.pick);
@@ -993,7 +1079,7 @@ i16 RunEquipScreen(i16 key) {
             }
             return FinishEquipChange();
     }
-    return -1;
+    return STATUS_COMMAND_NONE;
 }
 
 static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
@@ -1021,8 +1107,8 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
         case MENU_EVENT_DESTROY:
             break;
         case MENU_EVENT_BEGIN_PAGE:
-            AddMenuLine(menu->plane, s_equipHeaderA, 0x400, 0, MENU_LINE_DISABLED);
-            AddMenuLine(menu->plane, s_equipHeaderB, 0x400, 0, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_equipHeaderA, TEXT_ATTR_DEFAULT, 0, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_equipHeaderB, TEXT_ATTR_DEFAULT, 0, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             item = GetBagItem(s_equipEntries[index]);
@@ -1037,7 +1123,13 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
             if (member != NULL) {
                 GZ_ENUM_LOCAL(EquipPart, i16) category = GetItemCategory(item);
                 if (IsEquipCurseActive(member, category)) {
-                    AddMenuLine(menu->plane, g_scratchBuffer, 0x560, s_equipEntries[index], 1);
+                    AddMenuLine(
+                        menu->plane,
+                        g_scratchBuffer,
+                        TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                        s_equipEntries[index],
+                        MENU_LINE_DISABLED
+                    );
                     return;
                 }
                 record = GetLoadedRecord(item);
@@ -1050,7 +1142,7 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                         AddMenuLine(
                             menu->plane,
                             g_scratchBuffer,
-                            0x560,
+                            TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                             s_equipEntries[index],
                             MENU_LINE_DISABLED
                         );
@@ -1058,32 +1150,49 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     }
                     record = GetLoadedRecord(item);
                 }
-                if (record->kind == ITEM_KIND_GUN && GetBattleStatShown(member, 6) > 0) {
-                    if (LacksItemRequiredStats(member, record, GetBattleStatShown(member, 6))) {
+                if (record->kind == ITEM_KIND_GUN
+                    && GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL) > 0) {
+                    if (LacksItemRequiredStats(
+                            member,
+                            record,
+                            GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL)
+                        )) {
                         AddMenuLine(
                             menu->plane,
                             g_scratchBuffer,
-                            0x760,
+                            TEXT_ATTR(TEXT_COLOR_YELLOW, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                             s_equipEntries[index],
                             MENU_LINE_DISABLED
                         );
                         return;
                     }
-                    AddMenuLine(menu->plane, g_scratchBuffer, 0x460, s_equipEntries[index], 0);
+                    AddMenuLine(
+                        menu->plane,
+                        g_scratchBuffer,
+                        TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                        s_equipEntries[index],
+                        MENU_LINE_NORMAL
+                    );
                     return;
                 }
                 if (LacksItemRequiredStats(member, record, 0)) {
                     AddMenuLine(
                         menu->plane,
                         g_scratchBuffer,
-                        0x760,
+                        TEXT_ATTR(TEXT_COLOR_YELLOW, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                         s_equipEntries[index],
                         MENU_LINE_DISABLED
                     );
                     return;
                 }
             }
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x460, s_equipEntries[index], 0);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                s_equipEntries[index],
+                MENU_LINE_NORMAL
+            );
             return;
     }
 }
@@ -1098,17 +1207,32 @@ void DrawEquipPanel(Character* member, Character* preview) {
 
     y = 0x28;
     for (i = 0; i < 4; i++) {
-        DrawPlaneText(s_equipPage.panelPlane, 8, y, g_statusBattleLabels[i + 1], 0x400);
+        DrawPlaneText(s_equipPage.panelPlane, 8, y, g_statusBattleLabels[i + 1], TEXT_ATTR_DEFAULT);
         y += 0x18;
     }
     if (preview == NULL) {
-        x = DrawStatColumn(5, 5, GetBattleStatGroup(member, 0), NULL);
-        x = DrawStatColumn(x, 5, GetBattleStatGroup(member, 1), NULL);
-        DrawStatColumn(x, 5, GetBattleStatGroup(member, 2), NULL);
+        x = DrawStatColumn(5, 5, GetBattleStatGroup(member, BATTLE_GROUP_WEAPON), NULL);
+        x = DrawStatColumn(x, 5, GetBattleStatGroup(member, BATTLE_GROUP_GUN), NULL);
+        DrawStatColumn(x, 5, GetBattleStatGroup(member, BATTLE_GROUP_MAGIC), NULL);
     } else {
-        x = DrawStatColumn(5, 5, GetBattleStatGroup(member, 0), GetBattleStatGroup(preview, 0));
-        x = DrawStatColumn(x, 5, GetBattleStatGroup(member, 1), GetBattleStatGroup(preview, 1));
-        DrawStatColumn(x, 5, GetBattleStatGroup(member, 2), GetBattleStatGroup(preview, 2));
+        x = DrawStatColumn(
+            5,
+            5,
+            GetBattleStatGroup(member, BATTLE_GROUP_WEAPON),
+            GetBattleStatGroup(preview, BATTLE_GROUP_WEAPON)
+        );
+        x = DrawStatColumn(
+            x,
+            5,
+            GetBattleStatGroup(member, BATTLE_GROUP_GUN),
+            GetBattleStatGroup(preview, BATTLE_GROUP_GUN)
+        );
+        DrawStatColumn(
+            x,
+            5,
+            GetBattleStatGroup(member, BATTLE_GROUP_MAGIC),
+            GetBattleStatGroup(preview, BATTLE_GROUP_MAGIC)
+        );
     }
     DrawPlaneImage(s_equipPage.panelPlane, 7, 1, 0);
     DrawPlaneImage(s_equipPage.panelPlane, 0x10, 1, 1);
@@ -1135,16 +1259,16 @@ static i16 DrawStatColumn(i16 x, i16 y, i16* stats, i16* preview) {
 
 RVA(0x00043a20, 0x93)
 static u16 DrawStatCompare(i16 x, i16 y, i16 value, i16 newValue) {
-    i32 attr = 0x400;
+    i32 attr = TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
 
     if (newValue < 0) {
         sprintf(g_scratchBuffer, "  %3d    ", value);
     } else {
         sprintf(g_scratchBuffer, "  %3d>%3d", value, newValue);
         if (value < newValue) {
-            attr = 0x600;
+            attr = TEXT_ATTR(TEXT_COLOR_GREEN, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
         } else if (value > newValue) {
-            attr = 0x500;
+            attr = TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
         }
     }
     DrawPlaneText(s_equipPage.panelPlane, x * 8, y * 8, g_scratchBuffer, attr);
@@ -1162,7 +1286,7 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
     ItemSlot slot;
     i16 count;
     GZ_ENUM_STORAGE(EquipPart, i16) result;
-    i16 kind;
+    GZ_ENUM_LOCAL(ItemKind, i16) kind;
     i16 gun;
 
     if (!member) {
@@ -1174,13 +1298,14 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
         ReadBagEntry(index, &slot, &count);
         kind = GetItemKind(slot.item);
         if (kind == ITEM_KIND_AMMO) {
-            slot.quantity =
-                GetGunMagazineSize(GetLoadedRecord(GetCharacterEquipment(member)[6].item));
+            slot.quantity = GetGunMagazineSize(
+                GetLoadedRecord(GetCharacterEquipment(member)[EQUIP_SLOT_GUN].item)
+            );
             LimitItemSlotToBag(&slot);
         } else if (kind == ITEM_KIND_FULL_BODY_ARMOR) {
-            EmptyItemSlot(&GetCharacterEquipment(member)[0]);
-            EmptyItemSlot(&GetCharacterEquipment(member)[2]);
-            EmptyItemSlot(&GetCharacterEquipment(member)[3]);
+            EmptyItemSlot(&GetCharacterEquipment(member)[EQUIP_SLOT_HEAD]);
+            EmptyItemSlot(&GetCharacterEquipment(member)[EQUIP_SLOT_ARMS]);
+            EmptyItemSlot(&GetCharacterEquipment(member)[EQUIP_SLOT_LEGS]);
         } else {
             // Kind 19 selects index 7, overwriting returnPosition.area in
             // the saved preview copy; retain this original store.
@@ -1188,12 +1313,12 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
             slot.quantity = 1;
         }
         if (kind == ITEM_KIND_GUN) {
-            gun = GetCharacterEquipment(member)[6].item;
-            GetCharacterEquipment(member)[6].item = slot.item;
-            if (CanEquipItem(member, GetCharacterEquipment(member)[7].item) < 1) {
-                EmptyItemSlot(&GetCharacterEquipment(member)[7]);
+            gun = GetCharacterEquipment(member)[EQUIP_SLOT_GUN].item;
+            GetCharacterEquipment(member)[EQUIP_SLOT_GUN].item = slot.item;
+            if (CanEquipItem(member, GetCharacterEquipment(member)[EQUIP_SLOT_AMMO].item) < 1) {
+                EmptyItemSlot(&GetCharacterEquipment(member)[EQUIP_SLOT_AMMO]);
             }
-            GetCharacterEquipment(member)[6].item = gun;
+            GetCharacterEquipment(member)[EQUIP_SLOT_GUN].item = gun;
         }
         SwapEquipSlot(g_statusMember, slot, &result);
     } else {
@@ -1212,24 +1337,24 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
 
 RVA(0x00043d10, 0x5e0)
 i16 RunAttachScreen(i16 sub) {
-    if (sub != -1 && sub != -2) {
-        SetGameSub(1);
-        s_attach.resume = -2;
-        if (sub != 9) {
+    if (sub != STATUS_COMMAND_NONE && sub != STATUS_COMMAND_CANCEL) {
+        SetGameSub(MENU_STEP_CLOSE);
+        s_attach.resume = STATUS_COMMAND_CANCEL;
+        if (sub != STATUS_STEP_ATTACH) {
             s_attach.resume = sub;
         }
     }
     switch (GetGameSub()) {
-        case 0:
-            SetGameSub(2);
+        case MENU_STEP_OPEN:
+            SetGameSub(MENU_STEP_RUN);
             s_attach.itemBase = GetGemItemBase();
-            SetStatusMenuItemFlag(9, PANEL_ROW_CHECKED, 1);
+            SetStatusMenuItemFlag(STATUS_STEP_ATTACH, PANEL_ROW_CHECKED, true);
             s_attach.itemMenu = CreateAttachItemMenu(s_attach.itemMenu);
             s_attach.plane = CreateTextPlane(0x12, 0);
             ResetTextPlaneLineStep(s_attach.plane, 3);
             s_attach.prevHook = SetTextPlaneHook(AttachTextHook);
-            return -1;
-        case 1:
+            return STATUS_COMMAND_NONE;
+        case MENU_STEP_CLOSE:
             SetTextPlaneHook(s_attach.prevHook);
             s_attach.prevHook = NULL;
             s_attach.plane = CloseTextWindow(s_attach.plane);
@@ -1238,21 +1363,21 @@ i16 RunAttachScreen(i16 sub) {
             PollEquipPart(g_statusMember, EQUIP_PICK_CLEAR);
             if (s_attach.redraw) {
                 DrawStatusScreen(g_statusMember);
-                s_attach.redraw = 0;
+                s_attach.redraw = false;
             }
-            SetStatusMenuItemFlag(9, PANEL_ROW_CHECKED, 0);
-            if (s_attach.resume == -1) {
+            SetStatusMenuItemFlag(STATUS_STEP_ATTACH, PANEL_ROW_CHECKED, false);
+            if (s_attach.resume == STATUS_COMMAND_NONE) {
                 PrevGameSub();
-                return -1;
+                return STATUS_COMMAND_NONE;
             }
             return s_attach.resume;
-        case 2:
-            if (sub == -2) {
+        case MENU_STEP_RUN:
+            if (sub == STATUS_COMMAND_CANCEL) {
                 PrevGameSub();
-                s_attach.resume = -2;
-                return -1;
+                s_attach.resume = STATUS_COMMAND_CANCEL;
+                return STATUS_COMMAND_NONE;
             }
-            if (RunListMenu(s_attach.itemMenu) == -1 || g_selectedObjectId < 0) {
+            if (RunListMenu(s_attach.itemMenu) == LIST_MENU_OPEN || g_selectedObjectId < 0) {
                 break;
             }
             NextGameSub();
@@ -1261,42 +1386,42 @@ i16 RunAttachScreen(i16 sub) {
             s_attach.plane = CloseTextWindow(s_attach.plane);
             s_attach.itemMenu = DestroyMenuBox(s_attach.itemMenu);
             s_attach.item = g_selectedObjectId;
-            return -1;
-        case 3:
+            return STATUS_COMMAND_NONE;
+        case ATTACH_STEP_OPEN_TARGET_LIST:
             NextGameSub();
             s_attach.entryMenu = CreateAttachEntryMenu(s_attach.entryMenu);
             PollEquipPart(g_statusMember, EQUIP_PICK_RESET);
-            return -1;
-        case 4:
-            if (sub == -2) {
-                SetGameSub(1);
-                s_attach.resume = -2;
-                return -1;
+            return STATUS_COMMAND_NONE;
+        case ATTACH_STEP_PICK_TARGET:
+            if (sub == STATUS_COMMAND_CANCEL) {
+                SetGameSub(MENU_STEP_CLOSE);
+                s_attach.resume = STATUS_COMMAND_CANCEL;
+                return STATUS_COMMAND_NONE;
             }
-            if (RunListMenu(s_attach.entryMenu) == -1) {
+            if (RunListMenu(s_attach.entryMenu) == LIST_MENU_OPEN) {
                 sub = PollEquipPart(g_statusMember, EQUIP_PICK_ATTACH_TARGET);
-                if (sub == -2) {
-                    SetGameSub(1);
-                    s_attach.resume = -2;
-                    return -1;
+                if (sub == STATUS_COMMAND_CANCEL) {
+                    SetGameSub(MENU_STEP_CLOSE);
+                    s_attach.resume = STATUS_COMMAND_CANCEL;
+                    return STATUS_COMMAND_NONE;
                 }
-                if (sub == -1) {
+                if (sub == STATUS_COMMAND_NONE) {
                     break;
                 }
                 s_attach.target = sub;
                 s_attach.entryMenu = DestroyMenuBox(s_attach.entryMenu);
-                SetGameSub(7);
-                return -1;
+                SetGameSub(ATTACH_STEP_APPLY_EQUIPPED_ITEM);
+                return STATUS_COMMAND_NONE;
             }
             NextGameSub();
             s_attach.target = g_selectedObjectId;
             s_attach.entryMenu = DestroyMenuBox(s_attach.entryMenu);
-            return -1;
-        case 5:
+            return STATUS_COMMAND_NONE;
+        case ATTACH_STEP_APPLY_BAG_ITEM:
             NextGameSub();
             s_attach.plane = CreateTextPlane(0x12, 0);
             sprintf(g_scratchBuffer, "%s", GetLoadedRecordName(s_attach.item));
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             TakeBagItems(s_attach.item, 1);
             s_attach.item = AttachBagEntryItem(s_attach.target, s_attach.item);
             if (s_attach.item < 0) {
@@ -1311,20 +1436,20 @@ i16 RunAttachScreen(i16 sub) {
                     GetLoadedRecordName(s_attach.item)
                 );
             }
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_attach.plane, -2);
-            PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
-            return -1;
-        case 6:
-            SetGameSub(1);
+            PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
+            return STATUS_COMMAND_NONE;
+        case ATTACH_STEP_FINISH_BAG_ITEM:
+            SetGameSub(MENU_STEP_CLOSE);
             s_attach.plane = CloseTextWindow(s_attach.plane);
-            s_attach.resume = -1;
-            return -1;
-        case 7:
+            s_attach.resume = STATUS_COMMAND_NONE;
+            return STATUS_COMMAND_NONE;
+        case ATTACH_STEP_APPLY_EQUIPPED_ITEM:
             NextGameSub();
             s_attach.plane = CreateTextPlane(0x12, 0);
             sprintf(g_scratchBuffer, "%s", GetLoadedRecordName(s_attach.item));
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             TakeBagItems(s_attach.item, 1);
             s_attach.item =
                 AttachEquipItem(g_statusMember, s_attach.target, s_attach.item - s_attach.itemBase);
@@ -1341,19 +1466,19 @@ i16 RunAttachScreen(i16 sub) {
                     GetLoadedRecordName(s_attach.item)
                 );
             }
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_attach.plane, -2);
-            PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
-            return -1;
-        case 8:
-            SetGameSub(1);
+            PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
+            return STATUS_COMMAND_NONE;
+        case ATTACH_STEP_FINISH_EQUIPPED_ITEM:
+            SetGameSub(MENU_STEP_CLOSE);
             s_attach.plane = CloseTextWindow(s_attach.plane);
             RecalcCharacterStats(GetRosterCharacter(g_statusMember));
-            s_attach.redraw = 1;
-            s_attach.resume = -1;
-            return -1;
+            s_attach.redraw = true;
+            s_attach.resume = STATUS_COMMAND_NONE;
+            return STATUS_COMMAND_NONE;
     }
-    return -1;
+    return STATUS_COMMAND_NONE;
 }
 
 static void AttachItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
@@ -1364,7 +1489,7 @@ static MenuBox* CreateAttachItemMenu(MenuBox* old) {
 
     SetMenuItems(menu, 16, NULL, 16, AttachItemMenuHandler);
     MoveMenuBox(menu, 0x2a, 0x50);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 0);
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, false);
     return menu;
 }
 
@@ -1387,12 +1512,18 @@ static void AttachItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEv
                 AddMenuLine(
                     menu->plane,
                     g_scratchBuffer,
-                    0x560,
+                    TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
                     index + s_attach.itemBase,
                     MENU_LINE_UNCHOOSABLE
                 );
             } else {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x460, index + s_attach.itemBase, 0);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                    index + s_attach.itemBase,
+                    MENU_LINE_NORMAL
+                );
             }
             break;
     }
@@ -1422,7 +1553,7 @@ static i16 ListAttachEntries(void) {
 
     CompactBag();
     count = 0;
-    for (i = 0; i < 48; i++) {
+    for (i = 0; i < BAG_ORDINARY_ENTRY_COUNT; i++) {
         item = GetBagItem(i);
         if (item >= 0 && GetItemStackLimit(item) == 1 && GetItemKind(item) != ITEM_KIND_GUN) {
             s_attachEntries[count].entry = i;
@@ -1439,8 +1570,8 @@ static void AttachEntryMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuE
         case MENU_EVENT_DESTROY:
             break;
         case MENU_EVENT_BEGIN_PAGE:
-            AddMenuLine(menu->plane, s_attachHeaderA, 0x400, 0, MENU_LINE_DISABLED);
-            AddMenuLine(menu->plane, s_attachHeaderB, 0x400, 0, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_attachHeaderA, TEXT_ATTR_DEFAULT, 0, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_attachHeaderB, TEXT_ATTR_DEFAULT, 0, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             sprintf(
@@ -1450,14 +1581,20 @@ static void AttachEntryMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuE
                 GetLoadedRecordName(GetBagItem(s_attachEntries[index].entry)),
                 s_attachEntries[index].count
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x460, s_attachEntries[index].entry, 0);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                s_attachEntries[index].entry,
+                MENU_LINE_NORMAL
+            );
             break;
     }
 }
 
 RVA(0x00044590, 0xb8)
 static void AttachTextHook(i16 plane, i16 event, i16 value) {
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     switch (event) {
@@ -1470,7 +1607,7 @@ static void AttachTextHook(i16 plane, i16 event, i16 value) {
             break;
         case TEXT_EVENT_HIGHLIGHT:
             strcpy(g_scratchBuffer, GetItemDescription(value + s_attach.itemBase));
-            PrintWindowText(s_attach.plane, g_scratchBuffer, 0x400, 0, 0);
+            PrintWindowText(s_attach.plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, false);
             break;
     }
     RepaintTextPlane(s_attach.plane, -2);
@@ -1480,21 +1617,21 @@ static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
 
 RVA(0x00044650, 0x1e0)
 i16 RunItemPage(i16 sub) {
-    if (sub != -1 && sub != -2) {
-        SetGameSub(1);
-        s_itemPage.pick = -2;
-        if (sub != 3) {
+    if (sub != STATUS_COMMAND_NONE && sub != STATUS_COMMAND_CANCEL) {
+        SetGameSub(MENU_STEP_CLOSE);
+        s_itemPage.pick = STATUS_COMMAND_CANCEL;
+        if (sub != STATUS_STEP_ITEMS) {
             s_itemPage.pick = sub;
         }
     }
     switch (GetGameSub()) {
-        case 0:
-            SetGameSub(2);
+        case MENU_STEP_OPEN:
+            SetGameSub(MENU_STEP_RUN);
             CompactBag();
-            SetStatusMenuItemFlag(3, PANEL_ROW_CHECKED, 1);
+            SetStatusMenuItemFlag(STATUS_STEP_ITEMS, PANEL_ROW_CHECKED, true);
             s_itemPage.menu = CreateMenuBox(s_itemPage.menu, 0x19, 2);
             MoveMenuBox(s_itemPage.menu, -8, -0x16);
-            s_itemPage.list = CopyBagEntries(0, 64, NULL);
+            s_itemPage.list = CopyBagEntries(0, BAG_ENTRY_COUNT, NULL);
             SetMenuItems(
                 s_itemPage.menu,
                 8,
@@ -1502,42 +1639,42 @@ i16 RunItemPage(i16 sub) {
                 GetItemListCount(s_itemPage.list),
                 ItemListHandler
             );
-            SetTextPlaneFirstSelectableRow(s_itemPage.menu->plane, 1, 1);
-            return -1;
-        case 1:
+            SetTextPlaneFirstSelectableRow(s_itemPage.menu->plane, 1, true);
+            return STATUS_COMMAND_NONE;
+        case MENU_STEP_CLOSE:
             s_itemPage.plane = CloseTextWindow(s_itemPage.plane);
             s_itemPage.menu = CloseListMenu(s_itemPage.menu);
-            SetStatusMenuItemFlag(3, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(STATUS_STEP_ITEMS, PANEL_ROW_CHECKED, false);
             return s_itemPage.pick;
-        case 2:
-            if (sub == -2) {
+        case MENU_STEP_RUN:
+            if (sub == STATUS_COMMAND_CANCEL) {
                 PrevGameSub();
                 s_itemPage.pick = sub;
-                return -1;
+                return STATUS_COMMAND_NONE;
             }
-            if (RunListMenu(s_itemPage.menu) == -1) {
+            if (RunListMenu(s_itemPage.menu) == LIST_MENU_OPEN) {
                 break;
             }
             NextGameSub();
             s_itemPage.pick = g_selectedObjectId;
-            return -1;
-        case 3:
-            if (sub == -2) {
+            return STATUS_COMMAND_NONE;
+        case ITEM_PAGE_SHOW_DESCRIPTION:
+            if (sub == STATUS_COMMAND_CANCEL) {
                 PrevGameSub();
-                return -1;
+                return STATUS_COMMAND_NONE;
             }
             NextGameSub();
             s_itemPage.plane = OpenItemInfoPlane(s_itemPage.pick);
-            return -1;
-        case 4:
-            if (sub != -2 && !TakeMouseLeftClick()) {
+            return STATUS_COMMAND_NONE;
+        case ITEM_PAGE_WAIT_DESCRIPTION:
+            if (sub != STATUS_COMMAND_CANCEL && !TakeMouseLeftClick()) {
                 break;
             }
             s_itemPage.plane = CloseTextWindow(s_itemPage.plane);
-            SetGameSub(2);
+            SetGameSub(MENU_STEP_RUN);
             break;
     }
-    return -1;
+    return STATUS_COMMAND_NONE;
 }
 
 RVA(0x00044830, 0x109)
@@ -1557,7 +1694,7 @@ static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                 "\217\212\216\235\203\101\203\103\203\145\203\200 %1d/8",
                 menu->cursor / 8 + 1
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             item = GetItemStackItem(GetItemListEntry(s_itemPage.list, index));
@@ -1568,7 +1705,13 @@ static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
                 GetLoadedRecordName(item),
                 GetItemStackCount(GetItemListEntry(s_itemPage.list, index))
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x460, item, 0);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                item,
+                MENU_LINE_NORMAL
+            );
             break;
     }
 }
@@ -1580,8 +1723,8 @@ RVA(0x00044940, 0x18a)
 void DrawEquipLines(Character* character, i16 x, i16 y) {
     DrawEquipLine(
         0,
-        GetCharacterEquipment(character)[5].item,
-        GetCharacterEquipment(character)[5].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].attachment,
         x,
         y,
         character,
@@ -1589,8 +1732,8 @@ void DrawEquipLines(Character* character, i16 x, i16 y) {
     );
     DrawEquipLine(
         1,
-        GetCharacterEquipment(character)[6].item,
-        GetCharacterEquipment(character)[6].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_GUN].attachment,
         x,
         y + 4,
         character,
@@ -1598,8 +1741,8 @@ void DrawEquipLines(Character* character, i16 x, i16 y) {
     );
     DrawEquipLine(
         2,
-        GetCharacterEquipment(character)[7].item,
-        GetCharacterEquipment(character)[7].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].attachment,
         x,
         y + 8,
         character,
@@ -1607,17 +1750,17 @@ void DrawEquipLines(Character* character, i16 x, i16 y) {
     );
     DrawEquipLine(
         3,
-        GetCharacterEquipment(character)[0].item,
-        GetCharacterEquipment(character)[0].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].attachment,
         x,
         y + 12,
         character,
-        GetCharacterEquipment(character)[1].item
+        GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item
     );
     DrawEquipLine(
         4,
-        GetCharacterEquipment(character)[1].item,
-        GetCharacterEquipment(character)[1].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_BODY].attachment,
         x,
         y + 16,
         character,
@@ -1625,26 +1768,26 @@ void DrawEquipLines(Character* character, i16 x, i16 y) {
     );
     DrawEquipLine(
         5,
-        GetCharacterEquipment(character)[2].item,
-        GetCharacterEquipment(character)[2].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].attachment,
         x,
         y + 20,
         character,
-        GetCharacterEquipment(character)[1].item
+        GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item
     );
     DrawEquipLine(
         6,
-        GetCharacterEquipment(character)[3].item,
-        GetCharacterEquipment(character)[3].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].attachment,
         x,
         y + 24,
         character,
-        GetCharacterEquipment(character)[1].item
+        GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item
     );
     DrawEquipLine(
         7,
-        GetCharacterEquipment(character)[4].item,
-        GetCharacterEquipment(character)[4].attachment,
+        GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item,
+        GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].attachment,
         x,
         y + 28,
         character,
@@ -1671,9 +1814,19 @@ DrawEquipLine(i16 part, i16 item, i16 attach, i16 x, i16 y, Character* character
         sprintf(g_scratchBuffer, "%c%-20.20s", ' ', s_emptyPartLabel);
     }
     if (item >= 1 && IsEquipCurseActive(character, GetItemCategory(item))) {
-        DrawStatusLine(x + 3, y + 1, g_scratchBuffer, 0x1500);
+        DrawStatusLine(
+            x + 3,
+            y + 1,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
     } else {
-        DrawStatusLine(x + 3, y + 1, g_scratchBuffer, 0x1400);
+        DrawStatusLine(
+            x + 3,
+            y + 1,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
     }
 }
 
@@ -1686,67 +1839,67 @@ i16 OpenItemInfoPlane(i16 item) {
 
     ClearTextPlane(plane);
     record = GetLoadedRecord(item);
-    PrintWindowText(plane, GetItemRecordName(record), 0x400, 0, 1);
-    PrintWindowText(plane, "\n", 0x400, 0, 1);
-    PrintWindowText(plane, record->description, 0x400, 0, 1);
+    PrintWindowText(plane, GetItemRecordName(record), TEXT_ATTR_DEFAULT, 0, true);
+    PrintWindowText(plane, "\n", TEXT_ATTR_DEFAULT, 0, true);
+    PrintWindowText(plane, record->description, TEXT_ATTR_DEFAULT, 0, true);
     RepaintTextPlane(plane, -2);
     return plane;
 }
 
 RVA(0x00044c30, 0x1c0)
 i16 RunSkillPage(i16 sub) {
-    if (sub != -1 && sub != -2) {
-        SetGameSub(1);
-        s_skillPage.pick = -2;
-        if (sub != 4) {
+    if (sub != STATUS_COMMAND_NONE && sub != STATUS_COMMAND_CANCEL) {
+        SetGameSub(MENU_STEP_CLOSE);
+        s_skillPage.pick = STATUS_COMMAND_CANCEL;
+        if (sub != STATUS_STEP_SKILLS) {
             s_skillPage.pick = sub;
         }
     }
     switch (GetGameSub()) {
-        case 0:
-            SetGameSub(2);
-            SetStatusMenuItemFlag(4, PANEL_ROW_CHECKED, 1);
+        case MENU_STEP_OPEN:
+            SetGameSub(MENU_STEP_RUN);
+            SetStatusMenuItemFlag(STATUS_STEP_SKILLS, PANEL_ROW_CHECKED, true);
             s_skillPage.menu = CreateSkillMenu(g_statusMember, s_skillPage.menu);
-            return -1;
-        case 1:
+            return STATUS_COMMAND_NONE;
+        case MENU_STEP_CLOSE:
             s_skillPage.plane = CloseTextWindow(s_skillPage.plane);
             s_skillPage.menu = DestroyMenuBox(s_skillPage.menu);
-            SetStatusMenuItemFlag(4, PANEL_ROW_CHECKED, 0);
+            SetStatusMenuItemFlag(STATUS_STEP_SKILLS, PANEL_ROW_CHECKED, false);
             return s_skillPage.pick;
-        case 2:
-            if (sub == -2) {
+        case MENU_STEP_RUN:
+            if (sub == STATUS_COMMAND_CANCEL) {
                 PrevGameSub();
                 s_skillPage.pick = sub;
-                return -1;
+                return STATUS_COMMAND_NONE;
             }
-            if (RunListMenu(s_skillPage.menu) == -1) {
+            if (RunListMenu(s_skillPage.menu) == LIST_MENU_OPEN) {
                 break;
             }
             NextGameSub();
             s_skillPage.pick = g_selectedObjectId;
-            return -1;
-        case 3:
+            return STATUS_COMMAND_NONE;
+        case SKILL_PAGE_SHOW_DESCRIPTION:
             NextGameSub();
             s_skillPage.plane = CreateTextPlane(0x20, 0);
             ClearTextPlane(s_skillPage.plane);
             PrintWindowText(
                 s_skillPage.plane,
-                FilterTextMarks(GetSkillDescription(s_skillPage.pick), 1),
-                0x400,
+                FilterTextMarks(GetSkillDescription(s_skillPage.pick), true),
+                TEXT_ATTR_DEFAULT,
                 0,
-                1
+                true
             );
             RepaintTextPlane(s_skillPage.plane, -2);
-            return -1;
-        case 4:
+            return STATUS_COMMAND_NONE;
+        case SKILL_PAGE_WAIT_DESCRIPTION:
             if (!TakeClickUnlessCancel(sub)) {
                 break;
             }
             s_skillPage.plane = CloseTextWindow(s_skillPage.plane);
-            SetGameSub(2);
+            SetGameSub(MENU_STEP_RUN);
             break;
     }
-    return -1;
+    return STATUS_COMMAND_NONE;
 }
 
 static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
@@ -1784,14 +1937,20 @@ static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                 "%-16.16s  MP  \214\370\211\312",
                 "\226\202\226\100\226\274\217\314"
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, MENU_LINE_DISABLED);
-            AddMenuLine(menu->plane, s_skillHeaderLine, 0x400, -1, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, s_skillHeaderLine, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             skill = skills[index];
             view = GetSkillView(skill);
             if (skill < 1) {
-                AddMenuLine(menu->plane, s_emptySkillLabel, 0x460, skill, MENU_LINE_DISABLED);
+                AddMenuLine(
+                    menu->plane,
+                    s_emptySkillLabel,
+                    TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                    skill,
+                    MENU_LINE_DISABLED
+                );
                 return;
             }
             if (SkillCostsFullPool(&view->parameters)) {
@@ -1801,7 +1960,7 @@ static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     "%-16.16sMAX%s %-26.26s",
                     view->name,
                     unit,
-                    FilterTextMarks(view->description, 0)
+                    FilterTextMarks(view->description, false)
                 );
             } else {
                 unit = GetSkillParameterCost(&view->parameters) < 0 ? "hp" : "mp";
@@ -1811,17 +1970,27 @@ static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     view->name,
                     abs(GetSkillParameterCost(&view->parameters)),
                     unit,
-                    FilterTextMarks(view->description, 0)
+                    FilterTextMarks(view->description, false)
                 );
             }
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x460, skills[index], 0);
+            AddMenuLine(
+                menu->plane,
+                g_scratchBuffer,
+                TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                skills[index],
+                MENU_LINE_NORMAL
+            );
             break;
     }
 }
 
 static __inline void UnhighlightEquipPart(i16 member) {
     if (s_equipPickPart >= 0) {
-        DrawEquipPickRow(member, s_equipPickPart, 0x1400);
+        DrawEquipPickRow(
+            member,
+            s_equipPickPart,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
     }
 }
 
@@ -1847,7 +2016,7 @@ i16 PollEquipPart(i16 member, i16 mode) {
             y = (g_mousePosition.y - 40) / 8 - 3;
             if (y >= 0 && y % 4 != 2 && y % 4 != 3) {
                 part = y / 4;
-                if (part < 8) {
+                if (part < EQUIP_SLOT_COUNT) {
                     if (s_equipPickPart == part) {
                         return -1;
                     }
@@ -1860,7 +2029,17 @@ i16 PollEquipPart(i16 member, i16 mode) {
                             )) {
                             UnhighlightEquipPart(member);
                             s_equipPickPart = part;
-                            if (DrawEquipPickRow(member, part, 0x1600) < 1) {
+                            if (DrawEquipPickRow(
+                                    member,
+                                    part,
+                                    TEXT_ATTR_OPAQUE
+                                        | TEXT_ATTR(
+                                            TEXT_COLOR_GREEN,
+                                            TEXT_COLOR_BLACK,
+                                            TEXT_COLOR_BLACK
+                                        )
+                                )
+                                < 1) {
                                 s_equipPickPart = -1;
                             }
                             return -1;

@@ -44,14 +44,14 @@ DATA(0x00081018)
 char g_textLine[0x100] = {0};
 
 DATA(0x00081118)
-static ScriptPanel* s_scriptPanels = 0;
+static ScriptPanel* s_scriptPanels = NULL;
 
 DATA(0x00081120)
 char g_capturedText[0x100] = {0};
 
 // The script's stacked windows, newest last.
 DATA(0x00081220)
-static ScriptWindowNode* s_windowStack = 0;
+static ScriptWindowNode* s_windowStack = NULL;
 
 // While set, printable script text is appended to the captured-text buffer
 // instead of being drawn.
@@ -71,9 +71,9 @@ void DestroyScriptPanel(ScriptPanel* node) {
     RestoreSavedCursor(HandleReadPtr(node->screenSave));
     FreeHandle(node->screenSave);
     FreeBlock(node->jumps);
-    node->flags.drawn = 0;
+    node->flags.drawn = false;
     ErasePanelPictures(node->panel);
-    ReleasePanel(node->panel, 1);
+    ReleasePanel(node->panel, true);
     FreeBlock(node);
 }
 
@@ -115,13 +115,13 @@ ScriptPanel* CreateScriptPanel(i16 image, i16 count, i16 x, i16 y) {
     SetPanelPosition(node->panel, x, y);
     node->jumps = AllocCleared(count, sizeof(ScriptPanelJump));
     for (i = 0; i < count; i++) {
-        GetScriptPanelJump(node, i)->value = 0xffff;
+        GetScriptPanelJump(node, i)->value = SCRIPT_PANEL_NO_JUMP;
     }
     node->image = image;
     ListAppend(&s_scriptPanels, node);
     size = GetPanelSize(node->panel);
     node->screenSave = AllocScreenSaveHandle(size.x, size.y);
-    node->flags.drawn = 0;
+    node->flags.drawn = false;
     return node;
 }
 
@@ -137,7 +137,7 @@ void DrawScriptPanel(ScriptPanel* node) {
     token = SaveDrawState();
     ClearPanel(node->panel, cell);
     RestoreDrawState(token);
-    node->flags.drawn = 1;
+    node->flags.drawn = true;
 }
 
 RVA(0x0002ef00, 0x3e)
@@ -239,11 +239,11 @@ i16 PollScriptPanels(void) {
         while (count > 1) {
             count--;
             row = PollPanel(last->panel);
-            if (row == -1) {
+            if (row == PANEL_INPUT_NONE) {
                 last = last->prev;
             } else {
                 jump = *GetScriptPanelJump(last, row);
-                if (jump.value != 0xffff) {
+                if (jump.value != SCRIPT_PANEL_NO_JUMP) {
                     CallScript(jump.parts.file, jump.parts.entry);
                     SetScriptLongVar(0x19, row);
                     SetScriptLongVar(0x18, IsPanelRowChecked(last->panel, row));
@@ -254,7 +254,7 @@ i16 PollScriptPanels(void) {
             }
         }
     }
-    return -1;
+    return PANEL_INPUT_NONE;
 }
 
 // @dead-code
@@ -321,7 +321,7 @@ void OpCreateScriptMenu(void) {
 // 0x12..0x16 set to the menu, the event + 1, the item index, the cursor and
 // the index less the cursor.
 RVA(0x0002f2d0, 0x6c)
-void RunScriptMenuHandler(MenuBox* menu, i16 index, i16 event) {
+void RunScriptMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     CallScript(menu->context.script.file, menu->context.script.entry);
     SetScriptLongVar(0x12, (u32)menu);
     SetScriptLongVar(0x13, event + 1);
@@ -405,7 +405,7 @@ void OpSetMenuScroll(void) {
         ResetTextPlaneLineStep(menu->plane, step);
     }
     if (pos != -1) {
-        SetTextPlaneFirstSelectableRow(menu->plane, pos, 1);
+        SetTextPlaneFirstSelectableRow(menu->plane, pos, true);
     }
 }
 
@@ -658,7 +658,7 @@ RVA(0x0002fb20, 0x35)
 i16 OpenScriptWindow(u16 kind, i16 arg) {
     i16 window = CreateTextPlane(kind, arg);
     SetTextWindowScrollTop(window, 2);
-    SetTextScrollMode(1);
+    SetTextScrollMode(true);
     return StackScriptWindow(window);
 }
 
@@ -687,17 +687,16 @@ i16 TopScriptWindow(void) {
     return node->window;
 }
 
-// Operand 0 stacks the message window; 1 drops the newest stacked window
-// without closing it.
+// Drops the newest stacked window without closing it for the drop action.
 RVA(0x0002fbc0, 0x3b)
 void OpStackMessageWindow(void) {
     ScriptWindowNode* node;
-    i16 op = ReadScriptValue();
+    GZ_ENUM_LOCAL(ScriptWindowStackAction, i16) op = ReadScriptValue();
     switch (op) {
-        case 0:
+        case SCRIPT_WINDOW_STACK_PUSH_MESSAGE:
             StackScriptWindow(OpenMessageWindow());
             break;
-        case 1:
+        case SCRIPT_WINDOW_STACK_DROP_TOP:
             node = ListPopLast(s_windowStack);
             if (node) {
                 FreeBlock(node);
@@ -732,16 +731,16 @@ void PopScriptWindow(void) {
 
 RVA(0x0002fc70, 0x73)
 b16 OpStepListMenu(void) {
-    i16 mode = ReadScriptValue();
+    GZ_ENUM_LOCAL(ScriptItemListOperation, i16) mode = ReadScriptValue();
     i16 stepVar = ReadLongVarIndex();
     i16 step = GetScriptLongVar(stepVar);
     i16 resultVar = ReadLongVarIndex();
     i16 result = 0;
     switch (mode) {
-        case 0:
+        case SCRIPT_ITEM_LIST_BUY:
             result = StepItemBuyMenu(&step);
             break;
-        case 1:
+        case SCRIPT_ITEM_LIST_SELL:
             result = StepItemSellMenu(&step);
             break;
     }

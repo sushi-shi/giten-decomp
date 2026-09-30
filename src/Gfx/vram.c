@@ -4,6 +4,8 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/FieldSight.h>
 #include <Gfx/Background.h>
 #include <Gfx/Bitmap.h>
@@ -31,18 +33,18 @@ static MaskGrid s_maskData = {0};
 
 // The mask as loaded from its data file, and the working copy drawn against.
 DATA(0x00075f00)
-static MaskGrid* s_savedMask = 0;
+static MaskGrid* s_savedMask = NULL;
 
 DATA(0x00075f04)
-static MaskGrid* s_mask = 0;
+static MaskGrid* s_mask = NULL;
 
 // The 16 analog palette entries (0xGRB) and how many users hold each one.
 // Nothing in this image reads the colours back.
 DATA(0x00075f38)
-static i16 s_paletteColors[16] = {0};
+static i16 s_paletteColors[PALETTE_SIZE] = {0};
 
 DATA(0x00075f58)
-static i16 s_paletteRefs[16] = {0};
+static i16 s_paletteRefs[PALETTE_SIZE] = {0};
 
 // Bit 0x40: a palette entry or mode changed; bit 0x80: a change awaits
 // upload. No reader of the queued bit survives in this image.
@@ -78,7 +80,7 @@ void ResetMask(i16 copySaved) {
 RVA(0x00002bf0, 0x69)
 void LoadMask(void) {
     u16 size;
-    FILE* fp = OpenDataFile(2, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_MAP_MASK, DATA_FILE_TABLE, 0);
     fread(&size, 2, 1, fp);
     s_savedMask = &s_savedMaskData;
     s_mask = &s_maskData;
@@ -189,7 +191,7 @@ RVA(0x00002ec0, 0x2b)
 void ResetUpperPalette(void) {
     i16 i;
     memset(&s_paletteRefs[8], 0, 8 * sizeof(s_paletteRefs[0]));
-    for (i = 8; i < 16; i++) {
+    for (i = 8; i < PALETTE_SIZE; i++) {
         StorePaletteColor(i, 0);
     }
 }
@@ -215,7 +217,7 @@ u8 FindPaletteEntry(i16 color) {
 RVA(0x00002f20, 0x1d)
 void RetainPaletteEntry(u8 index) {
     i16* ref;
-    if (index < 16) {
+    if (index < PALETTE_SIZE) {
         ref = &s_paletteRefs[index];
         (*ref)++;
     }
@@ -223,7 +225,7 @@ void RetainPaletteEntry(u8 index) {
 
 RVA(0x00002f40, 0x28)
 b16 SetPaletteColor(u8 index, i16 color) {
-    if (index < 16) {
+    if (index < PALETTE_SIZE) {
         StorePaletteColor(index, color);
         MarkPaletteDirty();
         return true;
@@ -254,7 +256,7 @@ u32 GrbToRgb(u32 grb) {
 RVA(0x00002fe0, 0x26)
 void ReleasePaletteEntry(u8 index) {
     i16* ref;
-    if (index < 16) {
+    if (index < PALETTE_SIZE) {
         ref = &s_paletteRefs[index];
         if (*ref > 0) {
             (*ref)--;
@@ -332,10 +334,10 @@ void SkipPaletteSync(void) {}
 RVA(0x000030d0, 0x27)
 void ReleaseImagePalette(ImagePalette* palette) {
     i16 i;
-    for (i = 0; i < 16; i++) {
-        if (palette->entries[i] != 0xff) {
+    for (i = 0; i < PALETTE_SIZE; i++) {
+        if (palette->entries[i] != PALETTE_ENTRY_NONE) {
             ReleasePaletteEntry(palette->entries[i]);
-            palette->entries[i] = 0xff;
+            palette->entries[i] = PALETTE_ENTRY_NONE;
         }
     }
 }
@@ -371,7 +373,7 @@ u32 FreeImageHandle(u32 handle) {
 RVA(0x00003130, 0x58)
 void* LoadImageData(ImageRequest* request) {
     void* block = NULL;
-    FILE* fp = OpenDataFile(request->file, 0, request->variant);
+    FILE* fp = OpenDataFile(request->file, DATA_FILE_IMAGE, request->variant);
     i32 size;
     if (fp != NULL) {
         size = _filelength(_fileno(fp));
@@ -384,7 +386,7 @@ void* LoadImageData(ImageRequest* request) {
 RVA(0x00003190, 0x5e)
 void* LoadImageVariant(ImageRequest* request, i32* size) {
     void* block = NULL;
-    FILE* fp = OpenDataFile(request->file, 0, request->variant);
+    FILE* fp = OpenDataFile(request->file, DATA_FILE_IMAGE, request->variant);
     if (fp != NULL) {
         *size = _filelength(_fileno(fp));
         ReadImageBytes(block, fp, *size);
@@ -397,7 +399,7 @@ void* LoadImageVariant(ImageRequest* request, i32* size) {
 RVA(0x000031f0, 0x79)
 void* LoadImageRequest(ImageRequest* request, i16 mode) {
     void* block = NULL;
-    FILE* fp = OpenDataFile(request->file, 0, request->variant);
+    FILE* fp = OpenDataFile(request->file, DATA_FILE_IMAGE, request->variant);
     u32 size;
     i32 length;
     if (fp != NULL) {
@@ -415,7 +417,7 @@ void* LoadImageRequest(ImageRequest* request, i16 mode) {
 RVA(0x00003270, 0x55)
 void* LoadImageKind1(ImageRequest* request) {
     void* block = NULL;
-    FILE* fp = OpenDataFile(request->file, 1, 0);
+    FILE* fp = OpenDataFile(request->file, DATA_FILE_IMAGE_FCH, 0);
     i32 size;
     if (fp != NULL) {
         size = _filelength(_fileno(fp));
@@ -428,7 +430,7 @@ void* LoadImageKind1(ImageRequest* request) {
 RVA(0x000032d0, 0x5f)
 void* LoadImageFile(ImageRequest* request, i32* size) {
     void* block = NULL;
-    FILE* fp = OpenDataFile(request->file, 0xf, request->variant);
+    FILE* fp = OpenDataFile(request->file, DATA_FILE_IMAGE_VARIANT, request->variant);
     if (fp != NULL) {
         *size = _filelength(_fileno(fp));
         ReadImageBytes(block, fp, *size);

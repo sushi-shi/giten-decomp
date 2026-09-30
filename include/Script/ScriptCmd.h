@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/AlignmentSide.h>
 #include <Game/CharacterPools.h>
 #include <Game/CharacterStat.h>
 #include <Ints.h>
@@ -37,6 +38,11 @@ ScriptChoice* PushScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, 
 void InitScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode);
 i16 FindScriptChoiceAtMouse(void);
 i16 PollScriptChoiceMenu(void);
+GZ_ENUM_BEGIN_SPLIT(ScriptChoiceSubstep, i16)
+    SCRIPT_CHOICE_SUBSTEP_INITIALIZE = 0,
+    SCRIPT_CHOICE_SUBSTEP_POLL = 1
+GZ_ENUM_END_SPLIT(ScriptChoiceSubstep)
+
 b16 RunScriptChoiceState(void);
 
 // eventflags' copy into bank 15's tag. Codegen constraint: declared here; in
@@ -53,7 +59,13 @@ i32 GetObjectStatTotal(i16 ref, GZ_ENUM_PARAM(CharacterStat, i16) stat);
 i32 GetObjectLevel(i16 ref);
 i32 GetObjectAlignmentLevelB(i16 ref);
 i32 GetObjectAlignmentLevelA(i16 ref);
-i16 StepForMode(i16 mode);
+GZ_ENUM_BEGIN_SPLIT(AlignmentStepMode, i16)
+    ALIGNMENT_STEP_TO_POSITIVE = 0,
+    ALIGNMENT_STEP_TO_NEUTRAL = 1,
+    ALIGNMENT_STEP_TO_NEGATIVE = 2
+GZ_ENUM_END_SPLIT(AlignmentStepMode)
+
+GZ_ENUM_RETURN(AlignmentSide, i16) StepForMode(GZ_ENUM_PARAM(AlignmentStepMode, i16) mode);
 void OpShiftPlayerAlignmentB(void);
 void OpShiftPlayerAlignmentA(void);
 b16 OpLevelUpMember(void);

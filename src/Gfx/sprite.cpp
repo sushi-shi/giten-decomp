@@ -71,7 +71,7 @@ void FreeSpriteImages(i16 slot) {
     }
     for (frame = 0; frame < SPRITE_FRAME_COUNT; frame++) {
         ReleaseComObject(GetSpriteFramePicture(slot, frame)->surface);
-        GetSpriteFramePicture(slot, frame)->visible = FALSE;
+        GetSpriteFramePicture(slot, frame)->visible = false;
     }
 }
 
@@ -83,7 +83,7 @@ b16 IsSpriteFrameLoaded(i16 slot, i16 frame) {
     if (GetSpriteFramePicture(slot, frame)->surface == NULL) {
         return false;
     }
-    return GetSpriteFramePicture(slot, frame)->visible != FALSE;
+    return GetSpriteFramePicture(slot, frame)->visible != false;
 }
 
 RVA(0x000588c0, 0xd0)
@@ -113,7 +113,7 @@ void LoadSpriteFrames(BmpFile* data, i16 slot, i16 image, i32 size) {
                 displayHeight,
                 width,
                 height,
-                FALSE
+                false
             )) {
             return;
         }

@@ -6,12 +6,17 @@
 #include <EnumDomain.h>
 #include <Game/ActionWait.h>
 #include <Game/Alignment.h>
+#include <Game/Attitude.h>
 #include <Game/BattleStat.h>
+#include <Game/BloodType.h>
 #include <Game/CharacterPools.h>
 #include <Game/CharacterStat.h>
 #include <Game/Condition.h>
 #include <Game/EquipPart.h>
+#include <Game/HumanTitle.h>
+#include <Game/ItemId.h>
 #include <Game/MapCoord.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/PickFlags.h>
 #include <Game/SavedMapPosition.h>
 #include <Ints.h>
@@ -26,7 +31,7 @@
 typedef struct ItemSlot {
     union {
         struct {
-            i16 item : 11;
+            GZ_ENUM_STORAGE(ItemId, i16) item : 11;
             i16 attachment : 5;
             i16 quantity;
         };
@@ -37,7 +42,7 @@ typedef struct ItemSlot {
 #define SetItemSlotItem(slot, value) ((slot)->item = (value), (slot)->attachment = -1)
 
 // Removes the item and quantity while retaining its attachment index.
-#define EmptyItemSlot(slot) ((slot)->item = -1, (slot)->quantity = 0)
+#define EmptyItemSlot(slot) ((slot)->item = ITEM_ID_EMPTY, (slot)->quantity = 0)
 
 static __inline void ClearItemSlot(ItemSlot* slot) {
     SetItemSlotItem(slot, -1);
@@ -57,18 +62,44 @@ typedef struct StatBlock {
     i16 total[11];
 } StatBlock;
 
+// Actor actions selected by scripts and stored on field and party actors.
+// RunObjectStep handles attack, movement and talk; defend and recover have no
+// field-step branch.
+GZ_ENUM_BEGIN_SPLIT(ActorMode, u8)
+    ACTOR_MODE_NONE = 0,
+    ACTOR_MODE_ATTACK = 1,
+    ACTOR_MODE_FLEE = 2,
+    ACTOR_MODE_DEFEND = 3,
+    ACTOR_MODE_APPROACH = 4,
+    ACTOR_MODE_STEP_INTO_RANGE = 5,
+    ACTOR_MODE_STEP_CLOSER = 6,
+    ACTOR_MODE_CIRCLE_AROUND = 7,
+    ACTOR_MODE_RECOVER = 8,
+    ACTOR_MODE_WANDER = 9,
+    ACTOR_MODE_IDLE = 10,
+    ACTOR_MODE_TALK = 11
+GZ_ENUM_END_SPLIT(ActorMode)
+
+// A human member's gender as InitCharacters gives it by name; Newton has none.
+GZ_ENUM_BEGIN_SPLIT(Gender, u8)
+    GENDER_NONE = 0,
+    GENDER_MALE = 1,
+    GENDER_FEMALE = 2
+GZ_ENUM_END_SPLIT(Gender)
+
 // A battle command, numbered from its row in the actor command menu
 // (s_commandLabels), as a member's pickRole keeps it; 0 is none.
-// Codegen constraint: an enum here renumbers the declarations of every unit
-// including this header and loses exact matches (see rule-exceptions.tsv).
-#define PICK_ROLE_ATTACK 1
-#define PICK_ROLE_GUN 2
-#define PICK_ROLE_COMP 3
-#define PICK_ROLE_MAGIC 4
-#define PICK_ROLE_ITEM 5
-#define PICK_ROLE_EXTRA 6
-#define PICK_ROLE_RETURN 7
-#define PICK_ROLE_DEFENCE 8
+GZ_ENUM_BEGIN_SPLIT(PickRole, i8)
+    PICK_ROLE_NONE = 0,
+    PICK_ROLE_ATTACK = 1,
+    PICK_ROLE_GUN = 2,
+    PICK_ROLE_COMP = 3,
+    PICK_ROLE_MAGIC = 4,
+    PICK_ROLE_ITEM = 5,
+    PICK_ROLE_EXTRA = 6,
+    PICK_ROLE_RETURN = 7,
+    PICK_ROLE_DEFENCE = 8
+GZ_ENUM_END_SPLIT(PickRole)
 
 // @identity-TODO: a party member's 0x21f-byte record (the 16-entry table of
 // them, the script objects resolved from negative ids, and the objects whose
@@ -88,7 +119,7 @@ typedef struct StatBlock {
 // @identity-TODO: `alignmentLevelB`/`alignmentLevelA` are the signed values
 // derived from `alignmentB`/`alignmentA` (0x43e0a0/0x43e0d0) that
 // AlignmentClass classifies; `battleStats` are recomputed with the stats and
-// copied to `battleStatsShown` (their 24 entries are unnamed).
+// copied to `battleStatsShown` (see BattleStatIndex for known entries).
 // `experience` is what 0x4187e0 adds a battle's award to (below level 99) and
 // 0x418aa0 raises to the level's minimum; `macca`/`magnetite` are what the
 // script reads for an object (0x438cc0/0x438d10), and `levelGap` is the party
@@ -97,12 +128,18 @@ typedef struct StatBlock {
 // index (the name table uses the first); `trainingPoints` are four counters
 // 0x41c690 adds to, capped by 0x41c650(99); `title` picks the name 0x410180
 // returns for a human member (id < 0x20); `familiarity` is an eighth of the
-// per-id count GetFamiliarityCount reads, clamped to 0..63 (the script adds 2
-// unless event flag 2/8 is set).
+// per-id count GetFamiliarityCount reads, clamped to 0..FAMILIARITY_MAX (the
+// script adds 2 once the DCS Mabudachi is held).
 // @identity-TODO: `fieldState` is set to 6 on every map actor after a party turn
 // of a field encounter and read as a script switch key; its values are unrecovered.
+#define FAMILIARITY_MAX 0x3f
+// A character's affiliations are training kinds (BattleStatGroup) or
+// AFFILIATION_NONE, packed to the front.
+#define AFFILIATION_COUNT 3
+#define AFFILIATION_NONE (-1)
+
 typedef struct Character {
-    i16 id;
+    GZ_ENUM_STORAGE(ObjectRecordId, i16) id;
     char namePrefix[17];
     char name[17];
     // @identity-TODO: bag-entry details copied during equipment preview;
@@ -116,12 +153,12 @@ typedef struct Character {
     // the roster leader and field effect 0x16 returns to (one cell in front);
     // skill 0x7a is blocked while no area is marked.
     SavedMapPosition markPosition;
-    u8 bloodType;
+    GZ_ENUM_STORAGE(BloodType, u8) bloodType;
     u8 sign;
     u8 pad037;
     // Per-attribute resistance; the special attribute beyond this array uses 50.
     u8 resistance[10];
-    i8 affiliation[3];
+    i8 affiliation[AFFILIATION_COUNT];
     // The group whose row of the equipment table (0x483b38) says what it can
     // equip.
     i16 equipGroup;
@@ -139,11 +176,9 @@ typedef struct Character {
     i16 shield;
     u8 pad065[4];
     u8 byte069; // @identity-TODO: copied to both object bytes +0x83/+0x84 (0x410930)
-    // @identity-TODO: FindFavouredMember (0x43bc70) only weighs human members
-    // with class 2; what the classes are is unrecovered.
-    u8 memberClass;
+    GZ_ENUM_STORAGE(Gender, u8) gender;
     u8 level;
-    u8 title;
+    GZ_ENUM_STORAGE(HumanTitle, u8) title;
     // @identity-TODO: the distance at which a field actor's script range
     // test holds (read as the script's trigger range only).
     u8 triggerRange;
@@ -167,7 +202,7 @@ typedef struct Character {
     // member with it set) and an action wait (OpSetActorAlert clamps it).
     ActionWait actionWait;
     // The battle command the member picked (a PICK_ROLE_*), and the record it uses.
-    i8 pickRole;
+    GZ_ENUM_STORAGE(PickRole, i8) pickRole;
     i16 pickTarget : 15;
     i16 pickTargetHigh : 1;
     // @identity-TODO: the object (or -1 - party position) the pick targets.
@@ -194,9 +229,9 @@ typedef struct Character {
     ItemSlot slots[8];
     u8 levelGap;
     u8 familiarity;
-    u8 attitude;
+    GZ_ENUM_STORAGE(Attitude, u8) attitude;
     u8 fieldState;
-    u8 mode;
+    GZ_ENUM_STORAGE(ActorMode, u8) mode;
     u8 pad1c7;
     u8 personalFlags[32];
     // @identity-TODO: two dwords cleared whenever a record is loaded (runtime
@@ -303,8 +338,9 @@ static __inline void SetCharacterChanges(Character* character, i32 targetChange,
 
 #define GetBattleStatShown(character, stat) ((character)->battleStatsShown[(stat)])
 
-static __inline i16* GetBattleStatGroup(Character* character, i16 group) {
-    return &character->battleStatsShown[group * 6];
+static __inline i16*
+GetBattleStatGroup(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) group) {
+    return &character->battleStatsShown[group * BATTLE_STATS_PER_GROUP];
 }
 
 #define GetTrainingPoints(character, kind) ((character)->trainingPoints[(kind)])
@@ -336,7 +372,10 @@ static __inline i32 GetSummonMagnetiteCost(const Character* character) {
     return character->levelBonus * character->level;
 }
 
-extern Character g_characters[16];
+// The character table: party members, loaded demons and scratch slots.
+#define CHARACTER_SLOT_COUNT 16
+
+extern Character g_characters[CHARACTER_SLOT_COUNT];
 
 Character* GetCharacter(i16 slot);
 i16 GetCharacterId(i16 slot);
@@ -349,7 +388,13 @@ void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part);
 void FullyRestoreCharacter(Character* character);
 
 void InitCharacters(void);
-void InitCharacterSlot(i16 slot, i16 id, const char* prefix, const char* name, i16 memberClass);
+void InitCharacterSlot(
+    i16 slot,
+    i16 id,
+    const char* prefix,
+    const char* name,
+    GZ_ENUM_PARAM(Gender, i16) gender
+);
 
 Character* CopyCharacterCore(Character* source, Character* destination);
 Character* LoadCharacterCore(i16 id, Character* destination);

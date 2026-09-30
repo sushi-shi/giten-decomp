@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Gfx/Bitmap.h>
 #include <Gfx/Picture.h>
 #include <Gfx/ScreenLayer.h>
@@ -36,7 +37,14 @@ typedef struct WorldMapBlitRegion {
 void LoadWorldMapTile(BmpFile* bmp, i16 slot);
 void LoadWorldMapOverlay(BmpFile* bmp, i16 slot);
 u8 ReadWorldMapTileCode(i16 x, i16 y, i16 slot, i16 layer);
-// Zero for no marker colour, two on the world map, three on the automap.
+// A marker-colour hit on the map surface, optionally through the automap
+// preview layer. The encoded results are 0, 2 and 3.
+GZ_ENUM_FLAGS_BEGIN(WorldMapHitFlags, i16)
+    WORLD_MAP_HIT_NONE = 0,
+    WORLD_MAP_HIT_AUTOMAP_LAYER = 1,
+    WORLD_MAP_HIT_MARKER_COLOR = 2
+GZ_ENUM_FLAGS_END(WorldMapHitFlags)
+
 i16 HitTestWorldMap(i16 x, i16 y, i16 layer);
 b16 IsWorldMapMarkerNearEdge(i16 x, i16 y);
 // Magnifies the map around the mouse into the automap canvas.

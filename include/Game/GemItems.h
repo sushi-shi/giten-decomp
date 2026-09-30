@@ -8,7 +8,10 @@
 
 // The sixteen gem items, numbered from the loaded gem base, with the count
 // held of each.
-extern ItemStack g_gemItems[16];
+// The gem kinds, one stack each.
+#define GEM_ITEM_COUNT 16
+
+extern ItemStack g_gemItems[GEM_ITEM_COUNT];
 
 #define GetGemItemEntry(index) (&g_gemItems[(index)])
 

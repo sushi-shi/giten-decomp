@@ -16,6 +16,10 @@ typedef struct ScriptBlock {
     i32 code;
 } ScriptBlock;
 
+// The id of a field object's own script block (read from the object script
+// file), which FindLayerScriptEntry also takes as that file.
+#define SCRIPT_BLOCK_OBJECT 0xff
+
 static __inline i16 GetScriptBlockId(const ScriptBlock* block) {
     return block->id;
 }
@@ -46,8 +50,10 @@ typedef struct ScriptRange {
     u16 length;
 } ScriptRange;
 
+#define SCRIPT_ENTRY_COUNT 256
+
 typedef struct ScriptCode {
-    ScriptRange ranges[256];
+    ScriptRange ranges[SCRIPT_ENTRY_COUNT];
     u8 bytes[1];
 } ScriptCode;
 

@@ -38,7 +38,7 @@ ScriptContext* g_curScript;
 // Negative script object ids -1, -2, ... name slots 0, 1, ...
 RVA(0x000387f0, 0xa)
 i16 ObjectSlotOfId(i16 id) {
-    id = -1 - id;
+    id = SCRIPT_REF_SLOT_BASE - id;
     return id;
 }
 
@@ -46,7 +46,7 @@ RVA(0x00038800, 0x12)
 i16 GetScriptActorId(void) {
     Character* actor = GetScriptActor();
     if (actor == NULL) {
-        return -1;
+        return CHARACTER_ID_NONE;
     }
     return actor->id;
 }
@@ -128,25 +128,25 @@ Character* GetScriptActor(void) {
 
 RVA(0x00038a50, 0x134)
 Character* ResolveScriptObject(i16 id) {
-    if (id == -16) {
+    if (id == SCRIPT_REF_FAVOURED_MEMBER) {
         return GetPartyCharacter(FindFavouredMember());
     }
-    if (id == -17) {
+    if (id == SCRIPT_REF_ACTOR) {
         return GetScriptActor();
     }
-    if (id == -18) {
+    if (id == SCRIPT_REF_ACTOR_BY_ID) {
         return GetCharacterById(GetScriptActorId());
     }
-    if (id == -19) {
+    if (id == SCRIPT_REF_ACTOR_ALIAS) {
         return GetScriptActor();
     }
-    if (id == -20) {
+    if (id == SCRIPT_REF_BATTLE_ACTOR) {
         return GetCombatant(g_actorId);
     }
-    if (id == -21) {
+    if (id == SCRIPT_REF_BATTLE_TARGET) {
         return GetCombatant(g_targetId);
     }
-    if (id == -22 || id == -23) {
+    if (id == SCRIPT_REF_FUSION_RESULT || id == SCRIPT_REF_FUSION_RESULT_ALIAS) {
         return LoadFusionResultCharacter(GetCharacter(-1));
     }
     if (id < 0) {
@@ -171,19 +171,20 @@ MapCoord ResolveScriptObjectCoord(i16 id) {
     MapCoord point;
     point.x = 0;
     point.y = 0;
-    if (id >= SCRIPT_REF_PARTY_BASE || id == -18 || (id < 0 && id >= -16) || id == -22
-        || id == -23) {
+    if (id >= SCRIPT_REF_PARTY_BASE || id == SCRIPT_REF_ACTOR_BY_ID
+        || (id < 0 && id >= SCRIPT_REF_FAVOURED_MEMBER) || id == SCRIPT_REF_FUSION_RESULT
+        || id == SCRIPT_REF_FUSION_RESULT_ALIAS) {
         return GetMapCoord();
     }
-    if (id == -17 || id == -19) {
+    if (id == SCRIPT_REF_ACTOR || id == SCRIPT_REF_ACTOR_ALIAS) {
         FieldActor* actor = (FieldActor*)g_curScript->actor;
         if (actor != NULL) {
             point.x = actor->pos.x;
             point.y = actor->pos.y;
         }
-    } else if (id == -20) {
+    } else if (id == SCRIPT_REF_BATTLE_ACTOR) {
         return GetCombatantCoord(g_actorId);
-    } else if (id == -21) {
+    } else if (id == SCRIPT_REF_BATTLE_TARGET) {
         return GetCombatantCoord(g_targetId);
     }
     return point;
@@ -226,7 +227,7 @@ i16 ReadObjectId(void) {
 RVA(0x00038cc0, 0x48)
 i32 GetObjectMacca(i16 ref) {
     Character* character;
-    if (ref == -24) {
+    if (ref == SCRIPT_REF_ROLLED_SPOILS) {
         strcpy(g_numberUnit, "\203}\203b\203J");
         return g_rolledMacca;
     }
@@ -240,7 +241,7 @@ i32 GetObjectMacca(i16 ref) {
 RVA(0x00038d10, 0x48)
 i32 GetObjectMagnetite(i16 ref) {
     Character* character;
-    if (ref == -24) {
+    if (ref == SCRIPT_REF_ROLLED_SPOILS) {
         strcpy(g_numberUnit, "\202l\202`\202f");
         return g_rolledMagnetite;
     }

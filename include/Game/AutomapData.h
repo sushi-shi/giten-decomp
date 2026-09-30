@@ -10,6 +10,9 @@
 // (a count, then one bitmap handle per level); the current level's bitmap is
 // kept unpacked in one buffer and written back when the level changes.
 
+// IsAutomapCellHidden's result for an unexplored cell (0 when explored).
+#define AUTOMAP_CELL_HIDDEN 0x100
+
 typedef struct AutomapBitmapHeader {
     i16 width;
     i16 height;

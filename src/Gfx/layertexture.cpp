@@ -16,11 +16,11 @@ b16 DecodeLayerImage(BmpFile* data, i16 layer, i32 size) {
     if (data == NULL) {
         return loaded;
     }
-    for (frame = 0; frame < 5; frame++) {
+    for (frame = 0; frame < ENEMY_TEXTURE_FRAMES; frame++) {
         ReleaseTexture(&g_enemyTextures[layer][frame]);
     }
     consumed = 0;
-    for (frame = 0; frame < 5; frame++) {
+    for (frame = 0; frame < ENEMY_TEXTURE_FRAMES; frame++) {
         if (consumed > size) {
             break;
         }
@@ -29,7 +29,7 @@ b16 DecodeLayerImage(BmpFile* data, i16 layer, i32 size) {
                 &g_enemyTextures[layer][frame],
                 // API-forced: borrowed BMP input, selected by fromFile = FALSE.
                 reinterpret_cast<const char*>(bmp),
-                FALSE
+                false
             )) { // API-forced: borrowed BMP input.
             loaded = false;
         }
@@ -40,7 +40,7 @@ b16 DecodeLayerImage(BmpFile* data, i16 layer, i32 size) {
         consumed += bitmapSize;
     }
     if (!loaded) {
-        for (frame = 0; frame < 5; frame++) {
+        for (frame = 0; frame < ENEMY_TEXTURE_FRAMES; frame++) {
             Texture* texture = &g_enemyTextures[layer][frame];
             ReleaseTextureSurfaces(texture);
         }
@@ -61,11 +61,11 @@ void DecodeLayerImageAlt(BmpFile* data, i16 layer, i32 size) {
     if (bmp == NULL) {
         return;
     }
-    for (frame = 0; frame < 5; frame++) {
+    for (frame = 0; frame < ENEMY_TEXTURE_FRAMES; frame++) {
         ReleaseTexture(&g_enemyTextures[layer][frame]);
     }
     consumed = 0;
-    for (frame = 0; frame < 5; frame++) {
+    for (frame = 0; frame < ENEMY_TEXTURE_FRAMES; frame++) {
         if (consumed > size) {
             break;
         }
@@ -74,7 +74,7 @@ void DecodeLayerImageAlt(BmpFile* data, i16 layer, i32 size) {
             &g_enemyTextures[layer][frame],
             // API-forced: borrowed BMP input, selected by fromFile = FALSE.
             reinterpret_cast<const char*>(bmp),
-            FALSE
+            false
         ); // API-forced: borrowed BMP input.
         // Byte-forced: packed complete BMP files advance by bfSize.
         bmp = reinterpret_cast<BmpFile*>(

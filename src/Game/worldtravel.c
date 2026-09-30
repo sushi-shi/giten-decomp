@@ -7,7 +7,9 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <File/DataTableId.h>
 #include <Game/FieldScreen.h>
 #include <Game/FieldView.h>
@@ -19,6 +21,7 @@
 #include <Input/Mouse.h>
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
+#include <Text/TextAttr.h>
 #include <Util/Range.h>
 #include <Util/Scratch.h>
 
@@ -40,8 +43,19 @@ i16 g_destinationY;
 DATA(0x000912fe)
 i16 g_destinationX;
 
+// The travel grid covers WORLD_TRAVEL_RADIUS cells each way around the party;
+// a cell's score holds TRAVEL_PASSABLE and TRAVEL_REACHABLE, with its weight in
+// the bits above them.
+#define WORLD_TRAVEL_RADIUS 2
+#define WORLD_TRAVEL_SPAN (2 * WORLD_TRAVEL_RADIUS + 1)
+GZ_ENUM_FLAGS_BEGIN(WorldTravelCellFlag, u8)
+    TRAVEL_PASSABLE = 1,
+    TRAVEL_REACHABLE = 2
+GZ_ENUM_FLAGS_END(WorldTravelCellFlag)
+#define TRAVEL_CELL_STATE (TRAVEL_PASSABLE | TRAVEL_REACHABLE)
+
 DATA(0x0007b500)
-static u8 s_travelScores[5][5] = {0};
+static u8 s_travelScores[WORLD_TRAVEL_SPAN][WORLD_TRAVEL_SPAN] = {0};
 
 DATA(0x0007b520)
 MapCoord g_worldTravelHistory[128] = {0};
@@ -81,7 +95,7 @@ RVA(0x00011660, 0xe2)
 b16 PickWorldMapDestination(i16 layer) {
     MapCoord destination = PopRoutePoint();
     i16 hit;
-    if (destination.x != -1 && destination.y != -1) {
+    if (destination.x != MAP_COORD_NONE && destination.y != MAP_COORD_NONE) {
         SetWorldTravelDestination(destination);
         return true;
     }
@@ -89,14 +103,14 @@ b16 PickWorldMapDestination(i16 layer) {
         return false;
     }
     destination = GetMouseWorldCell();
-    if (destination.x == -1 && destination.y == -1) {
+    if (destination.x == MAP_COORD_NONE && destination.y == MAP_COORD_NONE) {
         return false;
     }
     hit = HitTestWorldMap(g_mousePosition.x, g_mousePosition.y, layer);
     if (!hit) {
         return false;
     }
-    if (hit == 2) {
+    if (hit == WORLD_MAP_HIT_MARKER_COLOR) {
         SetWorldTravelDestination(destination);
         return true;
     }
@@ -156,7 +170,7 @@ MapCoord FindWorldTravelStep(i16 layer, i16 x, i16 y, i16 destX, i16 destY) {
     delta.y = destY - y;
     direction = GetWorldTravelDirection(delta.x, delta.y);
     LoadWorldTravelCandidates(layer, x, y, direction);
-    MarkReachableWorldTravelCells(2, 2);
+    MarkReachableWorldTravelCells(WORLD_TRAVEL_RADIUS, WORLD_TRAVEL_RADIUS);
     WeightWorldTravelCandidates(GetWorldTravelLateralDelta(delta.x, delta.y, direction));
     for (i = 0; i < s_travelHistoryCount; i++) {
         ExcludeWorldTravelStep(
@@ -194,7 +208,7 @@ i16 GetWorldTravelLateralDelta(i16 x, i16 y, i16 direction) {
 }
 
 DATA(0x000644a8)
-static const u8 s_travelWeights[3][5][5] = {
+static const u8 s_travelWeights[3][WORLD_TRAVEL_SPAN][WORLD_TRAVEL_SPAN] = {
     {{4, 12, 20, 16, 8},
      {36, 44, 52, 48, 40},
      {68, 76, 0, 80, 72},
@@ -220,8 +234,8 @@ void LoadWorldTravelCandidates(i16 layer, i16 x, i16 y, i16 direction) {
     i16 row;
     i16 column;
     u8 code = 0;
-    for (row = -2; row <= 2; row++) {
-        for (column = -2; column <= 2; column++) {
+    for (row = -WORLD_TRAVEL_RADIUS; row <= WORLD_TRAVEL_RADIUS; row++) {
+        for (column = -WORLD_TRAVEL_RADIUS; column <= WORLD_TRAVEL_RADIUS; column++) {
             switch (direction) {
                 case VIEW_NORTH:
                     code = GetWorldMapCellCode(layer, x + column, y - row);
@@ -237,7 +251,7 @@ void LoadWorldTravelCandidates(i16 layer, i16 x, i16 y, i16 direction) {
                     break;
             }
             code = g_worldTravelTerrainFlags[code];
-            s_travelScores[row + 2][column + 2] = code;
+            s_travelScores[row + WORLD_TRAVEL_RADIUS][column + WORLD_TRAVEL_RADIUS] = code;
         }
     }
 }
@@ -245,33 +259,35 @@ void LoadWorldTravelCandidates(i16 layer, i16 x, i16 y, i16 direction) {
 RVA(0x00011b30, 0x10e)
 void MarkReachableWorldTravelCells(i16 row, i16 column) {
     i16 scan;
-    if (s_travelScores[row][column] & 2) {
+    if (s_travelScores[row][column] & TRAVEL_REACHABLE) {
         return;
     }
-    if (!(s_travelScores[row][column] & 1)) {
+    if (!(s_travelScores[row][column] & TRAVEL_PASSABLE)) {
         return;
     }
     for (scan = column; scan >= 0; scan--) {
-        if ((s_travelScores[row][scan] & 3) != 1) {
+        if ((s_travelScores[row][scan] & TRAVEL_CELL_STATE) != TRAVEL_PASSABLE) {
             break;
         }
-        s_travelScores[row][scan] |= 2;
-        if (row < 4 && (s_travelScores[row + 1][scan] & 3) == 1) {
+        s_travelScores[row][scan] |= TRAVEL_REACHABLE;
+        if (row < WORLD_TRAVEL_SPAN - 1
+            && (s_travelScores[row + 1][scan] & TRAVEL_CELL_STATE) == TRAVEL_PASSABLE) {
             MarkReachableWorldTravelCells(row + 1, scan);
         }
-        if (row > 0 && (s_travelScores[row - 1][scan] & 3) == 1) {
+        if (row > 0 && (s_travelScores[row - 1][scan] & TRAVEL_CELL_STATE) == TRAVEL_PASSABLE) {
             MarkReachableWorldTravelCells(row - 1, scan);
         }
     }
-    for (scan = column + 1; scan <= 4; scan++) {
-        if ((s_travelScores[row][scan] & 3) != 1) {
+    for (scan = column + 1; scan <= WORLD_TRAVEL_SPAN - 1; scan++) {
+        if ((s_travelScores[row][scan] & TRAVEL_CELL_STATE) != TRAVEL_PASSABLE) {
             break;
         }
-        s_travelScores[row][scan] |= 2;
-        if (row < 4 && (s_travelScores[row + 1][scan] & 3) == 1) {
+        s_travelScores[row][scan] |= TRAVEL_REACHABLE;
+        if (row < WORLD_TRAVEL_SPAN - 1
+            && (s_travelScores[row + 1][scan] & TRAVEL_CELL_STATE) == TRAVEL_PASSABLE) {
             MarkReachableWorldTravelCells(row + 1, scan);
         }
-        if (row > 0 && (s_travelScores[row - 1][scan] & 3) == 1) {
+        if (row > 0 && (s_travelScores[row - 1][scan] & TRAVEL_CELL_STATE) == TRAVEL_PASSABLE) {
             MarkReachableWorldTravelCells(row - 1, scan);
         }
     }
@@ -282,18 +298,19 @@ void WeightWorldTravelCandidates(i16 lateral) {
     i16 magnitude;
     i16 row;
     i16 column;
-    if (lateral < -2) {
-        lateral = -2;
-    } else if (lateral > 2) {
-        lateral = 2;
+    if (lateral < -WORLD_TRAVEL_RADIUS) {
+        lateral = -WORLD_TRAVEL_RADIUS;
+    } else if (lateral > WORLD_TRAVEL_RADIUS) {
+        lateral = WORLD_TRAVEL_RADIUS;
     }
     magnitude = abs(lateral);
     lateral = lateral >= 0 ? -1 : 1;
-    for (row = -2; row <= 2; row++) {
-        u8* scores = s_travelScores[row + 2] + 2;
-        for (column = -2; column <= 2; column++) {
-            if (scores[column] & 2) {
-                scores[column] |= s_travelWeights[magnitude][row + 2][column * lateral + 2];
+    for (row = -WORLD_TRAVEL_RADIUS; row <= WORLD_TRAVEL_RADIUS; row++) {
+        u8* scores = s_travelScores[row + WORLD_TRAVEL_RADIUS] + WORLD_TRAVEL_RADIUS;
+        for (column = -WORLD_TRAVEL_RADIUS; column <= WORLD_TRAVEL_RADIUS; column++) {
+            if (scores[column] & TRAVEL_REACHABLE) {
+                scores[column] |= s_travelWeights[magnitude][row + WORLD_TRAVEL_RADIUS]
+                                                 [column * lateral + WORLD_TRAVEL_RADIUS];
             }
         }
     }
@@ -304,9 +321,11 @@ void PreferWorldTravelDestination(i16 x, i16 y, i16 direction) {
     i16 row = 0;
     i16 column = 0;
     GetWorldTravelGridOffset(x, y, direction, &row, &column);
-    if (row >= -2 && row <= 2 && column >= -2 && column <= 2) {
-        if (s_travelScores[row + 2][column + 2] & 2) {
-            s_travelScores[row + 2][column + 2] |= 0xfc;
+    if (row >= -WORLD_TRAVEL_RADIUS && row <= WORLD_TRAVEL_RADIUS && column >= -WORLD_TRAVEL_RADIUS
+        && column <= WORLD_TRAVEL_RADIUS) {
+        if (s_travelScores[row + WORLD_TRAVEL_RADIUS][column + WORLD_TRAVEL_RADIUS]
+            & TRAVEL_REACHABLE) {
+            s_travelScores[row + WORLD_TRAVEL_RADIUS][column + WORLD_TRAVEL_RADIUS] |= 0xfc;
         }
     }
 }
@@ -319,9 +338,9 @@ MapCoord GetBestWorldTravelStep(i16 direction) {
     i16 row;
     i16 column;
     MapCoord step;
-    for (row = -2; row <= 2; row++) {
-        u8* scores = s_travelScores[row + 2] + 2;
-        for (column = -2; column <= 2; column++) {
+    for (row = -WORLD_TRAVEL_RADIUS; row <= WORLD_TRAVEL_RADIUS; row++) {
+        u8* scores = s_travelScores[row + WORLD_TRAVEL_RADIUS] + WORLD_TRAVEL_RADIUS;
+        for (column = -WORLD_TRAVEL_RADIUS; column <= WORLD_TRAVEL_RADIUS; column++) {
             if (scores[column] > bestScore) {
                 bestRow = row;
                 bestColumn = column;
@@ -356,8 +375,9 @@ void ExcludeWorldTravelStep(i16 x, i16 y, i16 direction) {
     i16 row = 0;
     i16 column = 0;
     GetWorldTravelGridOffset(x, y, direction, &row, &column);
-    if (row >= -2 && row <= 2 && column >= -2 && column <= 2) {
-        s_travelScores[row + 2][column + 2] = 0;
+    if (row >= -WORLD_TRAVEL_RADIUS && row <= WORLD_TRAVEL_RADIUS && column >= -WORLD_TRAVEL_RADIUS
+        && column <= WORLD_TRAVEL_RADIUS) {
+        s_travelScores[row + WORLD_TRAVEL_RADIUS][column + WORLD_TRAVEL_RADIUS] = 0;
     }
 }
 
@@ -391,12 +411,13 @@ void PushRoutePoint(MapCoord point) {
     s_routeCount++;
 }
 
-// The next route point ((-1, -1) and inactive when the route is done).
+// The next route point (MAP_COORD_NONE twice, and inactive, when the route is
+// done).
 RVA(0x00011f90, 0x7d)
 MapCoord PopRoutePoint(void) {
     MapCoord point;
-    point.x = -1;
-    point.y = -1;
+    point.x = MAP_COORD_NONE;
+    point.y = MAP_COORD_NONE;
     if (!s_route) {
         s_routeActive = false;
         return point;
@@ -420,7 +441,7 @@ i16 IsRouteActive(void) {
 
 RVA(0x00012020, 0x41)
 void LoadWorldMapPlaces(void) {
-    FILE* fp = OpenDataFile(DATA_TABLE_WORLD_PLACES, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_WORLD_PLACES, DATA_FILE_TABLE, 0);
     s_placeGrid = ReadCryptHandle(fp);
     s_placeNames = ReadCryptHandle(fp);
     CloseDataFile(fp);
@@ -476,7 +497,14 @@ void DrawWorldMapPlaceName(i16 place) {
         s_shownPlace = place;
         saved = SaveDrawState();
         ClearLocationCaption();
-        DrawLayerText(SCREEN_LAYER_LOCATION, 8, 8, g_scratchBuffer, 0x3400);
+        DrawLayerText(
+            SCREEN_LAYER_LOCATION,
+            8,
+            8,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1
+                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
         RestoreDrawState(saved);
     }
 }

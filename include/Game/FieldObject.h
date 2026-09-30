@@ -3,16 +3,28 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/Character.h>
+#include <Game/DemonPantheon.h>
+#include <Game/FieldLayerIndex.h>
 #include <Game/FieldSupport.h>
 #include <Game/GameState.h>
+#include <Game/HumanTitle.h>
+#include <Game/ObjectRecordId.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 // Negative image codes request horizontal mirroring. Nonnegative codes
 // can include the lit flag for the animated specular-lighting path.
 // clang-format off
 GZ_ENUM_BEGIN(FieldObjectImageCode)
+    FIELD_OBJECT_IMAGE_SIDE_MIRRORED = -1,
+    FIELD_OBJECT_IMAGE_FRONT = 0,
+    FIELD_OBJECT_IMAGE_SIDE = 1,
+    FIELD_OBJECT_IMAGE_BACK = 2,
+    FIELD_OBJECT_IMAGE_ACTING = 3,
+    FIELD_OBJECT_IMAGE_REACTION = 4,
     FIELD_OBJECT_IMAGE_INDEX_MASK = 0x0f,
     FIELD_OBJECT_IMAGE_LIT = 0x10
 GZ_ENUM_END(FieldObjectImageCode);
@@ -28,16 +40,56 @@ GZ_ENUM_END(FieldObjectImageCode);
 // rank corresponds to Character.level and list to Character.skills. Slots
 // 6/7 are the gun/ammunition pair; the ammunition extra field holds the
 // magazine size.
+// The field object table, and the layer of an unused object slot.
+#define FIELD_OBJECT_COUNT 16
+// Field-object record kinds run from HUMAN_ID_LIMIT below OBJECT_KIND_END.
+#define OBJECT_KIND_END 0x2020
+// The skills an object record lists (a field object rolls them by slot).
+#define OBJECT_SKILL_COUNT 8
+#define FIELD_LAYER_NONE (-1)
+// An object with no event to queue, and the bank and index of an object
+// with no event flag.
+#define FIELD_OBJECT_NO_EVENT (-1)
+#define FIELD_OBJECT_NO_FLAG 0xff
+
+// Which records FindObjectAt and CountObjectsAt accept: any, only `kind`, or
+// any but `kind`.
+GZ_ENUM_BEGIN_SPLIT(ObjectKindMatch, i16)
+    OBJECT_MATCH_ANY = 0,
+    OBJECT_MATCH_KIND = 1,
+    OBJECT_MATCH_OTHER_KIND = 2
+GZ_ENUM_END_SPLIT(ObjectKindMatch)
+
+// CheckObjectState's result for a slot.
+GZ_ENUM_BEGIN_SPLIT(ObjectSlotState, i16)
+    OBJECT_SLOT_FREE = -1,
+    OBJECT_SLOT_REMOVED = 0,
+    OBJECT_SLOT_LIVE = 1
+GZ_ENUM_END_SPLIT(ObjectSlotState)
+
+// Whether an object is absent, active, or has a fatal condition.
+GZ_ENUM_BEGIN_SPLIT(ObjectLifeState, i16)
+    OBJECT_LIFE_ABSENT = 0,
+    OBJECT_LIFE_ACTIVE = 1,
+    OBJECT_LIFE_FALLEN = 2
+GZ_ENUM_END_SPLIT(ObjectLifeState)
+
+// Whether a field object's movement stops when it reaches the party's cell.
+GZ_ENUM_BEGIN_SPLIT(ObjectPartyCellStop, i16)
+    OBJECT_PARTY_CELL_CONTINUE = 0,
+    OBJECT_PARTY_CELL_STOP = 1
+GZ_ENUM_END_SPLIT(ObjectPartyCellStop)
+
 typedef struct FieldObject {
     u8 pad000[0x14];
     i16 layer;
     i16 redraw;
     i16 anim;
-    i16 kind;
+    GZ_ENUM_STORAGE(ObjectRecordId, i16) kind;
     char namePrefix[17];
     u8 pad02d[0x25];
     u8 resistance[10];
-    i8 affiliation[3];
+    i8 affiliation[AFFILIATION_COUNT];
     i16 equipGroup;
     GZ_ENUM_STORAGE(PickFlags, u8) pickFlags;
     u32 trainingPoints[4];
@@ -50,11 +102,11 @@ typedef struct FieldObject {
     u8 encounterRow;
     i16 shield;
     u8 pad07f[3];
-    u8 pantheon;
+    GZ_ENUM_STORAGE(DemonPantheon, u8) pantheon;
     u8 byte083;
-    u8 memberClass;
+    GZ_ENUM_STORAGE(Gender, u8) gender;
     u8 rank;
-    u8 title;
+    GZ_ENUM_STORAGE(HumanTitle, u8) title;
     u8 triggerRange;
     u32 experience;
     i32 macca;
@@ -70,7 +122,7 @@ typedef struct FieldObject {
     i16 battleStatsShown[24];
     ConditionSet conditions;
     ActionWait actionWait;
-    i8 pickRole;
+    GZ_ENUM_STORAGE(PickRole, i8) pickRole;
     i16 pickTarget : 15;
     i16 pickTargetHigh : 1;
     i16 pickObject : 14;
@@ -87,9 +139,9 @@ typedef struct FieldObject {
     ItemSlot slots[8];
     u8 levelGap;
     u8 familiarity;
-    u8 attitude;
+    GZ_ENUM_STORAGE(Attitude, u8) attitude;
     u8 fieldState;
-    u8 mode;
+    GZ_ENUM_STORAGE(ActorMode, u8) mode;
     u8 pad1e1;
     u8 personalFlags[32];
     u32 clearedOnLoad[2];
@@ -98,7 +150,7 @@ typedef struct FieldObject {
     u8 pad211;
     i8 moonRow;
     MapCoord pos;
-    i16 direction;
+    GZ_ENUM_STORAGE(ViewDirection, i16) direction;
     u8 pad219;
     u8 byte21a;
     u8 byte21b;
@@ -111,7 +163,7 @@ typedef struct FieldObject {
     u8 flagIndex;
     // @identity-TODO: skill words 1..8 a field actor rolls from (index 0 overlaps
     // flagBank/flagIndex).
-    i16 skills[8];
+    i16 skills[OBJECT_SKILL_COUNT];
     ScriptBlock* script;
     i8 slot;
     i8 event;
@@ -125,7 +177,7 @@ static __inline void SetFieldObjectPickTarget(FieldObject* actor, i16 target) {
 #define SetObjectDirection(object, facing, changed)                                                \
     do {                                                                                           \
         if ((facing) != (object)->direction) {                                                     \
-            (changed) = 1;                                                                         \
+            (changed) = true;                                                                      \
             (object)->direction = (facing);                                                        \
         }                                                                                          \
     } while (0)
@@ -149,9 +201,9 @@ static __inline b32 TestFieldObjectFlag(FieldObject* object, i16 index) {
 }
 
 b16 InitFieldObjects(void);
-void RemoveFieldObject(i16 index, i16 announce);
+void RemoveFieldObject(i16 index, b16 announce);
 b16 ResetFieldObjects(void);
-i16 ExchangeObjectsFrozen(i16 frozen);
+b16 ExchangeObjectsFrozen(b16 frozen);
 i16 FindObjectOnLayer(i16 layer);
 void SetObjectEventFlag(i16 index, u8 bank, u8 flag);
 i16 SpawnFieldObject(
@@ -160,13 +212,13 @@ i16 SpawnFieldObject(
     i16 y,
     i16 direction,
     i16 kind,
-    i16 alternate,
+    b16 alternate,
     i8 event,
-    i16 fresh
+    b16 fresh
 );
 i16 SpawnMapObject(i16 layer, i16 x, i16 y, i16 direction, i8 event);
 i16 GetLiveObject(i16 index);
-i16 RespawnFieldObject(i16 index, i16 alternate, i8 event, i16 fresh);
+i16 RespawnFieldObject(i16 index, b16 alternate, i8 event, b16 fresh);
 void ResetObjectAnims(void);
 void ResetObjectAnim(i16 index);
 FieldObject* GetFieldObject(i16 index);
@@ -179,24 +231,24 @@ MapCoord GetObjectCoord(i16 index);
 i16 GetObjectDirection(i16 index);
 i16 ExchangeObjectCheckBypass(i16 bypass);
 i16 FlushObjectRedraws(void);
-i16 GetObjectLifeState(FieldObject* object);
+GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeState(FieldObject* object);
 i16 RelativeFacing(i16 from, i16 to);
 
 b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 drawn);
 MapCoord GetApproachOffset(i16 scale, i16 step);
 
 void DrawFieldObjects(void);
-i16 CheckObjectState(i16 index);
+GZ_ENUM_RETURN(ObjectSlotState, i16) CheckObjectState(i16 index);
 void RunFieldIdle(void);
-i16 FindObjectAt(i16 x, i16 y, i16 start, i16 mode, i16 kind);
-i16 CountObjectsAt(i16 x, i16 y, i16 mode, i16 kind);
+i16 FindObjectAt(i16 x, i16 y, i16 start, GZ_ENUM_PARAM(ObjectKindMatch, i16) mode, i16 kind);
+i16 CountObjectsAt(i16 x, i16 y, GZ_ENUM_PARAM(ObjectKindMatch, i16) mode, i16 kind);
 i16 FindObjectAtParty(void);
 void UpdateFieldObjects(void);
 i16 ExchangeObjectRemovalDeferred(i16 deferred);
 void ClearObjectStuns(i16* cleared);
 void ApplyObjectConditions(i16* marked);
 i16 GetObjectsFrozen(void);
-i16 GetObjectLifeStateAt(i16 index);
+GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeStateAt(i16 index);
 MapCoord* GetObjectCoordPtr(i16 index);
 i16 GetObjectSlot(i16 index);
 i16 GetObjectAnim(i16 index);
@@ -225,9 +277,9 @@ typedef struct FieldSkillCandidate {
 
 b16 RunObjectStep(FieldObject* object, i16 index);
 
-void SaveFieldLayer(i16 layer);
-void RestoreFieldLayer(i16 layer);
-void ResetFieldLayer(i16 layer);
+void SaveFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer);
+void RestoreFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer);
+void ResetFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer);
 i16 GetLayerKind(i16 layer);
 u32 GetLayerImage(i16 layer);
 i16 FindLayerOfKind(i16 kind);

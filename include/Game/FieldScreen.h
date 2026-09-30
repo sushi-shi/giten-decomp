@@ -3,8 +3,11 @@
 
 #include <rva.h>
 
-#include <Game/GameState.h>
+#include <EnumDomain.h>
+#include <Game/CellCode.h>
 #include <Game/FieldObject.h>
+#include <Game/GameState.h>
+#include <Game/ViewDirection.h>
 
 // The field screen: its redraw requests and menu mode.
 
@@ -29,12 +32,21 @@ b16 UpdateFieldScreen(i16 force);
 
 static __inline b16 FlushFieldScreen(void) {
     FlushObjectRedraws();
-    return UpdateFieldScreen(0);
+    return UpdateFieldScreen(false);
 }
 
 // @identity-TODO: which menu the table 0x4687e8 is and what flag 0x8000 means (disabled?) are
 // unrecovered; decode 0x22aa0/0x22ab0.
-void SetFieldMenuMode(i16 mode);
+// Which command rows the field panel permits. The names give the disabled
+// command set: skill=2, item=3, fight=5, talk=6, mapping=7.
+GZ_ENUM_BEGIN_SPLIT(FieldMenuMode, i16)
+    FIELD_MENU_ALL = 0,
+    FIELD_MENU_NO_SKILL_ITEM_FIGHT = 1,
+    FIELD_MENU_NO_FIGHT_TALK_MAPPING = 2,
+    FIELD_MENU_NO_SKILL_ITEM_FIGHT_MAPPING = 3
+GZ_ENUM_END_SPLIT(FieldMenuMode)
+
+void SetFieldMenuMode(GZ_ENUM_PARAM(FieldMenuMode, i16) mode);
 
 // @identity-TODO: What the saved point is used for (the spot 0x125d0 restores after a scene) is
 // inferred from its only reader pair.
@@ -46,7 +58,7 @@ void SetReturnPointAhead(void);
 
 // @identity-TODO: That wall kind 1 (preferred over 0 = open) is a door is inferred; confirm
 // from the wall renderer.
-i16 FindExitDirection(i16 x, i16 y);
+GZ_ENUM_RETURN(ViewDirection, i16) FindExitDirection(i16 x, i16 y);
 
 // @identity-TODO: That 0x9e30(0,3,1,0) is the party-member pick and 0xeaa0 maps an actor to its
 // talk entry is inferred.
@@ -88,7 +100,7 @@ void LoadCommandMenuImage(void);
 void FreeCommandMenuImage(void);
 
 i16 GetObjectsHidden(void);
-i16 ExchangeObjectsHidden(i16 hidden);
+b16 ExchangeObjectsHidden(b16 hidden);
 
 // @identity-TODO: What effect 0x15cc0 plays (sound 6, frames 0..8 of image 0x47b7fc) is
 // unrecovered.
@@ -120,7 +132,7 @@ typedef struct FieldMessage {
 } FieldMessage;
 
 FieldMessage* GetFieldMessage(i16 code);
-b16 DrawFieldMessage(i16 code, i16 band, i16 marked);
+b16 DrawFieldMessage(GZ_ENUM_PARAM(CellCode, i16) code, i16 band, i16 marked);
 
 void ResetSubscreen(void);
 

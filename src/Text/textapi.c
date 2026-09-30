@@ -34,7 +34,7 @@ TextPlaneHook SetTextPlaneHook(TextPlaneHook hook) {
 
 RVA(0x00045300, 0x1e)
 void CallTextPlaneHook(i16 plane, i16 event, i16 value) {
-    if (s_hook != 0) {
+    if (s_hook != NULL) {
         s_hook(plane, event, value);
     }
 }

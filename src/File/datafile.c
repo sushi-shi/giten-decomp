@@ -23,10 +23,10 @@ DATA(0x000714d8)
 static char s_nestedFileBuffer[0x200] = {0};
 
 DATA(0x000716d8)
-static FILE* s_dataFile = 0;
+static FILE* s_dataFile = NULL;
 
 DATA(0x000716dc)
-static FILE* s_prevDataFile = 0;
+static FILE* s_prevDataFile = NULL;
 
 // The id last asked for, and the id actually opened (after any fallback).
 DATA(0x000716e0)
@@ -156,7 +156,7 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
     i16 retried;
 
     s_requestedId = id;
-    retried = 0;
+    retried = false;
     sprintf(name, "fc\\fc%.4x.bmp", id);
     fp = fopen(name, "rb");
     for (;;) {
@@ -260,7 +260,7 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
                 s_dataFile = fp;
                 return fp;
         }
-        if (fp != NULL || retried == 1 || fallback == -1) {
+        if (fp != NULL || retried == true || fallback == -1) {
             break;
         }
         id = fallback;

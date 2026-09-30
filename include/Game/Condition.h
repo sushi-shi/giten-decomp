@@ -4,14 +4,17 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
-#include <Ints.h>
+#include <Enums.h>
 #include <Game/ConditionId.h>
+#include <Game/InflictCode.h>
+#include <Game/RestoreEffect.h>
+#include <Ints.h>
 #include <Util/BitSet.h>
 
 // Status conditions are bits 0..34, followed by their individual ages.
 typedef struct ConditionSet {
     u8 bits[5];
-    u8 ages[35];
+    u8 ages[CONDITION_COUNT];
 } ConditionSet;
 
 static __inline void
@@ -27,21 +30,30 @@ ClearCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) conditi
         }                                                                                          \
     } while (0)
 
-// @identity-TODO: a condition id the battle code keeps (cleared by
-// 0x424b20/0x424b60 and the attack routines 0x408d30/0x424950, set from byte
-// +0xd of the cached skill by 0x42db90); its role is unrecovered.
-extern i16 g_statusCondition;
+// The inflict code of the action being resolved (the skill's inflicted
+// condition, or the one an attack inflicted); INFLICT_NONE when none.
+extern GZ_ENUM_STORAGE(InflictCode, i16) g_statusCondition;
 
 const char* GetConditionName(GZ_ENUM_PARAM(ConditionId, i16) bit);
-b16 HasCondition(ConditionSet* conditions, i16 condition);
-i16 ConditionKindApplies(i16 kind, ConditionSet* conditions);
+b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
+i16 ConditionKindApplies(GZ_ENUM_PARAM(RestoreEffect, i16) kind, ConditionSet* conditions);
 
 // The physical ailments selected by restoration kind 57.
 extern const i16 g_physicalRecoveryConditions[8];
-i16 AddCondition(ConditionSet* conditions, i16 condition);
+// What AddCondition did: the condition was already held, was blocked (a
+// fatal or overriding condition), was added, or instead cleared the opposing
+// condition it cancels.
+GZ_ENUM_BEGIN(ConditionAddResult)
+    CONDITION_ADD_ALREADY_HELD = -1,
+    CONDITION_ADD_BLOCKED = 0,
+    CONDITION_ADD_ADDED = 1,
+    CONDITION_ADD_CANCELLED_OPPOSITE = 2
+GZ_ENUM_END(ConditionAddResult)
+
+GZ_ENUM_RETURN(ConditionAddResult, i16) AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
 i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
 void ClearConditionList(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
-i16 GetDisablingCondition(ConditionSet* conditions);
+GZ_ENUM_RETURN(ConditionId, i16) GetDisablingCondition(ConditionSet* conditions);
 void ClearBattleConditions(ConditionSet* conditions);
 void ClearLeaveConditions(ConditionSet* conditions);
 void ClearAllConditions(ConditionSet* conditions);
@@ -50,7 +62,15 @@ void ClearAllConditions(ConditionSet* conditions);
 // LastConditionIn over the list {0, 1, 2}.
 GZ_ENUM_RETURN(ConditionId, i16) GetFatalCondition(ConditionSet* conditions);
 
-i16 EaseSleep(ConditionSet* conditions);
+// Escalating or easing a condition changes nothing, changes the mild state,
+// or changes the severe state. The direction depends on the operation.
+GZ_ENUM_BEGIN_SPLIT(ConditionChangeResult, i16)
+    CONDITION_CHANGE_NONE = 0,
+    CONDITION_CHANGE_MILD = 1,
+    CONDITION_CHANGE_SEVERE = 2
+GZ_ENUM_END_SPLIT(ConditionChangeResult)
+
+GZ_ENUM_RETURN(ConditionChangeResult, i16) EaseSleep(ConditionSet* conditions);
 const char* GetFirstConditionName(ConditionSet* conditions);
 
 GZ_ENUM_RETURN(ConditionId, i16) GetPickBlockingCondition(ConditionSet* conditions);

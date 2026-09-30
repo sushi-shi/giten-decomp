@@ -4,6 +4,10 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/CellCode.h>
+#include <Game/GameStateId.h>
+#include <Game/PartyStep.h>
+#include <Game/WallKind.h>
 #include <Gfx/DDError.h>
 #include <Gfx/ScreenLayer.h>
 #include <Gfx/Sprite.h>
@@ -61,10 +65,6 @@ void DrawScreenFade(void);
 // states 9 and 12; what it shows is unrecovered.
 void BlitFieldBackground(void);
 
-#define GAME_STATE_SHOT 9
-#define GAME_STATE_CLOSING_EFFECT 12
-#define GAME_STATE_SCRIPT_ANIMATION 37
-
 // Selects and marks the hotspot the party points at.
 void DrawHotspotMarks(void);
 
@@ -100,10 +100,8 @@ i32 BlitTextPlanes(i32 first, i32 last, u32 skip);
 // The layers from the top down, as the layer code keeps them.
 extern struct ScreenLayer* g_layerStack[SCREEN_LAYER_COUNT];
 
-// The status screen's game state (pushed by the status command), and the
-// status phase that hides the first layers.
+// The status phase that hides the first layers.
 // @identity-TODO: what phase 3 shows is unrecovered.
-#define GAME_STATE_STATUS 0x19
 #define STATUS_PHASE_NO_LAYERS 3
 
 // Draws the sprites of the sprite table over the render target.
@@ -206,10 +204,6 @@ extern struct Mesh g_wallMesh;
 // CELL_STAIRS_NEAR marks those half a cell nearer.
 // @identity-TODO: how the "steps" pair (0x90, 0x91) differs from the stairs
 // is unrecovered; the up/down texture split is DrawStairs' low-bit test.
-#define CELL_STAIRS_UP 0x42
-#define CELL_STAIRS_DOWN 0x43
-#define CELL_STEPS_UP 0x90
-#define CELL_STEPS_DOWN 0x91
 #define CELL_STAIRS_NEAR 0x08
 
 // The stairs quad: its half width and its distance ahead.
@@ -225,12 +219,8 @@ void DrawStairs(void);
 #define CELL_SIZE 320
 #define WALL_TOP 324.0f
 
-// Wall kinds: kind WALL_OPEN draws nothing (GetWallAt counts it as none);
-// kinds up to 2 and WALL_PLAIN_ALT use the plain wall quarter of the atlas,
-// the others the door quarter.
-// @identity-TODO: what kinds 6 and 11 are is unrecovered.
-#define WALL_OPEN 6
-#define WALL_PLAIN_ALT 11
+// Wall kinds up to WALL_KIND_FLAG_BARRED_DOOR and WALL_KIND_UNBARRED_DOOR use
+// the plain wall quarter of the atlas; the others use the door quarter.
 
 // The areas whose map wraps around its edges: across only, or both ways.
 // @identity-TODO: which areas these are is unrecovered.
@@ -388,6 +378,7 @@ void ReleaseGraphics(void);
 // which AnimateDoor opens instead (ahead, back, left, right).
 extern u32 g_moveState;
 
+#define MOVE_STATE_NONE 0
 #define MOVE_STATE_STEP 1
 #define MOVE_STATE_BACK 2
 #define MOVE_STATE_LEFT 3
@@ -401,15 +392,8 @@ extern u32 g_moveState;
 #define MOVE_STATE_DOOR_LEFT 0x40
 #define MOVE_STATE_DOOR_RIGHT 0x80
 
-// StepParty's directions relative to the party's facing, and its result for
-// a plain step (0x10 when the step goes through a door).
-#define STEP_FORWARD 0
-#define STEP_RIGHT 1
-#define STEP_BACK 2
-#define STEP_LEFT 3
-#define STEP_WALK 1
-
 // The buttons of the navigation pad on layer SCREEN_LAYER_NAVIGATION.
+#define PAD_NONE 0
 #define PAD_FORWARD 1
 #define PAD_BACK 2
 #define PAD_LEFT 3

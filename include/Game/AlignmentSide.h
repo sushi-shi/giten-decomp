@@ -3,7 +3,7 @@
 
 #include <EnumDomain.h>
 
-// The sign of an alignment class (GetAlignmentClassB).
+// The negative, neutral or positive side of an alignment class or shift.
 GZ_ENUM_BEGIN_SPLIT(AlignmentSide, i16)
     ALIGNMENT_NEGATIVE = -1,
     ALIGNMENT_NEUTRAL = 0,

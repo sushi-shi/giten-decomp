@@ -5,7 +5,10 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/Alignment.h>
+#include <Game/CharacterStat.h>
 #include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
@@ -28,6 +31,7 @@
 #include <Gfx/ScreenLayer.h>
 #include <Gfx/ScreenSave.h>
 #include <Gfx/Vram.h>
+#include <Giten/Resource.h>
 #include <Input/Mouse.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
@@ -48,7 +52,7 @@ DATA(0x00064670)
 static const i16 s_fusionFlagLevelBonuses[4] = {0, 5, 7, 10};
 
 DATA(0x00068f88)
-static i16 s_fusionInfoPlane = -1;
+static i16 s_fusionInfoPlane = TEXT_PLANE_NONE;
 
 DATA(0x00068f8c)
 static i16 s_fusionPageRows = 1;
@@ -78,19 +82,19 @@ i16 g_fusionThirdSlot = -1;
 
 // @identity-TODO: the individual contents of these auxiliary planes are unproven.
 DATA(0x00068fc4)
-static i16 s_firstFusionDetailPlane = -1;
+static i16 s_firstFusionDetailPlane = TEXT_PLANE_NONE;
 
 DATA(0x00068fc8)
-static i16 s_secondFusionDetailPlane = -1;
+static i16 s_secondFusionDetailPlane = TEXT_PLANE_NONE;
 
 DATA(0x00068fcc)
-static i16 s_thirdFusionDetailPlane = -1;
+static i16 s_thirdFusionDetailPlane = TEXT_PLANE_NONE;
 
 DATA(0x00068fd0)
 static i16 s_pendingFusionResultId = -1;
 
 DATA(0x00068fd4)
-static i16 s_fusionPreviewPlane = -1;
+static i16 s_fusionPreviewPlane = TEXT_PLANE_NONE;
 
 DATA(0x00068fd8)
 i16 g_fusionResult = -1;
@@ -105,7 +109,7 @@ DATA(0x00080118)
 char g_fusionNameBuffer[128] = {0};
 
 DATA(0x00080198)
-static i16 s_fusionPageAction = 0;
+static GZ_ENUM_STORAGE(FusionPagerButton, i16) s_fusionPageAction = FUSION_PAGER_PREVIOUS;
 
 DATA(0x000801a0)
 static FusionSummary s_fusionPairSummaries[32 * 32] = {0};
@@ -114,7 +118,7 @@ DATA(0x000809a0)
 static FusionSummary s_fusionSummary = {0};
 
 DATA(0x000809a4)
-static struct BmpFile* s_animationImage = 0;
+static struct BmpFile* s_animationImage = NULL;
 
 DATA(0x000809a8)
 static i16 s_fusionSlots[32] = {0};
@@ -123,22 +127,22 @@ DATA(0x000809e8)
 static u32 s_fusionSelectionImage = 0;
 
 DATA(0x000809ec)
-static MenuBox* s_fusionMenu = 0;
+static MenuBox* s_fusionMenu = NULL;
 
 DATA(0x000809f0)
-static TextPlaneHook s_previousFusionTextHook = 0;
+static TextPlaneHook s_previousFusionTextHook = NULL;
 
 DATA(0x000809f4)
 static i16 s_fusionColumnOffset = 0;
 
 DATA(0x000809f8)
-static Panel* s_fusionPager = 0;
+static Panel* s_fusionPager = NULL;
 
 DATA(0x000809fc)
 static FusionSummary s_cachedFusionSummary = {0};
 
 DATA(0x00080a00)
-static PaletteState* s_fusionSelectionPaletteState = 0;
+static PaletteState* s_fusionSelectionPaletteState = NULL;
 
 DATA(0x00080a04)
 static i16 s_fusionResultId = 0;
@@ -147,19 +151,19 @@ DATA(0x00080a08)
 static i16 s_fusionCandidateCount = 0;
 
 DATA(0x00080a0c)
-static Character* s_savedFusionCharacter = 0;
+static Character* s_savedFusionCharacter = NULL;
 
 DATA(0x00080a10)
 u8 g_fusionPreviewSave[16] = {0};
 
 DATA(0x00080a20)
-PaletteState* g_fusionPaletteState = 0;
+PaletteState* g_fusionPaletteState = NULL;
 
 DATA(0x00080a24)
-static FusionSummary* s_fusionSummaryTable = 0;
+static FusionSummary* s_fusionSummaryTable = NULL;
 
 DATA(0x00080a28)
-static u8* s_animationScript = 0;
+static u8* s_animationScript = NULL;
 
 DATA(0x00080a2c)
 static i16 s_animationResource = 0;
@@ -180,7 +184,7 @@ DATA(0x00080a40)
 static i16 s_fusionResultKind = 0;
 
 DATA(0x00080a44)
-static i16 s_initialFusionStep = 0;
+static GZ_ENUM_STORAGE(FusionMenuStep, i16) s_initialFusionStep = FUSION_MENU_PAIR_FIRST;
 
 DATA(0x00080a48)
 static i16 s_fusionResultVariable = 0;
@@ -243,7 +247,7 @@ RVA(0x00026550, 0x27)
 i16 SetFusionResult(i16 demon, i16 kind) {
     g_fusionResult = demon;
     if (demon == -1) {
-        kind = 0;
+        kind = FUSION_SUMMARY_UNSPECIFIED;
     }
     s_fusionResultKind = kind;
     return g_fusionResult;
@@ -284,8 +288,8 @@ i16 CalculatePairFusion(i16 first, i16 second) {
             }
         }
     }
-    if (g_fusionResult >= 32 && IsFusionDemonRestricted(g_fusionResult)) {
-        return SetFusionResult(-1, 0);
+    if (g_fusionResult >= HUMAN_ID_LIMIT && IsFusionDemonRestricted(g_fusionResult)) {
+        return SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
     }
     return result;
 }
@@ -295,10 +299,10 @@ i16 CheckFusionRestrictedPair(i16 first, i16 second) {
     i16 firstClass = GetRosterFusionRestrictedClass(first);
     i16 secondClass = GetRosterFusionRestrictedClass(second);
     if (firstClass && secondClass) {
-        return SetFusionResult(-1, 0);
+        return SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
     }
     if (firstClass || secondClass) {
-        SetFusionResult(0, 0);
+        SetFusionResult(0, FUSION_SUMMARY_UNSPECIFIED);
         return 1;
     }
     return 0;
@@ -314,15 +318,15 @@ i16 ResolveFusionDemonPair(i16 first, i16 second) {
     }
     if (result >= 1000) {
         result -= 1000;
-        return SetFusionResult(result, 8);
+        return SetFusionResult(result, FUSION_SUMMARY_DIRECT_DEMON);
     }
     level = GetFusionLevel(first, second);
     demon = FindStrongestOfRace(level, result);
     if (demon >= 1) {
-        return SetFusionResult(demon, 0);
+        return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
     }
     demon = FindFusionFallback(first, second);
-    return SetFusionResult(demon, 9);
+    return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
 }
 
 RVA(0x00026770, 0x4b)
@@ -392,8 +396,8 @@ i16 ResolveSpecialRaceFusion(i16 first, i16 second) {
 RVA(0x00026910, 0x24)
 i16 ApplyFusionRankChange(i16 demon, i16 kind) {
     switch (kind) {
-        case 3:
-        case 4:
+        case FUSION_SUMMARY_RANK_UP:
+        case FUSION_SUMMARY_RANK_UP_GAIN_LEVEL:
             demon = FindNextOfRace(demon, 1);
             break;
     }
@@ -409,27 +413,27 @@ i16 ResolveSameRaceFusion(i16 first, i16 second) {
     if (race != otherRace) {
         return 0;
     }
-    if (GetDemonFlagLow(GetRosterId(first)) != -1) {
+    if (GetDemonFlagLow(GetRosterId(first)) != FUSION_FLAG_UNAVAILABLE) {
         demon = GetFusionRacePair(first, second);
-        return SetFusionResult(demon, 8);
+        return SetFusionResult(demon, FUSION_SUMMARY_DIRECT_DEMON);
     }
     race = GetSameRaceFusionRace(first);
     level = GetFusionLevel(first, second);
     demon = FindStrongestOfRace(level, race);
     if (demon >= 1) {
-        return SetFusionResult(demon, 0);
+        return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
     }
     demon = FindFusionFallback(first, second);
-    return SetFusionResult(demon, 9);
+    return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
 }
 
 RVA(0x00026a00, 0x5b)
 i16 ResolveFusionFallbackPair(i16 first, i16 second) {
     if (FindFusionFallbackIndex(GetRosterId(first)) >= 0) {
-        return SetFusionResult(GetRosterId(second), 5);
+        return SetFusionResult(GetRosterId(second), FUSION_SUMMARY_MERGE_POOLS);
     }
     if (FindFusionFallbackIndex(GetRosterId(second)) >= 0) {
-        return SetFusionResult(GetRosterId(first), 7);
+        return SetFusionResult(GetRosterId(first), FUSION_SUMMARY_RETAIN_SOURCE);
     }
     return 0;
 }
@@ -438,19 +442,22 @@ RVA(0x00026a60, 0xb1)
 i16 ResolveFusionRankPair(i16 first, i16 second) {
     Character* members[2];
     i16 selected;
-    if (GetDemonFlagLow(GetRosterId(first)) != -1) {
+    if (GetDemonFlagLow(GetRosterId(first)) != FUSION_FLAG_UNAVAILABLE) {
         return 0;
     }
-    if (GetDemonFlagLow(GetRosterId(second)) != -1) {
+    if (GetDemonFlagLow(GetRosterId(second)) != FUSION_FLAG_UNAVAILABLE) {
         return 0;
     }
     members[0] = GetRosterCharacter(first);
     members[1] = GetRosterCharacter(second);
     selected = CompareFusionCharacters(members[0], members[1]);
     if (selected != -1) {
-        return SetFusionResult(FindNextOfRace(members[selected]->id, 0), 0);
+        return SetFusionResult(
+            FindNextOfRace(members[selected]->id, 0),
+            FUSION_SUMMARY_UNSPECIFIED
+        );
     }
-    return SetFusionResult(-1, 0);
+    return SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
 }
 
 RVA(0x00026b20, 0x17f)
@@ -461,10 +468,10 @@ i16 ResolveMixedRankFusion(i16 first, i16 second) {
     i16 side = -1;
     i16 level;
     i16 demon;
-    if (GetDemonFlagLow(GetRosterId(first)) != -1) {
+    if (GetDemonFlagLow(GetRosterId(first)) != FUSION_FLAG_UNAVAILABLE) {
         side = 0;
     }
-    if (GetDemonFlagLow(GetRosterId(second)) != -1) {
+    if (GetDemonFlagLow(GetRosterId(second)) != FUSION_FLAG_UNAVAILABLE) {
         if (side != -1) {
             return 0;
         }
@@ -480,22 +487,22 @@ i16 ResolveMixedRankFusion(i16 first, i16 second) {
     if (ranked->level >= other->level) {
         if (level % 7 == 0) {
             demon = FindNextOfRace(ranked->id, 0);
-            return SetFusionResult(demon, 0);
+            return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
         }
         if (level % 5 == 0) {
             demon = FindNextOfRace(ranked->id, 0);
-            return SetFusionResult(demon, 3);
+            return SetFusionResult(demon, FUSION_SUMMARY_RANK_UP);
         }
         if (level % 3 == 0) {
-            return SetFusionResult(ranked->id, 0);
+            return SetFusionResult(ranked->id, FUSION_SUMMARY_UNSPECIFIED);
         }
     }
     if (!(level & 1)) {
         demon = FindNextOfRace(other->id, 0);
-        return SetFusionResult(demon, 0);
+        return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
     }
     demon = FindFusionFallback(first, second);
-    return SetFusionResult(demon, 9);
+    return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
 }
 
 RVA(0x00026ca0, 0x77)
@@ -510,10 +517,10 @@ i16 ResolveSameClassFusion(i16 first, i16 second) {
     level = GetFusionLevel(first, second);
     demon = FindStrongestOfClass(level, cls);
     if (demon >= 1) {
-        return SetFusionResult(demon, 0);
+        return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
     }
     demon = FindFusionFallback(first, second);
-    return SetFusionResult(demon, 9);
+    return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
 }
 
 RVA(0x00026d20, 0x7c)
@@ -523,17 +530,17 @@ i16 ResolveFusionRacePair(i16 first, i16 second) {
     i16 level;
     if (race < 1) {
         if (race == -1) {
-            return SetFusionResult(-1, 0);
+            return SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
         }
         return 0;
     }
     level = GetFusionLevel(first, second);
     demon = FindStrongestOfRace(level, race);
     if (demon >= 1) {
-        return SetFusionResult(demon, 0);
+        return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
     }
     demon = FindFusionFallback(first, second);
-    return SetFusionResult(demon, 9);
+    return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
 }
 
 RVA(0x00026da0, 0x6a)
@@ -563,7 +570,7 @@ FusionSummary GetPairFusionSummary(i16 first, i16 second) {
         return summary;
     }
     if (g_fusionResult == -1) {
-        summary.fields.kind = -1;
+        summary.fields.kind = FUSION_SUMMARY_NO_RESULT;
         return summary;
     }
     resultLevel = GetDemonLevel(g_fusionResult);
@@ -573,7 +580,7 @@ FusionSummary GetPairFusionSummary(i16 first, i16 second) {
     result->fields.highFlag = GetDemonFlagHigh(g_fusionResult);
     result->fields.lowFlag = GetDemonFlagLow(g_fusionResult);
     SetFusionSummaryKind(&summary, s_fusionResultKind, resultLevel, sourceLevel);
-    if (GetRosterCharacter(0)->level + 3 <= resultLevel) {
+    if (GetRosterCharacter(ROSTER_LEADER)->level + 3 <= resultLevel) {
         summary.fields.overLevel = 1;
     }
     return summary;
@@ -584,11 +591,11 @@ i16 ResolveRandomFusion(void) {
     i16 phaseDistance = abs(14 - g_clock.moonPhase) + 1;
     i16 limit = 10 / phaseDistance;
     i16 demon;
-    limit += GetRosterCharacter(0)->level;
+    limit += GetRosterCharacter(ROSTER_LEADER)->level;
     do {
         demon = SelectRandomFusionDemon();
     } while (limit < GetDemonLevel(demon));
-    return SetFusionResult(demon, 0);
+    return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
 }
 
 RVA(0x00026f90, 0x7c)
@@ -602,11 +609,11 @@ i16 SelectRandomFusionDemon(void) {
         for (index = 0; index < 3; index++) {
             sum += rand();
         }
-        demon = (sum / 3) * (count - 32) / 32768 + 32;
+        demon = (sum / 3) * (count - HUMAN_ID_LIMIT) / 32768 + HUMAN_ID_LIMIT;
         if (GetFusionRestrictedClass(demon)) {
             continue;
         }
-        if (GetDemonClass(demon) == 14) {
+        if (GetDemonClass(demon) == DEMON_CLASS_MUSEIBUTSU) {
             continue;
         }
         if (IsFusionDemonRestricted(demon)) {
@@ -717,7 +724,7 @@ i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
     if (result > 1) {
         StageFusionCharacter(result);
         RestoreFusionCharacter();
-        return SetFusionResult(result, 0);
+        return SetFusionResult(result, FUSION_SUMMARY_UNSPECIFIED);
     }
     primaryCount = secondaryCount = otherCount = 0;
     ClassifyFusionSlot(
@@ -749,7 +756,7 @@ i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
     );
     if (secondaryCount == 2) {
         result = StagePairFusionCharacter(secondary[0], secondary[1], 0);
-        if (result >= 32) {
+        if (result >= HUMAN_ID_LIMIT) {
             if (primaryCount) {
                 result = StagePairFusionCharacter(0, primary[0], 1);
             } else {
@@ -758,7 +765,7 @@ i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
         }
     } else if (primaryCount == 2) {
         result = StagePairFusionCharacter(primary[0], primary[1], 1);
-        if (result >= 32) {
+        if (result >= HUMAN_ID_LIMIT) {
             if (secondaryCount) {
                 result = StagePairFusionCharacter(0, secondary[0], 1);
             } else {
@@ -850,9 +857,9 @@ i16 ResolveTwoUnrankedFusion(i16 first, i16 second, i16 third) {
 
 RVA(0x00027600, 0x69)
 i16 CountUnrankedFusionSlots(i16 first, i16 second, i16 third) {
-    i16 count = GetDemonFlagLow(GetRosterId(first)) == -1;
-    count += GetDemonFlagLow(GetRosterId(second)) == -1;
-    count += GetDemonFlagLow(GetRosterId(third)) == -1;
+    i16 count = GetDemonFlagLow(GetRosterId(first)) == FUSION_FLAG_UNAVAILABLE;
+    count += GetDemonFlagLow(GetRosterId(second)) == FUSION_FLAG_UNAVAILABLE;
+    count += GetDemonFlagLow(GetRosterId(third)) == FUSION_FLAG_UNAVAILABLE;
     return count;
 }
 
@@ -891,17 +898,17 @@ i16 ResolveSameClassTripleFusion(i16 first, i16 second, i16 third) {
 
 RVA(0x000277a0, 0x67)
 i16 CountFusionLowFlagOne(i16 first, i16 second, i16 third) {
-    i16 count = GetDemonFlagLow(GetRosterId(first)) == 1;
-    count += GetDemonFlagLow(GetRosterId(second)) == 1;
-    count += GetDemonFlagLow(GetRosterId(third)) == 1;
+    i16 count = GetDemonFlagLow(GetRosterId(first)) == FUSION_FLAG_SET;
+    count += GetDemonFlagLow(GetRosterId(second)) == FUSION_FLAG_SET;
+    count += GetDemonFlagLow(GetRosterId(third)) == FUSION_FLAG_SET;
     return count;
 }
 
 RVA(0x00027810, 0x67)
 i16 CountFusionHighFlagOne(i16 first, i16 second, i16 third) {
-    i16 count = GetDemonFlagHigh(GetRosterId(first)) == 1;
-    count += GetDemonFlagHigh(GetRosterId(second)) == 1;
-    count += GetDemonFlagHigh(GetRosterId(third)) == 1;
+    i16 count = GetDemonFlagHigh(GetRosterId(first)) == FUSION_FLAG_SET;
+    count += GetDemonFlagHigh(GetRosterId(second)) == FUSION_FLAG_SET;
+    count += GetDemonFlagHigh(GetRosterId(third)) == FUSION_FLAG_SET;
     return count;
 }
 
@@ -939,7 +946,7 @@ i16 ResolveGeneralTripleFusion(i16 first, i16 second, i16 third) {
     if (CompareRosterFusionClasses(first, second) == 0) {
         StageTripleFusionCharacter(result, first, second, third, 1, 1);
         RestoreFusionCharacter();
-        if (GetDemonFlagLow(GetRosterId(third)) == -1) {
+        if (GetDemonFlagLow(GetRosterId(third)) == FUSION_FLAG_UNAVAILABLE) {
             s_fusionLevelAllowance = 8;
         }
         return result;
@@ -954,17 +961,17 @@ i16 ResolveGeneralTripleFusion(i16 first, i16 second, i16 third) {
     index = min(26, index);
     race = GetFusionRaceEntry(index, third);
     if (race >= 100) {
-        race = 5;
+        race = RACE_DAITENSHI;
     }
     level = GetTripleFusionLevel(first, second, third);
     level += GetTripleFusionLevelBonus(first, second, third);
     result = FindDemonOfRace(level, race);
     StageFusionCharacter(result);
     RestoreFusionCharacter();
-    if (GetDemonFlagLow(GetRosterId(third)) == -1) {
+    if (GetDemonFlagLow(GetRosterId(third)) == FUSION_FLAG_UNAVAILABLE) {
         s_fusionLevelAllowance = 8;
     }
-    return SetFusionResult(result, 0);
+    return SetFusionResult(result, FUSION_SUMMARY_UNSPECIFIED);
 }
 
 RVA(0x00027b30, 0xe9)
@@ -992,11 +999,11 @@ i16 CalculateTripleFusion(i16 first, i16 second, i16 third) {
         }
     }
     if (result < 0) {
-        SetFusionResult(-1, 0);
+        SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
         return 0;
     }
     if (result > 0 && IsFusionDemonRestricted(result)) {
-        SetFusionResult(-1, 0);
+        SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
         return 0;
     }
     return result;
@@ -1023,7 +1030,7 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
         return summary;
     }
     if (demon == -1) {
-        summary.fields.kind = -1;
+        summary.fields.kind = FUSION_SUMMARY_NO_RESULT;
         return summary;
     }
     clampedLevel = ClampLevel(GetDemonLevel(demon));
@@ -1039,7 +1046,7 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
 
 RVA(0x00027d60, 0x104)
 void LoadFusionTables(void) {
-    FILE* fp = OpenDataFile(12, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FUSION_RACES, DATA_FILE_TABLE, 0);
     s_fusionRaceMatrix = ReadCryptHandle(fp);
     s_fusionSameRaceChanges = ReadCryptHandle(fp);
     s_fusionDemonMatrix = ReadCryptHandle(fp);
@@ -1049,13 +1056,13 @@ void LoadFusionTables(void) {
     s_fusionFallbackHandle = ReadCryptHandle(fp);
     ReadCryptRecord(fp, &s_fusionRestrictedClass);
     CloseDataFile(fp);
-    fp = OpenDataFile(15, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_FUSION_CLASSES, DATA_FILE_TABLE, 0);
     s_fusionClassMatrix = ReadRawHandle(fp);
     s_fusionRaceRows = ReadRawHandle(fp);
     s_fusionPairs = ReadRawHandle(fp);
     s_fusionPrimaryComplements = ReadRawHandle(fp);
     CloseDataFile(fp);
-    fp = OpenDataFile(17, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_FUSION_RESTRICTIONS, DATA_FILE_TABLE, 0);
     s_fusionFlagRestrictions = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -1306,24 +1313,24 @@ void PushScriptAnimation(i16 animation, i16 x, i16 y) {
     s_animationResource = animation * 16;
     s_animationX = x;
     s_animationY = y;
-    PushGameState(37);
+    PushGameState(GAME_STATE_SCRIPT_ANIMATION);
 }
 
 RVA(0x000286f0, 0x9e)
 b16 RunScriptAnimationState(void) {
     switch (GetGamePhase()) {
-        case 0:
+        case SCRIPT_ANIMATION_LOAD:
             NextGamePhase();
             LoadScriptAnimation(s_animationResource);
             LoadScriptAnimationImage(s_animationResource);
             StartEffectScript(s_animationScript, 0);
             break;
-        case 1:
+        case SCRIPT_ANIMATION_RUN:
             if (!StepScreenEffectScript()) {
                 NextGamePhase();
             }
             break;
-        case 2:
+        case SCRIPT_ANIMATION_CLOSE:
             s_animationImage = FreeImageFile(s_animationImage);
             ClearEffectLayer(1);
             s_animationScript = FreeBlock(s_animationScript);
@@ -1335,7 +1342,7 @@ b16 RunScriptAnimationState(void) {
 
 RVA(0x00028790, 0x32)
 void LoadScriptAnimation(i16 resource) {
-    FILE* file = OpenDataFile(resource + 0x3000, 2, 0);
+    FILE* file = OpenDataFile(resource + 0x3000, DATA_FILE_EFFECT, 0);
     s_animationScript = ReadRawAlloc(file);
     CloseDataFile(file);
 }
@@ -1367,7 +1374,7 @@ void AcquireFusionSelectionMode(void) {
 RVA(0x00028860, 0x2a)
 void ReleaseFusionSelectionResources(void) {
     s_fusionSelectionImage = FreeImageHandle(s_fusionSelectionImage);
-    s_fusionSelectionPaletteState = RestorePaletteState(s_fusionSelectionPaletteState, 1);
+    s_fusionSelectionPaletteState = RestorePaletteState(s_fusionSelectionPaletteState, true);
 }
 
 RVA(0x00028890, 0xa)
@@ -1393,27 +1400,27 @@ i16 GetThirdFusionSlot(void) {
 RVA(0x000288d0, 0x75)
 i16 GetFusionResultKind(void) {
     if (s_fusionSummary.fields.overLevel) {
-        return -3;
+        return FUSION_RESULT_OVER_LEVEL;
     }
     switch (s_fusionSummary.fields.kind) {
-        case 0:
-        case 3:
-        case 4:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
+        case FUSION_SUMMARY_UNSPECIFIED:
+        case FUSION_SUMMARY_RANK_UP:
+        case FUSION_SUMMARY_RANK_UP_GAIN_LEVEL:
+        case FUSION_SUMMARY_DIRECT_DEMON:
+        case FUSION_SUMMARY_FALLBACK:
+        case FUSION_SUMMARY_LEVEL_HIGHER:
+        case FUSION_SUMMARY_LEVEL_LOWER:
+        case FUSION_SUMMARY_LEVEL_EQUAL:
             if (RosterContainsId(s_fusionResultId)) {
-                return -2;
+                return FUSION_RESULT_ALREADY_IN_ROSTER;
             }
             break;
-        case 1:
-        case 2:
+        case FUSION_SUMMARY_GAIN_ONE_LEVEL:
+        case FUSION_SUMMARY_GAIN_TWO_LEVELS:
             return s_fusionSummary.fields.kind;
-        case 5:
-        case 6:
-        case 7:
+        case FUSION_SUMMARY_MERGE_POOLS:
+        case FUSION_SUMMARY_MERGE_POOLS_CLEANSE:
+        case FUSION_SUMMARY_RETAIN_SOURCE:
             return s_fusionSummary.fields.kind;
     }
     return s_fusionSummary.fields.kind;
@@ -1446,8 +1453,8 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
         return NULL;
     }
     switch (s_fusionSummary.fields.kind) {
-        case 1:
-        case 2:
+        case FUSION_SUMMARY_GAIN_ONE_LEVEL:
+        case FUSION_SUMMARY_GAIN_TWO_LEVELS:
             MoveSpecialFusionCharacters(&firstCharacter, &secondCharacter, &first, &second);
             result = CopyCharacter(firstCharacter, NULL);
             GainLevels(result, s_fusionSummary.fields.kind);
@@ -1455,24 +1462,24 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
             RaiseExperienceToLevel(result);
             FullyRestoreCharacter(result);
             return result;
-        case 5:
-        case 6:
-        case 7:
+        case FUSION_SUMMARY_MERGE_POOLS:
+        case FUSION_SUMMARY_MERGE_POOLS_CLEANSE:
+        case FUSION_SUMMARY_RETAIN_SOURCE:
             MoveSpecialFusionCharacters(&firstCharacter, &secondCharacter, &first, &second);
             result = CopyCharacter(firstCharacter, NULL);
-            if (s_fusionSummary.fields.kind <= 6) {
+            if (s_fusionSummary.fields.kind <= FUSION_SUMMARY_MERGE_POOLS_CLEANSE) {
                 result->pools.hp.cur += secondCharacter->pools.hp.cur;
                 result->pools.mp.cur += secondCharacter->pools.mp.cur;
-                if (s_fusionSummary.fields.kind == 6) {
+                if (s_fusionSummary.fields.kind == FUSION_SUMMARY_MERGE_POOLS_CLEANSE) {
                     ClearAllConditions(GetCharacterConditions(result));
                 }
             }
             break;
-        case 4:
+        case FUSION_SUMMARY_RANK_UP_GAIN_LEVEL:
             goto createCharacter;
-        case 9:
+        case FUSION_SUMMARY_FALLBACK:
             goto createCharacter;
-        case 11:
+        case FUSION_SUMMARY_LEVEL_LOWER:
             goto createCharacter;
         default:
         createCharacter:
@@ -1481,7 +1488,7 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
             result->level = ClampLevel(result->level + GetFusionGrowthBonus(first, second));
             RaiseExperienceToLevel(result);
             FullyRestoreCharacter(result);
-            if (s_fusionSummary.fields.kind == 4) {
+            if (s_fusionSummary.fields.kind == FUSION_SUMMARY_RANK_UP_GAIN_LEVEL) {
                 GainLevels(result, 1);
             }
             break;
@@ -1495,13 +1502,13 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
     i16 result;
     i16 oldOffset;
     switch (step) {
-        case 0:
-            g_fusionFirstSlot = -1;
-            g_fusionSecondSlot = -1;
-            CountRosterEntries(1);
+        case FUSION_PICKER_OPEN:
+            g_fusionFirstSlot = ROSTER_SLOT_NONE;
+            g_fusionSecondSlot = ROSTER_SLOT_NONE;
+            CountRosterEntries(true);
             s_fusionInfoPlane = CreateFusionInfoPlane(6);
             if (!triple) {
-                g_fusionThirdSlot = -1;
+                g_fusionThirdSlot = ROSTER_SLOT_NONE;
                 count = BuildPairFusionCandidates(0);
             } else {
                 count = BuildTripleFusionSummaries(g_fusionThirdSlot);
@@ -1512,34 +1519,34 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
             s_fusionColumnCount = count;
             PaintMenuBox(s_fusionMenu);
             if (s_fusionPageRows < count) {
-                s_fusionPager = CreateKindPanel(s_fusionPager, 284, 2, 1);
+                s_fusionPager = CreateKindPanel(s_fusionPager, IDB_BITMAP60, 2, 1);
                 PaintPanel(s_fusionPager, s_fusionMenu->plane);
             }
             ++step;
             break;
-        case 1:
+        case FUSION_PICKER_POLL:
             result = RunMenu(s_fusionMenu);
-            if (result != 0) {
-                if (result > 0) {
+            if (result != TEXT_EVENT_NONE) {
+                if (result > TEXT_EVENT_NONE) {
                     g_fusionFirstSlot = g_selectedObjectId;
                     s_selectedFusionIndex = s_fusionMenu->cursor + g_hoveredObjectId;
                 } else {
-                    g_fusionFirstSlot = -1;
+                    g_fusionFirstSlot = ROSTER_SLOT_NONE;
                 }
                 ++step;
             } else {
                 result = RunPanelInput(s_fusionPager);
-                if (s_fusionPageActionPending == 1) {
+                if (s_fusionPageActionPending == true) {
                     result = s_fusionPageAction;
                     s_fusionPageActionPending = false;
-                    s_fusionPageAction = -1;
+                    s_fusionPageAction = FUSION_PAGER_NONE;
                     oldOffset = s_fusionColumnOffset;
-                    if (result == 0) {
+                    if (result == FUSION_PAGER_PREVIOUS) {
                         s_fusionColumnOffset -= s_fusionPageRows;
                         if (s_fusionColumnOffset < 0) {
                             s_fusionColumnOffset = 0;
                         }
-                    } else if (result == 1) {
+                    } else if (result == FUSION_PAGER_NEXT) {
                         if (s_fusionColumnOffset + s_fusionPageRows < s_fusionColumnCount) {
                             s_fusionColumnOffset += s_fusionPageRows;
                         }
@@ -1554,23 +1561,23 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
                         s_fusionPageActionPending = true;
                         s_fusionPageAction = result;
                     }
-                    if (result == -1) {
+                    if (result == PANEL_INPUT_NONE) {
                         s_fusionPreviewPlane = OpenFusionPreviewOnClick();
                         if (s_fusionPreviewPlane >= 0) {
-                            step = 3;
+                            step = FUSION_PICKER_PREVIEW;
                         }
                     }
                 }
             }
             break;
-        case 2:
-            s_fusionPager = ReleasePanel(s_fusionPager, 1);
+        case FUSION_PICKER_CLOSE:
+            s_fusionPager = ReleasePanel(s_fusionPager, true);
             step = CloseFusionPicker(g_fusionFirstSlot);
             break;
-        case 3:
+        case FUSION_PICKER_PREVIEW:
             s_fusionPreviewPlane = CloseFusionPreviewOnClick(s_fusionPreviewPlane);
             if (s_fusionPreviewPlane < 0) {
-                step = 1;
+                step = FUSION_PICKER_POLL;
             }
             break;
     }
@@ -1613,7 +1620,7 @@ void DrawFusionSummaryGrid(void) {
             272 + (column - s_fusionColumnOffset) * 24,
             7,
             g_scratchBuffer,
-            0x1400
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
         );
         for (row = s_fusionMenu->cursor; row < s_fusionMenu->cursor + s_fusionMenu->pageRows;
              ++row) {
@@ -1646,16 +1653,16 @@ FusionSummary* GetFusionPairSummaryCell(i16 first, i16 second) {
     if (s_fusionSummaryTable == NULL) {
         s_fusionSummaryTable = s_fusionPairSummaries;
     }
-    first = first * 32 + second;
+    first = first * ROSTER_SIZE + second;
     return &s_fusionPairSummaries[first];
 }
 
 RVA(0x00029120, 0x8d)
 i16 CreateFusionList(i16 window, i16 count) {
-    SetPanelImage(0x11c);
+    SetPanelImage(IDB_BITMAP60);
     s_fusionMenu = CreateMenuBox(s_fusionMenu, window, 2);
     SetMenuItems(s_fusionMenu, 15, NULL, count, FusionListMenuHandler);
-    SetTextPlaneFirstSelectableRow(s_fusionMenu->plane, 1, 0);
+    SetTextPlaneFirstSelectableRow(s_fusionMenu->plane, 1, false);
     s_previousFusionTextHook = SetTextPlaneHook(FusionSelectionTextHook);
     if (s_fusionPageRows == -1) {
         s_fusionPageRows = 15;
@@ -1702,13 +1709,19 @@ void FusionListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i1
                 && (s_fusionPageRows != 1
                     || GetFusionPairSummaryCell(s_fusionSlots[index], g_fusionFirstSlot)
                                ->fields.kind
-                           != -1)) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, s_fusionSlots[index], 0);
+                           != FUSION_SUMMARY_NO_RESULT)) {
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                    s_fusionSlots[index],
+                    MENU_LINE_NORMAL
+                );
             } else {
                 AddMenuLine(
                     menu->plane,
                     g_scratchBuffer,
-                    0x2500,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
                     s_fusionSlots[index],
                     MENU_LINE_DISABLED
                 );
@@ -1727,7 +1740,7 @@ RVA(0x00029350, 0x94)
 void FusionSelectionTextHook(i16 plane, i16 event, i16 value) {
     Character* character;
     i16 index;
-    if (plane == -1) {
+    if (plane == TEXT_PLANE_NONE) {
         return;
     }
     switch (event) {
@@ -1753,37 +1766,91 @@ RVA(0x000293f0, 0x192)
 void DrawFusionCharacterDetails(i16 plane, Character* character) {
     ClearTextPlane(plane);
     sprintf(g_scratchBuffer, "%4d  %4d", character->pools.hp.cur, character->pools.hp.max);
-    DrawPlaneText(plane, 56, 8, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        56,
+        8,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d  %3d", character->pools.mp.cur, character->pools.mp.max);
-    DrawPlaneText(plane, 56, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        56,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(
         g_scratchBuffer,
         " %s   %s",
         s_fusionAlignmentALabels[GetAlignmentClassA(character) + 1],
         s_fusionAlignmentBLabels[GetAlignmentClassB(character) + 1]
     );
-    DrawPlaneText(plane, 56, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        56,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", character->levelBonus);
-    DrawPlaneText(plane, 168, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        168,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", character->level);
-    DrawPlaneText(plane, 168, 56, g_scratchBuffer, 0x1400);
-    DrawFusionStatGroup(plane, 240, GetBattleStatGroup(character, 0));
-    DrawFusionStatGroup(plane, 384, GetBattleStatGroup(character, 1));
-    DrawFusionStatGroup(plane, 528, GetBattleStatGroup(character, 2));
+    DrawPlaneText(
+        plane,
+        168,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
+    DrawFusionStatGroup(plane, 240, GetBattleStatGroup(character, BATTLE_GROUP_WEAPON));
+    DrawFusionStatGroup(plane, 384, GetBattleStatGroup(character, BATTLE_GROUP_GUN));
+    DrawFusionStatGroup(plane, 528, GetBattleStatGroup(character, BATTLE_GROUP_MAGIC));
 }
 
 RVA(0x00029590, 0xca)
 void DrawFusionStatGroup(i16 plane, i16 x, i16* stats) {
     i16 column = x;
     sprintf(g_scratchBuffer, "%3d", stats[3]);
-    DrawPlaneText(plane, column, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        column,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", stats[5]);
-    DrawPlaneText(plane, column, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        column,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", stats[2]);
     column += 72;
-    DrawPlaneText(plane, column, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        column,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", stats[4]);
-    DrawPlaneText(plane, column, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        column,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
 }
 
 RVA(0x00029660, 0x85)
@@ -1798,7 +1865,7 @@ i32 CloseFusionPicker(i16 selection) {
     s_previousFusionTextHook = NULL;
     s_fusionMenu = DestroyMenuBox(s_fusionMenu);
     s_fusionInfoPlane = CloseTextWindow(s_fusionInfoPlane);
-    return selection == -1 ? -2 : -1;
+    return selection == ROSTER_SLOT_NONE ? FUSION_PICKER_CANCELLED : FUSION_PICKER_SELECTED;
 }
 
 RVA(0x000296f0, 0x134)
@@ -1808,19 +1875,19 @@ i16 BuildPairFusionCandidates(i16 skipCalculation) {
     i16 demon;
     FusionSummary summary;
     s_fusionCandidateCount = 0;
-    for (first = 0; first < 32; first++) {
-        if (GetRosterId(first) >= 32) {
+    for (first = 0; first < ROSTER_SIZE; first++) {
+        if (GetRosterId(first) >= HUMAN_ID_LIMIT) {
             s_fusionSlots[s_fusionCandidateCount++] = first;
         }
-        for (second = 0; second < 32; second++) {
+        for (second = 0; second < ROSTER_SIZE; second++) {
             s_pendingFusionResultId = -1;
             summary.value = -256;
             StoreFusionPairSummary(first, second, &summary);
             if (first == second) {
-                summary.fields.kind = -1;
+                summary.fields.kind = FUSION_SUMMARY_NO_RESULT;
                 StoreFusionPairSummary(first, second, &summary);
-            } else if (GetRosterId(second) < 32) {
-                summary.fields.kind = -1;
+            } else if (GetRosterId(second) < HUMAN_ID_LIMIT) {
+                summary.fields.kind = FUSION_SUMMARY_NO_RESULT;
                 StoreFusionPairSummary(first, second, &summary);
             } else if (!skipCalculation && CalculatePairFusion(first, second)) {
                 summary = GetPairFusionSummary(first, second);
@@ -1829,10 +1896,10 @@ i16 BuildPairFusionCandidates(i16 skipCalculation) {
         }
     }
     summary.value = -128;
-    for (first = 0; first < 32; first++) {
+    for (first = 0; first < ROSTER_SIZE; first++) {
         demon = GetRosterId(first);
-        if (demon >= 32 && IsFusionDemonRestricted(demon)) {
-            for (second = 0; second < 32; second++) {
+        if (demon >= HUMAN_ID_LIMIT && IsFusionDemonRestricted(demon)) {
+            for (second = 0; second < ROSTER_SIZE; second++) {
                 StoreFusionPairSummary(first, second, &summary);
                 StoreFusionPairSummary(second, first, &summary);
             }
@@ -1846,7 +1913,7 @@ void StoreFusionPairSummary(i16 first, i16 second, const FusionSummary* summary)
     if (s_fusionSummaryTable == NULL) {
         s_fusionSummaryTable = s_fusionPairSummaries;
     }
-    first = first * 32 + second;
+    first = first * ROSTER_SIZE + second;
     s_fusionPairSummaries[first] = *summary;
 }
 
@@ -1857,17 +1924,17 @@ i16 BuildTripleFusionSummaries(i16 third) {
     i16 demon;
     FusionSummary summary;
     summary.value = -256;
-    for (first = 0; first < 32; first++) {
-        for (second = 0; second < 32; second++) {
+    for (first = 0; first < ROSTER_SIZE; first++) {
+        for (second = 0; second < ROSTER_SIZE; second++) {
             StoreFusionPairSummary(first, second, &summary);
         }
     }
-    for (first = 0; first < 32; first++) {
-        if (GetRosterId(first) >= 32) {
-            for (second = 0; second < 32; second++) {
+    for (first = 0; first < ROSTER_SIZE; first++) {
+        if (GetRosterId(first) >= HUMAN_ID_LIMIT) {
+            for (second = 0; second < ROSTER_SIZE; second++) {
                 s_pendingFusionResultId = -1;
-                if (GetRosterId(second) < 32) {
-                    summary.fields.kind = -1;
+                if (GetRosterId(second) < HUMAN_ID_LIMIT) {
+                    summary.fields.kind = FUSION_SUMMARY_NO_RESULT;
                     StoreFusionPairSummary(first, second, &summary);
                 } else if (first != second && first != g_fusionThirdSlot
                            && second != g_fusionThirdSlot
@@ -1882,10 +1949,10 @@ i16 BuildTripleFusionSummaries(i16 third) {
         }
     }
     summary.value = -128;
-    for (first = 0; first < 32; first++) {
+    for (first = 0; first < ROSTER_SIZE; first++) {
         demon = GetRosterId(first);
-        if (demon >= 32 && IsFusionDemonRestricted(demon)) {
-            for (second = 0; second < 32; second++) {
+        if (demon >= HUMAN_ID_LIMIT && IsFusionDemonRestricted(demon)) {
+            for (second = 0; second < ROSTER_SIZE; second++) {
                 StoreFusionPairSummary(first, second, &summary);
                 StoreFusionPairSummary(second, first, &summary);
             }
@@ -1899,7 +1966,7 @@ i16 CloseFusionPreviewOnClick(i16 plane) {
     if (!g_mouseLeftClick) {
         return plane;
     }
-    if (s_thirdFusionDetailPlane != -1) {
+    if (s_thirdFusionDetailPlane != TEXT_PLANE_NONE) {
         s_thirdFusionDetailPlane = CloseTextWindow(s_thirdFusionDetailPlane);
     }
     s_secondFusionDetailPlane = CloseTextWindow(s_secondFusionDetailPlane);
@@ -1918,7 +1985,7 @@ i16 OpenFusionPreviewOnClick(void) {
     if (!g_mouseLeftClick) {
         return -1;
     }
-    g_mouseLeftClick = 0;
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
     column = (g_mousePosition.x - 272) / 24;
     row = (g_mousePosition.y - 54) / 16;
     if (column < 0 || column >= s_fusionPageRows || row < 0 || row >= s_fusionMenu->pageRows) {
@@ -1971,22 +2038,58 @@ void DrawFusionPreviewCard(i16 plane, Character* character) {
         GetDemonRaceName(character->id),
         g_fusionNameBuffer
     );
-    DrawPlaneText(plane, 16, 8, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        16,
+        8,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%4d  %4d", character->pools.hp.cur, character->pools.hp.max);
-    DrawPlaneText(plane, 56, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        56,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d  %3d", character->pools.mp.cur, character->pools.mp.max);
-    DrawPlaneText(plane, 56, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        56,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(
         g_scratchBuffer,
         " %s   %s",
         s_fusionAlignmentALabels[GetAlignmentClassA(character) + 1],
         s_fusionAlignmentBLabels[GetAlignmentClassB(character) + 1]
     );
-    DrawPlaneText(plane, 184, 56, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        184,
+        56,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", character->levelBonus);
-    DrawPlaneText(plane, 256, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        256,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%3d", character->level);
-    DrawPlaneText(plane, 184, 32, g_scratchBuffer, 0x1400);
+    DrawPlaneText(
+        plane,
+        184,
+        32,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
 }
 
 RVA(0x00029d90, 0x44)
@@ -2001,18 +2104,18 @@ i16 CreateFusionPreviewCard(i16 window, i16 slot) {
 RVA(0x00029de0, 0x11f)
 i16 RunSecondFusionPicker(i16 step) {
     i16 count;
-    i16 result;
+    GZ_ENUM_LOCAL(TextEvent, i16) result;
     switch (step) {
-        case 0:
+        case FUSION_PICKER_OPEN:
             count = s_fusionCandidateCount;
-            g_fusionSecondSlot = -1;
+            g_fusionSecondSlot = ROSTER_SLOT_NONE;
             s_fusionInfoPlane = CreateFusionInfoPlane(6);
             s_fusionPageRows = 1;
             CreateFusionList(4, count);
             s_fusionColumnCount = s_selectedFusionIndex + 1;
             s_fusionColumnOffset = s_selectedFusionIndex;
             PaintMenuBox(s_fusionMenu);
-            if (g_fusionThirdSlot == -1) {
+            if (g_fusionThirdSlot == ROSTER_SLOT_NONE) {
                 s_firstFusionDetailPlane = CreateFusionPreviewCard(7, g_fusionFirstSlot);
             } else {
                 s_firstFusionDetailPlane = CreateFusionPreviewCard(7, g_fusionThirdSlot);
@@ -2020,18 +2123,18 @@ i16 RunSecondFusionPicker(i16 step) {
             }
             ++step;
             break;
-        case 1:
+        case FUSION_PICKER_POLL:
             result = RunMenu(s_fusionMenu);
-            if (result != 0) {
-                if (result > 0) {
+            if (result != TEXT_EVENT_NONE) {
+                if (result > TEXT_EVENT_NONE) {
                     g_fusionSecondSlot = g_selectedObjectId;
                 } else {
-                    g_fusionSecondSlot = -1;
+                    g_fusionSecondSlot = ROSTER_SLOT_NONE;
                 }
                 ++step;
             }
             break;
-        case 2:
+        case FUSION_PICKER_CLOSE:
             step = CloseFusionPicker(g_fusionSecondSlot);
             break;
     }
@@ -2041,13 +2144,13 @@ i16 RunSecondFusionPicker(i16 step) {
 RVA(0x00029f00, 0xd4)
 i16 RunThirdFusionPicker(i16 step) {
     i16 count;
-    i16 result;
+    GZ_ENUM_LOCAL(TextEvent, i16) result;
     switch (step) {
-        case 0:
-            g_fusionThirdSlot = -1;
-            g_fusionFirstSlot = -1;
-            g_fusionSecondSlot = -1;
-            CountRosterEntries(1);
+        case FUSION_PICKER_OPEN:
+            g_fusionThirdSlot = ROSTER_SLOT_NONE;
+            g_fusionFirstSlot = ROSTER_SLOT_NONE;
+            g_fusionSecondSlot = ROSTER_SLOT_NONE;
+            CountRosterEntries(true);
             s_fusionInfoPlane = CreateFusionInfoPlane(6);
             count = BuildPairFusionCandidates(1);
             s_fusionPageRows = 0;
@@ -2056,18 +2159,18 @@ i16 RunThirdFusionPicker(i16 step) {
             PaintMenuBox(s_fusionMenu);
             ++step;
             break;
-        case 1:
+        case FUSION_PICKER_POLL:
             result = RunMenu(s_fusionMenu);
-            if (result != 0) {
-                if (result > 0) {
+            if (result != TEXT_EVENT_NONE) {
+                if (result > TEXT_EVENT_NONE) {
                     g_fusionThirdSlot = g_selectedObjectId;
                 } else {
-                    g_fusionThirdSlot = -1;
+                    g_fusionThirdSlot = ROSTER_SLOT_NONE;
                 }
                 ++step;
             }
             break;
-        case 2:
+        case FUSION_PICKER_CLOSE:
             step = CloseFusionPicker(g_fusionThirdSlot);
             break;
     }
@@ -2091,7 +2194,7 @@ RVA(0x0002a060, 0x49)
 b16 CloseFusionPreview(void) {
     LeaveStatusScreen(1);
     RestoreDrawState(SaveDrawState());
-    g_fusionPaletteState = RestorePaletteState(g_fusionPaletteState, 1);
+    g_fusionPaletteState = RestorePaletteState(g_fusionPaletteState, true);
     RestoreScreenSave(g_fusionPreviewSave);
     FreeScreenSave(g_fusionPreviewSave);
     return false;
@@ -2253,7 +2356,7 @@ i16 CompareFusionCharacters(Character* first, Character* second) {
     if (result != -1) {
         return result;
     }
-    for (index = 0; index < 11; index++) {
+    for (index = 0; index < STAT_COUNT; index++) {
         firstStat = GetBaseStat(first, index);
         secondStat = GetBaseStat(second, index);
     }
@@ -2321,7 +2424,7 @@ b16 MoveSpecialRaceFusionSlot(i16* first, i16* second) {
 
 RVA(0x0002a6e0, 0x3b)
 b16 MoveUnrankedFusionSlot(i16* first, i16* second) {
-    if (GetDemonFlagLow(GetRosterId(*first)) == -1) {
+    if (GetDemonFlagLow(GetRosterId(*first)) == FUSION_FLAG_UNAVAILABLE) {
         SwapFusionSlotValues(first, second);
         return true;
     }
@@ -2336,21 +2439,21 @@ i16 CompareRosterFusionClasses(i16 first, i16 second) {
 }
 
 RVA(0x0002a760, 0x21)
-void PushFusionMenu(i16 kind, i16 resultVariable) {
+void PushFusionMenu(GZ_ENUM_PARAM(FusionMenuStep, i16) kind, i16 resultVariable) {
     s_initialFusionStep = kind;
     s_fusionResultVariable = resultVariable;
-    PushGameState(31);
+    PushGameState(GAME_STATE_FUSION_MENU);
 }
 
 RVA(0x0002a790, 0x23d)
 b16 RunFusionMenuState(void) {
     i16 result;
     switch (GetGamePhase()) {
-        case 0:
+        case FUSION_MENU_PHASE_OPEN:
             switch (GetGameStep()) {
-                case 0:
+                case FUSION_MENU_LIFECYCLE_ADVANCE:
                     NextGameStep();
-                case 1:
+                case FUSION_MENU_LIFECYCLE_APPLY:
                     NextGamePhase();
                     NextGamePhase();
                     g_fusionPaletteState = SavePaletteState(g_fusionPaletteState, 2);
@@ -2359,14 +2462,14 @@ b16 RunFusionMenuState(void) {
                     break;
             }
             break;
-        case 1:
+        case FUSION_MENU_PHASE_CLOSE:
             switch (GetGameStep()) {
-                case 0:
+                case FUSION_MENU_LIFECYCLE_ADVANCE:
                     NextGameStep();
-                case 1:
+                case FUSION_MENU_LIFECYCLE_APPLY:
                     ReturnFromGameState();
                     FreeFusionTables();
-                    g_fusionPaletteState = RestorePaletteState(g_fusionPaletteState, 1);
+                    g_fusionPaletteState = RestorePaletteState(g_fusionPaletteState, true);
                     ErasePictureSurface(54);
                     if (s_restoreFusionRenderMode) {
                         SetSceneRenderMode();
@@ -2376,25 +2479,25 @@ b16 RunFusionMenuState(void) {
                     break;
             }
             break;
-        case 2:
+        case FUSION_MENU_PHASE_SELECT:
             switch (GetGameStep()) {
-                case 0:
+                case FUSION_MENU_PAIR_FIRST:
                     ClearStatusPicture();
                     ResetThirdFusionSlot();
-                    result = RunFirstFusionPicker(GetGameSub(), 0);
+                    result = RunFirstFusionPicker(GetGameSub(), false);
                     SetGameSub(result);
                     if (result < 0) {
                         FinishFusionMenuSelection(result, GetFirstFusionSlot());
                     }
                     break;
-                case 3:
+                case FUSION_MENU_PAIR_COMMIT:
                     result = CommitPairFusion();
                     if (s_fusionResultVariable >= 0) {
                         SetScriptLongVar(s_fusionResultVariable, result);
                     }
                     PrevGamePhase();
                     break;
-                case 16:
+                case FUSION_MENU_TRIPLE_THIRD:
                     ClearStatusPicture();
                     result = RunThirdFusionPicker(GetGameSub());
                     SetGameSub(result);
@@ -2402,22 +2505,22 @@ b16 RunFusionMenuState(void) {
                         FinishFusionMenuSelection(result, GetThirdFusionSlot());
                     }
                     break;
-                case 17:
-                    result = RunFirstFusionPicker(GetGameSub(), 1);
+                case FUSION_MENU_TRIPLE_FIRST:
+                    result = RunFirstFusionPicker(GetGameSub(), true);
                     SetGameSub(result);
                     if (result < 0) {
                         FinishFusionMenuSelection(result, GetFirstFusionSlot());
                     }
                     break;
-                case 1:
-                case 18:
+                case FUSION_MENU_PAIR_SECOND:
+                case FUSION_MENU_TRIPLE_SECOND:
                     result = RunSecondFusionPicker(GetGameSub());
                     SetGameSub(result);
                     if (result < 0) {
                         FinishFusionMenuSelection(result, GetSecondFusionSlot());
                     }
                     break;
-                case 20:
+                case FUSION_MENU_TRIPLE_COMMIT:
                     result = CommitTripleFusion();
                     if (s_fusionResultVariable >= 0) {
                         SetScriptLongVar(s_fusionResultVariable, result);

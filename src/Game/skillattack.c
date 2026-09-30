@@ -17,27 +17,28 @@
 #include <math.h>
 
 RVA(0x0000aa20, 0x22c)
-b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide) {
+b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
     i16 attribute;
     i32 accuracy;
     i32 defense;
     i32 skillValue;
     i16 value;
     i32 roll;
-    g_attackResistance = GetSkillResistance(target, attacker->pickTarget, 1, sameSide, &attribute);
+    g_attackResistance =
+        GetSkillResistance(target, attacker->pickTarget, true, sameSide, &attribute);
     g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, attribute);
     if (g_attackResistance == -6) {
-        SetResistanceResult(attacker, -6, 10);
+        SetResistanceResult(attacker, -6, BATTLE_ACTION_PROTECTED);
         return false;
     }
-    SetActionResult(attacker, 3);
+    SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
     if (g_attackResistance <= -4) {
         return true;
     }
     if (GetPickBlockingCondition(GetCharacterConditions(target))) {
         return true;
     }
-    if (GetCombatantFacingDifference(g_actorId, g_targetId) == 2) {
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) == FACING_FROM_BEHIND) {
         return true;
     }
     accuracy = GetRecordValue();
@@ -49,7 +50,7 @@ b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide) {
         accuracy *= 100;
     }
     defense *= 100;
-    if (GetCombatantFacingDifference(g_actorId, g_targetId) != 0) {
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) != FACING_FACE_TO_FACE) {
         accuracy = accuracy * 150 / 100;
     }
     skillValue = GetSkillValueA(GetCachedSkill(attacker->pickTarget));
@@ -66,7 +67,7 @@ b16 RollSkillHit(Character* attacker, Character* target, i16 sameSide) {
     if (accuracy > roll) {
         return true;
     }
-    SetActionResult(attacker, 0);
+    SetActionResult(attacker, BATTLE_ACTION_MISSED);
     return false;
 }
 
@@ -82,8 +83,10 @@ i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
         return 0;
     }
     skill = GetCachedSkill(attacker->pickTarget);
-    power = WearSkillValue(GetSkillValueB(skill) + GetBattleStatShown(attacker, 15));
-    defense = GetBattleStatShown(target, 17);
+    power = WearSkillValue(
+        GetSkillValueB(skill) + GetBattleStatShown(attacker, BATTLE_STAT_MAGIC_POWER)
+    );
+    defense = GetBattleStatShown(target, BATTLE_STAT_MAGIC_DEFENSE);
     amount = power;
     if (power < defense) {
         amount *= 0.8;
@@ -96,9 +99,9 @@ i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
         amount *= 1.2;
     }
     facing = GetCombatantFacingDifference(g_actorId, g_targetId);
-    if (facing == 2) {
+    if (facing == FACING_FROM_BEHIND) {
         amount *= 1.5;
-    } else if (facing != 0) {
+    } else if (facing != FACING_FACE_TO_FACE) {
         amount *= 1.2;
     }
     if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
@@ -113,7 +116,7 @@ i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
     damage = RandomPercent(damage, -20, 20);
     damage = ClampInt(damage / 100, 0, 0x7fffffff);
     if (damage == 0) {
-        SetActionResult(attacker, 1);
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
     }
     return damage;
 }
@@ -125,17 +128,17 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
     i16 defense;
     i32 value;
     i16 power;
-    g_statusCondition = 0;
+    g_statusCondition = INFLICT_NONE;
     if (!condition) {
         return false;
     }
     if (attacker->lastChange < GetConditionDamageThreshold(target)) {
         return false;
     }
-    if (g_actionResult >= 7) {
+    if (g_actionResult >= BATTLE_ACTION_REFLECTED) {
         return false;
     }
-    if (g_targetId >= 0 && IsFieldModeAtLeast(0) && IsFieldConditionRestricted(condition)) {
+    if (g_targetId >= 0 && IsFieldModeAtLeast(false) && IsFieldConditionRestricted(condition)) {
         return false;
     }
     roll = RandomAverage(0, 20, 0);
@@ -145,7 +148,7 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
         return false;
     }
     roll = RandomAverage(0, 30, 0);
-    defense = GetBattleStatShown(target, 5);
+    defense = GetBattleStatShown(target, BATTLE_STAT_WEAPON_DEFENSE);
     defense *= roll;
     value = GetSkillValueA(GetCachedSkill(attacker->pickTarget));
     value += GetRecordValue();
@@ -162,36 +165,37 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
 }
 
 RVA(0x0000af70, 0x38)
-i16 ApplySkillResistanceOutcome(Character* attacker, i32 amount) {
+GZ_ENUM_RETURN(ResistanceFollowup, i16)
+ApplySkillResistanceOutcome(Character* attacker, i32 amount) {
     ApplyResistanceOutcome(attacker, g_attackResistance, amount);
-    if (g_actionResult == 7) {
-        return -1;
+    if (g_actionResult == BATTLE_ACTION_REFLECTED) {
+        return RESISTANCE_FOLLOWUP_REFLECT;
     }
-    return g_actionResult < 8;
+    return g_actionResult < BATTLE_ACTION_HP_ABSORBED;
 }
 
 RVA(0x0000afb0, 0x13e)
 b16 ResolveSkillAttack(Character* attacker, Character* target) {
-    u16 mode = GetSkillMode(attacker->pickTarget);
+    GZ_ENUM_LOCAL(AttackMode, u16) mode = GetSkillMode(attacker->pickTarget);
     i16 hit;
     i32 damage;
-    if (mode == 1) {
+    if (mode == ATTACK_WEAPON) {
         if (g_targetId >= 0) {
-            return ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(0));
+            return ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(false));
         } else {
             return ResolveWeaponAttack(attacker, target, 0);
         }
     }
-    if (mode == 2) {
+    if (mode == ATTACK_GUN) {
         if (g_targetId >= 0) {
-            return ResolveGunAttack(attacker, target, IsFieldModeAtLeast(0));
+            return ResolveGunAttack(attacker, target, IsFieldModeAtLeast(false));
         } else {
             return ResolveGunAttack(attacker, target, 0);
         }
     }
-    hit = RollSkillHit(attacker, target, 0);
+    hit = RollSkillHit(attacker, target, false);
     if (hit) {
-        AddTrainingPoints(attacker, 2, 3);
+        AddTrainingPoints(attacker, BATTLE_GROUP_MAGIC, 3);
     }
     damage = ComputeSkillDamage(attacker, target, hit);
     if (hit && !damage) {

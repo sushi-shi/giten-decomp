@@ -4,10 +4,14 @@
 #include <EnumDomain.h>
 #include <Ints.h>
 
-// Numbered memory blocks: handle 0 is "none"; 1..1023 index the table.
+// Numbered memory blocks: HANDLE_NONE is "none"; HANDLE_FIRST..1023 index the
+// table.
 #define HANDLE_COUNT 1024
+#define HANDLE_NONE 0
+#define HANDLE_FIRST 1
 
 GZ_ENUM_FLAGS_BEGIN(HandleFlags, u16)
+    HANDLE_FREE = 0,
     HANDLE_IN_USE = 1
 GZ_ENUM_FLAGS_END(HandleFlags)
 

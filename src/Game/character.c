@@ -10,9 +10,13 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/Alignment.h>
-#include <Game/Character.h>
+#include <Game/ActorFlag.h>
 #include <Game/CharInfo.h>
+#include <Game/Character.h>
+#include <Game/CharacterStat.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
@@ -20,16 +24,19 @@
 #include <Game/EquipEffect.h>
 #include <Game/EquipMagicDefense.h>
 #include <Game/EquipScreen.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/FieldHud.h>
 #include <Game/FieldMain.h>
 #include <Game/FieldObject.h>
 #include <Game/FieldSupport.h>
 #include <Game/GameState.h>
 #include <Game/Guest.h>
+#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
 #include <Game/ItemEffect.h>
+#include <Game/ItemId.h>
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
 #include <Game/ModeFlags.h>
@@ -40,8 +47,8 @@
 #include <Game/Pool.h>
 #include <Game/SaveGame.h>
 #include <Game/SkillUse.h>
-#include <Game/Stats.h>
 #include <Game/StatUpdate.h>
+#include <Game/Stats.h>
 #include <Game/StatusDraw.h>
 #include <Game/StatusScreen.h>
 #include <Game/WorldMap.h>
@@ -52,6 +59,7 @@
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Script/Script.h>
 #include <Text/Font.h>
 #include <Text/TextPlane.h>
@@ -80,128 +88,102 @@ typedef struct ConditionName {
 
 // The fatal conditions (ash, dead, dying).
 DATA(0x000646e8)
-static const i16 s_fatalConditions[] = {CONDITION_ASH, CONDITION_DEAD, CONDITION_DYING, -1};
+static const i16 s_fatalConditions[] =
+    {CONDITION_ASH, CONDITION_DEAD, CONDITION_DYING, CONDITION_LIST_END};
 
 // @identity-TODO: the conditions GetPickBlockingCondition reports (the last one
 // set wins); named from its caller in the party picker.
 DATA(0x000646f0)
 static const i16 s_pickBlockingConditions[] = {
-    21,
-    6,
+    CONDITION_ICE,
+    CONDITION_FREEZE,
     CONDITION_DOZE,
     CONDITION_SLEEP,
-    10,
-    3,
+    CONDITION_STUN,
+    CONDITION_COLLAPSE,
     CONDITION_DYING,
     CONDITION_DEAD,
     CONDITION_ASH,
-    20,
-    12,
-    5,
-    4,
-    19,
-    -1
+    CONDITION_SHOCK,
+    CONDITION_BIND,
+    CONDITION_PARALYSIS,
+    CONDITION_STONE,
+    CONDITION_DANCE,
+    CONDITION_LIST_END
 };
 
 // Conditions suppressed when an attack targets a field actor in field mode.
 DATA(0x00064710)
 static const i16 s_fieldRestrictedConditions[] = {
-    CONDITION_ASH,
-    CONDITION_DEAD,
-    CONDITION_DYING,
-    3,
-    4,
-    5,
-    6,
-    7,
-    CONDITION_ZOMBIE,
-    9,
-    10,
-    11,
-    12,
-    CONDITION_SLEEP,
-    14,
-    CONDITION_POISON,
-    17,
-    19,
-    21,
-    30,
-    31,
-    CONDITION_SEVERE_POISON,
-    33,
-    -1,
+    CONDITION_ASH,    CONDITION_DEAD,          CONDITION_DYING,   CONDITION_COLLAPSE,
+    CONDITION_STONE,  CONDITION_PARALYSIS,     CONDITION_FREEZE,  CONDITION_POSSESSION,
+    CONDITION_ZOMBIE, CONDITION_CURSE,         CONDITION_STUN,    CONDITION_SUFFOCATION,
+    CONDITION_BIND,   CONDITION_SLEEP,         CONDITION_PANIC,   CONDITION_POISON,
+    CONDITION_CHARM,  CONDITION_DANCE,         CONDITION_ICE,     CONDITION_DRUNK,
+    CONDITION_SLIME,  CONDITION_SEVERE_POISON, CONDITION_VAMPIRE, CONDITION_LIST_END,
 };
 
 // @identity-TODO: the conditions GetDisablingCondition reports (the last one
 // set wins), those cleared after a battle, those cleared when a member leaves
 // the party, and every condition in display order.
 DATA(0x00064740)
-static const i16 s_disablingConditions[] =
-    {CONDITION_DYING, CONDITION_DEAD, CONDITION_ASH, 3, 4, 5, 6, -1};
+static const i16 s_disablingConditions[] = {
+    CONDITION_DYING,
+    CONDITION_DEAD,
+    CONDITION_ASH,
+    CONDITION_COLLAPSE,
+    CONDITION_STONE,
+    CONDITION_PARALYSIS,
+    CONDITION_FREEZE,
+    CONDITION_LIST_END
+};
 
 DATA(0x00064750)
-static const i16 s_battleConditions[] = {17, 20, 21, 22, CONDITION_DOZE, 26, 27, 28, -1};
+static const i16 s_battleConditions[] = {
+    CONDITION_CHARM,
+    CONDITION_SHOCK,
+    CONDITION_ICE,
+    CONDITION_BURN,
+    CONDITION_DOZE,
+    CONDITION_BERSERK,
+    CONDITION_HIGH,
+    CONDITION_HAPPY,
+    CONDITION_LIST_END
+};
 
 DATA(0x00064768)
 static const i16 s_leaveConditions[] = {
-    10,
-    11,
+    CONDITION_STUN,
+    CONDITION_SUFFOCATION,
     CONDITION_SLEEP,
-    14,
-    16,
-    18,
-    19,
-    20,
-    21,
-    22,
-    23,
+    CONDITION_PANIC,
+    CONDITION_HALLUCINATION,
+    CONDITION_CONFUSION,
+    CONDITION_DANCE,
+    CONDITION_SHOCK,
+    CONDITION_ICE,
+    CONDITION_BURN,
+    CONDITION_BLIND,
     CONDITION_DOZE,
-    26,
-    27,
-    28,
-    29,
-    31,
-    -1,
+    CONDITION_BERSERK,
+    CONDITION_HIGH,
+    CONDITION_HAPPY,
+    CONDITION_TIPSY,
+    CONDITION_SLIME,
+    CONDITION_LIST_END,
 };
 
 DATA(0x00064790)
 static const i16 s_allConditions[] = {
-    CONDITION_ASH,
-    CONDITION_DEAD,
-    CONDITION_DYING,
-    3,
-    4,
-    5,
-    6,
-    7,
-    CONDITION_ZOMBIE,
-    9,
-    10,
-    11,
-    12,
-    CONDITION_SLEEP,
-    14,
-    CONDITION_SEVERE_POISON,
-    CONDITION_POISON,
-    16,
-    17,
-    18,
-    19,
-    20,
-    21,
-    22,
-    23,
-    24,
-    CONDITION_DOZE,
-    26,
-    27,
-    30,
-    29,
-    28,
-    31,
-    33,
-    34,
-    -1,
+    CONDITION_ASH,    CONDITION_DEAD,          CONDITION_DYING,  CONDITION_COLLAPSE,
+    CONDITION_STONE,  CONDITION_PARALYSIS,     CONDITION_FREEZE, CONDITION_POSSESSION,
+    CONDITION_ZOMBIE, CONDITION_CURSE,         CONDITION_STUN,   CONDITION_SUFFOCATION,
+    CONDITION_BIND,   CONDITION_SLEEP,         CONDITION_PANIC,  CONDITION_SEVERE_POISON,
+    CONDITION_POISON, CONDITION_HALLUCINATION, CONDITION_CHARM,  CONDITION_CONFUSION,
+    CONDITION_DANCE,  CONDITION_SHOCK,         CONDITION_ICE,    CONDITION_BURN,
+    CONDITION_BLIND,  CONDITION_MAGIC_SEAL,    CONDITION_DOZE,   CONDITION_BERSERK,
+    CONDITION_HIGH,   CONDITION_DRUNK,         CONDITION_TIPSY,  CONDITION_HAPPY,
+    CONDITION_SLIME,  CONDITION_VAMPIRE,       CONDITION_INJURY, CONDITION_LIST_END,
 };
 
 // Shown when no condition name applies: three full-width spaces.
@@ -213,38 +195,38 @@ static const ConditionName s_conditionNames[] = {
     {CONDITION_ASH, "\212D"},                      // 灰
     {CONDITION_DEAD, "\216\200"},                  // 死
     {CONDITION_DYING, "\225m\216\200"},            // 瀕死
-    {3, "\215\250\223|"},                          // 昏倒
-    {4, "\220\316\211\273"},                       // 石化
-    {5, "\226\203\341\203"},                       // 麻痺
-    {6, "\223\200\214\213"},                       // 凍結
-    {7, "\234\337\210\313"},                       // 憑依
+    {CONDITION_COLLAPSE, "\215\250\223|"},         // 昏倒
+    {CONDITION_STONE, "\220\316\211\273"},         // 石化
+    {CONDITION_PARALYSIS, "\226\203\341\203"},     // 麻痺
+    {CONDITION_FREEZE, "\223\200\214\213"},        // 凍結
+    {CONDITION_POSSESSION, "\234\337\210\313"},    // 憑依
     {CONDITION_ZOMBIE, "\203]\203\223\203r"},      // ゾンビ
-    {9, "\216\364\202\242"},                       // 呪い
-    {10, "\213C\220\342"},                         // 気絶
-    {11, "\222\202\221\247"},                      // 窒息
-    {12, "\213\326\224\233"},                      // 禁縛
+    {CONDITION_CURSE, "\216\364\202\242"},         // 呪い
+    {CONDITION_STUN, "\213C\220\342"},             // 気絶
+    {CONDITION_SUFFOCATION, "\222\202\221\247"},   // 窒息
+    {CONDITION_BIND, "\213\326\224\233"},          // 禁縛
     {CONDITION_SLEEP, "\226\260\202\350"},         // 眠り
-    {14, "\213\260\215Q"},                         // 恐慌
+    {CONDITION_PANIC, "\213\260\215Q"},            // 恐慌
     {CONDITION_SEVERE_POISON, "\226\322\223\305"}, // 猛毒
     {CONDITION_POISON, "\223\305"},                // 毒
-    {16, "\214\266\212o"},                         // 幻覚
-    {17, "\226\243\227\271"},                      // 魅了
-    {18, "\215\254\227\220"},                      // 混乱
-    {19, "\225\221\223\245"},                      // 舞踏
-    {20, "\212\264\223d"},                         // 感電
-    {21, "\225X\214\213"},                         // 氷結
-    {22, "\211\212\217\343"},                      // 炎上
-    {23, "\226\323\226\332"},                      // 盲目
-    {24, "\225\225\226\202"},                      // 封魔
+    {CONDITION_HALLUCINATION, "\214\266\212o"},    // 幻覚
+    {CONDITION_CHARM, "\226\243\227\271"},         // 魅了
+    {CONDITION_CONFUSION, "\215\254\227\220"},     // 混乱
+    {CONDITION_DANCE, "\225\221\223\245"},         // 舞踏
+    {CONDITION_SHOCK, "\212\264\223d"},            // 感電
+    {CONDITION_ICE, "\225X\214\213"},              // 氷結
+    {CONDITION_BURN, "\211\212\217\343"},          // 炎上
+    {CONDITION_BLIND, "\226\323\226\332"},         // 盲目
+    {CONDITION_MAGIC_SEAL, "\225\225\226\202"},    // 封魔
     {CONDITION_DOZE, "\213\217\226\260\202\350"},  // 居眠り
-    {26, "\213\266\220\355\216m"},                 // 狂戦士
-    {27, "\203n\203C"},                            // ハイ
-    {30, "\223D\220\214"},                         // 泥酔
-    {29, "\202\331\202\353\220\214"},              // ほろ酔
-    {28, "\215K\225\237"},                         // 幸福
-    {31, "\275\327\262\321"},                      // ｽﾗｲﾑ
-    {33, "\213z\214\214"},                         // 吸血
-    {34, "\212O\217\235"},                         // 外傷
+    {CONDITION_BERSERK, "\213\266\220\355\216m"},  // 狂戦士
+    {CONDITION_HIGH, "\203n\203C"},                // ハイ
+    {CONDITION_DRUNK, "\223D\220\214"},            // 泥酔
+    {CONDITION_TIPSY, "\202\331\202\353\220\214"}, // ほろ酔
+    {CONDITION_HAPPY, "\215K\225\237"},            // 幸福
+    {CONDITION_SLIME, "\275\327\262\321"},         // ｽﾗｲﾑ
+    {CONDITION_VAMPIRE, "\213z\214\214"},          // 吸血
+    {CONDITION_INJURY, "\212O\217\235"},           // 外傷
 };
 
 // The Character `ammoCounts` entry of equipment kinds 11 through 19 (-1 for
@@ -270,7 +252,7 @@ static i16 s_selectedPartySlot = -1;
 
 // Each condition's base chance (of 256) to wear off per roll; 0 never does.
 DATA(0x00069f08)
-static i16 s_recoveryChance[35] = {
+static i16 s_recoveryChance[CONDITION_COUNT] = {
     0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  15, 40, 30, 40, 40, 0, 60, 10,
     50, 50, 128, 60, 50, 50, 10, 80, 10, 70, 80, 50, 10, 0,  0,  0, 0,
 };
@@ -279,7 +261,7 @@ DATA(0x000816a8)
 static FieldObject s_characterLoadObject = {0};
 
 DATA(0x000818e8)
-Character g_characters[16] = {0};
+Character g_characters[CHARACTER_SLOT_COUNT] = {0};
 
 // The roster slots the status screen lists and how many there are.
 DATA(0x00083ad8)
@@ -293,18 +275,18 @@ DATA(0x00083b1c)
 static b16 s_statusRedrawPending = false;
 
 DATA(0x00083b20)
-Character* g_panelMembers[6] = {0};
+Character* g_panelMembers[6] = {NULL};
 
 // Per character group, the 40-bit set of items the group can equip.
 DATA(0x00083b38)
 static i32 s_equipTable = 0;
 
 DATA(0x00083b3c)
-static MenuBox* s_statusListMenu = 0;
+static MenuBox* s_statusListMenu = NULL;
 
-// Which of the five status-line columns the character status line shows.
+// Which roster filter the status list uses.
 DATA(0x00083b40)
-static i16 s_statusColumn = 0;
+static GZ_ENUM_STORAGE(StatusListColumn, i16) s_statusColumn = STATUS_LIST_ALL;
 
 DATA(0x00083b44)
 i16 g_statusSlotCount = 0;
@@ -392,33 +374,45 @@ static __inline void CopyCharacterWithoutSkills(Character* destination, const Ch
 RVA(0x0003ca40, 0x1b9)
 void InitCharacters(void) {
     i16 i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < CHARACTER_SLOT_COUNT; i++) {
         InitEmptyWordList(&g_characters[i].skills);
     }
-    InitCharacterSlot(0, 0, "\212\213\217\351", "\216\152\220\154", 1);
-    InitCharacterSlot(1, 2, "\213\153", "\227\122\211\106\215\201", 2);
-    InitCharacterSlot(2, 4, "\224\362\222\271", "\237\243", 2);
-    InitCharacterSlot(3, 5, "\220\274\226\354", "\213\140\227\131", 1);
-    InitCharacterSlot(4, 6, "\221\201\215\342", "\222\102\226\347", 1);
-    InitCharacterSlot(5, 10, "\216\122\220\243", "\227\105", 1);
-    InitCharacterSlot(6, 11, "\213\313\223\207", "\211\160\224\374", 2);
-    InitCharacterSlot(7, 13, "\203\152\203\205\201\133\203\147\203\223", s_emptyCharacterName, 0);
-    InitCharacterSlot(8, 14, "\216\122\223\143", "\203\112\203\131\203\176", 1);
-    InitCharacterSlot(9, 15, "\227\247\220\354", "\221\171\214\265", 1);
-    InitCharacterSlot(10, 7, "\211\200\223\143", "\223\116\226\347", 1);
-    InitCharacterSlot(11, 8, "\217\343\211\315", "\214\366\213\120", 1);
-    InitCharacterSlot(12, 9, "\221\212\224\156", "\216\117\216\154\230\131", 1);
+    InitCharacterSlot(0, HUMAN_KATSURAGI, "\212\213\217\351", "\216\152\220\154", GENDER_MALE);
+    InitCharacterSlot(1, HUMAN_TACHIBANA, "\213\153", "\227\122\211\106\215\201", GENDER_FEMALE);
+    InitCharacterSlot(2, HUMAN_ASUKA, "\224\362\222\271", "\237\243", GENDER_FEMALE);
+    InitCharacterSlot(3, HUMAN_NISHINO, "\220\274\226\354", "\213\140\227\131", GENDER_MALE);
+    InitCharacterSlot(4, HUMAN_HAYASAKA, "\221\201\215\342", "\222\102\226\347", GENDER_MALE);
+    InitCharacterSlot(5, HUMAN_YAMASE, "\216\122\220\243", "\227\105", GENDER_MALE);
+    InitCharacterSlot(6, HUMAN_KIRISHIMA, "\213\313\223\207", "\211\160\224\374", GENDER_FEMALE);
+    InitCharacterSlot(
+        7,
+        HUMAN_NEWTON,
+        "\203\152\203\205\201\133\203\147\203\223",
+        s_emptyCharacterName,
+        GENDER_NONE
+    );
+    InitCharacterSlot(8, HUMAN_YAMADA, "\216\122\223\143", "\203\112\203\131\203\176", GENDER_MALE);
+    InitCharacterSlot(9, HUMAN_TACHIKAWA, "\227\247\220\354", "\221\171\214\265", GENDER_MALE);
+    InitCharacterSlot(10, HUMAN_SONODA, "\211\200\223\143", "\223\116\226\347", GENDER_MALE);
+    InitCharacterSlot(11, HUMAN_KAMIKAWA, "\217\343\211\315", "\214\366\213\120", GENDER_MALE);
+    InitCharacterSlot(12, HUMAN_SOUMA, "\221\212\224\156", "\216\117\216\154\230\131", GENDER_MALE);
     CopyCharacterWithoutSkills(&g_characters[13], &g_characters[0]);
     CopyCharacterWithoutSkills(&g_characters[14], &g_characters[0]);
     CopyCharacterWithoutSkills(&g_characters[15], &g_characters[0]);
 }
 
 RVA(0x0003cc00, 0x15c)
-void InitCharacterSlot(i16 slot, i16 id, const char* prefix, const char* name, i16 memberClass) {
+void InitCharacterSlot(
+    i16 slot,
+    i16 id,
+    const char* prefix,
+    const char* name,
+    GZ_ENUM_PARAM(Gender, i16) gender
+) {
     LoadCharacterCore(id, &g_characters[slot]);
     NormalizeAffiliations(&g_characters[slot]);
-    g_characters[slot].byte069 = memberClass;
-    g_characters[slot].memberClass = memberClass;
+    g_characters[slot].byte069 = gender;
+    g_characters[slot].gender = gender;
     g_characters[slot].id = id;
     memset(g_characters[slot].namePrefix, 0, sizeof(g_characters[slot].namePrefix));
     memset(g_characters[slot].name, 0, sizeof(g_characters[slot].name));
@@ -439,8 +433,8 @@ void InitCharacterSlot(i16 slot, i16 id, const char* prefix, const char* name, i
 // Out-of-range slots fall back to the last record.
 RVA(0x0003cd60, 0x29)
 Character* GetCharacter(i16 slot) {
-    if (slot < 0 || slot >= 16) {
-        slot = 15;
+    if (slot < 0 || slot >= CHARACTER_SLOT_COUNT) {
+        slot = CHARACTER_SLOT_COUNT - 1;
     }
     return &g_characters[slot];
 }
@@ -449,7 +443,7 @@ RVA(0x0003cd90, 0x1a)
 i16 GetCharacterId(i16 slot) {
     Character* character = GetCharacter(slot);
     if (character == NULL) {
-        return -1;
+        return CHARACTER_ID_NONE;
     }
     return character->id;
 }
@@ -457,7 +451,7 @@ i16 GetCharacterId(i16 slot) {
 RVA(0x0003cdb0, 0x2d)
 i16 FindCharacter(i16 id) {
     i16 slot;
-    for (slot = 0; slot < 16; slot++) {
+    for (slot = 0; slot < CHARACTER_SLOT_COUNT; slot++) {
         if (g_characters[slot].id == id) {
             return slot;
         }
@@ -488,7 +482,7 @@ RVA(0x0003ce20, 0x91)
 void ResetRosterStatModifiers(void) {
     i16 slot;
     Character* character;
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
         if (character) {
             ClearStatModifiers(&character->stats);
@@ -507,18 +501,16 @@ void ResetRosterStatModifiers(void) {
     }
 }
 
-// Maximum HP: level * vitality / 2 + protection and fortune + 5, doubled by personal
-// flag 37 and again by flag 38, at most 9999.
 RVA(0x0003cec0, 0xa3)
 i32 CalcMaxHp(Character* character) {
     double value = character->level;
-    value *= character->stats.total[6];
+    value *= character->stats.total[STAT_VITALITY];
     value *= 0.5;
-    value += character->stats.total[4] + character->stats.total[10] + 5;
-    if (TestBit(character->personalFlags, 37) == 1) {
+    value += character->stats.total[STAT_PROTECTION] + character->stats.total[STAT_FORTUNE] + 5;
+    if (TestBit(character->personalFlags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
         value += value;
     }
-    if (TestBit(character->personalFlags, 38) == 1) {
+    if (TestBit(character->personalFlags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
         value += value;
     }
     if (value > 9999.0) {
@@ -527,17 +519,16 @@ i32 CalcMaxHp(Character* character) {
     return (i32)value;
 }
 
-// Maximum MP: (charm and mental strength) / 2 + sqrt(level) * magic * 1.5, doubled by
-// personal flag 38, at most 999.
 RVA(0x0003cf70, 0x8c)
 i32 CalcMaxMp(Character* character) {
     double scaled = sqrt(character->level);
-    double value = GetStatTotal(character, 9) + GetStatTotal(character, 1);
+    double value =
+        GetStatTotal(character, STAT_CHARM) + GetStatTotal(character, STAT_MENTAL_STRENGTH);
     value *= 0.5;
-    scaled *= GetStatTotal(character, 2);
+    scaled *= GetStatTotal(character, STAT_MAGIC);
     scaled *= 1.5;
     value += scaled;
-    if (TestCharacterFlag(character, 38) == 1) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
         value += value;
     }
     if (value > 999.0) {
@@ -562,11 +553,11 @@ i16 LowPoolMask(CharacterPools* pools) {
     return mask;
 }
 
-// 2: full; 1: partly spent; 0: empty.
+// Full at or above maximum, partly filled above zero, otherwise empty.
 RVA(0x0003d030, 0x1d)
-i16 PoolState(CurMax* pool) {
+GZ_ENUM_RETURN(PoolStateKind, i16) PoolState(CurMax* pool) {
     if (pool->max <= pool->cur) {
-        return 2;
+        return POOL_STATE_FULL;
     }
     return pool->cur > 0;
 }
@@ -728,36 +719,43 @@ i32 CalcMagicDefenseStat(i16* stats, i32 amount) {
 // Recomputes a character's 24 battle stats from its total stats and the
 // bonuses of its eight item slots (each slot's item, then its indexed gem
 // item); stats 0, 6, 12 and 18 are kept, 13 and 19..23 are set to 1.
-// @identity-TODO: which values the indices name is unrecovered.
 RVA(0x0003d560, 0x3e0)
 void RecalcDerivedStats(Character* character) {
-    i16 kept12 = GetBattleStatBase(character, 12);
-    i16 kept18 = GetBattleStatBase(character, 18);
-    i16 level = GetBattleStatBase(character, 0);
-    i16 kept6 = GetBattleStatBase(character, 6);
+    i16 kept12 = GetBattleStatBase(character, BATTLE_STAT_MAGIC_LEVEL);
+    i16 kept18 = GetBattleStatBase(character, BATTLE_STAT_DEMON_INTERACTION_LEVEL);
+    i16 level = GetBattleStatBase(character, BATTLE_STAT_WEAPON_LEVEL);
+    i16 kept6 = GetBattleStatBase(character, BATTLE_STAT_GUN_LEVEL);
     i16 bonuses[24];
     i16* stats;
 
     memset(bonuses, 0, sizeof(bonuses));
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[5].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[6].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[7].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[5].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[6].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[7].attachment, bonuses, 1);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].attachment, bonuses, true);
+    AddItemStatBonuses(
+        GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].attachment,
+        bonuses,
+        true
+    );
+    AddItemStatBonuses(
+        GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].attachment,
+        bonuses,
+        true
+    );
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].attachment, bonuses, true);
 
     stats = character->stats.total;
-    character->battleStats[0] = level;
+    character->battleStats[BATTLE_STAT_WEAPON_LEVEL] = level;
     character->battleStats[1] = StatBlend57(stats, level);
     character->battleStats[BATTLE_STAT_WEAPON_ACCURACY] =
         CalcWeaponAccuracyStat(stats, bonuses[BATTLE_STAT_WEAPON_ACCURACY]);
@@ -767,32 +765,34 @@ void RecalcDerivedStats(Character* character) {
         CalcWeaponEvasionStat(stats, bonuses[BATTLE_STAT_WEAPON_EVASION]);
     character->battleStats[BATTLE_STAT_WEAPON_DEFENSE] =
         CalcPhysicalDefenseStat(stats, bonuses[BATTLE_STAT_WEAPON_DEFENSE]);
-    character->battleStats[6] = kept6;
+    character->battleStats[BATTLE_STAT_GUN_LEVEL] = kept6;
     character->battleStats[7] = StatBlend80(stats, kept6);
     character->battleStats[BATTLE_STAT_GUN_ACCURACY] = CalcGunAccuracyStat(
         stats,
         bonuses[BATTLE_STAT_GUN_ACCURACY],
-        GetBattleStatBase(character, 6)
+        GetBattleStatBase(character, BATTLE_STAT_GUN_LEVEL)
     );
     character->battleStats[BATTLE_STAT_GUN_POWER] = ClampTo999(bonuses[BATTLE_STAT_GUN_POWER]);
     character->battleStats[BATTLE_STAT_GUN_EVASION] = CalcGunEvasionStat(stats);
     character->battleStats[BATTLE_STAT_GUN_DEFENSE] =
         GetBattleStatBase(character, BATTLE_STAT_WEAPON_DEFENSE);
-    character->battleStats[12] = kept12;
+    character->battleStats[BATTLE_STAT_MAGIC_LEVEL] = kept12;
     character->battleStats[13] = 1;
-    character->battleStats[BATTLE_STAT_MAGIC_POWER] =
-        CalcMagicPowerStat(stats, GetItemMagicPowerBonus(GetCharacterEquipment(character)[5].item));
+    character->battleStats[BATTLE_STAT_MAGIC_POWER] = CalcMagicPowerStat(
+        stats,
+        GetItemMagicPowerBonus(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item)
+    );
     character->battleStats[BATTLE_STAT_MAGIC_ACCURACY] = CalcMagicAccuracyStat(
         stats,
-        GetItemMagicAccuracyBonus(GetCharacterEquipment(character)[5].item)
+        GetItemMagicAccuracyBonus(GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item)
     );
     character->battleStats[BATTLE_STAT_MAGIC_EVASION] = CalcMagicEvasionStat(
         stats,
-        GetItemPhysicalEvasionBonus(GetCharacterEquipment(character)[4].item)
+        GetItemPhysicalEvasionBonus(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item)
     );
     character->battleStats[BATTLE_STAT_MAGIC_DEFENSE] =
         CalcMagicDefenseStat(stats, SumEquippedMagicDefenseBonus(character, 3));
-    character->battleStats[18] = kept18;
+    character->battleStats[BATTLE_STAT_DEMON_INTERACTION_LEVEL] = kept18;
     character->battleStats[19] = 1;
     character->battleStats[21] = 1;
     character->battleStats[20] = 1;
@@ -806,27 +806,26 @@ i16 SumArmorDefenseBonus(Character* character) {
     i16 bonuses[24];
 
     memset(bonuses, 0, sizeof(bonuses));
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].item, bonuses, 0);
-    AddItemStatBonuses(GetCharacterEquipment(character)[0].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[1].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[2].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[3].attachment, bonuses, 1);
-    AddItemStatBonuses(GetCharacterEquipment(character)[4].attachment, bonuses, 1);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, bonuses, false);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_BODY].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].attachment, bonuses, true);
+    AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].attachment, bonuses, true);
+    AddItemStatBonuses(
+        GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].attachment,
+        bonuses,
+        true
+    );
     return bonuses[BATTLE_STAT_WEAPON_DEFENSE];
 }
 
-// Scales the shown battle stats by the member's personal flags: flag 36
-// halves stats 2, 4, 8 and 10, flag 35 raises them by half, flag 37 raises
-// stats 3 and 5 by half.
-// @identity-TODO: which stats the indices name and what the flags stand for
-// are unrecovered.
 RVA(0x0003da90, 0x14b)
 void ApplyStatFlags(Character* character) {
-    if (TestCharacterFlag(character, 0x24) == 1) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
         character->battleStatsShown[BATTLE_STAT_WEAPON_ACCURACY] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_ACCURACY), 50);
         character->battleStatsShown[BATTLE_STAT_WEAPON_EVASION] =
@@ -836,7 +835,7 @@ void ApplyStatFlags(Character* character) {
         character->battleStatsShown[BATTLE_STAT_GUN_EVASION] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 50);
     }
-    if (TestCharacterFlag(character, 0x23) == 1) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
         character->battleStatsShown[BATTLE_STAT_WEAPON_ACCURACY] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_ACCURACY), 150);
         character->battleStatsShown[BATTLE_STAT_WEAPON_EVASION] =
@@ -846,7 +845,7 @@ void ApplyStatFlags(Character* character) {
         character->battleStatsShown[BATTLE_STAT_GUN_EVASION] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 150);
     }
-    if (TestCharacterFlag(character, 0x25) == 1) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
         character->battleStatsShown[BATTLE_STAT_WEAPON_POWER] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_POWER), 150);
         character->battleStatsShown[BATTLE_STAT_WEAPON_DEFENSE] =
@@ -876,7 +875,7 @@ i16 RecalcStatTotals(StatBlock* stats) {
     i16 changed = 0;
     i16 i;
     i16 total;
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < STAT_COUNT; i++) {
         total =
             ClampSum100(stats->base[i], stats->equipment[i] + stats->bonus[i], stats->modifiers[i]);
         if (total != stats->total[i]) {
@@ -892,7 +891,7 @@ RVA(0x0003dcb0, 0x21)
 i16 ClearStatModifiers(StatBlock* stats) {
     i16 count = 0;
     i16 i;
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < STAT_COUNT; i++) {
         if (stats->modifiers[i] != 0) {
             count++;
         }
@@ -908,26 +907,26 @@ RVA(0x0003dce0, 0x1c0)
 b16 ApplyItemStatBonuses(StatBlock* stats, ItemSlot* slots) {
     i16 i;
 
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < STAT_COUNT; i++) {
         stats->bonus[i] = 0;
         stats->equipment[i] = 0;
     }
-    AddItemStatPoints(slots[0].item, stats->bonus);
-    AddItemStatPoints(slots[1].item, stats->bonus);
-    AddItemStatPoints(slots[2].item, stats->bonus);
-    AddItemStatPoints(slots[3].item, stats->bonus);
-    AddItemStatPoints(slots[4].item, stats->bonus);
-    AddItemStatPoints(slots[5].item, stats->bonus);
-    AddItemStatPoints(slots[6].item, stats->bonus);
-    AddItemStatPoints(slots[7].item, stats->bonus);
-    AddItemStatPoints(GemItemId(slots[0].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[1].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[2].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[3].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[4].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[5].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[6].attachment), stats->equipment);
-    AddItemStatPoints(GemItemId(slots[7].attachment), stats->equipment);
+    AddItemStatPoints(slots[EQUIP_SLOT_HEAD].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_BODY].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_ARMS].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_LEGS].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_ACCESSORY].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_WEAPON].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_GUN].item, stats->bonus);
+    AddItemStatPoints(slots[EQUIP_SLOT_AMMO].item, stats->bonus);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_HEAD].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_BODY].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_ARMS].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_LEGS].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_ACCESSORY].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_WEAPON].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_GUN].attachment), stats->equipment);
+    AddItemStatPoints(GemItemId(slots[EQUIP_SLOT_AMMO].attachment), stats->equipment);
     return false;
 }
 
@@ -948,16 +947,16 @@ RVA(0x0003dee0, 0x3b)
 void UpdateStatTotals(StatBlock* stats) {
     i16 i;
     i16 sum;
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < STAT_COUNT; i++) {
         sum = stats->base[i] + stats->bonus[i] + stats->equipment[i] + stats->modifiers[i];
         stats->total[i] = ClampTo100(sum / 2);
     }
 }
 
 RVA(0x0003df20, 0x50)
-i16 GetAlignmentAffinity(AlignmentInfo* info, i16 side) {
+i16 GetAlignmentAffinity(AlignmentInfo* info, GZ_ENUM_PARAM(AlignmentSide, i16) side) {
     i16 sum = info->last1 + info->last0;
-    if (sum == 0 && info->last0 == 0 && side == 0) {
+    if (sum == 0 && info->last0 == ALIGNMENT_NEUTRAL && side == ALIGNMENT_NEUTRAL) {
         return 2;
     }
     sum += 2;
@@ -972,14 +971,15 @@ i16 GetAlignmentAffinity(AlignmentInfo* info, i16 side) {
 // side's own register (xor bl,cl; and ebx,3) where this build uses eax;
 // everything before the final insert matches.
 RVA(0x0003df70, 0x110)
-i16 MoveAlignment(AlignmentInfo* info, i16 weight, i16 side) {
+GZ_ENUM_RETURN(AlignmentSide, i16)
+MoveAlignment(AlignmentInfo* info, i16 weight, GZ_ENUM_PARAM(AlignmentSide, i16) side) {
     i16 delta = GetAlignmentAffinity(info, side) * weight;
     switch (side) {
-        case -1:
+        case ALIGNMENT_NEGATIVE:
             info->negativeMoves++;
             delta = -delta;
             break;
-        case 0:
+        case ALIGNMENT_NEUTRAL:
             info->neutralMoves++;
             if (delta > abs(info->value)) {
                 delta = abs(info->value);
@@ -988,7 +988,7 @@ i16 MoveAlignment(AlignmentInfo* info, i16 weight, i16 side) {
                 delta = -delta;
             }
             break;
-        case 1:
+        case ALIGNMENT_POSITIVE:
             info->positiveMoves++;
             break;
         default:
@@ -1009,22 +1009,22 @@ i16 MoveAlignment(AlignmentInfo* info, i16 weight, i16 side) {
 
 // -1 at or below -42, 1 at or above 42, 0 between.
 RVA(0x0003e080, 0x1d)
-i16 AlignmentClass(i16 value) {
+GZ_ENUM_RETURN(AlignmentSide, i16) AlignmentClass(i16 value) {
     if (value <= -42) {
-        return -1;
+        return ALIGNMENT_NEGATIVE;
     }
     return value >= 42;
 }
 
 RVA(0x0003e0a0, 0x27)
-void ShiftAlignmentB(Character* character, i16 amount, i16 step) {
+void ShiftAlignmentB(Character* character, i16 amount, GZ_ENUM_PARAM(AlignmentSide, i16) step) {
     AlignmentInfo* alignment = &character->alignmentB;
     MoveAlignment(alignment, amount, step);
     character->alignmentLevelB = GetAlignmentValue(alignment);
 }
 
 RVA(0x0003e0d0, 0x27)
-void ShiftAlignmentA(Character* character, i16 amount, i16 step) {
+void ShiftAlignmentA(Character* character, i16 amount, GZ_ENUM_PARAM(AlignmentSide, i16) step) {
     AlignmentInfo* alignment = &character->alignmentA;
     MoveAlignment(alignment, amount, step);
     character->alignmentLevelA = GetAlignmentValue(alignment);
@@ -1041,7 +1041,7 @@ i16 PartyAlignmentClass(i16 axis) {
     i16 count = 0;
     i16 i;
     Character* member;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         member = GetPartyEntry(i);
         if (member != NULL) {
             if (axis == 0) {
@@ -1078,8 +1078,8 @@ void RedrawPartyStatus(void) {
     i16 slot;
     i16 swapped;
     ClearTextPlane(g_infoPlane);
-    for (slot = 0; slot < 6; slot++) {
-        if (PartySlotAt(slot) == -1) {
+    for (slot = 0; slot < PARTY_SIZE; slot++) {
+        if (PartySlotAt(slot) == PARTY_SLOT_EMPTY) {
             DrawPartyStatusSlot(slot, NULL);
         } else {
             swapped = GetSwappedMember(slot);
@@ -1111,15 +1111,42 @@ void DrawPartyStatusSlot(i16 slot, Character* character) {
     g_panelMembers[partySlot] = character;
     ShowScreenLayer(slot);
     sprintf(g_scratchBuffer, "%-16s", FormatFullName(name, character));
-    DrawLayerText(slot, 8, 8, g_scratchBuffer, 0x3450);
+    DrawLayerText(
+        slot,
+        8,
+        8,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%5d", character->pools.hp.cur);
-    DrawLayerText(slot, 144, 24, g_scratchBuffer, 0x9450);
+    DrawLayerText(
+        slot,
+        144,
+        24,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_HALF_WIDTH
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK)
+    );
     sprintf(g_scratchBuffer, "%5d", character->pools.mp.cur);
-    DrawLayerText(slot, 144, 40, g_scratchBuffer, 0x9450);
+    DrawLayerText(
+        slot,
+        144,
+        40,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_HALF_WIDTH
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK)
+    );
     DrawLayerGauge(slot, character->pools.hp.cur, character->pools.hp.max, 1);
     DrawLayerGauge(slot, character->pools.mp.cur, character->pools.mp.max, 0);
     sprintf(g_scratchBuffer, "%6s", GetFirstConditionName(GetCharacterConditions(character)));
-    DrawLayerText(slot, 8, 44, g_scratchBuffer, 0x1450);
+    DrawLayerText(
+        slot,
+        8,
+        44,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK)
+    );
 }
 
 static __inline void RefreshPartyStatusIfNeeded(i16 force) {
@@ -1147,7 +1174,7 @@ void RefreshStatusPanel(i16 force) {
 // edges match. A separate filter result regresses both callers; C-safe TU states
 // retain the register exchange, with one also extending the line-step lifetime.
 RVA(0x0003e3c0, 0x1c1)
-i16 PollTextPartySlotSelection(i16 mode) {
+GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
     i16 oldStep = ResetTextPlaneLineStep(g_infoPlane, 3);
     i16 x;
     i16 y;
@@ -1159,13 +1186,13 @@ i16 PollTextPartySlotSelection(i16 mode) {
         CommitPartySlotSelection();
         ClearMouseClicks();
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
-        return 1;
+        return PARTY_SLOT_POLL_CONFIRMED;
     }
     if (g_mouseRightClick) {
         ClearMouseSelection();
         ClearMouseClicks();
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
-        return -1;
+        return PARTY_SLOT_POLL_CANCELLED;
     }
     column = TextPlaneCellAt(g_infoPlane, g_mousePosition.x, g_mousePosition.y, &x, &y);
     if (column == 0 || column == 39) {
@@ -1177,7 +1204,7 @@ i16 PollTextPartySlotSelection(i16 mode) {
     }
     if (s_selectedPartySlot == slot) {
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
-        return 0;
+        return PARTY_SLOT_POLL_WAITING;
     }
     s_selectedPartySlot = slot;
     ClearTextPlaneHighlight(g_infoPlane);
@@ -1185,26 +1212,26 @@ i16 PollTextPartySlotSelection(i16 mode) {
         SetTextPlaneHighlight(g_infoPlane, column, y);
     }
     ResetTextPlaneLineStep(g_infoPlane, oldStep);
-    return 0;
+    return PARTY_SLOT_POLL_WAITING;
 }
 
 RVA(0x0003e590, 0xc9)
-i16 PollPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
+GZ_ENUM_RETURN(PartySlotPollResult, i16) PollPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
     i16 slot;
     if (g_mouseLeftClick) {
         CommitPartySlotSelection();
         ClearMouseClicks();
-        return 1;
+        return PARTY_SLOT_POLL_CONFIRMED;
     }
     if (g_mouseRightClick) {
         ClearMouseSelection();
         ClearMouseClicks();
-        return -1;
+        return PARTY_SLOT_POLL_CANCELLED;
     }
     slot = PartyPanelAtPoint(g_mousePosition.x, g_mousePosition.y);
     slot = FilterPartySlotSelection(slot, mode);
     s_selectedPartySlot = slot;
-    return 0;
+    return PARTY_SLOT_POLL_WAITING;
 }
 
 RVA(0x0003e660, 0x19)
@@ -1226,14 +1253,14 @@ void RequestStatusRedraw(void) {
 }
 
 RVA(0x0003e6b0, 0x13)
-b16 HasCondition(ConditionSet* conditions, i16 condition) {
+b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     return TestBit(conditions->bits, condition);
 }
 
 #define AccumulateCollapseOrPetrification(blocked, conditions)                                     \
     do {                                                                                           \
-        (blocked) |= HasCondition((conditions), 3);                                                \
-        (blocked) |= HasCondition((conditions), 4);                                                \
+        (blocked) |= HasCondition((conditions), CONDITION_COLLAPSE);                               \
+        (blocked) |= HasCondition((conditions), CONDITION_STONE);                                  \
     } while (0)
 
 // The last condition of `list` that is set, or 0.
@@ -1247,7 +1274,7 @@ b16 HasCondition(ConditionSet* conditions, i16 condition) {
 // case 5's here; instructions, calls and branch counts are identical. Loop
 // form (for/goto), nested-if returns, case 33/34 spelling and order were tried.
 RVA(0x0003e6d0, 0x700)
-i16 AddCondition(ConditionSet* conditions, i16 condition) {
+GZ_ENUM_RETURN(ConditionAddResult, i16) AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     i16 blocked;
     i16 i;
 
@@ -1257,252 +1284,252 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
         switch (condition) {
             case CONDITION_POISON:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                blocked |= HasCondition(conditions, 4);
+                blocked |= HasCondition(conditions, CONDITION_STONE);
                 blocked |= HasCondition(conditions, CONDITION_SEVERE_POISON);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 if (!HasCondition(conditions, CONDITION_POISON)) {
                     break;
                 }
                 condition = CONDITION_SEVERE_POISON;
                 continue;
-            case 21:
+            case CONDITION_ICE:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                blocked |= HasCondition(conditions, 4);
-                blocked |= HasCondition(conditions, 6);
+                blocked |= HasCondition(conditions, CONDITION_STONE);
+                blocked |= HasCondition(conditions, CONDITION_FREEZE);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                if (!HasCondition(conditions, 21)) {
+                if (!HasCondition(conditions, CONDITION_ICE)) {
                     break;
                 }
-                condition = 6;
+                condition = CONDITION_FREEZE;
                 continue;
             case CONDITION_DOZE:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 10);
+                blocked |= HasCondition(conditions, CONDITION_STUN);
                 blocked |= HasCondition(conditions, CONDITION_SLEEP);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 if (!HasCondition(conditions, CONDITION_DOZE)) {
                     break;
                 }
                 condition = CONDITION_SLEEP;
                 continue;
-            case 29:
+            case CONDITION_TIPSY:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 30);
+                blocked |= HasCondition(conditions, CONDITION_DRUNK);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                if (!HasCondition(conditions, 29)) {
+                if (!HasCondition(conditions, CONDITION_TIPSY)) {
                     break;
                 }
-                condition = 30;
+                condition = CONDITION_DRUNK;
                 continue;
             case CONDITION_ASH:
                 if (HasCondition(conditions, condition)) {
-                    return -1;
+                    return CONDITION_ADD_ALREADY_HELD;
                 }
-                for (i = 0; i < 35; i++) {
+                for (i = 0; i < CONDITION_COUNT; i++) {
                     ClearCondition(conditions, i);
                 }
                 break;
             case CONDITION_DEAD:
             case CONDITION_DYING:
                 if (HasCondition(conditions, condition)) {
-                    return -1;
+                    return CONDITION_ADD_ALREADY_HELD;
                 }
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                for (i = 0; i < 35; i++) {
+                for (i = 0; i < CONDITION_COUNT; i++) {
                     ClearCondition(conditions, i);
                 }
                 break;
-            case 3:
+            case CONDITION_COLLAPSE:
                 if (HasCondition(conditions, condition)) {
-                    return -1;
+                    return CONDITION_ADD_ALREADY_HELD;
                 }
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                if (HasCondition(conditions, 26)) {
-                    return 0;
+                if (HasCondition(conditions, CONDITION_BERSERK)) {
+                    return CONDITION_ADD_BLOCKED;
                 }
-                ClearCondition(conditions, 10);
+                ClearCondition(conditions, CONDITION_STUN);
                 ClearCondition(conditions, CONDITION_SLEEP);
-                ClearCondition(conditions, 18);
-                ClearCondition(conditions, 20);
+                ClearCondition(conditions, CONDITION_CONFUSION);
+                ClearCondition(conditions, CONDITION_SHOCK);
                 ClearCondition(conditions, CONDITION_DOZE);
-                ClearCondition(conditions, 27);
-                ClearCondition(conditions, 28);
-                ClearCondition(conditions, 29);
-                ClearCondition(conditions, 30);
+                ClearCondition(conditions, CONDITION_HIGH);
+                ClearCondition(conditions, CONDITION_HAPPY);
+                ClearCondition(conditions, CONDITION_TIPSY);
+                ClearCondition(conditions, CONDITION_DRUNK);
                 break;
-            case 4:
-            case 9:
-            case 24:
+            case CONDITION_STONE:
+            case CONDITION_CURSE:
+            case CONDITION_MAGIC_SEAL:
                 if (HasCondition(conditions, condition)) {
-                    return -1;
+                    return CONDITION_ADD_ALREADY_HELD;
                 }
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
-            case 5:
-            case 12:
-            case 17:
-            case 19:
-            case 20:
-            case 28:
+            case CONDITION_PARALYSIS:
+            case CONDITION_BIND:
+            case CONDITION_CHARM:
+            case CONDITION_DANCE:
+            case CONDITION_SHOCK:
+            case CONDITION_HAPPY:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
-            case 26:
+            case CONDITION_BERSERK:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 5);
-                blocked |= HasCondition(conditions, 7);
+                blocked |= HasCondition(conditions, CONDITION_PARALYSIS);
+                blocked |= HasCondition(conditions, CONDITION_POSSESSION);
                 blocked |= HasCondition(conditions, CONDITION_ZOMBIE);
-                blocked |= HasCondition(conditions, 10);
+                blocked |= HasCondition(conditions, CONDITION_STUN);
                 blocked |= HasCondition(conditions, CONDITION_SLEEP);
                 blocked |= HasCondition(conditions, CONDITION_DOZE);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
-            case 30:
+            case CONDITION_DRUNK:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                ClearCondition(conditions, 29);
+                ClearCondition(conditions, CONDITION_TIPSY);
                 break;
             case CONDITION_SEVERE_POISON:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 ClearCondition(conditions, CONDITION_POISON);
                 break;
-            case 33:
-            case 34:
+            case CONDITION_VAMPIRE:
+            case CONDITION_INJURY:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
-            case 6:
+            case CONDITION_FREEZE:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                blocked |= HasCondition(conditions, 4);
+                blocked |= HasCondition(conditions, CONDITION_STONE);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                if (HasCondition(conditions, 22)) {
-                    ClearCondition(conditions, 22);
-                    return 2;
+                if (HasCondition(conditions, CONDITION_BURN)) {
+                    ClearCondition(conditions, CONDITION_BURN);
+                    return CONDITION_ADD_CANCELLED_OPPOSITE;
                 }
-                ClearCondition(conditions, 21);
+                ClearCondition(conditions, CONDITION_ICE);
                 break;
-            case 7:
+            case CONDITION_POSSESSION:
             case CONDITION_ZOMBIE:
-            case 11:
-            case 31:
+            case CONDITION_SUFFOCATION:
+            case CONDITION_SLIME:
                 if (HasCondition(conditions, condition)) {
-                    return -1;
+                    return CONDITION_ADD_ALREADY_HELD;
                 }
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                if (HasCondition(conditions, 4)) {
-                    return 0;
+                if (HasCondition(conditions, CONDITION_STONE)) {
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
-            case 10:
+            case CONDITION_STUN:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 26);
+                blocked |= HasCondition(conditions, CONDITION_BERSERK);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 ClearCondition(conditions, CONDITION_SLEEP);
                 ClearCondition(conditions, CONDITION_DOZE);
                 break;
             case CONDITION_SLEEP:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 10);
-                blocked |= HasCondition(conditions, 26);
+                blocked |= HasCondition(conditions, CONDITION_STUN);
+                blocked |= HasCondition(conditions, CONDITION_BERSERK);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 ClearCondition(conditions, CONDITION_DOZE);
                 break;
-            case 14:
-            case 16:
-            case 18:
-            case 27:
+            case CONDITION_PANIC:
+            case CONDITION_HALLUCINATION:
+            case CONDITION_CONFUSION:
+            case CONDITION_HIGH:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 AccumulateCollapseOrPetrification(blocked, conditions);
-                blocked |= HasCondition(conditions, 26);
+                blocked |= HasCondition(conditions, CONDITION_BERSERK);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 ClearCondition(conditions, CONDITION_DOZE);
                 break;
-            case 22:
+            case CONDITION_BURN:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                blocked |= HasCondition(conditions, 4);
+                blocked |= HasCondition(conditions, CONDITION_STONE);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                if (HasCondition(conditions, 6)) {
-                    ClearCondition(conditions, 6);
-                    return 2;
+                if (HasCondition(conditions, CONDITION_FREEZE)) {
+                    ClearCondition(conditions, CONDITION_FREEZE);
+                    return CONDITION_ADD_CANCELLED_OPPOSITE;
                 }
                 break;
-            case 23:
+            case CONDITION_BLIND:
                 if (GetFatalCondition(conditions)) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
-                blocked |= HasCondition(conditions, 4);
+                blocked |= HasCondition(conditions, CONDITION_STONE);
                 if (blocked) {
-                    return 0;
+                    return CONDITION_ADD_BLOCKED;
                 }
                 break;
         }
@@ -1510,7 +1537,7 @@ i16 AddCondition(ConditionSet* conditions, i16 condition) {
     }
     SetBit(conditions->bits, condition);
     SetConditionAge(conditions, condition, 0);
-    return 1;
+    return CONDITION_ADD_ADDED;
 }
 
 RVA(0x0003edd0, 0x13)
@@ -1522,7 +1549,7 @@ RVA(0x0003edf0, 0x43)
 i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list) {
     i16 found = 0;
     i16 i;
-    for (i = 0; list[i] != -1; i++) {
+    for (i = 0; list[i] != CONDITION_LIST_END; i++) {
         if (HasCondition(conditions, list[i])) {
             found = list[i];
         }
@@ -1533,7 +1560,7 @@ i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId,
 RVA(0x0003ee40, 0x32)
 void ClearConditionList(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list) {
     i16 i;
-    for (i = 0; list[i] != -1; i++) {
+    for (i = 0; list[i] != CONDITION_LIST_END; i++) {
         ClearCondition(conditions, list[i]);
     }
 }
@@ -1544,9 +1571,9 @@ GZ_ENUM_RETURN(ConditionId, i16) GetPickBlockingCondition(ConditionSet* conditio
 }
 
 RVA(0x0003eea0, 0x36)
-b16 IsFieldConditionRestricted(i16 condition) {
+b16 IsFieldConditionRestricted(GZ_ENUM_PARAM(ConditionId, i16) condition) {
     i16 i;
-    for (i = 0; s_fieldRestrictedConditions[i] != -1; i++) {
+    for (i = 0; s_fieldRestrictedConditions[i] != CONDITION_LIST_END; i++) {
         if (s_fieldRestrictedConditions[i] == condition) {
             return true;
         }
@@ -1582,7 +1609,7 @@ i16 AgeConditions(ConditionSet* conditions, i16 amount) {
     if (!amount) {
         return 0;
     }
-    for (i = 0; i < 35; i++) {
+    for (i = 0; i < CONDITION_COUNT; i++) {
         aged |= AgeCondition(amount, conditions, i);
     }
     return aged;
@@ -1591,7 +1618,7 @@ i16 AgeConditions(ConditionSet* conditions, i16 amount) {
 // Ages `condition` by `amount` (kept in 0..255) when it is held and can wear
 // off; 1 when aged.
 RVA(0x0003efa0, 0x57)
-b16 AgeCondition(i16 amount, ConditionSet* conditions, i16 condition) {
+b16 AgeCondition(i16 amount, ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     if (!HasCondition(conditions, condition)) {
         return false;
     }
@@ -1612,7 +1639,7 @@ RVA(0x0003f000, 0x25)
 i16 RecoverConditions(Character* character) {
     i16 recovered = 0;
     i16 i;
-    for (i = 0; i < 35; i++) {
+    for (i = 0; i < CONDITION_COUNT; i++) {
         recovered |= RecoverCondition(character, i);
     }
     return recovered;
@@ -1622,7 +1649,7 @@ i16 RecoverConditions(Character* character) {
 // 0..255. A condition that stays can hurt: dancing (19) drains 1..5 HP,
 // suffocation (11) 1..33.
 RVA(0x0003f030, 0xb6)
-b16 RecoverCondition(Character* character, i16 condition) {
+b16 RecoverCondition(Character* character, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     i16 chance;
     if (!HasCondition(GetCharacterConditions(character), condition)) {
         return false;
@@ -1633,9 +1660,9 @@ b16 RecoverCondition(Character* character, i16 condition) {
     chance = (GetConditionAge(GetCharacterConditions(character), condition) >> 3)
              + s_recoveryChance[condition];
     if (chance <= RandomUpTo(0xff)) {
-        if (condition == 19) {
+        if (condition == CONDITION_DANCE) {
             DrainPool(&character->pools.hp, RandomUpTo(4) + 1);
-        } else if (condition == 11) {
+        } else if (condition == CONDITION_SUFFOCATION) {
             DrainPool(&character->pools.hp, RandomUpTo(0x20) + 1);
         }
         return false;
@@ -1650,20 +1677,20 @@ b16 RecoverCondition(Character* character, i16 condition) {
 // dying, 2 when HP is out while dying, else 0.
 // @identity-TODO: condition 8's role here is unrecovered.
 RVA(0x0003f0f0, 0xd0)
-i16 ApplyEmptyPools(Character* character) {
+GZ_ENUM_RETURN(EmptyPoolOutcome, i16) ApplyEmptyPools(Character* character) {
     switch (EmptyPoolMask(&character->pools)) {
         case POOL_MASK_NONE:
             break;
         case POOL_MASK_BOTH:
             if (!HasCondition(GetCharacterConditions(character), CONDITION_DYING)) {
                 AddCondition(GetCharacterConditions(character), CONDITION_DYING);
-                return 3;
+                return EMPTY_POOL_CONDITION_ADDED;
             }
-            return 4;
+            return EMPTY_POOL_BOTH_ALREADY_DYING;
         case POOL_MASK_MP:
             if (HasCondition(GetCharacterConditions(character), CONDITION_ZOMBIE)) {
                 AddCondition(GetCharacterConditions(character), CONDITION_DEAD);
-                return 3;
+                return EMPTY_POOL_CONDITION_ADDED;
             }
             break;
         case POOL_MASK_HP:
@@ -1672,11 +1699,11 @@ i16 ApplyEmptyPools(Character* character) {
                     break;
                 }
                 AddCondition(GetCharacterConditions(character), CONDITION_DYING);
-                return 1;
+                return EMPTY_POOL_HP_DYING_ADDED;
             }
-            return 2;
+            return EMPTY_POOL_HP_ALREADY_DYING;
     }
-    return 0;
+    return EMPTY_POOL_UNCHANGED;
 }
 
 // @dead-code
@@ -1684,26 +1711,26 @@ i16 ApplyEmptyPools(Character* character) {
 // Escalates `mild` to `severe`: 0 when `severe` is held, 1 when `mild` was
 // added, 2 when `mild` became `severe`.
 RVA(0x0003f1c0, 0x60)
-i16 EscalateCondition(
+GZ_ENUM_RETURN(ConditionChangeResult, i16) EscalateCondition(
     ConditionSet* conditions,
     GZ_ENUM_PARAM(ConditionId, i16) mild,
     GZ_ENUM_PARAM(ConditionId, i16) severe
 ) {
     if (HasCondition(conditions, severe)) {
-        return 0;
+        return CONDITION_CHANGE_NONE;
     }
     if (!HasCondition(conditions, mild)) {
         AddCondition(conditions, mild);
-        return 1;
+        return CONDITION_CHANGE_MILD;
     }
     ClearCondition(conditions, mild);
     AddCondition(conditions, severe);
-    return 2;
+    return CONDITION_CHANGE_SEVERE;
 }
 
 // Eases `severe` to `mild` (2), or clears `mild` (1); 0 when neither is held.
 RVA(0x0003f220, 0x6c)
-i16 EaseCondition(
+GZ_ENUM_RETURN(ConditionChangeResult, i16) EaseCondition(
     ConditionSet* conditions,
     GZ_ENUM_PARAM(ConditionId, i16) mild,
     GZ_ENUM_PARAM(ConditionId, i16) severe
@@ -1712,18 +1739,18 @@ i16 EaseCondition(
         ClearCondition(conditions, severe);
         ClearCondition(conditions, mild);
         AddCondition(conditions, mild);
-        return 2;
+        return CONDITION_CHANGE_SEVERE;
     }
     if (HasCondition(conditions, mild)) {
         ClearCondition(conditions, mild);
-        return 1;
+        return CONDITION_CHANGE_MILD;
     }
-    return 0;
+    return CONDITION_CHANGE_NONE;
 }
 
 // Eases sleep (13) to doze (25).
 RVA(0x0003f290, 0x12)
-i16 EaseSleep(ConditionSet* conditions) {
+GZ_ENUM_RETURN(ConditionChangeResult, i16) EaseSleep(ConditionSet* conditions) {
     return EaseCondition(conditions, CONDITION_DOZE, CONDITION_SLEEP);
 }
 
@@ -1791,8 +1818,8 @@ Character* FreeCharacterRecord(Character* character) {
 RVA(0x0003f3f0, 0x31)
 i16 FindRosterSlotIn(i16 id, i16 inParty) {
     i16 slot = FindRosterSlotById(id);
-    if (inParty && FindPartySlot(slot) == -1) {
-        return -1;
+    if (inParty && FindPartySlot(slot) == PARTY_POSITION_NONE) {
+        return ROSTER_SLOT_NONE;
     }
     return slot;
 }
@@ -1804,7 +1831,7 @@ Character* GetRosterCharacterById(i16 id, i16 inParty) {
 
 // An empty party position when `inParty`, else a free roster slot (-1: none).
 RVA(0x0003f450, 0x1c)
-i16 FindEmptySlot(i16 inParty) {
+i16 FindEmptySlot(b16 inParty) {
     if (inParty) {
         return FindPartySlot(-1);
     }
@@ -1820,7 +1847,7 @@ RVA(0x0003f480, 0x2e)
 i16 CountRosterEntries(i16 all) {
     i16 count = 0;
     i16 i;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < ROSTER_SIZE; i++) {
         if (RosterMemberAt(i) != NULL && (all || !IsHumanCharacter(RosterMemberAt(i)))) {
             count++;
         }
@@ -1857,7 +1884,7 @@ i16 TickPartyActionWaits(void) {
     i16 count = 0;
     i16 index;
     Character* actor;
-    for (index = 0; index < 6; index++) {
+    for (index = 0; index < PARTY_SIZE; index++) {
         if (GetPartySlot(index) >= 0) {
             actor = GetPartyEntry(index);
             if (actor) {
@@ -1872,11 +1899,12 @@ i16 TickPartyActionWaits(void) {
 }
 
 RVA(0x0003f5c0, 0x30)
-i16 GetPickState(Character* character) {
+GZ_ENUM_RETURN(MemberPickState, i16) GetPickState(Character* character) {
     if (GetPickBlockingCondition(GetCharacterConditions(character))) {
-        return 1;
+        return MEMBER_PICK_CONDITION_BLOCKED;
     }
-    return IsActionWaitPending(GetCharacterActionWait(character)) ? 2 : 0;
+    return IsActionWaitPending(GetCharacterActionWait(character)) ? MEMBER_PICK_ACTION_PENDING
+                                                                  : MEMBER_PICK_READY;
 }
 
 // The first party member free to act (with `needMark`, also holding its field
@@ -1885,7 +1913,7 @@ RVA(0x0003f5f0, 0x4c)
 i16 FindReadyMember(i16 needMark) {
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && !GetPickState(character)) {
             if (!needMark || IsActionWaitMarked(GetCharacterActionWait(character))) {
@@ -1893,7 +1921,7 @@ i16 FindReadyMember(i16 needMark) {
             }
         }
     }
-    return -1;
+    return PARTY_POSITION_NONE;
 }
 
 // Lists (count, then ids) up to `max` party members not blocked by a
@@ -1907,7 +1935,7 @@ PartyMemberList* ListPickableMembers(PartyMemberList* list, i16 max, i16 idleOnl
         list = AllocCleared(1, max * sizeof(list->ids[0]) + offsetof(PartyMemberList, ids));
     }
     list->count = 0;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         if (list->count >= max) {
             break;
         }
@@ -1927,19 +1955,19 @@ PartyMemberList* ListPickableMembers(PartyMemberList* list, i16 max, i16 idleOnl
 // and whose HP (`pools` bit 0) or MP (bit 1) pool is in `state` (state 1 also
 // takes an empty pool); -1 when none.
 RVA(0x0003f6d0, 0xa6)
-i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
+i16 FindMemberByPoolState(i16 start, i16 mode, GZ_ENUM_PARAM(PoolStateKind, i16) state, u8 pools) {
     i16 slot;
     Character* character;
-    i16 pool;
-    for (slot = start; slot < 32; slot++) {
+    GZ_ENUM_LOCAL(PoolStateKind, i16) pool;
+    for (slot = start; slot < ROSTER_SIZE; slot++) {
         character = RosterMemberAt(slot);
-        if (character && FilterPartyMember(slot, mode) != -1) {
+        if (character && FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
             if (pools & POOL_MASK_HP) {
                 pool = PoolState(&character->pools.hp);
                 if (pool == state) {
                     return slot;
                 }
-                if (state == 1 && pool == 0) {
+                if (state == POOL_STATE_PARTIAL && pool == POOL_STATE_EMPTY) {
                     return slot;
                 }
             }
@@ -1948,27 +1976,27 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
                 if (pool == state) {
                     return slot;
                 }
-                if (state == 1 && pool == 0) {
+                if (state == POOL_STATE_PARTIAL && pool == POOL_STATE_EMPTY) {
                     return slot;
                 }
             }
         }
     }
-    return -1;
+    return ROSTER_SLOT_NONE;
 }
 
-// Returns `slot` when it is in the party and `mode` bit 0 is set, or when it is
-// not and bit 1 is set; -1 otherwise.
+// Returns `slot` when its party or reserve position is allowed by `mode`;
+// otherwise returns ROSTER_SLOT_NONE.
 RVA(0x0003f780, 0x38)
-i16 FilterPartyMember(i16 slot, i16 mode) {
+i16 FilterPartyMember(i16 slot, GZ_ENUM_PARAM(RosterMemberFilter, i16) mode) {
     i16 index = FindPartySlot(slot);
-    if (index != -1 && (mode & 1)) {
+    if (index != PARTY_POSITION_NONE && (mode & ROSTER_FILTER_PARTY)) {
         return slot;
     }
-    if (index == -1 && (mode & 2)) {
+    if (index == PARTY_POSITION_NONE && (mode & ROSTER_FILTER_RESERVE)) {
         return slot;
     }
-    return -1;
+    return ROSTER_SLOT_NONE;
 }
 
 // Installs `character` in a free roster slot; a human member (id below 32)
@@ -1977,10 +2005,10 @@ i16 FilterPartyMember(i16 slot, i16 mode) {
 RVA(0x0003f7c0, 0x8a)
 i16 AddToRoster(Character* character) {
     i16 slot;
-    if (!IsHumanCharacter(character) && CountRosterEntries(0) >= 26) {
-        return -1;
+    if (!IsHumanCharacter(character) && CountRosterEntries(false) >= 26) {
+        return ROSTER_SLOT_NONE;
     }
-    slot = FindEmptySlot(0);
+    slot = FindEmptySlot(false);
     if (slot != -1) {
         SetRosterEntry(slot, character);
         if (IsHumanCharacter(character)) {
@@ -2002,10 +2030,10 @@ i16 RemoveFromRoster(i16 slot) {
     i16 index;
     Character* character = GetRosterEntry(slot);
     if (!character) {
-        return -1;
+        return ROSTER_SLOT_NONE;
     }
     index = FindPartySlot(slot);
-    SetPartySlot(index, -1);
+    SetPartySlot(index, PARTY_SLOT_EMPTY);
     if (!IsHumanCharacter(character)) {
         FreeWordList(GetCharacterSkills(character));
         FreeBlock(character);
@@ -2018,16 +2046,16 @@ i16 RemoveFromRoster(i16 slot) {
 // full, a human member replaces the first non-human one.
 RVA(0x0003f8b0, 0x5a)
 i16 AddToParty(i16 slot) {
-    i16 index = FindEmptySlot(1);
+    i16 index = FindEmptySlot(true);
     if (index == -1) {
         i16 id = GetRosterId(slot);
-        if (id >= 0 && id < 32) {
-            for (index = 0; index < 6; index++) {
-                if (GetPartyRosterId(index) >= 32) {
+        if (id >= 0 && id < HUMAN_ID_LIMIT) {
+            for (index = 0; index < PARTY_SIZE; index++) {
+                if (GetPartyRosterId(index) >= HUMAN_ID_LIMIT) {
                     break;
                 }
             }
-            if (index == 6) {
+            if (index == PARTY_SIZE) {
                 index = -1;
             }
         } else {
@@ -2046,7 +2074,7 @@ i16 ExchangePartySlot(i16 index, i16 slot) {
 
 RVA(0x0003f940, 0x10)
 void ClearPartyPosition(i16 index) {
-    SetPartySlot(index, -1);
+    SetPartySlot(index, PARTY_SLOT_EMPTY);
 }
 
 // Takes roster slot `slot` out of the party.
@@ -2062,7 +2090,7 @@ i16 CountPartyMembers(i16 skipDisabled) {
     i16 count = 0;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character) {
             if (!skipDisabled || !GetDisablingCondition(GetCharacterConditions(character))) {
@@ -2080,7 +2108,7 @@ i16 TickPartyConditions(void) {
     i16 recovered = 0;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character) {
             AgeConditions(GetCharacterConditions(character), 1);
@@ -2098,18 +2126,17 @@ static __inline i32 PoolPercentAmount(const CurMax* pool, i16 percent) {
 
 // Takes `percent` of each living member's maximum HP (at least 1; a negative
 // `percent` takes that many points), then applies what an empty pool brings.
-// With `skipId13`, character 13 is spared. Returns how many were hit.
-// @identity-TODO: who character 13 is is unrecovered.
+// With `skipNewton`, Newton is spared. Returns how many were hit.
 RVA(0x0003f9f0, 0xa1)
-i16 DamageParty(i16 percent, i16 skipId13) {
+i16 DamageParty(i16 percent, b16 skipNewton) {
     i16 hit = 0;
     i16 i;
     i32 amount;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && !GetFatalCondition(GetCharacterConditions(character))) {
-            if (skipId13 && character->id == 13) {
+            if (skipNewton && character->id == HUMAN_NEWTON) {
                 continue;
             }
             if (percent < 0) {
@@ -2133,7 +2160,7 @@ i16 HealParty(i16 percent) {
     i16 i;
     i32 amount;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && !GetFatalCondition(GetCharacterConditions(character))) {
             if (percent < 0) {
@@ -2155,7 +2182,7 @@ RVA(0x0003fb30, 0x4a)
 void ResetRosterBattleState(void) {
     i16 slot;
     Character* character;
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
         if (character) {
             ClearBattleConditions(GetCharacterConditions(character));
@@ -2170,7 +2197,7 @@ RVA(0x0003fb80, 0x35)
 void ClearRosterConditions(void) {
     i16 slot;
     Character* character;
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
         if (character) {
             ClearAllConditions(GetCharacterConditions(character));
@@ -2208,7 +2235,7 @@ i16 CountFallenHumans(void) {
     b16 found = false;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character) {
             if (!GetFatalCondition(GetCharacterConditions(character))) {
@@ -2244,7 +2271,7 @@ i16 ProcessPartyCasualties(void) {
     i16 count = 0;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (!character) {
             continue;
@@ -2254,14 +2281,14 @@ i16 ProcessPartyCasualties(void) {
                 continue;
             }
             CheckPickTarget(i);
-            SetPartySlot(i, -1);
+            SetPartySlot(i, PARTY_SLOT_EMPTY);
         } else {
             if (!ApplyEmptyPools(character) || IsGuestIndex(i) >= 0) {
                 continue;
             }
             CheckPickTarget(i);
             if (!IsHumanCharacter(character)) {
-                SetPartySlot(i, -1);
+                SetPartySlot(i, PARTY_SLOT_EMPTY);
             }
         }
         count++;
@@ -2274,19 +2301,19 @@ i16 TickPartySteps(void) {
     i16 changed = 0;
     i16 index;
     Character* character;
-    for (index = 0; index < 6; index++) {
+    for (index = 0; index < PARTY_SIZE; index++) {
         character = GetPartyCharacter(index);
         if (character) {
             ApplyEquipmentRegen(character);
             ApplyEquipmentEffects(character, EQUIP_EFFECT_STEP_TICK);
-            if (character->id != 13) {
+            if (character->id != HUMAN_NEWTON) {
                 if (HasCondition(GetCharacterConditions(character), CONDITION_SEVERE_POISON)
-                    && !IsConditionResisted(character, 32)) {
+                    && !IsConditionResisted(character, CONDITION_SEVERE_POISON)) {
                     changed |= 1;
                     DrainPool(&character->pools.hp, 4);
                 }
                 if (HasCondition(GetCharacterConditions(character), CONDITION_POISON)
-                    && !IsConditionResisted(character, 15)) {
+                    && !IsConditionResisted(character, CONDITION_POISON)) {
                     changed |= 1;
                     DrainPool(&character->pools.hp, 1);
                 }
@@ -2306,12 +2333,12 @@ Character* AsCharacter(Character* character) {
 
 RVA(0x0003fe40, 0x6)
 Character* GetRosterLeader(void) {
-    return RosterMemberAt(0);
+    return RosterMemberAt(ROSTER_LEADER);
 }
 
 RVA(0x0003fe50, 0x1e)
 Character* GetRosterEntry(i16 slot) {
-    if (slot >= 0 && slot < 32) {
+    if (slot >= 0 && slot < ROSTER_SIZE) {
         return RosterMemberAt(slot);
     }
     return NULL;
@@ -2325,19 +2352,19 @@ Character* GetRosterCharacter(i16 slot) {
 RVA(0x0003fe90, 0x20)
 i16 FindPartySlot(i16 slot) {
     i16 i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         if (PartySlotAt(i) == slot) {
             return i;
         }
     }
-    return -1;
+    return PARTY_POSITION_NONE;
 }
 
 RVA(0x0003feb0, 0x1a)
 i16 GetRosterId(i16 slot) {
     Character* character = GetRosterCharacter(slot);
     if (character == NULL) {
-        return -1;
+        return CHARACTER_ID_NONE;
     }
     return character->id;
 }
@@ -2351,7 +2378,7 @@ Character* SetRosterEntry(i16 slot, Character* character) {
 
 RVA(0x0003fef0, 0x21)
 i16 GetPartySlot(i16 index) {
-    if (index >= 0 && index < 6) {
+    if (index >= 0 && index < PARTY_SIZE) {
         return PartySlotAt(index);
     }
     return -1;
@@ -2372,13 +2399,13 @@ Character* GetPartyCharacter(i16 index) {
 RVA(0x0003ff60, 0x6b)
 void SetPartySlot(i16 index, i16 slot) {
     Character* character;
-    if (index < 0 || index >= 6) {
+    if (index < 0 || index >= PARTY_SIZE) {
         return;
     }
-    if (slot < -1 || slot >= 32) {
+    if (slot < -1 || slot >= ROSTER_SIZE) {
         return;
     }
-    if (PartySlotAt(index) != -1) {
+    if (PartySlotAt(index) != PARTY_SLOT_EMPTY) {
         character = GetPartyCharacter(index);
         if (character != NULL && IsGuestIndex(index) < 0) {
             ClearLeaveConditions(GetCharacterConditions(character));
@@ -2396,12 +2423,12 @@ i16 GetPartyRosterId(i16 index) {
 RVA(0x0003fff0, 0x2b)
 i16 FindRosterSlotById(i16 id) {
     i16 slot;
-    for (slot = 0; slot < 32; slot++) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
         if (GetRosterId(slot) == id) {
             return slot;
         }
     }
-    return -1;
+    return ROSTER_SLOT_NONE;
 }
 
 RVA(0x00040020, 0x18)
@@ -2433,17 +2460,17 @@ i16 FindPartyPositionOfId(i16 id) {
 // `goto next`; as a for loop cl rotates it and the layout differs.
 RVA(0x00040090, 0xcd)
 b16 SortRoster(void) {
-    i16 ids[6];
+    i16 ids[PARTY_SIZE];
     i16 i;
     i16 j;
     i16 id;
     i16 other;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         ids[i] = GetPartyRosterId(i);
     }
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < ROSTER_SIZE; i++) {
         id = GetRosterId(i);
-        while (id >= 0 && id < 32) {
+        while (id >= 0 && id < HUMAN_ID_LIMIT) {
             j = 0;
             while (1) {
                 if (j >= i) {
@@ -2461,9 +2488,9 @@ b16 SortRoster(void) {
         }
     next:;
     }
-    for (i = 0; i < 6; i++) {
-        if (ids[i] == -1) {
-            SetPartySlot(i, -1);
+    for (i = 0; i < PARTY_SIZE; i++) {
+        if (ids[i] == PARTY_SLOT_EMPTY) {
+            SetPartySlot(i, PARTY_SLOT_EMPTY);
         } else {
             SetPartySlot(i, FindRosterSlotById(ids[i]));
         }
@@ -2486,13 +2513,14 @@ void SwapPartySlots(i16 a, i16 b) {
         slot = PartySlotAt(a);
         g_party.slots[a] = PartySlotAt(b);
         g_party.slots[b] = slot;
-        if (PartySlotAt(0) == -1 && PartySlotAt(1) == -1 && PartySlotAt(2) == -1) {
+        if (PartySlotAt(0) == PARTY_SLOT_EMPTY && PartySlotAt(1) == PARTY_SLOT_EMPTY
+            && PartySlotAt(2) == PARTY_SLOT_EMPTY) {
             g_party.slots[0] = PartySlotAt(3);
             g_party.slots[1] = PartySlotAt(4);
             g_party.slots[2] = PartySlotAt(5);
-            g_party.slots[3] = -1;
-            g_party.slots[4] = -1;
-            g_party.slots[5] = -1;
+            g_party.slots[3] = PARTY_SLOT_EMPTY;
+            g_party.slots[4] = PARTY_SLOT_EMPTY;
+            g_party.slots[5] = PARTY_SLOT_EMPTY;
         }
     }
 }
@@ -2501,7 +2529,7 @@ void SwapPartySlots(i16 a, i16 b) {
 // the group can equip.
 RVA(0x00040220, 0x2a)
 void LoadEquipTable(void) {
-    FILE* fp = OpenDataFile(6, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_EQUIPMENT_RULES, DATA_FILE_TABLE, 0);
     s_equipTable = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -2514,7 +2542,7 @@ b16 CanGroupEquip(i16 group, i16 item) {
         return false;
     }
     table = HandleReadPtr(s_equipTable);
-    return TestBit(table + group * 5, item) != 0;
+    return TestBit(table + group * 5, item) != false;
 }
 
 RVA(0x00040290, 0x74)
@@ -2523,29 +2551,29 @@ GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(ItemRecord* item) {
     i16 kind = item->kind;
     kind -= ITEM_KIND_WEAPON;
     switch (kind) {
-        case 0:
+        case ITEM_KIND_WEAPON - ITEM_KIND_WEAPON:
             part = EQUIP_PART_WEAPON;
             break;
-        case 1:
+        case ITEM_KIND_GUN - ITEM_KIND_WEAPON:
             part = EQUIP_PART_GUN;
             break;
-        case 2:
+        case ITEM_KIND_AMMO - ITEM_KIND_WEAPON:
             part = EQUIP_PART_AMMO;
             break;
-        case 4:
+        case ITEM_KIND_HEAD_ARMOR - ITEM_KIND_WEAPON:
             part = EQUIP_PART_HEAD;
             break;
-        case 3:
-        case 5:
+        case ITEM_KIND_FULL_BODY_ARMOR - ITEM_KIND_WEAPON:
+        case ITEM_KIND_BODY_ARMOR - ITEM_KIND_WEAPON:
             part = EQUIP_PART_BODY;
             break;
-        case 6:
+        case ITEM_KIND_ARM_ARMOR - ITEM_KIND_WEAPON:
             part = EQUIP_PART_ARMS;
             break;
-        case 7:
+        case ITEM_KIND_LEG_ARMOR - ITEM_KIND_WEAPON:
             part = EQUIP_PART_LEGS;
             break;
-        case 8:
+        case ITEM_KIND_ACCESSORY - ITEM_KIND_WEAPON:
             part = EQUIP_PART_ACCESSORY;
             break;
     }
@@ -2558,21 +2586,21 @@ ItemSlot GetEquipSlot(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part) 
     if (character != NULL) {
         switch (part) {
             case EQUIP_PART_WEAPON:
-                return GetCharacterEquipment(character)[5];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON];
             case EQUIP_PART_GUN:
-                return GetCharacterEquipment(character)[6];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_GUN];
             case EQUIP_PART_AMMO:
-                return GetCharacterEquipment(character)[7];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_AMMO];
             case EQUIP_PART_HEAD:
-                return GetCharacterEquipment(character)[0];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_HEAD];
             case EQUIP_PART_BODY:
-                return GetCharacterEquipment(character)[1];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_BODY];
             case EQUIP_PART_ARMS:
-                return GetCharacterEquipment(character)[2];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_ARMS];
             case EQUIP_PART_LEGS:
-                return GetCharacterEquipment(character)[3];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_LEGS];
             case EQUIP_PART_ACCESSORY:
-                return GetCharacterEquipment(character)[4];
+                return GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY];
         }
     }
     return none;
@@ -2592,38 +2620,40 @@ RVA(0x000403e0, 0x110)
 GZ_ENUM_RETURN(EquipPart, i16) SetEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part, ItemSlot item, i16 check) {
     Character* character = GetRosterCharacter(slot);
     if (!character) {
-        return -1;
+        return EQUIP_PART_NONE;
     }
     switch (part) {
         case EQUIP_PART_WEAPON:
-            GetCharacterEquipment(character)[5] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON] = item;
             break;
         case EQUIP_PART_GUN:
-            GetCharacterEquipment(character)[6] = item;
-            if (check && CanEquipItem(character, GetCharacterEquipment(character)[7].item) < 1) {
+            GetCharacterEquipment(character)[EQUIP_SLOT_GUN] = item;
+            if (check
+                && CanEquipItem(character, GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item)
+                       < 1) {
                 UnequipPart(slot, EQUIP_PART_AMMO);
             }
             break;
         case EQUIP_PART_AMMO:
-            GetCharacterEquipment(character)[7] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_AMMO] = item;
             break;
         case EQUIP_PART_HEAD:
-            GetCharacterEquipment(character)[0] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_HEAD] = item;
             break;
         case EQUIP_PART_BODY:
-            GetCharacterEquipment(character)[1] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_BODY] = item;
             break;
         case EQUIP_PART_ARMS:
-            GetCharacterEquipment(character)[2] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_ARMS] = item;
             break;
         case EQUIP_PART_LEGS:
-            GetCharacterEquipment(character)[3] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_LEGS] = item;
             break;
         case EQUIP_PART_ACCESSORY:
-            GetCharacterEquipment(character)[4] = item;
+            GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY] = item;
             break;
         default:
-            part = -1;
+            part = EQUIP_PART_NONE;
     }
     return part;
 }
@@ -2635,7 +2665,7 @@ void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part) {
     ClearItemSlot(&empty);
     item = GetRosterEquipSlot(slot, part);
     SetEquipSlot(slot, part, empty, 1);
-    if (item.item != -1 && item.item != 0) {
+    if (item.item != ITEM_ID_EMPTY && item.item != ITEM_ID_NONE) {
         if (item.quantity < 1) {
             item.quantity = 1;
         }
@@ -2660,10 +2690,10 @@ i16 GetGunAmmoType(Character* character) {
     if (!character) {
         return -1;
     }
-    if (GetCharacterEquipment(character)[6].item < 1) {
+    if (GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item < 1) {
         return -1;
     }
-    return GetItemAmmoType(GetLoadedRecord(GetCharacterEquipment(character)[6].item));
+    return GetItemAmmoType(GetLoadedRecord(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item));
 }
 
 // The equipment part item `item` goes in when `character` can equip it, else
@@ -2674,21 +2704,21 @@ GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(Character* character, i16 item) {
     ItemRecord* record;
     i16 part;
     if (item < 1) {
-        return -1;
+        return EQUIP_PART_NONE;
     }
     record = GetLoadedRecord(item);
     part = EquipPartOfItem(record);
     if (part < 0) {
-        return -1;
+        return EQUIP_PART_NONE;
     }
     if (record->kind != ITEM_KIND_AMMO) {
         if (!CanGroupEquip(character->equipGroup, GetItemEquipCode(record))) {
-            return -1;
+            return EQUIP_PART_NONE;
         }
     } else {
         i16 ammo = GetItemAmmoType(record);
         if (GetGunAmmoType(character) != ammo) {
-            return -1;
+            return EQUIP_PART_NONE;
         }
     }
     return part;
@@ -2704,19 +2734,15 @@ ItemSlot SwapEquipSlot(i16 slot, ItemSlot item, GZ_ENUM_STORAGE(EquipPart, i16) 
     return old;
 }
 
-// Equips `item` from bag entry `index` on roster member `slot`, taking it out
-// of the bag and putting the replaced item back; returns the replaced slot.
-// Ammunition (kind 13) records `count` for the character; kind 14 clears
-// parts 3, 5 and 6.
 RVA(0x00040710, 0x11a)
 ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
     GZ_ENUM_STORAGE(EquipPart, i16) result;
     ItemSlot old = SwapEquipSlot(slot, item, &result);
-    if (result != -1) {
+    if (result != EQUIP_PART_NONE) {
         Character* character = GetRosterCharacter(slot);
-        if (item.item != -1) {
-            i16 kind = GetItemKind(item.item);
-            if (kind != 13) {
+        if (item.item != ITEM_ID_EMPTY) {
+            GZ_ENUM_LOCAL(ItemKind, i16) kind = GetItemKind(item.item);
+            if (kind != ITEM_KIND_AMMO) {
                 TakeBagItemsAt(index, item.item, item.quantity);
                 if (kind == ITEM_KIND_FULL_BODY_ARMOR) {
                     UnequipPart(slot, EQUIP_PART_HEAD);
@@ -2731,7 +2757,7 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
                 }
             }
         }
-        if (old.item != -1) {
+        if (old.item != ITEM_ID_EMPTY) {
             if (old.quantity < 1) {
                 old.quantity = 1;
             }
@@ -2745,14 +2771,14 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
 // Normalises all eight equipment slots.
 RVA(0x00040830, 0x7f)
 void NormalizeEquipSlots(Character* character) {
-    NormalizeItemSlot(&GetCharacterEquipment(character)[0]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[1]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[2]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[3]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[4]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[5]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[6]);
-    NormalizeItemSlot(&GetCharacterEquipment(character)[7]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_HEAD]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_BODY]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_ARMS]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_LEGS]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_GUN]);
+    NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_AMMO]);
 }
 
 // Empties a slot without an item; a non-ammunition item gets quantity 1.
@@ -2798,24 +2824,24 @@ i16 CompareMacca(i16 who, i32 amount) {
 }
 
 RVA(0x00040980, 0x12)
-i16 SetStatusColumn(i16 column) {
-    i16 prev = s_statusColumn;
+GZ_ENUM_RETURN(StatusListColumn, i16) SetStatusColumn(GZ_ENUM_PARAM(StatusListColumn, i16) column) {
+    GZ_ENUM_LOCAL(StatusListColumn, i16) prev = s_statusColumn;
     s_statusColumn = column;
     return prev;
 }
 
 RVA(0x000409a0, 0x74)
 i16 RunStatusListPicker(i16 close) {
-    i16 result = -2;
+    i16 result = LIST_MENU_CANCELLED;
     if (!close) {
         if (!s_statusListMenu) {
             s_statusListMenu = CreateStatusListMenu(NULL);
         }
         result = RunListMenu(s_statusListMenu);
-        if (result == -1) {
-            return -1;
+        if (result == LIST_MENU_OPEN) {
+            return LIST_MENU_OPEN;
         }
-        if (result != -2) {
+        if (result != LIST_MENU_CANCELLED) {
             result = g_selectedObjectId;
         }
     }
@@ -2830,7 +2856,7 @@ MenuBox* CreateStatusListMenu(MenuBox* parent) {
     menu = CreateMenuBox(parent, 26, 2);
     MoveMenuBox(menu, 45, 86);
     SetMenuItems(menu, 16, g_statusSlots, g_statusSlotCount, StatusListMenuHandler);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 1);
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, true);
     return menu;
 }
 
@@ -2846,11 +2872,29 @@ void StatusListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i1
         case MENU_EVENT_ADD_ROW:
             result = FormatStatusLine(slot, index);
             if (result == -1) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2500, slot, MENU_LINE_DISABLED);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+                    slot,
+                    MENU_LINE_DISABLED
+                );
             } else if (result >= 0) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, slot, 0);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                    slot,
+                    MENU_LINE_NORMAL
+                );
             } else {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2500, slot, MENU_LINE_DISABLED);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+                    slot,
+                    MENU_LINE_DISABLED
+                );
             }
             break;
     }
@@ -2874,7 +2918,7 @@ i16 FormatStatusLine(i16 slot, i16 row) {
     sprintf(
         g_scratchBuffer,
         "%c%2d %-17.17s ",
-        FindPartySlot(slot) != -1 ? '*' : ' ',
+        FindPartySlot(slot) != PARTY_POSITION_NONE ? '*' : ' ',
         row + 1,
         FormatFullName(text, member)
     );
@@ -2889,37 +2933,37 @@ i16 FormatStatusLine(i16 slot, i16 row) {
     sprintf(text, "%-6.6s", GetFirstConditionName(GetCharacterConditions(member)));
     strcat(g_scratchBuffer, text);
     switch (s_statusColumn) {
-        case 0:
+        case STATUS_LIST_ALL:
             break;
-        case 1:
+        case STATUS_LIST_SUMMONABLE:
             cost = GetSummonMagnetiteCost(member);
             sprintf(text, " %6ld", cost);
             strcat(g_scratchBuffer, text);
-            if (FindPartySlot(slot) != -1) {
+            if (FindPartySlot(slot) != PARTY_POSITION_NONE) {
                 return -1;
             }
             if (GetFatalCondition(GetCharacterConditions(member))) {
                 return -1;
             }
-            if (GetRosterCharacter(0)->magnetite < cost) {
+            if (GetRosterCharacter(ROSTER_LEADER)->magnetite < cost) {
                 return -2;
             }
             break;
-        case 2:
-            if (FindPartySlot(slot) != -1) {
+        case STATUS_LIST_RESERVE_UNFLAGGED:
+            if (FindPartySlot(slot) != PARTY_POSITION_NONE) {
                 return -1;
             }
             if (TestCharacterFlag(member, 0x40)) {
                 return -1;
             }
             break;
-        case 3:
+        case STATUS_LIST_UNFLAGGED:
             if (TestCharacterFlag(member, 0x40)) {
                 return -1;
             }
             break;
-        case 4:
-            if (FindPartySlot(slot) != -1) {
+        case STATUS_LIST_RESERVE:
+            if (FindPartySlot(slot) != PARTY_POSITION_NONE) {
                 return -1;
             }
             break;
@@ -2948,8 +2992,8 @@ i16 BuildStatusSlots(void) {
     i16 slot;
     Character* character;
     g_statusSlotCount = 0;
-    for (slot = 0; slot < 32; slot++) {
-        if (s_statusColumn != 0) {
+    for (slot = 0; slot < ROSTER_SIZE; slot++) {
+        if (s_statusColumn != STATUS_LIST_ALL) {
             character = GetRosterCharacter(slot);
             if (character == NULL || IsHumanCharacter(character)) {
                 continue;
@@ -2967,17 +3011,17 @@ i16 BuildStatusSlots(void) {
 RVA(0x00040fa0, 0x183)
 i16 PayStepUpkeep(void) {
     i16 died = 0;
-    Character* hero = GetRosterCharacter(0);
+    Character* hero = GetRosterCharacter(ROSTER_LEADER);
     i16 i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         Character* member = GetPartyCharacter(i);
         i16 whole;
-        i16 class;
+        GZ_ENUM_LOCAL(DemonClass, i16) class;
         i16 rate;
         if (member == NULL || GetFatalCondition(GetCharacterConditions(member))) {
             continue;
         }
-        if (GetDemonClass(member->id) == 10) {
+        if (GetDemonClass(member->id) == DEMON_CLASS_JAREI) {
             whole = AddHundredths(member, member->levelBonus);
             if (whole == 0) {
                 continue;
@@ -2986,7 +3030,7 @@ i16 PayStepUpkeep(void) {
             died += DrainUpkeep(hero, member, whole * 8, i);
         } else if (HasCondition(GetCharacterConditions(member), CONDITION_ZOMBIE)) {
             class = GetDemonClass(member->id);
-            if (class == 12 || class == 13) {
+            if (class == DEMON_CLASS_HITO || class == DEMON_CLASS_MAJIN) {
                 rate = member->level;
             } else {
                 rate = member->levelBonus;
@@ -2999,7 +3043,7 @@ i16 PayStepUpkeep(void) {
             died += DrainUpkeep(hero, member, whole * 8, i);
         } else {
             class = GetDemonClass(member->id);
-            if (class == 12 || class == 13) {
+            if (class == DEMON_CLASS_HITO || class == DEMON_CLASS_MAJIN) {
                 continue;
             }
             whole = AddHundredths(member, member->levelBonus);
@@ -3068,16 +3112,18 @@ b16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position) {
 // and the moon sets or clears its condition 3. -1 when the timers are off or
 // no such member is in the party, 0 when no period passed (or it is down).
 RVA(0x000412a0, 0x150)
-i16 TickPartyTimers(u16 minutes) {
+GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
     Character* character;
     i16 i;
     i16 count;
-    if (IsEventFlagSet(1, 0xc) || GetGameState() == 5) {
-        return -1;
+    if (IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_HEROINE_REVIVAL_1)
+        || GetGameState() == GAME_STATE_SCRIPT_SCENE) {
+        return PARTY_TIMER_INACTIVE;
     }
-    for (i = 0; i < 6; i++) {
-        if (PartySlotAt(i) != -1 && (character = RosterMemberAt(PartySlotAt(i))) != NULL
-            && character->id == 2) {
+    for (i = 0; i < PARTY_SIZE; i++) {
+        if (PartySlotAt(i) != PARTY_SLOT_EMPTY
+            && (character = RosterMemberAt(PartySlotAt(i))) != NULL
+            && character->id == HUMAN_TACHIBANA) {
             if (TestModeFlags(MODE_WORLD_MAP)) {
                 s_timerMinutes += minutes;
                 count = s_timerMinutes / 240;
@@ -3088,57 +3134,54 @@ i16 TickPartyTimers(u16 minutes) {
                 s_timerMinutes %= 60;
             }
             if (count == 0) {
-                return 0;
+                return PARTY_TIMER_UNCHANGED;
             }
             if (GetFatalCondition(GetCharacterConditions(character))) {
-                return 0;
+                return PARTY_TIMER_UNCHANGED;
             }
             ChangePool(&character->pools.mp, -count);
             ChangePool(&character->pools.hp, -count);
             ApplyEmptyPools(character);
             RequestStatusRedraw();
             if (g_clock.moonPhase <= 14) {
-                ClearCondition(GetCharacterConditions(character), 3);
+                ClearCondition(GetCharacterConditions(character), CONDITION_COLLAPSE);
             } else {
-                AddCondition(GetCharacterConditions(character), 3);
+                AddCondition(GetCharacterConditions(character), CONDITION_COLLAPSE);
             }
-            return 1;
+            return PARTY_TIMER_APPLIED;
         }
     }
-    return -1;
+    return PARTY_TIMER_INACTIVE;
 }
 
-// Clears the character's moon-driven personal flags as the moon moves on
-// (flag 0x23 steps to 0x24; unless `keep`, 0x25 and 0x26 clear, 0x26 adding
-// condition 0). Returns how many flags changed.
 // @early-stop prologue: retail pushes esi up front and forms the flags
 // pointer after the NULL test; assigning it after the test defers the push,
 // initialising it at the declaration hoists the lea (direct field use,
 // if-wrapped body and return-variable spellings tried).
 RVA(0x000413f0, 0xb6)
-i16 ApplyMoonPhase(Character* character, i16 keep) {
+i16 ApplyMoonPhase(Character* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
     u8* flags = GetCharacterFlags(character);
     i16 changed = 0;
     if (character == NULL) {
         return 0;
     }
-    if (TestBit(flags, 0x24) == 1) {
+    if (TestBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
         changed = 1;
-        ClearBit(flags, 0x24);
+        ClearBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
     }
-    if (TestBit(flags, 0x23) == 1) {
+    if (TestBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
         changed++;
-        ClearBit(flags, 0x23);
-        SetBit(flags, 0x24);
+        ClearBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP);
+        SetBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
     }
-    if (keep == 0) {
-        if (TestBit(flags, 0x25) == 1) {
+    if (moonPhase == MOON_PHASE_NEW) {
+        if (TestBit(flags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
             changed++;
-            ClearBit(flags, 0x25);
+            ClearBit(flags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST);
         }
-        if (TestBit(flags, 0x26) == 1) {
+        if (TestBit(flags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
             changed++;
-            ClearBit(flags, 0x26);
+            ClearBit(flags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING);
             AddCondition(GetCharacterConditions(character), CONDITION_ASH);
         }
     }
@@ -3192,7 +3235,7 @@ i16 WriteCharacters(FILE* fp) {
     i16 count = 16;
     i16 i;
     i16 failed = 1 - fwrite(&count, 2, 1, fp);
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < CHARACTER_SLOT_COUNT; i++) {
         failed |= WriteCharacter(fp, &g_characters[i]);
     }
     return failed;

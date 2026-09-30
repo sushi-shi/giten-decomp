@@ -41,8 +41,10 @@ from giten.verify.srcscan import blank_comments
 CDB = BUILD / "clangd/compile_commands.json"
 REPORT = BUILD / "gen/bare_constants.tsv"
 _NUMBER = re.compile(rb"(?:0[xX][0-9A-Fa-f]+|[0-9]+)(?:[uUlL]*)(?![A-Za-z0-9_.])")
+_FLOAT = re.compile(rb"(?:[0-9]+\.[0-9]*|\.[0-9]+)(?:[eE][-+]?[0-9]+)?[fFlL]?"
+                    rb"|[0-9]+[eE][-+]?[0-9]+[fFlL]?")
 _SUFFIX = re.compile(r"[uUlL]+$")
-_BOOLEAN_TYPE_SPELLINGS = {"BOOL", "b32"}
+_BOOLEAN_TYPE_SPELLINGS = {"BOOL", "b16", "b32"}
 _LEGACY_BOOLEAN = re.compile(r"\b(?:FALSE|TRUE)\b")
 _STRING = re.compile(r'"(?:\\.|[^"\\\n])*"')
 _CHAR = re.compile(r"'(?:\\.|[^'\\\n])*'")
@@ -96,12 +98,16 @@ def _source_path(entry: dict, repo: Path) -> Path:
     return path.resolve()
 
 
-def _raw_number(path: Path, offset: int, cache: dict[Path, bytes]):
+def _raw_number(path: Path, offset: int, cache: dict[Path, bytes],
+                floating: bool = False):
     raw = cache.setdefault(path, path.read_bytes())
     if offset < 0 or offset >= len(raw):
         return None
     if offset and (chr(raw[offset - 1]).isalnum() or raw[offset - 1] in b"_."):
         return None
+    if floating:
+        match = _FLOAT.match(raw, offset)
+        return (match.group().decode("ascii"), None) if match else None
     match = _NUMBER.match(raw, offset)
     if match is None:
         return None
@@ -128,11 +134,21 @@ def _scope(cidx, stack) -> tuple[str, str]:
     if any(node.kind == cidx.CursorKind.ENUM_DECL for node in stack):
         return "named-enum-definition", function.spelling if function else ""
     if function is not None:
-        return "function-body", function.displayname or function.spelling
-    if any(node.kind == cidx.CursorKind.VAR_DECL for node in stack):
-        return "data-initializer-or-extent", ""
+        parent = function.semantic_parent
+        if parent is not None and parent.kind in (cidx.CursorKind.CLASS_DECL,
+                                                  cidx.CursorKind.STRUCT_DECL):
+            return "function-body", f"{parent.spelling}::{function.spelling}"
+        return "function-body", function.spelling
+    variable = next((node for node in reversed(stack)
+                     if node.kind == cidx.CursorKind.VAR_DECL), None)
+    if variable is not None:
+        return "data-initializer-or-extent", variable.spelling
+    record = next((node for node in reversed(stack)
+                   if node.kind in (cidx.CursorKind.STRUCT_DECL,
+                                    cidx.CursorKind.UNION_DECL,
+                                    cidx.CursorKind.CLASS_DECL)), None)
     if any(node.kind == cidx.CursorKind.FIELD_DECL for node in stack):
-        return "field-or-class-extent", ""
+        return "field-or-class-extent", record.spelling if record is not None else ""
     return "other-declaration", ""
 
 
@@ -189,6 +205,7 @@ def _comparison_sibling(cidx, literal, stack):
     transparent = {
         cidx.CursorKind.PAREN_EXPR,
         cidx.CursorKind.UNEXPOSED_EXPR,
+        cidx.CursorKind.UNARY_OPERATOR,
     }
     for pos in range(len(stack) - 1, -1, -1):
         binary = stack[pos]
@@ -268,7 +285,16 @@ def _semantic_type_role(cidx, ty):
     return None
 
 
-def _typed_value_classification(cidx, value, ty, null_available, reason):
+def _typed_value_classification(cidx, value, ty, null_available, reason,
+                                enum_values=None):
+    canonical = ty.get_canonical()
+    if (enum_values is not None and value is not None
+            and canonical.kind == cidx.TypeKind.ENUM):
+        spelling = canonical.spelling.replace("enum ", "")
+        names = enum_values.get(spelling, {}).get(value, set())
+        if len(names) == 1:
+            return ("enum", next(iter(names)), spelling,
+                    f"{reason} is {spelling}; value has one enumerator")
     role = _semantic_type_role(cidx, ty)
     if value == 0 and role == "pointer":
         if not null_available:
@@ -290,6 +316,7 @@ def _direct_value_path(cidx, node, literal) -> bool:
     transparent = {
         cidx.CursorKind.PAREN_EXPR,
         cidx.CursorKind.UNEXPOSED_EXPR,
+        cidx.CursorKind.UNARY_OPERATOR,
     }
     if node.kind in transparent:
         children = list(node.get_children())
@@ -359,6 +386,33 @@ def _expected_semantic_context(cidx, literal, stack):
     return None
 
 
+def _case_subject_type(cidx, stack):
+    """The type of the switch subject when the literal is a case label."""
+    transparent = {cidx.CursorKind.PAREN_EXPR, cidx.CursorKind.UNEXPOSED_EXPR,
+                   cidx.CursorKind.UNARY_OPERATOR}
+    for pos in range(len(stack) - 1, -1, -1):
+        node = stack[pos]
+        if node.kind in transparent:
+            continue
+        if node.kind != cidx.CursorKind.CASE_STMT:
+            return None
+        switch = next((n for n in reversed(stack[:pos])
+                       if n.kind == cidx.CursorKind.SWITCH_STMT), None)
+        if switch is None:
+            return None
+        parts = list(switch.get_children())
+        if not parts:
+            return None
+        subject = parts[0]
+        while subject.kind in (cidx.CursorKind.UNEXPOSED_EXPR, cidx.CursorKind.PAREN_EXPR):
+            inner = list(subject.get_children())
+            if not inner:
+                break
+            subject = inner[0]
+        return subject.type
+    return None
+
+
 def _classify(cidx, literal, stack, value, enum_values, null_available):
     if _explicit_cast_ancestor(cidx, stack):
         return "numeric", "", "", "explicit conversion is an ingest boundary"
@@ -387,11 +441,18 @@ def _classify(cidx, literal, stack, value, enum_values, null_available):
             return ("numeric", "", enum_type,
                     f"{enum_type} value has aliases: {', '.join(sorted(names))}")
 
+    case_type = _case_subject_type(cidx, stack)
+    if case_type is not None and value is not None:
+        typed = _typed_value_classification(
+            cidx, value, case_type, null_available, "switch subject", enum_values)
+        if typed is not None and typed[0] == "enum":
+            return typed
+
     expected = _expected_semantic_context(cidx, literal, stack)
     if expected is not None:
         ty, reason = expected
         typed = _typed_value_classification(
-            cidx, value, ty, null_available, reason)
+            cidx, value, ty, null_available, reason, enum_values)
         if typed is not None:
             return typed
 
@@ -424,22 +485,141 @@ def _call_argument_context(cidx, literal, stack):
     return None
 
 
-def _nearest_expression_context(cidx, stack):
+def _expr_name(cidx, node) -> str:
+    """A short name for an operand: a variable or member, a call's callee
+    with (), an array's name with [], else ''."""
+    while node is not None and node.kind in (cidx.CursorKind.UNEXPOSED_EXPR,
+                                             cidx.CursorKind.PAREN_EXPR):
+        inner = list(node.get_children())
+        node = inner[0] if inner else None
+    if node is None:
+        return ""
+    if node.kind in (cidx.CursorKind.MEMBER_REF_EXPR, cidx.CursorKind.DECL_REF_EXPR):
+        return node.spelling
+    if node.kind == cidx.CursorKind.CALL_EXPR:
+        return f"{node.spelling}()" if node.spelling else ""
+    if node.kind == cidx.CursorKind.ARRAY_SUBSCRIPT_EXPR:
+        base = _subscript_base(cidx, node)
+        return f"{base}[]" if base else ""
+    if node.kind == cidx.CursorKind.UNARY_OPERATOR:
+        inner = list(node.get_children())
+        return _expr_name(cidx, inner[0]) if inner else ""
+    return ""
+
+
+def _other_operand(cidx, binary, literal) -> str:
+    children = list(binary.get_children())
+    if len(children) != 2:
+        return ""
+    other = children[1] if _cursor_contains(children[0], literal) else children[0]
+    return _expr_name(cidx, other)
+
+
+def _nearest_expression_context(cidx, stack, literal=None):
     bitwise = {"&", "|", "^", "<<", ">>"}
     comparison = {"==", "!=", "<", "<=", ">", ">="}
     arithmetic = {"+", "-", "*", "/", "%"}
-    for node in reversed(stack):
+    for pos in range(len(stack) - 1, -1, -1):
+        node = stack[pos]
         if node.kind == cidx.CursorKind.ARRAY_SUBSCRIPT_EXPR:
-            return "array-index", "array subscript"
+            return "array-index", f"array subscript {_subscript_base(cidx, node)}".rstrip()
+        if node.kind == cidx.CursorKind.CASE_STMT:
+            switch = next((n for n in reversed(stack[:pos])
+                           if n.kind == cidx.CursorKind.SWITCH_STMT), None)
+            subject = ""
+            if switch is not None:
+                parts = list(switch.get_children())
+                subject = _expr_name(cidx, parts[0]) if parts else ""
+            return "case-label", f"switch on {subject}".rstrip()
+        if node.kind == cidx.CursorKind.RETURN_STMT:
+            return "return", "return value"
+        if node.kind == cidx.CursorKind.COMPOUND_ASSIGNMENT_OPERATOR:
+            children = list(node.get_children())
+            target = _expr_name(cidx, children[0]) if children else ""
+            return "arithmetic", f"compound assignment to {target}".rstrip()
+        if node.kind == cidx.CursorKind.VAR_DECL:
+            return "store", f"initializer of {node.spelling}"
         if node.kind != cidx.CursorKind.BINARY_OPERATOR:
             continue
+        other = _other_operand(cidx, node, literal) if literal is not None else ""
+        if node.spelling == "=":
+            return "store", f"store to {other}".rstrip()
         if node.spelling in bitwise:
-            return "bitwise-or-packing", f"operator {node.spelling}"
+            return "bitwise-or-packing", f"operator {node.spelling} {other}".rstrip()
         if node.spelling in comparison:
-            return "comparison-or-bound", f"operator {node.spelling}"
+            return "comparison-or-bound", f"operator {node.spelling} {other}".rstrip()
         if node.spelling in arithmetic:
-            return "arithmetic", f"operator {node.spelling}"
+            return "arithmetic", f"operator {node.spelling} {other}".rstrip()
     return None
+
+def _subscript_base(cidx, node) -> str:
+    """The name of the array an ARRAY_SUBSCRIPT_EXPR indexes (its member or
+    variable), or '' when the base is not a plain name."""
+    children = list(node.get_children())
+    base = children[0] if children else None
+    while base is not None and base.kind in (cidx.CursorKind.UNEXPOSED_EXPR,
+                                             cidx.CursorKind.PAREN_EXPR,
+                                             cidx.CursorKind.ARRAY_SUBSCRIPT_EXPR):
+        inner = list(base.get_children())
+        base = inner[0] if inner else None
+    if base is not None and base.kind in (cidx.CursorKind.MEMBER_REF_EXPR,
+                                          cidx.CursorKind.DECL_REF_EXPR):
+        return base.spelling
+    return ""
+
+
+def _trivial_role(cidx, literal, stack) -> str:
+    """The syntactic role of a 0/1/-1 in a function body, for review rows."""
+    transparent = {cidx.CursorKind.PAREN_EXPR, cidx.CursorKind.UNEXPOSED_EXPR,
+                   cidx.CursorKind.UNARY_OPERATOR}
+    child = literal
+    for node in reversed(stack):
+        if node.kind in transparent:
+            child = node
+            continue
+        kind = node.kind
+        if kind == cidx.CursorKind.RETURN_STMT:
+            return "return"
+        if kind == cidx.CursorKind.CASE_STMT:
+            return "case"
+        if kind == cidx.CursorKind.VAR_DECL:
+            return "initializer"
+        if kind == cidx.CursorKind.FOR_STMT:
+            parts = list(node.get_children())
+            return "for-init" if parts and _cursor_contains(parts[0], literal) \
+                else "for-bound"
+        if kind == cidx.CursorKind.COMPOUND_ASSIGNMENT_OPERATOR:
+            return "compound-assignment"
+        if kind == cidx.CursorKind.BINARY_OPERATOR:
+            op = node.spelling
+            if op == "=":
+                loop = next((n for n in reversed(stack)
+                             if n.kind == cidx.CursorKind.FOR_STMT), None)
+                if loop is not None:
+                    parts = list(loop.get_children())
+                    if parts and _cursor_contains(parts[0], literal):
+                        return "for-init"
+                return f"store {_other_operand(cidx, node, literal)}".rstrip()
+            if op in ("==", "!="):
+                return f"equality {_other_operand(cidx, node, literal)}".rstrip()
+            if op in ("<", "<=", ">", ">="):
+                return f"bound {_other_operand(cidx, node, literal)}".rstrip()
+            if op in ("+", "-", "*", "/", "%"):
+                return "arithmetic"
+            if op in ("&", "|", "^", "<<", ">>"):
+                return "bitwise"
+            if op in ("&&", "||"):
+                return "condition"
+            return f"operator {op}"
+        if kind == cidx.CursorKind.CONDITIONAL_OPERATOR:
+            return "conditional"
+        if kind == cidx.CursorKind.ARRAY_SUBSCRIPT_EXPR:
+            return f"array-index {_subscript_base(cidx, node)}".rstrip()
+        if kind in (cidx.CursorKind.IF_STMT, cidx.CursorKind.WHILE_STMT,
+                    cidx.CursorKind.DO_STMT):
+            return "condition"
+        return kind.name.lower()
+    return "unresolved"
 
 
 def _review_group(cidx, literal, stack, scope, value, classification):
@@ -448,7 +628,14 @@ def _review_group(cidx, literal, stack, scope, value, classification):
     if scope == "named-enum-definition":
         return "named-definition", "enumerator value"
     if scope in {"data-initializer-or-extent", "field-or-class-extent"}:
-        return "data-or-extent", scope
+        lists = [node for node in stack if node.kind == cidx.CursorKind.INIT_LIST_EXPR]
+        if not lists:
+            return "data-or-extent", "array extent"
+        outer = lists[0]
+        items = list(outer.get_children())
+        if len(items) == 1 and value == 0 and len(lists) == 1:
+            return "data-or-extent", "zero fill"
+        return "data-or-extent", "table entry"
     if any(node.kind == cidx.CursorKind.INIT_LIST_EXPR for node in stack):
         return "initializer-payload", "initializer list"
 
@@ -456,8 +643,8 @@ def _review_group(cidx, literal, stack, scope, value, classification):
     if call is not None:
         return "call-argument", call
     if scope == "function-body" and value in (-1, 0, 1):
-        return "trivial-function-literal", str(value)
-    expression = _nearest_expression_context(cidx, stack)
+        return "trivial-function-literal", f"{value} {_trivial_role(cidx, literal, stack)}"
+    expression = _nearest_expression_context(cidx, stack, literal)
     if expression is not None:
         return expression
     return "unresolved", "no narrower AST context"
@@ -474,14 +661,24 @@ def _scan_entry(payload):
         _require_cl_mode(args)
     except RuntimeError as exc:
         return [], f"{path}: {exc}"
-    try:
-        tu = cidx.Index.create().parse(
-            str(path), args=args,
-            options=cidx.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD)
-    except cidx.TranslationUnitLoadError as exc:
-        return [], f"{path}: libclang could not load TU: {exc}"
-    errors = [d for d in tu.diagnostics if d.severity >= cidx.Diagnostic.Error]
-    if errors:
+    tu = None
+    strict = False
+    # The strict-enum view types domain-annotated storage, parameters and
+    # returns with their enums, so literals meeting them can be named; a unit
+    # that does not parse in it falls back to the retail view.
+    for extra in (["/DGZ_STRICT_ENUMS"], []):
+        try:
+            candidate = cidx.Index.create().parse(
+                str(path), args=args + extra,
+                options=cidx.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD)
+        except cidx.TranslationUnitLoadError as exc:
+            return [], f"{path}: libclang could not load TU: {exc}"
+        errors = [d for d in candidate.diagnostics if d.severity >= cidx.Diagnostic.Error]
+        if not errors:
+            tu = candidate
+            strict = bool(extra)
+            break
+    if tu is None:
         return [], f"{path}: parse error: {errors[0]}"
 
     enum_values = _enum_values(cidx, tu.cursor)
@@ -492,14 +689,18 @@ def _scan_entry(payload):
     sites: list[Site] = []
 
     def walk(node, stack=()):
-        if node.kind == cidx.CursorKind.INTEGER_LITERAL and node.location.file:
+        if (node.kind in (cidx.CursorKind.INTEGER_LITERAL,
+                          cidx.CursorKind.FLOATING_LITERAL)
+                and node.location.file):
             source = Path(node.location.file.name).resolve()
             try:
                 rel = source.relative_to(repo)
             except ValueError:
                 rel = None
             if rel is not None and rel.parts[0] in ("src", "include"):
-                raw = _raw_number(source, node.location.offset, cache)
+                raw = _raw_number(
+                    source, node.location.offset, cache,
+                    floating=node.kind == cidx.CursorKind.FLOATING_LITERAL)
                 if raw is not None:
                     spelling, value = raw
                     site_null_available = null_available
@@ -509,8 +710,8 @@ def _scan_entry(payload):
                     if stack and stack[-1].kind == cidx.CursorKind.UNARY_OPERATOR:
                         unary = "".join(tok.spelling
                                         for tok in stack[-1].get_tokens())
-                        if unary.startswith("-") and value is not None:
-                            value = -value
+                        if unary.startswith("-"):
+                            value = -value if value is not None else None
                             spelling = "-" + spelling
                     scope, function = _scope(cidx, stack)
                     cls, repl, context, reason = _classify(
@@ -526,7 +727,7 @@ def _scan_entry(payload):
             walk(child, stack + (node,))
 
     walk(tu.cursor)
-    return sites, None
+    return sites, None if strict or path.suffix == ".cpp" else f"RETAIL-VIEW {path}"
 
 
 def scan_entries(entries: list[dict], *, repo: Path = REPO, jobs: int = 1):
@@ -540,6 +741,9 @@ def scan_entries(entries: list[dict], *, repo: Path = REPO, jobs: int = 1):
         results = pool.map(_scan_entry, payloads)
     try:
         for sites, error in results:
+            if error and error.startswith("RETAIL-VIEW "):
+                RETAIL_VIEW_UNITS.append(error[len("RETAIL-VIEW "):])
+                error = None
             if error:
                 errors.append(error)
                 continue
@@ -599,12 +803,22 @@ def apply_proven(sites: list[Site], *, repo: Path = REPO) -> int:
         path = repo / rel
         raw = path.read_bytes()
         for site in sorted(file_sites, key=lambda item: item.offset, reverse=True):
-            old = site.spelling.encode("ascii")
             replacement = site.replacement.encode("ascii")
-            if raw[site.offset:site.offset + len(old)] != old:
+            start, digits = site.offset, site.spelling
+            if digits.startswith("-"):
+                # The literal's offset is its digits; the sign sits before it.
+                digits = digits[1:]
+                start = site.offset - 1
+                while start > 0 and raw[start:start + 1] in (b" ", b"\t"):
+                    start -= 1
+                if raw[start:start + 1] != b"-":
+                    raise RuntimeError(
+                        f"{rel}:{site.line}:{site.column}: source changed since scan")
+            end = site.offset + len(digits)
+            if raw[site.offset:end] != digits.encode("ascii"):
                 raise RuntimeError(
                     f"{rel}:{site.line}:{site.column}: source changed since scan")
-            raw = raw[:site.offset] + replacement + raw[site.offset + len(old):]
+            raw = raw[:start] + replacement + raw[end:]
             applied += 1
         path.write_bytes(raw)
     return applied
@@ -630,6 +844,110 @@ def legacy_boolean_spellings(*, repo: Path = REPO) -> list[str]:
                     f"{rel}:{line}:{column}: {match.group()} -> "
                     f"{'true' if match.group() == 'TRUE' else 'false'}")
     return findings
+
+
+#: The work list: every numeric constant is open until it is spelled as a
+#: name (an enumerator, a named macro, NULL, true/false) or a row here keeps
+#: it numeric with the reason.
+WORKLIST = REPO / "config/constants.tsv"
+
+#: C units the last scan read in the retail view because the strict-enum view
+#: does not parse (a declaration disagrees with its definition).
+RETAIL_VIEW_UNITS: list[str] = []
+OPEN_REPORT = BUILD / "gen/constants_open.tsv"
+_WORKLIST_FIELDS = ("file", "owner", "spelling", "group", "detail", "reason")
+
+
+@dataclass(frozen=True)
+class Keep:
+    line: int
+    file: str
+    owner: str
+    spelling: str
+    group: str
+    detail: str
+    reason: str
+
+    def matches(self, site: Site) -> bool:
+        from fnmatch import fnmatchcase
+        return (fnmatchcase(site.file, self.file)
+                and fnmatchcase(site.function, self.owner)
+                and fnmatchcase(site.spelling, self.spelling)
+                and fnmatchcase(site.review_group, self.group)
+                and fnmatchcase(site.review_context, self.detail))
+
+
+def load_worklist(path: Path = WORKLIST) -> tuple[list[Keep], int | None, list[str]]:
+    """Kept rows, the committed floor of open constants, and format errors."""
+    keeps: list[Keep] = []
+    floor = None
+    errors: list[str] = []
+    if not path.is_file():
+        return keeps, floor, errors
+    for number, text in enumerate(path.read_text().splitlines(), 1):
+        if not text.strip():
+            continue
+        if text.startswith("#"):
+            parts = text[1:].split("\t")
+            if parts[0].strip() == "floor" and len(parts) == 2:
+                floor = int(parts[1])
+            continue
+        parts = text.split("\t")
+        if len(parts) != len(_WORKLIST_FIELDS):
+            errors.append(f"{path.name}:{number}: expected "
+                          f"{len(_WORKLIST_FIELDS)} tab-separated fields")
+            continue
+        keep = Keep(number, *parts)
+        if not keep.reason.strip() or keep.reason.strip() == "*":
+            errors.append(f"{path.name}:{number}: a kept constant needs a reason")
+            continue
+        keeps.append(keep)
+    return keeps, floor, errors
+
+
+def is_counted(site: Site) -> bool:
+    """Every numeric spelling counts except an enumerator's own value."""
+    return site.scope != "named-enum-definition"
+
+
+def open_sites(sites: list[Site], keeps: list[Keep]) -> tuple[list[Site], list[Keep]]:
+    """Counted sites no row keeps, and the rows that keep nothing (stale)."""
+    used: set[int] = set()
+    out: list[Site] = []
+    for site in sites:
+        if not is_counted(site):
+            continue
+        keep = next((k for k in keeps if k.matches(site)), None)
+        if keep is None:
+            out.append(site)
+        else:
+            used.add(keep.line)
+    return out, [k for k in keeps if k.line not in used]
+
+
+def write_open_report(path: Path, sites: list[Site]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = ["\t".join(("file", "line", "owner", "spelling", "group", "detail",
+                        "replacement"))]
+    for site in sites:
+        lines.append("\t".join((site.file, str(site.line), site.function,
+                                site.spelling, site.review_group,
+                                site.review_context, site.replacement)))
+    path.write_text("\n".join(lines) + "\n")
+
+
+def write_floor(path: Path, floor: int) -> None:
+    text = path.read_text() if path.is_file() else ""
+    lines = [line for line in text.splitlines() if not line.startswith("#floor")]
+    head = [line for line in lines if line.startswith("#")]
+    body = [line for line in lines if not line.startswith("#")]
+    path.write_text("\n".join(head + [f"#floor\t{floor}"] + body) + "\n")
+
+
+def open_summary(sites: list[Site]) -> str:
+    groups = Counter(site.review_group for site in sites)
+    detail = ", ".join(f"{name} {count}" for name, count in groups.most_common())
+    return f"{len(sites)} open constant(s): {detail}"
 
 
 def summary(sites: list[Site]) -> str:
@@ -669,6 +987,11 @@ def main(argv=None) -> int:
                         help="apply every compiler-proven replacement")
     parser.add_argument("--no-report", action="store_true",
                         help="do not write build/gen/bare_constants.tsv")
+    parser.add_argument("--list", metavar="FILTER", nargs="?", const="",
+                        help="print the open constants whose file or owner "
+                             "contains FILTER (all when empty)")
+    parser.add_argument("--update-floor", action="store_true",
+                        help="lower the committed floor to the current open count")
     parser.add_argument("--jobs", type=int,
                         default=min(4, multiprocessing.cpu_count()),
                         help="parallel libclang workers (default: up to 4)")
@@ -686,16 +1009,28 @@ def main(argv=None) -> int:
         print(f"[constants] FATAL: {len(errors)} translation unit(s) did not parse")
         return 2
     if args.fix:
+        keeps, _floor, _errors = load_worklist()
+        remaining, _stale = open_sites(sites, keeps)
         try:
-            applied = apply_proven(sites, repo=REPO)
+            applied = apply_proven(remaining, repo=REPO)
         except (OSError, RuntimeError) as exc:
             print(f"[constants] FATAL: {exc}")
             return 2
         print(f"[constants] applied {applied} compiler-proven replacement(s)")
         return 0
+    keeps, floor, worklist_errors = load_worklist()
+    remaining, stale = open_sites(sites, keeps)
     if not args.no_report:
         write_report(REPORT, sites)
-    bad = findings(sites)
+        write_open_report(OPEN_REPORT, remaining)
+    if args.list is not None:
+        for site in remaining:
+            if args.list in site.file or args.list == site.function or not args.list:
+                note = f" -> {site.replacement}" if site.replacement else ""
+                print(f"{site.file}:{site.line}:{site.column}\t{site.function}\t"
+                      f"{site.spelling}\t{site.review_group}\t"
+                      f"{site.review_context}{note}")
+    bad = findings(remaining)
     legacy_booleans = legacy_boolean_spellings(repo=REPO)
     if args.verbose:
         for finding in bad + legacy_booleans:
@@ -704,9 +1039,33 @@ def main(argv=None) -> int:
     print(f"[constants] legacy TRUE/FALSE spelling(s): {len(legacy_booleans)}")
     if not args.no_report:
         print(f"[constants] report: {REPORT.relative_to(REPO)}")
-    if args.gate and (bad or legacy_booleans):
-        print(f"[constants] FAIL: {len(bad)} compiler-proven replacement(s), "
-              f"{len(legacy_booleans)} legacy boolean spelling(s) remain")
+    for unit in RETAIL_VIEW_UNITS:
+        print(f"   {unit}: read in the retail view; the strict-enum view does not parse")
+    print(f"[constants] {open_summary(remaining)}; floor "
+          f"{floor if floor is not None else 'unset'} "
+          f"({WORKLIST.relative_to(REPO)}: {len(keeps)} kept row(s))")
+    if not args.no_report:
+        print(f"[constants] open list: {OPEN_REPORT.relative_to(REPO)}")
+    for error in worklist_errors:
+        print(f"   {error}")
+    for keep in stale:
+        print(f"   {WORKLIST.name}:{keep.line}: keeps no constant (stale row)")
+    if args.update_floor:
+        if floor is None or len(remaining) < floor:
+            write_floor(WORKLIST, len(remaining))
+            print(f"[constants] floor -> {len(remaining)}")
+        return 0
+    failed = []
+    if bad or legacy_booleans:
+        failed.append(f"{len(bad)} compiler-proven replacement(s), "
+                      f"{len(legacy_booleans)} legacy boolean spelling(s)")
+    if floor is not None and len(remaining) > floor:
+        failed.append(f"open constants rose {floor} -> {len(remaining)}")
+    if stale or worklist_errors:
+        failed.append(f"{len(stale)} stale and {len(worklist_errors)} malformed "
+                      f"work-list row(s)")
+    if args.gate and failed:
+        print(f"[constants] FAIL: {'; '.join(failed)}")
         return 1
     return 0
 

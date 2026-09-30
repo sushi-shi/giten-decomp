@@ -29,10 +29,10 @@ void OpEnterFieldMap(void) {
         i16 rateA = ReadScriptValue();
         i16 countB = ReadScriptValue();
         i16 rateB = ReadScriptValue();
-        SetGameStep(4);
+        SetGameStep(SCRIPT_SCENE_STEP_RESUME_FIELD_MAP);
         SetGameSub(ExchangeViewHold(hold));
         ThawObjectsForScript();
-        EnterFieldMap(map, countA, rateA, countB, rateB, 1);
+        EnterFieldMap(map, countA, rateA, countB, rateB, FIELD_MAP_SCRIPT_EVENT);
         HoldScriptFiles();
         SaveScriptState();
     }
@@ -45,9 +45,9 @@ RVA(0x00032560, 0x44)
 void OpIfEventObjectIs(void) {
     i16 target = ReadBranchTarget();
     i16 different = ReadScriptValue();
-    i32 matches = 0;
+    b32 matches = false;
     if ((g_actorId == g_targetId && !different) || (g_actorId != g_targetId && different)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -56,9 +56,9 @@ RVA(0x000325b0, 0x3e)
 void OpIfBattleResult(void) {
     i16 target = ReadBranchTarget();
     i16 multiple = ReadScriptValue();
-    i32 matches = 0;
-    if ((g_targetCount == 1 && multiple == 0) || (g_targetCount >= 2 && multiple == 1)) {
-        matches = 1;
+    b32 matches = false;
+    if ((g_targetCount == 1 && multiple == false) || (g_targetCount >= 2 && multiple == true)) {
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -79,9 +79,9 @@ i16 OpCountObjectsAt(void) {
 RVA(0x00032660, 0x39)
 void OpIfStatusPositive(i16 invert) {
     i16 target = ReadBranchTarget();
-    i32 matches = 0;
-    if ((g_statusCondition > 0 && !invert) || (g_statusCondition == 0 && invert)) {
-        matches = 1;
+    b32 matches = false;
+    if ((g_statusCondition > 0 && !invert) || (g_statusCondition == INFLICT_NONE && invert)) {
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
@@ -92,9 +92,9 @@ RVA(0x000326a0, 0x3b)
 void OpIfInBattle(void) {
     i16 target = ReadBranchTarget();
     i16 invert = ReadScriptValue();
-    i32 matches = 0;
+    b32 matches = false;
     if (ScriptBooleanMatches(g_fieldBattleActive, invert)) {
-        matches = 1;
+        matches = true;
     }
     ScriptJumpUnless(target, matches);
 }

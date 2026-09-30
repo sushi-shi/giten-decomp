@@ -52,6 +52,10 @@ typedef struct Texture {
         (value)->handle = 0;                                                                       \
     } while (0)
 
+// The frames of each enemy layer's texture, and the field-object texture slots.
+#define ENEMY_TEXTURE_FRAMES 5
+#define OBJECT_TEXTURE_COUNT 6
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -64,8 +68,8 @@ extern "C" {
     extern Texture g_npcTexture;        // w\npc.bmp
     // @identity-TODO: roles inferred only from the renderer reading them.
     extern Texture g_roomTexture;
-    extern Texture g_enemyTextures[2][5];
-    extern Texture g_objectTextures[6];
+    extern Texture g_enemyTextures[2][ENEMY_TEXTURE_FRAMES];
+    extern Texture g_objectTextures[OBJECT_TEXTURE_COUNT];
 
     BmpFile* OpenTextureBitmap(Texture* texture, const char* name, b32 fromFile);
     void RestoreTexture(Texture* texture);

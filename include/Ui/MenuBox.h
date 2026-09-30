@@ -6,12 +6,18 @@
 #include <EnumDomain.h>
 #include <Enums.h>
 #include <Ints.h>
+#include <Text/TextEvent.h>
 
 struct Character;
 struct MenuBox;
 struct Panel;
 struct ItemStackList;
 struct PartyMemberList;
+
+GZ_ENUM_BEGIN_SPLIT(ItemMenuMode, u8)
+    ITEM_MENU_MODE_SHOP = 0,
+    ITEM_MENU_MODE_SCRIPT = 2
+GZ_ENUM_END_SPLIT(ItemMenuMode)
 
 typedef union MenuContext {
     u32 value;
@@ -21,7 +27,7 @@ typedef union MenuContext {
     } script;
     struct {
         u8 priceDivisor;
-        u8 mode;
+        GZ_ENUM_STORAGE(ItemMenuMode, u8) mode;
         i16 totalVar;
     } item;
 } MenuContext;
@@ -38,7 +44,7 @@ typedef struct MenuEntry {
 // A row of the system menu's tables (savegame): its label, shown disabled
 // while mode flag 2 is set when `restricted`.
 typedef struct SystemMenuEntry {
-    i16 restricted;
+    b16 restricted;
     char* label;
 } SystemMenuEntry;
 
@@ -95,24 +101,27 @@ typedef struct MenuBox {
 } MenuBox;
 
 static __inline void RequestMenuRedraw(MenuBox* menu) {
-    menu->flagBits.redraw = 1;
+    menu->flagBits.redraw = true;
 }
 
 MenuBox* DestroyMenuBox(MenuBox* menu);
 
 MenuBox* CreateMenuBox(MenuBox* old, i16 window, i16 panelRows);
 
-// Moves the menu's list to (x, y); -1 keeps a coordinate.
+// MoveMenuBox and SetMenuItems keep a coordinate or the page rows given as
+// MENU_BOX_KEEP.
+#define MENU_BOX_KEEP (-1)
+
+// Moves the menu's list to (x, y).
 void MoveMenuBox(MenuBox* menu, i16 x, i16 y);
 
-// A pageRows of -1 keeps the plane's own.
 void SetMenuItems(MenuBox* menu, i16 pageRows, void* items, i16 itemCount, MenuHandler handler);
 
-i16 RunMenu(MenuBox* menu);
+GZ_ENUM_RETURN(TextEvent, i16) RunMenu(MenuBox* menu);
 void DispatchMenuEvent(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 void BuildMenuPage(MenuBox* menu);
 void PaintMenuBox(MenuBox* menu);
-i16 PollMenuBox(MenuBox* menu);
+GZ_ENUM_RETURN(TextEvent, i16) PollMenuBox(MenuBox* menu);
 b16 HandleMenuControl(MenuBox* menu, i16 control);
 
 #endif // GITEN_UI_MENUBOX_H

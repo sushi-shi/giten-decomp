@@ -7,6 +7,9 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
+#include <File/DataTableId.h>
+#include <Game/ActorFlag.h>
 #include <Game/AreaLevel.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
@@ -23,6 +26,7 @@
 #include <Game/FieldSupport.h>
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
+#include <Game/MapArea.h>
 #include <Game/ObjectRecord.h>
 #include <Game/Scene.h>
 #include <Game/SkillUse.h>
@@ -34,6 +38,7 @@
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Sound/Sound.h>
 #include <Ui/Panel.h>
 #include <Util/BitSet.h>
@@ -48,31 +53,31 @@ DATA(0x00068e50)
 static CellKind s_cellKinds[] = {
     {CELL_STAIRS_UP, CELL_EVENT_STAIRS, 0, 0},
     {CELL_STAIRS_DOWN, CELL_EVENT_STAIRS, 0, 0},
-    {0x90, CELL_EVENT_STAIRS, 0, 0},
-    {0x91, CELL_EVENT_STAIRS, 0, 0},
-    {0x70, CELL_EVENT_FORCED_MOVE, 0, 0},
-    {0x71, CELL_EVENT_FORCED_MOVE, 0, 0},
-    {0x72, CELL_EVENT_FORCED_MOVE, 0, 0},
-    {0x73, CELL_EVENT_FORCED_MOVE, 0, 0},
-    {0x74, CELL_EVENT_FORCED_MOVE, 0, 0},
-    {0x75, CELL_EVENT_FORCED_MOVE, 0, 0},
-    {0x76, CELL_EVENT_FORCED_MOVE, 0, 0},
-    {0x64, CELL_EVENT_FORCED_MOVE, 0, 0},
-    {0x77, CELL_EVENT_MARKED_WARP, 0, 0},
+    {CELL_STEPS_UP, CELL_EVENT_STAIRS, 0, 0},
+    {CELL_STEPS_DOWN, CELL_EVENT_STAIRS, 0, 0},
+    {CELL_FORCED_MOVE_NORTH, CELL_EVENT_FORCED_MOVE, 0, 0},
+    {CELL_FORCED_MOVE_EAST, CELL_EVENT_FORCED_MOVE, 0, 0},
+    {CELL_FORCED_MOVE_SOUTH, CELL_EVENT_FORCED_MOVE, 0, 0},
+    {CELL_FORCED_MOVE_WEST, CELL_EVENT_FORCED_MOVE, 0, 0},
+    {CELL_SPIN_RIGHT, CELL_EVENT_FORCED_MOVE, 0, 0},
+    {CELL_SPIN_AROUND, CELL_EVENT_FORCED_MOVE, 0, 0},
+    {CELL_SPIN_LEFT, CELL_EVENT_FORCED_MOVE, 0, 0},
+    {CELL_FORCED_MOVE_BACK, CELL_EVENT_FORCED_MOVE, 0, 0},
+    {CELL_MARKED_WARP, CELL_EVENT_MARKED_WARP, 0, 0},
     {CELL_EXIT, CELL_EVENT_WORLD_EXIT, 0, 0},
-    {0x7f, CELL_EVENT_FROZEN_SCENE, CELL_KIND_CHECK_FACING, 0},
-    {0x79, CELL_EVENT_SCRIPT, CELL_KIND_CHECK_FACING, 0},
-    {0x7c, 10, 0, 0},
-    {0x8b, 10, 0, 0},
-    {0x8c, 10, 0, 0},
-    {0x8d, 10, 0, 0},
-    {0x8e, 10, 0, 0},
-    {0x8f, 10, 0, 0},
+    {CELL_FROZEN_SCENE, CELL_EVENT_FROZEN_SCENE, CELL_KIND_CHECK_FACING, 0},
+    {CELL_FACING_SCRIPT, CELL_EVENT_SCRIPT, CELL_KIND_CHECK_FACING, 0},
+    {CELL_UNUSED_FLOOR_PROPERTY, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
+    {0x8b, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
+    {0x8c, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
+    {CELL_DARK, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
+    {CELL_COMMAND_BLOCKED, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
+    {0x8f, CELL_EVENT_FLOOR_PROPERTY, 0, 0},
     {CELL_CHUTE, CELL_EVENT_CHUTE, 0, 0},
-    {0x88, 12, 0, 0},
-    {0x89, 12, 0, 0},
-    {0x65, 13, 0, 0},
-    {0xff, CELL_EVENT_NONE, 0, 0},
+    {CELL_TREASURE_BOX_FIRST_FRAME_PAIR, CELL_EVENT_FADE_SCENE, 0, 0},
+    {CELL_TREASURE_BOX_SECOND_FRAME_PAIR, CELL_EVENT_FADE_SCENE, 0, 0},
+    {CELL_INERT, CELL_EVENT_INERT, 0, 0},
+    {CELL_CODE_TABLE_END, CELL_EVENT_NONE, 0, 0},
 };
 
 DATA(0x00068ec0)
@@ -117,11 +122,11 @@ DATA(0x0007fe50)
 static i32 s_moonFlags = 0;
 
 DATA(0x0007fe54)
-AreaMap* g_areaMap = 0;
+AreaMap* g_areaMap = NULL;
 
 // The level of the area map the party is on (NULL without a map).
 DATA(0x0007fe58)
-AreaLevel* g_areaLevel = 0;
+AreaLevel* g_areaLevel = NULL;
 
 // The name returned without an area map.
 DATA(0x0007fe5c)
@@ -147,7 +152,7 @@ void InitClock(void) {
     ResetClockPhaseAndTime(&g_clock);
     g_tickElapsed = 0;
     if (!s_moonFlags) {
-        FILE* fp = OpenDataFile(0x19, 0xc, 0);
+        FILE* fp = OpenDataFile(DATA_TABLE_MOON_FLAGS, DATA_FILE_TABLE, 0);
         s_moonFlags = ReadRawHandle(fp);
         CloseDataFile(fp);
     }
@@ -159,8 +164,16 @@ void InitClock(void) {
 RVA(0x00020b80, 0x6c)
 GZ_ENUM_RETURN(ClockUpdate, i16) AdvanceClock(u16 minutes) {
     GZ_ENUM_STORAGE(ClockUpdate, i16) changed = TickClock(minutes);
-    ModifyEventFlag(0, 0x23, g_clock.moonPhase != 0xe);
-    ModifyEventFlag(0, 0x25, g_clock.moonPhase != 0);
+    ModifyEventFlag(
+        EVENT_FLAG_BANK_SCENARIO,
+        SCENARIO_FULL_MOON_1,
+        g_clock.moonPhase != MOON_PHASE_FULL
+    );
+    ModifyEventFlag(
+        EVENT_FLAG_BANK_SCENARIO,
+        SCENARIO_NEW_MOON_1,
+        g_clock.moonPhase != MOON_PHASE_NEW
+    );
     ApplyClockChanges(changed);
     DrawDownCountdown(minutes);
     ExpireSpecialItems();
@@ -187,19 +200,16 @@ GZ_ENUM_RETURN(ClockUpdate, i16) TickClock(u16 minutes) {
     g_clock.days += carry;
     total = g_clock.moonTicks;
     total = total + minutes;
-    carry = total / 0x5f0;
-    g_clock.moonTicks = total % 0x5f0;
+    carry = total / MOON_PHASE_TICKS;
+    g_clock.moonTicks = total % MOON_PHASE_TICKS;
     if (carry) {
         changed |= CLOCK_UPDATE_MOON;
     }
     total = carry + g_clock.moonPhase;
-    g_clock.moonPhase = total % 28;
+    g_clock.moonPhase = total % MOON_PHASE_COUNT;
     return changed;
 }
 
-// On a new moon phase: clears flag 7/0xfd and the leader's flag 0x22, sets
-// flag 10 of every live object, applies the phase to the party and the
-// objects, and handles the full (0xe), new (0) and waning (0xf) moons.
 RVA(0x00020cf0, 0x149)
 void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
     i16 i;
@@ -208,23 +218,23 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
     if (!(changed & CLOCK_UPDATE_MOON)) {
         return;
     }
-    ModifyEventFlag(7, 0xfd, 0);
-    flags = GetCharacterFlags(GetRosterCharacter(0));
-    ClearBit(flags, 0x22);
-    for (i = 0; i < 16; i++) {
+    ModifyEventFlag(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_CORE_SHIELD, BIT_CHANGE_CLEAR);
+    flags = GetCharacterFlags(GetRosterCharacter(ROSTER_LEADER));
+    ClearBit(flags, ACTOR_FLAG_ESTOMA);
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         i16 object = GetLiveObject(i);
         if (object >= 0) {
             flags = GetCharacterFlags(GetCombatant(object));
-            SetBit(flags, 10);
+            SetBit(flags, ACTOR_FLAG_NOTICED);
         }
     }
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (ApplyMoonPhase(character, g_clock.moonPhase)) {
             RecalcCharacterStats(character);
         }
     }
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         i16 object = GetLiveObject(i);
         if (object >= 0) {
             character = GetCombatant(object);
@@ -233,17 +243,21 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
             }
         }
     }
-    if (g_clock.moonPhase == 0xe) {
-        ModifyEventFlag(0, 0x24, 0);
+    if (g_clock.moonPhase == MOON_PHASE_FULL) {
+        ModifyEventFlag(EVENT_FLAG_BANK_SCENARIO, SCENARIO_FULL_MOON_2, BIT_CHANGE_CLEAR);
     }
-    if (g_clock.moonPhase == 0) {
-        ModifyEventFlag(0, 0x26, 0);
+    if (g_clock.moonPhase == MOON_PHASE_NEW) {
+        ModifyEventFlag(EVENT_FLAG_BANK_SCENARIO, SCENARIO_NEW_MOON_2, BIT_CHANGE_CLEAR);
     }
-    if (g_clock.moonPhase == 0xe) {
-        ModifyEventFlag(7, 0xff, 0);
-        ModifyEventFlag(7, 0xfe, 0);
+    if (g_clock.moonPhase == MOON_PHASE_FULL) {
+        ModifyEventFlag(
+            EVENT_FLAG_BANK_ITEM_EFFECTS,
+            ITEM_EFFECT_KUSHINADA_JAR_USED,
+            BIT_CHANGE_CLEAR
+        );
+        ModifyEventFlag(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_SOMA_CUP_USED, BIT_CHANGE_CLEAR);
     }
-    if (g_clock.moonPhase == 0xf) {
+    if (g_clock.moonPhase == MOON_PHASE_AFTER_FULL) {
         ClearMoonFlags();
     }
 }
@@ -260,7 +274,7 @@ void ClearMoonFlags(void) {
     }
     list = HandleReadPtr(s_moonFlags);
     for (i = 0; list[i] != 0xff; i += 2) {
-        ModifyEventFlag(list[i], list[i + 1], 0);
+        ModifyEventFlag(list[i], list[i + 1], BIT_CHANGE_CLEAR);
     }
 }
 
@@ -348,15 +362,15 @@ void SpawnMapObjects(i16 cellCode) {
     i16 layer;
     i16 object;
     SetSpawnInterval(GetCellSpawnRate(cellCode));
-    if (TestLevelEvent(g_party.field.pos.level) == 1) {
+    if (TestLevelEvent(g_party.field.pos.level) == true) {
         return;
     }
     if (!g_areaLevel) {
         return;
     }
-    if (g_party.field.pos.area == 0x10 && g_party.field.pos.level == 6) {
+    if (g_party.field.pos.area == MAP_AREA_HARAJUKU && g_party.field.pos.level == 6) {
         special = 1;
-    } else if (g_party.field.pos.area == 0x13 && g_party.field.pos.level == 4) {
+    } else if (g_party.field.pos.area == MAP_AREA_SHANSHAN_CITY && g_party.field.pos.level == 4) {
         special = 2;
     }
     for (entry = g_areaLevel->spawns; entry->xLayer != 0xff; entry++, index++) {
@@ -470,8 +484,8 @@ void SelectAreaLevel(i16 level, i16 force) {
         ResetFieldMemory();
         g_areaLevel = AreaLevelAt(g_areaMap, level);
         if (!s_preserveLevelFlags) {
-            SetFlagBank(8);
-            ClearFlagBank(0xd);
+            SetFlagBank(EVENT_FLAG_BANK_LEVEL);
+            ClearFlagBank(EVENT_FLAG_BANK_LEVEL_SCRATCH);
         }
         s_preserveLevelFlags = 0;
         ResetFieldObjects();
@@ -492,7 +506,7 @@ void SelectAreaLevel(i16 level, i16 force) {
 }
 
 // Loads area `area` (when it is not the current one: allocating the map,
-// resetting flag banks 9 (unless preserved) and 12, and decoding the data
+// resetting the area flag banks (the first unless preserved), and decoding the data
 // file) and selects level `level`, forced after a load. Area 9's second
 // level is displayed as basement floor 1.
 RVA(0x000213a0, 0xd0)
@@ -504,21 +518,21 @@ void LoadAreaMap(i16 area, i16 level) {
             g_areaMap = AllocCleared(1, 0x2c00);
         }
         if (!s_preserveAreaFlags) {
-            SetFlagBank(9);
+            SetFlagBank(EVENT_FLAG_BANK_AREA);
         }
         s_preserveAreaFlags = 0;
-        SetFlagBank(0xc);
+        SetFlagBank(EVENT_FLAG_BANK_SCRATCH);
         UnloadAreaMap();
-        fp = OpenDataFile(area, 3, 0);
+        fp = OpenDataFile(area, DATA_FILE_MAP, 0);
         ReadCryptRecord(fp, s_areaRecord);
         CloseDataFile(fp);
         DecodeAreaMap(g_areaMap, s_areaRecord);
         g_areaMap->area = area;
-        if (area == 9) {
+        if (area == MAP_AREA_SHINJUKU_TOCHO) {
             AreaLevelAt(g_areaMap, 1)->floor = -1;
         }
         ResetLevelEvents();
-        force = 1;
+        force = true;
     }
     SelectAreaLevel(level, force);
 }
@@ -593,11 +607,11 @@ void PlayLevelMusic(void) {
                 g_areaLevel->music.choices[i].flagBank,
                 g_areaLevel->music.choices[i].flagIndex
             )) {
-            PlayMusic(g_areaLevel->music.choices[i].music, 1);
+            PlayMusic(g_areaLevel->music.choices[i].music, true);
             return;
         }
     }
-    PlayMusic(g_areaLevel->defaultMusic, 1);
+    PlayMusic(g_areaLevel->defaultMusic, true);
 }
 
 RVA(0x00021700, 0x9)
@@ -679,7 +693,7 @@ RVA(0x00021850, 0x29)
 const CellKind* FindCellKind(const CellHead* cell) {
     const CellKind* kind;
 
-    for (kind = s_cellKinds; kind->code != 0xff; kind++) {
+    for (kind = s_cellKinds; kind->code != CELL_CODE_TABLE_END; kind++) {
         if (kind->code == cell->code) {
             return kind;
         }
@@ -703,7 +717,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
 
     for (warp = AreaLevelAt(g_areaMap, level)->warps; !IsCellListEnd(&warp->head); warp++) {
         if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(&warp->head, 6)) {
-            LatchCellDestination(&warp->head, 3, 4, -1, 5, 8);
+            LatchCellDestination(&warp->head, 3, 4, CELL_FIELD_NONE, 5, 8);
             SetSceneCell(&warp->head);
             kind = FindCellKind(&warp->head);
             if (kind == NULL) {
@@ -717,7 +731,14 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (IsCellAt(x, y, &battle->head) && !IsCellFlagSet(&battle->head, 3)
             && !IsCellFlagSet(&battle->head, 7)) {
             SetFieldPair(battle->battleFlag[0], battle->battleFlag[1]);
-            LatchCellDestination(&battle->head, 5, 6, -1, -1, -1);
+            LatchCellDestination(
+                &battle->head,
+                5,
+                6,
+                CELL_FIELD_NONE,
+                CELL_FIELD_NONE,
+                CELL_FIELD_NONE
+            );
             SetSceneCell(&battle->head);
             return CELL_EVENT_BATTLE;
         }
@@ -727,7 +748,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (!IsCellAt(x, y, &link->head) || IsCellFlagSet(&link->head, 3)) {
             continue;
         }
-        LatchCellDestination(&link->head, 5, 6, 7, -1, -1);
+        LatchCellDestination(&link->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
         SetSceneCell(&link->head);
         SetCellScript(OffsetByWord((u8*)g_areaMap, &link->script));
         kind = FindCellKind(&link->head);
@@ -747,7 +768,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
             && !(link->facings & GetFacingBit())) {
             continue;
         }
-        if (kind->code == 0x7f) {
+        if (kind->code == CELL_FROZEN_SCENE) {
             SetSceneScriptByIndex(7, 8);
         }
         return kind->kind;
@@ -760,7 +781,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (!IsCellAt(x, y, &object->head) || IsCellFlagSet(&object->head, 3)) {
             continue;
         }
-        LatchCellDestination(&object->head, 5, 6, 7, -1, -1);
+        LatchCellDestination(&object->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
         SetSceneCell(&object->head);
         kind = FindCellKind(&object->head);
         if (kind == NULL) {
@@ -775,7 +796,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (!IsCellAt(x, y, &exit->head)) {
             continue;
         }
-        LatchCellDestination(&exit->head, 3, 4, 5, -1, -1);
+        LatchCellDestination(&exit->head, 3, 4, 5, CELL_FIELD_NONE, CELL_FIELD_NONE);
         SetSceneCell(&exit->head);
         kind = FindCellKind(&exit->head);
         if (kind == NULL) {
@@ -790,7 +811,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (IsCellFlagSet(&exit->head, 6)) {
             continue;
         }
-        LatchCellDestination(&exit->head, 3, 4, -1, 5, -1);
+        LatchCellDestination(&exit->head, 3, 4, CELL_FIELD_NONE, 5, CELL_FIELD_NONE);
         g_cellDestArea = g_areaMap->area;
         return kind->kind;
     }
@@ -803,7 +824,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (kind == NULL) {
             continue;
         }
-        LatchCellDestination(&box->head, 5, 6, 7, -1, -1);
+        LatchCellDestination(&box->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
         SetSceneCell(&box->head);
         SetCellScript(NULL);
         return kind->kind;
@@ -813,7 +834,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (!IsCellAt(x, y, &script->head) || IsCellFlagSet(&script->head, 3)) {
             continue;
         }
-        LatchCellDestination(&script->head, 5, 6, 7, -1, -1);
+        LatchCellDestination(&script->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
         SetSceneCell(&script->head);
         SetCellScript(OffsetByWord((u8*)g_areaMap, &script->script));
         SwapSceneCellParams();
@@ -835,13 +856,13 @@ void LatchCellDestination(const CellHead* cell, i16 x, i16 y, i16 direction, i16
     g_cellCode = cell->code;
     g_cellDestX = bytes[x];
     g_cellDestY = bytes[y];
-    if (direction != -1) {
+    if (direction != CELL_FIELD_NONE) {
         g_cellDestDirection = bytes[direction];
     }
-    if (level != -1) {
+    if (level != CELL_FIELD_NONE) {
         g_cellDestLevel = bytes[level];
     }
-    if (area != -1) {
+    if (area != CELL_FIELD_NONE) {
         g_cellDestArea = bytes[area];
     }
 }
@@ -856,7 +877,7 @@ b16 IsDarkCell(i16 x, i16 y) {
     }
     for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
         if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(&cell->head, 3)
-            && cell->head.code == 0x8d) {
+            && cell->head.code == CELL_DARK) {
             return true;
         }
     }
@@ -873,7 +894,7 @@ b16 IsCellCommandBlocked(i16 x, i16 y) {
     }
     for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
         if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(&cell->head, 3)
-            && cell->head.code == 0x8e) {
+            && cell->head.code == CELL_COMMAND_BLOCKED) {
             return true;
         }
     }
@@ -893,7 +914,7 @@ b16 IsRoomCell(i16 x, i16 y) {
 // there, else its wall or room bit. With `mode` 0, draws each enabled cell's
 // automap icon instead and returns 0.
 RVA(0x00021ed0, 0x1d3)
-i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
+i16 IsCellBlocked(i16 level, GZ_ENUM_PARAM(CellScanMode, i16) mode, i16 x, i16 y) {
     WarpCell* warp;
     BattleCell* battle;
     LinkCell* link;
@@ -938,7 +959,7 @@ i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
             return hit;
         }
     }
-    if (mode == 0) {
+    if (mode == CELL_SCAN_DRAW_ICONS) {
         return 0;
     }
     y = AreaLevelAt(g_areaMap, level)->width * y + x;
@@ -948,15 +969,21 @@ i16 IsCellBlocked(i16 level, i16 mode, i16 x, i16 y) {
     return TestBit(AreaLevelAt(g_areaMap, level)->roomBits, y);
 }
 
-// With `mode` set, 1 when the cell is at x/y. With `mode` 0, draws the cell's
+// With CELL_SCAN_TEST, 1 when the cell is at x/y. With CELL_SCAN_DRAW_ICONS, draws the cell's
 // automap icon unless its flag at `flagOffset` is set, and returns -1.
 // @early-stop scheduling: retail loads each cell byte just before its
 // subtraction (reusing edx) and the icon arguments into eax/ecx/dl; the
 // difference test (or/neg/sbb) spelled `!(a | b)`, `(a | b) == 0`, with a dy
 // local or as a compare pair keeps an extra register.
 RVA(0x000220b0, 0x62)
-i16 CheckBlockingCell(const CellHead* cell, i16 mode, i16 flagOffset, i16 x, i16 y) {
-    if (mode != 0) {
+i16 CheckBlockingCell(
+    const CellHead* cell,
+    GZ_ENUM_PARAM(CellScanMode, i16) mode,
+    i16 flagOffset,
+    i16 x,
+    i16 y
+) {
+    if (mode != CELL_SCAN_DRAW_ICONS) {
         return !((y - cell->y) | (x - cell->x));
     }
     if (!IsCellFlagSet(cell, flagOffset)) {
@@ -967,12 +994,12 @@ i16 CheckBlockingCell(const CellHead* cell, i16 mode, i16 flagOffset, i16 x, i16
 
 // The code of the enabled warp, link or script cell at x/y (0: none).
 RVA(0x00022120, 0xcf)
-i16 GetEventCellCode(i16 x, i16 y) {
+GZ_ENUM_RETURN(CellCode, i16) GetEventCellCode(i16 x, i16 y) {
     WarpCell* warp;
     LinkCell* link;
     ScriptCell* script;
     if (g_areaLevel == NULL) {
-        return 0;
+        return CELL_NONE;
     }
     for (warp = g_areaLevel->warps; !IsCellListEnd(&warp->head); warp++) {
         if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(&warp->head, 6)) {
@@ -989,11 +1016,11 @@ i16 GetEventCellCode(i16 x, i16 y) {
             return script->head.code;
         }
     }
-    return 0;
+    return CELL_NONE;
 }
 
 RVA(0x000221f0, 0x99)
-i16 IsStepBarred(i16 x, i16 y, i16 direction, i16 turn) {
+i16 IsStepBarred(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn) {
     i16 facing;
     DoorCell* door;
     if (g_areaLevel == NULL) {
@@ -1001,7 +1028,8 @@ i16 IsStepBarred(i16 x, i16 y, i16 direction, i16 turn) {
     }
     facing = TurnDirection(direction, turn);
     for (door = g_areaLevel->doors; !IsCellListEnd(&door->head); door++) {
-        if ((door->head.code & 0xf) != 0xb && (door->head.code >> 4) == facing
+        if ((door->head.code & 0xf) != WALL_KIND_UNBARRED_DOOR
+            && (door->head.code >> 4) == facing
             && IsCellAt(x, y, &door->head) && !IsCellFlagSet(&door->head, 3)) {
             return door->head.code;
         }
@@ -1107,8 +1135,9 @@ i16 GetCellAtOffset(i16 dx, i16 dy) {
     if (g_areaLevel == NULL) {
         return 0;
     }
-    if (g_party.field.pos.x == 2 && g_party.field.pos.y == 5 && g_party.field.pos.area == 9
-        && g_party.field.pos.level == 6 && dx == -1 && dy == 0) {
+    if (g_party.field.pos.x == 2 && g_party.field.pos.y == 5
+        && g_party.field.pos.area == MAP_AREA_SHINJUKU_TOCHO && g_party.field.pos.level == 6
+        && dx == -1 && dy == 0) {
         return CELL_STAIRS_UP;
     }
     ReturnWarpCodeAt(g_areaLevel->warps, g_party.field.pos.x, g_party.field.pos.y, 8);
@@ -1118,9 +1147,9 @@ i16 GetCellAtOffset(i16 dx, i16 dy) {
     return 0;
 }
 
-// The current level's room list (0) or door list (1).
+// The current level's room list or door list.
 RVA(0x00022540, 0x1c)
-u8* GetLevelList(i16 which) {
+u8* GetLevelList(GZ_ENUM_PARAM(LevelListKind, i16) which) {
     AreaLevel* level = g_areaLevel;
     u8* list;
     if (level == NULL) {
@@ -1171,7 +1200,7 @@ b16 IsLevelMapRevealed(void) {
 }
 
 // Copies the enabled exit at x/y into `out` (an exit without a kind entry, or
-// a kind-7 in-area exit); NULL when there is none.
+// a chute in-area exit); NULL when there is none.
 RVA(0x00022600, 0xbd)
 ExitCell* CopyExitAt(i16 x, i16 y, ExitCell* out) {
     ExitCell* exit;
@@ -1190,7 +1219,7 @@ ExitCell* CopyExitAt(i16 x, i16 y, ExitCell* out) {
                     }
                     return out;
                 }
-            } else if (kind->kind == 7 && !IsCellFlagSet(&exit->head, 6)) {
+            } else if (kind->kind == CELL_EVENT_CHUTE && !IsCellFlagSet(&exit->head, 6)) {
                 for (i = 0; i < sizeof(ExitCell); i++) {
                     ((u8*)out)[i] = ((u8*)exit)[i];
                 }
@@ -1281,7 +1310,7 @@ Panel* CreatePositionedPanel(Panel* panel, i16 x, i16 y, i16 count, i16 kind) {
 }
 
 RVA(0x00022980, 0x3c)
-Panel* ReleasePanel(Panel* panel, i16 freePanel) {
+Panel* ReleasePanel(Panel* panel, b16 freePanel) {
     if (panel == NULL) {
         return NULL;
     }
@@ -1311,18 +1340,18 @@ RVA(0x00022a20, 0x6d)
 i16 RunPanelInput(Panel* panel) {
     i16 result;
     if (panel == NULL) {
-        return -1;
+        return PANEL_INPUT_NONE;
     }
     ExchangeActivePanel(panel);
     if (!(panel->flags & PANEL_ALLOW_RIGHT_CLICK) && TakeMouseCancelSound()) {
         g_hoveredObjectId = g_selectedObjectId = -1;
         ExchangeActivePanel(NULL);
-        return -2;
+        return PANEL_INPUT_CANCELLED;
     }
     result = PollPanel(panel);
     // Codegen constraint: preserve the explicit no-selection result assignment.
-    if (result == -1) {
-        result = -1;
+    if (result == PANEL_INPUT_NONE) {
+        result = PANEL_INPUT_NONE;
     }
     ExchangeActivePanel(NULL);
     return result;
@@ -1364,7 +1393,7 @@ b32 TestPanelRowFlags(Panel* panel, i16 row, GZ_ENUM_PARAM(PanelFlags, u16) mask
 
 RVA(0x00022b30, 0x4a)
 void SetPanelRowFlags(Panel* panel, i16 row, GZ_ENUM_PARAM(PanelFlags, u16) mask, i16 on) {
-    if (on == 0) {
+    if (on == false) {
         ClearFlagBits(&GetPanelRow(panel, row)->flags, mask);
         return;
     }
@@ -1395,11 +1424,11 @@ void SavePanelChecks(Panel* panel) {
     for (i = 0; i < GetPanelRowCount(panel); i++) {
         row = GetPanelRow(panel, i);
         ClearFlagBits(&row->flags, PANEL_ROW_SAVED_CHECK);
-        if (TestFlagBits(&row->flags, PANEL_ROW_CHECKED) == 1) {
+        if (TestFlagBits(&row->flags, PANEL_ROW_CHECKED) == true) {
             SetFlagBits(&row->flags, PANEL_ROW_SAVED_CHECK);
         }
         ClearFlagBits(&row->flags, PANEL_ROW_SAVED_INPUT_DISABLED);
-        if (TestFlagBits(&row->flags, PANEL_INPUT_DISABLED) == 1) {
+        if (TestFlagBits(&row->flags, PANEL_INPUT_DISABLED) == true) {
             SetFlagBits(&row->flags, PANEL_ROW_SAVED_INPUT_DISABLED);
         }
     }
@@ -1416,11 +1445,11 @@ void RestorePanelChecks(Panel* panel) {
     for (i = 0; i < GetPanelRowCount(panel); i++) {
         row = GetPanelRow(panel, i);
         ClearPanelRowCheck(row);
-        if (TestFlagBits(&row->flags, PANEL_ROW_SAVED_CHECK) == 1) {
+        if (TestFlagBits(&row->flags, PANEL_ROW_SAVED_CHECK) == true) {
             SetFlagBits(&row->flags, PANEL_ROW_CHECKED);
         }
         ClearFlagBits(&row->flags, PANEL_INPUT_DISABLED);
-        if (TestFlagBits(&row->flags, PANEL_ROW_SAVED_INPUT_DISABLED) == 1) {
+        if (TestFlagBits(&row->flags, PANEL_ROW_SAVED_INPUT_DISABLED) == true) {
             SetFlagBits(&row->flags, PANEL_INPUT_DISABLED);
         }
     }

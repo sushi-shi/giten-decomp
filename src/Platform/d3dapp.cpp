@@ -9,6 +9,7 @@
 
 #include <Gfx/DDError.h>
 #include <Gfx/DisplayConfig.h>
+#include <Giten/Resource.h>
 #include <Platform/Com.h>
 #include <Platform/D3DApp.h>
 #include <Platform/D3DMath.h>
@@ -131,12 +132,117 @@ BOOL g_bilinearFiltering;
 // The WAVE resource of each sound effect (0 = none), sound 1 first.
 DATA(0x0006a6c8)
 static u16 s_soundResources[SOUND_COUNT - 1] = {
-    383, 384, 385, 386, 387, 388, 389, 390, 392, 393, 394, 0,   395, 396, 397, 398, 399, 727, 400,
-    401, 728, 402, 403, 729, 404, 405, 0,   406, 407, 408, 409, 410, 411, 412, 413, 414, 732, 415,
-    416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 0,   433,
-    434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 0,   0,   0,   0,   0,   0,   0,   0,   0,
-    444, 445, 446, 447, 448, 449, 450, 0,   451, 452, 453, 454, 455, 456, 0,   457, 458, 459, 460,
-    461, 462, 463, 464, 465, 466, 467, 468, 469, 0,   470, 471, 730, 0,   0,   472,
+    IDR_SOUND_1,
+    IDR_SOUND_2,
+    IDR_SOUND_3,
+    IDR_SOUND_4,
+    IDR_SOUND_5,
+    IDR_SOUND_6,
+    IDR_SOUND_7,
+    IDR_SOUND_8,
+    IDR_SOUND_9,
+    IDR_SOUND_10,
+    IDR_SOUND_11,
+    0,
+    IDR_SOUND_13,
+    IDR_SOUND_14,
+    IDR_SOUND_15,
+    IDR_SOUND_16,
+    IDR_SOUND_17,
+    IDR_SOUND_18,
+    IDR_SOUND_19,
+    IDR_SOUND_20,
+    IDR_SOUND_21,
+    IDR_SOUND_22,
+    IDR_SOUND_23,
+    IDR_SOUND_24,
+    IDR_SOUND_25,
+    IDR_SOUND_26,
+    0,
+    IDR_SOUND_28,
+    IDR_SOUND_29,
+    IDR_SOUND_30,
+    IDR_SOUND_31,
+    IDR_SOUND_32,
+    IDR_SOUND_33,
+    IDR_SOUND_34,
+    IDR_SOUND_35,
+    IDR_SOUND_36,
+    IDR_SOUND_37,
+    IDR_SOUND_38,
+    IDR_SOUND_39,
+    IDR_SOUND_40,
+    IDR_SOUND_41,
+    IDR_SOUND_42,
+    IDR_SOUND_43,
+    IDR_SOUND_44,
+    IDR_SOUND_45,
+    IDR_SOUND_46,
+    IDR_SOUND_47,
+    IDR_SOUND_48,
+    IDR_SOUND_49,
+    IDR_SOUND_50,
+    IDR_SOUND_51,
+    IDR_SOUND_52,
+    IDR_SOUND_53,
+    IDR_SOUND_54,
+    IDR_SOUND_55,
+    0,
+    IDR_SOUND_57,
+    IDR_SOUND_58,
+    IDR_SOUND_59,
+    IDR_SOUND_60,
+    IDR_SOUND_61,
+    IDR_SOUND_62,
+    IDR_SOUND_63,
+    IDR_SOUND_64,
+    IDR_SOUND_65,
+    IDR_SOUND_66,
+    IDR_SOUND_67,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    IDR_SOUND_77,
+    IDR_SOUND_78,
+    IDR_SOUND_79,
+    IDR_SOUND_80,
+    IDR_SOUND_81,
+    IDR_SOUND_82,
+    IDR_SOUND_83,
+    0,
+    IDR_SOUND_85,
+    IDR_SOUND_86,
+    IDR_SOUND_87,
+    IDR_SOUND_88,
+    IDR_SOUND_89,
+    IDR_SOUND_90,
+    0,
+    IDR_SOUND_92,
+    IDR_SOUND_93,
+    IDR_SOUND_94,
+    IDR_SOUND_95,
+    IDR_SOUND_96,
+    IDR_SOUND_97,
+    IDR_SOUND_98,
+    IDR_SOUND_99,
+    IDR_SOUND_100,
+    IDR_SOUND_101,
+    IDR_SOUND_102,
+    IDR_SOUND_103,
+    IDR_SOUND_104,
+    0,
+    IDR_SOUND_106,
+    IDR_SOUND_107,
+    IDR_SOUND_108,
+    0,
+    0,
+    IDR_SOUND_111,
 };
 
 // The identity matrix the Set*Matrix helpers start from.
@@ -858,7 +964,7 @@ b32 InitDirectDraw(void) {
     if (g_ddraw->QueryInterface(IID_IDirectDraw2, reinterpret_cast<void**>(&g_ddraw2)) != DD_OK) {
         return false;
     }
-    if (g_deviceSettings.caps.hardwareOnly == TRUE) {
+    if (g_deviceSettings.caps.hardwareOnly == true) {
         g_deviceType = D3D_DEVICE_HAL;
     } else {
         QueryD3DDevices();
@@ -1207,32 +1313,32 @@ b32 InitDirect3D(void) {
     g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_VIEW, &g_viewMatrix);
     SetProjectionMatrix(g_projectionMatrix, 160.0f, 160.0f, 1281.0f);
     g_d3dDevice->SetTransform(D3DTRANSFORMSTATE_PROJECTION, &g_projectionMatrix);
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, true);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
     if (g_deviceSettings.caps.blendMode[static_cast<i32>(g_deviceType)] == BLEND_MODE_ALPHA) {
-        SetDeviceAlphaBlend(g_d3dDevice, TRUE);
+        SetDeviceAlphaBlend(g_d3dDevice, true);
     } else {
-        SetDeviceAlphaBlend(g_d3dDevice, FALSE);
+        SetDeviceAlphaBlend(g_d3dDevice, false);
     }
     if (g_deviceType != D3D_DEVICE_MMX) {
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
     } else {
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_CCW);
     }
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, TRUE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, true);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZFUNC, D3DCMP_LESSEQUAL);
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZVISIBLE, FALSE);
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, TRUE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZVISIBLE, false);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, true);
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD);
     if (g_deviceSettings.caps.dither[static_cast<i32>(g_deviceType)]) {
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE, TRUE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE, true);
     } else {
-        g_d3dDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE, FALSE);
+        g_d3dDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE, false);
     }
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, TRUE);
-    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ANTIALIAS, FALSE);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, false);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, true);
+    g_d3dDevice->SetRenderState(D3DRENDERSTATE_ANTIALIAS, false);
     if (g_bilinearFiltering) {
         SetTextureFiltering(D3DFILTER_LINEAR);
     } else {
@@ -1242,21 +1348,21 @@ b32 InitDirect3D(void) {
     g_d3dDevice->SetRenderState(D3DRENDERSTATE_ALPHAFUNC, D3DCMP_NEVER);
     if (g_deviceType == D3D_DEVICE_HAL) {
         g_screenDevice->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
-        g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);
+        g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, true);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
         if (g_deviceSettings.caps.blendMode[static_cast<i32>(g_deviceType)] == BLEND_MODE_ALPHA) {
-            SetDeviceAlphaBlend(g_screenDevice, TRUE);
+            SetDeviceAlphaBlend(g_screenDevice, true);
         } else {
-            SetDeviceAlphaBlend(g_screenDevice, FALSE);
+            SetDeviceAlphaBlend(g_screenDevice, false);
         }
     } else {
-        g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, TRUE);
+        g_screenDevice->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, true);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_FLAT);
-        g_screenDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, FALSE);
+        g_screenDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, false);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAPBLEND, D3DTBLEND_DECAL);
         g_screenDevice->SetRenderState(D3DRENDERSTATE_ALPHAFUNC, D3DCMP_NEVER);
-        g_screenDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
+        g_screenDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, false);
     }
     ZeroMemory(&g_textureFormat, sizeof(g_textureFormat));
     g_d3dDevice->EnumTextureFormats(ChooseTextureFormat, &g_textureFormat);

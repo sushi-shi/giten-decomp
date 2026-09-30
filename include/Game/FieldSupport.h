@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/AutomapMark.h>
 #include <Ints.h>
 #include <Platform/ScreenFade.h>
 #include <Script/ScriptBlock.h>
@@ -35,13 +36,11 @@ void ClearEncounterPending(void);
 
 i16 GetEncounterPending(void);
 
-// Sets bit 11 / bit 0 of the flags of item 1 of the list 0x468858; returns the
-// old bit.
-// @identity-TODO: that the list is the field command menu (drawn by 0x15940)
-// is inferred; what the two bits mean is unrecovered.
-b16 SetFieldStatusBit11(i16 on);
+// Sets field command panel row 1's hit-test skip flag; returns its old state.
+b16 SetFieldStatusBit11(b16 on);
 
-b16 SetFieldStatusBit0(i16 on);
+// Sets field command panel row 1's checked flag; returns its old state.
+b16 SetFieldStatusBit0(b16 on);
 
 RVA_DECL(0x00049cb0)
 void SetFieldRenderMode(void);
@@ -78,6 +77,8 @@ i16 GetMapCellCode(i16 x, i16 y);
 i16 IsObjectCell(i16 code);
 
 // Marks map cell x/y with `kind` on the automap.
+// Map marks 0-3 are the party arrow by ViewDirection; these mark an area NPC
+// and a field object.
 void MarkMapCell(i16 kind, i16 x, i16 y);
 
 // @identity-TODO: sets the flag 0x480d10 (instead of removing a hidden object).
@@ -88,6 +89,6 @@ u32 DropLayerImage(u32 image);
 
 // @identity-TODO: requests a redraw of the area of object `index`.
 RVA_DECL(0x00049fe0)
-void RequestObjectRedraw(i16 index, i16 a, i16 b);
+void RequestObjectRedraw(i16 index, i16 x, i16 y);
 
 #endif // GITEN_GAME_FIELDSUPPORT_H

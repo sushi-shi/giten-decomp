@@ -16,9 +16,9 @@ i16 HitTestWorldMap(i16 x, i16 y, i16 layer) {
     u16 color;
     i32 result;
     if (index >= 0 && g_layerStack[index]->slot != SCREEN_LAYER_AUTOMAP) {
-        return 0;
+        return WORLD_MAP_HIT_NONE;
     }
-    result = 0;
+    result = WORLD_MAP_HIT_NONE;
     if (index < 0) {
         if (layer & 1) {
             color = ReadSurfaceWord(g_viewCachePicture.surface, x, y, 640);
@@ -28,19 +28,19 @@ i16 HitTestWorldMap(i16 x, i16 y, i16 layer) {
     } else {
         x -= g_layerStack[index]->x;
         y -= g_layerStack[index]->y;
-        result = 1;
+        result = WORLD_MAP_HIT_AUTOMAP_LAYER;
         color = ReadSurfaceWord(g_layerStack[index]->canvas, x, y, 128);
     }
     if (color == g_markerColors[0].color) {
-        result |= 2;
+        result |= WORLD_MAP_HIT_MARKER_COLOR;
     } else if (color == g_markerColors[2].color) {
-        result |= 2;
+        result |= WORLD_MAP_HIT_MARKER_COLOR;
     } else if (color == g_markerColors[3].color) {
-        result |= 2;
+        result |= WORLD_MAP_HIT_MARKER_COLOR;
     } else if (color == g_markerColors[1].color) {
-        result |= 2;
+        result |= WORLD_MAP_HIT_MARKER_COLOR;
     } else {
-        result = 0;
+        result = WORLD_MAP_HIT_NONE;
     }
     return result;
 }

@@ -3,7 +3,12 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Enums.h>
+#include <Game/BattleStat.h>
 #include <Game/GameState.h>
+#include <Game/MapArea.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 #include <stdio.h>
@@ -11,11 +16,30 @@
 // The macca a battle awards (GrantBattleRewards pays it out).
 extern i32 g_rewardMacca;
 
+// The phases of the field exploration state (RunFieldExploration): load the
+// area, enter the party's cell, explore, run a cell event, resume exploring
+// or run the analyze window, end an event, fade out and return to the return
+// point, or fade out and leave for the world map.
+GZ_ENUM_BEGIN(FieldPhase)
+    FIELD_PHASE_LOAD_AREA = 0,
+    FIELD_PHASE_ENTER_CELL = 1,
+    FIELD_PHASE_EXPLORE = 2,
+    FIELD_PHASE_CELL_EVENT = 3,
+    FIELD_PHASE_RESUME = 4,
+    FIELD_PHASE_RESUME_ALIAS = 5,
+    FIELD_PHASE_ANALYZE = 6,
+    FIELD_PHASE_END_EVENT = 7,
+    FIELD_PHASE_FADE_TO_RETURN_POINT = 8,
+    FIELD_PHASE_RETURN_TO_RETURN_POINT = 9,
+    FIELD_PHASE_FADE_TO_WORLD_MAP = 10,
+    FIELD_PHASE_CLOSE = 11
+GZ_ENUM_END(FieldPhase)
+
 b16 RunFieldExploration(void);
 
 // Sets the return point the field leaves to (and resets the field objects
 // and the selected hotspot).
-void SetReturnPoint(i16 area, i16 level, i16 x, i16 y, i16 direction);
+void SetReturnPoint(i16 area, i16 level, i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 // Moves the party to x/y facing `direction` and rebuilds the view.
 void MovePartyTo(i16 x, i16 y, i16 direction);
@@ -25,7 +49,21 @@ void MovePartyTo(i16 x, i16 y, i16 direction);
 i16 ExchangeSceneHold(i16 hold);
 void MarkSceneDirty(void);
 
-i16 AdvancePartyMove(i16 command);
+GZ_ENUM_BEGIN_SPLIT(ObjectEventState, u8)
+    OBJECT_EVENT_IDLE = 0,
+    OBJECT_EVENT_RAISED = 1,
+    OBJECT_EVENT_DONE = 2,
+    OBJECT_EVENT_QUEUED = 3
+GZ_ENUM_END_SPLIT(ObjectEventState)
+
+// Whether a party step or turn is still running, completed, or blocked.
+GZ_ENUM_BEGIN_SPLIT(PartyMoveOutcome, i16)
+    PARTY_MOVE_IN_PROGRESS = 0,
+    PARTY_MOVE_DONE = 1,
+    PARTY_MOVE_BLOCKED = 2
+GZ_ENUM_END_SPLIT(PartyMoveOutcome)
+
+GZ_ENUM_RETURN(PartyMoveOutcome, i16) AdvancePartyMove(i16 command);
 void ResetLevelEvents(void);
 b32 TestLevelEvent(i16 level);
 b16 RaiseObjectEvent(i16 event, i16 queued);
@@ -68,7 +106,7 @@ void SetAnalyzeTarget(Character* target);
 void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor);
 
 // @identity-TODO: label-only; the cap (0x41c650(99)) is unrecovered.
-u32 AddTrainingPoints(Character* character, i16 kind, i16 amount);
+u32 AddTrainingPoints(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind, i16 amount);
 
 // The object index under the selected hotspot, -1 for none.
 // @identity-TODO: label-only; the hotspot table 0x48802c is Ui/Hotspot's.
@@ -90,7 +128,16 @@ i16 NextAutoMove(void);
 i16 GetFieldExplorationActive(void);
 i16 SetPendingSound(i16 sound);
 void SetRebuildRoom(i16 rebuild);
-i16 GetReturnPoint(i16* out);
+// The return point as GetReturnPoint copies it out.
+typedef struct ReturnPoint {
+    GZ_ENUM_STORAGE(MapAreaId, i16) area;
+    i16 level;
+    i16 x;
+    i16 y;
+    GZ_ENUM_STORAGE(ViewDirection, i16) direction;
+} ReturnPoint;
+
+i16 GetReturnPoint(ReturnPoint* out);
 b16 TickStepDamage(void);
 i16 TickFieldSteps(void);
 

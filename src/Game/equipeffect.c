@@ -7,6 +7,7 @@
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
 #include <Game/EquipEffect.h>
+#include <Game/EquipSlotIndex.h>
 #include <Game/ItemCurse.h>
 #include <Game/ItemRecord.h>
 #include <Game/Pool.h>
@@ -102,52 +103,52 @@ void ApplyItemCurse(
             return;
         case ITEM_CURSE_BURNING:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x40) {
-                AddCondition(GetCharacterConditions(character), 0x16);
+                AddCondition(GetCharacterConditions(character), CONDITION_BURN);
             }
             return;
         case ITEM_CURSE_MAGIC_SEALED:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x20) {
-                AddCondition(GetCharacterConditions(character), 0x18);
+                AddCondition(GetCharacterConditions(character), CONDITION_MAGIC_SEAL);
             }
             return;
         case ITEM_CURSE_PANIC:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x20) {
-                AddCondition(GetCharacterConditions(character), 0xe);
+                AddCondition(GetCharacterConditions(character), CONDITION_PANIC);
             }
             return;
         case ITEM_CURSE_CONFUSED:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x40) {
-                AddCondition(GetCharacterConditions(character), 0x12);
+                AddCondition(GetCharacterConditions(character), CONDITION_CONFUSION);
             }
             return;
         case ITEM_CURSE_CHARMED:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x20) {
-                AddCondition(GetCharacterConditions(character), 0x11);
+                AddCondition(GetCharacterConditions(character), CONDITION_CHARM);
             }
             return;
         case ITEM_CURSE_DANCING:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x40) {
-                AddCondition(GetCharacterConditions(character), 0x13);
+                AddCondition(GetCharacterConditions(character), CONDITION_DANCE);
             }
             return;
         case ITEM_CURSE_BOUND:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x20) {
-                AddCondition(GetCharacterConditions(character), 0xc);
+                AddCondition(GetCharacterConditions(character), CONDITION_BIND);
             }
             return;
         case ITEM_CURSE_BERSERK:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x40) {
-                AddCondition(GetCharacterConditions(character), 0x1a);
+                AddCondition(GetCharacterConditions(character), CONDITION_BERSERK);
             }
             return;
         case ITEM_CURSE_TIPSY:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x40) {
-                AddCondition(GetCharacterConditions(character), 0x1d);
+                AddCondition(GetCharacterConditions(character), CONDITION_TIPSY);
             }
             return;
         case ITEM_CURSE_SLIME:
             if (timing == EQUIP_EFFECT_ACTION && RandomUpTo(0xff) < 0x20) {
-                AddCondition(GetCharacterConditions(character), 0x1f);
+                AddCondition(GetCharacterConditions(character), CONDITION_SLIME);
             }
             return;
     }
@@ -159,12 +160,12 @@ void ApplyEquipmentEffects(
     Character* character,
     GZ_ENUM_STORAGE(EquipmentEffectTiming, i16) timing
 ) {
-    ApplyItemCurse(character, GetCharacterEquipment(character)[0].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[1].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[2].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[3].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[4].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[5].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[6].item, timing);
-    ApplyItemCurse(character, GetCharacterEquipment(character)[7].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_BODY].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_ARMS].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_LEGS].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_ACCESSORY].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, timing);
+    ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, timing);
 }

@@ -9,14 +9,18 @@
 #include <Game/GameState.h>
 #include <Game/ModeFlags.h>
 #include <Game/Skill.h>
+#include <Game/SkillId.h>
 #include <Game/StateStack.h>
 #include <Game/WorldMap.h>
 #include <Gfx/Shot.h>
 #include <Input/Mouse.h>
 #include <Platform/PlatformApi.h>
 #include <Script/ScriptVars.h>
+#include <Text/TextAttr.h>
+#include <Text/TextPlane.h>
 #include <Text/TextWindow.h>
 #include <Ui/MenuBox.h>
+#include <Ui/MenuStep.h>
 #include <Util/Scratch.h>
 
 #include <stddef.h>
@@ -25,7 +29,7 @@
 // The open menu, the skill the magic test launches, and how many skills
 // there are.
 DATA(0x00071170)
-static MenuBox* s_debugMenu = 0;
+static MenuBox* s_debugMenu = NULL;
 
 DATA(0x00071174)
 static i16 s_testSkill = 0;
@@ -98,110 +102,110 @@ i16 RunDebugMenu(void) {
     MapCoord to;
 
     switch (GetGameStep()) {
-        case 0:
-            s_testSkill = 0x10;
+        case MENU_STEP_OPEN:
+            s_testSkill = SKILL_AGI;
             s_shotRise = 3;
             NextGameStep();
             NextGameStep();
             s_debugMenu = CreateMenuBox(s_debugMenu, 0x19, 2);
             MoveMenuBox(s_debugMenu, -8, -0x16);
             SetMenuItems(s_debugMenu, 8, s_debugEntries, 15, DebugMenuHandler);
-            return 0;
-        case 1:
+            return SUBSTATE_RUNNING;
+        case MENU_STEP_CLOSE:
             s_debugMenu = DestroyMenuBox(s_debugMenu);
             HideTextPlane(0);
-            return -1;
-        case 2:
+            return SUBSTATE_FINISHED;
+        case MENU_STEP_RUN:
             pick = RunMenu(s_debugMenu);
-            if (pick == -1) {
+            if (pick == TEXT_EVENT_CANCEL) {
                 PrevGameStep();
             }
             if (pick > 0) {
-                SetGameStep(g_selectedObjectId + 3);
+                SetGameStep(g_selectedObjectId + MENU_STEP_PICK_FIRST);
                 s_debugMenu = DestroyMenuBox(s_debugMenu);
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             break;
-        case 7:
-            SetGameStep(1);
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_DESTROY_ALL_DEMONS:
+            SetGameStep(MENU_STEP_CLOSE);
             ResetObjectAnims();
-            return 0;
-        case 9:
-        case 12:
-        case 15:
-            row = GetGameStep() - 3;
-            SetGameStep(1);
+            return SUBSTATE_RUNNING;
+        case MENU_STEP_PICK_FIRST + 6:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_MOVE_3D:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_LOAD:
+            row = GetGameStep() - MENU_STEP_PICK_FIRST;
+            SetGameStep(MENU_STEP_CLOSE);
             StartDebugScene(0xaf, s_debugEntries[row].value, g_infoPlane);
-            return 0;
-        case 16:
-            row = GetGameStep() - 3;
-            SetGameStep(0);
+            return SUBSTATE_RUNNING;
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_CHECK_DATA:
+            row = GetGameStep() - MENU_STEP_PICK_FIRST;
+            SetGameStep(MENU_STEP_OPEN);
             StartDebugScene(0xd1, s_debugEntries[row].value, g_infoPlane);
-            return 0;
-        case 3:
-        case 4:
-        case 6:
-        case 8:
-        case 10:
-        case 11:
-        case 13:
-        case 14:
-            row = GetGameStep() - 3;
-            SetGameStep(0);
+            return SUBSTATE_RUNNING;
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_BGM:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_SE:
+        case MENU_STEP_PICK_FIRST + 3:
+        case MENU_STEP_PICK_FIRST + 5:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_GET_ITEMS:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_CHANGE_STATS:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_CHANGE_FLAGS:
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_SAVE:
+            row = GetGameStep() - MENU_STEP_PICK_FIRST;
+            SetGameStep(MENU_STEP_OPEN);
             StartDebugScene(0xaf, s_debugEntries[row].value, g_infoPlane);
-            return 0;
-        case 17:
-            SetGameStep(0);
-            return 0;
-        case 5:
+            return SUBSTATE_RUNNING;
+        case MENU_STEP_PICK_FIRST + 14:
+            SetGameStep(MENU_STEP_OPEN);
+            return SUBSTATE_RUNNING;
+        case MENU_STEP_PICK_FIRST + DEBUG_ROW_MAGIC_EFFECT:
             switch (GetGameSub()) {
-                case 0:
+                case MENU_STEP_OPEN:
                     s_skillCount = GetSkillCount();
                     NextGameSub();
                     NextGameSub();
                     s_debugMenu = CreateMenuBox(s_debugMenu, 0x19, 2);
                     MoveMenuBox(s_debugMenu, -8, -0x16);
                     SetMenuItems(s_debugMenu, 8, s_magicEntries, 8, MagicMenuHandler);
-                    return 0;
-                case 1:
+                    return SUBSTATE_RUNNING;
+                case MENU_STEP_CLOSE:
                     s_debugMenu = DestroyMenuBox(s_debugMenu);
-                    SetGameStep(0);
-                    return 0;
-                case 2:
+                    SetGameStep(MENU_STEP_OPEN);
+                    return SUBSTATE_RUNNING;
+                case MENU_STEP_RUN:
                     pick = RunMenu(s_debugMenu);
-                    if (pick == -1) {
+                    if (pick == TEXT_EVENT_CANCEL) {
                         PrevGameSub();
                     }
                     if (pick > 0) {
-                        SetGameSub(g_selectedObjectId + 3);
-                        return 0;
+                        SetGameSub(g_selectedObjectId + MENU_STEP_PICK_FIRST);
+                        return SUBSTATE_RUNNING;
                     }
                     break;
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                    row = GetGameSub() - 3;
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_PLUS_1:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_MINUS_1:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_PLUS_10:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_MINUS_10:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_PLUS_100:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_MINUS_100:
+                    row = GetGameSub() - MENU_STEP_PICK_FIRST;
                     s_testSkill += s_magicEntries[row].value;
-                    SetGameSub(2);
+                    SetGameSub(MENU_STEP_RUN);
                     s_debugMenu->flags |= 1;
-                    return 0;
-                case 9:
-                    SetGameSub(2);
+                    return SUBSTATE_RUNNING;
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_DISTANCE:
+                    SetGameSub(MENU_STEP_RUN);
                     s_debugMenu->flags |= 1;
                     if (++s_shotRise > 3) {
                         s_shotRise = 0;
-                        return 0;
+                        return SUBSTATE_RUNNING;
                     }
                     break;
-                case 10:
+                case MENU_STEP_PICK_FIRST + DEBUG_MAGIC_ROW_RUN:
                     s_debugMenu = DestroyMenuBox(s_debugMenu);
-                    SetGameSub(0);
+                    SetGameSub(MENU_STEP_OPEN);
                     from = GetMapCoord();
                     to = MoveMapCoord(from, g_party.field.pos.direction, 0, -s_shotRise);
-                    PushGameState(0xc);
+                    PushGameState(GAME_STATE_CLOSING_EFFECT);
                     LaunchShot(
                         GetSkillShotId(s_testSkill),
                         0,
@@ -215,7 +219,7 @@ i16 RunDebugMenu(void) {
             }
             break;
     }
-    return 0;
+    return SUBSTATE_RUNNING;
 }
 
 RVA(0x00001410, 0xc0)
@@ -234,14 +238,26 @@ static void DebugMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                 g_scratchBuffer,
                 "<\203\146\203\157\203\142\203\117\203\201\203\152\203\205\201\133>"
             );
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
             entry = &entries[index];
             if (entry->restricted && TestModeFlags(MODE_WORLD_MAP)) {
-                AddMenuLine(menu->plane, entry->label, 0x500, index, 1);
+                AddMenuLine(
+                    menu->plane,
+                    entry->label,
+                    TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+                    index,
+                    MENU_LINE_DISABLED
+                );
             } else {
-                AddMenuLine(menu->plane, entry->label, 0x2450, index, 0);
+                AddMenuLine(
+                    menu->plane,
+                    entry->label,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                    index,
+                    MENU_LINE_NORMAL
+                );
             }
             break;
     }
@@ -260,26 +276,50 @@ static void MagicMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
         case MENU_EVENT_BEGIN_PAGE:
             // "<魔法デバッグ>" (magic debug)
             sprintf(g_scratchBuffer, "<\226\202\226\100\203\146\203\157\203\142\203\117>");
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             return;
         case MENU_EVENT_ADD_ROW:
-            if (index == 6) {
-                sprintf(g_scratchBuffer, "%s(%.1d) +1", entries[6].label, s_shotRise);
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2450, 6, 0);
+            if (index == DEBUG_MAGIC_ROW_DISTANCE) {
+                sprintf(
+                    g_scratchBuffer,
+                    "%s(%.1d) +1",
+                    entries[DEBUG_MAGIC_ROW_DISTANCE].label,
+                    s_shotRise
+                );
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                    DEBUG_MAGIC_ROW_DISTANCE,
+                    MENU_LINE_NORMAL
+                );
                 return;
             }
-            if (index <= 5) {
+            if (index <= DEBUG_MAGIC_ROW_MINUS_100) {
                 skill = entries[index].value + s_testSkill;
                 if (skill < 0 || skill >= s_skillCount) {
-                    AddMenuLine(menu->plane, entries[index].label, 0x2560, index, 1);
+                    AddMenuLine(
+                        menu->plane,
+                        entries[index].label,
+                        TEXT_ATTR_FLAG1
+                            | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                        index,
+                        MENU_LINE_DISABLED
+                    );
                     return;
                 }
             }
-            AddMenuLine(menu->plane, entries[index].label, 0x2450, index, 0);
+            AddMenuLine(
+                menu->plane,
+                entries[index].label,
+                TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                index,
+                MENU_LINE_NORMAL
+            );
             return;
         case MENU_EVENT_END_PAGE:
             sprintf(g_scratchBuffer, "%3d %s", s_testSkill, GetSkillName(s_testSkill));
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, index, 1);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, index, MENU_LINE_DISABLED);
             return;
     }
 }

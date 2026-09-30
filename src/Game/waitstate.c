@@ -14,7 +14,7 @@
 
 RVA(0x0001a870, 0xc0)
 b16 StepWaitState(void) {
-    u16 inputMask;
+    GZ_ENUM_LOCAL(WaitInputMask, u16) inputMask;
     switch (GetGamePhase()) {
         case WAIT_FRAMES:
             if (PrevGameSub() == 1) {
@@ -31,12 +31,13 @@ b16 StepWaitState(void) {
         case WAIT_INPUT:
             ShowBusyCursor();
             inputMask = GetGameStep();
-            if ((inputMask & 1) && (g_mousePosition.buttons & MOUSE_LEFT_DOWN)) {
+            if ((inputMask & WAIT_ON_LEFT_DOWN) && (g_mousePosition.buttons & MOUSE_LEFT_DOWN)) {
                 HideBusyCursor();
                 ReturnFromGameState();
                 break;
             }
-            if ((inputMask & 2) && (g_mousePosition.buttons & MOUSE_LEFT_PRESSED)) {
+            if ((inputMask & WAIT_ON_LEFT_PRESSED)
+                && (g_mousePosition.buttons & MOUSE_LEFT_PRESSED)) {
                 HideBusyCursor();
                 ReturnFromGameState();
                 break;
@@ -56,8 +57,13 @@ b16 StepWaitState(void) {
 }
 
 RVA(0x0001a930, 0x29)
-void PushWaitState(GZ_ENUM_STORAGE(WaitMode, i16) mode, u16 inputMask, u16 frames, i16 unused) {
-    PushGameState(1);
+void PushWaitState(
+    GZ_ENUM_STORAGE(WaitMode, i16) mode,
+    GZ_ENUM_PARAM(WaitInputMask, u16) inputMask,
+    u16 frames,
+    i16 unused
+) {
+    PushGameState(GAME_STATE_WAIT);
     SetGamePhase(mode);
     SetGameStep(inputMask);
     SetGameSub(frames);
@@ -75,7 +81,7 @@ b16 RunScreenFadeState(void) {
 RVA(0x0001a990, 0x30)
 void PushScreenFade(GZ_ENUM_PARAM(ScreenFadeMode, i16) kind, i16 speed) {
     PushWaitState(WAIT_FADE, 0, 0, -1);
-    PushGameState(13);
+    PushGameState(GAME_STATE_SCREEN_FADE);
     SetGamePhase(kind);
     SetGameStep(speed);
 }
@@ -89,22 +95,27 @@ void FadeScreenAndWait(GZ_ENUM_PARAM(ScreenFadeMode, i16) kind, i16 speed) {
 RVA(0x0001a9f0, 0x41)
 i16 PushMessageBox(i16 window, const char* text) {
     i16 plane;
-    PushGameState(33);
+    PushGameState(GAME_STATE_MESSAGE_BOX);
     plane = CreateTextPlane(window, 0x4000);
-    PrintWindowText(plane, text, 0, 0, 1);
+    PrintWindowText(plane, text, 0, 0, true);
     SetGamePhase(plane);
     return plane;
 }
+
+GZ_ENUM_BEGIN_SPLIT(MessageBoxStep, i16)
+    MESSAGE_BOX_STEP_WAIT = 0,
+    MESSAGE_BOX_STEP_CLOSE = 1
+GZ_ENUM_END_SPLIT(MessageBoxStep)
 
 RVA(0x0001aa40, 0x54)
 b16 RunMessageBoxState(void) {
     i16 plane = GetGamePhase();
     switch (GetGameStep()) {
-        case 1:
+        case MESSAGE_BOX_STEP_CLOSE:
             CloseTextWindow(plane);
             ReturnFromGameState();
             break;
-        case 0:
+        case MESSAGE_BOX_STEP_WAIT:
             NextGameStep();
             RepaintTextPlane(plane, 1);
             PushWaitState(WAIT_INPUT, 10, 0xffff, plane);

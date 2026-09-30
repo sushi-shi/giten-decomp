@@ -1,6 +1,8 @@
 #ifndef GITEN_MATH_VEC3_H
 #define GITEN_MATH_VEC3_H
 
+#include <EnumDomain.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 #include <Math/Coord.h>
 
@@ -47,6 +49,12 @@ void ClearBody(Body* body);
 void ClampToField(Vec3* pos);
 Vec3* CellToField(i16 column, i16 row, i16 cell, Vec3* out);
 Vec3* UnprojectPoint(i16 x, i16 y, i16 depth, Vec3* out);
-void RotateOffset(i16* x, i16* y, i16 originX, i16 originY, i16 facing);
+void RotateOffset(
+    i16* x,
+    i16* y,
+    i16 originX,
+    i16 originY,
+    GZ_ENUM_PARAM(ViewDirection, i16) facing
+);
 
 #endif // GITEN_MATH_VEC3_H

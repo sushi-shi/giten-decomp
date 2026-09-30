@@ -3,8 +3,16 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/FusionMenuStep.h>
+#include <Game/MoveCommand.h>
+#include <Script/ActorAlertMode.h>
+#include <Script/ActorSpoilKind.h>
+#include <Script/BranchMode.h>
 #include <Script/ScriptPanel.h>
+#include <Script/ScriptStatus.h>
+#include <Script/WindowReverseMode.h>
 #include <Util/Compare.h>
 
 GZ_ENUM_BEGIN(ScriptFlagAction)
@@ -18,7 +26,7 @@ GZ_ENUM_END(ScriptFlagAction)
 // units are not recovered yet; each declaration moves to its owner's header
 // when that unit is reconstructed.
 
-void SetWindowReverse(i16 window, i16 mode);
+void SetWindowReverse(i16 window, GZ_ENUM_PARAM(WindowReverseMode, i16) mode);
 
 void OpSetWindowColor(i16 window, i16 part);
 
@@ -82,12 +90,36 @@ void OpCaptureRecordString(void);
 
 void OpCallTextScript(void);
 
+GZ_ENUM_BEGIN_SPLIT(ScriptItemListOperation, i16)
+    SCRIPT_ITEM_LIST_BUY = 0,
+    SCRIPT_ITEM_LIST_SELL = 1
+GZ_ENUM_END_SPLIT(ScriptItemListOperation)
+
+// Bag-list category 1..19 uses ItemKind; these selectors extend it with
+// filters for scenario items and item prices.
+GZ_ENUM_BEGIN_SPLIT(ScriptBagCategory, i16)
+    SCRIPT_BAG_CATEGORY_ALL = 0,
+    SCRIPT_BAG_CATEGORY_NON_SCENARIO = 20,
+    SCRIPT_BAG_CATEGORY_PRICED_NON_SCENARIO = 21,
+    SCRIPT_BAG_CATEGORY_ZERO_PRICE = 22
+GZ_ENUM_END_SPLIT(ScriptBagCategory)
+
 b16 OpStepListMenu(void);
 void OpSetMenuCharacter(void);
 
+// The save-data operations OpSaveDataCommand reads: a slot's summary field,
+// saving (at the return point when one is set), loading, and the summary field
+// as captured text.
+GZ_ENUM_BEGIN(SaveDataOperation)
+    SAVE_DATA_SUMMARY = 0,
+    SAVE_DATA_SAVE = 1,
+    SAVE_DATA_LOAD = 2,
+    SAVE_DATA_SUMMARY_TEXT = 3
+GZ_ENUM_END(SaveDataOperation)
+
 b16 OpSaveDataCommand(void);
 
-void OpIfFlags(i16 all);
+void OpIfFlags(b16 all);
 
 // Queries the last field-entry result, or enters a map with a view-hold
 // setting and the two sides' count/rate pairs.
@@ -163,7 +195,7 @@ void DespawnScriptActor(void);
 void RetireScriptActor(void);
 
 RVA_DECL(0x00032d30)
-i16 StepScriptActor(i16 turn);
+GZ_ENUM_RETURN(ScriptStatus, i16) StepScriptActor(GZ_ENUM_PARAM(MoveCommand, i16) turn);
 
 RVA_DECL(0x00032d80)
 void OpStoreActorDistance(void);
@@ -173,13 +205,28 @@ void OpStoreActorDistance(void);
 RVA_DECL(0x00032dc0)
 void PlaceScriptActor(void);
 
-void GrantActorReward(i16 kind);
+GZ_ENUM_BEGIN(ActorRewardKind)
+    ACTOR_REWARD_FIRST_ITEM = 0,
+    ACTOR_REWARD_SECOND_ITEM = 1,
+    ACTOR_REWARD_GEM = 2,
+    ACTOR_REWARD_PICK_ITEM = 3,
+    ACTOR_REWARD_SPOIL_MACCA = 4,
+    ACTOR_REWARD_SPOIL_MAGNETITE = 5,
+    ACTOR_REWARD_SPOIL_EXPERIENCE = 6,
+    ACTOR_REWARD_RANDOM = 7,
+    ACTOR_REWARD_HEALED = 7,
+    ACTOR_REWARD_RANDOM_B = 8,
+    ACTOR_REWARD_BOMB_ATTACK = 8,
+    ACTOR_REWARD_PUNCH_ATTACK = 9
+GZ_ENUM_END(ActorRewardKind)
+
+void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind);
 
 struct Character;
 i16 PickEquipmentReward(struct Character* character);
 
 RVA_DECL(0x00033210)
-void GrantActorSpoil(i16 kind);
+void GrantActorSpoil(GZ_ENUM_PARAM(ActorSpoilKind, i16) kind);
 
 // @identity-TODO: The 0x78878 bitmap meaning (object gone/defeated) is inferred from 0x36080;
 // confirm via its readers.
@@ -190,12 +237,15 @@ void OpSetObjectPresence(void);
 void DismissTalkTarget(void);
 
 RVA_DECL(0x00033390)
-void OpJumpUnlessActorCanStep(i16 invert, i16 turn);
+void OpJumpUnlessActorCanStep(
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+);
 
 // @identity-TODO: Meaning of 0x2ac50 (actor+0x1c4=2, local flags 8/10, mode=6) and the word at
 // actor+0x17f is unproven; decode other 0x2ac50 callers (0x7390, 0xf890).
 RVA_DECL(0x00033490)
-i16 OpSetActorAlert(i16 level);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(GZ_ENUM_PARAM(ActorAlertMode, i16) level);
 
 RVA_DECL(0x00033510)
 void OpJumpUnlessPlayerInLine(i16 invert);
@@ -248,8 +298,22 @@ void OpJumpUnlessEventFlag(ScriptFlagAction action, i32 expect);
 RVA_DECL(0x00034880)
 void OpJumpUnlessFlagSet(void);
 
+// The four contest levels selected by the normal and swapped script opcodes.
+// Their numeric order has stat-specific effects, so the opcode level is the
+// stable identity shared by all stat contests.
+GZ_ENUM_BEGIN_SPLIT(StatContestLevel, i16)
+    STAT_CONTEST_LEVEL_0 = 0,
+    STAT_CONTEST_LEVEL_1 = 1,
+    STAT_CONTEST_LEVEL_2 = 2,
+    STAT_CONTEST_LEVEL_3 = 3
+GZ_ENUM_END_SPLIT(StatContestLevel)
+
 RVA_DECL(0x000348b0)
-void OpJumpUnlessStatContest(i16 level, i16 invert, i16 swap);
+void OpJumpUnlessStatContest(
+    GZ_ENUM_PARAM(StatContestLevel, i16) level,
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert,
+    b16 swap
+);
 
 void OpJumpUnlessPlayerInView(i16 invert);
 
@@ -355,23 +419,23 @@ void OpTakeDropSlot(void);
 
 // @identity-TODO: which scene game mode 0x26 is (pushed with 0x16c00) is unrecovered; find the
 // mode-0x26 handler.
-i16 OpCallSubScene(void);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpCallSubScene(void);
 
 void OpCopyItemRecord(void);
 
-void OpOpenFusionScreen(i16 kind);
+void OpOpenFusionScreen(GZ_ENUM_PARAM(FusionMenuStep, i16) kind);
 
-void OpRunFusion(i16 triple);
+void OpRunFusion(b16 triple);
 
 void OpEndFusion(void);
 
-void OpJumpIf(i16 cond);
+void OpJumpIf(b16 cond);
 
 // @identity-TODO: the dispatcher pushes 1 but the body never reads it; whether the original
 // took a flag is unproven.
 void OpSkipJumpTarget(i16 unused);
 
-void OpIfDemonCount(i16 mode, i16 limit);
+void OpIfDemonCount(GZ_ENUM_PARAM(ScriptTestPolarity, i16) mode, i16 limit);
 
 void OpGetFusionResult(void);
 
@@ -398,18 +462,21 @@ void OpGetPlayerLocation(void);
 
 void OpSetPlayerPosition(void);
 
-void OpIfBlockedToward(i16 negate, i16 turn);
+void OpIfBlockedToward(
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) negate,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn
+);
 
 // @identity-TODO: the effect table 0x46b9d8 (8 entries, called after a colour-fill Blt in
 // 0x49f50) is unnamed.
-i16 PlayScreenTransition(i16 effect);
+GZ_ENUM_RETURN(ScriptStatus, i16) PlayScreenTransition(i16 effect);
 
-i16 OpScreenTransition(void);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpScreenTransition(void);
 
 // Adds the character, entering the roster replacement state on failure.
 void AddScriptCharacterToRoster(struct Character* character, i16 unused);
 
-i16 OpAddToRoster(void);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpAddToRoster(void);
 
 RVA_DECL(0x000361b0)
 i16 OpRemoveFromRoster(void);

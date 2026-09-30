@@ -14,7 +14,7 @@
 
 RVA(0x00058580, 0xb)
 void ClearSelectedHotspot(void) {
-    g_selectedHotspot = -1;
+    g_selectedHotspot = HOTSPOT_NONE;
 }
 
 RVA(0x00058590, 0xa)
@@ -62,7 +62,7 @@ i16 CountFieldObjects(void) {
     char buffer[128];
     i16 count = IsAbortPending();
     if (count) {
-        SetAbortPending(0);
+        SetAbortPending(false);
         count = -1;
     } else if (g_renderMode == RENDER_MODE_VIEW) {
         u32 i;

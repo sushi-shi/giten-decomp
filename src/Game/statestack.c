@@ -15,13 +15,14 @@
 
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/AreaMap.h>
 #include <Game/Automap.h>
 #include <Game/BagItems.h>
 #include <Game/Battle.h>
 #include <Game/BattleEffect.h>
-#include <Game/Character.h>
 #include <Game/CharInfo.h>
+#include <Game/Character.h>
 #include <Game/Clock.h>
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
@@ -39,12 +40,14 @@
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
 #include <Game/Growth.h>
+#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemId.h>
 #include <Game/ItemMenu.h>
 #include <Game/ItemRecord.h>
 #include <Game/ItemUse.h>
 #include <Game/LevelUp.h>
+#include <Game/MapArea.h>
 #include <Game/MenuCursor.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
@@ -90,6 +93,7 @@
 #include <Script/ScriptVars.h>
 #include <Sound/Sound.h>
 #include <Text/Font.h>
+#include <Text/TextEvent.h>
 #include <Text/TextPlane.h>
 #include <Text/TextWindow.h>
 #include <Text/WindowText.h>
@@ -97,6 +101,7 @@
 #include <Ui/Hotspot.h>
 #include <Ui/Menu.h>
 #include <Ui/MenuBox.h>
+#include <Ui/MenuStep.h>
 #include <Ui/Message.h>
 #include <Ui/Panel.h>
 #include <Ui/PartySlotSelection.h>
@@ -111,7 +116,20 @@
 
 // The conditions a level-up cures.
 DATA(0x00064540)
-static const i16 s_levelUpCures[] = {17, 26, 27, 28, 14, 18, 19, 29, 23, 16, 10, -1};
+static const i16 s_levelUpCures[] = {
+    CONDITION_CHARM,
+    CONDITION_BERSERK,
+    CONDITION_HIGH,
+    CONDITION_HAPPY,
+    CONDITION_PANIC,
+    CONDITION_CONFUSION,
+    CONDITION_DANCE,
+    CONDITION_TIPSY,
+    CONDITION_BLIND,
+    CONDITION_HALLUCINATION,
+    CONDITION_STUN,
+    CONDITION_LIST_END
+};
 
 // The party's world-map position (initially 286, 192).
 DATA(0x00068a48)
@@ -122,7 +140,7 @@ i16 g_worldMapY = 192;
 
 // @identity-TODO: the menu plane is only read; its creator is unrecovered.
 DATA(0x00068a50)
-static i16 s_dismissMenuPlane = -1;
+static i16 s_dismissMenuPlane = TEXT_PLANE_NONE;
 
 // The item being used (-1 for none).
 DATA(0x00068a54)
@@ -152,7 +170,7 @@ static i16 s_currentRoomCode = -1;
 
 // The stat-list window of the member levelling up.
 DATA(0x00068a74)
-static i16 s_statWindow = -1;
+static i16 s_statWindow = TEXT_PLANE_NONE;
 
 // The roster slot of the member levelling up.
 DATA(0x00068a78)
@@ -169,11 +187,11 @@ DATA(0x0007b818)
 i16 g_sceneFramePositions[32][2] = {0};
 
 DATA(0x0007b898)
-static u8* s_sceneSpriteStream = 0;
+static u8* s_sceneSpriteStream = NULL;
 
 // The script the cell event runs (NULL: none).
 DATA(0x0007b89c)
-static u8* s_cellScript = 0;
+static u8* s_cellScript = NULL;
 
 // The points of each stat raised this level.
 DATA(0x0007b8a0)
@@ -227,11 +245,11 @@ DATA(0x0007be3c)
 i16 g_statusMember = 0;
 
 DATA(0x0007be40)
-b16 g_statusFixedMember = 0;
+b16 g_statusFixedMember = false;
 
 // @identity-TODO: the status screen's analyze mode flag.
 DATA(0x0007be44)
-static i16 s_statusAnalyzeMode = 0;
+static b16 s_statusAnalyzeMode = false;
 
 DATA(0x0007be48)
 static i16 s_stateDepth = 0;
@@ -251,7 +269,7 @@ DATA(0x0007be58)
 static i16 s_subscreenActive = 0;
 
 DATA(0x0007be5c)
-static i16 s_partyPickerMode = 0;
+static GZ_ENUM_STORAGE(PartyPickerMode, i16) s_partyPickerMode = PARTY_PICKER_ALL;
 
 // The spot marked when the world map is entered with a request.
 DATA(0x0007be60)
@@ -265,7 +283,7 @@ DATA(0x0007be68)
 static i16 s_mapLayer = 0;
 
 DATA(0x0007be6c)
-static MenuBox* s_partyPicker = 0;
+static MenuBox* s_partyPicker = NULL;
 
 // Set while the party travels towards a picked destination.
 DATA(0x0007be70)
@@ -311,20 +329,20 @@ DATA(0x0007be9c)
 static i16 s_savedMusic = 0;
 
 DATA(0x0007bea0)
-static PaletteState* s_scenePaletteState = 0;
+static PaletteState* s_scenePaletteState = NULL;
 
 DATA(0x0007bea4)
-static PaletteState* s_statusPaletteState = 0;
+static PaletteState* s_statusPaletteState = NULL;
 
 // The item list menu.
 DATA(0x0007bea8)
-static MenuBox* s_itemMenu = 0;
+static MenuBox* s_itemMenu = NULL;
 
 DATA(0x0007beac)
-static u8* s_moonTable = 0;
+static u8* s_moonTable = NULL;
 
 DATA(0x0007beb0)
-static MenuBox* s_ddsMenu = 0;
+static MenuBox* s_ddsMenu = NULL;
 
 // @identity-TODO: the screen area kept while the level-up screen is open; its
 // layout is not recovered (the Windows build's save/restore bodies are empty).
@@ -332,7 +350,7 @@ DATA(0x0007beb8)
 static u8 s_screenSave[16] = {0};
 
 DATA(0x0007bec8)
-Character* g_rosterPendingMember = 0;
+Character* g_rosterPendingMember = NULL;
 
 DATA(0x0007becc)
 i16 g_rosterReturnState = 0;
@@ -344,7 +362,7 @@ DATA(0x0007bed4)
 u16 g_rosterReturnStep = 0;
 
 DATA(0x0007bed8)
-static i16 s_rosterSavedColumn = 0;
+static GZ_ENUM_STORAGE(StatusListColumn, i16) s_rosterSavedColumn = STATUS_LIST_ALL;
 
 RVA(0x000169e0, 0xa)
 void ClearGameStateStack(void) {
@@ -366,7 +384,7 @@ void PopGameState(void) {
 }
 
 RVA(0x00016a70, 0x24)
-i16 __fastcall SetGameState(i16 state) {
+i16 __fastcall SetGameState(GZ_ENUM_PARAM(GameStateId, i16) state) {
     i16 old = s_gameState.state;
     s_gameState.state = state;
     s_gameState.phase = 0;
@@ -443,7 +461,7 @@ i16 PrevGameSub(void) {
 }
 
 RVA(0x00016bc0, 0x7)
-i16 GetGameState(void) {
+GZ_ENUM_RETURN(GameStateId, i16) GetGameState(void) {
     return s_gameState.state;
 }
 
@@ -463,7 +481,7 @@ u16 GetGameSub(void) {
 }
 
 RVA(0x00016c00, 0x16)
-void __fastcall PushGameState(i16 state) {
+void __fastcall PushGameState(GZ_ENUM_PARAM(GameStateId, i16) state) {
     SaveGameState();
     SetGameState(state);
 }
@@ -531,44 +549,44 @@ RVA(0x00016d30, 0x11c)
 i16 PickStatusMember(void) {
     i16 selected;
     switch (GetGameStep()) {
-        case 2:
+        case PICK_MEMBER_STEP_POLL:
             selected = PollStatusMenu();
-            if (selected == 2 || selected == -2) {
-                CheckStatusMenuItem(2);
-                SetGameStep(0xffff);
+            if (selected == STATUS_STEP_CLOSE || selected == STATUS_COMMAND_CANCEL) {
+                CheckStatusMenuItem(STATUS_STEP_CLOSE);
+                SetGameStep(PICK_MEMBER_STEP_CANCELLED);
             } else {
-                selected = RunStatusListPicker(0);
+                selected = RunStatusListPicker(false);
                 if (selected >= 0) {
                     PrevGameStep();
                     SetGameSub(selected);
                 }
             }
             break;
-        case 0:
-            SetGameStep(2);
+        case PICK_MEMBER_STEP_OPEN:
+            SetGameStep(PICK_MEMBER_STEP_POLL);
             TakeMouseCancelSound();
             SetStatusMenuItemsHidden(1);
-            SetStatusMenuItemFlag(3, 0x800, !CountBagEntries());
+            SetStatusMenuItemFlag(STATUS_STEP_ITEMS, PANEL_SKIP_HIT_TEST, !CountBagEntries());
             RedrawPartyStatus();
             RepaintTextPlane(g_infoPlane, 1);
             ClearStatusMenu();
-            SetStatusColumn(0);
-            RunStatusListPicker(0);
+            SetStatusColumn(STATUS_LIST_ALL);
+            RunStatusListPicker(false);
             break;
-        case 1:
-        case 0xffff:
+        case PICK_MEMBER_STEP_PICKED:
+        case PICK_MEMBER_STEP_CANCELLED:
             SetStatusMenuItemsHidden(0);
-            RunStatusListPicker(1);
-            if (GetGameStep() == 0xffff) {
-                return -3;
+            RunStatusListPicker(true);
+            if (GetGameStep() == PICK_MEMBER_STEP_CANCELLED) {
+                return STATUS_COMMAND_CANCEL_FIXED_MEMBER;
             }
             return GetGameSub();
     }
-    return -1;
+    return STATUS_COMMAND_NONE;
 }
 
 RVA(0x00016e50, 0xc)
-void SetStatusAnalyzeMode(i16 on) {
+void SetStatusAnalyzeMode(b16 on) {
     s_statusAnalyzeMode = on;
 }
 
@@ -581,11 +599,11 @@ RVA(0x00016e70, 0x144)
 b16 RunStatusScreen(void) {
     i16 result;
     switch (GetGamePhase()) {
-        case 0:
+        case STATUS_PHASE_OPEN:
             SetPictureRenderMode();
             HideScreenLayer(SCREEN_LAYER_PANEL);
             CloseMessageWindow();
-            SetGamePhase(2);
+            SetGamePhase(STATUS_PHASE_PICK_MEMBER);
             SetStatusMenuItemsHidden(0);
             EnterStatusScreen(0);
             if (s_statusAnalyzeMode) {
@@ -594,9 +612,9 @@ b16 RunStatusScreen(void) {
                 g_statusFixedMember = true;
             }
             break;
-        case 1:
+        case STATUS_PHASE_CLOSE:
             ReturnFromGameState();
-            RunStatusListPicker(1);
+            RunStatusListPicker(true);
             RequestFieldRefresh();
             LeaveStatusScreen(0);
             g_statusFixedMember = false;
@@ -605,20 +623,20 @@ b16 RunStatusScreen(void) {
             ErasePictureSurface(0x36);
             ClearStatusPicture();
             break;
-        case 2:
+        case STATUS_PHASE_PICK_MEMBER:
             g_statusMember = PickStatusMember();
-            if (g_statusMember == -3) {
+            if (g_statusMember == STATUS_COMMAND_CANCEL_FIXED_MEMBER) {
                 PrevGamePhase();
-            } else if (g_statusMember != -1) {
+            } else if (g_statusMember != STATUS_COMMAND_NONE) {
                 NextGamePhase();
             }
             break;
-        case 3:
+        case STATUS_PHASE_COMMANDS:
             result = RunStatusCommands();
-            if (result == -3) {
+            if (result == STATUS_COMMAND_CANCEL_FIXED_MEMBER) {
                 ErasePictureSurface(0x36);
-                SetGamePhase(1);
-            } else if (result == 7 || result == -2) {
+                SetGamePhase(STATUS_PHASE_CLOSE);
+            } else if (result == STATUS_STEP_EXIT || result == STATUS_COMMAND_CANCEL) {
                 PrevGamePhase();
                 ClearStatusPicture();
                 ErasePictureSurface(0x36);
@@ -642,7 +660,7 @@ void LeaveStatusScreen(i16 nested) {
     ResetStatusMenu();
     if (!nested) {
         if (s_statusPaletteState) {
-            s_statusPaletteState = RestorePaletteState(s_statusPaletteState, 1);
+            s_statusPaletteState = RestorePaletteState(s_statusPaletteState, true);
         }
         SetSubscreenActive(0);
     }
@@ -651,15 +669,15 @@ void LeaveStatusScreen(i16 nested) {
 RVA(0x00017030, 0x60)
 b16 RunDismissMenuState(void) {
     switch (GetGamePhase()) {
-        case 0:
+        case DISMISS_MENU_RESET_SELECTION:
             NextGamePhase();
             ResetTextPlaneHighlight(s_dismissMenuPlane);
-        case 1:
+        case DISMISS_MENU_WAIT_INPUT:
             if (PollMenuInput(s_dismissMenuPlane)) {
                 NextGamePhase();
             }
             break;
-        case 2:
+        case DISMISS_MENU_CLOSE:
             CloseTextWindow(s_dismissMenuPlane);
             ReturnFromGameState();
             break;
@@ -674,22 +692,22 @@ RVA(0x00017090, 0xc1)
 b16 ReplaceRosterMember(void) {
     i16 selected;
     switch (GetGamePhase()) {
-        case 0:
-            s_rosterSavedColumn = SetStatusColumn(2);
+        case ROSTER_REPLACEMENT_OPEN_LIST:
+            s_rosterSavedColumn = SetStatusColumn(STATUS_LIST_RESERVE_UNFLAGGED);
             NextGamePhase();
-        case 1:
-            selected = RunStatusListPicker(0);
-            if (selected == -1 || selected == -2) {
+        case ROSTER_REPLACEMENT_PICK_MEMBER:
+            selected = RunStatusListPicker(false);
+            if (selected == LIST_MENU_OPEN || selected == LIST_MENU_CANCELLED) {
                 break;
             }
             NextGamePhase();
-        case 2:
+        case ROSTER_REPLACEMENT_APPLY:
             // Retail leaves selected uninitialized on direct entry to this phase.
             RemoveFromRoster(selected);
             SetStatusColumn(s_rosterSavedColumn);
-            RunStatusListPicker(1);
+            RunStatusListPicker(true);
             if (AddToRoster(g_rosterPendingMember) < 0) {
-                SetGamePhase(0);
+                SetGamePhase(ROSTER_REPLACEMENT_OPEN_LIST);
             }
             RestoreRosterReturnState();
             break;
@@ -702,117 +720,117 @@ i16 DispatchGameState(void) {
     i16 result;
     u16 state = GetGameState();
     switch (state) {
-        case 0:
+        case GAME_STATE_RETURN:
             ReturnFromGameState();
             result = 0;
             break;
-        case 1:
+        case GAME_STATE_WAIT:
             result = StepWaitState();
             break;
-        case 5:
+        case GAME_STATE_SCRIPT_SCENE:
             RunScriptScene();
             result = 0;
             break;
-        case 6:
+        case GAME_STATE_SCRIPT_CHOICE:
             RunScriptChoiceState();
             result = 0;
             break;
-        case 7:
+        case GAME_STATE_DISMISS_MENU:
             RunDismissMenuState();
             result = 0;
             break;
-        case 8:
+        case GAME_STATE_TEXT_WINDOW:
             RunTextWindowState();
             result = 0;
             break;
-        case 9:
+        case GAME_STATE_SHOT:
             result = RunShotState();
             break;
-        case 10:
+        case GAME_STATE_ACTOR_SCENE:
             result = RunActorScene();
             break;
-        case 11:
+        case GAME_STATE_FIELD_ENCOUNTER:
             result = RunFieldEncounter();
             break;
-        case 12:
+        case GAME_STATE_CLOSING_EFFECT:
             result = RunClosingEffectState();
             break;
-        case 13:
+        case GAME_STATE_SCREEN_FADE:
             result = RunScreenFadeState();
             break;
-        case 14:
+        case GAME_STATE_ITEM_USE:
             result = RunItemUse();
             break;
-        case 15:
+        case GAME_STATE_SYSTEM_MENU:
             result = RunSystemMenu();
             break;
-        case 16:
+        case GAME_STATE_FIELD_EXPLORATION:
             result = RunFieldExploration();
             break;
-        case 18:
+        case GAME_STATE_CELL_SCENE:
             result = RunCellScene();
             break;
-        case 19:
+        case GAME_STATE_ITEM_BUY_MENU:
             result = RunItemBuyMenu();
             break;
-        case 21:
+        case GAME_STATE_FIELD_TEXT_SCENE:
             result = RunFieldTextScene();
             break;
-        case 22:
+        case GAME_STATE_WORLD_MAP:
             result = RunWorldMap();
             break;
-        case 23:
+        case GAME_STATE_BACKGROUND_SCENE:
             result = RunBackgroundScene();
             break;
-        case 24:
+        case GAME_STATE_BATTLE_ACTION:
             result = RunBattleAction();
             break;
-        case 25:
+        case GAME_STATE_STATUS:
             result = RunStatusScreen();
             break;
-        case 26:
+        case GAME_STATE_FIELD_SKILL_USE:
             result = RunFieldSkillUse();
             break;
-        case 27:
+        case GAME_STATE_LEVEL_UP:
             result = RunLevelUp();
             break;
-        case 28:
+        case GAME_STATE_ITEM_SELL_MENU:
             result = RunItemSellMenu();
             break;
-        case 29:
+        case GAME_STATE_FROZEN_FIELD_SCENE:
             result = RunFrozenFieldScene();
             break;
-        case 30:
+        case GAME_STATE_DDS_MENU:
             result = RunDdsMenu();
             break;
-        case 31:
+        case GAME_STATE_FUSION_MENU:
             result = RunFusionMenuState();
             break;
-        case 32:
+        case GAME_STATE_AUTOMAP:
             result = RunAutomapState();
             break;
-        case 33:
+        case GAME_STATE_MESSAGE_BOX:
             result = RunMessageBoxState();
             break;
-        case 34:
+        case GAME_STATE_FIELD:
             result = RunFieldState();
             break;
-        case 35:
+        case GAME_STATE_MESSAGE_SCENE_END:
             result = FinishMessageScene();
             break;
-        case 36:
+        case GAME_STATE_PARTY_REORDER:
             result = RunPartyReorder();
             break;
-        case 37:
+        case GAME_STATE_SCRIPT_ANIMATION:
             result = RunScriptAnimationState();
             break;
-        case 38:
+        case GAME_STATE_GEM_ITEM_GIFT:
             result = RunGemItemGift();
             break;
-        case 39:
+        case GAME_STATE_PICTURE_TRANSITION:
             result = RunPictureTransition();
             break;
-        case 40:
+        case GAME_STATE_REPLACE_ROSTER_MEMBER:
             result = ReplaceRosterMember();
             break;
     }
@@ -824,43 +842,43 @@ RVA(0x00017330, 0x178)
 b16 RunDdsMenu(void) {
     i16 result;
     switch (GetGamePhase()) {
-        case 0:
+        case MENU_STEP_OPEN:
             NextGamePhase();
             NextGamePhase();
-            RunPartyPicker(-1);
+            RunPartyPicker(PARTY_PICKER_COMMAND_CLOSE);
             s_ddsMenu = CreateMenuBox(s_ddsMenu, 25, 2);
             MoveMenuBox(s_ddsMenu, -8, -22);
             SetMenuItems(s_ddsMenu, 9, s_ddsCommands, 3, DdsMenuHandler);
             HideScreenLayer(SCREEN_LAYER_PANEL);
             break;
-        case 1:
+        case MENU_STEP_CLOSE:
             ReturnFromGameState();
             s_ddsMenu = DestroyMenuBox(s_ddsMenu);
             SetFieldPanelRowChecked(4, 0);
             RequestFieldRefresh();
             break;
-        case 2:
+        case MENU_STEP_RUN:
             result = RunMenu(s_ddsMenu);
-            if (result == -1) {
+            if (result == TEXT_EVENT_CANCEL) {
                 PrevGamePhase();
             }
             if (result > 0) {
-                SetGamePhase(g_selectedObjectId + 3);
+                SetGamePhase(g_selectedObjectId + MENU_STEP_PICK_FIRST);
                 s_ddsMenu = DestroyMenuBox(s_ddsMenu);
             }
             break;
-        case 3:
+        case MENU_STEP_PICK_FIRST + DDS_ROW_CALL:
             RunDdsSummon();
             break;
-        case 4:
+        case MENU_STEP_PICK_FIRST + DDS_ROW_RETURN:
             s_ddsRosterSlot = ReturnDdsMember();
             if (s_ddsRosterSlot) {
-                SetGamePhase(1);
+                SetGamePhase(MENU_STEP_CLOSE);
             }
             break;
-        case 5:
-            if (PickDdsPurgeMember() != -1) {
-                SetGamePhase(1);
+        case MENU_STEP_PICK_FIRST + DDS_ROW_PURGE:
+            if (PickDdsPurgeMember() != ROSTER_SLOT_NONE) {
+                SetGamePhase(MENU_STEP_CLOSE);
                 if (s_ddsRosterSlot >= 0) {
                     RemoveFromRoster(s_ddsRosterSlot);
                     PlaySoundEffect(0x36);
@@ -873,23 +891,23 @@ b16 RunDdsMenu(void) {
 
 RVA(0x000174b0, 0x70)
 b16 RunDdsSummon(void) {
-    i16 result;
+    GZ_ENUM_LOCAL(DdsActionResult, i16) result;
     switch (GetGameStep()) {
-        case 2:
-            SetGamePhase(1);
+        case DDS_SUMMON_STEP_CLOSE:
+            SetGamePhase(MENU_STEP_CLOSE);
             break;
-        case 1:
+        case DDS_SUMMON_STEP_PICK:
             result = PickDdsSummon();
             if (result) {
                 NextGameStep();
                 if (result > 0) {
-                    AddTrainingPoints(GetCharacters(), 3, 8);
+                    AddTrainingPoints(GetCharacters(), BATTLE_GROUP_DEMON_INTERACTION, 8);
                 }
             }
             break;
-        case 0:
+        case DDS_SUMMON_STEP_PREPARE:
             CloseMessageWindow();
-            SetCursorLevel0(&s_summonCursor, 0);
+            SetCursorLevel0(&s_summonCursor, DDS_SUMMON_CURSOR_PICK_ROSTER);
             NextGameStep();
             break;
     }
@@ -897,47 +915,47 @@ b16 RunDdsSummon(void) {
 }
 
 RVA(0x00017520, 0x1cc)
-i16 PickDdsSummon(void) {
+GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
     i16 step;
     i16 previous;
     Character* character;
     switch (GetCursorLevel0(&s_summonCursor)) {
-        case 0:
+        case DDS_SUMMON_CURSOR_PICK_ROSTER:
             step = PickDdsRosterMember(GetCursorLevel1(&s_summonCursor));
             SetCursorLevel1(&s_summonCursor, step);
             if (step < 0) {
                 if (s_ddsRosterSlot < 0) {
-                    return -1;
+                    return DDS_ACTION_CANCELLED;
                 }
                 NextCursorLevel0(&s_summonCursor);
             }
             break;
-        case 1:
-            if (!PollPartySlotSelection(1)) {
+        case DDS_SUMMON_CURSOR_PICK_PARTY_SLOT:
+            if (!PollPartySlotSelection(PARTY_SLOT_ANY)) {
                 break;
             }
             ClearPartySlotSelection();
             if (g_selectedObjectId < 0) {
                 PrevCursorLevel0(&s_summonCursor);
-                return 0;
+                return DDS_ACTION_PENDING;
             }
             character = GetPartyCharacter(g_selectedObjectId);
             if (character != NULL && IsHumanCharacter(character)) {
-                return -1;
+                return DDS_ACTION_CANCELLED;
             }
             s_ddsPartySlot = g_selectedObjectId;
             NextCursorLevel0(&s_summonCursor);
             break;
-        case 2:
+        case DDS_SUMMON_CURSOR_TRANSITION:
             NextCursorLevel0(&s_summonCursor);
             break;
-        case 3:
+        case DDS_SUMMON_CURSOR_EXCHANGE:
             NextCursorLevel0(&s_summonCursor);
             previous = ExchangePartySlot(s_ddsPartySlot, s_ddsRosterSlot);
             character = GetRosterCharacter(s_ddsRosterSlot);
             if (character != NULL) {
                 ClearActionWait(GetCharacterActionWait(character));
-                AddMagnetite(GetRosterCharacter(0), -GetSummonMagnetiteCost(character));
+                AddMagnetite(GetRosterCharacter(ROSTER_LEADER), -GetSummonMagnetiteCost(character));
                 ResetBattleTally(character);
             }
             character = GetRosterCharacter(previous);
@@ -948,24 +966,24 @@ i16 PickDdsSummon(void) {
             MarkPickDone();
             PlaySoundEffect(0x20);
             break;
-        case 4:
-            return 1;
+        case DDS_SUMMON_CURSOR_FINISHED:
+            return DDS_ACTION_COMPLETED;
     }
-    return 0;
+    return DDS_ACTION_PENDING;
 }
 
 RVA(0x000176f0, 0x4a)
 i16 PickDdsRosterMember(i16 step) {
     switch (step) {
-        case 2:
-            RunStatusListPicker(1);
-            return -1;
-        case 0:
-            SetStatusColumn(1);
+        case DDS_ROSTER_PICK_CLOSE:
+            RunStatusListPicker(true);
+            return DDS_ROSTER_PICK_CLOSED;
+        case DDS_ROSTER_PICK_OPEN:
+            SetStatusColumn(STATUS_LIST_SUMMONABLE);
             step++;
-        case 1:
-            s_ddsRosterSlot = RunStatusListPicker(0);
-            if (s_ddsRosterSlot != -1) {
+        case DDS_ROSTER_PICK_POLL:
+            s_ddsRosterSlot = RunStatusListPicker(false);
+            if (s_ddsRosterSlot != ROSTER_SLOT_NONE) {
                 step++;
             }
             break;
@@ -984,31 +1002,36 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
     items = menu->items.text;
     switch (event) {
         case MENU_EVENT_ADD_ROW:
-            attribute = 0x500;
+            attribute = TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
             disabled = MENU_LINE_DISABLED;
             switch (index) {
-                case 2:
-                    if (CountRosterEntries(0)) {
-                        attribute = 0x2450;
-                        disabled = 0;
+                case DDS_ROW_PURGE:
+                    if (CountRosterEntries(false)) {
+                        attribute = TEXT_ATTR_FLAG1
+                                    | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
+                        disabled = false;
                     }
                     break;
-                case 1:
-                    for (slot = 0; slot < 6; slot++) {
+                case DDS_ROW_RETURN:
+                    for (slot = 0; slot < PARTY_SIZE; slot++) {
                         character = GetPartyCharacter(slot);
                         if (character != NULL && !IsHumanCharacter(character)) {
-                            attribute = 0x2450;
-                            disabled = 0;
+                            attribute =
+                                TEXT_ATTR_FLAG1
+                                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
+                            disabled = false;
                         }
                     }
                     break;
-                case 0:
-                    for (slot = 0; slot < 32; slot++) {
+                case DDS_ROW_CALL:
+                    for (slot = 0; slot < ROSTER_SIZE; slot++) {
                         character = GetRosterCharacter(slot);
                         if (character != NULL && !IsHumanCharacter(character)
                             && !GetFatalCondition(GetCharacterConditions(character))) {
-                            attribute = 0x2450;
-                            disabled = 0;
+                            attribute =
+                                TEXT_ATTR_FLAG1
+                                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
+                            disabled = false;
                         }
                     }
                     break;
@@ -1017,7 +1040,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
             break;
         case MENU_EVENT_BEGIN_PAGE:
             sprintf(g_scratchBuffer, "<DDS>");
-            AddMenuLine(menu->plane, g_scratchBuffer, 0x400, -1, MENU_LINE_DISABLED);
+            AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_DESTROY:
             menu->items.text = NULL;
@@ -1027,62 +1050,62 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
 }
 
 RVA(0x00017870, 0x8a)
-i16 ReturnDdsMember(void) {
+GZ_ENUM_RETURN(DdsActionResult, i16) ReturnDdsMember(void) {
     Character* character;
     if (!PollPartySlotSelection(PARTY_SLOT_REQUIRE_OCCUPIED)) {
-        return 0;
+        return DDS_ACTION_PENDING;
     }
     ClearPartySlotSelection();
     if (g_selectedObjectId < 0) {
-        return -1;
+        return DDS_ACTION_CANCELLED;
     }
     character = GetPartyCharacter(g_selectedObjectId);
     if (character == NULL) {
-        return 0;
+        return DDS_ACTION_PENDING;
     }
     if (IsHumanCharacter(character)) {
-        return 0;
+        return DDS_ACTION_PENDING;
     }
     ClearBattleConditions(GetCharacterConditions(character));
     ResetBattleTally(character);
     MarkPickDone();
     ClearPartyPosition(g_selectedObjectId);
     PlaySoundEffect(0x55);
-    return 1;
+    return DDS_ACTION_COMPLETED;
 }
 
 RVA(0x00017900, 0x5f)
 i16 PickDdsPurgeMember(void) {
     switch (GetGameSub()) {
-        case 2:
-            s_ddsRosterSlot = RunStatusListPicker(0);
-            if (s_ddsRosterSlot != -1) {
+        case DDS_PURGE_PICK:
+            s_ddsRosterSlot = RunStatusListPicker(false);
+            if (s_ddsRosterSlot != ROSTER_SLOT_NONE) {
                 PrevGameSub();
             }
             break;
-        case 1:
-            RunStatusListPicker(1);
+        case DDS_PURGE_FINISH:
+            RunStatusListPicker(true);
             return s_ddsRosterSlot;
-        case 0:
+        case DDS_PURGE_PREPARE:
             NextGameSub();
             NextGameSub();
-            SetStatusColumn(2);
+            SetStatusColumn(STATUS_LIST_RESERVE_UNFLAGGED);
             break;
     }
-    return -1;
+    return ROSTER_SLOT_NONE;
 }
 
 RVA(0x00017960, 0x2a)
 u16 TimeUntilMoonPhase(i16 phase) {
     phase -= g_clock.moonPhase;
     if (phase <= 0) {
-        phase += 28;
+        phase += MOON_PHASE_COUNT;
     }
-    return phase * 1520 - g_clock.moonTicks;
+    return phase * MOON_PHASE_TICKS - g_clock.moonTicks;
 }
 
 RVA(0x00017990, 0x9)
-i16 GetMoonPhase(void) {
+GZ_ENUM_RETURN(MoonPhase, i16) GetMoonPhase(void) {
     return g_clock.moonPhase;
 }
 
@@ -1093,7 +1116,7 @@ u32 GetClockMinutes(void) {
 
 RVA(0x000179d0, 0x34)
 void LoadMoonTable(void) {
-    FILE* fp = OpenDataFile(3, DATA_FILE_TABLE, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_MOON, DATA_FILE_TABLE, 0);
     ReadRawBlock(fp, s_moonTableBuffer);
     s_moonTable = s_moonTableBuffer;
     CloseDataFile(fp);
@@ -1169,20 +1192,20 @@ void SceneNop(void) {}
 RVA(0x00017ba0, 0xf3)
 void RestoreBackground(void) {
     MapPosition position = g_party.field.pos;
-    if (position.area == 0x82) {
+    if (position.area == MAP_AREA_HATSUDAI) {
         if (position.x == 12 && position.y == 11 && position.level == 8) {
             s_sceneCell[9] = 0x31;
             s_sceneCell[10] = 2;
             s_sceneCell[11] = 2;
         }
-    } else if (position.area == 0x35) {
+    } else if (position.area == MAP_AREA_BAEL_CASTLE) {
         if (position.x == 4 && position.y == 3 && position.level == 7) {
             s_sceneCell[13] = 0x31;
             s_sceneCell[14] = 3;
             s_sceneCell[15] = 2;
         }
     }
-    if (!IsEventFlagSet(9, 0x7b)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_AREA, AREA_FIXED_BACKGROUND)) {
         s_sceneCell[9] = 0x31;
         s_sceneCell[10] = 4;
         s_sceneCell[11] = 4;
@@ -1291,7 +1314,7 @@ void DrawSceneFrame(i16 image, i16 slot, i16 frame, i16 x, i16 y, i16 mode) {
 RVA(0x00017ef0, 0x218)
 b16 RunCellScene(void) {
     switch (GetGamePhase()) {
-        case 0:
+        case CELL_SCENE_PREPARE:
             SetSceneRenderMode();
             UnplaceAllSprites();
             s_sceneScreenState = SaveScreenState();
@@ -1299,7 +1322,7 @@ b16 RunCellScene(void) {
             NextGamePhase();
             SaveVideoState(g_sceneVideoState);
             SetSubscreenActive(1);
-            g_fieldRedrawRequest = 1;
+            g_fieldRedrawRequest = true;
             ClearMaskView();
             ResetMask(1);
             s_scenePaletteState = SavePaletteState(s_scenePaletteState, 1);
@@ -1307,37 +1330,37 @@ b16 RunCellScene(void) {
             LoadSceneSprites();
             PlaceSceneSprites();
             ClearTextPlane(g_infoPlane);
-            LockStatusRedraw(1);
+            LockStatusRedraw(true);
             RedrawScreen(1, 0);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
             return true;
-        case 1:
+        case CELL_SCENE_RUN_SCRIPT:
             NextGamePhase();
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
             break;
-        case 2:
+        case CELL_SCENE_WAIT_INPUT:
             NextGamePhase();
-            PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
+            PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
             break;
-        case 3:
+        case CELL_SCENE_FADE_OUT:
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             break;
-        case 4:
+        case CELL_SCENE_RETURN_FIELD:
             s_sceneDirty = false;
             FreeSceneSprites();
             SceneNop();
-            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
+            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, true);
             RestoreVideoState(g_sceneVideoState);
             SetSubscreenActive(0);
             ReturnFromGameState();
             PlayLevelMusic();
-            LockStatusRedraw(0);
+            LockStatusRedraw(false);
             SetRebuildRoom(1);
             if (g_worldMapRequest < 0) {
-                SetGameState(16);
+                SetGameState(GAME_STATE_FIELD_EXPLORATION);
             } else if (g_worldMapRequest > 0) {
-                SetGameState(16);
+                SetGameState(GAME_STATE_FIELD_EXPLORATION);
             } else if (!s_sceneHold) {
                 RestoreSavedPoint();
             }
@@ -1406,30 +1429,30 @@ void SetSceneScriptByIndex(i16 scriptIndex, i16 entryIndex) {
 RVA(0x00018230, 0x10e)
 b16 RunFieldTextScene(void) {
     switch (GetGamePhase()) {
-        case 1:
+        case FIELD_TEXT_SCENE_RETURN_FIELD:
             s_sceneDirty = false;
             FreeSceneSprites();
             ReturnFromGameState();
-            LockStatusRedraw(0);
+            LockStatusRedraw(false);
             RefreshStatusPanel(1);
             RepaintTextPlane(g_infoPlane, 3);
-            g_fieldRedrawRequest = 1;
+            g_fieldRedrawRequest = true;
             if (g_worldMapRequest < 0) {
-                SetGameState(16);
-                SetGamePhase(8);
+                SetGameState(GAME_STATE_FIELD_EXPLORATION);
+                SetGamePhase(FIELD_PHASE_FADE_TO_RETURN_POINT);
             } else if (g_worldMapRequest > 0) {
-                SetGameState(16);
+                SetGameState(GAME_STATE_FIELD_EXPLORATION);
             }
             s_sceneHold = 0;
             RestoreScreenState(s_sceneScreenState);
             RedrawFieldView();
             break;
-        case 0:
+        case FIELD_TEXT_SCENE_START:
             s_sceneScreenState = SaveScreenState();
             NextGamePhase();
             PrepareFieldRedraw(1);
             ClearTextPlane(g_infoPlane);
-            LockStatusRedraw(1);
+            LockStatusRedraw(true);
             RepaintTextPlane(g_infoPlane, 3);
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
             break;
@@ -1440,64 +1463,64 @@ b16 RunFieldTextScene(void) {
 RVA(0x00018340, 0x157)
 b16 RunFrozenFieldScene(void) {
     switch (GetGamePhase()) {
-        case 1:
+        case FROZEN_FIELD_SCENE_RETURN_FIELD:
             s_sceneDirty = false;
             FreeSceneSprites();
             ReturnFromGameState();
             ExchangeObjectsFrozen(s_sceneObjectsFrozen);
-            LockStatusRedraw(0);
-            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
+            LockStatusRedraw(false);
+            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, true);
             RefreshStatusPanel(1);
-            g_fieldRedrawRequest = 1;
+            g_fieldRedrawRequest = true;
             if (g_worldMapRequest < 0 || g_worldMapRequest > 0) {
-                SetGameState(16);
+                SetGameState(GAME_STATE_FIELD_EXPLORATION);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             }
             s_sceneHold = 0;
             RestoreScreenState(s_sceneScreenState);
             RedrawFieldView();
             break;
-        case 0:
-            s_sceneObjectsFrozen = ExchangeObjectsFrozen(1);
+        case FROZEN_FIELD_SCENE_START:
+            s_sceneObjectsFrozen = ExchangeObjectsFrozen(true);
             s_sceneScreenState = SaveScreenState();
             NextGamePhase();
             s_scenePaletteState = SavePaletteState(s_scenePaletteState, 3);
             PrepareFieldRedraw(1);
             ClearTextPlane(g_infoPlane);
-            LockStatusRedraw(1);
+            LockStatusRedraw(true);
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
-            g_fieldRedrawRequest = 1;
+            g_fieldRedrawRequest = true;
             RedrawFieldView();
             break;
     }
-    return UpdateFieldScreen(0);
+    return UpdateFieldScreen(false);
 }
 
 // @identity-TODO: the role of the fixed scene script is unrecovered.
 RVA(0x000184a0, 0xe8)
 b16 RunPictureTransition(void) {
     switch (GetGamePhase()) {
-        case 0:
+        case PICTURE_TRANSITION_FADE_OUT:
             NextGamePhase();
-            LockStatusRedraw(1);
+            LockStatusRedraw(true);
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             break;
-        case 1:
+        case PICTURE_TRANSITION_SHOW_PICTURE:
             NextGamePhase();
             StartScreenFade(SCREEN_FADE_FROM_BLACK, 1);
             ShowScenePicture();
             PushWaitState(WAIT_FADE, 0, 0, -1);
             break;
-        case 2:
+        case PICTURE_TRANSITION_RUN_SCRIPT:
             NextGamePhase();
             StartDebugScene(0x2d, 0, 0);
             break;
-        case 3:
+        case PICTURE_TRANSITION_RETURN_FIELD:
             s_sceneDirty = false;
             FreeSceneSprites();
-            LockStatusRedraw(0);
-            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
-            SetGameState(16);
+            LockStatusRedraw(false);
+            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, true);
+            SetGameState(GAME_STATE_FIELD_EXPLORATION);
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             s_sceneHold = 0;
             break;
@@ -1508,42 +1531,42 @@ b16 RunPictureTransition(void) {
 RVA(0x00018590, 0x19c)
 b16 RunBackgroundScene(void) {
     switch (GetGamePhase()) {
-        case 0:
+        case BACKGROUND_SCENE_PREPARE:
             ClearSceneSurfaces();
             s_sceneScreenState = SaveScreenState();
             NextGamePhase();
             SaveVideoState(g_sceneVideoState);
-            g_fieldRedrawRequest = 1;
+            g_fieldRedrawRequest = true;
             ClearMaskView();
             ResetMask(1);
             s_scenePaletteState = SavePaletteState(s_scenePaletteState, 1);
             RestoreBackground();
-            LockStatusRedraw(1);
+            LockStatusRedraw(true);
             ClearTextPlane(g_infoPlane);
             SetInfoBarLayout(0);
             RedrawScreen(0, 1);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
             return true;
-        case 1:
+        case BACKGROUND_SCENE_RUN_SCRIPT:
             NextGamePhase();
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
             break;
-        case 2:
+        case BACKGROUND_SCENE_WAIT_INPUT:
             NextGamePhase();
-            PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
+            PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
             break;
-        case 3:
+        case BACKGROUND_SCENE_FADE_OUT:
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             break;
-        case 4:
+        case BACKGROUND_SCENE_RESTORE:
             s_sceneDirty = false;
             FreeSceneSprites();
             SceneNop();
-            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, 1);
+            s_scenePaletteState = RestorePaletteState(s_scenePaletteState, true);
             RestoreVideoState(g_sceneVideoState);
             ReturnFromGameState();
-            LockStatusRedraw(0);
+            LockStatusRedraw(false);
             s_sceneHold = 0;
             RestoreScreenState(s_sceneScreenState);
             break;
@@ -1560,15 +1583,15 @@ void LevelUpNop(void) {}
 // The reward screen's click: 2 for the right button, 0 for a left click in
 // the OK box, -1 otherwise.
 RVA(0x00018740, 0x3e)
-i16 PollRewardClick(i16 inputA, i16 inputB, i16 inputC, i16* x, i16* y) {
+GZ_ENUM_RETURN(RewardClickResult, i16) PollRewardClick(i16 inputA, i16 inputB, i16 inputC, i16* x, i16* y) {
     if (g_mousePosition.buttons & MOUSE_RIGHT_DOWN) {
-        return 2;
+        return REWARD_CLICK_RIGHT_BUTTON;
     }
     if ((g_mousePosition.buttons & MOUSE_LEFT_DOWN) && g_mousePosition.x >= 0xea
         && g_mousePosition.x <= 0x192 && g_mousePosition.y >= 0xc0 && g_mousePosition.y <= 0xf6) {
-        return 0;
+        return REWARD_CLICK_CONFIRM;
     }
-    return -1;
+    return REWARD_CLICK_NONE;
 }
 
 // The experience at which `level` begins: 4(n^3)+6 for a human (id below
@@ -1618,7 +1641,7 @@ i32 ShareExperience(i32 amount) {
     i32 share = amount * 2 / count;
     i32 reached = 0;
     i16 i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         reached += AddExperience(GetPartyCharacter(i), share) >= 0;
     }
     return reached;
@@ -1647,7 +1670,7 @@ RVA(0x00018910, 0x27)
 i16 CountPartyPendingLevels(void) {
     i16 total = 0;
     i16 i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         total += CountPendingLevels(GetPartySlot(i));
     }
     return total;
@@ -1657,7 +1680,7 @@ i16 CountPartyPendingLevels(void) {
 RVA(0x00018940, 0x32)
 i16 FindLevelUpSlot(void) {
     i16 i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         if (CountPendingLevels(GetPartySlot(i)) > 0) {
             return GetPartySlot(i);
         }
@@ -1692,7 +1715,7 @@ RVA(0x00018a00, 0x2b)
 i16 CountRaisableStats(Character* character) {
     i16 count = 0;
     i16 i;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < STAT_FORTUNE; i++) {
         count += !IsStatCapped(character, i);
     }
     return count;
@@ -1729,12 +1752,12 @@ RVA(0x00018ad0, 0x76)
 i16 GrantBattleRewards(void) {
     Character* leader;
     if (s_rewardsPending) {
-        leader = GetRosterCharacter(0);
+        leader = GetRosterCharacter(ROSTER_LEADER);
         AddMacca(leader, g_rewardMacca);
         g_rewardMacca = 0;
         AddMagnetite(leader, g_rewardMagnetite);
         g_rewardMagnetite = 0;
-        DrawInfoBar(0, 0);
+        DrawInfoBar(0, false);
         ShareExperience(g_rewardExperience);
         g_rewardExperience = 0;
         s_rewardsPending = false;
@@ -1756,13 +1779,13 @@ static __inline void FinishLevelGain(Character* character) {
 static __inline void ApplyPickedStatGain(Character* member) {
     member->stats.base[s_raisedStat]++;
     SaveGameState();
-    SetGamePhase(6);
+    SetGamePhase(LEVEL_UP_PHASE_REDRAW_STAT);
 }
 
 static __inline void ShowRaisedStat(Character* member, i16 highlighted) {
     FullyRestoreCharacter(member);
     DrawStatLine(member, s_raisedStat, highlighted, s_statWindow);
-    PushWaitState(WAIT_FRAMES, 0xffff, 10, 0);
+    PushWaitState(WAIT_FRAMES, WAIT_ON_ANY_INPUT, 10, 0);
 }
 
 // Runs one frame of the level-up screen, by phase: 0 opens it, 2 picks the
@@ -1772,29 +1795,29 @@ static __inline void ShowRaisedStat(Character* member, i16 highlighted) {
 RVA(0x00018b60, 0x780)
 b16 RunLevelUp(void) {
     Character* member;
-    i16 key;
+    GZ_ENUM_LOCAL(TextEvent, i16) key;
     i16 skill;
 
     SetStatusRenderMode();
     switch (GetGamePhase()) {
-        case 0:
-            s_savedMusic = PlayMusic(0x17, 1);
+        case LEVEL_UP_PHASE_OPEN:
+            s_savedMusic = PlayMusic(0x17, true);
             CloseMessageWindow();
-            SetGamePhase(2);
+            SetGamePhase(LEVEL_UP_PHASE_PICK_MEMBER);
             AllocScreenSave(s_screenSave);
             CaptureScreenSaveWithState(s_screenSave);
             return false;
-        case 1:
+        case LEVEL_UP_PHASE_CLOSE:
             switch (GetGameStep()) {
-                case 0:
+                case LEVEL_UP_CLOSE_FADE:
                     NextGameStep();
                     s_pointPrompt = CloseTextWindow(s_pointPrompt);
                     PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
-                    PushWaitState(WAIT_INPUT, 0xffff, 0xffff, 0);
+                    PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
                     s_statWindow = CloseTextWindow(s_statWindow);
                     DrawStatusVitals(s_levelUpSlot);
                     return false;
-                case 1:
+                case LEVEL_UP_CLOSE_RESTORE:
                     ReturnFromGameState();
                     g_rewardExperience = 0;
                     RequestFieldRefresh();
@@ -1803,36 +1826,36 @@ b16 RunLevelUp(void) {
                     ClearStatusPicture();
                     RestoreScreenSave(s_screenSave);
                     FreeScreenSave(s_screenSave);
-                    PlayMusic(s_savedMusic, 1);
+                    PlayMusic(s_savedMusic, true);
                     return false;
             }
             break;
-        case 2:
+        case LEVEL_UP_PHASE_PICK_MEMBER:
             CloseMessageWindow();
             EnterStatusScreen(0);
             member = GetRosterCharacter(s_levelUpSlot = FindLevelUpSlot());
             ClearConditionList(GetCharacterConditions(member), s_levelUpCures);
             DrawStatusScreen(s_levelUpSlot);
             s_statWindow = OpenStatListWindow(member);
-            SetGamePhase(1);
+            SetGamePhase(LEVEL_UP_PHASE_CLOSE);
             SaveGameState();
-            SetGamePhase(4);
+            SetGamePhase(LEVEL_UP_PHASE_DISTRIBUTE);
             if (!IsHumanCharacter(member)) {
                 NextGamePhase();
             }
             FadeScreenAndWait(SCREEN_FADE_FROM_BLACK, 1);
             return false;
-        case 3:
+        case LEVEL_UP_PHASE_SKIP:
             NextGamePhase();
             return false;
-        case 4:
+        case LEVEL_UP_PHASE_DISTRIBUTE:
             member = GetRosterCharacter(s_levelUpSlot);
             switch (GetGameStep()) {
-                case 0:
+                case LEVEL_UP_HUMAN_COUNT_LEVELS:
                     NextGameStep();
                     s_remaining = CountPendingLevels(s_levelUpSlot);
                     return false;
-                case 1:
+                case LEVEL_UP_HUMAN_PICK_GROWTH:
                     NextGameStep();
                     if (s_remaining == 0 || !CountRaisableStats(member)) {
                         NextGameStep();
@@ -1842,7 +1865,7 @@ b16 RunLevelUp(void) {
                     DropTopStatPicks(member, s_statPicks);
                     s_remaining--;
                     return false;
-                case 2:
+                case LEVEL_UP_HUMAN_APPLY_GROWTH:
                     if (GetGameSub() >= 3) {
                         PrevGameStep();
                         return false;
@@ -1855,7 +1878,7 @@ b16 RunLevelUp(void) {
                     }
                     ApplyPickedStatGain(member);
                     return false;
-                case 3:
+                case LEVEL_UP_HUMAN_OPEN_POINT_PICKER:
                     NextGameStep();
                     ResetTextPlaneMenu(s_statWindow, 0, 0);
                     SetTextPlaneHighlightMode(s_statWindow, TEXT_HIGHLIGHT_OUTER);
@@ -1867,19 +1890,20 @@ b16 RunLevelUp(void) {
                     }
                     ShowStatPointPrompt(s_remaining);
                     return false;
-                case 4:
+                case LEVEL_UP_HUMAN_DISTRIBUTE_POINTS:
                     key = PollMenuInput(s_statWindow);
-                    if (key == 0) {
+                    if (key == TEXT_EVENT_NONE) {
                         break;
                     }
-                    if (key == 1 && !IsStatCapped(member, g_selectedObjectId)) {
+                    if (key == TEXT_EVENT_CHOOSE && !IsStatCapped(member, g_selectedObjectId)) {
                         s_statPicks[g_selectedObjectId]++;
                         member->stats.base[g_selectedObjectId]++;
                         s_remaining--;
                         if (s_pointPrompt != -1) {
                             ShowStatPointPrompt(s_remaining);
                         }
-                    } else if (key == 2 && s_statPicks[g_selectedObjectId] > 0) {
+                    } else if (key == TEXT_EVENT_CHOOSE_RIGHT
+                               && s_statPicks[g_selectedObjectId] > 0) {
                         s_statPicks[g_selectedObjectId]--;
                         member->stats.base[g_selectedObjectId]--;
                         s_remaining++;
@@ -1895,9 +1919,9 @@ b16 RunLevelUp(void) {
                     ClearTextPlaneHighlight(s_statWindow);
                     s_raisedStat = g_selectedObjectId;
                     SaveGameState();
-                    SetGamePhase(6);
+                    SetGamePhase(LEVEL_UP_PHASE_REDRAW_STAT);
                     return false;
-                case 5:
+                case LEVEL_UP_HUMAN_FINISH_LEVELS:
                     while (CountPendingLevels(s_levelUpSlot)) {
                         member->level++;
                         FinishLevelGain(member);
@@ -1912,7 +1936,7 @@ b16 RunLevelUp(void) {
                         return false;
                     }
                     break;
-                case 6:
+                case LEVEL_UP_HUMAN_LEARN_SKILL:
                     skill = TakeLearnableSkill(member, s_learnableSkills);
                     if (skill == -1) {
                         ReturnFromGameState();
@@ -1928,17 +1952,17 @@ b16 RunLevelUp(void) {
                     return false;
             }
             break;
-        case 5:
+        case LEVEL_UP_PHASE_DISTRIBUTE_DEMON:
             member = GetRosterCharacter(s_levelUpSlot);
             switch (GetGameStep()) {
-                case 0:
+                case LEVEL_UP_DEMON_CHECK_PENDING:
                     if (!CountPendingLevels(s_levelUpSlot)) {
                         ReturnFromGameState();
                         return false;
                     }
                     NextGameStep();
                     return false;
-                case 1:
+                case LEVEL_UP_DEMON_APPLY_GROWTH:
                     if (GetGameSub() >= 4) {
                         NextGameStep();
                         return false;
@@ -1951,8 +1975,8 @@ b16 RunLevelUp(void) {
                     }
                     ApplyPickedStatGain(member);
                     return false;
-                case 2:
-                    SetGameStep(0);
+                case LEVEL_UP_DEMON_FINISH_LEVEL:
+                    SetGameStep(LEVEL_UP_DEMON_CHECK_PENDING);
                     member->levelBonus += 2;
                     member->level++;
                     FinishLevelGain(member);
@@ -1970,18 +1994,18 @@ b16 RunLevelUp(void) {
                     break;
             }
             break;
-        case 6:
+        case LEVEL_UP_PHASE_REDRAW_STAT:
             member = GetRosterCharacter(s_levelUpSlot);
             switch (GetGameStep()) {
-                case 0:
+                case LEVEL_UP_REDRAW_RAISED:
                     NextGameStep();
                     ShowRaisedStat(member, 1);
                     break;
-                case 1:
+                case LEVEL_UP_REDRAW_NORMAL:
                     NextGameStep();
                     ShowRaisedStat(member, 0);
                     break;
-                case 2:
+                case LEVEL_UP_REDRAW_RETURN:
                     ReturnFromGameState();
                     return false;
             }
@@ -2001,12 +2025,12 @@ void ShowStatPointPrompt(i16 points) {
         "\203|"
         "\203C\203\223\203g\202\360\220U\202\350\225\252\202\257\202\304\202\255\202\276\202\263"
         "\202\242\n",
-        0x400,
+        TEXT_ATTR_DEFAULT,
         0,
-        1
+        true
     );
     sprintf(g_scratchBuffer, "\214\343 %.1d \203|\203C\203\223\203g  \n", points);
-    PrintWindowText(s_pointPrompt, g_scratchBuffer, 0x400, 0, 1);
+    PrintWindowText(s_pointPrompt, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
     RepaintTextPlane(s_pointPrompt, -2);
 }
 
@@ -2020,9 +2044,9 @@ i16 RollWeightedStat(Character* character) {
         return -1;
     }
     draw = rand() * 10000 / RAND_MAX;
-    for (stat = 0; stat < 10 && s_statPicks[stat] < draw; stat++) {
+    for (stat = 0; stat < STAT_FORTUNE && s_statPicks[stat] < draw; stat++) {
     }
-    if (stat >= 10) {
+    if (stat >= STAT_FORTUNE) {
         return -1;
     }
     return stat;
@@ -2068,7 +2092,7 @@ i16 CollectLearnableSkills(Character* character, i16 source) {
     i16 count;
     if (source == -1) {
         count = AppendLearnableSkills(character, 0, 0);
-        if (character->id != 0) {
+        if (character->id != HUMAN_KATSURAGI) {
             return count;
         }
         count = AppendLearnableSkills(character, count, 1);
@@ -2210,16 +2234,16 @@ b16 RunWorldMap(void) {
 
     SetPanelRenderMode();
     switch (GetGamePhase()) {
-        case 0:
+        case WORLD_MAP_PHASE_LOAD:
             ClearSceneSurfaces();
             NextGamePhase();
             s_traveling = false;
-            g_party.field.pos.area = 0xff;
+            g_party.field.pos.area = MAP_AREA_WORLD_MAP;
             g_party.field.pos.level = 0;
             g_party.field.pos.x = 3;
             g_party.field.pos.y = 3;
-            g_party.field.pos.direction = 0;
-            LoadAreaMap(0xff, 0);
+            g_party.field.pos.direction = VIEW_NORTH;
+            LoadAreaMap(MAP_AREA_WORLD_MAP, 0);
             SetModeFlags(MODE_WORLD_MAP);
             if (g_worldMapRequest > 0) {
                 g_worldMapX = s_savedSpotX;
@@ -2231,14 +2255,14 @@ b16 RunWorldMap(void) {
             LoadWorldMapEvents();
             LoadEncounterTables();
             g_worldMapRequest = 0;
-            SetFieldMenuMode(2);
-        case 1:
+            SetFieldMenuMode(FIELD_MENU_NO_FIGHT_TALK_MAPPING);
+        case WORLD_MAP_PHASE_SAVE_VIDEO:
             NextGamePhase();
             SaveVideoState(s_videoState);
-        case 2:
+        case WORLD_MAP_PHASE_ENTER:
             SetWorldMapActive(1);
             if (g_worldMapRequest < 0) {
-                SetGamePhase(8);
+                SetGamePhase(WORLD_MAP_PHASE_CLOSE);
                 return false;
             }
             if (g_worldMapRequest > 0) {
@@ -2248,38 +2272,38 @@ b16 RunWorldMap(void) {
                 g_worldMapRequest = 0;
             }
             NextGamePhase();
-            PlayMusic(0, 1);
+            PlayMusic(0, true);
             ClearMaskView();
             ResetMask(1);
-            SetFieldStatusBit11(1);
+            SetFieldStatusBit11(true);
             ClearTextPlane(g_infoPlane);
             SetInfoBarLayout(0);
             RedrawScreen(0, 1);
-            FlushStatusRedraw(1);
+            FlushStatusRedraw(true);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
             return true;
-        case 3:
+        case WORLD_MAP_PHASE_LOAD_BLOCKS:
             NextGamePhase();
             LoadWorldMapBlocks(GetWorldMapBlock(g_worldMapX, g_worldMapY));
             return false;
-        case 4:
+        case WORLD_MAP_PHASE_SCROLL_VIEW:
             NextGamePhase();
             origin = GetWorldMapViewOrigin(g_worldMapX, g_worldMapY);
             ScrollWorldMapView(origin.x, origin.y);
-            FlushStatusRedraw(1);
+            FlushStatusRedraw(true);
             RefreshInfoBar(1);
             ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 1);
             DiscardWorldMapScreenSave();
             return false;
-        case 5:
+        case WORLD_MAP_PHASE_WAIT_DESTINATION:
             AllowImmediateInput();
             if (g_worldMapRequest < 0) {
-                SetGamePhase(7);
+                SetGamePhase(WORLD_MAP_PHASE_FADE_OUT);
                 return false;
             }
             if (g_fieldRedrawRequest) {
-                g_fieldRedrawRequest = 0;
-                SetGamePhase(2);
+                g_fieldRedrawRequest = false;
+                SetGamePhase(WORLD_MAP_PHASE_ENTER);
                 return false;
             }
             if (FindAbleHumanMember() == -1) {
@@ -2291,12 +2315,12 @@ b16 RunWorldMap(void) {
             if (ProcessPartyCasualties()) {
                 RequestStatusRedraw();
             }
-            FlushStatusRedraw(0);
+            FlushStatusRedraw(false);
             s_idleFlag = 0;
             if (s_traveling) {
                 NextGamePhase();
                 if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
-                    DrawInfoBar(1, 1);
+                    DrawInfoBar(1, true);
                 }
                 ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
                 return false;
@@ -2305,18 +2329,18 @@ b16 RunWorldMap(void) {
                 s_traveling = true;
                 NextGamePhase();
                 if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
-                    DrawInfoBar(1, 1);
+                    DrawInfoBar(1, true);
                 }
                 ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
                 return false;
             }
             if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
-                DrawInfoBar(1, 1);
+                DrawInfoBar(1, true);
             }
             ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
             FireCountdownEvent();
             return false;
-        case 6:
+        case WORLD_MAP_PHASE_TRAVEL:
             AllowImmediateInput();
             steps = StepWorldMapTravel(s_mapLayer, 2);
             if (steps == 0) {
@@ -2331,7 +2355,7 @@ b16 RunWorldMap(void) {
             if (ProcessPartyCasualties()) {
                 RequestStatusRedraw();
             }
-            FlushStatusRedraw(0);
+            FlushStatusRedraw(false);
             RefreshInfoBar(0);
             ShowWorldMapPlaceName(g_worldMapX, g_worldMapY, 0);
             if (FindAbleHumanMember() == -1) {
@@ -2341,9 +2365,9 @@ b16 RunWorldMap(void) {
             }
             if (CheckWorldMapEvent(g_worldMapX, g_worldMapY)) {
                 CloseMessageWindow();
-                SetGamePhase(9);
+                SetGamePhase(WORLD_MAP_PHASE_LEAVE_FOR_STATE);
                 s_traveling = false;
-                SetGameStep(0x17);
+                SetGameStep(GAME_STATE_BACKGROUND_SCENE);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
                 return false;
             }
@@ -2351,18 +2375,18 @@ b16 RunWorldMap(void) {
                 CloseMessageWindow();
                 g_party.field.pos.x = 3;
                 g_party.field.pos.y = 3;
-                g_party.field.pos.direction = 0;
-                SetGamePhase(9);
-                SetGameStep(0x22);
+                g_party.field.pos.direction = VIEW_NORTH;
+                SetGamePhase(WORLD_MAP_PHASE_LEAVE_FOR_STATE);
+                SetGameStep(GAME_STATE_FIELD);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
                 return false;
             }
             break;
-        case 7:
+        case WORLD_MAP_PHASE_FADE_OUT:
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             return false;
-        case 8:
+        case WORLD_MAP_PHASE_CLOSE:
             SetWorldMapActive(0);
             FreeWorldMapScreenSave();
             ResetWorldMapBlocks(1);
@@ -2371,12 +2395,12 @@ b16 RunWorldMap(void) {
             FreeFieldImageCache();
             RestoreVideoState(s_videoState);
             SetSubscreenActive(0);
-            SetGameState(0x10);
+            SetGameState(GAME_STATE_FIELD_EXPLORATION);
             ClearModeFlags(MODE_WORLD_MAP);
-            SetFieldMenuMode(0);
+            SetFieldMenuMode(FIELD_MENU_ALL);
             RecordWarpInLeader();
             return false;
-        case 9:
+        case WORLD_MAP_PHASE_LEAVE_FOR_STATE:
             ClearLayerSurface(SCREEN_LAYER_AUTOMAP);
             CancelLayerDrag();
             state = GetGameStep();
@@ -2386,10 +2410,10 @@ b16 RunWorldMap(void) {
             ResetWorldMapBlocks(1);
             PushGameState(state);
             return false;
-        case 10:
+        case WORLD_MAP_PHASE_REENTER:
             LoadWorldMapEvents();
             LoadEncounterTables();
-            SetGamePhase(2);
+            SetGamePhase(WORLD_MAP_PHASE_ENTER);
             ClearSceneSurfaces();
             ClearSelectedHotspot();
             break;
@@ -2426,7 +2450,7 @@ i16 RunPickerMenu(MenuBox* menu) {
 
 RVA(0x00019e80, 0x17)
 MenuBox* ClosePickerMenu(MenuBox* menu) {
-    s_partyPickerMode = 0;
+    s_partyPickerMode = PARTY_PICKER_ALL;
     return DestroyMenuBox(menu);
 }
 
@@ -2434,34 +2458,34 @@ RVA(0x00019ea0, 0x9e)
 i16 RunPartyPicker(i16 command) {
     PartyMemberList* entries;
     i16 result;
-    if (command != 0) {
+    if (command != PARTY_PICKER_COMMAND_CONTINUE) {
         s_partyPicker = ClosePickerMenu(s_partyPicker);
     }
-    if (command >= 0) {
+    if (command >= PARTY_PICKER_COMMAND_CONTINUE) {
         if (!s_partyPicker) {
             if (!CountPickablePartyMembers()) {
-                return -2;
+                return PARTY_PICKER_RESULT_CANCELLED;
             }
-            entries = ListPickableMembers(NULL, 6, 1);
+            entries = ListPickableMembers(NULL, PARTY_SIZE, true);
             if (!entries->count) {
                 FreeBlock(entries);
-                return -2;
+                return PARTY_PICKER_RESULT_CANCELLED;
             }
             s_partyPicker = OpenPartyPicker(entries);
         }
         result = RunPickerMenu(s_partyPicker);
-        if (result != -1 && result != -2) {
+        if (result != PARTY_PICKER_RESULT_NONE && result != PARTY_PICKER_RESULT_CANCELLED) {
             s_partyPicker = ClosePickerMenu(s_partyPicker);
             return g_selectedObjectId;
         }
     }
-    return -1;
+    return PARTY_PICKER_RESULT_NONE;
 }
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00019f40, 0xc)
-void SetPartyPickerMode(i16 mode) {
+void SetPartyPickerMode(GZ_ENUM_PARAM(PartyPickerMode, i16) mode) {
     s_partyPickerMode = mode;
 }
 
@@ -2469,8 +2493,8 @@ RVA(0x00019f50, 0x52)
 MenuBox* OpenPartyPicker(PartyMemberList* entries) {
     MenuBox* menu = CreateMenuBox(NULL, 5, 2);
     SetMenuItems(menu, 7, entries, entries->count, PartyPickerHandler);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 1);
-    if (!s_partyPickerMode) {
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, true);
+    if (s_partyPickerMode == PARTY_PICKER_ALL) {
         menu->list->flags |= 2;
     }
     menu->flags |= 0x1e;
@@ -2484,28 +2508,35 @@ void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) 
     i16 enabled;
     switch (event) {
         case MENU_EVENT_ADD_ROW:
-            enabled = 1;
+            enabled = true;
             character = GetCharacterById(entries->ids[index]);
             switch (s_partyPickerMode) {
-                case 0:
+                case PARTY_PICKER_ALL:
                     break;
-                case 1:
-                    enabled = CountUsableMemberSkills(character, 1);
+                case PARTY_PICKER_USABLE_SKILLS:
+                    enabled = CountUsableMemberSkills(character, true);
                     break;
-                case 2:
+                case PARTY_PICKER_HUMANS:
                     if (!IsHumanCharacter(character)) {
-                        enabled = 0;
+                        enabled = false;
                     }
                     break;
             }
             FormatFullName(g_scratchBuffer, character);
             if (enabled) {
-                AddMenuLine(menu->plane, g_scratchBuffer, 0x2460, entries->ids[index], 0);
+                AddMenuLine(
+                    menu->plane,
+                    g_scratchBuffer,
+                    TEXT_ATTR_FLAG1
+                        | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_GREEN, TEXT_COLOR_BLACK),
+                    entries->ids[index],
+                    MENU_LINE_NORMAL
+                );
             } else {
                 AddMenuLine(
                     menu->plane,
                     g_scratchBuffer,
-                    0x2500,
+                    TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
                     entries->ids[index],
                     MENU_LINE_DISABLED
                 );
@@ -2519,7 +2550,7 @@ void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) 
 }
 
 RVA(0x0001a090, 0x3b)
-void SetCellMark(i16 area, i16 level, i16 x, i16 y, i16 direction) {
+void SetCellMark(i16 area, i16 level, i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     s_markedArea = area;
     s_markedLevel = level;
     s_markedX = x;
@@ -2539,15 +2570,15 @@ void SaveFieldPosition(void) {
 }
 
 RVA(0x0001a110, 0x67)
-i16 IsOnCellMark(i16 checkDirection) {
+GZ_ENUM_RETURN(CellMarkMatch, i16) IsOnCellMark(i16 checkDirection) {
     if (g_party.field.pos.x == s_markedX && g_party.field.pos.y == s_markedY
         && g_party.field.pos.area == s_markedArea && g_party.field.pos.level == s_markedLevel) {
         if (checkDirection && g_party.field.pos.direction != s_markedDirection) {
-            return 1;
+            return CELL_MARK_FACING_DIFFERS;
         }
-        return 0;
+        return CELL_MARK_MATCH;
     }
-    return -1;
+    return CELL_MARK_OFF_CELL;
 }
 
 RVA(0x0001a180, 0x7)
@@ -2593,7 +2624,15 @@ MenuBox* OpenItemListMenu(void) {
 #define ItemUseInvokesSkill(kind) ((kind) == ITEM_KIND_WEAPON || (kind) == ITEM_KIND_ACCESSORY)
 
 static __inline void AddItemUseMenuLine(MenuBox* menu, i16 item, i16 disabled) {
-    AddMenuLine(menu->plane, g_scratchBuffer, disabled ? 0x2500 : 0x2470, item, disabled);
+    AddMenuLine(
+        menu->plane,
+        g_scratchBuffer,
+        disabled
+            ? TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+            : TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_YELLOW, TEXT_COLOR_BLACK),
+        item,
+        disabled
+    );
 }
 
 RVA(0x0001a240, 0x1bc)
@@ -2608,10 +2647,10 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
                 GetLoadedRecordName(GetItemStackItem(GetItemListEntry(entries, index))),
                 GetItemStackCount(GetItemListEntry(entries, index))
             );
-            if ((GetItemStackItem(GetItemListEntry(entries, index)) == 0x21
-                 && IsEventFlagSet(7, 0xff))
-                || (GetItemStackItem(GetItemListEntry(entries, index)) == 0x24
-                    && IsEventFlagSet(7, 0xfe))) {
+            if ((GetItemStackItem(GetItemListEntry(entries, index)) == ITEM_KUSHINADA_JAR
+                 && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_KUSHINADA_JAR_USED))
+                || (GetItemStackItem(GetItemListEntry(entries, index)) == ITEM_SOMA_CUP
+                    && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_SOMA_CUP_USED))) {
                 AddItemUseMenuLine(
                     menu,
                     GetItemStackItem(GetItemListEntry(entries, index)),
@@ -2624,7 +2663,7 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
             if (ItemUseInvokesSkill(record->kind)) {
                 event = GetSkillUseModes(GetSkillView(GetItemSkillId(record)));
             }
-            if (CheckSkillArea(GetItemSkillId(record)) != 1) {
+            if (CheckSkillArea(GetItemSkillId(record)) != SKILL_AREA_ALLOWED) {
                 AddItemUseMenuLine(
                     menu,
                     GetItemStackItem(GetItemListEntry(entries, index)),
@@ -2643,7 +2682,13 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
             AddItemUseMenuLine(menu, GetItemStackItem(GetItemListEntry(entries, index)), 0);
             return;
         case MENU_EVENT_BEGIN_PAGE:
-            AddMenuLine(menu->plane, "<\203A\203C\203e\203\200>", 0x2450, 0, MENU_LINE_DISABLED);
+            AddMenuLine(
+                menu->plane,
+                "<\203A\203C\203e\203\200>",
+                TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                0,
+                MENU_LINE_DISABLED
+            );
             return;
         case MENU_EVENT_DESTROY:
             menu->items.itemList = FreeBlock(entries);
@@ -2674,23 +2719,23 @@ b16 RunItemUse(void) {
     i16 position;
 
     switch (GetGamePhase()) {
-        case 0:
+        case ITEM_USE_PHASE_OPEN:
             NextGamePhase();
             NextGamePhase();
             s_itemMenu = OpenItemListMenu();
             HideScreenLayer(1);
             return false;
 
-        case 1:
+        case ITEM_USE_PHASE_CLOSE:
             ReturnFromGameState();
             s_itemMenu = CloseListMenu(s_itemMenu);
             RestoreSwappedMember();
             s_useMemberId = -1;
             return false;
 
-        case 2:
+        case ITEM_USE_PHASE_PICK_ITEM:
             picked = RunListMenu(s_itemMenu);
-            if (picked == -2) {
+            if (picked == LIST_MENU_CANCELLED) {
                 PrevGamePhase();
             }
             if (picked < 0) {
@@ -2702,7 +2747,7 @@ b16 RunItemUse(void) {
             s_usePosition = FindFirstAbleMemberPosition();
             return false;
 
-        case 3:
+        case ITEM_USE_PHASE_PICK_TARGET:
             record = GetLoadedRecord(s_useItem);
             kind = record->kind;
             if (ItemUseInvokesSkill(kind)) {
@@ -2720,21 +2765,41 @@ b16 RunItemUse(void) {
                 SelectItemUserAsTarget();
                 return false;
             }
-            if (flags == 0x10) {
-                picked = RunPickTargetWindow(0, range, 5, GetPartyRosterId(s_usePosition));
-            } else if (flags == 0x11) {
-                picked = RunPickTargetWindow(0, range, 4, GetPartyRosterId(s_usePosition));
-            } else if (flags == 0x30) {
-                picked = RunPickTargetWindow(0, range, 6, GetPartyRosterId(s_usePosition));
+            if (flags == TARGET_SELECT_FIELD_OR_ROSTER) {
+                picked = RunPickTargetWindow(
+                    0,
+                    range,
+                    TARGET_PICK_FIELD_OBJECT | TARGET_PICK_ROSTER_LIST,
+                    GetPartyRosterId(s_usePosition)
+                );
+            } else if (flags == TARGET_SELECT_ROSTER_ONLY) {
+                picked = RunPickTargetWindow(
+                    0,
+                    range,
+                    TARGET_PICK_ROSTER_LIST,
+                    GetPartyRosterId(s_usePosition)
+                );
+            } else if (flags == TARGET_SELECT_PARTY_OR_ROSTER) {
+                picked = RunPickTargetWindow(
+                    0,
+                    range,
+                    TARGET_PICK_PARTY_SLOT | TARGET_PICK_ROSTER_LIST,
+                    GetPartyRosterId(s_usePosition)
+                );
             } else {
                 flags = 0;
-                picked = RunPickTargetWindow(0, range, 3, GetPartyRosterId(s_usePosition));
+                picked = RunPickTargetWindow(
+                    0,
+                    range,
+                    TARGET_PICK_FIELD_OBJECT | TARGET_PICK_PARTY_SLOT,
+                    GetPartyRosterId(s_usePosition)
+                );
             }
-            if (picked == -1) {
+            if (picked == TARGET_PICK_CANCELLED) {
                 PrevGamePhase();
                 return false;
             }
-            if (picked == 0) {
+            if (picked == TARGET_PICK_WAITING) {
                 break;
             }
             NextGamePhase();
@@ -2744,12 +2809,12 @@ b16 RunItemUse(void) {
             g_targetId = g_selectedObjectId;
             return false;
 
-        case 4:
+        case ITEM_USE_PHASE_DESTROY_MENU:
             NextGamePhase();
             s_itemMenu = DestroyMenuBox(s_itemMenu);
             return false;
 
-        case 5:
+        case ITEM_USE_PHASE_PROMPT_ACTION:
             NextGamePhase();
             position = FindPartyPositionOfId(s_useMemberId);
             user = GetPartyCharacter(position);
@@ -2758,7 +2823,7 @@ b16 RunItemUse(void) {
             if (ItemUseInvokesSkill(kind)) {
                 g_actorId = PartyCombatantId(position);
                 user->pickObject = g_targetId;
-                user->pickRole = 4;
+                user->pickRole = PICK_ROLE_MAGIC;
                 g_actionId = GetItemSkillId(record);
                 user->pickTarget = GetItemSkillId(record);
                 user->pickFlags |= PICK_ITEM_SKILL;
@@ -2766,15 +2831,15 @@ b16 RunItemUse(void) {
             } else {
                 g_actorId = PartyCombatantId(position);
                 user->pickObject = g_targetId;
-                user->pickRole = 5;
+                user->pickRole = PICK_ROLE_ITEM;
                 g_actionId = s_useItem;
                 user->pickTarget = s_useItem;
             }
             PushFieldUsePrompt();
             return false;
 
-        case 6:
-            SetGamePhase(1);
+        case ITEM_USE_PHASE_FINISH:
+            SetGamePhase(ITEM_USE_PHASE_CLOSE);
             break;
     }
     return false;

@@ -105,6 +105,9 @@ extern MotionTable g_loadedMotionTable;
 // which pass them on; `frames` has room for ten.
 #define EFFECT_SLOTS 1
 #define EFFECT_IMAGE_SETS 1
+// The id of a free record or image-set slot, and what the finders return when
+// no slot holds an id.
+#define EFFECT_ID_NONE (-1)
 #define EFFECT_FRAMES 7
 
 typedef struct EffectRecord {
@@ -162,7 +165,7 @@ EffectCommand* StepScreenEffectScript(void);
 i16 ExecuteEffectCommand(void);
 
 void InitEffectImageSets(void);
-i16 ExchangeEffectSkipping(i16 skipping);
+b16 ExchangeEffectSkipping(b16 skipping);
 i16 FindEffectImageSet(i16 id);
 void LoadEffectImageSet(i16 slot, i16 id);
 void FreeEffectImageSet(i16 slot);

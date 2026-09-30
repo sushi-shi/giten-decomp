@@ -3,7 +3,9 @@
 
 #include <EnumDomain.h>
 #include <Game/Character.h>
+#include <Game/MapArea.h>
 #include <Game/MapCoord.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 // The party's place on the map; these ten bytes are also passed by value.
@@ -13,20 +15,27 @@
 typedef struct MapPosition {
     i16 x;
     i16 y;
-    i16 direction;
+    GZ_ENUM_STORAGE(ViewDirection, i16) direction;
     u8 pad06;
-    u8 area;
+    GZ_ENUM_STORAGE(MapAreaId, u8) area;
     u8 level;
     u8 pad09;
 } MapPosition;
 
 // The field state saved as one 16-byte block.
-// @identity-TODO: the three movement words are named from the step/turn
-// state machine that drives them (0x412280: state 0 idle, 1 stepping,
-// 2 turning; the command; the turns still to make).
+// The party's step/turn state machine (AdvancePartyMove): idle, stepping or
+// turning.
+GZ_ENUM_BEGIN_SPLIT(FieldMoveState, i16)
+    FIELD_MOVE_IDLE = 0,
+    FIELD_MOVE_STEPPING = 1,
+    FIELD_MOVE_TURNING = 2
+GZ_ENUM_END_SPLIT(FieldMoveState)
+
+// @identity-TODO: the movement words are named from the step/turn state
+// machine that drives them (the state; the command; the turns still to make).
 typedef struct FieldState {
     MapPosition pos;
-    i16 moveState;
+    GZ_ENUM_STORAGE(FieldMoveState, i16) moveState;
     i16 moveCommand;
     i16 turnsLeft;
 } FieldState;
@@ -45,15 +54,32 @@ typedef struct FieldStatus {
 // and restored member by member. One object: `slots` is two-aligned, which no
 // standalone twelve-byte COMMON is, and InitNewGame's roster clear follows the
 // field stores only when the roster and the field share an object.
+// The party positions and the roster size.
+#define PARTY_SIZE 6
+// Positions below PARTY_ROW_SIZE are the front row, the rest the back row.
+#define PARTY_ROW_SIZE 3
+#define ROSTER_SIZE 32
+// The roster slot of the party leader (GetRosterLeader).
+#define ROSTER_LEADER 0
+// A party position holding no roster member.
+#define PARTY_SLOT_EMPTY (-1)
+// What the finders return when there is no such roster slot, party position
+// or character id.
+#define ROSTER_SLOT_NONE (-1)
+#define PARTY_POSITION_NONE (-1)
+#define CHARACTER_ID_NONE (-1)
+// Character ids below this are human members.
+#define HUMAN_ID_LIMIT 32
+
 typedef struct Party {
     FieldState field;
     // @identity-TODO: the facing restored with a saved position (-1 when unset).
     i16 savedDirection;
     // The party's six roster indices (-1 = empty slot).
-    i16 slots[6];
+    i16 slots[PARTY_SIZE];
     FieldStatus status;
     // The roster: characters the party can field; ids below 32 are human members.
-    Character* roster[32];
+    Character* roster[ROSTER_SIZE];
 } Party;
 
 extern Party g_party;
@@ -66,8 +92,16 @@ extern Party g_party;
 
 void InitNewGame(void);
 
+GZ_ENUM_BEGIN_SPLIT(MapValueSelector, i16)
+    MAP_VALUE_AREA = 0,
+    MAP_VALUE_LEVEL = 1,
+    MAP_VALUE_X = 2,
+    MAP_VALUE_Y = 3
+GZ_ENUM_END_SPLIT(MapValueSelector)
+
+i16 GetMapValue(GZ_ENUM_PARAM(MapValueSelector, i16) which);
 MapPosition* GetMapPosition(void);
-u8 GetMapArea(void);
+GZ_ENUM_RETURN(MapAreaId, u8) GetMapArea(void);
 u8 GetMapLevel(void);
 MapCoord GetMapCoord(void);
 Character* AsCharacter(Character* character);
@@ -92,7 +126,7 @@ i16 IsPartyMemberFallen(i16 index);
 i16 GetPartyRosterId(i16 index);
 
 // An empty party position when `inParty`, else a free roster slot (-1: none).
-i16 FindEmptySlot(i16 inParty);
+i16 FindEmptySlot(b16 inParty);
 
 // Ages every member's conditions by one and rolls them for recovery; nonzero
 // when any wore off.

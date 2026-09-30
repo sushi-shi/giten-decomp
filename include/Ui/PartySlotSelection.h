@@ -10,25 +10,38 @@
 
 GZ_ENUM_BEGIN(PartySlotSelectionMode)
     PARTY_SLOT_REQUIRE_OCCUPIED = 0,
+    PARTY_SLOT_ANY = 1,
     PARTY_SLOT_EXCLUDE_HUMANS = 2
 GZ_ENUM_END(PartySlotSelectionMode)
 
-static __inline i16 FilterPartySlotSelection(i16 slot, i16 mode) {
-    if (mode == PARTY_SLOT_REQUIRE_OCCUPIED && GetPartySlot(slot) == -1) {
-        slot = -1;
+static __inline i16
+FilterPartySlotSelection(i16 slot, GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
+    if (mode == PARTY_SLOT_REQUIRE_OCCUPIED && GetPartySlot(slot) == PARTY_SLOT_EMPTY) {
+        slot = PARTY_POSITION_NONE;
     }
-    if (mode == PARTY_SLOT_EXCLUDE_HUMANS && GetPartySlot(slot) != -1
-        && GetPartyRosterId(slot) < 32) {
-        slot = -1;
+    if (mode == PARTY_SLOT_EXCLUDE_HUMANS && GetPartySlot(slot) != PARTY_SLOT_EMPTY
+        && GetPartyRosterId(slot) < HUMAN_ID_LIMIT) {
+        slot = PARTY_POSITION_NONE;
     }
     return slot;
 }
 
-i16 PollTextPartySlotSelection(i16 mode);
+// Both panel and text-plane pollers wait for a mouse click, then confirm or
+// cancel the selected party position.
+GZ_ENUM_BEGIN_SPLIT(PartySlotPollResult, i16)
+    PARTY_SLOT_POLL_CANCELLED = -1,
+    PARTY_SLOT_POLL_WAITING = 0,
+    PARTY_SLOT_POLL_CONFIRMED = 1
+GZ_ENUM_END_SPLIT(PartySlotPollResult)
 
-// Polls the hovered party panel and commits or cancels on a mouse click.
+GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(
+    GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode
+);
+
 // Mode 0 excludes empty slots; mode 2 excludes occupied human slots.
-i16 PollPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode);
+GZ_ENUM_RETURN(PartySlotPollResult, i16) PollPartySlotSelection(
+    GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode
+);
 
 void ClearPartySlotSelection(void);
 

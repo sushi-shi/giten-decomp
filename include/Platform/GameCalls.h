@@ -6,7 +6,11 @@
 #include <EnumDomain.h>
 #include <Game/Field.h>
 #include <Game/GameLoop.h>
+#include <Game/GameStateId.h>
+#include <Game/MoveCommand.h>
 #include <Game/PartyAction.h>
+#include <Game/PartyStep.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 // Game functions and data the platform layer uses that their owners' headers
@@ -54,9 +58,9 @@ struct AreaNpc* GetAreaNpc(i16 npc);
 // From Game/StateStack.h and Game/FieldHud.h, declared here instead: including
 // those headers shifts winmain's TU state (AllocCleared, AllocClearedLong).
 i16 NextGamePhase(void);
-i16 GetGameState(void);
+GZ_ENUM_RETURN(GameStateId, i16) GetGameState(void);
 u16 GetGamePhase(void);
-void RedrawFieldAt(i16 x, i16 y, i16 direction);
+void RedrawFieldAt(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 // The party's world-map marker: which of the six map screens shows it (-1
 // off the map) and its point on that screen.
@@ -156,11 +160,11 @@ u16* GetWallMap(void);
 void UpdateAreaPalette(void);
 void UpdateViewPalette(void);
 
-// Tries to step the party one cell in `direction` (STEP_FORWARD..STEP_LEFT,
-// relative to its facing): 0 when blocked (the bump sound plays), else
-// STEP_WALK, or 0x10 when the cell's wall reports a door.
+// Tries to step the party one cell in `direction` (MOVE_FORWARD..MOVE_LEFT,
+// relative to its facing): STEP_BLOCKED (the bump sound plays), STEP_WALK,
+// or STEP_DOOR when the cell's wall reports a door.
 // @identity-TODO: read from its body only; the field TU owns it.
-i16 StepParty(i16 direction);
+GZ_ENUM_RETURN(PartyStepResult, i16) StepParty(GZ_ENUM_PARAM(MoveCommand, i16) direction);
 
 // Completes a step the camera has slid through: advances the clock, moves the
 // party's cell and marks it on the automap.

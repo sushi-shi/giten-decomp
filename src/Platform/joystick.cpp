@@ -62,13 +62,13 @@ u32 ReadJoystick(JoystickState* state) {
             buttons |= key->bit;
         }
     }
-    read = FALSE;
+    read = false;
     if (s_joystickCount > 0) {
         info.dwSize = sizeof(info);
         info.dwFlags = JOY_RETURNX | JOY_RETURNY | JOY_RETURNZ | JOY_RETURNR | JOY_RETURNBUTTONS
                        | JOY_RETURNCENTERED;
         if (joyGetPosEx(0, &info) == JOYERR_NOERROR) {
-            read = TRUE;
+            read = true;
         }
     }
     if (read) {

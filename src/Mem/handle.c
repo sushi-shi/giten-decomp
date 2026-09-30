@@ -19,7 +19,7 @@ RVA(0x000043d0, 0x1f)
 void ClearHandleTable(void) {
     i16 handle;
     for (handle = 0; handle < HANDLE_COUNT; handle++) {
-        SetHandleEntry(handle, 0, 0, 0);
+        SetHandleEntry(handle, NULL, 0, HANDLE_FREE);
     }
 }
 
@@ -54,12 +54,12 @@ i32 AllocHandle(u32 size) {
 RVA(0x00004470, 0x3d)
 i32 NewHandle(void* ptr, u32 size) {
     i16 handle;
-    for (handle = 1; handle < HANDLE_COUNT; handle++) {
+    for (handle = HANDLE_FIRST; handle < HANDLE_COUNT; handle++) {
         if (!IsHandleUsed(handle)) {
             return SetHandleEntry(handle, ptr, size, HANDLE_IN_USE);
         }
     }
-    return 0;
+    return HANDLE_NONE;
 }
 
 RVA(0x000044b0, 0xf)
@@ -102,7 +102,7 @@ i32 NewStringHandle(const char* text) {
 RVA(0x000045b0, 0x3e)
 i32 ResizeHandle(i32 handle, u32 size) {
     void* block;
-    if (handle == 0) {
+    if (handle == HANDLE_NONE) {
         return AllocHandle(size);
     }
     block = ReallocBlock(HandlePtr(handle), size);
@@ -121,7 +121,7 @@ i32 SetHandlePtr(i32 handle, void* ptr, u16 size) {
 
 RVA(0x00004620, 0x2a)
 b32 FreeHandle(i32 handle) {
-    if (handle == 0) {
+    if (handle == HANDLE_NONE) {
         return false;
     }
     FreeBlock(HandlePtr(handle));
@@ -130,7 +130,7 @@ b32 FreeHandle(i32 handle) {
 
 RVA(0x00004650, 0x16)
 b32 ClearHandle(i32 handle) {
-    SetHandleEntry(handle, 0, 0, 0);
+    SetHandleEntry(handle, NULL, 0, HANDLE_FREE);
     return false;
 }
 
@@ -170,11 +170,11 @@ i32 PopListTail(i32 list, i32* node) {
 RVA(0x000046f0, 0x31)
 i32 HandleListTail(i32 node) {
     ListLink* link;
-    if (node == 0) {
-        return 0;
+    if (node == HANDLE_NONE) {
+        return HANDLE_NONE;
     }
     link = HandleListNodeForRead(node);
-    while (link->next != 0) {
+    while (link->next != HANDLE_NONE) {
         node = link->next;
         link = HandleListNodeForRead(node);
     }
@@ -184,7 +184,7 @@ i32 HandleListTail(i32 node) {
 RVA(0x00004730, 0x25)
 i32 HandleListAppend(i32 list, i32 node) {
     i32 tail = HandleListTail(list);
-    if (tail == 0) {
+    if (tail == HANDLE_NONE) {
         return node;
     }
     return HandleListInsertAfter(tail, node);
@@ -210,11 +210,11 @@ ListLink* HandleListNodeForWrite(i32 node) {
 RVA(0x000047a0, 0x33)
 i32 HandleListHead(i32 node) {
     ListLink* link;
-    if (node == 0) {
-        return 0;
+    if (node == HANDLE_NONE) {
+        return HANDLE_NONE;
     }
     link = HandleListNodeForRead(node);
-    while (link->prev != 0) {
+    while (link->prev != HANDLE_NONE) {
         node = link->prev;
         link = HandleListNodeForRead(node);
     }
@@ -226,21 +226,21 @@ i32 HandleListUnlink(i32 node) {
     ListLink* link;
     i32 prev;
     i32 next;
-    if (node == 0) {
-        return 0;
+    if (node == HANDLE_NONE) {
+        return HANDLE_NONE;
     }
     link = HandleListNodeForWrite(node);
     prev = link->prev;
     next = link->next;
-    link->next = 0;
-    link->prev = 0;
-    if (prev != 0) {
+    link->next = HANDLE_NONE;
+    link->prev = HANDLE_NONE;
+    if (prev != HANDLE_NONE) {
         HandleListNodeForWrite(prev)->next = next;
     }
-    if (next != 0) {
+    if (next != HANDLE_NONE) {
         HandleListNodeForWrite(next)->prev = prev;
     }
-    if (prev == 0) {
+    if (prev == HANDLE_NONE) {
         return HandleListHead(next);
     }
     return HandleListHead(prev);
@@ -252,12 +252,12 @@ i32 HandleListInsertAfter(i32 pos, i32 node) {
     i32 tail;
     i32 next;
     i32 prev;
-    if (pos == 0) {
+    if (pos == HANDLE_NONE) {
         return node;
     }
     tail = HandleListTail(node);
     next = HandleListNodeForWrite(pos)->next;
-    if (next == 0) {
+    if (next == HANDLE_NONE) {
         HandleListNodeForWrite(node)->prev = pos;
     } else {
         link = HandleListNodeForWrite(next);
@@ -275,8 +275,8 @@ i32 HandleListInsertAfter(i32 pos, i32 node) {
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x000048e0, 0x15)
 i32 HandleListNext(i32 node) {
-    if (node == 0) {
-        return 0;
+    if (node == HANDLE_NONE) {
+        return HANDLE_NONE;
     }
     return HandleListNodeForRead(node)->next;
 }
@@ -285,8 +285,8 @@ i32 HandleListNext(i32 node) {
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00004900, 0x16)
 i32 HandleListPrev(i32 node) {
-    if (node == 0) {
-        return 0;
+    if (node == HANDLE_NONE) {
+        return HANDLE_NONE;
     }
     return HandleListNodeForRead(node)->prev;
 }

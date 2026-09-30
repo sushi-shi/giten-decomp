@@ -5,9 +5,14 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/AttackAttribute.h>
+#include <Game/AttackMode.h>
 #include <Ints.h>
 
+#include <Game/SkillFamily.h>
 #include <Game/SkillMessage.h>
+#include <Game/TargetArea.h>
+#include <Game/TargetFlags.h>
 
 // clang-format off
 GZ_ENUM_BEGIN(SkillUseModes)
@@ -17,31 +22,63 @@ GZ_ENUM_BEGIN(SkillUseModes)
 GZ_ENUM_END(SkillUseModes);
 // clang-format on
 
+// Traesto, Traport and Trafuri can be blocked by the current field marker
+// or forbidden by the area's skill flag.
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(SkillAreaAvailability, i16)
+    SKILL_AREA_FORBIDDEN = -1,
+    SKILL_AREA_FIELD_MARKED = 0,
+    SKILL_AREA_ALLOWED = 1
+GZ_ENUM_END_SPLIT(SkillAreaAvailability);
+// clang-format on
+
+// The low six bits of a skill record's first byte select its effect family.
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(SkillKind, u8)
+    SKILL_KIND_BASE_ATTACK = 0,
+    SKILL_KIND_ATTACK = 1,
+    SKILL_KIND_RESTORE = 2,
+    SKILL_KIND_BATTLE_TALLY = 3,
+    SKILL_KIND_BATTLE_STAT = 4,
+    SKILL_KIND_HP_DRAIN = 5,
+    SKILL_KIND_MP_DAMAGE = 6,
+    SKILL_KIND_MP_DRAIN = 7,
+    SKILL_KIND_EXPERIENCE_DRAIN = 8,
+    SKILL_KIND_CLEAR_BATTLE_TALLIES = 9,
+    SKILL_KIND_CLEAR_BATTLE_TALLIES_ALIAS = 10,
+    SKILL_KIND_RESET_BATTLE_STATS = 11,
+    SKILL_KIND_FIELD_TRAVEL = 12,
+    SKILL_KIND_SUMMON = 13,
+    SKILL_KIND_FIELD_EFFECT_REPORT_SUCCESS = 14,
+    SKILL_KIND_FIELD_EFFECT = 15,
+    SKILL_KIND_INERT = 16
+GZ_ENUM_END_SPLIT(SkillKind);
+// clang-format on
+
 // Parameters shared by the file header and the menu's skill view.
+#define SKILL_KIND_BITS 6
+#define SKILL_MODE_BITS 2
 typedef struct SkillParameters {
-    // @identity-TODO: the low six bits and the top two of the first byte are
-    // read by separate accessors, and the combat resolver compares the whole
-    // byte (`type`); roles unrecovered.
+    // The kind and attack mode share a byte used whole by the combat resolver.
     union {
         struct {
-            u8 kind : 6;
-            u8 mode : 2;
+            GZ_ENUM_STORAGE(SkillKind, u8) kind : SKILL_KIND_BITS;
+            GZ_ENUM_STORAGE(AttackMode, u8) mode : SKILL_MODE_BITS;
         };
         u8 type;
     };
-    u8 family; // @identity-TODO: FindSkill matches it against up to three codes
-    u8 level;  // FindSkill takes skills up to a given level
-    i8 cost;   // negative: HP, positive: MP (see HpMpLeftAfterCost)
+    GZ_ENUM_STORAGE(SkillFamily, u8) family;
+    u8 level; // FindSkill takes skills up to a given level
+    i8 cost;  // negative: HP, positive: MP (see HpMpLeftAfterCost)
     GZ_ENUM_STORAGE(SkillUseModes, u8) usable;
-    u8 targetArea; // @identity-TODO: CollectTargets' area code
-    // @identity-TODO: target-picker combinations 0x10/0x11/0x30 remain unnamed.
-    u8 targetFlags;
+    GZ_ENUM_STORAGE(TargetArea, u8) targetArea;
+    GZ_ENUM_STORAGE(TargetFlags, u8) targetFlags;
     u8 targetCounts; // Low nibble: hits; high nibble: target count or selection mode.
     u8 attackRange;  // Packed minimum/maximum distance; also selects the target-picker range icon.
     u8 valueA;       // @identity-TODO: the two values a use of the skill wears down
     u8 valueB;
     u8 wear; // percent lost per use (randomized by 20 either way)
-    u8 attackAttribute;
+    GZ_ENUM_STORAGE(AttackAttribute, u8) attackAttribute;
     u8 inflictedCondition;
     u8 effectCode; // Effect selector interpreted according to the skill kind.
     u8 effect;     // the shot LaunchShot flies for it
@@ -86,7 +123,7 @@ char* GetSkillName(i16 id);
 char* GetSkillDescription(i16 id);
 SkillHeader* GetCachedSkill(i16 id);
 
-static __inline u8 GetSkillTargetFlags(i16 id) {
+static __inline GZ_ENUM_RETURN(TargetFlags, u8) GetSkillTargetFlags(i16 id) {
     return GetCachedSkill(id)->parameters.targetFlags;
 }
 
@@ -96,7 +133,7 @@ static __inline u8 GetSkillTargetFlags(i16 id) {
 
 #define GetSkillValueB(record) ((record)->parameters.valueB)
 
-static __inline u8 GetSkillAttackAttribute(SkillHeader* record) {
+static __inline GZ_ENUM_RETURN(AttackAttribute, u8) GetSkillAttackAttribute(SkillHeader* record) {
     return record->parameters.attackAttribute;
 }
 
@@ -123,10 +160,10 @@ i16 GetRecordValue(void);
 i16 HpMpLeftAfterCost(i16 cost, struct Character* character);
 SkillView* GetSkillView(i16 id);
 void LoadSkillFiles(void);
-i16 CheckSkillArea(i16 id);
+GZ_ENUM_RETURN(SkillAreaAvailability, i16) CheckSkillArea(i16 id);
 i16 CanUseSkill(i16 id, struct Character* character);
-i32 GetSkillKind(i16 id);
-u16 GetSkillMode(i16 id);
+GZ_ENUM_RETURN(SkillKind, i32) GetSkillKind(i16 id);
+GZ_ENUM_RETURN(AttackMode, u16) GetSkillMode(i16 id);
 u16 GetSkillFamily(i16 id);
 u16 GetSkillLevel(i16 id);
 i16 FindSkill(i16 start, u16 a, u16 b, u16 c, i16 maxLevel);

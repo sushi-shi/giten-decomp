@@ -4,10 +4,13 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
+#include <File/DataTableId.h>
 #include <Game/Character.h>
 #include <Game/Field.h>
 #include <Game/GameState.h>
 #include <Game/Skill.h>
+#include <Game/SkillId.h>
 #include <Game/SkillList.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
@@ -42,15 +45,15 @@ static char s_skillViewDescription[0x100] = {0};
 
 // The stacked script states, newest first.
 DATA(0x00080ff0)
-static SavedScriptState* s_savedScripts = 0;
+static SavedScriptState* s_savedScripts = NULL;
 
 // The handle of the loaded skill file.
 DATA(0x00080ff4)
 static i32 s_skillTable = 0;
 
-// One byte per map area; bit 0 allows skills 0x79..0x7b there.
+// One byte per map area; bit 0 allows Traesto, Traport and Trafuri there.
 DATA(0x00080ff8)
-static u8* s_areaSkillFlags = 0;
+static u8* s_areaSkillFlags = NULL;
 
 DATA(0x00080ffc)
 static i16 s_skillCount = 0;
@@ -120,17 +123,17 @@ i16 FindWord(WordList* list, i16 word) {
             }
         }
     }
-    return -1;
+    return WORD_NONE;
 }
 
 RVA(0x0002dce0, 0x99)
 i16 AddSkill(WordList* list, i16 skill) {
     i16 i;
     if (!list) {
-        return -1;
+        return WORD_NONE;
     }
     if (ContainsWord(list, skill)) {
-        return -1;
+        return WORD_NONE;
     }
     for (i = 0; i < list->count; i++) {
         s_wordScratch[i] = GetWord(list, i);
@@ -148,7 +151,7 @@ RVA(0x0002dd80, 0x82)
 void MoveWord(WordList* list, i16 from, i16 to) {
     i16 value = list->words[from];
     i16 i;
-    if (to == -1) {
+    if (to == WORD_LAST) {
         to = list->count - 1;
     }
     if (from <= to) {
@@ -168,13 +171,13 @@ i16 RemoveWord(WordList* list, i16 word) {
     i16 index;
     i16 i;
     if (!list) {
-        return -1;
+        return WORD_NONE;
     }
     index = FindWord(list, word);
     if (index < 0) {
-        return -1;
+        return WORD_NONE;
     }
-    MoveWord(list, index, -1);
+    MoveWord(list, index, WORD_LAST);
     list->count--;
     for (i = 0; i < list->count; i++) {
         s_wordScratch[i] = GetWord(list, i);
@@ -399,12 +402,12 @@ int CompareSkillRanks(const void* left, const void* right) {
 RVA(0x0002e3a0, 0x69)
 void LoadSkillFiles(void) {
     SkillTable* table;
-    FILE* fp = OpenDataFile(4, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_SKILLS, DATA_FILE_TABLE, 0);
     s_skillTable = ReadCryptHandle(fp);
     CloseDataFile(fp);
     table = HandleReadPtr(s_skillTable);
     s_skillCount = table->count;
-    fp = OpenDataFile(0x28, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_AREA_SKILL_FLAGS, DATA_FILE_TABLE, 0);
     s_areaSkillFlags = ReadRawAlloc(fp);
     CloseDataFile(fp);
 }
@@ -414,13 +417,12 @@ char* GetSkillName(i16 id) {
     return GetSkillRecordText(GetSkill(id));
 }
 
-// An out-of-range id reads record 16.
 RVA(0x0002e430, 0x43)
 SkillHeader* GetSkill(i16 id) {
     SkillTable* table = HandleReadPtr(s_skillTable);
     if (id < 0 || id >= table->count) {
         table = HandleReadPtr(s_skillTable);
-        id = 16;
+        id = SKILL_AGI;
     }
     return OffsetBy(table, table->offsets[id]);
 }
@@ -471,15 +473,13 @@ SkillHeader* CopySkillHeader(i16 id, SkillHeader* dst) {
     return dst;
 }
 
-// Skills 0x79..0x7b work only where the area allows them (and never while the
-// field marker is set): 1 when usable here, -1 when the area forbids it.
 RVA(0x0002e580, 0x42)
-i16 CheckSkillArea(i16 id) {
-    if (id != 0x79 && id != 0x7a && id != 0x7b) {
-        return 1;
+GZ_ENUM_RETURN(SkillAreaAvailability, i16) CheckSkillArea(i16 id) {
+    if (id != SKILL_TRAESTO && id != SKILL_TRAPORT && id != SKILL_TRAFURI) {
+        return SKILL_AREA_ALLOWED;
     }
     if (GetFieldMarker()) {
-        return 0;
+        return SKILL_AREA_FIELD_MARKED;
     }
     return (s_areaSkillFlags[g_party.field.pos.area] & 1) * 2 - 1;
 }
@@ -535,12 +535,12 @@ SkillView* GetSkillView(i16 id) {
 }
 
 RVA(0x0002e720, 0x13)
-i32 GetSkillKind(i16 id) {
+GZ_ENUM_RETURN(SkillKind, i32) GetSkillKind(i16 id) {
     return GetCachedSkill(id)->parameters.kind;
 }
 
 RVA(0x0002e740, 0x18)
-u16 GetSkillMode(i16 id) {
+GZ_ENUM_RETURN(AttackMode, u16) GetSkillMode(i16 id) {
     return GetCachedSkill(id)->parameters.mode;
 }
 
@@ -563,7 +563,7 @@ i16 FindSkill(i16 start, u16 a, u16 b, u16 c, i16 maxLevel) {
     u16 family;
     for (id = start; id < s_skillCount; id++) {
         skill = GetCachedSkill(id);
-        if (skill->parameters.family) {
+        if (skill->parameters.family != SKILL_FAMILY_NONE) {
             family = skill->parameters.family;
             if ((family == a || family == b || family == c)
                 && skill->parameters.level <= maxLevel) {

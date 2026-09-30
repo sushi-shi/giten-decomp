@@ -1,0 +1,81 @@
+#ifndef GITEN_GAME_CELLCODE_H
+#define GITEN_GAME_CELLCODE_H
+
+#include <Enums.h>
+
+// Map cell codes, named after what the cell does: the forced moves push the
+// party toward a direction (code - CELL_FORCED_MOVE_NORTH) or back the way it
+// came, the spinners turn it, and the dark and command-blocked cells are
+// properties the field code tests. The traps take a share of each member's HP;
+// the alignment traps (CELL_ALIGNMENT_TRAP_FIRST..LAST) affect the alignment
+// sides selected by their record mask. The three recorded codes 0x6c..0x6e
+// carry masks 5..7 respectively. Cell-code tables end with CELL_CODE_TABLE_END;
+// cell-record lists instead end at x == CELL_LIST_X_END.
+// NPC codes select four-direction masks in GetNpcImageOfCode; the Windows
+// renderer uses the record's texture slot instead of that legacy mask.
+// @identity-TODO: the spring variants 0x85..0x87 and object-property codes
+// 0x8b, 0x8c and 0x8f remain unnamed. The table-only codes below describe
+// their observed dispatch behavior, not their authored purpose.
+GZ_ENUM_BEGIN(CellCode)
+    CELL_NONE = 0,
+    CELL_SERVICE_TERMINAL = 0x40,
+    CELL_EXIT = 0x41,
+    CELL_STAIRS_UP = 0x42,
+    CELL_STAIRS_DOWN = 0x43,
+    CELL_ELEVATOR_LOWER_STOP = 0x44,
+    CELL_ELEVATOR_UPPER_STOP = 0x45,
+    CELL_ELEVATOR_MIDDLE_STOP = 0x46,
+    CELL_CHUTE = 0x47,
+    CELL_AREA_NPC_MASK_ALL = 0x48,
+    CELL_AREA_NPC_MASK_NORTH = 0x49,
+    CELL_AREA_NPC_MASK_EAST = 0x4a,
+    CELL_AREA_NPC_MASK_SOUTH = 0x4b,
+    CELL_AREA_NPC_MASK_WEST = 0x4c,
+    CELL_AREA_NPC_MASK_NORTH_SOUTH = 0x4d,
+    CELL_AREA_NPC_MASK_EAST_WEST = 0x4e,
+    CELL_TREASURE_BOX_FOURTH_FRAME_PAIR = 0x4f,
+    CELL_SOFTWARE_SHOP = 0x50,
+    CELL_WEAPON_SHOP = 0x51,
+    CELL_TRANSFER_DEVICE = 0x52,
+    CELL_MEDICINE_SHOP = 0x53,
+    CELL_HERETIC_MANSION = 0x54,
+    CELL_HOSPITAL = 0x55,
+    CELL_SPRING = 0x56,
+    CELL_RECOVERY_HALL = 0x57,
+    CELL_ARMOR_SHOP = 0x58,
+    CELL_BAR = 0x59,
+    CELL_ITEM_SHOP = 0x5b,
+    CELL_DAMAGE_TRAP = 0x60,
+    CELL_FORCED_MOVE_BACK = 0x64,
+    CELL_INERT = 0x65,
+    CELL_WARP_HIDING_OBJECTS = 0x67,
+    CELL_ALIGNMENT_TRAP_FIRST = 0x68,
+    CELL_ALIGNMENT_TRAP_CHAOS_LAW = 0x6c,
+    CELL_ALIGNMENT_TRAP_CHAOS_NEUTRAL = 0x6d,
+    CELL_ALIGNMENT_TRAP_ALL = 0x6e,
+    CELL_ALIGNMENT_TRAP_LAST = CELL_ALIGNMENT_TRAP_ALL,
+    CELL_FORCED_MOVE_NORTH = 0x70,
+    CELL_FORCED_MOVE_EAST = 0x71,
+    CELL_FORCED_MOVE_SOUTH = 0x72,
+    CELL_FORCED_MOVE_WEST = 0x73,
+    CELL_SPIN_RIGHT = 0x74,
+    CELL_SPIN_AROUND = 0x75,
+    CELL_SPIN_LEFT = 0x76,
+    CELL_MARKED_WARP = 0x77,
+    CELL_FACING_SCRIPT = 0x79,
+    CELL_ARM_TERMINAL = 0x7b,
+    CELL_UNUSED_FLOOR_PROPERTY = 0x7c,
+    CELL_STAIRS_TO_SUBWAY_PLATFORM = 0x7d,
+    CELL_FROZEN_SCENE = 0x7f,
+    CELL_TREASURE_BOX_FIRST_FRAME_PAIR = 0x88,
+    CELL_TREASURE_BOX_SECOND_FRAME_PAIR = 0x89,
+    CELL_TREASURE_BOX_LOWER_TEXTURE_HALF = 0x8a,
+    CELL_DARK = 0x8d,
+    CELL_COMMAND_BLOCKED = 0x8e,
+    CELL_STEPS_UP = 0x90,
+    CELL_STEPS_DOWN = 0x91,
+    CELL_AUTOMAP_BLANK = 0xbf,
+    CELL_CODE_TABLE_END = 0xff
+GZ_ENUM_END(CellCode)
+
+#endif // GITEN_GAME_CELLCODE_H

@@ -3,6 +3,8 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Game/BattleStat.h>
 #include <Game/Character.h>
 
 // Raises a character by `count` levels.
@@ -29,8 +31,8 @@ typedef struct LearnableSkillRequirement {
 void LoadLearnableSkillTables(void);
 i16 TakeLearnableSkill(Character* character, i16* skills);
 
-// Four stat pairs.
-extern const i16 g_affiliationGrowthStats[4][2];
+// Two growth stats per affiliation (training kind).
+extern const i16 g_affiliationGrowthStats[BATTLE_GROUP_COUNT][2];
 
 #define GetAffiliationGrowthStat(affiliation, choice)                                              \
     (g_affiliationGrowthStats[(affiliation) & 3][choice])
@@ -43,11 +45,14 @@ void DropTopStatPicks(Character* character, i16* picks);
 
 // The training counters (Character.trainingPoints) and levels (battle-stat
 // words 0, 6, 12, 18) of the four affiliations (training.c).
-// @identity-TODO: What the four kinds measure is unrecovered.
 u32 TrainingThreshold(i16 level);
-u32 AddTrainingPointsRaw(Character* character, i16 kind, u32 amount);
-u32 AddTrainingPoints(Character* character, i16 kind, i16 amount);
-i16 ApplyTraining(Character* character, i16 kind);
+u32 AddTrainingPointsRaw(
+    Character* character,
+    GZ_ENUM_PARAM(BattleStatGroup, i16) kind,
+    u32 amount
+);
+u32 AddTrainingPoints(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind, i16 amount);
+i16 ApplyTraining(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind);
 void RaiseAffiliationLevels(Character* character);
 
 void ShowStatPointPrompt(i16 points);

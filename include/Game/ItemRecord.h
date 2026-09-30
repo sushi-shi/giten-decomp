@@ -4,9 +4,14 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
-#include <Ints.h>
-#include <Game/SkillMessage.h>
+#include <Enums.h>
+#include <Game/AttackAttribute.h>
+#include <Game/ItemId.h>
 #include <Game/ItemKind.h>
+#include <Game/SkillMessage.h>
+#include <Game/TargetArea.h>
+#include <Game/TargetFlags.h>
+#include <Ints.h>
 
 typedef struct ItemTable {
     i16 count;
@@ -23,7 +28,7 @@ typedef struct ItemTable {
 // (the equipment page loads that many rounds); +0x29/+0x2a are read by
 // the helpers named for them.
 typedef struct ItemRecord {
-    i16 id;
+    GZ_ENUM_STORAGE(ItemId, i16) id;
     i32 price;
     GZ_ENUM_STORAGE(ItemKind, u8) kind;
     u8 params[0x33];
@@ -83,7 +88,7 @@ static __inline u8 GetItemShotId(const ItemRecord* record) {
     return record->params[0x32];
 }
 
-static __inline u8 GetItemTargetArea(const ItemRecord* record) {
+static __inline GZ_ENUM_RETURN(TargetArea, u8) GetItemTargetArea(const ItemRecord* record) {
     return record->params[3];
 }
 
@@ -91,7 +96,7 @@ static __inline u8 GetItemTargetCounts(const ItemRecord* record) {
     return record->params[5];
 }
 
-static __inline u8 GetItemTargetFlags(const ItemRecord* record) {
+static __inline GZ_ENUM_RETURN(TargetFlags, u8) GetItemTargetFlags(const ItemRecord* record) {
     return record->params[4];
 }
 
@@ -133,7 +138,9 @@ static __inline u8 GetEquipmentInflictedCondition(const ItemRecord* record) {
     return record->params[0x24];
 }
 
-static __inline u8 GetEquipmentAttribute(const ItemRecord* record) {
+static __inline GZ_ENUM_RETURN(AttackAttribute, u8) GetEquipmentAttribute(
+    const ItemRecord* record
+) {
     return record->params[0x21];
 }
 
@@ -161,6 +168,78 @@ static __inline i16 GetItemRecordMagicDefenseBonus(const ItemRecord* record) {
     i8 bonus = record->params[0x2f];
     return bonus;
 }
+
+// An equipped item's passive effect (its params[0x25]; a gem's params[0xb]):
+// stat points (AddItemStatPoints: a point in the item's own stat, a set of
+// stats, or a fixed change), a battle-stat bonus (AddItemStatBonuses; the
+// number is the bonus), HP or MP regeneration per
+// turn (AddItemRegen), or resistance to conditions (ItemResistsCondition:
+// mental is confusion, happy and hallucination; intoxication is high,
+// berserk and tipsy; fire and ice is burn, freeze and ice), or HP/MP
+// returned to the attacker after a weapon hit.
+GZ_ENUM_BEGIN(ItemPassiveEffect)
+    ITEM_PASSIVE_INTUITION_POINT = 1,
+    ITEM_PASSIVE_MENTAL_STRENGTH_POINT = 2,
+    ITEM_PASSIVE_MAGIC_POINT = 3,
+    ITEM_PASSIVE_INTELLIGENCE_POINT = 4,
+    ITEM_PASSIVE_PROTECTION_POINT = 5,
+    ITEM_PASSIVE_STRENGTH_POINT = 6,
+    ITEM_PASSIVE_VITALITY_POINT = 7,
+    ITEM_PASSIVE_AGILITY_POINT = 8,
+    ITEM_PASSIVE_DEXTERITY_POINT = 9,
+    ITEM_PASSIVE_CHARM_POINT = 10,
+    ITEM_PASSIVE_FORTUNE_POINT = 11,
+    ITEM_PASSIVE_STRENGTH_CHARM_POINTS = 12,
+    ITEM_PASSIVE_VITALITY_MENTAL_STRENGTH_POINTS = 13,
+    ITEM_PASSIVE_INTUITION_AGILITY_POINTS = 14,
+    ITEM_PASSIVE_MAGIC_PROTECTION_POINTS = 15,
+    ITEM_PASSIVE_INTELLIGENCE_DEXTERITY_POINTS = 16,
+    ITEM_PASSIVE_STRENGTH_VITALITY_MENTAL_STRENGTH_POINTS = 17,
+    ITEM_PASSIVE_MENTAL_STRENGTH_PLUS_4 = 32,
+    ITEM_PASSIVE_INTELLIGENCE_PLUS_3 = 33,
+    ITEM_PASSIVE_PROTECTION_PLUS_1 = 34,
+    ITEM_PASSIVE_PROTECTION_PLUS_2 = 35,
+    ITEM_PASSIVE_AGILITY_MINUS_10 = 36,
+    ITEM_PASSIVE_CHARM_PLUS_2 = 37,
+    ITEM_PASSIVE_CHARM_PLUS_4 = 38,
+    ITEM_PASSIVE_CHARM_MINUS_3 = 39,
+    ITEM_PASSIVE_INTUITION_PLUS_1 = 40,
+    ITEM_PASSIVE_AGILITY_PLUS_3 = 41,
+    ITEM_PASSIVE_WEAPON_POWER_5 = 0x30,
+    ITEM_PASSIVE_WEAPON_POWER_10 = 0x31,
+    ITEM_PASSIVE_WEAPON_POWER_20 = 0x32,
+    ITEM_PASSIVE_WEAPON_POWER_30 = 0x33,
+    ITEM_PASSIVE_WEAPON_ACCURACY_20 = 0x34,
+    ITEM_PASSIVE_GUN_ACCURACY_20 = 0x35,
+    ITEM_PASSIVE_WEAPON_ACCURACY_BONUS = 0x36,
+    ITEM_PASSIVE_MAGIC_EVASION_4 = 0x37,
+    ITEM_PASSIVE_MAGIC_EVASION_20 = 0x38,
+    ITEM_PASSIVE_DEFENSE_10 = 0x39,
+    ITEM_PASSIVE_DEFENSE_20 = 0x3a,
+    ITEM_PASSIVE_MAGIC_DEFENSE_15 = 0x3b,
+    ITEM_PASSIVE_HP_REGEN_1 = 0x70,
+    ITEM_PASSIVE_HP_REGEN_2 = 0x71,
+    ITEM_PASSIVE_HP_REGEN_3 = 0x72,
+    ITEM_PASSIVE_HP_REGEN_5 = 0x73,
+    ITEM_PASSIVE_MP_REGEN_1 = 0x74,
+    ITEM_PASSIVE_RESIST_STONE = 0x77,
+    ITEM_PASSIVE_RESIST_PARALYSIS = 0x78,
+    ITEM_PASSIVE_RESIST_FREEZE_ICE = 0x79,
+    ITEM_PASSIVE_RESIST_BIND = 0x7a,
+    ITEM_PASSIVE_RESIST_SLEEP = 0x7b,
+    ITEM_PASSIVE_RESIST_MENTAL = 0x7c,
+    ITEM_PASSIVE_RESIST_HAPPY = 0x7d,
+    ITEM_PASSIVE_RESIST_HALLUCINATION = 0x7e,
+    ITEM_PASSIVE_RESIST_PANIC = 0x7f,
+    ITEM_PASSIVE_RESIST_POISON = 0x80,
+    ITEM_PASSIVE_RESIST_SHOCK = 0x81,
+    ITEM_PASSIVE_RESIST_BURN = 0x82,
+    ITEM_PASSIVE_RESIST_MAGIC_SEAL = 0x83,
+    ITEM_PASSIVE_RESIST_INTOXICATION = 0x84,
+    ITEM_PASSIVE_RESIST_FIRE_AND_ICE = 0x85,
+    ITEM_PASSIVE_WEAPON_HP_DRAIN = 0x86,
+    ITEM_PASSIVE_WEAPON_MP_DRAIN = 0x87
+GZ_ENUM_END(ItemPassiveEffect)
 
 // Selects the equipped item's stat, resistance, regeneration or drain effect.
 #define GetItemPassiveEffectCode(record) ((record)->params[0x25])

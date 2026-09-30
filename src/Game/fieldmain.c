@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <File/DataTableId.h>
 #include <Game/Analyze.h>
 #include <Game/AreaMap.h>
@@ -24,10 +25,12 @@
 #include <Game/LevelUp.h>
 #include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
+#include <Game/MoveCommand.h>
 #include <Game/ObjectRecord.h>
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
+#include <Game/PartyStep.h>
 #include <Game/Scene.h>
 #include <Game/StateStack.h>
 #include <Game/TreasureBox.h>
@@ -43,6 +46,7 @@
 #include <Mem/Handle.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Script/ScriptVars.h>
 #include <Sound/Sound.h>
 #include <Ui/Hotspot.h>
@@ -66,14 +70,14 @@ static u8 s_levelEvents[0x20] = {0};
 // The direction the party faces after returning to the field (-1: find the
 // exit it came through).
 DATA(0x0007b760)
-static i16 s_returnDirection = 0;
+static GZ_ENUM_STORAGE(ViewDirection, i16) s_returnDirection = VIEW_NORTH;
 
 // The return point: the field position restored when the field is re-entered.
 DATA(0x0007b764)
 static i16 s_returnLevel = 0;
 
 DATA(0x0007b768)
-static i16 s_returnArea = 0;
+static GZ_ENUM_STORAGE(MapAreaId, i16) s_returnArea = MAP_AREA_HATSUDAI_SHELTER;
 
 DATA(0x0007b76c)
 static i16 s_returnY = 0;
@@ -216,20 +220,20 @@ void SaveReturnPoint(void) {
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00012280, 0x231)
-i16 AdvancePartyMove(i16 command) {
+GZ_ENUM_RETURN(PartyMoveOutcome, i16) AdvancePartyMove(i16 command) {
     i16 wall;
     i16 step;
     i16 x;
     i16 y;
     for (;;) {
         switch (g_party.field.moveState) {
-            case 0:
-                if (command < 4) {
+            case FIELD_MOVE_IDLE:
+                if (command < MOVE_TURN_RIGHT) {
                     g_party.field.moveCommand = command;
-                    g_party.field.moveState = 1;
+                    g_party.field.moveState = FIELD_MOVE_STEPPING;
                 } else {
                     command -= 3;
-                    g_party.field.moveState = 2;
+                    g_party.field.moveState = FIELD_MOVE_TURNING;
                     if (command == 3) {
                         g_party.field.turnsLeft = -1;
                     } else {
@@ -238,9 +242,9 @@ i16 AdvancePartyMove(i16 command) {
                 }
                 command = 0;
                 continue;
-            case 1:
+            case FIELD_MOVE_STEPPING:
                 SaveReturnPoint();
-                g_party.field.moveState = 0;
+                g_party.field.moveState = FIELD_MOVE_IDLE;
                 if (!IsStepBarred(
                         g_party.field.pos.x,
                         g_party.field.pos.y,
@@ -252,10 +256,11 @@ i16 AdvancePartyMove(i16 command) {
                         g_party.field.moveCommand,
                         RevealAreaMapAt(g_party.field.pos.x, g_party.field.pos.y)
                     );
-                    if (((wall == 1 || wall == 2) && g_party.field.moveCommand != 0)
-                        || WallStops(wall, WALL_STOP_MOVEMENT) == 3) {
+                    if (((wall == WALL_KIND_DOOR || wall == WALL_KIND_FLAG_BARRED_DOOR)
+                         && g_party.field.moveCommand != MOVE_FORWARD)
+                        || WallStops(wall, WALL_STOP_MOVEMENT) == WALL_STOP_SOLID) {
                         PlaySoundEffect(8);
-                        return 2;
+                        return PARTY_MOVE_BLOCKED;
                     }
                     if (WallStops(wall, WALL_STOP_MOVEMENT)) {
                         PlayWallEffect();
@@ -271,25 +276,25 @@ i16 AdvancePartyMove(i16 command) {
                         TurnDirection(g_party.field.pos.direction, g_party.field.moveCommand)
                     );
                     PlaySoundEffect(0xc);
-                    return 1;
+                    return PARTY_MOVE_DONE;
                 }
                 ShowMessage(
                     "\224\340\202\315\203\215\203b\203N\202\263\202\352\202\304\202\242\202\351",
                     0x3c
                 );
                 PlaySoundEffect(8);
-                return 2;
-            case 2:
+                return PARTY_MOVE_BLOCKED;
+            case FIELD_MOVE_TURNING:
                 step = g_party.field.turnsLeft < 0 ? -1 : 1;
                 g_party.field.pos.direction = TurnDirection(g_party.field.pos.direction, step);
                 g_party.field.turnsLeft -= step;
                 if (g_party.field.turnsLeft == 0) {
-                    g_party.field.moveState = 0;
-                    return 1;
+                    g_party.field.moveState = FIELD_MOVE_IDLE;
+                    return PARTY_MOVE_DONE;
                 }
                 break;
         }
-        return 0;
+        return PARTY_MOVE_IN_PROGRESS;
     }
 }
 
@@ -335,14 +340,14 @@ void RestoreSavedPoint(void) {
 }
 
 RVA(0x00012600, 0xde)
-i16 StepParty(i16 direction) {
+GZ_ENUM_RETURN(PartyStepResult, i16) StepParty(GZ_ENUM_PARAM(MoveCommand, i16) direction) {
     i16 wall;
     if (FindObjectAtParty() >= 0) {
-        return 0;
+        return STEP_BLOCKED;
     }
     g_party.field.moveCommand = direction;
     SaveReturnPoint();
-    g_party.field.moveState = 0;
+    g_party.field.moveState = FIELD_MOVE_IDLE;
     if (!IsStepBarred(
             g_party.field.pos.x,
             g_party.field.pos.y,
@@ -354,16 +359,17 @@ i16 StepParty(i16 direction) {
             g_party.field.moveCommand,
             RevealAreaMapAt(g_party.field.pos.x, g_party.field.pos.y)
         );
-        if (((wall == 1 || wall == 2) && g_party.field.moveCommand != 0)
-            || WallStops(wall, WALL_STOP_MOVEMENT) == 3) {
+        if (((wall == WALL_KIND_DOOR || wall == WALL_KIND_FLAG_BARRED_DOOR)
+             && g_party.field.moveCommand != MOVE_FORWARD)
+            || WallStops(wall, WALL_STOP_MOVEMENT) == WALL_STOP_SOLID) {
             PlaySoundEffect(8);
-            return 0;
+            return STEP_BLOCKED;
         }
-        return WallStops(wall, WALL_STOP_MOVEMENT) ? 0x10 : 1;
+        return WallStops(wall, WALL_STOP_MOVEMENT) ? STEP_DOOR : STEP_WALK;
     }
     ShowMessage("\224\340\202\315\203\215\203b\203N\202\263\202\352\202\304\202\242\202\351", 0x3c);
     PlaySoundEffect(8);
-    return 0;
+    return STEP_BLOCKED;
 }
 
 // Frees the queued automatic moves.
@@ -452,11 +458,17 @@ i16 GetFieldBusy(void) {
 
 RVA(0x00012870, 0xc)
 i16 RequestTalk(void) {
-    return g_pendingTalk = 1;
+    return g_pendingTalk = true;
 }
 
 RVA(0x00012880, 0x53)
-void SetReturnPoint(i16 area, i16 level, i16 x, i16 y, i16 direction) {
+void SetReturnPoint(
+    i16 area,
+    i16 level,
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction
+) {
     s_returnArea = area;
     s_returnLevel = level;
     s_returnX = x;
@@ -481,22 +493,21 @@ void MovePartyTo(i16 x, i16 y, i16 direction) {
     RebuildViewScene();
 }
 
-// Copies the return point (area, level, x, y, direction) into `out`;
-// returns the pending world-map request.
+// Copies the return point into `out`; returns the pending world-map request.
 RVA(0x00012930, 0x41)
-i16 GetReturnPoint(i16* out) {
-    out[0] = s_returnArea;
-    out[1] = s_returnLevel;
-    out[2] = s_returnX;
-    out[3] = s_returnY;
-    out[4] = s_returnDirection;
+i16 GetReturnPoint(ReturnPoint* out) {
+    out->area = s_returnArea;
+    out->level = s_returnLevel;
+    out->x = s_returnX;
+    out->y = s_returnY;
+    out->direction = s_returnDirection;
     return g_worldMapRequest;
 }
 
 // Records the return point in the roster leader (see Character.returnPosition).
 RVA(0x00012980, 0x38)
 void RecordWarpInLeader(void) {
-    Character* leader = GetRosterCharacter(0);
+    Character* leader = GetRosterCharacter(ROSTER_LEADER);
     SetSavedMapPosition(
         &leader->returnPosition,
         s_returnArea,
@@ -515,32 +526,32 @@ void SetReturnPointAhead(void) {
     i16 y = g_party.field.pos.y;
     i16 direction = FindExitDirection(x, y);
     direction &= 3;
-    StepMapCoord(&x, &y, direction, 0);
+    StepMapCoord(&x, &y, direction, MOVE_FORWARD);
     SetSavedPoint(x, y, direction);
 }
 
 // The first side of x/y with a door (wall kind 1), else the first open side;
 // -1 for none.
 RVA(0x00012a20, 0x58)
-i16 FindExitDirection(i16 x, i16 y) {
+GZ_ENUM_RETURN(ViewDirection, i16) FindExitDirection(i16 x, i16 y) {
     i16 cell = RevealAreaMapAt(x, y);
     i16 side;
     for (side = 0; side < 4; side++) {
-        if (GetCellWall(0, side, cell) == 1) {
+        if (GetCellWall(VIEW_NORTH, side, cell) == WALL_KIND_DOOR) {
             return side;
         }
     }
     for (side = 0; side < 4; side++) {
-        if (GetCellWall(0, side, cell) == 0) {
+        if (GetCellWall(VIEW_NORTH, side, cell) == WALL_KIND_NONE) {
             return side;
         }
     }
-    return -1;
+    return VIEW_NONE;
 }
 
 // With a key pending and the automap allowed, makes the object under the
-// selected hotspot the analyze target (a training point of kind 3 for the
-// player); returns its index, else -1.
+// selected hotspot the analyze target (one demon-interaction training point
+// for the player); returns its index, else -1.
 RVA(0x00012a80, 0x78)
 i16 PickAnalyzeTarget(void) {
     i16 index;
@@ -562,7 +573,7 @@ i16 PickAnalyzeTarget(void) {
     }
     ClearPendingKey();
     SetAnalyzeTarget(target);
-    AddTrainingPoints(GetCharacters(), 3, 1);
+    AddTrainingPoints(GetCharacters(), BATTLE_GROUP_DEMON_INTERACTION, 1);
     return index;
 }
 
@@ -588,23 +599,23 @@ i16 GetFieldExplorationActive(void) {
 RVA(0x00012b30, 0x53)
 void StartBoxScene(TreasureBox* box) {
     SceneScript script;
-    SetGamePhase(2);
+    SetGamePhase(FIELD_PHASE_EXPLORE);
     script = BeginBoxScene(box);
     PushFieldTextScene(script.script, script.entry);
     CloseFieldWindows();
     OpenTreasureBox(box);
-    g_fieldBattleActive = 0;
+    g_fieldBattleActive = false;
 }
 
 // Runs an NPC's scene script.
 RVA(0x00012b90, 0x48)
 void StartNpcScene(AreaNpc* npc) {
     SceneScript script;
-    SetGamePhase(2);
+    SetGamePhase(FIELD_PHASE_EXPLORE);
     script = GetNpcScript(npc);
     PushFieldTextScene(script.script, script.entry);
     CloseFieldWindows();
-    g_fieldBattleActive = 0;
+    g_fieldBattleActive = false;
 }
 
 // Runs the pending talk: picks a party member (none: the talk is dropped and
@@ -612,7 +623,7 @@ void StartNpcScene(AreaNpc* npc) {
 // gives the player a training point of kind 3; returns 1.
 RVA(0x00012be0, 0xb3)
 i16 RunPendingTalk(void) {
-    i16 abort = ExchangeAbortPending(0);
+    b16 abort = ExchangeAbortPending(false);
     i16 objects = CountFieldObjects();
     i16 picked;
     Character* actor;
@@ -621,35 +632,35 @@ i16 RunPendingTalk(void) {
         g_pendingTalk = objects;
         return -1;
     }
-    picked = RunPickTargetWindow(0, 3, 1, 0);
+    picked = RunPickTargetWindow(0, 3, TARGET_PICK_FIELD_OBJECT, 0);
     if (!picked) {
         return picked;
     }
     if (picked < 0) {
-        g_pendingTalk = 0;
+        g_pendingTalk = false;
         return -1;
     }
     actor = GetFieldActor(g_selectedObjectId);
     objects = FindLayerOfKind(actor->id);
     CloseMessageWindow();
     StartActorScene(0xe0, 0, objects + 1, actor);
-    g_pendingTalk = 0;
-    AddTrainingPoints(GetCharacters(), 3, 3);
+    g_pendingTalk = false;
+    AddTrainingPoints(GetCharacters(), BATTLE_GROUP_DEMON_INTERACTION, 3);
     return 1;
 }
 
-// Every third step (unless event flag 1/0x2b is set) the party takes a point
-// of damage; nonzero when it did.
-// @identity-TODO: what the damage and the flag stand for is unrecovered.
+// Every third step without suppression, the party takes a point of damage;
+// nonzero when it did.
+// @identity-TODO: the source of the damage is unrecovered.
 RVA(0x00012ca0, 0x4f)
 b16 TickStepDamage(void) {
-    if (IsEventFlagSet(1, 0x2b)) {
+    if (IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_STEP_DAMAGE_SUPPRESSED)) {
         s_damageSteps = 0;
         return false;
     }
     if (++s_damageSteps >= 3) {
         s_damageSteps = 0;
-        DamageParty(-1, 1);
+        DamageParty(-1, true);
         return true;
     }
     return false;
@@ -680,7 +691,7 @@ RVA(0x00012d20, 0x88c)
 b16 RunFieldExploration(void) {
     i16 count;
 
-    if (GetGamePhase() != 0) {
+    if (GetGamePhase() != FIELD_PHASE_LOAD_AREA) {
         if (GetRenderMode() == RENDER_MODE_PANEL && g_worldMapRequest == 1) {
             SetPanelRenderMode();
         } else {
@@ -688,7 +699,7 @@ b16 RunFieldExploration(void) {
         }
     }
     switch (GetGamePhase()) {
-        case 0:
+        case FIELD_PHASE_LOAD_AREA:
             s_eventRunning = false;
             SetModeFlags(MODE_FIELD);
             ShowScreenLayer(SCREEN_LAYER_NAVIGATION);
@@ -696,12 +707,12 @@ b16 RunFieldExploration(void) {
                 if (GetRenderMode() == RENDER_MODE_PANEL) {
                     HideScreenLayer(SCREEN_LAYER_NAVIGATION);
                 }
-                SetGamePhase(10);
+                SetGamePhase(FIELD_PHASE_FADE_TO_WORLD_MAP);
                 return false;
             }
             SetViewRenderMode();
             if (g_worldMapRequest < 0) {
-                SetGamePhase(9);
+                SetGamePhase(FIELD_PHASE_RETURN_TO_RETURN_POINT);
                 g_worldMapRequest = 0;
                 return false;
             }
@@ -709,11 +720,11 @@ b16 RunFieldExploration(void) {
             g_worldMapRequest = 0;
             LoadAreaMap(g_party.field.pos.area, g_party.field.pos.level);
             SaveReturnPoint();
-        case 1:
+        case FIELD_PHASE_ENTER_CELL:
             s_eventRunning = false;
             g_rewardMagnetite = 0;
             if (s_leaveToReturnPoint) {
-                SetGamePhase(9);
+                SetGamePhase(FIELD_PHASE_RETURN_TO_RETURN_POINT);
                 return FlushFieldScreen();
             }
             NextGamePhase();
@@ -729,12 +740,12 @@ b16 RunFieldExploration(void) {
                        == CELL_EVENT_SCRIPT) {
                 CloseMessageWindow();
                 SaveFieldPosition();
-                SetGamePhase(1);
+                SetGamePhase(FIELD_PHASE_ENTER_CELL);
                 SetSceneScriptByIndex(7, 8);
-                PushGameState(0x12);
+                PushGameState(GAME_STATE_CELL_SCENE);
                 RevealAutomapRoom(g_party.field.pos.x, g_party.field.pos.y);
                 CancelFieldMap();
-                ExchangeObjectsHidden(1);
+                ExchangeObjectsHidden(true);
                 SetReturnPointAhead();
                 return FlushFieldScreen();
             }
@@ -753,15 +764,15 @@ b16 RunFieldExploration(void) {
                 s_pendingSound = 0;
             }
             FadeScreenAndWait(SCREEN_FADE_FROM_BLACK, 1);
-            if (g_party.field.pos.area == 0x3d && g_party.field.pos.level == 3
+            if (g_party.field.pos.area == MAP_AREA_CHIYODA_LINE && g_party.field.pos.level == 3
                 && g_party.field.pos.x == 5 && g_party.field.pos.y == 0) {
                 SaveFieldPosition();
                 return FlushFieldScreen();
             }
             break;
-        case 2:
+        case FIELD_PHASE_EXPLORE:
             if (g_worldMapRequest) {
-                SetGamePhase(0);
+                SetGamePhase(FIELD_PHASE_LOAD_AREA);
                 s_eventRunning = false;
                 return false;
             }
@@ -769,10 +780,10 @@ b16 RunFieldExploration(void) {
                 RequestFieldRefresh();
             }
             if (GrantBattleRewards()) {
-                SetGamePhase(1);
-                PushGameState(0x1b);
+                SetGamePhase(FIELD_PHASE_ENTER_CELL);
+                PushGameState(GAME_STATE_LEVEL_UP);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
-                PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, 0x50, -1);
+                PushWaitState(WAIT_INPUT_OR_FRAMES, WAIT_ON_ANY_INPUT, 0x50, -1);
                 MarkRewardsPending();
                 FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
                 ShowMessage(g_scratchBuffer, 0x3c);
@@ -783,14 +794,16 @@ b16 RunFieldExploration(void) {
             if (ProcessPartyCasualties()) {
                 RequestFieldRefresh();
             }
-            if (CountFallenHumans() && !IsEventFlagSet(1, 0x4f) && !g_fieldBattleActive) {
+            if (CountFallenHumans()
+                && !IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_FALLEN_RESCUE_SUPPRESSED)
+                && !g_fieldBattleActive) {
                 CloseMessageWindow();
                 PushFieldTextScene(0x1a, 6);
                 s_eventRunning = false;
                 return false;
             }
             if (FindAbleHumanMember() == -1) {
-                if (g_party.field.pos.area == 1) {
+                if (g_party.field.pos.area == MAP_AREA_VIRTUAL_DUNGEON) {
                     CloseMessageWindow();
                     PushFieldTextScene(0x59, 6);
                     ClearRosterConditions();
@@ -812,7 +825,7 @@ b16 RunFieldExploration(void) {
                 return false;
             }
             if (s_leaveToReturnPoint) {
-                SetGamePhase(8);
+                SetGamePhase(FIELD_PHASE_FADE_TO_RETURN_POINT);
                 s_eventRunning = false;
                 return FlushFieldScreen();
             }
@@ -849,7 +862,7 @@ b16 RunFieldExploration(void) {
                         RequestFieldRefresh();
                     }
                     ResetRosterStatModifiers();
-                    g_fieldBattleActive = 0;
+                    g_fieldBattleActive = false;
                     s_eventRunning = false;
                     return FlushFieldScreen();
                 }
@@ -865,12 +878,12 @@ b16 RunFieldExploration(void) {
                     RunFieldIdle();
                 }
             }
-            if (GetGameState() == 0x10 && s_actorVanishing == 0) {
+            if (GetGameState() == GAME_STATE_FIELD_EXPLORATION && s_actorVanishing == 0) {
                 PollFieldCommand();
             }
             TickEnemySpawnTimer();
             return FlushFieldScreen();
-        case 3:
+        case FIELD_PHASE_CELL_EVENT:
             ClearFieldPanelSelection();
             PrevGamePhaseKeepStep();
             if (GetGameStep() == 0) {
@@ -880,16 +893,16 @@ b16 RunFieldExploration(void) {
             }
             s_eventRunning = true;
             return FlushFieldScreen();
-        case 6:
+        case FIELD_PHASE_ANALYZE:
             s_eventRunning = false;
             if (!RunAnalyzeWindow()) {
                 break;
             }
-        case 4:
-        case 5:
-            SetGamePhase(2);
+        case FIELD_PHASE_RESUME:
+        case FIELD_PHASE_RESUME_ALIAS:
+            SetGamePhase(FIELD_PHASE_EXPLORE);
             return FlushFieldScreen();
-        case 7:
+        case FIELD_PHASE_END_EVENT:
             s_eventRunning = false;
             NextGamePhase();
             if (s_eventSound) {
@@ -898,17 +911,17 @@ b16 RunFieldExploration(void) {
             }
             RequestFieldRefresh();
             return FlushFieldScreen();
-        case 8:
+        case FIELD_PHASE_FADE_TO_RETURN_POINT:
             s_eventRunning = false;
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             g_party.savedDirection = -1;
             g_worldMapRequest = 0;
             return FlushFieldScreen();
-        case 9:
+        case FIELD_PHASE_RETURN_TO_RETURN_POINT:
             s_eventRunning = false;
             s_leaveToReturnPoint = false;
-            SetGamePhase(1);
+            SetGamePhase(FIELD_PHASE_ENTER_CELL);
             g_party.field.pos.x = s_returnX;
             g_party.field.pos.level = s_returnLevel;
             g_party.field.pos.area = s_returnArea;
@@ -920,17 +933,17 @@ b16 RunFieldExploration(void) {
                 g_party.field.pos.x,
                 g_party.field.pos.y
             );
-            if (s_returnDirection == -1) {
+            if (s_returnDirection == VIEW_NONE) {
                 s_returnDirection = FindExitDirection(s_returnX, s_returnY);
                 if (s_returnDirection >= 0) {
                     g_party.field.pos.direction = (u8)s_returnDirection;
                 }
-                if (s_stayOnExit == 0) {
+                if (s_stayOnExit == false) {
                     StepMapCoord(
                         &g_party.field.pos.x,
                         &g_party.field.pos.y,
                         g_party.field.pos.direction,
-                        0
+                        MOVE_FORWARD
                     );
                     RebuildViewScene();
                 }
@@ -941,12 +954,12 @@ b16 RunFieldExploration(void) {
             g_party.savedDirection = OppositeDirection(g_party.field.pos.direction);
             RebuildViewScene();
             return FlushFieldScreen();
-        case 10:
+        case FIELD_PHASE_FADE_TO_WORLD_MAP:
             s_eventRunning = false;
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             return FlushFieldScreen();
-        case 11:
+        case FIELD_PHASE_CLOSE:
             ClearLayerSurface(SCREEN_LAYER_AUTOMAP);
             s_eventRunning = false;
             CloseMessageWindow();
@@ -956,7 +969,7 @@ b16 RunFieldExploration(void) {
             FreeEffectFrames();
             FreeFieldImageCache();
             UnloadAreaMap();
-            SetGameState(0x16);
+            SetGameState(GAME_STATE_WORLD_MAP);
             ClearModeFlags(MODE_FIELD);
             return false;
     }
@@ -977,7 +990,7 @@ void PollFieldCommand(void) {
         AllowImmediateInput();
     }
     if (PickAnalyzeTarget() >= 0) {
-        SetGamePhase(6);
+        SetGamePhase(FIELD_PHASE_ANALYZE);
         return;
     }
     if (!g_fieldBattleActive) {
@@ -994,8 +1007,8 @@ void CancelFieldMap(void) {
         CloseFieldWindows();
         PlayLevelMusic();
     }
-    g_fieldBattleActive = 0;
-    g_pendingTalk = 0;
+    g_fieldBattleActive = false;
+    g_pendingTalk = false;
 }
 
 RVA(0x00013640, 0x440)
@@ -1005,7 +1018,7 @@ void RunCellEvent(void) {
     i16 map;
     u16 step;
 
-    if (IsOnCellMark(0) == 0 && GetGameStep() == 0) {
+    if (IsOnCellMark(false) == CELL_MARK_MATCH && GetGameStep() == 0) {
         return;
     }
     SaveFieldPosition();
@@ -1013,54 +1026,60 @@ void RunCellEvent(void) {
     kind = CheckCellEvent(g_party.field.pos.x, g_party.field.pos.y, g_party.field.pos.level);
     switch (kind) {
         case CELL_EVENT_SCRIPT:
-            SetGamePhase(1);
+            SetGamePhase(FIELD_PHASE_ENTER_CELL);
             SetSceneScriptByIndex(7, 8);
-            PushGameState(0x12);
+            PushGameState(GAME_STATE_CELL_SCENE);
             RevealAutomapRoom(g_party.field.pos.x, g_party.field.pos.y);
             CancelFieldMap();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
-            ExchangeObjectsHidden(1);
+            ExchangeObjectsHidden(true);
             break;
         case CELL_EVENT_WORLD_EXIT:
-            SetGamePhase(10);
+            SetGamePhase(FIELD_PHASE_FADE_TO_WORLD_MAP);
             CancelFieldMap();
-            ExchangeObjectsHidden(1);
+            ExchangeObjectsHidden(true);
             break;
         case CELL_EVENT_STAIRS:
             s_stayOnExit = false;
             if (HasAutoMoves()) {
-                SetGamePhase(7);
+                SetGamePhase(FIELD_PHASE_END_EVENT);
                 CancelFieldMap();
-                SetReturnPoint(g_cellDestArea, g_cellDestLevel, g_cellDestX, g_cellDestY, -1);
+                SetReturnPoint(
+                    g_cellDestArea,
+                    g_cellDestLevel,
+                    g_cellDestX,
+                    g_cellDestY,
+                    VIEW_NONE
+                );
                 s_eventSound = 4;
                 break;
             }
             SetSceneScript(0x7f04, 7);
         case CELL_EVENT_FROZEN_SCENE:
-            PushGameState(0x1d);
+            PushGameState(GAME_STATE_FROZEN_FIELD_SCENE);
             CancelFieldMap();
             break;
         case CELL_EVENT_MARKED_WARP:
             s_stayOnExit = true;
-            SetGamePhase(7);
+            SetGamePhase(FIELD_PHASE_END_EVENT);
             CancelFieldMap();
             SetReturnPoint(
                 g_cellDestArea,
                 g_cellDestLevel,
                 g_cellDestX,
                 g_cellDestY,
-                s_stayOnExit == 1 ? g_party.field.pos.direction : -1
+                s_stayOnExit == true ? g_party.field.pos.direction : -1
             );
             SetCellMark(
                 g_cellDestArea,
                 g_cellDestLevel,
                 g_cellDestX,
                 g_cellDestY,
-                s_stayOnExit == 1 ? g_party.field.pos.direction : -1
+                s_stayOnExit == true ? g_party.field.pos.direction : -1
             );
             break;
         case CELL_EVENT_TRAP:
-            if (!IsEventFlagSet(7, 0xfd)) {
+            if (!IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_CORE_SHIELD)) {
                 RunCellTrap(1, g_party.field.pos.x, g_party.field.pos.y);
             }
             break;
@@ -1068,64 +1087,67 @@ void RunCellEvent(void) {
             RunCellTrap(1, g_party.field.pos.x, g_party.field.pos.y);
             s_stayOnExit = true;
         case CELL_EVENT_WARP:
-            SetGamePhase(7);
+            SetGamePhase(FIELD_PHASE_END_EVENT);
             CancelFieldMap();
             SetReturnPoint(
                 g_cellDestArea,
                 g_cellDestLevel,
                 g_cellDestX,
                 g_cellDestY,
-                s_stayOnExit == 1 ? g_party.field.pos.direction : -1
+                s_stayOnExit == true ? g_party.field.pos.direction : -1
             );
-            if (g_cellCode == 0x67) {
-                ExchangeObjectsHidden(1);
+            if (g_cellCode == CELL_WARP_HIDING_OBJECTS) {
+                ExchangeObjectsHidden(true);
             }
             break;
         case CELL_EVENT_FORCED_MOVE:
-            SetGamePhaseKeepStep(3);
-            if (g_cellCode >= 0x70 && g_cellCode <= 0x73) {
-                command = TurnDirection(g_cellCode - g_party.field.pos.direction - 0x70, 0);
+            SetGamePhaseKeepStep(FIELD_PHASE_CELL_EVENT);
+            if (g_cellCode >= CELL_FORCED_MOVE_NORTH && g_cellCode <= CELL_FORCED_MOVE_WEST) {
+                command = TurnDirection(
+                    g_cellCode - g_party.field.pos.direction - CELL_FORCED_MOVE_NORTH,
+                    0
+                );
                 SetGameStep(0);
-            } else if (g_cellCode == 0x64) {
+            } else if (g_cellCode == CELL_FORCED_MOVE_BACK) {
                 command = TurnDirection(
                     TurnDirection(g_party.savedDirection, 2) - g_party.field.pos.direction,
                     0
                 );
                 SetGameStep(0);
-            } else if (g_cellCode == 0x76) {
-                command = 6;
+            } else if (g_cellCode == CELL_SPIN_LEFT) {
+                command = MOVE_TURN_LEFT;
                 SetGameStep(0);
             } else {
                 if ((step = GetGameStep()) == 0) {
-                    SetGameStep(g_cellCode - 0x74);
+                    SetGameStep(g_cellCode - CELL_SPIN_RIGHT);
                 } else {
                     SetGameStep(step - 1);
                 }
-                command = 4;
+                command = MOVE_TURN_RIGHT;
             }
             RunMoveCommand(command, 0);
             RequestFieldRefresh();
             break;
         case CELL_EVENT_OBJECT:
-            PushGameState(0x15);
+            PushGameState(GAME_STATE_FIELD_TEXT_SCENE);
             CancelFieldMap();
             break;
         case CELL_EVENT_BATTLE:
-            SetGamePhase(2);
+            SetGamePhase(FIELD_PHASE_EXPLORE);
             // The destination y passes through `kind`'s slot before its low byte
             // becomes the map's high byte (retail stores it there).
             kind = g_cellDestY;
             map = (u8)kind << 8 | g_cellDestX;
             MarkFieldRefresh();
-            EnterFieldMap(map, -1, 100, -1, 100, 0);
+            EnterFieldMap(map, -1, 100, -1, 100, FIELD_MAP_CELL_EVENT);
             break;
-        case 12:
-            SetGamePhase(1);
+        case CELL_EVENT_FADE_SCENE:
+            SetGamePhase(FIELD_PHASE_ENTER_CELL);
             SetSceneScriptByIndex(5, 6);
-            PushGameState(0x12);
+            PushGameState(GAME_STATE_CELL_SCENE);
             CancelFieldMap();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
-            ExchangeObjectsHidden(1);
+            ExchangeObjectsHidden(true);
             MarkSceneDirty();
             break;
     }
@@ -1195,13 +1217,13 @@ b16 RaiseObjectEvent(i16 event, i16 queued) {
         event = 0;
     }
     state = (u8*)HandleWritePtr(s_eventStates) + event;
-    if (*state == 2) {
+    if (*state == OBJECT_EVENT_DONE) {
         return false;
     }
     if (queued) {
-        *state = 3;
+        *state = OBJECT_EVENT_QUEUED;
     } else {
-        *state = 1;
+        *state = OBJECT_EVENT_RAISED;
     }
     return true;
 }
@@ -1217,8 +1239,8 @@ void QueueObjectEvent(i16 event) {
         event = 0;
     }
     state = (u8*)HandleWritePtr(s_eventStates) + event;
-    if (*state == 3) {
-        *state = 2;
+    if (*state == OBJECT_EVENT_QUEUED) {
+        *state = OBJECT_EVENT_DONE;
     }
 }
 
@@ -1234,7 +1256,7 @@ i16 HasQueuedObjectEvents(void) {
     count = 0;
     state = HandleWritePtr(s_eventStates);
     for (i = 0x100; i != 0; i--) {
-        if (*state == 3) {
+        if (*state == OBJECT_EVENT_QUEUED) {
             count++;
         }
         state++;
@@ -1276,7 +1298,7 @@ i16 LoadFieldMemory(FILE* fp) {
 // Loads the field event table (data file 10).
 RVA(0x00013d10, 0x2a)
 void LoadFieldEventTable(void) {
-    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_EVENTS, 0xc, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_FIELD_EVENTS, DATA_FILE_TABLE, 0);
     s_eventTable = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -1388,7 +1410,7 @@ void BuildViewOcclusion(i16 x, i16 y, i16 direction, i16 mode) {
 }
 
 RVA(0x000140a0, 0x26)
-void RedrawFieldAt(i16 x, i16 y, i16 direction) {
+void RedrawFieldAt(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     SampleViewWalls(x, y, direction);
     UpdateViewCells(x, y);
 }
@@ -1542,7 +1564,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
     if (across <= 0 && (g_leftViewOcclusion[index] & 0x0f) != 0x0f) {
         stop = GetCellWallStop(direction, 3, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
-        if (stop == 1) {
+        if (stop == true) {
             AreObjectsHidden(view, across, along, -1);
         } else {
             GetCellWallStop(direction, 3, cell);
@@ -1551,7 +1573,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
     if (across >= 0 && (g_rightViewOcclusion[index] & 0x0f) != 0x0f) {
         stop = GetCellWallStop(direction, 1, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
-        if (stop == 1) {
+        if (stop == true) {
             AreObjectsHidden(view, across, along, 1);
         } else {
             GetCellWallStop(direction, 1, cell);
@@ -1560,7 +1582,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
     if (across < 0 && (g_leftViewOcclusion[index] & 0xf0) != 0xf0) {
         stop = GetCellWallStop(direction, 0, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
-        if (stop == 1) {
+        if (stop == true) {
             AreObjectsHidden(view, across, along, 0);
         } else {
             GetCellWallStop(direction, 0, cell);
@@ -1569,7 +1591,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
     if (across > 0 && (g_rightViewOcclusion[index] & 0xf0) != 0xf0) {
         stop = GetCellWallStop(direction, 0, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
-        if (stop == 1) {
+        if (stop == true) {
             AreObjectsHidden(view, across, along, 0);
         } else {
             GetCellWallStop(direction, 0, cell);
@@ -1578,7 +1600,7 @@ void VisitVisibleCellWalls(i16 view, i16 across, i16 along, i16 direction, u16 c
     if (across == 0) {
         stop = GetCellWallStop(direction, 0, cell);
         stop = WallStops(stop, WALL_STOP_GEOMETRY);
-        if (stop == 1) {
+        if (stop == true) {
             AreObjectsHidden(view, 0, along, 0);
         } else {
             GetCellWallStop(direction, 0, cell);

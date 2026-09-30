@@ -1,0 +1,1409 @@
+# giten constants work list - numeric constants kept on purpose, one row each,
+# with the reason. Every other numeric spelling in src/ and include/ is open
+# until it is written as a name (enumerator, named macro, NULL, true/false).
+# `giten verify constants --list [FILTER]` prints the open ones; the floor
+# never rises (`--update-floor` lowers it). Columns (tab-separated; `*` matches
+# anything; every field takes a glob): file owner spelling group detail reason.
+# group/detail are the census' review_group/review_context columns.
+#floor	0
+src/Text/font.cpp	s_halfWidthGlyphs	*	data-or-extent	*	glyph bitmap rows: one byte of pixels per row of each 8x16 half-width glyph
+src/Text/font.cpp	s_planeLayouts	*	data-or-extent	*	text window geometry: screen position and size in pixels, text grid in cells
+src/Text/font.cpp	s_textPalette	*	data-or-extent	*	RGB colour components of the 16 text colours
+src/Text/font.cpp	s_layerOrigin	*	data-or-extent	*	screen-layer origins in pixels
+src/Text/font.cpp	s_layerSize	*	data-or-extent	*	screen-layer sizes in pixels and the second-surface flag per slot
+src/Platform/winmain.cpp	s_quadUV	*	data-or-extent	*	texture coordinates of the billboard quads
+src/Platform/winmain.cpp	s_hardwareAtlasUV	*	data-or-extent	*	texture coordinates of the room-texture quarters (hardware device)
+src/Platform/winmain.cpp	s_softwareAtlasUV	*	data-or-extent	*	texture coordinates of the room-texture quarters (software device)
+src/Platform/winmain.cpp	s_boxUV	*	data-or-extent	*	texture coordinates of the treasure-box frames
+src/Platform/winmain.cpp	s_doorCorners	*	data-or-extent	*	door-frame corner offsets in world units and texture u per animation step
+src/Platform/winmain.cpp	s_turnSine	*	data-or-extent	*	sine table: sin(3 * i degrees) per turn step
+src/Game/skilluse.c	s_targetCellDistance	*	data-or-extent	*	grid distance of each cell of the 7x7 target area from its centre
+src/Gfx/bitmapio.cpp	s_worldMapRegions	*	data-or-extent	*	world-map blit rectangles: source and destination pixel coordinates and sizes
+src/Platform/d3dapp.cpp	s_soundResources	0	data-or-extent	*	sound slot with no WAVE resource (0 = none)
+src/Platform/winmain.cpp	g_mapTileImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Platform/winmain.cpp	g_textPlaneImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Platform/winmain.cpp	g_mapMarkImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Platform/winmain.cpp	g_commandImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Platform/winmain.cpp	g_layerImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Platform/winmain.cpp	g_panelImages	0	data-or-extent	*	entry with no bitmap resource (0 = none)
+src/Text/font.cpp	s_hotspotImages	0	data-or-extent	*	hotspot with no bitmap resource (0 = none)
+*	*	0	trivial-function-literal	0 for-init	a for loop's counter starts at zero
+*	*	*	call-argument	RandomAverage(*argument 1	the low bound of a random roll
+*	*	*	call-argument	RandomAverage(*argument 2	the high bound of a random roll
+*	*	*	call-argument	RandomAverage(*argument 3	how many rolls are averaged (0 for one uniform roll)
+*	*	*	call-argument	RandomUpTo(*argument 1	the exclusive upper bound of a random roll
+*	*	*	call-argument	RandomPercent(*argument 2	the low percentage of a random scaling
+*	*	*	call-argument	RandomPercent(*argument 3	the high percentage of a random scaling
+*	*	*	call-argument	memset(void *, int, size_t) argument 2	the fill byte
+*	*	*	call-argument	memset(void *, int, size_t) argument 3	the byte count
+*	*	*	call-argument	fread(void *, size_t, size_t, FILE *) argument 2	the element size of a file read
+*	*	*	call-argument	fread(void *, size_t, size_t, FILE *) argument 3	the element count of a file read
+*	*	*	call-argument	fwrite(const void *, size_t, size_t, FILE *) argument 2	the element size of a file write
+*	*	*	call-argument	fwrite(const void *, size_t, size_t, FILE *) argument 3	the element count of a file write
+*	*	*	call-argument	BltFast(*argument 1	the destination x in pixels
+*	*	*	call-argument	BltFast(*argument 2	the destination y in pixels
+*	*	*	call-argument	BlitImage(*argument 3	the destination x in pixels
+*	*	*	call-argument	BlitImage(*argument 4	the destination y in pixels
+*	*	*	call-argument	AllocCleared(*argument 1	the element count of an allocation
+*	*	*	call-argument	AllocCleared(*argument 2	the element size of an allocation
+*	*	*	call-argument	sprintf(char *, const char *, ...) argument 3	a value formatted into the text
+*	*	*	call-argument	sprintf(char *, const char *, ...) argument 4	a value formatted into the text
+*	*	*	call-argument	PushPromptState(*argument 1	the action state's sub-state
+*	*	*	call-argument	PushPromptState(*argument [234]	the action effect's field position (x, height, depth)
+*	*	*	call-argument	PushPromptState(*argument 5	the action state's mode
+src/Platform/winmain.cpp	*	*	*	*array*[ ]vertices	vertex slot of a fixed quad or strip mesh
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_door*	corner and animation-step slot of the door frame tables
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_enemy	vertex slot of the enemy billboard quad
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_npc	vertex slot of the NPC billboard quad
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_box	vertex slot of the treasure-box quad
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_outline	vertex slot of the drag-outline strip
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_stairs	vertex slot of the stairs quad
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_backdrop	vertex slot of the backdrop quad
+src/Platform/winmain.cpp	*	*	*	*array*[ ]s_*AtlasUV	quarter, corner and u/v slot of the room-texture coordinates
+src/Game/fieldview.c	*	*	*	*array*[ ]g_viewCells	row and column of the 4x7 view-cell grid
+src/Game/fieldview.c	*	*	*	*array*[ ]s_view*	row and column of the 4x7 view-cell grid
+*	*	*	*	*array*[ ]params	ItemRecord parameter byte index; the params block is not yet recovered as typed fields (@identity-TODO in Game/ItemRecord.h)
+*	*	0	trivial-function-literal	0 bound*	sign test against zero (a handle's validity test keeps its retail >= 0 / < 0 form)
+*	*	0	trivial-function-literal	0 initializer*	an accumulator or counter declared at zero
+*	*	1	trivial-function-literal	1 arithmetic*	a one-step offset: the next index, element or count
+*	*	1	trivial-function-literal	1 compound-assignment*	a one-step increment or decrement
+*	*	*	call-argument	operator(*argument 2	D3DMATRIX element row
+*	*	*	call-argument	operator(*argument 3	D3DMATRIX element column
+*	*	*	call-argument	PlaceSprite(*argument 4	sprite x in pixels
+*	*	*	call-argument	PlaceSprite(*argument 5	sprite y in pixels
+*	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 2	picture width in pixels
+*	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 3	picture height in pixels
+*	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 4	surface width in pixels
+*	*	*	call-argument	CreatePicture(struct Picture *, i32, i32, i32, i32, b32) argument 5	surface height in pixels
+*	*	*	call-argument	DrawPlaneText(i16, i16, i16, const char *, i32) argument 2	text x in pixels
+*	*	*	call-argument	DrawPlaneText(i16, i16, i16, const char *, i32) argument 3	text y in pixels
+*	*	*	call-argument	DrawLayerText*argument 2	text x in pixels
+*	*	*	call-argument	DrawLayerText*argument 3	text y in pixels
+*	*	*	call-argument	MoveMenuBox(*argument 2	menu box x offset in pixels
+*	*	*	call-argument	MoveMenuBox(*argument 3	menu box y offset in pixels
+*	*	*	call-argument	ReadSurfaceWord*argument 3	surface x in pixels
+*	*	*	call-argument	ReadSurfaceWord*argument 4	surface y in pixels
+*	*	*	call-argument	ShowMessage(const char *, i16) argument 2	how many ticks the message stays (-1 until dismissed)
+*	*	*	call-argument	PushWaitState(*argument 3	how many frames to wait
+*	*	*	call-argument	SetMenuItems(*argument 2	rows per menu page
+*	*	*	call-argument	CreateMenuBox(MenuBox *, i16, i16) argument 3	rows of the menu box panel
+*	*	*	call-argument	ScalePercent999(*argument 2	a percentage
+*	*	*	call-argument	AddTrainingPoints(*argument 3	training points to add
+*	*	*	call-argument	ScaleActionValue(*argument 3	a multiplier
+*	*	*	call-argument	ResetTextPlaneLineStep(*argument 2	the text line step in rows
+*	*	*	call-argument	RunPickTargetWindow(*argument 1	the minimum target range
+src/Text/font.cpp	s_hotspotAreas	*	data-or-extent	*	hotspot rectangles in pixels and the text-plane kind each is drawn on; the areas' roles are unrecovered (@identity-TODO)
+src/Game/worldtravel.c	s_travelWeights	*	data-or-extent	*	world-travel weight table; what the values count is unrecovered
+src/Game/clock.c	s_kindFirstRow	*	data-or-extent	*	first image row of each cell kind (-1 none)
+src/Game/clock.c	s_imageFirstRow	*	data-or-extent	*	first image row of each cell image (-1 none)
+src/Game/statusmenu.c	s_statusMenu	*	data-or-extent	*	panel layout: position, row count, row ids and flags
+src/Game/fieldscreen.c	s_fieldPanel	*	data-or-extent	*	panel layout: position, row count, row ids and flags
+src/Game/fieldscreen.c	s_worldPanel	*	data-or-extent	*	panel layout: position, row count, row ids and flags
+src/Game/fieldscreen.c	s_commandPanel	*	data-or-extent	*	panel layout: position, row count, row ids and flags
+src/Game/character.c	s_recoveryChance	*	data-or-extent	*	per-condition chance (of 256) to wear off
+src/Game/fieldview.c	s_viewCellOrder	*	data-or-extent	*	row and column of each view cell in occlusion order
+src/Game/fieldview.c	s_viewFloodMask	*	data-or-extent	*	view-grid cells visibility may spread through
+src/Game/fieldview.c	s_viewCellNumbers	*	data-or-extent	*	view-grid cell numbers
+src/Game/fieldview.c	s_unusedViewCellLists	*	data-or-extent	*	view-cell number runs (unused; @identity-TODO)
+src/Text/font.cpp	s_hotspotPlaneKinds	*	data-or-extent	*	text-plane kind of each hotspot area
+src/Game/debugmenu.c	s_debugEntries	*	data-or-extent	*	debug menu rows: flags and the scene value each starts
+src/Game/debugmenu.c	s_magicEntries	*	data-or-extent	*	magic test rows: flags and the skill-number step
+src/Game/treasurebox.c	g_npcTextures	*	data-or-extent	*	NPC texture slots, 0xffff when unloaded
+src/Platform/winmain.cpp	s_quadY	*	data-or-extent	*	quad vertex screen y in pixels
+src/Platform/winmain.cpp	s_enemySizes	*	data-or-extent	*	billboard size of each enemy frame in pixels
+src/Platform/winmain.cpp	s_wallCorners	*	data-or-extent	*	wall quad corner offsets in world units
+src/Game/character.c	s_affinity	*	data-or-extent	*	alignment affinity scores
+src/Game/itemrecord.c	s_timedItemFlags	-1	data-or-extent	*	the lover's heart has no expiry flag
+src/Game/itemrecord.c	s_giftFamiliarity	*	data-or-extent	*	familiarity each gem gift adds
+src/Platform/winmain.cpp	s_doorWidths	*	data-or-extent	*	door opening half-width per animation step
+src/Platform/winmain.cpp	s_doorEdgeU	*	data-or-extent	*	door texture edge u per animation step
+src/Script/scriptactor.c	s_rewardLevelThresholds	*	data-or-extent	*	reward roll thresholds
+src/Platform/d3dapp.cpp	g_identityMatrix	*	data-or-extent	*	the identity matrix
+src/Text/font.cpp	s_glyphRowOffset	*	data-or-extent	*	glyph-buffer offset of a glyph's first row by origin y
+src/Game/fieldscreen.c	s_worldBlocks	*	data-or-extent	*	world-map block origins (-1 unset)
+src/Game/statuspanel.c	s_statusCommandHotspots	*	data-or-extent	*	hotspot of each status command (-1 none)
+src/Platform/winmain.cpp	g_mapScreenOffsets	*	data-or-extent	*	world-map screen offsets in pixels
+src/Game/character.c	s_itemCountSlots	*	data-or-extent	*	ammoCounts entry of each equipment kind (-1 ammunition)
+src/Game/statuspanel.c	s_equipCountSlots	*	data-or-extent	*	ammoCounts entry of each equipment kind (-1 ammunition)
+src/Gfx/bitmapio.cpp	s_textureDiffuse	*	data-or-extent	*	texture diffuse colour components
+src/Platform/winmain.cpp	s_cellCorner	*	data-or-extent	*	room cell corner offsets in world units
+src/Platform/winmain.cpp	s_cameraOffsets	*	data-or-extent	*	camera offset per facing in world units
+src/Platform/winmain.cpp	s_billboardAxes	*	data-or-extent	*	billboard axis per facing
+src/Game/treasurebox.c	s_unusedWordTable	*	data-or-extent	*	unread words (@identity-TODO)
+src/Gfx/vram.c	g_pixelMasks	*	data-or-extent	*	bit of each pixel in a byte, most significant first
+src/Platform/winmain.cpp	s_turnImageCodesRight	*	data-or-extent	*	image variant per turn step (negative mirrors)
+src/Platform/winmain.cpp	s_turnImageCodesLeft	*	data-or-extent	*	image variant per turn step (negative mirrors)
+src/Text/font.cpp	s_padPositions	*	data-or-extent	*	navigation pad button positions in pixels
+include/*	*	*	data-or-extent	*	array extent of a record field
+src/Game/worldtravel.c	g_worldTravelTerrainFlags	*	data-or-extent	*	the terrain bit (bit 0) each world-map cell code sets in its travel score
+src/Game/fieldscreen.c	g_worldMapOverlayFlags	89	data-or-extent	*	the table's length: one flag per world-map tile variant
+*	*	*	data-or-extent	array extent	the element count of an array, written in its declaration
+*	*	0	data-or-extent	zero fill	the {0} zero fill of static storage
+src/Script/scriptsprite.c	OpLoadSprite	*	*	*== level	a shopkeeper's map level, beside the developer trace that names the shop
+src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality level	a shopkeeper's map level, beside the developer trace that names the shop
+src/Script/scriptsprite.c	OpLoadSprite	*	*	*== x	a shopkeeper's map x, beside the developer trace that names the shop
+src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality x	a shopkeeper's map x, beside the developer trace that names the shop
+src/Script/scriptsprite.c	OpLoadSprite	*	*	*== y	a shopkeeper's map y, beside the developer trace that names the shop
+src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality y	a shopkeeper's map y, beside the developer trace that names the shop
+src/Script/scriptsprite.c	OpLoadSprite	*	*	*== image	a shopkeeper's sprite image number
+src/Script/scriptsprite.c	OpPlaceSprite	*	*	store to [xy]	a sprite position in pixels
+src/Script/scriptsprite.c	OpPlaceSprite	*	*	*== [xy]	a sprite position in pixels
+src/Script/scriptsprite.c	Op*Sprite	*	*	*slot	a sprite slot
+src/Script/scriptsprite.c	Op*Sprite	*	*	*image	a sprite image number
+src/Script/scriptsprite.c	OpLoadSprite	*	*	*arg	the sprite load argument of the Osaki-fox event image the developer trace names
+src/Platform/winmain.cpp	[RD][er][na][dw]*	*	initializer-payload	*	vertex fields of a rendered primitive: screen or world position, colour and texture coordinates
+src/Platform/winmain.cpp	AnimateDoor	*	*	*	door animation geometry: corner offsets, widths and texture u per step
+src/Platform/winmain.cpp	Render[ENT]*	*	store	*	billboard geometry: offsets, spread and texture coordinates
+src/Platform/winmain.cpp	Render[ENT]*	*	arithmetic	*	billboard geometry scale factors
+src/Platform/winmain.cpp	BuildRoomMesh	*	arithmetic	*	room mesh geometry
+src/Platform/winmain.cpp	s_*Indices	*	data-or-extent	*	triangle vertex indices of a quad
+src/Platform/winmain.cpp	g_menuButtonX	*	data-or-extent	*	menu bar button left edges in pixels
+src/Platform/winmain.cpp	s_layerOrder	*	data-or-extent	*	the party panel number after SCREEN_LAYER_FIRST_PANEL
+src/Platform/winmain.cpp	HandleInput	*	arithmetic	*SCREEN_LAYER_FIRST_PANEL	the party panel number after SCREEN_LAYER_FIRST_PANEL
+src/Script/scriptactor.c	OpLoadRecord	*	*	*	a shop script (file 0x7f) entry and its keeper sprite (slot 0x1f, image number and position) or map location, as the developer trace beside each names; files 0xe0..0xff are skipped
+*	*	*	call-argument	PlaySoundEffect(*argument 1	a sound effect number (sound n plays IDR_SOUND_n; the sounds have no names)
+*	*	*	call-argument	IsEventFlagSet(*argument 1	an event-flag bank of a flag the developers' flag-name table (ET0018) does not name
+*	*	*	call-argument	IsEventFlagSet(*argument 2	an event flag the developers' flag-name table (ET0018) does not name
+*	*	*	call-argument	ModifyEventFlag(*argument 1	an event-flag bank of a flag the developers' flag-name table (ET0018) does not name
+*	*	*	call-argument	ModifyEventFlag(*argument 2	an event flag the developers' flag-name table (ET0018) does not name
+*	*	*	call-argument	LoadSpriteImage(*argument 1	a sprite slot
+*	*	*	call-argument	LoadSpriteImage(*argument 2	a sprite image number in the image data files
+*	*	*	call-argument	LoadSpriteImage(*argument 3	the sprite load argument
+*	*	*	call-argument	PlaceSprite(*argument 1	a sprite id
+*	*	*	call-argument	PlaceSprite(*argument 2	a sprite slot
+*	*	*	call-argument	PlaceSprite(*argument 3	a sprite frame
+*	*	*	call-argument	OpenDataFile(*argument 1	a record number within the data file
+*	*	*	call-argument	OpenDataFile(*argument 3	the file variant (0 is the base file)
+*	*	*	call-argument	PlayMusic(*argument 1	a music track number (the sound data files' tracks have no names)
+*	*	*	call-argument	CreateTextPlane(*argument 1	a text-plane kind (its layout is s_planeLayouts[kind]; the kinds have no names)
+*	*	*	call-argument	CreateTextPlane(*argument 2	the text-plane creation argument
+src/Game/statestack.c	RunLevelUp	*	*	*GetGame[SS][tu][eb]*	the human/demon growth sub-step limits (three or four attempts); phase-local step cases have named domains
+src/Game/statestack.c	RunLevelUp	*	call-argument	SetGame[SS][tu][eb]*	a level-up sub-step advanced in order by NextGameSub; phase-local step cases have named domains
+src/Game/fieldobj.c	s_depthRise	*	data-or-extent	*	@identity-TODO: screen rise in pixels per view depth (0..-4)
+src/Game/fieldobj.c	s_approach[XY]	*	data-or-extent	*	@identity-TODO: approach offsets in pixels per step (0..-4)
+src/Game/fieldobj.c	s_facingSprite	*	data-or-extent	*	sprite per facing relative to the view (-1 mirrors the side sprite)
+src/Game/fieldobj.c	s_encounterSpread	*	data-or-extent	*	how far across an encounter object may land, per step along (0..-3)
+src/Game/fieldobj.c	*	*	*	*anim*	anim is a frame counter: 0 idle, -1 restart, frames from 1, hidden past frame 8
+src/Game/fieldobj.c	*	0	call-argument	*WordList(*argument 2	an empty word list
+src/Game/fieldobj.c	RemoveFieldObject	0	trivial-function-literal	0 equality flag*	flag 0 of bank 0 is the object's no-flag value (it always reads clear)
+src/Game/fieldobj.c	RemoveFieldObject	7	call-argument	ModifyEventFlag*	shifts the bank byte's negate bit (FLAG_NEGATE) down to a BitChangeMode
+src/Game/fieldobj.c	FindObjectOnLayer	-1	*	*	no slot
+src/Game/fieldobj.c	SpawnFieldObject	-1	*	*	no free slot
+src/Game/fieldobj.c	SpawnFieldObject	0	trivial-function-literal	0 store *	a fresh slot starts with these fields clear
+src/Game/fieldobj.c	SpawnMapObject	-1	*	*	a map cell code of -1 holds nothing; -1 is the no-object result
+src/Game/fieldobj.c	GetLiveObject	0	*	*	the object checks are not bypassed
+src/Game/fieldobj.c	GetLiveObject	-1	*	*	no live object
+src/Game/fieldobj.c	RespawnFieldObject	-1	*	*	no object spawned
+src/Game/fieldobj.c	GetObjectLifeState	0	*	*	no object in play; GetObjectLifeState counts 1 per live object and 2 per fallen one, and DrawFieldObjects sums the counts
+src/Game/fieldobj.c	RelativeFacing	*	*	*	quarter-turn arithmetic on ViewDirection values: add a half turn and wrap to 0..3
+src/Game/fieldobj.c	GetApproachOffset	-80	store	*	@identity-TODO: the approach offset outside the table's five steps
+src/Game/fieldobj.c	GetApproachOffset	-4	*	*	the table covers steps 0..-4
+src/Game/fieldobj.c	DrawFieldObject	9	*	*	@identity-TODO: the near/far cell tables cover up to 9 objects in a cell
+src/Game/fieldobj.c	DrawFieldObject	8	comparison-or-bound	*	@identity-TODO: the near/far cell tables have 9 draw positions (0..8)
+src/Game/fieldobj.c	DrawFieldObject	8	store	*	@identity-TODO: the near/far cell tables have 9 draw positions (0..8)
+src/Game/fieldobj.c	DrawFieldObject	0	*	*	view depth 0 is the party's own row
+src/Game/fieldobj.c	DrawFieldObject	0x72	*	*	@identity-TODO: screen y of the floor projection's base line in pixels
+src/Game/fieldobj.c	DrawFieldObject	320	*	*	half the 640-pixel screen width: x from the screen centre
+src/Game/fieldobj.c	DrawFieldObject	8	arithmetic	*	@identity-TODO: the sprite position is in 8-pixel units
+src/Game/fieldobj.c	DrawFieldObjects	0	*	*	no object drawn yet
+src/Game/fieldobj.c	FindObjectAt	-1	*	*	no object
+src/Game/fieldobj.c	CountObjectsAt	-1	*	*	FindObjectAt's no-object result
+src/Game/fieldobj.c	CountObjectsAt	1	*	*	the next slot after the one found
+src/Game/fieldobj.c	FindObjectAtParty	0	*	*	search from slot 0; OBJECT_MATCH_ANY ignores the kind
+src/Game/fieldobj.c	UpdateFieldObjects	4	*	*	@identity-TODO: objects at map y 4 and beyond are hidden
+src/Game/fieldobj.c	ClearObjectStuns	*	*	*	cleared[] is a per-slot yes/no word array the caller passes on to ApplyObjectConditions
+src/Game/fieldobj.c	ApplyObjectConditions	0	*	*	marked[] is a per-slot yes/no word array
+src/Game/fieldobj.c	GetScriptSetFile	3	*	*	a script set lists three script files
+src/Game/fieldobj.c	SaveFieldLayer	0	*	*	the layer's picture moves to the saved copy
+src/Game/fieldobj.c	RestoreFieldLayer	0	*	*	the saved copy's picture moves back to the layer
+src/Game/fieldobj.c	ResetFieldLayer	-1	*	*	an empty layer's record id
+src/Game/fieldobj.c	LoadEnemyGroupSlot	-1	*	*	an empty layer's record id
+src/Game/fieldobj.c	LoadEnemyGroupSlot	4	*	*	a record's picture index selects a block of 16 image files
+src/Game/fieldobj.c	LoadEnemyGroupSlot	0x2002	*	*	the object pictures start at image file 0x2002
+src/Game/fieldobj.c	LoadEnemyGroupSlot	0xb80	*	*	@identity-TODO: picture block 0xb80 decodes with the alternate decoder
+src/Game/fieldobj.c	FindLayerScriptEntry	0	*	*	layer slot 0 is no layer (slots count from 1); script 0 is the layer's first, loaded with the set
+src/Game/fieldobj.c	FindLayerOfKind	-1	*	*	no layer holds the record
+src/Game/fieldobj.c	LoadLayerScripts	0x20	*	*	@identity-TODO: a layer script's state is its index minus 32
+src/Game/fieldobj.c	LoadLayerScriptSet	0x6000	*	*	the common object scripts are script file 0x6000, the set's files count from it
+src/Game/fieldobj.c	LoadLayerScriptSet	0x6100	*	*	a set's third file counts from script file 0x6100
+src/Game/fieldobj.c	LoadLayerScriptSet	0	call-argument	LoadLayerScripts*	each file fills script slots 0..15
+src/Game/fieldobj.c	LoadLayerScriptSet	0x10	call-argument	LoadLayerScripts*	each file fills script slots 0..15
+src/Game/fieldobj.c	LoadLayerScriptSet	*	call-argument	GetScriptSetFile*	the set's first, second and third file
+src/Game/fieldobj.c	LoadLayerScriptSet	0xff	*	*	a set's file 0xff is none
+src/Game/fieldobj.c	RestartEnemySpawnTimer	60	*	*	the interval is in seconds, the timer in ticks (60 a second)
+src/Game/fieldobj.c	SetSpawnInterval	0	*	*	0 seconds picks a random interval
+src/Game/fieldobj.c	SpawnRandomEnemy	-1	*	*	no enemy spawned
+src/Game/fieldobj.c	SpawnRandomEnemy	1	*	*	picks one of the two layers from a random roll's low bit
+src/Game/fieldobj.c	SpawnRandomEnemy	10	*	*	ten tries at a free cell
+src/Game/fieldobj.c	TickEnemySpawnTimer	0	*	*	the timer has run out
+src/Game/fieldobj.c	TickEnemySpawnTimer	-1	*	*	no enemy spawned
+src/Game/fieldobj.c	ScanSightRow	3	*	*	wraps a turned ViewDirection to 0..3
+src/Game/fieldobj.c	BuildSightGrid	*	*	*	the four ViewDirections from the facing, wrapped to 0..3
+src/Game/fieldobj.c	GetSightCell	0	*	*	unseen
+src/Game/fieldobj.c	GetPartySide	2	*	*	a random side: MOVE_RIGHT (1) or MOVE_LEFT (3)
+src/Game/fieldobj.c	IsWithinRange	*	*	*	a range byte packs the near distance in its high nibble and the far one in its low nibble
+src/Game/fieldobj.c	UseObjectSkill	-1	*	*	the skill cannot be used, is out of range or fails
+src/Game/fieldobj.c	UseObjectSkill	*	*	operator >> max	three quarters of the maximum HP
+src/Game/fieldobj.c	UseObjectSkill	3	arithmetic	*	three quarters of the maximum HP
+src/Game/fieldobj.c	RunObjectStep	0	trivial-function-literal	0 equality g_tickElapsed	no ticks have elapsed
+src/Game/fieldobj.c	RunObjectStep	1	call-argument	AgeConditions*	conditions age one turn
+src/Game/fieldobj.c	RunObjectStep	1	call-argument	SetFieldBusy*	one actor is busy (the value counts animating objects)
+src/Game/fieldobj.c	RunObjectStep	0xff	call-argument	StartScriptInCode*	@identity-TODO: the object script's call argument
+src/Game/fieldobj.c	RunObjectStep	0	call-argument	StartScriptInCode*	entry 0 of the object script
+src/Game/fieldobj.c	RunObjectStep	1	call-argument	NewScriptContext*	@identity-TODO: script context mode 1 runs for an actor
+src/Game/fieldobj.c	RunObjectStep	0	call-argument	Run*	text window 0
+src/Game/fieldobj.c	RunObjectStep	0	call-argument	RetakeDeferredChar*	text window 0
+src/Game/fieldobj.c	RunObjectStep	2	store	store to action	@identity-TODO: PickActorAction's result 2, a skill
+src/Game/fieldobj.c	RunObjectStep	1	trivial-function-literal	1 store g_actionId	@identity-TODO: action 1 goes with the weapon attack (PICK_ROLE_ATTACK)
+src/Game/fieldobj.c	RunObjectStep	*	*	* action	@identity-TODO: PickActorAction result 1 attacks, 2 uses a skill; this is an actor-choice domain distinct from battle outcome messages
+src/Game/fieldobj.c	RunObjectStep	0	trivial-function-literal	0 equality result	UseObjectSkill picked no target
+src/Game/fieldobj.c	RunObjectStep	0	trivial-function-literal	0 store tries	no tries yet
+src/Game/fieldobj.c	RunObjectStep	1	trivial-function-literal	1 bound slot	encounter slot 0 attacks; slots 1..OBJECT_SKILL_COUNT pick a skill
+src/Game/fieldobj.c	RunObjectStep	1	trivial-function-literal	1 for-init	encounter slot n picks skills[n - 1]; @identity-TODO: action 1 again (the weapon attack) once the skill tries fail
+src/Game/fieldobj.c	RunObjectStep	4	*	*	four tries at a usable skill in range
+src/Game/fieldobj.c	RunObjectStep	*	call-argument	StepObjectTowardParty*argument 2	a random side: MOVE_RIGHT (1) or MOVE_LEFT (3)
+src/Game/fieldobj.c	RunObjectStep	*	*	*scene*	@identity-TODO: the talk scene's entries per attitude (-1 falls back to entry 2)
+src/Game/fieldobj.c	RunObjectStep	0xe2	*	*	@identity-TODO: scene file 0xe2 is the field talk scene
+src/Game/fieldobj.c	ChooseObjectTarget	-1	*	*	FindPartyPositionOfId's not-in-party result
+src/Game/fieldobj.c	ChooseObjectTarget	0	trivial-function-literal	0 equality count	no candidate
+src/Game/fieldobj.c	FindStrongestOf*	-1	*	*	no demon or level found yet
+src/Game/fieldobj.c	FindDemonOfRace	-1	*	*	no demon found
+src/Game/fieldobj.c	FindDemonOfRace	500	*	*	above any demon level, so the first match wins
+src/Game/fieldobj.c	FindNextOfRace	0x7fff	*	*	above any level or id, so the first match wins
+src/Game/fieldobj.c	FindNextOfRace	0x8000	*	*	@identity-TODO: the i16 best id wrapped past 0x7fff
+src/Game/fieldobj.c	FindNextOfRace	-1	*	*	no demon found; levels from 0 count
+src/Game/fieldobj.c	FindNextOfRace	0	*	*	no wrap-around search
+src/Game/fieldobj.c	ScaleLevelGap	*	*	*	@identity-TODO: (a - b) * 42 / 20 clamped to a signed byte
+src/Game/fieldobj.c	InitObjectFromRecord	0	trivial-function-literal	0 store *	a new object starts with these fields clear
+src/Game/fieldobj.c	InitObjectFromRecord	0	trivial-function-literal	0 store	a new object starts with its conditions and flags clear
+src/Game/fieldobj.c	InitObjectFromRecord	*	*	*bits68*	a record's bits68 packs byte083 (bits 0-1), triggerRange (bits 2-4) and the pick flags (bits 5-6)
+src/Game/fieldobj.c	InitObjectFromRecord	*	*	operator & pickFlags	a record's bits68 bits 5-6 replace the pick flags' bits 0-2
+src/Game/fieldobj.c	InitObjectFromRecord	*	*	operator &	a record's bits68 packs byte083 (bits 0-1), triggerRange (bits 2-4) and the pick flags (bits 5-6)
+src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 bitwise	a record's bits68 packs the pick flags in bits 5-6
+src/Game/fieldobj.c	InitObjectFromRecord	*	call-argument	ScaleLevelGap*	the record's two alignment bytes
+src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 bound item	item 0 is no item
+src/Game/fieldobj.c	InitObjectFromRecord	-1	*	*	an empty slot has no attachment
+src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 store byte096	@identity-TODO: byte096 starts at 1
+src/Game/fieldobj.c	InitObjectFromRecord	0x11	*	*	@identity-TODO: word098 starts at 0x11
+src/Game/fieldobj.c	ReadObjectRecordField	*	*	*	a field of one, two or four bytes
+src/Game/fieldobj.c	SetFamiliarityCount	0	*	*	counts start at zero
+src/Game/fieldobj.c	RefreshFamiliarity	8	*	*	the familiarity is an eighth of the count
+src/Game/fieldobj.c	RefreshFamiliarity	0	*	*	familiarity and level gap start at zero
+src/Game/fieldobj.c	SetLevelGap	0	*	*	the level gap starts at zero
+src/Game/fieldobj.c	SetFamiliarity	0	*	*	familiarity starts at zero
+src/Game/fieldobj.c	GetFamiliarity	2	*	*	two more without the DCS Mabudachi
+src/Game/fieldobj.c	RollCharacterFunds	10	*	*	ten times the level (plus 0..10)
+src/Game/fieldobj.c	AlignmentConflicts	-1	*	*	no character, or the alignments conflict
+src/Game/fieldobj.c	AlignmentConflicts	0	*	*	opposite classes sum to zero; 0 is no conflict
+src/Game/fieldobj.c	RollWorldMapEncounter	*	*	*	-1 no encounter this turn, 0 none rolled, else the count; a cell has two variants (0 and 1)
+src/Game/fieldobj.c	CheckWorldEncounterInterval	120	*	*	two hours of game minutes between encounters
+src/Game/fieldobj.c	CheckWorldEncounterInterval	*	*	*	-1 too soon, 1 an encounter may happen
+src/Game/fieldobj.c	TestWorldEncounterChance	0	*	*	the bonus resets after an encounter
+src/Game/fieldobj.c	PrepareWorldEncounter	0	*	*	no encounter
+src/Game/fieldobj.c	PrepareWorldEncounter	*	*	*array-index s_encounterGroups	layers 0 and 1 each get a group
+src/Game/fieldobj.c	PrepareWorldEncounter	10	*	*	ten rolls for a second group different from the first
+src/Game/fieldobj.c	GetWorldEncounterMaximum	2	*	*	Asuka's two extra encounter objects
+src/Game/fieldobj.c	GetPartyEncounterSizeBonus	*	*	*	(50 - the human members' mean fortune) / 10, at least 1; 0 without humans
+src/Game/fieldobj.c	PickWorldEncounterGroup	10	*	*	Asuka adds 10 to the group roll
+src/Game/fieldobj.c	PickWorldEncounterGroup	0	*	*	the weights' running total starts at 0; past the weights, the next table's first group
+src/Game/fieldobj.c	AssignWorldEncounterGroups	40	*	*	a 40% chance per object of the second group
+src/Game/fieldobj.c	AssignWorldEncounterGroups	*	*	*	layer 0 or 1
+src/Game/fieldobj.c	LoadFieldTable	0	*	*	no handle loaded
+src/Game/fieldobj.c	LoadFieldTable	0x5000	*	*	the field images start at image file 0x5000
+src/Game/fieldobj.c	AnyObjectInReach	*	call-argument	HasObjectInReach*	@identity-TODO: reach mode 1 from the party (-1)
+src/Game/treasurebox.c	*	0	call-argument	FindTreasureBoxAt(*argument 3	find the box without making it the scene cell
+src/Game/treasurebox.c	IsHotspotTreasureOpen	1	*	*	dead legacy selector skips a box whose open flag selects frame 1
+src/Game/treasurebox.c	IsHotspotTreasureOpen	2	*	*	dead legacy selector advances two frames per treasure-box texture pair
+src/Game/treasurebox.c	CheckWorldMapEvent	2	*	*	an event triggers within two pixels of its spot; a world block has two layers (block * 2 + odd layer)
+src/Game/treasurebox.c	CheckWorldMapEvent	-1	*	*	a world event list ends at x -1
+src/Game/treasurebox.c	CheckWorldMapEvent	*	call-argument	SetSceneScriptByIndex*	the scene cell's bytes 7 and 8 name its script (file, entry)
+src/Game/treasurebox.c	SetItemMenuCharacter	-1	*	*	no equipment group or ammunition type (no member chosen)
+src/Game/treasurebox.c	FormatItemMenuEntry	-1	*	*	no equipment group (no member chosen)
+src/Game/treasurebox.c	*	1	call-argument	*ItemMenuTotal(*argument 2	prices scale by 1/priceDivisor (numerator 1)
+src/Game/treasurebox.c	*	1	call-argument	FormatItemMenuEntry(*argument 2	prices scale by 1/priceDivisor (numerator 1)
+src/Game/treasurebox.c	FormatItemMenuEntry	1	call-argument	ScaleItemPrice*	the price of one item
+src/Game/treasurebox.c	ItemMenuHandler	-1	call-argument	CompareMacca*	@identity-TODO: CompareMacca's -1 compares the party's money
+src/Game/treasurebox.c	StepItem*Menu	-1	*	*	TEXT_EVENT_CHOOSE_RIGHT (a right click) takes one away
+src/Game/treasurebox.c	StepItemSellMenu	0	call-argument	CopyBagEntries*	from the first bag entry
+src/Game/treasurebox.c	CreateItemMenu	0	call-argument	SetTextPlaneCancelEnabled*	the item menu ignores the cancel button
+src/Game/treasurebox.c	CreateItemMenu	2	*	*	@identity-TODO: menu list flag 2
+src/Game/treasurebox.c	DrawItemMenuTotal	16	*	*	the total's text column
+src/Game/treasurebox.c	AdjustItemMenuCount	10	*	*	ammunition counts go in tens
+src/Game/treasurebox.c	AdjustItemMenuCount	0	call-argument	AddClampShort*	counts start at zero
+src/Game/treasurebox.c	AdjustItemMenuCount	0	call-argument	SetTextPlaneCursorLine*	text column 0
+src/Game/treasurebox.c	GetItemMenuStock	16	*	*	@identity-TODO: an out-of-range stock index falls back to list 16
+src/Game/treasurebox.c	GetLearnableSkillList	-1	*	*	the protagonist's lists are keyed -1 - affiliation, below every character key
+src/Game/treasurebox.c	TakeLearnableSkill	-1	*	*	no requirement entry found
+src/Game/treasurebox.c	TakeLearnableSkill	0	*	*	the list's first slot
+src/Game/treasurebox.c	PickGrowthStats	*	*	*	affiliation slots 0-2 and their picks; returns 3 (three affiliations), 2 (two, alternating by turn), 1 (one, both its stats) or 0 (none); each affiliation's stat pair 0/1 (one picked at random)
+src/Game/treasurebox.c	DropTopStatPicks	*	*	*	a pick on the character's highest stat is dropped one time in four (-1: no pick)
+src/Game/treasurebox.c	TrainingThreshold	*	*	*	training level n needs 3 (n - 1)^2 + 7 points, levels clamped to 0..99
+src/Game/treasurebox.c	AddTrainingPointsRaw	99	*	*	the counter caps at training level 99's threshold
+src/Game/treasurebox.c	GetCellTrapDamage	0x6b	call-argument	*	a sound effect number (the sounds have no names)
+src/Game/treasurebox.c	GetCellTrapDamage	*	case-label	*	alignment trap codes 0x69..0x6b have no area-map records in either original disc; the recorded 0x6c..0x6e variants carry matching mask values 5..7
+src/Game/treasurebox.c	GetCellTrapDamage	*	trivial-function-literal	*	no damage below 1%; alignment traps keep the percentage in disableFlag[1]
+src/Game/treasurebox.c	GetCellTrapDamage	100	*	*	damage is a percentage of the maximum HP
+src/Game/treasurebox.c	FindPanelRowAt	-1	*	*	no row
+src/Game/treasurebox.c	ClickPanel	-1	trivial-function-literal	*	no row
+src/Game/treasurebox.c	ClickPanel	-1	call-argument	*	a click runs the row with op -1 (BIT_CHANGE_TOGGLE for a check row)
+src/Game/treasurebox.c	PollPanel	-1	*	*	no click
+src/Game/treasurebox.c	ApplyRowCheck	1	*	*	the row is checked
+src/Game/treasurebox.c	AllocAutomapLevels	*	arithmetic	*	one bit per cell, rounded up to bytes
+src/Game/treasurebox.c	*Automap*	1	call-argument	CreateArrayHandle(*argument 2	byte-sized elements
+src/Game/treasurebox.c	IsAutomapCellHidden	0	*	*	explored
+src/Game/treasurebox.c	StoreAutomapLevel	-1	*	*	no level unpacked
+src/Game/treasurebox.c	WriteAutomapAreas	4	*	*	an empty area table is written as four 256-byte blocks of zeros (MAP_AREA_COUNT handles of 4 bytes)
+src/Game/treasurebox.c	WriteAutomapAreas	256	*	*	an empty area table is written as four 256-byte blocks of zeros (MAP_AREA_COUNT handles of 4 bytes)
+src/Game/treasurebox.c	*	15	comparison-or-bound	operator == level	@identity-TODO: Hatsudai level 15 draws the automap two or three cells in (its map is offset)
+src/Game/treasurebox.c	MarkMapCell	*	*	*	@identity-TODO: Hatsudai level 15 draws the automap two or three cells in (its map is offset), by the party's facing
+src/Game/treasurebox.c	DrawMapOverlayTile	*	*	*	@identity-TODO: Hatsudai level 15 draws the automap two or three cells in (its map is offset), by the party's facing
+src/Game/treasurebox.c	Draw*	0	call-argument	IsCellBlocked(*	CELL_SCAN_DRAW_ICONS ignores the cell
+src/Game/treasurebox.c	DrawAutomapRegion	0	call-argument	GetRotatedWallAtOffset*	the wall of the cell itself
+src/Game/treasurebox.c	DrawAutomapViewport	*	*	*	the viewport centres on the party: half its width and height each way
+src/Game/treasurebox.c	DrawMapOverlay	8	*	*	text rows are 8 pixels high
+src/Game/treasurebox.c	DrawMapOverlay	*	*	*	the overlay centres on the party: half its size each way
+src/Game/treasurebox.c	RunAutomapState	*	call-argument	DrawAutomapRegion*	a one-cell strip along the edge scrolled into view
+src/Game/treasurebox.c	RunAutomapState	*	call-argument	CreateKindPanel*	@identity-TODO: the scroll panel's kind 4 on text plane 31
+src/Game/treasurebox.c	UpdateAutomapScrollPanel	0	*	*	the map's first row or column
+src/Game/treasurebox.c	DrawMoneyCounters	*	*	*	magnetite in row 8, macca in row 11 (currency 0 and 1)
+src/Game/treasurebox.c	DrawMoneyCounter	1	*	*	a value below 1 draws in the empty colour
+src/Game/treasurebox.c	DrawAreaInfo	*	*	*	the location layer's floor text at x 176 (184 below floor -10)
+src/Game/treasurebox.c	RefreshInfoBar	1	*	*	@identity-TODO: info bar layout 1
+src/Game/treasurebox.c	UpdateInfoBar	*	*	*	@identity-TODO: info bar layout 0 on a field redraw, 1 on a moon change
+src/Game/treasurebox.c	IsRegionFlagOn	*	*	*	an entry's flag pair is bank then index; the byte after it inverts the test
+src/Game/treasurebox.c	MarkRegionList	0xff	*	*	a marker entry starts with 0xff; the list ends with 0xff 0xff
+src/Game/treasurebox.c	MarkRegionList	*	call-argument	FillRegionRect*	the entry's rectangle bytes x0, y0, x1, y1
+src/Game/treasurebox.c	MarkRegionList	*	*	*	a rectangle entry's flag pair follows its four bytes; a marker entry's follows its 0xff and is 3 bytes shorter
+src/Game/treasurebox.c	FindRegionData	0xff	*	*	a marker entry starts with 0xff; the list ends with 0xff 0xff
+src/Game/treasurebox.c	FindRegionData	*	*	*	an entry's data follows its four rectangle bytes (or its 0xff marker); a marker entry is 3 bytes shorter
+src/Game/treasurebox.c	MarkRoomRegions	*	*	*	the whole grid (0..REGION_GRID_SIZE - 1); rooms number their regions from 0
+src/Game/treasurebox.c	Get*	1	call-argument	FindRegionData*	a region's index within its list (REGION_DOOR - 1 masks the door bit)
+src/Game/treasurebox.c	GetCellSpawnRate	0	*	*	no door data: no spawns
+src/Game/treasurebox.c	ResetFieldScene	-1	*	*	no current room
+src/Game/treasurebox.c	LookupCellObject	1	*	*	layers 0 and 1
+src/Game/treasurebox.c	LookupCellObject	0x20	*	*	@identity-TODO: a door without data returns object kind HUMAN_ID_LIMIT
+src/Game/treasurebox.c	EnterRoom	-1	*	*	no region
+src/Game/treasurebox.c	*	*	call-argument	LookupCellObject*	layers 0 and 1
+src/Game/treasurebox.c	FindCellObject	*	*	*	-1 no door or not its object; else layer 0 or 1
+src/Game/treasurebox.c	FinishDoorStep	*	*	*	the cell one step behind the party
+src/Game/treasurebox.c	ReturnToLeaderMark	*	*	*	the cell one step behind
+src/Game/treasurebox.c	UpdateCurrentRoom	*	*	*	@identity-TODO: alternate Tocho level 3 swaps NPC texture 0 to picture 0x53 at (3, 4) and 0x4c at (3, 5)
+src/Game/treasurebox.c	LoadNpcTexture	*	*	*	@identity-TODO: two spots swap NPC pictures (Hatsudai level 8 cells (11, 7) and (12, 6): 0x2b to 0x24; alternate Tocho level 3 below row 4: 0x53 to 0x4c); pictures are image files from 0x4000, mode bit 7 selects the request flags 3/4
+src/Game/treasurebox.c	LoadNpcPalette	*	*	*	NPC_TEXTURE_SLOTS palette colours from entry 8
+src/Game/treasurebox.c	LoadAreaNpcImages	*	*	*	@identity-TODO: the NPC record's palette follows 3 header bytes; then (code, mode) pairs, mode 0xff for an empty slot
+src/Game/treasurebox.c	AddAreaNpc	1	*	*	the texture slot follows the entry byte
+src/Game/treasurebox.c	GetNpcImageOfCode	4	*	*	retail's physical-recovery index lands on the adjacent direction-mask table at codes 0x48..0x4e; the out-of-bounds source referent remains to preserve its matched code shape
+src/Game/treasurebox.c	GetNpcTexture	0	*	*	no texture
+src/Game/treasurebox.c	NextNpcSlot	-1	*	*	no free slot
+src/Game/treasurebox.c	DrawNpcAt	*	*	*	only depths 0 and -1 draw an NPC
+src/Game/treasurebox.c	ShieldTarget	10	*	*	a shield of a tenth of the maximum HP
+src/Game/treasurebox.c	*	*	call-argument	HasObjectInReach(*	@identity-TODO: reach mode (1 from the party, 0 its own cell) and the party's combatant -1
+src/Game/treasurebox.c	SpawnActorGroup	-1	*	*	@identity-TODO: the second group spawns with alternate value -1 (nonzero: the alternate script)
+src/Game/treasurebox.c	RunAnalyzeWindow	0	call-argument	SetTextPlaneCursor*	the plane's top left
+src/Game/treasurebox.c	RunAnalyzeWindow	2	*	*	the yes/no menu's two rows
+src/Game/treasurebox.c	RunAnalyzeWindow	0	call-argument	InitWordList*	an empty word list
+src/Game/itemrecord.c	ApplyEquipmentRegen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
+src/Game/character.c	AgeConditions	0	existing-symbol	enum	a loop over every condition starts at condition 0
+src/Game/character.c	IsPartyMemberFallen	0	existing-symbol	enum	0 from GetFatalCondition/LastConditionIn means none found; LastConditionIn cannot tell condition 0 (ash) from none, so it is not CONDITION_ASH
+*	*	0	trivial-function-literal	0 store [xy]	a coordinate reset to the origin
+*	*	0	trivial-function-literal	0 store p[xy]	a coordinate reset to the origin
+*	*	0	trivial-function-literal	0 store s[xyz]	a coordinate reset to the origin
+*	*	0	trivial-function-literal	0 store top	a rectangle edge reset to the origin
+*	*	0	trivial-function-literal	0 store left	a rectangle edge reset to the origin
+*	*	0	trivial-function-literal	0 store pos	a position reset to the origin
+*	*	0	trivial-function-literal	0 store offset[XYZ]	an offset reset to none
+*	*	0	trivial-function-literal	0 store *[Cc]ount	a count reset to zero
+*	*	0	trivial-function-literal	0 store g_hpChange	an HP change reset to none
+*	*	0	trivial-function-literal	0 store g_mpChange	an MP change reset to none
+*	*	0	trivial-function-literal	0 store lastChange	the last pool change reset to none
+*	*	0	trivial-function-literal	0 store g_drainAmount	the drained amount reset to none
+*	*	0	trivial-function-literal	0 store *[Tt]ick*	a tick timer reset
+*	*	0	trivial-function-literal	0 store delay*	a delay reset
+*	*	0	trivial-function-literal	0 store flags	every flag cleared
+*	*	0	trivial-function-literal	0 store g_viewCells[]	a view-grid cell cleared
+*	*	0	trivial-function-literal	0 store cursor	a cursor back at the first entry
+*	*	0	trivial-function-literal	0 store index	an index back at the first entry
+*	*	0	trivial-function-literal	0 store i	an index back at the first entry
+*	*	0	trivial-function-literal	0 equality strcmp()	strcmp returns 0 for equal strings
+*	*	*	call-argument	RepaintTextPlane(*argument 2	the repaint mode RepaintTextPlane does not read
+src/Game/clock.c	s_cellKinds	*	data-or-extent	*	cell-kind rows: the kind flags (0 none), the pad byte, and the cell codes still unnamed (@identity-TODO in Game/CellCode.h)
+src/Game/treasurebox.c	s_mapIcons	*	data-or-extent	*	automap icon rows: exit, stair, elevator, area-NPC, kanji-sign and blank images named; image indices 6 and 23 and several cell codes still unnamed (@identity-TODO in Game/CellCode.h)
+*	*	*	call-argument	LatchCellDestination(*argument [2-6]	a byte offset of a destination field within the cell record
+*	*	*	call-argument	SetPanelRowFlags(*argument 2	a row of the panel (its position in the panel's row table)
+*	*	*	call-argument	PrintWindowText(*argument 4	the text style flag (TextState.flag1; its effect is unproven, @identity-TODO in Text/WindowText.h)
+*	*	*	call-argument	AddMenuLine(*argument 4	the value the menu line yields when chosen (-1 none)
+*	*	*	call-argument	PushWaitState(*argument 2	the input mask that ends the wait
+*	*	*	call-argument	PushWaitState(*argument 4	the text window scripts pass (-1 otherwise); the Windows body never reads it
+*	*	*	call-argument	StartScreenFadeAndWait(*argument 2	the fade speed
+*	*	*	call-argument	IsCellFlagSet(*argument 2	a byte offset of a flag within the cell record
+*	*	*	call-argument	ViewCellHasWall(*argument 4	a view-grid column
+*	*	*	call-argument	SwapWorldMapBlocks(*argument [12]	a world-map screen block (0..5)
+*	*	*	call-argument	SetScriptLongVar(*argument 1	a script long-variable index
+*	*	*	call-argument	CreateMenuBox(*argument 2	the text-plane kind of the menu window
+*	*	*	call-argument	SetTextPlaneFirstSelectableRow(*argument 2	a text-plane row
+*	*	*	call-argument	OffsetMapCoord(*argument 4	an offset across the facing, in cells
+*	*	*	call-argument	OffsetMapCoord(*argument 5	an offset along the facing, in cells
+*	*	*	call-argument	GetCellWallStop(*argument 2	a quarter-turn count from the facing
+src/Platform/d3dapp.cpp	Map*SoundId	*	*	*	a sound number the platform layer remaps between the game's and its WAVE table (the sounds have no names)
+src/Platform/d3dapp.cpp	MapSoundEffectId	*	*	*	a sound number the platform layer remaps between the game's and its WAVE table (the sounds have no names)
+src/Platform/d3dapp.cpp	ZBufferDepth	*	*	*	a z-buffer bit depth
+src/Platform/d3dapp.cpp	*	*	store	store to operator()()	a D3DMATRIX element value
+src/Platform/d3dapp.cpp	*	*	store	store to g_*Loss	the bits a colour channel loses in the pixel format
+src/Text/font.cpp	s_identityMatrix	*	data-or-extent	*	the identity MAT2 GetGlyphOutline takes
+src/Text/font.cpp	s_padGrid	*	data-or-extent	*	the navigation pad's button under each 32x32 cell
+src/Text/font.cpp	s_scrollStripRect	*	data-or-extent	*	the strip each scroll clears, in pixels
+src/Text/font.cpp	s_glyphInfo	*	data-or-extent	*	the glyph DIB header: width, height, planes and bits per pixel
+src/Text/font.cpp	PaintLayer	*	arithmetic	*SCREEN_LAYER_FIRST_PANEL	the party panel number after SCREEN_LAYER_FIRST_PANEL
+src/Text/font.cpp	BlitGlyph	*	*	*	glyph bitmap arithmetic: bit positions, pixel masks and row offsets
+src/Text/font.cpp	RenderGlyph	*	*	*	glyph bitmap arithmetic: bit positions, pixel masks and row offsets
+src/Text/font.cpp	DrawBandText	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	DrawLayerText	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	DrawPlaneText	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	DrawStatusText	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	DrawTextCell	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	RepaintTextPlane	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	ScrollPlaneMapDown	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	ScrollPlaneMapLeft	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	ScrollPlaneMapRight	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	ScrollPlaneMapUp	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	ScrollTextPlaneSurface	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	TextPlaneCellAt	*	arithmetic	*	text-plane pixel geometry: cell and line sizes and offsets
+src/Text/font.cpp	DrawBandText	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawLayerGauge	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawLayerText	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawPlaneIconKeyed	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawPlaneText	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawStatusPortrait	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawStatusText	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	DrawTextCell	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	ScrollTextPlaneSurface	*	store	*	text-plane pixel geometry: rectangle edges
+src/Text/font.cpp	ScrollTextPlaneText	*	store	*	text-plane pixel geometry: rectangle edges
+src/Platform/winmain.cpp	AllocWallMesh	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	AnimateMove	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	BuildQuadMesh	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	BuildRoomGeometry	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	BuildRoomMesh	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawDebugText	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawDragOutline	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawHotspotMarks	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawMouseCursor	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawSceneSprites	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawScreenFade	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawSprites	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	DrawStairs	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	FinishScreenFade	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	GetWallCode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderBlankMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderEnemy	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderEventMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderFieldMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderFieldView	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderLayersMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderNPC	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderPanelMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderPictureMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderSceneMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderStatusMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderTBox	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RenderViewMode	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	ResetCamera	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RestoreTextures	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	RotateByDirection	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	ShadeMesh	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	StartScreenFade	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	StepScreenFade	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	TurnAroundStep	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	TurnLeftStep	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	TurnRightStep	*	*	*	rendering: screen and world geometry, texture coordinates, colours, cell-word wall nibbles and blit parameters
+src/Platform/winmain.cpp	CreateMainWindow	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	GetSavePath	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	LoadGraphics	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	MainWindowProc	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	PlayMusic	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	ReleaseGraphics	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	ResetDisplayGlobals	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	RestoreScreenMode	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	WinMain	*	*	*	Win32/DirectX API arguments and results: window class sizes, message filters, exit codes, marker colour pixels, MIDI volume
+src/Platform/winmain.cpp	BlitTextPlanes	*	*	*	text-plane blitting: the plane bit, the keypad highlight frame count and the keypad rows rectangle in pixels
+src/Platform/winmain.cpp	RunMoveCommand	7	*	*	the move-command table index mask (eight commands)
+src/Platform/winmain.cpp	PollJoystick	0xffff	*	*	all joystick button bits, to invert the last state
+src/Platform/winmain.cpp	HandleInput	0	call-argument	PostQuitMessage(*argument 1	the exit code
+src/Script/scriptvm.c	ExecScriptOpcode	[-1]*	call-argument	Op[AC][dh]*(*argument 1	the sign that scales the script operand (add or take away)
+src/Script/scriptvm.c	ExecScriptOpcode	[01]	call-argument	OpPlaceSprite(*argument 1	an argument the body never reads; what the two opcodes differ in is unrecovered (@identity-TODO in ScriptOps.h)
+src/Script/scriptvm.c	ExecScriptOpcode	1	call-argument	OpSkipJumpTarget(*argument 1	an argument the body never reads (@identity-TODO in ScriptOps.h)
+src/Script/scriptvm.c	ExecScriptOpcode	[12]	call-argument	OpIfDemonCount(*argument 2	the demon count the opcode tests against
+src/Game/partyaction.c	GetActionResistance	50	return	*	a same-side attack takes half resistance
+src/Game/partyaction.c	GetActionResistance	50	store	*	ATTACK_ATTRIBUTE_FIXED_HALF_RESISTANCE takes a 50-percent resistance value
+src/Game/partyaction.c	GetActionResistance	100	return	*	zombie resistance to attribute 6 is 100 percent
+src/Game/partyaction.c	GetActionResistance	0	trivial-function-literal	0 return	no actor has no resistance value
+src/Game/partyaction.c	GetActionResistance	1	trivial-function-literal	1 bound result	positive protection-check results proceed to the resistance byte
+src/Game/partyaction.c	ApplyResistanceOutcome	0	trivial-function-literal	*case	resistance zero applies no damage and records a separate action result
+src/Game/partyaction.c	ApplyResistanceOutcome	2	call-argument	SetCharacterChanges*	half the amount is assigned to each of the HP and MP changes
+src/Game/partyaction.c	ReadActionResultFlags	*	*	*	@identity-TODO: bank 15 bits 26..31 form an action-result bitmap; the message-script decoder is needed to name the bits
+src/Game/partyaction.c	PickActorAction	-1	trivial-function-literal	*return	no condition is active, so no condition action was picked
+src/Game/partyaction.c	PickActorAction	0xdb	call-argument	StartScript*	script file 0xdb supplies the condition-action result; its disc identity is not decoded
+src/Game/partyaction.c	PickActorAction	0	call-argument	StartScript*	entry zero of the condition-action script selects an action
+src/Game/partyaction.c	PickActorAction	0	call-argument	NewScriptContext*	ordinary script context mode zero, with no actor bound
+src/Game/partyaction.c	PickActorAction	0	call-argument	RunScriptStep*	the condition-action script runs without a text window
+src/Game/partyaction.c	PickActorAction	0	call-argument	RetakeDeferredChar*	the condition-action script has no text window to restore
+src/Game/partyaction.c	PickActorAction	64	arithmetic	*	@identity-TODO: actor flag 31 raises action-result bit 6; the message-script decoder is needed to name it
+src/Script/scriptvm.c	ExecScriptOpcode	0x7eff	call-argument	CallScript(*argument 1	bank-script opcodes 1..8 call script files 0x7f00..0x7f07
+src/Script/*.c	*	0xdf	call-argument	*Script(*argument 1	the script file that the reward report, despawn and step-back paths enter; its contents are disc data and its identity is unrecovered
+src/Script/*.c	*	[0-2]	call-argument	*Script(*argument 2	an entry of script file 0xdf (unrecovered disc script)
+src/Script/scriptactor.c	GrantActorReward	0	existing-symbol	*	the loop reuses `kind` as the gem index
+src/Script/scriptactor.c	GrantActorReward	*	comparison-or-bound	operator <= roll	percent thresholds of the random reward tables
+src/Script/scriptactor.c	GrantActorReward	[1-3]	call-argument	GrantAdjustedActorSpoil(*argument 2	the spoil amount adjustment the random reward table applies
+src/Script/scriptactor.c	GrantActorReward	1	trivial-function-literal	1 bound reward	an equipment reward below item 1 means none was picked
+src/Game/character.c	InitCharacters	*	call-argument	InitCharacterSlot(*argument 1	the g_characters slots, filled in order
+src/Game/character.c	InitCharacters	*	call-argument	CopyCharacterWithoutSkills(*	slots 13..15 start as copies of slot 0's record
+src/Game/treasurebox.c	KnockBack	[01]	*	*at	x and y of the pushed position (`at` points at its x)
+src/Game/treasurebox.c	KnockBack	[01]	call-argument	*argument [12]	x and y of the pushed position (`at` points at its x)
+*	*	0	trivial-function-literal	0 store z	a coordinate reset to the origin
+src/Math/vec3.c	ProjectPoint	*	arithmetic	*	the 3D view's screen projection: centre column 320, eye height 233 and horizon row 114
+src/Math/vec3.c	ProjectFloorPoint	0	call-argument	ProjectPoint(*argument 2	a point on the floor (height 0)
+src/Math/vec3.c	MoveBySubVelocity	8	call-argument	ClampDelta(*argument 2	velocity is kept in 1/256 units; the step adds its whole part
+src/Math/vec3.c	CellToField	*	arithmetic	*	field cell to 3D coordinates: 3x3 subcells per cell, 6 subcells per column or row step, 75 units per subcell, and the origin offsets
+src/Mem/handle.c	Clear*	0	call-argument	SetHandleEntry(*argument 3	a freed entry has size 0
+src/Util/range.c	PowerOfTwo	1	*	*	the power of two starts at 2^0
+src/Util/range.c	ClampToUShort	0	call-argument	ClampInt(*argument 2	the unsigned short range starts at 0
+src/Util/range.c	RoundToInt	*	*	*	rounding half away from zero
+src/Util/range.c	RandomPercent	*	*	*	percent arithmetic: scale by 100, round at 50
+src/Util/range.c	Capped*	0	trivial-function-literal	0 return	no change applied
+src/Util/range.c	FilterTextMarks	0	trivial-function-literal	*	an empty string / the text's terminator
+src/Util/range.c	FilterTextMarks	0x8197	comparison-or-bound	*	Shift-JIS '＠', the text mark (see Range.h); a wide character constant would not be the same code
+src/Util/bitset.c	*	*	*	*	byte and bit of a bit index (8 bits per byte)
+src/Mem/pool.c	*	*	*	*	the dead element-pool API: four pools of 256-element chunks (index >> 8, low byte), sixteen chunks each; the size table ends at 0
+src/File/datafile.c	SetCryptKey	8	*	*	the crypt key folds the seed's high byte into its low byte
+src/File/datafile.c	ReadCryptWord	8	*	*	a little-endian word from two crypt bytes
+src/File/datafile.c	Read*Handle	1	call-argument	AllocArrayHandle(*argument 2	a byte array (element size 1)
+src/File/datafile.c	SkipBytes	0	trivial-function-literal	0 equality count	no bytes left to skip
+src/File/datafile.c	OpenDataFile	*	*	*	file-id ranges (0x2000..0x3fff, 0x4000.., 0x5000.., 0x6000.., scripts up to 0xdf) and the fallback file each range opens when a file is missing; the name buffer size and the retry loop's passes
+src/Game/abortflag.c	AddSceneHotspot	31	comparison-or-bound	*	the last usable slot of s_hotspots[32]
+src/Game/abortflag.c	*	*	*	*[0145] case	dead scene-hotspot code: kinds 0, 1, 4 and 5 have no recovered caller, so their identity is unrecovered
+src/Game/abortflag.c	AddSceneHotspot	[45]	case-label	*	dead scene-hotspot code: kinds 0, 1, 4 and 5 have no recovered caller, so their identity is unrecovered
+src/Game/abortflag.c	CountHotspotsOfKind	*	*	*	-1 reports a pending abort in place of a count; the count starts at 0 and the pending abort is cleared
+src/Game/abortflag.c	PickSceneHotspot	*	*	*	dead: a hit is the button in bits 5 and up over the hotspot index; -1 is no hit
+src/Game/abortflag.c	*	[01]	*	*dest	a treasure box's destination script and entry
+src/Game/abortflag.c	GetHotspotScript	*	*	*	dead: an empty scene script {0, 0}; FindTreasureBoxAt's `1` is its live-box filter
+src/Game/abortflag.c	DrawSceneSprite	*	*	*	dead: sprite mode 0 draws into the scene; flips mirror inside the 80x400 sprite cell, and centered sprites sit at (40, 112); -1 is no sprite
+src/Game/playtime.c	*	*	*	*	play-time units: 7232/10000 of a 17 ms tick, milliseconds, seconds, minutes, hours, days and hundreds of days
+src/Game/gamestate.c	GetMapValue	0	trivial-function-literal	0 return	an invalid map-value selector returns zero
+src/Game/gamestate.c	InitNewGame	*	*	*	a new game starts at level 8, cell (2, 1) with the movement words cleared, the hero's character slot 0 in party position 0
+src/Game/abortflag.c	AddSceneHotspot	-1	trivial-function-literal	-1 return	no free hotspot slot
+src/Game/debugmenu.c	RunDebugMenu	*	*	*s_shotRise	the magic test's shot distance: starts at 3 and wraps from 3 to 0
+src/Game/debugmenu.c	RunDebugMenu	*	call-argument	SetMenuItems(*argument 4	the row counts of s_debugEntries (15) and s_magicEntries (8)
+src/Game/debugmenu.c	RunDebugMenu	0	call-argument	HideTextPlane(*	@identity-TODO: text plane 0, which the debug scenes print on
+src/Game/debugmenu.c	RunDebugMenu	*	arithmetic	operator + MENU_STEP_PICK_FIRST	debug-menu rows 3, 5, 6 and 14 have no label (see DebugMenuRow)
+src/Game/debugmenu.c	RunDebugMenu	*	call-argument	StartDebugScene(*argument 1	@identity-TODO: the debug script files 0xaf and 0xd1 the rows run (disc scripts)
+src/Game/debugmenu.c	RunDebugMenu	0	call-argument	MoveMapCoord(*argument 3	the shot flies straight ahead (no sideways offset)
+src/Game/debugmenu.c	RunDebugMenu	0	call-argument	LaunchShot(*argument 2	@identity-TODO: LaunchShot's second argument, 0 for the test shot
+src/Ui/message.c	*	0	call-argument	PrintWindowText(*argument 3	attribute 0: print in the plane's own attribute
+src/Ui/message.c	RunTextWindowState	1	call-argument	TestFeatureMask(*	@identity-TODO: feature bit 1, tested for no effect after the repaint
+src/Ui/message.c	SetMessageLifetime	*	*	*	a lifetime under one tick falls back to 15 ticks
+src/Ui/message.c	TickMessageWindow	0	*	*	no ticks left
+src/Ui/menubox.c	*	0	call-argument	DispatchMenuEvent(*argument 2	page-level menu events carry no row (index 0)
+src/Ui/menubox.c	CreateMenuBox	-1	call-argument	CreatePositionedPanel(*	@identity-TODO: -1, -1 position the list panel by the window
+src/Ui/menubox.c	CreateMenuBox	0	*	*value	an empty menu context
+src/Ui/menubox.c	CreateMenuBox	-2	store	*repaintMode	@identity-TODO: repaint mode -2 of a new menu (RepaintTextPlane mode)
+src/Ui/menubox.c	BuildMenuPage	0	*	*	the page flags start clear; row 0 has no previous page
+src/Script/textstate.c	TickTextDelay	*	*	*	the per-character delay countdown: counts down by 2 per tick, finishing at 0
+src/Script/textstate.c	InitTextState	0	*	*charDelay	no per-character delay
+src/Script/textstate.c	InitTextState	30	store	*waitFrames	a timed wait lasts 30 frames by default
+src/Script/textstate.c	*TextPeriod	*	*	*	the text period countdown: 0 while running, -1 once it has elapsed
+src/Gfx/shot.c	SetShotPath	*	*	*	shot geometry: from and to the centre subcell 4 of their cells, lifted 1 and 2 units, depth never 0; no slope without depth
+src/Gfx/shot.c	StepShot	[01]	trivial-function-literal	[01] return	0 once the shot arrives, 1 while it flies
+src/Gfx/shot.c	GetShotScaledPosition	*	*	*	dead: the shot position scaled from the 320-unit field to 450x373, depth never 0
+src/Gfx/shot.c	RunShotState	0	*	*	phase 0 starts the shot; StepShot's 0 means it arrived
+src/Gfx/shot.c	RunClosingEffectState	0	call-argument	*	the effect's image set and record slot 0
+src/Text/windowtext.c	PrintWindowText	0	*	*inputWait	printed text waits for no input
+src/Text/windowtext.c	PutTextChar	*	*	*	a character's cell width (1 or 2, 8 pixels per cell), the slack its punctuation may use at the line end (0, -2 or -4), and -2 when the character is deferred to the next line
+src/Gfx/vram.c	LoadMask	1	call-argument	ResetMask(*	@identity-TODO: ResetMask's argument 1 when a mask file is loaded
+src/Gfx/vram.c	ClearMaskSeam	*	*	*	the seam's edge pixels: bit 0 of the left byte and bit 7 of the right
+src/Gfx/vram.c	*Mask*	*	*	*	mask geometry: 8 pixels per mask byte; 0 outside the mask
+src/Gfx/vram.c	ResetUpperPalette	*	*	*	dead: the upper eight palette entries (8..15) cleared to colour 0
+src/Gfx/vram.c	FindPaletteEntry	2	return	*	dead: the legacy colour lookup always answers entry 2
+src/Gfx/vram.c	GrbToRgb	*	*	*	PC-98 0xGRB palette words: swap the G and R nibbles
+src/Gfx/vram.c	FreeImageHandle	0	*	*	a freed image handle is none (0)
+src/Gfx/vram.c	CopySpriteBitmap	2	arithmetic	*	two bytes per 16-bit pixel
+src/Gfx/vramcell.c	*	*	*	*	PC-98 VRAM cells: 8 rows of up to 4 colour planes
+include/Gfx/VramCell.h	*	4	unresolved	*	PC-98 VRAM cells: 8 rows of up to 4 colour planes
+src/Gfx/vramaccess.c	*	*	*	*	screen-save buffers of 4 planes x 128 bytes and 640-pixel rows (8 lines per band); the 0x55aa checkerboard dither patterns and their inverse
+src/Gfx/blit.c	PrepareFullSceneSprite	*	call-argument	PrepareSceneSprite(*	the full 80x400 sprite cell with no origin or offset
+src/Gfx/videostate.c	GetPlane*	*	*	*	@identity-TODO: video planes 0..2 map to their data and headers; which screen layer each is is unrecovered
+src/Gfx/displayconfig.c	*	*	*	*	registry value sizes, key-open options and the display-config version (4) Win32 reads and writes
+src/Game/gameloop.c	InitGameData	0xc000	*	*	@identity-TODO: the feature bits set at start-up (TestFeatureMask); their meaning is unrecovered
+src/Game/gameloop.c	StepGame	*	*	*	-1 from the state dispatch or at the quit point asks to quit; the clock ticks with no extra time; a long frame advances play time 31 ms, a short one 24 ms
+src/Ui/hotspot.c	GetSelectedHotspot*	-1	*	*	no selected hotspot value
+src/Ui/hotspot.c	CountFieldObjects	*	*	*	the debug trace buffer size; -1 reports a pending abort in place of a count, which it clears
+src/Script/windowcolor.c	*	*	*	*	@identity-TODO: the alternate-text window switches: save flag 1, cursor column 0, scroll-top rows 0 and 2, and no text delay
+src/Game/waitstate.c	StepWaitState	1	*	*	a timed wait ends when its frame count reaches 1
+src/Game/waitstate.c	PushMessageBox	0	call-argument	PrintWindowText(*argument 3	attribute 0: print in the plane's own attribute
+src/Text/textchar.c	*	*	*	*	Shift-JIS decoding: a trail byte forms the low byte; codes 0xfe and up are two-byte escapes; a lead byte at the end reads as '※' (0x81a6)
+src/Script/scriptfield.c	OpIfBattleResult	*	*	*g_targetCount	target counts: exactly one, or two or more
+src/Script/scriptfield.c	OpCountObjectsAt	1	call-argument	*	@identity-TODO: CountObjectsAt's third argument, 1 for the script count
+src/Gfx/automap.c	ScreenToAutomapCell	*	*	*	automap screen geometry: an 8-pixel margin, 8 pixels per cell, 0x70 pixels (14 cells) across, and cell 7 at the centre
+src/Game/equipeffect.c	ApplyItemCurse	*	*	*	curse effects: HP and MP drained per step and chances of 0x40 or 0x20 in RandomUpTo(0xff); items below 1 are none
+include/Game/WorldMap.h	ClampWorldMapViewOrigin	*	*	*	world-map view origin limits in pixels (1664 x 1872), aligned down to 8 pixels
+include/Game/FieldSight.h	PushFieldUsePrompt	*	call-argument	*	@identity-TODO: the use prompt's position (the centre subcell 4 of cell (0, 0), height 0xba) and its sub-state and mode 0
+src/Platform/winmain.cpp	RestoreCursorClip	0	*	*	an empty (never saved) clip rectangle
+src/Platform/winmain.cpp	g_joystickKeys	*	data-or-extent	*	joystick button bits (1, 2, 4 shifted to the button field); the table ends with {0, 0}
+src/Platform/winmain.cpp	ClickMenuBar	0	*	*	no menu-bar command handled
+src/Platform/d3dapp.cpp	*	*	*	*	DirectDraw, Direct3D, DirectSound and DirectInput setup: surface sizes (640x480, 640x328 view), bit depths, 4x4 matrices, the projection (160, 1281), light and material colours, the 22050 Hz 16-bit mono sound format, buffer sizes and volumes, and API flags left 0
+src/Sound/midistream.cpp	*	*	*	*	MIDI stream buffers: members cleared at construction, 3-word events (4-byte aligned lengths), 16 channels, one MIDI device, API flags left 0
+src/Gfx/bitmapio.cpp	*	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Platform/joystick.cpp	*	*	*	*	joystick ranges: the axis centre (half the range) and a quarter-range dead zone; GetAsyncKeyState's down bit (0x8000); joystick 1 (id 0)
+src/Gfx/sprite.cpp	*	*	*	*	sprite placement: 8 pixels per column, one-slot shifts of the placement list, and demon images (0x2000..0x2fff) whose low nibble selects the half-size variant
+src/Gfx/layertexture.cpp	DecodeLayerImageAlt	*	*	*	the alternate decode's six pictures and the loaded check on g_enemyPictures[0]; decode offsets start at 0
+src/Gfx/layertexture.cpp	DecodeLayerImage	0	*	*consumed	decode offsets start at 0
+src/Gfx/walltexture.cpp	LoadWallTextures	*	*	*	wall sets: the low nibble selects the set, levels 1..3 its variant
+src/Gfx/effectdraw.cpp	*	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
+src/Platform/worldmap.cpp	*	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
+src/Text/font.cpp	*	*	*	*	the Windows text-plane renderer: accessors answer 0 (lookups -1) for a missing plane, line or cell; 4-bit colour fields of text attributes; 8-pixel cells, 80 columns and glyph buffers; -1 for no highlight or no hit; hook values, header rows and line steps
+src/Gfx/surfacecopy.cpp	CopySurfaceSquare	0	call-argument	StretchBlt(*	the source and destination origins (0, 0)
+src/Script/scriptswitch.c	SwitchOnValue	0	call-argument	PushCallFrame(*argument 2	@identity-TODO: PushCallFrame's second argument, 0 for a switch call
+src/Gfx/screensave.c	SetTextCursorOffset	80	*	*	the PC-98 text screen's 80 columns
+src/Gfx/screensave.c	RedrawScreen	*	call-argument	*	@identity-TODO: FieldScreenNop's 0 and RefreshInfoBar's 1 on a full redraw
+include/Util/Text.h	AppendTextChar	*	*	*	a two-byte Shift-JIS character (above 0xff) stores its high byte first and advances two bytes
+include/Script/Script.h	ClearScriptPosition	0	*	*	a cleared script position (no code, pc 0)
+include/Script/ScriptBlock.h	ClearScriptEntry	0	*	*	a cleared script entry (no code, pc 0)
+include/Game/Clock.h	ResetClockPhaseAndTime	0	*	*	the clock restarts at moon phase 0, 00:00
+include/Game/Character.h	ClearItemSlot	0	*	*quantity	an empty item slot holds none
+include/Game/Character.h	SetCharacterPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
+include/Game/FieldObject.h	SetFieldObjectPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
+src/Ui/hotspotclick.cpp	ClickHotspotAt	-1	*	*	no hotspot hit
+src/Game/statusmenu.c	DrawStatusLine	2	*	*	two pixels below the line top
+src/Game/statusmenu.c	SetStatusMenuItemsHidden	-1	*	*	@identity-TODO: -1 marks an unswitched status-menu item
+src/Game/clickwait.c	TakeClickUnlessCancel	*	*	*	@identity-TODO: key code -2 cancels (-1); see the function comment
+include/Ui/Panel.h	InitPanelRow	0	*	*word04	@identity-TODO: panel row word +4 starts at 0
+include/Input/Mouse.h	ClearMouseSelection	-1	*	*	no hovered or selected object
+include/Game/DropTable.h	ClearDropSlot	0	*	*amount	an empty drop slot
+include/Game/DropTable.h	RollDropAmount	1	call-argument	RollItemAmount(*argument 3	@identity-TODO: RollItemAmount's third argument, 1 for a drop
+include/Game/CombatantId.h	*	-1	*	*	party combatant ids count down from -1 (position 0)
+include/Game/BattleEffect.h	GetConditionDamageThreshold	2	*	*	half the target's level
+include/Game/AutomapData.h	GetAutomapLevelTableSize	4	*	*	four bytes per automap level entry after a 4-byte header
+src/Platform/devicesettings.cpp	LoadDeviceSettings	0	call-argument	RegOpenKeyExA(*	RegOpenKeyEx's reserved options (0)
+src/Input/mouse.c	TakeMouseCancel	0	*	*	@identity-TODO: clearSelection == 0 keeps the selection
+include/Sound/Mmio.h	*	0	*	*	MMIOINFO's first info word
+include/Game/SkillUse.h	ClearAllBattleTallies	0	*	*	battle tallies start at 0
+include/Game/FieldView.h	ApplyFacingOffset	3	*	*	the four directions (a 2-bit value)
+include/Game/Attack.h	GetExceptionalAttackLuck	0.5	*	*	half the exceptional-attack value
+include/Game/ActionWait.h	QueueActionWait	1	*	*remaining	a queued wait runs at least one more tick
+src/Script/scriptop.c	OpSaveDataCommand	1	*	*result	reading the summary always succeeds (script result 1)
+src/Script/scriptop.c	SetActorMode	*	*	*g_scriptRegs*	@identity-TODO: script register 0 set to 1 when an actor's mode changes
+src/Script/scriptop.c	OpIfFlags	*	*	*	a flag list ends with the operand (bank 0x7f, invert -1); `every` starts as all bits and the low bit of invert negates a flag
+src/Script/scripttext.c	CreateScriptPanel	0	call-argument	CreateImagePanel(*	@identity-TODO: CreateImagePanel's unused fourth argument
+src/Script/scripttext.c	OpOpenScriptPanel	0x113	*	*	@identity-TODO: opening panel image 0x113 first clears the element pool
+src/Script/scripttext.c	PollScriptPanels	*	*	*	panels are polled from the last one down; the long vars 0x16..0x19 the panel script reads (count, right click, checked, row)
+src/Script/scripttext.c	RunScriptMenuHandler	1	call-argument	SetScriptLongVar(*	@identity-TODO: the menu handler's script result 1
+src/Script/scripttext.c	OpSetMenuScroll	-1	*	*	-1 keeps the menu's scroll step or position
+src/Script/scripttext.c	WriteFormattedTextLine	0	*	*	an empty text line
+src/Script/scripttext.c	OpAllocLongArray	4	call-argument	CreateArrayHandle(*	a long array of 4-byte elements
+src/Script/scripttext.c	ReadSizedDataInt	*	*	*	little-endian bytes, sign-extended from the top byte (0x80)
+src/Script/scripttext.c	Op*Int	*	*	*	the operand's sign (1 or -1)
+src/Script/scripttext.c	OpSaveSceneCell	*	call-argument	CreateArrayHandle(*	a 16-byte scene-cell record
+src/Script/scripttext.c	OpCallTextScript	0	*	*	@identity-TODO: text source 0
+src/Script/scripttext.c	OpenScriptWindow	2	call-argument	SetTextWindowScrollTop(*	@identity-TODO: a script window's scroll-top row 2
+src/Script/scripttext.c	TopScriptWindow	-1	*	*	no script window open
+src/Script/scripttext.c	OpPushScriptWindow	*	*	*	@identity-TODO: window kind 5 is remapped to 0xe (see the function comment); OpenScriptWindow's second argument 0
+src/Game/savegame.c	WriteSaveHeader	0	call-argument	GetCharacter(*	character slot 0, the hero
+src/Game/savegame.c	LoadGame	0	trivial-function-literal	0 return	no errors when the file cannot be opened
+src/Game/savegame.c	LoadGame	*	*	*direction	turning around (a half turn of the four directions)
+src/Game/savegame.c	LoadGame	*	call-argument	OffsetMapCoordFacing(*	one cell ahead
+src/Game/savegame.c	LoadGame	*	call-argument	ReadObjectRecordField(*	the equipment group: the 2-byte object-record field at 0x20
+src/Game/savegame.c	Read*	-1	trivial-function-literal	-1 return	the file cannot be read
+src/Game/savegame.c	Run*	[01]	trivial-function-literal	[01] case	a system sub-menu's steps: open it, then run it
+src/Game/savegame.c	Run*	2	call-argument	OpenSystemMenu(*	the two rows of the display and quit choices
+src/Game/savegame.c	RunQuitConfirm	*	*	*	row 0 of the quit choice quits; g_quitRequest 1 asks StepGame to end
+src/Game/savegame.c	ReadSaveSummary	0	*	*g_scratchBuffer*	an empty floor text
+src/Script/scriptctx.c	ResolveObjectId	*	comparison-or-bound	*== slot	the special refs' slot forms: slot 16 (ref -17) through 23 (ref -24) run one past ResolveScriptObject's refs (-16..-23), as retail compares them
+src/Script/scriptctx.c	*	-1	call-argument	GetCharacter(*	the last character slot (out-of-range slots fall back to it), where the fusion result loads
+src/Script/scriptctx.c	ResolveScriptObject	14	call-argument	GetCharacter(*	@identity-TODO: character slot 14, the scratch slot a character id loads into
+src/Script/scriptctx.c	OpConvertCharacterRef	-15	store	*	@identity-TODO: -15 (slot 14's ref) when the character is not loaded
+src/Script/scriptctx.c	GetObject*	0	*	*	no such object: no macca or magnetite
+src/Script/scriptctx.c	NewScriptContext	0	*	*	a new context has no call stack
+src/Script/scriptctx.c	Read*	*	*	*	script code decoding: little-endian bytes and words; 0 at the end of the code
+src/Script/scriptctx.c	StepScript	*	*	*	@identity-TODO: StepScript's -1 result and 0 return
+src/Script/scriptctx.c	RunScript	0	call-argument	NewScriptContext(*	@identity-TODO: NewScriptContext's first argument, 0 for RunScript
+src/Script/scriptctx.c	RunScriptStep	0	*	*	@identity-TODO: RunScriptStep's result 0
+src/Script/scriptctx.c	TickScript	0	*	*	no delay skip; 0 while the script runs on
+src/Script/scriptctx.c	RetakeDeferredChar	*	*	*	PutTextChar's -2 (deferred) and no character
+src/Game/*.c	*	*	call-argument	Set*Result(*	@identity-TODO: mixed action-result codes outside the base combat outcomes; they are sent through GetActionValue to the message scripts
+src/Game/*.c	*	*	*	*g_actionResult*	@identity-TODO: the shared result word also holds restoration and field-effect codes and drain tags
+src/Game/*.c	*	*	*	*g_attackResistance*	@identity-TODO: GetActionResistance also holds ordinary damage rates alongside its named special results
+src/Game/*attack.c	*	*	*	*resistance	@identity-TODO: the attack formulas also use positive resistance rates and named special results
+src/Game/*attack.c	*	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
+src/Game/*attack.c	*	*	comparison-or-bound	*amount	a damage amount below zero is none
+src/Game/*attack.c	*	*	store	*amount	a damage amount below zero is none; 0x7fff for an overkill
+src/Game/*attack.c	*	*	call-argument	ClampInt(*	damage as a percentage of the rolled value, clamped to 0..0x7fffffff
+src/Game/*attack.c	*	*	call-argument	RoundToInt(*	percent scaling (100 or 1/100)
+src/Game/*attack.c	*	2	call-argument	ScaleByMoonValue(*argument 3	@identity-TODO: ScaleByMoonValue's third argument, 2 for damage
+src/Game/*attack.c	*	*	call-argument	ScaleActionValue(*argument 1	value scales (4 for the hit roll, 10 for the condition roll)
+src/Game/*attack.c	*	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
+src/Game/*attack.c	*	0	trivial-function-literal	0 return	no damage
+src/Game/*attack.c	*	0	trivial-function-literal	0 equality damage	no damage
+src/Game/*attack.c	*	0	trivial-function-literal	0 store hit	no hit
+src/Game/*attack.c	*	0	trivial-function-literal	0 equality result	the hit roll's result 0 (a miss)
+src/Game/*attack.c	*	*	comparison-or-bound	*< result	the exceptional-attack roll's results (2, 4, 5)
+src/Game/*attack.c	Run*Attack	0	call-argument	Resolve*Attack(*argument 3	a plain attack (mode 0)
+src/Game/skillattack.c	ResolveSkillAttack	0	call-argument	*argument 3	@identity-TODO: the weapon and gun attacks' mode, and RollSkillHit's sameSide, 0 against the enemy side
+src/Game/*.c	*	0	call-argument	SetCharacterChanges(*	no change to that side (target or self)
+src/Game/restore.c	s_swappedPairOrder	*	data-or-extent	*	@identity-TODO: an unread table of the order 0..3 with the middle pair swapped (see its comment)
+src/Game/restore.c	s_fourBitMasks	*	data-or-extent	*	GetNpcImageOfCode indirectly reads these seven direction masks; its source referent remains an out-of-bounds physical-recovery array index
+src/Game/restore.c	ComputeRestoreAmount	*	*	*	the zero and fixed-share amount codes are named; the magic roll is clamped at 0 and scaled by a percent
+src/Game/restore.c	ApplyRestoreEffect	0	*	*g_effectCondition	no condition to report
+src/Game/restore.c	ApplyRestoreEffect	*	*	*	@identity-TODO: pool fractions (a quarter, an eighth); RestoreResult names the return codes
+src/Script/eventflags.c	SetFlagBank	0xffffffff	*	*	every flag of the word set
+src/Script/eventflags.c	ClearFlagBank	0	*	*	every flag of the word clear
+src/Script/eventflags.c	ResetEventFlags	*	call-argument	*	flag 0 of bank 0 is the flag that always reads clear (TestEventFlag), not the table's first scenario flag
+src/Script/eventflags.c	TestEventFlag	0	*	*	flag 0 of bank 0 always reads clear
+src/Script/eventflags.c	SetFlagSettings	0x3fc0ffff	*	*	@identity-TODO: the setting bits the system word keeps (the rest come from `packed`)
+src/Script/eventflags.c	SetFlagTag	5	*	*	the five tag bytes of the system bank
+src/Script/eventflags.c	ReadFlagOperand	*	*	*	-1 for a negated operand, else 0
+src/Script/eventflags.c	*FlagWord	*	*	*	a flag word's index in its high byte; a set, un-negated flag reads 1
+src/Script/eventflags.c	Op*EventFlagByValue	*	*	*	a script value packs a flag as bank | index << 8 (a byte each)
+src/Script/eventflags.c	*ScriptVars	0x100	*	*	the 256-byte script variable block
+src/Gfx/motion.c	ResetSceneInput	0	*	*	@identity-TODO: the scene input words and scene flags cleared
+src/Gfx/motion.c	*Motion*	0	*	*	a motion restarts at step 0 with no delay
+src/Gfx/motion.c	MotionPoint	*	*	*	motion points: depth 731 and 14-bit fixed-point (16384) fractions
+src/Gfx/motion.c	ClampEffectCount	32	*	*	at most 32 effect repeats
+src/Gfx/motion.c	*EffectScript	*	*	*	effect scripts: no delay at the start; a delay under one tick runs the next command; the effect layer to clear (0 scene, 1 screen)
+src/Gfx/motion.c	ExecuteEffectCommand	*	trivial-function-literal	*	0 when the script ends, -1 to run the next command, 1 to wait
+src/Gfx/motion.c	*EffectImageSet	*	*	*	image sets: file ids 0x6000 + 16 * set, the loaded image's variant 0 and flags 2; slot 0 is reused when none is free
+src/Gfx/motion.c	AcquireEffectRecord	0	*	*	slot 0 is reused when none is free
+src/Gfx/motion.c	InitEffectImageSets	0	*	*	no image loaded
+src/Gfx/motion.c	ProjectEffectFrame	*	*	*	the depth frame from the shot depth (z - 56) / 450, doubled and clamped to frames 2..6
+src/Gfx/motion.c	GetEffectImageBase	4	*	*	16 pictures per image set
+src/Gfx/motion.c	CloseEffect	0	call-argument	StartMotion(*	the motion stops at the origin
+src/Gfx/motion.c	ReleaseEffectPalette	*	call-argument	*	the effect palette's entries 14 and 15
+src/Script/recordcache.c	AllocWordArray	1	*	*	at least one word
+src/Script/recordcache.c	StripZeroWords	0	call-argument	*	word 0 (no skill)
+src/Script/recordcache.c	KeepFirstSixWords	*	*	*	six skills kept; -1 when the list is missing or already short
+src/Script/recordcache.c	RollSkillLearning	10	*	*	a tenth-scaled learning chance
+src/Script/recordcache.c	LearnLevelSkill	*	*	*	no skill learned (0); -1 before one is picked
+src/Script/recordcache.c	RemoveLowestAffiliatedSkill	*	*	*	the lowest level starts above any (1000); -1 before a skill is found
+src/Script/recordcache.c	FindSkillAffiliation	*	*	*	a skill's three affiliation codes; -1 when none matches
+src/Script/recordcache.c	HighestAffiliatedSkillLevel	-1	*	*	below any level before a skill is found
+src/Script/recordcache.c	BuildLearnableSkillRanks	*	*	*	skill ids from 1; -1 ends the list; no learnable skills (0); rank 0
+src/Script/recordcache.c	CheckSkillArea	*	*	*	the area flag's bit 0 is converted arithmetically to the named allowed/forbidden results
+src/Script/recordcache.c	HpMpLeftAfterCost	*	*	*	-1 with the pool already empty, else what is left (0 when spent)
+src/Script/recordcache.c	CanUseSkill	*	*	*	-1 when unusable, else 0
+src/Script/recordcache.c	FindSkill	-1	*	*	no skill found
+src/Script/recordcache.c	ResetRecordCache	-1	*	*	no cached record
+src/Script/recordcache.c	WearCachedSkill	*	*	*	percent wear of the cached skill's values; -1 when nothing is cached
+src/Script/recordcache.c	CacheSkill	1	*	*	a skill starts with one use
+src/Script/recordcache.c	WearSkillValue	*	*	*	percent wear, at least 1 and at most 30000
+src/Game/worldtravel.c	StepWorldMapTravel	*	*	*	@identity-TODO: history index 1 and the no-step result 0
+src/Game/worldtravel.c	GetWorldTravelLateralDelta	0	*	*	no lateral offset
+src/Game/worldtravel.c	MarkReachableWorldTravelCells	1	call-argument	*	the neighbouring rows (row + 1, row - 1)
+src/Game/worldtravel.c	WeightWorldTravelCandidates	*	*	*	the lateral sign that mirrors the weight table (-1 or 1)
+src/Game/worldtravel.c	PreferWorldTravelDestination	0xfc	*	*	the top weight (every bit above the cell state)
+src/Game/worldtravel.c	ExcludeWorldTravelStep	0	*	*	an excluded cell scores nothing
+src/Game/worldtravel.c	*Route	*	*	*	the route queue: read position and capacity reset to 0, grown by one 4-byte point
+src/Game/worldtravel.c	PushRoutePoint	1	call-argument	GrowRoute(*	one more point
+src/Game/worldtravel.c	*WorldMapPlace*	*	*	*	@identity-TODO: no place name shown (-1); the name's 32/40-pixel offset and the block step 2
+src/Game/clock.c	InitClock	*	*	*	the clock's pacing: a tick every 5 frames, 2 minute steps per tick toward 60 per minute, from day 0
+src/Game/clock.c	TickClock	*	*	*	60 minutes per hour, 24 hours per day
+src/Game/clock.c	ClearMoonFlags	*	*	*	the moon flag list: bank and index byte pairs ending at 0xff
+src/Game/clock.c	TickGameClock	*	*	*	24 ticks a round; a frame's tick advances the clock one minute
+src/Game/clock.c	SetAreaFlagPreservation	-1	*	*	-1 keeps the current area or level
+src/Game/clock.c	UnloadAreaMap	-1	*	*	no area loaded
+src/Game/clock.c	SpawnMapObjects	*	*	*	@identity-TODO: two spawn exceptions: Harajuku level 6 skips the spawn at (4, 0), Shan Shan City level 4 moves the one at (9, 2) to y 1; 0xff ends the spawn list; RaiseObjectEvent's clear/raise
+src/Game/clock.c	IsSpawnEnabled	*	*	*	a spawn's flag operand: bank 0xff always spawns; the negate bit and the bank's low bits
+src/Game/clock.c	BuildRoomMap	0	*	*	no room map built
+src/Game/clock.c	RespawnAreaActors	0	call-argument	*	@identity-TODO: room 0 rebuilt on respawn
+src/Game/clock.c	SelectAreaLevel	*	*	*	out-of-range levels select level 0; wall set 0xff keeps the loaded walls; the level-flag preservation is reset
+src/Game/clock.c	LoadAreaMap	*	*	*	the area record buffer size; the area-flag preservation is reset; Shinjuku Tocho's level 1 shows as basement floor 1
+src/Game/clock.c	DecodeAreaMap	*	*	*	area record layout: a word per level after a word header, 28-byte level entries, one-byte copies and the 0x2800-byte map block
+src/Game/clock.c	PlayLevelMusic	5	*	*	@identity-TODO: the five level-music slots
+src/Game/clock.c	GetLevelFloor	0	*	*	no floor number (ground level)
+src/Game/clock.c	GetMapSize	0	*	*	no level loaded: size 0
+src/Game/clock.c	IsCellFlagSet	0	*	*	a clear cell flag byte
+src/Game/clock.c	CheckCellEvent	*	*	*	@identity-TODO: cell event parameters: the field pair (0, 1), layer 0xff (the world map), the world-map request 1, a facing mask of 0, scene script 7/8
+src/Game/clock.c	IsCellBlocked	*	*	*	@identity-TODO: the blocking-cell kinds 3, 6 and 0xb CheckBlockingCell tests, by mode (0 the party); 0 open, 1 blocked
+src/Game/clock.c	CheckBlockingCell	*	*	*	mode 0 is the party; -1 when the cell blocks
+src/Game/clock.c	GetEventCellCode	0	*	*	no event cell code
+src/Game/clock.c	IsStepBarred	*	*	*	@identity-TODO: a cell code's low nibble 0xb bars the step in the direction of its high nibble; 0 when not barred
+src/Game/clock.c	ClampMapCoord	0	*	*	the map's first column or row
+src/Game/clock.c	RevealAreaMapAt	0	*	*	no cell revealed
+src/Game/clock.c	GetWarpCodeAtOffset	0	*	*	no warp code
+src/Game/clock.c	GetCellAtOffset	*	*	*	@identity-TODO: an exception at Shinjuku Tocho level 6 (2, 5) looking west (-1, 0) reads stairs up; 0 when no level or no warp
+src/Game/clock.c	*Panel*	*	*	*	@identity-TODO: panel images 0x12, 0x110 (13 rows) and 0x112 with their special cases; -1 no image or no selection; the kind's low nibble
+src/Game/clock.c	TestFlagBits	0	*	*	no bit of the mask set
+src/Game/fieldscreen.c	PrepareFieldRedraw	*	*	*	@identity-TODO: the mask reset (1) and the view reset flag cleared
+src/Game/fieldscreen.c	UpdateFieldScreen	*	call-argument	*	@identity-TODO: the info-bar layout 0, the status refresh 1 and the full redraw (1, 0)
+src/Game/fieldscreen.c	*Cursor*	-1	*	*	no cursor cell
+src/Game/fieldscreen.c	TrackWorldMapCursor	*	*	*	the 640x328 view
+src/Game/fieldscreen.c	RunFieldPanelRow	1	call-argument	*	@identity-TODO: RunPanelRow's third argument 1
+src/Game/fieldscreen.c	RevealAutomap*	*	*	*	automap reveal: one cell ahead; a hidden cell is 0
+src/Game/fieldscreen.c	CanRevealAutomap*	0	*	*	a hidden automap cell is 0
+src/Game/fieldscreen.c	LoadCommandMenuImage	0x11	*	*	@identity-TODO: menu image 0x11
+src/Game/fieldscreen.c	SetFieldStatusBit*	*	*	*	field command panel row 1; the checked and hit-test flags are named
+src/Game/fieldscreen.c	LoadMenuImage	0	*	*	no menu image
+src/Game/fieldscreen.c	*PanelRow	*	call-argument	*Hotspot(*	panel rows are hotspots of the first plane, unhighlighted (0), hit tests with the flag 1
+src/Game/fieldscreen.c	Update*Palette	*	call-argument	*	@identity-TODO: the palette modes 0 and 1 the view and area switch between; the cell one step ahead (0, -1)
+src/Game/fieldscreen.c	RebuildFieldView	0	*	*	@identity-TODO: video plane 0 redrawn and the objects shown
+src/Game/fieldscreen.c	FreeEffect*	-1	*	*	no effect frames or backdrop loaded
+src/Game/fieldscreen.c	SelectEffectImages	*	*	*	effect image files 0x1300 (backdrops) and 0x1400 (frames) plus the effect id
+src/Game/fieldscreen.c	PlayWallEffect	*	*	*	@identity-TODO: the wall effect: every party member (-1), five frames of plane 0 stepped by 2, drawn whole
+src/Game/fieldscreen.c	UpdateFieldHud	*	*	*	@identity-TODO: the HUD's wall messages: side and front walls on the near rows (along > -4), 1 marks a message wall, 2 once its message is shown
+src/Game/fieldscreen.c	DrawFieldMessage	*	*	*	field message layout: an empty message, 8-pixel columns, the 78-column line, the 40-column centre and rows 40 and 62, column 16
+src/Game/fieldscreen.c	GetFieldMessage	*	*	*	@identity-TODO: wall message codes 0x40..0x9f
+src/Game/fieldscreen.c	LoadWorldMapBlock*	*	*	*	@identity-TODO: world-map block images: file 0x7e00 + block, block 76's file 0x7e58, 88 blocks, variants; the six loaded block slots and their block numbers
+src/Game/fieldscreen.c	*WorldMapBlock*	*	*	*	@identity-TODO: an unused block slot (-1) and its reserved word
+src/Game/fieldscreen.c	*WorldMapViewOrigin	*	*	*	the view centre (320, 164) and the half-block row test (200 / 100)
+src/Game/fieldscreen.c	GetWorldViewBlockDelta	*	*	*	block columns and rows (8 per row); a zero delta
+src/Game/fieldscreen.c	GetWorldMapCellCode	0	*	*	outside the map: no code
+src/Game/fieldscreen.c	GetWorldMapMarker	*	*	*	-1 outside the map; the marker's 3-pixel offset
+src/Game/fieldscreen.c	GetWorldBlock	0	*	*	@identity-TODO: world block slot 0
+src/Game/fieldscreen.c	*LayerImage*	*	*	*	@identity-TODO: layer image bands (7), the band scale 281/225 and the last band 6; a new image's count 1
+src/Game/fieldscreen.c	GetLayerFrame	0	*	*	no frame
+src/Game/fieldscreen.c	InitWorldPanel	0x118	*	*	@identity-TODO: menu image 0x118
+src/Game/fieldview.c	*	*	*	*	the 3D view's geometry: the 4-row x 7-column cell grid around the party (column 3 ahead), the perspective wall slots 1..16 and their left/right wedges and edges, flood-fill steps, 2-bit directions and 4-bit wall nibbles per side of a cell word
+src/Script/scriptvars.c	OpRefreshFieldScreen	*	*	*	@identity-TODO: the refresh option bit 0x10, FieldScreenNop's 7 and the info bar's layout 1
+src/Script/scriptvars.c	OpFadeOutAndClear	*	*	*	@identity-TODO: the fade speed 1; the new game's start cell (level 8, 2, 1) and render mode 2 it tests
+src/Script/scriptvars.c	OpDrawImage	*	call-argument	*	@identity-TODO: the image's plane 0, its (40, 112) origin and flag 1
+src/Script/scriptvars.c	Op*ScreenCells	*	*	*	PC-98 screen cells: 8-pixel cells on the 80 x 400 byte screen, 8 rows each, a 4-bit colour
+src/Script/scriptvars.c	OpEnableBackground	7	*	*	@identity-TODO: scene flags 7
+src/Script/scriptvars.c	*Choice*	*	*	*	choices: no delay, no choice (-1), two columns of padding, at least one column, a choice enabled (0), the menu's first row 0
+src/Script/scriptvars.c	*ScriptBlock	*	*	*	script blocks: one 0x500-byte array (0x400 of code), an entry table starting at length 1, word-aligned sizes
+src/Script/scriptvars.c	*ScriptEntr*	*	*	*	script entries: the 3- or 7-byte header, 0xffff for an absent entry, a new entry's length 1 and 0x400-byte size, an empty count
+src/Script/scriptvars.c	ThawObjectsForScript	0	*	*	objects unfrozen
+src/Script/scriptvars.c	StartDebugScene	*	*	*	@identity-TODO: debug scene 0xe0 runs as an actor scene of object 0 (entry 1)
+src/Script/scriptvars.c	Run*Scene	*	*	*	@identity-TODO: a scene window's indent and scroll-top rows
+src/Script/scriptvars.c	*Scene	*	call-argument	*	@identity-TODO: a scene window's indent (0), scroll-top rows (0, 2) and NewScriptContext's 0
+src/Script/scriptvars.c	WaitForScriptText	1	*	*	a wait of at least one frame
+src/Script/scriptvars.c	*MessageHook	*	*	*	no message hook (-1; 0xff in the operand); NewScriptContext's 0
+src/Script/scriptvars.c	ScriptFileListTail	1	*	*	loop until the list's end
+src/Script/scriptvars.c	PreloadScriptFiles	*	*	*	@identity-TODO: the bank script files 0x7f00..0x7f07 and the system script files 0xdb..0xdf kept loaded
+src/Script/scriptvars.c	*ScriptFiles	0	*	*	no holds
+src/Script/scriptvars.c	PurgeScriptFiles	0xdf	*	*	@identity-TODO: script file 0xdf is kept
+src/Script/scriptvars.c	*TextScript	0	*	*	no text script yet; the call frame's and jump's 0 offsets
+src/Script/scriptvars.c	RunTextScript	0x400	*	*	a 0x400-byte text script block
+src/Script/scriptvars.c	OpPrintNumber	*	*	*	the number buffer (32 bytes), no unit, two-byte characters above 0xff
+src/Script/scriptvars.c	SetTickCountOn	0	call-argument	*	the counter restarts at 0
+src/Script/scriptvars.c	FireCountdownEvent	0	*	*	the countdown has run out; its script is cleared
+src/Script/scriptvars.c	FindFavouredMember	-1	*	*	no member picked yet
+src/Script/scriptvars.c	OpPeekPokeScratch	*	*	*	Byte and word masks (0xff, 0xffff) and zero-initialized transfer value; the operation sentinels and width selectors are named
+src/Script/scriptvars.c	*ScriptLongVar*	0	*	*	a cleared variable reads 0
+src/Script/scriptvars.c	OpWaitMessage	*	*	*	@identity-TODO: wait kinds: frames from 0, input mask 0xffff or 2, PollIdle's (1, 0x18)
+src/Script/scriptvars.c	*CallFrame*	*	*	*	call frames: one element, unlinked (0), an empty stack, discard 0/1
+src/Script/scriptvars.c	OpShowBackground	*	*	*	@identity-TODO: background image 0x31 with arg 4 by default; images 0x4c and 7 unplace sprites 0x1f and 0
+src/Script/scriptvars.c	OpShow*Picture	*	*	*	@identity-TODO: event pictures 0x5000 + n: the ranges that wait, the 10-frame pause, and 0x505c/0x506e's special cases
+src/Script/scriptvars.c	OpSaveRestoreScreen	*	*	*	the saved screen's 80-byte rows, empty draw-state token and handle initialization; the operation flags are named
+src/Script/scriptvars.c	ClearSystemVars	0	*	*	a cleared variable reads 0
+src/Script/scriptvars.c	SetScriptLongVar	-1	*	*	no variable (ReadLongVarIndex's -1)
+src/Script/scriptvars.c	Call*Name	*	call-argument	GetTextToken(*	the second member is slot 1's ref (SCRIPT_REF_SLOT_BASE - 1)
+src/Game/fieldmain.c	AdvancePartyMove	*	*	*	@identity-TODO: turn commands less 3 give quarter turns (3 = one left); door kinds and the named solid stop block a step that is not forward; a step takes 3..6 minutes; movement results are named
+src/Game/fieldmain.c	StepParty	*	*	*	door kinds and the named solid stop block a step that is not forward
+src/Game/fieldmain.c	CommitPartyStep	3	*	*	a step takes 3 minutes
+src/Game/fieldmain.c	*AutoMove*	*	*	*	the auto-move queue: read position and capacity reset to 0, grown by one; 0xff ends it; -1 once it is empty
+src/Game/fieldmain.c	SetReturnPoint	-1	*	*	no selected hotspot
+src/Game/fieldmain.c	MovePartyTo	1	*	*	@identity-TODO: SetRebuildRoom's 1
+src/Game/fieldmain.c	SetReturnPointAhead	3	*	*	@identity-TODO: a three-quarter turn of the facing
+src/Game/fieldmain.c	FindExitDirection	*	*	*	the four sides; WALL_KIND_DOOR marks an exit, WALL_KIND_NONE an open side
+src/Game/fieldmain.c	PickAnalyzeTarget	*	*	*	-1 when nothing is picked; analyzing trains the fourth battle-stat group (3, @identity-TODO in BattleStat.h)
+src/Game/fieldmain.c	RunPendingTalk	*	*	*	@identity-TODO: talk: the pick window's (3, 1, 0), actor scene script 0xe0 entry 0 with 1, the fourth group's training; -1 when no talk starts
+src/Game/fieldmain.c	TickStepDamage	*	*	*	damage every third step: one point (-1) to each member
+src/Game/fieldmain.c	TickFieldSteps	*	*	*	three steps between field ticks
+src/Game/fieldmain.c	PollFieldCommand	*	*	*	@identity-TODO: no move (-1); RunMoveCommand's next phase 1
+src/Game/fieldmain.c	ReturnToCurrentCell	1	*	*	@identity-TODO: both flag banks preserved
+src/Game/fieldmain.c	*FieldMemory	*	*	*	field memory: 0x100 event bytes and 0x40 state words (0x20 bytes)
+src/Game/fieldmain.c	RaiseObjectEvent	0	trivial-function-literal	0 store event	out-of-range event ids fall back to the first event
+src/Game/fieldmain.c	QueueObjectEvent	0	trivial-function-literal	0 store event	out-of-range event ids fall back to the first event
+src/Game/fieldmain.c	HasQueuedObjectEvents	0	trivial-function-literal	0 equality i	stops after scanning the event-state byte buffer
+src/Game/fieldmain.c	*ObjectEvent*	0x100	*	*	object event ids stay below the 0x100-byte state buffer
+src/Game/fieldmain.c	*View*	*	*	*	the 3D view's occlusion: 4-cell rows (along -3..0, across -3..3), 4-bit occlusion nibbles per side, 0xff for unoccluded
+src/Game/fieldmain.c	*FieldImageCache	-1	*	*	no cached field image
+src/Game/fieldmain.c	SelectFieldImageCache	*	*	*	@identity-TODO: the cache key packs 0x100 | id with the variant in bits 4 and up
+src/Game/fieldmain.c	LoadFieldImage	*	*	*	@identity-TODO: field image 0x5000 shows as 0x5049; variant, mode 0 and flags 1
+src/Game/fieldmain.c	VisitVisibleCellWalls	*	*	*	the 3D view's occlusion nibbles (0x0f, 0xf0), 0xffff for no cell, the sides (-1, 0, 1) and the cell ahead
+src/Game/fieldmain.c	MarkVisibleFieldCells	*	*	*	the 3D view's occlusion: 4-cell rows from -3, 0xff for unoccluded, the centre column 0
+src/Game/fieldmain.c	RunFieldExploration	*	*	*	@identity-TODO: exploration's special cases and parameters: the world-map request 1, scene scripts (7, 8), field text scenes (0x1a/6, 0x59/6, 0x16/0xd, 0x2a/0), battle-message scene 0xdd/0x59, script register 1, Chiyoda Line level 3 (5, 0), Hatsudai levels 0xc..0xe, fade speeds 1 and the room rebuild 1
+src/Game/fieldmain.c	RunCellEvent	*	*	*	@identity-TODO: cell event parameters: scene scripts (7, 8) and (5, 6), the stairs' script 0x7f04/7 and sound 4, forced-move steps and turns, traps (1), field maps entered at rates 100 and a map id packed as y << 8 | x
+src/Game/treasurebox.c	DrawMoneyCounter	0xffffb*	store	*attr	a half-width, flag-1, opaque attribute (white or red text) held sign-extended in an i32
+src/Game/treasurebox.c	RunAutomapState	*	call-argument	RunFieldPanelRow*	@identity-TODO: field panel row 7 with no op or flag changes (the automap command row)
+src/Game/skilluse.c	AddCombatTarget	270	*	*	@identity-TODO: the target list's 270 slots
+src/Game/skilluse.c	NextTarget	*	*	*	the first target of a non-empty list
+src/Game/skilluse.c	FlashHitObject	*	*	*	@identity-TODO: no change; redraw mode 2
+src/Game/skilluse.c	ApplyCombatDamage	*	*	*	item ids below 1 are absent; the named weapon passives return HP or MP to the attacker on hit
+src/Game/skilluse.c	ResolveCombatAction	*	*	*	@identity-TODO: knockout sentinel 0x7fff, Noelem's special pair (-2, -2), resistance results -1..-6 (see SetActionResult's row), the reply alert bits 0x40/0x80 and alert level 2, the counter-attack kinds
+src/Game/skilluse.c	ResolveKnockout	*	*	*	a knocked-out combatant's HP 0; analyzed (1) and one drop added
+src/Game/skilluse.c	*BattleTall*	*	*	*	@identity-TODO: unidentified tally slots; the report modes and absent index are named
+src/Game/skilluse.c	ShowKnockoutMessage	*	*	*	@identity-TODO: battle-message script 221 (0xdd), entries 79 and 80; the knockout sentinel 0x7fff
+src/Game/skilluse.c	IsSkillUsableNow	*	*	*	1 when usable now, -1 when not
+src/Game/skilluse.c	OpenMemberSkillMenu	0x1e	*	*	@identity-TODO: menu flags 0x1e
+src/Game/skilluse.c	MemberSkillMenuHandler	*	*	*	an empty skill word; the usable and blocked tests (1)
+src/Game/skilluse.c	CountUsableMemberSkills	1	*	*	usable skills (at least 1)
+src/Game/skilluse.c	CollectTargets	*	*	*	@identity-TODO: distinct meanings of target areas 1, 3..5, 6..7 and 17 beyond their shared geometry (6..7 use the visible grid)
+src/Game/skilluse.c	CollectTargetsAtCell	*	*	*	@identity-TODO: the target list buffer; the skill's packed target-count byte now has named nibble modes
+src/Game/skilluse.c	Add*TargetsAtCell	*	*	*	@identity-TODO: FindObjectAt's filters (0 or 1), no object (-1), party combatant ids -1..-6, the related flag 0
+src/Game/skilluse.c	AddRelatedCombatTargets	0	*	*	@identity-TODO: AddCombatTarget's related flag 0
+src/Game/skilluse.c	CollectTargetsAlongLine	*	*	*	the line's step (-1 or 0) and its three cells ahead
+src/Game/skilluse.c	CollectTargetsInView	*	*	*	the 3D view's 7-cell grid and its six-cell reach
+src/Game/skilluse.c	UseAttackSkill	*	*	*	@identity-TODO: the resistance outcome's amount 0; the hit results 0 and -1
+src/Game/skilluse.c	UseRestoreSkill	0	call-argument	ApplyRestoreEffect(*	@identity-TODO: ApplyRestoreEffect's fourth argument 0
+src/Game/skilluse.c	UseBattleStatSkill	*	*	*	@identity-TODO: the effect's percent scaling and action-result codes (3 for a hit, 1 for no stat change)
+src/Game/skilluse.c	ChangeBattleStat	*	*	*	@identity-TODO: a battle stat doubled or halved, clamped to 999 (4 digits)
+src/Game/skilluse.c	ApplySkillEffect	*	*	*	Self Recovery overrides the combined kind/mode byte to 2
+src/Game/skilluse.c	CancelFieldTargetMenu	-1	*	*	no command picked
+src/Game/skilluse.c	LocateFieldSkillUser	1	*	*	@identity-TODO: FindRosterSlotIn's 1
+src/Game/skilluse.c	RunFieldSkillUse	*	*	*	@identity-TODO: target flags 0x10, 0x11 and 0x30 and the pick windows (5, 4, 6, 3) they open; user -2; no pick (-1); screen layer 1 hidden
+src/Game/skilluse.c	PrepareSkillAction	0	*	*	@identity-TODO: the skill action's reset value 0
+src/Game/skilluse.c	RunBattleAction	*	*	*	@identity-TODO: battle-action parameters: the outcome flags 0/1, the target collections (7, 0xa, 0xf1) and 0xff, one bag item used, the effect stages, the battle-message script 0xdf entry 3, the kept pick cleared
+src/Game/skilluse.c	PlayActionEffect	*	*	*	@identity-TODO: the action message scripts 0xdd/0xde and their entries (3, 4, 5, 0x44), the before/after message (0/1), weapons from 1
+src/Game/itemrecord.c	*	[56]	case-label	switch on kind	@identity-TODO: item kinds 5 and 6 have records, but their category names remain unsupported
+src/Game/itemrecord.c	DecodeItemRecord	*	*	*	@identity-TODO: item record decoding: absent params (0xff), message pairs (1, 1)/(1, 0), params[] 11, the name copy after the leading byte
+src/Game/itemrecord.c	AddItemStatPoints	*	arithmetic	*	the points a fixed stat change adds or takes
+src/Game/itemrecord.c	AddItemStatBonuses	*	*	*	the battle-stat bonus amounts ItemPassiveEffect names; no item
+src/Game/itemrecord.c	GetItemStackLimit	1	*	*	equipment does not stack
+src/Game/itemrecord.c	RemapItem	*	*	*	the remap table's (from, to) pairs end at 0xffff; 0 when none
+src/Game/itemrecord.c	*	1	trivial-function-literal	1 bound item	item ids start at 1 (0 is none)
+src/Game/itemrecord.c	*	-1	trivial-function-literal	-1 equality GemItemIndex()	not a gem item
+src/Game/itemrecord.c	GemItemIndex	-1	*	*	not a gem item
+src/Game/itemrecord.c	*Gem*	-1	*	*	not a gem item or out of range
+src/Game/itemrecord.c	StoreBagItem	*	*	*	@identity-TODO: nothing stored yet; the quiet flag; AddBagItems' fourth argument 0
+src/Game/itemrecord.c	*Pool*	*	*	*	@identity-TODO: an empty pool stack; RollItemAmount's third argument 0; StoreBagItem's -1; the bag copy's quiet flag and its 16 fit tests
+src/Game/itemrecord.c	RestoreBagEntries	0	*	*	nothing restored
+src/Game/itemrecord.c	AddDropSlot	*	*	*	-1 when the item is not dropped; no remap (0)
+src/Game/itemrecord.c	FindBagItem	*	*	*	no matching item (-1), the first 48 ordinary and last 16 scenario slots, and reverse search order; group bits are named
+src/Game/itemrecord.c	*BagEntry*	*	*	*	@identity-TODO: bag-entry attachment and detail words: -1 for none, 0 cleared; a detached quantity of 1; SetBagEntry's (-1, -1) clears; the 0xff taken from a stack's count
+src/Game/itemrecord.c	AddBagItems	*	*	*	item ids from 1; 0 when nothing is added
+src/Game/itemrecord.c	AddScenarioBagItems	-1	call-argument	*	a cleared detail word
+src/Game/itemrecord.c	CompactBag	-1	call-argument	*	a cleared entry
+src/Game/itemrecord.c	UseRestoreItem	*	*	*	@identity-TODO: the restore item's params (7 and 8 the HP and MP amounts, 9 the restore effect); no pending condition
+src/Game/itemrecord.c	UseAttackItem	*	*	*	@identity-TODO: an attack item's result, params[0] and inflict code 0x21 and above
+src/Game/itemrecord.c	SetInertItemOutcome	0	*	*	@identity-TODO: result 0
+src/Game/itemrecord.c	SumEquippedMagicDefenseBonus	*	*	*	@identity-TODO: equipment groups bits 1 and 2
+src/Game/itemrecord.c	GetItem*Bonus	0	*	*	no item: no bonus
+src/Game/itemrecord.c	ApplyItemDamageRatio	*	*	*	@identity-TODO: item damage ratio codes from 0x40 (below 40 codes), four steps of 50 percent
+src/Game/itemrecord.c	ScaleDamageByEquipment	*	*	*	@identity-TODO: the ten element ratios (100 percent each), damage from 1
+src/Game/itemrecord.c	CountElementGuards	*	*	*	@identity-TODO: the ten elements; no guards
+src/Game/itemrecord.c	*Regen	*	*	*	regeneration: none yet; item ids from 1; the regeneration amounts
+src/Game/itemrecord.c	ResolveInflictedCondition	*	*	*	@identity-TODO: the inflict codes' chances (50, 75 percent) and the roll's two outcomes; the demon class is named
+src/Game/itemrecord.c	*Condition*	1	trivial-function-literal	1 bound condition	condition codes start at 1 (0 is none)
+src/Game/itemrecord.c	IsConditionResisted	1	*	*	resisted
+src/Game/itemrecord.c	*SpecialItem*	*	*	*	the eight lover's body-part items, their event flags from 0xd0, a 42560-minute (four-week) lifetime; -1 when not one
+src/Game/itemrecord.c	RunBagDiscardMenu	*	*	*	@identity-TODO: priceless items (0); menu flags 0x1e; the cancel flag cleared; SetBagEntry's (-1, -1) clears
+src/Game/itemrecord.c	RunGemItemGift	*	call-argument	*	familiarity stays within 0..63; one gem given
+src/Game/itemrecord.c	GiftMenuHandler	0	*	*	the menu's origin (0, 0); no gems held
+src/Game/character.c	ComputeActionSpeed	*	*	*	action speed formula: 4 times the root (at least 1), a quarter of the burden, a speed of at least 1
+src/Game/character.c	InitCharacterSlot	*	*	*	@identity-TODO: the never-read value (10000) and bytes (0, 1) a new character gets
+src/Game/character.c	Find*	-1	*	*	no such character or slot
+src/Game/character.c	Calc*	*	*	*	derived-stat formulas: stat weights and fractions, level thresholds, caps of 999 or 9999
+src/Game/character.c	LowPoolMask	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
+src/Game/character.c	EmptyPoolMask	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
+src/Game/character.c	DrainPool	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
+src/Game/character.c	FillPool	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
+src/Game/character.c	StatBlend*	*	*	*	derived-stat blend weights
+src/Game/character.c	ScalePercent999	100	*	*	percent scaling
+src/Game/character.c	*StatModifiers	0	*	*	a cleared stat modifier
+src/Game/character.c	ApplyItemStatBonuses	0	*	*	bonuses cleared before they are summed
+src/Game/character.c	GemItemId	-1	*	*	no gem attached
+src/Game/character.c	UpdateStatTotals	2	*	*	@identity-TODO: ClampTo100's argument 2
+src/Game/character.c	*Alignment*	*	*	*	alignment: levels within -127..127 and classes split at -42 and 42 (-1, 0, 1); the affinity's sides and sums
+src/Game/character.c	*PartySlotSelection	*	*	*	@identity-TODO: party-slot polls: 1 picked, -1 cancelled, 0 still open; the text plane's highlight mode 0, columns 0 and 39, three columns per slot
+src/Game/character.c	*SelectedPartySlot	-1	*	*	no selected party slot
+src/Game/character.c	RedrawPartyStatus	*	*	*	@identity-TODO: no swap (-1) or a swap (-2) pending; no selected slot
+src/Game/character.c	DrawPartyStatusSlot	*	*	*	the name buffer (36 bytes) and the HP/MP gauges (1, 0)
+src/Game/character.c	AddCondition	0	call-argument	*	a new condition's age starts at 0
+src/Game/character.c	AgeCondition*	*	*	*	condition ages: no recovery chance, ages clamped to 0..0xff
+src/Game/character.c	RecoverCondition	*	*	*	@identity-TODO: recovery: no chance, the age's high bits (>> 3), one point drained from each pool
+src/Game/character.c	*ConditionName*	*	*	*	the condition-name list's first entry; -1 once exhausted
+src/Game/character.c	GetFirstConditionIndex	*	*	*	the condition-name list's first entry; -1 when none is held
+src/Game/character.c	GetRankScore	10	*	*	ten rank points per level
+src/Game/character.c	TickActionWait	*	*	*	the action wait: 0 once it runs out; a new wait of 2 x a roll + 5 ticks
+src/Game/character.c	AddToRoster	*	*	*	@identity-TODO: at most 26 demons in the roster; FindEmptySlot's 0 (roster)
+src/Game/character.c	AddToParty	*	*	*	FindEmptySlot's 1 (party); no free position (-1)
+src/Game/character.c	TickPartyConditions	1	call-argument	*	@identity-TODO: AgeConditions' second argument 1
+src/Game/character.c	*Fallen*	-1	*	*	no member shown or found
+src/Game/character.c	TickPartySteps	*	call-argument	DrainPool(*	the poison drains per step (4 severe, 1 ordinary)
+src/Game/character.c	GetPartySlot	-1	*	*	an empty party position (PARTY_SLOT_EMPTY)
+src/Game/character.c	SetPartySlot	-1	*	*	PARTY_SLOT_EMPTY is allowed
+src/Game/character.c	*OfId	-1	*	*	no such character
+src/Game/character.c	SortRoster	0	*	*	the sort's first index
+src/Game/character.c	PayStepUpkeep	*	*	*	@identity-TODO: step upkeep: named demon classes cost HP or MP (the pool fill mode 2, eight steps) instead of magnetite; the money counters redraw (1)
+src/Game/character.c	TickPartyTimers	*	*	*	@identity-TODO: party timers every 240 and 60 minutes, the moon phases up to the full moon (14); 1/-1 results
+src/Game/character.c	ApplyMoonPhase	[01]	trivial-function-literal	*	the count of changed flags starts at zero and increments by one
+src/Game/character.c	RecalcDerivedStats	*	*	*	@identity-TODO: battle-stat words 1, 7, 13 and 18..23 (the fourth group) and their floors of 1; the bonus buffer (24 words); the magic-defence groups (3)
+src/Game/character.c	SumArmorDefenseBonus	24	*	*	the 24 battle-stat words
+src/Game/character.c	PoolPercentAmount	100	*	*	percent scaling
+src/Game/character.c	SortRoster	*	*	*	the sort's first index and the loop's run flag; human ids below 32 (HUMAN_ID_LIMIT) stay first
+src/Game/character.c	SwapPartySlots	*	*	*	the six party positions (PARTY_SIZE)
+src/Game/character.c	CanGroupEquip	5	call-argument	*	@identity-TODO: TestBit's first argument 5
+src/Game/character.c	GetEquipSlot	*	initializer-payload	*	an empty equipment slot {-1, -1, 0}
+src/Game/character.c	*Equip*	1	*	*	item ids and quantities start at 1
+src/Game/character.c	*EquipItem	0	call-argument	*	@identity-TODO: SetEquipSlot's fourth argument 0
+src/Game/character.c	GetGunAmmoType	*	*	*	-1 when no gun is equipped; item ids from 1
+src/Game/character.c	NormalizeItemSlot	1	*	*	item ids and quantities start at 1
+src/Game/character.c	Add*	*	*	*	money: added within 0..9999999; nothing when no character
+src/Game/character.c	CompareMacca	-1	*	*	fewer macca
+src/Game/character.c	StatusListMenuHandler	-1	*	*	@identity-TODO: no result
+src/Game/character.c	FormatStatusLine	*	*	*	@identity-TODO: the status list's columns 0..4 (name, alignment letters, HP and MP widths 4 and 3); -1 and -2 for no line
+src/Game/character.c	DrainUpkeep	*	*	*	upkeep: nothing yet; costs of at least 1; an emptied pool
+src/Game/character.c	*FieldState	*	*	*	the field state record: six party slots, the 32 roster ids (0x20 humans), -1 for none
+src/Game/character.c	WriteCharacters	16	*	*	the sixteen character slots (CHARACTER_SLOT_COUNT)
+src/Game/character.c	LoadCharacter	*	*	*	@identity-TODO: the two words cleared when a character loads
+src/Game/character.c	UnequipPart	1	*	*	item quantities start at 1; SetEquipSlot's fourth argument 1 (@identity-TODO)
+src/Game/statuspanel.c	DrawStatusScreen	*	*	*	status screen layout: the text-cell positions of the name, capacity, conditions, equipment lines and portrait; the first member; two or more roster entries for the next-member command; the equipment list's first pass (1)
+src/Game/statuspanel.c	Run*Screen	*	*	*	@identity-TODO: the equip picker's results (-1 none, -2 cancelled), quantities from 1 and the preview's before/after (0/1); one item moved between bag and slot (StoreBagItem's -1)
+src/Game/statuspanel.c	DrawEquipPanel	*	*	*	equip panel layout: rows every 0x18 pixels from 0x28, four stat columns at 5-cell spacing, panel images 7, 0x10 and 0x19
+src/Game/statuspanel.c	PollEquipPart	*	*	*	equip-part hit test: 8-pixel cells from column 0x37 (0x15 wide) and row 40, four rows per part; -1 when no part is hit
+src/Game/statuspanel.c	DrawStat[!u]*	*	*	*	stat display layout: bar segments of 50, twelve-cell bars, the ten stats before fortune, list rows every 2 lines; -1 when nothing is drawn; compare columns
+src/Game/statuspanel.c	DrawBattleStat*	*	*	*	battle-stat panel layout: rows every 3 lines, six-cell columns, the demon-interaction group shown for humans, ammo under the gun column (13), icons shifted by 4 when hidden, human ids below 32
+src/Game/statuspanel.c	DrawEquipLine*	*	*	*	equipment line layout: column 3, item ids from 1, gem attachments up to 15
+src/Game/statuspanel.c	DrawEquipPickRow	*	*	*	pick-row layout: column 0x37; item ids from 1; no attachment (-1)
+src/Game/statuspanel.c	*EquipChange	*	*	*	@identity-TODO: the preview's scratch character slot 14, a quantity of 1, empty skills, SetEquipSlot's 0, the stat totals at column 3; no pick (-1) and the equip sub-step 1
+src/Game/statuspanel.c	ClearEquipPreview	*	*	*	the stat totals at column 3, row 0x19
+src/Game/statuspanel.c	RunStatusCommands	*	*	*	the first member; the stat totals at column 3
+src/Game/statuspanel.c	Run*Page	*	*	*	@identity-TODO: status pages: the bag copy's start 0, marks kept (1), and their window and menu geometry
+src/Game/statuspanel.c	ResumeStatusPage	0	*	*	@identity-TODO: hotspot plane 0
+src/Game/statuspanel.c	s_*Page	-1	data-or-extent	*	a page with no pick yet ({-1, -1})
+src/Game/statuspanel.c	s_attach	*	data-or-extent	*	an empty attach state (no picks, -1)
+src/Game/statuspanel.c	s_battleStatIcons	*	data-or-extent	*	@identity-TODO: battle-stat icon images
+src/Game/statuspanel.c	SkillListHandler	*	*	*	skill ids from 1; marks dropped (0)
+src/Game/statuspanel.c	*Attach*	*	*	*	@identity-TODO: the attach menus: 16 rows, text plane flag 8 set, an empty list, stackable items (limit 1 means not)
+src/Game/statuspanel.c	OpenEquipMenu	*	*	*	@identity-TODO: the equipment list's second pass (0) and text plane flag 8 set
+src/Game/statuspanel.c	OpenStatListWindow	-1	*	*	no window
+src/Game/statuspanel.c	ListEquipCandidates	*	*	*	item ids from 1; no candidates
+src/Game/statuspanel.c	AlignmentChartCell	*	*	*	the alignment chart: levels -128..127 scaled to 24 cells, origin 23
+src/Game/statuspanel.c	DrawStatusConditions	*	*	*	the conditions list: column 2 and at most 18 entries
+src/Game/statuspanel.c	DrawStatusExperience	*	*	*	experience to the next level: none at level 99; ExperienceForLevel's 1
+src/Game/statuspanel.c	DrawStatusMemberPortrait	*	*	*	@identity-TODO: portraits 0x4000 + picture index (0x4001 before the event flag), variant 0, mode 1
+src/Game/statuspanel.c	DrawStatusName	*	*	*	the name buffer (36 bytes), an empty name, two lines down
+src/Game/statuspanel.c	DrawStatusVitals	*	call-argument	*	vitals layout: text column 3, the battle panel at 52
+src/Script/scriptactor.c	OpJumpUnlessCompanionHealthy	*	*	*	@identity-TODO: the companion slot refs -2, -3 and -7 (see the function comment)
+src/Script/scriptactor.c	AddScriptCharacterToRoster	0	call-argument	SetGamePhase(*	the roster replacement state's first phase
+src/Script/scriptactor.c	*CallFrame*	*	*	*	@identity-TODO: call frames: PushCallFrame's and PopCallFrame's flag words (0, 1)
+src/Script/scriptactor.c	CallScript	0	call-argument	*	@identity-TODO: PushCallFrame's second argument 0
+src/Script/scriptactor.c	OpPushReturnTarget	1	call-argument	*	@identity-TODO: PushCallFrame's second argument 1
+src/Script/scriptactor.c	CompareByOp	0	*	*	equal order (0)
+src/Script/scriptactor.c	CompareInt	-1	*	*	less than
+src/Script/scriptactor.c	CountItemInSlots	*	*	*	the eight equipment slots, counted in order
+src/Script/scriptactor.c	*ScriptActor	1	*	*	a despawned actor is hidden (fieldHidden)
+src/Script/scriptactor.c	DismissTalkTarget	*	*	*	a dismissed object is hidden; @identity-TODO: flash pattern 0x37
+src/Script/scriptactor.c	FindScriptChoiceAtMouse	*	*	*	8-pixel cells; -1 when no choice is under the mouse
+src/Script/scriptactor.c	Get*Value	*	*	*	twice the experience per able member and the first drop slot
+src/Script/scriptactor.c	GetObject*	0	*	*	no object: 0
+src/Script/scriptactor.c	GetResolvedPartyCharacter	1	call-argument	*	@identity-TODO: GetRosterCharacterById's second argument 1
+src/Script/scriptactor.c	GetTextToken	0	*	*	the token text buffer's start
+src/Script/scriptactor.c	GotoScript	*	*	*	@identity-TODO: script file 0xde's entry 1 remapped to 9
+src/Script/scriptactor.c	InitScriptChoiceMenu	-1	*	*	no hovered choice
+src/Script/scriptactor.c	ListTail	1	*	*	loop until the list's end
+src/Script/scriptactor.c	OpAddToRoster	*	*	*	@identity-TODO: roster changes: AddScriptCharacterToRoster's mode 3, the character analyzed (1), -1 for no slot, 0 for none added
+src/Script/scriptactor.c	OpRemoveFromRoster	*	*	*	@identity-TODO: roster changes: AddScriptCharacterToRoster's mode 3, the character analyzed (1), -1 for no slot, 0 for none added
+src/Script/scriptactor.c	Op*ActiveParty	*	*	*	@identity-TODO: party changes: AddScriptCharacterToRoster's mode 3, the character analyzed (1), 0 or -1 results
+src/Script/scriptactor.c	Op*	1	call-argument	DrawMoneyCounters(*	redraw the money counters
+src/Script/scriptactor.c	OpAdjustItemCount	*	*	*	nothing moved yet; the quiet bag; StoreBagItem's -1
+src/Script/scriptactor.c	OpApplyEventFlag	0	*	*	no result yet
+src/Script/scriptactor.c	OpBoostPool	*	*	*	@identity-TODO: pool selector 0 writes HP while any other value writes MP; the floor 0 and signed cap 0x7fff are numeric bounds; boost modes are named
+src/Script/scriptactor.c	OpChangeMap	-1	*	*	leave the map (a negative request)
+src/Script/scriptactor.c	OpClearBagEntry	0	*	*	no attachment
+src/Script/scriptactor.c	OpCloseItemListWindow	0x115	*	*	@identity-TODO: panel image 0x115, the item list window
+src/Script/scriptactor.c	OpDivLongVar	*	*	*	long-variable arithmetic: a zero operand divides by 1; percent scaling
+src/Script/scriptactor.c	OpPercentLongVar	*	*	*	long-variable arithmetic: a zero operand divides by 1; percent scaling
+src/Script/scriptactor.c	OpFindMember*	*	*	*	no member found yet (0, -1); the 32 roster slots
+src/Script/scriptactor.c	OpGetActorMoonValue	2	*	*	@identity-TODO: half the moon value
+src/Script/scriptactor.c	OpGetCombatantId	-1	*	*	no combatant id
+src/Script/scriptactor.c	OpGetTimeOfDay	60	*	*	minutes per hour
+src/Script/scriptactor.c	OpGiveItem	*	call-argument	*	the quiet bag (0); one item stored
+src/Script/scriptactor.c	OpIf*	*	*	*	@identity-TODO: script tests: facing masks (& 3), -1 for no saved direction, object states below 2 (3 set), side offsets (-1), the adjacent distance 0, item lists ending at -1
+src/Script/scriptactor.c	OpJump*	*	*	*	@identity-TODO: script jumps: the wall kind (& 3), IsCellBlocked's 1, a blocked start, the hero's ref, the price cap, percent and quarter rolls, the near-front distance 4, the line test's x 0, withRhs 1
+src/Script/scriptactor.c	OpListBagByCategory	*	*	*	item categories 1..19 (0 for all), the 65-entry list and 4-byte entries, item ids from 1
+src/Script/scriptactor.c	OpOpenItemListWindow	8	*	*	@identity-TODO: the item list window's eight rows
+src/Script/scriptactor.c	OpQueueAutoMoves	*	*	*	the auto-move list ends at 0xff; the scene hold; the first move
+src/Script/scriptactor.c	OpRebalanceMemberStats	2	*	*	@identity-TODO: half the stat sum
+src/Script/scriptactor.c	OpRollActor*	0	*	*	no rolled spoils
+src/Script/scriptactor.c	OpRunFusion	1	call-argument	*	@identity-TODO: SetBlankStep's 1
+src/Script/scriptactor.c	OpScreenTransition	1	call-argument	*	@identity-TODO: SetLongFrame's 1
+src/Script/scriptactor.c	OpSetObjectFamiliarity	0	*	*	familiarity from 0
+src/Script/scriptactor.c	OpSetObjectField	*	*	*	@identity-TODO: object field 3 and the fourth group's level (battle-stat word 18)
+src/Script/scriptactor.c	OpSetObjectPresence	1	*	*	@identity-TODO: SetAnalyzed's 1
+src/Script/scriptactor.c	OpSetWorldMapSpot	1	*	*	mark the saved spot (a positive request)
+src/Script/scriptactor.c	OpShiftPlayerAlignment*	*	*	*	@identity-TODO: alignment shift modes
+src/Script/scriptactor.c	PlaceScriptActor	*	*	*	@identity-TODO: no layer (-1); SpawnFieldObject's and SpawnMapObject's defaults (0, -1, 0)
+src/Script/scriptactor.c	PickEquipmentReward	*	*	*	@identity-TODO: the eight equipment slots picked from, item ids from 1, at most three candidates; 0 when none
+src/Script/scriptactor.c	ReadLongOperand	0	*	*	not in place
+src/Script/scriptactor.c	ResolveScriptEntry	*	*	*	script files 0xe0..0xff are the layer scripts; @identity-TODO: FindLayerScriptEntry's 1
+src/Script/scriptactor.c	ReturnFromCall	*	*	*	@identity-TODO: PopCallFrame's 0; 0 after a return, -1 with no frame
+src/Script/scriptactor.c	RequestQuit	1	*	*	ask StepGame to end
+src/Script/scriptactor.c	OpTakeItem	1	call-argument	*	one item taken
+src/Script/scriptactor.c	OpOpenItemListWindow	0	call-argument	*	the window at (0, 0)
+src/Script/scriptactor.c	OpStashItemLists	*	call-argument	*	@identity-TODO: SaveOrRestoreBag's 16-stack offset in script variables
+src/Script/scriptactor.c	PlayScreenTransition	0	call-argument	*	@identity-TODO: RunMoveCommand's next phase 0
+src/Script/scriptactor.c	OpSwitchOnMoonPhase	1	call-argument	*	@identity-TODO: SwitchOnValue's 1
+src/Script/scriptactor.c	ReadTextToken	*	*	*	@identity-TODO: text tokens: the object-check bypass, the token buffer, no id, long variable 11
+src/Script/scriptactor.c	ReadScriptOperand	*	*	*	@identity-TODO: operand scaling (a quarter of the price, doubling) and a zero value
+src/Script/scriptactor.c	ReadContestValues	*	*	*	contest values: none (0) for a missing object, and -1 for the other side when it has none
+src/Script/scriptactor.c	OpSetObjectFamiliarity	0xff	*	*	familiarity up to 0xff
+src/Script/scriptactor.c	PollScriptChoiceMenu	*	*	*	choice polls: 1 picked, -1 cancelled, 0 still open; no hovered choice (-1)
+src/Script/scriptactor.c	LoadScriptCharacterToRoster	*	call-argument	*	@identity-TODO: AddScriptCharacterToRoster's mode 3; analyzed (1)
+src/Script/scriptactor.c	OpSetLongVar	*	*	*	@identity-TODO: long variable 23 (a system variable) and sprite 0
+src/Script/scriptactor.c	OpCureRosterCondition	1	*	*	the roster's first slot
+src/Script/scriptactor.c	OpRecoverRosterPool	1	*	*	the roster's first slot
+src/Script/scriptactor.c	OpZeroLongVar	0	call-argument	*	the variable is set to 0
+src/Game/fusion.c	s_fusionSummaryIcons	*	data-or-extent	*	@identity-TODO: the summary icon of each fusion result kind
+src/Game/fusion.c	s_fusionFlagLevelBonuses	*	data-or-extent	*	@identity-TODO: level bonuses by demon flag pair
+src/Game/fusion.c	Resolve*	*	*	*	@identity-TODO: fusion resolution: race/rank table lookups, sides (-1, 0, 1), the members' level parity (% 7, % 5, % 3), FindNextOfRace's wrap flag, rank steps, demon ids from 32, the result slot codes (1000), random picks (10, 14)
+src/Game/fusion.c	Calculate*Fusion	*	*	*	@identity-TODO: fusion calculation: the first and second slots, demon ids from 32, the triple's level step 5
+src/Game/fusion.c	*Fusion*Character	*	*	*	@identity-TODO: fusion staging: the scratch character slot 13, humans below 32, the staged character's derived stats and flags
+src/Game/fusion.c	SelectRandomFusionDemon	*	*	*	@identity-TODO: a random demon between the id floor and the count (32768 the roll's range), rank steps of 3 and 14
+src/Game/fusion.c	Build*Fusion*	*	*	*	@identity-TODO: the fusion summaries: flag words (-256, -128), no pair (-1)
+src/Game/fusion.c	*Fusion*Summary*	*	*	*	@identity-TODO: summary cells packed by roster slot (32 per row), no summary (-1), pair sides (0, 1, 3)
+src/Game/fusion.c	*FusionPicker	*	*	*	@identity-TODO: the fusion pickers' panel rows (6, 7, 8), picture window 10 and the preview plane
+src/Game/fusion.c	RunFusionMenuState	2	call-argument	SavePaletteState(PaletteState *, i16) argument 2	@identity-TODO: palette mode 2 is opaque because the Windows layer stub returns its input
+src/Game/fusion.c	RunFusionMenuState	54	call-argument	ErasePictureSurface(i16) argument 1	@identity-TODO: the fusion menu's picture surface 54
+src/Game/fusion.c	OpenFusionPreviewOnClick	*	*	*	@identity-TODO: the preview's hit test (272 x 24 origin, 54, 16 rows of 32 cells), the scratch slot 13, no preview (-1), its steps
+src/Game/fusion.c	CreateFusionInfoPlane	*	*	*	fusion info plane layout: the three planes at 25, 43 and 61 and their kinds
+src/Game/fusion.c	CreateFusionList	*	*	*	the fusion list's 15 rows; no list (-1)
+src/Game/fusion.c	DrawFusion*	*	*	*	fusion display layout: the detail columns (240, 384, 528), the stat group's 72, the summary grid's cells, rows and colours
+src/Game/fusion.c	Find*Fusion*	*	*	*	@identity-TODO: fallback and complement lookups: -1 when none; race and rank codes
+src/Game/fusion.c	FusionListMenuHandler	*	*	*	@identity-TODO: the fusion list's rows and events (0, 1, -1)
+src/Game/fusion.c	*ScriptAnimation*	*	*	*	@identity-TODO: script animations: image files 0x3000, variant 0, flags 2, 16 frames, 8-pixel steps
+src/Game/fusion.c	CompareFusion*	*	*	*	sort order: -1 before, 0 equal
+src/Game/fusion.c	CountSpecialRaceFusionSlots	0	*	*	no special race
+src/Game/fusion.c	CountFusion*FlagOne	1	*	*	flag value 1
+src/Game/fusion.c	MatchFusionPair	*	*	*	-1 no match, 1 a match
+src/Game/fusion.c	CheckFusionRestrictedPair	*	*	*	restricted (1) or not (0)
+src/Game/fusion.c	ClassifyFusionSlot	*	*	*	@identity-TODO: slot classes 0 and 1
+src/Game/fusion.c	CommitTripleFusion	*	*	*	@identity-TODO: the scratch slot 13; no third slot; commit flag 1
+src/Game/fusion.c	CommitPairFusion	0	*	*	@identity-TODO: the first slot and flag 0
+src/Game/fusion.c	RunTripleFusion	*	*	*	@identity-TODO: the scratch slot 13; no third slot
+src/Game/fusion.c	RunPairFusion	*	*	*	@identity-TODO: no third slot; flag 0
+src/Game/fusion.c	SortFusionSlots	0	*	*	the first slot
+src/Game/fusion.c	InheritFusionStat	4	*	*	@identity-TODO: a quarter of the parent stat
+src/Game/fusion.c	AcquireFusionSelectionMode	1	*	*	@identity-TODO: SavePaletteState's mode 1
+src/Game/fusion.c	ApplyFusionRankChange	*	*	*	@identity-TODO: rank-change kinds 3 and 4; FindNextOfRace's wrap flag 1
+src/Game/fusion.c	CloseFusionPreview	1	*	*	a nested status screen
+src/Game/fusion.c	FinishFusionMenuSelection	1	*	*	@identity-TODO: result variable 1
+src/Game/fusion.c	FusionSelectionTextHook	0	*	*	an empty text
+src/Game/fusion.c	GetFusion*	*	*	*	@identity-TODO: fusion lookups: level offsets (+2, +5), none (0), sides (-1, 0, 1), the special race table's entries from 1 ending at -1
+src/Game/fusion.c	GetSameRaceFusionRace	0	*	*	no race
+src/Game/fusion.c	GetTripleFusionLevel*	*	*	*	@identity-TODO: triple fusion levels (+3, +5) and the high-flag bonus (3 flags give 2)
+src/Game/fusion.c	ResetThirdFusionSlot	-1	*	*	no third slot
+src/Game/fusion.c	SetFusionResult	*	*	*	no demon (-1); an unspecified result kind is named in FusionSummaryKind
+src/Game/statestack.c	Next*	1	call-argument	*	one step forward
+src/Game/statestack.c	Prev*	1	call-argument	*	one step back
+src/Game/statestack.c	SetGame*	0	*	*	a new phase, step or state starts its step and sub-step at 0
+src/Game/statestack.c	*Cursor*	*	*	*	the menu cursor's four levels (0..3), reset to 0 below the one set
+src/Game/statestack.c	*StateStack	0	*	*	an empty state stack
+src/Game/statestack.c	PopGameState	0	*	*	an empty state stack
+src/Game/statestack.c	DispatchGameState	0	*	*	@identity-TODO: a state's result 0
+src/Game/statestack.c	CountPendingLevels	*	*	*	no pending levels; ExperienceToLevel's 1
+src/Game/statestack.c	*LearnableSkills	*	*	*	@identity-TODO: learnable skill lists: at most 63, -1 ends a list, sources 0..2
+src/Game/statestack.c	LearnAllSkills	*	*	*	skills learned from at least one source; none (0); -1 ends a list
+src/Game/statestack.c	ApplyLevelStatGrowth	*	*	*	@identity-TODO: a growth point every third level (bit 1 selects the stat)
+src/Game/statestack.c	BuildStatWeightRanges	*	*	*	stat weights in 1/10000: the ten stats before fortune, ten per base point, -1 for no range
+src/Game/statestack.c	RollWeightedStat	*	*	*	a weighted roll in 1/10000 over the ten stats before fortune; -1 when none
+src/Game/statestack.c	ResolveRaisableStat	-1	*	*	no raisable stat
+src/Game/statestack.c	GainLevels	*	*	*	@identity-TODO: level gains: four stat picks (-1 none, index 3 the last), levelBonus +2, ClampLevel's 1, LearnAllSkills' -1
+src/Game/statestack.c	ShareExperience	*	*	*	twice the experience split among the able members (CountPartyMembers' 1)
+src/Game/statestack.c	FindLevelUpSlot	-1	*	*	no member to level up
+src/Game/statestack.c	FormatLevelUpMessage	64	*	*	the name buffer (64 bytes)
+src/Game/statestack.c	FindFirstAbleMemberPosition	*	*	*	@identity-TODO: the first sixteen ids; FindPartyPositionOfId's 0
+src/Game/statestack.c	GetClockMinutes	*	*	*	minutes per day (24 x 60)
+src/Game/statestack.c	GetMoonValue	2	*	*	@identity-TODO: twice the moon table's value
+src/Game/statestack.c	ScaleByMoonValue	100	*	*	percent scaling
+src/Game/statestack.c	GetPickerSelection	-1	*	*	no selection
+src/Game/statestack.c	RestoreBackground*	*	*	*	@identity-TODO: background scene exceptions (by area, level and cell) and their scene-cell parameter overrides (0x31, 2); BackgroundParameterNop's (11, 1), (15, 1)
+src/Game/statestack.c	Run*Scene	*	*	*	@identity-TODO: scene states' redraw and palette modes (0, 1, 3), the scene hold cleared
+src/Game/statestack.c	EnterStatusScreen	*	*	*	the subscreen is active; palette mode 2
+src/Game/statestack.c	LeaveStatusScreen	0	*	*	the subscreen is inactive
+src/Game/statestack.c	ResetSubscreen	0	*	*	the subscreen is inactive
+src/Game/statestack.c	InitFieldPanels	1	*	*	@identity-TODO: menu image 1
+src/Game/statestack.c	IsOddMapLayer	1	*	*	the layer's low bit
+src/Game/statestack.c	ItemListMenuHandler	*	*	*	item-use availability tests and AddItemUseMenuLine's 0
+src/Game/statestack.c	LoadSpriteImage	*	*	*	@identity-TODO: sprite images: -1 none, human portraits 0x4000 + id (0x401d remapped to 0x40fd), demons 0x2000..0x2fff with variant bits (& 15 == 4, & 13 | 2)
+src/Game/statestack.c	OpenItemListMenu	*	*	*	the whole bag copied (0, 64 entries); menu flags 0x1e
+src/Game/statestack.c	OpenPartyPicker	*	*	*	@identity-TODO: menu flags 0x1e and 2
+src/Game/statestack.c	PickStatusMember	*	*	*	@identity-TODO: the status menu items hidden (1, 0) and status column 0; the hit-test flag is named
+src/Game/statestack.c	PollRewardClick	*	*	*	the reward window's hit box (0xea..0x192, 0xc0..0xf6)
+src/Game/statestack.c	RunItemUse	*	*	*	@identity-TODO: item use: screen layer 1 hidden, no user (-1), target flags (0x10, 0x11, 0x30) and their pick windows (5, 4, 6, 3)
+src/Game/statestack.c	RunLevelUp	*	*	*	@identity-TODO: level-up screen parameters: fades (1), the status screen entered and left (0), picture surface 0x36, reward experience cleared
+src/Game/statestack.c	RunStatusScreen	*	*	*	@identity-TODO: status screen parameters: menu items shown (0), not nested (0), the analyze member slot 15, field panel row 1 unchecked, the member reset
+src/Game/statestack.c	RunWorldMap	*	*	*	@identity-TODO: world-map parameters: the start cell (3, 3) and level 0, the request cleared, field menu mode 2, the world map active, its phases and panels
+src/Game/statestack.c	ShowBackground	0x5000	*	*	@identity-TODO: background pictures 0x5000 + n
+src/Game/statestack.c	ShowStatPointPrompt	-1	*	*	no prompt shown
+src/Game/statestack.c	SwapSceneCellParams	*	*	*	@identity-TODO: scene-cell parameter words 9, 10, 12 and 13 swapped
+src/Game/statestack.c	TickStepCounter	*	*	*	idle after 50 ticks; the counter reset
+src/Game/statestack.c	CancelItemTargetMenu	-1	*	*	no command picked
+src/Game/statestack.c	GrantBattleRewards	*	*	*	the rewards cleared once granted; the info bar's layout 0; 0 when none
+src/Game/statestack.c	*Experience*	*	*	*	experience: the level cap (99, 100), the cube formula (4, 6, 5) and demon ids from 0x20; ExperienceToLevel's 1; 0 or -1 when no level is gained
+src/Game/statestack.c	*Scene*	*	*	*	@identity-TODO: scene cells and sprites: the sixteen cells, cell kind at index 5, the 32 entries and sprite slots (31 the last), streams ending at 0xff and packed 16 at a time, frames (-1 none) at (40, 112)
+src/Game/statestack.c	*Dds*	*	*	*	@identity-TODO: the party slot poll's mode 1, the summon's training (group 3), menu geometry, and sound effects
+src/Game/partyaction.c	PickPartyMember	1	trivial-function-literal	1 bound TickFieldCount()	one remaining field tick is the minimum for a member to be ready
+src/Game/partyaction.c	CountPickablePartyMembers	0	call-argument	FindPickablePartyMember(i16) argument 1	zero-based party positions: start at position 0 and advance one after each found member
+src/Game/partyaction.c	CountPickablePartyMembers	1	call-argument	FindPickablePartyMember(i16) argument 1	zero-based party positions: start at position 0 and advance one after each found member
+src/Game/partyaction.c	GetMemberPanelState	1	trivial-function-literal	1 bound TickFieldCount()	one remaining field tick is the minimum for a ready panel
+src/Game/partyaction.c	DelayActionSide	50	call-argument	DelayActionWait(ActionWait *, u16) argument 2	50 action-wait ticks are imposed on every member of the selected side
+src/Game/partyaction.c	AdjustActorAction	0xdb	call-argument	StartScript(i16, i16, ScriptContext *) argument 1	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
+src/Game/partyaction.c	AdjustActorAction	1	call-argument	StartScript(i16, i16, ScriptContext *) argument 2	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
+src/Game/partyaction.c	AdjustActorAction	0	call-argument	NewScriptContext(i16, Character *) argument 1	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
+src/Game/partyaction.c	AdjustActorAction	-2	comparison-or-bound	operator == result	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
+src/Game/partyaction.c	AdjustActorAction	-1	trivial-function-literal	-1 equality result	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
+src/Game/partyaction.c	AdjustActorAction	60	call-argument	SetMessageLifetime(i16) argument 1	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
+src/Game/partyaction.c	FormatAttackCommand	1	trivial-function-literal	1 bound item	an item id below 1 has no decodable equipped weapon record
+src/Game/partyaction.c	FormatGunCommand	1	trivial-function-literal	1 bound item	@identity-TODO: equipment item id lower bound and party-cell reach query; operand identities remain unproven
+src/Game/partyaction.c	FormatGunCommand	-1	call-argument	HasObjectInReach(ReachTestMode, i16, i16) argument 2	@identity-TODO: equipment item id lower bound and party-cell reach query; operand identities remain unproven
+src/Game/partyaction.c	FormatGunCommand	0	call-argument	HasObjectInReach(ReachTestMode, i16, i16) argument 3	@identity-TODO: equipment item id lower bound and party-cell reach query; operand identities remain unproven
+src/Game/partyaction.c	FormatItemCommand	0	trivial-function-literal	0 equality CountBagEntries()	zero bag entries means the item command is unavailable
+src/Game/partyaction.c	FormatCompCommand	1	trivial-function-literal	1 equality compState	@identity-TODO: compState value 1 makes the COMP command available
+src/Game/partyaction.c	PrepareMemberPickTarget	1	trivial-function-literal	1 return	@identity-TODO: signed pickTargetHigh marker and command-phase step advances (0, 1, 4, -1); zero target for roles needing none
+src/Game/partyaction.c	PrepareMemberPickTarget	-1	trivial-function-literal	-1 store pickTargetHigh	@identity-TODO: signed pickTargetHigh marker and command-phase step advances (0, 1, 4, -1); zero target for roles needing none
+src/Game/partyaction.c	PrepareMemberPickTarget	0	trivial-function-literal	0 return	@identity-TODO: signed pickTargetHigh marker and command-phase step advances (0, 1, 4, -1); zero target for roles needing none
+src/Game/partyaction.c	PrepareMemberPickTarget	0	trivial-function-literal	0 store pickTargetHigh	@identity-TODO: signed pickTargetHigh marker and command-phase step advances (0, 1, 4, -1); zero target for roles needing none
+src/Game/partyaction.c	PrepareMemberPickTarget	0	call-argument	SetCharacterPickTarget(Character *, i16) argument 2	@identity-TODO: signed pickTargetHigh marker and command-phase step advances (0, 1, 4, -1); zero target for roles needing none
+src/Game/partyaction.c	PrepareMemberPickTarget	4	return	return value	@identity-TODO: signed pickTargetHigh marker and command-phase step advances (0, 1, 4, -1); zero target for roles needing none
+src/Game/partyaction.c	PrepareMemberPickTarget	-1	trivial-function-literal	-1 return	@identity-TODO: signed pickTargetHigh marker and command-phase step advances (0, 1, 4, -1); zero target for roles needing none
+src/Game/partyaction.c	ScaleActionValue	50	store	store to resistance	resistance is clamped at 50 then scaled as a percentage over 100
+src/Game/partyaction.c	ScaleActionValue	100	arithmetic	operator /	resistance is clamped at 50 then scaled as a percentage over 100
+src/Game/partyaction.c	GetPickedAttackAttribute	0	trivial-function-literal	0 store condition	@identity-TODO: attribute and inflicted-condition zero can denote no picked attack or no condition
+src/Game/partyaction.c	GetPickedAttackAttribute	0	trivial-function-literal	0 return	@identity-TODO: attribute and inflicted-condition zero can denote no picked attack or no condition
+src/Game/partyaction.c	TickFieldCount	1	trivial-function-literal	1 return	field count protocol: -1 unlimited, zero at timeout, -2 exhausted marker; return 1 for inactive, -1 at exact zero, 0 after exhaustion
+src/Game/partyaction.c	TickFieldCount	-1	trivial-function-literal	-1 equality count	field count protocol: -1 unlimited, zero at timeout, -2 exhausted marker; return 1 for inactive, -1 at exact zero, 0 after exhaustion
+src/Game/partyaction.c	TickFieldCount	0	trivial-function-literal	0 equality count	field count protocol: -1 unlimited, zero at timeout, -2 exhausted marker; return 1 for inactive, -1 at exact zero, 0 after exhaustion
+src/Game/partyaction.c	TickFieldCount	-1	trivial-function-literal	-1 return	field count protocol: -1 unlimited, zero at timeout, -2 exhausted marker; return 1 for inactive, -1 at exact zero, 0 after exhaustion
+src/Game/partyaction.c	TickFieldCount	-2	store	store to count	field count protocol: -1 unlimited, zero at timeout, -2 exhausted marker; return 1 for inactive, -1 at exact zero, 0 after exhaustion
+src/Game/partyaction.c	TickFieldCount	-2	comparison-or-bound	operator == count	field count protocol: -1 unlimited, zero at timeout, -2 exhausted marker; return 1 for inactive, -1 at exact zero, 0 after exhaustion
+src/Game/partyaction.c	TickFieldCount	0	trivial-function-literal	0 return	field count protocol: -1 unlimited, zero at timeout, -2 exhausted marker; return 1 for inactive, -1 at exact zero, 0 after exhaustion
+src/Game/partyaction.c	ScaleByFieldRate	0.01	arithmetic	operator * scaled	field rates are integer percentages converted to a fraction by multiplying 0.01
+src/Game/partyaction.c	RunFieldEncounter	3	call-argument	SavePaletteState(PaletteState *, i16) argument 2	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	-1	call-argument	TickFieldCount(i16, b16) argument 1	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	1	call-argument	TickFieldCount(i16, b16) argument 1	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	0	call-argument	TickFieldCount(i16, b16) argument 1	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	6	store	store to fieldState	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	0xdd	call-argument	RunMessageScene(i16, i16, i16) argument 1	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	0x59	call-argument	RunMessageScene(i16, i16, i16) argument 2	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	-1	call-argument	RunMessageScene(i16, i16, i16) argument 3	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	0	trivial-function-literal	0 equality s_fieldPairFirst	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	0	trivial-function-literal	0 equality s_fieldPairSecond	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	1	call-argument	PushScreenFade(ScreenFadeMode, i16) argument 2	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	0	trivial-function-literal	0 store s_fieldPairFirst	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	0	trivial-function-literal	0 store s_fieldPairSecond	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	-1	trivial-function-literal	-1 store s_fieldCountA	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	100	store	store to s_fieldRateA	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	-1	trivial-function-literal	-1 store s_fieldCountB	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	100	store	store to s_fieldRateB	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	20	store	store to s_fieldOption	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	1	trivial-function-literal	1 store s_fieldParamFirst	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	-1	trivial-function-literal	-1 store s_fieldParamSecond	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldEncounter	0	trivial-function-literal	0 store s_fieldParamThird	@identity-TODO: encounter scene palette/script/fade parameters, side-count selectors, actor state and reset defaults; numeric values belong to distinct callee and field protocols
+src/Game/partyaction.c	RunFieldState	0	call-argument	SetInfoBarLayout(i16) argument 1	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	3	call-argument	SavePaletteState(PaletteState *, i16) argument 2	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	0x7f04	call-argument	RunMessageScene(i16, i16, i16) argument 1	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	0x10	call-argument	RunMessageScene(i16, i16, i16) argument 2	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	-1	call-argument	RunMessageScene(i16, i16, i16) argument 3	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	0x11	call-argument	RunMessageScene(i16, i16, i16) argument 2	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	1	call-argument	AccessScriptReg(i16, i16, i16) argument 1	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	0	call-argument	AccessScriptReg(i16, i16, i16) argument 2	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	1	call-argument	AccessScriptReg(i16, i16, i16) argument 3	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	0xdd	call-argument	RunMessageScene(i16, i16, i16) argument 1	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	0x59	call-argument	RunMessageScene(i16, i16, i16) argument 2	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	0	trivial-function-literal	0 equality s_fieldPairFirst	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	0	trivial-function-literal	0 equality s_fieldPairSecond	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	1	call-argument	PushScreenFade(ScreenFadeMode, i16) argument 2	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	0	trivial-function-literal	0 store s_fieldPairFirst	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RunFieldState	0	trivial-function-literal	0 store s_fieldPairSecond	@identity-TODO: field scene palette/message/register/fade parameters and unset event-flag pair; the script resource identities are undecoded
+src/Game/partyaction.c	RollProximityEvent	0x7fff	store	initializer of nearest	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
+src/Game/partyaction.c	RollProximityEvent	-1	trivial-function-literal	-1 initializer	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
+src/Game/partyaction.c	RollProximityEvent	15	store	store to index	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
+src/Game/partyaction.c	RollProximityEvent	0	trivial-function-literal	0 case	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
+src/Game/partyaction.c	RollProximityEvent	0x7fff	store	store to index	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
+src/Game/partyaction.c	RollProximityEvent	1	trivial-function-literal	1 case	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
+src/Game/partyaction.c	RollProximityEvent	2	case-label	switch on nearest	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
+src/Game/partyaction.c	HasObjectInReach	0	call-argument	CountObjectsAt(i16, i16, ObjectKindMatch, i16) argument 4	CountObjectsAt argument 4 selects index zero for objects on the party cell
+src/Game/partyaction.c	TickPartyConditionActions	36	comparison-or-bound	operator >= conditionActionTicks	36 ticks trigger a condition action; positive action codes are actionable and zero means none
+src/Game/partyaction.c	TickPartyConditionActions	1	trivial-function-literal	1 bound action	36 ticks trigger a condition action; positive action codes are actionable and zero means none
+src/Game/partyaction.c	RunPartyTurn	-1	trivial-function-literal	-1 return	@identity-TODO: party turn result and prompt parameters: -1 waits for command input, zero yields, positive is party slot plus one; action id 1 is set before resolution
+src/Game/partyaction.c	RunPartyTurn	1	call-argument	FindReadyMember(i16) argument 1	@identity-TODO: party turn result and prompt parameters: -1 waits for command input, zero yields, positive is party slot plus one; action id 1 is set before resolution
+src/Game/partyaction.c	RunPartyTurn	0	trivial-function-literal	0 return	@identity-TODO: party turn result and prompt parameters: -1 waits for command input, zero yields, positive is party slot plus one; action id 1 is set before resolution
+src/Game/partyaction.c	RunPartyTurn	1	trivial-function-literal	1 store g_actionId	@identity-TODO: party turn result and prompt parameters: -1 waits for command input, zero yields, positive is party slot plus one; action id 1 is set before resolution
+src/Game/partyaction.c	GetEquipmentHitModifier	1	trivial-function-literal	1 bound pickTarget	a positive picked target means an item or skill is present
+src/Game/partyaction.c	GetCombatantFacingDifference	0	trivial-function-literal	0 return	zero means no facing difference when both combatants are party members
+src/Game/partyaction.c	GetCombatantAttackRange	1	trivial-function-literal	1 bound pickTarget	a missing attack item uses one grid cell of reach
+src/Game/partyaction.c	GetCombatantAttackRange	1	trivial-function-literal	1 return	a missing attack item uses one grid cell of reach
+src/Game/partyaction.c	RollExceptionalAttack	13	arithmetic	operator + moonPhase	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	14	arithmetic	operator %	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	4	arithmetic	operator /	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	0	trivial-function-literal	0 equality resistance	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	-6	comparison-or-bound	operator != resistance	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	0.01	arithmetic	compound assignment to value	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	0.01	call-argument	RoundToInt(double) argument 1	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollExceptionalAttack	0	trivial-function-literal	0 return	@identity-TODO: moon-cycle formula and resistance exceptions; decimal factors convert percent rolls
+src/Game/partyaction.c	RollGunHit	2	arithmetic	compound assignment to evasion	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
+src/Game/partyaction.c	RollGunHit	50	arithmetic	operator * accuracy	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
+src/Game/partyaction.c	RollGunHit	100	arithmetic	operator * accuracy	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
+src/Game/partyaction.c	RollGunHit	0	trivial-function-literal	0 equality GetCombatantDistance()	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
+src/Game/partyaction.c	RollGunHit	2	arithmetic	compound assignment to attack	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
+src/Game/partyaction.c	RollGunHit	75	arithmetic	operator * evasion	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
+src/Game/partyaction.c	RollGunHit	100	arithmetic	operator * evasion	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
+src/Game/partyaction.c	RollGunHit	8	arithmetic	compound assignment to attack	gun hit chance uses distance and facing multipliers and an eightfold roll scale; the values are numeric formula coefficients
+src/Game/partyaction.c	GetGunAttackPower	0	trivial-function-literal	0 array-index s_gunPower	burst power slot zero holds the current shot, with fallback to the actor stat
+src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 return	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0.2	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0.0	comparison-or-bound	operator < amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0.0	store	store to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	2.2	arithmetic	compound assignment to ratio	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	1.0	arithmetic	compound assignment to ratio	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	5	arithmetic	operator + level	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	1.2	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	1.5	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0.25	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 equality GetCombatantDistance()	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	100.0	call-argument	RoundToInt(double) argument 1	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	2	call-argument	ScaleByMoonValue(i32, i16, i16) argument 3	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	100	call-argument	ClampInt(i32, i32, i32) argument 1	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0	call-argument	ClampInt(i32, i32, i32) argument 2	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0x7fffffff	call-argument	ClampInt(i32, i32, i32) argument 3	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 equality damage	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
+src/Game/partyaction.c	RollGunCondition	10	call-argument	ScaleActionValue(i32, i16, i16) argument 1	gun condition roll scales base power by ten before resistance and defense
+src/Game/partyaction.c	ResolveGunAttack	0	trivial-function-literal	0 equality result	@identity-TODO: zero means no exceptional hit; 0x7fff saturates lethal damage
+src/Game/partyaction.c	ResolveGunAttack	5	comparison-or-bound	operator < result	@identity-TODO: zero means no exceptional hit; 0x7fff saturates lethal damage
+src/Game/partyaction.c	ResolveGunAttack	0x7fff	store	store to amount	@identity-TODO: zero means no exceptional hit; 0x7fff saturates lethal damage
+src/Game/partyaction.c	FilterGunTargets	1	trivial-function-literal	1 bound rounds	at least one round is required; zero targets are assigned when no rounds remain
+src/Game/partyaction.c	FilterGunTargets	0	trivial-function-literal	0 return	at least one round is required; zero targets are assigned when no rounds remain
+src/Game/partyaction.c	GetGunBurstRounds	1	trivial-function-literal	1 bound item	equipped item ids start at one; field enemies use 255 as an effectively unlimited round count
+src/Game/partyaction.c	GetGunBurstRounds	0	trivial-function-literal	0 return	equipped item ids start at one; field enemies use 255 as an effectively unlimited round count
+src/Game/partyaction.c	GetGunBurstRounds	255	store	store to rounds	equipped item ids start at one; field enemies use 255 as an effectively unlimited round count
+src/Game/partyaction.c	PrepareGunBurst	1	trivial-function-literal	1 bound minimum	one is the minimum number of shots in a nonempty burst
+src/Game/partyaction.c	PrepareGunBurst	1	trivial-function-literal	1 store minimum	one is the minimum number of shots in a nonempty burst
+src/Game/partyaction.c	GetGunRequirementPenalty	1	trivial-function-literal	1 bound requirement	stat requirement is at least one, with a five-point clamp input and signed-short upper bound
+src/Game/partyaction.c	GetGunRequirementPenalty	1	trivial-function-literal	1 store requirement	stat requirement is at least one, with a five-point clamp input and signed-short upper bound
+src/Game/partyaction.c	GetGunRequirementPenalty	5	call-argument	ClampShort(i16, i16, i16) argument 1	stat requirement is at least one, with a five-point clamp input and signed-short upper bound
+src/Game/partyaction.c	GetGunRequirementPenalty	1	call-argument	ClampShort(i16, i16, i16) argument 2	stat requirement is at least one, with a five-point clamp input and signed-short upper bound
+src/Game/partyaction.c	GetGunRequirementPenalty	0x7fff	call-argument	ClampShort(i16, i16, i16) argument 3	stat requirement is at least one, with a five-point clamp input and signed-short upper bound
+src/Game/partyaction.c	DistributeGunRounds	0	trivial-function-literal	0 equality	round distribution uses a percentage of 100, assigns at least one round per live target and stops when none remain
+src/Game/partyaction.c	DistributeGunRounds	1	trivial-function-literal	1 bound remaining	round distribution uses a percentage of 100, assigns at least one round per live target and stops when none remain
+src/Game/partyaction.c	DistributeGunRounds	100	arithmetic	compound assignment to share	round distribution uses a percentage of 100, assigns at least one round per live target and stops when none remain
+src/Game/partyaction.c	DistributeGunRounds	1	trivial-function-literal	1 bound share	round distribution uses a percentage of 100, assigns at least one round per live target and stops when none remain
+src/Game/partyaction.c	DistributeGunRounds	1	trivial-function-literal	1 store share	round distribution uses a percentage of 100, assigns at least one round per live target and stops when none remain
+src/Game/partyaction.c	SpendGunRounds	0	trivial-function-literal	0 array-index s_gunRounds	array slot zero is the current burst; a shifted-off tail is cleared to zero
+src/Game/partyaction.c	SpendGunRounds	0	trivial-function-literal	0 store s_gunPower[[]]	array slot zero is the current burst; a shifted-off tail is cleared to zero
+src/Game/partyaction.c	SpendGunRounds	0	trivial-function-literal	0 store s_gunRounds[[]]	array slot zero is the current burst; a shifted-off tail is cleared to zero
+src/Game/partyaction.c	SpendAllGunRounds	0	trivial-function-literal	0 array-index s_gunRounds	array slot zero is the current burst; stop once it has no rounds
+src/Game/partyaction.c	CloseFieldWindows	-1	call-argument	CancelFieldTargetMenu(i16) argument 1	-1 requests cancellation of each open party/item target picker
+src/Game/partyaction.c	CloseFieldWindows	-1	call-argument	CancelItemTargetMenu(i16) argument 1	-1 requests cancellation of each open party/item target picker
+src/Game/partyaction.c	CheckPickTarget	0	trivial-function-literal	0 return	zero means no completed pick from a missing character or menu selection
+src/Game/partyaction.c	RunMemberPickMenu	1	trivial-function-literal	1 return	one means the role needs no list menu and can proceed immediately
+src/Game/partyaction.c	PickMemberActionTarget	0	call-argument	RunPickTargetWindow(i16, i16, i16, i16) argument 4	@identity-TODO: picker id zero and encoded kinds 0x82/0x12 are passed to the target picker; their high-bit semantics are unproven
+src/Game/partyaction.c	PickMemberActionTarget	0x82	call-argument	RunPickTargetWindow(i16, i16, i16, i16) argument 3	@identity-TODO: picker id zero and encoded kinds 0x82/0x12 are passed to the target picker; their high-bit semantics are unproven
+src/Game/partyaction.c	PickMemberActionTarget	0x12	call-argument	RunPickTargetWindow(i16, i16, i16, i16) argument 3	@identity-TODO: picker id zero and encoded kinds 0x82/0x12 are passed to the target picker; their high-bit semantics are unproven
+src/Game/partyaction.c	RunPartyCommandInput	-1	trivial-function-literal	-1 initializer	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
+src/Game/partyaction.c	RunPartyCommandInput	-1	call-argument	HasObjectInReach(ReachTestMode, i16, i16) argument 2	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
+src/Game/partyaction.c	RunPartyCommandInput	0	call-argument	HasObjectInReach(ReachTestMode, i16, i16) argument 3	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
+src/Game/partyaction.c	RunPartyCommandInput	0	call-argument	RunPickTargetWindow(i16, i16, i16, i16) argument 4	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
+src/Game/partyaction.c	RunPartyCommandInput	0	trivial-function-literal	0 equality flags	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
+src/Game/partyaction.c	RunPartyCommandInput	0	call-argument	RunPickTargetWindow(i16, i16, i16, i16) argument 2	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
+src/Game/partyaction.c	GetMemberPickRange	0	trivial-function-literal	0 return	the pending action uses grid-cell reach 0/1/3; item zero and targets below one are absent
+src/Game/partyaction.c	GetMemberPickRange	1	trivial-function-literal	1 return	the pending action uses grid-cell reach 0/1/3; item zero and targets below one are absent
+src/Game/partyaction.c	GetMemberPickRange	3	return	return value	the pending action uses grid-cell reach 0/1/3; item zero and targets below one are absent
+src/Game/partyaction.c	GetMemberPickRange	1	trivial-function-literal	1 bound pickTarget	the pending action uses grid-cell reach 0/1/3; item zero and targets below one are absent
+src/Game/partyaction.c	GetSwappedMember	-2	return	return value	-2 distinguishes a nonmatching guest position from the ordinary empty-slot value -1
+src/Game/partyaction.c	IsGuestIndex	-2	return	return value	-2 distinguishes a nonmatching guest position from the ordinary empty-slot value -1
+src/Game/partyaction.c	RunPickTargetWindow	-1	trivial-function-literal	-1 store g_selectedObjectId	-1 clears selected and hovered object ids before a cancelled picker closes
+src/Game/partyaction.c	PickFieldObjectTarget	-1	trivial-function-literal	-1 equality g_hoveredObjectId	-1 from the hotspot means no field object is hovered
+src/Game/partyaction.c	PickPartySlotTarget	-1	trivial-function-literal	-1 equality g_hoveredObjectId	party-slot poll returns zero while waiting and -1 on cancel; hovered -1 means no party position
+src/Game/statestack.c	RunPictureTransition	1	call-argument	StartScreenFade(ScreenFadeMode, i16) argument 2	one frame is the fade speed used for the picture reveal
+src/Game/statestack.c	RunPictureTransition	0x2d	call-argument	StartDebugScene(i16, i16, i16) argument 1	@identity-TODO: fixed scene script 0x2d has no decoded title
+src/Game/statestack.c	RunPictureTransition	0	call-argument	StartDebugScene(i16, i16, i16) argument 2	the fixed scene script starts at entry zero
+src/Game/statestack.c	RunPictureTransition	0	call-argument	StartDebugScene(i16, i16, i16) argument 3	@identity-TODO: fixed scene script call argument three is zero
+src/Game/statestack.c	RunPictureTransition	0	trivial-function-literal	0 store s_sceneHold	clears the scene hold before returning to field exploration

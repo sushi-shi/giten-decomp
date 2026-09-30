@@ -18,13 +18,20 @@ i16 CountPartyMembers(i16 skipDisabled);
 i16 FindRosterSlotById(i16 id);
 
 static __inline b32 RosterContainsId(i16 id) {
-    return FindRosterSlotById(id) != -1;
+    return FindRosterSlotById(id) != ROSTER_SLOT_NONE;
 }
 
 i16 RosterSlotOfId(i16 id);
 b16 SortRoster(void);
-i16 FilterPartyMember(i16 slot, i16 mode);
-i16 DamageParty(i16 percent, i16 skipId13);
+// FilterPartyMember accepts party positions, reserve roster entries, or both.
+GZ_ENUM_FLAGS_BEGIN(RosterMemberFilter, i16)
+    ROSTER_FILTER_PARTY = 1,
+    ROSTER_FILTER_RESERVE = 2,
+    ROSTER_FILTER_BOTH = ROSTER_FILTER_PARTY | ROSTER_FILTER_RESERVE
+GZ_ENUM_FLAGS_END(RosterMemberFilter)
+
+i16 FilterPartyMember(i16 slot, GZ_ENUM_PARAM(RosterMemberFilter, i16) mode);
+i16 DamageParty(i16 percent, b16 skipNewton);
 i16 HealParty(i16 percent);
 Character* CopyCharacter(Character* src, Character* dst);
 i32 AddMacca(Character* character, i32 amount);

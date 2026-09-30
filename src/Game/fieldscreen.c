@@ -20,9 +20,11 @@
 #include <Game/FieldSupport.h>
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
+#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemUse.h>
 #include <Game/PartyPick.h>
+#include <Game/SceneHotspotKind.h>
 #include <Game/StateStack.h>
 #include <Game/TreasureBox.h>
 #include <Game/WorldMap.h>
@@ -38,6 +40,8 @@
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
 #include <Script/EventFlags.h>
+#include <Script/OwnedFlag.h>
+#include <Script/ScenarioFlag.h>
 #include <Sound/Sound.h>
 #include <Text/Font.h>
 #include <Text/TextBand.h>
@@ -68,7 +72,7 @@ static i16 s_viewX = 0;
 
 // While set, field objects are drawn hidden.
 DATA(0x0007b7e8)
-static i16 s_objectsHidden = 0;
+static b16 s_objectsHidden = false;
 
 // Set while the area palette is switched on (a dark cell).
 DATA(0x0007b7ec)
@@ -93,7 +97,7 @@ DATA(0x0007b804)
 static u32 s_overlayImage = 0;
 
 DATA(0x0007b808)
-static void* s_backdropBlock = 0;
+static void* s_backdropBlock = NULL;
 
 DATA(0x0007b80c)
 static i32 s_fieldMessages = 0;
@@ -161,9 +165,13 @@ static WorldMapBlock s_worldBlocks[6] = {
 
 DATA(0x00068730)
 i16 g_worldMapOverlayFlags[89] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1,
-    1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    false, false, false, false, false, false, false, false, false, false, true,  false, false,
+    false, false, false, false, false, true,  true,  false, false, false, false, false, false,
+    false, true,  true,  false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, true,  true,  false, false, false, false, false, false,
+    true,  true,  false, false, false, false, false, true,  true,  false, false, false, false,
+    false, false, true,  true,  false, false, false, false, false, false, false, true,  true,
+    true,  false, false, false, false, false, false, false, false, false, true,
 };
 
 // The field panel: nine command rows (their ids pick the command; flag
@@ -207,7 +215,7 @@ i16 ExchangeViewHold(i16 hold) {
 
 RVA(0x00014750, 0xe)
 void RequestFieldRefresh(void) {
-    g_fieldRedrawRequest = 1;
+    g_fieldRedrawRequest = true;
     RedrawFieldView();
 }
 
@@ -226,7 +234,7 @@ b16 PrepareFieldRedraw(i16 force) {
         UpdateInfoBar();
         return false;
     }
-    g_fieldRedrawRequest = 1;
+    g_fieldRedrawRequest = true;
     ClearMaskView();
     ResetMask(1);
     if (!s_viewHold) {
@@ -280,7 +288,7 @@ void TrackWorldMapCursor(i16 layer) {
     if (s_cursorCellX == cell.x && s_cursorCellY == cell.y) {
         return;
     }
-    g_mouseRightClick = 0;
+    g_mouseRightClick = MOUSE_CLICK_NONE;
     if (g_mousePosition.x >= 0 && g_mousePosition.x < 0x280 && g_mousePosition.y >= 0
         && g_mousePosition.y < 0x148) {
         DrawWorldMapCursor(g_mousePosition.x, g_mousePosition.y, layer);
@@ -309,18 +317,18 @@ MapCoord GetMouseTravelCell(void) {
 RVA(0x00014960, 0x93)
 b16 CanOpenAutomap(void) {
     Character* character;
-    if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) == 1) {
+    if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) == true) {
         return false;
     }
-    character = GetCharacterById(0);
+    character = GetCharacterById(HUMAN_KATSURAGI);
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
-    character = GetCharacterById(10);
+    character = GetCharacterById(HUMAN_YAMASE);
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
-    character = GetCharacterById(11);
+    character = GetCharacterById(HUMAN_KIRISHIMA);
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
@@ -332,7 +340,7 @@ RVA(0x00014a00, 0x36)
 i16 ReorderRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         PlaySoundEffect(1);
-        PushGameState(0x24);
+        PushGameState(GAME_STATE_PARTY_REORDER);
     }
     return value;
 }
@@ -342,7 +350,7 @@ RVA(0x00014a40, 0x36)
 i16 StatusRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         PlaySoundEffect(1);
-        PushGameState(0x19);
+        PushGameState(GAME_STATE_STATUS);
     }
     return value;
 }
@@ -352,7 +360,7 @@ RVA(0x00014a80, 0x36)
 i16 SkillRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         PlaySoundEffect(1);
-        PushGameState(0x1a);
+        PushGameState(GAME_STATE_FIELD_SKILL_USE);
     }
     return value;
 }
@@ -365,7 +373,7 @@ i16 ItemRowHandler(PanelRow* row, i16 value, i16 op) {
         if (CanHumanMemberAct()) {
             if (CountBagEntries()) {
                 PlaySoundEffect(1);
-                PushGameState(0xe);
+                PushGameState(GAME_STATE_ITEM_USE);
             } else {
                 ClearPanelRowCheck(row);
                 // "[ITEM] アイテムが有りません"
@@ -393,7 +401,7 @@ RVA(0x00014b50, 0x3b)
 b16 CanHumanMemberAct(void) {
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && IsHumanCharacter(character)
             && !GetPickBlockingCondition(GetCharacterConditions(character))) {
@@ -408,7 +416,7 @@ RVA(0x00014b90, 0x81)
 i16 DdsRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         if (CanOpenAutomap()) {
-            if (IsEventFlagSet(2, 6)) {
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DDS_V1_0)) {
                 ClearPanelRowCheck(row);
                 // "[DDS] DDSを所持していません"
                 ShowMessage(
@@ -418,7 +426,7 @@ i16 DdsRowHandler(PanelRow* row, i16 value, i16 op) {
                 );
             } else {
                 PlaySoundEffect(1);
-                PushGameState(0x1e);
+                PushGameState(GAME_STATE_DDS_MENU);
             }
         } else {
             ClearPanelRowCheck(row);
@@ -431,7 +439,7 @@ i16 DdsRowHandler(PanelRow* row, i16 value, i16 op) {
 RVA(0x00014c20, 0x83)
 i16 FightRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
-        if (!CountHotspotsOfKind(2, 0)) {
+        if (!CountHotspotsOfKind(SCENE_HOTSPOT_OBJECT, false)) {
             ClearPanelRowCheck(row);
             // "[FIGHT] 戦う相手が居ません"
             ShowMessage(
@@ -442,9 +450,9 @@ i16 FightRowHandler(PanelRow* row, i16 value, i16 op) {
         }
         if (!g_fieldBattleActive) {
             PlaySoundEffect(1);
-            PlayMusic(0xd, 1);
+            PlayMusic(0xd, true);
         }
-        g_fieldBattleActive = 1;
+        g_fieldBattleActive = true;
         ResetPartyTurnState();
     }
     return value;
@@ -455,14 +463,15 @@ RVA(0x00014cb0, 0xd1)
 i16 TalkRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         if (CanOpenAutomap()) {
-            if (!CountHotspotsOfKind(2, 0)) {
+            if (!CountHotspotsOfKind(SCENE_HOTSPOT_OBJECT, false)) {
                 ClearPanelRowCheck(row);
                 // "[TALK] 会話相手が居ません"
                 ShowMessage(
                     "[TALK] \211\357\230b\221\212\216\350\202\252\213\217\202\334\202\271\202\361",
                     -1
                 );
-            } else if (IsEventFlagSet(2, 7) && IsEventFlagSet(2, 8)) {
+            } else if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_V1_0)
+                       && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
                 ClearPanelRowCheck(row);
                 // "[TALK] DCSを所持していません"
                 ShowMessage(
@@ -488,7 +497,7 @@ RVA(0x00014d90, 0x81)
 i16 MappingRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         if (CanOpenAutomap()) {
-            if (IsEventFlagSet(2, 0x39)) {
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_MAPPING_AMS)) {
                 ClearPanelRowCheck(row);
                 // "[MAPPING] AMSを所持していません"
                 ShowMessage(
@@ -498,7 +507,7 @@ i16 MappingRowHandler(PanelRow* row, i16 value, i16 op) {
                 );
             } else {
                 PlaySoundEffect(1);
-                PushGameState(0x20);
+                PushGameState(GAME_STATE_AUTOMAP);
             }
         } else {
             ClearPanelRowCheck(row);
@@ -512,7 +521,7 @@ RVA(0x00014e20, 0x36)
 i16 MenuRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         PlaySoundEffect(1);
-        PushGameState(0xf);
+        PushGameState(GAME_STATE_SYSTEM_MENU);
     }
     return value;
 }
@@ -552,39 +561,39 @@ b32 IsFieldPanelRowChecked(i16 row) {
 // in mode 0; rows 2, 3 and 5 in mode 1; 5, 6 and 7 in mode 2; 2, 3, 5 and 7
 // in mode 3. Rows 0, 1, 4 and 8 are always enabled.
 RVA(0x00014f20, 0x1f0)
-void SetFieldMenuMode(i16 mode) {
-    SetPanelRowFlags(&s_fieldPanel.panel, 0, PANEL_INPUT_DISABLED, 0);
-    SetPanelRowFlags(&s_fieldPanel.panel, 1, PANEL_INPUT_DISABLED, 0);
-    SetPanelRowFlags(&s_fieldPanel.panel, 8, PANEL_INPUT_DISABLED, 0);
-    SetPanelRowFlags(&s_fieldPanel.panel, 4, PANEL_INPUT_DISABLED, 0);
+void SetFieldMenuMode(GZ_ENUM_PARAM(FieldMenuMode, i16) mode) {
+    SetPanelRowFlags(&s_fieldPanel.panel, 0, PANEL_INPUT_DISABLED, false);
+    SetPanelRowFlags(&s_fieldPanel.panel, 1, PANEL_INPUT_DISABLED, false);
+    SetPanelRowFlags(&s_fieldPanel.panel, 8, PANEL_INPUT_DISABLED, false);
+    SetPanelRowFlags(&s_fieldPanel.panel, 4, PANEL_INPUT_DISABLED, false);
     switch (mode) {
-        case 0:
-            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, 0);
+        case FIELD_MENU_ALL:
+            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, false);
             break;
-        case 1:
-            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, 0);
+        case FIELD_MENU_NO_SKILL_ITEM_FIGHT:
+            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, false);
             break;
-        case 2:
-            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, 1);
+        case FIELD_MENU_NO_FIGHT_TALK_MAPPING:
+            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, true);
             break;
-        case 3:
-            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, 1);
-            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, 0);
-            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, 1);
+        case FIELD_MENU_NO_SKILL_ITEM_FIGHT_MAPPING:
+            SetPanelRowFlags(&s_fieldPanel.panel, 2, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 3, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 5, PANEL_INPUT_DISABLED, true);
+            SetPanelRowFlags(&s_fieldPanel.panel, 6, PANEL_INPUT_DISABLED, false);
+            SetPanelRowFlags(&s_fieldPanel.panel, 7, PANEL_INPUT_DISABLED, true);
             break;
     }
 }
@@ -596,7 +605,8 @@ void TalkCommand(void) {
     if (!CanOpenAutomap()) {
         return;
     }
-    if (IsEventFlagSet(2, 7) && IsEventFlagSet(2, 8)) {
+    if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_V1_0)
+        && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
         // "[TALK] DCSを所持していません"
         ShowMessage(
             "[TALK] DCS\202\360\217\212\216\235\202\265\202\304\202\242\202\334\202\271\202\361",
@@ -622,10 +632,10 @@ void FightCommand(i16 id) {
     }
     if (!g_fieldBattleActive) {
         PlaySoundEffect(1);
-        PlayMusic(0xd, 1);
+        PlayMusic(0xd, true);
         ResetPartyTurnState();
     }
-    g_fieldBattleActive = 1;
+    g_fieldBattleActive = true;
     SetMemberPickRole(id, PICK_ROLE_ATTACK);
 }
 
@@ -641,10 +651,10 @@ void GunCommand(i16 id) {
     }
     if (!g_fieldBattleActive) {
         PlaySoundEffect(1);
-        PlayMusic(0xd, 1);
+        PlayMusic(0xd, true);
         ResetPartyTurnState();
     }
-    g_fieldBattleActive = 1;
+    g_fieldBattleActive = true;
     SetMemberPickRole(id, PICK_ROLE_GUN);
 }
 
@@ -654,15 +664,15 @@ void SkillCommand(i16 id) {
     if (CountFieldObjects()) {
         if (!g_fieldBattleActive) {
             PlaySoundEffect(1);
-            PlayMusic(0xd, 1);
+            PlayMusic(0xd, true);
         }
-        g_fieldBattleActive = 1;
+        g_fieldBattleActive = true;
         PlaySoundEffect(1);
         SetMemberPickRole(id, PICK_ROLE_MAGIC);
         return;
     }
     PlaySoundEffect(1);
-    PushGameState(0x1a);
+    PushGameState(GAME_STATE_FIELD_SKILL_USE);
     SetFieldSkillUser(id);
 }
 
@@ -673,9 +683,9 @@ void ItemCommand(i16 id) {
     if (CountFieldObjects()) {
         if (!g_fieldBattleActive) {
             PlaySoundEffect(1);
-            PlayMusic(0xd, 1);
+            PlayMusic(0xd, true);
         }
-        g_fieldBattleActive = 1;
+        g_fieldBattleActive = true;
         PlaySoundEffect(1);
         SetMemberPickRole(id, PICK_ROLE_ITEM);
         return;
@@ -691,7 +701,7 @@ void ItemCommand(i16 id) {
     }
     if (CountBagEntries()) {
         PlaySoundEffect(1);
-        PushGameState(0xe);
+        PushGameState(GAME_STATE_ITEM_USE);
         SetUseMemberId(id);
         return;
     }
@@ -705,7 +715,7 @@ RVA(0x00015350, 0x51)
 b16 CanMemberAct(i16 id) {
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && character->id == id) {
             if (!IsHumanCharacter(character)) {
@@ -731,10 +741,10 @@ void DefenceCommand(i16 id) {
     }
     if (!g_fieldBattleActive) {
         PlaySoundEffect(1);
-        PlayMusic(0xd, 1);
+        PlayMusic(0xd, true);
         ResetPartyTurnState();
     }
-    g_fieldBattleActive = 1;
+    g_fieldBattleActive = true;
     SetMemberPickRole(id, PICK_ROLE_DEFENCE);
 }
 
@@ -750,7 +760,7 @@ void DdsCommand(void) {
     if (!CanOpenAutomap()) {
         return;
     }
-    if (IsEventFlagSet(2, 6)) {
+    if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DDS_V1_0)) {
         // "[DDS] DDSを所持していません"
         ShowMessage(
             "[DDS] DDS\202\360\217\212\216\235\202\265\202\304\202\242\202\334\202\271\202\361",
@@ -759,13 +769,13 @@ void DdsCommand(void) {
         return;
     }
     PlaySoundEffect(1);
-    PushGameState(0x1e);
+    PushGameState(GAME_STATE_DDS_MENU);
 }
 
 RVA(0x00015470, 0x14)
 void StatusCommand(void) {
     PlaySoundEffect(1);
-    PushGameState(0x19);
+    PushGameState(GAME_STATE_STATUS);
 }
 
 RVA(0x00015490, 0x14)
@@ -788,7 +798,7 @@ i16 GetEncounterPending(void) {
 RVA(0x000154d0, 0x14)
 void OpenFieldMenu(void) {
     PlaySoundEffect(1);
-    PushGameState(0xf);
+    PushGameState(GAME_STATE_SYSTEM_MENU);
 }
 
 // Opens the automap (game state 0x20) unless the MAPPING program is missing.
@@ -797,7 +807,7 @@ void OpenAutomap(void) {
     if (!CanOpenAutomap()) {
         return;
     }
-    if (IsEventFlagSet(2, 0x39)) {
+    if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_MAPPING_AMS)) {
         // "[MAPPING] AMSを所持していません"
         ShowMessage(
             "[MAPPING] AMS\202\360\217\212\216\235\202\265\202\304\202\242\202\334\202\271\202\361",
@@ -806,14 +816,15 @@ void OpenAutomap(void) {
         return;
     }
     PlaySoundEffect(1);
-    PushGameState(0x20);
+    PushGameState(GAME_STATE_AUTOMAP);
 }
 
 // Whether this character can use the automap command on the current cell.
 RVA(0x00015530, 0x56)
 b16 CanCharacterOpenAutomap(Character* character) {
-    if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) != 1 && character != NULL
-        && (character->id == 0 || character->id == 10 || character->id == 11)
+    if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) != true && character != NULL
+        && (character->id == HUMAN_KATSURAGI || character->id == HUMAN_YAMASE
+            || character->id == HUMAN_KIRISHIMA)
         && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
@@ -860,7 +871,7 @@ static i16 MarkAutomapRowSpan(i16* x, i16 y) {
         next = right + 1;
         while (right < s_roomSize.x) {
             MarkAutomapCell(g_party.field.pos.area, g_party.field.pos.level, right, y);
-            wall = GetMapWallKind(right, y, 1);
+            wall = GetMapWallKind(right, y, VIEW_EAST);
             if (WallStops(wall, WALL_STOP_MOVEMENT) || next >= s_roomSize.x
                 || !IsRoomCell(next, y)) {
                 break;
@@ -871,7 +882,7 @@ static i16 MarkAutomapRowSpan(i16* x, i16 y) {
     }
     while (*x >= 0) {
         MarkAutomapCell(g_party.field.pos.area, g_party.field.pos.level, *x, y);
-        wall = GetMapWallKind(*x, y, 3);
+        wall = GetMapWallKind(*x, y, VIEW_WEST);
         if (WallStops(wall, WALL_STOP_MOVEMENT)) {
             break;
         }
@@ -887,7 +898,7 @@ static i16 MarkAutomapRowSpan(i16* x, i16 y) {
 
 RVA(0x00015730, 0x73)
 static b16 CanRevealAutomapSouth(i16 x, i16 y) {
-    i16 wall = GetMapWallKind(x, y, 2);
+    i16 wall = GetMapWallKind(x, y, VIEW_SOUTH);
     if (WallStops(wall, WALL_STOP_MOVEMENT)) {
         return false;
     }
@@ -903,7 +914,7 @@ static b16 CanRevealAutomapSouth(i16 x, i16 y) {
 
 RVA(0x000157b0, 0x6f)
 static b16 CanRevealAutomapNorth(i16 x, i16 y) {
-    i16 wall = GetMapWallKind(x, y, 0);
+    i16 wall = GetMapWallKind(x, y, VIEW_NORTH);
     if (WallStops(wall, WALL_STOP_MOVEMENT)) {
         return false;
     }
@@ -938,14 +949,14 @@ void FreeCommandMenuImage(void) {
 }
 
 RVA(0x00015870, 0x35)
-b16 SetFieldStatusBit11(i16 on) {
-    b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, 0x800);
-    SetPanelRowFlags(&s_commandPanel.panel, 1, 0x800, on);
+b16 SetFieldStatusBit11(b16 on) {
+    b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, PANEL_SKIP_HIT_TEST);
+    SetPanelRowFlags(&s_commandPanel.panel, 1, PANEL_SKIP_HIT_TEST, on);
     return old;
 }
 
 RVA(0x000158b0, 0x2f)
-b16 SetFieldStatusBit0(i16 on) {
+b16 SetFieldStatusBit0(b16 on) {
     b16 old = TestPanelRowFlags(&s_commandPanel.panel, 1, PANEL_ROW_CHECKED);
     SetPanelRowFlags(&s_commandPanel.panel, 1, PANEL_ROW_CHECKED, on);
     return old;
@@ -1032,8 +1043,8 @@ i16 HitTestPanelRow(Panel* panel, i16 id, i16 x, i16 y, u16 flags) {
 }
 
 RVA(0x00015a90, 0x12)
-i16 ExchangeObjectsHidden(i16 hidden) {
-    i16 old = s_objectsHidden;
+b16 ExchangeObjectsHidden(b16 hidden) {
+    b16 old = s_objectsHidden;
     s_objectsHidden = hidden;
     return old;
 }
@@ -1083,7 +1094,7 @@ b16 RebuildFieldView(void) {
     ClearDrawTable();
     FlushPlaneUpdates();
     RedrawFieldViewAt(GetPlaneHeader(0), 0);
-    s_objectsHidden = 0;
+    s_objectsHidden = false;
     return true;
 }
 
@@ -1134,7 +1145,7 @@ i16 AreObjectsHidden(i16 view, i16 across, i16 along, i16 side) {
 RVA(0x00015cc0, 0x48)
 void PlayWallEffect(void) {
     i16 i;
-    RunPartyPicker(-1);
+    RunPartyPicker(PARTY_PICKER_COMMAND_CLOSE);
     PlaySoundEffect(6);
     for (i = 0; i < 10; i += 2) {
         DrawImageFrame(GetPlaneData(0), s_effectFrames, i, 0, 0, 0, 0, 0, 1);
@@ -1157,10 +1168,10 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
     i16 rightBlocked;
     i16 along;
     i16 scan;
-    i16 code;
+    GZ_ENUM_LOCAL(CellCode, i16) code;
     MapCoord origin;
     MapCoord cell;
-    center = left = right = leftBlocked = rightBlocked = 0;
+    center = left = right = leftBlocked = rightBlocked = false;
     if (IsDarkCell(g_party.field.pos.x, g_party.field.pos.y)) {
         return;
     }
@@ -1174,7 +1185,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
                 if (code && (center == 0 || along == 0)) {
                     left = DrawFieldMessage(code, TEXT_BAND_LEFT, 1);
                 }
-            } else if (leftBlocked == 0) {
+            } else if (leftBlocked == false) {
                 if (g_leftFrontWalls[-along][0] == 1) {
                     cell = OffsetCoordClamped(origin, direction, -1, along - 1);
                     code = GetEventCellCode(cell.x, cell.y);
@@ -1198,7 +1209,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
                         }
                     }
                 } else if (g_leftFrontWalls[-along][0]) {
-                    leftBlocked = 1;
+                    leftBlocked = true;
                 }
             }
         }
@@ -1209,7 +1220,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
                 if (code && (center == 0 || along == 0)) {
                     right = DrawFieldMessage(code, TEXT_BAND_RIGHT, 1);
                 }
-            } else if (rightBlocked == 0) {
+            } else if (rightBlocked == false) {
                 if (g_rightFrontWalls[-along][0] == 1) {
                     cell = OffsetCoordClamped(origin, direction, 1, along - 1);
                     code = GetEventCellCode(cell.x, cell.y);
@@ -1233,7 +1244,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
                         }
                     }
                 } else if (g_rightFrontWalls[-along][0]) {
-                    rightBlocked = 1;
+                    rightBlocked = true;
                 }
             }
         }
@@ -1261,7 +1272,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
 }
 
 RVA(0x000160c0, 0x163)
-b16 DrawFieldMessage(i16 code, i16 band, i16 marked) {
+b16 DrawFieldMessage(GZ_ENUM_PARAM(CellCode, i16) code, i16 band, i16 marked) {
     FieldMessage* message = GetFieldMessage(code);
     char* text = message->text;
     i16 x;
@@ -1295,7 +1306,13 @@ b16 DrawFieldMessage(i16 code, i16 band, i16 marked) {
             y = 62;
             break;
     }
-    DrawBandText(x, y, g_scratchBuffer, 0x2650, band);
+    DrawBandText(
+        x,
+        y,
+        g_scratchBuffer,
+        TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_GREEN, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+        band
+    );
     return true;
 }
 
@@ -1320,7 +1337,7 @@ void LoadWorldMapBlockImage(i16 block, i16 slot) {
         return;
     }
     request.file = block + 0x7e00;
-    if (block == 76 && !IsEventFlagSet(1, 13)) {
+    if (block == 76 && !IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_RAINBOW_BRIDGE)) {
         request.file = 0x7e58;
         variant = 88;
     }
@@ -1496,11 +1513,16 @@ u8 GetWorldMapCellCode(i16 layer, i16 x, i16 y) {
     if (!IsWorldCellInMap(x, y)) {
         return 0;
     }
-    column = x / 288;
-    row = y / 200;
-    block = column + row * 8;
+    column = x / WORLD_BLOCK_WIDTH;
+    row = y / WORLD_BLOCK_HEIGHT;
+    block = column + row * WORLD_BLOCK_COLUMNS;
     ResolveWorldMapBlockSlot(block);
-    return ReadWorldMapTileCode(x - column * 288, y - row * 200, block, layer);
+    return ReadWorldMapTileCode(
+        x - column * WORLD_BLOCK_WIDTH,
+        y - row * WORLD_BLOCK_HEIGHT,
+        block,
+        layer
+    );
 }
 
 RVA(0x000167b0, 0x14)
@@ -1535,11 +1557,11 @@ i16 GetWorldMapMarker(i16* x, i16* y) {
     if (!IsWorldCellInMap(g_worldMapX, g_worldMapY)) {
         return -1;
     }
-    column = g_worldMapX / 288;
-    row = g_worldMapY / 200;
-    block = column + row * 8;
-    *x = g_worldMapX - column * 288 - 3;
-    *y = g_worldMapY - row * 200 - 3;
+    column = g_worldMapX / WORLD_BLOCK_WIDTH;
+    row = g_worldMapY / WORLD_BLOCK_HEIGHT;
+    block = column + row * WORLD_BLOCK_COLUMNS;
+    *x = g_worldMapX - column * WORLD_BLOCK_WIDTH - 3;
+    *y = g_worldMapY - row * WORLD_BLOCK_HEIGHT - 3;
     ResolveWorldMapBlockSlot(block);
     return block;
 }
@@ -1601,14 +1623,14 @@ void InitWorldPanel(void) {
 // The world panel's row handler (drops a pending left click first).
 RVA(0x00016990, 0x26)
 i16 WorldRowHandler(PanelRow* row, i16 value, i16 op) {
-    g_mouseLeftClick = 0;
+    g_mouseLeftClick = MOUSE_CLICK_NONE;
     ApplyRowCheck(row, value, op);
     return value;
 }
 
 RVA(0x000169c0, 0x18)
 void ClearFieldPanelSelection(void) {
-    if (g_party.field.moveState == 0) {
+    if (g_party.field.moveState == FIELD_MOVE_IDLE) {
         ClearPanelChecks(&s_worldPanel.panel);
     }
 }

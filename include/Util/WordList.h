@@ -40,17 +40,22 @@ void FreeWordList(WordList* list);
 RVA_DECL(0x0002dc40)
 void ResetWordList(WordList* list, i16 count);
 
-// Index of a matching word, or -1 when absent.
+// FindWord and RemoveWord report an absent word as WORD_NONE; MoveWord takes
+// WORD_LAST for the last slot.
+#define WORD_NONE (-1)
+#define WORD_LAST (-1)
+
+// Index of a matching word, or WORD_NONE.
 RVA_DECL(0x0002dca0)
 i16 FindWord(WordList* list, i16 word);
 
 #define ContainsWord(list, word) (FindWord((list), (word)) >= 0)
 
-// Move the word at `from` to `to`; -1 means the last slot.
+// Move the word at `from` to `to` (or WORD_LAST).
 RVA_DECL(0x0002dd80)
 void MoveWord(WordList* list, i16 from, i16 to);
 
-// Remove a matching word from the list; -1 if absent.
+// Remove a matching word from the list; WORD_NONE if absent.
 RVA_DECL(0x0002de10)
 i16 RemoveWord(WordList* list, i16 word);
 

@@ -9,16 +9,21 @@
 #include <rva.h>
 
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
+#include <File/DataTableId.h>
+#include <Game/ActorFlag.h>
 #include <Game/Alignment.h>
 #include <Game/Analyze.h>
 #include <Game/AnalyzeData.h>
 #include <Game/AreaLevel.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
+#include <Game/Attitude.h>
 #include <Game/Automap.h>
 #include <Game/AutomapData.h>
 #include <Game/BagItems.h>
 #include <Game/BattleEffect.h>
+#include <Game/CellCode.h>
 #include <Game/CellTrap.h>
 #include <Game/Character.h>
 #include <Game/Clock.h>
@@ -39,9 +44,11 @@
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
 #include <Game/Growth.h>
+#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemMenu.h>
 #include <Game/ItemRecord.h>
+#include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
 #include <Game/Party.h>
@@ -62,12 +69,14 @@
 #include <Gfx/Render.h>
 #include <Gfx/ScreenLayer.h>
 #include <Gfx/VramAccess.h>
+#include <Giten/Resource.h>
 #include <Input/Mouse.h>
 #include <Mem/Alloc.h>
 #include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
+#include <Script/OwnedFlag.h>
 #include <Script/ScriptVars.h>
 #include <Sound/Sound.h>
 #include <Text/Font.h>
@@ -89,20 +98,34 @@
 
 DATA(0x00068b30)
 static AutomapIcon s_mapIcons[] = {
-    {0x40, 6, AUTOMAP_DETAIL_BASIC},  {0x41, 7, AUTOMAP_DETAIL_BASIC},
-    {0x42, 8, AUTOMAP_DETAIL_BASIC},  {0x43, 9, AUTOMAP_DETAIL_BASIC},
-    {0x44, 10, AUTOMAP_DETAIL_BASIC}, {0x45, 10, AUTOMAP_DETAIL_BASIC},
-    {0x46, 10, AUTOMAP_DETAIL_BASIC}, {0x48, 11, AUTOMAP_DETAIL_NPCS},
-    {0x50, 12, AUTOMAP_DETAIL_NPCS},  {0x51, 13, AUTOMAP_DETAIL_NPCS},
-    {0x52, 14, AUTOMAP_DETAIL_NPCS},  {0x53, 15, AUTOMAP_DETAIL_NPCS},
-    {0x54, 16, AUTOMAP_DETAIL_NPCS},  {0x55, 17, AUTOMAP_DETAIL_NPCS},
-    {0x56, 18, AUTOMAP_DETAIL_NPCS},  {0x57, 19, AUTOMAP_DETAIL_NPCS},
-    {0x58, 20, AUTOMAP_DETAIL_NPCS},  {0x59, 21, AUTOMAP_DETAIL_NPCS},
-    {0x5b, 22, AUTOMAP_DETAIL_NPCS},  {0x7b, 23, AUTOMAP_DETAIL_NPCS},
-    {0x7d, 9, AUTOMAP_DETAIL_NPCS},   {0x85, 18, AUTOMAP_DETAIL_NPCS},
-    {0x86, 18, AUTOMAP_DETAIL_NPCS},  {0x87, 18, AUTOMAP_DETAIL_NPCS},
-    {0x90, 8, AUTOMAP_DETAIL_BASIC},  {0x91, 9, AUTOMAP_DETAIL_BASIC},
-    {0xbf, 24, AUTOMAP_DETAIL_BASIC}, {0xff, 24, AUTOMAP_DETAIL_BASIC},
+    {CELL_SERVICE_TERMINAL, MAP_MARK_SERVICE_TERMINAL, AUTOMAP_DETAIL_BASIC},
+    {CELL_EXIT, MAP_MARK_EXIT, AUTOMAP_DETAIL_BASIC},
+    {CELL_STAIRS_UP, MAP_MARK_STAIRS_UP, AUTOMAP_DETAIL_BASIC},
+    {CELL_STAIRS_DOWN, MAP_MARK_STAIRS_DOWN, AUTOMAP_DETAIL_BASIC},
+    {CELL_ELEVATOR_LOWER_STOP, MAP_MARK_ELEVATOR, AUTOMAP_DETAIL_BASIC},
+    {CELL_ELEVATOR_UPPER_STOP, MAP_MARK_ELEVATOR, AUTOMAP_DETAIL_BASIC},
+    {CELL_ELEVATOR_MIDDLE_STOP, MAP_MARK_ELEVATOR, AUTOMAP_DETAIL_BASIC},
+    {CELL_AREA_NPC_MASK_ALL, MAP_MARK_NPC_RECORD, AUTOMAP_DETAIL_NPCS},
+    {CELL_SOFTWARE_SHOP, MAP_MARK_ELECTRIC, AUTOMAP_DETAIL_NPCS},
+    {CELL_WEAPON_SHOP, MAP_MARK_WEAPONS, AUTOMAP_DETAIL_NPCS},
+    {CELL_TRANSFER_DEVICE, MAP_MARK_TRANSFER, AUTOMAP_DETAIL_NPCS},
+    {CELL_MEDICINE_SHOP, MAP_MARK_MEDICINE, AUTOMAP_DETAIL_NPCS},
+    {CELL_HERETIC_MANSION, MAP_MARK_HERETIC, AUTOMAP_DETAIL_NPCS},
+    {CELL_HOSPITAL, MAP_MARK_HOSPITAL, AUTOMAP_DETAIL_NPCS},
+    {CELL_SPRING, MAP_MARK_SPRING, AUTOMAP_DETAIL_NPCS},
+    {CELL_RECOVERY_HALL, MAP_MARK_RECOVERY, AUTOMAP_DETAIL_NPCS},
+    {CELL_ARMOR_SHOP, MAP_MARK_DEFENSE, AUTOMAP_DETAIL_NPCS},
+    {CELL_BAR, MAP_MARK_BAR, AUTOMAP_DETAIL_NPCS},
+    {CELL_ITEM_SHOP, MAP_MARK_ITEMS, AUTOMAP_DETAIL_NPCS},
+    {CELL_ARM_TERMINAL, MAP_MARK_ARM_TERMINAL, AUTOMAP_DETAIL_NPCS},
+    {CELL_STAIRS_TO_SUBWAY_PLATFORM, MAP_MARK_STAIRS_DOWN, AUTOMAP_DETAIL_NPCS},
+    {0x85, MAP_MARK_SPRING, AUTOMAP_DETAIL_NPCS},
+    {0x86, MAP_MARK_SPRING, AUTOMAP_DETAIL_NPCS},
+    {0x87, MAP_MARK_SPRING, AUTOMAP_DETAIL_NPCS},
+    {CELL_STEPS_UP, MAP_MARK_STAIRS_UP, AUTOMAP_DETAIL_BASIC},
+    {CELL_STEPS_DOWN, MAP_MARK_STAIRS_DOWN, AUTOMAP_DETAIL_BASIC},
+    {CELL_AUTOMAP_BLANK, MAP_MARK_BLANK, AUTOMAP_DETAIL_BASIC},
+    {CELL_CODE_TABLE_END, MAP_MARK_BLANK, AUTOMAP_DETAIL_BASIC},
 };
 
 DATA(0x00068b88)
@@ -129,7 +152,7 @@ static i16 s_unusedWordTable[8] = {0, 0, 2, 2, 0, 0, 0, 0};
 
 // The five attitude names, indexed by Character.attitude.
 DATA(0x00068bf8)
-static char* s_attitudeNames[5] = {
+static char* s_attitudeNames[ATTITUDE_COUNT] = {
     "\210\243\212\350\223I",      // 哀願的
     "\227F\215D\223I",            // 友好的
     "\222\264\223G\221\316\223I", // 超敵対的
@@ -148,11 +171,11 @@ static i16 s_markedY = -1;
 
 // The window with the target's name (and the prompts).
 DATA(0x00068c18)
-static i16 s_namePlane = -1;
+static i16 s_namePlane = TEXT_PLANE_NONE;
 
 // The window with the target's analyze data.
 DATA(0x00068c1c)
-static i16 s_dataPlane = -1;
+static i16 s_dataPlane = TEXT_PLANE_NONE;
 
 // The law/chaos and light/dark letters, indexed by AlignmentClass + 1.
 DATA(0x00068c20)
@@ -201,7 +224,7 @@ static i16 s_unusedItemMenuValue = -1;
 
 // The per-area level tables (256 handles).
 DATA(0x0007bee0)
-static i32 s_areaStore[256] = {0};
+static i32 s_areaStore[MAP_AREA_COUNT] = {0};
 
 DATA(0x0007c2e0)
 static i16 s_mapPlane = 0;
@@ -215,7 +238,7 @@ static AutomapBitmap s_levelBuffer = {0};
 
 // The current area's NPCs (s_npcCount of them placed).
 DATA(0x0007d300)
-static AreaNpc s_npcs[16] = {0};
+static AreaNpc s_npcs[AREA_NPC_COUNT] = {0};
 
 // The treasure box in view: its cell, and the party's map position with x/y
 // set to the view's lateral and depth position. Nothing reads either back.
@@ -229,34 +252,34 @@ DATA(0x0007d5b4)
 static MapPosition s_boxPosition = {0};
 
 DATA(0x0007d5c0)
-static ItemStackList* s_itemMenuLimits = 0;
+static ItemStackList* s_itemMenuLimits = NULL;
 
 DATA(0x0007d5c8)
 static i32 s_events = 0;
 
 // The yes/no menu of the "analyze in detail?" prompt.
 DATA(0x0007d5cc)
-static MenuBox* s_menu = 0;
+static MenuBox* s_menu = NULL;
 
 DATA(0x0007d5d0)
-static Character* s_target = 0;
+static Character* s_target = NULL;
 
 // The window's step; -1 closes it.
 DATA(0x0007d5d4)
-static i16 s_step = 0;
+static GZ_ENUM_STORAGE(AnalyzeStep, i16) s_step = ANALYZE_STEP_SHOW_NAME;
 
 // Roster entry 15 while the detailed analysis borrows it.
 DATA(0x0007d5d8)
-static Character* s_savedRosterEntry = 0;
+static Character* s_savedRosterEntry = NULL;
 
 DATA(0x0007d5dc)
 static i16 s_npcCount = 0;
 
 DATA(0x0007d5e0)
-static i32* s_areas = 0;
+static i32* s_areas = NULL;
 
 DATA(0x0007d5e4)
-static i16 s_mapDirection = 0;
+static GZ_ENUM_STORAGE(ViewDirection, i16) s_mapDirection = VIEW_NORTH;
 
 DATA(0x0007d5e8)
 static i16 s_mapOriginX = 0;
@@ -280,17 +303,17 @@ DATA(0x0007d600)
 static b16 s_mapActive = false;
 
 DATA(0x0007d604)
-static GZ_ENUM_STORAGE(AutomapDetail, i16) s_mapDetail = 0;
+static GZ_ENUM_STORAGE(AutomapDetail, i16) s_mapDetail = AUTOMAP_DETAIL_NONE;
 
 DATA(0x0007d608)
-static Panel* s_mapPanel = 0;
+static Panel* s_mapPanel = NULL;
 
 DATA(0x0007d60c)
-static AutomapBitmap* s_levelBitmap = 0;
+static AutomapBitmap* s_levelBitmap = NULL;
 
 // The panel being polled (NULL outside a poll).
 DATA(0x0007d610)
-static Panel* s_activePanel = 0;
+static Panel* s_activePanel = NULL;
 
 // While set, a row click plays no sound.
 DATA(0x0007d614)
@@ -306,7 +329,7 @@ DATA(0x0007d620)
 static i32 s_itemMenuStock = 0;
 
 DATA(0x0007d624)
-static MenuBox* s_itemMenu = 0;
+static MenuBox* s_itemMenu = NULL;
 
 DATA(0x0007d628)
 static b16 s_hideItemMenuTotal = false;
@@ -362,11 +385,11 @@ void IsHotspotTreasureOpen(i32 index) {
     }
     frame++;
     switch (box->head.code) {
-        case 0x4f:
+        case CELL_TREASURE_BOX_FOURTH_FRAME_PAIR:
             frame += 2;
-        case TREASURE_BOX_LOWER:
+        case CELL_TREASURE_BOX_LOWER_TEXTURE_HALF:
             frame += 2;
-        case 0x89:
+        case CELL_TREASURE_BOX_SECOND_FRAME_PAIR:
             frame += 2;
     }
 }
@@ -375,17 +398,17 @@ RVA(0x0001ab90, 0x168)
 b16 RunPartyReorder(void) {
     i16 slot;
     switch (GetGamePhase()) {
-        case 0:
+        case REORDER_PHASE_OPEN:
             NextGamePhase();
             NextGamePhase();
             break;
-        case 1:
+        case REORDER_PHASE_CLOSE:
             ReturnFromGameState();
-            FlushStatusRedraw(1);
+            FlushStatusRedraw(true);
             break;
-        case 2:
+        case REORDER_PHASE_PICK_FIRST:
             s_reorderFirst = PickReorderSlot();
-            if (s_reorderFirst == -1) {
+            if (s_reorderFirst == REORDER_PICK_PENDING) {
                 break;
             }
             if (s_reorderFirst < 0) {
@@ -395,15 +418,15 @@ b16 RunPartyReorder(void) {
                 NextGamePhase();
             }
             break;
-        case 3:
+        case REORDER_PHASE_PICK_SECOND:
             s_reorderSecond = PickReorderSlot();
-            if (s_reorderSecond == -1) {
+            if (s_reorderSecond == REORDER_PICK_PENDING) {
                 break;
             }
             ClearPartySlotSelection();
             if (s_reorderSecond < 0) {
                 PrevGamePhase();
-                FlushStatusRedraw(1);
+                FlushStatusRedraw(true);
                 break;
             }
             ExchangePartySlot(
@@ -411,16 +434,16 @@ b16 RunPartyReorder(void) {
                 ExchangePartySlot(s_reorderSecond, GetPartySlot(s_reorderFirst))
             );
             MarkPickDone();
-            SetGamePhase(1);
-            for (s_reorderFirst = 0; s_reorderFirst < 3; s_reorderFirst++) {
+            SetGamePhase(REORDER_PHASE_CLOSE);
+            for (s_reorderFirst = 0; s_reorderFirst < PARTY_ROW_SIZE; s_reorderFirst++) {
                 if (GetPartySlot(s_reorderFirst) >= 0) {
                     return false;
                 }
             }
-            for (slot = 3; slot < 6; slot++) {
+            for (slot = PARTY_ROW_SIZE; slot < PARTY_SIZE; slot++) {
                 s_reorderFirst = GetPartySlot(slot);
                 if (s_reorderFirst >= 0) {
-                    s_reorderFirst = ExchangePartySlot(slot - 3, s_reorderFirst);
+                    s_reorderFirst = ExchangePartySlot(slot - PARTY_ROW_SIZE, s_reorderFirst);
                     ExchangePartySlot(slot, s_reorderFirst);
                 }
             }
@@ -431,11 +454,11 @@ b16 RunPartyReorder(void) {
 
 RVA(0x0001ad00, 0x39)
 i16 PickReorderSlot(void) {
-    if (!PollPartySlotSelection(1)) {
-        return -1;
+    if (!PollPartySlotSelection(PARTY_SLOT_ANY)) {
+        return REORDER_PICK_PENDING;
     }
     if (g_selectedObjectId < 0) {
-        return -2;
+        return REORDER_PICK_CANCELLED;
     }
     ResetTextPlaneHighlight(g_infoPlane);
     return g_selectedObjectId;
@@ -455,34 +478,36 @@ void SetAnalyzeTarget(Character* target) {
 RVA(0x0001ad50, 0x5f0)
 i16 RunAnalyzeWindow(void) {
     Character* target = s_target;
-    i16 choice;
+    GZ_ENUM_LOCAL(TextEvent, i16) choice;
 
     switch (s_step) {
-        case -1:
+        case ANALYZE_STEP_CLOSE:
             if (s_menu != NULL) {
                 s_menu = DestroyMenuBox(s_menu);
             }
-            if (s_dataPlane != -1) {
+            if (s_dataPlane != TEXT_PLANE_NONE) {
                 s_dataPlane = CloseTextWindow(s_dataPlane);
             }
-            if (s_namePlane != -1) {
+            if (s_namePlane != TEXT_PLANE_NONE) {
                 s_namePlane = CloseTextWindow(s_namePlane);
             }
             s_step++;
-            return -1;
+            return SUBSTATE_FINISHED;
 
-        case 0:
+        case ANALYZE_STEP_SHOW_NAME:
             if (target == NULL) {
-                return -1;
+                return SUBSTATE_FINISHED;
             }
-            if (IsEventFlagSet(2, 11) && IsEventFlagSet(2, 12) && IsEventFlagSet(2, 16)) {
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V1_0)
+                && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V1_1)
+                && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V2_0)) {
                 ShowMessage(
                     "\202c\202`\202r\202\252\203C\203\223\203X\203g\203D\201["
                     "\203\213\202\263\202\352\202\304\202\242\202\334\202\271\202\361",
                     -1
                 ); // ＤＡＳがインストゥールされていません
-                s_step = -1;
-                return 0;
+                s_step = ANALYZE_STEP_CLOSE;
+                return SUBSTATE_RUNNING;
             }
             s_namePlane = CreateTextPlane(15, 0);
             EraseTextPlaneText(s_namePlane);
@@ -493,27 +518,28 @@ i16 RunAnalyzeWindow(void) {
                 GetDemonRaceName(target->id),
                 target->namePrefix
             );
-            PrintWindowText(s_namePlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_namePlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_namePlane, -2);
             s_step++;
-            return 0;
+            return SUBSTATE_RUNNING;
 
-        case 1:
-            if (IsEventFlagSet(2, 12) && IsEventFlagSet(2, 16)) {
+        case ANALYZE_STEP_SHOW_DATA:
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V1_1)
+                && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V2_0)) {
                 s_step++;
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             if (!HasAnalyzeData(target->id)) {
                 PrintWindowText(
                     s_namePlane,
                     "\203A\203i\203\211\203C\203Y\203f\201[\203^"
                     "\202\252\202\240\202\350\202\334\202\271\202\361\n",
-                    0x400,
+                    TEXT_ATTR_DEFAULT,
                     1,
-                    1
+                    true
                 ); // アナライズデータがありません
                 s_step++;
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             s_step++;
             s_dataPlane = CreateTextPlane(16, 0);
@@ -525,111 +551,112 @@ i16 RunAnalyzeWindow(void) {
                 s_lightDarkLetters[GetAlignmentClassA(target) + 1],
                 s_lawChaosLetters[GetAlignmentClassB(target) + 1]
             );
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             sprintf(g_scratchBuffer, "\203\214\203x\203\213 L%2d\n", target->level); // レベル L%2d
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\202g\202o   %d/%d\n",
                 target->pools.hp.cur,
                 target->pools.hp.max
             ); // ＨＰ   %d/%d
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\202l\202o   %d/%d\n",
                 target->pools.mp.cur,
                 target->pools.mp.max
             ); // ＭＰ   %d/%d
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\221\324\223x   %s\n",
                 s_attitudeNames[target->attitude]
             ); // 態度   %s
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             sprintf(
                 g_scratchBuffer,
                 "\217\363\221\324   %s\n",
                 GetFirstConditionName(GetCharacterConditions(target))
             ); // 状態   %s
-            PrintWindowText(s_dataPlane, g_scratchBuffer, 0x400, 0, 1);
+            PrintWindowText(s_dataPlane, g_scratchBuffer, TEXT_ATTR_DEFAULT, 0, true);
             RepaintTextPlane(s_dataPlane, -2);
-            return 0;
+            return SUBSTATE_RUNNING;
 
-        case 2:
+        case ANALYZE_STEP_WAIT:
             if (TakeMouseLeftClick()) {
                 s_step++;
-                return 0;
+                return SUBSTATE_RUNNING;
             }
             if (TakeMouseCancelSound()) {
-                s_step = -1;
-                return 0;
+                s_step = ANALYZE_STEP_CLOSE;
+                return SUBSTATE_RUNNING;
             }
             break;
 
-        case 3:
-            if (IsEventFlagSet(2, 16) || !HasAnalyzeData(target->id)) {
-                s_step = -1;
-                return 0;
+        case ANALYZE_STEP_OFFER_DETAIL:
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DAS_V2_0)
+                || !HasAnalyzeData(target->id)) {
+                s_step = ANALYZE_STEP_CLOSE;
+                return SUBSTATE_RUNNING;
             }
             PrintWindowText(
                 s_namePlane,
                 "\217\332\215\327\203A\203i\203\211\203C\203Y\202\265\202\334\202\267\202\251\201H"
                 "\n",
-                0x400,
+                TEXT_ATTR_DEFAULT,
                 1,
-                1
+                true
             ); // 詳細アナライズしますか？
             s_menu = CreateMenuBox(s_menu, 16, 2);
             SetMenuItems(s_menu, 5, s_yesNo, 2, AnalyzeMenuHandler);
-            SetTextPlaneFirstSelectableRow(s_menu->plane, 0, 0);
+            SetTextPlaneFirstSelectableRow(s_menu->plane, 0, false);
             SetTextPlaneHighlightMode(s_menu->plane, TEXT_HIGHLIGHT_OUTER);
             s_step++;
-            return 0;
+            return SUBSTATE_RUNNING;
 
-        case 4:
+        case ANALYZE_STEP_RUN_MENU:
             choice = RunMenu(s_menu);
-            if (choice == 0) {
+            if (choice == TEXT_EVENT_NONE) {
                 break;
             }
             s_menu = DestroyMenuBox(s_menu);
             s_step++;
-            if (choice >= 0 && g_selectedObjectId >= 0) {
+            if (choice >= TEXT_EVENT_NONE && g_selectedObjectId >= 0) {
                 break;
             }
-            s_step = -1;
-            return 0;
+            s_step = ANALYZE_STEP_CLOSE;
+            return SUBSTATE_RUNNING;
 
-        case 5: {
+        case ANALYZE_STEP_SHOW_DETAIL: {
             Character* copy;
 
             s_step++;
-            copy = GetCharacter(15);
+            copy = GetCharacter(ANALYZE_ROSTER_ENTRY);
             // The copy stops short of alignmentA and what follows it.
             memcpy(copy, target, offsetof(Character, alignmentA));
-            s_savedRosterEntry = GetRosterEntry(15);
-            SetRosterEntry(15, copy);
-            SetStatusAnalyzeMode(1);
-            PushGameState(0x19);
+            s_savedRosterEntry = GetRosterEntry(ANALYZE_ROSTER_ENTRY);
+            SetRosterEntry(ANALYZE_ROSTER_ENTRY, copy);
+            SetStatusAnalyzeMode(true);
+            PushGameState(GAME_STATE_STATUS);
             s_dataPlane = CloseTextWindow(s_dataPlane);
             s_namePlane = CloseTextWindow(s_namePlane);
-            return 0;
+            return SUBSTATE_RUNNING;
         }
 
-        case 6: {
+        case ANALYZE_STEP_END_DETAIL: {
             Character* copy;
 
-            s_step = -1;
-            SetStatusAnalyzeMode(0);
-            SetRosterEntry(15, s_savedRosterEntry);
+            s_step = ANALYZE_STEP_CLOSE;
+            SetStatusAnalyzeMode(false);
+            SetRosterEntry(ANALYZE_ROSTER_ENTRY, s_savedRosterEntry);
             s_savedRosterEntry = NULL;
-            copy = GetCharacter(15);
+            copy = GetCharacter(ANALYZE_ROSTER_ENTRY);
             InitWordList(GetCharacterSkills(copy), 0);
             break;
         }
     }
-    return 0;
+    return SUBSTATE_RUNNING;
 }
 
 // Lists the yes/no items, and forgets them when the menu is torn down; an
@@ -644,7 +671,13 @@ static void AnalyzeMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent
             menu->itemCount = 0;
             break;
         case MENU_EVENT_ADD_ROW:
-            AddMenuLine(menu->plane, items[index], 0x1700, -index, 0);
+            AddMenuLine(
+                menu->plane,
+                items[index],
+                TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_YELLOW, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+                -index,
+                MENU_LINE_NORMAL
+            );
             break;
     }
 }
@@ -658,7 +691,7 @@ RVA(0x0001b3b0, 0x2f)
 void LoadWorldMapEvents(void) {
     FILE* fp;
     FreeWorldMapEvents();
-    fp = OpenDataFile(32, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_WORLD_EVENTS, DATA_FILE_TABLE, 0);
     s_events = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -696,7 +729,7 @@ b16 CheckWorldMapEvent(i16 x, i16 y) {
     block = block * 2 + IsOddMapLayer();
     table = HandleReadPtr(s_events);
     events = OffsetBy(table, table->offsets[block]);
-    marked = 0;
+    marked = false;
     for (index = 0; events[index].x != -1; index++) {
         if (events[index].x >= left && events[index].x <= x && events[index].y >= top
             && events[index].y <= y) {
@@ -706,7 +739,7 @@ b16 CheckWorldMapEvent(i16 x, i16 y) {
             }
             if (events[index].x == s_markedX && events[index].y == s_markedY
                 && block == s_markedLayer) {
-                marked = 1;
+                marked = true;
             } else {
                 SetMarkedWorldMapEvent(block, events[index].x, events[index].y);
                 SetSceneCell(&events[index]);
@@ -732,18 +765,18 @@ RVA(0x0001b5c0, 0x93)
 void SetItemMenuCharacter(i16 member) {
     i16 ammo;
     i16 group;
-    if (member == -1) {
+    if (member == CHARACTER_ID_NONE) {
         if (s_itemMenuEquipGroup != -1 && s_itemMenu) {
             RequestMenuRedraw(s_itemMenu);
         }
         s_itemMenuEquipGroup = -1;
-        s_itemMenuMember = -1;
+        s_itemMenuMember = CHARACTER_ID_NONE;
         g_itemMenuAmmoType = -1;
         return;
     }
     ammo = GetGunAmmoType(GetCharacterById(member));
     s_itemMenuMember = member;
-    group = ReadObjectRecordField(member, 0x20, 2);
+    group = ReadObjectRecordField(member, offsetof(ObjectRecord, equipGroup), sizeof(i16));
     if (s_itemMenu && (s_itemMenuEquipGroup != group || g_itemMenuAmmoType != ammo)) {
         RequestMenuRedraw(s_itemMenu);
     }
@@ -754,42 +787,47 @@ void SetItemMenuCharacter(i16 member) {
 RVA(0x0001b660, 0xea)
 i16 StepItemBuyMenu(i16* step) {
     switch (*step) {
-        case 0: {
+        case ITEM_MENU_STEP_OPEN: {
             i16 count;
             i16* items = AllocItemMenuStock(GetSceneCellKind(), &count);
             ItemStackList* list = CreateItemMenuEntries(items, count);
             FreeBlock(items);
             s_itemMenu = CreateItemMenu(s_itemMenu, list, count);
-            InitItemMenuContext(s_itemMenu, 1, 0, 0x11);
+            InitItemMenuContext(
+                s_itemMenu,
+                ITEM_PRICE_DIVISOR_BUY,
+                ITEM_MENU_MODE_SHOP,
+                ITEM_MENU_TOTAL_VAR
+            );
             (*step)++;
-            return 0;
+            return SUBSTATE_RUNNING;
         }
-        case 1: {
+        case ITEM_MENU_STEP_RUN: {
             i16 result = RunMenu(s_itemMenu);
-            if (result == -1 || result == 0) {
-                return 0;
+            if (result == TEXT_EVENT_CANCEL || result == TEXT_EVENT_NONE) {
+                return SUBSTATE_RUNNING;
             }
-            if (result == 2) {
+            if (result == TEXT_EVENT_CHOOSE_RIGHT) {
                 result = -1;
             }
-            AdjustItemMenuCount(s_itemMenu, g_hoveredObjectId, result, 99);
-            return 0;
+            AdjustItemMenuCount(s_itemMenu, g_hoveredObjectId, result, ITEM_STACK_MAX);
+            return SUBSTATE_RUNNING;
         }
-        case 2:
+        case ITEM_MENU_STEP_CLOSE:
             s_itemMenu = DestroyMenuBox(s_itemMenu);
-            return -1;
+            return SUBSTATE_FINISHED;
     }
 }
 
 RVA(0x0001b750, 0x6d)
 MenuBox* CreateItemMenu(MenuBox* old, ItemStackList* entries, i16 count) {
     MenuBox* menu;
-    SetItemMenuCharacter(-1);
+    SetItemMenuCharacter(CHARACTER_ID_NONE);
     menu = CreateMenuBox(old, 0x19, 2);
     MoveMenuBox(menu, -8, -22);
-    SetMenuItems(menu, 9, entries, count, ItemMenuHandler);
+    SetMenuItems(menu, ITEM_MENU_ROWS, entries, count, ItemMenuHandler);
     SetTextPlaneCancelEnabled(menu->plane, 0);
-    SetTextPlaneFirstSelectableRow(menu->plane, 0, 1);
+    SetTextPlaneFirstSelectableRow(menu->plane, 0, true);
     menu->list->flags |= 2;
     return menu;
 }
@@ -800,7 +838,7 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
     i16 i;
     switch (event) {
         case MENU_EVENT_DESTROY:
-            if (menu->context.item.mode != 2) {
+            if (menu->context.item.mode != ITEM_MENU_MODE_SCRIPT) {
                 ClearPool();
                 for (i = 0; i < menu->itemCount; i++) {
                     if (GetItemStackCount(GetItemListEntry(list, i))) {
@@ -810,7 +848,10 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
                         );
                     }
                 }
-                SetScriptLongVar(0x11, GetItemMenuTotal(list, 1, menu->context.item.priceDivisor));
+                SetScriptLongVar(
+                    ITEM_MENU_TOTAL_VAR,
+                    GetItemMenuTotal(list, 1, menu->context.item.priceDivisor)
+                );
             }
             s_itemMenuLimits = FreeBlock(s_itemMenuLimits);
             menu->items.itemList = FreeBlock(list);
@@ -818,21 +859,25 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
             break;
         case MENU_EVENT_ADD_ROW: {
             ItemStack* entry = GetItemListEntry(list, index);
-            i32 color = 0x3450;
+            i32 color = TEXT_ATTR_FLAG1 | TEXT_ATTR_OPAQUE
+                        | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
             i32 price = FormatItemMenuEntry(*entry, 1, menu->context.item.priceDivisor);
             ItemRecord* record = GetLoadedRecord(GetItemStackItem(entry));
             if (!GetItemRecordPrice(record)) {
                 AddMenuLine(
                     menu->plane,
                     g_scratchBuffer,
-                    0x3500,
+                    TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1
+                        | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
                     GetItemStackItem(entry),
                     MENU_LINE_DISABLED
                 );
             } else {
-                if (menu->context.item.mode == 0 && menu->context.item.priceDivisor == 1) {
+                if (menu->context.item.mode == ITEM_MENU_MODE_SHOP
+                    && menu->context.item.priceDivisor == ITEM_PRICE_DIVISOR_BUY) {
                     if (CompareMacca(-1, price) < 0) {
-                        color = 0x3500;
+                        color = TEXT_ATTR_FLAG1 | TEXT_ATTR_OPAQUE
+                                | TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
                     }
                 }
                 AddMenuLine(
@@ -840,19 +885,19 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
                     g_scratchBuffer,
                     color,
                     GetItemStackItem(entry),
-                    menu->context.item.mode == 2
+                    menu->context.item.mode == ITEM_MENU_MODE_SCRIPT
                 );
             }
             break;
         }
         case MENU_EVENT_END_PAGE: {
             i32 total;
-            if (menu->context.item.mode == 2) {
+            if (menu->context.item.mode == ITEM_MENU_MODE_SCRIPT) {
                 total = GetScriptLongVar(menu->context.item.totalVar);
             } else {
                 total = GetItemMenuTotal(list, 1, menu->context.item.priceDivisor);
             }
-            DrawItemMenuTotal(menu->plane, total, 0, index - menu->cursor);
+            DrawItemMenuTotal(menu->plane, total, false, index - menu->cursor);
             break;
         }
     }
@@ -875,8 +920,13 @@ i32 FormatItemMenuEntry(ItemStack entry, i32 numerator, i32 denominator) {
             marker = 'E';
             member = GetCharacterById(s_itemMenuMember);
             record = GetLoadedRecord(GetItemStackItem(&entry));
-            if (record->kind == ITEM_KIND_GUN && GetBattleStatShown(member, 6) > 0) {
-                if (LacksItemRequiredStats(member, record, GetBattleStatShown(member, 6))) {
+            if (record->kind == ITEM_KIND_GUN
+                && GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL) > 0) {
+                if (LacksItemRequiredStats(
+                        member,
+                        record,
+                        GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL)
+                    )) {
                     marker = 'e';
                 }
             } else if (LacksItemRequiredStats(member, record, 0)) {
@@ -937,7 +987,7 @@ i32 GetItemMenuTotal(ItemStackList* list, i32 numerator, i32 denominator) {
 }
 
 RVA(0x0001bbc0, 0xda)
-void DrawItemMenuTotal(i16 plane, i32 total, i16 redraw, i16 line) {
+void DrawItemMenuTotal(i16 plane, i32 total, b16 redraw, i16 line) {
     if (!redraw) {
         if (!s_hideItemMenuTotal) {
             sprintf(g_scratchBuffer, "                \215\207\214\166 %10ld   ", total);
@@ -945,14 +995,32 @@ void DrawItemMenuTotal(i16 plane, i32 total, i16 redraw, i16 line) {
             sprintf(g_scratchBuffer, "                \215\207\214\166 ");
             s_hideItemMenuTotal = false;
         }
-        for (; line < 9; line++) {
-            AddMenuLine(plane, s_emptyItemLine, 0x1400, -1, MENU_LINE_DISABLED);
+        for (; line < ITEM_MENU_ROWS; line++) {
+            AddMenuLine(
+                plane,
+                s_emptyItemLine,
+                TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+                -1,
+                MENU_LINE_DISABLED
+            );
         }
-        AddMenuLine(plane, g_scratchBuffer, 0x1400, -1, MENU_LINE_DISABLED);
+        AddMenuLine(
+            plane,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+            -1,
+            MENU_LINE_DISABLED
+        );
     } else {
         sprintf(g_scratchBuffer, "\215\207\214\166 %10ld   ", total);
-        SetTextPlaneCursorLine(plane, 16, 9);
-        PrintWindowText(plane, g_scratchBuffer, 0x1400, 1, 1);
+        SetTextPlaneCursorLine(plane, 16, ITEM_MENU_ROWS);
+        PrintWindowText(
+            plane,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK),
+            1,
+            true
+        );
     }
 }
 
@@ -975,9 +1043,9 @@ void AdjustItemMenuCount(MenuBox* menu, i16 row, i16 delta, i16 limit) {
         ResetTextPlaneHighlight(menu->plane);
         SetTextPlaneCursorLine(menu->plane, 0, row);
         SetMenuLineText(menu->plane, row, g_scratchBuffer);
-        PrintWindowText(menu->plane, g_scratchBuffer, attr, 1, 1);
+        PrintWindowText(menu->plane, g_scratchBuffer, attr, 1, true);
         total = GetItemMenuTotal(list, 1, menu->context.item.priceDivisor);
-        DrawItemMenuTotal(menu->plane, total, 1, 9);
+        DrawItemMenuTotal(menu->plane, total, true, ITEM_MENU_ROWS);
     }
 }
 
@@ -999,18 +1067,18 @@ b16 RunItemBuyMenu(void) {
     i16 step;
     i16 result;
     switch (GetGamePhase()) {
-        case 0:
+        case ITEM_MENU_PHASE_ENTER:
             NextGamePhase();
             break;
-        case 1:
+        case ITEM_MENU_PHASE_RUN:
             step = GetGameStep();
             result = StepItemBuyMenu(&step);
             SetGameStep(step);
-            if (result == -1) {
+            if (result == SUBSTATE_FINISHED) {
                 NextGamePhase();
             }
             break;
-        case 2:
+        case ITEM_MENU_PHASE_RETURN:
             ReturnFromGameState();
             break;
     }
@@ -1021,25 +1089,30 @@ RVA(0x0001be70, 0x110)
 i16 StepItemSellMenu(i16* step) {
     ItemStackList* list;
     switch (*step) {
-        case 0: {
+        case ITEM_MENU_STEP_OPEN: {
             i16 i;
-            s_itemMenuLimits = CopyBagEntries(0, 48, NULL);
-            list = CopyBagEntries(0, 48, NULL);
+            s_itemMenuLimits = CopyBagEntries(0, BAG_ORDINARY_ENTRY_COUNT, NULL);
+            list = CopyBagEntries(0, BAG_ORDINARY_ENTRY_COUNT, NULL);
             for (i = 0; i < GetItemListCount(list); i++) {
                 GetItemListEntry(list, i)->count = 0;
             }
             s_itemMenu = CreateItemMenu(s_itemMenu, list, GetItemListCount(list));
-            InitItemMenuContext(s_itemMenu, 4, 0, 0x11);
+            InitItemMenuContext(
+                s_itemMenu,
+                ITEM_PRICE_DIVISOR_SELL,
+                ITEM_MENU_MODE_SHOP,
+                ITEM_MENU_TOTAL_VAR
+            );
             (*step)++;
-            return 0;
+            return SUBSTATE_RUNNING;
         }
-        case 1: {
+        case ITEM_MENU_STEP_RUN: {
             i16 result;
             result = RunMenu(s_itemMenu);
-            if (result == -1 || result == 0) {
-                return 0;
+            if (result == TEXT_EVENT_CANCEL || result == TEXT_EVENT_NONE) {
+                return SUBSTATE_RUNNING;
             }
-            if (result == 2) {
+            if (result == TEXT_EVENT_CHOOSE_RIGHT) {
                 result = -1;
             }
             AdjustItemMenuCount(
@@ -1050,11 +1123,11 @@ i16 StepItemSellMenu(i16* step) {
                     GetItemListEntry(s_itemMenuLimits, s_itemMenu->cursor + g_hoveredObjectId)
                 )
             );
-            return 0;
+            return SUBSTATE_RUNNING;
         }
-        case 2:
+        case ITEM_MENU_STEP_CLOSE:
             s_itemMenu = DestroyMenuBox(s_itemMenu);
-            return -1;
+            return SUBSTATE_FINISHED;
     }
 }
 
@@ -1063,18 +1136,18 @@ b16 RunItemSellMenu(void) {
     i16 step;
     i16 result;
     switch (GetGamePhase()) {
-        case 0:
+        case ITEM_MENU_PHASE_ENTER:
             NextGamePhase();
             break;
-        case 1:
+        case ITEM_MENU_PHASE_RUN:
             step = GetGameStep();
             result = StepItemSellMenu(&step);
             SetGameStep(step);
-            if (result == -1) {
+            if (result == SUBSTATE_FINISHED) {
                 NextGamePhase();
             }
             break;
-        case 2:
+        case ITEM_MENU_PHASE_RETURN:
             ReturnFromGameState();
             break;
     }
@@ -1083,7 +1156,12 @@ b16 RunItemSellMenu(void) {
 
 RVA(0x0001bfe0, 0x2a)
 void RefreshScriptItemMenuTotal(void) {
-    DrawItemMenuTotal(s_itemMenu->plane, GetScriptLongVar(s_itemMenu->context.item.totalVar), 1, 9);
+    DrawItemMenuTotal(
+        s_itemMenu->plane,
+        GetScriptLongVar(s_itemMenu->context.item.totalVar),
+        true,
+        ITEM_MENU_ROWS
+    );
 }
 
 RVA(0x0001c010, 0x8b)
@@ -1091,12 +1169,17 @@ void OpenScriptItemMenu(i16 totalVar, i16 selling) {
     ItemStack* entries;
     i16 count;
     ItemStackList* list;
-    SetItemMenuCharacter(-1);
+    SetItemMenuCharacter(CHARACTER_ID_NONE);
     entries = GetPoolEntries();
     count = CountPoolEntries();
     list = CopyItemMenuEntries(entries, count);
     s_itemMenu = CreateItemMenu(s_itemMenu, list, count);
-    InitItemMenuContext(s_itemMenu, selling ? 4 : 1, 2, totalVar);
+    InitItemMenuContext(
+        s_itemMenu,
+        selling ? ITEM_PRICE_DIVISOR_SELL : ITEM_PRICE_DIVISOR_BUY,
+        ITEM_MENU_MODE_SCRIPT,
+        totalVar
+    );
     s_hideItemMenuTotal = true;
     RunMenu(s_itemMenu);
     s_hideItemMenuTotal = false;
@@ -1117,7 +1200,7 @@ ItemStackList* CopyItemMenuEntries(ItemStack* entries, i16 count) {
 
 RVA(0x0001c0e0, 0x19)
 void PollScriptItemMenu(void) {
-    if (s_itemMenu && s_itemMenu->context.item.mode == 2) {
+    if (s_itemMenu && s_itemMenu->context.item.mode == ITEM_MENU_MODE_SCRIPT) {
         RunMenu(s_itemMenu);
     }
 }
@@ -1138,8 +1221,8 @@ i16* GetItemMenuStock(i16 index) {
 
 RVA(0x0001c160, 0x33)
 void LoadItemMenuStock(void) {
-    if (s_itemMenuStock == 0) {
-        FILE* fp = OpenDataFile(8, 12, 0);
+    if (s_itemMenuStock == HANDLE_NONE) {
+        FILE* fp = OpenDataFile(DATA_TABLE_ITEM_MENU_STOCK, DATA_FILE_TABLE, 0);
         s_itemMenuStock = ReadRawHandle(fp);
         CloseDataFile(fp);
     }
@@ -1151,7 +1234,7 @@ i16 CountItemMenuStock(i16 index) {
     i16* items;
     LoadItemMenuStock();
     items = GetItemMenuStock(index);
-    while (*items != -1) {
+    while (*items != ITEM_STOCK_END) {
         items++;
         count++;
     }
@@ -1164,7 +1247,7 @@ i16 CopyItemMenuStock(i16 index, i16* items) {
     i16* stock;
     LoadItemMenuStock();
     stock = GetItemMenuStock(index);
-    while (*stock != -1) {
+    while (*stock != ITEM_STOCK_END) {
         items[count++] = *stock++;
     }
     return count;
@@ -1181,10 +1264,10 @@ i16* AllocItemMenuStock(i16 index, i16* count) {
 
 RVA(0x0001c250, 0x51)
 void LoadLearnableSkillTables(void) {
-    FILE* fp = OpenDataFile(48, 12, 0);
+    FILE* fp = OpenDataFile(DATA_TABLE_LEARNABLE_SKILLS, DATA_FILE_TABLE, 0);
     s_learnableSkillTable = ReadRawHandle(fp);
     CloseDataFile(fp);
-    fp = OpenDataFile(49, 12, 0);
+    fp = OpenDataFile(DATA_TABLE_SKILL_LEARNING_REQUIREMENTS, DATA_FILE_TABLE, 0);
     s_learnableSkillRequirements = ReadRawHandle(fp);
     CloseDataFile(fp);
 }
@@ -1194,8 +1277,8 @@ i16* GetLearnableSkillList(i16 id, i16 source) {
     i16 key;
     i16 i;
     LearnableSkillTable* table;
-    if (id == 0) {
-        key = GetCharacterAffiliation(GetRosterCharacter(0), source);
+    if (id == HUMAN_KATSURAGI) {
+        key = GetCharacterAffiliation(GetRosterCharacter(ROSTER_LEADER), source);
         key = -1 - key;
     } else {
         key = FindCharacter(id);
@@ -1218,14 +1301,14 @@ i16 TakeLearnableSkill(Character* character, i16* skills) {
     i16 i;
     i16 skill;
     i16 j;
-    for (i = 0; skills[i] != -1; i++) {
+    for (i = 0; skills[i] != SKILL_LIST_END; i++) {
         if (ContainsWord(GetCharacterSkills(character), skills[i])) {
             continue;
         }
-        if (id == 0) {
+        if (id == HUMAN_KATSURAGI) {
             i16 found = -1;
             LearnableSkillRequirement* requirements = HandleReadPtr(s_learnableSkillRequirements);
-            for (j = 0; requirements[j].skill != -1; j++) {
+            for (j = 0; requirements[j].skill != SKILL_LIST_END; j++) {
                 if (requirements[j].skill == skills[i]) {
                     found = j;
                     break;
@@ -1240,21 +1323,21 @@ i16 TakeLearnableSkill(Character* character, i16* skills) {
         }
     }
     skill = skills[i];
-    if (skill == -1) {
-        skills[0] = -1;
-        return -1;
+    if (skill == SKILL_LIST_END) {
+        skills[0] = SKILL_LIST_END;
+        return SKILL_LIST_END;
     }
     i++;
-    for (j = 0; skills[i + j] != -1; j++) {
+    for (j = 0; skills[i + j] != SKILL_LIST_END; j++) {
         skills[j] = skills[i + j];
     }
-    skills[j] = -1;
+    skills[j] = SKILL_LIST_END;
     return skill;
 }
 
 RVA(0x0001c460, 0x173)
 i16 PickGrowthStats(Character* character, i16* picks, i16 turn) {
-    memset(picks, -1, 3 * sizeof(i16));
+    memset(picks, -1, AFFILIATION_COUNT * sizeof(i16));
     if (GetCharacterAffiliation(character, 2) >= 0) {
         picks[0] =
             GetAffiliationGrowthStat(GetCharacterAffiliation(character, 0), RandomAverage(0, 1, 0));
@@ -1289,15 +1372,15 @@ i16 PickGrowthStats(Character* character, i16* picks, i16 turn) {
 RVA(0x0001c5e0, 0x61)
 void DropTopStatPicks(Character* character, i16* picks) {
     i16 i;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < AFFILIATION_COUNT; i++) {
         if (picks[i] >= 0) {
             i16 j;
-            for (j = 0; j < 10; j++) {
+            for (j = 0; j < STAT_FORTUNE; j++) {
                 if (GetBaseStat(character, j) > GetBaseStat(character, picks[i])) {
                     break;
                 }
             }
-            if (j >= 10 && RandomAverage(0, 3, 0) == 0) {
+            if (j >= STAT_FORTUNE && RandomAverage(0, 3, 0) == 0) {
                 picks[i] = -1;
             }
         }
@@ -1322,7 +1405,11 @@ u32 TrainingThreshold(i16 level) {
 // Adds `amount` to training counter `kind`, capped at level 99's threshold;
 // returns the new count.
 RVA(0x0001c690, 0x2c)
-u32 AddTrainingPointsRaw(Character* character, i16 kind, u32 amount) {
+u32 AddTrainingPointsRaw(
+    Character* character,
+    GZ_ENUM_PARAM(BattleStatGroup, i16) kind,
+    u32 amount
+) {
     u32* points = &character->trainingPoints[kind];
     u32 limit;
     amount += *points;
@@ -1333,8 +1420,8 @@ u32 AddTrainingPointsRaw(Character* character, i16 kind, u32 amount) {
 }
 
 RVA(0x0001c6c0, 0x24)
-u32 AddTrainingPoints(Character* character, i16 kind, i16 amount) {
-    if (kind >= 0 && kind < 4) {
+u32 AddTrainingPoints(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind, i16 amount) {
+    if (kind >= 0 && kind < BATTLE_GROUP_COUNT) {
         return AddTrainingPointsRaw(character, kind, amount);
     }
 }
@@ -1349,36 +1436,35 @@ u32 AddTrainingPoints(Character* character, i16 kind, i16 amount) {
 
 // Raises training level `kind` (the battle-stat words 0, 6, 12 and 18) while
 // its counter covers the next level's threshold; returns the levels gained.
-// @identity-TODO: what the four training kinds measure is unrecovered.
 RVA(0x0001c6f0, 0x140)
-i16 ApplyTraining(Character* character, i16 kind) {
+i16 ApplyTraining(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind) {
     i16 raised = 0;
     switch (kind) {
-        case 0:
+        case BATTLE_GROUP_WEAPON:
             RaiseTrainedLevel(
-                GetBattleStatBase(character, 0),
-                GetTrainingPoints(character, 0),
+                GetBattleStatBase(character, BATTLE_STAT_WEAPON_LEVEL),
+                GetTrainingPoints(character, BATTLE_GROUP_WEAPON),
                 raised
             );
             break;
-        case 1:
+        case BATTLE_GROUP_GUN:
             RaiseTrainedLevel(
-                GetBattleStatBase(character, 6),
-                GetTrainingPoints(character, 1),
+                GetBattleStatBase(character, BATTLE_STAT_GUN_LEVEL),
+                GetTrainingPoints(character, BATTLE_GROUP_GUN),
                 raised
             );
             break;
-        case 2:
+        case BATTLE_GROUP_MAGIC:
             RaiseTrainedLevel(
-                GetBattleStatBase(character, 12),
-                GetTrainingPoints(character, 2),
+                GetBattleStatBase(character, BATTLE_STAT_MAGIC_LEVEL),
+                GetTrainingPoints(character, BATTLE_GROUP_MAGIC),
                 raised
             );
             break;
-        case 3:
+        case BATTLE_GROUP_DEMON_INTERACTION:
             RaiseTrainedLevel(
-                GetBattleStatBase(character, 18),
-                GetTrainingPoints(character, 3),
+                GetBattleStatBase(character, BATTLE_STAT_DEMON_INTERACTION_LEVEL),
+                GetTrainingPoints(character, BATTLE_GROUP_DEMON_INTERACTION),
                 raised
             );
             break;
@@ -1394,26 +1480,26 @@ RVA(0x0001c830, 0x9b)
 void NormalizeAffiliations(Character* character) {
     i16 i;
     i16 j;
-    for (i = 0; i < 3; i++) {
-        if (character->affiliation[i] > 3 || character->affiliation[i] < 0) {
-            SetCharacterAffiliation(character, i, -1);
+    for (i = 0; i < AFFILIATION_COUNT; i++) {
+        if (character->affiliation[i] > BATTLE_GROUP_COUNT - 1 || character->affiliation[i] < 0) {
+            SetCharacterAffiliation(character, i, AFFILIATION_NONE);
         }
     }
-    for (i = 2; i > 0; i--) {
-        if (character->affiliation[i] != -1) {
+    for (i = AFFILIATION_COUNT - 1; i > 0; i--) {
+        if (character->affiliation[i] != AFFILIATION_NONE) {
             for (j = i - 1; j >= 0; j--) {
                 if (character->affiliation[i] == character->affiliation[j]) {
-                    SetCharacterAffiliation(character, i, -1);
+                    SetCharacterAffiliation(character, i, AFFILIATION_NONE);
                 }
             }
         }
     }
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < AFFILIATION_COUNT - 1; i++) {
         if (character->affiliation[i] < 0) {
-            for (j = 0; i + j + 1 < 3; j++) {
+            for (j = 0; i + j + 1 < AFFILIATION_COUNT; j++) {
                 SetCharacterAffiliation(character, i + j, character->affiliation[i + j + 1]);
             }
-            SetCharacterAffiliation(character, i + j, -1);
+            SetCharacterAffiliation(character, i + j, AFFILIATION_NONE);
         }
     }
 }
@@ -1446,19 +1532,19 @@ i32 GetCellTrapDamage(ExitCell* cell, i16 maxHp) {
             }
             percent = RandomAverage(1, cell->secondaryDamagePercent, 1);
             break;
-        case 0x60:
+        case CELL_DAMAGE_TRAP:
             if (cell->trap.damagePercent < 1) {
                 return 0;
             }
             percent = RandomAverage(1, cell->trap.damagePercent, 1);
             break;
-        case 0x68:
+        case CELL_ALIGNMENT_TRAP_FIRST:
         case 0x69:
         case 0x6a:
         case 0x6b:
-        case 0x6c:
-        case 0x6d:
-        case 0x6e:
+        case CELL_ALIGNMENT_TRAP_CHAOS_LAW:
+        case CELL_ALIGNMENT_TRAP_CHAOS_NEUTRAL:
+        case CELL_ALIGNMENT_TRAP_ALL:
             // Alignment traps reuse the flag-index byte as the damage percentage.
             if (cell->disableFlag[1] < 1) {
                 return 0;
@@ -1481,13 +1567,14 @@ void RunCellTrap(i16 mode, i16 x, i16 y) {
     i16 hp;
     u8 alignmentMask;
     if (mode && CopyExitAt(x, y, &cell.exit)) {
-        for (mode = 0; mode < 6; mode++) {
+        for (mode = 0; mode < PARTY_SIZE; mode++) {
             member = GetPartyCharacter(mode);
             if (member) {
                 damage = GetCellTrapDamage(&cell.exit, member->pools.hp.max);
                 hp = member->pools.hp.cur;
-                if (cell.exit.head.code >= 0x68 && cell.exit.head.code <= 0x6e) {
-                    alignmentMask = 4;
+                if (cell.exit.head.code >= CELL_ALIGNMENT_TRAP_FIRST
+                    && cell.exit.head.code <= CELL_ALIGNMENT_TRAP_LAST) {
+                    alignmentMask = CELL_TRAP_AFFECTS_CHAOS;
                     alignmentMask >>= GetAlignmentClassB(member) + 1;
                     if (!(cell.exit.trap.alignmentMask & alignmentMask)) {
                         continue;
@@ -1504,7 +1591,7 @@ void RunCellTrap(i16 mode, i16 x, i16 y) {
         } else {
             PlaySoundEffect(0x60);
         }
-        FlushStatusRedraw(1);
+        FlushStatusRedraw(true);
     }
 }
 
@@ -1537,7 +1624,7 @@ Panel* ExchangeActivePanel(Panel* panel) {
 // position; clears the right-click mark.
 RVA(0x0001cb10, 0x65)
 b16 CheckPanelLeftClick(Panel* panel) {
-    panel->input.rightClick = 0;
+    panel->input.rightClick = false;
     g_panelClickX = g_mouseLeftClickX;
     g_panelClickY = g_mouseLeftClickY;
     if (!g_mouseLeftClick) {
@@ -1575,7 +1662,7 @@ b16 CheckPanelRightClick(Panel* panel) {
         g_panelClickX = g_mousePosition.x;
         g_panelClickY = g_mousePosition.y;
     }
-    panel->input.rightClick = 1;
+    panel->input.rightClick = true;
     return true;
 }
 
@@ -1585,12 +1672,12 @@ RVA(0x0001cc00, 0x78)
 i16 FindPanelRowAt(Panel* panel, i16 x, i16 y) {
     i16 i;
     u16 flags;
-    if (panel->flags & (PANEL_HIDDEN | PANEL_INPUT_DISABLED | 0x0800)) {
+    if (panel->flags & (PANEL_HIDDEN | PANEL_INPUT_DISABLED | PANEL_SKIP_HIT_TEST)) {
         return -1;
     }
     for (i = 0; i < GetPanelRowCount(panel); i++) {
         flags = GetPanelRow(panel, i)->flags;
-        if (flags & (PANEL_HIDDEN | PANEL_INPUT_DISABLED | 0x0800)) {
+        if (flags & (PANEL_HIDDEN | PANEL_INPUT_DISABLED | PANEL_SKIP_HIT_TEST)) {
             continue;
         }
         if (WasPanelRightClicked(panel) && (flags & PANEL_IGNORE_RIGHT_CLICK)) {
@@ -1643,17 +1730,17 @@ i16 PollPanel(Panel* panel) {
 }
 
 RVA(0x0001cd80, 0x5f)
-i16 ApplyRowCheck(PanelRow* row, i16 value, i16 op) {
+i16 ApplyRowCheck(PanelRow* row, i16 value, GZ_ENUM_PARAM(BitChangeMode, i16) op) {
     i16 result = 0;
     switch (op) {
-        case -1:
-            g_mouseLeftClick = 0;
+        case BIT_CHANGE_TOGGLE:
+            g_mouseLeftClick = MOUSE_CLICK_NONE;
             result = ToggleFlagBits(&row->flags, PANEL_ROW_CHECKED);
             break;
-        case 0:
+        case BIT_CHANGE_CLEAR:
             ClearPanelRowCheck(row);
             break;
-        case 1:
+        case BIT_CHANGE_SET:
             SetFlagBits(&row->flags, PANEL_ROW_CHECKED);
             result = 1;
             break;
@@ -1695,16 +1782,16 @@ void AllocAutomapLevels(void) {
     count = GetAreaLevelCount();
     slot = &s_areas[area];
     levels = *slot;
-    if (levels == 0) {
+    if (levels == HANDLE_NONE) {
         levels = CreateArrayHandle(GetAutomapLevelTableSize(count), 1);
         *slot = levels;
         ((AutomapLevels*)HandleWritePtr(levels))->header.count = count;
     }
     for (level = 0; level < count; level++) {
-        if (GetAutomapLevelHandle(HandleReadPtr(levels), level) == 0) {
+        if (GetAutomapLevelHandle(HandleReadPtr(levels), level) == HANDLE_NONE) {
             size = GetAreaSize(level);
             bytes = ((i16)(size.x * size.y) + 7) / 8;
-            bitmap = CreateArrayHandle(bytes + 8, 1);
+            bitmap = CreateArrayHandle(bytes + sizeof(AutomapBitmapHeader), 1);
             SetAutomapLevelHandle(HandleWritePtr(levels), level, bitmap);
             data = HandleWritePtr(bitmap);
             data->header.width = size.x;
@@ -1723,9 +1810,9 @@ void FreeAutomap(void) {
     if (s_areas == NULL) {
         return;
     }
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < MAP_AREA_COUNT; i++) {
         levels = GetAutomapAreaHandle(i);
-        if (levels != 0) {
+        if (levels != HANDLE_NONE) {
             count = GetAutomapLevelCount(HandleReadPtr(levels));
             for (k = 0; k < count; k++) {
                 FreeHandle(GetAutomapLevelHandle(HandleReadPtr(levels), k));
@@ -1744,11 +1831,11 @@ void StoreAutomapLevel(void) {
     i32 bitmap;
     u16 size;
     if (s_levelArea >= 0 && s_levelIndex >= 0 && s_areas != NULL
-        && GetAutomapAreaHandle(s_levelArea) != 0) {
+        && GetAutomapAreaHandle(s_levelArea) != HANDLE_NONE) {
         levels = HandleReadPtr(GetAutomapAreaHandle(s_levelArea));
         if (GetAutomapLevelCount(levels) > s_levelIndex) {
             bitmap = GetAutomapLevelHandle(levels, s_levelIndex);
-            if (bitmap != 0) {
+            if (bitmap != HANDLE_NONE) {
                 size = GetAutomapBitmapSize(&s_levelBitmap->header);
                 data = HandleWritePtr(bitmap);
                 memmove(data, s_levelBitmap, size);
@@ -1767,7 +1854,7 @@ void LoadAutomapLevel(i16 area, i16 level) {
         return;
     }
     StoreAutomapLevel();
-    if (s_areas == NULL || GetAutomapAreaHandle(area) == 0) {
+    if (s_areas == NULL || GetAutomapAreaHandle(area) == HANDLE_NONE) {
         return;
     }
     levels = HandleReadPtr(GetAutomapAreaHandle(area));
@@ -1775,7 +1862,7 @@ void LoadAutomapLevel(i16 area, i16 level) {
         return;
     }
     bitmap = GetAutomapLevelHandle(levels, level);
-    if (bitmap == 0) {
+    if (bitmap == HANDLE_NONE) {
         return;
     }
     data = HandleReadPtr(bitmap);
@@ -1791,7 +1878,7 @@ void MarkAutomapCell(i16 area, i16 level, i16 x, i16 y) {
     }
 }
 
-// 0x100 when x/y of `area`/`level` has not been explored (or has no bitmap);
+// AUTOMAP_CELL_HIDDEN when x/y of `area`/`level` has not been explored (or has no bitmap);
 // coordinates wrap at the level size.
 RVA(0x0001d120, 0xe1)
 i16 IsAutomapCellHidden(i16 x, i16 y, i16 area, i16 level) {
@@ -1801,21 +1888,23 @@ i16 IsAutomapCellHidden(i16 x, i16 y, i16 area, i16 level) {
     u8* bits;
     i16 index;
     if (s_levelArea == area && s_levelIndex == level) {
-        return TestBit(s_levelBitmap->bits, AutomapCellIndex(s_levelBitmap, x, y)) != 1 ? 0x100 : 0;
+        return TestBit(s_levelBitmap->bits, AutomapCellIndex(s_levelBitmap, x, y)) != true
+                   ? AUTOMAP_CELL_HIDDEN
+                   : 0;
     } else {
         if (s_areas == NULL) {
-            return 0x100;
+            return AUTOMAP_CELL_HIDDEN;
         }
-        if (GetAutomapAreaHandle(area) == 0) {
-            return 0x100;
+        if (GetAutomapAreaHandle(area) == HANDLE_NONE) {
+            return AUTOMAP_CELL_HIDDEN;
         }
         levels = HandleReadPtr(GetAutomapAreaHandle(area));
         if (GetAutomapLevelCount(levels) <= level) {
-            return 0x100;
+            return AUTOMAP_CELL_HIDDEN;
         }
         bitmap = GetAutomapLevelHandle(levels, level);
-        if (bitmap == 0) {
-            return 0x100;
+        if (bitmap == HANDLE_NONE) {
+            return AUTOMAP_CELL_HIDDEN;
         }
         data = HandleReadPtr(bitmap);
         if (x >= data->header.width) {
@@ -1827,14 +1916,14 @@ i16 IsAutomapCellHidden(i16 x, i16 y, i16 area, i16 level) {
         bits = data->bits;
         index = AutomapCellIndex(data, x, y);
     }
-    return TestBit(bits, index) != 1 ? 0x100 : 0;
+    return TestBit(bits, index) != true ? AUTOMAP_CELL_HIDDEN : 0;
 }
 
 RVA(0x0001d210, 0xd4)
 void RotateAutomapRegion(
     i16 x,
     i16 y,
-    i16 direction,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
     i16* left,
     i16* top,
     i16* width,
@@ -1842,22 +1931,22 @@ void RotateAutomapRegion(
 ) {
     i16 oldWidth;
     switch (direction) {
-        case 0:
+        case VIEW_NORTH:
             *left = -x;
             *top = -y;
             break;
-        case 1:
+        case VIEW_EAST:
             *left = -y;
             *top = x - *width + 1;
             oldWidth = *width;
             *width = *height;
             *height = oldWidth;
             break;
-        case 2:
+        case VIEW_SOUTH:
             *left = x - *width + 1;
             *top = y - *height + 1;
             break;
-        case 3:
+        case VIEW_WEST:
             *left = y - *height + 1;
             *top = -x;
             oldWidth = *width;
@@ -1884,20 +1973,20 @@ RVA(0x0001d380, 0xb4)
 void TransformAutomapPoint(i16* x, i16* y) {
     i16 oldX;
     switch (s_mapDirection) {
-        case 0:
+        case VIEW_NORTH:
             *x -= s_mapOriginX;
             *y -= s_mapOriginY;
             break;
-        case 1:
+        case VIEW_EAST:
             oldX = *x;
             *x = *y - s_mapOriginY;
             *y = s_mapOriginX - oldX;
             break;
-        case 2:
+        case VIEW_SOUTH:
             *x = s_mapOriginX - *x;
             *y = s_mapOriginY - *y;
             break;
-        case 3:
+        case VIEW_WEST:
             oldX = *x;
             *x = s_mapOriginY - *y;
             *y = oldX - s_mapOriginX;
@@ -1914,7 +2003,7 @@ void MarkMapCell(i16 kind, i16 x, i16 y) {
     }
     TransformAutomapPoint(&x, &y);
     if (x >= 0 && x < s_mapWidth && y >= 0 && y < s_mapHeight) {
-        if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 15) {
+        if (g_party.field.pos.area == MAP_AREA_HATSUDAI && g_party.field.pos.level == 15) {
             if (!g_party.status.navigationFixed && (g_party.field.pos.direction & 1)) {
                 x += 3;
                 y += 2;
@@ -1937,44 +2026,44 @@ b16 RunAutomapState(void) {
     }
     SetLayersRenderMode();
     switch (GetGamePhase()) {
-        case 0:
+        case AUTOMAP_PHASE_OPEN:
             NextGamePhase();
             s_mapActive = true;
             RestoreDrawState(SaveDrawState());
             s_mapPosition = g_party.field.pos;
             s_mapPlane = CreateTextPlane(31, 0);
-            s_mapPanel = CreateKindPanel(s_mapPanel, 0x11d, 4, 31);
+            s_mapPanel = CreateKindPanel(s_mapPanel, IDB_BITMAP61, 4, 31);
             if (g_party.status.automapFixed) {
-                s_mapPosition.direction = 0;
+                s_mapPosition.direction = VIEW_NORTH;
             }
             s_mapDetail = AUTOMAP_DETAIL_NONE;
-            if (!IsEventFlagSet(2, 0x39)) {
+            if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_MAPPING_AMS)) {
                 s_mapDetail = AUTOMAP_DETAIL_NPCS;
             }
             if (s_mapDetail < AUTOMAP_DETAIL_BASIC) {
-                SetGamePhase(3);
+                SetGamePhase(AUTOMAP_PHASE_CLOSE);
             }
             break;
-        case 1:
+        case AUTOMAP_PHASE_DRAW:
             NextGamePhase();
             savedState = SaveDrawState();
             DrawAutomapViewport(s_mapPosition);
             UpdateAutomapScrollPanel();
             RestoreDrawState(savedState);
             break;
-        case 2:
+        case AUTOMAP_PHASE_SCROLL:
             input = RunPanelInput(s_mapPanel);
-            if (input == -2) {
+            if (input == PANEL_INPUT_CANCELLED) {
                 NextGamePhase();
-            } else if (input != -1) {
+            } else if (input != PANEL_INPUT_NONE) {
                 savedState = SaveDrawState();
                 switch (input) {
-                    case 0:
+                    case AUTOMAP_SCROLL_UP:
                         ScrollPlaneMapDown(s_mapPlane);
                         OffsetMapCoord(&s_mapOriginX, &s_mapOriginY, s_mapDirection, 0, -1);
                         DrawAutomapRegion(s_mapOriginX, s_mapOriginY, s_mapWidth, 1, 0, 0);
                         break;
-                    case 1:
+                    case AUTOMAP_SCROLL_RIGHT:
                         ScrollPlaneMapLeft(s_mapPlane);
                         OffsetMapCoord(&s_mapOriginX, &s_mapOriginY, s_mapDirection, 1, 0);
                         DrawAutomapRegion(
@@ -1986,7 +2075,7 @@ b16 RunAutomapState(void) {
                             0
                         );
                         break;
-                    case 2:
+                    case AUTOMAP_SCROLL_DOWN:
                         ScrollPlaneMapUp(s_mapPlane);
                         OffsetMapCoord(&s_mapOriginX, &s_mapOriginY, s_mapDirection, 0, 1);
                         DrawAutomapRegion(
@@ -1998,7 +2087,7 @@ b16 RunAutomapState(void) {
                             s_mapHeight - 1
                         );
                         break;
-                    case 3:
+                    case AUTOMAP_SCROLL_LEFT:
                         ScrollPlaneMapRight(s_mapPlane);
                         OffsetMapCoord(&s_mapOriginX, &s_mapOriginY, s_mapDirection, -1, 0);
                         DrawAutomapRegion(s_mapOriginX, s_mapOriginY, 1, s_mapHeight, 0, 0);
@@ -2008,9 +2097,9 @@ b16 RunAutomapState(void) {
                 RestoreDrawState(savedState);
             }
             break;
-        case 3:
+        case AUTOMAP_PHASE_CLOSE:
             CloseTextWindow(s_mapPlane);
-            s_mapPanel = ReleasePanel(s_mapPanel, 1);
+            s_mapPanel = ReleasePanel(s_mapPanel, true);
             RequestFieldRefresh();
             RunFieldPanelRow(7, 0, 0, 0);
             ReturnFromGameState();
@@ -2024,72 +2113,72 @@ RVA(0x0001d890, 0x1ec)
 void UpdateAutomapScrollPanel(void) {
     i16 width;
     i16 height;
-    i16 blocked;
+    GZ_ENUM_LOCAL(AutomapScrollBlock, i16) blocked;
     ClearPanelChecksAgain(s_mapPanel);
     GetMapSize(&width, &height);
-    blocked = 0;
+    blocked = AUTOMAP_BLOCK_NONE;
     switch (s_mapDirection) {
-        case 0:
+        case VIEW_NORTH:
             if (s_mapOriginX == 0) {
-                blocked |= 1;
+                blocked |= AUTOMAP_BLOCK_LEFT;
             }
             if (s_mapOriginX + s_mapWidth >= width) {
-                blocked |= 2;
+                blocked |= AUTOMAP_BLOCK_RIGHT;
             }
             if (s_mapOriginY == 0) {
-                blocked |= 4;
+                blocked |= AUTOMAP_BLOCK_UP;
             }
             if (s_mapOriginY + s_mapHeight >= height) {
-                blocked |= 8;
+                blocked |= AUTOMAP_BLOCK_DOWN;
             }
             break;
-        case 1:
+        case VIEW_EAST:
             if (s_mapOriginY == 0) {
-                blocked |= 1;
+                blocked |= AUTOMAP_BLOCK_LEFT;
             }
             if (s_mapOriginY + s_mapWidth >= height) {
-                blocked |= 2;
+                blocked |= AUTOMAP_BLOCK_RIGHT;
             }
             if (s_mapOriginX == width - 1) {
-                blocked |= 4;
+                blocked |= AUTOMAP_BLOCK_UP;
             }
             if (s_mapOriginX - s_mapHeight < 0) {
-                blocked |= 8;
+                blocked |= AUTOMAP_BLOCK_DOWN;
             }
             break;
-        case 2:
+        case VIEW_SOUTH:
             if (s_mapOriginX == width - 1) {
-                blocked |= 1;
+                blocked |= AUTOMAP_BLOCK_LEFT;
             }
             if (s_mapOriginX - s_mapWidth < 0) {
-                blocked |= 2;
+                blocked |= AUTOMAP_BLOCK_RIGHT;
             }
             if (s_mapOriginY == height - 1) {
-                blocked |= 4;
+                blocked |= AUTOMAP_BLOCK_UP;
             }
             if (s_mapOriginY - s_mapHeight < 0) {
-                blocked |= 8;
+                blocked |= AUTOMAP_BLOCK_DOWN;
             }
             break;
-        case 3:
+        case VIEW_WEST:
             if (s_mapOriginY == height - 1) {
-                blocked |= 1;
+                blocked |= AUTOMAP_BLOCK_LEFT;
             }
             if (s_mapOriginY - s_mapWidth < 0) {
-                blocked |= 2;
+                blocked |= AUTOMAP_BLOCK_RIGHT;
             }
             if (s_mapOriginX == 0) {
-                blocked |= 4;
+                blocked |= AUTOMAP_BLOCK_UP;
             }
             if (s_mapOriginX + s_mapHeight == width) {
-                blocked |= 8;
+                blocked |= AUTOMAP_BLOCK_DOWN;
             }
             break;
     }
-    SetPanelRowFlags(s_mapPanel, 3, PANEL_HIDDEN, blocked & 1);
-    SetPanelRowFlags(s_mapPanel, 1, PANEL_HIDDEN, blocked & 2);
-    SetPanelRowFlags(s_mapPanel, 0, PANEL_HIDDEN, blocked & 4);
-    SetPanelRowFlags(s_mapPanel, 2, PANEL_HIDDEN, blocked & 8);
+    SetPanelRowFlags(s_mapPanel, AUTOMAP_SCROLL_LEFT, PANEL_HIDDEN, blocked & AUTOMAP_BLOCK_LEFT);
+    SetPanelRowFlags(s_mapPanel, AUTOMAP_SCROLL_RIGHT, PANEL_HIDDEN, blocked & AUTOMAP_BLOCK_RIGHT);
+    SetPanelRowFlags(s_mapPanel, AUTOMAP_SCROLL_UP, PANEL_HIDDEN, blocked & AUTOMAP_BLOCK_UP);
+    SetPanelRowFlags(s_mapPanel, AUTOMAP_SCROLL_DOWN, PANEL_HIDDEN, blocked & AUTOMAP_BLOCK_DOWN);
     PaintPanel(s_mapPanel, s_mapPlane);
 }
 
@@ -2110,7 +2199,7 @@ void DrawAutomapRegion(i16 x, i16 y, i16 width, i16 height, i16 across, i16 alon
             DrawAutomapTile(tile, cell.x, cell.y);
         }
     }
-    IsCellBlocked(s_mapPosition.level, 0, 0, 0);
+    IsCellBlocked(s_mapPosition.level, CELL_SCAN_DRAW_ICONS, 0, 0);
     if (s_mapPosition.level == g_party.field.pos.level) {
         DrawAutomapMark(
             TurnDirection(g_party.field.pos.direction, -s_mapDirection),
@@ -2146,67 +2235,67 @@ b16 DrawAutomapViewport(MapPosition position) {
     i16 viewHeight;
     i16 x;
     i16 y;
-    i16 direction;
+    GZ_ENUM_LOCAL(ViewDirection, i16) direction;
     GetMapSize(&width, &height);
     x = position.x;
     y = position.y;
     direction = position.direction;
     RotateAutomapRegion(x, y, direction, &left, &top, &width, &height);
-    if (width <= 38) {
+    if (width <= AUTOMAP_VIEW_WIDTH) {
         viewWidth = width;
     } else {
-        viewWidth = 38;
-        if (-left * 2 > 38) {
-            left = -19;
+        viewWidth = AUTOMAP_VIEW_WIDTH;
+        if (-left * 2 > AUTOMAP_VIEW_WIDTH) {
+            left = -(AUTOMAP_VIEW_WIDTH / 2);
             switch (direction) {
-                case 0:
-                    if (x + 19 > width) {
-                        left = width - x - 38;
+                case VIEW_NORTH:
+                    if (x + AUTOMAP_VIEW_WIDTH / 2 > width) {
+                        left = width - x - AUTOMAP_VIEW_WIDTH;
                     }
                     break;
-                case 1:
-                    if (y + 19 > width) {
-                        left = width - y - 38;
+                case VIEW_EAST:
+                    if (y + AUTOMAP_VIEW_WIDTH / 2 > width) {
+                        left = width - y - AUTOMAP_VIEW_WIDTH;
                     }
                     break;
-                case 2:
-                    if (x - 18 < 0) {
-                        left = x - 37;
+                case VIEW_SOUTH:
+                    if (x - (AUTOMAP_VIEW_WIDTH / 2 - 1) < 0) {
+                        left = x - (AUTOMAP_VIEW_WIDTH - 1);
                     }
                     break;
-                case 3:
-                    if (y - 18 < 0) {
-                        left = y - 37;
+                case VIEW_WEST:
+                    if (y - (AUTOMAP_VIEW_WIDTH / 2 - 1) < 0) {
+                        left = y - (AUTOMAP_VIEW_WIDTH - 1);
                     }
                     break;
             }
         }
     }
-    if (height <= 18) {
+    if (height <= AUTOMAP_VIEW_HEIGHT) {
         viewHeight = height;
     } else {
-        viewHeight = 18;
-        if (-top * 2 > 18) {
-            top = -9;
+        viewHeight = AUTOMAP_VIEW_HEIGHT;
+        if (-top * 2 > AUTOMAP_VIEW_HEIGHT) {
+            top = -(AUTOMAP_VIEW_HEIGHT / 2);
             switch (direction) {
-                case 0:
-                    if (y + 9 > height) {
-                        top = height - y - 18;
+                case VIEW_NORTH:
+                    if (y + AUTOMAP_VIEW_HEIGHT / 2 > height) {
+                        top = height - y - AUTOMAP_VIEW_HEIGHT;
                     }
                     break;
-                case 1:
-                    if (x - 8 < 0) {
-                        top = x - 17;
+                case VIEW_EAST:
+                    if (x - (AUTOMAP_VIEW_HEIGHT / 2 - 1) < 0) {
+                        top = x - (AUTOMAP_VIEW_HEIGHT - 1);
                     }
                     break;
-                case 2:
-                    if (y - 8 < 0) {
-                        top = y - 17;
+                case VIEW_SOUTH:
+                    if (y - (AUTOMAP_VIEW_HEIGHT / 2 - 1) < 0) {
+                        top = y - (AUTOMAP_VIEW_HEIGHT - 1);
                     }
                     break;
-                case 3:
-                    if (x + 9 > height) {
-                        top = height - x - 18;
+                case VIEW_WEST:
+                    if (x + AUTOMAP_VIEW_HEIGHT / 2 > height) {
+                        top = height - x - AUTOMAP_VIEW_HEIGHT;
                     }
                     break;
             }
@@ -2239,16 +2328,16 @@ void DrawMapOverlay(MapPosition position) {
     }
     ClearLayerSurface(SCREEN_LAYER_AUTOMAP);
     if (g_party.status.navigationFixed) {
-        position.direction = 0;
+        position.direction = VIEW_NORTH;
     }
     s_mapDetail = AUTOMAP_DETAIL_NONE;
-    if (!IsEventFlagSet(2, 9)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_AMS_V1_0)) {
         s_mapDetail = AUTOMAP_DETAIL_BASIC;
     }
-    if (!IsEventFlagSet(2, 15)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_AMS_V2_0)) {
         s_mapDetail = AUTOMAP_DETAIL_NPCS;
     }
-    if (!IsEventFlagSet(2, 0x38)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_AMS_OBJECT_MAPPING)) {
         s_mapDetail = AUTOMAP_DETAIL_OBJECTS;
     }
     if (s_mapDetail < AUTOMAP_DETAIL_BASIC) {
@@ -2262,70 +2351,70 @@ void DrawMapOverlay(MapPosition position) {
     y = position.y;
     direction = position.direction;
     RotateAutomapRegion(x, y, direction, &left, &top, &width, &height);
-    if (width <= 7) {
+    if (width <= MAP_OVERLAY_SIZE) {
         viewWidth = width;
-        screenX = 8 - width;
+        screenX = MAP_OVERLAY_X + MAP_OVERLAY_SIZE - width;
     } else {
-        screenX = 1;
-        viewWidth = 7;
-        if (-left * 2 > 7) {
-            left = -3;
+        screenX = MAP_OVERLAY_X;
+        viewWidth = MAP_OVERLAY_SIZE;
+        if (-left * 2 > MAP_OVERLAY_SIZE) {
+            left = -(MAP_OVERLAY_SIZE / 2);
             switch (position.direction) {
-                case 0:
-                    if (position.x + 4 > width) {
-                        left = width - x - 7;
+                case VIEW_NORTH:
+                    if (position.x + MAP_OVERLAY_SIZE / 2 + 1 > width) {
+                        left = width - x - MAP_OVERLAY_SIZE;
                     }
                     break;
-                case 1:
-                    if (position.y + 4 > width) {
-                        left = width - y - 7;
+                case VIEW_EAST:
+                    if (position.y + MAP_OVERLAY_SIZE / 2 + 1 > width) {
+                        left = width - y - MAP_OVERLAY_SIZE;
                     }
                     break;
-                case 2:
-                    edge = x - 3;
+                case VIEW_SOUTH:
+                    edge = x - MAP_OVERLAY_SIZE / 2;
                     if (edge < 0) {
-                        left = x - 6;
+                        left = x - (MAP_OVERLAY_SIZE - 1);
                     }
                     break;
-                case 3:
-                    edge = y - 3;
+                case VIEW_WEST:
+                    edge = y - MAP_OVERLAY_SIZE / 2;
                     if (edge < 0) {
-                        left = y - 6;
+                        left = y - (MAP_OVERLAY_SIZE - 1);
                     }
                     break;
             }
         }
     }
-    if (height <= 7) {
+    if (height <= MAP_OVERLAY_SIZE) {
         viewHeight = height;
-        screenY = 21 - height;
+        screenY = MAP_OVERLAY_Y + MAP_OVERLAY_SIZE - height;
     } else {
-        screenY = 14;
-        viewHeight = 7;
+        screenY = MAP_OVERLAY_Y;
+        viewHeight = MAP_OVERLAY_SIZE;
         edge = -top * 2;
-        if (edge > 7) {
-            top = -3;
+        if (edge > MAP_OVERLAY_SIZE) {
+            top = -(MAP_OVERLAY_SIZE / 2);
             switch (position.direction) {
-                case 0:
-                    if (position.y + 4 > height) {
-                        top = height - y - 7;
+                case VIEW_NORTH:
+                    if (position.y + MAP_OVERLAY_SIZE / 2 + 1 > height) {
+                        top = height - y - MAP_OVERLAY_SIZE;
                     }
                     break;
-                case 1:
-                    edge = x - 3;
+                case VIEW_EAST:
+                    edge = x - MAP_OVERLAY_SIZE / 2;
                     if (edge < 0) {
-                        top = x - 6;
+                        top = x - (MAP_OVERLAY_SIZE - 1);
                     }
                     break;
-                case 2:
-                    edge = y - 3;
+                case VIEW_SOUTH:
+                    edge = y - MAP_OVERLAY_SIZE / 2;
                     if (edge < 0) {
-                        top = y - 6;
+                        top = y - (MAP_OVERLAY_SIZE - 1);
                     }
                     break;
-                case 3:
-                    if (position.x + 4 > height) {
-                        top = height - x - 7;
+                case VIEW_WEST:
+                    if (position.x + MAP_OVERLAY_SIZE / 2 + 1 > height) {
+                        top = height - x - MAP_OVERLAY_SIZE;
                     }
                     break;
             }
@@ -2350,7 +2439,7 @@ void DrawMapOverlay(MapPosition position) {
             DrawMapOverlayTile(tile, cell.x, cell.y);
         }
     }
-    IsCellBlocked(g_party.field.pos.level, 0, 0, 0);
+    IsCellBlocked(g_party.field.pos.level, CELL_SCAN_DRAW_ICONS, 0, 0);
     if (s_mapDetail >= AUTOMAP_DETAIL_NPCS) {
         MarkAreaNpcs();
     }
@@ -2373,7 +2462,7 @@ void DrawMapOverlayTile(i16 tile, i16 x, i16 y) {
     }
     TransformAutomapPoint(&x, &y);
     if (x >= 0 && x < s_mapWidth && y >= 0 && y < s_mapHeight) {
-        if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 15) {
+        if (g_party.field.pos.area == MAP_AREA_HATSUDAI && g_party.field.pos.level == 15) {
             if (!g_party.status.navigationFixed && (g_party.field.pos.direction & 1)) {
                 x += 3;
                 y += 2;
@@ -2429,8 +2518,8 @@ i16 WriteAutomapAreas(FILE* fp) {
         return errors;
     }
     StoreAutomapLevel();
-    errors = 256 - fwrite(s_areas, 4, 256, fp);
-    for (area = 0; area < 256; area++) {
+    errors = MAP_AREA_COUNT - fwrite(s_areas, 4, MAP_AREA_COUNT, fp);
+    for (area = 0; area < MAP_AREA_COUNT; area++) {
         handle = GetAutomapAreaHandle(area);
         if (handle) {
             levels = HandleReadPtr(handle);
@@ -2468,11 +2557,11 @@ i16 LoadAutomapAreas(FILE* fp) {
     StoreAutomapLevel();
     FreeAutomap();
     EnsureAutomapStore();
-    errors = 256 - fread(s_areas, 4, 256, fp);
+    errors = MAP_AREA_COUNT - fread(s_areas, 4, MAP_AREA_COUNT, fp);
     if (errors) {
         return errors;
     }
-    for (area = 0; area < 256; area++) {
+    for (area = 0; area < MAP_AREA_COUNT; area++) {
         if (GetAutomapAreaHandle(area)) {
             errors += 1 - fread(&levelHeader, 4, 1, fp);
             count = levelHeader.count;
@@ -2513,17 +2602,24 @@ i16 SetInfoBarLayout(i16 layout) {
 
 RVA(0x0001e740, 0x4b)
 void DrawMoneyCounters(i16 mode) {
-    DrawMoneyCounter(mode, 8, RosterMemberAt(0)->magnetite, 0);
-    s_shownMagnetite = RosterMemberAt(0)->magnetite;
-    DrawMoneyCounter(mode, 11, RosterMemberAt(0)->macca, 1);
-    s_shownMacca = RosterMemberAt(0)->macca;
+    DrawMoneyCounter(mode, 8, RosterMemberAt(ROSTER_LEADER)->magnetite, 0);
+    s_shownMagnetite = RosterMemberAt(ROSTER_LEADER)->magnetite;
+    DrawMoneyCounter(mode, 11, RosterMemberAt(ROSTER_LEADER)->macca, 1);
+    s_shownMacca = RosterMemberAt(ROSTER_LEADER)->macca;
 }
 
 RVA(0x0001e790, 0xcf)
 void DrawMoneyCounter(i16 mode, i16 row, i32 value, i16 currency) {
     i32 attr = 0xffffb400;
     if (!currency) {
-        DrawLayerText(SCREEN_LAYER_CURRENCY, 8, 8, "       ", 0xb400);
+        DrawLayerText(
+            SCREEN_LAYER_CURRENCY,
+            8,
+            8,
+            "       ",
+            TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1 | TEXT_ATTR_HALF_WIDTH
+                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
         if (value < 1) {
             attr = 0xffffb500;
         }
@@ -2531,7 +2627,14 @@ void DrawMoneyCounter(i16 mode, i16 row, i32 value, i16 currency) {
         DrawLayerText(SCREEN_LAYER_CURRENCY, 8, 8, g_scratchBuffer, attr);
         DrawLayerText(SCREEN_LAYER_CURRENCY, 72, 8, "MAG", attr);
     } else {
-        DrawLayerText(SCREEN_LAYER_CURRENCY, 40, 32, "       ", 0xb400);
+        DrawLayerText(
+            SCREEN_LAYER_CURRENCY,
+            40,
+            32,
+            "       ",
+            TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1 | TEXT_ATTR_HALF_WIDTH
+                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
         if (value < 1) {
             attr = 0xffffb500;
         }
@@ -2545,7 +2648,14 @@ RVA(0x0001e860, 0x81)
 b16 DrawInfoBar(i16 layout, i16 partial) {
     DrawIconLayerImage(g_clock.moonPhase);
     sprintf(g_scratchBuffer, "%2d", g_clock.moonPhase + 1);
-    DrawLayerText(SCREEN_LAYER_MOON_PHASE, 8, 8, g_scratchBuffer, 0xb400);
+    DrawLayerText(
+        SCREEN_LAYER_MOON_PHASE,
+        8,
+        8,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1 | TEXT_ATTR_HALF_WIDTH
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     s_shownMoonPhase = g_clock.moonPhase;
     DrawMoneyCounters(layout);
     if (!partial || TestModeFlags(MODE_WORLD_MAP)) {
@@ -2564,9 +2674,23 @@ void DrawAreaInfo(void) {
     } else {
         FormatWorldMapLocation();
     }
-    DrawLayerText(SCREEN_LAYER_LOCATION, 8, 8, g_scratchBuffer, 0x3400);
+    DrawLayerText(
+        SCREEN_LAYER_LOCATION,
+        8,
+        8,
+        g_scratchBuffer,
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     floor = GetLevelFloor();
-    DrawLayerText(SCREEN_LAYER_LOCATION, 176, 8, "    ", 0xb400);
+    DrawLayerText(
+        SCREEN_LAYER_LOCATION,
+        176,
+        8,
+        "    ",
+        TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1 | TEXT_ATTR_HALF_WIDTH
+            | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+    );
     if (floor) {
         x = 176;
         if (floor < 0) {
@@ -2577,18 +2701,25 @@ void DrawAreaInfo(void) {
         } else {
             sprintf(g_scratchBuffer, " %2dF", floor);
         }
-        DrawLayerText(SCREEN_LAYER_LOCATION, x, 8, g_scratchBuffer, 0xb400);
+        DrawLayerText(
+            SCREEN_LAYER_LOCATION,
+            x,
+            8,
+            g_scratchBuffer,
+            TEXT_ATTR_OPAQUE | TEXT_ATTR_FLAG1 | TEXT_ATTR_HALF_WIDTH
+                | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK)
+        );
     }
 }
 
 RVA(0x0001e9f0, 0x60)
 b16 RefreshInfoBar(i16 force) {
     if (force) {
-        DrawInfoBar(s_nextLayout, 1);
+        DrawInfoBar(s_nextLayout, true);
     } else if (s_shownMoonPhase != g_clock.moonPhase
-               || s_shownMagnetite != RosterMemberAt(0)->magnetite
-               || s_shownMacca != RosterMemberAt(0)->macca) {
-        DrawInfoBar(s_nextLayout, 1);
+               || s_shownMagnetite != RosterMemberAt(ROSTER_LEADER)->magnetite
+               || s_shownMacca != RosterMemberAt(ROSTER_LEADER)->macca) {
+        DrawInfoBar(s_nextLayout, true);
     }
     s_nextLayout = 1;
     return false;
@@ -2597,23 +2728,23 @@ b16 RefreshInfoBar(i16 force) {
 RVA(0x0001ea50, 0x34)
 b16 UpdateInfoBar(void) {
     if (g_fieldRedrawRequest) {
-        DrawInfoBar(0, 0);
+        DrawInfoBar(0, false);
         return false;
     }
     if (g_tickElapsed >= CLOCK_UPDATE_MOON) {
-        DrawInfoBar(1, 0);
+        DrawInfoBar(1, false);
     }
     return false;
 }
 
 static __inline void EnsureGridByteStorage(i32* grid) {
     if (!*grid) {
-        *grid = AllocHandle(0x1000);
+        *grid = AllocHandle(REGION_GRID_SIZE * REGION_GRID_SIZE);
     }
 }
 
 static __inline i16 GridByteIndex(i16 x, i16 y) {
-    return y * 64 + x;
+    return y * REGION_GRID_SIZE + x;
 }
 
 // Sets region `value` on every cell of the rectangle x0..x1, y0..y1.
@@ -2633,7 +2764,7 @@ void SetRoomRegion(i16 x, i16 y, u8 value) {
     SetGridByte(&s_roomRegions, x, y, value);
 }
 
-// Sets cell x/y of a 64x64 byte grid (allocated on first use).
+// Sets cell x/y of a region grid (allocated on first use).
 RVA(0x0001eaf0, 0x3d)
 void SetGridByte(i32* grid, i16 x, i16 y, u8 value) {
     u8* bytes;
@@ -2649,7 +2780,7 @@ void FillEmptyRegions(i16 width, i16 height, u8 value) {
     i16 y;
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-            if (GetRoomRegion(x, y) == 0xff) {
+            if (GetRoomRegion(x, y) == REGION_NONE) {
                 SetRoomRegion(x, y, value);
             }
         }
@@ -2675,7 +2806,7 @@ u8 GetGridByte(i32* grid, i16 x, i16 y) {
 RVA(0x0001ebe0, 0x2e)
 b16 IsRegionFlagOn(u8* list, i16 offset) {
     b16 invert = list[offset + 2] != 0;
-    return (IsCellFlagSet((CellHead*)list, offset) != 0) ^ invert;
+    return (IsCellFlagSet((CellHead*)list, offset) != false) ^ invert;
 }
 
 // Marks the regions of a level's room list: entries of `stride` bytes (a
@@ -2732,13 +2863,12 @@ u8* FindRegionData(u8* list, i16 stride, i16 index) {
     }
 }
 
-// Clears the region grid, then marks the level's rooms (0x1f-byte entries,
-// regions 0..) and doors (13-byte entries, regions 0x80..).
+// Clears the region grid, then marks the level's rooms and doors.
 RVA(0x0001ed20, 0x4b)
 void MarkRoomRegions(u8* rooms, u8* doors, i16 width, i16 height) {
-    FillRegionRect(0, 0, 0x3f, 0x3f, 0xff);
-    MarkRegionList(rooms, 0x1f, 0, width, height);
-    MarkRegionList(doors, 0xd, 0x80, width, height);
+    FillRegionRect(0, 0, REGION_GRID_SIZE - 1, REGION_GRID_SIZE - 1, REGION_NONE);
+    MarkRegionList(rooms, ROOM_ENTRY_SIZE, 0, width, height);
+    MarkRegionList(doors, DOOR_ENTRY_SIZE, REGION_DOOR, width, height);
 }
 
 static __inline void SaveRoomRegions(i16 width, i16 height) {
@@ -2800,10 +2930,10 @@ i16 GetPartyCellCode(void) {
     return GetMapCellCode(g_party.field.pos.x, g_party.field.pos.y);
 }
 
-// Whether a region code is a door (0x80..).
+// Whether a region code is a door.
 RVA(0x0001eee0, 0xa)
 i16 IsObjectCell(i16 code) {
-    return code & 0x80;
+    return code & REGION_DOOR;
 }
 
 RVA(0x0001eef0, 0x1a)
@@ -2823,8 +2953,8 @@ i16 CellCodeDiffers(i16 code, i16 x, i16 y) {
 RVA(0x0001ef30, 0x24)
 void ResetFieldScene(void) {
     ReleaseNpcTextures();
-    ResetFieldLayer(1);
-    ResetFieldLayer(0);
+    ResetFieldLayer(FIELD_LAYER_SECOND);
+    ResetFieldLayer(FIELD_LAYER_FIRST);
     SetCurrentRoomCode(-1);
 }
 
@@ -2839,23 +2969,28 @@ i16 LookupCellObject(DoorRegionData* table, i16 layer) {
 
 RVA(0x0001ef90, 0x1e)
 u8* GetRoomData(i16 code) {
-    return FindRegionData(GetLevelList(0), 0x1f, code & 0x7f);
+    return FindRegionData(
+        GetLevelList(LEVEL_LIST_ROOMS),
+        ROOM_ENTRY_SIZE,
+        code & (REGION_DOOR - 1)
+    );
 }
 
 RVA(0x0001efb0, 0x1e)
 DoorRegionData* GetCellObjectTable(i16 code) {
-    void* data = FindRegionData(GetLevelList(1), 0xd, code & 0x7f);
+    void* data =
+        FindRegionData(GetLevelList(LEVEL_LIST_DOORS), DOOR_ENTRY_SIZE, code & (REGION_DOOR - 1));
     return data;
 }
 
 // Enters region `code`: a room loads its NPC images, a door its two enemy
-// groups (object ids 0x20..0x201f).
+// groups (object record kinds).
 RVA(0x0001efd0, 0x95)
 void EnterRoom(i16 code) {
     DoorRegionData* table;
     i16 object;
     SetCurrentRoomCode(code);
-    if (code == 0xff || code == -1) {
+    if (code == REGION_NONE || code == -1) {
         return;
     }
     if (!IsObjectCell(code)) {
@@ -2870,23 +3005,23 @@ void EnterRoom(i16 code) {
         return;
     }
     object = LookupCellObject(table, 0);
-    if (object >= 0x20 && object <= 0x201f) {
-        LoadEnemyGroupSlot(0, object);
+    if (object >= HUMAN_ID_LIMIT && object <= OBJECT_KIND_END - 1) {
+        LoadEnemyGroupSlot(FIELD_LAYER_FIRST, object);
     }
     object = LookupCellObject(table, 1);
-    if (object >= 0x20 && object <= 0x201f) {
-        LoadEnemyGroupSlot(1, object);
+    if (object >= HUMAN_ID_LIMIT && object <= OBJECT_KIND_END - 1) {
+        LoadEnemyGroupSlot(FIELD_LAYER_SECOND, object);
     }
 }
 
 // Re-enters the party's region when it changed (resetting the field and
-// respawning), else re-picks the two special pictures of area 0x85 level 3.
+// respawning), else re-picks the two special pictures of alternate Tocho level 3.
 RVA(0x0001f070, 0xb6)
 void UpdateCurrentRoom(void) {
     i16 code;
     if (!CellCodeDiffers(GetCurrentRoomCode(), g_party.field.pos.x, g_party.field.pos.y)) {
-        if (g_party.field.pos.area == 0x85 && g_party.field.pos.level == 3
-            && g_party.field.pos.x == 3) {
+        if (g_party.field.pos.area == MAP_AREA_SHINJUKU_TOCHO_ALTERNATE
+            && g_party.field.pos.level == 3 && g_party.field.pos.x == 3) {
             if (g_party.field.pos.y == 4) {
                 LoadNpcTexture(0, 0x53, 0);
             } else if (g_party.field.pos.y == 5) {
@@ -2940,10 +3075,10 @@ i16 FindCellObject(i16 id, i16 x, i16 y) {
     return LookupCellObject(table, 1) != id ? -1 : 1;
 }
 
-// The slot the next NPC takes, -1 when all 16 are placed.
+// The slot the next NPC takes, -1 when all AREA_NPC_COUNT are placed.
 RVA(0x0001f250, 0x11)
 i16 NextNpcSlot(void) {
-    if (s_npcCount >= 16) {
+    if (s_npcCount >= AREA_NPC_COUNT) {
         return -1;
     }
     return s_npcCount;
@@ -2951,14 +3086,15 @@ i16 NextNpcSlot(void) {
 
 RVA(0x0001f270, 0x12)
 void CountPlacedNpc(void) {
-    if (s_npcCount < 16) {
+    if (s_npcCount < AREA_NPC_COUNT) {
         s_npcCount++;
     }
 }
 
-// The picture of NPC code `code`.
+// The four-direction mask selected by NPC code `code`. Retail's indexed load
+// reaches s_fourBitMasks in restore.c through the physical-recovery array.
 RVA(0x0001f290, 0xe)
-i16 GetNpcImageOfCode(i16 code) {
+GZ_ENUM_RETURN(NpcDirectionMask, i16) GetNpcImageOfCode(i16 code) {
     // Retail indexes the physical recovery list from its fifth entry.
     return g_physicalRecoveryConditions[code + 4];
 }
@@ -2968,7 +3104,7 @@ void ClearAreaNpcs(void) {
     s_npcCount = 0;
 }
 
-// Places an NPC from its map record: cell x/y, picture code, event flag
+// Places an NPC from its map record: cell x/y, direction-mask code, event flag
 // (bank, index), scene script (file, entry) and texture slot.
 RVA(0x0001f2b0, 0x93)
 void AddAreaNpc(const u8* record) {
@@ -2978,7 +3114,7 @@ void AddAreaNpc(const u8* record) {
     }
     s_npcs[slot].x = *record++;
     s_npcs[slot].y = *record++;
-    s_npcs[slot].image = GetNpcImageOfCode(*record++);
+    s_npcs[slot].directionMask = GetNpcImageOfCode(*record++);
     s_npcs[slot].flagBank = *record++;
     s_npcs[slot].flagIndex = *record++;
     s_npcs[slot].script = *record++;
@@ -2989,7 +3125,7 @@ void AddAreaNpc(const u8* record) {
 
 RVA(0x0001f350, 0x18)
 b16 IsReservedObjectCell(const CellHead* cell) {
-    if (cell->code >= 0x48 && cell->code <= 0x4e) {
+    if (cell->code >= CELL_AREA_NPC_MASK_ALL && cell->code <= CELL_AREA_NPC_MASK_EAST_WEST) {
         return true;
     }
     return false;
@@ -3044,7 +3180,7 @@ void MarkAreaNpcs(void) {
     i16 i;
     for (i = 0; i < s_npcCount; i++) {
         if (!IsEventFlagSet(s_npcs[i].flagBank, s_npcs[i].flagIndex)) {
-            MarkMapCell(4, s_npcs[i].x, s_npcs[i].y);
+            MarkMapCell(MAP_MARK_NPC, s_npcs[i].x, s_npcs[i].y);
         }
     }
 }
@@ -3063,19 +3199,20 @@ void ReleaseNpcTextures(void) {
 // Loads NPC picture `code` (image 0x4000 + code; `mode` bit 7 picks the
 // variant) into object texture slot `slot`. Two spots swap the picture: code
 // 0x2b at area 0x82 level 8 cell 11/7 or 12/6 shows 0x24, and code 0x53 at
-// area 0x85 level 3 south of row 4 shows 0x4c.
+// alternate Tocho level 3 south of row 4 shows 0x4c.
 // @identity-TODO: why those spots swap pictures is unrecovered.
 RVA(0x0001f550, 0xd0)
 void LoadNpcTexture(i16 slot, i16 code, i16 mode) {
     ImageRequest request;
     void* image;
-    if (code == 0x2b && mode == 0 && g_party.field.pos.area == 0x82
+    if (code == 0x2b && mode == 0 && g_party.field.pos.area == MAP_AREA_HATSUDAI
         && g_party.field.pos.level == 8) {
         if ((g_party.field.pos.x == 0xb && g_party.field.pos.y == 7)
             || (g_party.field.pos.x == 0xc && g_party.field.pos.y == 6)) {
             code = 0x24;
         }
-    } else if (code == 0x53 && mode == 0 && g_party.field.pos.area == 0x85
+    } else if (code == 0x53 && mode == 0
+               && g_party.field.pos.area == MAP_AREA_SHINJUKU_TOCHO_ALTERNATE
                && g_party.field.pos.level == 3 && g_party.field.pos.y > 4) {
         code = 0x4c;
     }
@@ -3108,7 +3245,7 @@ void LoadAreaNpcImages(u8* record) {
         return;
     }
     p = (u8*)LoadNpcPalette((u16*)(record + 3));
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < NPC_TEXTURE_SLOTS; i++) {
         if (p[1] != 0xff) {
             LoadNpcTexture(i, p[0], p[1]);
         }
@@ -3116,10 +3253,10 @@ void LoadAreaNpcImages(u8* record) {
     }
 }
 
-// The NPC texture in `slot` (0..5), else 0.
+// The NPC texture in `slot` (below NPC_TEXTURE_SLOTS), else 0.
 RVA(0x0001f6b0, 0x1e)
 u32 GetNpcTexture(i16 slot) {
-    if (slot >= 0 && slot < 6) {
+    if (slot >= 0 && slot < NPC_TEXTURE_SLOTS) {
         return g_npcTextures[slot].texture;
     }
     return 0;
@@ -3135,53 +3272,48 @@ u32 DrawNpcAt(i16 x, i16 y, i16 depth, AreaNpc* npc, i16 index) {
     }
 }
 
-// Runs the field effect of a skill or item: 1 knocks the target back, 3
-// shields it, 0x11 and 0x14 set flags, 0x15/0x16 return to the leader's
-// recorded point or mark, 0x17 knocks the actor back, 0x19/0x1a spawn a second
-// group, 0x1b seals a demon, 0x20..0x22 set stat flags, 0x23 does nothing but
-// succeed. Returns the handler's result (1 done, 0 no effect, -1 failed).
-// @identity-TODO: the handlers are named from their bodies only.
+// Runs a skill's field effect and returns the handler result.
 RVA(0x0001f700, 0xcc)
-i16 RunFieldEffect(i16 effect) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectCode, i16) effect) {
     switch (effect) {
-        case 0:
+        case FIELD_EFFECT_CODE_NONE:
             break;
-        case 1:
+        case FIELD_EFFECT_CODE_KNOCK_BACK_TARGET:
             return KnockBack(g_targetId);
-        case 3:
+        case FIELD_EFFECT_CODE_ILLUSION:
             return ShieldTarget();
-        case 0x11:
+        case FIELD_EFFECT_CODE_INVISIBLE:
             return SetTargetFlag21();
-        case 0x14:
+        case FIELD_EFFECT_CODE_ESTOMA:
             return ScatterObjects();
-        case 0x15:
+        case FIELD_EFFECT_CODE_TRAESTO:
             return ReturnToLeaderWarp();
-        case 0x16:
+        case FIELD_EFFECT_CODE_TRAPORT:
             return ReturnToLeaderMark();
-        case 0x17:
+        case FIELD_EFFECT_CODE_TRAFURI:
             return KnockBackActor();
-        case 0x19:
-        case 0x1a:
+        case FIELD_EFFECT_CODE_SABATOMA:
+        case FIELD_EFFECT_CODE_SPAWN_SECOND_GROUP:
             return SpawnActorGroup();
-        case 0x1b:
+        case FIELD_EFFECT_CODE_DESAMAN:
             return SealTarget();
-        case 0x20:
+        case FIELD_EFFECT_CODE_RAISE_ACCURACY_EVASION:
             return RaiseTargetFlag23();
-        case 0x21:
+        case FIELD_EFFECT_CODE_DOUBLE_MAX_HP_RAISE_WEAPON_STATS:
             return RaiseTargetFlag25();
-        case 0x22:
+        case FIELD_EFFECT_CODE_DOUBLE_MAX_POOLS_THEN_ASH:
             return RaiseTargetFlag26();
-        case 0x23:
-            return 1;
+        case FIELD_EFFECT_CODE_SUCCEED_WITHOUT_ACTION:
+            return FIELD_EFFECT_DONE;
     }
-    return 0;
+    return FIELD_EFFECT_NONE;
 }
 
 // Pushes `who` (a field object, or the party for a negative id) one cell
 // back (the party: behind itself; an object: away from the party), unless a
 // wall, a map-cell change or a blocked cell stops it; -1 then.
 RVA(0x0001f7d0, 0x152)
-i16 KnockBack(i16 who) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBack(i16 who) {
     i16* at;
     i16 direction;
     if (who < 0) {
@@ -3196,71 +3328,71 @@ i16 KnockBack(i16 who) {
         direction = OppositeDirection(g_party.field.pos.direction);
         object = GetLiveObject(who);
         if (object < 0) {
-            return -1;
+            return FIELD_EFFECT_FAILED;
         }
         actor = GetFieldActor(object);
         at = &((FieldActor*)GetFieldActor(object))->pos.x;
-        if (TestCharacterFlag(actor, 0x20)) {
-            return -1;
+        if (TestCharacterFlag(actor, ACTOR_FLAG_ANCHORED)) {
+            return FIELD_EFFECT_FAILED;
         }
         code = GetMapCellCode(at[0], at[1]);
         x = at[0];
         y = at[1];
-        StepMapCoord(&x, &y, direction, 2);
+        StepMapCoord(&x, &y, direction, MOVE_BACK);
         WrapMapPosition(&x, &y);
         if (CellCodeDiffers(code, x, y)) {
-            return -1;
+            return FIELD_EFFECT_FAILED;
         }
-        if (IsCellBlocked(g_party.field.pos.level, 1, x, y)) {
-            return -1;
+        if (IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y)) {
+            return FIELD_EFFECT_FAILED;
         }
     }
-    if (WallStopsToward(at[0], at[1], direction, 2)) {
-        return -1;
+    if (WallStopsToward(at[0], at[1], direction, MOVE_BACK)) {
+        return FIELD_EFFECT_FAILED;
     }
-    StepMapCoord(&at[0], &at[1], direction, 2);
+    StepMapCoord(&at[0], &at[1], direction, MOVE_BACK);
     RefreshFieldScene();
-    return 1;
+    return FIELD_EFFECT_DONE;
 }
 
 // Gives the target a shield of a tenth of its maximum HP (a field object:
 // respawns it instead).
 RVA(0x0001f930, 0x56)
-i16 ShieldTarget(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) ShieldTarget(void) {
     Character* target;
     if (g_targetId < 0) {
         target = GetCombatant(g_targetId);
         if (!target) {
-            return -1;
+            return FIELD_EFFECT_FAILED;
         }
         target->shield = target->pools.hp.max / 10;
-        return 1;
+        return FIELD_EFFECT_DONE;
     }
-    return RespawnFieldObject(g_targetId, 0, -1, 1);
+    return RespawnFieldObject(g_targetId, false, FIELD_OBJECT_NO_EVENT, true);
 }
 
 RVA(0x0001f990, 0x2d)
-i16 SetTargetFlag21(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) SetTargetFlag21(void) {
     Character* target = GetCombatant(g_targetId);
     if (!target) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
-    SetCharacterFlag(target, 0x21);
-    return 1;
+    SetCharacterFlag(target, ACTOR_FLAG_INVISIBLE);
+    return FIELD_EFFECT_DONE;
 }
 
-// Sets the leader's flag 0x22 and clears flag 10 of every live object out of
-// reach.
+// Sets the leader's Estoma flag and clears ACTOR_FLAG_NOTICED of every live
+// object out of reach.
 RVA(0x0001f9c0, 0x67)
 b16 ScatterObjects(void) {
     i16 i;
-    u8* flags = GetCharacterFlags(GetRosterCharacter(0));
-    SetBit(flags, 0x22);
-    for (i = 0; i < 16; i++) {
+    u8* flags = GetCharacterFlags(GetRosterCharacter(ROSTER_LEADER));
+    SetBit(flags, ACTOR_FLAG_ESTOMA);
+    for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         i16 object = GetLiveObject(i);
-        if (object >= 0 && !HasObjectInReach(1, -1, object)) {
+        if (object >= 0 && !HasObjectInReach(REACH_SHARED_PARTY_CELL, -1, object)) {
             flags = GetCharacterFlags(GetCombatant(object));
-            ClearBit(flags, 10);
+            ClearBit(flags, ACTOR_FLAG_NOTICED);
         }
     }
     return true;
@@ -3269,7 +3401,7 @@ b16 ScatterObjects(void) {
 // Sends the party to the return point recorded in the roster leader.
 RVA(0x0001fa30, 0x35)
 b16 ReturnToLeaderWarp(void) {
-    Character* leader = GetRosterCharacter(0);
+    Character* leader = GetRosterCharacter(ROSTER_LEADER);
     SetReturnPoint(
         leader->returnPosition.area,
         leader->returnPosition.level,
@@ -3283,7 +3415,7 @@ b16 ReturnToLeaderWarp(void) {
 // Sends the party to the cell in front of the leader's marked position.
 RVA(0x0001fa70, 0x6d)
 b16 ReturnToLeaderMark(void) {
-    Character* leader = GetRosterCharacter(0);
+    Character* leader = GetRosterCharacter(ROSTER_LEADER);
     i16 area = leader->markPosition.area;
     i16 level = leader->markPosition.level;
     i16 x = leader->markPosition.x;
@@ -3297,115 +3429,113 @@ b16 ReturnToLeaderMark(void) {
 // Knocks the acting object back; when nothing is left within reach, raises
 // the pending abort.
 RVA(0x0001fae0, 0x44)
-i16 KnockBackActor(void) {
-    i16 result;
+GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBackActor(void) {
+    GZ_ENUM_LOCAL(FieldEffectResult, i16) result;
     if (g_actorId >= 0) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     result = KnockBack(g_actorId);
     if (result < 0) {
         return result;
     }
-    if (HasObjectInReach(0, -1, 0)) {
-        return 0;
+    if (HasObjectInReach(REACH_VERTICAL_OR_OCCUPIED, -1, 0)) {
+        return FIELD_EFFECT_NONE;
     }
-    ExchangeAbortPending(1);
-    return 1;
+    ExchangeAbortPending(true);
+    return FIELD_EFFECT_DONE;
 }
 
 // Spawns a second enemy group at the acting object's cell.
 RVA(0x0001fb30, 0x42)
-i16 SpawnActorGroup(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) SpawnActorGroup(void) {
     i16 object = GetLiveObject(g_actorId);
     MapCoord* pos;
     if (object < 0) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     pos = &((FieldActor*)GetFieldActor(object))->pos;
     SpawnSecondGroupActor(pos->x, pos->y, -1);
 }
 
-// Seals the target (flag 0x3f, result 3) unless it is human or of races
-// 0x1a..0x22; while the field marker is set against an object the action
-// fails with result 6.
+// Seals the target (flag 0x3f, result 3) unless it is human or of a race from
+// RACE_MAJIN to RACE_INU; while the field marker is set against an object the
+// action fails with result 6.
 RVA(0x0001fb80, 0xe4)
-i16 SealTarget(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void) {
     Character* actor = GetCombatant(g_actorId);
     Character* target;
-    i16 race;
+    GZ_ENUM_LOCAL(DemonRace, i16) race;
     if (g_targetId >= 0 && GetFieldMarker()) {
-        SetActionResult(actor, 6);
-        return 0;
+        SetActionResult(actor, BATTLE_ACTION_IMMUNE);
+        return FIELD_EFFECT_NONE;
     }
     target = GetCombatant(g_targetId);
     if (!target) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     if (IsHumanCharacter(target)) {
-        return 0;
+        return FIELD_EFFECT_NONE;
     }
     race = GetDemonRace(target->id);
-    if (race == 0x1a || race == 0x1b || race == 0x1c || race == 0x1d || race == 0x1e || race == 0x1f
-        || race == 0x20 || race == 0x21 || race == 0x22) {
-        return 0;
+    if (race == RACE_MAJIN || race == RACE_DEMONOID || race == RACE_JUUJIN
+        || race == RACE_ISHTAR_BELIEVER || race == RACE_BAEL_BELIEVER || race == RACE_KYOUJIN
+        || race == RACE_HEISHI || race == RACE_HITO || race == RACE_INU) {
+        return FIELD_EFFECT_NONE;
     }
-    SetActionResult(actor, 3);
-    SetCharacterFlag(target, 0x3f);
-    return 1;
+    SetActionResult(actor, BATTLE_ACTION_SUCCESS);
+    SetCharacterFlag(target, ACTOR_FLAG_DESAMAN);
+    return FIELD_EFFECT_DONE;
 }
 
-// Sets the target's flag 0x23 (not with 0x23 or 0x24 already set) and
-// recalculates its stats.
 RVA(0x0001fc70, 0x6d)
-i16 RaiseTargetFlag23(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag23(void) {
     Character* target = GetCombatant(g_targetId);
     if (!target) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
-    if (TestCharacterFlag(target, 0x23) == 1) {
-        return -1;
+    if (TestCharacterFlag(target, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
+        return FIELD_EFFECT_FAILED;
     }
-    if (TestCharacterFlag(target, 0x24) == 1) {
-        return -1;
+    if (TestCharacterFlag(target, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
+        return FIELD_EFFECT_FAILED;
     }
-    SetCharacterFlag(target, 0x23);
+    SetCharacterFlag(target, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP);
     RecalcCharacterStats(target);
-    return 1;
+    return FIELD_EFFECT_DONE;
 }
 
-// The same with flag 0x25, only while the moon is not new.
 RVA(0x0001fce0, 0x67)
-i16 RaiseTargetFlag25(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void) {
     Character* target;
     if (!GetMoonPhase()) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     target = GetCombatant(g_targetId);
     if (!target) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
-    if (TestCharacterFlag(target, 0x25) == 1) {
-        return -1;
+    if (TestCharacterFlag(target, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
+        return FIELD_EFFECT_FAILED;
     }
-    SetCharacterFlag(target, 0x25);
+    SetCharacterFlag(target, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST);
     RecalcCharacterStats(target);
-    return 1;
+    return FIELD_EFFECT_DONE;
 }
 
 RVA(0x0001fd50, 0x67)
-i16 RaiseTargetFlag26(void) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag26(void) {
     Character* target;
     if (!GetMoonPhase()) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
     target = GetCombatant(g_targetId);
     if (!target) {
-        return -1;
+        return FIELD_EFFECT_FAILED;
     }
-    if (TestCharacterFlag(target, 0x26) == 1) {
-        return -1;
+    if (TestCharacterFlag(target, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
+        return FIELD_EFFECT_FAILED;
     }
-    SetCharacterFlag(target, 0x26);
+    SetCharacterFlag(target, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING);
     RecalcCharacterStats(target);
-    return 1;
+    return FIELD_EFFECT_DONE;
 }

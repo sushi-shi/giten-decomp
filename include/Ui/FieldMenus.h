@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Enums.h>
 #include <Game/PartyAction.h>
 #include <Ints.h>
 #include <Ui/Menu.h>
@@ -11,8 +12,24 @@
 // The open party picker's text plane, or -1 when closed.
 i16 GetPickerSelection(void);
 
+GZ_ENUM_BEGIN_SPLIT(PartyPickerMode, i16)
+    PARTY_PICKER_ALL = 0,
+    PARTY_PICKER_USABLE_SKILLS = 1,
+    PARTY_PICKER_HUMANS = 2
+GZ_ENUM_END_SPLIT(PartyPickerMode)
+
+GZ_ENUM_CONST_BEGIN(PartyPickerResult)
+    PARTY_PICKER_RESULT_CANCELLED = -2,
+    PARTY_PICKER_RESULT_NONE = -1
+GZ_ENUM_CONST_END(PartyPickerResult)
+
+GZ_ENUM_CONST_BEGIN(PartyPickerCommand)
+    PARTY_PICKER_COMMAND_CLOSE = -1,
+    PARTY_PICKER_COMMAND_CONTINUE = 0
+GZ_ENUM_CONST_END(PartyPickerCommand)
+
 i16 RunPartyPicker(i16 command);
-void SetPartyPickerMode(i16 mode);
+void SetPartyPickerMode(GZ_ENUM_PARAM(PartyPickerMode, i16) mode);
 struct PartyMemberList;
 MenuBox* OpenPartyPicker(struct PartyMemberList* entries);
 void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
@@ -20,12 +37,40 @@ void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) 
 i16 CancelItemTargetMenu(i16 command);
 
 // The field item-use flow (game state) and its user lookup.
+// The phases of the field item-use state (RunItemUse): open the item list,
+// close it, pick the item and its target, destroy the menu, prompt the action
+// and finish.
+GZ_ENUM_BEGIN(ItemUsePhase)
+    ITEM_USE_PHASE_OPEN = 0,
+    ITEM_USE_PHASE_CLOSE = 1,
+    ITEM_USE_PHASE_PICK_ITEM = 2,
+    ITEM_USE_PHASE_PICK_TARGET = 3,
+    ITEM_USE_PHASE_DESTROY_MENU = 4,
+    ITEM_USE_PHASE_PROMPT_ACTION = 5,
+    ITEM_USE_PHASE_FINISH = 6
+GZ_ENUM_END(ItemUsePhase)
+
 b16 RunItemUse(void);
 i16 FindFirstAbleMemberPosition(void);
 
 i16 CancelFieldTargetMenu(i16 command);
 
 // The field skill-use flow (game state), its pick and its preset member.
+// The phases of the field skill-use state (RunFieldSkillUse): start, close the
+// member picker, pick the member, open and close the skill list, pick the
+// skill and its target, prompt the action, and end.
+GZ_ENUM_BEGIN(FieldSkillUsePhase)
+    SKILL_USE_PHASE_START = 0,
+    SKILL_USE_PHASE_CLOSE_MEMBER_PICKER = 1,
+    SKILL_USE_PHASE_PICK_MEMBER = 2,
+    SKILL_USE_PHASE_OPEN_SKILL_LIST = 3,
+    SKILL_USE_PHASE_CLOSE_SKILL_LIST = 4,
+    SKILL_USE_PHASE_PICK_SKILL = 5,
+    SKILL_USE_PHASE_PICK_TARGET = 6,
+    SKILL_USE_PHASE_PROMPT_ACTION = 7,
+    SKILL_USE_PHASE_END = 8
+GZ_ENUM_END(FieldSkillUsePhase)
+
 b16 RunFieldSkillUse(void);
 void SetSkillPick(i16 position);
 void SetFieldSkillUser(i16 id);

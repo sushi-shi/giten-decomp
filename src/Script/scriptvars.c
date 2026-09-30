@@ -3,7 +3,9 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <File/DataFile.h>
+#include <File/DataFileKind.h>
 #include <Game/CharInfo.h>
 #include <Game/Condition.h>
 #include <Game/FieldMain.h>
@@ -15,6 +17,7 @@
 #include <Game/GameState.h>
 #include <Game/InfoBar.h>
 #include <Game/LevelUp.h>
+#include <Game/MapArea.h>
 #include <Game/Scene.h>
 #include <Game/ScreenEffect.h>
 #include <Game/StateStack.h>
@@ -38,6 +41,7 @@
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
 #include <Script/LongVar.h>
+#include <Script/ObjectRef.h>
 #include <Script/Script.h>
 #include <Script/ScriptBlock.h>
 #include <Script/ScriptCmd.h>
@@ -45,6 +49,7 @@
 #include <Script/ScriptOps.h>
 #include <Script/ScriptPanel.h>
 #include <Script/ScriptState.h>
+#include <Script/ScriptStatus.h>
 #include <Script/ScriptText.h>
 #include <Script/ScriptVars.h>
 #include <Script/TextState.h>
@@ -78,19 +83,42 @@ u32 g_scriptLongVars[26] = {0};
 DATA(0x00081648)
 static ScriptScratchValue s_scratchValue = {0};
 
+// Operand widths for reading or writing the script scratch value. Width 3
+// uses the same full 32-bit transfer as width 4.
+GZ_ENUM_BEGIN_SPLIT(ScriptScratchWidth, i16)
+    SCRIPT_SCRATCH_BYTE = 1,
+    SCRIPT_SCRATCH_WORD = 2,
+    SCRIPT_SCRATCH_FULL_AT_THREE = 3,
+    SCRIPT_SCRATCH_FULL = 4
+GZ_ENUM_END_SPLIT(ScriptScratchWidth)
+
+// Negative operation operands select a transfer; nonnegative operands are
+// script register indices copied directly to the destination long variable.
+GZ_ENUM_CONST_BEGIN(ScriptScratchTransfer)
+    SCRIPT_SCRATCH_PEEK = -1,
+    SCRIPT_SCRATCH_POKE = -2
+GZ_ENUM_CONST_END(ScriptScratchTransfer)
+
 // @identity-TODO: a counter that advances once per call of its tick while
 // counting is on; a script opcode reads it into a variable.
 DATA(0x0008164c)
 u32 g_tickCounter = 0;
 
+// The tick counter's states.
+GZ_ENUM_BEGIN_SPLIT(TickCounterState, i16)
+    TICK_COUNT_PAUSED = -1,
+    TICK_COUNT_STOPPED = 0,
+    TICK_COUNT_RUNNING = 1
+GZ_ENUM_END_SPLIT(TickCounterState)
+
 DATA(0x00081650)
-static i16 s_tickCountOn = 0;
+static GZ_ENUM_STORAGE(TickCounterState, i16) s_tickCountOn = TICK_COUNT_STOPPED;
 
 // @identity-TODO: the option word the script's window-opening opcode passes on.
 // Set while a script builds a choice list; the text writer takes it with
 // every character.
 DATA(0x00081654)
-b16 g_inChoices = 0;
+b16 g_inChoices = false;
 
 DATA(0x00081658)
 static i16 s_pendingScene = 0;
@@ -99,7 +127,7 @@ DATA(0x0008165c)
 static i16 s_pendingSceneEntry = 0;
 
 DATA(0x00081660)
-static ScriptChoice* s_choices = 0;
+static ScriptChoice* s_choices = NULL;
 
 DATA(0x00081664)
 static i16 s_choiceIndex = 0;
@@ -131,7 +159,7 @@ static i16 s_objectsWereFrozen = 0;
 
 // The loaded script files, oldest first.
 DATA(0x00081688)
-ScriptFileEntry* g_scriptFiles = 0;
+ScriptFileEntry* g_scriptFiles = NULL;
 
 // @identity-TODO: a script-set countdown that other code draws down; the
 // script fires its pending event once it reaches zero.
@@ -148,7 +176,7 @@ DATA(0x00081694)
 static i16 s_countdownEntry = 0;
 
 DATA(0x00081698)
-static i16 s_holdOn = 0;
+static b16 s_holdOn = false;
 
 // The handle of the block that holds generated script text.
 DATA(0x0008169c)
@@ -190,7 +218,7 @@ void OpRefreshFieldScreen(void) {
     i16 option = ReadScriptValue();
     FieldScreenNop(option & 7);
     if (!(option & 0x10)) {
-        DrawInfoBar(1, 0);
+        DrawInfoBar(1, false);
     }
     RestoreDrawState(state);
     if (GetSpriteMode() == SPRITE_LAYERS_PARTY_AND_TEXT) {
@@ -204,8 +232,8 @@ void OpFadeOutAndClear(void) {
     ReadScriptValue();
     StartScreenFade(SCREEN_FADE_TO_BLACK, 1);
     FinishScreenFade();
-    if (g_party.field.pos.area == 0x82 && g_party.field.pos.level == 8 && g_party.field.pos.x == 2
-        && g_party.field.pos.y == 1 && GetRenderMode() == 2) {
+    if (g_party.field.pos.area == MAP_AREA_HATSUDAI && g_party.field.pos.level == 8
+        && g_party.field.pos.x == 2 && g_party.field.pos.y == 1 && GetRenderMode() == 2) {
         ResetSprites(SPRITE_LAYERS_PARTY_AND_TEXT);
     }
 }
@@ -431,7 +459,7 @@ ScriptBlock* NewScriptBlock(void) {
     u16 i;
     block->code = AllocArrayHandle(1, 0x500);
     code = HandleWritePtr(block->code);
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < SCRIPT_ENTRY_COUNT; i++) {
         GetScriptRange(code, i)->offset = i + 0x400;
         GetScriptRange(code, i)->length = 1;
         code->bytes[i] = 0;
@@ -496,7 +524,7 @@ u8* ResizeScriptEntry(ScriptBlock* block, i16 entry, i16 length) {
     }
     code = HandleWritePtr(block->code);
     size = 0x400;
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < SCRIPT_ENTRY_COUNT; i++) {
         size += GetScriptRange(code, i)->length;
     }
     delta = length - GetScriptRange(code, entry)->length;
@@ -528,7 +556,7 @@ void ShiftScriptEntries(ScriptCode* code, i16 entry, i16 delta, u16 size) {
     if (count != 0) {
         memmove(dst, src, count);
         GetScriptRange(code, entry)->length += delta;
-        for (i = entry + 1; i < 256; i++) {
+        for (i = entry + 1; i < SCRIPT_ENTRY_COUNT; i++) {
             GetScriptRange(code, i)->offset += delta;
         }
     }
@@ -537,7 +565,7 @@ void ShiftScriptEntries(ScriptCode* code, i16 entry, i16 delta, u16 size) {
 // Loads script data file `file` into `block` (a new block when NULL).
 RVA(0x0003ad20, 0x38)
 ScriptBlock* LoadScriptBlock(ScriptBlock* block, i16 file) {
-    FILE* fp = OpenDataFile(file, 9, 0);
+    FILE* fp = OpenDataFile(file, DATA_FILE_SCRIPT, 0);
     block = ReadScriptBlock(block, fp);
     block->id = file;
     CloseDataFile(fp);
@@ -627,7 +655,7 @@ void StartDebugScene(i16 scene, i16 arg, i16 phase) {
         StartActorScene(0xe0, arg, 1, GetFieldActor(0));
         return;
     }
-    PushGameState(5);
+    PushGameState(GAME_STATE_SCRIPT_SCENE);
     SetGamePhase(phase);
     s_pendingScene = scene;
     s_pendingSceneEntry = arg;
@@ -651,12 +679,12 @@ RVA(0x0003afe0, 0x258)
 b16 RunScriptScene(void) {
     i16 window = GetGamePhase();
     switch (GetGameStep()) {
-        case 1:
+        case SCRIPT_SCENE_STEP_ADVANCE_TEXT:
             NextGameStep();
             AdvanceScriptTextWindow(window);
             break;
-        case 0:
-            ClearFlagBank(12);
+        case SCRIPT_SCENE_STEP_START:
+            ClearFlagBank(EVENT_FLAG_BANK_SCRATCH);
             UnplaceAllSprites();
             NextGameStep();
             NextGameStep();
@@ -674,16 +702,16 @@ b16 RunScriptScene(void) {
             ForgetTextPlaneAttr(window);
             ResetScriptPanels();
             StartScript(s_pendingScene, s_pendingSceneEntry, NewScriptContext(0, NULL));
-            SetTextScrollMode(1);
-            SetTextTimedWait(0);
+            SetTextScrollMode(true);
+            SetTextTimedWait(false);
             ClearScriptLongVars();
-        case 2: {
+        case SCRIPT_SCENE_STEP_RUN: {
             i16 result;
             PollScriptPanels();
             result = TickScript(window);
-            if (result == -1) {
+            if (result == SCRIPT_END) {
                 NextGameStep();
-            } else if (result < 0 && result != -3) {
+            } else if (result < 0 && result != SCRIPT_YIELD) {
                 if (!StepOnTextPeriod(window)) {
                     PrevGameStep();
                     WaitForScriptText(window);
@@ -691,7 +719,7 @@ b16 RunScriptScene(void) {
             }
             break;
         }
-        case 3:
+        case SCRIPT_SCENE_STEP_END:
             s_messageHookFile = s_messageHookEntry = -1;
             SetCurrentScript(FreeScriptContext(GetCurrentScript()));
             PurgeScriptFiles();
@@ -703,10 +731,10 @@ b16 RunScriptScene(void) {
             CloseScriptInterface();
             ReturnFromGameState();
             break;
-        case 4:
+        case SCRIPT_SCENE_STEP_RESUME_FIELD_MAP:
             ExchangeObjectsFrozen(s_objectsWereFrozen);
             ExchangeViewHold(GetGameSub());
-            SetGameStep(2);
+            SetGameStep(SCRIPT_SCENE_STEP_RUN);
             ReleaseScriptFiles();
             RestoreScriptState();
             ResetTextPlaneLineStep(window, 2);
@@ -714,10 +742,10 @@ b16 RunScriptScene(void) {
             RepaintTextPlane(window, 3);
             ClearTextPeriod();
             break;
-        case 5: {
+        case SCRIPT_SCENE_STEP_WAIT_PERIOD: {
             i16 top = GetScriptWindowOrDefault(window);
             ScrollTextWindowLine(top);
-            SetGameStep(2);
+            SetGameStep(SCRIPT_SCENE_STEP_RUN);
             break;
         }
     }
@@ -729,7 +757,7 @@ b16 RunScriptScene(void) {
 RVA(0x0003b240, 0x26)
 b16 StepOnTextPeriod(i16 window) {
     if (g_textState.scrollEnabled && !TickTextPeriod()) {
-        SetGameStep(5);
+        SetGameStep(SCRIPT_SCENE_STEP_WAIT_PERIOD);
         return true;
     }
     return false;
@@ -740,15 +768,15 @@ void WaitForScriptText(i16 window) {
     i16 top = GetScriptWindowOrDefault(window);
     if (g_textState.timedWait && g_textState.inputWait) {
         if (g_textState.waitFrames > 1) {
-            PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, g_textState.waitFrames - 1, top);
+            PushWaitState(WAIT_INPUT_OR_FRAMES, WAIT_ON_ANY_INPUT, g_textState.waitFrames - 1, top);
         } else {
-            PushWaitState(WAIT_INPUT_OR_FRAMES, 0xffff, 1, top);
+            PushWaitState(WAIT_INPUT_OR_FRAMES, WAIT_ON_ANY_INPUT, 1, top);
         }
     } else if (!g_textState.timedWait && g_textState.inputWait) {
-        PushWaitState(WAIT_INPUT, 0xffff, g_textState.waitFrames, top);
+        PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, g_textState.waitFrames, top);
     } else if (g_textState.timedWait && !g_textState.inputWait) {
         if (g_textState.waitFrames > 1) {
-            PushWaitState(WAIT_FRAMES, 0xffff, g_textState.waitFrames - 1, top);
+            PushWaitState(WAIT_FRAMES, WAIT_ON_ANY_INPUT, g_textState.waitFrames - 1, top);
         }
     }
 }
@@ -770,7 +798,7 @@ void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor) {
     actor->facing = OppositeDirection(g_party.field.pos.direction);
     RequestFieldRefresh();
     RedrawFieldView();
-    PushGameState(10);
+    PushGameState(GAME_STATE_ACTOR_SCENE);
     window = CreateTextPlane(2, 0);
     SetGamePhase(window);
     RepaintTextPlane(window, 1);
@@ -787,7 +815,7 @@ void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor) {
     SaveAndResetTextPlaneAttrs(window);
     SetTextPeriod(window);
     ClearTextPeriod();
-    SetTextScrollMode(0);
+    SetTextScrollMode(false);
     ForgetTextPlaneAttr(window);
     ResetScriptPanels();
     StartScript(s_pendingScene, s_pendingSceneEntry, NewScriptContext(index, actor));
@@ -798,37 +826,37 @@ b16 RunActorScene(void) {
     i16 window = GetGamePhase();
     for (;;) {
         switch (GetGameStep()) {
-            case 0:
+            case SCRIPT_SCENE_STEP_START:
                 NextGameStep();
                 NextGameStep();
-                ClearFlagBank(12);
-            case 2: {
+                ClearFlagBank(EVENT_FLAG_BANK_SCRATCH);
+            case SCRIPT_SCENE_STEP_RUN: {
                 i16 result;
                 PollScriptPanels();
                 result = TickScript(window);
-                if (result == -1) {
+                if (result == SCRIPT_END) {
                     NextGameStep();
-                } else if (result < 0 && result != -3) {
+                } else if (result < 0 && result != SCRIPT_YIELD) {
                     if (!StepOnTextPeriod(window)) {
                         PrevGameStep();
                         WaitForScriptText(window);
                     }
                 } else {
-                    return UpdateFieldScreen(0);
+                    return UpdateFieldScreen(false);
                 }
                 break;
             }
-            case 1:
+            case SCRIPT_SCENE_STEP_ADVANCE_TEXT:
                 NextGameStep();
                 AdvanceScriptTextWindow(window);
                 continue;
-            case 5: {
+            case SCRIPT_SCENE_STEP_WAIT_PERIOD: {
                 i16 top = GetScriptWindowOrDefault(window);
                 ScrollTextWindowLine(top);
-                SetGameStep(2);
+                SetGameStep(SCRIPT_SCENE_STEP_RUN);
                 break;
             }
-            case 3:
+            case SCRIPT_SCENE_STEP_END:
                 s_messageHookFile = s_messageHookEntry = -1;
                 SetCurrentScript(FreeScriptContext(GetCurrentScript()));
                 PurgeScriptFiles();
@@ -847,9 +875,9 @@ void OpSetMessageHook(void) {
     if (s_messageHookFile == 0xff && s_messageHookEntry == 0xff) {
         s_messageHookFile = -1;
         s_messageHookEntry = -1;
-        g_textState.messageHookEnabled = 0;
+        g_textState.messageHookEnabled = false;
     } else {
-        g_textState.messageHookEnabled = 1;
+        g_textState.messageHookEnabled = true;
     }
 }
 
@@ -1017,7 +1045,7 @@ void CallTextScript(const char* text) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b940, 0x18)
 void CallFirstMemberName(void) {
-    CallTextScript(GetTextToken(0, 0, -1));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, false, SCRIPT_REF_SLOT_BASE));
 }
 
 // @dead-code
@@ -1025,7 +1053,7 @@ void CallFirstMemberName(void) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b960, 0x18)
 void CallSecondMemberName(void) {
-    CallTextScript(GetTextToken(0, 0, -2));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, false, SCRIPT_REF_SLOT_BASE - 1));
 }
 
 // @dead-code
@@ -1033,7 +1061,7 @@ void CallSecondMemberName(void) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b980, 0x18)
 void CallSelectedMemberName(void) {
-    CallTextScript(GetTextToken(0, 0, -16));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, false, SCRIPT_REF_FAVOURED_MEMBER));
 }
 
 // @dead-code
@@ -1041,7 +1069,7 @@ void CallSelectedMemberName(void) {
 // (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
 RVA(0x0003b9a0, 0x18)
 void CallActorName(void) {
-    CallTextScript(GetTextToken(0, 0, -17));
+    CallTextScript(GetTextToken(TEXT_TOKEN_FULL_NAME, false, SCRIPT_REF_ACTOR));
 }
 
 RVA(0x0003b9c0, 0x5e)
@@ -1091,9 +1119,10 @@ u32 SetTickCounter(u32 value) {
 
 RVA(0x0003baf0, 0x34)
 // Turning counting on from off restarts the counter at 0.
-i16 SetTickCountOn(i16 on) {
-    i16 prev = s_tickCountOn;
-    if (on == 1 && s_tickCountOn == 0) {
+GZ_ENUM_RETURN(TickCounterState, i16)
+SetTickCountOn(GZ_ENUM_PARAM(TickCounterState, i16) on) {
+    GZ_ENUM_LOCAL(TickCounterState, i16) prev = s_tickCountOn;
+    if (on == TICK_COUNT_RUNNING && s_tickCountOn == TICK_COUNT_STOPPED) {
         SetTickCounter(0);
     }
     s_tickCountOn = on;
@@ -1102,17 +1131,17 @@ i16 SetTickCountOn(i16 on) {
 
 RVA(0x0003bb30, 0xb)
 void OpStartTickCounter(void) {
-    SetTickCountOn(1);
+    SetTickCountOn(TICK_COUNT_RUNNING);
 }
 
 RVA(0x0003bb40, 0xb)
 void OpPauseTickCounter(void) {
-    SetTickCountOn(-1);
+    SetTickCountOn(TICK_COUNT_PAUSED);
 }
 
 RVA(0x0003bb50, 0xb)
 void OpStopTickCounter(void) {
-    SetTickCountOn(0);
+    SetTickCountOn(TICK_COUNT_STOPPED);
 }
 
 RVA(0x0003bb60, 0x16)
@@ -1135,7 +1164,7 @@ void OpStartCountdown(void) {
 
 RVA(0x0003bbc0, 0x11)
 void TickCounter(void) {
-    if (s_tickCountOn > 0) {
+    if (s_tickCountOn > TICK_COUNT_STOPPED) {
         g_tickCounter++;
     }
 }
@@ -1165,7 +1194,7 @@ b16 FireCountdownEvent(void) {
     return true;
 }
 
-// The party position of the class-2 human member with the highest
+// The party position of the female human member with the highest
 // familiarity (on a tie, the lowest id) who is free to be picked; -1 when
 // none.
 RVA(0x0003bc70, 0x7b)
@@ -1175,9 +1204,9 @@ i16 FindFavouredMember(void) {
     i16 bestId = -1;
     i16 i;
     Character* character;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
-        if (character && IsHumanCharacter(character) && character->memberClass == 2
+        if (character && IsHumanCharacter(character) && character->gender == GENDER_FEMALE
             && !GetPickBlockingCondition(GetCharacterConditions(character))) {
             if (best != -1) {
                 if (character->familiarity < bestFamiliarity) {
@@ -1213,7 +1242,7 @@ ScriptEntry MakeScriptEntry(ScriptBlock* block, i16 entry) {
 RVA(0x0003bd40, 0xf4)
 void OpPeekPokeScratch(void) {
     u32 value = 0;
-    i16 width;
+    GZ_ENUM_LOCAL(ScriptScratchWidth, i16) width;
     i16 index;
     i16 operation;
     ReadScriptValue();
@@ -1221,31 +1250,31 @@ void OpPeekPokeScratch(void) {
     width = ReadScriptValue();
     index = ReadLongVarIndex();
     operation = ReadScriptValue();
-    if (operation == -1) {
+    if (operation == SCRIPT_SCRATCH_PEEK) {
         switch (width) {
-            case 1:
+            case SCRIPT_SCRATCH_BYTE:
                 value = s_scratchValue.value & 0xff;
                 break;
-            case 2:
+            case SCRIPT_SCRATCH_WORD:
                 value = s_scratchValue.value & 0xffff;
                 break;
-            case 3:
-            case 4:
+            case SCRIPT_SCRATCH_FULL_AT_THREE:
+            case SCRIPT_SCRATCH_FULL:
                 value = s_scratchValue.value;
                 break;
         }
         SetScriptLongVar(index, value);
-    } else if (operation == -2) {
+    } else if (operation == SCRIPT_SCRATCH_POKE) {
         value = GetScriptLongVar(index);
         switch (width) {
-            case 1:
+            case SCRIPT_SCRATCH_BYTE:
                 s_scratchValue.byte = value;
                 break;
-            case 2:
+            case SCRIPT_SCRATCH_WORD:
                 s_scratchValue.word = value;
                 break;
-            case 3:
-            case 4:
+            case SCRIPT_SCRATCH_FULL_AT_THREE:
+            case SCRIPT_SCRATCH_FULL:
                 s_scratchValue.value = value;
                 break;
         }
@@ -1266,36 +1295,36 @@ i16 AccessScriptReg(i16 write, i16 index, i16 value) {
 RVA(0x0003be70, 0x27)
 void ClearScriptLongVars(void) {
     i16 i;
-    for (i = 0; i < 26; i++) {
+    for (i = 0; i < SCRIPT_LONG_VAR_COUNT; i++) {
         g_scriptLongVars[i] = 0;
-        ClearEventFlag(15, i);
+        ClearEventFlag(EVENT_FLAG_BANK_SYSTEM, i);
     }
 }
 
 RVA(0x0003bea0, 0x2a)
 void ClearSystemVars(void) {
     i16 i;
-    for (i = 0; i < 8; i++) {
-        g_scriptLongVars[18 + i] = 0;
-        ClearEventFlag(15, i + 18);
+    for (i = 0; i < SCRIPT_SYSTEM_VAR_COUNT; i++) {
+        g_scriptLongVars[SCRIPT_SYSTEM_VAR_FIRST + i] = 0;
+        ClearEventFlag(EVENT_FLAG_BANK_SYSTEM, i + SCRIPT_SYSTEM_VAR_FIRST);
     }
 }
 
 RVA(0x0003bed0, 0x29)
 void ClearScriptLongVar(i16 index) {
-    if (index >= 0 && index < 26) {
+    if (index >= 0 && index < SCRIPT_LONG_VAR_COUNT) {
         g_scriptLongVars[index] = 0;
-        ClearEventFlag(15, index);
+        ClearEventFlag(EVENT_FLAG_BANK_SYSTEM, index);
     }
 }
 
-// Copies out script variables 18..25 and the bank-15 settings word.
+// Copies out the system variables and the system bank's settings word.
 RVA(0x0003bf00, 0x2c)
 void SaveSystemVars(u32* vars, u32* settings) {
     i16 i;
     i16 var;
-    for (i = 0; i < 8; i++) {
-        var = i + 18;
+    for (i = 0; i < SCRIPT_SYSTEM_VAR_COUNT; i++) {
+        var = i + SCRIPT_SYSTEM_VAR_FIRST;
         vars[i] = g_scriptLongVars[var];
     }
     *settings = GetFlagSettings();
@@ -1304,26 +1333,26 @@ void SaveSystemVars(u32* vars, u32* settings) {
 RVA(0x0003bf30, 0x2d)
 void RestoreSystemVars(u32* vars, u32* settings) {
     i16 i;
-    for (i = 0; i < 8; i++) {
-        g_scriptLongVars[18 + i] = vars[i];
+    for (i = 0; i < SCRIPT_SYSTEM_VAR_COUNT; i++) {
+        g_scriptLongVars[SCRIPT_SYSTEM_VAR_FIRST + i] = vars[i];
     }
     SetFlagSettings(*settings);
 }
 
-// Sets a variable and marks it set (bank 15); returns `value`.
+// Sets a variable and marks it set (in the system bank); returns `value`.
 RVA(0x0003bf60, 0x39)
 u32 SetScriptLongVar(i16 index, u32 value) {
-    if (index == -1 || index < 0 || index >= 26) {
+    if (index == -1 || index < 0 || index >= SCRIPT_LONG_VAR_COUNT) {
         return value;
     }
     g_scriptLongVars[index] = value;
-    SetEventFlag(15, index);
+    SetEventFlag(EVENT_FLAG_BANK_SYSTEM, index);
     return value;
 }
 
 RVA(0x0003bfa0, 0x1e)
 u32 GetScriptLongVar(i16 index) {
-    if (index >= 0 && index < 26) {
+    if (index >= 0 && index < SCRIPT_LONG_VAR_COUNT) {
         return g_scriptLongVars[index];
     }
     return 0;
@@ -1337,15 +1366,15 @@ RVA(0x0003bfc0, 0x79)
 void SwapScriptLongVars(i16 a, i16 b) {
     u32 value;
     i32 changed;
-    if (a >= 0 && a < 26 && b >= 0 && b < 26) {
+    if (a >= 0 && a < SCRIPT_LONG_VAR_COUNT && b >= 0 && b < SCRIPT_LONG_VAR_COUNT) {
         value = g_scriptLongVars[a];
         g_scriptLongVars[a] = g_scriptLongVars[b];
         g_scriptLongVars[b] = value;
-        changed = TestEventFlag(15, a);
-        changed ^= TestEventFlag(15, b);
+        changed = TestEventFlag(EVENT_FLAG_BANK_SYSTEM, a);
+        changed ^= TestEventFlag(EVENT_FLAG_BANK_SYSTEM, b);
         if (changed) {
-            ToggleEventFlag(15, a);
-            ToggleEventFlag(15, b);
+            ToggleEventFlag(EVENT_FLAG_BANK_SYSTEM, a);
+            ToggleEventFlag(EVENT_FLAG_BANK_SYSTEM, b);
         }
     }
 }
@@ -1353,19 +1382,19 @@ void SwapScriptLongVars(i16 a, i16 b) {
 // Copies a variable and its set mark.
 RVA(0x0003c040, 0x59)
 void CopyScriptLongVar(i16 dst, i16 src) {
-    if (dst >= 0 && dst < 26 && src >= 0 && src < 26) {
+    if (dst >= 0 && dst < SCRIPT_LONG_VAR_COUNT && src >= 0 && src < SCRIPT_LONG_VAR_COUNT) {
         g_scriptLongVars[dst] = g_scriptLongVars[src];
-        if (!TestEventFlag(15, src)) {
-            ClearEventFlag(15, dst);
+        if (!TestEventFlag(EVENT_FLAG_BANK_SYSTEM, src)) {
+            ClearEventFlag(EVENT_FLAG_BANK_SYSTEM, dst);
         } else {
-            SetEventFlag(15, dst);
+            SetEventFlag(EVENT_FLAG_BANK_SYSTEM, dst);
         }
     }
 }
 
 RVA(0x0003c0a0, 0x12)
-i16 SetHold(i16 on) {
-    i16 prev = s_holdOn;
+b16 SetHold(b16 on) {
+    b16 prev = s_holdOn;
     s_holdOn = on;
     return prev;
 }
@@ -1374,7 +1403,7 @@ i16 SetHold(i16 on) {
 // frame count, 1 waits on input mask 2). While held, runs the wait here until
 // it ends and returns 0; otherwise returns -3 to leave the script loop.
 RVA(0x0003c0c0, 0x85)
-i16 OpWaitMessage(i16 window) {
+GZ_ENUM_RETURN(ScriptStatus, i16) OpWaitMessage(i16 window) {
     GZ_ENUM_STORAGE(WaitMode, i16) kind;
     u16 mask;
     u16 frames;
@@ -1393,13 +1422,13 @@ i16 OpWaitMessage(i16 window) {
     }
     PushWaitState(kind, mask, frames, window);
     if (s_holdOn) {
-        while (GetGameState() == 1) {
+        while (GetGameState() == GAME_STATE_WAIT) {
             PollIdle(1, 0x18);
             StepWaitState();
         }
-        return 0;
+        return SCRIPT_CONTINUE;
     }
-    return -3;
+    return SCRIPT_YIELD;
 }
 
 RVA(0x0003c150, 0xf)
@@ -1526,7 +1555,7 @@ void OpShowBackground(void) {
     i16 arg = ReadScriptValue();
     ReadScriptValue();
     ReadScriptValue();
-    if (!IsEventFlagSet(9, 0x7b)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_AREA, AREA_FIXED_BACKGROUND)) {
         image = 0x31;
         arg = 4;
     }
@@ -1584,10 +1613,17 @@ void OpShowEventPicture(void) {
     }
 }
 
+// The script's screen save/restore operand: allocate a new save for bit 0,
+// and skip the draw-state pair around either operation for bit 1.
+GZ_ENUM_FLAGS_BEGIN(ScriptScreenSaveFlags, i16)
+    SCRIPT_SCREEN_SAVE_ALLOCATE = 1,
+    SCRIPT_SCREEN_SAVE_SKIP_DRAW_STATE = 2
+GZ_ENUM_FLAGS_END(ScriptScreenSaveFlags)
+
 RVA(0x0003c5a0, 0xfd)
 void OpSaveRestoreScreen(void) {
     i16 index = ReadLongVarIndex();
-    i16 flags = ReadScriptValue();
+    GZ_ENUM_LOCAL(ScriptScreenSaveFlags, i16) flags = ReadScriptValue();
     i16 x = ReadScriptValue();
     i16 y = ReadScriptValue();
     i16 width = ReadScriptValue();
@@ -1595,25 +1631,25 @@ void OpSaveRestoreScreen(void) {
     i16 state = 0;
     i32 handle;
     ScreenSaveHeader* save;
-    if (flags & 1) {
+    if (flags & SCRIPT_SCREEN_SAVE_ALLOCATE) {
         handle = AllocScreenSaveHandle(width, height);
         save = HandleWritePtr(handle);
-        if (!(flags & 2)) {
+        if (!(flags & SCRIPT_SCREEN_SAVE_SKIP_DRAW_STATE)) {
             state = SaveDrawState();
         }
         SetTextCursorOffset(&save->offset, x, y);
-        if (!(flags & 2)) {
+        if (!(flags & SCRIPT_SCREEN_SAVE_SKIP_DRAW_STATE)) {
             RestoreDrawState(state);
         }
     } else {
         handle = GetScriptLongVar(index);
         save = HandleWritePtr(handle);
         save->offset = y * 80 + x;
-        if (!(flags & 2)) {
+        if (!(flags & SCRIPT_SCREEN_SAVE_SKIP_DRAW_STATE)) {
             state = SaveDrawState();
         }
         ApplyTextCursor(save);
-        if (!(flags & 2)) {
+        if (!(flags & SCRIPT_SCREEN_SAVE_SKIP_DRAW_STATE)) {
             RestoreDrawState(state);
         }
         handle = FreeHandle(handle);
