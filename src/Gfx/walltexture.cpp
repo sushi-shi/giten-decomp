@@ -1,6 +1,7 @@
 #include <rva.h>
 
 #include <Game/AreaLevel.h>
+#include <Game/MapArea.h>
 #include <Gfx/Texture.h>
 #include <Platform/GameApi.h>
 #include <Platform/Scene3D.h>
@@ -27,7 +28,7 @@ static const char* s_wallTextureNames[16][4] = {
 
 RVA(0x00057e80, 0x94)
 void LoadWallTextures(i16 wallSet, i16 variant) {
-    u8 area;
+    GZ_ENUM_LOCAL(MapAreaId, u8) area;
     u8 level;
     ReleaseTexture(&g_roomTexture);
     g_fixedLighting = false;

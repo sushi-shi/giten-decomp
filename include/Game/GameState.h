@@ -3,6 +3,7 @@
 
 #include <EnumDomain.h>
 #include <Game/Character.h>
+#include <Game/MapArea.h>
 #include <Game/MapCoord.h>
 #include <Game/ViewDirection.h>
 #include <Ints.h>
@@ -16,7 +17,7 @@ typedef struct MapPosition {
     i16 y;
     GZ_ENUM_STORAGE(ViewDirection, i16) direction;
     u8 pad06;
-    u8 area;
+    GZ_ENUM_STORAGE(MapAreaId, u8) area;
     u8 level;
     u8 pad09;
 } MapPosition;
@@ -100,7 +101,7 @@ GZ_ENUM_END_SPLIT(MapValueSelector)
 
 i16 GetMapValue(GZ_ENUM_PARAM(MapValueSelector, i16) which);
 MapPosition* GetMapPosition(void);
-u8 GetMapArea(void);
+GZ_ENUM_RETURN(MapAreaId, u8) GetMapArea(void);
 u8 GetMapLevel(void);
 MapCoord GetMapCoord(void);
 Character* AsCharacter(Character* character);

@@ -71,7 +71,7 @@ i16 GetRosterCapacity(void) {
 }
 
 RVA(0x0003c7f0, 0x6)
-u8 GetMapArea(void) {
+GZ_ENUM_RETURN(MapAreaId, u8) GetMapArea(void) {
     return g_party.field.pos.area;
 }
 
