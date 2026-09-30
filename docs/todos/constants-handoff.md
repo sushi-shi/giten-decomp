@@ -296,6 +296,13 @@ Skill family names:
   versions without restricting it to special maneuvers. PC-98 also assigns
   Sabatoma (record 125) to family 10 where Windows assigns family 0; the
   family-10 meaning remains mixed.
+  Family 15 has six barrier, reflection or barrier-clearing skills and four
+  travel, concealment or escape skills. Family 24 has one electric attack and
+  four water skills, including a water barrier. Family 26 has four dances and
+  one Fairy Bolt; its composite name keeps that outlier visible. Family 32
+  has five elemental attacks (fire, lightning, ice, holy and dark) and three
+  demon expulsion, charm or destruction powers. These composite names record
+  their mixed members without treating any one subset as the whole family.
   `SkillParameters.family` retains its retail byte storage; mixed families
   still need individual identities.
 
