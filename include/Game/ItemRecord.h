@@ -9,6 +9,7 @@
 #include <Game/ItemKind.h>
 #include <Game/SkillMessage.h>
 #include <Game/TargetArea.h>
+#include <Game/TargetFlags.h>
 #include <Ints.h>
 
 typedef struct ItemTable {
@@ -94,7 +95,7 @@ static __inline u8 GetItemTargetCounts(const ItemRecord* record) {
     return record->params[5];
 }
 
-static __inline u8 GetItemTargetFlags(const ItemRecord* record) {
+static __inline GZ_ENUM_RETURN(TargetFlags, u8) GetItemTargetFlags(const ItemRecord* record) {
     return record->params[4];
 }
 

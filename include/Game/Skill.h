@@ -11,6 +11,7 @@
 
 #include <Game/SkillMessage.h>
 #include <Game/TargetArea.h>
+#include <Game/TargetFlags.h>
 
 // clang-format off
 GZ_ENUM_BEGIN(SkillUseModes)
@@ -55,8 +56,7 @@ typedef struct SkillParameters {
     i8 cost;   // negative: HP, positive: MP (see HpMpLeftAfterCost)
     GZ_ENUM_STORAGE(SkillUseModes, u8) usable;
     GZ_ENUM_STORAGE(TargetArea, u8) targetArea;
-    // @identity-TODO: target-picker combinations 0x10/0x11/0x30 remain unnamed.
-    u8 targetFlags;
+    GZ_ENUM_STORAGE(TargetFlags, u8) targetFlags;
     u8 targetCounts; // Low nibble: hits; high nibble: target count or selection mode.
     u8 attackRange;  // Packed minimum/maximum distance; also selects the target-picker range icon.
     u8 valueA;       // @identity-TODO: the two values a use of the skill wears down
@@ -107,7 +107,7 @@ char* GetSkillName(i16 id);
 char* GetSkillDescription(i16 id);
 SkillHeader* GetCachedSkill(i16 id);
 
-static __inline u8 GetSkillTargetFlags(i16 id) {
+static __inline GZ_ENUM_RETURN(TargetFlags, u8) GetSkillTargetFlags(i16 id) {
     return GetCachedSkill(id)->parameters.targetFlags;
 }
 
