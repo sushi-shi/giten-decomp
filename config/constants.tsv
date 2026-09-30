@@ -179,8 +179,8 @@ src/Script/scriptactor.c	OpJumpUnlessStatContest	[01]	trivial-function-literal	[
 *	*	*	call-argument	PlayMusic(*argument 1	a music track number (the sound data files' tracks have no names)
 *	*	*	call-argument	CreateTextPlane(*argument 1	a text-plane kind (its layout is s_planeLayouts[kind]; the kinds have no names)
 *	*	*	call-argument	CreateTextPlane(*argument 2	the text-plane creation argument
-src/Game/statestack.c	RunLevelUp	*	*	*GetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
-src/Game/statestack.c	RunLevelUp	*	call-argument	SetGame[SS][tu][eb]*	a step or sub-step within a level-up phase: a position in its sequence, advanced in order by NextGameStep/NextGameSub
+src/Game/statestack.c	RunLevelUp	*	*	*GetGame[SS][tu][eb]*	the human/demon growth sub-step limits (three or four attempts); phase-local step cases have named domains
+src/Game/statestack.c	RunLevelUp	*	call-argument	SetGame[SS][tu][eb]*	a level-up sub-step advanced in order by NextGameSub; phase-local step cases have named domains
 src/Game/fieldobj.c	s_depthRise	*	data-or-extent	*	@identity-TODO: screen rise in pixels per view depth (0..-4)
 src/Game/fieldobj.c	s_approach[XY]	*	data-or-extent	*	@identity-TODO: approach offsets in pixels per step (0..-4)
 src/Game/fieldobj.c	s_facingSprite	*	data-or-extent	*	sprite per facing relative to the view (-1 mirrors the side sprite)

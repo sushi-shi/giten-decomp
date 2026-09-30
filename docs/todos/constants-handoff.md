@@ -56,6 +56,9 @@ Tools:
 - A game-state phase gets a per-state enum (`XxxPhase` with `XXX_PHASE_*`),
   like `WorldMapPhase` and `MenuStateStep`.
   - Sub-state step functions return `SUBSTATE_RUNNING` or `SUBSTATE_FINISHED`.
+- `RunLevelUp` has distinct close, human-growth, demon-growth and redraw step
+  domains within its named phases. The human and demon `GetGameSub` limits are
+  iteration counts, not members of those step domains.
 
 ## Evidence sources
 

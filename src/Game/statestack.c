@@ -1808,7 +1808,7 @@ b16 RunLevelUp(void) {
             return false;
         case LEVEL_UP_PHASE_CLOSE:
             switch (GetGameStep()) {
-                case 0:
+                case LEVEL_UP_CLOSE_FADE:
                     NextGameStep();
                     s_pointPrompt = CloseTextWindow(s_pointPrompt);
                     PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
@@ -1816,7 +1816,7 @@ b16 RunLevelUp(void) {
                     s_statWindow = CloseTextWindow(s_statWindow);
                     DrawStatusVitals(s_levelUpSlot);
                     return false;
-                case 1:
+                case LEVEL_UP_CLOSE_RESTORE:
                     ReturnFromGameState();
                     g_rewardExperience = 0;
                     RequestFieldRefresh();
@@ -1850,11 +1850,11 @@ b16 RunLevelUp(void) {
         case LEVEL_UP_PHASE_DISTRIBUTE:
             member = GetRosterCharacter(s_levelUpSlot);
             switch (GetGameStep()) {
-                case 0:
+                case LEVEL_UP_HUMAN_COUNT_LEVELS:
                     NextGameStep();
                     s_remaining = CountPendingLevels(s_levelUpSlot);
                     return false;
-                case 1:
+                case LEVEL_UP_HUMAN_PICK_GROWTH:
                     NextGameStep();
                     if (s_remaining == 0 || !CountRaisableStats(member)) {
                         NextGameStep();
@@ -1864,7 +1864,7 @@ b16 RunLevelUp(void) {
                     DropTopStatPicks(member, s_statPicks);
                     s_remaining--;
                     return false;
-                case 2:
+                case LEVEL_UP_HUMAN_APPLY_GROWTH:
                     if (GetGameSub() >= 3) {
                         PrevGameStep();
                         return false;
@@ -1877,7 +1877,7 @@ b16 RunLevelUp(void) {
                     }
                     ApplyPickedStatGain(member);
                     return false;
-                case 3:
+                case LEVEL_UP_HUMAN_OPEN_POINT_PICKER:
                     NextGameStep();
                     ResetTextPlaneMenu(s_statWindow, 0, 0);
                     SetTextPlaneHighlightMode(s_statWindow, TEXT_HIGHLIGHT_OUTER);
@@ -1889,7 +1889,7 @@ b16 RunLevelUp(void) {
                     }
                     ShowStatPointPrompt(s_remaining);
                     return false;
-                case 4:
+                case LEVEL_UP_HUMAN_DISTRIBUTE_POINTS:
                     key = PollMenuInput(s_statWindow);
                     if (key == 0) {
                         break;
@@ -1919,7 +1919,7 @@ b16 RunLevelUp(void) {
                     SaveGameState();
                     SetGamePhase(LEVEL_UP_PHASE_REDRAW_STAT);
                     return false;
-                case 5:
+                case LEVEL_UP_HUMAN_FINISH_LEVELS:
                     while (CountPendingLevels(s_levelUpSlot)) {
                         member->level++;
                         FinishLevelGain(member);
@@ -1934,7 +1934,7 @@ b16 RunLevelUp(void) {
                         return false;
                     }
                     break;
-                case 6:
+                case LEVEL_UP_HUMAN_LEARN_SKILL:
                     skill = TakeLearnableSkill(member, s_learnableSkills);
                     if (skill == -1) {
                         ReturnFromGameState();
@@ -1953,14 +1953,14 @@ b16 RunLevelUp(void) {
         case LEVEL_UP_PHASE_DISTRIBUTE_DEMON:
             member = GetRosterCharacter(s_levelUpSlot);
             switch (GetGameStep()) {
-                case 0:
+                case LEVEL_UP_DEMON_CHECK_PENDING:
                     if (!CountPendingLevels(s_levelUpSlot)) {
                         ReturnFromGameState();
                         return false;
                     }
                     NextGameStep();
                     return false;
-                case 1:
+                case LEVEL_UP_DEMON_APPLY_GROWTH:
                     if (GetGameSub() >= 4) {
                         NextGameStep();
                         return false;
@@ -1973,8 +1973,8 @@ b16 RunLevelUp(void) {
                     }
                     ApplyPickedStatGain(member);
                     return false;
-                case 2:
-                    SetGameStep(0);
+                case LEVEL_UP_DEMON_FINISH_LEVEL:
+                    SetGameStep(LEVEL_UP_DEMON_CHECK_PENDING);
                     member->levelBonus += 2;
                     member->level++;
                     FinishLevelGain(member);
@@ -1995,15 +1995,15 @@ b16 RunLevelUp(void) {
         case LEVEL_UP_PHASE_REDRAW_STAT:
             member = GetRosterCharacter(s_levelUpSlot);
             switch (GetGameStep()) {
-                case 0:
+                case LEVEL_UP_REDRAW_RAISED:
                     NextGameStep();
                     ShowRaisedStat(member, 1);
                     break;
-                case 1:
+                case LEVEL_UP_REDRAW_NORMAL:
                     NextGameStep();
                     ShowRaisedStat(member, 0);
                     break;
-                case 2:
+                case LEVEL_UP_REDRAW_RETURN:
                     ReturnFromGameState();
                     return false;
             }
