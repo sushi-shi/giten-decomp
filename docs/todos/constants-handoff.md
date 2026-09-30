@@ -495,6 +495,13 @@ other phase numbers have no separate names in the current source. `MoonPhase`
 types the saved byte while the 28-phase count and tick duration remain
 numeric extents.
 
+## Script tick counter
+
+The script tick counter has three states: -1 pauses it, 0 stops it, and 1
+runs it. `TickCounter` increments only in the running state, and
+`SetTickCountOn` resets the count only on the stopped-to-running transition.
+Those values now form the local `TickCounterState` domain in `scriptvars.c`.
+
 ## Attack attribute columns
 
 Retail object records P2029 (Urd) and P2042 (Heqet) store resistance bytes

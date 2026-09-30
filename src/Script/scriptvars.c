@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <Game/CharInfo.h>
@@ -88,12 +89,14 @@ DATA(0x0008164c)
 u32 g_tickCounter = 0;
 
 // The tick counter's states.
-#define TICK_COUNT_STOPPED 0
-#define TICK_COUNT_RUNNING 1
-#define TICK_COUNT_PAUSED (-1)
+GZ_ENUM_BEGIN_SPLIT(TickCounterState, i16)
+    TICK_COUNT_PAUSED = -1,
+    TICK_COUNT_STOPPED = 0,
+    TICK_COUNT_RUNNING = 1
+GZ_ENUM_END_SPLIT(TickCounterState)
 
 DATA(0x00081650)
-static i16 s_tickCountOn = TICK_COUNT_STOPPED;
+static GZ_ENUM_STORAGE(TickCounterState, i16) s_tickCountOn = TICK_COUNT_STOPPED;
 
 // @identity-TODO: the option word the script's window-opening opcode passes on.
 // Set while a script builds a choice list; the text writer takes it with
@@ -1100,8 +1103,9 @@ u32 SetTickCounter(u32 value) {
 
 RVA(0x0003baf0, 0x34)
 // Turning counting on from off restarts the counter at 0.
-i16 SetTickCountOn(i16 on) {
-    i16 prev = s_tickCountOn;
+GZ_ENUM_RETURN(TickCounterState, i16)
+SetTickCountOn(GZ_ENUM_PARAM(TickCounterState, i16) on) {
+    GZ_ENUM_LOCAL(TickCounterState, i16) prev = s_tickCountOn;
     if (on == TICK_COUNT_RUNNING && s_tickCountOn == TICK_COUNT_STOPPED) {
         SetTickCounter(0);
     }
