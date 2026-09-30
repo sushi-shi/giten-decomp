@@ -407,19 +407,19 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
                 return;
             case SKILL_KIND_HP_DRAIN:
                 ChangePool(&attacker->pools.hp, attacker->lastChange);
-                g_actionResult |= 0x50;
+                g_actionResult |= ACTION_DRAIN_HP;
                 break;
             case SKILL_KIND_MP_DRAIN:
                 ChangePool(&attacker->pools.mp, attacker->lastChange);
                 ChangePool(&target->pools.mp, -attacker->lastChange);
-                g_actionResult |= 0x70;
+                g_actionResult |= ACTION_DRAIN_MP;
                 g_mpChange = attacker->lastChange;
                 return;
             case SKILL_KIND_EXPERIENCE_DRAIN:
                 attacker->lastChange = min(target->experience, attacker->lastChange);
                 target->experience -= attacker->lastChange;
                 attacker->experience += attacker->lastChange;
-                g_actionResult |= 0x80;
+                g_actionResult |= ACTION_DRAIN_EXPERIENCE;
                 g_drainAmount = attacker->lastChange;
                 return;
         }

@@ -23,6 +23,13 @@ GZ_ENUM_BEGIN_SPLIT(BattleActionResult, i16)
 GZ_ENUM_END_SPLIT(BattleActionResult)
 // clang-format on
 
+// Composite tags added to the result word after a draining skill lands.
+GZ_ENUM_CONST_BEGIN(ActionDrainTag)
+    ACTION_DRAIN_HP = 0x50,
+    ACTION_DRAIN_MP = 0x70,
+    ACTION_DRAIN_EXPERIENCE = 0x80
+GZ_ENUM_CONST_END(ActionDrainTag)
+
 // The HP and MP change and the cured condition the last applied effect
 // reports to the battle messages (0x41fe90 writes them).
 extern i16 g_hpChange;

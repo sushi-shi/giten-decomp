@@ -197,6 +197,8 @@ Kept as rows until there is evidence:
   success, critical, lethal, immune, reflect, HP/MP absorb and protection.
   The resistance bytes 251..255 map to reflected or absorbed damage. The
   tally effects still need their script and record relationships decoded.
+  The combat resolver identifies result-word tags 0x50, 0x70 and 0x80
+  for HP, MP and experience draining skills.
   Attribute 10 bypasses the resistance array with a fixed value of 50;
   the current ET0004 skills and ET0001 attack items do not use it.
 - Skill kinds 9, 10 and 14 have no records in the current ET0004 skill table.
