@@ -1202,7 +1202,6 @@ src/Script/scriptactor.c	ReadContestValues	*	*	*	contest values: none (0) for a 
 src/Script/scriptactor.c	StepForMode	*	*	*	@identity-TODO: step modes 0..2 and their steps (1, 0, -1)
 src/Script/scriptactor.c	OpSetObjectFamiliarity	0xff	*	*	familiarity up to 0xff
 src/Script/scriptactor.c	PollScriptChoiceMenu	*	*	*	choice polls: 1 picked, -1 cancelled, 0 still open; no hovered choice (-1)
-src/Script/scriptactor.c	RunScriptChoiceState	*	*	*	the choice state's steps: open, then poll
 src/Script/scriptactor.c	LoadScriptCharacterToRoster	*	call-argument	*	@identity-TODO: AddScriptCharacterToRoster's mode 3; analyzed (1)
 src/Script/scriptactor.c	OpSetLongVar	*	*	*	@identity-TODO: long variable 23 (a system variable) and sprite 0
 src/Script/scriptactor.c	OpCureRosterCondition	1	*	*	the roster's first slot

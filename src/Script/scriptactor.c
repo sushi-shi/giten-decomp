@@ -4173,10 +4173,10 @@ i16 FindScriptChoiceAtMouse(void) {
 RVA(0x00038790, 0x53)
 b16 RunScriptChoiceState(void) {
     switch (GetGameSub()) {
-        case 0:
+        case SCRIPT_CHOICE_SUBSTEP_INITIALIZE:
             NextGameSub();
             InitScriptChoiceMenu(s_choiceMenu, s_choiceWindow, s_keepChoices, s_choiceCancelMode);
-        case 1:
+        case SCRIPT_CHOICE_SUBSTEP_POLL:
             if (PollScriptChoiceMenu()) {
                 ReturnFromGameState();
             }

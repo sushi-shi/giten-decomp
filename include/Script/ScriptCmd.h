@@ -37,6 +37,11 @@ ScriptChoice* PushScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, 
 void InitScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode);
 i16 FindScriptChoiceAtMouse(void);
 i16 PollScriptChoiceMenu(void);
+GZ_ENUM_BEGIN_SPLIT(ScriptChoiceSubstep, i16)
+    SCRIPT_CHOICE_SUBSTEP_INITIALIZE = 0,
+    SCRIPT_CHOICE_SUBSTEP_POLL = 1
+GZ_ENUM_END_SPLIT(ScriptChoiceSubstep)
+
 b16 RunScriptChoiceState(void);
 
 // eventflags' copy into bank 15's tag. Codegen constraint: declared here; in
