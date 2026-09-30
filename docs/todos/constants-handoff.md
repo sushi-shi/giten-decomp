@@ -181,8 +181,9 @@ Skill family names:
   expulsion, Megi, remedy/revival, Shibabu, Kaja/Kunda and Dia skills.
   Code 9's three records all use the mental attack attribute. Code 22's
   four records all use the fire attribute. Code 25's eight records all
-  inflict conditions. Codes 23, 27, 29, 30 and 33 group ice gas/breath,
-  songs, sword techniques, martial arts and arrows.
+  inflict conditions. Codes 23, 27, 28, 29, 30 and 33 group ice gas/breath,
+  songs, eye blinding and needle attacks, sword techniques, martial arts
+  and arrows.
   `SkillParameters.family` retains its retail byte storage; mixed families
   still need individual identities.
 
@@ -283,6 +284,9 @@ Kept as rows until there is evidence:
   6 and 7 have distinct record meanings still unproven. The gun
   path uses 7; ET0001 also gives 7 to items 110, 111, 116 (kind 5) and
   140 (software), so it is not gun-specific.
+  In ET0004, code 3 has 34 mostly close-range attacks, code 5 has only two
+  spear attacks, and code 17 has only six single-target remedy/revival skills.
+  Their distinct selection meanings are not established by the collector.
 - Field-effect codes 0x1a and 0x23. The dispatcher proves
   no effect (0), knockback (1), raised accuracy/evasion (0x20), doubled
   maximum HP and raised weapon power/defense (0x21), and doubled maximum
