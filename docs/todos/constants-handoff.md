@@ -108,6 +108,15 @@ Map area names:
   1-by-10 and 1-by-8 wall grids; M0050 has three levels with 5-by-1,
   1-by-3 and 6-by-1 grids. Their enum names use the level counts because
   neither map has a source check that identifies a primary version.
+- M0060..M0068 are one-level, 1-by-3 transition maps displaying the names
+  of larger areas. Their code-0x79 entrance links call MS000B entries 5..11;
+  each entry branches to one of two destination maps for that location.
+  M0060 and M0061 use entries 5 and 6, whose destinations are Shanshan City
+  level 2 (floor 1) and level 5 (floor 10). M0064 and M0065 use entries 10
+  and 11, whose Ohanayashiki destinations are (8, 10) and (10, 4); map north
+  is decreasing y, so these are the south and north entrances. M0068 uses
+  entry 9, reaching Millennium Headquarters level 6 (floor 7). The paired
+  Hotel and Ochanomizu transition maps still need distinct identities.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
