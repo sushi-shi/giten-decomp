@@ -1137,7 +1137,7 @@ b32 IsSkillBlocked(Character* character, SkillParameters* skill) {
         return true;
     }
     if (!skill->mode) {
-        if (GetCharacterBattleTallies(character)[0]) {
+        if (GetCharacterBattleTallies(character)[BATTLE_TALLY_MAGIC_SEAL]) {
             return true;
         }
         if (LastConditionIn(GetCharacterConditions(character), s_skillBlockingConditions)) {
@@ -1154,7 +1154,7 @@ b32 IsSkillIdBlocked(Character* character, i16 id) {
     if (GetSkillMode(id)) {
         return false;
     }
-    if (GetCharacterBattleTallies(character)[0]) {
+    if (GetCharacterBattleTallies(character)[BATTLE_TALLY_MAGIC_SEAL]) {
         return true;
     }
     if (LastConditionIn(GetCharacterConditions(character), s_skillIdBlockingConditions)) {
@@ -1609,13 +1609,13 @@ void UseBattleTallySkill(Character* user, Character* target) {
     g_statusCondition = GetSkillInflictedCondition(&s_effectSkill);
     tally = GetSkillEffectCode(&s_effectSkill);
     if (tally < 0 || tally > 15) {
-        tally = 13;
+        tally = BATTLE_TALLY_ALL_BLOCK;
     }
     GetCharacterBattleTallies(target)[tally] = GetSkillValueA(&s_effectSkill);
-    if (tally == 8) {
-        GetCharacterBattleTallies(target)[9] = 0;
-    } else if (tally == 9) {
-        GetCharacterBattleTallies(target)[8] = 0;
+    if (tally == BATTLE_TALLY_FIRE_BLOCK) {
+        GetCharacterBattleTallies(target)[BATTLE_TALLY_ICE_BLOCK] = 0;
+    } else if (tally == BATTLE_TALLY_ICE_BLOCK) {
+        GetCharacterBattleTallies(target)[BATTLE_TALLY_FIRE_BLOCK] = 0;
     }
     SetActionOutcome(ACTION_OUTCOME_BATTLE_TALLY);
 }

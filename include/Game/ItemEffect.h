@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/AttackAttribute.h>
 #include <Game/BattleEffect.h>
 #include <Game/Character.h>
 #include <Game/Condition.h>

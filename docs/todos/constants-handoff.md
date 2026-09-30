@@ -12,7 +12,7 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 216 declared domains. The retail
+`giten verify enum-domains` passes with 218 declared domains. The retail
 compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
 
 ## Batch workflow
@@ -103,7 +103,9 @@ Polarity:
 
 Kept as rows until there is evidence:
 
-- Battle-tally slot names and the shared result word's noncombat encodings.
+- Battle-tally slots 4..6, attack attributes 0/1 and 7..9, and the shared
+  result word's noncombat encodings. The ET0004 skill table links effect
+  codes to protection slots: 0..3 and 7..14 now have evidence-backed names.
   MS00DD entry 5 dispatches base action results 0..10 to entries 10..19 and
   97; the messages and combat resolver identify miss, no effect, graze,
   success, critical, lethal, immune, reflect, HP/MP absorb and protection.

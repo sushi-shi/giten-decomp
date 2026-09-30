@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/AttackAttribute.h>
 #include <Game/AttackMode.h>
 #include <Ints.h>
 
@@ -59,7 +60,7 @@ typedef struct SkillParameters {
     u8 valueA;       // @identity-TODO: the two values a use of the skill wears down
     u8 valueB;
     u8 wear; // percent lost per use (randomized by 20 either way)
-    u8 attackAttribute;
+    GZ_ENUM_STORAGE(AttackAttribute, u8) attackAttribute;
     u8 inflictedCondition;
     u8 effectCode; // Effect selector interpreted according to the skill kind.
     u8 effect;     // the shot LaunchShot flies for it
@@ -114,7 +115,7 @@ static __inline u8 GetSkillTargetFlags(i16 id) {
 
 #define GetSkillValueB(record) ((record)->parameters.valueB)
 
-static __inline u8 GetSkillAttackAttribute(SkillHeader* record) {
+static __inline GZ_ENUM_RETURN(AttackAttribute, u8) GetSkillAttackAttribute(SkillHeader* record) {
     return record->parameters.attackAttribute;
 }
 

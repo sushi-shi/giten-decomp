@@ -1746,7 +1746,8 @@ b16 IsItemGuardingElement(i16 item, i16 element) {
     if (GetItemEquipCode(&g_loadedItem) < 0) {
         return false;
     }
-    if (element >= 2 && element <= 5 && element == GetEquipmentAttribute(&g_loadedItem)) {
+    if (element >= ATTACK_ATTRIBUTE_FIRE && element <= ATTACK_ATTRIBUTE_ELECTRIC
+        && element == GetEquipmentAttribute(&g_loadedItem)) {
         return true;
     }
     return false;

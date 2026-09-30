@@ -111,6 +111,25 @@ void PlayActionEffect(i16 stage);
 // set, clearing the flag.
 void DropFlaggedMember(i16 id);
 
+// The battle protection or restriction stored at a combatant's tally index.
+// Indices 4..6 and the attributes behind them still need fuller identity.
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(BattleTallyIndex, i16)
+    BATTLE_TALLY_MAGIC_SEAL = 0,
+    BATTLE_TALLY_MAGIC_REFLECT = 1,
+    BATTLE_TALLY_MAGIC_REFLECT_HALF = 2,
+    BATTLE_TALLY_MAGIC_MP_ABSORB = 3,
+    BATTLE_TALLY_GUN_BLOCK = 7,
+    BATTLE_TALLY_FIRE_BLOCK = 8,
+    BATTLE_TALLY_ICE_BLOCK = 9,
+    BATTLE_TALLY_ELECTRIC_BLOCK = 10,
+    BATTLE_TALLY_EXPEL_BLOCK = 11,
+    BATTLE_TALLY_DARK_BLOCK = 12,
+    BATTLE_TALLY_ALL_BLOCK = 13,
+    BATTLE_TALLY_MAGIC_GUN_BLOCK = 14
+GZ_ENUM_END_SPLIT(BattleTallyIndex)
+// clang-format on
+
 // Reads a battle tally byte; mode 1 remembers `index`, while mode -1 uses
 // the remembered index and tests whether the byte clears.
 i16 ReportBattleTally(Character* combatant, i16 index, i16 mode);

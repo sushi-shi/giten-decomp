@@ -555,12 +555,11 @@ src/Script/scriptvm.c	ExecScriptOpcode	1	call-argument	OpSkipJumpTarget(*argumen
 src/Script/scriptvm.c	ExecScriptOpcode	[12]	call-argument	OpIfDemonCount(*argument 2	the demon count the opcode tests against
 src/Script/scriptvm.c	ExecScriptOpcode	[38]	call-argument	SetActorMode(*argument 1	actor modes 3 and 8 have no step behaviour (RunObjectStep has no case for them); their meaning is unrecovered
 src/Game/partyaction.c	*	[38]	case-label	*	actor modes 3 and 8 have no step behaviour (RunObjectStep has no case for them); their meaning is unrecovered
-src/Game/partyaction.c	CheckBattleProtection	*	array-index	*	@identity-TODO: the battle-tally slots are only numbered; message scripts 0xdd and 0xdf are needed to identify their effects
-src/Game/partyaction.c	CheckBattleProtection	*	call-argument	ReportBattleTally*	@identity-TODO: the battle-tally slot reported to the script has no recovered effect name
-src/Game/partyaction.c	CheckBattleProtection	*	trivial-function-literal	*array-index	@identity-TODO: battle-tally slots 0 and 1 need the message-script decoder
+src/Game/partyaction.c	CheckBattleProtection	*	array-index	*	@identity-TODO: tally slots 5 and 6 still use unnamed attribute categories
+src/Game/partyaction.c	CheckBattleProtection	*	call-argument	ReportBattleTally*	@identity-TODO: tally slots 5 and 6 still lack distinct effect names
 src/Game/partyaction.c	CheckBattleProtection	*	comparison-or-bound	*attribute	@identity-TODO: the attack-attribute numbers paired with tally slots need the item/skill and message-script decoder
 src/Game/partyaction.c	CheckBattleProtection	*	trivial-function-literal	*attribute	@identity-TODO: attack attributes 0 and 1 are encoded values without recovered names
-src/Game/partyaction.c	GetActionResistance	*	comparison-or-bound	*attribute	@identity-TODO: attack attributes 6 and 10 are encoded item/skill values without recovered names
+src/Game/partyaction.c	GetActionResistance	*	comparison-or-bound	*attribute	@identity-TODO: attack attribute 10 is an encoded item/skill value without a recovered name
 src/Game/partyaction.c	GetActionResistance	50	return	*	a same-side attack takes half resistance
 src/Game/partyaction.c	GetActionResistance	50	store	*	attribute 10 takes a 50-percent resistance value
 src/Game/partyaction.c	GetActionResistance	100	return	*	zombie resistance to attribute 6 is 100 percent
@@ -972,9 +971,8 @@ src/Game/skilluse.c	FlashHitObject	*	*	*	@identity-TODO: no change; redraw mode 
 src/Game/skilluse.c	ApplyCombatDamage	*	*	*	@identity-TODO: items below 1 are none; item passive codes 0x86 and 0x87 also drain pools
 src/Game/skilluse.c	ResolveCombatAction	*	*	*	@identity-TODO: knockout sentinel 0x7fff, demon ids 0x22/0xce/0x36 and Noelem's special pair (-2, -2), resistance results -1..-6 (see SetActionResult's row), the reply alert bits 0x40/0x80 and alert level 2, the counter-attack kinds
 src/Game/skilluse.c	ResolveKnockout	*	*	*	a knocked-out combatant's HP 0; analyzed (1) and one drop added
-src/Game/skilluse.c	*BattleTall*	*	*	*	@identity-TODO: battle tallies (14 of them, indices from the message scripts); -1 for none reported; the tally modes 1 and -1
+src/Game/skilluse.c	*BattleTall*	*	*	*	@identity-TODO: unidentified tally slots and -1 for none reported; the tally modes 1 and -1
 src/Game/skilluse.c	ShowKnockoutMessage	*	*	*	@identity-TODO: battle-message script 221 (0xdd), entries 79 and 80; the knockout sentinel 0x7fff
-src/Game/skilluse.c	IsSkill*Blocked	0	*	*	the first battle tally
 src/Game/skilluse.c	PaySkillCost	0x10	*	*	skills below 0x10 (the attacks) cost nothing
 src/Game/skilluse.c	IsSkillUsableNow	*	*	*	1 when usable now, -1 when not
 src/Game/skilluse.c	OpenMemberSkillMenu	0x1e	*	*	@identity-TODO: menu flags 0x1e
@@ -1026,7 +1024,6 @@ src/Game/itemrecord.c	SumEquippedMagicDefenseBonus	*	*	*	@identity-TODO: equipme
 src/Game/itemrecord.c	GetItem*Bonus	0	*	*	no item: no bonus
 src/Game/itemrecord.c	ApplyItemDamageRatio	*	*	*	@identity-TODO: item damage ratio codes from 0x40 (below 40 codes), four steps of 50 percent
 src/Game/itemrecord.c	ScaleDamageByEquipment	*	*	*	@identity-TODO: the ten element ratios (100 percent each), damage from 1
-src/Game/itemrecord.c	IsItemGuardingElement	*	*	*	@identity-TODO: elements 2..5 a guard covers; item ids from 1
 src/Game/itemrecord.c	CountElementGuards	*	*	*	@identity-TODO: the ten elements; no guards
 src/Game/itemrecord.c	*Regen	*	*	*	regeneration: none yet; item ids from 1; the regeneration amounts
 src/Game/itemrecord.c	ResolveInflictedCondition	*	*	*	@identity-TODO: the inflict codes' chances (50, 75 percent), demon class 8 and the roll's two outcomes

@@ -886,48 +886,53 @@ GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
     GZ_ENUM_PARAM(AttackMode, i16) mode,
     b16 report
 ) {
-    if (GetCharacterBattleTallies(actor)[13]) {
-        ReportBattleTally(actor, 13, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_ALL_BLOCK]) {
+        ReportBattleTally(actor, BATTLE_TALLY_ALL_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
-    if (GetCharacterBattleTallies(actor)[14] && (mode == ATTACK_MAGIC || mode == ATTACK_GUN)) {
-        ReportBattleTally(actor, 14, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_GUN_BLOCK]
+        && (mode == ATTACK_MAGIC || mode == ATTACK_GUN)) {
+        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_GUN_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
-    if (GetCharacterBattleTallies(actor)[0] && mode == ATTACK_MAGIC) {
-        ReportBattleTally(actor, 0, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_SEAL] && mode == ATTACK_MAGIC) {
+        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_SEAL, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
-    if (GetCharacterBattleTallies(actor)[7] && mode == ATTACK_GUN) {
-        ReportBattleTally(actor, 7, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_GUN_BLOCK] && mode == ATTACK_GUN) {
+        ReportBattleTally(actor, BATTLE_TALLY_GUN_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
-    if (GetCharacterBattleTallies(actor)[8] && attribute == 2) {
-        ReportBattleTally(actor, 8, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_FIRE_BLOCK]
+        && attribute == ATTACK_ATTRIBUTE_FIRE) {
+        ReportBattleTally(actor, BATTLE_TALLY_FIRE_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
-    if (GetCharacterBattleTallies(actor)[9] && attribute == 3) {
-        ReportBattleTally(actor, 9, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_ICE_BLOCK]
+        && attribute == ATTACK_ATTRIBUTE_ICE) {
+        ReportBattleTally(actor, BATTLE_TALLY_ICE_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
-    if (GetCharacterBattleTallies(actor)[10] && attribute == 5) {
-        ReportBattleTally(actor, 10, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_ELECTRIC_BLOCK]
+        && attribute == ATTACK_ATTRIBUTE_ELECTRIC) {
+        ReportBattleTally(actor, BATTLE_TALLY_ELECTRIC_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
-    if (GetCharacterBattleTallies(actor)[11] && attribute == 6) {
-        ReportBattleTally(actor, 11, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_EXPEL_BLOCK]
+        && attribute == ATTACK_ATTRIBUTE_EXPEL) {
+        ReportBattleTally(actor, BATTLE_TALLY_EXPEL_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
-    if (GetCharacterBattleTallies(actor)[12] && attribute == 8) {
-        ReportBattleTally(actor, 12, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_DARK_BLOCK] && attribute == 8) {
+        ReportBattleTally(actor, BATTLE_TALLY_DARK_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
-    if (GetCharacterBattleTallies(actor)[1] && mode == ATTACK_MAGIC) {
-        ReportBattleTally(actor, 1, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_REFLECT] && mode == ATTACK_MAGIC) {
+        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_REFLECT, report);
         return BATTLE_PROTECTION_REFLECT;
     }
-    if (GetCharacterBattleTallies(actor)[2] && mode == ATTACK_MAGIC) {
-        ReportBattleTally(actor, 2, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_REFLECT_HALF] && mode == ATTACK_MAGIC) {
+        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_REFLECT_HALF, report);
         return BATTLE_PROTECTION_REFLECT_HALF;
     }
     if (GetCharacterBattleTallies(actor)[5] && attribute == 0) {
@@ -938,8 +943,8 @@ GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
         ReportBattleTally(actor, 6, report);
         return BATTLE_PROTECTION_REFLECT;
     }
-    if (GetCharacterBattleTallies(actor)[3] && mode == ATTACK_MAGIC) {
-        ReportBattleTally(actor, 3, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_MP_ABSORB] && mode == ATTACK_MAGIC) {
+        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_MP_ABSORB, report);
         return BATTLE_PROTECTION_ABSORB_MP;
     }
     return BATTLE_PROTECTION_NORMAL;
@@ -965,7 +970,8 @@ i16 GetActionResistance(
         return ATTACK_RESIST_PROTECTED;
     }
     if (result >= 1) {
-        if (HasCondition(GetCharacterConditions(actor), CONDITION_ZOMBIE) && attribute == 6) {
+        if (HasCondition(GetCharacterConditions(actor), CONDITION_ZOMBIE)
+            && attribute == ATTACK_ATTRIBUTE_EXPEL) {
             return 100;
         }
         result = attribute == 10 ? 50 : actor->resistance[attribute];
