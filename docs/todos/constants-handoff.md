@@ -142,7 +142,9 @@ Kept as rows until there is evidence:
   with kinds 12 and 13.
 - Target-area codes 1, 3..7 and 17. The collector proves selected-only
   (0), line (2) and weapon-hit (0xff) behavior. Codes 6 and 7 scan the same
-  visible grid, but their distinct record meanings are unproven.
+  visible grid, but their distinct record meanings are unproven. The gun
+  path uses 7; ET0001 also gives 7 to items 110, 111, 116 (kind 5) and
+  140 (software), so it is not gun-specific.
 - Field-effect codes 0, 1, 0x1a and 0x20..0x23. ET0004 identifies
   illusion (3), invisibility (0x11), Estoma (0x14), Traesto (0x15),
   Traport (0x16), Trafuri (0x17), Sabatoma (0x19) and Desaman (0x1b).
