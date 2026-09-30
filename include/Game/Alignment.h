@@ -34,9 +34,10 @@ typedef struct AlignmentInfo {
         (info)->positiveMoves = 0;                                                                 \
     } while (0)
 
-i16 MoveAlignment(AlignmentInfo* info, i16 weight, GZ_ENUM_PARAM(AlignmentSide, i16) side);
-i16 GetAlignmentAffinity(AlignmentInfo* info, i16 side);
-i16 AlignmentClass(i16 value);
+GZ_ENUM_RETURN(AlignmentSide, i16)
+MoveAlignment(AlignmentInfo* info, i16 weight, GZ_ENUM_PARAM(AlignmentSide, i16) side);
+i16 GetAlignmentAffinity(AlignmentInfo* info, GZ_ENUM_PARAM(AlignmentSide, i16) side);
+GZ_ENUM_RETURN(AlignmentSide, i16) AlignmentClass(i16 value);
 i16 AlignmentChartCell(i16 value);
 
 struct Character;

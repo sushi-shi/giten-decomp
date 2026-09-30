@@ -592,6 +592,13 @@ preview. `PickWorldMapDestination` accepts a hit of 2 as the direct world
 cell; a hit of 3 uses the preview's offset travel cell. These bits form
 `WorldMapHitFlags`.
 
+## Alignment classes
+
+`AlignmentClass` returns the existing `AlignmentSide` values -1, 0 and 1;
+`MoveAlignment` returns that class and `GetAlignmentAffinity` accepts the
+same side. Their source signatures now mark the domain without changing the
+retail `i16` ABI.
+
 ## Attack attribute columns
 
 Retail object records P2029 (Urd) and P2042 (Heqet) store resistance bytes

@@ -953,9 +953,9 @@ void UpdateStatTotals(StatBlock* stats) {
 }
 
 RVA(0x0003df20, 0x50)
-i16 GetAlignmentAffinity(AlignmentInfo* info, i16 side) {
+i16 GetAlignmentAffinity(AlignmentInfo* info, GZ_ENUM_PARAM(AlignmentSide, i16) side) {
     i16 sum = info->last1 + info->last0;
-    if (sum == 0 && info->last0 == 0 && side == 0) {
+    if (sum == 0 && info->last0 == ALIGNMENT_NEUTRAL && side == ALIGNMENT_NEUTRAL) {
         return 2;
     }
     sum += 2;
@@ -970,7 +970,8 @@ i16 GetAlignmentAffinity(AlignmentInfo* info, i16 side) {
 // side's own register (xor bl,cl; and ebx,3) where this build uses eax;
 // everything before the final insert matches.
 RVA(0x0003df70, 0x110)
-i16 MoveAlignment(AlignmentInfo* info, i16 weight, GZ_ENUM_PARAM(AlignmentSide, i16) side) {
+GZ_ENUM_RETURN(AlignmentSide, i16)
+MoveAlignment(AlignmentInfo* info, i16 weight, GZ_ENUM_PARAM(AlignmentSide, i16) side) {
     i16 delta = GetAlignmentAffinity(info, side) * weight;
     switch (side) {
         case ALIGNMENT_NEGATIVE:
@@ -1007,9 +1008,9 @@ i16 MoveAlignment(AlignmentInfo* info, i16 weight, GZ_ENUM_PARAM(AlignmentSide, 
 
 // -1 at or below -42, 1 at or above 42, 0 between.
 RVA(0x0003e080, 0x1d)
-i16 AlignmentClass(i16 value) {
+GZ_ENUM_RETURN(AlignmentSide, i16) AlignmentClass(i16 value) {
     if (value <= -42) {
-        return -1;
+        return ALIGNMENT_NEGATIVE;
     }
     return value >= 42;
 }
