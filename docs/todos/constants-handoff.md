@@ -380,6 +380,14 @@ matching sprite, and 4..9 force x=40 with distinct y positions. The same
 modes occur at different shop categories, so their enumerators describe
 placement behavior rather than a shop type.
 
+## Script operand operations
+
+`OpStackMessageWindow` reads a two-value operand: 0 stacks a message window,
+while 1 removes the top stack node without closing its window.
+`OpStepListMenu` uses a separate two-value operand: 0 advances the buy menu
+and 1 advances the sell menu. Their switch branches establish separate enum
+domains for the two opcodes.
+
 ## Deferred identities
 
 Kept as rows until there is evidence:

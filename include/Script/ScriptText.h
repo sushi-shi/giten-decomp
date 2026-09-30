@@ -53,6 +53,11 @@ static __inline i16 GetScriptWindowOrDefault(i16 window) {
     return top;
 }
 
+GZ_ENUM_BEGIN_SPLIT(ScriptWindowStackAction, i16)
+    SCRIPT_WINDOW_STACK_PUSH_MESSAGE = 0,
+    SCRIPT_WINDOW_STACK_DROP_TOP = 1
+GZ_ENUM_END_SPLIT(ScriptWindowStackAction)
+
 void OpStackMessageWindow(void);
 void OpPushScriptWindow(void);
 void PopScriptWindow(void);

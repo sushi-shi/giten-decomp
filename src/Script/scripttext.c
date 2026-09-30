@@ -687,17 +687,16 @@ i16 TopScriptWindow(void) {
     return node->window;
 }
 
-// Operand 0 stacks the message window; 1 drops the newest stacked window
-// without closing it.
+// Drops the newest stacked window without closing it for the drop action.
 RVA(0x0002fbc0, 0x3b)
 void OpStackMessageWindow(void) {
     ScriptWindowNode* node;
-    i16 op = ReadScriptValue();
+    GZ_ENUM_LOCAL(ScriptWindowStackAction, i16) op = ReadScriptValue();
     switch (op) {
-        case 0:
+        case SCRIPT_WINDOW_STACK_PUSH_MESSAGE:
             StackScriptWindow(OpenMessageWindow());
             break;
-        case 1:
+        case SCRIPT_WINDOW_STACK_DROP_TOP:
             node = ListPopLast(s_windowStack);
             if (node) {
                 FreeBlock(node);
@@ -732,16 +731,16 @@ void PopScriptWindow(void) {
 
 RVA(0x0002fc70, 0x73)
 b16 OpStepListMenu(void) {
-    i16 mode = ReadScriptValue();
+    GZ_ENUM_LOCAL(ScriptItemListOperation, i16) mode = ReadScriptValue();
     i16 stepVar = ReadLongVarIndex();
     i16 step = GetScriptLongVar(stepVar);
     i16 resultVar = ReadLongVarIndex();
     i16 result = 0;
     switch (mode) {
-        case 0:
+        case SCRIPT_ITEM_LIST_BUY:
             result = StepItemBuyMenu(&step);
             break;
-        case 1:
+        case SCRIPT_ITEM_LIST_SELL:
             result = StepItemSellMenu(&step);
             break;
     }

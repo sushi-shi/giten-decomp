@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/FusionMenuStep.h>
 #include <Game/MoveCommand.h>
@@ -87,6 +88,11 @@ void OpCaptureDataString(void);
 void OpCaptureRecordString(void);
 
 void OpCallTextScript(void);
+
+GZ_ENUM_BEGIN_SPLIT(ScriptItemListOperation, i16)
+    SCRIPT_ITEM_LIST_BUY = 0,
+    SCRIPT_ITEM_LIST_SELL = 1
+GZ_ENUM_END_SPLIT(ScriptItemListOperation)
 
 b16 OpStepListMenu(void);
 void OpSetMenuCharacter(void);

@@ -719,7 +719,6 @@ src/Script/scripttext.c	OpSaveSceneCell	*	call-argument	CreateArrayHandle(*	a 16
 src/Script/scripttext.c	OpCallTextScript	0	*	*	@identity-TODO: text source 0
 src/Script/scripttext.c	OpenScriptWindow	2	call-argument	SetTextWindowScrollTop(*	@identity-TODO: a script window's scroll-top row 2
 src/Script/scripttext.c	TopScriptWindow	-1	*	*	no script window open
-src/Script/scripttext.c	Op*	[01]	trivial-function-literal	[01] case	@identity-TODO: the script operand's two sub-operations (0 and 1)
 src/Script/scripttext.c	OpPushScriptWindow	*	*	*	@identity-TODO: window kind 5 is remapped to 0xe (see the function comment); OpenScriptWindow's second argument 0
 src/Game/savegame.c	WriteSaveHeader	0	call-argument	GetCharacter(*	character slot 0, the hero
 src/Game/savegame.c	LoadGame	0	trivial-function-literal	0 return	no errors when the file cannot be opened
