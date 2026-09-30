@@ -92,6 +92,9 @@ Automap marks:
 - Mark 10 is the white E bitmap. Cell codes 0x44..0x46 use it; all are map
   links, and the 0x46 links recur on Shinjuku Tocho's upper floors, supporting
   the elevator mark name.
+- Mark 11 is a red stick person. The icon table gives it to cell code 0x48,
+  whose records occur in the area object lists; `SpawnLevelObjects` creates
+  area NPCs from those records.
 
 Object record names:
 
