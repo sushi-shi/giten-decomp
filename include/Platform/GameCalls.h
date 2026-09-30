@@ -7,7 +7,9 @@
 #include <Game/Field.h>
 #include <Game/GameLoop.h>
 #include <Game/GameStateId.h>
+#include <Game/MoveCommand.h>
 #include <Game/PartyAction.h>
+#include <Game/PartyStep.h>
 #include <Game/ViewDirection.h>
 #include <Ints.h>
 
@@ -158,11 +160,11 @@ u16* GetWallMap(void);
 void UpdateAreaPalette(void);
 void UpdateViewPalette(void);
 
-// Tries to step the party one cell in `direction` (STEP_FORWARD..STEP_LEFT,
-// relative to its facing): 0 when blocked (the bump sound plays), else
-// STEP_WALK, or 0x10 when the cell's wall reports a door.
+// Tries to step the party one cell in `direction` (MOVE_FORWARD..MOVE_LEFT,
+// relative to its facing): STEP_BLOCKED (the bump sound plays), STEP_WALK,
+// or STEP_DOOR when the cell's wall reports a door.
 // @identity-TODO: read from its body only; the field TU owns it.
-i16 StepParty(i16 direction);
+GZ_ENUM_RETURN(PartyStepResult, i16) StepParty(GZ_ENUM_PARAM(MoveCommand, i16) direction);
 
 // Completes a step the camera has slid through: advances the clock, moves the
 // party's cell and marks it on the automap.

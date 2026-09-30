@@ -340,7 +340,7 @@ void RestoreSavedPoint(void) {
 }
 
 RVA(0x00012600, 0xde)
-i16 StepParty(i16 direction) {
+GZ_ENUM_RETURN(PartyStepResult, i16) StepParty(GZ_ENUM_PARAM(MoveCommand, i16) direction) {
     i16 wall;
     if (FindObjectAtParty() >= 0) {
         return STEP_BLOCKED;

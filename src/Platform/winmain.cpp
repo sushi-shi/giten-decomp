@@ -4525,7 +4525,7 @@ GZ_ENUM_RETURN(MouseButtonBits, u8) PollInput(void) {
 RVA(0x00050220, 0x5d)
 b32 MoveForwardCommand(i16 nextPhase) {
     b32 moved = false;
-    i16 step = StepParty(STEP_FORWARD);
+    GZ_ENUM_LOCAL(PartyStepResult, i16) step = StepParty(MOVE_FORWARD);
 
     if (step) {
         UpdateAreaPalette();
@@ -4560,7 +4560,7 @@ b32 TurnAroundCommand(i16 nextPhase) {
 RVA(0x000502d0, 0x61)
 b32 MoveBackCommand(i16 nextPhase) {
     b32 moved = false;
-    i16 step = StepParty(STEP_BACK);
+    GZ_ENUM_LOCAL(PartyStepResult, i16) step = StepParty(MOVE_BACK);
 
     if (step) {
         UpdateAreaPalette();
@@ -4595,7 +4595,7 @@ b32 TurnLeftCommand(i16 nextPhase) {
 RVA(0x00050390, 0x61)
 b32 MoveLeftCommand(i16 nextPhase) {
     b32 moved = false;
-    i16 step = StepParty(STEP_LEFT);
+    GZ_ENUM_LOCAL(PartyStepResult, i16) step = StepParty(MOVE_LEFT);
 
     if (step) {
         UpdateAreaPalette();
@@ -4630,7 +4630,7 @@ b32 TurnRightCommand(i16 nextPhase) {
 RVA(0x00050450, 0x61)
 b32 MoveRightCommand(i16 nextPhase) {
     b32 moved = false;
-    i16 step = StepParty(STEP_RIGHT);
+    GZ_ENUM_LOCAL(PartyStepResult, i16) step = StepParty(MOVE_RIGHT);
 
     if (step) {
         UpdateAreaPalette();
