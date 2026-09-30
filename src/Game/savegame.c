@@ -312,6 +312,11 @@ static void SystemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent,
     }
 }
 
+GZ_ENUM_BEGIN_SPLIT(DisplayChoiceStep, i16)
+    DISPLAY_CHOICE_STEP_OPEN = 0,
+    DISPLAY_CHOICE_STEP_POLL = 1
+GZ_ENUM_END_SPLIT(DisplayChoiceStep)
+
 // Picks free or fixed display for auto-mapping or auto-navigation, then asks
 // for a field redraw and closes the system menu.
 RVA(0x00004070, 0x100)
@@ -319,11 +324,11 @@ static b16 RunDisplayChoice(void) {
     GZ_ENUM_LOCAL(TextEvent, i16) pick;
 
     switch (GetGameStep()) {
-        case 0:
+        case DISPLAY_CHOICE_STEP_OPEN:
             NextGameStep();
             OpenSystemMenu(s_displayEntries, 2);
             break;
-        case 1:
+        case DISPLAY_CHOICE_STEP_POLL:
             pick = RunMenu(s_systemMenu);
             if (pick == TEXT_EVENT_NONE) {
                 break;
@@ -345,17 +350,22 @@ static b16 RunDisplayChoice(void) {
     return false;
 }
 
+GZ_ENUM_BEGIN_SPLIT(QuitConfirmStep, i16)
+    QUIT_CONFIRM_STEP_OPEN = 0,
+    QUIT_CONFIRM_STEP_POLL = 1
+GZ_ENUM_END_SPLIT(QuitConfirmStep)
+
 // Asks whether to quit; "quit" requests the game's end and a field redraw.
 RVA(0x00004170, 0xc0)
 static b16 RunQuitConfirm(void) {
     GZ_ENUM_LOCAL(TextEvent, i16) pick;
 
     switch (GetGameStep()) {
-        case 0:
+        case QUIT_CONFIRM_STEP_OPEN:
             NextGameStep();
             OpenSystemMenu(s_quitEntries, 2);
             break;
-        case 1:
+        case QUIT_CONFIRM_STEP_POLL:
             pick = RunMenu(s_systemMenu);
             if (pick == TEXT_EVENT_NONE) {
                 break;

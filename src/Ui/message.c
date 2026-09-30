@@ -41,17 +41,22 @@ void PushTextWindowState(const char* text) {
     s_textStateRefreshPending = false;
 }
 
+GZ_ENUM_BEGIN_SPLIT(TextWindowStateStep, i16)
+    TEXT_WINDOW_STEP_REPAINT = 0,
+    TEXT_WINDOW_STEP_CLOSE = 1
+GZ_ENUM_END_SPLIT(TextWindowStateStep)
+
 RVA(0x00002550, 0x70)
 b16 RunTextWindowState(void) {
     i16 plane;
     switch (GetGameSub()) {
-        case 0:
+        case TEXT_WINDOW_STEP_REPAINT:
             plane = GetGamePhase();
             RepaintTextPlane(plane, 1);
             NextGameSub();
             TestFeatureMask(1);
             break;
-        case 1:
+        case TEXT_WINDOW_STEP_CLOSE:
             CloseTextWindow(GetGamePhase());
             ReturnFromGameState();
             break;

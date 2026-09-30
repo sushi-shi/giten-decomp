@@ -504,6 +504,14 @@ slots 0..47 and bit 1 before scanning scenario slots 48..63. `CompactBagCore`
 passes both bits. The operand is now `BagSearchGroup`, with the two storage
 groups and their combined search named.
 
+## Two-step menu and message states
+
+`RunTextWindowState` repaints at sub-step 0 and closes at 1;
+`RunMessageBoxState` repaints and waits for input at step 0, then closes at 1.
+`RunDisplayChoice` and `RunQuitConfirm` each open their two-row menu at step
+0 and poll it at step 1. Their independently stored game steps have separate
+local enum domains.
+
 ## Event-flag banks
 
 The saved flag block has sixteen 256-bit banks. Source readers and resets

@@ -102,15 +102,20 @@ i16 PushMessageBox(i16 window, const char* text) {
     return plane;
 }
 
+GZ_ENUM_BEGIN_SPLIT(MessageBoxStep, i16)
+    MESSAGE_BOX_STEP_WAIT = 0,
+    MESSAGE_BOX_STEP_CLOSE = 1
+GZ_ENUM_END_SPLIT(MessageBoxStep)
+
 RVA(0x0001aa40, 0x54)
 b16 RunMessageBoxState(void) {
     i16 plane = GetGamePhase();
     switch (GetGameStep()) {
-        case 1:
+        case MESSAGE_BOX_STEP_CLOSE:
             CloseTextWindow(plane);
             ReturnFromGameState();
             break;
-        case 0:
+        case MESSAGE_BOX_STEP_WAIT:
             NextGameStep();
             RepaintTextPlane(plane, 1);
             PushWaitState(WAIT_INPUT, 10, 0xffff, plane);

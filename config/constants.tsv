@@ -600,7 +600,6 @@ src/Game/debugmenu.c	RunDebugMenu	*	call-argument	StartDebugScene(*argument 1	@i
 src/Game/debugmenu.c	RunDebugMenu	0	call-argument	MoveMapCoord(*argument 3	the shot flies straight ahead (no sideways offset)
 src/Game/debugmenu.c	RunDebugMenu	0	call-argument	LaunchShot(*argument 2	@identity-TODO: LaunchShot's second argument, 0 for the test shot
 src/Ui/message.c	*	0	call-argument	PrintWindowText(*argument 3	attribute 0: print in the plane's own attribute
-src/Ui/message.c	RunTextWindowState	[01]	trivial-function-literal	[01] case	the text-window state's sub-steps: repaint, then close
 src/Ui/message.c	RunTextWindowState	1	call-argument	TestFeatureMask(*	@identity-TODO: feature bit 1, tested for no effect after the repaint
 src/Ui/message.c	SetMessageLifetime	*	*	*	a lifetime under one tick falls back to 15 ticks
 src/Ui/message.c	TickMessageWindow	0	*	*	no ticks left
@@ -641,7 +640,6 @@ src/Ui/hotspot.c	CountFieldObjects	*	*	*	the debug trace buffer size; -1 reports
 src/Script/windowcolor.c	*	*	*	*	@identity-TODO: the alternate-text window switches: save flag 1, cursor column 0, scroll-top rows 0 and 2, and no text delay
 src/Game/waitstate.c	StepWaitState	1	*	*	a timed wait ends when its frame count reaches 1
 src/Game/waitstate.c	PushMessageBox	0	call-argument	PrintWindowText(*argument 3	attribute 0: print in the plane's own attribute
-src/Game/waitstate.c	RunMessageBoxState	[01]	*	*	the message box state's sub-steps: wait, then close
 src/Text/textchar.c	*	*	*	*	Shift-JIS decoding: a trail byte forms the low byte; codes 0xfe and up are two-byte escapes; a lead byte at the end reads as '※' (0x81a6)
 src/Script/scriptfield.c	OpIfBattleResult	*	*	*g_targetCount	target counts: exactly one, or two or more
 src/Script/scriptfield.c	OpCountObjectsAt	1	call-argument	*	@identity-TODO: CountObjectsAt's third argument, 1 for the script count
