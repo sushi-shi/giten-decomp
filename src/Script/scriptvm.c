@@ -233,8 +233,8 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 return SetActorMode(ACTOR_MODE_ATTACK);
             case SCRIPT_OP_SET_ACTOR_MODE_FLEE:
                 return SetActorMode(ACTOR_MODE_FLEE);
-            case SCRIPT_OP_SET_ACTOR_MODE_3:
-                return SetActorMode(3);
+            case SCRIPT_OP_SET_ACTOR_MODE_DEFEND:
+                return SetActorMode(ACTOR_MODE_DEFEND);
             case SCRIPT_OP_SET_ACTOR_MODE_APPROACH:
                 return SetActorMode(ACTOR_MODE_APPROACH);
             case SCRIPT_OP_SET_ACTOR_MODE_CHARGE:
@@ -243,8 +243,8 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 return SetActorMode(ACTOR_MODE_PURSUE);
             case SCRIPT_OP_SET_ACTOR_MODE_SIDESTEP:
                 return SetActorMode(ACTOR_MODE_SIDESTEP);
-            case SCRIPT_OP_SET_ACTOR_MODE_8:
-                return SetActorMode(8);
+            case SCRIPT_OP_SET_ACTOR_MODE_RECOVER:
+                return SetActorMode(ACTOR_MODE_RECOVER);
             case SCRIPT_OP_SET_ACTOR_MODE_WANDER:
                 return SetActorMode(ACTOR_MODE_WANDER);
             case SCRIPT_OP_SET_ACTOR_MODE_IDLE:

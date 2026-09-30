@@ -60,18 +60,19 @@ typedef struct StatBlock {
     i16 total[11];
 } StatBlock;
 
-// What a field actor does on its step (RunObjectStep), as its `mode` and the
-// script's SetActorMode set it: attack, flee, approach (stopping on the
-// party's cell), charge, pursue (set when a skill turns it), sidestep, wander, idle
-// (it has acted) or talk.
+// Actor actions selected by scripts and stored on field and party actors.
+// RunObjectStep handles attack, movement and talk; defend and recover have no
+// field-step branch.
 GZ_ENUM_BEGIN_SPLIT(ActorMode, u8)
     ACTOR_MODE_NONE = 0,
     ACTOR_MODE_ATTACK = 1,
     ACTOR_MODE_FLEE = 2,
+    ACTOR_MODE_DEFEND = 3,
     ACTOR_MODE_APPROACH = 4,
     ACTOR_MODE_CHARGE = 5,
     ACTOR_MODE_PURSUE = 6,
     ACTOR_MODE_SIDESTEP = 7,
+    ACTOR_MODE_RECOVER = 8,
     ACTOR_MODE_WANDER = 9,
     ACTOR_MODE_IDLE = 10,
     ACTOR_MODE_TALK = 11

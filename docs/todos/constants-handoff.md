@@ -392,6 +392,15 @@ The item menu context stores a different domain: shop mode 0 replaces the
 temporary item pool with selected rows and writes the shop total, while script
 mode 2 reads the script's total variable and leaves the pool to its caller.
 
+## Actor modes
+
+The PC-98 overlay function paired with Windows `RunObjectStep` references
+eleven contiguous action labels. Their order agrees with the nine modes that
+Windows names from behavior; labels three and eight are 防御行動 (defense action)
+and 回復行動 (recovery action). They name `ACTOR_MODE_DEFEND` and
+`ACTOR_MODE_RECOVER`. Windows `RunObjectStep` has no branch for either mode;
+`MarkActorActionReady` gives both the defense pick role for party members.
+
 ## Attack attribute columns
 
 Retail object records P2029 (Urd) and P2042 (Heqet) store resistance bytes
