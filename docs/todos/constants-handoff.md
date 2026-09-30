@@ -353,7 +353,8 @@ Demon fusion flags:
 - The demon table flag byte has low and high fusion-value bits (0 and 4)
   plus independent unavailable bits (2 and 6). The getters return -1 for
   an unavailable pair, otherwise its value 0 or 1. The game meaning of
-  either value pair remains open.
+  either value pair remains open. `FusionFlagValue` names unavailable, clear
+  and set for both getters and the signed three-bit fusion summary fields.
 
 Fusion summary kind:
 

@@ -266,8 +266,6 @@ src/Game/fieldobj.c	RunObjectStep	*	*	*scene*	@identity-TODO: the talk scene's e
 src/Game/fieldobj.c	RunObjectStep	0xe2	*	*	@identity-TODO: scene file 0xe2 is the field talk scene
 src/Game/fieldobj.c	ChooseObjectTarget	-1	*	*	FindPartyPositionOfId's not-in-party result
 src/Game/fieldobj.c	ChooseObjectTarget	0	trivial-function-literal	0 equality count	no candidate
-src/Game/fieldobj.c	GetDemonFlag*	*	*	*	the named low and high fusion flag values and unavailable bits in a demon table entry
-src/Game/fieldobj.c	FindStrongestOfClass	-1	*	-1 equality GetDemonFlagLow()	GetDemonFlagLow's disabled result
 src/Game/fieldobj.c	FindStrongestOf*	-1	*	*	no demon or level found yet
 src/Game/fieldobj.c	FindDemonOfRace	-1	*	*	no demon found
 src/Game/fieldobj.c	FindDemonOfRace	500	*	*	above any demon level, so the first match wins
@@ -1162,7 +1160,7 @@ src/Game/fusion.c	Find*Fusion*	*	*	*	@identity-TODO: fallback and complement loo
 src/Game/fusion.c	FusionListMenuHandler	*	*	*	@identity-TODO: the fusion list's rows and events (0, 1, -1)
 src/Game/fusion.c	*ScriptAnimation*	*	*	*	@identity-TODO: script animations: image files 0x3000, variant 0, flags 2, 16 frames, 8-pixel steps
 src/Game/fusion.c	CompareFusion*	*	*	*	sort order: -1 before, 0 equal
-src/Game/fusion.c	Count*FusionSlots	*	*	*	no special race (0), unranked (-1)
+src/Game/fusion.c	CountSpecialRaceFusionSlots	0	*	*	no special race
 src/Game/fusion.c	CountFusion*FlagOne	1	*	*	flag value 1
 src/Game/fusion.c	MatchFusionPair	*	*	*	-1 no match, 1 a match
 src/Game/fusion.c	CheckFusionRestrictedPair	*	*	*	restricted (1) or not (0)
@@ -1181,7 +1179,6 @@ src/Game/fusion.c	FusionSelectionTextHook	0	*	*	an empty text
 src/Game/fusion.c	GetFusion*	*	*	*	@identity-TODO: fusion lookups: level offsets (+2, +5), none (0), sides (-1, 0, 1), the special race table's entries from 1 ending at -1
 src/Game/fusion.c	GetSameRaceFusionRace	0	*	*	no race
 src/Game/fusion.c	GetTripleFusionLevel*	*	*	*	@identity-TODO: triple fusion levels (+3, +5) and the high-flag bonus (3 flags give 2)
-src/Game/fusion.c	MoveUnrankedFusionSlot	-1	*	*	an unranked demon (flag -1)
 src/Game/fusion.c	ResetThirdFusionSlot	-1	*	*	no third slot
 src/Game/fusion.c	SetFusionResult	*	*	*	no demon (-1); an unspecified result kind is named in FusionSummaryKind
 src/Game/statestack.c	Next*	1	call-argument	*	one step forward

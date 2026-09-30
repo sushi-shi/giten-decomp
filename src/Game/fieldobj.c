@@ -1922,20 +1922,20 @@ i16 GetDemonLevel(i16 id) {
 
 // -1 when flag bit 2 is set, else flag bit 0.
 RVA(0x00010000, 0x27)
-i16 GetDemonFlagLow(i16 id) {
+GZ_ENUM_RETURN(FusionFlagValue, i16) GetDemonFlagLow(i16 id) {
     u8 flags = ReadDemonTable()->entries[id].flags;
     if (flags & DEMON_FLAG_LOW_UNAVAILABLE) {
-        return -1;
+        return FUSION_FLAG_UNAVAILABLE;
     }
     return (u8)(flags & DEMON_FLAG_LOW_VALUE);
 }
 
 // -1 when flag bit 6 is set, else flag bit 4.
 RVA(0x00010030, 0x2a)
-i16 GetDemonFlagHigh(i16 id) {
+GZ_ENUM_RETURN(FusionFlagValue, i16) GetDemonFlagHigh(i16 id) {
     u8 flags = ReadDemonTable()->entries[id].flags;
     if (flags & DEMON_FLAG_HIGH_UNAVAILABLE) {
-        return -1;
+        return FUSION_FLAG_UNAVAILABLE;
     }
     return (u8)((flags & DEMON_FLAG_HIGH_VALUE) >> 4);
 }
@@ -2049,8 +2049,8 @@ i16 FindStrongestOfClass(i16 maxLevel, GZ_ENUM_PARAM(DemonClass, i16) cls) {
     i16 level;
     for (i = HUMAN_ID_LIMIT; i < count; i++) {
         level = GetDemonLevel(i);
-        if (level <= maxLevel && GetDemonFlagLow(i) != -1 && GetDemonClass(i) == cls
-            && bestLevel < level) {
+        if (level <= maxLevel && GetDemonFlagLow(i) != FUSION_FLAG_UNAVAILABLE
+            && GetDemonClass(i) == cls && bestLevel < level) {
             bestLevel = level;
             best = i;
         }

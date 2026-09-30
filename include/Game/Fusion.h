@@ -23,8 +23,8 @@ typedef union FusionSummary {
     i16 value;
     struct {
         i16 overLevel : 1;
-        i16 highFlag : 3;
-        i16 lowFlag : 3;
+        GZ_ENUM_STORAGE(FusionFlagValue, i16) highFlag : 3;
+        GZ_ENUM_STORAGE(FusionFlagValue, i16) lowFlag : 3;
         GZ_ENUM_STORAGE(FusionSummaryKind, i16) kind : FUSION_SUMMARY_KIND_BITS;
     } fields;
 } FusionSummary;

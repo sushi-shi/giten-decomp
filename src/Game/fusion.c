@@ -413,7 +413,7 @@ i16 ResolveSameRaceFusion(i16 first, i16 second) {
     if (race != otherRace) {
         return 0;
     }
-    if (GetDemonFlagLow(GetRosterId(first)) != -1) {
+    if (GetDemonFlagLow(GetRosterId(first)) != FUSION_FLAG_UNAVAILABLE) {
         demon = GetFusionRacePair(first, second);
         return SetFusionResult(demon, FUSION_SUMMARY_DIRECT_DEMON);
     }
@@ -442,10 +442,10 @@ RVA(0x00026a60, 0xb1)
 i16 ResolveFusionRankPair(i16 first, i16 second) {
     Character* members[2];
     i16 selected;
-    if (GetDemonFlagLow(GetRosterId(first)) != -1) {
+    if (GetDemonFlagLow(GetRosterId(first)) != FUSION_FLAG_UNAVAILABLE) {
         return 0;
     }
-    if (GetDemonFlagLow(GetRosterId(second)) != -1) {
+    if (GetDemonFlagLow(GetRosterId(second)) != FUSION_FLAG_UNAVAILABLE) {
         return 0;
     }
     members[0] = GetRosterCharacter(first);
@@ -468,10 +468,10 @@ i16 ResolveMixedRankFusion(i16 first, i16 second) {
     i16 side = -1;
     i16 level;
     i16 demon;
-    if (GetDemonFlagLow(GetRosterId(first)) != -1) {
+    if (GetDemonFlagLow(GetRosterId(first)) != FUSION_FLAG_UNAVAILABLE) {
         side = 0;
     }
-    if (GetDemonFlagLow(GetRosterId(second)) != -1) {
+    if (GetDemonFlagLow(GetRosterId(second)) != FUSION_FLAG_UNAVAILABLE) {
         if (side != -1) {
             return 0;
         }
@@ -857,9 +857,9 @@ i16 ResolveTwoUnrankedFusion(i16 first, i16 second, i16 third) {
 
 RVA(0x00027600, 0x69)
 i16 CountUnrankedFusionSlots(i16 first, i16 second, i16 third) {
-    i16 count = GetDemonFlagLow(GetRosterId(first)) == -1;
-    count += GetDemonFlagLow(GetRosterId(second)) == -1;
-    count += GetDemonFlagLow(GetRosterId(third)) == -1;
+    i16 count = GetDemonFlagLow(GetRosterId(first)) == FUSION_FLAG_UNAVAILABLE;
+    count += GetDemonFlagLow(GetRosterId(second)) == FUSION_FLAG_UNAVAILABLE;
+    count += GetDemonFlagLow(GetRosterId(third)) == FUSION_FLAG_UNAVAILABLE;
     return count;
 }
 
@@ -898,17 +898,17 @@ i16 ResolveSameClassTripleFusion(i16 first, i16 second, i16 third) {
 
 RVA(0x000277a0, 0x67)
 i16 CountFusionLowFlagOne(i16 first, i16 second, i16 third) {
-    i16 count = GetDemonFlagLow(GetRosterId(first)) == 1;
-    count += GetDemonFlagLow(GetRosterId(second)) == 1;
-    count += GetDemonFlagLow(GetRosterId(third)) == 1;
+    i16 count = GetDemonFlagLow(GetRosterId(first)) == FUSION_FLAG_SET;
+    count += GetDemonFlagLow(GetRosterId(second)) == FUSION_FLAG_SET;
+    count += GetDemonFlagLow(GetRosterId(third)) == FUSION_FLAG_SET;
     return count;
 }
 
 RVA(0x00027810, 0x67)
 i16 CountFusionHighFlagOne(i16 first, i16 second, i16 third) {
-    i16 count = GetDemonFlagHigh(GetRosterId(first)) == 1;
-    count += GetDemonFlagHigh(GetRosterId(second)) == 1;
-    count += GetDemonFlagHigh(GetRosterId(third)) == 1;
+    i16 count = GetDemonFlagHigh(GetRosterId(first)) == FUSION_FLAG_SET;
+    count += GetDemonFlagHigh(GetRosterId(second)) == FUSION_FLAG_SET;
+    count += GetDemonFlagHigh(GetRosterId(third)) == FUSION_FLAG_SET;
     return count;
 }
 
@@ -946,7 +946,7 @@ i16 ResolveGeneralTripleFusion(i16 first, i16 second, i16 third) {
     if (CompareRosterFusionClasses(first, second) == 0) {
         StageTripleFusionCharacter(result, first, second, third, 1, 1);
         RestoreFusionCharacter();
-        if (GetDemonFlagLow(GetRosterId(third)) == -1) {
+        if (GetDemonFlagLow(GetRosterId(third)) == FUSION_FLAG_UNAVAILABLE) {
             s_fusionLevelAllowance = 8;
         }
         return result;
@@ -968,7 +968,7 @@ i16 ResolveGeneralTripleFusion(i16 first, i16 second, i16 third) {
     result = FindDemonOfRace(level, race);
     StageFusionCharacter(result);
     RestoreFusionCharacter();
-    if (GetDemonFlagLow(GetRosterId(third)) == -1) {
+    if (GetDemonFlagLow(GetRosterId(third)) == FUSION_FLAG_UNAVAILABLE) {
         s_fusionLevelAllowance = 8;
     }
     return SetFusionResult(result, FUSION_SUMMARY_UNSPECIFIED);
@@ -2424,7 +2424,7 @@ b16 MoveSpecialRaceFusionSlot(i16* first, i16* second) {
 
 RVA(0x0002a6e0, 0x3b)
 b16 MoveUnrankedFusionSlot(i16* first, i16* second) {
-    if (GetDemonFlagLow(GetRosterId(*first)) == -1) {
+    if (GetDemonFlagLow(GetRosterId(*first)) == FUSION_FLAG_UNAVAILABLE) {
         SwapFusionSlotValues(first, second);
         return true;
     }
