@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/AutomapMark.h>
 #include <Game/GameState.h>
 #include <Game/ViewDirection.h>
 
@@ -75,7 +76,7 @@ GZ_ENUM_END(AutomapDetail)
 
 typedef struct AutomapIcon {
     u8 code;
-    u8 mark;
+    GZ_ENUM_STORAGE(AutomapMark, u8) mark;
     GZ_ENUM_STORAGE(AutomapDetail, u8) detail;
 } AutomapIcon;
 // clang-format on

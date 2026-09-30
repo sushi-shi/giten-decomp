@@ -75,6 +75,12 @@ Map area names:
   two areas for the alternate wall texture. Other duplicate or blank map
   names still need their separate identities established.
 
+Automap marks:
+
+- The automap icon table uses image marks 7, 8 and 9 for exits, stairs
+  up and stairs down. Its mark byte now has an `AutomapMark` domain, shared
+  with live NPC (4) and field-object (5) marks.
+
 Object record names:
 
 - File: `P/Pxxxx.BIN`, where `xxxx` is `0x2000 + record id`.

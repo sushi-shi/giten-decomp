@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/AutomapMark.h>
 #include <Ints.h>
 #include <Platform/ScreenFade.h>
 #include <Script/ScriptBlock.h>
@@ -80,8 +81,6 @@ i16 IsObjectCell(i16 code);
 // Marks map cell x/y with `kind` on the automap.
 // Map marks 0-3 are the party arrow by ViewDirection; these mark an area NPC
 // and a field object.
-#define MAP_MARK_NPC 4
-#define MAP_MARK_OBJECT 5
 void MarkMapCell(i16 kind, i16 x, i16 y);
 
 // @identity-TODO: sets the flag 0x480d10 (instead of removing a hidden object).
