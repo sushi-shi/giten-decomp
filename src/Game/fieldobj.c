@@ -1946,13 +1946,13 @@ i16 GetDemonCount(void) {
 }
 
 RVA(0x00010080, 0x19)
-i16 GetRaceClass(GZ_ENUM_PARAM(DemonRace, i16) race) {
+GZ_ENUM_RETURN(DemonClass, i16) GetRaceClass(GZ_ENUM_PARAM(DemonRace, i16) race) {
     u8* classes = HandleReadPtr(s_raceClasses);
     return classes[race];
 }
 
 RVA(0x000100a0, 0x17)
-i16 GetDemonClass(i16 id) {
+GZ_ENUM_RETURN(DemonClass, i16) GetDemonClass(i16 id) {
     return GetRaceClass(GetDemonRace(id));
 }
 
@@ -1969,7 +1969,7 @@ char* GetDemonRaceName(i16 id) {
 
 RVA(0x00010100, 0x33)
 char* GetDemonClassName(i16 id) {
-    i16 cls = GetDemonClass(id);
+    GZ_ENUM_LOCAL(DemonClass, i16) cls = GetDemonClass(id);
     return ReadDemonName(s_classNames, cls);
 }
 
@@ -2041,7 +2041,7 @@ i16 FindDemonOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race) {
 // The highest-level demon of race class `cls` at or below `maxLevel` whose
 // low flag is not -1.
 RVA(0x000102c0, 0x69)
-i16 FindStrongestOfClass(i16 maxLevel, i16 cls) {
+i16 FindStrongestOfClass(i16 maxLevel, GZ_ENUM_PARAM(DemonClass, i16) cls) {
     i16 count = GetDemonCount();
     i16 i;
     i16 bestLevel = -1;

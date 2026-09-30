@@ -46,8 +46,8 @@ i16 GetDemonLevel(i16 id);
 i16 GetDemonFlagLow(i16 id);
 i16 GetDemonFlagHigh(i16 id);
 i16 GetDemonCount(void);
-i16 GetRaceClass(GZ_ENUM_PARAM(DemonRace, i16) race);
-i16 GetDemonClass(i16 id);
+GZ_ENUM_RETURN(DemonClass, i16) GetRaceClass(GZ_ENUM_PARAM(DemonRace, i16) race);
+GZ_ENUM_RETURN(DemonClass, i16) GetDemonClass(i16 id);
 
 // Names selected by the demon record; human titles are indexed directly.
 char* GetDemonRaceName(i16 id);
@@ -58,7 +58,7 @@ char* CopyObjectRecordName(i16 id, char* destination);
 
 i16 FindStrongestOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race);
 i16 FindDemonOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race);
-i16 FindStrongestOfClass(i16 maxLevel, i16 cls);
+i16 FindStrongestOfClass(i16 maxLevel, GZ_ENUM_PARAM(DemonClass, i16) cls);
 i16 FindNextOfRace(i16 id, i16 wrap);
 i16 ScaleLevelGap(i16 a, i16 b);
 

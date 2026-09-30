@@ -517,7 +517,8 @@ local enum domains.
 ET0000 has six encrypted blocks. Its second block maps each of the 51 demon
 races to a major class; the sixth block names all sixteen classes in order.
 `GetRaceClass` reads the map, and `GetDemonClassName` indexes the name block
-with the resulting class. `DemonClass` follows those names. The observed
+with the resulting class. `DemonClass` follows those names and types the class
+accessors and class search while retaining their retail `i16` ABI. The observed
 checks select 鬼族系 (8) for one inflicted condition, 邪霊系 (10) and 人系/魔人系
 (12/13) for step upkeep, and 無生物 (14) for random fusion exclusion.
 The fourth ET0000 block names 23 pantheons. Its indices occupy a byte in

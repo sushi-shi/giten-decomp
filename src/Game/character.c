@@ -3014,7 +3014,7 @@ i16 PayStepUpkeep(void) {
     for (i = 0; i < PARTY_SIZE; i++) {
         Character* member = GetPartyCharacter(i);
         i16 whole;
-        i16 class;
+        GZ_ENUM_LOCAL(DemonClass, i16) class;
         i16 rate;
         if (member == NULL || GetFatalCondition(GetCharacterConditions(member))) {
             continue;
