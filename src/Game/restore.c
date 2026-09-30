@@ -162,7 +162,8 @@ static __inline void FillRestorePools(CurMax* hpPool, CurMax* mpPool, i16 hp, i1
 }
 
 RVA(0x0001fe90, 0x6f0)
-i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* target, i16 mp) {
+GZ_ENUM_RETURN(RestoreResult, i16)
+ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* target, i16 mp) {
     i16 reportCondition;
     i16 revival;
     GZ_ENUM_LOCAL(ConditionChangeResult, i16) sleep;
@@ -349,7 +350,8 @@ i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character
         g_mpChange = 0;
         g_hpChange = 0;
         target->lastChange = 0;
-        return revival == true ? 6 : 2;
+        return revival == true ? RESTORE_RESULT_NO_EFFECT_REPORTED
+                               : RESTORE_RESULT_FATAL_WITHOUT_REVIVAL;
     }
     if (reportCondition) {
         if (!g_effectCondition) {
@@ -359,9 +361,10 @@ i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character
                 g_effectCondition = CONDITION_DOZE;
             }
         }
-        return g_effectCondition ? 3 : 6;
+        return g_effectCondition ? RESTORE_RESULT_EFFECT_REPORTED
+                                 : RESTORE_RESULT_NO_EFFECT_REPORTED;
     }
-    return target->lastChange ? 3 : 6;
+    return target->lastChange ? RESTORE_RESULT_EFFECT_REPORTED : RESTORE_RESULT_NO_EFFECT_REPORTED;
 }
 
 RVA(0x00020580, 0x160)

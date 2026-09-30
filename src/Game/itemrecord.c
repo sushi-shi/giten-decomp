@@ -1384,7 +1384,7 @@ RVA(0x00024950, 0x100)
 void UseRestoreItem(Character* user, Character* target) {
     i16 mp;
     i16 hp;
-    i16 result;
+    GZ_ENUM_LOCAL(RestoreResult, i16) result;
 
     g_statusCondition = INFLICT_NONE;
     mp = ComputeRestoreAmount(s_usedItem.params[8], user, target->pools.mp.max);

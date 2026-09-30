@@ -1622,7 +1622,7 @@ RVA(0x0002ceb0, 0xe0)
 void UseRestoreSkill(Character* user, Character* target) {
     i16 hit;
     i16 amount;
-    i16 result;
+    GZ_ENUM_LOCAL(RestoreResult, i16) result;
     g_statusCondition = INFLICT_NONE;
     hit = RollSkillHit(user, target, true);
     amount = ComputeRestoreAmount(GetSkillValueB(&s_effectSkill), user, target->pools.hp.max);

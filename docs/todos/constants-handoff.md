@@ -178,7 +178,9 @@ Automap marks:
   MS003A: 0x85 uses entries 2..4, 0x87 uses 6..7, and 0x86 uses 8..13.
   Each entry sets script long variable 0 before entering the shared entry
   27; entries 8..13 also set other variables. The script branches by those
-  values, so the icon alone does not establish separate names for the codes.
+  values. Entry 13's branch can reach the Hagenti encounter asking for the
+  Kusanagi sword, but the same code 0x86 also uses entries 8..12. The icon
+  and that encounter do not establish separate names for the codes.
 - Cell code 0x7d uses the stairs-down mark and occurs in 25 station links,
   all calling MS0044 entries 3..28. That script describes stairs leading
   down to a subway platform and offers the platform route.
@@ -378,7 +380,7 @@ placement behavior rather than a shop type.
 Kept as rows until there is evidence:
 
 - Attack attributes 0/1 and 9, and the shared
-  result word's noncombat encodings. ET0004 kind-3 skills select tally slots
+  result word's other noncombat encodings. ET0004 kind-3 skills select tally slots
   0, 1, 4, 5 and 7..14; the other named slots have direct reader evidence.
   Attribute 1 is not simply the gun category: ET0001 gives it to 21 melee
   weapons as well as 21 ammunition records; attribute 0 occurs on 98 melee
@@ -397,6 +399,12 @@ Kept as rows until there is evidence:
   remaining tally effects still need their script and record relationships decoded.
   The combat resolver identifies result-word tags 0x50, 0x70 and 0x80
   for HP, MP and experience draining skills.
+  `ApplyRestoreEffect` returns 2 if a fatal condition remains without a
+  revival attempt, 3 when it has a condition or pool change to report, and
+  6 on its other completed paths. A condition-specific effect can restore
+  HP yet return 6 when it had no condition to report. `RestoreResult` names
+  these outcomes before they enter the shared result word, where the same
+  numbers also name battle messages.
   Attribute 10 bypasses the resistance array with a fixed value of 50, so it
   has a behavior-based enum member. The current ET0004 skills and ET0001
   attack items do not use it.

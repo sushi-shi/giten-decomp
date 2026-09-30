@@ -28,9 +28,10 @@ void UseInertItem(Character* user, Character* target);
 // 0xfd a quarter, else scaled by `user`.
 i16 ComputeRestoreAmount(i16 code, Character* user, u16 max);
 
-// Applies an HP/MP restoration of kind `kind` to `target`; returns the result
-// code (3..5 let a condition follow).
-i16 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* target, i16 mp);
+// Applies an HP/MP restoration of kind `kind` to `target`; a reported effect
+// lets a condition follow.
+GZ_ENUM_RETURN(RestoreResult, i16)
+ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* target, i16 mp);
 
 #define RestoreEffectAllowsCondition(result) ((result) >= 3 && (result) <= 5)
 

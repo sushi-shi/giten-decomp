@@ -29,6 +29,15 @@ GZ_ENUM_BEGIN_SPLIT(RestoreEffect, i16)
     RESTORE_EFFECT_HEAL_IF_ALIGNMENT_B_BELOW_NEUTRAL = 65
 GZ_ENUM_END_SPLIT(RestoreEffect)
 
+// ApplyRestoreEffect's result before it is copied into the shared action
+// result word. Code 3 reports a cured condition or a changed pool when no
+// condition report is requested; code 6 covers the other completed paths.
+GZ_ENUM_BEGIN_SPLIT(RestoreResult, i16)
+    RESTORE_RESULT_FATAL_WITHOUT_REVIVAL = 2,
+    RESTORE_RESULT_EFFECT_REPORTED = 3,
+    RESTORE_RESULT_NO_EFFECT_REPORTED = 6
+GZ_ENUM_END_SPLIT(RestoreResult)
+
 // ComputeRestoreAmount's amount codes that restore a fixed share of the pool;
 // other codes add to a roll on the user's magic.
 GZ_ENUM_CONST_BEGIN(RestoreAmount)
