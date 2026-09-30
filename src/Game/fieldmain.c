@@ -792,7 +792,9 @@ b16 RunFieldExploration(void) {
             if (ProcessPartyCasualties()) {
                 RequestFieldRefresh();
             }
-            if (CountFallenHumans() && !IsEventFlagSet(1, 0x4f) && !g_fieldBattleActive) {
+            if (CountFallenHumans()
+                && !IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_FALLEN_RESCUE_SUPPRESSED)
+                && !g_fieldBattleActive) {
                 CloseMessageWindow();
                 PushFieldTextScene(0x1a, 6);
                 s_eventRunning = false;
