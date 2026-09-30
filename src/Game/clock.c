@@ -1200,7 +1200,7 @@ b16 IsLevelMapRevealed(void) {
 }
 
 // Copies the enabled exit at x/y into `out` (an exit without a kind entry, or
-// a kind-7 in-area exit); NULL when there is none.
+// a chute in-area exit); NULL when there is none.
 RVA(0x00022600, 0xbd)
 ExitCell* CopyExitAt(i16 x, i16 y, ExitCell* out) {
     ExitCell* exit;
@@ -1219,7 +1219,7 @@ ExitCell* CopyExitAt(i16 x, i16 y, ExitCell* out) {
                     }
                     return out;
                 }
-            } else if (kind->kind == 7 && !IsCellFlagSet(&exit->head, 6)) {
+            } else if (kind->kind == CELL_EVENT_CHUTE && !IsCellFlagSet(&exit->head, 6)) {
                 for (i = 0; i < sizeof(ExitCell); i++) {
                     ((u8*)out)[i] = ((u8*)exit)[i];
                 }

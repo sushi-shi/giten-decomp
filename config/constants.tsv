@@ -845,7 +845,6 @@ src/Game/clock.c	ClampMapCoord	0	*	*	the map's first column or row
 src/Game/clock.c	RevealAreaMapAt	0	*	*	no cell revealed
 src/Game/clock.c	GetWarpCodeAtOffset	0	*	*	no warp code
 src/Game/clock.c	GetCellAtOffset	*	*	*	@identity-TODO: an exception at Shinjuku Tocho level 6 (2, 5) looking west (-1, 0) reads stairs up; 0 when no level or no warp
-src/Game/clock.c	CopyExitAt	7	*	*	@identity-TODO: exit kind 7
 src/Game/clock.c	*Panel*	*	*	*	@identity-TODO: panel images 0x12, 0x110 (13 rows) and 0x112 with their special cases; -1 no image or no selection; the kind's low nibble
 src/Game/clock.c	TestFlagBits	0	*	*	no bit of the mask set
 src/Game/fieldscreen.c	PrepareFieldRedraw	*	*	*	@identity-TODO: the mask reset (1) and the view reset flag cleared

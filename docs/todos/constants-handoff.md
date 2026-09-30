@@ -452,7 +452,9 @@ Kept as rows until there is evidence:
   ignores their kind-10 result for object records, and the direct object-cell
   queries recognize only 0x8d and 0x8e. Their distinct map roles remain
   unproven. Code 0x7c has a cell-kind table row but no cell record in the
-  current disc's area maps.
+  current disc's area maps. Code 0x65 likewise has a kind-13 table row but no
+  cell record in any of the 109 current disc area maps. `RunCellEvent` has no
+  kind-13 branch. `CopyExitAt`'s numeric kind 7 is the chute event kind.
 - Field-object image codes -1 and 0..4 name the mirrored side, facing rows,
   acting row and reaction frame. The fifth frame of the disc's five-BMP actor
   images is a distinct reaction pose. `FlashHitObject` selects it after a pool

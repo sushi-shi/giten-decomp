@@ -51,7 +51,7 @@ GZ_ENUM_FLAGS_END(CellKindFlags)
 // @identity-TODO: event kind 13 (cell code 0x65) remains unnamed.
 typedef struct CellKind {
     u8 code;
-    u8 kind;
+    GZ_ENUM_STORAGE(CellEventKind, u8) kind;
     GZ_ENUM_STORAGE(CellKindFlags, u8) flags;
     u8 pad03;
 } CellKind;
