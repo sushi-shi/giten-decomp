@@ -36,7 +36,7 @@ void InitNewGame(void) {
     g_party.field.pos.x = 2;
     g_party.field.pos.y = 1;
     g_party.field.pos.direction = VIEW_NORTH;
-    g_party.field.moveState = 0;
+    g_party.field.moveState = FIELD_MOVE_IDLE;
     g_party.field.turnsLeft = 0;
     g_party.field.moveCommand = 0;
     g_party.status.rosterCapacity = ROSTER_SIZE;

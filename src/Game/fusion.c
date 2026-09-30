@@ -1709,7 +1709,7 @@ void FusionListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i1
                 && (s_fusionPageRows != 1
                     || GetFusionPairSummaryCell(s_fusionSlots[index], g_fusionFirstSlot)
                                ->fields.kind
-                           != -1)) {
+                           != FUSION_SUMMARY_NO_RESULT)) {
                 AddMenuLine(
                     menu->plane,
                     g_scratchBuffer,

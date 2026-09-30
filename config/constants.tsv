@@ -889,7 +889,6 @@ src/Game/fieldscreen.c	GetWorldBlock	0	*	*	@identity-TODO: world block slot 0
 src/Game/fieldscreen.c	*LayerImage*	*	*	*	@identity-TODO: layer image bands (7), the band scale 281/225 and the last band 6; a new image's count 1
 src/Game/fieldscreen.c	GetLayerFrame	0	*	*	no frame
 src/Game/fieldscreen.c	InitWorldPanel	0x118	*	*	@identity-TODO: menu image 0x118
-src/Game/fieldscreen.c	ClearFieldPanelSelection	0	*	*	no movement under way (move state 0)
 src/Game/fieldview.c	*	*	*	*	the 3D view's geometry: the 4-row x 7-column cell grid around the party (column 3 ahead), the perspective wall slots 1..16 and their left/right wedges and edges, flood-fill steps, 2-bit directions and 4-bit wall nibbles per side of a cell word
 src/Script/scriptvars.c	OpRefreshFieldScreen	*	*	*	@identity-TODO: the refresh option bit 0x10, FieldScreenNop's 7 and the info bar's layout 1
 src/Script/scriptvars.c	OpFadeOutAndClear	*	*	*	@identity-TODO: the fade speed 1; the new game's start cell (level 8, 2, 1) and render mode 2 it tests

@@ -1630,7 +1630,7 @@ i16 WorldRowHandler(PanelRow* row, i16 value, i16 op) {
 
 RVA(0x000169c0, 0x18)
 void ClearFieldPanelSelection(void) {
-    if (g_party.field.moveState == 0) {
+    if (g_party.field.moveState == FIELD_MOVE_IDLE) {
         ClearPanelChecks(&s_worldPanel.panel);
     }
 }
