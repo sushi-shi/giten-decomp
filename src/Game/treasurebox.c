@@ -2037,7 +2037,7 @@ b16 RunAutomapState(void) {
                 s_mapPosition.direction = VIEW_NORTH;
             }
             s_mapDetail = AUTOMAP_DETAIL_NONE;
-            if (!IsEventFlagSet(2, 0x39)) {
+            if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_MAPPING_AMS)) {
                 s_mapDetail = AUTOMAP_DETAIL_NPCS;
             }
             if (s_mapDetail < AUTOMAP_DETAIL_BASIC) {

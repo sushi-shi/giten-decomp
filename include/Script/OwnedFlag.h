@@ -4,7 +4,7 @@
 #include <EnumDomain.h>
 
 // Flags of bank EVENT_FLAG_BANK_OWNED: the maps and arm-terminal programs the
-// player holds, named after the developers' event-flag name table on the disc
+// player holds, mostly named after the developers' event-flag name table on the disc
 // (ET0018, "...所持"/"...マップ入手"). A new game starts with every flag set;
 // obtaining the item clears its flag.
 GZ_ENUM_CONST_BEGIN(OwnedFlag)
@@ -34,7 +34,8 @@ GZ_ENUM_CONST_BEGIN(OwnedFlag)
     OWNED_ELEMENT_A = 23,
     OWNED_ELEMENT_B = 24,
     OWNED_ELEMENT_C = 25,
-    OWNED_DEVIL_ERASER = 26
+    OWNED_DEVIL_ERASER = 26,
+    OWNED_MAPPING_AMS = 0x39
 GZ_ENUM_CONST_END(OwnedFlag)
 
 #endif // GITEN_SCRIPT_OWNEDFLAG_H

@@ -497,7 +497,7 @@ RVA(0x00014d90, 0x81)
 i16 MappingRowHandler(PanelRow* row, i16 value, i16 op) {
     if (ApplyRowCheck(row, value, op)) {
         if (CanOpenAutomap()) {
-            if (IsEventFlagSet(2, 0x39)) {
+            if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_MAPPING_AMS)) {
                 ClearPanelRowCheck(row);
                 // "[MAPPING] AMSを所持していません"
                 ShowMessage(
@@ -807,7 +807,7 @@ void OpenAutomap(void) {
     if (!CanOpenAutomap()) {
         return;
     }
-    if (IsEventFlagSet(2, 0x39)) {
+    if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_MAPPING_AMS)) {
         // "[MAPPING] AMSを所持していません"
         ShowMessage(
             "[MAPPING] AMS\202\360\217\212\216\235\202\265\202\304\202\242\202\334\202\271\202\361",

@@ -300,6 +300,10 @@ Coverage:
 - Banks 0 and 1 hold the scenario flags. The names run on through bank 1 bits
   0-28.
 - Bank 2 holds the owned maps and programs.
+- Bank 2 bit 0x39 gates the MAPPING command and NPC automap detail. Both
+  MAPPING entry paths say the AMS is not owned while it is set, establishing
+  `OWNED_MAPPING_AMS`. Bit 0x38 enables object marks on the automap; its
+  particular AMS upgrade identity is still unproven.
 - Bank 4 holds the boxes.
 - Bank 8 bit 0 is "no enemies".
 - Bank 9's names are only the Shinjuku base's.
