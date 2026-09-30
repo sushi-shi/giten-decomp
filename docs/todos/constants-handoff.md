@@ -104,6 +104,9 @@ Skill family names:
   that record when it has no equipped weapon item.
 - Record 250 names Self Recovery. `ApplySkillEffect` changes its combined
   kind/mode byte to 2 before dispatching it as a restore skill.
+- ET0004 kind 0 contains only the sixteen built-in attack records (including
+  the no-attack entry); kind 1 contains the ordinary attack-skill records.
+  Both use the default attack handler in `ApplySkillEffect`.
 - In ET0004, family codes 1..5 each contain one consistent spell series:
   Agi, Zan, Dawm, Zio and Bufu. Codes 6, 7, 8, 11, 14 and 16 group
   expulsion, Megi, remedy/revival, Shibabu, Kaja/Kunda and Dia skills.

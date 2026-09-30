@@ -25,6 +25,8 @@ GZ_ENUM_END(SkillUseModes);
 // The low six bits of a skill record's first byte select its effect family.
 // clang-format off
 GZ_ENUM_BEGIN_SPLIT(SkillKind, u8)
+    SKILL_KIND_BASE_ATTACK = 0,
+    SKILL_KIND_ATTACK = 1,
     SKILL_KIND_RESTORE = 2,
     SKILL_KIND_BATTLE_TALLY = 3,
     SKILL_KIND_BATTLE_STAT = 4,
