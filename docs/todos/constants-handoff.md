@@ -172,10 +172,13 @@ Automap marks:
 - Mark 24 selects retail bitmap 272, a 16-by-16 image whose pixels all use
   black palette entry 1. The icon table uses it for code 0xbf and its final
   sentinel row, so it is a blank mark.
-- The remaining mark 6 bitmap resembles a standing figure and belongs to
-  code 0x40, which occurs in map link records. Mark 23 is a red C-shaped
-  bitmap for code 0x7b, which occurs mainly in script-cell records. Their
-  game meanings remain unproved.
+- Mark 6's standing-figure bitmap belongs to cell code 0x40. Across the
+  disc's maps, its scripted links load MS003C's service-terminal menu or
+  enter a small map whose second cell loads that menu. Mark 23's red
+  C-shaped bitmap belongs to code 0x7b. Its script cells run MS003D or
+  MS0043's ARM-terminal menu or enter a small map whose second cell runs
+  that menu. The two 0x7b links and one 0x40 link in M0000 have no direct
+  script-file referent in their link records.
 
 Object record names:
 

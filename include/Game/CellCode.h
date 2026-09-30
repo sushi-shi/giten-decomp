@@ -12,6 +12,7 @@
 // @identity-TODO: the individual NPC picture and other object codes, and the
 // kind-10/12/13 cells 0x7c, 0x88, 0x89, 0x8b, 0x8c, 0x8f and 0x65 are unnamed.
 GZ_ENUM_BEGIN(CellCode)
+    CELL_SERVICE_TERMINAL = 0x40,
     CELL_EXIT = 0x41,
     CELL_STAIRS_UP = 0x42,
     CELL_STAIRS_DOWN = 0x43,
@@ -32,6 +33,7 @@ GZ_ENUM_BEGIN(CellCode)
     CELL_SPIN_LEFT = 0x76,
     CELL_MARKED_WARP = 0x77,
     CELL_FACING_SCRIPT = 0x79,
+    CELL_ARM_TERMINAL = 0x7b,
     CELL_FROZEN_SCENE = 0x7f,
     CELL_DARK = 0x8d,
     CELL_COMMAND_BLOCKED = 0x8e,
