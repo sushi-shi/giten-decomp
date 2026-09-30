@@ -1461,15 +1461,15 @@ void OpJumpUnlessFlagSet(void) {
 #define RollFixedContestValue(value, level)                                                        \
     do {                                                                                           \
         switch (level) {                                                                           \
-            case 0:                                                                                \
+            case STAT_CONTEST_LEVEL_0:                                                             \
                 break;                                                                             \
-            case 1:                                                                                \
+            case STAT_CONTEST_LEVEL_1:                                                             \
                 (value) = RandomAverage(5, 15, 0);                                                 \
                 break;                                                                             \
-            case 2:                                                                                \
+            case STAT_CONTEST_LEVEL_2:                                                             \
                 (value) = RandomAverage(12, 22, 0);                                                \
                 break;                                                                             \
-            case 3:                                                                                \
+            case STAT_CONTEST_LEVEL_3:                                                             \
                 (value) = RandomAverage(20, 40, 0);                                                \
                 break;                                                                             \
         }                                                                                          \
@@ -1478,15 +1478,15 @@ void OpJumpUnlessFlagSet(void) {
 #define RollRelativeContestValue(value, level)                                                     \
     do {                                                                                           \
         switch (level) {                                                                           \
-            case 0:                                                                                \
+            case STAT_CONTEST_LEVEL_0:                                                             \
                 break;                                                                             \
-            case 1:                                                                                \
+            case STAT_CONTEST_LEVEL_1:                                                             \
                 (value) = RandomPercent((value), -20, 20);                                         \
                 break;                                                                             \
-            case 2:                                                                                \
+            case STAT_CONTEST_LEVEL_2:                                                             \
                 (value) = RandomPercent((value), 0, 30);                                           \
                 break;                                                                             \
-            case 3:                                                                                \
+            case STAT_CONTEST_LEVEL_3:                                                             \
                 (value) = RandomPercent((value), 10, 40);                                          \
                 break;                                                                             \
         }                                                                                          \
@@ -1497,7 +1497,11 @@ void OpJumpUnlessFlagSet(void) {
 // value, a random spread around it, or a fixed random range chosen by the
 // stat and the contest `level` (0..3); `swap` exchanges the sides.
 RVA(0x000348b0, 0x520)
-void OpJumpUnlessStatContest(i16 level, GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert, b16 swap) {
+void OpJumpUnlessStatContest(
+    GZ_ENUM_PARAM(StatContestLevel, i16) level,
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert,
+    b16 swap
+) {
     i16 target = ReadBranchTarget();
     i16 stat = ReadScriptValue();
     i32 own;
@@ -1519,15 +1523,15 @@ void OpJumpUnlessStatContest(i16 level, GZ_ENUM_PARAM(ScriptTestPolarity, i16) i
             break;
         case STAT_INTELLIGENCE:
             switch (level) {
-                case 0:
+                case STAT_CONTEST_LEVEL_0:
                     break;
-                case 1:
+                case STAT_CONTEST_LEVEL_1:
                     other = RandomPercent(other, -20, 20);
                     break;
-                case 2:
+                case STAT_CONTEST_LEVEL_2:
                     other = RandomPercent(other, 10, 30);
                     break;
-                case 3:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomPercent(other, 10, 40);
                     break;
             }
@@ -1537,10 +1541,10 @@ void OpJumpUnlessStatContest(i16 level, GZ_ENUM_PARAM(ScriptTestPolarity, i16) i
             break;
         case STAT_STRENGTH:
             switch (level) {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
+                case STAT_CONTEST_LEVEL_0:
+                case STAT_CONTEST_LEVEL_1:
+                case STAT_CONTEST_LEVEL_2:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomAverage(0, 40, 2);
                     break;
             }
@@ -1562,7 +1566,7 @@ void OpJumpUnlessStatContest(i16 level, GZ_ENUM_PARAM(ScriptTestPolarity, i16) i
             break;
         case CONTEST_LEVEL:
             switch (level) {
-                case 0: {
+                case STAT_CONTEST_LEVEL_0: {
                     i32 ownProtection;
                     i32 otherProtection;
 
@@ -1570,61 +1574,61 @@ void OpJumpUnlessStatContest(i16 level, GZ_ENUM_PARAM(ScriptTestPolarity, i16) i
                     other = -sqrt(otherProtection);
                     break;
                 }
-                case 1:
+                case STAT_CONTEST_LEVEL_1:
                     other = RandomPercent(other, 10, 25);
                     break;
-                case 2:
+                case STAT_CONTEST_LEVEL_2:
                     other = RandomPercent(other, 25, 50);
                     break;
-                case 3:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomPercent(other, -20, 20);
                     break;
             }
             break;
         case CONTEST_LEVEL_GAP:
             switch (level) {
-                case 0:
+                case STAT_CONTEST_LEVEL_0:
                     other = RandomAverage(0, 7, 0);
                     break;
-                case 1:
+                case STAT_CONTEST_LEVEL_1:
                     other = RandomAverage(7, 10, 0);
                     break;
-                case 2:
+                case STAT_CONTEST_LEVEL_2:
                     other = RandomAverage(6, 13, 0);
                     break;
-                case 3:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomAverage(10, 17, 0);
                     break;
             }
             break;
         case CONTEST_FAMILIARITY:
             switch (level) {
-                case 0:
+                case STAT_CONTEST_LEVEL_0:
                     other = RandomAverage(0, 7, 0);
                     break;
-                case 1:
+                case STAT_CONTEST_LEVEL_1:
                     other = RandomAverage(7, 10, 0);
                     break;
-                case 2:
+                case STAT_CONTEST_LEVEL_2:
                     other = RandomAverage(6, 13, 0);
                     break;
-                case 3:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomAverage(11, 18, 0);
                     break;
             }
             break;
         case CONTEST_FAMILIARITY_COUNT:
             switch (level) {
-                case 0:
+                case STAT_CONTEST_LEVEL_0:
                     other = RandomAverage(35, 70, 0);
                     break;
-                case 1:
+                case STAT_CONTEST_LEVEL_1:
                     other = RandomAverage(60, 91, 0);
                     break;
-                case 2:
+                case STAT_CONTEST_LEVEL_2:
                     other = RandomAverage(85, 116, 0);
                     break;
-                case 3:
+                case STAT_CONTEST_LEVEL_3:
                     other = RandomAverage(120, 135, 0);
                     break;
             }

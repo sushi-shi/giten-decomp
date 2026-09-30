@@ -161,8 +161,6 @@ src/Platform/winmain.cpp	g_menuButtonX	*	data-or-extent	*	menu bar button left e
 src/Platform/winmain.cpp	s_layerOrder	*	data-or-extent	*	the party panel number after SCREEN_LAYER_FIRST_PANEL
 src/Platform/winmain.cpp	HandleInput	*	arithmetic	*SCREEN_LAYER_FIRST_PANEL	the party panel number after SCREEN_LAYER_FIRST_PANEL
 src/Script/scriptactor.c	OpLoadRecord	*	*	*	a shop script (file 0x7f) entry and its keeper sprite (slot 0x1f, image number and position) or map location, as the developer trace beside each names; files 0xe0..0xff are skipped
-src/Script/scriptactor.c	OpJumpUnlessStatContest	*	*	*switch on level	the contest level 0..3 (0 compares the target's own value, 1..3 roll wider ranges)
-src/Script/scriptactor.c	OpJumpUnlessStatContest	[01]	trivial-function-literal	[01] case	the contest level 0..3 (0 compares the target's own value, 1..3 roll wider ranges)
 *	*	*	call-argument	PlaySoundEffect(*argument 1	a sound effect number (sound n plays IDR_SOUND_n; the sounds have no names)
 *	*	*	call-argument	IsEventFlagSet(*argument 1	an event-flag bank of a flag the developers' flag-name table (ET0018) does not name
 *	*	*	call-argument	IsEventFlagSet(*argument 2	an event flag the developers' flag-name table (ET0018) does not name
@@ -534,7 +532,6 @@ src/Platform/winmain.cpp	BlitTextPlanes	*	*	*	text-plane blitting: the plane bit
 src/Platform/winmain.cpp	RunMoveCommand	7	*	*	the move-command table index mask (eight commands)
 src/Platform/winmain.cpp	PollJoystick	0xffff	*	*	all joystick button bits, to invert the last state
 src/Platform/winmain.cpp	HandleInput	0	call-argument	PostQuitMessage(*argument 1	the exit code
-src/Script/scriptvm.c	ExecScriptOpcode	[0-3]	call-argument	OpJumpUnlessStatContest(*argument 1	the contest level 0..3 that the opcode names carry (0 compares the target's own value, 1..3 roll wider ranges)
 src/Script/scriptvm.c	ExecScriptOpcode	[-1]*	call-argument	Op[AC][dh]*(*argument 1	the sign that scales the script operand (add or take away)
 src/Script/scriptvm.c	ExecScriptOpcode	[01]	call-argument	OpPlaceSprite(*argument 1	an argument the body never reads; what the two opcodes differ in is unrecovered (@identity-TODO in ScriptOps.h)
 src/Script/scriptvm.c	ExecScriptOpcode	1	call-argument	OpSkipJumpTarget(*argument 1	an argument the body never reads (@identity-TODO in ScriptOps.h)

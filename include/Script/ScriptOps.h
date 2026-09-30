@@ -298,8 +298,22 @@ void OpJumpUnlessEventFlag(ScriptFlagAction action, i32 expect);
 RVA_DECL(0x00034880)
 void OpJumpUnlessFlagSet(void);
 
+// The four contest levels selected by the normal and swapped script opcodes.
+// Their numeric order has stat-specific effects, so the opcode level is the
+// stable identity shared by all stat contests.
+GZ_ENUM_BEGIN_SPLIT(StatContestLevel, i16)
+    STAT_CONTEST_LEVEL_0 = 0,
+    STAT_CONTEST_LEVEL_1 = 1,
+    STAT_CONTEST_LEVEL_2 = 2,
+    STAT_CONTEST_LEVEL_3 = 3
+GZ_ENUM_END_SPLIT(StatContestLevel)
+
 RVA_DECL(0x000348b0)
-void OpJumpUnlessStatContest(i16 level, GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert, b16 swap);
+void OpJumpUnlessStatContest(
+    GZ_ENUM_PARAM(StatContestLevel, i16) level,
+    GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert,
+    b16 swap
+);
 
 void OpJumpUnlessPlayerInView(i16 invert);
 

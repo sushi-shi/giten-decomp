@@ -414,6 +414,11 @@ The item menu context stores a different domain: shop mode 0 replaces the
 temporary item pool with selected rows and writes the shop total, while script
 mode 2 reads the script's total variable and leaves the pool to its caller.
 
+The sixteen normal and swapped stat-contest opcodes pass levels 0..3 to
+`OpJumpUnlessStatContest`. The same level selects different random ranges for
+different stats, so `StatContestLevel` names the explicit opcode levels rather
+than assigning one difficulty label across all stats.
+
 ## Actor modes
 
 The PC-98 overlay function paired with Windows `RunObjectStep` references

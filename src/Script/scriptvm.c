@@ -101,28 +101,28 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpSwitchOnSelection(SCRIPT_BRANCH_JUMP);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_0_NORMAL:
-                OpJumpUnlessStatContest(0, SCRIPT_TEST_NORMAL, false);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_0, SCRIPT_TEST_NORMAL, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_0_INVERTED:
-                OpJumpUnlessStatContest(0, SCRIPT_TEST_INVERTED, false);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_0, SCRIPT_TEST_INVERTED, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_1_NORMAL:
-                OpJumpUnlessStatContest(1, SCRIPT_TEST_NORMAL, false);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_1, SCRIPT_TEST_NORMAL, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_1_INVERTED:
-                OpJumpUnlessStatContest(1, SCRIPT_TEST_INVERTED, false);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_1, SCRIPT_TEST_INVERTED, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_2_NORMAL:
-                OpJumpUnlessStatContest(2, SCRIPT_TEST_NORMAL, false);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_2, SCRIPT_TEST_NORMAL, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_2_INVERTED:
-                OpJumpUnlessStatContest(2, SCRIPT_TEST_INVERTED, false);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_2, SCRIPT_TEST_INVERTED, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_3_NORMAL:
-                OpJumpUnlessStatContest(3, SCRIPT_TEST_NORMAL, false);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_3, SCRIPT_TEST_NORMAL, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_CONTEST_LEVEL_3_INVERTED:
-                OpJumpUnlessStatContest(3, SCRIPT_TEST_INVERTED, false);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_3, SCRIPT_TEST_INVERTED, false);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP:
                 OpJump();
@@ -152,28 +152,28 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 OpIfFlags(true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_0_NORMAL:
-                OpJumpUnlessStatContest(0, SCRIPT_TEST_NORMAL, true);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_0, SCRIPT_TEST_NORMAL, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_0_INVERTED:
-                OpJumpUnlessStatContest(0, SCRIPT_TEST_INVERTED, true);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_0, SCRIPT_TEST_INVERTED, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_1_NORMAL:
-                OpJumpUnlessStatContest(1, SCRIPT_TEST_NORMAL, true);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_1, SCRIPT_TEST_NORMAL, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_1_INVERTED:
-                OpJumpUnlessStatContest(1, SCRIPT_TEST_INVERTED, true);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_1, SCRIPT_TEST_INVERTED, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_2_NORMAL:
-                OpJumpUnlessStatContest(2, SCRIPT_TEST_NORMAL, true);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_2, SCRIPT_TEST_NORMAL, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_2_INVERTED:
-                OpJumpUnlessStatContest(2, SCRIPT_TEST_INVERTED, true);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_2, SCRIPT_TEST_INVERTED, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_3_NORMAL:
-                OpJumpUnlessStatContest(3, SCRIPT_TEST_NORMAL, true);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_3, SCRIPT_TEST_NORMAL, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_JUMP_UNLESS_SWAPPED_CONTEST_LEVEL_3_INVERTED:
-                OpJumpUnlessStatContest(3, SCRIPT_TEST_INVERTED, true);
+                OpJumpUnlessStatContest(STAT_CONTEST_LEVEL_3, SCRIPT_TEST_INVERTED, true);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_ALERT_ACTOR:
                 return OpSetActorAlert(ACTOR_ALERT_NORMAL);
