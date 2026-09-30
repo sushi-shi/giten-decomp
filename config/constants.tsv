@@ -1076,8 +1076,6 @@ src/Game/character.c	*ConditionName*	*	*	*	the condition-name list's first entry
 src/Game/character.c	GetFirstConditionIndex	*	*	*	the condition-name list's first entry; -1 when none is held
 src/Game/character.c	GetRankScore	10	*	*	ten rank points per level
 src/Game/character.c	TickActionWait	*	*	*	the action wait: 0 once it runs out; a new wait of 2 x a roll + 5 ticks
-src/Game/character.c	GetPickState	*	*	*	@identity-TODO: pick states 0..2
-src/Game/character.c	FilterPartyMember	*	*	*	@identity-TODO: filter mode bits 1 and 2
 src/Game/character.c	AddToRoster	*	*	*	@identity-TODO: at most 26 demons in the roster; FindEmptySlot's 0 (roster)
 src/Game/character.c	AddToParty	*	*	*	FindEmptySlot's 1 (party); no free position (-1)
 src/Game/character.c	TickPartyConditions	1	call-argument	*	@identity-TODO: AgeConditions' second argument 1
@@ -1325,11 +1323,10 @@ src/Game/partyaction.c	AdjustActorAction	-2	comparison-or-bound	operator == resu
 src/Game/partyaction.c	AdjustActorAction	-1	trivial-function-literal	-1 equality result	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
 src/Game/partyaction.c	AdjustActorAction	60	call-argument	SetMessageLifetime(i16) argument 1	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
 src/Game/partyaction.c	FormatAttackCommand	1	trivial-function-literal	1 bound item	an item id below 1 has no decodable equipped weapon record
-src/Game/partyaction.c	FormatGunCommand	1	trivial-function-literal	1 bound item	@identity-TODO: equipment item id lower bound, party-cell reach query, and decoded record kind zero; mode/operand identities remain unproven
-src/Game/partyaction.c	FormatGunCommand	0	call-argument	HasObjectInReach(i16, i16, i16) argument 1	@identity-TODO: equipment item id lower bound, party-cell reach query, and decoded record kind zero; mode/operand identities remain unproven
-src/Game/partyaction.c	FormatGunCommand	-1	call-argument	HasObjectInReach(i16, i16, i16) argument 2	@identity-TODO: equipment item id lower bound, party-cell reach query, and decoded record kind zero; mode/operand identities remain unproven
-src/Game/partyaction.c	FormatGunCommand	0	call-argument	HasObjectInReach(i16, i16, i16) argument 3	@identity-TODO: equipment item id lower bound, party-cell reach query, and decoded record kind zero; mode/operand identities remain unproven
-src/Game/partyaction.c	FormatGunCommand	0	trivial-function-literal	0 equality kind	@identity-TODO: equipment item id lower bound, party-cell reach query, and decoded record kind zero; mode/operand identities remain unproven
+src/Game/partyaction.c	FormatGunCommand	1	trivial-function-literal	1 bound item	@identity-TODO: equipment item id lower bound, party-cell reach query, and decoded record kind zero; operand identities remain unproven
+src/Game/partyaction.c	FormatGunCommand	-1	call-argument	HasObjectInReach(ReachTestMode, i16, i16) argument 2	@identity-TODO: equipment item id lower bound, party-cell reach query, and decoded record kind zero; operand identities remain unproven
+src/Game/partyaction.c	FormatGunCommand	0	call-argument	HasObjectInReach(ReachTestMode, i16, i16) argument 3	@identity-TODO: equipment item id lower bound, party-cell reach query, and decoded record kind zero; operand identities remain unproven
+src/Game/partyaction.c	FormatGunCommand	0	trivial-function-literal	0 equality kind	@identity-TODO: equipment item id lower bound, party-cell reach query, and decoded record kind zero; operand identities remain unproven
 src/Game/partyaction.c	FormatItemCommand	0	trivial-function-literal	0 equality CountBagEntries()	zero bag entries means the item command is unavailable
 src/Game/partyaction.c	FormatCompCommand	1	trivial-function-literal	1 equality compState	@identity-TODO: compState value 1 makes the COMP command available
 src/Game/partyaction.c	PrepareMemberPickTarget	1	trivial-function-literal	1 return	@identity-TODO: signed pickTargetHigh marker and command-phase step advances (0, 1, 4, -1); zero target for roles needing none
@@ -1395,9 +1392,7 @@ src/Game/partyaction.c	RollProximityEvent	0	trivial-function-literal	0 case	near
 src/Game/partyaction.c	RollProximityEvent	0x7fff	store	store to index	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
 src/Game/partyaction.c	RollProximityEvent	1	trivial-function-literal	1 case	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
 src/Game/partyaction.c	RollProximityEvent	2	case-label	switch on nearest	nearest-object distance uses 0x7fff as no-distance sentinel, slot 15 is the last of 16, and distances 0/1/2 select different random thresholds
-src/Game/partyaction.c	HasObjectInReach	0	trivial-function-literal	0 case	@identity-TODO: reach-query modes 0/1 select the vertical-or-occupied and same-party-cell branches; CountObjectsAt index 0 selects the party cell
-src/Game/partyaction.c	HasObjectInReach	0	call-argument	CountObjectsAt(i16, i16, ObjectKindMatch, i16) argument 4	@identity-TODO: reach-query modes 0/1 select the vertical-or-occupied and same-party-cell branches; CountObjectsAt index 0 selects the party cell
-src/Game/partyaction.c	HasObjectInReach	1	trivial-function-literal	1 case	@identity-TODO: reach-query modes 0/1 select the vertical-or-occupied and same-party-cell branches; CountObjectsAt index 0 selects the party cell
+src/Game/partyaction.c	HasObjectInReach	0	call-argument	CountObjectsAt(i16, i16, ObjectKindMatch, i16) argument 4	CountObjectsAt argument 4 selects index zero for objects on the party cell
 src/Game/partyaction.c	FindAbleHumanMember	38	comparison-or-bound	operator == id	@identity-TODO: character ids 38 and 399 are accepted alongside human ids, but their character names are undecoded
 src/Game/partyaction.c	FindAbleHumanMember	399	comparison-or-bound	operator == id	@identity-TODO: character ids 38 and 399 are accepted alongside human ids, but their character names are undecoded
 src/Game/partyaction.c	TickPartyConditionActions	36	comparison-or-bound	operator >= conditionActionTicks	36 ticks trigger a condition action; positive action codes are actionable and zero means none
@@ -1483,9 +1478,8 @@ src/Game/partyaction.c	PickMemberActionTarget	0	call-argument	RunPickTargetWindo
 src/Game/partyaction.c	PickMemberActionTarget	0x82	call-argument	RunPickTargetWindow(i16, i16, i16, i16) argument 3	@identity-TODO: picker id zero and encoded kinds 0x82/0x12 are passed to the target picker; their high-bit semantics are unproven
 src/Game/partyaction.c	PickMemberActionTarget	0x12	call-argument	RunPickTargetWindow(i16, i16, i16, i16) argument 3	@identity-TODO: picker id zero and encoded kinds 0x82/0x12 are passed to the target picker; their high-bit semantics are unproven
 src/Game/partyaction.c	RunPartyCommandInput	-1	trivial-function-literal	-1 initializer	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
-src/Game/partyaction.c	RunPartyCommandInput	0	call-argument	HasObjectInReach(i16, i16, i16) argument 1	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
-src/Game/partyaction.c	RunPartyCommandInput	-1	call-argument	HasObjectInReach(i16, i16, i16) argument 2	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
-src/Game/partyaction.c	RunPartyCommandInput	0	call-argument	HasObjectInReach(i16, i16, i16) argument 3	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
+src/Game/partyaction.c	RunPartyCommandInput	-1	call-argument	HasObjectInReach(ReachTestMode, i16, i16) argument 2	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
+src/Game/partyaction.c	RunPartyCommandInput	0	call-argument	HasObjectInReach(ReachTestMode, i16, i16) argument 3	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
 src/Game/partyaction.c	RunPartyCommandInput	0	call-argument	RunPickTargetWindow(i16, i16, i16, i16) argument 4	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
 src/Game/partyaction.c	RunPartyCommandInput	0	trivial-function-literal	0 equality flags	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
 src/Game/partyaction.c	RunPartyCommandInput	0	call-argument	RunPickTargetWindow(i16, i16, i16, i16) argument 2	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
@@ -1498,6 +1492,4 @@ src/Game/partyaction.c	GetSwappedMember	-2	return	return value	-2 distinguishes 
 src/Game/partyaction.c	IsGuestIndex	-2	return	return value	-2 distinguishes a nonmatching guest position from the ordinary empty-slot value -1
 src/Game/partyaction.c	RunPickTargetWindow	-1	trivial-function-literal	-1 store g_selectedObjectId	-1 clears selected and hovered object ids before a cancelled picker closes
 src/Game/partyaction.c	PickFieldObjectTarget	-1	trivial-function-literal	-1 equality g_hoveredObjectId	-1 from the hotspot means no field object is hovered
-src/Game/partyaction.c	PickPartySlotTarget	0	trivial-function-literal	0 equality result	party-slot poll returns zero while waiting and -1 on cancel; hovered -1 means no party position
-src/Game/partyaction.c	PickPartySlotTarget	-1	trivial-function-literal	-1 equality result	party-slot poll returns zero while waiting and -1 on cancel; hovered -1 means no party position
 src/Game/partyaction.c	PickPartySlotTarget	-1	trivial-function-literal	-1 equality g_hoveredObjectId	party-slot poll returns zero while waiting and -1 on cancel; hovered -1 means no party position

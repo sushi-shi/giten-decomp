@@ -12,10 +12,8 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 172 declared domains. The retail
-compile reports zero REGRESS and zero RESET. The strict-enum view still warns
-that `src/Game/fieldobj.c` does not parse; that is separate from the retail
-compile and constants gate.
+`giten verify enum-domains` passes with 176 declared domains. The retail
+compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
 
 ## Batch workflow
 

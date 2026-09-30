@@ -713,7 +713,7 @@ b16 FormatGunCommand(Character* actor) {
     if (GetCharacterEquipment(actor)[EQUIP_SLOT_GUN].item < 1) {
         return false;
     }
-    if (HasObjectInReach(0, -1, 0)) {
+    if (HasObjectInReach(REACH_VERTICAL_OR_OCCUPIED, -1, 0)) {
         return false;
     }
     strcpy(g_scratchBuffer, "GUN");
@@ -1670,11 +1670,11 @@ void UpdatePartyActionWaits(void) {
 }
 
 RVA(0x00008060, 0xd5)
-b16 HasObjectInReach(i16 mode, i16 first, i16 second) {
+b16 HasObjectInReach(GZ_ENUM_PARAM(ReachTestMode, i16) mode, i16 first, i16 second) {
     MapCoord pos = GetMapCoord();
     FieldObject* object;
     switch (mode) {
-        case 0:
+        case REACH_VERTICAL_OR_OCCUPIED:
             if (first >= 0) {
                 object = GetFieldObject(first);
                 if (pos.x != object->pos.x || pos.y == object->pos.y) {
@@ -1684,7 +1684,7 @@ b16 HasObjectInReach(i16 mode, i16 first, i16 second) {
                 return false;
             }
             break;
-        case 1:
+        case REACH_SHARED_PARTY_CELL:
             if (first >= 0 && second >= 0) {
                 return false;
             }
@@ -2534,7 +2534,7 @@ i16 RunPartyCommandInput(void) {
                 || flags == TARGET_SELECT_PARTY_OR_ROSTER) {
                 reach = true;
             }
-            if (reach == false && HasObjectInReach(0, -1, 0)) {
+            if (reach == false && HasObjectInReach(REACH_VERTICAL_OR_OCCUPIED, -1, 0)) {
                 character->pickObject = FindObjectAtParty();
             target_selected:
                 s_pickMode++;
@@ -2851,12 +2851,12 @@ b16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
 
 RVA(0x0000a0b0, 0x69)
 GZ_ENUM_RETURN(TargetPickResult, i16) PickPartySlotTarget(i16 minimumRange, i16 mode) {
-    i16 result = PollPartySlotSelection(mode);
-    if (result == 0) {
+    GZ_ENUM_LOCAL(PartySlotPollResult, i16) result = PollPartySlotSelection(mode);
+    if (result == PARTY_SLOT_POLL_WAITING) {
         ClearMouseClicks();
         return TARGET_PICK_WAITING;
     }
-    if (result == -1) {
+    if (result == PARTY_SLOT_POLL_CANCELLED) {
         ClearMouseClicks();
         return TARGET_PICK_CANCELLED;
     }

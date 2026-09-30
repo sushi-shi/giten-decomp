@@ -1,6 +1,7 @@
 #ifndef GITEN_GAME_CHARINFO_H
 #define GITEN_GAME_CHARINFO_H
 
+#include <EnumDomain.h>
 #include <Game/Character.h>
 
 typedef struct PartyMemberList {
@@ -16,7 +17,15 @@ i16 FindRosterSlotIn(i16 id, i16 inParty);
 Character* GetRosterCharacterById(i16 id, i16 inParty);
 i16 TickActionWait(ActionWait* wait, i16 speed);
 i16 TickPartyActionWaits(void);
-i16 GetPickState(Character* character);
+// A party member is ready to pick, blocked by a condition, or still waiting
+// for its action timer.
+GZ_ENUM_BEGIN_SPLIT(MemberPickState, i16)
+    MEMBER_PICK_READY = 0,
+    MEMBER_PICK_CONDITION_BLOCKED = 1,
+    MEMBER_PICK_ACTION_PENDING = 2
+GZ_ENUM_END_SPLIT(MemberPickState)
+
+GZ_ENUM_RETURN(MemberPickState, i16) GetPickState(Character* character);
 i16 FindReadyMember(i16 needMark);
 PartyMemberList* ListPickableMembers(PartyMemberList* list, i16 max, i16 idleOnly);
 i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools);

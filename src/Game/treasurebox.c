@@ -3393,7 +3393,7 @@ b16 ScatterObjects(void) {
     SetBit(flags, 0x22);
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         i16 object = GetLiveObject(i);
-        if (object >= 0 && !HasObjectInReach(1, -1, object)) {
+        if (object >= 0 && !HasObjectInReach(REACH_SHARED_PARTY_CELL, -1, object)) {
             flags = GetCharacterFlags(GetCombatant(object));
             ClearBit(flags, ACTOR_FLAG_NOTICED);
         }
@@ -3441,7 +3441,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBackActor(void) {
     if (result < 0) {
         return result;
     }
-    if (HasObjectInReach(0, -1, 0)) {
+    if (HasObjectInReach(REACH_VERTICAL_OR_OCCUPIED, -1, 0)) {
         return FIELD_EFFECT_NONE;
     }
     ExchangeAbortPending(true);

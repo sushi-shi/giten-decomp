@@ -1181,7 +1181,7 @@ void RefreshStatusPanel(i16 force) {
 // edges match. A separate filter result regresses both callers; C-safe TU states
 // retain the register exchange, with one also extending the line-step lifetime.
 RVA(0x0003e3c0, 0x1c1)
-i16 PollTextPartySlotSelection(i16 mode) {
+GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
     i16 oldStep = ResetTextPlaneLineStep(g_infoPlane, 3);
     i16 x;
     i16 y;
@@ -1193,13 +1193,13 @@ i16 PollTextPartySlotSelection(i16 mode) {
         CommitPartySlotSelection();
         ClearMouseClicks();
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
-        return 1;
+        return PARTY_SLOT_POLL_CONFIRMED;
     }
     if (g_mouseRightClick) {
         ClearMouseSelection();
         ClearMouseClicks();
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
-        return -1;
+        return PARTY_SLOT_POLL_CANCELLED;
     }
     column = TextPlaneCellAt(g_infoPlane, g_mousePosition.x, g_mousePosition.y, &x, &y);
     if (column == 0 || column == 39) {
@@ -1211,7 +1211,7 @@ i16 PollTextPartySlotSelection(i16 mode) {
     }
     if (s_selectedPartySlot == slot) {
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
-        return 0;
+        return PARTY_SLOT_POLL_WAITING;
     }
     s_selectedPartySlot = slot;
     ClearTextPlaneHighlight(g_infoPlane);
@@ -1219,26 +1219,26 @@ i16 PollTextPartySlotSelection(i16 mode) {
         SetTextPlaneHighlight(g_infoPlane, column, y);
     }
     ResetTextPlaneLineStep(g_infoPlane, oldStep);
-    return 0;
+    return PARTY_SLOT_POLL_WAITING;
 }
 
 RVA(0x0003e590, 0xc9)
-i16 PollPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
+GZ_ENUM_RETURN(PartySlotPollResult, i16) PollPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
     i16 slot;
     if (g_mouseLeftClick) {
         CommitPartySlotSelection();
         ClearMouseClicks();
-        return 1;
+        return PARTY_SLOT_POLL_CONFIRMED;
     }
     if (g_mouseRightClick) {
         ClearMouseSelection();
         ClearMouseClicks();
-        return -1;
+        return PARTY_SLOT_POLL_CANCELLED;
     }
     slot = PartyPanelAtPoint(g_mousePosition.x, g_mousePosition.y);
     slot = FilterPartySlotSelection(slot, mode);
     s_selectedPartySlot = slot;
-    return 0;
+    return PARTY_SLOT_POLL_WAITING;
 }
 
 RVA(0x0003e660, 0x19)
@@ -1906,11 +1906,12 @@ i16 TickPartyActionWaits(void) {
 }
 
 RVA(0x0003f5c0, 0x30)
-i16 GetPickState(Character* character) {
+GZ_ENUM_RETURN(MemberPickState, i16) GetPickState(Character* character) {
     if (GetPickBlockingCondition(GetCharacterConditions(character))) {
-        return 1;
+        return MEMBER_PICK_CONDITION_BLOCKED;
     }
-    return IsActionWaitPending(GetCharacterActionWait(character)) ? 2 : 0;
+    return IsActionWaitPending(GetCharacterActionWait(character)) ? MEMBER_PICK_ACTION_PENDING
+                                                                  : MEMBER_PICK_READY;
 }
 
 // The first party member free to act (with `needMark`, also holding its field
@@ -1991,15 +1992,15 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
     return ROSTER_SLOT_NONE;
 }
 
-// Returns `slot` when it is in the party and `mode` bit 0 is set, or when it is
-// not and bit 1 is set; -1 otherwise.
+// Returns `slot` when its party or reserve position is allowed by `mode`;
+// otherwise returns ROSTER_SLOT_NONE.
 RVA(0x0003f780, 0x38)
-i16 FilterPartyMember(i16 slot, i16 mode) {
+i16 FilterPartyMember(i16 slot, GZ_ENUM_PARAM(RosterMemberFilter, i16) mode) {
     i16 index = FindPartySlot(slot);
-    if (index != PARTY_POSITION_NONE && (mode & 1)) {
+    if (index != PARTY_POSITION_NONE && (mode & ROSTER_FILTER_PARTY)) {
         return slot;
     }
-    if (index == PARTY_POSITION_NONE && (mode & 2)) {
+    if (index == PARTY_POSITION_NONE && (mode & ROSTER_FILTER_RESERVE)) {
         return slot;
     }
     return ROSTER_SLOT_NONE;

@@ -1069,7 +1069,7 @@ void ResetFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer) {
 
 // Loads record `kind` and its picture into layer `layer` (-1 empties it).
 RVA(0x0000e820, 0xcb)
-void LoadEnemyGroupSlot(i16 layer, i16 kind) {
+void LoadEnemyGroupSlot(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer, i16 kind) {
     ImageRequest request;
     i32 size;
     struct BmpFile* data;
@@ -2705,7 +2705,7 @@ b32 AnyObjectInReach(void) {
     i16 object;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         object = GetLiveObject(i);
-        if (object >= 0 && HasObjectInReach(1, -1, object)) {
+        if (object >= 0 && HasObjectInReach(REACH_SHARED_PARTY_CELL, -1, object)) {
             found = true;
         }
     }

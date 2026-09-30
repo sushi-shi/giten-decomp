@@ -33,9 +33,16 @@ i16 PrepareMemberPickTarget(i16 id);
 // The party position of roster member `id`, or -1.
 i16 FindPartyPositionOfId(i16 id);
 
-// @identity-TODO: tests combatant placement against the party cell; negative
-// ids select the party side. Mode zero's object test requires equal x and unequal y.
-b16 HasObjectInReach(i16 mode, i16 first, i16 second);
+// Two placement tests against the party cell. In the first, a supplied object
+// must share x but differ in y; without one, an object must occupy the party
+// cell. In the second, party-side pairs share that cell, while a mixed pair
+// requires its field object there. Negative ids select the party side.
+GZ_ENUM_BEGIN_SPLIT(ReachTestMode, i16)
+    REACH_VERTICAL_OR_OCCUPIED = 0,
+    REACH_SHARED_PARTY_CELL = 1
+GZ_ENUM_END_SPLIT(ReachTestMode)
+
+b16 HasObjectInReach(GZ_ENUM_PARAM(ReachTestMode, i16) mode, i16 first, i16 second);
 
 // Target sources selected by RunPickTargetWindow's low three kind bits.
 GZ_ENUM_FLAGS_BEGIN(TargetPickKind, i16)
