@@ -295,7 +295,6 @@ src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 bound item
 src/Game/fieldobj.c	InitObjectFromRecord	-1	*	*	an empty slot has no attachment
 src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 store byte096	@identity-TODO: byte096 starts at 1
 src/Game/fieldobj.c	InitObjectFromRecord	0x11	*	*	@identity-TODO: word098 starts at 0x11
-src/Game/fieldobj.c	InitObjectFromRecord	18	*	*	@identity-TODO: the fourth battle-stat group's level (its identity is unrecovered)
 src/Game/fieldobj.c	ReadObjectRecordField	*	*	*	a field of one, two or four bytes
 src/Game/fieldobj.c	SetFamiliarityCount	0	*	*	counts start at zero
 src/Game/fieldobj.c	RefreshFamiliarity	8	*	*	the familiarity is an eighth of the count
@@ -349,7 +348,6 @@ src/Game/treasurebox.c	PickGrowthStats	*	*	*	affiliation slots 0-2 and their pic
 src/Game/treasurebox.c	DropTopStatPicks	*	*	*	a pick on the character's highest stat is dropped one time in four (-1: no pick)
 src/Game/treasurebox.c	TrainingThreshold	*	*	*	training level n needs 3 (n - 1)^2 + 7 points, levels clamped to 0..99
 src/Game/treasurebox.c	AddTrainingPointsRaw	99	*	*	the counter caps at training level 99's threshold
-src/Game/treasurebox.c	ApplyTraining	3	*	*	the demon-interaction training group covers talking, analyzing and summoning
 src/Game/treasurebox.c	GetCellTrapDamage	0x6b	call-argument	*	a sound effect number (the sounds have no names)
 src/Game/treasurebox.c	GetCellTrapDamage	*	case-label	*	alignment trap codes between CELL_ALIGNMENT_TRAP_FIRST and _LAST (their masks, not their codes, differ)
 src/Game/treasurebox.c	GetCellTrapDamage	*	trivial-function-literal	*	no damage below 1%; alignment traps keep the percentage in disableFlag[1]
@@ -549,8 +547,8 @@ src/Script/scriptvm.c	ExecScriptOpcode	1	call-argument	OpSkipJumpTarget(*argumen
 src/Script/scriptvm.c	ExecScriptOpcode	[12]	call-argument	OpIfDemonCount(*argument 2	the demon count the opcode tests against
 src/Script/scriptvm.c	ExecScriptOpcode	[38]	call-argument	SetActorMode(*argument 1	actor modes 3 and 8 have no step behaviour (RunObjectStep has no case for them); their meaning is unrecovered
 src/Game/partyaction.c	*	[38]	case-label	*	actor modes 3 and 8 have no step behaviour (RunObjectStep has no case for them); their meaning is unrecovered
-src/Game/partyaction.c	CheckBattleProtection	*	array-index	*	@identity-TODO: tally slots 5 and 6 still use unnamed attribute categories
-src/Game/partyaction.c	CheckBattleProtection	*	call-argument	ReportBattleTally*	@identity-TODO: tally slots 5 and 6 still lack distinct effect names
+src/Game/partyaction.c	CheckBattleProtection	*	array-index	*	@identity-TODO: tally slot 6 still uses an unnamed attribute category
+src/Game/partyaction.c	CheckBattleProtection	*	call-argument	ReportBattleTally*	@identity-TODO: tally slot 6 still lacks a distinct effect name
 src/Game/partyaction.c	CheckBattleProtection	*	trivial-function-literal	*attribute	@identity-TODO: attack attributes 0 and 1 are encoded values without recovered names
 src/Game/partyaction.c	GetActionResistance	*	comparison-or-bound	*attribute	@identity-TODO: attack attribute 10 is an encoded item/skill value without a recovered name
 src/Game/partyaction.c	GetActionResistance	50	return	*	a same-side attack takes half resistance
@@ -577,7 +575,6 @@ src/Script/scriptactor.c	GrantActorReward	[1-3]	call-argument	GrantAdjustedActor
 src/Script/scriptactor.c	GrantActorReward	1	trivial-function-literal	1 bound reward	an equipment reward below item 1 means none was picked
 src/Game/character.c	InitCharacters	*	call-argument	InitCharacterSlot(*argument 1	the g_characters slots, filled in order
 src/Game/character.c	InitCharacters	*	call-argument	CopyCharacterWithoutSkills(*	slots 13..15 start as copies of slot 0's record
-src/Game/treasurebox.c	RunFieldEffect	*	*	* case	field-effect codes 0x1a and 0x23 have no proven individual skill identity
 src/Game/treasurebox.c	RunFieldEffect	*	case-label	switch on effect	field-effect codes 0x1a and 0x23 have no proven individual skill identity
 src/Game/treasurebox.c	KnockBack	[01]	*	*at	x and y of the pushed position (`at` points at its x)
 src/Game/treasurebox.c	KnockBack	[01]	call-argument	*argument [12]	x and y of the pushed position (`at` points at its x)

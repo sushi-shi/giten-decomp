@@ -202,14 +202,17 @@ into `GrantActorReward`, so the enum keeps both names for that value.
 
 Kept as rows until there is evidence:
 
-- Battle-tally slots 4..6, attack attributes 0/1, 9 and 10, and the shared
+- Battle-tally slots 4 and 6, attack attributes 0/1, 9 and 10, and the shared
   result word's noncombat encodings. The ET0004 skill table links effect
-  codes to protection slots: 0..3 and 7..14 now have evidence-backed names.
+  codes to protection slots: 0..3, 5 and 7..14 now have evidence-backed names.
+  Slot 5 is set by Tetrakarn and Counterattack and reflects attacks with
+  attribute 0. The barrier-cleared message in MS00DF entry 3 uses the generic
+  barrier label from MS7F00 entry 52, so it does not distinguish slots 5 and 6.
   MS00DD entry 5 dispatches base action results 0..10 to entries 10..19 and
   97; the messages and combat resolver identify miss, no effect, graze,
   success, critical, lethal, immune, reflect, HP/MP absorb and protection.
   The resistance bytes 251..255 map to reflected or absorbed damage. The
-  tally effects still need their script and record relationships decoded.
+  remaining tally effects still need their script and record relationships decoded.
   The combat resolver identifies result-word tags 0x50, 0x70 and 0x80
   for HP, MP and experience draining skills.
   Attribute 10 bypasses the resistance array with a fixed value of 50;
