@@ -1804,9 +1804,9 @@ void MarkActorActionReady(Character* actor) {
             }
         case ACTOR_MODE_DEFEND:
         case ACTOR_MODE_APPROACH:
-        case ACTOR_MODE_CHARGE:
-        case ACTOR_MODE_PURSUE:
-        case ACTOR_MODE_SIDESTEP:
+        case ACTOR_MODE_STEP_INTO_RANGE:
+        case ACTOR_MODE_STEP_CLOSER:
+        case ACTOR_MODE_CIRCLE_AROUND:
         case ACTOR_MODE_RECOVER:
         case ACTOR_MODE_WANDER:
         case ACTOR_MODE_IDLE:

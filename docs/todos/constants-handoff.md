@@ -420,6 +420,9 @@ Windows names from behavior; labels three and eight are 防御行動 (defense ac
 and 回復行動 (recovery action). They name `ACTOR_MODE_DEFEND` and
 `ACTOR_MODE_RECOVER`. Windows `RunObjectStep` has no branch for either mode;
 `MarkActorActionReady` gives both the defense pick role for party members.
+The same label order identifies modes five through seven as 間合に一歩 (step into
+range), 一歩近づく (step closer) and 周り込み (circle around). Their former
+charge/pursue/sidestep names were less faithful to those labels.
 
 ## Attack attribute columns
 

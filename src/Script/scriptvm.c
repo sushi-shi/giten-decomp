@@ -237,12 +237,12 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 return SetActorMode(ACTOR_MODE_DEFEND);
             case SCRIPT_OP_SET_ACTOR_MODE_APPROACH:
                 return SetActorMode(ACTOR_MODE_APPROACH);
-            case SCRIPT_OP_SET_ACTOR_MODE_CHARGE:
-                return SetActorMode(ACTOR_MODE_CHARGE);
-            case SCRIPT_OP_SET_ACTOR_MODE_PURSUE:
-                return SetActorMode(ACTOR_MODE_PURSUE);
-            case SCRIPT_OP_SET_ACTOR_MODE_SIDESTEP:
-                return SetActorMode(ACTOR_MODE_SIDESTEP);
+            case SCRIPT_OP_SET_ACTOR_MODE_STEP_INTO_RANGE:
+                return SetActorMode(ACTOR_MODE_STEP_INTO_RANGE);
+            case SCRIPT_OP_SET_ACTOR_MODE_STEP_CLOSER:
+                return SetActorMode(ACTOR_MODE_STEP_CLOSER);
+            case SCRIPT_OP_SET_ACTOR_MODE_CIRCLE_AROUND:
+                return SetActorMode(ACTOR_MODE_CIRCLE_AROUND);
             case SCRIPT_OP_SET_ACTOR_MODE_RECOVER:
                 return SetActorMode(ACTOR_MODE_RECOVER);
             case SCRIPT_OP_SET_ACTOR_MODE_WANDER:

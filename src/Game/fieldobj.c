@@ -1775,14 +1775,14 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
         case ACTOR_MODE_FLEE:
             StepObjectTowardParty(object, MOVE_BACK, OBJECT_PARTY_CELL_CONTINUE);
             break;
-        case ACTOR_MODE_CHARGE:
+        case ACTOR_MODE_STEP_INTO_RANGE:
             StepObjectTowardParty(object, MOVE_FORWARD, OBJECT_PARTY_CELL_CONTINUE);
             break;
         case ACTOR_MODE_APPROACH:
-        case ACTOR_MODE_PURSUE:
+        case ACTOR_MODE_STEP_CLOSER:
             StepObjectTowardParty(object, MOVE_FORWARD, OBJECT_PARTY_CELL_STOP);
             break;
-        case ACTOR_MODE_SIDESTEP:
+        case ACTOR_MODE_CIRCLE_AROUND:
             StepObjectTowardParty(object, RandomUpTo(1) * 2 + 1, OBJECT_PARTY_CELL_CONTINUE);
             break;
         case ACTOR_MODE_WANDER:

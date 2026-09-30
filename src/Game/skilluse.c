@@ -373,7 +373,7 @@ void AlertActor(Character* actor, GZ_ENUM_PARAM(Attitude, i16) state) {
         }
         SetCharacterFlag(actor, ACTOR_FLAG_BATTLE);
         SetCharacterFlag(actor, ACTOR_FLAG_NOTICED);
-        actor->mode = ACTOR_MODE_PURSUE;
+        actor->mode = ACTOR_MODE_STEP_CLOSER;
     }
 }
 

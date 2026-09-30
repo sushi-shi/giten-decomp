@@ -8,8 +8,7 @@
 // Map actors' behaviour state.
 
 // Sets the actor's attitude when state is nonnegative, then activates it.
-// @identity-TODO: personalFlags bits 8/10 and mode 6 are unproven;
-// decode 0xf890's reads of them.
+// @identity-TODO: personalFlags bits 8/10 are unproven; decode RunObjectStep's reads of them.
 void AlertActor(Character* actor, GZ_ENUM_PARAM(Attitude, i16) state);
 
 #endif // GITEN_GAME_ACTOR_H
