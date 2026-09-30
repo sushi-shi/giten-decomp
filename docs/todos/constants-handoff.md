@@ -120,8 +120,12 @@ Map area names:
   level 2 (floor 1) and level 5 (floor 10). M0064 and M0065 use entries 10
   and 11, whose Ohanayashiki destinations are (8, 10) and (10, 4); map north
   is decreasing y, so these are the south and north entrances. M0068 uses
-  entry 9, reaching Millennium Headquarters level 6 (floor 7). The paired
-  Hotel and Ochanomizu transition maps still need distinct identities.
+  entry 9, reaching Millennium Headquarters level 6 (floor 7). M0062/63
+  (Shinagawa Hotel) and M0066/67 (Ochanomizu Shelter) each share one MS000B
+  destination entry. Their second cell distinguishes them: M0062 and M0066
+  use code 0x7b to run MS0043 entry 0, which offers ARM terminal connection;
+  M0063 and M0067 use code 0x40 to run MS003C entries 8 and 13, which load
+  a keeper record and open entry 16's service-terminal menu.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
