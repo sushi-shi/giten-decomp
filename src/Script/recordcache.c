@@ -538,7 +538,7 @@ SkillView* GetSkillView(i16 id) {
 }
 
 RVA(0x0002e720, 0x13)
-i32 GetSkillKind(i16 id) {
+GZ_ENUM_RETURN(SkillKind, i32) GetSkillKind(i16 id) {
     return GetCachedSkill(id)->parameters.kind;
 }
 

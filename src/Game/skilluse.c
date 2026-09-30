@@ -396,23 +396,23 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
     if (IsSkillAction(attacker)) {
         kind = GetSkillKind(attacker->pickTarget);
         switch (kind) {
-            case 6:
+            case SKILL_KIND_MP_DAMAGE:
                 if (target->shield == 0) {
                     ChangePool(&target->pools.mp, -attacker->lastChange);
                 }
                 g_mpChange = attacker->lastChange;
                 return;
-            case 5:
+            case SKILL_KIND_HP_DRAIN:
                 ChangePool(&attacker->pools.hp, attacker->lastChange);
                 g_actionResult |= 0x50;
                 break;
-            case 7:
+            case SKILL_KIND_MP_DRAIN:
                 ChangePool(&attacker->pools.mp, attacker->lastChange);
                 ChangePool(&target->pools.mp, -attacker->lastChange);
                 g_actionResult |= 0x70;
                 g_mpChange = attacker->lastChange;
                 return;
-            case 8:
+            case SKILL_KIND_EXPERIENCE_DRAIN:
                 attacker->lastChange = min(target->experience, attacker->lastChange);
                 target->experience -= attacker->lastChange;
                 attacker->experience += attacker->lastChange;
@@ -836,7 +836,7 @@ b16 RunBattleAction(void) {
             g_targetCount = count;
             if (g_actorId >= 0
                 && (actor->pickRole != PICK_ROLE_MAGIC
-                    || GetCachedSkill(actor->pickTarget)->parameters.kind != 0x10)) {
+                    || GetCachedSkill(actor->pickTarget)->parameters.kind != SKILL_KIND_INERT)) {
                 actor->acting = true;
                 RedrawFieldView();
                 RequestFieldRefresh();
@@ -1733,35 +1733,35 @@ void ApplySkillEffect(i16 skill, Character* user, Character* target) {
         s_effectSkill.parameters.type = 2;
     }
     switch (s_effectSkill.parameters.kind) {
-        case 2:
+        case SKILL_KIND_RESTORE:
             UseRestoreSkill(user, target);
             break;
-        case 3:
+        case SKILL_KIND_BATTLE_TALLY:
             UseBattleTallySkill(user, target);
             break;
-        case 4:
+        case SKILL_KIND_BATTLE_STAT:
             UseBattleStatSkill(user, target);
             break;
         case 9:
         case 10:
             UseClearBattleTallySkill(user, target);
             break;
-        case 11:
+        case SKILL_KIND_RESET_BATTLE_STATS:
             UseResetBattleStatsSkill(user, target);
             break;
-        case 12:
+        case SKILL_KIND_FIELD_TRAVEL:
             UseKind12Skill(user, target);
             break;
-        case 13:
+        case SKILL_KIND_SUMMON:
             UseKind13Skill(user, target);
             break;
         case 14:
             UseKind14Skill(user, target);
             break;
-        case 15:
+        case SKILL_KIND_FIELD_EFFECT:
             UseFieldEffectSkill(user, target);
             break;
-        case 16:
+        case SKILL_KIND_INERT:
             UseInertSkill(user, target);
             break;
         default:

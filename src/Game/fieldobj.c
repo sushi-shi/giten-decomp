@@ -1591,7 +1591,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     if (CanUseSkill(skill, actor) <= 0) {
         return -1;
     }
-    if ((i16)GetSkillKind(skill) == 2) {
+    if ((i16)GetSkillKind(skill) == SKILL_KIND_RESTORE) {
         count = 0;
         for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             InitFieldSkillCandidate(&candidates[i]);

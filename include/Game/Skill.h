@@ -18,14 +18,31 @@ GZ_ENUM_BEGIN(SkillUseModes)
 GZ_ENUM_END(SkillUseModes);
 // clang-format on
 
+// The low six bits of a skill record's first byte select its effect family.
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(SkillKind, u8)
+    SKILL_KIND_RESTORE = 2,
+    SKILL_KIND_BATTLE_TALLY = 3,
+    SKILL_KIND_BATTLE_STAT = 4,
+    SKILL_KIND_HP_DRAIN = 5,
+    SKILL_KIND_MP_DAMAGE = 6,
+    SKILL_KIND_MP_DRAIN = 7,
+    SKILL_KIND_EXPERIENCE_DRAIN = 8,
+    SKILL_KIND_RESET_BATTLE_STATS = 11,
+    SKILL_KIND_FIELD_TRAVEL = 12,
+    SKILL_KIND_SUMMON = 13,
+    SKILL_KIND_FIELD_EFFECT = 15,
+    SKILL_KIND_INERT = 16
+GZ_ENUM_END_SPLIT(SkillKind);
+// clang-format on
+
 // Parameters shared by the file header and the menu's skill view.
+#define SKILL_KIND_BITS 6
 typedef struct SkillParameters {
-    // @identity-TODO: the low six bits and the top two of the first byte are
-    // read by separate accessors, and the combat resolver compares the whole
-    // byte (`type`); roles unrecovered.
+    // The kind and attack mode share a byte used whole by the combat resolver.
     union {
         struct {
-            u8 kind : 6;
+            GZ_ENUM_STORAGE(SkillKind, u8) kind : SKILL_KIND_BITS;
             u8 mode : 2;
         };
         u8 type;
@@ -126,7 +143,7 @@ SkillView* GetSkillView(i16 id);
 void LoadSkillFiles(void);
 i16 CheckSkillArea(i16 id);
 i16 CanUseSkill(i16 id, struct Character* character);
-i32 GetSkillKind(i16 id);
+GZ_ENUM_RETURN(SkillKind, i32) GetSkillKind(i16 id);
 GZ_ENUM_RETURN(AttackMode, u16) GetSkillMode(i16 id);
 u16 GetSkillFamily(i16 id);
 u16 GetSkillLevel(i16 id);

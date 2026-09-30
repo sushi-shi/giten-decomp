@@ -12,7 +12,7 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 210 declared domains. The retail
+`giten verify enum-domains` passes with 211 declared domains. The retail
 compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
 
 ## Batch workflow
@@ -105,7 +105,10 @@ Kept as rows until there is evidence:
 
 - Action-result, resistance and battle-tally codes. These need a decoder for
   message-script files 0xdd and 0xdf.
-- Skill kinds 2, 5, 6 and 7.
+- Skill kinds 9, 10 and 14 have no records in the current ET0004 skill table.
+  Their distinct identities are still unknown; the combat code shares the
+  first two's handler and the field-effect code shares kind 14's handler
+  with kinds 12 and 13.
 - Object record ids 0xce, 0x22 and 0x117. The record names are undecoded.
 - Actor flags 0x20, 0x21, 0x22 and 0x3f.
 - Bank 7 flags 0xfd-0xff.

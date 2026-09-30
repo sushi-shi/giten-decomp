@@ -252,7 +252,6 @@ src/Game/fieldobj.c	GetPartySide	2	*	*	a random side: MOVE_RIGHT (1) or MOVE_LEF
 src/Game/fieldobj.c	StepObjectTowardParty	1	*	*	mode 1 stops next to the party
 src/Game/fieldobj.c	IsWithinRange	*	*	*	a range byte packs the near distance in its high nibble and the far one in its low nibble
 src/Game/fieldobj.c	UseObjectSkill	-1	*	*	the skill cannot be used, is out of range or fails
-src/Game/fieldobj.c	UseObjectSkill	2	comparison-or-bound	*	@identity-TODO: skill kind 2 targets field objects by HP or conditions
 src/Game/fieldobj.c	UseObjectSkill	*	*	operator >> max	three quarters of the maximum HP
 src/Game/fieldobj.c	UseObjectSkill	3	arithmetic	*	three quarters of the maximum HP
 src/Game/fieldobj.c	RunObjectStep	0	trivial-function-literal	0 equality g_tickElapsed	no ticks have elapsed
