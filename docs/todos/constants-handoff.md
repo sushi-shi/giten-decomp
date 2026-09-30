@@ -543,7 +543,10 @@ Unresolved identities and behavior-only names:
   at raw `DDS98.EXE` offsets 0x3f4da and 0x3f536 also compare only 0x8d and
   0x8e. The Windows map has 97 code-0x8b records (85 on Shibuya level 2),
   twelve code-0x8c records (ten in Chuu), and nine code-0x8f records (in
-  Ueno Shrine, Takamagahara and Chuu). Their distinct map roles remain
+  Ueno Shrine, Takamagahara and Chuu). The 85 Shibuya code-0x8b rows have
+  zero flag pairs and the same three payload bytes (40, 6, 0xff); the ten
+  Chuu code-0x8c rows and all nine code-0x8f rows have zero flag and payload
+  bytes. Their distinct map roles remain
   unproven. The original PC-98 disc has 23 code-0x8c object records versus
   Windows' 12; the eleven extra records are on Shanshan City level 5. Code
   0x7c has a cell-kind table row but no cell record in either disc's area

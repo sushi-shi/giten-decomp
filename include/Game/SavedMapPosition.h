@@ -2,11 +2,12 @@
 #define GITEN_GAME_SAVEDMAPPOSITION_H
 
 #include <EnumDomain.h>
+#include <Game/MapArea.h>
 #include <Game/ViewDirection.h>
 #include <Ints.h>
 
 typedef struct SavedMapPosition {
-    u8 area;
+    GZ_ENUM_STORAGE(MapAreaId, u8) area;
     u8 level;
     u8 x;
     u8 y;

@@ -77,7 +77,7 @@ DATA(0x0007b764)
 static i16 s_returnLevel = 0;
 
 DATA(0x0007b768)
-static i16 s_returnArea = 0;
+static GZ_ENUM_STORAGE(MapAreaId, i16) s_returnArea = MAP_AREA_HATSUDAI_SHELTER;
 
 DATA(0x0007b76c)
 static i16 s_returnY = 0;

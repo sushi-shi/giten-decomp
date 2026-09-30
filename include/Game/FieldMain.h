@@ -7,6 +7,7 @@
 #include <Enums.h>
 #include <Game/BattleStat.h>
 #include <Game/GameState.h>
+#include <Game/MapArea.h>
 #include <Game/ViewDirection.h>
 #include <Ints.h>
 
@@ -129,7 +130,7 @@ i16 SetPendingSound(i16 sound);
 void SetRebuildRoom(i16 rebuild);
 // The return point as GetReturnPoint copies it out.
 typedef struct ReturnPoint {
-    i16 area;
+    GZ_ENUM_STORAGE(MapAreaId, i16) area;
     i16 level;
     i16 x;
     i16 y;
