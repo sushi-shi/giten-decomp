@@ -142,6 +142,7 @@ void DropFlaggedMember(i16 id);
 // skill record selects that slot, so the tally effect's authored name is open.
 // clang-format off
 GZ_ENUM_BEGIN_SPLIT(BattleTallyIndex, i16)
+    BATTLE_TALLY_NONE = -1,
     BATTLE_TALLY_MAGIC_SEAL = 0,
     BATTLE_TALLY_MAGIC_REFLECT = 1,
     BATTLE_TALLY_MAGIC_REFLECT_HALF = 2,
@@ -160,9 +161,19 @@ GZ_ENUM_BEGIN_SPLIT(BattleTallyIndex, i16)
 GZ_ENUM_END_SPLIT(BattleTallyIndex)
 // clang-format on
 
-// Reads a battle tally byte; mode 1 remembers `index`, while mode -1 uses
-// the remembered index and tests whether the byte clears.
-i16 ReportBattleTally(Character* combatant, i16 index, i16 mode);
+// Remember an index and read its byte, or test whether the selected byte
+// clears. The remembered mode uses the index from the previous read.
+GZ_ENUM_BEGIN_SPLIT(BattleTallyReportMode, i16)
+    BATTLE_TALLY_TEST_REMEMBERED = -1,
+    BATTLE_TALLY_TEST_INDEX = 0,
+    BATTLE_TALLY_REMEMBER = 1
+GZ_ENUM_END_SPLIT(BattleTallyReportMode)
+
+i16 ReportBattleTally(
+    Character* combatant,
+    GZ_ENUM_PARAM(BattleTallyIndex, i16) index,
+    GZ_ENUM_PARAM(BattleTallyReportMode, i16) mode
+);
 
 // Clears the combatant's 14 battle tally bytes.
 void ClearBattleTally(Character* combatant);

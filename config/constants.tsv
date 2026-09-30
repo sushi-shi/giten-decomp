@@ -940,7 +940,7 @@ src/Game/skilluse.c	FlashHitObject	*	*	*	@identity-TODO: no change; redraw mode 
 src/Game/skilluse.c	ApplyCombatDamage	*	*	*	item ids below 1 are absent; the named weapon passives return HP or MP to the attacker on hit
 src/Game/skilluse.c	ResolveCombatAction	*	*	*	@identity-TODO: knockout sentinel 0x7fff, Noelem's special pair (-2, -2), resistance results -1..-6 (see SetActionResult's row), the reply alert bits 0x40/0x80 and alert level 2, the counter-attack kinds
 src/Game/skilluse.c	ResolveKnockout	*	*	*	a knocked-out combatant's HP 0; analyzed (1) and one drop added
-src/Game/skilluse.c	*BattleTall*	*	*	*	@identity-TODO: unidentified tally slots and -1 for none reported; the tally modes 1 and -1
+src/Game/skilluse.c	*BattleTall*	*	*	*	@identity-TODO: unidentified tally slots; the report modes and absent index are named
 src/Game/skilluse.c	ShowKnockoutMessage	*	*	*	@identity-TODO: battle-message script 221 (0xdd), entries 79 and 80; the knockout sentinel 0x7fff
 src/Game/skilluse.c	IsSkillUsableNow	*	*	*	1 when usable now, -1 when not
 src/Game/skilluse.c	OpenMemberSkillMenu	0x1e	*	*	@identity-TODO: menu flags 0x1e

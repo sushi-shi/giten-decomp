@@ -267,6 +267,9 @@ Battle tally names:
   不治呪縛 (Incurable Curse); `UseBattleTallySkill` writes that effect code to
   the same numbered battle-tally slot. The slot's later gameplay effect is
   not established by a direct reader in the reconstructed C.
+- `ReportBattleTally` mode 1 remembers and reads an index, mode 0 tests the
+  supplied index for clearing, and mode -1 tests the remembered index. Its
+  remembered and message indices use -1 when absent.
 
 Training group:
 

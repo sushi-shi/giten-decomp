@@ -115,13 +115,11 @@ static i16 s_promptSub = -1;
 DATA(0x000690dc)
 static i16 s_knockedOut = 0x7fff;
 
-// @identity-TODO: the battle byte ReportBattleTally last reported (-1 for
-// none) and a message flag checked with it after the action (-1 for none).
 DATA(0x000690e0)
-static i16 s_reportedTally = -1;
+static GZ_ENUM_STORAGE(BattleTallyIndex, i16) s_reportedTally = BATTLE_TALLY_NONE;
 
 DATA(0x000690e4)
-static i16 s_tallyMessage = -1;
+static GZ_ENUM_STORAGE(BattleTallyIndex, i16) s_tallyMessage = BATTLE_TALLY_NONE;
 
 DATA(0x00091542)
 i16 g_battleOutcome;
@@ -652,17 +650,21 @@ void ResolveKnockout(i16 previousHp, i16 id) {
 }
 
 RVA(0x0002b5f0, 0x82)
-i16 ReportBattleTally(Character* combatant, i16 index, i16 mode) {
-    i16 tally;
+i16 ReportBattleTally(
+    Character* combatant,
+    GZ_ENUM_PARAM(BattleTallyIndex, i16) index,
+    GZ_ENUM_PARAM(BattleTallyReportMode, i16) mode
+) {
+    GZ_ENUM_LOCAL(BattleTallyIndex, i16) tally;
     u8* value;
     if (combatant == NULL) {
         return 0;
     }
-    if (mode == 1) {
+    if (mode == BATTLE_TALLY_REMEMBER) {
         s_reportedTally = index;
         return GetCharacterBattleTallies(combatant)[index];
     }
-    tally = mode == -1 ? s_reportedTally : index;
+    tally = mode == BATTLE_TALLY_TEST_REMEMBERED ? s_reportedTally : index;
     if (tally < 0) {
         return -1;
     }
@@ -720,8 +722,8 @@ static __inline void RefreshAfterDeferredRemoval(void) {
 // to the next living target, 8 ends the action (the summoning skill swaps its
 // demon into the command position).
 static __inline void ResetReportedBattleTally(void) {
-    s_tallyMessage = -1;
-    s_reportedTally = -1;
+    s_tallyMessage = BATTLE_TALLY_NONE;
+    s_reportedTally = BATTLE_TALLY_NONE;
 }
 
 // Codegen constraint: keep next-target success outside the phase switch;
@@ -944,12 +946,12 @@ b16 RunBattleAction(void) {
             if (actor == NULL) {
                 break;
             }
-            if (s_reportedTally != -1) {
+            if (s_reportedTally != BATTLE_TALLY_NONE) {
                 if (g_actionResult >= BATTLE_ACTION_GRAZED) {
                     Character* target = GetCombatant(g_targetId);
-                    ReportBattleTally(target, s_reportedTally, -1);
+                    ReportBattleTally(target, s_reportedTally, BATTLE_TALLY_TEST_REMEMBERED);
                 }
-                if (s_tallyMessage != -1) {
+                if (s_tallyMessage != BATTLE_TALLY_NONE) {
                     RunMessageScript(0xdf, 3, -1);
                 }
             }
