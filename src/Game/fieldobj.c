@@ -1481,12 +1481,17 @@ GetPartySide(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
 // Turns an object towards the party (plus `turn` quarter turns) and steps it
 // one cell forward when the way is free; when blocked and not already turned
 // aside, retries once towards the party's side. Returns whether a visible
-// change was refreshed. `mode` 1 stops next to the party.
+// change was refreshed. The stop mode keeps an object already on the party's
+// cell from stepping away.
 // @early-stop tail merge: the two visible/turned refresh exits coalesce here;
 // retail keeps them separate. Shared loop breaks retain that merge, while
 // routing the successful move through the same exit merges all three sites.
 RVA(0x0000f290, 0x24d)
-b16 StepObjectTowardParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) turn, i16 mode) {
+b16 StepObjectTowardParty(
+    FieldObject* object,
+    GZ_ENUM_PARAM(MoveCommand, i16) turn,
+    GZ_ENUM_PARAM(ObjectPartyCellStop, i16) stop
+) {
     i16 x;
     i16 y;
     b16 visible;
@@ -1508,7 +1513,7 @@ b16 StepObjectTowardParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) t
         direction = DirectionToParty(x, y);
         direction = TurnDirection(direction, turn);
         SetObjectDirection(object, direction, turned);
-        if (!DistanceFromParty(x, y) && mode == 1) {
+        if (!DistanceFromParty(x, y) && stop == OBJECT_PARTY_CELL_STOP) {
             return RefreshIfTurned(visible, turned);
         }
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
@@ -1751,7 +1756,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                     goto attack;
                 }
                 if (++tries >= 4) {
-                    StepObjectTowardParty(object, MOVE_FORWARD, 1);
+                    StepObjectTowardParty(object, MOVE_FORWARD, OBJECT_PARTY_CELL_STOP);
                     break;
                 }
             }
@@ -1768,20 +1773,20 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             }
             break;
         case ACTOR_MODE_FLEE:
-            StepObjectTowardParty(object, MOVE_BACK, 0);
+            StepObjectTowardParty(object, MOVE_BACK, OBJECT_PARTY_CELL_CONTINUE);
             break;
         case ACTOR_MODE_CHARGE:
-            StepObjectTowardParty(object, MOVE_FORWARD, 0);
+            StepObjectTowardParty(object, MOVE_FORWARD, OBJECT_PARTY_CELL_CONTINUE);
             break;
         case ACTOR_MODE_APPROACH:
         case ACTOR_MODE_PURSUE:
-            StepObjectTowardParty(object, MOVE_FORWARD, 1);
+            StepObjectTowardParty(object, MOVE_FORWARD, OBJECT_PARTY_CELL_STOP);
             break;
         case ACTOR_MODE_SIDESTEP:
-            StepObjectTowardParty(object, RandomUpTo(1) * 2 + 1, 0);
+            StepObjectTowardParty(object, RandomUpTo(1) * 2 + 1, OBJECT_PARTY_CELL_CONTINUE);
             break;
         case ACTOR_MODE_WANDER:
-            StepObjectTowardParty(object, RandomUpTo(3), 0);
+            StepObjectTowardParty(object, RandomUpTo(3), OBJECT_PARTY_CELL_CONTINUE);
             break;
         case ACTOR_MODE_TALK:
             scenes[ATTITUDE_PLEADING] = 3;

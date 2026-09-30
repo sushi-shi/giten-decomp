@@ -243,7 +243,6 @@ src/Game/fieldobj.c	ScanSightRow	3	*	*	wraps a turned ViewDirection to 0..3
 src/Game/fieldobj.c	BuildSightGrid	*	*	*	the four ViewDirections from the facing, wrapped to 0..3
 src/Game/fieldobj.c	GetSightCell	0	*	*	unseen
 src/Game/fieldobj.c	GetPartySide	2	*	*	a random side: MOVE_RIGHT (1) or MOVE_LEFT (3)
-src/Game/fieldobj.c	StepObjectTowardParty	1	*	*	mode 1 stops next to the party
 src/Game/fieldobj.c	IsWithinRange	*	*	*	a range byte packs the near distance in its high nibble and the far one in its low nibble
 src/Game/fieldobj.c	UseObjectSkill	-1	*	*	the skill cannot be used, is out of range or fails
 src/Game/fieldobj.c	UseObjectSkill	*	*	operator >> max	three quarters of the maximum HP
@@ -264,7 +263,6 @@ src/Game/fieldobj.c	RunObjectStep	0	trivial-function-literal	0 store tries	no tr
 src/Game/fieldobj.c	RunObjectStep	1	trivial-function-literal	1 bound slot	encounter slot 0 attacks; slots 1..OBJECT_SKILL_COUNT pick a skill
 src/Game/fieldobj.c	RunObjectStep	1	trivial-function-literal	1 for-init	encounter slot n picks skills[n - 1]; @identity-TODO: action 1 again (the weapon attack) once the skill tries fail
 src/Game/fieldobj.c	RunObjectStep	4	*	*	four tries at a usable skill in range
-src/Game/fieldobj.c	RunObjectStep	*	call-argument	StepObjectTowardParty*argument 3	mode 1 stops next to the party, 0 closes in
 src/Game/fieldobj.c	RunObjectStep	*	call-argument	StepObjectTowardParty*argument 2	a random side: MOVE_RIGHT (1) or MOVE_LEFT (3)
 src/Game/fieldobj.c	RunObjectStep	*	*	*scene*	@identity-TODO: the talk scene's entries per attitude (-1 falls back to entry 2)
 src/Game/fieldobj.c	RunObjectStep	0xe2	*	*	@identity-TODO: scene file 0xe2 is the field talk scene

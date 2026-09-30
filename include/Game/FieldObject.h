@@ -72,6 +72,12 @@ GZ_ENUM_BEGIN_SPLIT(ObjectLifeState, i16)
     OBJECT_LIFE_FALLEN = 2
 GZ_ENUM_END_SPLIT(ObjectLifeState)
 
+// Whether a field object's movement stops when it reaches the party's cell.
+GZ_ENUM_BEGIN_SPLIT(ObjectPartyCellStop, i16)
+    OBJECT_PARTY_CELL_CONTINUE = 0,
+    OBJECT_PARTY_CELL_STOP = 1
+GZ_ENUM_END_SPLIT(ObjectPartyCellStop)
+
 typedef struct FieldObject {
     u8 pad000[0x14];
     i16 layer;
