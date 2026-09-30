@@ -168,8 +168,12 @@ Automap marks:
   0x58 run MS0039's merchant menus. The 武 and 防 signs distinguish weapon
   and armor shops even where those codes call the same merchant entry.
 - Mark 10 is the white E bitmap. Cell codes 0x44..0x46 use it; all are map
-  links, and the 0x46 links recur on Shinjuku Tocho's upper floors, supporting
-  the elevator mark name.
+  links. In working shafts, 0x44 marks the lowest stop, 0x45 the highest,
+  and 0x46 the intervening stops. M000A's six stops (floors 1, 4..8),
+  M0014's three stops (floors -5..-3), and M001B's two separate shafts
+  show the pattern. MS003B's menus omit the current floor from their
+  destinations. M0028 uses 0x45 at three floors for a disabled elevator;
+  its MS0006 entry 38 says the elevator is destroyed.
 - Cell code 0x7d uses the stairs-down mark and occurs in 25 station links,
   all calling MS0044 entries 3..28. That script describes stairs leading
   down to a subway platform and offers the platform route.
