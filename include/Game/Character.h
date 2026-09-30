@@ -12,6 +12,7 @@
 #include <Game/CharacterStat.h>
 #include <Game/Condition.h>
 #include <Game/EquipPart.h>
+#include <Game/ItemId.h>
 #include <Game/MapCoord.h>
 #include <Game/ObjectRecordId.h>
 #include <Game/PickFlags.h>
@@ -28,7 +29,7 @@
 typedef struct ItemSlot {
     union {
         struct {
-            i16 item : 11;
+            GZ_ENUM_STORAGE(ItemId, i16) item : 11;
             i16 attachment : 5;
             i16 quantity;
         };
@@ -39,7 +40,7 @@ typedef struct ItemSlot {
 #define SetItemSlotItem(slot, value) ((slot)->item = (value), (slot)->attachment = -1)
 
 // Removes the item and quantity while retaining its attachment index.
-#define EmptyItemSlot(slot) ((slot)->item = -1, (slot)->quantity = 0)
+#define EmptyItemSlot(slot) ((slot)->item = ITEM_ID_EMPTY, (slot)->quantity = 0)
 
 static __inline void ClearItemSlot(ItemSlot* slot) {
     SetItemSlotItem(slot, -1);

@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/ItemId.h>
 #include <Game/ItemKind.h>
 #include <Game/SkillMessage.h>
 #include <Ints.h>
@@ -24,7 +25,7 @@ typedef struct ItemTable {
 // (the equipment page loads that many rounds); +0x29/+0x2a are read by
 // the helpers named for them.
 typedef struct ItemRecord {
-    i16 id;
+    GZ_ENUM_STORAGE(ItemId, i16) id;
     i32 price;
     GZ_ENUM_STORAGE(ItemKind, u8) kind;
     u8 params[0x33];

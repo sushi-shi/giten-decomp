@@ -1,12 +1,13 @@
 #ifndef GITEN_GAME_DROPTABLE_H
 #define GITEN_GAME_DROPTABLE_H
 
+#include <EnumDomain.h>
 #include <Game/ItemId.h>
 #include <Ints.h>
 
 // An item dropped for the party: the item id (-1 when empty) and the amount.
 typedef struct DropSlot {
-    i16 item;
+    GZ_ENUM_STORAGE(ItemId, i16) item;
     i16 amount;
 } DropSlot;
 

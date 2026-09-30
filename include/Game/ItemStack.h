@@ -1,6 +1,8 @@
 #ifndef GITEN_GAME_ITEMSTACK_H
 #define GITEN_GAME_ITEMSTACK_H
 
+#include <EnumDomain.h>
+#include <Game/ItemId.h>
 #include <Ints.h>
 
 // A counted item entry of the bag and the gem item table. An empty
@@ -12,7 +14,7 @@ typedef union ItemStack {
     // Script long variables carry the complete packed entry.
     u32 value;
     struct {
-        i16 item : 11;
+        GZ_ENUM_STORAGE(ItemId, i16) item : 11;
         i16 attachment : 5;
         u16 count : 8;
         u16 detail : 7;
@@ -22,7 +24,7 @@ typedef union ItemStack {
 
 #define ClearItemStack(entry)                                                                      \
     do {                                                                                           \
-        (entry)->item = -1;                                                                        \
+        (entry)->item = ITEM_ID_EMPTY;                                                             \
         (entry)->attachment = 0;                                                                   \
         (entry)->count = 0;                                                                        \
         (entry)->detail = 0;                                                                       \
@@ -31,7 +33,7 @@ typedef union ItemStack {
 
 #define HasItemStackAttachment(entry) ((entry)->hasAttachment)
 
-static __inline i16 GetItemStackItem(const ItemStack* entry) {
+static __inline GZ_ENUM_RETURN(ItemId, i16) GetItemStackItem(const ItemStack* entry) {
     return entry->item;
 }
 
