@@ -565,7 +565,7 @@ i16 FindSkill(i16 start, u16 a, u16 b, u16 c, i16 maxLevel) {
     u16 family;
     for (id = start; id < s_skillCount; id++) {
         skill = GetCachedSkill(id);
-        if (skill->parameters.family) {
+        if (skill->parameters.family != SKILL_FAMILY_NONE) {
             family = skill->parameters.family;
             if ((family == a || family == b || family == c)
                 && skill->parameters.level <= maxLevel) {

@@ -6,6 +6,7 @@
 
 // clang-format off
 GZ_ENUM_BEGIN_SPLIT(SkillFamily, u8)
+    SKILL_FAMILY_NONE = 0,
     SKILL_FAMILY_AGI = 1,
     SKILL_FAMILY_ZAN = 2,
     SKILL_FAMILY_DAWM = 3,

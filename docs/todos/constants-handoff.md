@@ -104,6 +104,9 @@ Item record names:
 
 Skill family names:
 
+- Family 0 holds the built-in attacks and unrelated actions. `FindSkill`
+  excludes it from family searches even when a caller asks for 0; it is
+  `SKILL_FAMILY_NONE`.
 - ET0004 skill record 1 names Sword Attack; the basic attack path selects
   that record when it has no equipped weapon item.
 - Record 250 names Self Recovery. `ApplySkillEffect` changes its combined
