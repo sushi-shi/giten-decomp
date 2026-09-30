@@ -12,8 +12,8 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 226 declared domains. The retail
-compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
+The enum-domain view covers the scanned units. Use the retail compile and
+comparison to check source changes.
 
 ## Batch workflow
 
@@ -70,6 +70,10 @@ Map area names:
 - Decode: `n = u16(data, 0)`, then `r = decrypt(data[2:2 + n])`.
 - The name is at `r[u16(r, 2):]`, in cp932.
 - Areas 0x09 and 0x85 both carry the name 新宿都庁.
+- `MapAreaId` includes records with distinct names from these files. The
+  0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
+  two areas for the alternate wall texture. Other duplicate or blank map
+  names still need their separate identities established.
 
 Object record names:
 
