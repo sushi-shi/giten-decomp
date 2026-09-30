@@ -12,7 +12,7 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 222 declared domains. The retail
+`giten verify enum-domains` passes with 224 declared domains. The retail
 compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
 
 ## Batch workflow
@@ -78,6 +78,17 @@ Object record names:
 - `ObjectRecord.name` starts at `r[54]` and is cp932. Records 0x22,
   0x36, 0xce and 0x117 name Marduk, Pyankara, Primrose and Doppelganger.
 
+Item record names:
+
+- `ET0001` is a decrypted count and offset table; item records 0x21, 0x24
+  and 0x71 name Kushinada's Jar, Soma Cup and Core Shield. Kind-1 names
+  begin at record +21; kind-5 names begin at +17. In item-use code,
+  these were previously mistaken for equal-valued skill ids.
+- Their bank-7 flags 0xff, 0xfe and 0xfd respectively mark Kushinada's Jar
+  and Soma Cup used until the full moon, and Core Shield active until the
+  next moon phase. The menu disables the first two while marked; field traps
+  are ignored while the last is marked.
+
 ### Event-flag names (ET0018)
 
 `ET0018` is the developers' event-flag name table.
@@ -128,7 +139,6 @@ Kept as rows until there is evidence:
 - Field-effect codes 0, 1, 0x1a and 0x20..0x23. ET0004 identifies
   illusion (3), invisibility (0x11), Estoma (0x14), Traesto (0x15),
   Traport (0x16), Trafuri (0x17), Sabatoma (0x19) and Desaman (0x1b).
-- Bank 7 flags 0xfd-0xff.
 - The identity of area 0x85.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,
   incense, a shield, dummy items and apparent scenario items; its one kind-6

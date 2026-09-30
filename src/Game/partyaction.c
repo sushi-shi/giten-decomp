@@ -2530,7 +2530,7 @@ i16 RunPartyCommandInput(void) {
                     character->pickObject = result;
                     goto target_selected;
                 }
-                if (character->pickTarget == SKILL_SAMARECARM) {
+                if (character->pickTarget == ITEM_CORE_SHIELD) {
                     flags = TARGET_ACTOR_SIDE;
                 }
                 if (flags & TARGET_ACTOR_SIDE) {

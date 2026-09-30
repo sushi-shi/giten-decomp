@@ -2645,10 +2645,10 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
                 GetLoadedRecordName(GetItemStackItem(GetItemListEntry(entries, index))),
                 GetItemStackCount(GetItemListEntry(entries, index))
             );
-            if ((GetItemStackItem(GetItemListEntry(entries, index)) == 0x21
-                 && IsEventFlagSet(7, 0xff))
-                || (GetItemStackItem(GetItemListEntry(entries, index)) == 0x24
-                    && IsEventFlagSet(7, 0xfe))) {
+            if ((GetItemStackItem(GetItemListEntry(entries, index)) == ITEM_KUSHINADA_JAR
+                 && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_KUSHINADA_JAR_USED))
+                || (GetItemStackItem(GetItemListEntry(entries, index)) == ITEM_SOMA_CUP
+                    && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_SOMA_CUP_USED))) {
                 AddItemUseMenuLine(
                     menu,
                     GetItemStackItem(GetItemListEntry(entries, index)),

@@ -210,7 +210,7 @@ GZ_ENUM_RETURN(ClockUpdate, i16) TickClock(u16 minutes) {
     return changed;
 }
 
-// On a new moon phase: clears flag 7/0xfd and the leader's Estoma flag, sets
+// On a new moon phase: clears the Core Shield and Estoma flags, sets
 // flag 10 of every live object, applies the phase to the party and the
 // objects, and handles the full and new moons and the phase after the full moon.
 RVA(0x00020cf0, 0x149)
@@ -221,7 +221,7 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
     if (!(changed & CLOCK_UPDATE_MOON)) {
         return;
     }
-    ModifyEventFlag(7, 0xfd, BIT_CHANGE_CLEAR);
+    ModifyEventFlag(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_CORE_SHIELD, BIT_CHANGE_CLEAR);
     flags = GetCharacterFlags(GetRosterCharacter(ROSTER_LEADER));
     ClearBit(flags, ACTOR_FLAG_ESTOMA);
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
@@ -253,8 +253,12 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
         ModifyEventFlag(EVENT_FLAG_BANK_SCENARIO, SCENARIO_NEW_MOON_2, BIT_CHANGE_CLEAR);
     }
     if (g_clock.moonPhase == MOON_PHASE_FULL) {
-        ModifyEventFlag(7, 0xff, BIT_CHANGE_CLEAR);
-        ModifyEventFlag(7, 0xfe, BIT_CHANGE_CLEAR);
+        ModifyEventFlag(
+            EVENT_FLAG_BANK_ITEM_EFFECTS,
+            ITEM_EFFECT_KUSHINADA_JAR_USED,
+            BIT_CHANGE_CLEAR
+        );
+        ModifyEventFlag(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_SOMA_CUP_USED, BIT_CHANGE_CLEAR);
     }
     if (g_clock.moonPhase == MOON_PHASE_FULL + 1) {
         ClearMoonFlags();

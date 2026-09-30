@@ -1074,7 +1074,7 @@ void RunCellEvent(void) {
             );
             break;
         case CELL_EVENT_TRAP:
-            if (!IsEventFlagSet(7, 0xfd)) {
+            if (!IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_CORE_SHIELD)) {
                 RunCellTrap(1, g_party.field.pos.x, g_party.field.pos.y);
             }
             break;

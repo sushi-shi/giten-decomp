@@ -1258,7 +1258,7 @@ src/Game/statestack.c	LeaveStatusScreen	0	*	*	the subscreen is inactive
 src/Game/statestack.c	ResetSubscreen	0	*	*	the subscreen is inactive
 src/Game/statestack.c	InitFieldPanels	1	*	*	@identity-TODO: menu image 1
 src/Game/statestack.c	IsOddMapLayer	1	*	*	the layer's low bit
-src/Game/statestack.c	ItemListMenuHandler	*	*	*	@identity-TODO: items 0x21 and 0x24 (area-restricted like Traesto), the usable tests (1), AddItemUseMenuLine's 0
+src/Game/statestack.c	ItemListMenuHandler	*	*	*	item-use availability tests and AddItemUseMenuLine's 0
 src/Game/statestack.c	LoadSpriteImage	*	*	*	@identity-TODO: sprite images: -1 none, human portraits 0x4000 + id (0x401d remapped to 0x40fd), demons 0x2000..0x2fff with variant bits (& 15 == 4, & 13 | 2)
 src/Game/statestack.c	OpenItemListMenu	*	*	*	the whole bag copied (0, 64 entries); menu flags 0x1e
 src/Game/statestack.c	OpenPartyPicker	*	*	*	@identity-TODO: menu flags 0x1e and 2

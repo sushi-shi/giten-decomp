@@ -32,6 +32,7 @@
 #include <Game/Growth.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemEffect.h>
+#include <Game/ItemId.h>
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
 #include <Game/ModeFlags.h>
@@ -788,13 +789,25 @@ b16 RunBattleAction(void) {
                     g_targetId,
                     g_actorId
                 );
-                if (actor->pickTarget == SKILL_SAMARECARM) {
-                    ModifyEventFlag(7, 0xfd, BIT_CHANGE_SET);
+                if (actor->pickTarget == ITEM_CORE_SHIELD) {
+                    ModifyEventFlag(
+                        EVENT_FLAG_BANK_ITEM_EFFECTS,
+                        ITEM_EFFECT_CORE_SHIELD,
+                        BIT_CHANGE_SET
+                    );
                 }
-                if (actor->pickTarget == SKILL_DAMUDORA) {
-                    ModifyEventFlag(7, 0xff, BIT_CHANGE_SET);
-                } else if (actor->pickTarget == SKILL_ZIORA) {
-                    ModifyEventFlag(7, 0xfe, BIT_CHANGE_SET);
+                if (actor->pickTarget == ITEM_KUSHINADA_JAR) {
+                    ModifyEventFlag(
+                        EVENT_FLAG_BANK_ITEM_EFFECTS,
+                        ITEM_EFFECT_KUSHINADA_JAR_USED,
+                        BIT_CHANGE_SET
+                    );
+                } else if (actor->pickTarget == ITEM_SOMA_CUP) {
+                    ModifyEventFlag(
+                        EVENT_FLAG_BANK_ITEM_EFFECTS,
+                        ITEM_EFFECT_SOMA_CUP_USED,
+                        BIT_CHANGE_SET
+                    );
                 } else if (GetItemValueHigh(actor->pickTarget)) {
                     TakeBagItems(actor->pickTarget, 1);
                 }

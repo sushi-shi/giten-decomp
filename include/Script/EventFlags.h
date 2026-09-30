@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
 #include <Util/BitChangeMode.h>
 
@@ -33,6 +34,7 @@ typedef union FlagBank {
 #define EVENT_FLAG_BANK_SCENARIO_2 1
 #define EVENT_FLAG_BANK_OWNED 2
 #define EVENT_FLAG_BANK_BOXES 4
+#define EVENT_FLAG_BANK_ITEM_EFFECTS 7
 // A new level resets EVENT_FLAG_BANK_LEVEL (unless its flags are preserved) and
 // clears EVENT_FLAG_BANK_LEVEL_SCRATCH; a new area resets EVENT_FLAG_BANK_AREA
 // (unless preserved) and EVENT_FLAG_BANK_SCRATCH, which each scene or actor
@@ -47,6 +49,13 @@ typedef union FlagBank {
 #define EVENT_FLAG_BANK_LEVEL_SCRATCH 13
 #define EVENT_FLAG_BANK_SYSTEM 15
 extern FlagBank g_eventFlags[EVENT_FLAG_BANK_COUNT];
+
+// Bank-7 flags: a trap shield and two items unavailable until the full moon.
+GZ_ENUM_BEGIN_SPLIT(ItemEffectFlag, u16)
+    ITEM_EFFECT_CORE_SHIELD = 0xfd,
+    ITEM_EFFECT_SOMA_CUP_USED = 0xfe,
+    ITEM_EFFECT_KUSHINADA_JAR_USED = 0xff
+GZ_ENUM_END_SPLIT(ItemEffectFlag)
 
 // A flag word or operand: the bank in bits 0-6, a negate bit, and (in a word)
 // the index in the high byte; bank FLAG_BANK_MASK with index 0xff always reads
