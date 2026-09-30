@@ -895,8 +895,8 @@ src/Script/scriptvars.c	OpSaveRestoreScreen	*	*	*	the saved screen's 80-byte row
 src/Script/scriptvars.c	ClearSystemVars	0	*	*	a cleared variable reads 0
 src/Script/scriptvars.c	SetScriptLongVar	-1	*	*	no variable (ReadLongVarIndex's -1)
 src/Script/scriptvars.c	Call*Name	*	call-argument	GetTextToken(*	the second member is slot 1's ref (SCRIPT_REF_SLOT_BASE - 1)
-src/Game/fieldmain.c	AdvancePartyMove	*	*	*	@identity-TODO: turn commands less 3 give quarter turns (3 = one left); door kinds and stop class 3 block a step that is not forward; a step takes 3..6 minutes; results 0 (under way), 1 (done), 2 (blocked)
-src/Game/fieldmain.c	StepParty	*	*	*	door kinds and stop class 3 block a step that is not forward
+src/Game/fieldmain.c	AdvancePartyMove	*	*	*	@identity-TODO: turn commands less 3 give quarter turns (3 = one left); door kinds and the named solid stop block a step that is not forward; a step takes 3..6 minutes; movement results are named
+src/Game/fieldmain.c	StepParty	*	*	*	door kinds and the named solid stop block a step that is not forward
 src/Game/fieldmain.c	CommitPartyStep	3	*	*	a step takes 3 minutes
 src/Game/fieldmain.c	*AutoMove*	*	*	*	the auto-move queue: read position and capacity reset to 0, grown by one; 0xff ends it; -1 once it is empty
 src/Game/fieldmain.c	SetReturnPoint	-1	*	*	no selected hotspot

@@ -822,7 +822,7 @@ i16 GetWallStopCode(u16 cell, GZ_ENUM_PARAM(WallStopMode, i16) mode) {
         if (stop == 2) {
             stop = true;
         }
-        if (stop == 3) {
+        if (stop == WALL_STOP_SOLID) {
             stop = 2;
         }
         code += stop * s_sideWeights[i];

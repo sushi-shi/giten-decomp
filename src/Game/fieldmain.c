@@ -258,7 +258,7 @@ GZ_ENUM_RETURN(PartyMoveOutcome, i16) AdvancePartyMove(i16 command) {
                     );
                     if (((wall == WALL_KIND_DOOR || wall == WALL_KIND_FLAG_BARRED_DOOR)
                          && g_party.field.moveCommand != MOVE_FORWARD)
-                        || WallStops(wall, WALL_STOP_MOVEMENT) == 3) {
+                        || WallStops(wall, WALL_STOP_MOVEMENT) == WALL_STOP_SOLID) {
                         PlaySoundEffect(8);
                         return PARTY_MOVE_BLOCKED;
                     }
@@ -361,7 +361,7 @@ GZ_ENUM_RETURN(PartyStepResult, i16) StepParty(GZ_ENUM_PARAM(MoveCommand, i16) d
         );
         if (((wall == WALL_KIND_DOOR || wall == WALL_KIND_FLAG_BARRED_DOOR)
              && g_party.field.moveCommand != MOVE_FORWARD)
-            || WallStops(wall, WALL_STOP_MOVEMENT) == 3) {
+            || WallStops(wall, WALL_STOP_MOVEMENT) == WALL_STOP_SOLID) {
             PlaySoundEffect(8);
             return STEP_BLOCKED;
         }

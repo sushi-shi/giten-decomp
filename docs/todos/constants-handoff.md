@@ -753,6 +753,9 @@ Unresolved identities and behavior-only names:
   gives it geometry class 3 and movement class 0. `BuildRoomGeometry` draws a
   quad for it, so `WALL_KIND_PASSABLE_WALL` describes its visible but passable
   behavior. Neither behavior name assigns an in-world identity.
+  `WALL_STOP_SOLID` names class 3 for either selected mode: wall kind 6 has it
+  only for movement, while kind 12 has it only for geometry. Classes 1 and 2
+  both fold to the door-like map code and remain distinct numeric table values.
 - The disc has 97 wall-kind-2 sides and 14 wall-kind-11 sides. Every one has a
   door record at the same cell and facing, with the same low-nibble kind. The
   kind-2 record bars a step while its flag is clear; `IsStepBarred` always

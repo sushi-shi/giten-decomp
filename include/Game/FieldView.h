@@ -178,6 +178,12 @@ GZ_ENUM_BEGIN(WallStopMode)
     WALL_STOP_MOVEMENT = 1
 GZ_ENUM_END(WallStopMode)
 
+// Stop class 3 blocks the selected geometry or movement mode. Classes 1 and
+// 2 are both folded to door-like code 1 by GetWallStopCode.
+GZ_ENUM_CONST_BEGIN(WallStopClass)
+    WALL_STOP_SOLID = 3
+GZ_ENUM_CONST_END(WallStopClass)
+
 u8 WallStops(i16 wall, GZ_ENUM_PARAM(WallStopMode, i16) mode);
 i16 GetCellWallStop(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn, u16 cell);
 i16 GetWallStopCode(u16 cell, GZ_ENUM_PARAM(WallStopMode, i16) mode);
