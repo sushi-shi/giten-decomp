@@ -294,8 +294,11 @@ Skill family names:
   unarmed and gun attacks (records 1..15) to family 18; Windows assigns those
   records to family 0 instead. Thus combat action covers the family in both
   versions without restricting it to special maneuvers. PC-98 also assigns
-  Sabatoma (record 125) to family 10 where Windows assigns family 0; the
-  family-10 meaning remains mixed.
+  Sabatoma (record 125) to family 10 where Windows assigns family 0. Family
+  10 has sixteen Windows skills: eleven inflict or cure mental and other status
+  conditions, two drain or transfer MP, two expel demons, and one
+  zombifies allies. The composite name also admits PC-98's Sabatoma summoning
+  skill; none of those effects alone identifies the whole family.
   Family 15 has six barrier, reflection or barrier-clearing skills and four
   travel, concealment or escape skills. Family 24 has one electric attack and
   four water skills, including a water barrier. Family 26 has four dances and
