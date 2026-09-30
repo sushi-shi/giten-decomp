@@ -107,8 +107,7 @@ void UseInertSkill(Character* user, Character* target);
 // Runs the action's message script (stage 0 before, 1 after the change).
 void PlayActionEffect(i16 stage);
 
-// Removes party member `id` from the party when its personal flag 0x3f is
-// set, clearing the flag.
+// Removes a party member marked by Desaman, then clears the mark.
 void DropFlaggedMember(i16 id);
 
 // The battle protection or restriction stored at a combatant's tally index.

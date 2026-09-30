@@ -1103,8 +1103,8 @@ void DropFlaggedMember(i16 id) {
     Character* character;
     if (id < 0) {
         character = GetCombatant(id);
-        if (character && TestCharacterFlag(character, 63)) {
-            ClearCharacterFlag(character, 63);
+        if (character && TestCharacterFlag(character, ACTOR_FLAG_DESAMAN)) {
+            ClearCharacterFlag(character, ACTOR_FLAG_DESAMAN);
             SetPartySlot(CombatantPartyPosition(id), PARTY_SLOT_EMPTY);
             RequestFieldRefresh();
         }

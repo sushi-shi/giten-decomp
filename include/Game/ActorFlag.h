@@ -5,8 +5,9 @@
 
 // A character's own flags (its personalFlags, bank EVENT_FLAG_BANK_ACTOR to
 // its script). ET0018 names the early flags; the invisibility skills and
-// Estoma identify flags 0x21 and 0x22 with their consumers. Bits 2-7
-// record the outcomes of a talk. The table's later names (personality
+// Estoma identify flags 0x21 and 0x22 with their consumers; Desaman marks
+// a demon for removal when the skill resolves. Bits 2-7 record the outcomes
+// of a talk. The table's later names (personality
 // degrees from bit 11) do not fit the bits the code sets there.
 GZ_ENUM_CONST_BEGIN(ActorFlag)
     ACTOR_FLAG_POINTS_READY = 0,
@@ -21,7 +22,8 @@ GZ_ENUM_CONST_BEGIN(ActorFlag)
     ACTOR_FLAG_FOUGHT = 9,
     ACTOR_FLAG_NOTICED = 10,
     ACTOR_FLAG_INVISIBLE = 0x21,
-    ACTOR_FLAG_ESTOMA = 0x22
+    ACTOR_FLAG_ESTOMA = 0x22,
+    ACTOR_FLAG_DESAMAN = 0x3f
 GZ_ENUM_CONST_END(ActorFlag)
 
 #endif // GITEN_GAME_ACTORFLAG_H

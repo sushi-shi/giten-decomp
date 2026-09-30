@@ -3482,7 +3482,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void) {
         return FIELD_EFFECT_NONE;
     }
     SetActionResult(actor, BATTLE_ACTION_SUCCESS);
-    SetCharacterFlag(target, 0x3f);
+    SetCharacterFlag(target, ACTOR_FLAG_DESAMAN);
     return FIELD_EFFECT_DONE;
 }
 

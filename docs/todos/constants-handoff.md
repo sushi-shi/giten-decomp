@@ -116,7 +116,7 @@ Kept as rows until there is evidence:
   first two's handler and the field-effect code shares kind 14's handler
   with kinds 12 and 13.
 - Object record ids 0xce, 0x22 and 0x117. The record names are undecoded.
-- Actor flags 0x20 and 0x3f.
+- Actor flag 0x20.
 - Field-effect codes 0, 1, 0x1a and 0x20..0x23. ET0004 identifies
   illusion (3), invisibility (0x11), Estoma (0x14), Traesto (0x15),
   Traport (0x16), Trafuri (0x17), Sabatoma (0x19) and Desaman (0x1b).
