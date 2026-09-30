@@ -46,6 +46,7 @@
 #include <Mem/Handle.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Script/ScriptVars.h>
 #include <Sound/Sound.h>
 #include <Ui/Hotspot.h>
@@ -646,12 +647,12 @@ i16 RunPendingTalk(void) {
     return 1;
 }
 
-// Every third step (unless event flag 1/0x2b is set) the party takes a point
-// of damage; nonzero when it did.
-// @identity-TODO: what the damage and the flag stand for is unrecovered.
+// Every third step without suppression, the party takes a point of damage;
+// nonzero when it did.
+// @identity-TODO: the source of the damage is unrecovered.
 RVA(0x00012ca0, 0x4f)
 b16 TickStepDamage(void) {
-    if (IsEventFlagSet(1, 0x2b)) {
+    if (IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_STEP_DAMAGE_SUPPRESSED)) {
         s_damageSteps = 0;
         return false;
     }

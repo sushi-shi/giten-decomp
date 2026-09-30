@@ -317,6 +317,10 @@ Coverage:
   MS001E entry 3 sets both bits after issuing DB equipment and uniforms;
   MS0055 entry 2 clears both before the entrance examination. The enum
   names describe the proven portrait selection, not an assumed story phase.
+- Bank 1 bit 0x2b suppresses `TickStepDamage` while set, so its enum name
+  describes that code-level effect. MS0056 entry 0 sets it amid a toxic-gas
+  and protective-suit scene; MS0051 entry 5 sets it in a hospital scene.
+  The specific source of step damage across the story remains unproven.
 - Bank 14 holds the actor flags. Bits 11-16 contradict the code, so they are
   not used.
 - Bank 0 bits 137..142 name the six withered lover's limbs and torso parts;
@@ -345,9 +349,6 @@ into `GrantActorReward`, so the enum keeps both names for that value.
 
 Kept as rows until there is evidence:
 
-- Bank 1 bit 0x2b suppresses `TickStepDamage` while set. MS0056 entry 0
-  sets it amid a toxic-gas and protective-suit scene, but MS0051 entry 5
-  also sets it in a hospital scene; its full story meaning remains open.
 - Battle-tally slot 6, attack attributes 0/1, 9 and 10, and the shared
   result word's noncombat encodings. The ET0004 skill table links effect
   codes to protection slots: 0..3, 5 and 7..14 now have evidence-backed names.
