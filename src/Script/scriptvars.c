@@ -660,11 +660,11 @@ RVA(0x0003afe0, 0x258)
 b16 RunScriptScene(void) {
     i16 window = GetGamePhase();
     switch (GetGameStep()) {
-        case 1:
+        case SCRIPT_SCENE_STEP_ADVANCE_TEXT:
             NextGameStep();
             AdvanceScriptTextWindow(window);
             break;
-        case 0:
+        case SCRIPT_SCENE_STEP_START:
             ClearFlagBank(EVENT_FLAG_BANK_SCRATCH);
             UnplaceAllSprites();
             NextGameStep();
@@ -686,7 +686,7 @@ b16 RunScriptScene(void) {
             SetTextScrollMode(true);
             SetTextTimedWait(false);
             ClearScriptLongVars();
-        case 2: {
+        case SCRIPT_SCENE_STEP_RUN: {
             i16 result;
             PollScriptPanels();
             result = TickScript(window);
@@ -700,7 +700,7 @@ b16 RunScriptScene(void) {
             }
             break;
         }
-        case 3:
+        case SCRIPT_SCENE_STEP_END:
             s_messageHookFile = s_messageHookEntry = -1;
             SetCurrentScript(FreeScriptContext(GetCurrentScript()));
             PurgeScriptFiles();
@@ -712,10 +712,10 @@ b16 RunScriptScene(void) {
             CloseScriptInterface();
             ReturnFromGameState();
             break;
-        case 4:
+        case SCRIPT_SCENE_STEP_RESUME_FIELD_MAP:
             ExchangeObjectsFrozen(s_objectsWereFrozen);
             ExchangeViewHold(GetGameSub());
-            SetGameStep(2);
+            SetGameStep(SCRIPT_SCENE_STEP_RUN);
             ReleaseScriptFiles();
             RestoreScriptState();
             ResetTextPlaneLineStep(window, 2);
@@ -723,10 +723,10 @@ b16 RunScriptScene(void) {
             RepaintTextPlane(window, 3);
             ClearTextPeriod();
             break;
-        case 5: {
+        case SCRIPT_SCENE_STEP_WAIT_PERIOD: {
             i16 top = GetScriptWindowOrDefault(window);
             ScrollTextWindowLine(top);
-            SetGameStep(2);
+            SetGameStep(SCRIPT_SCENE_STEP_RUN);
             break;
         }
     }
@@ -738,7 +738,7 @@ b16 RunScriptScene(void) {
 RVA(0x0003b240, 0x26)
 b16 StepOnTextPeriod(i16 window) {
     if (g_textState.scrollEnabled && !TickTextPeriod()) {
-        SetGameStep(5);
+        SetGameStep(SCRIPT_SCENE_STEP_WAIT_PERIOD);
         return true;
     }
     return false;
@@ -807,11 +807,11 @@ b16 RunActorScene(void) {
     i16 window = GetGamePhase();
     for (;;) {
         switch (GetGameStep()) {
-            case 0:
+            case SCRIPT_SCENE_STEP_START:
                 NextGameStep();
                 NextGameStep();
                 ClearFlagBank(EVENT_FLAG_BANK_SCRATCH);
-            case 2: {
+            case SCRIPT_SCENE_STEP_RUN: {
                 i16 result;
                 PollScriptPanels();
                 result = TickScript(window);
@@ -827,17 +827,17 @@ b16 RunActorScene(void) {
                 }
                 break;
             }
-            case 1:
+            case SCRIPT_SCENE_STEP_ADVANCE_TEXT:
                 NextGameStep();
                 AdvanceScriptTextWindow(window);
                 continue;
-            case 5: {
+            case SCRIPT_SCENE_STEP_WAIT_PERIOD: {
                 i16 top = GetScriptWindowOrDefault(window);
                 ScrollTextWindowLine(top);
-                SetGameStep(2);
+                SetGameStep(SCRIPT_SCENE_STEP_RUN);
                 break;
             }
-            case 3:
+            case SCRIPT_SCENE_STEP_END:
                 s_messageHookFile = s_messageHookEntry = -1;
                 SetCurrentScript(FreeScriptContext(GetCurrentScript()));
                 PurgeScriptFiles();

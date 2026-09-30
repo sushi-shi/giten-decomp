@@ -118,6 +118,15 @@ void StartDebugScene(i16 scene, i16 arg, i16 phase);
 void OpSetMessageHook(void);
 void RunMessageHook(void);
 
+GZ_ENUM_BEGIN_SPLIT(ScriptSceneStep, i16)
+    SCRIPT_SCENE_STEP_START = 0,
+    SCRIPT_SCENE_STEP_ADVANCE_TEXT = 1,
+    SCRIPT_SCENE_STEP_RUN = 2,
+    SCRIPT_SCENE_STEP_END = 3,
+    SCRIPT_SCENE_STEP_RESUME_FIELD_MAP = 4,
+    SCRIPT_SCENE_STEP_WAIT_PERIOD = 5
+GZ_ENUM_END_SPLIT(ScriptSceneStep)
+
 void WaitForScriptText(i16 window);
 void AdvanceScriptTextWindow(i16 window);
 b16 RunActorScene(void);

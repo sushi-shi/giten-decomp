@@ -682,7 +682,6 @@ src/Game/waitstate.c	StepWaitState	1	*	*	a timed wait ends when its frame count 
 src/Game/waitstate.c	PushMessageBox	0	call-argument	PrintWindowText(*argument 3	attribute 0: print in the plane's own attribute
 src/Game/waitstate.c	RunMessageBoxState	[01]	*	*	the message box state's sub-steps: wait, then close
 src/Text/textchar.c	*	*	*	*	Shift-JIS decoding: a trail byte forms the low byte; codes 0xfe and up are two-byte escapes; a lead byte at the end reads as '※' (0x81a6)
-src/Script/scriptfield.c	OpEnterFieldMap	*	call-argument	*	@identity-TODO: the field-map entry's game step 4 and EnterFieldMap's last argument 1
 src/Script/scriptfield.c	OpIfBattleResult	*	*	*g_targetCount	target counts: exactly one, or two or more
 src/Script/scriptfield.c	OpCountObjectsAt	1	call-argument	*	@identity-TODO: CountObjectsAt's third argument, 1 for the script count
 src/Gfx/automap.c	ScreenToAutomapCell	*	*	*	automap screen geometry: an 8-pixel margin, 8 pixels per cell, 0x70 pixels (14 cells) across, and cell 7 at the centre
@@ -924,9 +923,8 @@ src/Script/scriptvars.c	*ScriptBlock	*	*	*	script blocks: one 0x500-byte array (
 src/Script/scriptvars.c	*ScriptEntr*	*	*	*	script entries: the 3- or 7-byte header, 0xffff for an absent entry, a new entry's length 1 and 0x400-byte size, an empty count
 src/Script/scriptvars.c	ThawObjectsForScript	0	*	*	objects unfrozen
 src/Script/scriptvars.c	StartDebugScene	*	*	*	@identity-TODO: debug scene 0xe0 runs as an actor scene of object 0 (entry 1)
-src/Script/scriptvars.c	Run*Scene	*	*	*	@identity-TODO: a scene's steps 0..5 (start, run, text wait, end, period wait) and its text window's indent and scroll-top rows
+src/Script/scriptvars.c	Run*Scene	*	*	*	@identity-TODO: a scene window's indent and scroll-top rows
 src/Script/scriptvars.c	*Scene	*	call-argument	*	@identity-TODO: a scene window's indent (0), scroll-top rows (0, 2) and NewScriptContext's 0
-src/Script/scriptvars.c	StepOnTextPeriod	5	*	*	@identity-TODO: the scene's period-wait step 5
 src/Script/scriptvars.c	WaitForScriptText	1	*	*	a wait of at least one frame
 src/Script/scriptvars.c	*MessageHook	*	*	*	no message hook (-1; 0xff in the operand); NewScriptContext's 0
 src/Script/scriptvars.c	ScriptFileListTail	1	*	*	loop until the list's end

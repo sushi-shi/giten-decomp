@@ -29,7 +29,7 @@ void OpEnterFieldMap(void) {
         i16 rateA = ReadScriptValue();
         i16 countB = ReadScriptValue();
         i16 rateB = ReadScriptValue();
-        SetGameStep(4);
+        SetGameStep(SCRIPT_SCENE_STEP_RESUME_FIELD_MAP);
         SetGameSub(ExchangeViewHold(hold));
         ThawObjectsForScript();
         EnterFieldMap(map, countA, rateA, countB, rateB, FIELD_MAP_SCRIPT_EVENT);
