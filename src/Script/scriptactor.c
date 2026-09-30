@@ -2115,15 +2115,16 @@ void OpAdjustItemCount(void) {
     SetScriptLongVar(index, moved);
 }
 
-// Lists the bag entries holding items of `category` (0: any; 1..19 an item
-// kind; 20 excludes scenario items, 21 also requires a price, 22 is priceless items)
+// Lists the bag entries holding items of `category` (1..19 selects an item
+// kind; the other selectors choose all, non-scenario, priced non-scenario or
+// zero-price items)
 // into a new array handle, with `spare` extra entries; stores the handle and
 // the count.
 RVA(0x00035920, 0x11a)
 void OpListBagByCategory(void) {
     i16 listVar = ReadLongVarIndex();
     i16 countVar = ReadLongVarIndex();
-    i16 category = ReadScriptValue();
+    GZ_ENUM_LOCAL(ScriptBagCategory, i16) category = ReadScriptValue();
     i16 spare = ReadScriptValue();
     // Retail's frame holds more than the bag's 64 entries (65 words fit).
     i16 entries[65];
@@ -2136,18 +2137,20 @@ void OpListBagByCategory(void) {
         if (item < 1) {
             continue;
         }
-        if (category >= 0 && category <= 19) {
-            if (category != 0 && GetItemKind(item) != category) {
+        if (category >= SCRIPT_BAG_CATEGORY_ALL && category <= ITEM_KIND_ACCESSORY) {
+            if (category != SCRIPT_BAG_CATEGORY_ALL && GetItemKind(item) != category) {
                 continue;
             }
         } else {
-            if ((category == 20 || category == 21) && GetItemKind(item) == ITEM_KIND_SCENARIO) {
+            if ((category == SCRIPT_BAG_CATEGORY_NON_SCENARIO
+                 || category == SCRIPT_BAG_CATEGORY_PRICED_NON_SCENARIO)
+                && GetItemKind(item) == ITEM_KIND_SCENARIO) {
                 continue;
             }
-            if (category == 21 && GetItemPrice(item) == 0) {
+            if (category == SCRIPT_BAG_CATEGORY_PRICED_NON_SCENARIO && GetItemPrice(item) == 0) {
                 continue;
             }
-            if (category == 22 && GetItemPrice(item) != 0) {
+            if (category == SCRIPT_BAG_CATEGORY_ZERO_PRICE && GetItemPrice(item) != 0) {
                 continue;
             }
         }

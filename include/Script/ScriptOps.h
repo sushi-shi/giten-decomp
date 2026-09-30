@@ -95,6 +95,15 @@ GZ_ENUM_BEGIN_SPLIT(ScriptItemListOperation, i16)
     SCRIPT_ITEM_LIST_SELL = 1
 GZ_ENUM_END_SPLIT(ScriptItemListOperation)
 
+// Bag-list category 1..19 uses ItemKind; these selectors extend it with
+// filters for scenario items and item prices.
+GZ_ENUM_BEGIN_SPLIT(ScriptBagCategory, i16)
+    SCRIPT_BAG_CATEGORY_ALL = 0,
+    SCRIPT_BAG_CATEGORY_NON_SCENARIO = 20,
+    SCRIPT_BAG_CATEGORY_PRICED_NON_SCENARIO = 21,
+    SCRIPT_BAG_CATEGORY_ZERO_PRICE = 22
+GZ_ENUM_END_SPLIT(ScriptBagCategory)
+
 b16 OpStepListMenu(void);
 void OpSetMenuCharacter(void);
 
