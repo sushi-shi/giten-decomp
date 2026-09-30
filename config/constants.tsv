@@ -963,7 +963,6 @@ src/Game/skilluse.c	ResolveCombatAction	*	*	*	@identity-TODO: knockout sentinel 
 src/Game/skilluse.c	ResolveKnockout	*	*	*	a knocked-out combatant's HP 0; analyzed (1) and one drop added
 src/Game/skilluse.c	*BattleTall*	*	*	*	@identity-TODO: unidentified tally slots and -1 for none reported; the tally modes 1 and -1
 src/Game/skilluse.c	ShowKnockoutMessage	*	*	*	@identity-TODO: battle-message script 221 (0xdd), entries 79 and 80; the knockout sentinel 0x7fff
-src/Game/skilluse.c	PaySkillCost	0x10	*	*	skills below 0x10 (the attacks) cost nothing
 src/Game/skilluse.c	IsSkillUsableNow	*	*	*	1 when usable now, -1 when not
 src/Game/skilluse.c	OpenMemberSkillMenu	0x1e	*	*	@identity-TODO: menu flags 0x1e
 src/Game/skilluse.c	MemberSkillMenuHandler	*	*	*	an empty skill word; the usable and blocked tests (1)

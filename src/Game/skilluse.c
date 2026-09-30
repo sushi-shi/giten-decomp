@@ -1184,14 +1184,11 @@ b32 IsSkillIdBlocked(Character* character, i16 id) {
     return false;
 }
 
-// Takes the skill's cost from `who`: MP for a positive cost, HP for a
-// negative one; 0x7f (MP) and -0x80 (HP) take the whole pool. Ids below 16 are
-// free.
 RVA(0x0002c3c0, 0x71)
 void PaySkillCost(i16 who, i16 skill) {
     Character* character;
     i16 cost;
-    if (skill < 0x10) {
+    if (skill < SKILL_AGI) {
         return;
     }
     character = GetCombatant(who);
