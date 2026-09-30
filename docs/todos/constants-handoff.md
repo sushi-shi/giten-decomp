@@ -472,6 +472,16 @@ to 2. These values form `UiHotspotKind` in the record's retail `u32` slot.
 The older `SceneHotspotKind` also has 2 and 3, but its other values occur only
 in the unused scene-hotspot path and are not identified by the Windows UI.
 
+## Event-flag banks
+
+The saved flag block has sixteen 256-bit banks. Source readers and resets
+identify bank 0/1 as the two scenario banks, 2 as owned maps/programs, 4 as
+opened boxes, 7 as timed item effects, 8/9 as level/area flags, 12/13 as
+scratch banks, 14 as the current actor's flags, and 15 as system settings.
+These named selectors now form `EventFlagBank`. `ResetEventFlags` also walks
+unnamed banks, and a script operand can carry a negate bit with its bank, so
+the dynamic bank parameters retain their numeric widths.
+
 ## Attack attribute columns
 
 Retail object records P2029 (Urd) and P2042 (Heqet) store resistance bytes

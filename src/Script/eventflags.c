@@ -56,13 +56,13 @@ void ResetEventFlags(void) {
     ClearFlagBank(EVENT_FLAG_BANK_BOXES);
     ClearFlagBank(EVENT_FLAG_BANK_ACTOR);
     ClearFlagBank(EVENT_FLAG_BANK_SYSTEM);
-    ClearEventFlag(0, 0);
+    ClearEventFlag(EVENT_FLAG_BANK_SCENARIO, 0);
 }
 
 // Flag 0 of bank 0 always reads clear.
 RVA(0x000392b0, 0x51)
 b32 TestEventFlag(u16 bank, u16 index) {
-    if (bank == 0 && index == 0) {
+    if (bank == EVENT_FLAG_BANK_SCENARIO && index == 0) {
         return false;
     }
     if (bank == EVENT_FLAG_BANK_ACTOR && g_curScript->actor != NULL) {

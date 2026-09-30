@@ -27,30 +27,33 @@ typedef union FlagBank {
 // EVENT_FLAG_BANK_SYSTEM holds the flag settings and tag.
 #define EVENT_FLAG_BANK_COUNT 16
 #define EVENT_FLAG_BANK_WORDS 8
-#define EVENT_FLAG_BANK_ACTOR 14
 // The scenario flags (ScenarioFlag, ScenarioFlag2), the maps and programs the
 // player holds (OwnedFlag), and the opened treasure boxes.
-#define EVENT_FLAG_BANK_SCENARIO 0
-#define EVENT_FLAG_BANK_SCENARIO_2 1
-#define EVENT_FLAG_BANK_OWNED 2
-#define EVENT_FLAG_BANK_BOXES 4
-#define EVENT_FLAG_BANK_ITEM_EFFECTS 7
 // A new level resets EVENT_FLAG_BANK_LEVEL (unless its flags are preserved) and
 // clears EVENT_FLAG_BANK_LEVEL_SCRATCH; a new area resets EVENT_FLAG_BANK_AREA
 // (unless preserved) and EVENT_FLAG_BANK_SCRATCH, which each scene or actor
 // script also clears before it runs.
-#define EVENT_FLAG_BANK_LEVEL 8
+GZ_ENUM_BEGIN_SPLIT(EventFlagBank, u8)
+    EVENT_FLAG_BANK_SCENARIO = 0,
+    EVENT_FLAG_BANK_SCENARIO_2 = 1,
+    EVENT_FLAG_BANK_OWNED = 2,
+    EVENT_FLAG_BANK_BOXES = 4,
+    EVENT_FLAG_BANK_ITEM_EFFECTS = 7,
+    EVENT_FLAG_BANK_LEVEL = 8,
+    EVENT_FLAG_BANK_AREA = 9,
+    EVENT_FLAG_BANK_SCRATCH = 12,
+    EVENT_FLAG_BANK_LEVEL_SCRATCH = 13,
+    EVENT_FLAG_BANK_ACTOR = 14,
+    EVENT_FLAG_BANK_SYSTEM = 15
+GZ_ENUM_END_SPLIT(EventFlagBank)
+
 // Level flag 0 is the developers' "敵無し" (no enemies): a new level and the
 // removal of its last field object set it, spawning an object clears it, and
 // random enemies spawn only while it is clear.
 #define LEVEL_FLAG_NO_ENEMIES 0
-#define EVENT_FLAG_BANK_AREA 9
 GZ_ENUM_CONST_BEGIN(AreaFlag)
     AREA_FIXED_BACKGROUND = 0x7b
 GZ_ENUM_CONST_END(AreaFlag)
-#define EVENT_FLAG_BANK_SCRATCH 12
-#define EVENT_FLAG_BANK_LEVEL_SCRATCH 13
-#define EVENT_FLAG_BANK_SYSTEM 15
 extern FlagBank g_eventFlags[EVENT_FLAG_BANK_COUNT];
 
 // Bank-7 flags: a trap shield and two items unavailable until the full moon.
