@@ -136,7 +136,7 @@ GZ_ENUM_BEGIN_SPLIT(BattleProtectionResult, i16)
 GZ_ENUM_END_SPLIT(BattleProtectionResult)
 // clang-format on
 
-// Special resistance outcomes; positive values are ordinary damage rates.
+// Nonpositive resistance outcomes; positive values are ordinary damage rates.
 // clang-format off
 GZ_ENUM_CONST_BEGIN(AttackResistanceSpecial)
     ATTACK_RESIST_PROTECTED = -6,
@@ -144,7 +144,8 @@ GZ_ENUM_CONST_BEGIN(AttackResistanceSpecial)
     ATTACK_RESIST_REFLECT = -4,
     ATTACK_RESIST_ABSORB_MP = -3,
     ATTACK_RESIST_ABSORB_HP_HALF = -2,
-    ATTACK_RESIST_ABSORB_HP = -1
+    ATTACK_RESIST_ABSORB_HP = -1,
+    ATTACK_RESIST_IMMUNE = 0
 GZ_ENUM_CONST_END(AttackResistanceSpecial)
 // clang-format on
 

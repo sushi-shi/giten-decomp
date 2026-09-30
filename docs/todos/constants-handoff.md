@@ -599,6 +599,13 @@ cell; a hit of 3 uses the preview's offset travel cell. These bits form
 same side. Their source signatures now mark the domain without changing the
 retail `i16` ABI.
 
+## Resistance outcomes
+
+`GetActionResistance` returns zero when there is no target actor, and
+`ApplyResistanceOutcome` sets `BATTLE_ACTION_IMMUNE` for that same result.
+`ATTACK_RESIST_IMMUNE` now names zero beside the negative special outcomes;
+positive resistance values remain damage rates.
+
 ## Attack attribute columns
 
 Retail object records P2029 (Urd) and P2042 (Heqet) store resistance bytes

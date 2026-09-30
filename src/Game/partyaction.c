@@ -966,7 +966,7 @@ i16 GetActionResistance(
 ) {
     i16 result;
     if (!actor) {
-        return 0;
+        return ATTACK_RESIST_IMMUNE;
     }
     if (sameSide && GetCombatantSideRelation()) {
         return 50;
@@ -1072,7 +1072,7 @@ void ApplyResistanceOutcome(Character* actor, i16 resistance, i32 amount) {
             SetCharacterChanges(actor, amount, 0);
             SetResistanceResult(actor, -2, BATTLE_ACTION_HP_ABSORBED);
             break;
-        case 0:
+        case ATTACK_RESIST_IMMUNE:
             SetCharacterChanges(actor, 0, 0);
             actor->result = BATTLE_ACTION_IMMUNE;
             break;
