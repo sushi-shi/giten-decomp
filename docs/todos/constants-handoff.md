@@ -163,8 +163,10 @@ Automap marks:
   device, MS003E's fusion hall, MS003A's spring spirit, MS003F's incense
   and healing room, and MS0040's bartender establish codes 0x52, 0x54,
   0x56, 0x57 and 0x59. Code 0x5b calls MS0039's item shop; its 道 sign
-  abbreviates 道具 (items), not a dojo. The other shop codes still need
-  their individual inventories distinguished.
+  abbreviates 道具 (items), not a dojo. Code 0x50 runs MS0042's software
+  price list, 0x55 runs MS0033's treatment menu, and codes 0x51, 0x53 and
+  0x58 run MS0039's merchant menus. The 武 and 防 signs distinguish weapon
+  and armor shops even where those codes call the same merchant entry.
 - Mark 10 is the white E bitmap. Cell codes 0x44..0x46 use it; all are map
   links, and the 0x46 links recur on Shinjuku Tocho's upper floors, supporting
   the elevator mark name.
