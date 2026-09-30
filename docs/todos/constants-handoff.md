@@ -216,6 +216,9 @@ Automap marks:
   sentinel row, so it is a blank mark. Code 0xbf has no record in any of the
   eight cell lists across the 109 Windows area maps; its `CellCode` name
   describes only this table behavior.
+  The final code row of the automap and cell-kind tables is
+  `CELL_CODE_TABLE_END` (0xff); a cell-record list instead ends when its x
+  byte is `CELL_LIST_X_END` (also 0xff). They are separate fields and domains.
 - Mark 6's standing-figure bitmap belongs to cell code 0x40. Across the
   disc's maps, its scripted links load MS003C's service-terminal menu or
   enter a small map whose second cell loads that menu. Mark 23's red

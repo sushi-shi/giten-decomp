@@ -8,7 +8,8 @@
 // came, the spinners turn it, and the dark and command-blocked cells are
 // properties the field code tests. The traps take a share of each member's HP;
 // the alignment traps (CELL_ALIGNMENT_TRAP_FIRST..LAST) spare the alignment
-// sides their mask leaves out. Lists of cells end with CELL_LIST_END.
+// sides their mask leaves out. Cell-code tables end with CELL_CODE_TABLE_END;
+// cell-record lists instead end at x == CELL_LIST_X_END.
 // NPC codes select four-direction masks in GetNpcImageOfCode; the Windows
 // renderer uses the record's texture slot instead of that legacy mask.
 // @identity-TODO: the spring variants 0x85..0x87 and object-property codes
@@ -70,7 +71,7 @@ GZ_ENUM_BEGIN(CellCode)
     CELL_STEPS_UP = 0x90,
     CELL_STEPS_DOWN = 0x91,
     CELL_AUTOMAP_BLANK = 0xbf,
-    CELL_LIST_END = 0xff
+    CELL_CODE_TABLE_END = 0xff
 GZ_ENUM_END(CellCode)
 
 #endif // GITEN_GAME_CELLCODE_H

@@ -77,7 +77,7 @@ static CellKind s_cellKinds[] = {
     {CELL_TREASURE_BOX_FIRST_FRAME_PAIR, CELL_EVENT_FADE_SCENE, 0, 0},
     {CELL_TREASURE_BOX_SECOND_FRAME_PAIR, CELL_EVENT_FADE_SCENE, 0, 0},
     {CELL_INERT, CELL_EVENT_INERT, 0, 0},
-    {CELL_LIST_END, CELL_EVENT_NONE, 0, 0},
+    {CELL_CODE_TABLE_END, CELL_EVENT_NONE, 0, 0},
 };
 
 DATA(0x00068ec0)
@@ -693,7 +693,7 @@ RVA(0x00021850, 0x29)
 const CellKind* FindCellKind(const CellHead* cell) {
     const CellKind* kind;
 
-    for (kind = s_cellKinds; kind->code != CELL_LIST_END; kind++) {
+    for (kind = s_cellKinds; kind->code != CELL_CODE_TABLE_END; kind++) {
         if (kind->code == cell->code) {
             return kind;
         }

@@ -21,9 +21,9 @@ typedef struct CellHead {
     u8 code;
 } CellHead;
 
-// A cell list ends at an x of CELL_LIST_END.
-#define CELL_LIST_END 0xff
-#define IsCellListEnd(cell) ((cell)->x == CELL_LIST_END)
+// A cell list ends at an x of CELL_LIST_X_END.
+#define CELL_LIST_X_END 0xff
+#define IsCellListEnd(cell) ((cell)->x == CELL_LIST_X_END)
 
 GZ_ENUM_BEGIN(CellEventKind)
     CELL_EVENT_NONE = 0,
