@@ -991,7 +991,6 @@ src/Game/skilluse.c	PlayActionEffect	*	*	*	@identity-TODO: the action message sc
 src/Game/itemrecord.c	*	[56]	case-label	switch on kind	@identity-TODO: item kinds 5 and 6 have records, but their category names remain unsupported
 src/Game/itemrecord.c	DecodeItemRecord	*	*	*	@identity-TODO: item record decoding: absent params (0xff), message pairs (1, 1)/(1, 0), params[] 11, the name copy after the leading byte
 src/Game/itemrecord.c	AddItemStatPoints	*	arithmetic	*	the points a fixed stat change adds or takes
-src/Game/itemrecord.c	AddItemStatPoints	0	*	*	no item
 src/Game/itemrecord.c	AddItemStatBonuses	*	*	*	the battle-stat bonus amounts ItemPassiveEffect names; no item
 src/Game/itemrecord.c	GetItemStackLimit	1	*	*	equipment does not stack
 src/Game/itemrecord.c	GetItemRecordData	1	*	*	@identity-TODO: record id 1
@@ -1072,7 +1071,6 @@ src/Game/character.c	SwapPartySlots	*	*	*	the six party positions (PARTY_SIZE)
 src/Game/character.c	CanGroupEquip	5	call-argument	*	@identity-TODO: TestBit's first argument 5
 src/Game/character.c	GetEquipSlot	*	initializer-payload	*	an empty equipment slot {-1, -1, 0}
 src/Game/character.c	*Equip*	1	*	*	item ids and quantities start at 1
-src/Game/character.c	UnequipPart	0	*	*	no item
 src/Game/character.c	*EquipItem	0	call-argument	*	@identity-TODO: SetEquipSlot's fourth argument 0
 src/Game/character.c	GetGunAmmoType	*	*	*	-1 when no gun is equipped; item ids from 1
 src/Game/character.c	EquipItem	13	*	*	@identity-TODO: ammunition (item kind 13)
@@ -1444,7 +1442,6 @@ src/Game/partyaction.c	RunPartyCommandInput	0	call-argument	RunPickTargetWindow(
 src/Game/partyaction.c	RunPartyCommandInput	0	trivial-function-literal	0 equality flags	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
 src/Game/partyaction.c	RunPartyCommandInput	0	call-argument	RunPickTargetWindow(i16, i16, i16, i16) argument 2	@identity-TODO: target flags default -1 and clear to zero, party-cell reach operands and picker id/range zeros are caller protocol values
 src/Game/partyaction.c	GetMemberPickRange	0	trivial-function-literal	0 return	the pending action uses grid-cell reach 0/1/3; item zero and targets below one are absent
-src/Game/partyaction.c	GetMemberPickRange	0	trivial-function-literal	0 equality item	the pending action uses grid-cell reach 0/1/3; item zero and targets below one are absent
 src/Game/partyaction.c	GetMemberPickRange	1	trivial-function-literal	1 return	the pending action uses grid-cell reach 0/1/3; item zero and targets below one are absent
 src/Game/partyaction.c	GetMemberPickRange	3	return	return value	the pending action uses grid-cell reach 0/1/3; item zero and targets below one are absent
 src/Game/partyaction.c	GetMemberPickRange	1	trivial-function-literal	1 bound pickTarget	the pending action uses grid-cell reach 0/1/3; item zero and targets below one are absent

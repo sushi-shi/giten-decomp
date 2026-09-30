@@ -2672,7 +2672,7 @@ void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part) {
     ClearItemSlot(&empty);
     item = GetRosterEquipSlot(slot, part);
     SetEquipSlot(slot, part, empty, 1);
-    if (item.item != ITEM_ID_EMPTY && item.item != 0) {
+    if (item.item != ITEM_ID_EMPTY && item.item != ITEM_ID_NONE) {
         if (item.quantity < 1) {
             item.quantity = 1;
         }

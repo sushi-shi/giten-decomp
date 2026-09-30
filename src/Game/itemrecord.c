@@ -699,7 +699,7 @@ i16 GivePooledItems(void) {
         if (GetItemStackItem(GetItemPoolEntry(i)) != ITEM_ID_EMPTY) {
             item = RemapItem(GetItemStackItem(GetItemPoolEntry(i)));
             amount = GetItemStackCount(GetItemPoolEntry(i));
-            if (item != 0) {
+            if (item != ITEM_ID_NONE) {
                 amount = RollItemAmount(
                     GetItemStackItem(GetItemPoolEntry(i)),
                     GetItemStackCount(GetItemPoolEntry(i)),
@@ -1454,7 +1454,7 @@ RVA(0x00024ba0, 0x1b0)
 void AddItemStatPoints(i16 item, i16* stats) {
     i16 code;
 
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1543,7 +1543,7 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
     if (indexed && item != ITEM_ID_EMPTY) {
         item += GetGemItemBase();
     }
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1642,7 +1642,7 @@ i16 SumEquippedMagicDefenseBonus(Character* character, u8 groups) {
 
 RVA(0x00025040, 0x30)
 i16 GetItemMagicDefenseBonus(i16 item) {
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return 0;
     }
     DecodeItemRecord(&g_loadedItem, item);
@@ -1651,7 +1651,7 @@ i16 GetItemMagicDefenseBonus(i16 item) {
 
 RVA(0x00025070, 0x30)
 i16 GetItemMagicAccuracyBonus(i16 item) {
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordMagicAccuracyBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1659,7 +1659,7 @@ i16 GetItemMagicAccuracyBonus(i16 item) {
 
 RVA(0x000250a0, 0x30)
 i16 GetItemPhysicalEvasionBonus(i16 item) {
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordPhysicalEvasionBonus(DecodeItemRecord(&g_loadedItem, item));
@@ -1667,7 +1667,7 @@ i16 GetItemPhysicalEvasionBonus(i16 item) {
 
 RVA(0x000250d0, 0x30)
 i16 GetItemMagicPowerBonus(i16 item) {
-    if (item == 0 || item == ITEM_ID_EMPTY) {
+    if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
         return 0;
     }
     return GetItemRecordMagicPowerBonus(DecodeItemRecord(&g_loadedItem, item));

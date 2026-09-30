@@ -2658,14 +2658,14 @@ i16 GetMemberPickRange(i16 id) {
     }
     if (role == PICK_ROLE_ATTACK) {
         item = GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item;
-        if (item == 0 || item == ITEM_ID_EMPTY) {
+        if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
             return 1;
         }
         return GetItemAttackRange(GetLoadedRecord(item));
     }
     if (role == PICK_ROLE_GUN) {
         item = GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item;
-        if (item == 0 || item == ITEM_ID_EMPTY) {
+        if (item == ITEM_ID_NONE || item == ITEM_ID_EMPTY) {
             return 1;
         }
         return 3;
