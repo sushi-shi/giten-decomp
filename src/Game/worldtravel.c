@@ -7,6 +7,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <File/DataTableId.h>
@@ -47,8 +48,10 @@ i16 g_destinationX;
 // the bits above them.
 #define WORLD_TRAVEL_RADIUS 2
 #define WORLD_TRAVEL_SPAN (2 * WORLD_TRAVEL_RADIUS + 1)
-#define TRAVEL_PASSABLE 1
-#define TRAVEL_REACHABLE 2
+GZ_ENUM_FLAGS_BEGIN(WorldTravelCellFlag, u8)
+    TRAVEL_PASSABLE = 1,
+    TRAVEL_REACHABLE = 2
+GZ_ENUM_FLAGS_END(WorldTravelCellFlag)
 #define TRAVEL_CELL_STATE (TRAVEL_PASSABLE | TRAVEL_REACHABLE)
 
 DATA(0x0007b500)

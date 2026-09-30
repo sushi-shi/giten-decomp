@@ -502,6 +502,14 @@ runs it. `TickCounter` increments only in the running state, and
 `SetTickCountOn` resets the count only on the stopped-to-running transition.
 Those values now form the local `TickCounterState` domain in `scriptvars.c`.
 
+## World travel cell flags
+
+`LoadWorldTravelCandidates` copies each terrain code's flags into a travel
+score byte. Bit 0 marks a passable cell; `MarkReachableWorldTravelCells`
+adds bit 1 after finding a route to it. The higher bits hold candidate
+weights, so the score byte stays numeric while its two state bits form the
+local `WorldTravelCellFlag` domain.
+
 ## Attack attribute columns
 
 Retail object records P2029 (Urd) and P2042 (Heqet) store resistance bytes
