@@ -405,7 +405,6 @@ src/Game/treasurebox.c	GetNpcImageOfCode	4	*	*	@identity-TODO: retail indexes th
 src/Game/treasurebox.c	GetNpcTexture	0	*	*	no texture
 src/Game/treasurebox.c	NextNpcSlot	-1	*	*	no free slot
 src/Game/treasurebox.c	DrawNpcAt	*	*	*	only depths 0 and -1 draw an NPC
-src/Game/treasurebox.c	IsReservedObjectCell	*	*	*	@identity-TODO: cell codes 0x48..0x4e (the NPC codes the automap icons list)
 src/Game/treasurebox.c	ShieldTarget	10	*	*	a shield of a tenth of the maximum HP
 src/Game/treasurebox.c	*	*	call-argument	HasObjectInReach(*	@identity-TODO: reach mode (1 from the party, 0 its own cell) and the party's combatant -1
 src/Game/treasurebox.c	SpawnActorGroup	-1	*	*	@identity-TODO: the second group spawns with alternate value -1 (nonzero: the alternate script)

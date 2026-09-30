@@ -23,6 +23,7 @@
 #include <Game/AutomapData.h>
 #include <Game/BagItems.h>
 #include <Game/BattleEffect.h>
+#include <Game/CellCode.h>
 #include <Game/CellTrap.h>
 #include <Game/Character.h>
 #include <Game/Clock.h>
@@ -104,7 +105,7 @@ static AutomapIcon s_mapIcons[] = {
     {0x44, MAP_MARK_ELEVATOR, AUTOMAP_DETAIL_BASIC},
     {0x45, MAP_MARK_ELEVATOR, AUTOMAP_DETAIL_BASIC},
     {0x46, MAP_MARK_ELEVATOR, AUTOMAP_DETAIL_BASIC},
-    {0x48, MAP_MARK_NPC_RECORD, AUTOMAP_DETAIL_NPCS},
+    {CELL_AREA_NPC_FIRST, MAP_MARK_NPC_RECORD, AUTOMAP_DETAIL_NPCS},
     {0x50, MAP_MARK_ELECTRIC, AUTOMAP_DETAIL_NPCS},
     {0x51, MAP_MARK_WEAPONS, AUTOMAP_DETAIL_NPCS},
     {0x52, MAP_MARK_TRANSFER, AUTOMAP_DETAIL_NPCS},
@@ -3123,7 +3124,7 @@ void AddAreaNpc(const u8* record) {
 
 RVA(0x0001f350, 0x18)
 b16 IsReservedObjectCell(const CellHead* cell) {
-    if (cell->code >= 0x48 && cell->code <= 0x4e) {
+    if (cell->code >= CELL_AREA_NPC_FIRST && cell->code <= CELL_AREA_NPC_LAST) {
         return true;
     }
     return false;

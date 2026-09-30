@@ -9,14 +9,15 @@
 // properties the field code tests. The traps take a share of each member's HP;
 // the alignment traps (CELL_ALIGNMENT_TRAP_FIRST..LAST) spare the alignment
 // sides their mask leaves out. Lists of cells end with CELL_LIST_END.
-// @identity-TODO: the other codes (the NPC and object codes the automap icons
-// list, the kind-10/12/13 cells 0x7c, 0x88, 0x89, 0x8b, 0x8c, 0x8f and 0x65)
-// are unnamed.
+// @identity-TODO: the individual NPC picture and other object codes, and the
+// kind-10/12/13 cells 0x7c, 0x88, 0x89, 0x8b, 0x8c, 0x8f and 0x65 are unnamed.
 GZ_ENUM_BEGIN(CellCode)
     CELL_EXIT = 0x41,
     CELL_STAIRS_UP = 0x42,
     CELL_STAIRS_DOWN = 0x43,
     CELL_CHUTE = 0x47,
+    CELL_AREA_NPC_FIRST = 0x48,
+    CELL_AREA_NPC_LAST = 0x4e,
     CELL_DAMAGE_TRAP = 0x60,
     CELL_FORCED_MOVE_BACK = 0x64,
     CELL_WARP_HIDING_OBJECTS = 0x67,

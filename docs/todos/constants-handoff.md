@@ -124,7 +124,8 @@ Automap marks:
   the elevator mark name.
 - Mark 11 is a red stick person. The icon table gives it to cell code 0x48,
   whose records occur in the area object lists; `SpawnLevelObjects` creates
-  area NPCs from those records.
+  area NPCs from those records. The accepted cell-code range is 0x48..0x4e;
+  the individual codes select NPC pictures whose identities remain open.
 - Mark 24 selects retail bitmap 272, a 16-by-16 image whose pixels all use
   black palette entry 1. The icon table uses it for code 0xbf and its final
   sentinel row, so it is a blank mark.
