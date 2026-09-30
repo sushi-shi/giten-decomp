@@ -1,9 +1,25 @@
 #ifndef GITEN_SCRIPT_SCRIPTSPRITE_H
 #define GITEN_SCRIPT_SCRIPTSPRITE_H
 
+#include <EnumDomain.h>
 #include <Ints.h>
 
-extern i8 g_shopKind;
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(SpritePlacementOverride, i8)
+    SPRITE_OVERRIDE_NONE = 0,
+    SPRITE_OVERRIDE_IMAGE_SLOT_ONE = 1,
+    SPRITE_OVERRIDE_IMAGE_SLOT_ZERO = 2,
+    SPRITE_OVERRIDE_RAISE_MATCHING = 3,
+    SPRITE_OVERRIDE_X40_Y240 = 4,
+    SPRITE_OVERRIDE_X40_Y213 = 5,
+    SPRITE_OVERRIDE_X40_Y225 = 6,
+    SPRITE_OVERRIDE_X40_Y218 = 7,
+    SPRITE_OVERRIDE_X40_Y230 = 8,
+    SPRITE_OVERRIDE_X40_Y212 = 9
+GZ_ENUM_END_SPLIT(SpritePlacementOverride)
+// clang-format on
+
+extern GZ_ENUM_STORAGE(SpritePlacementOverride, i8) g_shopKind;
 
 b16 OpLoadSprite(void);
 

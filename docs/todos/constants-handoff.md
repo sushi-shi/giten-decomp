@@ -359,6 +359,15 @@ run the HP-change opcode using a value derived from the actor's level in long
 variable 19. Kind 8 also selects the second random reward table when passed
 into `GrantActorReward`, so the enum keeps both names for that value.
 
+## Sprite placement override
+
+`g_shopKind` is a one-use sprite placement override, despite its old name.
+`OpLoadSprite` sets it for particular images at shop locations, then
+`OpPlaceSprite` consumes it: modes 1 and 2 remap image and slot, 3 raises a
+matching sprite, and 4..9 force x=40 with distinct y positions. The same
+modes occur at different shop categories, so their enumerators describe
+placement behavior rather than a shop type.
+
 ## Deferred identities
 
 Kept as rows until there is evidence:

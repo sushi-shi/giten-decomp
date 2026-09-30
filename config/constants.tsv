@@ -146,12 +146,10 @@ src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality x	a shopkeeper's map x, bes
 src/Script/scriptsprite.c	OpLoadSprite	*	*	*== y	a shopkeeper's map y, beside the developer trace that names the shop
 src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality y	a shopkeeper's map y, beside the developer trace that names the shop
 src/Script/scriptsprite.c	OpLoadSprite	*	*	*== image	a shopkeeper's sprite image number
-src/Script/scriptsprite.c	Op*Sprite	*	*	*g_shopKind	the sprite placement override OpPlaceSprite applies once (1/2 remap the slot, 3 raises one sprite, 4..9 fix y); the kinds have no other meaning
 src/Script/scriptsprite.c	OpPlaceSprite	*	*	store to [xy]	a sprite position in pixels
 src/Script/scriptsprite.c	OpPlaceSprite	*	*	*== [xy]	a sprite position in pixels
 src/Script/scriptsprite.c	Op*Sprite	*	*	*slot	a sprite slot
 src/Script/scriptsprite.c	Op*Sprite	*	*	*image	a sprite image number
-src/Script/scriptsprite.c	OpPlaceSprite	1	*	1 case	the sprite placement override (see g_shopKind)
 src/Script/scriptsprite.c	OpLoadSprite	*	*	*arg	the sprite load argument of the Osaki-fox event image the developer trace names
 src/Platform/winmain.cpp	[RD][er][na][dw]*	*	initializer-payload	*	vertex fields of a rendered primitive: screen or world position, colour and texture coordinates
 src/Platform/winmain.cpp	AnimateDoor	*	*	*	door animation geometry: corner offsets, widths and texture u per step
