@@ -482,6 +482,10 @@ Kept as rows until there is evidence:
   they do not identify a distinct target geometry.
   In ET0004, code 3 has 34 mostly close-range attacks, code 5 has only two
   spear attacks, and code 17 has only six single-target remedy/revival skills.
+  Code 1 has 140 records, including basic melee attacks, guns, elemental
+  spells, restoration and field skills. Codes 1 and 3 both contain kind-1
+  attacks with target flags 2 and range 1, so those fields do not separate
+  the two area values.
   The records' own descriptions confirm these groupings: code-5 skills 294
   and 296 describe spear attacks; code-17 skills 108..113 cure poison,
   paralysis, petrification and curses or revive the fallen. Code-3 skill 198
@@ -548,5 +552,7 @@ Kept as rows until there is evidence:
   message fields but gives kind 6 neither; `ApplyItemEffect` sends both to
   handlers with the same no-effect outcome. The field item picker invokes a
   skill only for weapons and accessories, so kind 6's extra decoded bytes do
-  not establish a skill-book role. These records do not establish category
-  names.
+  not establish a skill-book role. The kind-5 descriptions promise distinct
+  effects for talismans 107/108, incense 110/111/118 and the Core Shield 113,
+  while 115..117 and 121 are dummies or undescribed. The shared no-effect
+  handler does not recover those intended effects or either category name.
