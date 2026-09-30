@@ -502,7 +502,11 @@ Unresolved identities and behavior-only names:
   All six code-17 skills also have target flags 0x11, which select the roster
   picker in `RunPartyCommandInput`; that picker reads the flags, not the area.
   `CollectTargets` sends area 17 through the same default cell collector as
-  areas 1, 3, 4 and 5. Their distinct selection meanings remain unproven.
+  areas 1, 3, 4 and 5. The original PC-98 dispatcher at raw `DDS98.EXE`
+  offset 0x3496a makes the same split: code 2 takes the line path, codes 6
+  and 7 take the visible-grid path, and the other codes take the cell path.
+  Its cell collector at 0x34bd8 special-cases 0xff and 0 as Windows does.
+  Their distinct selection meanings remain unproven.
 - Field-effect code 0x1a is named for its observed `SpawnActorGroup` behavior,
   shared with Sabatoma (0x19). Neither version's 309 ET0004 skill records
   selects 0x1a, so its authored skill identity remains unknown.
@@ -540,7 +544,11 @@ Unresolved identities and behavior-only names:
   0x7c has a cell-kind table row but no cell record in either disc's area
   maps. Code 0x65 likewise has a kind-13 table row but no cell record in any
   of the 109 Windows or 100 PC-98 area maps. `RunCellEvent` has no kind-13
-  branch. `CopyExitAt`'s numeric kind 7 is the chute event kind.
+  branch. The PC-98 `RunCellEvent` switch at raw `DDS98.EXE` offset 0x40b63
+  dispatches through a 14-entry jump table; kinds 10 and 13 both jump to
+  its return at 0x40de1. That proves kind 13 has no action in either version,
+  but does not identify the authored purpose of its unused cell code.
+  `CopyExitAt`'s numeric kind 7 is the chute event kind.
 - Field-object image codes -1 and 0..4 name the mirrored side, facing rows,
   acting row and reaction frame. The fifth frame of the disc's five-BMP actor
   images is a distinct reaction pose. `FlashHitObject` selects it after a pool
