@@ -7,8 +7,7 @@
 // romanized), or after the shopkeeper debug traces in OpLoadSprite. Several
 // map files can carry one place's name; the name goes to the one the code
 // tests.
-// @identity-TODO: the other area ids, including WallOverrideArea's alternate-wall
-// areas, are not named yet.
+// @identity-TODO: area ids with duplicate or missing map names are not named yet.
 // Area ids are bytes; the automap keeps a handle per possible area.
 #define MAP_AREA_COUNT 256
 
@@ -66,6 +65,7 @@ GZ_ENUM_BEGIN_SPLIT(MapAreaId, u8)
     MAP_AREA_MARUNOUCHI_LINE = 0x3f,
     MAP_AREA_SENDAGI_SUBWAY_STATION = 0x40,
     MAP_AREA_SHINAGAWA_AQUARIUM_STATION = 0x42,
+    MAP_AREA_HIBIYA_LINE = 0x43,
     MAP_AREA_MINOWA_SUBWAY_STATION = 0x45,
     MAP_AREA_SHIBAURA_FUTO_STATION = 0x46,
     MAP_AREA_AKIHABARA_SUBWAY_STATION = 0x47,

@@ -37,8 +37,8 @@ void LoadWallTextures(i16 wallSet, i16 variant) {
     if (wallSet == WALL_TEXTURE_MAP_OVERRIDE) {
         area = GetMapArea();
         level = GetMapLevel();
-        if ((area == WALL_OVERRIDE_UPPER_AREA && level > 1)
-            || (area == WALL_OVERRIDE_LOWER_AREA && level < 4)) {
+        if ((area == MAP_AREA_CHIYODA_LINE && level > 1)
+            || (area == MAP_AREA_HIBIYA_LINE && level < 4)) {
             LoadTexture(&g_roomTexture, "w\\wall11_0.bmp", true);
             return;
         }
