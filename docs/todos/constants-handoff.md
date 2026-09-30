@@ -281,6 +281,14 @@ Skill family names:
   body slam and howl), aerial attacks (shriek, claw, wingbeat and tornado),
   and body attacks (crush, rampage and tail). The groups describe the moves;
   the object records also assign some of them to human and mechanical actors.
+  Family 12's five skills create hallucinations, blindness, invisibility or
+  decoys, or dispel illusions, so it is the illusion family. Family 13's
+  eleven records include a dark barrier, HP conversion, fear, curses,
+  petrification, a black hole and zombification; the name dark magic covers
+  that set without assigning a narrower spell series. Family 17's seventeen
+  records inflict conditions, possession or HP/MP/experience drain through
+  gazes, touch, words and kisses. Family 31's eleven records describe melee
+  techniques with elbows, knees, thrusts, swords or repeated blows.
   `SkillParameters.family` retains its retail byte storage; mixed families
   still need individual identities.
 
