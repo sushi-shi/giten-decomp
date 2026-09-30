@@ -1145,7 +1145,7 @@ i16 AreObjectsHidden(i16 view, i16 across, i16 along, i16 side) {
 RVA(0x00015cc0, 0x48)
 void PlayWallEffect(void) {
     i16 i;
-    RunPartyPicker(-1);
+    RunPartyPicker(PARTY_PICKER_COMMAND_CLOSE);
     PlaySoundEffect(6);
     for (i = 0; i < 10; i += 2) {
         DrawImageFrame(GetPlaneData(0), s_effectFrames, i, 0, 0, 0, 0, 0, 1);

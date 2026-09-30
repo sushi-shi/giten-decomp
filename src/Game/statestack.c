@@ -844,7 +844,7 @@ b16 RunDdsMenu(void) {
         case MENU_STEP_OPEN:
             NextGamePhase();
             NextGamePhase();
-            RunPartyPicker(-1);
+            RunPartyPicker(PARTY_PICKER_COMMAND_CLOSE);
             s_ddsMenu = CreateMenuBox(s_ddsMenu, 25, 2);
             MoveMenuBox(s_ddsMenu, -8, -22);
             SetMenuItems(s_ddsMenu, 9, s_ddsCommands, 3, DdsMenuHandler);
@@ -876,7 +876,7 @@ b16 RunDdsMenu(void) {
             }
             break;
         case MENU_STEP_PICK_FIRST + DDS_ROW_PURGE:
-            if (PickDdsPurgeMember() != -1) {
+            if (PickDdsPurgeMember() != ROSTER_SLOT_NONE) {
                 SetGamePhase(MENU_STEP_CLOSE);
                 if (s_ddsRosterSlot >= 0) {
                     RemoveFromRoster(s_ddsRosterSlot);
@@ -890,12 +890,12 @@ b16 RunDdsMenu(void) {
 
 RVA(0x000174b0, 0x70)
 b16 RunDdsSummon(void) {
-    i16 result;
+    GZ_ENUM_LOCAL(DdsActionResult, i16) result;
     switch (GetGameStep()) {
-        case 2:
-            SetGamePhase(1);
+        case DDS_SUMMON_STEP_CLOSE:
+            SetGamePhase(MENU_STEP_CLOSE);
             break;
-        case 1:
+        case DDS_SUMMON_STEP_PICK:
             result = PickDdsSummon();
             if (result) {
                 NextGameStep();
@@ -904,9 +904,9 @@ b16 RunDdsSummon(void) {
                 }
             }
             break;
-        case 0:
+        case DDS_SUMMON_STEP_PREPARE:
             CloseMessageWindow();
-            SetCursorLevel0(&s_summonCursor, 0);
+            SetCursorLevel0(&s_summonCursor, DDS_SUMMON_CURSOR_PICK_ROSTER);
             NextGameStep();
             break;
     }
@@ -914,41 +914,41 @@ b16 RunDdsSummon(void) {
 }
 
 RVA(0x00017520, 0x1cc)
-i16 PickDdsSummon(void) {
+GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
     i16 step;
     i16 previous;
     Character* character;
     switch (GetCursorLevel0(&s_summonCursor)) {
-        case 0:
+        case DDS_SUMMON_CURSOR_PICK_ROSTER:
             step = PickDdsRosterMember(GetCursorLevel1(&s_summonCursor));
             SetCursorLevel1(&s_summonCursor, step);
             if (step < 0) {
                 if (s_ddsRosterSlot < 0) {
-                    return -1;
+                    return DDS_ACTION_CANCELLED;
                 }
                 NextCursorLevel0(&s_summonCursor);
             }
             break;
-        case 1:
+        case DDS_SUMMON_CURSOR_PICK_PARTY_SLOT:
             if (!PollPartySlotSelection(PARTY_SLOT_ANY)) {
                 break;
             }
             ClearPartySlotSelection();
             if (g_selectedObjectId < 0) {
                 PrevCursorLevel0(&s_summonCursor);
-                return 0;
+                return DDS_ACTION_PENDING;
             }
             character = GetPartyCharacter(g_selectedObjectId);
             if (character != NULL && IsHumanCharacter(character)) {
-                return -1;
+                return DDS_ACTION_CANCELLED;
             }
             s_ddsPartySlot = g_selectedObjectId;
             NextCursorLevel0(&s_summonCursor);
             break;
-        case 2:
+        case DDS_SUMMON_CURSOR_TRANSITION:
             NextCursorLevel0(&s_summonCursor);
             break;
-        case 3:
+        case DDS_SUMMON_CURSOR_EXCHANGE:
             NextCursorLevel0(&s_summonCursor);
             previous = ExchangePartySlot(s_ddsPartySlot, s_ddsRosterSlot);
             character = GetRosterCharacter(s_ddsRosterSlot);
@@ -965,24 +965,24 @@ i16 PickDdsSummon(void) {
             MarkPickDone();
             PlaySoundEffect(0x20);
             break;
-        case 4:
-            return 1;
+        case DDS_SUMMON_CURSOR_FINISHED:
+            return DDS_ACTION_COMPLETED;
     }
-    return 0;
+    return DDS_ACTION_PENDING;
 }
 
 RVA(0x000176f0, 0x4a)
 i16 PickDdsRosterMember(i16 step) {
     switch (step) {
-        case 2:
+        case DDS_ROSTER_PICK_CLOSE:
             RunStatusListPicker(true);
-            return -1;
-        case 0:
+            return DDS_ROSTER_PICK_CLOSED;
+        case DDS_ROSTER_PICK_OPEN:
             SetStatusColumn(STATUS_LIST_SUMMONABLE);
             step++;
-        case 1:
+        case DDS_ROSTER_PICK_POLL:
             s_ddsRosterSlot = RunStatusListPicker(false);
-            if (s_ddsRosterSlot != -1) {
+            if (s_ddsRosterSlot != ROSTER_SLOT_NONE) {
                 step++;
             }
             break;
@@ -1004,14 +1004,14 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
             attribute = TEXT_ATTR(TEXT_COLOR_RED, TEXT_COLOR_BLACK, TEXT_COLOR_BLACK);
             disabled = MENU_LINE_DISABLED;
             switch (index) {
-                case 2:
+                case DDS_ROW_PURGE:
                     if (CountRosterEntries(false)) {
                         attribute = TEXT_ATTR_FLAG1
                                     | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK);
                         disabled = false;
                     }
                     break;
-                case 1:
+                case DDS_ROW_RETURN:
                     for (slot = 0; slot < PARTY_SIZE; slot++) {
                         character = GetPartyCharacter(slot);
                         if (character != NULL && !IsHumanCharacter(character)) {
@@ -1022,7 +1022,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
                         }
                     }
                     break;
-                case 0:
+                case DDS_ROW_CALL:
                     for (slot = 0; slot < ROSTER_SIZE; slot++) {
                         character = GetRosterCharacter(slot);
                         if (character != NULL && !IsHumanCharacter(character)
@@ -1049,49 +1049,49 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
 }
 
 RVA(0x00017870, 0x8a)
-i16 ReturnDdsMember(void) {
+GZ_ENUM_RETURN(DdsActionResult, i16) ReturnDdsMember(void) {
     Character* character;
     if (!PollPartySlotSelection(PARTY_SLOT_REQUIRE_OCCUPIED)) {
-        return 0;
+        return DDS_ACTION_PENDING;
     }
     ClearPartySlotSelection();
     if (g_selectedObjectId < 0) {
-        return -1;
+        return DDS_ACTION_CANCELLED;
     }
     character = GetPartyCharacter(g_selectedObjectId);
     if (character == NULL) {
-        return 0;
+        return DDS_ACTION_PENDING;
     }
     if (IsHumanCharacter(character)) {
-        return 0;
+        return DDS_ACTION_PENDING;
     }
     ClearBattleConditions(GetCharacterConditions(character));
     ResetBattleTally(character);
     MarkPickDone();
     ClearPartyPosition(g_selectedObjectId);
     PlaySoundEffect(0x55);
-    return 1;
+    return DDS_ACTION_COMPLETED;
 }
 
 RVA(0x00017900, 0x5f)
 i16 PickDdsPurgeMember(void) {
     switch (GetGameSub()) {
-        case 2:
+        case DDS_PURGE_PICK:
             s_ddsRosterSlot = RunStatusListPicker(false);
-            if (s_ddsRosterSlot != -1) {
+            if (s_ddsRosterSlot != ROSTER_SLOT_NONE) {
                 PrevGameSub();
             }
             break;
-        case 1:
+        case DDS_PURGE_FINISH:
             RunStatusListPicker(true);
             return s_ddsRosterSlot;
-        case 0:
+        case DDS_PURGE_PREPARE:
             NextGameSub();
             NextGameSub();
             SetStatusColumn(STATUS_LIST_RESERVE_UNFLAGGED);
             break;
     }
-    return -1;
+    return ROSTER_SLOT_NONE;
 }
 
 RVA(0x00017960, 0x2a)
@@ -2456,10 +2456,10 @@ RVA(0x00019ea0, 0x9e)
 i16 RunPartyPicker(i16 command) {
     PartyMemberList* entries;
     i16 result;
-    if (command != 0) {
+    if (command != PARTY_PICKER_COMMAND_CONTINUE) {
         s_partyPicker = ClosePickerMenu(s_partyPicker);
     }
-    if (command >= 0) {
+    if (command >= PARTY_PICKER_COMMAND_CONTINUE) {
         if (!s_partyPicker) {
             if (!CountPickablePartyMembers()) {
                 return PARTY_PICKER_RESULT_CANCELLED;

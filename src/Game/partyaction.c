@@ -2323,7 +2323,7 @@ static __inline void ResetPartyCommandPick(void) {
 
 RVA(0x000093e0, 0x36)
 void CloseFieldWindows(void) {
-    RunPartyPicker(-1);
+    RunPartyPicker(PARTY_PICKER_COMMAND_CLOSE);
     CancelFieldTargetMenu(-1);
     CancelItemTargetMenu(-1);
     ResetPartyCommandPick();

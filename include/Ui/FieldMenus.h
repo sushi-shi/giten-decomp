@@ -23,6 +23,11 @@ GZ_ENUM_CONST_BEGIN(PartyPickerResult)
     PARTY_PICKER_RESULT_NONE = -1
 GZ_ENUM_CONST_END(PartyPickerResult)
 
+GZ_ENUM_CONST_BEGIN(PartyPickerCommand)
+    PARTY_PICKER_COMMAND_CLOSE = -1,
+    PARTY_PICKER_COMMAND_CONTINUE = 0
+GZ_ENUM_CONST_END(PartyPickerCommand)
+
 i16 RunPartyPicker(i16 command);
 void SetPartyPickerMode(GZ_ENUM_PARAM(PartyPickerMode, i16) mode);
 struct PartyMemberList;

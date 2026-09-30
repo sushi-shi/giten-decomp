@@ -1286,8 +1286,6 @@ src/Game/statestack.c	OpenItemListMenu	*	*	*	the whole bag copied (0, 64 entries
 src/Game/statestack.c	OpenPartyPicker	*	*	*	@identity-TODO: menu flags 0x1e and 2
 src/Game/statestack.c	PickStatusMember	*	*	*	@identity-TODO: the status menu items hidden (1, 0), status column 0, panel row flag 0x800
 src/Game/statestack.c	PollRewardClick	*	*	*	the reward window's hit box (0xea..0x192, 0xc0..0xf6)
-src/Game/statestack.c	ReturnDdsMember	*	*	*	@identity-TODO: returned (1), not (0), cancelled (-1)
-src/Game/statestack.c	RunPartyPicker	0	trivial-function-literal	0 equality command	zero continues polling the open picker without resetting it
 src/Game/statestack.c	RunItemUse	*	*	*	@identity-TODO: item use: screen layer 1 hidden, no user (-1), target flags (0x10, 0x11, 0x30) and their pick windows (5, 4, 6, 3)
 src/Game/statestack.c	RunLevelUp	*	*	*	@identity-TODO: level-up screen parameters: fades (1), the status screen entered and left (0), picture surface 0x36, reward experience cleared
 src/Game/statestack.c	RunStatusScreen	*	*	*	@identity-TODO: status screen parameters: menu items shown (0), not nested (0), the analyze member slot 15, field panel row 1 unchecked, the member reset
@@ -1300,7 +1298,7 @@ src/Game/statestack.c	CancelItemTargetMenu	-1	*	*	no command picked
 src/Game/statestack.c	GrantBattleRewards	*	*	*	the rewards cleared once granted; the info bar's layout 0; 0 when none
 src/Game/statestack.c	*Experience*	*	*	*	experience: the level cap (99, 100), the cube formula (4, 6, 5) and demon ids from 0x20; ExperienceToLevel's 1; 0 or -1 when no level is gained
 src/Game/statestack.c	*Scene*	*	*	*	@identity-TODO: scene cells and sprites: the sixteen cells, cell kind at index 5, the 32 entries and sprite slots (31 the last), streams ending at 0xff and packed 16 at a time, frames (-1 none) at (40, 112)
-src/Game/statestack.c	*Dds*	*	*	*	@identity-TODO: DDS menu steps (0..4), status columns (1, 2), no roster slot (-1), the party slot poll's mode 1, results (0, 1, -1), the summon's training (group 3) and menu rows (3, 4)
+src/Game/statestack.c	*Dds*	*	*	*	@identity-TODO: the party slot poll's mode 1, the summon's training (group 3), menu geometry, and sound effects
 src/Game/partyaction.c	PickPartyMember	1	trivial-function-literal	1 bound TickFieldCount()	one remaining field tick is the minimum for a member to be ready
 src/Game/partyaction.c	CountPickablePartyMembers	0	call-argument	FindPickablePartyMember(i16) argument 1	zero-based party positions: start at position 0 and advance one after each found member
 src/Game/partyaction.c	CountPickablePartyMembers	1	call-argument	FindPickablePartyMember(i16) argument 1	zero-based party positions: start at position 0 and advance one after each found member
@@ -1459,7 +1457,6 @@ src/Game/partyaction.c	SpendGunRounds	0	trivial-function-literal	0 array-index s
 src/Game/partyaction.c	SpendGunRounds	0	trivial-function-literal	0 store s_gunPower[[]]	array slot zero is the current burst; a shifted-off tail is cleared to zero
 src/Game/partyaction.c	SpendGunRounds	0	trivial-function-literal	0 store s_gunRounds[[]]	array slot zero is the current burst; a shifted-off tail is cleared to zero
 src/Game/partyaction.c	SpendAllGunRounds	0	trivial-function-literal	0 array-index s_gunRounds	array slot zero is the current burst; stop once it has no rounds
-src/Game/partyaction.c	CloseFieldWindows	-1	call-argument	RunPartyPicker(i16) argument 1	-1 requests cancellation of each open party/item target picker
 src/Game/partyaction.c	CloseFieldWindows	-1	call-argument	CancelFieldTargetMenu(i16) argument 1	-1 requests cancellation of each open party/item target picker
 src/Game/partyaction.c	CloseFieldWindows	-1	call-argument	CancelItemTargetMenu(i16) argument 1	-1 requests cancellation of each open party/item target picker
 src/Game/partyaction.c	CheckPickTarget	0	trivial-function-literal	0 return	zero means no completed pick from a missing character or menu selection
