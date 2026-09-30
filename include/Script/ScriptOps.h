@@ -7,6 +7,7 @@
 #include <Enums.h>
 #include <Game/FusionMenuStep.h>
 #include <Game/MoveCommand.h>
+#include <Script/ActorAlertMode.h>
 #include <Script/ActorSpoilKind.h>
 #include <Script/BranchMode.h>
 #include <Script/ScriptPanel.h>
@@ -235,7 +236,7 @@ void OpJumpUnlessActorCanStep(
 // @identity-TODO: Meaning of 0x2ac50 (actor+0x1c4=2, local flags 8/10, mode=6) and the word at
 // actor+0x17f is unproven; decode other 0x2ac50 callers (0x7390, 0xf890).
 RVA_DECL(0x00033490)
-GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(i16 level);
+GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(GZ_ENUM_PARAM(ActorAlertMode, i16) level);
 
 RVA_DECL(0x00033510)
 void OpJumpUnlessPlayerInLine(i16 invert);

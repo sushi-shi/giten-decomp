@@ -1131,7 +1131,6 @@ src/Script/scriptactor.c	OpRebalanceMemberStats	2	*	*	@identity-TODO: half the s
 src/Script/scriptactor.c	OpRollActor*	0	*	*	no rolled spoils
 src/Script/scriptactor.c	OpRunFusion	1	call-argument	*	@identity-TODO: SetBlankStep's 1
 src/Script/scriptactor.c	OpScreenTransition	1	call-argument	*	@identity-TODO: SetLongFrame's 1
-src/Script/scriptactor.c	OpSetActorAlert	*	*	*	@identity-TODO: alert levels 1 and 2 and the 0x200-tick alert
 src/Script/scriptactor.c	OpSetObjectFamiliarity	0	*	*	familiarity from 0
 src/Script/scriptactor.c	OpSetObjectField	*	*	*	@identity-TODO: object field 3 and the fourth group's level (battle-stat word 18)
 src/Script/scriptactor.c	OpSetObjectPresence	1	*	*	@identity-TODO: SetAnalyzed's 1

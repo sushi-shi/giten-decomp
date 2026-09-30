@@ -448,7 +448,9 @@ Kept as rows until there is evidence:
   spear attacks, and code 17 has only six single-target remedy/revival skills.
   Their distinct selection meanings are not established by the collector.
 - Field-effect code 0x1a shares Sabatoma's actor-group handler, but its
-  distinct identity remains unknown. Code 0x23 returns `FIELD_EFFECT_DONE`
+  distinct identity remains unknown. None of the 309 skill records in the
+  current ET0004 table selects 0x1a, so their names cannot identify it.
+  Code 0x23 returns `FIELD_EFFECT_DONE`
   directly without changing state, so its name describes that behavior.
   The dispatcher also proves
   no effect (0), knockback (1), raised accuracy/evasion (0x20), doubled

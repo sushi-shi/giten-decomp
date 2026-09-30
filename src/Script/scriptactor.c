@@ -9,6 +9,7 @@
 #include <rva.h>
 
 #include <Game/Actor.h>
+#include <Game/ActionMark.h>
 #include <Game/Alignment.h>
 #include <Game/AnalyzeData.h>
 #include <Game/AreaMap.h>
@@ -532,19 +533,19 @@ void OpJumpUnlessActorCanStep(
 }
 
 RVA(0x00033490, 0x76)
-GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(i16 level) {
+GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(GZ_ENUM_PARAM(ActorAlertMode, i16) level) {
     ReadScriptValue();
     if (g_curScript->actor != NULL) {
-        if (level != 2) {
+        if (level != ACTOR_ALERT_DELAY) {
             AlertActor(g_curScript->actor, ATTITUDE_VERY_HOSTILE);
         }
-        if (level == 1) {
-            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining > 1) {
-                GetCharacterActionWait(g_curScript->actor)->remaining = 1;
+        if (level == ACTOR_ALERT_IMMEDIATE) {
+            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining > ACTION_WAIT_QUEUED) {
+                GetCharacterActionWait(g_curScript->actor)->remaining = ACTION_WAIT_QUEUED;
             }
-        } else if (level == 2) {
-            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining < 0x200) {
-                GetCharacterActionWait(g_curScript->actor)->remaining = 0x200;
+        } else if (level == ACTOR_ALERT_DELAY) {
+            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining < ACTION_WAIT_EXTENDED) {
+                GetCharacterActionWait(g_curScript->actor)->remaining = ACTION_WAIT_EXTENDED;
             }
         }
     }
