@@ -9,6 +9,7 @@
 #include <Game/AttackMode.h>
 #include <Ints.h>
 
+#include <Game/SkillFamily.h>
 #include <Game/SkillMessage.h>
 #include <Game/TargetArea.h>
 #include <Game/TargetFlags.h>
@@ -51,9 +52,9 @@ typedef struct SkillParameters {
         };
         u8 type;
     };
-    u8 family; // @identity-TODO: FindSkill matches it against up to three codes
-    u8 level;  // FindSkill takes skills up to a given level
-    i8 cost;   // negative: HP, positive: MP (see HpMpLeftAfterCost)
+    GZ_ENUM_STORAGE(SkillFamily, u8) family;
+    u8 level; // FindSkill takes skills up to a given level
+    i8 cost;  // negative: HP, positive: MP (see HpMpLeftAfterCost)
     GZ_ENUM_STORAGE(SkillUseModes, u8) usable;
     GZ_ENUM_STORAGE(TargetArea, u8) targetArea;
     GZ_ENUM_STORAGE(TargetFlags, u8) targetFlags;

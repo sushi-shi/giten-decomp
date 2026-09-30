@@ -98,6 +98,12 @@ Item record names:
   arms, chest, abdomen, head and heart. They are the eight timed scenario
   items whose expiry is tracked by `StampSpecialItem`.
 
+Skill family names:
+
+- In ET0004, family codes 1..5 each contain one consistent spell series:
+  Agi, Zan, Dawm, Zio and Bufu. `SkillParameters.family` retains its retail
+  byte storage; the other family codes need individual identities.
+
 ### Event-flag names (ET0018)
 
 `ET0018` is the developers' event-flag name table.
