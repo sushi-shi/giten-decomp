@@ -79,6 +79,9 @@ Map area names:
   their decoded records differ in events and other level data. The code tests
   0x30 as Shibuya, so 0x28 is named its alternate map without a story-phase
   claim.
+- M0029 and M002B both display 品川ホテル and have separate five-level wall
+  layouts. A retail debug trace calls 0x29 品川ホテル（幻）, so 0x29 keeps the
+  illusion qualifier and 0x2b uses the displayed hotel name.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
