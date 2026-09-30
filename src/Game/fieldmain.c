@@ -219,7 +219,7 @@ void SaveReturnPoint(void) {
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
 RVA(0x00012280, 0x231)
-i16 AdvancePartyMove(i16 command) {
+GZ_ENUM_RETURN(PartyMoveOutcome, i16) AdvancePartyMove(i16 command) {
     i16 wall;
     i16 step;
     i16 x;
@@ -258,7 +258,7 @@ i16 AdvancePartyMove(i16 command) {
                     if (((wall == 1 || wall == 2) && g_party.field.moveCommand != MOVE_FORWARD)
                         || WallStops(wall, WALL_STOP_MOVEMENT) == 3) {
                         PlaySoundEffect(8);
-                        return 2;
+                        return PARTY_MOVE_BLOCKED;
                     }
                     if (WallStops(wall, WALL_STOP_MOVEMENT)) {
                         PlayWallEffect();
@@ -274,25 +274,25 @@ i16 AdvancePartyMove(i16 command) {
                         TurnDirection(g_party.field.pos.direction, g_party.field.moveCommand)
                     );
                     PlaySoundEffect(0xc);
-                    return 1;
+                    return PARTY_MOVE_DONE;
                 }
                 ShowMessage(
                     "\224\340\202\315\203\215\203b\203N\202\263\202\352\202\304\202\242\202\351",
                     0x3c
                 );
                 PlaySoundEffect(8);
-                return 2;
+                return PARTY_MOVE_BLOCKED;
             case FIELD_MOVE_TURNING:
                 step = g_party.field.turnsLeft < 0 ? -1 : 1;
                 g_party.field.pos.direction = TurnDirection(g_party.field.pos.direction, step);
                 g_party.field.turnsLeft -= step;
                 if (g_party.field.turnsLeft == 0) {
                     g_party.field.moveState = FIELD_MOVE_IDLE;
-                    return 1;
+                    return PARTY_MOVE_DONE;
                 }
                 break;
         }
-        return 0;
+        return PARTY_MOVE_IN_PROGRESS;
     }
 }
 

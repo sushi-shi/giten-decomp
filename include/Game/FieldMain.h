@@ -55,7 +55,14 @@ GZ_ENUM_BEGIN_SPLIT(ObjectEventState, u8)
     OBJECT_EVENT_QUEUED = 3
 GZ_ENUM_END_SPLIT(ObjectEventState)
 
-i16 AdvancePartyMove(i16 command);
+// Whether a party step or turn is still running, completed, or blocked.
+GZ_ENUM_BEGIN_SPLIT(PartyMoveOutcome, i16)
+    PARTY_MOVE_IN_PROGRESS = 0,
+    PARTY_MOVE_DONE = 1,
+    PARTY_MOVE_BLOCKED = 2
+GZ_ENUM_END_SPLIT(PartyMoveOutcome)
+
+GZ_ENUM_RETURN(PartyMoveOutcome, i16) AdvancePartyMove(i16 command);
 void ResetLevelEvents(void);
 b32 TestLevelEvent(i16 level);
 b16 RaiseObjectEvent(i16 event, i16 queued);
