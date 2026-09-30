@@ -468,6 +468,7 @@ Kept as rows until there is evidence:
   has a behavior-based enum member. The current ET0004 skills and ET0001
   attack items do not use it.
 - Skill kinds 9, 10 and 14 have no records in the current ET0004 skill table.
+  The original PC-98 ET0004 also has 309 records and none of those kinds.
   Their distinct identities are still unknown; the combat code shares the
   first two's handler and the field-effect code shares kind 14's handler
   with kinds 12 and 13.
@@ -488,7 +489,8 @@ Kept as rows until there is evidence:
   Code 1 has 140 records, including basic melee attacks, guns, elemental
   spells, restoration and field skills. Codes 1 and 3 both contain kind-1
   attacks with target flags 2 and range 1, so those fields do not separate
-  the two area values.
+  the two area values. The PC-98 ET0004 assigns area 1 to 25 skills that
+  Windows changed to area 6; it has no area-4 skill either.
   The records' own descriptions confirm these groupings: code-5 skills 294
   and 296 describe spear attacks; code-17 skills 108..113 cure poison,
   paralysis, petrification and curses or revive the fallen. Code-3 skill 198
@@ -499,8 +501,8 @@ Kept as rows until there is evidence:
   `CollectTargets` sends area 17 through the same default cell collector as
   areas 1, 3, 4 and 5. Their distinct selection meanings remain unproven.
 - Field-effect code 0x1a shares Sabatoma's actor-group handler, but its
-  distinct identity remains unknown. None of the 309 skill records in the
-  current ET0004 table selects 0x1a, so their names cannot identify it.
+  distinct identity remains unknown. Neither version's 309 ET0004 skill
+  records selects 0x1a, so their names cannot identify it.
   Code 0x23 returns `FIELD_EFFECT_DONE`
   directly without changing state, so its name describes that behavior.
   The dispatcher also proves
@@ -526,10 +528,12 @@ Kept as rows until there is evidence:
 - Codes 0x8b, 0x8c and 0x8f occur in area object lists. `CheckCellEvent`
   ignores their kind-10 result for object records, and the direct object-cell
   queries recognize only 0x8d and 0x8e. Their distinct map roles remain
-  unproven. Code 0x7c has a cell-kind table row but no cell record in the
-  current disc's area maps. Code 0x65 likewise has a kind-13 table row but no
-  cell record in any of the 109 current disc area maps. `RunCellEvent` has no
-  kind-13 branch. `CopyExitAt`'s numeric kind 7 is the chute event kind.
+  unproven. The original PC-98 disc has 23 code-0x8c object records versus
+  Windows' 12; the eleven extra records are on Shanshan City level 5. Code
+  0x7c has a cell-kind table row but no cell record in either disc's area
+  maps. Code 0x65 likewise has a kind-13 table row but no cell record in any
+  of the 109 Windows or 100 PC-98 area maps. `RunCellEvent` has no kind-13
+  branch. `CopyExitAt`'s numeric kind 7 is the chute event kind.
 - Field-object image codes -1 and 0..4 name the mirrored side, facing rows,
   acting row and reaction frame. The fifth frame of the disc's five-BMP actor
   images is a distinct reaction pose. `FlashHitObject` selects it after a pool
@@ -551,11 +555,13 @@ Kept as rows until there is evidence:
   seven now have enum members. Kind 3 has solid geometry and movement classes.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,
   incense, a shield, dummy items and apparent scenario items; its one kind-6
-  record is the Necronomicon. `DecodeItemRecord` gives kind 5 targeting and
-  message fields but gives kind 6 neither; `ApplyItemEffect` sends both to
-  handlers with the same no-effect outcome. The field item picker invokes a
-  skill only for weapons and accessories, so kind 6's extra decoded bytes do
-  not establish a skill-book role. The kind-5 descriptions promise distinct
-  effects for talismans 107/108, incense 110/111/118 and the Core Shield 113,
-  while 115..117 and 121 are dummies or undescribed. The shared no-effect
-  handler does not recover those intended effects or either category name.
+  record is the Necronomicon. The PC-98 records 107..122 are byte-identical
+  to Windows, with the same kind assignments. `DecodeItemRecord` gives kind 5
+  targeting and message fields but gives kind 6 neither; `ApplyItemEffect`
+  sends both to handlers with the same no-effect outcome. The field item
+  picker invokes a skill only for weapons and accessories, so kind 6's extra
+  decoded bytes do not establish a skill-book role. The kind-5 descriptions
+  promise distinct effects for talismans 107/108, incense 110/111/118 and
+  the Core Shield 113. Items 115..117 and 121 are dummies or undescribed.
+  The shared no-effect handler does not recover those intended effects or
+  either category name.
