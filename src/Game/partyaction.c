@@ -700,7 +700,7 @@ b16 FormatAttackCommand(Character* actor) {
         return true;
     }
     DecodeItemRecord(&record, GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item);
-    if (!record.kind) {
+    if (record.kind == ITEM_KIND_NONE) {
         strcpy(g_scratchBuffer, "ATTACK");
         return true;
     }
@@ -726,7 +726,7 @@ b16 FormatGunCommand(Character* actor) {
         return false;
     }
     DecodeItemRecord(&record, GetCharacterEquipment(actor)[EQUIP_SLOT_AMMO].item);
-    return record.kind != 0;
+    return record.kind != ITEM_KIND_NONE;
 }
 
 RVA(0x00006660, 0x77)

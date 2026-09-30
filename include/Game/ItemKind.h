@@ -6,6 +6,7 @@
 
 // clang-format off
 GZ_ENUM_BEGIN_SPLIT(ItemKind, u8)
+    ITEM_KIND_NONE = 0,
     ITEM_KIND_RESTORATIVE = 1,
     ITEM_KIND_INCENSE = 2,
     ITEM_KIND_ENHANCER = 3,

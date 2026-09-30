@@ -790,3 +790,6 @@ Unresolved identities and behavior-only names:
   only two `OpListBagByCategory` calls in each version's scripts (MS000B/4
   and MS00D8/10) both request category 21, all priced non-scenario items;
   neither script selects kind 5 or 6 by its category number.
+  Kind 0 is ET0001 item ID 0's zero-price empty record. It is the only
+  kind-0 record among the 745 item entries, and the gun command rejects that
+  kind. `ITEM_KIND_NONE` names it without assigning an identity to kinds 5 or 6.
