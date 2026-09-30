@@ -497,6 +497,13 @@ commands excluded in fixed-member mode; the field command panel sets it on
 its status row. The observed behavior supports `PANEL_SKIP_HIT_TEST` in the
 shared `PanelFlags` domain without assigning a visual style to the bit.
 
+## Bag search groups
+
+`FindBagItem` tests bit 0 of its group operand before scanning ordinary bag
+slots 0..47 and bit 1 before scanning scenario slots 48..63. `CompactBagCore`
+passes both bits. The operand is now `BagSearchGroup`, with the two storage
+groups and their combined search named.
+
 ## Event-flag banks
 
 The saved flag block has sixteen 256-bit banks. Source readers and resets

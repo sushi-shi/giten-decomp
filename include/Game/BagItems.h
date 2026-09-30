@@ -116,7 +116,13 @@ i16 AddScenarioBagItems(i16 item, i16 count);
 
 // The last bag entry holding `item` among the first 48 (bit 0 of `groups`)
 // or the last sixteen (bit 1), else -1.
-i16 FindBagItem(i16 item, u8 groups);
+GZ_ENUM_FLAGS_BEGIN(BagSearchGroup, u8)
+    BAG_SEARCH_ORDINARY = 1,
+    BAG_SEARCH_SCENARIO = 2,
+    BAG_SEARCH_ALL = BAG_SEARCH_ORDINARY | BAG_SEARCH_SCENARIO
+GZ_ENUM_FLAGS_END(BagSearchGroup)
+
+i16 FindBagItem(i16 item, GZ_ENUM_PARAM(BagSearchGroup, u8) groups);
 
 // Adds `amount` to entry `index` up to `limit`; returns the amount added.
 i16 AddToBagEntry(i16 index, u16 amount, u16 limit);

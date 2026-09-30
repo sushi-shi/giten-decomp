@@ -829,17 +829,17 @@ i16 AddDropSlot(i16 item, i16 amount) {
 }
 
 RVA(0x00023ca0, 0x70)
-i16 FindBagItem(i16 item, u8 groups) {
+i16 FindBagItem(i16 item, GZ_ENUM_PARAM(BagSearchGroup, u8) groups) {
     i16 i;
 
-    if (groups & 1) {
+    if (groups & BAG_SEARCH_ORDINARY) {
         for (i = BAG_ORDINARY_ENTRY_COUNT - 1; i >= 0; i--) {
             if (GetItemStackItem(&g_bagItems[i]) == item) {
                 return i;
             }
         }
     }
-    if (groups & 2) {
+    if (groups & BAG_SEARCH_SCENARIO) {
         for (i = BAG_ENTRY_COUNT - 1; i >= BAG_ORDINARY_ENTRY_COUNT; i--) {
             if (GetItemStackItem(&g_bagItems[i]) == item) {
                 return i;
@@ -968,7 +968,7 @@ static void CompactBagCore(void) {
         }
         limit = GetItemStackLimit(GetItemStackItem(&g_bagItems[i]));
         while (GetItemStackCount(&g_bagItems[i]) < limit) {
-            from = FindBagItem(GetItemStackItem(&g_bagItems[i]), 3);
+            from = FindBagItem(GetItemStackItem(&g_bagItems[i]), BAG_SEARCH_ALL);
             if (from <= i) {
                 break;
             }

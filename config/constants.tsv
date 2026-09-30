@@ -970,9 +970,8 @@ src/Game/itemrecord.c	StoreBagItem	*	*	*	@identity-TODO: nothing stored yet; the
 src/Game/itemrecord.c	*Pool*	*	*	*	@identity-TODO: an empty pool stack; RollItemAmount's third argument 0; StoreBagItem's -1; the bag copy's quiet flag and its 16 fit tests
 src/Game/itemrecord.c	RestoreBagEntries	0	*	*	nothing restored
 src/Game/itemrecord.c	AddDropSlot	*	*	*	-1 when the item is not dropped; no remap (0)
-src/Game/itemrecord.c	FindBagItem	*	*	*	@identity-TODO: the bag groups searched (bit 1 ordinary, bit 2 scenario); -1 when not found
+src/Game/itemrecord.c	FindBagItem	*	*	*	no matching item (-1), the first 48 ordinary and last 16 scenario slots, and reverse search order; group bits are named
 src/Game/itemrecord.c	*BagEntry*	*	*	*	@identity-TODO: bag-entry attachment and detail words: -1 for none, 0 cleared; a detached quantity of 1; SetBagEntry's (-1, -1) clears; the 0xff taken from a stack's count
-src/Game/itemrecord.c	CompactBagCore	3	call-argument	FindBagItem(*	both bag groups
 src/Game/itemrecord.c	AddBagItems	*	*	*	item ids from 1; 0 when nothing is added
 src/Game/itemrecord.c	AddScenarioBagItems	-1	call-argument	*	a cleared detail word
 src/Game/itemrecord.c	CompactBag	-1	call-argument	*	a cleared entry
