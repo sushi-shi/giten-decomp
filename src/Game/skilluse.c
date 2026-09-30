@@ -1805,7 +1805,7 @@ void ApplySkillEffect(i16 skill, Character* user, Character* target) {
         case SKILL_KIND_SUMMON:
             UseKind13Skill(user, target);
             break;
-        case 14:
+        case SKILL_KIND_FIELD_EFFECT_REPORT_SUCCESS:
             UseKind14Skill(user, target);
             break;
         case SKILL_KIND_FIELD_EFFECT:
