@@ -1684,20 +1684,20 @@ b16 RecoverCondition(Character* character, GZ_ENUM_PARAM(ConditionId, i16) condi
 // dying, 2 when HP is out while dying, else 0.
 // @identity-TODO: condition 8's role here is unrecovered.
 RVA(0x0003f0f0, 0xd0)
-i16 ApplyEmptyPools(Character* character) {
+GZ_ENUM_RETURN(EmptyPoolOutcome, i16) ApplyEmptyPools(Character* character) {
     switch (EmptyPoolMask(&character->pools)) {
         case POOL_MASK_NONE:
             break;
         case POOL_MASK_BOTH:
             if (!HasCondition(GetCharacterConditions(character), CONDITION_DYING)) {
                 AddCondition(GetCharacterConditions(character), CONDITION_DYING);
-                return 3;
+                return EMPTY_POOL_CONDITION_ADDED;
             }
-            return 4;
+            return EMPTY_POOL_BOTH_ALREADY_DYING;
         case POOL_MASK_MP:
             if (HasCondition(GetCharacterConditions(character), CONDITION_ZOMBIE)) {
                 AddCondition(GetCharacterConditions(character), CONDITION_DEAD);
-                return 3;
+                return EMPTY_POOL_CONDITION_ADDED;
             }
             break;
         case POOL_MASK_HP:
@@ -1706,11 +1706,11 @@ i16 ApplyEmptyPools(Character* character) {
                     break;
                 }
                 AddCondition(GetCharacterConditions(character), CONDITION_DYING);
-                return 1;
+                return EMPTY_POOL_HP_DYING_ADDED;
             }
-            return 2;
+            return EMPTY_POOL_HP_ALREADY_DYING;
     }
-    return 0;
+    return EMPTY_POOL_UNCHANGED;
 }
 
 // @dead-code

@@ -15,13 +15,24 @@ SetConditionAge(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condit
     conditions->ages[condition] = age;
 }
 
+// The result of applying depleted HP or MP to a character's conditions.
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(EmptyPoolOutcome, i16)
+    EMPTY_POOL_UNCHANGED = 0,
+    EMPTY_POOL_HP_DYING_ADDED = 1,
+    EMPTY_POOL_HP_ALREADY_DYING = 2,
+    EMPTY_POOL_CONDITION_ADDED = 3,
+    EMPTY_POOL_BOTH_ALREADY_DYING = 4
+GZ_ENUM_END_SPLIT(EmptyPoolOutcome);
+// clang-format on
+
 // The condition set's per-condition ages: aging, recovery rolls and the
 // conditions an empty pool brings, plus easing and the name walk.
 i16 AgeConditions(ConditionSet* conditions, i16 amount);
 b16 AgeCondition(i16 amount, ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
 i16 RecoverConditions(Character* character);
 b16 RecoverCondition(Character* character, GZ_ENUM_PARAM(ConditionId, i16) condition);
-i16 ApplyEmptyPools(Character* character);
+GZ_ENUM_RETURN(EmptyPoolOutcome, i16) ApplyEmptyPools(Character* character);
 GZ_ENUM_RETURN(ConditionChangeResult, i16) EscalateCondition(
     ConditionSet* conditions,
     GZ_ENUM_PARAM(ConditionId, i16) mild,

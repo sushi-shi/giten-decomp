@@ -12,7 +12,7 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 211 declared domains. The retail
+`giten verify enum-domains` passes with 212 declared domains. The retail
 compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
 
 ## Batch workflow
@@ -113,4 +113,6 @@ Kept as rows until there is evidence:
 - Actor flags 0x20, 0x21, 0x22 and 0x3f.
 - Bank 7 flags 0xfd-0xff.
 - The identity of area 0x85.
-- Item kinds 5 and 6.
+- Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,
+  incense, a shield, dummy items and apparent scenario items; its one kind-6
+  record is the Necronomicon. Those records do not establish category names.
