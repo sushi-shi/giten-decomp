@@ -311,6 +311,12 @@ Coverage:
 - Bank 4 holds the boxes.
 - Bank 8 bit 0 is "no enemies".
 - Bank 9's names are only the Shinjuku base's.
+- Bank 1 bits 0x5e and 0x75 select FC4001 and FC4002 frame 1 for Katsuragi
+  and Tachibana's status portraits while clear. The retail bitmap chains
+  show civilian clothing in frame 1 and armored DB clothing in frame 0.
+  MS001E entry 3 sets both bits after issuing DB equipment and uniforms;
+  MS0055 entry 2 clears both before the entrance examination. The enum
+  names describe the proven portrait selection, not an assumed story phase.
 - Bank 14 holds the actor flags. Bits 11-16 contradict the code, so they are
   not used.
 - Bank 0 bits 137..142 name the six withered lover's limbs and torso parts;
@@ -339,12 +345,7 @@ into `GrantActorReward`, so the enum keeps both names for that value.
 
 Kept as rows until there is evidence:
 
-- Bank 1 bits 0x5e and 0x75 select alternate portraits for Katsuragi and
-  Tachibana when clear. MS001E entry 3 sets both after the DB equipment and
-  uniforms are issued, while MS0055 entry 2 clears both before the entrance
-  examination. Other story entries also change them, so a uniform-specific
-  name still needs the portrait assets and those transitions reconciled.
-  Bank 1 bit 0x2b suppresses `TickStepDamage` while set. MS0056 entry 0
+- Bank 1 bit 0x2b suppresses `TickStepDamage` while set. MS0056 entry 0
   sets it amid a toxic-gas and protective-suit scene, but MS0051 entry 5
   also sets it in a hospital scene; its full story meaning remains open.
 - Battle-tally slot 6, attack attributes 0/1, 9 and 10, and the shared

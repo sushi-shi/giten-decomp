@@ -38,6 +38,7 @@
 #include <Ints.h>
 #include <Mem/Alloc.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Script/ScriptOps.h>
 #include <Text/Font.h>
 #include <Text/TextPlane.h>
@@ -225,12 +226,18 @@ static void DrawStatusMemberPortrait(i16 x, i16 y, Character* member) {
         file = picture.index + 0x4000;
         mode = picture.variant;
         if (member->id == HUMAN_KATSURAGI) {
-            if (!IsEventFlagSet(1, 0x5e)) {
+            if (!IsEventFlagSet(
+                    EVENT_FLAG_BANK_SCENARIO_2,
+                    SCENARIO_2_KATSURAGI_CIVILIAN_PORTRAIT
+                )) {
                 file = 0x4001;
                 mode = 1;
             }
         } else if (member->id == HUMAN_TACHIBANA) {
-            if (!IsEventFlagSet(1, 0x75)) {
+            if (!IsEventFlagSet(
+                    EVENT_FLAG_BANK_SCENARIO_2,
+                    SCENARIO_2_TACHIBANA_CIVILIAN_PORTRAIT
+                )) {
                 file = 0x4002;
                 mode = 1;
             }
