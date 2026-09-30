@@ -100,6 +100,14 @@ Map area names:
   Their warps connect to M0006 (新宿地下街, Shinjuku Underground Mall) level 1
   at y=4/6 and y=25/26 respectively. Since map north is decreasing y, these
   are the north and south passage maps.
+- M000E and M000F both display オリンピックプール (Olympic Pool). M000E contains
+  one level at floor 1; M000F has that floor plus three basement levels
+  displayed as floors -1, -1 and -2. Their pool-floor wall layouts differ.
+  The enum names describe the decoded layout without assigning a story phase.
+- M0041 and M0050 both display 銀座線 (Ginza Line). M0041 has two levels with
+  1-by-10 and 1-by-8 wall grids; M0050 has three levels with 5-by-1,
+  1-by-3 and 6-by-1 grids. Their enum names use the level counts because
+  neither map has a source check that identifies a primary version.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map

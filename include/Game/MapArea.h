@@ -5,8 +5,8 @@
 
 // Map areas, named after the area names in their map files (translated or
 // romanized), or after the shopkeeper debug traces in OpLoadSprite. Several
-// map files can carry one place's name; the name goes to the one the code
-// tests.
+// map files can carry one place's name; the unqualified name goes to the one
+// the code tests. When neither is tested, the decoded layout distinguishes them.
 // @identity-TODO: area ids with duplicate or missing map names are not named yet.
 // Area ids are bytes; the automap keeps a handle per possible area.
 #define MAP_AREA_COUNT 256
@@ -24,6 +24,8 @@ GZ_ENUM_BEGIN_SPLIT(MapAreaId, u8)
     MAP_AREA_KEIO_LUMINE = 0x0b,
     MAP_AREA_YOMOTSU_HIRASAKA = 0x0c,
     MAP_AREA_MITAKYU_HULK = 0x0d,
+    MAP_AREA_OLYMPIC_POOL_SINGLE_LEVEL = 0x0e,
+    MAP_AREA_OLYMPIC_POOL_WITH_BASEMENTS = 0x0f,
     MAP_AREA_HARAJUKU = 0x10,
     MAP_AREA_MILLENNIUM_HEADQUARTERS_ALTERNATE = 0x11,
     MAP_AREA_SHANSHAN_CITY_ALTERNATE = 0x12,
@@ -73,6 +75,7 @@ GZ_ENUM_BEGIN_SPLIT(MapAreaId, u8)
     MAP_AREA_MEIJI_JINGUMAE_STATION = 0x3e,
     MAP_AREA_MARUNOUCHI_LINE = 0x3f,
     MAP_AREA_SENDAGI_SUBWAY_STATION = 0x40,
+    MAP_AREA_GINZA_LINE_TWO_LEVELS = 0x41,
     MAP_AREA_SHINAGAWA_AQUARIUM_STATION = 0x42,
     MAP_AREA_HIBIYA_LINE = 0x43,
     MAP_AREA_HIBIYA_LINE_ALTERNATE = 0x44,
@@ -87,6 +90,7 @@ GZ_ENUM_BEGIN_SPLIT(MapAreaId, u8)
     MAP_AREA_MEGURO_FUDO = 0x4d,
     MAP_AREA_FORBIDDEN_PLACE = 0x4e,
     MAP_AREA_GOKOKUJI_TEMPLE = 0x4f,
+    MAP_AREA_GINZA_LINE_THREE_LEVELS = 0x50,
     MAP_AREA_YOYOGI_PARK_STATION = 0x51,
     MAP_AREA_TOYAMA_SHELTER = 0x52,
     MAP_AREA_MILLENNIUM_HOSPITAL = 0x53,
