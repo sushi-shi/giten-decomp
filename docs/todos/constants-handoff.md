@@ -339,6 +339,14 @@ into `GrantActorReward`, so the enum keeps both names for that value.
 
 Kept as rows until there is evidence:
 
+- Bank 1 bits 0x5e and 0x75 select alternate portraits for Katsuragi and
+  Tachibana when clear. MS001E entry 3 sets both after the DB equipment and
+  uniforms are issued, while MS0055 entry 2 clears both before the entrance
+  examination. Other story entries also change them, so a uniform-specific
+  name still needs the portrait assets and those transitions reconciled.
+  Bank 1 bit 0x2b suppresses `TickStepDamage` while set. MS0056 entry 0
+  sets it amid a toxic-gas and protective-suit scene, but MS0051 entry 5
+  also sets it in a hospital scene; its full story meaning remains open.
 - Battle-tally slot 6, attack attributes 0/1, 9 and 10, and the shared
   result word's noncombat encodings. The ET0004 skill table links effect
   codes to protection slots: 0..3, 5 and 7..14 now have evidence-backed names.
