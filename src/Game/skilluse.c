@@ -1792,8 +1792,8 @@ void ApplySkillEffect(i16 skill, Character* user, Character* target) {
         case SKILL_KIND_BATTLE_STAT:
             UseBattleStatSkill(user, target);
             break;
-        case 9:
-        case 10:
+        case SKILL_KIND_CLEAR_BATTLE_TALLIES:
+        case SKILL_KIND_CLEAR_BATTLE_TALLIES_ALIAS:
             UseClearBattleTallySkill(user, target);
             break;
         case SKILL_KIND_RESET_BATTLE_STATS:

@@ -476,8 +476,9 @@ Unresolved identities and behavior-only names:
   attack items do not use it.
 - Skill kinds 9, 10 and 14 have no records in the current ET0004 skill table.
   The original PC-98 ET0004 also has 309 records and none of those kinds.
-  Kinds 9 and 10 share a battle-tally clearing handler; their distinct
-  identities remain unknown. Kind 14 now names its observed field-effect
+  Kinds 9 and 10 name their shared battle-tally clearing handler, with 10
+  marked as the alternate dispatch code; their distinct authored identities
+  remain unknown. Kind 14 now names its observed field-effect
   call followed by an unconditional success report, the same path used by
   kinds 12 and 13. Its authored category remains unknown.
 - Target-area codes 1, 3..5, 6..7 and 17. The collector proves selected-only
