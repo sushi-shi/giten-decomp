@@ -35,6 +35,7 @@
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
 #include <Game/ModeFlags.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
@@ -467,10 +468,10 @@ i16 ResolveCombatAction(void) {
     s_targetHpBefore = target->pools.hp.cur;
     targetHp = &target->pools.hp;
     fatal = GetFatalCondition(GetCharacterConditions(target));
-    if (attacker->id == 0x22 && target->id == 0xce) {
+    if (attacker->id == OBJECT_RECORD_MARDUK && target->id == OBJECT_RECORD_PRIMROSE) {
         SetFieldCounts(-2, -2);
     }
-    if (target->id == 0x36 && attacker->pickRole == PICK_ROLE_ITEM
+    if (target->id == OBJECT_RECORD_PYANKARA && attacker->pickRole == PICK_ROLE_ITEM
         && attacker->pickTarget == SKILL_NOELEM) {
         SetFieldCounts(-2, -2);
     }

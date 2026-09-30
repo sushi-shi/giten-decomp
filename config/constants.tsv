@@ -274,8 +274,6 @@ src/Game/fieldobj.c	RunObjectStep	*	call-argument	StepObjectTowardParty*argument
 src/Game/fieldobj.c	RunObjectStep	*	call-argument	StepObjectTowardParty*argument 2	a random side: MOVE_RIGHT (1) or MOVE_LEFT (3)
 src/Game/fieldobj.c	RunObjectStep	*	*	*scene*	@identity-TODO: the talk scene's entries per attitude (-1 falls back to entry 2)
 src/Game/fieldobj.c	RunObjectStep	0xe2	*	*	@identity-TODO: scene file 0xe2 is the field talk scene
-src/Game/fieldobj.c	ChooseObjectTarget	0xce	*	*	@identity-TODO: object record 0xce targets party member 0x22 first (record names are undecoded)
-src/Game/fieldobj.c	ChooseObjectTarget	0x22	*	*	@identity-TODO: the character object record 0xce seeks out (record names are undecoded)
 src/Game/fieldobj.c	ChooseObjectTarget	-1	*	*	FindPartyPositionOfId's not-in-party result
 src/Game/fieldobj.c	ChooseObjectTarget	0	trivial-function-literal	0 equality count	no candidate
 src/Game/fieldobj.c	GetDemonFlag*	*	*	*	@identity-TODO: a demon table entry's flag byte: bit 2 (bit 6) disables the low (high) flag in bit 0 (bit 4)
@@ -300,7 +298,6 @@ src/Game/fieldobj.c	InitObjectFromRecord	-1	*	*	an empty slot has no attachment
 src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 store byte096	@identity-TODO: byte096 starts at 1
 src/Game/fieldobj.c	InitObjectFromRecord	0x11	*	*	@identity-TODO: word098 starts at 0x11
 src/Game/fieldobj.c	InitObjectFromRecord	18	*	*	@identity-TODO: the fourth battle-stat group's level (its identity is unrecovered)
-src/Game/fieldobj.c	InitObjectFromRecord	0x117	*	*	@identity-TODO: object record 0x117 mirrors the party leader (record names are undecoded)
 src/Game/fieldobj.c	ReadObjectRecordField	*	*	*	a field of one, two or four bytes
 src/Game/fieldobj.c	SetFamiliarityCount	0	*	*	counts start at zero
 src/Game/fieldobj.c	RefreshFamiliarity	8	*	*	the familiarity is an eighth of the count
@@ -967,7 +964,7 @@ src/Game/skilluse.c	AddCombatTarget	270	*	*	@identity-TODO: the target list's 27
 src/Game/skilluse.c	NextTarget	*	*	*	the first target of a non-empty list
 src/Game/skilluse.c	FlashHitObject	*	*	*	@identity-TODO: no change; redraw mode 2
 src/Game/skilluse.c	ApplyCombatDamage	*	*	*	@identity-TODO: items below 1 are none; item passive codes 0x86 and 0x87 also drain pools
-src/Game/skilluse.c	ResolveCombatAction	*	*	*	@identity-TODO: knockout sentinel 0x7fff, demon ids 0x22/0xce/0x36 and Noelem's special pair (-2, -2), resistance results -1..-6 (see SetActionResult's row), the reply alert bits 0x40/0x80 and alert level 2, the counter-attack kinds
+src/Game/skilluse.c	ResolveCombatAction	*	*	*	@identity-TODO: knockout sentinel 0x7fff, Noelem's special pair (-2, -2), resistance results -1..-6 (see SetActionResult's row), the reply alert bits 0x40/0x80 and alert level 2, the counter-attack kinds
 src/Game/skilluse.c	ResolveKnockout	*	*	*	a knocked-out combatant's HP 0; analyzed (1) and one drop added
 src/Game/skilluse.c	*BattleTall*	*	*	*	@identity-TODO: unidentified tally slots and -1 for none reported; the tally modes 1 and -1
 src/Game/skilluse.c	ShowKnockoutMessage	*	*	*	@identity-TODO: battle-message script 221 (0xdd), entries 79 and 80; the knockout sentinel 0x7fff

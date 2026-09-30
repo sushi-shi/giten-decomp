@@ -12,7 +12,7 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 221 declared domains. The retail
+`giten verify enum-domains` passes with 222 declared domains. The retail
 compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
 
 ## Batch workflow
@@ -71,6 +71,13 @@ Map area names:
 - The name is at `r[u16(r, 2):]`, in cp932.
 - Areas 0x09 and 0x85 both carry the name 新宿都庁.
 
+Object record names:
+
+- File: `P/Pxxxx.BIN`, where `xxxx` is `0x2000 + record id`.
+- Decode: `n = u16(data, 0)`, then `r = decrypt(data[2:2 + n])`.
+- `ObjectRecord.name` starts at `r[54]` and is cp932. Records 0x22,
+  0x36, 0xce and 0x117 name Marduk, Pyankara, Primrose and Doppelganger.
+
 ### Event-flag names (ET0018)
 
 `ET0018` is the developers' event-flag name table.
@@ -115,7 +122,6 @@ Kept as rows until there is evidence:
   Their distinct identities are still unknown; the combat code shares the
   first two's handler and the field-effect code shares kind 14's handler
   with kinds 12 and 13.
-- Object record ids 0xce, 0x22 and 0x117. The record names are undecoded.
 - Actor flag 0x20.
 - Field-effect codes 0, 1, 0x1a and 0x20..0x23. ET0004 identifies
   illusion (3), invisibility (0x11), Estoma (0x14), Traesto (0x15),

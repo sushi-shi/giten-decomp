@@ -46,6 +46,7 @@
 #include <Game/ItemRecord.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/Party.h>
 #include <Game/PartyAction.h>
 #include <Game/PartyCommand.h>
@@ -1815,8 +1816,8 @@ b16 ChooseObjectTarget(FieldObject* object) {
     i16 count;
     i16 i;
     i16 target;
-    if (object->kind == 0xce) {
-        target = FindPartyPositionOfId(0x22);
+    if (object->kind == OBJECT_RECORD_PRIMROSE) {
+        target = FindPartyPositionOfId(OBJECT_RECORD_MARDUK);
         if (target != -1) {
             if (PushPromptState(0, 0, 200, 450, 0)) {
                 return true;
@@ -2108,7 +2109,7 @@ static __inline void RecalcObjectStats(FieldObject* object) {
 
 // Builds object `object` from its record: identity, pools, stats, item slots
 // (an empty gun clears its ammunition, else the ammunition count is the gun's
-// magazine size) and skills; kind 0x117 then mirrors the first party member.
+// magazine size) and skills; Doppelganger then mirrors the first party member.
 RVA(0x00010470, 0x4b1)
 void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     i16 i;
@@ -2203,12 +2204,12 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     RecalcObjectStats(object);
     InitCurMax(&object->pools.hp, record->hp);
     InitCurMax(&object->pools.mp, record->mp);
-    if (object->kind == 0x117) {
+    if (object->kind == OBJECT_RECORD_DOPPELGANGER) {
         CopyLeaderIntoObject(object);
     }
 }
 
-// @identity-TODO: object kind 0x117 takes over the first party member's
+// Doppelganger takes over the first party member's
 // level, title, the bytes +0x69 (twice), stats, fieldMarkValue and full pools.
 RVA(0x00010930, 0xcb)
 void CopyLeaderIntoObject(FieldObject* object) {
