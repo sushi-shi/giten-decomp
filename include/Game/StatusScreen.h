@@ -135,6 +135,12 @@ static __inline void RestoreRosterReturnState(void) {
     SetGameStep(g_rosterReturnStep);
 }
 
+GZ_ENUM_BEGIN_SPLIT(RosterReplacementPhase, i16)
+    ROSTER_REPLACEMENT_OPEN_LIST = 0,
+    ROSTER_REPLACEMENT_PICK_MEMBER = 1,
+    ROSTER_REPLACEMENT_APPLY = 2
+GZ_ENUM_END_SPLIT(RosterReplacementPhase)
+
 b16 ReplaceRosterMember(void);
 
 void EnterStatusScreen(i16 nested);

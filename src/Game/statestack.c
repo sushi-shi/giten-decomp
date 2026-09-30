@@ -691,22 +691,22 @@ RVA(0x00017090, 0xc1)
 b16 ReplaceRosterMember(void) {
     i16 selected;
     switch (GetGamePhase()) {
-        case 0:
+        case ROSTER_REPLACEMENT_OPEN_LIST:
             s_rosterSavedColumn = SetStatusColumn(STATUS_LIST_RESERVE_UNFLAGGED);
             NextGamePhase();
-        case 1:
+        case ROSTER_REPLACEMENT_PICK_MEMBER:
             selected = RunStatusListPicker(false);
             if (selected == LIST_MENU_OPEN || selected == LIST_MENU_CANCELLED) {
                 break;
             }
             NextGamePhase();
-        case 2:
+        case ROSTER_REPLACEMENT_APPLY:
             // Retail leaves selected uninitialized on direct entry to this phase.
             RemoveFromRoster(selected);
             SetStatusColumn(s_rosterSavedColumn);
             RunStatusListPicker(true);
             if (AddToRoster(g_rosterPendingMember) < 0) {
-                SetGamePhase(0);
+                SetGamePhase(ROSTER_REPLACEMENT_OPEN_LIST);
             }
             RestoreRosterReturnState();
             break;

@@ -1286,7 +1286,6 @@ src/Game/statestack.c	OpenPartyPicker	*	*	*	@identity-TODO: menu flags 0x1e and 
 src/Game/statestack.c	PartyPickerHandler	*	*	*	@identity-TODO: picker modes 0..2; CountUsableMemberSkills' 1
 src/Game/statestack.c	PickStatusMember	*	*	*	@identity-TODO: the status menu items hidden (1, 0), status column 0, panel row flag 0x800
 src/Game/statestack.c	PollRewardClick	*	*	*	the reward window's hit box (0xea..0x192, 0xc0..0xf6); 2 on a click, 0 outside, -1 cancelled
-src/Game/statestack.c	ReplaceRosterMember	*	*	*	@identity-TODO: the replacement's phases 0..2, status column 2, restart at phase 0
 src/Game/statestack.c	ReturnDdsMember	*	*	*	@identity-TODO: returned (1), not (0), cancelled (-1)
 src/Game/statestack.c	RunItemUse	*	*	*	@identity-TODO: item use: screen layer 1 hidden, no user (-1), target flags (0x10, 0x11, 0x30) and their pick windows (5, 4, 6, 3)
 src/Game/statestack.c	RunLevelUp	*	*	*	@identity-TODO: level-up screen parameters: fades (1), the status screen entered and left (0), picture surface 0x36, reward experience cleared
