@@ -91,6 +91,14 @@ extern Party g_party;
 
 void InitNewGame(void);
 
+GZ_ENUM_BEGIN_SPLIT(MapValueSelector, i16)
+    MAP_VALUE_AREA = 0,
+    MAP_VALUE_LEVEL = 1,
+    MAP_VALUE_X = 2,
+    MAP_VALUE_Y = 3
+GZ_ENUM_END_SPLIT(MapValueSelector)
+
+i16 GetMapValue(GZ_ENUM_PARAM(MapValueSelector, i16) which);
 MapPosition* GetMapPosition(void);
 u8 GetMapArea(void);
 u8 GetMapLevel(void);

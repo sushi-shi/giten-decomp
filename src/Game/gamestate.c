@@ -14,15 +14,15 @@ DATA(0x00091080)
 Party g_party;
 
 RVA(0x0003c6a0, 0x48)
-i16 GetMapValue(i16 which) {
+i16 GetMapValue(GZ_ENUM_PARAM(MapValueSelector, i16) which) {
     switch (which) {
-        case 0:
+        case MAP_VALUE_AREA:
             return g_party.field.pos.area;
-        case 1:
+        case MAP_VALUE_LEVEL:
             return g_party.field.pos.level;
-        case 2:
+        case MAP_VALUE_X:
             return g_party.field.pos.x;
-        case 3:
+        case MAP_VALUE_Y:
             return g_party.field.pos.y;
     }
     return 0;

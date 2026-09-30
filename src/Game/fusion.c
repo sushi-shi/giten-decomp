@@ -1316,18 +1316,18 @@ void PushScriptAnimation(i16 animation, i16 x, i16 y) {
 RVA(0x000286f0, 0x9e)
 b16 RunScriptAnimationState(void) {
     switch (GetGamePhase()) {
-        case 0:
+        case SCRIPT_ANIMATION_LOAD:
             NextGamePhase();
             LoadScriptAnimation(s_animationResource);
             LoadScriptAnimationImage(s_animationResource);
             StartEffectScript(s_animationScript, 0);
             break;
-        case 1:
+        case SCRIPT_ANIMATION_RUN:
             if (!StepScreenEffectScript()) {
                 NextGamePhase();
             }
             break;
-        case 2:
+        case SCRIPT_ANIMATION_CLOSE:
             s_animationImage = FreeImageFile(s_animationImage);
             ClearEffectLayer(1);
             s_animationScript = FreeBlock(s_animationScript);

@@ -628,7 +628,7 @@ src/Game/abortflag.c	GetHotspotScript	*	*	*	dead: an empty scene script {0, 0}; 
 src/Game/abortflag.c	IsSceneObjectVisible	33	call-argument	*	@identity-TODO: field-object flag 33 hides the object from the scene
 src/Game/abortflag.c	DrawSceneSprite	*	*	*	dead: sprite mode 0 draws into the scene; flips mirror inside the 80x400 sprite cell, and centered sprites sit at (40, 112); -1 is no sprite
 src/Game/playtime.c	*	*	*	*	play-time units: 7232/10000 of a 17 ms tick, milliseconds, seconds, minutes, hours, days and hundreds of days
-src/Game/gamestate.c	GetMapValue	*	*	*	selector 0..3 of the party's area, level, x and y (a script operand); 0 for any other
+src/Game/gamestate.c	GetMapValue	0	trivial-function-literal	0 return	an invalid map-value selector returns zero
 src/Game/gamestate.c	InitNewGame	*	*	*	a new game starts at level 8, cell (2, 1) with the movement words cleared, the hero's character slot 0 in party position 0
 src/Game/abortflag.c	AddSceneHotspot	-1	trivial-function-literal	-1 return	no free hotspot slot
 src/Game/debugmenu.c	RunDebugMenu	*	*	*s_shotRise	the magic test's shot distance: starts at 3 and wraps from 3 to 0
@@ -1225,7 +1225,7 @@ src/Game/fusion.c	CreateFusionList	*	*	*	the fusion list's 15 rows; no list (-1)
 src/Game/fusion.c	DrawFusion*	*	*	*	fusion display layout: the detail columns (240, 384, 528), the stat group's 72, the summary grid's cells, rows and colours
 src/Game/fusion.c	Find*Fusion*	*	*	*	@identity-TODO: fallback and complement lookups: -1 when none; race and rank codes
 src/Game/fusion.c	FusionListMenuHandler	*	*	*	@identity-TODO: the fusion list's rows and events (0, 1, -1)
-src/Game/fusion.c	*ScriptAnimation*	*	*	*	@identity-TODO: script animations: image files 0x3000, variant 0, flags 2, 16 frames, 8-pixel steps; the state's steps 0..2
+src/Game/fusion.c	*ScriptAnimation*	*	*	*	@identity-TODO: script animations: image files 0x3000, variant 0, flags 2, 16 frames, 8-pixel steps
 src/Game/fusion.c	CompareFusion*	*	*	*	sort order: -1 before, 0 equal
 src/Game/fusion.c	Count*FusionSlots	*	*	*	no special race (0), unranked (-1)
 src/Game/fusion.c	CountFusion*FlagOne	1	*	*	flag value 1
