@@ -103,6 +103,8 @@ Skill family names:
 - In ET0004, family codes 1..5 each contain one consistent spell series:
   Agi, Zan, Dawm, Zio and Bufu. Codes 6, 7, 8, 11, 14 and 16 group
   expulsion, Megi, remedy/revival, Shibabu, Kaja/Kunda and Dia skills.
+  Codes 23, 27, 29, 30 and 33 group ice gas/breath, songs, sword
+  techniques, martial arts and arrows.
   `SkillParameters.family` retains its retail byte storage; mixed families
   still need individual identities.
 
