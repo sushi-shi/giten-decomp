@@ -5,8 +5,9 @@ void LevelUpNop(void);
 
 #include <rva.h>
 
-#include <Ints.h>
+#include <EnumDomain.h>
 #include <Enums.h>
+#include <Ints.h>
 
 // The experience a battle awards, cleared when the level-up screen closes.
 extern i32 g_rewardExperience;
@@ -43,7 +44,14 @@ i16 ResolveRaisableStat(struct Character* character, i16 stat);
 // marking them pending.
 // @identity-TODO: the three input roles are unproven; Windows ignores
 // them and leaves the two output words untouched.
-i16 PollRewardClick(i16 inputA, i16 inputB, i16 inputC, i16* x, i16* y);
+GZ_ENUM_BEGIN_SPLIT(RewardClickResult, i16)
+    REWARD_CLICK_NONE = -1,
+    REWARD_CLICK_CONFIRM = 0,
+    REWARD_CLICK_RIGHT_BUTTON = 2
+GZ_ENUM_END_SPLIT(RewardClickResult)
+
+GZ_ENUM_RETURN(RewardClickResult, i16)
+PollRewardClick(i16 inputA, i16 inputB, i16 inputC, i16* x, i16* y);
 i16 GrantBattleRewards(void);
 void MarkRewardsPending(void);
 

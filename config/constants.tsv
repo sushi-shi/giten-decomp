@@ -1285,7 +1285,7 @@ src/Game/statestack.c	LoadSpriteImage	*	*	*	@identity-TODO: sprite images: -1 no
 src/Game/statestack.c	OpenItemListMenu	*	*	*	the whole bag copied (0, 64 entries); menu flags 0x1e
 src/Game/statestack.c	OpenPartyPicker	*	*	*	@identity-TODO: menu flags 0x1e and 2
 src/Game/statestack.c	PickStatusMember	*	*	*	@identity-TODO: the status menu items hidden (1, 0), status column 0, panel row flag 0x800
-src/Game/statestack.c	PollRewardClick	*	*	*	the reward window's hit box (0xea..0x192, 0xc0..0xf6); 2 on a click, 0 outside, -1 cancelled
+src/Game/statestack.c	PollRewardClick	*	*	*	the reward window's hit box (0xea..0x192, 0xc0..0xf6)
 src/Game/statestack.c	ReturnDdsMember	*	*	*	@identity-TODO: returned (1), not (0), cancelled (-1)
 src/Game/statestack.c	RunPartyPicker	0	trivial-function-literal	0 equality command	zero continues polling the open picker without resetting it
 src/Game/statestack.c	RunItemUse	*	*	*	@identity-TODO: item use: screen layer 1 hidden, no user (-1), target flags (0x10, 0x11, 0x30) and their pick windows (5, 4, 6, 3)

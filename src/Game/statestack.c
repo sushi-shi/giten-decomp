@@ -1582,15 +1582,15 @@ void LevelUpNop(void) {}
 // The reward screen's click: 2 for the right button, 0 for a left click in
 // the OK box, -1 otherwise.
 RVA(0x00018740, 0x3e)
-i16 PollRewardClick(i16 inputA, i16 inputB, i16 inputC, i16* x, i16* y) {
+GZ_ENUM_RETURN(RewardClickResult, i16) PollRewardClick(i16 inputA, i16 inputB, i16 inputC, i16* x, i16* y) {
     if (g_mousePosition.buttons & MOUSE_RIGHT_DOWN) {
-        return 2;
+        return REWARD_CLICK_RIGHT_BUTTON;
     }
     if ((g_mousePosition.buttons & MOUSE_LEFT_DOWN) && g_mousePosition.x >= 0xea
         && g_mousePosition.x <= 0x192 && g_mousePosition.y >= 0xc0 && g_mousePosition.y <= 0xf6) {
-        return 0;
+        return REWARD_CLICK_CONFIRM;
     }
-    return -1;
+    return REWARD_CLICK_NONE;
 }
 
 // The experience at which `level` begins: 4(n^3)+6 for a human (id below
