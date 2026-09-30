@@ -487,7 +487,10 @@ Kept as rows until there is evidence:
   paralysis, petrification and curses or revive the fallen. Code-3 skill 198
   says it hits four enemies, while code-1 skill 169 says it panics all enemies,
   so neither code 1 nor 3 alone identifies a single-versus-group target.
-  Their distinct selection meanings are not established by the collector.
+  All six code-17 skills also have target flags 0x11, which select the roster
+  picker in `RunPartyCommandInput`; that picker reads the flags, not the area.
+  `CollectTargets` sends area 17 through the same default cell collector as
+  areas 1, 3, 4 and 5. Their distinct selection meanings remain unproven.
 - Field-effect code 0x1a shares Sabatoma's actor-group handler, but its
   distinct identity remains unknown. None of the 309 skill records in the
   current ET0004 table selects 0x1a, so their names cannot identify it.
@@ -541,4 +544,9 @@ Kept as rows until there is evidence:
   seven now have enum members. Kind 3 has solid geometry and movement classes.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,
   incense, a shield, dummy items and apparent scenario items; its one kind-6
-  record is the Necronomicon. Those records do not establish category names.
+  record is the Necronomicon. `DecodeItemRecord` gives kind 5 targeting and
+  message fields but gives kind 6 neither; `ApplyItemEffect` sends both to
+  handlers with the same no-effect outcome. The field item picker invokes a
+  skill only for weapons and accessories, so kind 6's extra decoded bytes do
+  not establish a skill-book role. These records do not establish category
+  names.
