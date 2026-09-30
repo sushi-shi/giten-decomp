@@ -549,14 +549,16 @@ Unresolved identities and behavior-only names:
   Chuu code-0x8c rows and all nine code-0x8f rows have zero flag and payload
   bytes. Their distinct map roles remain
   unproven. The original PC-98 disc has 23 code-0x8c object records versus
-  Windows' 12; the eleven extra records are on Shanshan City level 5. Code
-  0x7c has a cell-kind table row but no cell record in either disc's area
-  maps. Code 0x65 likewise has a kind-13 table row but no cell record in any
-  of the 109 Windows or 100 PC-98 area maps. `RunCellEvent` has no kind-13
-  branch. The PC-98 `RunCellEvent` switch at raw `DDS98.EXE` offset 0x40b63
+  Windows' 12; the eleven extra records are on Shanshan City level 5.
+  `CELL_UNUSED_FLOOR_PROPERTY` has a kind-10 table row but no cell record in
+  either disc's area maps. `CELL_INERT` likewise has a kind-13 table row but
+  no cell record in any of the 109 Windows or 100 PC-98 area maps.
+  `RunCellEvent` has no kind-13 branch. The PC-98 `RunCellEvent` switch at
+  raw `DDS98.EXE` offset 0x40b63
   dispatches through a 14-entry jump table; kinds 10 and 13 both jump to
-  its return at 0x40de1. `CELL_EVENT_INERT` names this no-action behavior in
-  both versions; the authored purpose of its unused cell code is unknown.
+  its return at 0x40de1. These table-only cell-code names and
+  `CELL_EVENT_INERT` describe observed behavior; their authored purposes are
+  unknown.
   `CopyExitAt`'s numeric kind 7 is the chute event kind.
 - Field-object image codes -1 and 0..4 name the mirrored side, facing rows,
   acting row and reaction frame. The fifth frame of the disc's five-BMP actor

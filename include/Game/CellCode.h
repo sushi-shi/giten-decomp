@@ -11,8 +11,9 @@
 // sides their mask leaves out. Lists of cells end with CELL_LIST_END.
 // NPC codes select four-direction masks in GetNpcImageOfCode; the Windows
 // renderer uses the record's texture slot instead of that legacy mask.
-// @identity-TODO: other object codes and kind-10/13 cells 0x7c, 0x8b, 0x8c,
-// 0x8f and 0x65 are unnamed.
+// @identity-TODO: the spring variants 0x85..0x87 and object-property codes
+// 0x8b, 0x8c and 0x8f remain unnamed. The table-only codes below describe
+// their observed dispatch behavior, not their authored purpose.
 GZ_ENUM_BEGIN(CellCode)
     CELL_NONE = 0,
     CELL_SERVICE_TERMINAL = 0x40,
@@ -44,6 +45,7 @@ GZ_ENUM_BEGIN(CellCode)
     CELL_ITEM_SHOP = 0x5b,
     CELL_DAMAGE_TRAP = 0x60,
     CELL_FORCED_MOVE_BACK = 0x64,
+    CELL_INERT = 0x65,
     CELL_WARP_HIDING_OBJECTS = 0x67,
     CELL_ALIGNMENT_TRAP_FIRST = 0x68,
     CELL_ALIGNMENT_TRAP_LAST = 0x6e,
@@ -57,6 +59,7 @@ GZ_ENUM_BEGIN(CellCode)
     CELL_MARKED_WARP = 0x77,
     CELL_FACING_SCRIPT = 0x79,
     CELL_ARM_TERMINAL = 0x7b,
+    CELL_UNUSED_FLOOR_PROPERTY = 0x7c,
     CELL_STAIRS_TO_SUBWAY_PLATFORM = 0x7d,
     CELL_FROZEN_SCENE = 0x7f,
     CELL_TREASURE_BOX_FIRST_FRAME_PAIR = 0x88,

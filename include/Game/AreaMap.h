@@ -49,8 +49,8 @@ GZ_ENUM_FLAGS_END(CellKindFlags)
 
 // A code's entry in the cell-kind table: `kind` is what CheckCellEvent returns
 // (RunCellEvent's case).
-// @identity-TODO: cell code 0x65's authored role is unrecovered; its mapped
-// event kind 13 takes no action in either version's event dispatcher.
+// @identity-TODO: CELL_INERT's authored role is unrecovered; its mapped event
+// kind takes no action in either version's event dispatcher.
 typedef struct CellKind {
     GZ_ENUM_STORAGE(CellCode, u8) code;
     GZ_ENUM_STORAGE(CellEventKind, u8) kind;
