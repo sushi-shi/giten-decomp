@@ -84,18 +84,23 @@ Map area names:
   illusion qualifier and 0x2b uses the displayed hotel name.
 - M0012 and M0013 both display シャンシャンシティ. M0012 has nine levels and
   M0013 ten, with different wall layouts; 0x13 is the area the source tests,
-  so 0x12 is its alternate map.
+  so 0x13 keeps the unqualified name. MS000B entries 5 and 6 use bank-0 flag
+  0x47 (ET0018: after Ikebukuro cleared): when it is clear they travel to
+  M0013, otherwise to M0012. M0012 is the before-clear map.
 - M0016 displays 御茶ﾉ水ｼｪﾙﾀｰ (Ochanomizu Shelter), distinct from M008A's
   御茶ﾉ水 (Ochanomizu). Its map has fifteen levels.
 - M0011 and M0018 both display ミレニアム　総本山 and share seven wall layouts,
   but their decoded records differ. Source area checks use 0x18 as Millennium
-  Headquarters; 0x11 is the alternate map.
+  Headquarters. MS000B entry 9 uses bank-0 flag 0x9b (ET0018: after
+  Belphegor defeated): when it is clear the entry travels to M0011,
+  otherwise to M0018. M0011 is the after-defeat map.
 - M0043 and M0044 both display 日比谷線 (Hibiya Line), with six and three
   distinct levels respectively. `LoadWallTextures` tests 0x43 as Hibiya Line;
   0x44 is its alternate map.
 - M0023 and M0024 both display 御花屋敷 (Ohanayashiki), but their one-level
   wall layouts differ. `OpLoadSprite` checks 0x24 as Ohanayashiki; 0x23 is
-  the alternate map.
+  selected by MS000B entries 10 and 11 when bank-0 flag 0xa7 (ET0018:
+  after Asakusa cleared) is clear. M0023 is the after-clear map.
 - M0007 and M0008 both display 新宿地下道 (Shinjuku Underground Passage).
   Their warps connect to M0006 (新宿地下街, Shinjuku Underground Mall) level 1
   at y=4/6 and y=25/26 respectively. Since map north is decreasing y, these
