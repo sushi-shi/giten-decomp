@@ -49,8 +49,6 @@ ItemStackList* CopyItemMenuEntries(ItemStack* entries, i16 count);
 #define ITEM_MENU_ROWS 9
 #define ITEM_PRICE_DIVISOR_BUY 1
 #define ITEM_PRICE_DIVISOR_SELL 4
-#define ITEM_MENU_MODE_SHOP 0
-#define ITEM_MENU_MODE_SCRIPT 2
 #define ITEM_MENU_TOTAL_VAR 0x11
 
 // The shop menus' steps (no other step is valid), and the phases of their

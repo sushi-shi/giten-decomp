@@ -14,6 +14,11 @@ struct Panel;
 struct ItemStackList;
 struct PartyMemberList;
 
+GZ_ENUM_BEGIN_SPLIT(ItemMenuMode, u8)
+    ITEM_MENU_MODE_SHOP = 0,
+    ITEM_MENU_MODE_SCRIPT = 2
+GZ_ENUM_END_SPLIT(ItemMenuMode)
+
 typedef union MenuContext {
     u32 value;
     struct {
@@ -22,7 +27,7 @@ typedef union MenuContext {
     } script;
     struct {
         u8 priceDivisor;
-        u8 mode;
+        GZ_ENUM_STORAGE(ItemMenuMode, u8) mode;
         i16 totalVar;
     } item;
 } MenuContext;

@@ -388,6 +388,10 @@ while 1 removes the top stack node without closing its window.
 and 1 advances the sell menu. Their switch branches establish separate enum
 domains for the two opcodes.
 
+The item menu context stores a different domain: shop mode 0 replaces the
+temporary item pool with selected rows and writes the shop total, while script
+mode 2 reads the script's total variable and leaves the pool to its caller.
+
 ## Deferred identities
 
 Kept as rows until there is evidence:
