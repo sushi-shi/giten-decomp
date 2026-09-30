@@ -12,7 +12,7 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 225 declared domains. The retail
+`giten verify enum-domains` passes with 226 declared domains. The retail
 compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
 
 ## Batch workflow
@@ -128,6 +128,8 @@ alternate-script objects, and pursuit and knockback refuse to move one.
 
 Kept as rows until there is evidence:
 
+- Fusion summary special kinds 1..9. The packed summary now names the
+  unavailable result (-1) and level comparison kinds 10..12.
 - Battle-tally slots 4..6, attack attributes 0/1 and 9, and the shared
   result word's noncombat encodings. The ET0004 skill table links effect
   codes to protection slots: 0..3 and 7..14 now have evidence-backed names.

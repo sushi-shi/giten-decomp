@@ -693,7 +693,6 @@ src/Gfx/screensave.c	RedrawScreen	*	call-argument	*	@identity-TODO: FieldScreenN
 include/Util/Text.h	AppendTextChar	*	*	*	a two-byte Shift-JIS character (above 0xff) stores its high byte first and advances two bytes
 include/Script/Script.h	ClearScriptPosition	0	*	*	a cleared script position (no code, pc 0)
 include/Script/ScriptBlock.h	ClearScriptEntry	0	*	*	a cleared script entry (no code, pc 0)
-include/Game/Fusion.h	SetFusionSummaryKind	*	store	*	@identity-TODO: fusion summary kinds 10, 11 and 12 for a result above, below and at the source's level
 include/Game/Clock.h	ResetClockPhaseAndTime	0	*	*	the clock restarts at moon phase 0, 00:00
 include/Game/Character.h	ClearItemSlot	0	*	*quantity	an empty item slot holds none
 include/Game/Character.h	SetCharacterPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word

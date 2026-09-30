@@ -6,6 +6,7 @@
 #include <EnumDomain.h>
 #include <Game/Character.h>
 #include <Game/DemonTable.h>
+#include <Game/FusionSummaryKind.h>
 #include <Game/Party.h>
 #include <Ints.h>
 #include <Mem/Handle.h>
@@ -22,7 +23,7 @@ typedef union FusionSummary {
         i16 overLevel : 1;
         i16 highFlag : 3;
         i16 lowFlag : 3;
-        i16 kind : 9;
+        GZ_ENUM_STORAGE(FusionSummaryKind, i16) kind : 9;
     } fields;
 } FusionSummary;
 
@@ -31,11 +32,11 @@ SetFusionSummaryKind(FusionSummary* summary, i16 kind, i16 resultLevel, i16 sour
     if (kind) {
         summary->fields.kind = kind;
     } else if (resultLevel < sourceLevel) {
-        summary->fields.kind = 11;
+        summary->fields.kind = FUSION_SUMMARY_LEVEL_LOWER;
     } else if (resultLevel > sourceLevel) {
-        summary->fields.kind = 10;
+        summary->fields.kind = FUSION_SUMMARY_LEVEL_HIGHER;
     } else {
-        summary->fields.kind = 12;
+        summary->fields.kind = FUSION_SUMMARY_LEVEL_EQUAL;
     }
 }
 

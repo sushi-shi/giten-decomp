@@ -567,7 +567,7 @@ FusionSummary GetPairFusionSummary(i16 first, i16 second) {
         return summary;
     }
     if (g_fusionResult == -1) {
-        summary.fields.kind = -1;
+        summary.fields.kind = FUSION_SUMMARY_NO_RESULT;
         return summary;
     }
     resultLevel = GetDemonLevel(g_fusionResult);
@@ -1027,7 +1027,7 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
         return summary;
     }
     if (demon == -1) {
-        summary.fields.kind = -1;
+        summary.fields.kind = FUSION_SUMMARY_NO_RESULT;
         return summary;
     }
     clampedLevel = ClampLevel(GetDemonLevel(demon));
@@ -1881,10 +1881,10 @@ i16 BuildPairFusionCandidates(i16 skipCalculation) {
             summary.value = -256;
             StoreFusionPairSummary(first, second, &summary);
             if (first == second) {
-                summary.fields.kind = -1;
+                summary.fields.kind = FUSION_SUMMARY_NO_RESULT;
                 StoreFusionPairSummary(first, second, &summary);
             } else if (GetRosterId(second) < HUMAN_ID_LIMIT) {
-                summary.fields.kind = -1;
+                summary.fields.kind = FUSION_SUMMARY_NO_RESULT;
                 StoreFusionPairSummary(first, second, &summary);
             } else if (!skipCalculation && CalculatePairFusion(first, second)) {
                 summary = GetPairFusionSummary(first, second);
@@ -1931,7 +1931,7 @@ i16 BuildTripleFusionSummaries(i16 third) {
             for (second = 0; second < ROSTER_SIZE; second++) {
                 s_pendingFusionResultId = -1;
                 if (GetRosterId(second) < HUMAN_ID_LIMIT) {
-                    summary.fields.kind = -1;
+                    summary.fields.kind = FUSION_SUMMARY_NO_RESULT;
                     StoreFusionPairSummary(first, second, &summary);
                 } else if (first != second && first != g_fusionThirdSlot
                            && second != g_fusionThirdSlot
