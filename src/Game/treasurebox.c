@@ -2337,7 +2337,7 @@ void DrawMapOverlay(MapPosition position) {
     if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_AMS_V2_0)) {
         s_mapDetail = AUTOMAP_DETAIL_NPCS;
     }
-    if (!IsEventFlagSet(2, 0x38)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_AMS_OBJECT_MAPPING)) {
         s_mapDetail = AUTOMAP_DETAIL_OBJECTS;
     }
     if (s_mapDetail < AUTOMAP_DETAIL_BASIC) {

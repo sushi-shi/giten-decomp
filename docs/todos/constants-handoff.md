@@ -302,8 +302,12 @@ Coverage:
 - Bank 2 holds the owned maps and programs.
 - Bank 2 bit 0x39 gates the MAPPING command and NPC automap detail. Both
   MAPPING entry paths say the AMS is not owned while it is set, establishing
-  `OWNED_MAPPING_AMS`. Bit 0x38 enables object marks on the automap; its
-  particular AMS upgrade identity is still unproven.
+  `OWNED_MAPPING_AMS`. MS0025 entry 1 clears the bit as the characters are
+  issued automapping, and MS0028 entry 0 clears it when they receive a
+  modified arm terminal with automapping. Bit 0x38 enables
+  `MarkObjectsOnMap` in `DrawMapOverlay`; `OWNED_AMS_OBJECT_MAPPING` names
+  that capability without assigning it an AMS version. The direct MS-script
+  references to 0x38 test or set it, but do not clear it.
 - Bank 4 holds the boxes.
 - Bank 8 bit 0 is "no enemies".
 - Bank 9's names are only the Shinjuku base's.
