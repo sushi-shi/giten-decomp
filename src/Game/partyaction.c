@@ -923,7 +923,8 @@ GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
         ReportBattleTally(actor, BATTLE_TALLY_EXPEL_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
-    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_DARK_BLOCK] && attribute == 8) {
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_DARK_BLOCK]
+        && attribute == ATTACK_ATTRIBUTE_DARK) {
         ReportBattleTally(actor, BATTLE_TALLY_DARK_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }

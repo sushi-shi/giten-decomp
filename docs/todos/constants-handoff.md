@@ -103,7 +103,7 @@ Polarity:
 
 Kept as rows until there is evidence:
 
-- Battle-tally slots 4..6, attack attributes 0/1 and 7..9, and the shared
+- Battle-tally slots 4..6, attack attributes 0/1 and 9, and the shared
   result word's noncombat encodings. The ET0004 skill table links effect
   codes to protection slots: 0..3 and 7..14 now have evidence-backed names.
   MS00DD entry 5 dispatches base action results 0..10 to entries 10..19 and
