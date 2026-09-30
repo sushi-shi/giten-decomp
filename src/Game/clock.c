@@ -9,6 +9,7 @@
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <File/DataTableId.h>
+#include <Game/ActorFlag.h>
 #include <Game/AreaLevel.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
@@ -209,7 +210,7 @@ GZ_ENUM_RETURN(ClockUpdate, i16) TickClock(u16 minutes) {
     return changed;
 }
 
-// On a new moon phase: clears flag 7/0xfd and the leader's flag 0x22, sets
+// On a new moon phase: clears flag 7/0xfd and the leader's Estoma flag, sets
 // flag 10 of every live object, applies the phase to the party and the
 // objects, and handles the full and new moons and the phase after the full moon.
 RVA(0x00020cf0, 0x149)
@@ -222,7 +223,7 @@ void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
     }
     ModifyEventFlag(7, 0xfd, BIT_CHANGE_CLEAR);
     flags = GetCharacterFlags(GetRosterCharacter(ROSTER_LEADER));
-    ClearBit(flags, 0x22);
+    ClearBit(flags, ACTOR_FLAG_ESTOMA);
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         i16 object = GetLiveObject(i);
         if (object >= 0) {

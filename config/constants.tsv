@@ -416,7 +416,6 @@ src/Game/treasurebox.c	NextNpcSlot	-1	*	*	no free slot
 src/Game/treasurebox.c	DrawNpcAt	*	*	*	only depths 0 and -1 draw an NPC
 src/Game/treasurebox.c	IsReservedObjectCell	*	*	*	@identity-TODO: cell codes 0x48..0x4e (the NPC codes the automap icons list)
 src/Game/treasurebox.c	ShieldTarget	10	*	*	a shield of a tenth of the maximum HP
-src/Game/treasurebox.c	ScatterObjects	0x22	*	*	@identity-TODO: the leader's actor flag 0x22 also stops world-map encounters (the flag table names no bit 0x22)
 src/Game/treasurebox.c	*	*	call-argument	HasObjectInReach(*	@identity-TODO: reach mode (1 from the party, 0 its own cell) and the party's combatant -1
 src/Game/treasurebox.c	SpawnActorGroup	-1	*	*	@identity-TODO: the second group spawns with alternate value -1 (nonzero: the alternate script)
 src/Game/treasurebox.c	RunAnalyzeWindow	0	call-argument	SetTextPlaneCursor*	the plane's top left
@@ -841,7 +840,7 @@ src/Game/worldtravel.c	PushRoutePoint	1	call-argument	GrowRoute(*	one more point
 src/Game/worldtravel.c	*WorldMapPlace*	*	*	*	@identity-TODO: no place name shown (-1); the name's 32/40-pixel offset and the block step 2
 src/Game/clock.c	InitClock	*	*	*	the clock's pacing: a tick every 5 frames, 2 minute steps per tick toward 60 per minute, from day 0
 src/Game/clock.c	TickClock	*	*	*	60 minutes per hour, 24 hours per day
-src/Game/clock.c	ApplyClockChanges	*	call-argument	*Bit(*	@identity-TODO: character flags 0x22 (the leader's, cleared) and 10 (each live object's, set) at a new moon phase
+src/Game/clock.c	ApplyClockChanges	*	call-argument	*Bit(*	@identity-TODO: character flag 10 (set on each live object) at a new moon phase
 src/Game/clock.c	ClearMoonFlags	*	*	*	the moon flag list: bank and index byte pairs ending at 0xff
 src/Game/clock.c	TickGameClock	*	*	*	24 ticks a round; a frame's tick advances the clock one minute
 src/Game/clock.c	SetAreaFlagPreservation	-1	*	*	-1 keeps the current area or level

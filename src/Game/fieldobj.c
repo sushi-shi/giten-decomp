@@ -2478,7 +2478,7 @@ i16 RollWorldMapEncounter(i16 x, i16 y) {
     i16 variant;
     WorldEncounterCell* cells;
     Character* leader = GetRosterCharacter(ROSTER_LEADER);
-    if (TestCharacterFlag(leader, 0x22) == true) {
+    if (TestCharacterFlag(leader, ACTOR_FLAG_ESTOMA) == true) {
         return -1;
     }
     if (CheckWorldEncounterInterval() < 1) {

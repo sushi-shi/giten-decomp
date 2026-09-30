@@ -116,7 +116,7 @@ Kept as rows until there is evidence:
   first two's handler and the field-effect code shares kind 14's handler
   with kinds 12 and 13.
 - Object record ids 0xce, 0x22 and 0x117. The record names are undecoded.
-- Actor flags 0x20, 0x21, 0x22 and 0x3f.
+- Actor flags 0x20, 0x21 and 0x3f.
 - Bank 7 flags 0xfd-0xff.
 - The identity of area 0x85.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,

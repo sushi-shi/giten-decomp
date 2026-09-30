@@ -3384,13 +3384,13 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) SetTargetFlag21(void) {
     return FIELD_EFFECT_DONE;
 }
 
-// Sets the leader's flag 0x22 and clears ACTOR_FLAG_NOTICED of every live
+// Sets the leader's Estoma flag and clears ACTOR_FLAG_NOTICED of every live
 // object out of reach.
 RVA(0x0001f9c0, 0x67)
 b16 ScatterObjects(void) {
     i16 i;
     u8* flags = GetCharacterFlags(GetRosterCharacter(ROSTER_LEADER));
-    SetBit(flags, 0x22);
+    SetBit(flags, ACTOR_FLAG_ESTOMA);
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         i16 object = GetLiveObject(i);
         if (object >= 0 && !HasObjectInReach(REACH_SHARED_PARTY_CELL, -1, object)) {
