@@ -6,8 +6,7 @@
 // Map areas, named after their map files (translated or romanized), script
 // travel labels, or shopkeeper debug traces in OpLoadSprite. Several
 // map files can carry one place's name; the unqualified name goes to the one
-// the code tests. When neither is tested, the decoded layout distinguishes them.
-// @identity-TODO: area ids with duplicate or missing map names are not named yet.
+// the code tests. When neither is tested, layout or script routes distinguish them.
 // Area ids are bytes; the automap keeps a handle per possible area.
 #define MAP_AREA_COUNT 256
 

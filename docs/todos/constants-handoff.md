@@ -143,10 +143,10 @@ Map area names:
   their consciousness falls away immediately before the script changes to
   area 0x57. The four-level area's links run MS0014 entries that stage
   memories and visions, including the protagonist's mother in entry 9.
-- `MapAreaId` includes records with distinct names from these files. The
-  0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
-  two areas for the alternate wall texture. Other duplicate or blank map
-  names still need their separate identities established.
+- The disc contains 109 map files, and `MapAreaId` names each one, including
+  duplicate and blank displayed names. No M0054 file exists. The 0x3d and 0x43
+  records are 千代田線 and 日比谷線; `LoadWallTextures` tests these two areas
+  for the alternate wall texture.
 
 Automap marks:
 
