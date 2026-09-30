@@ -39,6 +39,7 @@ GZ_ENUM_BEGIN(CellEventKind)
     CELL_EVENT_FLOOR_PROPERTY = 10,
     CELL_EVENT_TRAP = 11,
     CELL_EVENT_FADE_SCENE = 12,
+    CELL_EVENT_INERT = 13,
     CELL_EVENT_MARKED_WARP = 14
 GZ_ENUM_END(CellEventKind)
 
@@ -48,7 +49,8 @@ GZ_ENUM_FLAGS_END(CellKindFlags)
 
 // A code's entry in the cell-kind table: `kind` is what CheckCellEvent returns
 // (RunCellEvent's case).
-// @identity-TODO: event kind 13 (cell code 0x65) remains unnamed.
+// @identity-TODO: cell code 0x65's authored role is unrecovered; its mapped
+// event kind 13 takes no action in either version's event dispatcher.
 typedef struct CellKind {
     GZ_ENUM_STORAGE(CellCode, u8) code;
     GZ_ENUM_STORAGE(CellEventKind, u8) kind;
