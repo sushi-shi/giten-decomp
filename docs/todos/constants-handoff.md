@@ -615,11 +615,17 @@ retail `i16` ABI.
 `ApplyResistanceOutcome` sets `BATTLE_ACTION_IMMUNE` for that same result.
 `ATTACK_RESIST_IMMUNE` now names zero beside the negative special outcomes;
 positive resistance values remain damage rates.
+
 `ApplySkillResistanceOutcome` reports a reflected follow-up (-1), suppressed
 follow-up (0), or a target follow-up (1) from the shared action result. The
 condition-skill caller uses all three; damage callers ignore the return.
 `ResistanceFollowup` names this result. The attack helpers also use the
 existing `ConditionId` names for Blind, Dance and Berserk.
+
+## Restore amount codes
+
+`ComputeRestoreAmount` returns zero immediately for amount code 0; this is
+`RESTORE_AMOUNT_NONE` beside the already named quarter, half and full codes.
 
 ## Attack attribute columns
 

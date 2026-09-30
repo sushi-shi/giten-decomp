@@ -131,7 +131,7 @@ static const i16 s_fourBitMasks[7] = {15, 1, 2, 4, 8, 5, 10};
 RVA(0x0001fdc0, 0xc1)
 i16 ComputeRestoreAmount(i16 code, Character* user, u16 max) {
     double amount;
-    if (code == 0) {
+    if (code == RESTORE_AMOUNT_NONE) {
         return 0;
     }
     if (code == RESTORE_AMOUNT_FULL) {

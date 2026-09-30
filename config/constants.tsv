@@ -749,7 +749,7 @@ src/Game/skillattack.c	ResolveSkillAttack	0	call-argument	*argument 3	@identity-
 src/Game/*.c	*	0	call-argument	SetCharacterChanges(*	no change to that side (target or self)
 src/Game/restore.c	s_swappedPairOrder	*	data-or-extent	*	@identity-TODO: an unread table of the order 0..3 with the middle pair swapped (see its comment)
 src/Game/restore.c	s_fourBitMasks	*	data-or-extent	*	GetNpcImageOfCode indirectly reads these seven direction masks; its source referent remains an out-of-bounds physical-recovery array index
-src/Game/restore.c	ComputeRestoreAmount	*	*	*	amount code 0 restores nothing; the half and quarter shares; the magic roll is clamped at 0 and scaled by a percent
+src/Game/restore.c	ComputeRestoreAmount	*	*	*	the zero and fixed-share amount codes are named; the magic roll is clamped at 0 and scaled by a percent
 src/Game/restore.c	ApplyRestoreEffect	0	*	*g_effectCondition	no condition to report
 src/Game/restore.c	ApplyRestoreEffect	*	*	*	@identity-TODO: pool fractions (a quarter, an eighth); RestoreResult names the return codes
 src/Script/eventflags.c	SetFlagBank	0xffffffff	*	*	every flag of the word set

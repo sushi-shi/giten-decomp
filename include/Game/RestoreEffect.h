@@ -41,6 +41,7 @@ GZ_ENUM_END_SPLIT(RestoreResult)
 // ComputeRestoreAmount's amount codes that restore a fixed share of the pool;
 // other codes add to a roll on the user's magic.
 GZ_ENUM_CONST_BEGIN(RestoreAmount)
+    RESTORE_AMOUNT_NONE = 0,
     RESTORE_AMOUNT_QUARTER = 253,
     RESTORE_AMOUNT_HALF = 254,
     RESTORE_AMOUNT_FULL = 255
