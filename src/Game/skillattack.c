@@ -165,10 +165,11 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
 }
 
 RVA(0x0000af70, 0x38)
-i16 ApplySkillResistanceOutcome(Character* attacker, i32 amount) {
+GZ_ENUM_RETURN(ResistanceFollowup, i16)
+ApplySkillResistanceOutcome(Character* attacker, i32 amount) {
     ApplyResistanceOutcome(attacker, g_attackResistance, amount);
     if (g_actionResult == BATTLE_ACTION_REFLECTED) {
-        return -1;
+        return RESISTANCE_FOLLOWUP_REFLECT;
     }
     return g_actionResult < BATTLE_ACTION_HP_ABSORBED;
 }

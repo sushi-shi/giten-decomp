@@ -1607,10 +1607,10 @@ void UseAttackSkill(Character* user, Character* target) {
     AddTrainingPoints(user, BATTLE_GROUP_MAGIC, 3);
     g_statusCondition = GetSkillInflictedCondition(&s_effectSkill);
     switch (ApplySkillResistanceOutcome(user, 0)) {
-        case 0:
+        case RESISTANCE_FOLLOWUP_SUPPRESS:
             g_statusCondition = INFLICT_NONE;
             break;
-        case -1:
+        case RESISTANCE_FOLLOWUP_REFLECT:
             SetActionOutcome(ACTION_OUTCOME_CONDITION);
             InflictCondition(GetSkillInflictedCondition(&s_effectSkill), user);
             break;

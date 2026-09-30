@@ -27,7 +27,7 @@ static __inline i32 GetExceptionalAttackBase(Character* actor) {
 
 #define ApplyAttackAccuracyConditions(character, accuracy)                                         \
     do {                                                                                           \
-        if (HasCondition(GetCharacterConditions(character), 23)) {                                 \
+        if (HasCondition(GetCharacterConditions(character), CONDITION_BLIND)) {                    \
             (accuracy) /= 4;                                                                       \
             if ((accuracy) < 1) {                                                                  \
                 (accuracy) = 1;                                                                    \
@@ -38,10 +38,10 @@ static __inline i32 GetExceptionalAttackBase(Character* actor) {
 // Both integer condition rolls and floating-point damage apply these boosts.
 #define ApplyWeaponPowerConditions(character, power)                                               \
     do {                                                                                           \
-        if (HasCondition(GetCharacterConditions(character), 19)) {                                 \
+        if (HasCondition(GetCharacterConditions(character), CONDITION_DANCE)) {                    \
             (power) *= 2;                                                                          \
         }                                                                                          \
-        if (HasCondition(GetCharacterConditions(character), 26)) {                                 \
+        if (HasCondition(GetCharacterConditions(character), CONDITION_BERSERK)) {                  \
             (power) *= 2;                                                                          \
         }                                                                                          \
     } while (0)
@@ -89,7 +89,17 @@ b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode);
 b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide);
 i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit);
 b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
-i16 ApplySkillResistanceOutcome(Character* attacker, i32 amount);
+
+// Whether a resistance result suppresses the follow-up, reflects it to the
+// user, or leaves it for the target.
+GZ_ENUM_BEGIN_SPLIT(ResistanceFollowup, i16)
+    RESISTANCE_FOLLOWUP_REFLECT = -1,
+    RESISTANCE_FOLLOWUP_SUPPRESS = 0,
+    RESISTANCE_FOLLOWUP_TARGET = 1
+GZ_ENUM_END_SPLIT(ResistanceFollowup)
+
+GZ_ENUM_RETURN(ResistanceFollowup, i16)
+ApplySkillResistanceOutcome(Character* attacker, i32 amount);
 b16 ResolveSkillAttack(Character* attacker, Character* target);
 
 // Spends the rounds a party member's gun attack used.
