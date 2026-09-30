@@ -1119,7 +1119,7 @@ src/Game/statuspanel.c	DrawEquipPickRow	*	*	*	pick-row layout: column 0x37; item
 src/Game/statuspanel.c	*EquipChange	*	*	*	@identity-TODO: the preview's scratch character slot 14, a quantity of 1, empty skills, SetEquipSlot's 0, the stat totals at column 3; no pick (-1) and the equip sub-step 1
 src/Game/statuspanel.c	ClearEquipPreview	*	*	*	the stat totals at column 3, row 0x19
 src/Game/statuspanel.c	RunStatusCommands	*	*	*	the first member; the stat totals at column 3
-src/Game/statuspanel.c	Run*Page	*	*	*	@identity-TODO: status pages: sub-step 3/4, commands 5 and 10, picks and resumes (-2 cancelled), the bag copy's start 0, marks kept (1)
+src/Game/statuspanel.c	Run*Page	*	*	*	@identity-TODO: status pages: the bag copy's start 0, marks kept (1), and their window and menu geometry
 src/Game/statuspanel.c	ResumeStatusPage	0	*	*	@identity-TODO: hotspot plane 0
 src/Game/statuspanel.c	s_*Page	-1	data-or-extent	*	a page with no pick yet ({-1, -1})
 src/Game/statuspanel.c	s_attach	*	data-or-extent	*	an empty attach state (no picks, -1)

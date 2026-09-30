@@ -103,6 +103,11 @@ typedef struct EquipSkillPage {
 // gem item) and opens the picked item's description (sub-state 0 opens
 // it, 1 closes it, 2 picks, 3..4 show the description until a click); returns
 // the sub-state to resume or -1.
+GZ_ENUM_BEGIN_SPLIT(ItemPageDetailStep, i16)
+    ITEM_PAGE_SHOW_DESCRIPTION = 3,
+    ITEM_PAGE_WAIT_DESCRIPTION = 4
+GZ_ENUM_END_SPLIT(ItemPageDetailStep)
+
 i16 RunItemPage(i16 sub);
 
 // Draws `character`'s eight equipped parts (the three hand parts first) as
@@ -113,6 +118,11 @@ void DrawEquipLines(Character* character, i16 x, i16 y);
 // and opens the picked skill's description (sub-state 0 opens it, 1 closes it,
 // 2 picks, 3..4 show the description until a click); returns the sub-state to
 // resume or -1.
+GZ_ENUM_BEGIN_SPLIT(SkillPageDetailStep, i16)
+    SKILL_PAGE_SHOW_DESCRIPTION = 3,
+    SKILL_PAGE_WAIT_DESCRIPTION = 4
+GZ_ENUM_END_SPLIT(SkillPageDetailStep)
+
 i16 RunSkillPage(i16 sub);
 
 // A bag entry that can take a gem item, and how many it holds.

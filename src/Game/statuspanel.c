@@ -527,8 +527,8 @@ RVA(0x000426a0, 0xd4)
 i16 RunStatPage(i16 command) {
     if (command != STATUS_COMMAND_NONE && command != STATUS_COMMAND_CANCEL) {
         SetGameSub(MENU_STEP_CLOSE);
-        s_statPage.resume = -2;
-        if (command != 5) {
+        s_statPage.resume = STATUS_COMMAND_CANCEL;
+        if (command != STATUS_STEP_STATS) {
             s_statPage.resume = command;
         }
     }
@@ -545,7 +545,7 @@ i16 RunStatPage(i16 command) {
         case MENU_STEP_RUN:
             if (TakeClickUnlessCancel(command)) {
                 PrevGameSub();
-                s_statPage.resume = -2;
+                s_statPage.resume = STATUS_COMMAND_CANCEL;
             }
             break;
     }
@@ -702,8 +702,8 @@ RVA(0x00042b00, 0x108)
 i16 RunAlignmentPage(i16 command) {
     if (command != STATUS_COMMAND_NONE && command != STATUS_COMMAND_CANCEL) {
         SetGameSub(MENU_STEP_CLOSE);
-        s_alignmentPage.resume = -2;
-        if (command != 10) {
+        s_alignmentPage.resume = STATUS_COMMAND_CANCEL;
+        if (command != STATUS_STEP_ALIGNMENT) {
             s_alignmentPage.resume = command;
         }
     }
@@ -723,7 +723,7 @@ i16 RunAlignmentPage(i16 command) {
         case MENU_STEP_RUN:
             if (TakeClickUnlessCancel(command)) {
                 PrevGameSub();
-                s_alignmentPage.resume = -2;
+                s_alignmentPage.resume = STATUS_COMMAND_CANCEL;
             }
             break;
     }
@@ -1601,7 +1601,7 @@ RVA(0x00044650, 0x1e0)
 i16 RunItemPage(i16 sub) {
     if (sub != STATUS_COMMAND_NONE && sub != STATUS_COMMAND_CANCEL) {
         SetGameSub(MENU_STEP_CLOSE);
-        s_itemPage.pick = -2;
+        s_itemPage.pick = STATUS_COMMAND_CANCEL;
         if (sub != STATUS_STEP_ITEMS) {
             s_itemPage.pick = sub;
         }
@@ -1640,7 +1640,7 @@ i16 RunItemPage(i16 sub) {
             NextGameSub();
             s_itemPage.pick = g_selectedObjectId;
             return STATUS_COMMAND_NONE;
-        case 3:
+        case ITEM_PAGE_SHOW_DESCRIPTION:
             if (sub == STATUS_COMMAND_CANCEL) {
                 PrevGameSub();
                 return STATUS_COMMAND_NONE;
@@ -1648,7 +1648,7 @@ i16 RunItemPage(i16 sub) {
             NextGameSub();
             s_itemPage.plane = OpenItemInfoPlane(s_itemPage.pick);
             return STATUS_COMMAND_NONE;
-        case 4:
+        case ITEM_PAGE_WAIT_DESCRIPTION:
             if (sub != STATUS_COMMAND_CANCEL && !TakeMouseLeftClick()) {
                 break;
             }
@@ -1832,8 +1832,8 @@ RVA(0x00044c30, 0x1c0)
 i16 RunSkillPage(i16 sub) {
     if (sub != STATUS_COMMAND_NONE && sub != STATUS_COMMAND_CANCEL) {
         SetGameSub(MENU_STEP_CLOSE);
-        s_skillPage.pick = -2;
-        if (sub != 4) {
+        s_skillPage.pick = STATUS_COMMAND_CANCEL;
+        if (sub != STATUS_STEP_SKILLS) {
             s_skillPage.pick = sub;
         }
     }
@@ -1860,7 +1860,7 @@ i16 RunSkillPage(i16 sub) {
             NextGameSub();
             s_skillPage.pick = g_selectedObjectId;
             return STATUS_COMMAND_NONE;
-        case 3:
+        case SKILL_PAGE_SHOW_DESCRIPTION:
             NextGameSub();
             s_skillPage.plane = CreateTextPlane(0x20, 0);
             ClearTextPlane(s_skillPage.plane);
@@ -1873,7 +1873,7 @@ i16 RunSkillPage(i16 sub) {
             );
             RepaintTextPlane(s_skillPage.plane, -2);
             return STATUS_COMMAND_NONE;
-        case 4:
+        case SKILL_PAGE_WAIT_DESCRIPTION:
             if (!TakeClickUnlessCancel(sub)) {
                 break;
             }
