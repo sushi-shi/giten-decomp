@@ -14,6 +14,7 @@
 // @identity-TODO: other object codes and kind-10/13 cells 0x7c, 0x8b, 0x8c,
 // 0x8f and 0x65 are unnamed.
 GZ_ENUM_BEGIN(CellCode)
+    CELL_NONE = 0,
     CELL_SERVICE_TERMINAL = 0x40,
     CELL_EXIT = 0x41,
     CELL_STAIRS_UP = 0x42,

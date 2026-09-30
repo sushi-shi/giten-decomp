@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/CellCode.h>
 #include <Game/FieldObject.h>
 #include <Game/GameState.h>
 #include <Game/ViewDirection.h>
@@ -131,7 +132,7 @@ typedef struct FieldMessage {
 } FieldMessage;
 
 FieldMessage* GetFieldMessage(i16 code);
-b16 DrawFieldMessage(i16 code, i16 band, i16 marked);
+b16 DrawFieldMessage(GZ_ENUM_PARAM(CellCode, i16) code, i16 band, i16 marked);
 
 void ResetSubscreen(void);
 

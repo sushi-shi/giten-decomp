@@ -529,7 +529,11 @@ Kept as rows until there is evidence:
   the first pair. Its `CellCode` name records the frame relation only.
 - Codes 0x8b, 0x8c and 0x8f occur in area object lists. `CheckCellEvent`
   ignores their kind-10 result for object records, and the direct object-cell
-  queries recognize only 0x8d and 0x8e. Their distinct map roles remain
+  queries recognize only 0x8d and 0x8e. The analogous PC-98 object scans
+  at raw `DDS98.EXE` offsets 0x3f4da and 0x3f536 also compare only 0x8d and
+  0x8e. The Windows map has 97 code-0x8b records (85 on Shibuya level 2),
+  twelve code-0x8c records (ten in Chuu), and nine code-0x8f records (in
+  Ueno Shrine, Takamagahara and Chuu). Their distinct map roles remain
   unproven. The original PC-98 disc has 23 code-0x8c object records versus
   Windows' 12; the eleven extra records are on Shanshan City level 5. Code
   0x7c has a cell-kind table row but no cell record in either disc's area

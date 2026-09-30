@@ -994,12 +994,12 @@ i16 CheckBlockingCell(
 
 // The code of the enabled warp, link or script cell at x/y (0: none).
 RVA(0x00022120, 0xcf)
-i16 GetEventCellCode(i16 x, i16 y) {
+GZ_ENUM_RETURN(CellCode, i16) GetEventCellCode(i16 x, i16 y) {
     WarpCell* warp;
     LinkCell* link;
     ScriptCell* script;
     if (g_areaLevel == NULL) {
-        return 0;
+        return CELL_NONE;
     }
     for (warp = g_areaLevel->warps; !IsCellListEnd(&warp->head); warp++) {
         if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(&warp->head, 6)) {
@@ -1016,7 +1016,7 @@ i16 GetEventCellCode(i16 x, i16 y) {
             return script->head.code;
         }
     }
-    return 0;
+    return CELL_NONE;
 }
 
 RVA(0x000221f0, 0x99)

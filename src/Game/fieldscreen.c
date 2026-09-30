@@ -1168,7 +1168,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
     i16 rightBlocked;
     i16 along;
     i16 scan;
-    i16 code;
+    GZ_ENUM_LOCAL(CellCode, i16) code;
     MapCoord origin;
     MapCoord cell;
     center = left = right = leftBlocked = rightBlocked = false;
@@ -1272,7 +1272,7 @@ void UpdateFieldHud(i16 x, i16 y, i16 direction) {
 }
 
 RVA(0x000160c0, 0x163)
-b16 DrawFieldMessage(i16 code, i16 band, i16 marked) {
+b16 DrawFieldMessage(GZ_ENUM_PARAM(CellCode, i16) code, i16 band, i16 marked) {
     FieldMessage* message = GetFieldMessage(code);
     char* text = message->text;
     i16 x;

@@ -50,7 +50,7 @@ GZ_ENUM_FLAGS_END(CellKindFlags)
 // (RunCellEvent's case).
 // @identity-TODO: event kind 13 (cell code 0x65) remains unnamed.
 typedef struct CellKind {
-    u8 code;
+    GZ_ENUM_STORAGE(CellCode, u8) code;
     GZ_ENUM_STORAGE(CellEventKind, u8) kind;
     GZ_ENUM_STORAGE(CellKindFlags, u8) flags;
     u8 pad03;
@@ -269,7 +269,7 @@ extern AreaLevel* g_areaLevel;
 // 0x70..0x76 of a kind-9 cell are is unrecovered.
 extern i16 g_cellX;
 extern i16 g_cellY;
-extern u8 g_cellCode;
+extern GZ_ENUM_STORAGE(CellCode, u8) g_cellCode;
 extern u8 g_cellDestDirection;
 extern i16 g_cellDestX;
 extern i16 g_cellDestY;
@@ -320,7 +320,7 @@ i16 CheckBlockingCell(
     i16 x,
     i16 y
 );
-i16 GetEventCellCode(i16 x, i16 y);
+GZ_ENUM_RETURN(CellCode, i16) GetEventCellCode(i16 x, i16 y);
 // Returns the barring door's code (0: none) for a step from x/y facing
 // `direction`, move `turn`.
 i16 IsStepBarred(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn);

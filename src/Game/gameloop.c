@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <Game/AreaMap.h>
 #include <Game/Attack.h>
 #include <Game/AutomapData.h>
 #include <Game/BagItems.h>
@@ -50,7 +51,7 @@ DATA(0x000712a8)
 i16 g_cellY = 0;
 
 DATA(0x000712ac)
-u8 g_cellCode = 0;
+GZ_ENUM_STORAGE(CellCode, u8) g_cellCode = CELL_NONE;
 
 DATA(0x000712b0)
 u8 g_cellDestDirection = 0;
