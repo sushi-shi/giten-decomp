@@ -7,6 +7,7 @@
 #include <Game/CellCode.h>
 #include <Game/GameStateId.h>
 #include <Game/PartyStep.h>
+#include <Game/WallKind.h>
 #include <Gfx/DDError.h>
 #include <Gfx/ScreenLayer.h>
 #include <Gfx/Sprite.h>
@@ -218,12 +219,8 @@ void DrawStairs(void);
 #define CELL_SIZE 320
 #define WALL_TOP 324.0f
 
-// Wall kinds: kind WALL_OPEN draws nothing (GetWallAt counts it as none);
-// kinds up to 2 and WALL_PLAIN_ALT use the plain wall quarter of the atlas,
-// the others the door quarter.
-// @identity-TODO: what kinds 6 and 11 are is unrecovered.
-#define WALL_OPEN 6
-#define WALL_PLAIN_ALT 11
+// Wall kinds up to 2 and WALL_KIND_PLAIN_ATLAS_ALTERNATE use the plain wall
+// quarter of the atlas; the others use the door quarter.
 
 // The areas whose map wraps around its edges: across only, or both ways.
 // @identity-TODO: which areas these are is unrecovered.

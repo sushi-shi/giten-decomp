@@ -430,10 +430,12 @@ Kept as rows until there is evidence:
   images is a distinct reaction pose. `FlashHitObject` selects it after a pool
   change; the vanish animation and hidden state reuse it, with the lit bit
   selecting the animation lighting path.
-- Wall kind 6. The wall-stop table gives it movement class 0 and geometry
-  class 3; `GetWallAt` treats it as absent when flooding the visible cells,
-  and `BuildRoomGeometry` draws no quad for it. Its geometry-class result
-  still needs reconciling with that open behavior before naming the kind.
+- Wall kind 6 occurs on 360 sides across seven disc areas. The wall-stop table
+  gives it movement class 0 and geometry class 3; `GetWallAt` treats it as
+  absent when flooding the visible cells, and `BuildRoomGeometry` draws no
+  quad for it. The geometry class is used by the map and field overlays, so
+  `WALL_KIND_PASSABLE_NO_QUAD` records the shared behavior without assigning
+  an in-world identity.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,
   incense, a shield, dummy items and apparent scenario items; its one kind-6
   record is the Necronomicon. Those records do not establish category names.

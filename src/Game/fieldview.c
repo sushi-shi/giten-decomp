@@ -209,12 +209,12 @@ void ViewCellToMapCell(
     }
 }
 
-// The wall on `side` of map cell (x, y), 0 for none (kind 6 counts as none).
+// The wall on `side` of map cell (x, y), 0 for none.
 RVA(0x0000c090, 0x2d)
 i32 GetWallAt(i16 x, i16 y, i32 side, i16 width, i16 height) {
     i32 wall = GetWallCode(x, y, side, width, height);
-    if (wall == 6) {
-        wall = 0;
+    if (wall == WALL_KIND_PASSABLE_NO_QUAD) {
+        wall = WALL_KIND_NONE;
     }
     return wall;
 }

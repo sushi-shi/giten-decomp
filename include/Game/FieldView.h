@@ -8,6 +8,7 @@
 #include <Game/GameState.h>
 #include <Game/MoveCommand.h>
 #include <Game/ViewDirection.h>
+#include <Game/WallKind.h>
 
 // The first-person view's cells: 4 rows ahead of the party (row 3 is the
 // party's own) by 7 columns (column 3 is straight ahead); nonzero = drawn.
@@ -44,8 +45,8 @@ void ViewCellToMapCell(
     i16 height
 );
 
-// The wall on `side` of map cell (x, y), 0 for none (kind 6 counts as none).
-// @identity-TODO: what wall kind 6 is (an open door?) is unrecovered.
+// The wall on `side` of map cell (x, y), 0 for none. The passable kind without
+// a 3D quad also counts as none here.
 i32 GetWallAt(i16 x, i16 y, i32 side, i16 width, i16 height);
 
 // Whether the view cell (col, row) seen from (x, y) facing `dir` has a wall on
