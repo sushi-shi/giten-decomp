@@ -116,7 +116,7 @@ GZ_ENUM_END_SPLIT(PickRole)
 // @identity-TODO: `alignmentLevelB`/`alignmentLevelA` are the signed values
 // derived from `alignmentB`/`alignmentA` (0x43e0a0/0x43e0d0) that
 // AlignmentClass classifies; `battleStats` are recomputed with the stats and
-// copied to `battleStatsShown` (their 24 entries are unnamed).
+// copied to `battleStatsShown` (see BattleStatIndex for known entries).
 // `experience` is what 0x4187e0 adds a battle's award to (below level 99) and
 // 0x418aa0 raises to the level's minimum; `macca`/`magnetite` are what the
 // script reads for an object (0x438cc0/0x438d10), and `levelGap` is the party

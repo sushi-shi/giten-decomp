@@ -45,7 +45,6 @@ void DropTopStatPicks(Character* character, i16* picks);
 
 // The training counters (Character.trainingPoints) and levels (battle-stat
 // words 0, 6, 12, 18) of the four affiliations (training.c).
-// @identity-TODO: What the four kinds measure is unrecovered.
 u32 TrainingThreshold(i16 level);
 u32 AddTrainingPointsRaw(
     Character* character,

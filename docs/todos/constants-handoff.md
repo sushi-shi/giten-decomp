@@ -127,6 +127,8 @@ Training group:
   actor, talking to one, and summoning. `ApplyTraining` raises battle-stat
   word 18 from that counter, and the group's affiliation growth uses
   Intelligence and Charm. The other three groups train weapon, gun and magic.
+  The status panel draws this fourth group only for human characters;
+  `RecalcDerivedStats` preserves all four named level words.
 
 Fusion summary kind:
 
@@ -211,6 +213,9 @@ Kept as rows until there is evidence:
 - Field-object image codes -1 and 0..3 now name the mirrored side,
   facing rows and acting row. Code 4 serves redraw, animation and hidden states;
   its distinct sprite-row identity remains unproven.
+- Wall kind 6. The wall-stop table gives it movement class 0 and geometry
+  class 3; `GetWallAt` treats it as absent when flooding the visible cells.
+  The map record or renderer still needs to establish its in-game identity.
 - The identity of area 0x85.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,
   incense, a shield, dummy items and apparent scenario items; its one kind-6

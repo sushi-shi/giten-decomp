@@ -1081,7 +1081,7 @@ src/Game/statuspanel.c	Run*Screen	*	*	*	@identity-TODO: the equip picker's resul
 src/Game/statuspanel.c	DrawEquipPanel	*	*	*	equip panel layout: rows every 0x18 pixels from 0x28, four stat columns at 5-cell spacing, panel images 7, 0x10 and 0x19
 src/Game/statuspanel.c	PollEquipPart	*	*	*	equip-part hit test: 8-pixel cells from column 0x37 (0x15 wide) and row 40, four rows per part; -1 when no part is hit
 src/Game/statuspanel.c	DrawStat[!u]*	*	*	*	stat display layout: bar segments of 50, twelve-cell bars, the ten stats before fortune, list rows every 2 lines; -1 when nothing is drawn; compare columns
-src/Game/statuspanel.c	DrawBattleStat*	*	*	*	battle-stat panel layout: rows every 3 lines, six-cell columns, the fourth group (3, @identity-TODO in BattleStat.h) shown for humans, ammo under the gun column (13), icons shifted by 4 when hidden, human ids below 32
+src/Game/statuspanel.c	DrawBattleStat*	*	*	*	battle-stat panel layout: rows every 3 lines, six-cell columns, the demon-interaction group shown for humans, ammo under the gun column (13), icons shifted by 4 when hidden, human ids below 32
 src/Game/statuspanel.c	DrawEquipLine*	*	*	*	equipment line layout: column 3, item ids from 1, gem attachments up to 15
 src/Game/statuspanel.c	DrawEquipPickRow	*	*	*	pick-row layout: column 0x37; item ids from 1; no attachment (-1)
 src/Game/statuspanel.c	*EquipChange	*	*	*	@identity-TODO: the preview's scratch character slot 14, a quantity of 1, empty skills, SetEquipSlot's 0, the stat totals at column 3; no pick (-1) and the equip sub-step 1

@@ -718,13 +718,12 @@ i32 CalcMagicDefenseStat(i16* stats, i32 amount) {
 // Recomputes a character's 24 battle stats from its total stats and the
 // bonuses of its eight item slots (each slot's item, then its indexed gem
 // item); stats 0, 6, 12 and 18 are kept, 13 and 19..23 are set to 1.
-// @identity-TODO: which values the indices name is unrecovered.
 RVA(0x0003d560, 0x3e0)
 void RecalcDerivedStats(Character* character) {
-    i16 kept12 = GetBattleStatBase(character, 12);
+    i16 kept12 = GetBattleStatBase(character, BATTLE_STAT_MAGIC_LEVEL);
     i16 kept18 = GetBattleStatBase(character, BATTLE_STAT_DEMON_INTERACTION_LEVEL);
-    i16 level = GetBattleStatBase(character, 0);
-    i16 kept6 = GetBattleStatBase(character, 6);
+    i16 level = GetBattleStatBase(character, BATTLE_STAT_WEAPON_LEVEL);
+    i16 kept6 = GetBattleStatBase(character, BATTLE_STAT_GUN_LEVEL);
     i16 bonuses[24];
     i16* stats;
 
@@ -755,7 +754,7 @@ void RecalcDerivedStats(Character* character) {
     AddItemStatBonuses(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].attachment, bonuses, true);
 
     stats = character->stats.total;
-    character->battleStats[0] = level;
+    character->battleStats[BATTLE_STAT_WEAPON_LEVEL] = level;
     character->battleStats[1] = StatBlend57(stats, level);
     character->battleStats[BATTLE_STAT_WEAPON_ACCURACY] =
         CalcWeaponAccuracyStat(stats, bonuses[BATTLE_STAT_WEAPON_ACCURACY]);
@@ -765,18 +764,18 @@ void RecalcDerivedStats(Character* character) {
         CalcWeaponEvasionStat(stats, bonuses[BATTLE_STAT_WEAPON_EVASION]);
     character->battleStats[BATTLE_STAT_WEAPON_DEFENSE] =
         CalcPhysicalDefenseStat(stats, bonuses[BATTLE_STAT_WEAPON_DEFENSE]);
-    character->battleStats[6] = kept6;
+    character->battleStats[BATTLE_STAT_GUN_LEVEL] = kept6;
     character->battleStats[7] = StatBlend80(stats, kept6);
     character->battleStats[BATTLE_STAT_GUN_ACCURACY] = CalcGunAccuracyStat(
         stats,
         bonuses[BATTLE_STAT_GUN_ACCURACY],
-        GetBattleStatBase(character, 6)
+        GetBattleStatBase(character, BATTLE_STAT_GUN_LEVEL)
     );
     character->battleStats[BATTLE_STAT_GUN_POWER] = ClampTo999(bonuses[BATTLE_STAT_GUN_POWER]);
     character->battleStats[BATTLE_STAT_GUN_EVASION] = CalcGunEvasionStat(stats);
     character->battleStats[BATTLE_STAT_GUN_DEFENSE] =
         GetBattleStatBase(character, BATTLE_STAT_WEAPON_DEFENSE);
-    character->battleStats[12] = kept12;
+    character->battleStats[BATTLE_STAT_MAGIC_LEVEL] = kept12;
     character->battleStats[13] = 1;
     character->battleStats[BATTLE_STAT_MAGIC_POWER] = CalcMagicPowerStat(
         stats,

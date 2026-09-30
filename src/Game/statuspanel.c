@@ -692,7 +692,13 @@ void DrawBattleStatsPanel(i16 x, i16 y, Character* member, i16 hideIcons) {
         member->id
     );
     if (icon >= 0 && IsHumanCharacter(member)) {
-        DrawBattleStatColumn(x, startY, GetBattleStatGroup(member, 3), icon + 3, member->id);
+        DrawBattleStatColumn(
+            x,
+            startY,
+            GetBattleStatGroup(member, BATTLE_GROUP_DEMON_INTERACTION),
+            icon + 3,
+            member->id
+        );
     }
 }
 
