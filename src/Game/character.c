@@ -3123,13 +3123,13 @@ b16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position) {
 // and the moon sets or clears its condition 3. -1 when the timers are off or
 // no such member is in the party, 0 when no period passed (or it is down).
 RVA(0x000412a0, 0x150)
-i16 TickPartyTimers(u16 minutes) {
+GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
     Character* character;
     i16 i;
     i16 count;
     if (IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_HEROINE_REVIVAL_1)
         || GetGameState() == GAME_STATE_SCRIPT_SCENE) {
-        return -1;
+        return PARTY_TIMER_INACTIVE;
     }
     for (i = 0; i < PARTY_SIZE; i++) {
         if (PartySlotAt(i) != PARTY_SLOT_EMPTY
@@ -3145,10 +3145,10 @@ i16 TickPartyTimers(u16 minutes) {
                 s_timerMinutes %= 60;
             }
             if (count == 0) {
-                return 0;
+                return PARTY_TIMER_UNCHANGED;
             }
             if (GetFatalCondition(GetCharacterConditions(character))) {
-                return 0;
+                return PARTY_TIMER_UNCHANGED;
             }
             ChangePool(&character->pools.mp, -count);
             ChangePool(&character->pools.hp, -count);
@@ -3159,10 +3159,10 @@ i16 TickPartyTimers(u16 minutes) {
             } else {
                 AddCondition(GetCharacterConditions(character), CONDITION_COLLAPSE);
             }
-            return 1;
+            return PARTY_TIMER_APPLIED;
         }
     }
-    return -1;
+    return PARTY_TIMER_INACTIVE;
 }
 
 // Clears the character's moon-driven personal flags as the moon moves on

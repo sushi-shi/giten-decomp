@@ -58,6 +58,13 @@ GZ_ENUM_BEGIN_SPLIT(ObjectSlotState, i16)
     OBJECT_SLOT_LIVE = 1
 GZ_ENUM_END_SPLIT(ObjectSlotState)
 
+// Whether an object is absent, active, or has a fatal condition.
+GZ_ENUM_BEGIN_SPLIT(ObjectLifeState, i16)
+    OBJECT_LIFE_ABSENT = 0,
+    OBJECT_LIFE_ACTIVE = 1,
+    OBJECT_LIFE_FALLEN = 2
+GZ_ENUM_END_SPLIT(ObjectLifeState)
+
 typedef struct FieldObject {
     u8 pad000[0x14];
     i16 layer;
@@ -209,7 +216,7 @@ MapCoord GetObjectCoord(i16 index);
 i16 GetObjectDirection(i16 index);
 i16 ExchangeObjectCheckBypass(i16 bypass);
 i16 FlushObjectRedraws(void);
-i16 GetObjectLifeState(FieldObject* object);
+GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeState(FieldObject* object);
 i16 RelativeFacing(i16 from, i16 to);
 
 b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 drawn);
@@ -226,7 +233,7 @@ i16 ExchangeObjectRemovalDeferred(i16 deferred);
 void ClearObjectStuns(i16* cleared);
 void ApplyObjectConditions(i16* marked);
 i16 GetObjectsFrozen(void);
-i16 GetObjectLifeStateAt(i16 index);
+GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeStateAt(i16 index);
 MapCoord* GetObjectCoordPtr(i16 index);
 i16 GetObjectSlot(i16 index);
 i16 GetObjectAnim(i16 index);

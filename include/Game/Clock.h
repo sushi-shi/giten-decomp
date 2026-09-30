@@ -17,6 +17,13 @@ GZ_ENUM_BEGIN_SPLIT(ClockUpdate, i16)
     CLOCK_UPDATE_MOON = 16,
 GZ_ENUM_END_SPLIT(ClockUpdate)
 
+// TickPartyTimers reports whether the timed party cost was applied.
+GZ_ENUM_BEGIN_SPLIT(PartyTimerOutcome, i16)
+    PARTY_TIMER_INACTIVE = -1,
+    PARTY_TIMER_UNCHANGED = 0,
+    PARTY_TIMER_APPLIED = 1
+GZ_ENUM_END_SPLIT(PartyTimerOutcome)
+
 // The game clock, saved and loaded as one record: days, the moon's ticks
 // (0x5f0 a phase) and phase (0..27: the column of the moon table and the
 // value OpSwitchOnMoonPhase switches on), the time of day, and the tick
@@ -58,8 +65,8 @@ GZ_ENUM_RETURN(ClockUpdate, i16) TickGameClock(i16 paused);
 // Steps a character's moon-driven personal flags; the count changed.
 i16 ApplyMoonPhase(struct Character* character, i16 keep);
 
-// The party's hourly timers for `minutes` (-1 when off).
-i16 TickPartyTimers(u16 minutes);
+// The party's periodic HP and MP cost for `minutes`.
+GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes);
 
 // scriptvars' countdown.
 void DrawDownCountdown(u16 amount);

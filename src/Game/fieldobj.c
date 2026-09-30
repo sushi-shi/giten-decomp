@@ -711,20 +711,18 @@ i16 FlushObjectRedraws(void) {
     return drawn;
 }
 
-// 0 for no object (or one whose layer is gone), 2 when it has a fatal
-// condition, else 1.
 RVA(0x0000dee0, 0x4a)
-i16 GetObjectLifeState(FieldObject* object) {
+GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeState(FieldObject* object) {
     if (object == NULL) {
-        return 0;
+        return OBJECT_LIFE_ABSENT;
     }
     if (object->layer == FIELD_LAYER_NONE) {
-        return 0;
+        return OBJECT_LIFE_ABSENT;
     }
     if (FindLayerOfKind(object->kind) < 0) {
-        return 0;
+        return OBJECT_LIFE_ABSENT;
     }
-    return (GetFatalCondition(GetFieldObjectConditions(object)) != 0) + 1;
+    return (GetFatalCondition(GetFieldObjectConditions(object)) != 0) + OBJECT_LIFE_ACTIVE;
 }
 
 RVA(0x0000df30, 0x11)
@@ -936,7 +934,7 @@ i16 GetObjectsFrozen(void) {
 }
 
 RVA(0x0000e530, 0x1e)
-i16 GetObjectLifeStateAt(i16 index) {
+GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeStateAt(i16 index) {
     return GetObjectLifeState(&s_objects[index]);
 }
 
