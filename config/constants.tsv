@@ -972,7 +972,7 @@ src/Game/skilluse.c	OpenMemberSkillMenu	0x1e	*	*	@identity-TODO: menu flags 0x1e
 src/Game/skilluse.c	MemberSkillMenuHandler	*	*	*	an empty skill word; the usable and blocked tests (1)
 src/Game/skilluse.c	CountUsableMemberSkills	1	*	*	usable skills (at least 1)
 src/Game/skilluse.c	CollectTargets	*	*	*	@identity-TODO: distinct meanings of target areas 1, 3..7 and 17 beyond their shared geometry
-src/Game/skilluse.c	CollectTargetsAtCell	*	*	*	@identity-TODO: a skill's range byte (hits in the low nibble, the mode in the high one; 15 all) and the target list buffer
+src/Game/skilluse.c	CollectTargetsAtCell	*	*	*	@identity-TODO: the target list buffer; the skill's packed target-count byte now has named nibble modes
 src/Game/skilluse.c	Add*TargetsAtCell	*	*	*	@identity-TODO: FindObjectAt's filters (0 or 1), no object (-1), party combatant ids -1..-6, the related flag 0
 src/Game/skilluse.c	AddRelatedCombatTargets	0	*	*	@identity-TODO: AddCombatTarget's related flag 0
 src/Game/skilluse.c	CollectTargetsAlongLine	*	*	*	the line's step (-1 or 0) and its three cells ahead

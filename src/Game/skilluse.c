@@ -45,6 +45,7 @@
 #include <Game/SkillUse.h>
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
+#include <Game/TargetCountMode.h>
 #include <Game/TargetFlags.h>
 #include <Gfx/ScreenMode.h>
 #include <Gfx/Shot.h>
@@ -1399,15 +1400,15 @@ i16 CollectTargetsAtCell(
         } else {
             result = AddRelatedCombatTargets(x, y, flags, target, actor);
         }
-        hits = range & 15;
+        hits = range & TARGET_COUNT_NIBBLE_MASK;
         if (hits < 1) {
             hits = 1;
         }
-        mode = (range >> 4) & 15;
+        mode = (range >> TARGET_COUNT_MODE_SHIFT) & TARGET_COUNT_NIBBLE_MASK;
         selected = mode;
-        if (mode == 15) {
+        if (mode == TARGET_COUNT_ALL_TARGETS) {
             selected = result;
-        } else if (mode == 0) {
+        } else if (mode == TARGET_COUNT_RANDOM_TARGETS) {
             selected = RandomPercent(hits, -20, 20);
         }
     }
@@ -1415,7 +1416,7 @@ i16 CollectTargetsAtCell(
     while ((id = NextTarget()) != TARGET_LIST_END) {
         targets[count++] = id;
     }
-    if (mode == 0) {
+    if (mode == TARGET_COUNT_RANDOM_TARGETS) {
         result = 0;
         for (i = 0; i < selected; i++) {
             id = RandomUpTo(count - 1);
@@ -1423,7 +1424,7 @@ i16 CollectTargetsAtCell(
         }
         ReturnCombatTargetsOrDefault(result, target);
     }
-    if (mode == 15 || selected > count) {
+    if (mode == TARGET_COUNT_ALL_TARGETS || selected > count) {
         selected = count;
     }
     result = 0;
