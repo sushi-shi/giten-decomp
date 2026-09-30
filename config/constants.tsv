@@ -602,7 +602,6 @@ src/Game/abortflag.c	CountHotspotsOfKind	*	*	*	-1 reports a pending abort in pla
 src/Game/abortflag.c	PickSceneHotspot	*	*	*	dead: a hit is the button in bits 5 and up over the hotspot index; -1 is no hit
 src/Game/abortflag.c	*	[01]	*	*dest	a treasure box's destination script and entry
 src/Game/abortflag.c	GetHotspotScript	*	*	*	dead: an empty scene script {0, 0}; FindTreasureBoxAt's `1` is its live-box filter
-src/Game/abortflag.c	IsSceneObjectVisible	33	call-argument	*	@identity-TODO: field-object flag 33 hides the object from the scene
 src/Game/abortflag.c	DrawSceneSprite	*	*	*	dead: sprite mode 0 draws into the scene; flips mirror inside the 80x400 sprite cell, and centered sprites sit at (40, 112); -1 is no sprite
 src/Game/playtime.c	*	*	*	*	play-time units: 7232/10000 of a 17 ms tick, milliseconds, seconds, minutes, hours, days and hundreds of days
 src/Game/gamestate.c	GetMapValue	0	trivial-function-literal	0 return	an invalid map-value selector returns zero

@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <Game/AbortFlag.h>
+#include <Game/ActorFlag.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
 #include <Game/FieldHud.h>
@@ -229,7 +230,8 @@ void DrawSceneObjects(i16 x, i16 y, i16 across, i16 along) {
 }
 
 static __inline b32 IsSceneObjectVisible(FieldObject* object, i16 kind) {
-    return (kind != SCENE_HOTSPOT_OBJECT || TestFieldObjectFlag(object, 33) != true)
+    return (kind != SCENE_HOTSPOT_OBJECT
+            || TestFieldObjectFlag(object, ACTOR_FLAG_INVISIBLE) != true)
            && !GetObjectsHidden();
 }
 
