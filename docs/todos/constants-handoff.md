@@ -548,6 +548,13 @@ adds bit 1 after finding a route to it. The higher bits hold candidate
 weights, so the score byte stays numeric while its two state bits form the
 local `WorldTravelCellFlag` domain.
 
+`HitTestWorldMap` returns zero when no marker colour is hit, bit 1 for a
+marker colour, and bit 0 when the sampled surface belongs to the automap
+preview layer. Its only nonzero results are 2 on the world map and 3 on the
+preview. `PickWorldMapDestination` accepts a hit of 2 as the direct world
+cell; a hit of 3 uses the preview's offset travel cell. These bits form
+`WorldMapHitFlags`.
+
 ## Attack attribute columns
 
 Retail object records P2029 (Urd) and P2042 (Heqet) store resistance bytes

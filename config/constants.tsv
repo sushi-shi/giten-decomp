@@ -797,7 +797,6 @@ src/Script/recordcache.c	ResetRecordCache	-1	*	*	no cached record
 src/Script/recordcache.c	WearCachedSkill	*	*	*	percent wear of the cached skill's values; -1 when nothing is cached
 src/Script/recordcache.c	CacheSkill	1	*	*	a skill starts with one use
 src/Script/recordcache.c	WearSkillValue	*	*	*	percent wear, at least 1 and at most 30000
-src/Game/worldtravel.c	PickWorldMapDestination	2	*	*	@identity-TODO: HitTestWorldMap's marker bit (2)
 src/Game/worldtravel.c	StepWorldMapTravel	*	*	*	@identity-TODO: history index 1 and the no-step result 0
 src/Game/worldtravel.c	GetWorldTravelLateralDelta	0	*	*	no lateral offset
 src/Game/worldtravel.c	MarkReachableWorldTravelCells	1	call-argument	*	the neighbouring rows (row + 1, row - 1)

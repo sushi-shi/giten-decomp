@@ -110,7 +110,7 @@ b16 PickWorldMapDestination(i16 layer) {
     if (!hit) {
         return false;
     }
-    if (hit == 2) {
+    if (hit == WORLD_MAP_HIT_MARKER_COLOR) {
         SetWorldTravelDestination(destination);
         return true;
     }
