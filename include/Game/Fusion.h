@@ -17,13 +17,15 @@
 
 #define GetFusionSlotLevel(slot) GetDemonLevel(GetRosterId(slot))
 
+#define FUSION_SUMMARY_KIND_BITS 9
+
 typedef union FusionSummary {
     i16 value;
     struct {
         i16 overLevel : 1;
         i16 highFlag : 3;
         i16 lowFlag : 3;
-        GZ_ENUM_STORAGE(FusionSummaryKind, i16) kind : 9;
+        GZ_ENUM_STORAGE(FusionSummaryKind, i16) kind : FUSION_SUMMARY_KIND_BITS;
     } fields;
 } FusionSummary;
 

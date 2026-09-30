@@ -326,7 +326,7 @@ i16 ResolveFusionDemonPair(i16 first, i16 second) {
         return SetFusionResult(demon, 0);
     }
     demon = FindFusionFallback(first, second);
-    return SetFusionResult(demon, 9);
+    return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
 }
 
 RVA(0x00026770, 0x4b)
@@ -424,7 +424,7 @@ i16 ResolveSameRaceFusion(i16 first, i16 second) {
         return SetFusionResult(demon, 0);
     }
     demon = FindFusionFallback(first, second);
-    return SetFusionResult(demon, 9);
+    return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
 }
 
 RVA(0x00026a00, 0x5b)
@@ -499,7 +499,7 @@ i16 ResolveMixedRankFusion(i16 first, i16 second) {
         return SetFusionResult(demon, 0);
     }
     demon = FindFusionFallback(first, second);
-    return SetFusionResult(demon, 9);
+    return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
 }
 
 RVA(0x00026ca0, 0x77)
@@ -517,7 +517,7 @@ i16 ResolveSameClassFusion(i16 first, i16 second) {
         return SetFusionResult(demon, 0);
     }
     demon = FindFusionFallback(first, second);
-    return SetFusionResult(demon, 9);
+    return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
 }
 
 RVA(0x00026d20, 0x7c)
@@ -537,7 +537,7 @@ i16 ResolveFusionRacePair(i16 first, i16 second) {
         return SetFusionResult(demon, 0);
     }
     demon = FindFusionFallback(first, second);
-    return SetFusionResult(demon, 9);
+    return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
 }
 
 RVA(0x00026da0, 0x6a)
@@ -1404,7 +1404,7 @@ i16 GetFusionResultKind(void) {
         case 3:
         case 4:
         case 8:
-        case 9:
+        case FUSION_SUMMARY_FALLBACK:
         case 10:
         case 11:
         case 12:
@@ -1474,7 +1474,7 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
             break;
         case 4:
             goto createCharacter;
-        case 9:
+        case FUSION_SUMMARY_FALLBACK:
             goto createCharacter;
         case 11:
             goto createCharacter;
