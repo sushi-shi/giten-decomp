@@ -1911,7 +1911,7 @@ GZ_ENUM_RETURN(DemonRace, i16) GetDemonRace(i16 id) {
 }
 
 RVA(0x0000ffc0, 0x1a)
-i16 GetDemonPantheon(i16 id) {
+GZ_ENUM_RETURN(DemonPantheon, i16) GetDemonPantheon(i16 id) {
     return ReadDemonTable()->entries[id].pantheon;
 }
 
@@ -1975,7 +1975,7 @@ char* GetDemonClassName(i16 id) {
 
 RVA(0x00010140, 0x33)
 char* GetDemonPantheonName(i16 id) {
-    i16 index = GetDemonPantheon(id);
+    GZ_ENUM_LOCAL(DemonPantheon, i16) index = GetDemonPantheon(id);
     return ReadDemonName(s_pantheonNames, index);
 }
 

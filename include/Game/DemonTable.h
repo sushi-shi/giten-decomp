@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Game/DemonClass.h>
+#include <Game/DemonPantheon.h>
 #include <Game/DemonRace.h>
 #include <Ints.h>
 
@@ -21,7 +22,7 @@ GZ_ENUM_FLAGS_END(DemonTableFlags)
 // strings and bytes indexed through those records.
 typedef struct DemonTableEntry {
     GZ_ENUM_STORAGE(DemonRace, u8) race;
-    u8 pantheon;
+    GZ_ENUM_STORAGE(DemonPantheon, u8) pantheon;
     u8 level;
     GZ_ENUM_STORAGE(DemonTableFlags, u8) flags;
 } DemonTableEntry;
@@ -39,7 +40,7 @@ typedef struct DemonNameTable {
 
 void LoadDemonTables(void);
 GZ_ENUM_RETURN(DemonRace, i16) GetDemonRace(i16 id);
-i16 GetDemonPantheon(i16 id);
+GZ_ENUM_RETURN(DemonPantheon, i16) GetDemonPantheon(i16 id);
 i16 GetDemonLevel(i16 id);
 i16 GetDemonFlagLow(i16 id);
 i16 GetDemonFlagHigh(i16 id);

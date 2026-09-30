@@ -6,6 +6,7 @@
 #include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/Character.h>
+#include <Game/DemonPantheon.h>
 #include <Game/FieldLayerIndex.h>
 #include <Game/FieldSupport.h>
 #include <Game/GameState.h>
@@ -100,7 +101,7 @@ typedef struct FieldObject {
     u8 encounterRow;
     i16 shield;
     u8 pad07f[3];
-    u8 pantheon;
+    GZ_ENUM_STORAGE(DemonPantheon, u8) pantheon;
     u8 byte083;
     GZ_ENUM_STORAGE(Gender, u8) gender;
     u8 rank;

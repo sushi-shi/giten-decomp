@@ -1,0 +1,36 @@
+#ifndef GITEN_GAME_DEMONPANTHEON_H
+#define GITEN_GAME_DEMONPANTHEON_H
+
+#include <EnumDomain.h>
+#include <Ints.h>
+
+// The pantheon-name block of the demon table (GetDemonPantheonName).
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(DemonPantheon, u8)
+    PANTHEON_UNKNOWN = 0,
+    PANTHEON_AMATSUKAMI = 1,
+    PANTHEON_KUNITSUKAMI = 2,
+    PANTHEON_HEBREW = 3,
+    PANTHEON_SENZOKU = 4,
+    PANTHEON_DEVA = 5,
+    PANTHEON_ASURA = 6,
+    PANTHEON_YAKSHA = 7,
+    PANTHEON_RAKSHASA = 8,
+    PANTHEON_AESIR = 9,
+    PANTHEON_VANIR = 10,
+    PANTHEON_DANU = 11,
+    PANTHEON_OLYMPIAN = 12,
+    PANTHEON_TITAN = 13,
+    PANTHEON_GAIANESS = 14,
+    PANTHEON_FOMORIAN = 15,
+    PANTHEON_VIE = 16,
+    PANTHEON_NONE = 17,
+    PANTHEON_BABEL = 18,
+    PANTHEON_LOUIS = 19,
+    PANTHEON_TOTEM = 20,
+    PANTHEON_RA = 21,
+    PANTHEON_YAZATA = 22
+GZ_ENUM_END_SPLIT(DemonPantheon)
+// clang-format on
+
+#endif // GITEN_GAME_DEMONPANTHEON_H

@@ -520,6 +520,10 @@ races to a major class; the sixth block names all sixteen classes in order.
 with the resulting class. `DemonClass` follows those names. The observed
 checks select 鬼族系 (8) for one inflicted condition, 邪霊系 (10) and 人系/魔人系
 (12/13) for step upkeep, and 無生物 (14) for random fusion exclusion.
+The fourth ET0000 block names 23 pantheons. Its indices occupy a byte in
+each demon record; `GetDemonPantheon` supplies the value copied to field
+objects, and `GetDemonPantheonName` uses it to read the same name table.
+`DemonPantheon` types both storage sites and the accessor's return.
 
 ## Event-flag banks
 
