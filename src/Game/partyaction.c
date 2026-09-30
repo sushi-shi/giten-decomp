@@ -941,8 +941,8 @@ GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
         ReportBattleTally(actor, BATTLE_TALLY_TETRAKARN, report);
         return BATTLE_PROTECTION_REFLECT;
     }
-    if (GetCharacterBattleTallies(actor)[6] && attribute == 1) {
-        ReportBattleTally(actor, 6, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_ATTRIBUTE_1_REFLECT] && attribute == 1) {
+        ReportBattleTally(actor, BATTLE_TALLY_ATTRIBUTE_1_REFLECT, report);
         return BATTLE_PROTECTION_REFLECT;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_MP_ABSORB] && mode == ATTACK_MAGIC) {

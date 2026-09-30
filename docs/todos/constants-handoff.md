@@ -372,15 +372,19 @@ placement behavior rather than a shop type.
 
 Kept as rows until there is evidence:
 
-- Battle-tally slot 6, attack attributes 0/1, 9 and 10, and the shared
-  result word's noncombat encodings. The ET0004 skill table links effect
-  codes to protection slots: 0..3, 5 and 7..14 now have evidence-backed names.
+- Attack attributes 0/1, 9 and 10, and the shared
+  result word's noncombat encodings. ET0004 kind-3 skills select tally slots
+  0, 1, 4, 5 and 7..14; the other named slots have direct reader evidence.
   Attribute 1 is not simply the gun category: ET0001 gives it to 21 melee
   weapons as well as 21 ammunition records; attribute 0 occurs on 98 melee
   weapons and seven ammunition records.
   Slot 5 is set by Tetrakarn and Counterattack and reflects attacks with
-  attribute 0. The barrier-cleared message in MS00DF entry 3 uses the generic
-  barrier label from MS7F00 entry 52, so it does not distinguish slots 5 and 6.
+  attribute 0. `CheckBattleProtection` directly reflects attribute-1 attacks
+  when slot 6 is set, so its enum name records that effect. `UseBattleTallySkill`
+  could set the slot from an effect code of 6, but no current ET0004 skill has
+  that code. Its authored name remains unknown. The barrier-cleared message
+  in MS00DF entry 3 uses the generic barrier label from MS7F00 entry 52, so it
+  does not distinguish slots 5 and 6.
   MS00DD entry 5 dispatches base action results 0..10 to entries 10..19 and
   97; the messages and combat resolver identify miss, no effect, graze,
   success, critical, lethal, immune, reflect, HP/MP absorb and protection.
