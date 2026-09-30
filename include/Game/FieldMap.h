@@ -32,7 +32,13 @@ void SaveFieldPosition(void);
 
 // -1 off the marked cell, else 0 (or, with `checkDirection`, 1 when facing
 // another way).
-i16 IsOnCellMark(i16 checkDirection);
+GZ_ENUM_BEGIN_SPLIT(CellMarkMatch, i16)
+    CELL_MARK_OFF_CELL = -1,
+    CELL_MARK_MATCH = 0,
+    CELL_MARK_FACING_DIFFERS = 1
+GZ_ENUM_END_SPLIT(CellMarkMatch)
+
+GZ_ENUM_RETURN(CellMarkMatch, i16) IsOnCellMark(i16 checkDirection);
 
 // The region code the field last entered (EnterRoom sets it).
 i16 GetCurrentRoomCode(void);

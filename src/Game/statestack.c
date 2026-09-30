@@ -2568,15 +2568,15 @@ void SaveFieldPosition(void) {
 }
 
 RVA(0x0001a110, 0x67)
-i16 IsOnCellMark(i16 checkDirection) {
+GZ_ENUM_RETURN(CellMarkMatch, i16) IsOnCellMark(i16 checkDirection) {
     if (g_party.field.pos.x == s_markedX && g_party.field.pos.y == s_markedY
         && g_party.field.pos.area == s_markedArea && g_party.field.pos.level == s_markedLevel) {
         if (checkDirection && g_party.field.pos.direction != s_markedDirection) {
-            return 1;
+            return CELL_MARK_FACING_DIFFERS;
         }
-        return 0;
+        return CELL_MARK_MATCH;
     }
-    return -1;
+    return CELL_MARK_OFF_CELL;
 }
 
 RVA(0x0001a180, 0x7)

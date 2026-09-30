@@ -1013,7 +1013,7 @@ void RunCellEvent(void) {
     i16 map;
     u16 step;
 
-    if (IsOnCellMark(0) == 0 && GetGameStep() == 0) {
+    if (IsOnCellMark(false) == CELL_MARK_MATCH && GetGameStep() == 0) {
         return;
     }
     SaveFieldPosition();
