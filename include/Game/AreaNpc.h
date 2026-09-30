@@ -88,6 +88,8 @@ void LoadAreaNpcImages(u8* record);
 // Field-effect codes identified by the skill records and their handlers.
 // clang-format off
 GZ_ENUM_BEGIN_SPLIT(FieldEffectCode, u8)
+    FIELD_EFFECT_CODE_NONE = 0,
+    FIELD_EFFECT_CODE_KNOCK_BACK_TARGET = 1,
     FIELD_EFFECT_CODE_ILLUSION = 3,
     FIELD_EFFECT_CODE_INVISIBLE = 0x11,
     FIELD_EFFECT_CODE_ESTOMA = 0x14,

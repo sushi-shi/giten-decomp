@@ -3271,13 +3271,13 @@ u32 DrawNpcAt(i16 x, i16 y, i16 depth, AreaNpc* npc, i16 index) {
 }
 
 // Runs a skill's field effect and returns the handler result.
-// @identity-TODO: codes 0, 1, 0x1a and 0x20..0x23 remain unnamed.
+// @identity-TODO: codes 0x1a and 0x20..0x23 remain unnamed.
 RVA(0x0001f700, 0xcc)
 GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectCode, i16) effect) {
     switch (effect) {
-        case 0:
+        case FIELD_EFFECT_CODE_NONE:
             break;
-        case 1:
+        case FIELD_EFFECT_CODE_KNOCK_BACK_TARGET:
             return KnockBack(g_targetId);
         case FIELD_EFFECT_CODE_ILLUSION:
             return ShieldTarget();
