@@ -482,6 +482,14 @@ These named selectors now form `EventFlagBank`. `ResetEventFlags` also walks
 unnamed banks, and a script operand can carry a negate bit with its bank, so
 the dynamic bank parameters retain their numeric widths.
 
+## Moon phases
+
+`GameClock.moonPhase` is a saved byte cycling through 0..27. `AdvanceClock`
+and `ApplyClockChanges` identify phase 0 as new moon and 14 as full moon; the
+other phase numbers have no separate names in the current source. `MoonPhase`
+types the saved byte while the 28-phase count and tick duration remain
+numeric extents.
+
 ## Attack attribute columns
 
 Retail object records P2029 (Urd) and P2042 (Heqet) store resistance bytes

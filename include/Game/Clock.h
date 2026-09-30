@@ -32,13 +32,15 @@ GZ_ENUM_END_SPLIT(PartyTimerOutcome)
 // The moon's 28 phases, each MOON_PHASE_TICKS minutes long.
 #define MOON_PHASE_COUNT 28
 #define MOON_PHASE_TICKS 0x5f0
-#define MOON_PHASE_NEW 0
-#define MOON_PHASE_FULL 14
+GZ_ENUM_BEGIN_SPLIT(MoonPhase, u8)
+    MOON_PHASE_NEW = 0,
+    MOON_PHASE_FULL = 14
+GZ_ENUM_END_SPLIT(MoonPhase)
 
 typedef struct GameClock {
     i32 days;
     u16 moonTicks;
-    u8 moonPhase;
+    GZ_ENUM_STORAGE(MoonPhase, u8) moonPhase;
     u8 hour;
     u8 minute;
     u8 frames;
