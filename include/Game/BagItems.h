@@ -22,6 +22,12 @@
 // The most items a stack holds.
 #define ITEM_STACK_MAX 99
 
+// Which way the script's temporary item-list transfer copies the bag.
+GZ_ENUM_BEGIN_SPLIT(ItemStashAction, i16)
+    ITEM_STASH_SAVE = 0,
+    ITEM_STASH_RESTORE = 1
+GZ_ENUM_END_SPLIT(ItemStashAction)
+
 extern ItemStack g_bagItems[BAG_ENTRY_COUNT];
 
 // Empties every bag entry.
@@ -53,9 +59,9 @@ i16 GetBagEntryCount(i16 index);
 // The number of non-empty bag entries.
 i16 CountBagEntries(void);
 
-// Copies the bag into `buffer` (allocated when NULL), or with `restore` set
-// back from it (a NULL buffer does nothing); returns `buffer`.
-ItemStack* SaveOrRestoreBag(ItemStack* buffer, i16 restore);
+// Saves the bag into `buffer` (allocated when NULL), or restores it from
+// `buffer` (a NULL buffer does nothing); returns `buffer`.
+ItemStack* SaveOrRestoreBag(ItemStack* buffer, GZ_ENUM_PARAM(ItemStashAction, i16) action);
 
 // Takes `amount` of `item` from entry `index` first, then from the end of the
 // bag; returns how many could not be taken.

@@ -1117,10 +1117,10 @@ i16 CountBagEntries(void) {
 }
 
 RVA(0x000242b0, 0x60)
-ItemStack* SaveOrRestoreBag(ItemStack* buffer, i16 restore) {
+ItemStack* SaveOrRestoreBag(ItemStack* buffer, GZ_ENUM_PARAM(ItemStashAction, i16) action) {
     i16 i;
 
-    if (!restore) {
+    if (action == ITEM_STASH_SAVE) {
         if (buffer == NULL) {
             buffer = AllocCleared(64, sizeof(ItemStack));
         }

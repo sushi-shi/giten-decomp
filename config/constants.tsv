@@ -1145,7 +1145,7 @@ src/Script/scriptactor.c	ReturnFromCall	*	*	*	@identity-TODO: PopCallFrame's 0; 
 src/Script/scriptactor.c	RequestQuit	1	*	*	ask StepGame to end
 src/Script/scriptactor.c	OpTakeItem	1	call-argument	*	one item taken
 src/Script/scriptactor.c	OpOpenItemListWindow	0	call-argument	*	the window at (0, 0)
-src/Script/scriptactor.c	OpStashItemLists	*	call-argument	*	@identity-TODO: SaveOrRestoreBag's 16 stacks and its save/restore flag (0, 1)
+src/Script/scriptactor.c	OpStashItemLists	*	call-argument	*	@identity-TODO: SaveOrRestoreBag's 16-stack offset in script variables
 src/Script/scriptactor.c	PlayScreenTransition	0	call-argument	*	@identity-TODO: RunMoveCommand's next phase 0
 src/Script/scriptactor.c	OpSwitchOnMoonPhase	1	call-argument	*	@identity-TODO: SwitchOnValue's 1
 src/Script/scriptactor.c	ReadTextToken	*	*	*	@identity-TODO: text tokens: the object-check bypass, the token buffer, no id, long variable 11

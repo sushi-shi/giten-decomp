@@ -2079,17 +2079,17 @@ void OpGetItemPrice(void) {
 // the bag.
 RVA(0x00035830, 0x7d)
 void OpStashItemLists(void) {
-    i16 restore = ReadScriptValue();
+    GZ_ENUM_STORAGE(ItemStashAction, i16) action = ReadScriptValue();
     i16 var = ReadScriptValue();
     var = min(var, 0xb0);
-    if (!restore) {
+    if (action == ITEM_STASH_SAVE) {
         SaveGemItems((ItemStack*)&g_scriptVars[var]);
         ResetGemItems(GetGemItemBase());
-        SaveOrRestoreBag((ItemStack*)&g_scriptVars[var + 16], 0);
+        SaveOrRestoreBag((ItemStack*)&g_scriptVars[var + 16], ITEM_STASH_SAVE);
         ClearBag();
     } else {
         RestoreGemItems((ItemStack*)&g_scriptVars[var]);
-        SaveOrRestoreBag((ItemStack*)&g_scriptVars[var + 16], 1);
+        SaveOrRestoreBag((ItemStack*)&g_scriptVars[var + 16], ITEM_STASH_RESTORE);
     }
 }
 
