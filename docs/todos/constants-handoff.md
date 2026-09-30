@@ -80,6 +80,9 @@ Map area names:
 
 Automap marks:
 
+- Marks 0..3 are white party arrows pointing up, right, down and left.
+  `DrawAutomapRegion` and `DrawMapOverlay` pass the party's direction relative
+  to the displayed map direction, in the same order.
 - The automap icon table uses image marks 7, 8 and 9 for exits, stairs
   up and stairs down. Its mark byte now has an `AutomapMark` domain, shared
   with live NPC (4) and field-object (5) marks.

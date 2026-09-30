@@ -6,6 +6,10 @@
 
 // @identity-TODO: the other automap image indices remain unnamed.
 GZ_ENUM_BEGIN_SPLIT(AutomapMark, u8)
+    MAP_MARK_PARTY_UP = 0,
+    MAP_MARK_PARTY_RIGHT = 1,
+    MAP_MARK_PARTY_DOWN = 2,
+    MAP_MARK_PARTY_LEFT = 3,
     MAP_MARK_NPC = 4,
     MAP_MARK_OBJECT = 5,
     MAP_MARK_EXIT = 7,
