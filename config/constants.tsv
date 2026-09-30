@@ -1178,7 +1178,7 @@ src/Script/scriptactor.c	OpSetLongVar	*	*	*	@identity-TODO: long variable 23 (a 
 src/Script/scriptactor.c	OpCureRosterCondition	1	*	*	the roster's first slot
 src/Script/scriptactor.c	OpRecoverRosterPool	1	*	*	the roster's first slot
 src/Script/scriptactor.c	OpZeroLongVar	0	call-argument	*	the variable is set to 0
-src/Game/fusion.c	GetFusionResultKind	*	*	*	@identity-TODO: fusion result kinds 0..12 (see SetFusionResult's row) and the script results -3 (over the level) and -2 (already in the roster)
+src/Game/fusion.c	GetFusionResultKind	*	*	*	@identity-TODO: script results -3 (over the level) and -2 (already in the roster), and the remaining summary dispatch values
 src/Game/fusion.c	s_fusionSummaryIcons	*	data-or-extent	*	@identity-TODO: the summary icon of each fusion result kind
 src/Game/fusion.c	s_fusionFlagLevelBonuses	*	data-or-extent	*	@identity-TODO: level bonuses by demon flag pair
 src/Game/fusion.c	Resolve*	*	*	*	@identity-TODO: fusion resolution: race/rank table lookups, sides (-1, 0, 1), the members' level parity (% 7, % 5, % 3), FindNextOfRace's wrap flag, rank steps, demon ids from 32, the result slot codes (1000), random picks (10, 14)
@@ -1219,7 +1219,7 @@ src/Game/fusion.c	GetSameRaceFusionRace	0	*	*	no race
 src/Game/fusion.c	GetTripleFusionLevel*	*	*	*	@identity-TODO: triple fusion levels (+3, +5) and the high-flag bonus (3 flags give 2)
 src/Game/fusion.c	MoveUnrankedFusionSlot	-1	*	*	an unranked demon (flag -1)
 src/Game/fusion.c	ResetThirdFusionSlot	-1	*	*	no third slot
-src/Game/fusion.c	SetFusionResult	*	*	*	no demon (-1); a new result's kind 0
+src/Game/fusion.c	SetFusionResult	*	*	*	no demon (-1); an unspecified result kind is named in FusionSummaryKind
 src/Game/statestack.c	Next*	1	call-argument	*	one step forward
 src/Game/statestack.c	Prev*	1	call-argument	*	one step back
 src/Game/statestack.c	SetGame*	0	*	*	a new phase, step or state starts its step and sub-step at 0

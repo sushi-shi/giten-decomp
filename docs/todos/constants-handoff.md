@@ -128,6 +128,14 @@ Training group:
   word 18 from that counter, and the group's affiliation growth uses
   Intelligence and Charm. The other three groups train weapon, gun and magic.
 
+Fusion summary kind:
+
+- Kind 0 leaves the result kind unspecified. `SetFusionSummaryKind` derives
+  higher, lower or equal from source and result levels when it receives 0;
+  a zero-initialized summary also remains 0 before a result is available.
+  Kinds 1..7 follow the ET000C special-fusion table and pair-result builder;
+  8 is a direct table demon and 9 a fallback demon.
+
 ### Event-flag names (ET0018)
 
 `ET0018` is the developers' event-flag name table.
@@ -167,10 +175,6 @@ alternate-script objects, and pursuit and knockback refuse to move one.
 
 Kept as rows until there is evidence:
 
-- Fusion summary kind 0 serves both an unset summary and a request to
-  derive kind 10..12 from the source/result level comparison. Kinds 1..7
-  follow the ET000C special-fusion table and the pair-result builder; 8
-  is a direct table demon and 9 a fallback demon.
 - Battle-tally slots 4..6, attack attributes 0/1, 9 and 10, and the shared
   result word's noncombat encodings. The ET0004 skill table links effect
   codes to protection slots: 0..3 and 7..14 now have evidence-backed names.

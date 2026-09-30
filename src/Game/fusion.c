@@ -247,7 +247,7 @@ RVA(0x00026550, 0x27)
 i16 SetFusionResult(i16 demon, i16 kind) {
     g_fusionResult = demon;
     if (demon == -1) {
-        kind = 0;
+        kind = FUSION_SUMMARY_UNSPECIFIED;
     }
     s_fusionResultKind = kind;
     return g_fusionResult;
@@ -289,7 +289,7 @@ i16 CalculatePairFusion(i16 first, i16 second) {
         }
     }
     if (g_fusionResult >= HUMAN_ID_LIMIT && IsFusionDemonRestricted(g_fusionResult)) {
-        return SetFusionResult(-1, 0);
+        return SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
     }
     return result;
 }
@@ -299,10 +299,10 @@ i16 CheckFusionRestrictedPair(i16 first, i16 second) {
     i16 firstClass = GetRosterFusionRestrictedClass(first);
     i16 secondClass = GetRosterFusionRestrictedClass(second);
     if (firstClass && secondClass) {
-        return SetFusionResult(-1, 0);
+        return SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
     }
     if (firstClass || secondClass) {
-        SetFusionResult(0, 0);
+        SetFusionResult(0, FUSION_SUMMARY_UNSPECIFIED);
         return 1;
     }
     return 0;
@@ -323,7 +323,7 @@ i16 ResolveFusionDemonPair(i16 first, i16 second) {
     level = GetFusionLevel(first, second);
     demon = FindStrongestOfRace(level, result);
     if (demon >= 1) {
-        return SetFusionResult(demon, 0);
+        return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
     }
     demon = FindFusionFallback(first, second);
     return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
@@ -421,7 +421,7 @@ i16 ResolveSameRaceFusion(i16 first, i16 second) {
     level = GetFusionLevel(first, second);
     demon = FindStrongestOfRace(level, race);
     if (demon >= 1) {
-        return SetFusionResult(demon, 0);
+        return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
     }
     demon = FindFusionFallback(first, second);
     return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
@@ -452,9 +452,12 @@ i16 ResolveFusionRankPair(i16 first, i16 second) {
     members[1] = GetRosterCharacter(second);
     selected = CompareFusionCharacters(members[0], members[1]);
     if (selected != -1) {
-        return SetFusionResult(FindNextOfRace(members[selected]->id, 0), 0);
+        return SetFusionResult(
+            FindNextOfRace(members[selected]->id, 0),
+            FUSION_SUMMARY_UNSPECIFIED
+        );
     }
-    return SetFusionResult(-1, 0);
+    return SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
 }
 
 RVA(0x00026b20, 0x17f)
@@ -484,19 +487,19 @@ i16 ResolveMixedRankFusion(i16 first, i16 second) {
     if (ranked->level >= other->level) {
         if (level % 7 == 0) {
             demon = FindNextOfRace(ranked->id, 0);
-            return SetFusionResult(demon, 0);
+            return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
         }
         if (level % 5 == 0) {
             demon = FindNextOfRace(ranked->id, 0);
             return SetFusionResult(demon, FUSION_SUMMARY_RANK_UP);
         }
         if (level % 3 == 0) {
-            return SetFusionResult(ranked->id, 0);
+            return SetFusionResult(ranked->id, FUSION_SUMMARY_UNSPECIFIED);
         }
     }
     if (!(level & 1)) {
         demon = FindNextOfRace(other->id, 0);
-        return SetFusionResult(demon, 0);
+        return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
     }
     demon = FindFusionFallback(first, second);
     return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
@@ -514,7 +517,7 @@ i16 ResolveSameClassFusion(i16 first, i16 second) {
     level = GetFusionLevel(first, second);
     demon = FindStrongestOfClass(level, cls);
     if (demon >= 1) {
-        return SetFusionResult(demon, 0);
+        return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
     }
     demon = FindFusionFallback(first, second);
     return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
@@ -527,14 +530,14 @@ i16 ResolveFusionRacePair(i16 first, i16 second) {
     i16 level;
     if (race < 1) {
         if (race == -1) {
-            return SetFusionResult(-1, 0);
+            return SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
         }
         return 0;
     }
     level = GetFusionLevel(first, second);
     demon = FindStrongestOfRace(level, race);
     if (demon >= 1) {
-        return SetFusionResult(demon, 0);
+        return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
     }
     demon = FindFusionFallback(first, second);
     return SetFusionResult(demon, FUSION_SUMMARY_FALLBACK);
@@ -592,7 +595,7 @@ i16 ResolveRandomFusion(void) {
     do {
         demon = SelectRandomFusionDemon();
     } while (limit < GetDemonLevel(demon));
-    return SetFusionResult(demon, 0);
+    return SetFusionResult(demon, FUSION_SUMMARY_UNSPECIFIED);
 }
 
 RVA(0x00026f90, 0x7c)
@@ -721,7 +724,7 @@ i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
     if (result > 1) {
         StageFusionCharacter(result);
         RestoreFusionCharacter();
-        return SetFusionResult(result, 0);
+        return SetFusionResult(result, FUSION_SUMMARY_UNSPECIFIED);
     }
     primaryCount = secondaryCount = otherCount = 0;
     ClassifyFusionSlot(
@@ -968,7 +971,7 @@ i16 ResolveGeneralTripleFusion(i16 first, i16 second, i16 third) {
     if (GetDemonFlagLow(GetRosterId(third)) == -1) {
         s_fusionLevelAllowance = 8;
     }
-    return SetFusionResult(result, 0);
+    return SetFusionResult(result, FUSION_SUMMARY_UNSPECIFIED);
 }
 
 RVA(0x00027b30, 0xe9)
@@ -996,11 +999,11 @@ i16 CalculateTripleFusion(i16 first, i16 second, i16 third) {
         }
     }
     if (result < 0) {
-        SetFusionResult(-1, 0);
+        SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
         return 0;
     }
     if (result > 0 && IsFusionDemonRestricted(result)) {
-        SetFusionResult(-1, 0);
+        SetFusionResult(-1, FUSION_SUMMARY_UNSPECIFIED);
         return 0;
     }
     return result;
@@ -1400,7 +1403,7 @@ i16 GetFusionResultKind(void) {
         return -3;
     }
     switch (s_fusionSummary.fields.kind) {
-        case 0:
+        case FUSION_SUMMARY_UNSPECIFIED:
         case FUSION_SUMMARY_RANK_UP:
         case FUSION_SUMMARY_RANK_UP_GAIN_LEVEL:
         case FUSION_SUMMARY_DIRECT_DEMON:

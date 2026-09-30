@@ -31,7 +31,7 @@ typedef union FusionSummary {
 
 static __inline void
 SetFusionSummaryKind(FusionSummary* summary, i16 kind, i16 resultLevel, i16 sourceLevel) {
-    if (kind) {
+    if (kind != FUSION_SUMMARY_UNSPECIFIED) {
         summary->fields.kind = kind;
     } else if (resultLevel < sourceLevel) {
         summary->fields.kind = FUSION_SUMMARY_LEVEL_LOWER;
