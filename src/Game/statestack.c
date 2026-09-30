@@ -668,15 +668,15 @@ void LeaveStatusScreen(i16 nested) {
 RVA(0x00017030, 0x60)
 b16 RunDismissMenuState(void) {
     switch (GetGamePhase()) {
-        case 0:
+        case DISMISS_MENU_RESET_SELECTION:
             NextGamePhase();
             ResetTextPlaneHighlight(s_dismissMenuPlane);
-        case 1:
+        case DISMISS_MENU_WAIT_INPUT:
             if (PollMenuInput(s_dismissMenuPlane)) {
                 NextGamePhase();
             }
             break;
-        case 2:
+        case DISMISS_MENU_CLOSE:
             CloseTextWindow(s_dismissMenuPlane);
             ReturnFromGameState();
             break;
@@ -1499,22 +1499,22 @@ b16 RunFrozenFieldScene(void) {
 RVA(0x000184a0, 0xe8)
 b16 RunPictureTransition(void) {
     switch (GetGamePhase()) {
-        case 0:
+        case PICTURE_TRANSITION_FADE_OUT:
             NextGamePhase();
             LockStatusRedraw(true);
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             break;
-        case 1:
+        case PICTURE_TRANSITION_SHOW_PICTURE:
             NextGamePhase();
             StartScreenFade(SCREEN_FADE_FROM_BLACK, 1);
             ShowScenePicture();
             PushWaitState(WAIT_FADE, 0, 0, -1);
             break;
-        case 2:
+        case PICTURE_TRANSITION_RUN_SCRIPT:
             NextGamePhase();
             StartDebugScene(0x2d, 0, 0);
             break;
-        case 3:
+        case PICTURE_TRANSITION_RETURN_FIELD:
             s_sceneDirty = false;
             FreeSceneSprites();
             LockStatusRedraw(false);

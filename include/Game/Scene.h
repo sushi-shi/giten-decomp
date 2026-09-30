@@ -3,14 +3,22 @@
 
 #include <rva.h>
 
-#include <Ints.h>
+#include <EnumDomain.h>
 #include <Game/StateStack.h>
+#include <Ints.h>
 
 // @identity-TODO: the Windows video-state stubs do not prove its saved extent.
 extern u8 g_sceneVideoState[16];
 b16 RunCellScene(void);
 b16 RunFieldTextScene(void);
 b16 RunFrozenFieldScene(void);
+GZ_ENUM_BEGIN_SPLIT(PictureTransitionPhase, i16)
+    PICTURE_TRANSITION_FADE_OUT = 0,
+    PICTURE_TRANSITION_SHOW_PICTURE = 1,
+    PICTURE_TRANSITION_RUN_SCRIPT = 2,
+    PICTURE_TRANSITION_RETURN_FIELD = 3
+GZ_ENUM_END_SPLIT(PictureTransitionPhase)
+
 b16 RunPictureTransition(void);
 b16 RunBackgroundScene(void);
 void FreeSceneSprites(void);

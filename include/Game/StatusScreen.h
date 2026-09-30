@@ -14,6 +14,12 @@
 extern i16 g_statusMember;
 extern b16 g_statusFixedMember;
 b16 RunStatusScreen(void);
+GZ_ENUM_BEGIN_SPLIT(DismissMenuPhase, i16)
+    DISMISS_MENU_RESET_SELECTION = 0,
+    DISMISS_MENU_WAIT_INPUT = 1,
+    DISMISS_MENU_CLOSE = 2
+GZ_ENUM_END_SPLIT(DismissMenuPhase)
+
 b16 RunDismissMenuState(void);
 // The status screen's steps (RunStatusCommands): the status menu returns the
 // step of the command picked, so a command is a StatusStep too.

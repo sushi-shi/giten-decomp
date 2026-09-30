@@ -1288,11 +1288,9 @@ src/Game/statestack.c	PickStatusMember	*	*	*	@identity-TODO: the status menu ite
 src/Game/statestack.c	PollRewardClick	*	*	*	the reward window's hit box (0xea..0x192, 0xc0..0xf6); 2 on a click, 0 outside, -1 cancelled
 src/Game/statestack.c	ReplaceRosterMember	*	*	*	@identity-TODO: the replacement's phases 0..2, status column 2, restart at phase 0
 src/Game/statestack.c	ReturnDdsMember	*	*	*	@identity-TODO: returned (1), not (0), cancelled (-1)
-src/Game/statestack.c	RunDismissMenuState	*	*	*	@identity-TODO: the dismiss menu's phases 0..2
 src/Game/statestack.c	RunItemUse	*	*	*	@identity-TODO: item use: screen layer 1 hidden, no user (-1), target flags (0x10, 0x11, 0x30) and their pick windows (5, 4, 6, 3)
 src/Game/statestack.c	RunLevelUp	*	*	*	@identity-TODO: level-up screen parameters: fades (1), the status screen entered and left (0), picture surface 0x36, reward experience cleared
 src/Game/statestack.c	RunPartyPicker	*	*	*	@identity-TODO: the picker's results (-2 cancelled, -1 none), six members listed with mode 1, command 0
-src/Game/statestack.c	RunPictureTransition	*	*	*	@identity-TODO: the transition's phases 0..3, fade speed 1, debug scene 0x2d
 src/Game/statestack.c	RunStatusScreen	*	*	*	@identity-TODO: status screen parameters: menu items shown (0), not nested (0), the analyze member slot 15, field panel row 1 unchecked, the member reset
 src/Game/statestack.c	RunWorldMap	*	*	*	@identity-TODO: world-map parameters: the start cell (3, 3) and level 0, the request cleared, field menu mode 2, the world map active, its phases and panels
 src/Game/statestack.c	ShowBackground	0x5000	*	*	@identity-TODO: background pictures 0x5000 + n
@@ -1487,3 +1485,8 @@ src/Game/partyaction.c	IsGuestIndex	-2	return	return value	-2 distinguishes a no
 src/Game/partyaction.c	RunPickTargetWindow	-1	trivial-function-literal	-1 store g_selectedObjectId	-1 clears selected and hovered object ids before a cancelled picker closes
 src/Game/partyaction.c	PickFieldObjectTarget	-1	trivial-function-literal	-1 equality g_hoveredObjectId	-1 from the hotspot means no field object is hovered
 src/Game/partyaction.c	PickPartySlotTarget	-1	trivial-function-literal	-1 equality g_hoveredObjectId	party-slot poll returns zero while waiting and -1 on cancel; hovered -1 means no party position
+src/Game/statestack.c	RunPictureTransition	1	call-argument	StartScreenFade(ScreenFadeMode, i16) argument 2	one frame is the fade speed used for the picture reveal
+src/Game/statestack.c	RunPictureTransition	0x2d	call-argument	StartDebugScene(i16, i16, i16) argument 1	@identity-TODO: fixed scene script 0x2d has no decoded title
+src/Game/statestack.c	RunPictureTransition	0	call-argument	StartDebugScene(i16, i16, i16) argument 2	the fixed scene script starts at entry zero
+src/Game/statestack.c	RunPictureTransition	0	call-argument	StartDebugScene(i16, i16, i16) argument 3	@identity-TODO: fixed scene script call argument three is zero
+src/Game/statestack.c	RunPictureTransition	0	trivial-function-literal	0 store s_sceneHold	clears the scene hold before returning to field exploration
