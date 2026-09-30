@@ -103,6 +103,10 @@ Automap marks:
 - Mark 24 selects retail bitmap 272, a 16-by-16 image whose pixels all use
   black palette entry 1. The icon table uses it for code 0xbf and its final
   sentinel row, so it is a blank mark.
+- The remaining mark 6 bitmap resembles a standing figure and belongs to
+  code 0x40, which occurs in map link records. Mark 23 is a red C-shaped
+  bitmap for code 0x7b, which occurs mainly in script-cell records. Their
+  game meanings remain unproved.
 
 Object record names:
 
@@ -228,6 +232,9 @@ Kept as rows until there is evidence:
 - Battle-tally slots 4 and 6, attack attributes 0/1, 9 and 10, and the shared
   result word's noncombat encodings. The ET0004 skill table links effect
   codes to protection slots: 0..3, 5 and 7..14 now have evidence-backed names.
+  Attribute 1 is not simply the gun category: ET0001 gives it to 21 melee
+  weapons as well as 21 ammunition records; attribute 0 occurs on 98 melee
+  weapons and seven ammunition records.
   Slot 5 is set by Tetrakarn and Counterattack and reflects attacks with
   attribute 0. The barrier-cleared message in MS00DF entry 3 uses the generic
   barrier label from MS7F00 entry 52, so it does not distinguish slots 5 and 6.
