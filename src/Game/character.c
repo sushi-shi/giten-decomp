@@ -555,11 +555,11 @@ i16 LowPoolMask(CharacterPools* pools) {
     return mask;
 }
 
-// 2: full; 1: partly spent; 0: empty.
+// Full at or above maximum, partly filled above zero, otherwise empty.
 RVA(0x0003d030, 0x1d)
-i16 PoolState(CurMax* pool) {
+GZ_ENUM_RETURN(PoolStateKind, i16) PoolState(CurMax* pool) {
     if (pool->max <= pool->cur) {
-        return 2;
+        return POOL_STATE_FULL;
     }
     return pool->cur > 0;
 }
@@ -1962,10 +1962,10 @@ PartyMemberList* ListPickableMembers(PartyMemberList* list, i16 max, i16 idleOnl
 // and whose HP (`pools` bit 0) or MP (bit 1) pool is in `state` (state 1 also
 // takes an empty pool); -1 when none.
 RVA(0x0003f6d0, 0xa6)
-i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
+i16 FindMemberByPoolState(i16 start, i16 mode, GZ_ENUM_PARAM(PoolStateKind, i16) state, u8 pools) {
     i16 slot;
     Character* character;
-    i16 pool;
+    GZ_ENUM_LOCAL(PoolStateKind, i16) pool;
     for (slot = start; slot < ROSTER_SIZE; slot++) {
         character = RosterMemberAt(slot);
         if (character && FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
@@ -1974,7 +1974,7 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
                 if (pool == state) {
                     return slot;
                 }
-                if (state == 1 && pool == 0) {
+                if (state == POOL_STATE_PARTIAL && pool == POOL_STATE_EMPTY) {
                     return slot;
                 }
             }
@@ -1983,7 +1983,7 @@ i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools) {
                 if (pool == state) {
                     return slot;
                 }
-                if (state == 1 && pool == 0) {
+                if (state == POOL_STATE_PARTIAL && pool == POOL_STATE_EMPTY) {
                     return slot;
                 }
             }

@@ -28,12 +28,19 @@ GZ_ENUM_END_SPLIT(MemberPickState)
 GZ_ENUM_RETURN(MemberPickState, i16) GetPickState(Character* character);
 i16 FindReadyMember(i16 needMark);
 PartyMemberList* ListPickableMembers(PartyMemberList* list, i16 max, i16 idleOnly);
-i16 FindMemberByPoolState(i16 start, i16 mode, i16 state, u8 pools);
+// The current pool relative to its maximum: empty, partly filled, or full.
+GZ_ENUM_BEGIN_SPLIT(PoolStateKind, i16)
+    POOL_STATE_EMPTY = 0,
+    POOL_STATE_PARTIAL = 1,
+    POOL_STATE_FULL = 2
+GZ_ENUM_END_SPLIT(PoolStateKind)
+
+i16 FindMemberByPoolState(i16 start, i16 mode, GZ_ENUM_PARAM(PoolStateKind, i16) state, u8 pools);
 
 // charpool functions. Codegen constraint: declared here rather than in
 // <Game/Stats.h>, where they flip CalcMagicAccuracyStat and CalcMagicEvasionStat.
 // The pool state: 2 full, 1 partly spent, 0 empty.
-i16 PoolState(CurMax* pool);
+GZ_ENUM_RETURN(PoolStateKind, i16) PoolState(CurMax* pool);
 
 i32 ScalePercent999(i16 value, i16 percent);
 

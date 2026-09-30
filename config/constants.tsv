@@ -1051,7 +1051,6 @@ src/Game/character.c	InitCharacterSlot	*	*	*	@identity-TODO: the never-read valu
 src/Game/character.c	Find*	-1	*	*	no such character or slot
 src/Game/character.c	Calc*	*	*	*	derived-stat formulas: stat weights and fractions, level thresholds, caps of 999 or 9999, doubling by personal flags 37 and 38 (@identity-TODO)
 src/Game/character.c	LowPoolMask	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
-src/Game/character.c	PoolState	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
 src/Game/character.c	EmptyPoolMask	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
 src/Game/character.c	DrainPool	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
 src/Game/character.c	FillPool	*	*	*	pools: half of the maximum, pool states 0..2, no floor, no cap (0xffff), nothing drained or filled
@@ -1091,7 +1090,6 @@ src/Game/character.c	ApplyMoonPhase	*	*	*	@identity-TODO: the character flags 0x
 src/Game/character.c	RecalcDerivedStats	*	*	*	@identity-TODO: battle-stat words 1, 7, 13 and 18..23 (the fourth group) and their floors of 1; the bonus buffer (24 words); the magic-defence groups (3)
 src/Game/character.c	SumArmorDefenseBonus	24	*	*	the 24 battle-stat words
 src/Game/character.c	ApplyEmptyPools	*	*	*	@identity-TODO: the outcome of empty pools (0..4): none and the conditions it brings
-src/Game/character.c	FindMemberByPoolState	*	*	*	@identity-TODO: pool state 1 of pool 0
 src/Game/character.c	PoolPercentAmount	100	*	*	percent scaling
 src/Game/character.c	SortRoster	*	*	*	the sort's first index and the loop's run flag; human ids below 32 (HUMAN_ID_LIMIT) stay first
 src/Game/character.c	SwapPartySlots	*	*	*	the six party positions (PARTY_SIZE)
