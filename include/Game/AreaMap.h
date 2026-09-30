@@ -288,7 +288,7 @@ const CellKind* FindCellKind(const CellHead* cell);
 
 void LatchCellDestination(const CellHead* cell, i16 x, i16 y, i16 direction, i16 level, i16 area);
 
-// @identity-TODO: what the codes 0x48..0x4e are is unrecovered.
+// Codes 0x48..0x4e select the legacy NPC direction mask.
 b16 IsReservedObjectCell(const CellHead* cell);
 
 // Decodes an area-map record into `map` (header, levels and their lists).

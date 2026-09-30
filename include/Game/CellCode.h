@@ -9,8 +9,10 @@
 // properties the field code tests. The traps take a share of each member's HP;
 // the alignment traps (CELL_ALIGNMENT_TRAP_FIRST..LAST) spare the alignment
 // sides their mask leaves out. Lists of cells end with CELL_LIST_END.
-// @identity-TODO: the individual NPC picture and other object codes, and the
-// kind-10/13 cells 0x7c, 0x8b, 0x8c, 0x8f and 0x65 are unnamed.
+// NPC codes select four-direction masks in GetNpcImageOfCode; the Windows
+// renderer uses the record's texture slot instead of that legacy mask.
+// @identity-TODO: other object codes and kind-10/13 cells 0x7c, 0x8b, 0x8c,
+// 0x8f and 0x65 are unnamed.
 GZ_ENUM_BEGIN(CellCode)
     CELL_SERVICE_TERMINAL = 0x40,
     CELL_EXIT = 0x41,
@@ -20,8 +22,13 @@ GZ_ENUM_BEGIN(CellCode)
     CELL_ELEVATOR_UPPER_STOP = 0x45,
     CELL_ELEVATOR_MIDDLE_STOP = 0x46,
     CELL_CHUTE = 0x47,
-    CELL_AREA_NPC_FIRST = 0x48,
-    CELL_AREA_NPC_LAST = 0x4e,
+    CELL_AREA_NPC_MASK_ALL = 0x48,
+    CELL_AREA_NPC_MASK_NORTH = 0x49,
+    CELL_AREA_NPC_MASK_EAST = 0x4a,
+    CELL_AREA_NPC_MASK_SOUTH = 0x4b,
+    CELL_AREA_NPC_MASK_WEST = 0x4c,
+    CELL_AREA_NPC_MASK_NORTH_SOUTH = 0x4d,
+    CELL_AREA_NPC_MASK_EAST_WEST = 0x4e,
     CELL_TREASURE_BOX_FOURTH_FRAME_PAIR = 0x4f,
     CELL_SOFTWARE_SHOP = 0x50,
     CELL_WEAPON_SHOP = 0x51,

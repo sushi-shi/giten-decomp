@@ -186,8 +186,13 @@ Automap marks:
   down to a subway platform and offers the platform route.
 - Mark 11 is a red stick person. The icon table gives it to cell code 0x48,
   whose records occur in the area object lists; `SpawnLevelObjects` creates
-  area NPCs from those records. The accepted cell-code range is 0x48..0x4e;
-  the individual codes select NPC pictures whose identities remain open.
+  area NPCs from those records. The accepted cell-code range is 0x48..0x4e.
+  `GetNpcImageOfCode` indexes from `g_physicalRecoveryConditions` into the
+  adjacent `s_fourBitMasks` data at exactly these seven codes, returning
+  15, 1, 2, 4, 8, 5 and 10. The single bits match north, east, south and west
+  in `GetFacingBit`; the last two values pair opposite directions. These
+  masks name all seven `CellCode` values. Windows uses the record's separate
+  texture slot for drawing and does not read its legacy `directionMask` field.
 - Mark 24 selects retail bitmap 272, a 16-by-16 image whose pixels all use
   black palette entry 1. The icon table uses it for code 0xbf and its final
   sentinel row, so it is a blank mark.

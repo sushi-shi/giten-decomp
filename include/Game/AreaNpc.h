@@ -6,16 +6,25 @@
 #include <Game/RoomRegion.h>
 #include <Ints.h>
 
-// A 42-byte record of an NPC placed in the current area: its cell, picture,
-// the event flag that marks it gone, and the values its map record carries.
+// The four facing bits selected by NPC cell codes 0x48..0x4e.
+GZ_ENUM_FLAGS_BEGIN(NpcDirectionMask, i16)
+    NPC_DIRECTION_NORTH = 1,
+    NPC_DIRECTION_EAST = 2,
+    NPC_DIRECTION_SOUTH = 4,
+    NPC_DIRECTION_WEST = 8,
+    NPC_DIRECTION_ALL = 15
+GZ_ENUM_FLAGS_END(NpcDirectionMask)
+
+// A 42-byte record of an NPC placed in the current area: its cell, legacy
+// direction mask, the event flag that marks it gone, and its map-record values.
 // `script`/`entry` are the scene script StartNpcScene runs.
 // @identity-TODO: the first 0x14 bytes (passed whole to 0x41f6d0 when the NPCs
-// are drawn) and the legacy `image` code are unrecovered.
+// are drawn) are unrecovered. Windows writes but never reads `directionMask`.
 typedef struct AreaNpc {
     u8 pad00[0x14];
     i16 x;
     i16 y;
-    i16 image;
+    GZ_ENUM_STORAGE(NpcDirectionMask, i16) directionMask;
     u8 pad1a[4];
     i16 flagBank;
     i16 flagIndex;
@@ -76,7 +85,7 @@ void EnterRoom(i16 code);
 i16 FindCellObject(i16 id, i16 x, i16 y);
 i16 NextNpcSlot(void);
 void CountPlacedNpc(void);
-i16 GetNpcImageOfCode(i16 code);
+GZ_ENUM_RETURN(NpcDirectionMask, i16) GetNpcImageOfCode(i16 code);
 void ClearAreaNpcs(void);
 void AddAreaNpc(const u8* record);
 void MarkAreaNpcs(void);

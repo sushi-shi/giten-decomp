@@ -105,7 +105,7 @@ static AutomapIcon s_mapIcons[] = {
     {CELL_ELEVATOR_LOWER_STOP, MAP_MARK_ELEVATOR, AUTOMAP_DETAIL_BASIC},
     {CELL_ELEVATOR_UPPER_STOP, MAP_MARK_ELEVATOR, AUTOMAP_DETAIL_BASIC},
     {CELL_ELEVATOR_MIDDLE_STOP, MAP_MARK_ELEVATOR, AUTOMAP_DETAIL_BASIC},
-    {CELL_AREA_NPC_FIRST, MAP_MARK_NPC_RECORD, AUTOMAP_DETAIL_NPCS},
+    {CELL_AREA_NPC_MASK_ALL, MAP_MARK_NPC_RECORD, AUTOMAP_DETAIL_NPCS},
     {CELL_SOFTWARE_SHOP, MAP_MARK_ELECTRIC, AUTOMAP_DETAIL_NPCS},
     {CELL_WEAPON_SHOP, MAP_MARK_WEAPONS, AUTOMAP_DETAIL_NPCS},
     {CELL_TRANSFER_DEVICE, MAP_MARK_TRANSFER, AUTOMAP_DETAIL_NPCS},
@@ -3091,9 +3091,10 @@ void CountPlacedNpc(void) {
     }
 }
 
-// The picture of NPC code `code`.
+// The four-direction mask selected by NPC code `code`. Retail's indexed load
+// reaches s_fourBitMasks in restore.c through the physical-recovery array.
 RVA(0x0001f290, 0xe)
-i16 GetNpcImageOfCode(i16 code) {
+GZ_ENUM_RETURN(NpcDirectionMask, i16) GetNpcImageOfCode(i16 code) {
     // Retail indexes the physical recovery list from its fifth entry.
     return g_physicalRecoveryConditions[code + 4];
 }
@@ -3103,7 +3104,7 @@ void ClearAreaNpcs(void) {
     s_npcCount = 0;
 }
 
-// Places an NPC from its map record: cell x/y, picture code, event flag
+// Places an NPC from its map record: cell x/y, direction-mask code, event flag
 // (bank, index), scene script (file, entry) and texture slot.
 RVA(0x0001f2b0, 0x93)
 void AddAreaNpc(const u8* record) {
@@ -3113,7 +3114,7 @@ void AddAreaNpc(const u8* record) {
     }
     s_npcs[slot].x = *record++;
     s_npcs[slot].y = *record++;
-    s_npcs[slot].image = GetNpcImageOfCode(*record++);
+    s_npcs[slot].directionMask = GetNpcImageOfCode(*record++);
     s_npcs[slot].flagBank = *record++;
     s_npcs[slot].flagIndex = *record++;
     s_npcs[slot].script = *record++;
@@ -3124,7 +3125,7 @@ void AddAreaNpc(const u8* record) {
 
 RVA(0x0001f350, 0x18)
 b16 IsReservedObjectCell(const CellHead* cell) {
-    if (cell->code >= CELL_AREA_NPC_FIRST && cell->code <= CELL_AREA_NPC_LAST) {
+    if (cell->code >= CELL_AREA_NPC_MASK_ALL && cell->code <= CELL_AREA_NPC_MASK_EAST_WEST) {
         return true;
     }
     return false;

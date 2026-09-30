@@ -58,8 +58,7 @@ void UnloadAreaMap(void);
 // @identity-TODO: Same room-region inference as UpdateCurrentRoom.
 i16 BuildRoomMap(i16 detectChanges);
 
-// @identity-TODO: What the kinds 0x48..0x4e (0x1f350) of the level's 8-byte object list +0x14
-// are is unrecovered.
+// Places NPC records whose cell code selects a four-direction mask.
 void SpawnLevelObjects(void);
 
 void LoadAreaMap(i16 area, i16 level);

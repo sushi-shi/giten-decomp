@@ -122,9 +122,9 @@ const i16 g_affiliationGrowthStats[BATTLE_GROUP_COUNT][2] = {
 DATA(0x00064628)
 static const i16 s_swappedPairOrder[4] = {0, 2, 1, 3};
 
-// @identity-TODO: no reader survives in this image; the PC-98 build keeps the
-// same seven words as one table (all four bits, each bit, then the two
-// alternating pairs), and a reader would name them.
+// GetNpcImageOfCode reaches this table through its out-of-bounds index into
+// g_physicalRecoveryConditions. The values are the all-direction mask, each
+// direction bit, then the two opposing-direction pairs.
 DATA(0x00064630)
 static const i16 s_fourBitMasks[7] = {15, 1, 2, 4, 8, 5, 10};
 
