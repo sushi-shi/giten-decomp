@@ -1658,7 +1658,7 @@ i16 RunItemPage(i16 sub) {
             NextGameSub();
             s_itemPage.pick = g_selectedObjectId;
             return STATUS_COMMAND_NONE;
-        case ITEM_PAGE_SHOW_DESCRIPTION:
+        case STATUS_PAGE_SHOW_DESCRIPTION:
             if (sub == STATUS_COMMAND_CANCEL) {
                 PrevGameSub();
                 return STATUS_COMMAND_NONE;
@@ -1666,7 +1666,7 @@ i16 RunItemPage(i16 sub) {
             NextGameSub();
             s_itemPage.plane = OpenItemInfoPlane(s_itemPage.pick);
             return STATUS_COMMAND_NONE;
-        case ITEM_PAGE_WAIT_DESCRIPTION:
+        case STATUS_PAGE_WAIT_DESCRIPTION:
             if (sub != STATUS_COMMAND_CANCEL && !TakeMouseLeftClick()) {
                 break;
             }
@@ -1878,7 +1878,7 @@ i16 RunSkillPage(i16 sub) {
             NextGameSub();
             s_skillPage.pick = g_selectedObjectId;
             return STATUS_COMMAND_NONE;
-        case SKILL_PAGE_SHOW_DESCRIPTION:
+        case STATUS_PAGE_SHOW_DESCRIPTION:
             NextGameSub();
             s_skillPage.plane = CreateTextPlane(0x20, 0);
             ClearTextPlane(s_skillPage.plane);
@@ -1891,7 +1891,7 @@ i16 RunSkillPage(i16 sub) {
             );
             RepaintTextPlane(s_skillPage.plane, -2);
             return STATUS_COMMAND_NONE;
-        case SKILL_PAGE_WAIT_DESCRIPTION:
+        case STATUS_PAGE_WAIT_DESCRIPTION:
             if (!TakeClickUnlessCancel(sub)) {
                 break;
             }

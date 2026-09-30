@@ -108,14 +108,14 @@ typedef struct EquipSkillPage {
     i16 pick;
 } EquipSkillPage;
 
+GZ_ENUM_BEGIN_SPLIT(StatusPageDescriptionStep, i16)
+    STATUS_PAGE_SHOW_DESCRIPTION = 3,
+    STATUS_PAGE_WAIT_DESCRIPTION = 4
+GZ_ENUM_END_SPLIT(StatusPageDescriptionStep)
+
 // The status screen's item page: lists the bag (with `*` on entries holding a
-// gem item) and opens the picked item's description (sub-state 0 opens
-// it, 1 closes it, 2 picks, 3..4 show the description until a click); returns
-// the sub-state to resume or -1.
-GZ_ENUM_BEGIN_SPLIT(ItemPageDetailStep, i16)
-    ITEM_PAGE_SHOW_DESCRIPTION = 3,
-    ITEM_PAGE_WAIT_DESCRIPTION = 4
-GZ_ENUM_END_SPLIT(ItemPageDetailStep)
+// gem item) and opens the picked item's description; returns the sub-state to
+// resume or -1.
 
 i16 RunItemPage(i16 sub);
 
@@ -124,13 +124,8 @@ i16 RunItemPage(i16 sub);
 void DrawEquipLines(Character* character, i16 x, i16 y);
 
 // The status screen's skill page: lists the member's skills with their costs
-// and opens the picked skill's description (sub-state 0 opens it, 1 closes it,
-// 2 picks, 3..4 show the description until a click); returns the sub-state to
-// resume or -1.
-GZ_ENUM_BEGIN_SPLIT(SkillPageDetailStep, i16)
-    SKILL_PAGE_SHOW_DESCRIPTION = 3,
-    SKILL_PAGE_WAIT_DESCRIPTION = 4
-GZ_ENUM_END_SPLIT(SkillPageDetailStep)
+// and opens the picked skill's description; returns the sub-state to resume
+// or -1.
 
 i16 RunSkillPage(i16 sub);
 
