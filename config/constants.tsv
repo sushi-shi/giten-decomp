@@ -1097,7 +1097,7 @@ src/Script/scriptactor.c	Op*ActiveParty	*	*	*	@identity-TODO: party changes: Add
 src/Script/scriptactor.c	Op*	1	call-argument	DrawMoneyCounters(*	redraw the money counters
 src/Script/scriptactor.c	OpAdjustItemCount	*	*	*	nothing moved yet; the quiet bag; StoreBagItem's -1
 src/Script/scriptactor.c	OpApplyEventFlag	0	*	*	no result yet
-src/Script/scriptactor.c	OpBoostPool	*	*	*	@identity-TODO: pool boosts: pool 0 (HP), modes 1 and 2 (limit doubled), the floor 0, the cap 0x7fff
+src/Script/scriptactor.c	OpBoostPool	*	*	*	@identity-TODO: pool selector 0 writes HP while any other value writes MP; the floor 0 and signed cap 0x7fff are numeric bounds; boost modes are named
 src/Script/scriptactor.c	OpChangeMap	-1	*	*	leave the map (a negative request)
 src/Script/scriptactor.c	OpClearBagEntry	0	*	*	no attachment
 src/Script/scriptactor.c	OpCloseItemListWindow	0x115	*	*	@identity-TODO: panel image 0x115, the item list window

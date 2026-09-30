@@ -512,6 +512,15 @@ groups and their combined search named.
 0 and poll it at step 1. Their independently stored game steps have separate
 local enum domains.
 
+## Script pool boost modes
+
+`OpBoostPool` reads a mode after its pool selector and amount. Mode 0 keeps
+the MP maximum used by this function, mode 1 doubles it, and mode 2 caps at
+`0x7fff`. These form `ScriptPoolBoostMode`. `PoolFillMode` uses codes 1 and 2
+for different limits. The pool selector
+writes HP for 0 and MP for any nonzero value, so its nonzero authored range
+stays open.
+
 ## Demon classes
 
 ET0000 has six encrypted blocks. Its second block maps each of the 51 demon

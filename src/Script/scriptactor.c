@@ -1324,13 +1324,19 @@ void OpChangeMp(i16 sign) {
     RequestFieldRefresh();
 }
 
+GZ_ENUM_BEGIN_SPLIT(ScriptPoolBoostMode, i16)
+    SCRIPT_POOL_BOOST_NORMAL = 0,
+    SCRIPT_POOL_BOOST_DOUBLE_MAX = 1,
+    SCRIPT_POOL_BOOST_SIGNED_MAX = 2
+GZ_ENUM_END_SPLIT(ScriptPoolBoostMode)
+
 // Retail uses the MP pair as the input even when writing the HP result.
 RVA(0x00034610, 0x6b)
 void OpBoostPool(void) {
     Character* character = ReadScriptObject();
     i16 which = ReadScriptValue();
     i16 amount = ReadScriptValue();
-    i16 mode = ReadScriptValue();
+    GZ_ENUM_LOCAL(ScriptPoolBoostMode, i16) mode = ReadScriptValue();
     i16 limit;
     i16 current;
     if (which == 0) {
@@ -1340,9 +1346,9 @@ void OpBoostPool(void) {
         limit = character->pools.mp.max;
         current = character->pools.mp.cur;
     }
-    if (mode == 1) {
+    if (mode == SCRIPT_POOL_BOOST_DOUBLE_MAX) {
         limit *= 2;
-    } else if (mode == 2) {
+    } else if (mode == SCRIPT_POOL_BOOST_SIGNED_MAX) {
         limit = 0x7fff;
     }
     current = AddClampShort(current, amount, 0, limit);
