@@ -495,6 +495,17 @@ other phase numbers have no separate names in the current source. `MoonPhase`
 types the saved byte while the 28-phase count and tick duration remain
 numeric extents.
 
+## Script scratch transfer
+
+`OpPeekPokeScratch` reads a width operand and an operation operand. Operation
+`-1` copies the scratch value to a long variable, masking it to one or two
+bytes for widths 1 and 2. Operation `-2` copies the long variable into the
+scratch byte, word or full value. Both widths 3 and 4 use the full 32-bit
+value; width 3 is therefore named as a full-value alias. Nonnegative
+operations select a script register instead of a scratch transfer, so the two
+negative operations are named constants within a mixed operand rather than
+declaring the whole operand to be a closed enum.
+
 ## Script tick counter
 
 The script tick counter has three states: -1 pauses it, 0 stops it, and 1

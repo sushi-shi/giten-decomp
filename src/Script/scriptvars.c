@@ -83,6 +83,22 @@ u32 g_scriptLongVars[26] = {0};
 DATA(0x00081648)
 static ScriptScratchValue s_scratchValue = {0};
 
+// Operand widths for reading or writing the script scratch value. Width 3
+// uses the same full 32-bit transfer as width 4.
+GZ_ENUM_BEGIN_SPLIT(ScriptScratchWidth, i16)
+    SCRIPT_SCRATCH_BYTE = 1,
+    SCRIPT_SCRATCH_WORD = 2,
+    SCRIPT_SCRATCH_FULL_AT_THREE = 3,
+    SCRIPT_SCRATCH_FULL = 4
+GZ_ENUM_END_SPLIT(ScriptScratchWidth)
+
+// Negative operation operands select a transfer; nonnegative operands are
+// script register indices copied directly to the destination long variable.
+GZ_ENUM_CONST_BEGIN(ScriptScratchTransfer)
+    SCRIPT_SCRATCH_PEEK = -1,
+    SCRIPT_SCRATCH_POKE = -2
+GZ_ENUM_CONST_END(ScriptScratchTransfer)
+
 // @identity-TODO: a counter that advances once per call of its tick while
 // counting is on; a script opcode reads it into a variable.
 DATA(0x0008164c)
@@ -1226,7 +1242,7 @@ ScriptEntry MakeScriptEntry(ScriptBlock* block, i16 entry) {
 RVA(0x0003bd40, 0xf4)
 void OpPeekPokeScratch(void) {
     u32 value = 0;
-    i16 width;
+    GZ_ENUM_LOCAL(ScriptScratchWidth, i16) width;
     i16 index;
     i16 operation;
     ReadScriptValue();
@@ -1234,31 +1250,31 @@ void OpPeekPokeScratch(void) {
     width = ReadScriptValue();
     index = ReadLongVarIndex();
     operation = ReadScriptValue();
-    if (operation == -1) {
+    if (operation == SCRIPT_SCRATCH_PEEK) {
         switch (width) {
-            case 1:
+            case SCRIPT_SCRATCH_BYTE:
                 value = s_scratchValue.value & 0xff;
                 break;
-            case 2:
+            case SCRIPT_SCRATCH_WORD:
                 value = s_scratchValue.value & 0xffff;
                 break;
-            case 3:
-            case 4:
+            case SCRIPT_SCRATCH_FULL_AT_THREE:
+            case SCRIPT_SCRATCH_FULL:
                 value = s_scratchValue.value;
                 break;
         }
         SetScriptLongVar(index, value);
-    } else if (operation == -2) {
+    } else if (operation == SCRIPT_SCRATCH_POKE) {
         value = GetScriptLongVar(index);
         switch (width) {
-            case 1:
+            case SCRIPT_SCRATCH_BYTE:
                 s_scratchValue.byte = value;
                 break;
-            case 2:
+            case SCRIPT_SCRATCH_WORD:
                 s_scratchValue.word = value;
                 break;
-            case 3:
-            case 4:
+            case SCRIPT_SCRATCH_FULL_AT_THREE:
+            case SCRIPT_SCRATCH_FULL:
                 s_scratchValue.value = value;
                 break;
         }

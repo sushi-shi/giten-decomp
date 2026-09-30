@@ -891,7 +891,7 @@ src/Script/scriptvars.c	OpPrintNumber	*	*	*	the number buffer (32 bytes), no uni
 src/Script/scriptvars.c	SetTickCountOn	0	call-argument	*	the counter restarts at 0
 src/Script/scriptvars.c	FireCountdownEvent	0	*	*	the countdown has run out; its script is cleared
 src/Script/scriptvars.c	FindFavouredMember	-1	*	*	no member picked yet
-src/Script/scriptvars.c	OpPeekPokeScratch	*	*	*	@identity-TODO: peek (-1) and poke (-2) of 1-, 2-, 3- or 4-byte values
+src/Script/scriptvars.c	OpPeekPokeScratch	*	*	*	Byte and word masks (0xff, 0xffff) and zero-initialized transfer value; the operation sentinels and width selectors are named
 src/Script/scriptvars.c	*ScriptLongVar*	0	*	*	a cleared variable reads 0
 src/Script/scriptvars.c	OpWaitMessage	*	*	*	@identity-TODO: wait kinds: frames from 0, input mask 0xffff or 2, PollIdle's (1, 0x18)
 src/Script/scriptvars.c	*CallFrame*	*	*	*	call frames: one element, unlinked (0), an empty stack, discard 0/1
