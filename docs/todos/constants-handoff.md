@@ -159,9 +159,12 @@ Automap marks:
 - Retail bitmap resources selected by `g_mapMarkImages` show kanji signs for
   marks 12..22: 電, 武, 転, 薬, 邪, 病, 泉, 回, 防, 酒 and 道. The
   automap icon table maps cell codes 0x50..0x59 and 0x5b to those marks in
-  order; codes 0x85..0x87 also use the spring mark. The English mark names
-  render those abbreviated signs; the cell codes' exact link roles still
-  need script evidence.
+  order; codes 0x85..0x87 also use the spring mark. MS0038's transfer
+  device, MS003E's fusion hall, MS003A's spring spirit, MS003F's incense
+  and healing room, and MS0040's bartender establish codes 0x52, 0x54,
+  0x56, 0x57 and 0x59. Code 0x5b calls MS0039's item shop; its 道 sign
+  abbreviates 道具 (items), not a dojo. The other shop codes still need
+  their individual inventories distinguished.
 - Mark 10 is the white E bitmap. Cell codes 0x44..0x46 use it; all are map
   links, and the 0x46 links recur on Shinjuku Tocho's upper floors, supporting
   the elevator mark name.
