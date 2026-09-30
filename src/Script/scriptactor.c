@@ -3105,7 +3105,7 @@ i32* ReadScriptOperand(void) {
             if (object == NULL) {
                 break;
             }
-            s_operand = GetBattleStatBase(object, 18);
+            s_operand = GetBattleStatBase(object, BATTLE_STAT_DEMON_INTERACTION_LEVEL);
             return &s_operand;
         case SCRIPT_OPERAND_OBJECT_WEAPON:
             object = ReadScriptObject();
@@ -3140,21 +3140,21 @@ i32* ReadScriptOperand(void) {
             if (object == NULL) {
                 break;
             }
-            s_operand = GetBattleStatBase(object, 0);
+            s_operand = GetBattleStatBase(object, BATTLE_STAT_WEAPON_LEVEL);
             return &s_operand;
         case SCRIPT_OPERAND_OBJECT_GUN_GROUP_BASE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetBattleStatBase(object, 6);
+            s_operand = GetBattleStatBase(object, BATTLE_STAT_GUN_LEVEL);
             return &s_operand;
         case SCRIPT_OPERAND_OBJECT_MAGIC_GROUP_BASE:
             object = ReadScriptObject();
             if (object == NULL) {
                 break;
             }
-            s_operand = GetBattleStatBase(object, 12);
+            s_operand = GetBattleStatBase(object, BATTLE_STAT_MAGIC_LEVEL);
             return &s_operand;
         case SCRIPT_OPERAND_OBJECT_HEAD:
             object = ReadScriptObject();
