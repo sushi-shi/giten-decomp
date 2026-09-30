@@ -185,8 +185,12 @@ Automap marks:
   MS003A: 0x85 uses entries 2..4, 0x87 uses 6..7, and 0x86 uses 8..13.
   Each entry sets script long variable 0 before entering the shared entry
   27; entries 8..13 also set other variables. The script branches by those
-  values. Entry 13's branch can reach the Hagenti encounter asking for the
-  Kusanagi sword, but the same code 0x86 also uses entries 8..12. The icon
+  values. In entry 27, selectors 1, 3, 7, 8, 9 and 10 each take a separate
+  branch to entry 37; selector 13 has another guarded branch to entry 38.
+  Those special cases span all three cell codes, so the branches do not
+  establish a single effect for any one code. Entry 13's branch can reach
+  the Hagenti encounter asking for the Kusanagi sword, but the same code
+  0x86 also uses entries 8..12. The icon
   and that encounter do not establish separate names for the codes.
   Across the current map records, code 0x85 occurs in four links, 0x86 in
   thirteen and 0x87 in five. M0081 (会話チェック, "conversation check") places
