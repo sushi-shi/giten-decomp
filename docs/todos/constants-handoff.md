@@ -321,6 +321,10 @@ Coverage:
   describes that code-level effect. MS0056 entry 0 sets it amid a toxic-gas
   and protective-suit scene; MS0051 entry 5 sets it in a hospital scene.
   The specific source of step damage across the story remains unproven.
+- Bank 1 bit 0x2d suppresses party combat effects while set:
+  `CanAffectCombatant` skips skill costs for a party actor and resolved
+  effects for a party target. MS0017 entry 2 clears it early in the
+  qualification story. The enum describes the code gate, not a named item.
 - Bank 1 bit 0x4f suppresses the fallen-human rescue scene while set.
   `fieldmain` starts MS001A entry 6 only when a human has fallen and the bit
   is clear; the entry immediately sets it, then describes carrying the

@@ -52,6 +52,7 @@
 #include <Input/Mouse.h>
 #include <Math/Vec3.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Sound/Sound.h>
 #include <Text/TextAttr.h>
 #include <Text/TextPlane.h>
@@ -378,7 +379,9 @@ void AlertActor(Character* actor, GZ_ENUM_PARAM(Attitude, i16) state) {
     }
 }
 
-#define CanAffectCombatant(id) (!IsEventFlagSet(1, 0x2d) || (id) >= 0)
+#define CanAffectCombatant(id)                                                                     \
+    (!IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_PARTY_COMBAT_EFFECTS_SUPPRESSED)       \
+     || (id) >= 0)
 
 static __inline void ApplyReflectedDamage(Character* actor) {
     g_hpChange = actor->selfChange;
