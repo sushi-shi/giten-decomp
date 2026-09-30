@@ -10,6 +10,7 @@
 #include <Game/FieldLayerIndex.h>
 #include <Game/FieldSupport.h>
 #include <Game/GameState.h>
+#include <Game/HumanTitle.h>
 #include <Game/ObjectRecordId.h>
 #include <Game/ViewDirection.h>
 #include <Ints.h>
@@ -105,7 +106,7 @@ typedef struct FieldObject {
     u8 byte083;
     GZ_ENUM_STORAGE(Gender, u8) gender;
     u8 rank;
-    u8 title;
+    GZ_ENUM_STORAGE(HumanTitle, u8) title;
     u8 triggerRange;
     u32 experience;
     i32 macca;

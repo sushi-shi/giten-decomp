@@ -7,6 +7,7 @@
 #include <Game/DemonClass.h>
 #include <Game/DemonPantheon.h>
 #include <Game/DemonRace.h>
+#include <Game/HumanTitle.h>
 #include <Ints.h>
 
 // @identity-TODO: the game meaning of the two fusion value bits remains open.
@@ -52,7 +53,7 @@ i16 GetDemonClass(i16 id);
 char* GetDemonRaceName(i16 id);
 char* GetDemonClassName(i16 id);
 char* GetDemonPantheonName(i16 id);
-char* GetHumanTitleName(i16 index);
+char* GetHumanTitleName(GZ_ENUM_PARAM(HumanTitle, i16) index);
 char* CopyObjectRecordName(i16 id, char* destination);
 
 i16 FindStrongestOfRace(i16 maxLevel, GZ_ENUM_PARAM(DemonRace, i16) race);

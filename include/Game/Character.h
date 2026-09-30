@@ -12,6 +12,7 @@
 #include <Game/CharacterStat.h>
 #include <Game/Condition.h>
 #include <Game/EquipPart.h>
+#include <Game/HumanTitle.h>
 #include <Game/ItemId.h>
 #include <Game/MapCoord.h>
 #include <Game/ObjectRecordId.h>
@@ -176,7 +177,7 @@ typedef struct Character {
     u8 byte069; // @identity-TODO: copied to both object bytes +0x83/+0x84 (0x410930)
     GZ_ENUM_STORAGE(Gender, u8) gender;
     u8 level;
-    u8 title;
+    GZ_ENUM_STORAGE(HumanTitle, u8) title;
     // @identity-TODO: the distance at which a field actor's script range
     // test holds (read as the script's trigger range only).
     u8 triggerRange;

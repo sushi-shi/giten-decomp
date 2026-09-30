@@ -524,6 +524,10 @@ The fourth ET0000 block names 23 pantheons. Its indices occupy a byte in
 each demon record; `GetDemonPantheon` supplies the value copied to field
 objects, and `GetDemonPantheonName` uses it to read the same name table.
 `DemonPantheon` types both storage sites and the accessor's return.
+The fifth ET0000 block gives seven human titles (愚者, 異能者, 覚醒者, 超人,
+導師, 神人, 神). `Character.title` selects that table for human status names;
+field objects copy the title from their leader. `HumanTitle` types those
+bytes and the name lookup's index.
 
 ## Event-flag banks
 

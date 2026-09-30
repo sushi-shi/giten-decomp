@@ -1980,7 +1980,7 @@ char* GetDemonPantheonName(i16 id) {
 }
 
 RVA(0x00010180, 0x23)
-char* GetHumanTitleName(i16 index) {
+char* GetHumanTitleName(GZ_ENUM_PARAM(HumanTitle, i16) index) {
     return ReadDemonName(s_humanTitles, index);
 }
 
