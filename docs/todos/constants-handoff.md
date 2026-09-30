@@ -422,6 +422,9 @@ Kept as rows until there is evidence:
   gives 0x88 the first open/closed pair and 0x89 the second. The Windows
   renderer uses the first pair for both, so the enum names describe the
   recorded frame distinction without claiming different Windows visuals.
+- Code 0x4f occurs in 64 treasure-box records. The legacy selector gives it
+  the fourth frame pair; the Windows renderer does not distinguish it from
+  the first pair. Its `CellCode` name records the frame relation only.
 - Field-object image codes -1 and 0..4 name the mirrored side, facing rows,
   acting row and reaction frame. The fifth frame of the disc's five-BMP actor
   images is a distinct reaction pose. `FlashHitObject` selects it after a pool
