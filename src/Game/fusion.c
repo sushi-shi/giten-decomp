@@ -184,7 +184,7 @@ DATA(0x00080a40)
 static i16 s_fusionResultKind = 0;
 
 DATA(0x00080a44)
-static i16 s_initialFusionStep = 0;
+static GZ_ENUM_STORAGE(FusionMenuStep, i16) s_initialFusionStep = FUSION_MENU_PAIR_FIRST;
 
 DATA(0x00080a48)
 static i16 s_fusionResultVariable = 0;
@@ -2436,7 +2436,7 @@ i16 CompareRosterFusionClasses(i16 first, i16 second) {
 }
 
 RVA(0x0002a760, 0x21)
-void PushFusionMenu(i16 kind, i16 resultVariable) {
+void PushFusionMenu(GZ_ENUM_PARAM(FusionMenuStep, i16) kind, i16 resultVariable) {
     s_initialFusionStep = kind;
     s_fusionResultVariable = resultVariable;
     PushGameState(GAME_STATE_FUSION_MENU);
@@ -2446,11 +2446,11 @@ RVA(0x0002a790, 0x23d)
 b16 RunFusionMenuState(void) {
     i16 result;
     switch (GetGamePhase()) {
-        case 0:
+        case FUSION_MENU_PHASE_OPEN:
             switch (GetGameStep()) {
-                case 0:
+                case FUSION_MENU_LIFECYCLE_ADVANCE:
                     NextGameStep();
-                case 1:
+                case FUSION_MENU_LIFECYCLE_APPLY:
                     NextGamePhase();
                     NextGamePhase();
                     g_fusionPaletteState = SavePaletteState(g_fusionPaletteState, 2);
@@ -2459,11 +2459,11 @@ b16 RunFusionMenuState(void) {
                     break;
             }
             break;
-        case 1:
+        case FUSION_MENU_PHASE_CLOSE:
             switch (GetGameStep()) {
-                case 0:
+                case FUSION_MENU_LIFECYCLE_ADVANCE:
                     NextGameStep();
-                case 1:
+                case FUSION_MENU_LIFECYCLE_APPLY:
                     ReturnFromGameState();
                     FreeFusionTables();
                     g_fusionPaletteState = RestorePaletteState(g_fusionPaletteState, true);
@@ -2476,25 +2476,25 @@ b16 RunFusionMenuState(void) {
                     break;
             }
             break;
-        case 2:
+        case FUSION_MENU_PHASE_SELECT:
             switch (GetGameStep()) {
-                case 0:
+                case FUSION_MENU_PAIR_FIRST:
                     ClearStatusPicture();
                     ResetThirdFusionSlot();
-                    result = RunFirstFusionPicker(GetGameSub(), 0);
+                    result = RunFirstFusionPicker(GetGameSub(), false);
                     SetGameSub(result);
                     if (result < 0) {
                         FinishFusionMenuSelection(result, GetFirstFusionSlot());
                     }
                     break;
-                case 3:
+                case FUSION_MENU_PAIR_COMMIT:
                     result = CommitPairFusion();
                     if (s_fusionResultVariable >= 0) {
                         SetScriptLongVar(s_fusionResultVariable, result);
                     }
                     PrevGamePhase();
                     break;
-                case 16:
+                case FUSION_MENU_TRIPLE_THIRD:
                     ClearStatusPicture();
                     result = RunThirdFusionPicker(GetGameSub());
                     SetGameSub(result);
@@ -2502,22 +2502,22 @@ b16 RunFusionMenuState(void) {
                         FinishFusionMenuSelection(result, GetThirdFusionSlot());
                     }
                     break;
-                case 17:
-                    result = RunFirstFusionPicker(GetGameSub(), 1);
+                case FUSION_MENU_TRIPLE_FIRST:
+                    result = RunFirstFusionPicker(GetGameSub(), true);
                     SetGameSub(result);
                     if (result < 0) {
                         FinishFusionMenuSelection(result, GetFirstFusionSlot());
                     }
                     break;
-                case 1:
-                case 18:
+                case FUSION_MENU_PAIR_SECOND:
+                case FUSION_MENU_TRIPLE_SECOND:
                     result = RunSecondFusionPicker(GetGameSub());
                     SetGameSub(result);
                     if (result < 0) {
                         FinishFusionMenuSelection(result, GetSecondFusionSlot());
                     }
                     break;
-                case 20:
+                case FUSION_MENU_TRIPLE_COMMIT:
                     result = CommitTripleFusion();
                     if (s_fusionResultVariable >= 0) {
                         SetScriptLongVar(s_fusionResultVariable, result);

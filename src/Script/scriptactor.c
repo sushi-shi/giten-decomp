@@ -2221,7 +2221,7 @@ void OpCopyItemRecord(void) {
 }
 
 RVA(0x00035b90, 0x14)
-void OpOpenFusionScreen(i16 kind) {
+void OpOpenFusionScreen(GZ_ENUM_PARAM(FusionMenuStep, i16) kind) {
     PushFusionMenu(kind, ReadLongVarIndex());
 }
 

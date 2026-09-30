@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <Enums.h>
+#include <Game/FusionMenuStep.h>
 #include <Game/MoveCommand.h>
 #include <Script/ActorSpoilKind.h>
 #include <Script/BranchMode.h>
@@ -393,7 +394,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpCallSubScene(void);
 
 void OpCopyItemRecord(void);
 
-void OpOpenFusionScreen(i16 kind);
+void OpOpenFusionScreen(GZ_ENUM_PARAM(FusionMenuStep, i16) kind);
 
 void OpRunFusion(b16 triple);
 
