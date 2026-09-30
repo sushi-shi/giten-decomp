@@ -438,7 +438,7 @@ src/Game/character.c	IsPartyMemberFallen	0	existing-symbol	enum	0 from GetFatalC
 *	*	0	trivial-function-literal	0 equality strcmp()	strcmp returns 0 for equal strings
 *	*	*	call-argument	RepaintTextPlane(*argument 2	the repaint mode RepaintTextPlane does not read
 src/Game/clock.c	s_cellKinds	*	data-or-extent	*	cell-kind rows: the kind flags (0 none), the pad byte, and the cell codes still unnamed (@identity-TODO in Game/CellCode.h)
-src/Game/treasurebox.c	s_mapIcons	*	data-or-extent	*	automap icon rows: exit and stair images named; other image indices and cell codes still unnamed (@identity-TODO in Game/CellCode.h)
+src/Game/treasurebox.c	s_mapIcons	*	data-or-extent	*	automap icon rows: exit, stair, elevator and kanji-sign images named; image indices 6, 11 and 23/24 and several cell codes still unnamed (@identity-TODO in Game/CellCode.h)
 *	*	*	call-argument	LatchCellDestination(*argument [2-6]	a byte offset of a destination field within the cell record
 *	*	*	call-argument	SetPanelRowFlags(*argument 2	a row of the panel (its position in the panel's row table)
 *	*	*	call-argument	PrintWindowText(*argument 4	the text style flag (TextState.flag1; its effect is unproven, @identity-TODO in Text/WindowText.h)

@@ -83,6 +83,15 @@ Automap marks:
 - The automap icon table uses image marks 7, 8 and 9 for exits, stairs
   up and stairs down. Its mark byte now has an `AutomapMark` domain, shared
   with live NPC (4) and field-object (5) marks.
+- Retail bitmap resources selected by `g_mapMarkImages` show kanji signs for
+  marks 12..22: 電, 武, 転, 薬, 邪, 病, 泉, 回, 防, 酒 and 道. The
+  automap icon table maps cell codes 0x50..0x59 and 0x5b to those marks in
+  order; codes 0x85..0x87 also use the spring mark. The English mark names
+  render those abbreviated signs; the cell codes' exact link roles still
+  need script evidence.
+- Mark 10 is the white E bitmap. Cell codes 0x44..0x46 use it; all are map
+  links, and the 0x46 links recur on Shinjuku Tocho's upper floors, supporting
+  the elevator mark name.
 
 Object record names:
 
