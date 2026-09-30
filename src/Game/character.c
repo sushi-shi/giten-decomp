@@ -522,9 +522,10 @@ i32 CalcMaxHp(Character* character) {
 RVA(0x0003cf70, 0x8c)
 i32 CalcMaxMp(Character* character) {
     double scaled = sqrt(character->level);
-    double value = GetStatTotal(character, 9) + GetStatTotal(character, 1);
+    double value =
+        GetStatTotal(character, STAT_CHARM) + GetStatTotal(character, STAT_MENTAL_STRENGTH);
     value *= 0.5;
-    scaled *= GetStatTotal(character, 2);
+    scaled *= GetStatTotal(character, STAT_MAGIC);
     scaled *= 1.5;
     value += scaled;
     if (TestCharacterFlag(character, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
