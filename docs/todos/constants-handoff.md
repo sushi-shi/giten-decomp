@@ -138,6 +138,11 @@ Map area names:
   (Meiji Jingu entrance) immediately before changing to area 5. MS0061
   entry 6 also enters area 5 during the gate-to-Yomi scene, consistent with
   the shrine entrance's story role.
+- M0057's displayed map name is blank. In MS0021 entry 5, Yoshino Hime
+  tells the protagonist to enter the darkness of their own heart and sorrow;
+  their consciousness falls away immediately before the script changes to
+  area 0x57. The four-level area's links run MS0014 entries that stage
+  memories and visions, including the protagonist's mother in entry 9.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
