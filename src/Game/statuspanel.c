@@ -923,7 +923,7 @@ static __inline void ClearEquipPreview(void) {
 static __inline i16 FinishEquipChange(void) {
     RecalcCharacterStats(GetRosterCharacter(g_statusMember));
     s_equipPage.changed = true;
-    SetGameSub(1);
+    SetGameSub(MENU_STEP_CLOSE);
     s_equipPage.pick = -1;
     return -1;
 }

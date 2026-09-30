@@ -83,7 +83,7 @@ void BuildMenuPage(MenuBox* menu) {
     if (menu == NULL) {
         return;
     }
-    previous = next = 0;
+    previous = next = PANEL_FLAGS_NONE;
     FreeMenuLines(menu->plane);
     DispatchMenuEvent(menu, 0, MENU_EVENT_BEGIN_PAGE);
     index = menu->cursor;

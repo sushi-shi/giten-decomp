@@ -2477,7 +2477,7 @@ void AddScriptCharacterToRoster(Character* character, i16 unused) {
         g_rosterPendingMember = character;
         SaveRosterReturnState();
         SetGameState(GAME_STATE_REPLACE_ROSTER_MEMBER);
-        SetGamePhase(0);
+        SetGamePhase(ROSTER_REPLACEMENT_OPEN_LIST);
     }
 }
 
