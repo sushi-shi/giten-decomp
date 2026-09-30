@@ -1313,7 +1313,7 @@ void DrawSceneFrame(i16 image, i16 slot, i16 frame, i16 x, i16 y, i16 mode) {
 RVA(0x00017ef0, 0x218)
 b16 RunCellScene(void) {
     switch (GetGamePhase()) {
-        case 0:
+        case CELL_SCENE_PREPARE:
             SetSceneRenderMode();
             UnplaceAllSprites();
             s_sceneScreenState = SaveScreenState();
@@ -1333,19 +1333,19 @@ b16 RunCellScene(void) {
             RedrawScreen(1, 0);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
             return true;
-        case 1:
+        case CELL_SCENE_RUN_SCRIPT:
             NextGamePhase();
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
             break;
-        case 2:
+        case CELL_SCENE_WAIT_INPUT:
             NextGamePhase();
             PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
             break;
-        case 3:
+        case CELL_SCENE_FADE_OUT:
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             break;
-        case 4:
+        case CELL_SCENE_RETURN_FIELD:
             s_sceneDirty = false;
             FreeSceneSprites();
             SceneNop();
@@ -1428,7 +1428,7 @@ void SetSceneScriptByIndex(i16 scriptIndex, i16 entryIndex) {
 RVA(0x00018230, 0x10e)
 b16 RunFieldTextScene(void) {
     switch (GetGamePhase()) {
-        case 1:
+        case FIELD_TEXT_SCENE_RETURN_FIELD:
             s_sceneDirty = false;
             FreeSceneSprites();
             ReturnFromGameState();
@@ -1446,7 +1446,7 @@ b16 RunFieldTextScene(void) {
             RestoreScreenState(s_sceneScreenState);
             RedrawFieldView();
             break;
-        case 0:
+        case FIELD_TEXT_SCENE_START:
             s_sceneScreenState = SaveScreenState();
             NextGamePhase();
             PrepareFieldRedraw(1);
@@ -1462,7 +1462,7 @@ b16 RunFieldTextScene(void) {
 RVA(0x00018340, 0x157)
 b16 RunFrozenFieldScene(void) {
     switch (GetGamePhase()) {
-        case 1:
+        case FROZEN_FIELD_SCENE_RETURN_FIELD:
             s_sceneDirty = false;
             FreeSceneSprites();
             ReturnFromGameState();
@@ -1479,7 +1479,7 @@ b16 RunFrozenFieldScene(void) {
             RestoreScreenState(s_sceneScreenState);
             RedrawFieldView();
             break;
-        case 0:
+        case FROZEN_FIELD_SCENE_START:
             s_sceneObjectsFrozen = ExchangeObjectsFrozen(true);
             s_sceneScreenState = SaveScreenState();
             NextGamePhase();
@@ -1530,7 +1530,7 @@ b16 RunPictureTransition(void) {
 RVA(0x00018590, 0x19c)
 b16 RunBackgroundScene(void) {
     switch (GetGamePhase()) {
-        case 0:
+        case BACKGROUND_SCENE_PREPARE:
             ClearSceneSurfaces();
             s_sceneScreenState = SaveScreenState();
             NextGamePhase();
@@ -1546,19 +1546,19 @@ b16 RunBackgroundScene(void) {
             RedrawScreen(0, 1);
             StartScreenFadeAndWait(SCREEN_FADE_FROM_BLACK, 1);
             return true;
-        case 1:
+        case BACKGROUND_SCENE_RUN_SCRIPT:
             NextGamePhase();
             StartDebugScene(s_sceneScript, s_sceneScriptEntry, g_infoPlane);
             break;
-        case 2:
+        case BACKGROUND_SCENE_WAIT_INPUT:
             NextGamePhase();
             PushWaitState(WAIT_INPUT, WAIT_ON_ANY_INPUT, 0xffff, 0);
             break;
-        case 3:
+        case BACKGROUND_SCENE_FADE_OUT:
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             break;
-        case 4:
+        case BACKGROUND_SCENE_RESTORE:
             s_sceneDirty = false;
             FreeSceneSprites();
             SceneNop();

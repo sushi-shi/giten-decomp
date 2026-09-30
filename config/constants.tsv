@@ -1272,7 +1272,7 @@ src/Game/statestack.c	GetMoonValue	2	*	*	@identity-TODO: twice the moon table's 
 src/Game/statestack.c	ScaleByMoonValue	100	*	*	percent scaling
 src/Game/statestack.c	GetPickerSelection	-1	*	*	no selection
 src/Game/statestack.c	RestoreBackground*	*	*	*	@identity-TODO: background scene exceptions (by area, level and cell) and their scene-cell parameter overrides (0x31, 2); BackgroundParameterNop's (11, 1), (15, 1)
-src/Game/statestack.c	Run*Scene	*	*	*	@identity-TODO: scene states' phases and steps (0..3), their redraw and palette modes (0, 1, 3), the scene hold cleared
+src/Game/statestack.c	Run*Scene	*	*	*	@identity-TODO: scene states' redraw and palette modes (0, 1, 3), the scene hold cleared
 src/Game/statestack.c	EnterStatusScreen	*	*	*	the subscreen is active; palette mode 2
 src/Game/statestack.c	LeaveStatusScreen	0	*	*	the subscreen is inactive
 src/Game/statestack.c	ResetSubscreen	0	*	*	the subscreen is inactive

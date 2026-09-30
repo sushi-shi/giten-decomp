@@ -9,8 +9,26 @@
 
 // @identity-TODO: the Windows video-state stubs do not prove its saved extent.
 extern u8 g_sceneVideoState[16];
+GZ_ENUM_BEGIN_SPLIT(CellScenePhase, i16)
+    CELL_SCENE_PREPARE = 0,
+    CELL_SCENE_RUN_SCRIPT = 1,
+    CELL_SCENE_WAIT_INPUT = 2,
+    CELL_SCENE_FADE_OUT = 3,
+    CELL_SCENE_RETURN_FIELD = 4
+GZ_ENUM_END_SPLIT(CellScenePhase)
+
 b16 RunCellScene(void);
+GZ_ENUM_BEGIN_SPLIT(FieldTextScenePhase, i16)
+    FIELD_TEXT_SCENE_START = 0,
+    FIELD_TEXT_SCENE_RETURN_FIELD = 1
+GZ_ENUM_END_SPLIT(FieldTextScenePhase)
+
 b16 RunFieldTextScene(void);
+GZ_ENUM_BEGIN_SPLIT(FrozenFieldScenePhase, i16)
+    FROZEN_FIELD_SCENE_START = 0,
+    FROZEN_FIELD_SCENE_RETURN_FIELD = 1
+GZ_ENUM_END_SPLIT(FrozenFieldScenePhase)
+
 b16 RunFrozenFieldScene(void);
 GZ_ENUM_BEGIN_SPLIT(PictureTransitionPhase, i16)
     PICTURE_TRANSITION_FADE_OUT = 0,
@@ -20,6 +38,14 @@ GZ_ENUM_BEGIN_SPLIT(PictureTransitionPhase, i16)
 GZ_ENUM_END_SPLIT(PictureTransitionPhase)
 
 b16 RunPictureTransition(void);
+GZ_ENUM_BEGIN_SPLIT(BackgroundScenePhase, i16)
+    BACKGROUND_SCENE_PREPARE = 0,
+    BACKGROUND_SCENE_RUN_SCRIPT = 1,
+    BACKGROUND_SCENE_WAIT_INPUT = 2,
+    BACKGROUND_SCENE_FADE_OUT = 3,
+    BACKGROUND_SCENE_RESTORE = 4
+GZ_ENUM_END_SPLIT(BackgroundScenePhase)
+
 b16 RunBackgroundScene(void);
 void FreeSceneSprites(void);
 void LoadSceneSprites(void);
