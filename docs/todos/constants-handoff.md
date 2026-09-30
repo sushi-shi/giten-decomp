@@ -102,6 +102,8 @@ Skill family names:
 
 - ET0004 skill record 1 names Sword Attack; the basic attack path selects
   that record when it has no equipped weapon item.
+- Record 250 names Self Recovery. `ApplySkillEffect` changes its combined
+  kind/mode byte to 2 before dispatching it as a restore skill.
 - In ET0004, family codes 1..5 each contain one consistent spell series:
   Agi, Zan, Dawm, Zio and Bufu. Codes 6, 7, 8, 11, 14 and 16 group
   expulsion, Megi, remedy/revival, Shibabu, Kaja/Kunda and Dia skills.

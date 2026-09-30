@@ -1774,7 +1774,7 @@ RVA(0x0002d480, 0x160)
 void ApplySkillEffect(i16 skill, Character* user, Character* target) {
     CopySkillHeader(skill, &s_effectSkill);
     s_effectSkillId = skill;
-    if (skill == 250) {
+    if (skill == SKILL_SELF_RECOVERY) {
         s_effectSkill.parameters.type = 2;
     }
     switch (s_effectSkill.parameters.kind) {

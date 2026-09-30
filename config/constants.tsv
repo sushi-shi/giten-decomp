@@ -978,7 +978,7 @@ src/Game/skilluse.c	UseAttackSkill	*	*	*	@identity-TODO: the resistance outcome'
 src/Game/skilluse.c	UseRestoreSkill	0	call-argument	ApplyRestoreEffect(*	@identity-TODO: ApplyRestoreEffect's fourth argument 0
 src/Game/skilluse.c	UseBattleStatSkill	*	*	*	@identity-TODO: the effect's percent scaling and action-result codes (3 for a hit, 1 for no stat change)
 src/Game/skilluse.c	ChangeBattleStat	*	*	*	@identity-TODO: a battle stat doubled or halved, clamped to 999 (4 digits)
-src/Game/skilluse.c	ApplySkillEffect	*	*	*	@identity-TODO: the unnamed skill kinds 9, 10 and 14, and skill 250's type override
+src/Game/skilluse.c	ApplySkillEffect	*	*	*	@identity-TODO: the unnamed skill kinds 9, 10 and 14; Self Recovery overrides the combined kind/mode byte to 2
 src/Game/skilluse.c	CancelFieldTargetMenu	-1	*	*	no command picked
 src/Game/skilluse.c	LocateFieldSkillUser	1	*	*	@identity-TODO: FindRosterSlotIn's 1
 src/Game/skilluse.c	RunFieldSkillUse	*	*	*	@identity-TODO: target flags 0x10, 0x11 and 0x30 and the pick windows (5, 4, 6, 3) they open; user -2; no pick (-1); screen layer 1 hidden
