@@ -138,13 +138,14 @@ void PlayActionEffect(i16 stage);
 void DropFlaggedMember(i16 id);
 
 // The battle protection or restriction stored at a combatant's tally index.
-// Indices 4 and 6 and the attributes behind them still need fuller identity.
+// Index 6 and the attribute behind it still need fuller identity.
 // clang-format off
 GZ_ENUM_BEGIN_SPLIT(BattleTallyIndex, i16)
     BATTLE_TALLY_MAGIC_SEAL = 0,
     BATTLE_TALLY_MAGIC_REFLECT = 1,
     BATTLE_TALLY_MAGIC_REFLECT_HALF = 2,
     BATTLE_TALLY_MAGIC_MP_ABSORB = 3,
+    BATTLE_TALLY_INCURABLE_CURSE = 4,
     BATTLE_TALLY_TETRAKARN = 5,
     BATTLE_TALLY_GUN_BLOCK = 7,
     BATTLE_TALLY_FIRE_BLOCK = 8,

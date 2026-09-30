@@ -199,6 +199,13 @@ Skill family names:
   `SkillParameters.family` retains its retail byte storage; mixed families
   still need individual identities.
 
+Battle tally names:
+
+- ET0004 record 286 is the only kind-3 skill with effect code 4. Its name is
+  不治呪縛 (Incurable Curse); `UseBattleTallySkill` writes that effect code to
+  the same numbered battle-tally slot. The slot's later gameplay effect is
+  not established by a direct reader in the reconstructed C.
+
 Training group:
 
 - `BattleStatGroup` index 3 is trained for the player by analyzing a field
@@ -269,7 +276,7 @@ into `GrantActorReward`, so the enum keeps both names for that value.
 
 Kept as rows until there is evidence:
 
-- Battle-tally slots 4 and 6, attack attributes 0/1, 9 and 10, and the shared
+- Battle-tally slot 6, attack attributes 0/1, 9 and 10, and the shared
   result word's noncombat encodings. The ET0004 skill table links effect
   codes to protection slots: 0..3, 5 and 7..14 now have evidence-backed names.
   Attribute 1 is not simply the gun category: ET0001 gives it to 21 melee
