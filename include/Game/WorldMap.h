@@ -92,7 +92,6 @@ i16 AssignWorldEncounterGroups(i16 count);
 // Group selection for each member of an encounter, capped at sixteen.
 extern u8 g_worldEncounterGroupSlots[FIELD_OBJECT_COUNT];
 
-// @identity-TODO: What leader personal flag 0x22 is (it suppresses encounters) is unrecovered.
 i16 RollWorldMapEncounter(i16 x, i16 y);
 
 // @identity-TODO: What word 0x47be68 (passed as layer; bit 0 picks surface 0x48f5e4 vs 0x48d714

@@ -85,6 +85,20 @@ void LoadNpcTexture(i16 slot, i16 code, i16 mode);
 u16* LoadNpcPalette(u16* colors);
 void LoadAreaNpcImages(u8* record);
 
+// Field-effect codes identified by the skill records and their handlers.
+// clang-format off
+GZ_ENUM_BEGIN_SPLIT(FieldEffectCode, u8)
+    FIELD_EFFECT_CODE_ILLUSION = 3,
+    FIELD_EFFECT_CODE_INVISIBLE = 0x11,
+    FIELD_EFFECT_CODE_ESTOMA = 0x14,
+    FIELD_EFFECT_CODE_TRAESTO = 0x15,
+    FIELD_EFFECT_CODE_TRAPORT = 0x16,
+    FIELD_EFFECT_CODE_TRAFURI = 0x17,
+    FIELD_EFFECT_CODE_SABATOMA = 0x19,
+    FIELD_EFFECT_CODE_DESAMAN = 0x1b
+GZ_ENUM_END_SPLIT(FieldEffectCode)
+    // clang-format on
+
 // What a skill's field effect did: failed, had no effect, or was done.
 GZ_ENUM_BEGIN(FieldEffectResult)
     FIELD_EFFECT_FAILED = -1,
@@ -92,7 +106,7 @@ GZ_ENUM_BEGIN(FieldEffectResult)
     FIELD_EFFECT_DONE = 1
 GZ_ENUM_END(FieldEffectResult)
 
-GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(i16 effect);
+GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectCode, i16) effect);
 GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBack(i16 who);
 GZ_ENUM_RETURN(FieldEffectResult, i16) ShieldTarget(void);
 GZ_ENUM_RETURN(FieldEffectResult, i16) SetTargetFlag21(void);

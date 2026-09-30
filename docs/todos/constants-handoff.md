@@ -12,7 +12,7 @@ zero open literals and no stale review rows. The floor is zero. Values with
 unproven identities remain numeric in narrowly matched `config/constants.tsv`
 rows; the evidence needed to name them is listed below.
 
-`giten verify enum-domains` passes with 220 declared domains. The retail
+`giten verify enum-domains` passes with 221 declared domains. The retail
 compile reports zero REGRESS and zero RESET. The strict-enum view parses all scanned units.
 
 ## Batch workflow
@@ -116,7 +116,10 @@ Kept as rows until there is evidence:
   first two's handler and the field-effect code shares kind 14's handler
   with kinds 12 and 13.
 - Object record ids 0xce, 0x22 and 0x117. The record names are undecoded.
-- Actor flags 0x20, 0x21 and 0x3f.
+- Actor flags 0x20 and 0x3f.
+- Field-effect codes 0, 1, 0x1a and 0x20..0x23. ET0004 identifies
+  illusion (3), invisibility (0x11), Estoma (0x14), Traesto (0x15),
+  Traport (0x16), Trafuri (0x17), Sabatoma (0x19) and Desaman (0x1b).
 - Bank 7 flags 0xfd-0xff.
 - The identity of area 0x85.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,

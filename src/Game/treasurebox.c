@@ -3270,35 +3270,31 @@ u32 DrawNpcAt(i16 x, i16 y, i16 depth, AreaNpc* npc, i16 index) {
     }
 }
 
-// Runs the field effect of a skill or item: 1 knocks the target back, 3
-// shields it, 0x11 and 0x14 set flags, 0x15/0x16 return to the leader's
-// recorded point or mark, 0x17 knocks the actor back, 0x19/0x1a spawn a second
-// group, 0x1b seals a demon, 0x20..0x22 set stat flags, 0x23 does nothing but
-// succeed. Returns the handler's result.
-// @identity-TODO: the handlers are named from their bodies only.
+// Runs a skill's field effect and returns the handler result.
+// @identity-TODO: codes 0, 1, 0x1a and 0x20..0x23 remain unnamed.
 RVA(0x0001f700, 0xcc)
-GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(i16 effect) {
+GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectCode, i16) effect) {
     switch (effect) {
         case 0:
             break;
         case 1:
             return KnockBack(g_targetId);
-        case 3:
+        case FIELD_EFFECT_CODE_ILLUSION:
             return ShieldTarget();
-        case 0x11:
+        case FIELD_EFFECT_CODE_INVISIBLE:
             return SetTargetFlag21();
-        case 0x14:
+        case FIELD_EFFECT_CODE_ESTOMA:
             return ScatterObjects();
-        case 0x15:
+        case FIELD_EFFECT_CODE_TRAESTO:
             return ReturnToLeaderWarp();
-        case 0x16:
+        case FIELD_EFFECT_CODE_TRAPORT:
             return ReturnToLeaderMark();
-        case 0x17:
+        case FIELD_EFFECT_CODE_TRAFURI:
             return KnockBackActor();
-        case 0x19:
+        case FIELD_EFFECT_CODE_SABATOMA:
         case 0x1a:
             return SpawnActorGroup();
-        case 0x1b:
+        case FIELD_EFFECT_CODE_DESAMAN:
             return SealTarget();
         case 0x20:
             return RaiseTargetFlag23();
@@ -3380,7 +3376,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) SetTargetFlag21(void) {
     if (!target) {
         return FIELD_EFFECT_FAILED;
     }
-    SetCharacterFlag(target, 0x21);
+    SetCharacterFlag(target, ACTOR_FLAG_INVISIBLE);
     return FIELD_EFFECT_DONE;
 }
 

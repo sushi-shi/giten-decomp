@@ -1836,7 +1836,7 @@ b16 ChooseObjectTarget(FieldObject* object) {
     for (i = 0; i < PARTY_SIZE; i++) {
         member = GetPartyCharacter(i);
         if (member != NULL && !GetDisablingCondition(GetCharacterConditions(member))
-            && TestCharacterFlag(member, 0x21) != true) {
+            && TestCharacterFlag(member, ACTOR_FLAG_INVISIBLE) != true) {
             candidates[count++] = i;
         }
     }
