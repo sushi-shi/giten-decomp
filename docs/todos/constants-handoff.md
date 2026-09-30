@@ -481,6 +481,8 @@ scratch banks, 14 as the current actor's flags, and 15 as system settings.
 These named selectors now form `EventFlagBank`. `ResetEventFlags` also walks
 unnamed banks, and a script operand can carry a negate bit with its bank, so
 the dynamic bank parameters retain their numeric widths.
+Both retail ET0018 tables contain 613 names, covering only banks 0, 1, 2,
+4, 8, 9 and 14. They provide no names for banks 3, 5, 6, 10 or 11.
 
 ## Moon phases
 
