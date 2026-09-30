@@ -289,6 +289,13 @@ Skill family names:
   records inflict conditions, possession or HP/MP/experience drain through
   gazes, touch, words and kisses. Family 31's eleven records describe melee
   techniques with elbows, knees, thrusts, swords or repeated blows.
+  Windows family 18 has nine guard, counter, slash, berserk, shout and
+  headbutt actions. The original PC-98 ET0004 also assigns its basic sword,
+  unarmed and gun attacks (records 1..15) to family 18; Windows assigns those
+  records to family 0 instead. Thus combat action covers the family in both
+  versions without restricting it to special maneuvers. PC-98 also assigns
+  Sabatoma (record 125) to family 10 where Windows assigns family 0; the
+  family-10 meaning remains mixed.
   `SkillParameters.family` retains its retail byte storage; mixed families
   still need individual identities.
 
