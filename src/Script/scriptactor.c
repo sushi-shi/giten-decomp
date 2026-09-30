@@ -3305,30 +3305,30 @@ i32* ReadScriptOperand(void) {
 }
 
 RVA(0x000373e0, 0x54)
-i32 GetBattleResultValue(i16 which) {
+i32 GetBattleResultValue(GZ_ENUM_PARAM(ScriptBattleResultSelector, i16) which) {
     switch (which) {
-        case 0:
+        case SCRIPT_BATTLE_RESULT_MACCA:
             return g_rewardMacca;
-        case 1:
+        case SCRIPT_BATTLE_RESULT_MAGNETITE:
             return g_rewardMagnetite;
-        case 2:
+        case SCRIPT_BATTLE_RESULT_EXPERIENCE_PER_MEMBER:
             return 2u * g_rewardExperience / CountPartyMembers(1);
-        case 3:
+        case SCRIPT_BATTLE_RESULT_FIRST_DROP_ITEM:
             return GetDropSlot(0)->item;
     }
     return 0;
 }
 
 RVA(0x00037440, 0x44)
-i32 GetActionValue(i16 which) {
+i32 GetActionValue(GZ_ENUM_PARAM(ScriptActionValueSelector, i16) which) {
     switch (which) {
-        case 0:
+        case SCRIPT_ACTION_VALUE_RESULT:
             return g_actionResult;
-        case 1:
+        case SCRIPT_ACTION_VALUE_HP_CHANGE:
             return g_hpChange;
-        case 2:
+        case SCRIPT_ACTION_VALUE_MP_CHANGE:
             return g_mpChange;
-        case 3:
+        case SCRIPT_ACTION_VALUE_DRAIN_AMOUNT:
             return g_drainAmount;
     }
     return 0;

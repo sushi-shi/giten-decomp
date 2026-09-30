@@ -1146,7 +1146,7 @@ src/Script/scriptactor.c	CountItemInSlots	*	*	*	the eight equipment slots, count
 src/Script/scriptactor.c	*ScriptActor	1	*	*	a despawned actor is hidden (fieldHidden)
 src/Script/scriptactor.c	DismissTalkTarget	*	*	*	a dismissed object is hidden; @identity-TODO: flash pattern 0x37
 src/Script/scriptactor.c	FindScriptChoiceAtMouse	*	*	*	8-pixel cells; -1 when no choice is under the mouse
-src/Script/scriptactor.c	Get*Value	*	*	*	script value selectors 0..3 (see GetActionValue's and GetBattleResultValue's comments); twice the experience per able member; the first drop slot
+src/Script/scriptactor.c	Get*Value	*	*	*	twice the experience per able member and the first drop slot
 src/Script/scriptactor.c	GetObject*	0	*	*	no object: 0
 src/Script/scriptactor.c	GetResolvedPartyCharacter	1	call-argument	*	@identity-TODO: GetRosterCharacterById's second argument 1
 src/Script/scriptactor.c	GetTextToken	0	*	*	the token text buffer's start

@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Enums.h>
 #include <Ints.h>
 
@@ -125,10 +126,24 @@ GZ_ENUM_END(ContestStat)
 
 void ReadContestValues(GZ_ENUM_PARAM(ContestStat, i16) stat, i32* own, i32* other, i16 swap);
 
+GZ_ENUM_BEGIN_SPLIT(ScriptBattleResultSelector, i16)
+    SCRIPT_BATTLE_RESULT_MACCA = 0,
+    SCRIPT_BATTLE_RESULT_MAGNETITE = 1,
+    SCRIPT_BATTLE_RESULT_EXPERIENCE_PER_MEMBER = 2,
+    SCRIPT_BATTLE_RESULT_FIRST_DROP_ITEM = 3
+GZ_ENUM_END_SPLIT(ScriptBattleResultSelector)
+
 // Macca, magnetite, twice the experience per able member, or first drop.
-i32 GetBattleResultValue(i16 which);
+i32 GetBattleResultValue(GZ_ENUM_PARAM(ScriptBattleResultSelector, i16) which);
+
+GZ_ENUM_BEGIN_SPLIT(ScriptActionValueSelector, i16)
+    SCRIPT_ACTION_VALUE_RESULT = 0,
+    SCRIPT_ACTION_VALUE_HP_CHANGE = 1,
+    SCRIPT_ACTION_VALUE_MP_CHANGE = 2,
+    SCRIPT_ACTION_VALUE_DRAIN_AMOUNT = 3
+GZ_ENUM_END_SPLIT(ScriptActionValueSelector)
 
 // The last action's result, HP change, MP change, or experience drain.
-i32 GetActionValue(i16 which);
+i32 GetActionValue(GZ_ENUM_PARAM(ScriptActionValueSelector, i16) which);
 
 #endif // GITEN_SCRIPT_SCRIPTOPERAND_H
