@@ -70,6 +70,9 @@ Map area names:
 - Decode: `n = u16(data, 0)`, then `r = decrypt(data[2:2 + n])`.
 - The name is at `r[u16(r, 2):]`, in cp932.
 - Areas 0x09 and 0x85 both carry the name 新宿都庁.
+- Area 0x85 is a separate ten-level Tocho map with different wall layouts;
+  the Bael Castle map (0x35) warps into its level 7. Its enum name marks
+  it as the alternate Tocho map without assigning a story phase.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
@@ -243,7 +246,6 @@ Kept as rows until there is evidence:
   class 3; `GetWallAt` treats it as absent when flooding the visible cells,
   and `BuildRoomGeometry` draws no quad for it. Its geometry-class result
   still needs reconciling with that open behavior before naming the kind.
-- The identity of area 0x85.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,
   incense, a shield, dummy items and apparent scenario items; its one kind-6
   record is the Necronomicon. Those records do not establish category names.

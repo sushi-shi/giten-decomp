@@ -397,8 +397,8 @@ src/Game/treasurebox.c	*	*	call-argument	LookupCellObject*	layers 0 and 1
 src/Game/treasurebox.c	FindCellObject	*	*	*	-1 no door or not its object; else layer 0 or 1
 src/Game/treasurebox.c	FinishDoorStep	*	*	*	the cell one step behind the party
 src/Game/treasurebox.c	ReturnToLeaderMark	*	*	*	the cell one step behind
-src/Game/treasurebox.c	UpdateCurrentRoom	*	*	*	@identity-TODO: area 0x85 (a second map file named 新宿都庁) level 3 swaps NPC texture 0 to picture 0x53 at (3, 4) and 0x4c at (3, 5)
-src/Game/treasurebox.c	LoadNpcTexture	*	*	*	@identity-TODO: two spots swap NPC pictures (Hatsudai level 8 cells (11, 7) and (12, 6): 0x2b to 0x24; area 0x85 level 3 below row 4: 0x53 to 0x4c); pictures are image files from 0x4000, mode bit 7 selects the request flags 3/4
+src/Game/treasurebox.c	UpdateCurrentRoom	*	*	*	@identity-TODO: alternate Tocho level 3 swaps NPC texture 0 to picture 0x53 at (3, 4) and 0x4c at (3, 5)
+src/Game/treasurebox.c	LoadNpcTexture	*	*	*	@identity-TODO: two spots swap NPC pictures (Hatsudai level 8 cells (11, 7) and (12, 6): 0x2b to 0x24; alternate Tocho level 3 below row 4: 0x53 to 0x4c); pictures are image files from 0x4000, mode bit 7 selects the request flags 3/4
 src/Game/treasurebox.c	LoadNpcPalette	*	*	*	NPC_TEXTURE_SLOTS palette colours from entry 8
 src/Game/treasurebox.c	LoadAreaNpcImages	*	*	*	@identity-TODO: the NPC record's palette follows 3 header bytes; then (code, mode) pairs, mode 0xff for an empty slot
 src/Game/treasurebox.c	AddAreaNpc	1	*	*	the texture slot follows the entry byte

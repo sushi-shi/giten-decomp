@@ -3014,13 +3014,13 @@ void EnterRoom(i16 code) {
 }
 
 // Re-enters the party's region when it changed (resetting the field and
-// respawning), else re-picks the two special pictures of area 0x85 level 3.
+// respawning), else re-picks the two special pictures of alternate Tocho level 3.
 RVA(0x0001f070, 0xb6)
 void UpdateCurrentRoom(void) {
     i16 code;
     if (!CellCodeDiffers(GetCurrentRoomCode(), g_party.field.pos.x, g_party.field.pos.y)) {
-        if (g_party.field.pos.area == 0x85 && g_party.field.pos.level == 3
-            && g_party.field.pos.x == 3) {
+        if (g_party.field.pos.area == MAP_AREA_SHINJUKU_TOCHO_ALTERNATE
+            && g_party.field.pos.level == 3 && g_party.field.pos.x == 3) {
             if (g_party.field.pos.y == 4) {
                 LoadNpcTexture(0, 0x53, 0);
             } else if (g_party.field.pos.y == 5) {
@@ -3197,7 +3197,7 @@ void ReleaseNpcTextures(void) {
 // Loads NPC picture `code` (image 0x4000 + code; `mode` bit 7 picks the
 // variant) into object texture slot `slot`. Two spots swap the picture: code
 // 0x2b at area 0x82 level 8 cell 11/7 or 12/6 shows 0x24, and code 0x53 at
-// area 0x85 level 3 south of row 4 shows 0x4c.
+// alternate Tocho level 3 south of row 4 shows 0x4c.
 // @identity-TODO: why those spots swap pictures is unrecovered.
 RVA(0x0001f550, 0xd0)
 void LoadNpcTexture(i16 slot, i16 code, i16 mode) {
@@ -3209,7 +3209,8 @@ void LoadNpcTexture(i16 slot, i16 code, i16 mode) {
             || (g_party.field.pos.x == 0xc && g_party.field.pos.y == 6)) {
             code = 0x24;
         }
-    } else if (code == 0x53 && mode == 0 && g_party.field.pos.area == 0x85
+    } else if (code == 0x53 && mode == 0
+               && g_party.field.pos.area == MAP_AREA_SHINJUKU_TOCHO_ALTERNATE
                && g_party.field.pos.level == 3 && g_party.field.pos.y > 4) {
         code = 0x4c;
     }
