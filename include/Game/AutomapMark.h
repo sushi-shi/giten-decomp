@@ -4,7 +4,6 @@
 #include <EnumDomain.h>
 #include <Ints.h>
 
-// @identity-TODO: the other automap image indices remain unnamed.
 GZ_ENUM_BEGIN_SPLIT(AutomapMark, u8)
     MAP_MARK_PARTY_UP = 0,
     MAP_MARK_PARTY_RIGHT = 1,
