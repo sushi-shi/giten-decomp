@@ -101,8 +101,10 @@ Item record names:
 Skill family names:
 
 - In ET0004, family codes 1..5 each contain one consistent spell series:
-  Agi, Zan, Dawm, Zio and Bufu. `SkillParameters.family` retains its retail
-  byte storage; the other family codes need individual identities.
+  Agi, Zan, Dawm, Zio and Bufu. Codes 6, 7, 8, 11, 14 and 16 group
+  expulsion, Megi, remedy/revival, Shibabu, Kaja/Kunda and Dia skills.
+  `SkillParameters.family` retains its retail byte storage; mixed families
+  still need individual identities.
 
 ### Event-flag names (ET0018)
 
