@@ -13,6 +13,7 @@
 #include <File/DataFileKind.h>
 #include <File/DataTableId.h>
 #include <Game/Alignment.h>
+#include <Game/ActorFlag.h>
 #include <Game/CharInfo.h>
 #include <Game/Character.h>
 #include <Game/CharacterStat.h>
@@ -826,14 +827,9 @@ i16 SumArmorDefenseBonus(Character* character) {
     return bonuses[BATTLE_STAT_WEAPON_DEFENSE];
 }
 
-// Scales the shown battle stats by the member's personal flags: flag 36
-// halves stats 2, 4, 8 and 10, flag 35 raises them by half, flag 37 raises
-// stats 3 and 5 by half.
-// @identity-TODO: which stats the indices name and what the flags stand for
-// are unrecovered.
 RVA(0x0003da90, 0x14b)
 void ApplyStatFlags(Character* character) {
-    if (TestCharacterFlag(character, 0x24) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
         character->battleStatsShown[BATTLE_STAT_WEAPON_ACCURACY] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_ACCURACY), 50);
         character->battleStatsShown[BATTLE_STAT_WEAPON_EVASION] =
@@ -843,7 +839,7 @@ void ApplyStatFlags(Character* character) {
         character->battleStatsShown[BATTLE_STAT_GUN_EVASION] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 50);
     }
-    if (TestCharacterFlag(character, 0x23) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
         character->battleStatsShown[BATTLE_STAT_WEAPON_ACCURACY] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_ACCURACY), 150);
         character->battleStatsShown[BATTLE_STAT_WEAPON_EVASION] =
@@ -853,7 +849,7 @@ void ApplyStatFlags(Character* character) {
         character->battleStatsShown[BATTLE_STAT_GUN_EVASION] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 150);
     }
-    if (TestCharacterFlag(character, 0x25) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MOON_WEAPON_POWER_DEFENSE_UP) == true) {
         character->battleStatsShown[BATTLE_STAT_WEAPON_POWER] =
             ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_POWER), 150);
         character->battleStatsShown[BATTLE_STAT_WEAPON_DEFENSE] =
@@ -3165,37 +3161,34 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
     return PARTY_TIMER_INACTIVE;
 }
 
-// Clears the character's moon-driven personal flags as the moon moves on
-// (flag 0x23 steps to 0x24; unless `keep`, 0x25 and 0x26 clear, 0x26 adding
-// condition 0). Returns how many flags changed.
 // @early-stop prologue: retail pushes esi up front and forms the flags
 // pointer after the NULL test; assigning it after the test defers the push,
 // initialising it at the declaration hoists the lea (direct field use,
 // if-wrapped body and return-variable spellings tried).
 RVA(0x000413f0, 0xb6)
-i16 ApplyMoonPhase(Character* character, i16 keep) {
+i16 ApplyMoonPhase(Character* character, i16 moonPhase) {
     u8* flags = GetCharacterFlags(character);
     i16 changed = 0;
     if (character == NULL) {
         return 0;
     }
-    if (TestBit(flags, 0x24) == true) {
+    if (TestBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
         changed = 1;
-        ClearBit(flags, 0x24);
+        ClearBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
     }
-    if (TestBit(flags, 0x23) == true) {
+    if (TestBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
         changed++;
-        ClearBit(flags, 0x23);
-        SetBit(flags, 0x24);
+        ClearBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP);
+        SetBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
     }
-    if (keep == 0) {
-        if (TestBit(flags, 0x25) == true) {
+    if (moonPhase == MOON_PHASE_NEW) {
+        if (TestBit(flags, ACTOR_FLAG_MOON_WEAPON_POWER_DEFENSE_UP) == true) {
             changed++;
-            ClearBit(flags, 0x25);
+            ClearBit(flags, ACTOR_FLAG_MOON_WEAPON_POWER_DEFENSE_UP);
         }
-        if (TestBit(flags, 0x26) == true) {
+        if (TestBit(flags, ACTOR_FLAG_MOON_ASH_PENDING) == true) {
             changed++;
-            ClearBit(flags, 0x26);
+            ClearBit(flags, ACTOR_FLAG_MOON_ASH_PENDING);
             AddCondition(GetCharacterConditions(character), CONDITION_ASH);
         }
     }

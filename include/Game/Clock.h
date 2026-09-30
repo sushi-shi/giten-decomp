@@ -63,7 +63,7 @@ void ClearMoonFlags(void);
 GZ_ENUM_RETURN(ClockUpdate, i16) TickGameClock(i16 paused);
 
 // Steps a character's moon-driven personal flags; the count changed.
-i16 ApplyMoonPhase(struct Character* character, i16 keep);
+i16 ApplyMoonPhase(struct Character* character, i16 moonPhase);
 
 // The party's periodic HP and MP cost for `minutes`.
 GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes);

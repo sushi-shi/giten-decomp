@@ -3271,7 +3271,7 @@ u32 DrawNpcAt(i16 x, i16 y, i16 depth, AreaNpc* npc, i16 index) {
 }
 
 // Runs a skill's field effect and returns the handler result.
-// @identity-TODO: codes 0x1a and 0x20..0x23 remain unnamed.
+// @identity-TODO: codes 0x1a and 0x23 remain unnamed.
 RVA(0x0001f700, 0xcc)
 GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectCode, i16) effect) {
     switch (effect) {
@@ -3296,11 +3296,11 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectC
             return SpawnActorGroup();
         case FIELD_EFFECT_CODE_DESAMAN:
             return SealTarget();
-        case 0x20:
+        case FIELD_EFFECT_CODE_RAISE_ACCURACY_EVASION:
             return RaiseTargetFlag23();
-        case 0x21:
+        case FIELD_EFFECT_CODE_RAISE_WEAPON_POWER_DEFENSE:
             return RaiseTargetFlag25();
-        case 0x22:
+        case FIELD_EFFECT_CODE_MARK_ASH_AT_NEW_MOON:
             return RaiseTargetFlag26();
         case 0x23:
             return FIELD_EFFECT_DONE;
@@ -3486,26 +3486,23 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void) {
     return FIELD_EFFECT_DONE;
 }
 
-// Sets the target's flag 0x23 (not with 0x23 or 0x24 already set) and
-// recalculates its stats.
 RVA(0x0001fc70, 0x6d)
 GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag23(void) {
     Character* target = GetCombatant(g_targetId);
     if (!target) {
         return FIELD_EFFECT_FAILED;
     }
-    if (TestCharacterFlag(target, 0x23) == true) {
+    if (TestCharacterFlag(target, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
         return FIELD_EFFECT_FAILED;
     }
-    if (TestCharacterFlag(target, 0x24) == true) {
+    if (TestCharacterFlag(target, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
         return FIELD_EFFECT_FAILED;
     }
-    SetCharacterFlag(target, 0x23);
+    SetCharacterFlag(target, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP);
     RecalcCharacterStats(target);
     return FIELD_EFFECT_DONE;
 }
 
-// The same with flag 0x25, only while the moon is not new.
 RVA(0x0001fce0, 0x67)
 GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void) {
     Character* target;
@@ -3516,10 +3513,10 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void) {
     if (!target) {
         return FIELD_EFFECT_FAILED;
     }
-    if (TestCharacterFlag(target, 0x25) == true) {
+    if (TestCharacterFlag(target, ACTOR_FLAG_MOON_WEAPON_POWER_DEFENSE_UP) == true) {
         return FIELD_EFFECT_FAILED;
     }
-    SetCharacterFlag(target, 0x25);
+    SetCharacterFlag(target, ACTOR_FLAG_MOON_WEAPON_POWER_DEFENSE_UP);
     RecalcCharacterStats(target);
     return FIELD_EFFECT_DONE;
 }
@@ -3534,10 +3531,10 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag26(void) {
     if (!target) {
         return FIELD_EFFECT_FAILED;
     }
-    if (TestCharacterFlag(target, 0x26) == true) {
+    if (TestCharacterFlag(target, ACTOR_FLAG_MOON_ASH_PENDING) == true) {
         return FIELD_EFFECT_FAILED;
     }
-    SetCharacterFlag(target, 0x26);
+    SetCharacterFlag(target, ACTOR_FLAG_MOON_ASH_PENDING);
     RecalcCharacterStats(target);
     return FIELD_EFFECT_DONE;
 }

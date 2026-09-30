@@ -577,8 +577,8 @@ src/Script/scriptactor.c	GrantActorReward	[89]	*	*	reward kinds 8 and 9 (reward 
 src/Script/scriptactor.c	GrantActorReward	1	trivial-function-literal	1 bound reward	an equipment reward below item 1 means none was picked
 src/Game/character.c	InitCharacters	*	call-argument	InitCharacterSlot(*argument 1	the g_characters slots, filled in order
 src/Game/character.c	InitCharacters	*	call-argument	CopyCharacterWithoutSkills(*	slots 13..15 start as copies of slot 0's record
-src/Game/treasurebox.c	RunFieldEffect	*	*	* case	field-effect codes 0x1a and 0x20..0x23 have no proven individual skill identity
-src/Game/treasurebox.c	RunFieldEffect	*	case-label	switch on effect	field-effect codes 0x1a and 0x20..0x23 have no proven individual skill identity
+src/Game/treasurebox.c	RunFieldEffect	*	*	* case	field-effect codes 0x1a and 0x23 have no proven individual skill identity
+src/Game/treasurebox.c	RunFieldEffect	*	case-label	switch on effect	field-effect codes 0x1a and 0x23 have no proven individual skill identity
 src/Game/treasurebox.c	KnockBack	[01]	*	*at	x and y of the pushed position (`at` points at its x)
 src/Game/treasurebox.c	KnockBack	[01]	call-argument	*argument [12]	x and y of the pushed position (`at` points at its x)
 *	*	0	trivial-function-literal	0 store z	a coordinate reset to the origin
@@ -1060,7 +1060,7 @@ src/Game/character.c	*OfId	-1	*	*	no such character
 src/Game/character.c	SortRoster	0	*	*	the sort's first index
 src/Game/character.c	PayStepUpkeep	*	*	*	@identity-TODO: step upkeep: demon classes 10, 12 and 13 cost HP or MP (the pool fill mode 2, eight steps) instead of magnetite; the money counters redraw (1)
 src/Game/character.c	TickPartyTimers	*	*	*	@identity-TODO: party timers every 240 and 60 minutes, the moon phases up to the full moon (14); 1/-1 results
-src/Game/character.c	ApplyMoonPhase	*	*	*	@identity-TODO: the character flags 0x23..0x26 a moon phase sets and clears
+src/Game/character.c	ApplyMoonPhase	[01]	trivial-function-literal	*	the count of changed flags starts at zero and increments by one
 src/Game/character.c	RecalcDerivedStats	*	*	*	@identity-TODO: battle-stat words 1, 7, 13 and 18..23 (the fourth group) and their floors of 1; the bonus buffer (24 words); the magic-defence groups (3)
 src/Game/character.c	SumArmorDefenseBonus	24	*	*	the 24 battle-stat words
 src/Game/character.c	PoolPercentAmount	100	*	*	percent scaling
