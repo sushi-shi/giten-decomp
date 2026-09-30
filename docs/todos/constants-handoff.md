@@ -192,7 +192,9 @@ Automap marks:
   thirteen and 0x87 in five. M0081 (会話チェック, "conversation check") places
   the three codes in adjacent cells at (12,15), (13,15) and (14,15). This
   confirms that the map data distinguishes them even in one location, but
-  does not explain what the three variants mean.
+  does not explain what the three variants mean. The PC-98 disc's 22 links
+  with these codes are byte-identical to Windows, as is decoded MS003A.
+  Its executable's automap table gives all three the same mark byte 0x11.
 - Cell code 0x7d uses the stairs-down mark and occurs in 25 station links,
   all calling MS0044 entries 3..28. That script describes stairs leading
   down to a subway platform and offers the platform route.
