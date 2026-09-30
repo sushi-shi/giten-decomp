@@ -3,8 +3,8 @@
 
 #include <EnumDomain.h>
 
-// Map areas, named after the area names in their map files (translated or
-// romanized), or after the shopkeeper debug traces in OpLoadSprite. Several
+// Map areas, named after their map files (translated or romanized), script
+// travel labels, or shopkeeper debug traces in OpLoadSprite. Several
 // map files can carry one place's name; the unqualified name goes to the one
 // the code tests. When neither is tested, the decoded layout distinguishes them.
 // @identity-TODO: area ids with duplicate or missing map names are not named yet.
@@ -17,6 +17,7 @@ GZ_ENUM_BEGIN_SPLIT(MapAreaId, u8)
     MAP_AREA_SUBSPACE_KISHIMOJIN_ROUTE = 0x02,
     MAP_AREA_TOGO_SHRINE_UNDERGROUND = 0x03,
     MAP_AREA_YOYOGI_LABOR_CAMP = 0x04,
+    MAP_AREA_MEIJI_JINGU_ENTRANCE = 0x05,
     MAP_AREA_SHINJUKU_UNDERGROUND = 0x06,
     MAP_AREA_SHINJUKU_UNDERGROUND_PASSAGE_NORTH = 0x07,
     MAP_AREA_SHINJUKU_UNDERGROUND_PASSAGE_SOUTH = 0x08,

@@ -134,6 +134,10 @@ Map area names:
   drink and the protagonist's consciousness fades. M0086 links to MS006D
   entries 38 and 39's vision dialogue. The distinct route and vision roles
   identify the two Subspace maps.
+- M0005's displayed map name is blank. MS0035 entry 2 prints 明治神宮入口
+  (Meiji Jingu entrance) immediately before changing to area 5. MS0061
+  entry 6 also enters area 5 during the gate-to-Yomi scene, consistent with
+  the shrine entrance's story role.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
