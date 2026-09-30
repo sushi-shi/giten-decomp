@@ -69,6 +69,8 @@ Map area names:
 - File: `M/Mxxxx.BIN`.
 - Decode: `n = u16(data, 0)`, then `r = decrypt(data[2:2 + n])`.
 - The name is at `r[u16(r, 2):]`, in cp932.
+- M0000 is named 初台ｼｪﾙﾀｰ (Hatsudai Shelter), distinct from M0082's 初台;
+  a warp in M0080 targets area 0, level 7.
 - Areas 0x09 and 0x85 both carry the name 新宿都庁.
 - Area 0x85 is a separate ten-level Tocho map with different wall layouts;
   the Bael Castle map (0x35) warps into its level 7. Its enum name marks
