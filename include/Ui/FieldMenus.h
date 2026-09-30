@@ -18,6 +18,11 @@ GZ_ENUM_BEGIN_SPLIT(PartyPickerMode, i16)
     PARTY_PICKER_HUMANS = 2
 GZ_ENUM_END_SPLIT(PartyPickerMode)
 
+GZ_ENUM_CONST_BEGIN(PartyPickerResult)
+    PARTY_PICKER_RESULT_CANCELLED = -2,
+    PARTY_PICKER_RESULT_NONE = -1
+GZ_ENUM_CONST_END(PartyPickerResult)
+
 i16 RunPartyPicker(i16 command);
 void SetPartyPickerMode(GZ_ENUM_PARAM(PartyPickerMode, i16) mode);
 struct PartyMemberList;

@@ -1287,9 +1287,9 @@ src/Game/statestack.c	OpenPartyPicker	*	*	*	@identity-TODO: menu flags 0x1e and 
 src/Game/statestack.c	PickStatusMember	*	*	*	@identity-TODO: the status menu items hidden (1, 0), status column 0, panel row flag 0x800
 src/Game/statestack.c	PollRewardClick	*	*	*	the reward window's hit box (0xea..0x192, 0xc0..0xf6); 2 on a click, 0 outside, -1 cancelled
 src/Game/statestack.c	ReturnDdsMember	*	*	*	@identity-TODO: returned (1), not (0), cancelled (-1)
+src/Game/statestack.c	RunPartyPicker	0	trivial-function-literal	0 equality command	zero continues polling the open picker without resetting it
 src/Game/statestack.c	RunItemUse	*	*	*	@identity-TODO: item use: screen layer 1 hidden, no user (-1), target flags (0x10, 0x11, 0x30) and their pick windows (5, 4, 6, 3)
 src/Game/statestack.c	RunLevelUp	*	*	*	@identity-TODO: level-up screen parameters: fades (1), the status screen entered and left (0), picture surface 0x36, reward experience cleared
-src/Game/statestack.c	RunPartyPicker	*	*	*	@identity-TODO: the picker's results (-2 cancelled, -1 none), six members listed with mode 1, command 0
 src/Game/statestack.c	RunStatusScreen	*	*	*	@identity-TODO: status screen parameters: menu items shown (0), not nested (0), the analyze member slot 15, field panel row 1 unchecked, the member reset
 src/Game/statestack.c	RunWorldMap	*	*	*	@identity-TODO: world-map parameters: the start cell (3, 3) and level 0, the request cleared, field menu mode 2, the world map active, its phases and panels
 src/Game/statestack.c	ShowBackground	0x5000	*	*	@identity-TODO: background pictures 0x5000 + n

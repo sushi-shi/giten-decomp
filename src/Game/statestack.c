@@ -2462,22 +2462,22 @@ i16 RunPartyPicker(i16 command) {
     if (command >= 0) {
         if (!s_partyPicker) {
             if (!CountPickablePartyMembers()) {
-                return -2;
+                return PARTY_PICKER_RESULT_CANCELLED;
             }
-            entries = ListPickableMembers(NULL, 6, 1);
+            entries = ListPickableMembers(NULL, PARTY_SIZE, true);
             if (!entries->count) {
                 FreeBlock(entries);
-                return -2;
+                return PARTY_PICKER_RESULT_CANCELLED;
             }
             s_partyPicker = OpenPartyPicker(entries);
         }
         result = RunPickerMenu(s_partyPicker);
-        if (result != -1 && result != -2) {
+        if (result != PARTY_PICKER_RESULT_NONE && result != PARTY_PICKER_RESULT_CANCELLED) {
             s_partyPicker = ClosePickerMenu(s_partyPicker);
             return g_selectedObjectId;
         }
     }
-    return -1;
+    return PARTY_PICKER_RESULT_NONE;
 }
 
 // @dead-code
