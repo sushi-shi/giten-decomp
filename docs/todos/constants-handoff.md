@@ -93,6 +93,9 @@ Map area names:
 - M0043 and M0044 both display 日比谷線 (Hibiya Line), with six and three
   distinct levels respectively. `LoadWallTextures` tests 0x43 as Hibiya Line;
   0x44 is its alternate map.
+- M0023 and M0024 both display 御花屋敷 (Ohanayashiki), but their one-level
+  wall layouts differ. `OpLoadSprite` checks 0x24 as Ohanayashiki; 0x23 is
+  the alternate map.
 - `MapAreaId` includes records with distinct names from these files. The
   0x3d and 0x43 records are 千代田線 and 日比谷線; `LoadWallTextures` tests these
   two areas for the alternate wall texture. Other duplicate or blank map
