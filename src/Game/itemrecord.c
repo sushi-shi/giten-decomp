@@ -37,6 +37,7 @@
 #include <Mem/Handle.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
+#include <Script/ScenarioFlag.h>
 #include <Script/Script.h>
 #include <Script/ScriptVars.h>
 #include <Text/TextAttr.h>
@@ -103,13 +104,13 @@ static MenuBox* s_giftMenu = NULL;
 // The event flag each timed item clears when it expires.
 DATA(0x00068f38)
 static TimedItemFlag s_timedItemFlags[8] = {
-    {0, 140},
-    {0, 139},
-    {0, 138},
-    {0, 137},
-    {0, 141},
-    {0, 142},
-    {1, 93},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_RIGHT_LEG},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_LEFT_LEG},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_RIGHT_ARM},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_LEFT_ARM},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_CHEST},
+    {EVENT_FLAG_BANK_SCENARIO, SCENARIO_WITHERED_LOVER_ABDOMEN},
+    {EVENT_FLAG_BANK_SCENARIO_2, 93},
     {-1, -1},
 };
 

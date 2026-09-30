@@ -113,7 +113,8 @@ src/Platform/winmain.cpp	s_quadY	*	data-or-extent	*	quad vertex screen y in pixe
 src/Platform/winmain.cpp	s_enemySizes	*	data-or-extent	*	billboard size of each enemy frame in pixels
 src/Platform/winmain.cpp	s_wallCorners	*	data-or-extent	*	wall quad corner offsets in world units
 src/Game/character.c	s_affinity	*	data-or-extent	*	alignment affinity scores
-src/Game/itemrecord.c	s_timedItemFlags	*	data-or-extent	*	event flag numbers the timed items clear (the flags are unnamed)
+src/Game/itemrecord.c	s_timedItemFlags	93	data-or-extent	*	the lover's head expiry flag in bank 1 is absent from ET0018
+src/Game/itemrecord.c	s_timedItemFlags	-1	data-or-extent	*	the lover's heart has no expiry flag
 src/Game/itemrecord.c	s_giftFamiliarity	*	data-or-extent	*	familiarity each gem gift adds
 src/Platform/winmain.cpp	s_doorWidths	*	data-or-extent	*	door opening half-width per animation step
 src/Platform/winmain.cpp	s_doorEdgeU	*	data-or-extent	*	door texture edge u per animation step

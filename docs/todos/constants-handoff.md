@@ -104,7 +104,7 @@ Item record names:
 
 Format, after `decrypt`:
 
-- A 4-byte header.
+- A 2-byte entry count.
 - Then 29-byte entries: a big-endian `bank * 256 + bit`, a 26-byte cp932 name,
   and a zero byte.
 
@@ -118,6 +118,10 @@ Coverage:
 - Bank 9's names are only the Shinjuku base's.
 - Bank 14 holds the actor flags. Bits 11-16 contradict the code, so they are
   not used.
+- Bank 0 bits 137..142 name the six withered lover's limbs and torso parts;
+  `s_timedItemFlags` clears them when their corresponding items expire.
+  The lover's head uses bank 1 bit 93, beyond this name table's coverage;
+  the heart has no expiry flag.
 
 Polarity:
 
