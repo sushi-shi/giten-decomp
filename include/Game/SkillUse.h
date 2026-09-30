@@ -138,8 +138,8 @@ void PlayActionEffect(i16 stage);
 void DropFlaggedMember(i16 id);
 
 // The battle protection or restriction stored at a combatant's tally index.
-// Index 6 reflects attacks with attribute 1; no current skill record selects
-// that slot, and the attribute's authored name is unknown.
+// Index 6 reflects attacks in the physical resistance column; no current
+// skill record selects that slot, so the tally effect's authored name is open.
 // clang-format off
 GZ_ENUM_BEGIN_SPLIT(BattleTallyIndex, i16)
     BATTLE_TALLY_MAGIC_SEAL = 0,
@@ -148,7 +148,7 @@ GZ_ENUM_BEGIN_SPLIT(BattleTallyIndex, i16)
     BATTLE_TALLY_MAGIC_MP_ABSORB = 3,
     BATTLE_TALLY_INCURABLE_CURSE = 4,
     BATTLE_TALLY_TETRAKARN = 5,
-    BATTLE_TALLY_ATTRIBUTE_1_REFLECT = 6,
+    BATTLE_TALLY_PHYSICAL_REFLECT = 6,
     BATTLE_TALLY_GUN_BLOCK = 7,
     BATTLE_TALLY_FIRE_BLOCK = 8,
     BATTLE_TALLY_ICE_BLOCK = 9,

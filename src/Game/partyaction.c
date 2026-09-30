@@ -108,7 +108,7 @@ DATA(0x000784d8)
 i16 g_attackResistance = 0;
 
 DATA(0x000784dc)
-i16 g_attackAttribute = 0;
+GZ_ENUM_STORAGE(AttackAttribute, i16) g_attackAttribute = ATTACK_ATTRIBUTE_SWORD;
 
 DATA(0x000784e0)
 i16 g_attackCondition = 0;
@@ -937,12 +937,14 @@ GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
         ReportBattleTally(actor, BATTLE_TALLY_MAGIC_REFLECT_HALF, report);
         return BATTLE_PROTECTION_REFLECT_HALF;
     }
-    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_TETRAKARN] && attribute == 0) {
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_TETRAKARN]
+        && attribute == ATTACK_ATTRIBUTE_SWORD) {
         ReportBattleTally(actor, BATTLE_TALLY_TETRAKARN, report);
         return BATTLE_PROTECTION_REFLECT;
     }
-    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_ATTRIBUTE_1_REFLECT] && attribute == 1) {
-        ReportBattleTally(actor, BATTLE_TALLY_ATTRIBUTE_1_REFLECT, report);
+    if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_PHYSICAL_REFLECT]
+        && attribute == ATTACK_ATTRIBUTE_PHYSICAL) {
+        ReportBattleTally(actor, BATTLE_TALLY_PHYSICAL_REFLECT, report);
         return BATTLE_PROTECTION_REFLECT;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_MP_ABSORB] && mode == ATTACK_MAGIC) {

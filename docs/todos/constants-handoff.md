@@ -392,21 +392,31 @@ The item menu context stores a different domain: shop mode 0 replaces the
 temporary item pool with selected rows and writes the shop total, while script
 mode 2 reads the script's total variable and leaves the pool to its caller.
 
+## Attack attribute columns
+
+Retail object records P2029 (Urd) and P2042 (Heqet) store resistance bytes
+`50,50,0,50,50,50,0,50,50,50` and `50,50,50,50,50,50,0,0,0,50`.
+Their null columns align with the [Urd](https://megatenwiki.com/wiki/Urdr)
+and [Heqet](https://www.megatenwiki.com/wiki/Heqet) resistance tables, whose
+headings place Sword, Phys and Ruin at indices 0, 1 and 9. The disc's ET0004
+records independently put Megido in column 0, Damu in column 1 and Shibaboo
+in column 9, matching those skill labels. These are resistance-column names:
+column 1 also occurs on 21 melee weapons and 21 ammunition records, while
+column 0 occurs on 98 melee weapons and seven ammunition records in ET0001.
+
 ## Deferred identities
 
 Kept as rows until there is evidence:
 
-- Attack attributes 0/1 and 9, and the shared
-  result word's other noncombat encodings. ET0004 kind-3 skills select tally slots
-  0, 1, 4, 5 and 7..14; the other named slots have direct reader evidence.
-  Attribute 1 is not simply the gun category: ET0001 gives it to 21 melee
-  weapons as well as 21 ammunition records; attribute 0 occurs on 98 melee
-  weapons and seven ammunition records.
+- The shared result word's other noncombat encodings. ET0004 kind-3 skills
+  select tally slots 0, 1, 4, 5 and 7..14; the other named slots have direct
+  reader evidence.
   Slot 5 is set by Tetrakarn and Counterattack and reflects attacks with
-  attribute 0. `CheckBattleProtection` directly reflects attribute-1 attacks
-  when slot 6 is set, so its enum name records that effect. `UseBattleTallySkill`
-  could set the slot from an effect code of 6, but no current ET0004 skill has
-  that code. Its authored name remains unknown. The barrier-cleared message
+  the Sword resistance attribute. `CheckBattleProtection` directly reflects
+  Physical-attribute attacks when slot 6 is set, so its enum name records
+  that effect. `UseBattleTallySkill` could set the slot from an effect code of
+  6, but no current ET0004 skill has that code. Its authored name remains
+  unknown. The barrier-cleared message
   in MS00DF entry 3 uses the generic barrier label from MS7F00 entry 52, so it
   does not distinguish slots 5 and 6.
   MS00DD entry 5 dispatches base action results 0..10 to entries 10..19 and

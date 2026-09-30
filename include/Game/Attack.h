@@ -4,13 +4,14 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/AttackAttribute.h>
 #include <Game/Character.h>
 #include <Game/Condition.h>
 #include <Ints.h>
 
 // Shared state of the attack being resolved, defined in Game/attack.c.
 extern i16 g_attackResistance;
-extern i16 g_attackAttribute;
+extern GZ_ENUM_STORAGE(AttackAttribute, i16) g_attackAttribute;
 extern i16 g_attackCondition;
 
 static __inline double GetExceptionalAttackLuck(Character* actor) {
