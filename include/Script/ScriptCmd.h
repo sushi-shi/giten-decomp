@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/AlignmentSide.h>
 #include <Game/CharacterPools.h>
 #include <Game/CharacterStat.h>
 #include <Ints.h>
@@ -58,7 +59,7 @@ i32 GetObjectStatTotal(i16 ref, GZ_ENUM_PARAM(CharacterStat, i16) stat);
 i32 GetObjectLevel(i16 ref);
 i32 GetObjectAlignmentLevelB(i16 ref);
 i32 GetObjectAlignmentLevelA(i16 ref);
-i16 StepForMode(i16 mode);
+GZ_ENUM_RETURN(AlignmentSide, i16) StepForMode(i16 mode);
 void OpShiftPlayerAlignmentB(void);
 void OpShiftPlayerAlignmentA(void);
 b16 OpLevelUpMember(void);

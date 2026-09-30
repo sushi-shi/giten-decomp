@@ -1151,7 +1151,7 @@ src/Script/scriptactor.c	OpSwitchOnMoonPhase	1	call-argument	*	@identity-TODO: S
 src/Script/scriptactor.c	ReadTextToken	*	*	*	@identity-TODO: text tokens: the object-check bypass, the token buffer, no id, long variable 11
 src/Script/scriptactor.c	ReadScriptOperand	*	*	*	@identity-TODO: operand scaling (a quarter of the price, doubling) and a zero value
 src/Script/scriptactor.c	ReadContestValues	*	*	*	contest values: none (0) for a missing object, and -1 for the other side when it has none
-src/Script/scriptactor.c	StepForMode	*	*	*	@identity-TODO: step modes 0..2 and their steps (1, 0, -1)
+src/Script/scriptactor.c	StepForMode	*	*	*	@identity-TODO: script modes 0..2 have unknown names; the returned alignment sides are named
 src/Script/scriptactor.c	OpSetObjectFamiliarity	0xff	*	*	familiarity up to 0xff
 src/Script/scriptactor.c	PollScriptChoiceMenu	*	*	*	choice polls: 1 picked, -1 cancelled, 0 still open; no hovered choice (-1)
 src/Script/scriptactor.c	LoadScriptCharacterToRoster	*	call-argument	*	@identity-TODO: AddScriptCharacterToRoster's mode 3; analyzed (1)

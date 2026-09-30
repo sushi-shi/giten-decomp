@@ -3816,19 +3816,19 @@ i32 GetObjectAlignmentLevelA(i16 ref) {
     return object->alignmentLevelA;
 }
 
-// @identity-TODO: maps a script mode operand 0/1/2 to the step +1/0/-1 the
-// caller passes on; the mode's meaning is unrecovered.
+// @identity-TODO: maps a script mode operand 0/1/2 to the alignment side
+// positive/neutral/negative; the mode's meaning is unrecovered.
 RVA(0x00037f80, 0x22)
-i16 StepForMode(i16 mode) {
+GZ_ENUM_RETURN(AlignmentSide, i16) StepForMode(i16 mode) {
     switch (mode) {
         case 0:
-            return 1;
+            return ALIGNMENT_POSITIVE;
         case 1:
-            return 0;
+            return ALIGNMENT_NEUTRAL;
         case 2:
-            return -1;
+            return ALIGNMENT_NEGATIVE;
     }
-    return 0;
+    return ALIGNMENT_NEUTRAL;
 }
 
 // Shifts the player's alignment B by an amount, towards the side the mode

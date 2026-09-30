@@ -970,14 +970,14 @@ i16 GetAlignmentAffinity(AlignmentInfo* info, i16 side) {
 // side's own register (xor bl,cl; and ebx,3) where this build uses eax;
 // everything before the final insert matches.
 RVA(0x0003df70, 0x110)
-i16 MoveAlignment(AlignmentInfo* info, i16 weight, i16 side) {
+i16 MoveAlignment(AlignmentInfo* info, i16 weight, GZ_ENUM_PARAM(AlignmentSide, i16) side) {
     i16 delta = GetAlignmentAffinity(info, side) * weight;
     switch (side) {
-        case -1:
+        case ALIGNMENT_NEGATIVE:
             info->negativeMoves++;
             delta = -delta;
             break;
-        case 0:
+        case ALIGNMENT_NEUTRAL:
             info->neutralMoves++;
             if (delta > abs(info->value)) {
                 delta = abs(info->value);
@@ -986,7 +986,7 @@ i16 MoveAlignment(AlignmentInfo* info, i16 weight, i16 side) {
                 delta = -delta;
             }
             break;
-        case 1:
+        case ALIGNMENT_POSITIVE:
             info->positiveMoves++;
             break;
         default:
@@ -1015,14 +1015,14 @@ i16 AlignmentClass(i16 value) {
 }
 
 RVA(0x0003e0a0, 0x27)
-void ShiftAlignmentB(Character* character, i16 amount, i16 step) {
+void ShiftAlignmentB(Character* character, i16 amount, GZ_ENUM_PARAM(AlignmentSide, i16) step) {
     AlignmentInfo* alignment = &character->alignmentB;
     MoveAlignment(alignment, amount, step);
     character->alignmentLevelB = GetAlignmentValue(alignment);
 }
 
 RVA(0x0003e0d0, 0x27)
-void ShiftAlignmentA(Character* character, i16 amount, i16 step) {
+void ShiftAlignmentA(Character* character, i16 amount, GZ_ENUM_PARAM(AlignmentSide, i16) step) {
     AlignmentInfo* alignment = &character->alignmentA;
     MoveAlignment(alignment, amount, step);
     character->alignmentLevelA = GetAlignmentValue(alignment);
