@@ -4,11 +4,16 @@
 #include <EnumDomain.h>
 #include <Ints.h>
 
-// The packed fusion summary's result kind. Special fusion kinds 1..7
-// still need distinct identities.
 // clang-format off
 GZ_ENUM_BEGIN_SPLIT(FusionSummaryKind, i16)
     FUSION_SUMMARY_NO_RESULT = -1,
+    FUSION_SUMMARY_GAIN_ONE_LEVEL = 1,
+    FUSION_SUMMARY_GAIN_TWO_LEVELS = 2,
+    FUSION_SUMMARY_RANK_UP = 3,
+    FUSION_SUMMARY_RANK_UP_GAIN_LEVEL = 4,
+    FUSION_SUMMARY_MERGE_POOLS = 5,
+    FUSION_SUMMARY_MERGE_POOLS_CLEANSE = 6,
+    FUSION_SUMMARY_RETAIN_SOURCE = 7,
     FUSION_SUMMARY_DIRECT_DEMON = 8,
     FUSION_SUMMARY_FALLBACK = 9,
     FUSION_SUMMARY_LEVEL_HIGHER = 10,

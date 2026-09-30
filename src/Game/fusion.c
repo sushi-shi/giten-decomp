@@ -396,8 +396,8 @@ i16 ResolveSpecialRaceFusion(i16 first, i16 second) {
 RVA(0x00026910, 0x24)
 i16 ApplyFusionRankChange(i16 demon, i16 kind) {
     switch (kind) {
-        case 3:
-        case 4:
+        case FUSION_SUMMARY_RANK_UP:
+        case FUSION_SUMMARY_RANK_UP_GAIN_LEVEL:
             demon = FindNextOfRace(demon, 1);
             break;
     }
@@ -430,10 +430,10 @@ i16 ResolveSameRaceFusion(i16 first, i16 second) {
 RVA(0x00026a00, 0x5b)
 i16 ResolveFusionFallbackPair(i16 first, i16 second) {
     if (FindFusionFallbackIndex(GetRosterId(first)) >= 0) {
-        return SetFusionResult(GetRosterId(second), 5);
+        return SetFusionResult(GetRosterId(second), FUSION_SUMMARY_MERGE_POOLS);
     }
     if (FindFusionFallbackIndex(GetRosterId(second)) >= 0) {
-        return SetFusionResult(GetRosterId(first), 7);
+        return SetFusionResult(GetRosterId(first), FUSION_SUMMARY_RETAIN_SOURCE);
     }
     return 0;
 }
@@ -488,7 +488,7 @@ i16 ResolveMixedRankFusion(i16 first, i16 second) {
         }
         if (level % 5 == 0) {
             demon = FindNextOfRace(ranked->id, 0);
-            return SetFusionResult(demon, 3);
+            return SetFusionResult(demon, FUSION_SUMMARY_RANK_UP);
         }
         if (level % 3 == 0) {
             return SetFusionResult(ranked->id, 0);
@@ -1401,23 +1401,23 @@ i16 GetFusionResultKind(void) {
     }
     switch (s_fusionSummary.fields.kind) {
         case 0:
-        case 3:
-        case 4:
+        case FUSION_SUMMARY_RANK_UP:
+        case FUSION_SUMMARY_RANK_UP_GAIN_LEVEL:
         case FUSION_SUMMARY_DIRECT_DEMON:
         case FUSION_SUMMARY_FALLBACK:
-        case 10:
-        case 11:
-        case 12:
+        case FUSION_SUMMARY_LEVEL_HIGHER:
+        case FUSION_SUMMARY_LEVEL_LOWER:
+        case FUSION_SUMMARY_LEVEL_EQUAL:
             if (RosterContainsId(s_fusionResultId)) {
                 return -2;
             }
             break;
-        case 1:
-        case 2:
+        case FUSION_SUMMARY_GAIN_ONE_LEVEL:
+        case FUSION_SUMMARY_GAIN_TWO_LEVELS:
             return s_fusionSummary.fields.kind;
-        case 5:
-        case 6:
-        case 7:
+        case FUSION_SUMMARY_MERGE_POOLS:
+        case FUSION_SUMMARY_MERGE_POOLS_CLEANSE:
+        case FUSION_SUMMARY_RETAIN_SOURCE:
             return s_fusionSummary.fields.kind;
     }
     return s_fusionSummary.fields.kind;
@@ -1450,8 +1450,8 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
         return NULL;
     }
     switch (s_fusionSummary.fields.kind) {
-        case 1:
-        case 2:
+        case FUSION_SUMMARY_GAIN_ONE_LEVEL:
+        case FUSION_SUMMARY_GAIN_TWO_LEVELS:
             MoveSpecialFusionCharacters(&firstCharacter, &secondCharacter, &first, &second);
             result = CopyCharacter(firstCharacter, NULL);
             GainLevels(result, s_fusionSummary.fields.kind);
@@ -1459,24 +1459,24 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
             RaiseExperienceToLevel(result);
             FullyRestoreCharacter(result);
             return result;
-        case 5:
-        case 6:
-        case 7:
+        case FUSION_SUMMARY_MERGE_POOLS:
+        case FUSION_SUMMARY_MERGE_POOLS_CLEANSE:
+        case FUSION_SUMMARY_RETAIN_SOURCE:
             MoveSpecialFusionCharacters(&firstCharacter, &secondCharacter, &first, &second);
             result = CopyCharacter(firstCharacter, NULL);
-            if (s_fusionSummary.fields.kind <= 6) {
+            if (s_fusionSummary.fields.kind <= FUSION_SUMMARY_MERGE_POOLS_CLEANSE) {
                 result->pools.hp.cur += secondCharacter->pools.hp.cur;
                 result->pools.mp.cur += secondCharacter->pools.mp.cur;
-                if (s_fusionSummary.fields.kind == 6) {
+                if (s_fusionSummary.fields.kind == FUSION_SUMMARY_MERGE_POOLS_CLEANSE) {
                     ClearAllConditions(GetCharacterConditions(result));
                 }
             }
             break;
-        case 4:
+        case FUSION_SUMMARY_RANK_UP_GAIN_LEVEL:
             goto createCharacter;
         case FUSION_SUMMARY_FALLBACK:
             goto createCharacter;
-        case 11:
+        case FUSION_SUMMARY_LEVEL_LOWER:
             goto createCharacter;
         default:
         createCharacter:
@@ -1485,7 +1485,7 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
             result->level = ClampLevel(result->level + GetFusionGrowthBonus(first, second));
             RaiseExperienceToLevel(result);
             FullyRestoreCharacter(result);
-            if (s_fusionSummary.fields.kind == 4) {
+            if (s_fusionSummary.fields.kind == FUSION_SUMMARY_RANK_UP_GAIN_LEVEL) {
                 GainLevels(result, 1);
             }
             break;

@@ -128,9 +128,10 @@ alternate-script objects, and pursuit and knockback refuse to move one.
 
 Kept as rows until there is evidence:
 
-- Fusion summary special kinds 1..7. The packed summary names the
-  unavailable result (-1), direct table demon (8), fallback (9) and
-  level comparison kinds 10..12.
+- Fusion summary kind 0 serves both an unset summary and a request to
+  derive kind 10..12 from the source/result level comparison. Kinds 1..7
+  follow the ET000C special-fusion table and the pair-result builder; 8
+  is a direct table demon and 9 a fallback demon.
 - Battle-tally slots 4..6, attack attributes 0/1 and 9, and the shared
   result word's noncombat encodings. The ET0004 skill table links effect
   codes to protection slots: 0..3 and 7..14 now have evidence-backed names.
