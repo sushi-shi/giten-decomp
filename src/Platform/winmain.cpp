@@ -3785,7 +3785,7 @@ static u16 s_wallQuadIndices[6] = {0, 1, 3, 0, 3, 2};
 
 // Rebuilds g_wallMesh from the wall words of the cells within ROOM_RADIUS of
 // the party (wrapping around the map edge in the areas that wrap): each
-// nonzero wall side except WALL_KIND_PASSABLE_NO_QUAD becomes a quad textured
+// nonzero wall side except WALL_KIND_INVISIBLE_BARRIER becomes a quad textured
 // with the wall quarter (kinds up to 2 and 11) or the door quarter of the atlas.
 // @early-stop register selection: the wrapped-start LEAs exchange base/index
 // operands; their addresses and the ordered referents agree.
@@ -3879,7 +3879,7 @@ void BuildRoomGeometry(void) {
             cell = walls[wrapY * width + wrapX];
             for (side = 0; side < 8; side += 2) {
                 kind = cell & 0xf;
-                if (kind > WALL_KIND_NONE && kind != WALL_KIND_PASSABLE_NO_QUAD) {
+                if (kind > WALL_KIND_NONE && kind != WALL_KIND_INVISIBLE_BARRIER) {
                     for (k = 0; k < 6; k++) {
                         g_wallMesh.indices[g_wallMesh.indexCount++] =
                             g_wallMesh.vertexCount + s_wallQuadIndices[k];
@@ -3892,7 +3892,7 @@ void BuildRoomGeometry(void) {
                         g_wallMesh.vertices[g_wallMesh.vertexCount].sy =
                             corner < 2 ? WALL_TOP : 0.0f;
                         g_wallMesh.vertices[g_wallMesh.vertexCount].specular = 0;
-                        if (kind > 2 && kind != WALL_KIND_PLAIN_ATLAS_ALTERNATE) {
+                        if (kind > WALL_KIND_FLAG_BARRED_DOOR && kind != WALL_KIND_UNBARRED_DOOR) {
                             if (g_deviceType == D3D_DEVICE_HAL) {
                                 g_wallMesh.vertices[g_wallMesh.vertexCount].tu =
                                     s_hardwareAtlasUV[2][corner][0];

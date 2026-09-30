@@ -213,7 +213,7 @@ void ViewCellToMapCell(
 RVA(0x0000c090, 0x2d)
 i32 GetWallAt(i16 x, i16 y, i32 side, i16 width, i16 height) {
     i32 wall = GetWallCode(x, y, side, width, height);
-    if (wall == WALL_KIND_PASSABLE_NO_QUAD) {
+    if (wall == WALL_KIND_INVISIBLE_BARRIER) {
         wall = WALL_KIND_NONE;
     }
     return wall;
@@ -525,8 +525,9 @@ void UpdateViewCells(i16 x, i16 y) {
     }
 }
 
-// How a wall kind stops a step (mode 0) or a sight line (mode 1): 0 open,
-// 1/2 a door or a partial wall, 3 a solid wall.
+// Geometry (mode 0) and movement (mode 1) class of each wall kind: 0 open,
+// 1/2 a door or a partial wall, 3 a solid wall. Kind 6 is invisible but blocks
+// movement; kind 12 is drawn but passable.
 DATA(0x000642f8)
 static const u8 s_wallStops[16][2] = {
     {0, 0},

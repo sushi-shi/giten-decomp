@@ -148,8 +148,8 @@ typedef struct LevelMusicSet {
     LevelMusic choices[5];
 } LevelMusicSet;
 
-// A door cell: facing (high nibble) and kind (low nibble; 0xb is not a
-// door) in the code byte, disabled by the flag at +3.
+// A door cell: facing (high nibble) and wall kind (low nibble) in the code
+// byte, disabled by the flag at +3. Kind 11 does not bar a step.
 typedef struct DoorCell {
     CellHead head;
     u8 disableFlag[2];

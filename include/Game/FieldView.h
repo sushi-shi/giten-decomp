@@ -45,8 +45,8 @@ void ViewCellToMapCell(
     i16 height
 );
 
-// The wall on `side` of map cell (x, y), 0 for none. The passable kind without
-// a 3D quad also counts as none here.
+// The wall on `side` of map cell (x, y), 0 for none. The invisible movement
+// barrier also counts as none for view-cell visibility.
 i32 GetWallAt(i16 x, i16 y, i32 side, i16 width, i16 height);
 
 // Whether the view cell (col, row) seen from (x, y) facing `dir` has a wall on

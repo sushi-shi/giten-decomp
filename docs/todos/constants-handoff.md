@@ -431,11 +431,19 @@ Kept as rows until there is evidence:
   change; the vanish animation and hidden state reuse it, with the lit bit
   selecting the animation lighting path.
 - Wall kind 6 occurs on 360 sides across seven disc areas. The wall-stop table
-  gives it movement class 0 and geometry class 3; `GetWallAt` treats it as
-  absent when flooding the visible cells, and `BuildRoomGeometry` draws no
-  quad for it. The geometry class is used by the map and field overlays, so
-  `WALL_KIND_PASSABLE_NO_QUAD` records the shared behavior without assigning
-  an in-world identity.
+  gives it geometry class 0 and movement class 3. `GetWallAt` treats it as
+  absent when flooding visible cells, and `BuildRoomGeometry` draws no quad;
+  `WALL_KIND_INVISIBLE_BARRIER` describes this invisible movement block.
+- Wall kind 12 occurs on 32 sides across eleven disc areas. The wall-stop table
+  gives it geometry class 3 and movement class 0. `BuildRoomGeometry` draws a
+  quad for it, so `WALL_KIND_PASSABLE_WALL` describes its visible but passable
+  behavior. Neither behavior name assigns an in-world identity.
+- The disc has 97 wall-kind-2 sides and 14 wall-kind-11 sides. Every one has a
+  door record at the same cell and facing, with the same low-nibble kind. The
+  kind-2 record bars a step while its flag is clear; `IsStepBarred` always
+  skips kind 11. The `WallKind` names record this flag-controlled distinction.
+  The seven wall kinds used by the disc are 0, 1, 2, 3, 6, 11 and 12; all
+  seven now have enum members. Kind 3 has solid geometry and movement classes.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,
   incense, a shield, dummy items and apparent scenario items; its one kind-6
   record is the Necronomicon. Those records do not establish category names.

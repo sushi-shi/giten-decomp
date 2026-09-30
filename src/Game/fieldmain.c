@@ -256,7 +256,8 @@ GZ_ENUM_RETURN(PartyMoveOutcome, i16) AdvancePartyMove(i16 command) {
                         g_party.field.moveCommand,
                         RevealAreaMapAt(g_party.field.pos.x, g_party.field.pos.y)
                     );
-                    if (((wall == 1 || wall == 2) && g_party.field.moveCommand != MOVE_FORWARD)
+                    if (((wall == WALL_KIND_DOOR || wall == WALL_KIND_FLAG_BARRED_DOOR)
+                         && g_party.field.moveCommand != MOVE_FORWARD)
                         || WallStops(wall, WALL_STOP_MOVEMENT) == 3) {
                         PlaySoundEffect(8);
                         return PARTY_MOVE_BLOCKED;
@@ -358,7 +359,8 @@ i16 StepParty(i16 direction) {
             g_party.field.moveCommand,
             RevealAreaMapAt(g_party.field.pos.x, g_party.field.pos.y)
         );
-        if (((wall == 1 || wall == 2) && g_party.field.moveCommand != MOVE_FORWARD)
+        if (((wall == WALL_KIND_DOOR || wall == WALL_KIND_FLAG_BARRED_DOOR)
+             && g_party.field.moveCommand != MOVE_FORWARD)
             || WallStops(wall, WALL_STOP_MOVEMENT) == 3) {
             PlaySoundEffect(8);
             return STEP_BLOCKED;
@@ -535,12 +537,12 @@ GZ_ENUM_RETURN(ViewDirection, i16) FindExitDirection(i16 x, i16 y) {
     i16 cell = RevealAreaMapAt(x, y);
     i16 side;
     for (side = 0; side < 4; side++) {
-        if (GetCellWall(VIEW_NORTH, side, cell) == 1) {
+        if (GetCellWall(VIEW_NORTH, side, cell) == WALL_KIND_DOOR) {
             return side;
         }
     }
     for (side = 0; side < 4; side++) {
-        if (GetCellWall(VIEW_NORTH, side, cell) == 0) {
+        if (GetCellWall(VIEW_NORTH, side, cell) == WALL_KIND_NONE) {
             return side;
         }
     }

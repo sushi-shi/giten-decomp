@@ -1028,7 +1028,8 @@ i16 IsStepBarred(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 
     }
     facing = TurnDirection(direction, turn);
     for (door = g_areaLevel->doors; !IsCellListEnd(&door->head); door++) {
-        if ((door->head.code & 0xf) != 0xb && (door->head.code >> 4) == facing
+        if ((door->head.code & 0xf) != WALL_KIND_UNBARRED_DOOR
+            && (door->head.code >> 4) == facing
             && IsCellAt(x, y, &door->head) && !IsCellFlagSet(&door->head, 3)) {
             return door->head.code;
         }

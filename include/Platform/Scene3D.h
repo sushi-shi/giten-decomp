@@ -219,8 +219,8 @@ void DrawStairs(void);
 #define CELL_SIZE 320
 #define WALL_TOP 324.0f
 
-// Wall kinds up to 2 and WALL_KIND_PLAIN_ATLAS_ALTERNATE use the plain wall
-// quarter of the atlas; the others use the door quarter.
+// Wall kinds up to WALL_KIND_FLAG_BARRED_DOOR and WALL_KIND_UNBARRED_DOOR use
+// the plain wall quarter of the atlas; the others use the door quarter.
 
 // The areas whose map wraps around its edges: across only, or both ways.
 // @identity-TODO: which areas these are is unrecovered.
