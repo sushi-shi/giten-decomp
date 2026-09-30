@@ -435,6 +435,11 @@ Kept as rows until there is evidence:
 - Code 0x4f occurs in 64 treasure-box records. The legacy selector gives it
   the fourth frame pair; the Windows renderer does not distinguish it from
   the first pair. Its `CellCode` name records the frame relation only.
+- Codes 0x8b, 0x8c and 0x8f occur in area object lists. `CheckCellEvent`
+  ignores their kind-10 result for object records, and the direct object-cell
+  queries recognize only 0x8d and 0x8e. Their distinct map roles remain
+  unproven. Code 0x7c has a cell-kind table row but no cell record in the
+  current disc's area maps.
 - Field-object image codes -1 and 0..4 name the mirrored side, facing rows,
   acting row and reaction frame. The fifth frame of the disc's five-BMP actor
   images is a distinct reaction pose. `FlashHitObject` selects it after a pool

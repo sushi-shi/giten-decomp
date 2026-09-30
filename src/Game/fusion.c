@@ -109,7 +109,7 @@ DATA(0x00080118)
 char g_fusionNameBuffer[128] = {0};
 
 DATA(0x00080198)
-static i16 s_fusionPageAction = 0;
+static GZ_ENUM_STORAGE(FusionPagerButton, i16) s_fusionPageAction = FUSION_PAGER_PREVIOUS;
 
 DATA(0x000801a0)
 static FusionSummary s_fusionPairSummaries[32 * 32] = {0};
@@ -1539,14 +1539,14 @@ i16 RunFirstFusionPicker(i16 step, i16 triple) {
                 if (s_fusionPageActionPending == true) {
                     result = s_fusionPageAction;
                     s_fusionPageActionPending = false;
-                    s_fusionPageAction = -1;
+                    s_fusionPageAction = FUSION_PAGER_NONE;
                     oldOffset = s_fusionColumnOffset;
-                    if (result == 0) {
+                    if (result == FUSION_PAGER_PREVIOUS) {
                         s_fusionColumnOffset -= s_fusionPageRows;
                         if (s_fusionColumnOffset < 0) {
                             s_fusionColumnOffset = 0;
                         }
-                    } else if (result == 1) {
+                    } else if (result == FUSION_PAGER_NEXT) {
                         if (s_fusionColumnOffset + s_fusionPageRows < s_fusionColumnCount) {
                             s_fusionColumnOffset += s_fusionPageRows;
                         }
