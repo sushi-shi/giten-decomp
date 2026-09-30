@@ -1535,7 +1535,7 @@ void OpShowBackground(void) {
     i16 arg = ReadScriptValue();
     ReadScriptValue();
     ReadScriptValue();
-    if (!IsEventFlagSet(9, 0x7b)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_AREA, AREA_FIXED_BACKGROUND)) {
         image = 0x31;
         arg = 4;
     }

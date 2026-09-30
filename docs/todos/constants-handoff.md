@@ -311,6 +311,11 @@ Coverage:
 - Bank 4 holds the boxes.
 - Bank 8 bit 0 is "no enemies".
 - Bank 9's names are only the Shinjuku base's.
+- Bank 9 bit 0x7b selects a fixed background while clear. `OpShowBackground`
+  replaces the requested picture with image 0x31, variant 4, and
+  `RestoreBackground` makes the same substitution in its scene cell. The
+  `AREA_FIXED_BACKGROUND` name records this shared picture gate without
+  assigning it to a story event.
 - Bank 1 bits 0x5e and 0x75 select FC4001 and FC4002 frame 1 for Katsuragi
   and Tachibana's status portraits while clear. The retail bitmap chains
   show civilian clothing in frame 1 and armored DB clothing in frame 0.

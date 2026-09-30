@@ -1204,7 +1204,7 @@ void RestoreBackground(void) {
             s_sceneCell[15] = 2;
         }
     }
-    if (!IsEventFlagSet(9, 0x7b)) {
+    if (!IsEventFlagSet(EVENT_FLAG_BANK_AREA, AREA_FIXED_BACKGROUND)) {
         s_sceneCell[9] = 0x31;
         s_sceneCell[10] = 4;
         s_sceneCell[11] = 4;

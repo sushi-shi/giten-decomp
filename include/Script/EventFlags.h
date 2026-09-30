@@ -45,6 +45,9 @@ typedef union FlagBank {
 // random enemies spawn only while it is clear.
 #define LEVEL_FLAG_NO_ENEMIES 0
 #define EVENT_FLAG_BANK_AREA 9
+GZ_ENUM_CONST_BEGIN(AreaFlag)
+    AREA_FIXED_BACKGROUND = 0x7b
+GZ_ENUM_CONST_END(AreaFlag)
 #define EVENT_FLAG_BANK_SCRATCH 12
 #define EVENT_FLAG_BANK_LEVEL_SCRATCH 13
 #define EVENT_FLAG_BANK_SYSTEM 15
