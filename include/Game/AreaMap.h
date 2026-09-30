@@ -48,7 +48,7 @@ GZ_ENUM_FLAGS_END(CellKindFlags)
 
 // A code's entry in the cell-kind table: `kind` is what CheckCellEvent returns
 // (RunCellEvent's case).
-// @identity-TODO: event kinds 10, 12 and 13 remain unnamed.
+// @identity-TODO: event kind 13 (cell code 0x65) remains unnamed.
 typedef struct CellKind {
     u8 code;
     u8 kind;

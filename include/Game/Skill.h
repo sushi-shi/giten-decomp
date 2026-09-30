@@ -39,12 +39,13 @@ GZ_ENUM_END_SPLIT(SkillKind);
 
 // Parameters shared by the file header and the menu's skill view.
 #define SKILL_KIND_BITS 6
+#define SKILL_MODE_BITS 2
 typedef struct SkillParameters {
     // The kind and attack mode share a byte used whole by the combat resolver.
     union {
         struct {
             GZ_ENUM_STORAGE(SkillKind, u8) kind : SKILL_KIND_BITS;
-            u8 mode : 2;
+            GZ_ENUM_STORAGE(AttackMode, u8) mode : SKILL_MODE_BITS;
         };
         u8 type;
     };
