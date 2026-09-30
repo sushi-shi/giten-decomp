@@ -274,7 +274,7 @@ src/Game/fieldobj.c	RunObjectStep	*	*	*scene*	@identity-TODO: the talk scene's e
 src/Game/fieldobj.c	RunObjectStep	0xe2	*	*	@identity-TODO: scene file 0xe2 is the field talk scene
 src/Game/fieldobj.c	ChooseObjectTarget	-1	*	*	FindPartyPositionOfId's not-in-party result
 src/Game/fieldobj.c	ChooseObjectTarget	0	trivial-function-literal	0 equality count	no candidate
-src/Game/fieldobj.c	GetDemonFlag*	*	*	*	@identity-TODO: a demon table entry's flag byte: bit 2 (bit 6) disables the low (high) flag in bit 0 (bit 4)
+src/Game/fieldobj.c	GetDemonFlag*	*	*	*	the named low and high fusion flag values and unavailable bits in a demon table entry
 src/Game/fieldobj.c	FindStrongestOfClass	-1	*	-1 equality GetDemonFlagLow()	GetDemonFlagLow's disabled result
 src/Game/fieldobj.c	FindStrongestOf*	-1	*	*	no demon or level found yet
 src/Game/fieldobj.c	FindDemonOfRace	-1	*	*	no demon found
@@ -349,7 +349,7 @@ src/Game/treasurebox.c	PickGrowthStats	*	*	*	affiliation slots 0-2 and their pic
 src/Game/treasurebox.c	DropTopStatPicks	*	*	*	a pick on the character's highest stat is dropped one time in four (-1: no pick)
 src/Game/treasurebox.c	TrainingThreshold	*	*	*	training level n needs 3 (n - 1)^2 + 7 points, levels clamped to 0..99
 src/Game/treasurebox.c	AddTrainingPointsRaw	99	*	*	the counter caps at training level 99's threshold
-src/Game/treasurebox.c	ApplyTraining	3	*	*	@identity-TODO: the fourth training kind (talking, analyzing, summoning) has no name
+src/Game/treasurebox.c	ApplyTraining	3	*	*	the demon-interaction training group covers talking, analyzing and summoning
 src/Game/treasurebox.c	GetCellTrapDamage	0x6b	call-argument	*	a sound effect number (the sounds have no names)
 src/Game/treasurebox.c	GetCellTrapDamage	*	case-label	*	alignment trap codes between CELL_ALIGNMENT_TRAP_FIRST and _LAST (their masks, not their codes, differ)
 src/Game/treasurebox.c	GetCellTrapDamage	*	trivial-function-literal	*	no damage below 1%; alignment traps keep the percentage in disableFlag[1]

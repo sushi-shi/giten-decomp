@@ -1919,20 +1919,20 @@ i16 GetDemonLevel(i16 id) {
 RVA(0x00010000, 0x27)
 i16 GetDemonFlagLow(i16 id) {
     u8 flags = ReadDemonTable()->entries[id].flags;
-    if (flags & 4) {
+    if (flags & DEMON_FLAG_LOW_UNAVAILABLE) {
         return -1;
     }
-    return (u8)(flags & 1);
+    return (u8)(flags & DEMON_FLAG_LOW_VALUE);
 }
 
 // -1 when flag bit 6 is set, else flag bit 4.
 RVA(0x00010030, 0x2a)
 i16 GetDemonFlagHigh(i16 id) {
     u8 flags = ReadDemonTable()->entries[id].flags;
-    if (flags & 0x40) {
+    if (flags & DEMON_FLAG_HIGH_UNAVAILABLE) {
         return -1;
     }
-    return (u8)((flags >> 4) & 1);
+    return (u8)((flags & DEMON_FLAG_HIGH_VALUE) >> 4);
 }
 
 RVA(0x00010060, 0x12)

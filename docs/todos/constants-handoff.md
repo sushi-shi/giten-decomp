@@ -136,6 +136,13 @@ Training group:
   The status panel draws this fourth group only for human characters;
   `RecalcDerivedStats` preserves all four named level words.
 
+Demon fusion flags:
+
+- The demon table flag byte has low and high fusion-value bits (0 and 4)
+  plus independent unavailable bits (2 and 6). The getters return -1 for
+  an unavailable pair, otherwise its value 0 or 1. The game meaning of
+  either value pair remains open.
+
 Fusion summary kind:
 
 - Kind 0 leaves the result kind unspecified. `SetFusionSummaryKind` derives

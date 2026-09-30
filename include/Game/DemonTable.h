@@ -7,6 +7,14 @@
 #include <Game/DemonRace.h>
 #include <Ints.h>
 
+// @identity-TODO: the game meaning of the two fusion value bits remains open.
+GZ_ENUM_FLAGS_BEGIN(DemonTableFlags, u8)
+    DEMON_FLAG_LOW_VALUE = 0x01,
+    DEMON_FLAG_LOW_UNAVAILABLE = 0x04,
+    DEMON_FLAG_HIGH_VALUE = 0x10,
+    DEMON_FLAG_HIGH_UNAVAILABLE = 0x40
+GZ_ENUM_FLAGS_END(DemonTableFlags)
+
 // The demon (record) table loaded from data file 0 (kind 12): a count, then a
 // 4-byte record per id (from id 32 on, the demons); plus five sections of
 // strings and bytes indexed through those records.
@@ -14,7 +22,7 @@ typedef struct DemonTableEntry {
     GZ_ENUM_STORAGE(DemonRace, u8) race;
     u8 pantheon;
     u8 level;
-    u8 flags; // @identity-TODO: the two flag-pair domains are unrecovered.
+    GZ_ENUM_STORAGE(DemonTableFlags, u8) flags;
 } DemonTableEntry;
 
 typedef struct DemonTable {
