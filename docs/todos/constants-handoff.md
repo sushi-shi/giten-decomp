@@ -152,7 +152,8 @@ Kept as rows until there is evidence:
 - Field-effect codes 0, 1, 0x1a and 0x20..0x23. ET0004 identifies
   illusion (3), invisibility (0x11), Estoma (0x14), Traesto (0x15),
   Traport (0x16), Trafuri (0x17), Sabatoma (0x19) and Desaman (0x1b).
-- Field-object image code 4 serves redraw, animation and hidden states;
+- Field-object image codes -1 and 0..3 now name the mirrored side,
+  facing rows and acting row. Code 4 serves redraw, animation and hidden states;
   its distinct sprite-row identity remains unproven.
 - The identity of area 0x85.
 - Item kinds 5 and 6. ET0001 has fifteen kind-5 records spanning charms,

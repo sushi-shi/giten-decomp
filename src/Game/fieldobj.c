@@ -287,7 +287,12 @@ static i16 s_facingSprite[4] = {0, 1, 2, -1};
 
 // Image codes by facing relative to the party; negative mirrors the side image.
 DATA(0x00068608)
-static i16 s_facingImageCodes[4] = {0, 1, 2, -1};
+static i16 s_facingImageCodes[4] = {
+    FIELD_OBJECT_IMAGE_FRONT,
+    FIELD_OBJECT_IMAGE_SIDE,
+    FIELD_OBJECT_IMAGE_BACK,
+    FIELD_OBJECT_IMAGE_SIDE_MIRRORED
+};
 
 DATA(0x00068610)
 static i16 s_encounterSpread[4] = {0, 0, 1, 2};

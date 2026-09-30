@@ -17,6 +17,10 @@
 // can include the lit flag for the animated specular-lighting path.
 // clang-format off
 GZ_ENUM_BEGIN(FieldObjectImageCode)
+    FIELD_OBJECT_IMAGE_SIDE_MIRRORED = -1,
+    FIELD_OBJECT_IMAGE_FRONT = 0,
+    FIELD_OBJECT_IMAGE_SIDE = 1,
+    FIELD_OBJECT_IMAGE_BACK = 2,
     FIELD_OBJECT_IMAGE_ACTING = 3,
     FIELD_OBJECT_IMAGE_INDEX_MASK = 0x0f,
     FIELD_OBJECT_IMAGE_LIT = 0x10

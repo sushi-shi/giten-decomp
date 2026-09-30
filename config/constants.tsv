@@ -186,7 +186,6 @@ src/Game/statestack.c	RunLevelUp	*	call-argument	SetGame[SS][tu][eb]*	a step or 
 src/Game/fieldobj.c	s_depthRise	*	data-or-extent	*	@identity-TODO: screen rise in pixels per view depth (0..-4)
 src/Game/fieldobj.c	s_approach[XY]	*	data-or-extent	*	@identity-TODO: approach offsets in pixels per step (0..-4)
 src/Game/fieldobj.c	s_facingSprite	*	data-or-extent	*	sprite per facing relative to the view (-1 mirrors the side sprite)
-src/Game/fieldobj.c	s_facingImageCodes	*	data-or-extent	*	image code per facing relative to the party (-1 mirrors the side image)
 src/Game/fieldobj.c	s_encounterSpread	*	data-or-extent	*	how far across an encounter object may land, per step along (0..-3)
 src/Game/fieldobj.c	*	*	*	*anim*	anim is a frame counter: 0 idle, -1 restart, frames from 1, hidden past frame 8
 src/Game/fieldobj.c	*	0	call-argument	*WordList(*argument 2	an empty word list
@@ -218,7 +217,7 @@ src/Game/fieldobj.c	FindObjectAtParty	0	*	*	search from slot 0; OBJECT_MATCH_ANY
 src/Game/fieldobj.c	UpdateFieldObjects	4	*	*	@identity-TODO: objects at map y 4 and beyond are hidden
 src/Game/fieldobj.c	ClearObjectStuns	*	*	*	cleared[] is a per-slot yes/no word array the caller passes on to ApplyObjectConditions
 src/Game/fieldobj.c	ApplyObjectConditions	0	*	*	marked[] is a per-slot yes/no word array
-src/Game/fieldobj.c	GetObject*ImageCode	*	*	*	@identity-TODO: image code 4 serves redraw, animation and hidden states; 0-2 select facing rows
+src/Game/fieldobj.c	GetObject*ImageCode	*	*	*	@identity-TODO: image code 4 serves redraw, animation and hidden states
 src/Game/fieldobj.c	GetScriptSetFile	3	*	*	a script set lists three script files
 src/Game/fieldobj.c	SaveFieldLayer	0	*	*	the layer's picture moves to the saved copy
 src/Game/fieldobj.c	RestoreFieldLayer	0	*	*	the saved copy's picture moves back to the layer
