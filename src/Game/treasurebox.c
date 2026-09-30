@@ -389,7 +389,7 @@ void IsHotspotTreasureOpen(i32 index) {
             frame += 2;
         case CELL_TREASURE_BOX_LOWER_TEXTURE_HALF:
             frame += 2;
-        case 0x89:
+        case CELL_TREASURE_BOX_SECOND_FRAME_PAIR:
             frame += 2;
     }
 }

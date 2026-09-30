@@ -408,6 +408,11 @@ Kept as rows until there is evidence:
   `RenderTBox`. The dead `IsHotspotTreasureOpen` frame arithmetic also gives
   it the third open/closed frame pair, so it is a `CellCode` enumerator rather
   than a separate treasure-box constant.
+- All 63 disc cells with code 0x88 and all 19 with code 0x89 are treasure-box
+  records. Both map to `CELL_EVENT_FADE_SCENE`; the dead legacy frame selector
+  gives 0x88 the first open/closed pair and 0x89 the second. The Windows
+  renderer uses the first pair for both, so the enum names describe the
+  recorded frame distinction without claiming different Windows visuals.
 - Field-object image codes -1 and 0..4 name the mirrored side, facing rows,
   acting row and reaction frame. The fifth frame of the disc's five-BMP actor
   images is a distinct reaction pose. `FlashHitObject` selects it after a pool

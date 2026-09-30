@@ -10,7 +10,7 @@
 // the alignment traps (CELL_ALIGNMENT_TRAP_FIRST..LAST) spare the alignment
 // sides their mask leaves out. Lists of cells end with CELL_LIST_END.
 // @identity-TODO: the individual NPC picture and other object codes, and the
-// kind-10/12/13 cells 0x7c, 0x88, 0x89, 0x8b, 0x8c, 0x8f and 0x65 are unnamed.
+// kind-10/13 cells 0x7c, 0x8b, 0x8c, 0x8f and 0x65 are unnamed.
 GZ_ENUM_BEGIN(CellCode)
     CELL_SERVICE_TERMINAL = 0x40,
     CELL_EXIT = 0x41,
@@ -50,6 +50,8 @@ GZ_ENUM_BEGIN(CellCode)
     CELL_ARM_TERMINAL = 0x7b,
     CELL_STAIRS_TO_SUBWAY_PLATFORM = 0x7d,
     CELL_FROZEN_SCENE = 0x7f,
+    CELL_TREASURE_BOX_FIRST_FRAME_PAIR = 0x88,
+    CELL_TREASURE_BOX_SECOND_FRAME_PAIR = 0x89,
     CELL_TREASURE_BOX_LOWER_TEXTURE_HALF = 0x8a,
     CELL_DARK = 0x8d,
     CELL_COMMAND_BLOCKED = 0x8e,
