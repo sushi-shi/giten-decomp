@@ -1258,8 +1258,8 @@ b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
 
 #define AccumulateCollapseOrPetrification(blocked, conditions)                                     \
     do {                                                                                           \
-        (blocked) |= HasCondition((conditions), 3);                                                \
-        (blocked) |= HasCondition((conditions), 4);                                                \
+        (blocked) |= HasCondition((conditions), CONDITION_COLLAPSE);                               \
+        (blocked) |= HasCondition((conditions), CONDITION_STONE);                                  \
     } while (0)
 
 // The last condition of `list` that is set, or 0.
