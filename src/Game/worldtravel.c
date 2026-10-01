@@ -395,7 +395,7 @@ void GrowRoute(i16 more) {
         s_routeActive = true;
     }
     s_routeCapacity += more;
-    s_route = ResizeHandle(s_route, s_routeCapacity * 4);
+    s_route = ResizeHandle(s_route, s_routeCapacity * sizeof(MapCoord));
 }
 
 RVA(0x00011f20, 0x28)

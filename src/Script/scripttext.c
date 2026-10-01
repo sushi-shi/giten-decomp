@@ -489,7 +489,7 @@ RVA(0x0002f710, 0x24)
 void OpAllocLongArray(void) {
     i16 index = ReadLongVarIndex();
     i16 count = ReadScriptValue();
-    SetScriptLongVar(index, CreateArrayHandle(count, 4));
+    SetScriptLongVar(index, CreateArrayHandle(count, sizeof(u32)));
 }
 
 RVA(0x0002f740, 0x26)
