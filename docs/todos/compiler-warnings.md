@@ -26,6 +26,11 @@ The C4761 sites by translation unit are listed below so the full audit scope
 survives even though compiler output under `build/` is ignored. Counts are
 individual diagnostics, not distinct source lines.
 
+[Script and graphics width boundaries](warning-width-boundaries.md) and
+[Game argument-width warnings](argument-width-warnings.md) record reviewed
+source groups, retained conversions, and the evidence still needed for a
+change. The generated warning-site report remains a separate tooling worklist.
+
 | Unit | Count | Unit | Count | Unit | Count |
 | --- | ---: | --- | ---: | --- | ---: |
 | `character.c` | 14 | `clock.c` | 13 | `debugmenu.c` | 3 |
