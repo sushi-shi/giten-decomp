@@ -48,7 +48,7 @@ _BOOLEAN_TYPE_SPELLINGS = {"BOOL", "b16", "b32"}
 _LEGACY_BOOLEAN = re.compile(r"\b(?:FALSE|TRUE)\b")
 _STRING = re.compile(r'"(?:\\.|[^"\\\n])*"')
 _CHAR = re.compile(r"'(?:\\.|[^'\\\n])*'")
-_SOURCE_EXTENSIONS = {".cpp", ".cc", ".cxx", ".h", ".hpp", ".inl"}
+_SOURCE_EXTENSIONS = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".inl"}
 
 
 @dataclass(frozen=True)
