@@ -85,6 +85,10 @@ static i16 s_routeCount = 0;
 DATA(0x0007b73c)
 static b16 s_routeActive = false;
 
+// The handle's allocation stride is sizeof(MapCoord).
+#define WriteRoutePoints() ((MapCoord*)HandleWritePtr(s_route))
+#define ReadRoutePoints() ((MapCoord*)HandleReadPtr(s_route))
+
 static __inline void SetWorldTravelDestination(MapCoord destination) {
     g_destinationX = destination.x;
     g_destinationY = destination.y;
@@ -407,7 +411,7 @@ void PushRoutePoint(MapCoord point) {
     if (s_routeCount >= s_routeCapacity) {
         GrowRoute(1);
     }
-    ((MapCoord*)HandleWritePtr(s_route))[s_routeCount] = point;
+    WriteRoutePoints()[s_routeCount] = point;
     s_routeCount++;
 }
 
@@ -427,7 +431,7 @@ MapCoord PopRoutePoint(void) {
         s_routeActive = false;
         return point;
     }
-    point = ((MapCoord*)HandleReadPtr(s_route))[s_routeRead++];
+    point = ReadRoutePoints()[s_routeRead++];
     if (s_routeRead >= s_routeCount) {
         FreeRoute();
     }
