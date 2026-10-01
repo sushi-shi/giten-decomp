@@ -58,7 +58,8 @@ layout and owner-seam examples at their source locations.
 - [Deferred constant identities](constants-handoff.md): review the complete
   producer/consumer domain before replacing a numeric value. `config/constants.tsv`
   records AST-exposed spellings with their reasons. [The separate macro-literal
-  census](macro-literals.md) finds tokens in function-like replacement lists;
+  census](macro-literals.md) finds tokens in function-like and object-like
+  replacement lists;
   for example, `FinalizeAttackDamage` in `include/Game/Attack.h` has damage-scale
   and clamp literals absent from `bare_constants.tsv`. The macro literals lack
   semantic dispositions, so an empty AST open list is not full coverage.
