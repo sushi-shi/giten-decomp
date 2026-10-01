@@ -417,7 +417,9 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
                 g_mpChange = attacker->lastChange;
                 return;
             case SKILL_KIND_EXPERIENCE_DRAIN:
-                attacker->lastChange = min(target->experience, attacker->lastChange);
+                if (target->experience < attacker->lastChange) {
+                    attacker->lastChange = target->experience;
+                }
                 target->experience -= attacker->lastChange;
                 attacker->experience += attacker->lastChange;
                 g_actionResult |= ACTION_DRAIN_EXPERIENCE;
@@ -443,10 +445,10 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
 // target: rolls it, pays its cost, plays the hit sound, applies the change by
 // the action's result code (the draining skills move HP, MP or experience),
 // then handles knockouts and turns the struck object toward the party.
-// @early-stop CFG/register allocation: shared ChangePool tails merge at
-// different points. Retail retains the fatal condition in ebx; this build
-// spills it while retaining the knockout sentinel in ebp. Declaration order,
-// register hints and the prior permutation frontier were byte-flat.
+// @early-stop CFG/register allocation: retail retains the fatal condition in
+// ebx and branches around zeroing it after the target-HP clamp; this build
+// keeps zero in ebx and the fatal condition in ebp. The later ChangePool
+// argument setup and tail joins still have different scheduling.
 RVA(0x0002ac90, 0x800)
 i16 ResolveCombatAction(void) {
     Character* attacker;
@@ -522,7 +524,9 @@ i16 ResolveCombatAction(void) {
         g_statusCondition = INFLICT_NONE;
         attacker->lastChange = 0;
         ResetPoolChanges();
-        s_targetHpBefore = max(1, s_targetHpBefore);
+        if (s_targetHpBefore < 1) {
+            s_targetHpBefore = 1;
+        }
     }
 
     if (IsSkillAction(attacker)) {
