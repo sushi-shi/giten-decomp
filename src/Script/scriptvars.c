@@ -233,7 +233,8 @@ void OpFadeOutAndClear(void) {
     StartScreenFade(SCREEN_FADE_TO_BLACK, 1);
     FinishScreenFade();
     if (g_party.field.pos.area == MAP_AREA_HATSUDAI && g_party.field.pos.level == 8
-        && g_party.field.pos.x == 2 && g_party.field.pos.y == 1 && GetRenderMode() == 2) {
+        && g_party.field.pos.x == 2 && g_party.field.pos.y == 1
+        && GetRenderMode() == RENDER_MODE_SCENE) {
         ResetSprites(SPRITE_LAYERS_PARTY_AND_TEXT);
     }
 }

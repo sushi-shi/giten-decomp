@@ -39,6 +39,7 @@
 #include <Mem/Handle.h>
 #include <Script/EventFlags.h>
 #include <Script/ScenarioFlag.h>
+#include <Script/ScriptVars.h>
 #include <Sound/Sound.h>
 #include <Ui/Panel.h>
 #include <Util/BitSet.h>
@@ -450,7 +451,7 @@ void SpawnLevelObjects(void) {
     }
     ClearAreaNpcs();
     for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
-        if (!IsCellFlagSet(&cell->head, 3) && IsReservedObjectCell(&cell->head)
+        if (!IsCellFlagSet(cell, 3) && IsReservedObjectCell(&cell->head)
             && !IsObjectCell(GetMapCellCode(cell->head.x, cell->head.y))) {
             AddAreaNpc((u8*)cell);
         }
@@ -677,11 +678,11 @@ b16 IsCellAt(i16 x, i16 y, const CellHead* cell) {
     return false;
 }
 
-// Whether the event flag at `offset` in the cell is set; a zero pair is
-// never set.
+// The flag pair at `offset` in a cell or room-list byte record; a zero pair
+// is never set.
 RVA(0x00021810, 0x31)
-b16 IsCellFlagSet(const CellHead* cell, i16 offset) {
-    const u8* bytes = &cell->x;
+b16 IsCellFlagSet(const void* record, i16 offset) {
+    const u8* bytes = record;
 
     if (bytes[offset] == 0 && bytes[offset + 1] == 0) {
         return false;
@@ -716,7 +717,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
     i16 layer;
 
     for (warp = AreaLevelAt(g_areaMap, level)->warps; !IsCellListEnd(&warp->head); warp++) {
-        if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(&warp->head, 6)) {
+        if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(warp, 6)) {
             LatchCellDestination(&warp->head, 3, 4, CELL_FIELD_NONE, 5, 8);
             SetSceneCell(&warp->head);
             kind = FindCellKind(&warp->head);
@@ -728,8 +729,8 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
     }
 
     for (battle = AreaLevelAt(g_areaMap, level)->battles; !IsCellListEnd(&battle->head); battle++) {
-        if (IsCellAt(x, y, &battle->head) && !IsCellFlagSet(&battle->head, 3)
-            && !IsCellFlagSet(&battle->head, 7)) {
+        if (IsCellAt(x, y, &battle->head) && !IsCellFlagSet(battle, 3)
+            && !IsCellFlagSet(battle, 7)) {
             SetFieldPair(battle->battleFlag[0], battle->battleFlag[1]);
             LatchCellDestination(
                 &battle->head,
@@ -745,7 +746,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
     }
 
     for (link = AreaLevelAt(g_areaMap, level)->links; !IsCellListEnd(&link->head); link++) {
-        if (!IsCellAt(x, y, &link->head) || IsCellFlagSet(&link->head, 3)) {
+        if (!IsCellAt(x, y, &link->head) || IsCellFlagSet(link, 3)) {
             continue;
         }
         LatchCellDestination(&link->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
@@ -778,7 +779,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (IsReservedObjectCell(&object->head)) {
             continue;
         }
-        if (!IsCellAt(x, y, &object->head) || IsCellFlagSet(&object->head, 3)) {
+        if (!IsCellAt(x, y, &object->head) || IsCellFlagSet(object, 3)) {
             continue;
         }
         LatchCellDestination(&object->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
@@ -800,7 +801,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         SetSceneCell(&exit->head);
         kind = FindCellKind(&exit->head);
         if (kind == NULL) {
-            if (IsCellFlagSet(&exit->head, 3)) {
+            if (IsCellFlagSet(exit, 3)) {
                 continue;
             }
             return CELL_EVENT_TRAP;
@@ -808,7 +809,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
         if (kind->kind != CELL_EVENT_CHUTE) {
             return kind->kind;
         }
-        if (IsCellFlagSet(&exit->head, 6)) {
+        if (IsCellFlagSet(exit, 6)) {
             continue;
         }
         LatchCellDestination(&exit->head, 3, 4, CELL_FIELD_NONE, 5, CELL_FIELD_NONE);
@@ -831,7 +832,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
     }
 
     for (script = AreaLevelAt(g_areaMap, level)->scripts; !IsCellListEnd(&script->head); script++) {
-        if (!IsCellAt(x, y, &script->head) || IsCellFlagSet(&script->head, 3)) {
+        if (!IsCellAt(x, y, &script->head) || IsCellFlagSet(script, 3)) {
             continue;
         }
         LatchCellDestination(&script->head, 5, 6, 7, CELL_FIELD_NONE, CELL_FIELD_NONE);
@@ -876,7 +877,7 @@ b16 IsDarkCell(i16 x, i16 y) {
         return true;
     }
     for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
-        if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(&cell->head, 3)
+        if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(cell, 3)
             && cell->head.code == CELL_DARK) {
             return true;
         }
@@ -893,7 +894,7 @@ b16 IsCellCommandBlocked(i16 x, i16 y) {
         return true;
     }
     for (cell = g_areaLevel->objects; !IsCellListEnd(&cell->head); cell++) {
-        if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(&cell->head, 3)
+        if (IsCellAt(x, y, &cell->head) && !IsCellFlagSet(cell, 3)
             && cell->head.code == CELL_COMMAND_BLOCKED) {
             return true;
         }
@@ -1002,17 +1003,17 @@ GZ_ENUM_RETURN(CellCode, i16) GetEventCellCode(i16 x, i16 y) {
         return CELL_NONE;
     }
     for (warp = g_areaLevel->warps; !IsCellListEnd(&warp->head); warp++) {
-        if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(&warp->head, 6)) {
+        if (IsCellAt(x, y, &warp->head) && !IsCellFlagSet(warp, 6)) {
             return warp->head.code;
         }
     }
     for (link = g_areaLevel->links; !IsCellListEnd(&link->head); link++) {
-        if (IsCellAt(x, y, &link->head) && !IsCellFlagSet(&link->head, 3)) {
+        if (IsCellAt(x, y, &link->head) && !IsCellFlagSet(link, 3)) {
             return link->head.code;
         }
     }
     for (script = g_areaLevel->scripts; !IsCellListEnd(&script->head); script++) {
-        if (IsCellAt(x, y, &script->head) && !IsCellFlagSet(&script->head, 3)) {
+        if (IsCellAt(x, y, &script->head) && !IsCellFlagSet(script, 3)) {
             return script->head.code;
         }
     }
@@ -1030,7 +1031,7 @@ i16 IsStepBarred(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 
     for (door = g_areaLevel->doors; !IsCellListEnd(&door->head); door++) {
         if ((door->head.code & 0xf) != WALL_KIND_UNBARRED_DOOR
             && (door->head.code >> 4) == facing
-            && IsCellAt(x, y, &door->head) && !IsCellFlagSet(&door->head, 3)) {
+            && IsCellAt(x, y, &door->head) && !IsCellFlagSet(door, 3)) {
             return door->head.code;
         }
     }
@@ -1213,13 +1214,13 @@ ExitCell* CopyExitAt(i16 x, i16 y, ExitCell* out) {
         if (IsCellAt(x, y, &exit->head)) {
             kind = FindCellKind(&exit->head);
             if (kind == NULL) {
-                if (!IsCellFlagSet(&exit->head, 3)) {
+                if (!IsCellFlagSet(exit, 3)) {
                     for (i = 0; i < sizeof(ExitCell); i++) {
                         ((u8*)out)[i] = ((u8*)exit)[i];
                     }
                     return out;
                 }
-            } else if (kind->kind == CELL_EVENT_CHUTE && !IsCellFlagSet(&exit->head, 6)) {
+            } else if (kind->kind == CELL_EVENT_CHUTE && !IsCellFlagSet(exit, 6)) {
                 for (i = 0; i < sizeof(ExitCell); i++) {
                     ((u8*)out)[i] = ((u8*)exit)[i];
                 }

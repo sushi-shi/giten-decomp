@@ -3397,6 +3397,9 @@ void FreeGlyphSurface(void) {
 
 // Draws `text` (Shift-JIS; tabs and newlines skipped) with attribute `attr`
 // at pixel (x, y) of layer `layer`'s work surface.
+// API-forced: the public text is char*; the decoder reads its encoded bytes.
+#define ReadStringTextChar(code, text, pos)                                                        \
+    ReadTextChar((code), reinterpret_cast<const u8*>(text), (pos))
 RVA(0x00051650, 0xf8)
 void DrawLayerText(i16 layer, i16 x, i16 y, const char* text, i32 attr) {
     HDC dc;
@@ -3410,8 +3413,7 @@ void DrawLayerText(i16 layer, i16 x, i16 y, const char* text, i32 attr) {
     while (text[pos] != 0) {
         u16 code;
 
-        // API-forced: ReadTextChar walks the Shift-JIS text as bytes
-        next = ReadTextChar(&code, reinterpret_cast<const u8*>(text), pos);
+        next = ReadStringTextChar(&code, text, pos);
         memset(glyph, 0, sizeof(glyph));
         if (code != '\t' && code != '\n') {
             BlitGlyph(x, y, attr, dc, RenderGlyph(code, glyph), GetTextGlyphWidth(attr));
@@ -3439,8 +3441,7 @@ void DrawPlaneText(i16 plane, i16 x, i16 y, const char* text, i32 attr) {
     while (text[pos] != 0) {
         u16 code;
 
-        // API-forced: ReadTextChar walks the Shift-JIS text as bytes
-        next = ReadTextChar(&code, reinterpret_cast<const u8*>(text), pos);
+        next = ReadStringTextChar(&code, text, pos);
         memset(glyph, 0, sizeof(glyph));
         if (code != '\t' && code != '\n') {
             BlitGlyph(x, y, attr, dc, RenderGlyph(code, glyph), GetTextGlyphWidth(attr));
@@ -3470,8 +3471,7 @@ void DrawStatusText(i16 x, i16 y, const char* text, i32 attr) {
     while (text[pos] != 0) {
         u16 code;
 
-        // API-forced: ReadTextChar walks the Shift-JIS text as bytes
-        next = ReadTextChar(&code, reinterpret_cast<const u8*>(text), pos);
+        next = ReadStringTextChar(&code, text, pos);
         memset(glyph, 0, sizeof(glyph));
         if (code != '\t' && code != '\n') {
             BlitGlyph(x, y, attr, dc, RenderGlyph(code, glyph), GetTextGlyphWidth(attr));
@@ -3517,8 +3517,7 @@ b16 DrawBandText(i16 x, i16 y, const char* text, i32 attr, i16 band) {
     while (text[pos] != 0) {
         u16 code;
 
-        // API-forced: ReadTextChar walks the Shift-JIS text as bytes
-        next = ReadTextChar(&code, reinterpret_cast<const u8*>(text), pos);
+        next = ReadStringTextChar(&code, text, pos);
         memset(glyph, 0, sizeof(glyph));
         if (code != '\t' && code != '\n') {
             BlitGlyph(px, 0, attr, dc, RenderGlyph(code, glyph), GetTextGlyphWidth(attr));
@@ -3794,13 +3793,12 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
     if (g_primarySurface->GetSurfaceDesc(&primary) != DD_OK) {
         return 0;
     }
-    ZeroMemory(&desc, sizeof(desc));
-    desc.dwSize = sizeof(desc);
-    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-    desc.dwWidth = s_planeLayouts[kind].width;
-    desc.dwHeight = s_planeLayouts[kind].height;
-    desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-    desc.ddpfPixelFormat = primary.ddpfPixelFormat;
+    InitOffscreenSurfaceDesc(
+        desc,
+        s_planeLayouts[kind].width,
+        s_planeLayouts[kind].height,
+        primary.ddpfPixelFormat
+    );
     if (g_ddraw->CreateSurface(&desc, &p->surface, NULL) != DD_OK) {
         return TEXT_PLANE_NONE;
     }
@@ -5338,8 +5336,7 @@ void ErasePictureSurface(i16 picture) {
         g_titleMenuPicture.surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
     } else {
         g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
-        g_screenLayers[SCREEN_LAYER_PANEL]
-            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+        ClearPanelLayerSurface();
     }
 }
 
@@ -5360,8 +5357,7 @@ RVA(0x00054390, 0x3a)
 void HideScreenLayer(i16 layer) {
     g_screenLayers[layer]->visible = false;
     if (layer == SCREEN_LAYER_PANEL) {
-        g_screenLayers[SCREEN_LAYER_PANEL]
-            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+        ClearPanelLayerSurface();
     }
 }
 
@@ -5799,17 +5795,17 @@ DATA(0x0006db78)
 static POINT s_padPositions[4] = {{32, 0}, {32, 64}, {0, 32}, {64, 32}};
 
 DATA(0x0006db98)
-static i32 s_padGrid[10] = {
-    0,
+static GZ_ENUM_STORAGE(NavPadButton, i32) s_padGrid[10] = {
+    PAD_NONE,
     PAD_FORWARD,
-    0,
+    PAD_NONE,
     PAD_LEFT,
     PAD_RELEASED,
     PAD_RIGHT,
-    0,
+    PAD_NONE,
     PAD_BACK,
-    0,
-    0,
+    PAD_NONE,
+    PAD_NONE,
 };
 
 // The character panel's commands: the ids shown on its eight lines (-1 for
@@ -5839,7 +5835,7 @@ static void (*s_panelCommands[PANEL_COMMAND_COUNT])(i16 character) = {
 
 // The pad button last pressed down.
 DATA(0x00090bcc)
-static i32 s_pressedPadButton;
+static GZ_ENUM_STORAGE(NavPadButton, i32) s_pressedPadButton;
 
 // The party panels' last drawn states.
 DATA(0x00090af8)
@@ -5860,8 +5856,9 @@ void FreeScreenLayers(void) {
 }
 
 RVA(0x00055020, 0x3f)
-b32 DrawPadButton(LPDIRECTDRAWSURFACE surface, i32 button, b32 pressed) {
-    if (button < PAD_FORWARD || button > PAD_RIGHT) {
+b32 DrawPadButton(
+    LPDIRECTDRAWSURFACE surface, GZ_ENUM_PARAM(NavPadButton, i32) button, b32 pressed) {
+    if (button < PAD_FIRST || button > PAD_LAST) {
         return false;
     }
     return BlitImage(
@@ -5936,7 +5933,7 @@ static b32 PaintLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, ScreenLayer* lay
 // in the primary's pixel format (and a second one for the slots that have a
 // work surface), painted for its slot; returns nonzero on failure.
 RVA(0x000551c0, 0x206)
-b32 CreateScreenLayer(i32 slot) {
+b32 CreateScreenLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot) {
     DDSURFACEDESC primary;
     DDSURFACEDESC desc;
     DDCOLORKEY key;
@@ -5951,13 +5948,12 @@ b32 CreateScreenLayer(i32 slot) {
     if (g_primarySurface->GetSurfaceDesc(&primary) != DD_OK) {
         return false;
     }
-    ZeroMemory(&desc, sizeof(desc));
-    desc.dwSize = sizeof(desc);
-    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-    desc.dwWidth = s_layerSize[slot].cx;
-    desc.dwHeight = s_layerSize[slot].cy;
-    desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-    desc.ddpfPixelFormat = primary.ddpfPixelFormat;
+    InitOffscreenSurfaceDesc(
+        desc,
+        s_layerSize[slot].cx,
+        s_layerSize[slot].cy,
+        primary.ddpfPixelFormat
+    );
     if (g_ddraw->CreateSurface(&desc, &layer->surface, NULL) != DD_OK) {
         delete layer;
         return true;
@@ -6002,7 +5998,7 @@ b32 CreateScreenLayer(i32 slot) {
     ((layer)->visible && (layer)->x <= (px) && (layer)->x + (layer)->source.right > (px)           \
      && (layer)->y <= (py) && (layer)->y + (layer)->source.bottom > (py))
 
-// The slot of the topmost layer at (x, y), SCREEN_LAYER_COUNT for none; on
+// The slot of the topmost layer at (x, y), SCREEN_LAYER_NONE for none; on
 // the navigation pad only its opaque pixels count, and the pad button under
 // them becomes the pressed and held one.
 RVA(0x000553d0, 0x142)
@@ -6040,7 +6036,7 @@ GZ_ENUM_RETURN(ScreenLayerSlot, i32) LayerAtPoint(u32 x, u32 y) {
     if (i < SCREEN_LAYER_COUNT - 1) {
         return g_layerStack[i]->slot;
     }
-    return SCREEN_LAYER_COUNT;
+    return SCREEN_LAYER_NONE;
 }
 
 // The stack index of the topmost layer at (x, y), -1 for none.

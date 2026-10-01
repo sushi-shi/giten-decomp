@@ -37,6 +37,7 @@
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
 #include <Game/ObjectRecordId.h>
+#include <Game/Party.h>
 #include <Game/PartyAction.h>
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
@@ -1014,7 +1015,7 @@ i16 GetSkillResistance(Character* actor, i16 skill, b16 report, b16 sameSide, i1
 
 RVA(0x00006dc0, 0x34)
 i16 GetItemResistance(Character* actor, i16 item, b16 report, b16 sameSide, i16* attribute) {
-    *attribute = GetLoadedRecord(item)->params[0xf];
+    *attribute = GetItemAttackAttribute(GetLoadedRecord(item));
     return GetActionResistance(actor, *attribute, ATTACK_MAGIC, report, sameSide);
 }
 
@@ -1040,7 +1041,7 @@ GZ_ENUM_RETURN(AttackAttribute, i16) GetPickedAttackAttribute(Character* actor, 
             *condition = GetEquipmentInflictedCondition(GetLoadedRecord(actor->pickTarget));
             return GetEquipmentAttribute(GetLoadedRecord(actor->pickTarget));
     }
-    return 0;
+    return ATTACK_ATTRIBUTE_SWORD;
 }
 
 RVA(0x00006f20, 0x1a4)
@@ -1150,7 +1151,7 @@ i16 GetFieldMap(void) {
 }
 
 RVA(0x00007200, 0x7)
-i16 GetFieldEntryState(void) {
+GZ_ENUM_RETURN(FieldMapOutcome, i16) GetFieldEntryState(void) {
     return s_fieldEntryState;
 }
 
@@ -1413,9 +1414,7 @@ b16 RunFieldEncounter(void) {
                 PushGameState(GAME_STATE_LEVEL_UP);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
                 PushWaitState(WAIT_INPUT_OR_FRAMES, WAIT_ON_ANY_INPUT, 0x50, -1);
-                MarkRewardsPending();
-                FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
-                ShowMessage(g_scratchBuffer, 0x3c);
+                ShowPendingLevelUpMessage(g_scratchBuffer);
                 return false;
             }
             s_fieldPairFirst = 0;
@@ -1491,9 +1490,9 @@ b16 RunFieldState(void) {
     i16 key;
     SetFieldRenderMode();
     SetInfoBarLayout(0);
-    switch ((u16)GetGamePhase()) {
+    switch (GetGamePhase()) {
         case FIELD_ENCOUNTER_PHASE_ENTER:
-            switch ((u16)GetGameStep()) {
+            switch (GetGameStep()) {
                 case FIELD_ENCOUNTER_STEP_SETUP:
                     ClearSceneSurfaces();
                     NextGameStep();
@@ -1602,9 +1601,7 @@ b16 RunFieldState(void) {
                 PushGameState(GAME_STATE_LEVEL_UP);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
                 PushWaitState(WAIT_INPUT_OR_FRAMES, -1, 0x50, -1);
-                MarkRewardsPending();
-                FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
-                ShowMessage(g_scratchBuffer, 0x3c);
+                ShowPendingLevelUpMessage(g_scratchBuffer);
                 return false;
             }
             s_fieldPairFirst = 0;
@@ -1881,7 +1878,7 @@ i16 GetEquipmentHitModifier(Character* attacker, Character* target) {
     AddArmorSlotHitModifier(&GetCharacterEquipment(target)[EQUIP_SLOT_ACCESSORY], &modifier);
     modifier = -modifier;
     if (attacker->pickTarget >= 1) {
-        modifier += GetLoadedRecord(attacker->pickTarget)->params[0x1c];
+        modifier += GetWeaponHitModifier(GetLoadedRecord(attacker->pickTarget));
     }
     return modifier;
 }
@@ -2070,11 +2067,7 @@ i32 ComputeGunDamage(Character* attacker, Character* target, i16 result) {
         amount *= 1.2;
     }
     facing = GetCombatantFacingDifference(g_actorId, g_targetId);
-    if (facing == FACING_FROM_BEHIND) {
-        amount *= 1.5;
-    } else if (facing != FACING_FACE_TO_FACE) {
-        amount *= 1.2;
-    }
+    ApplyFacingDamageBonus(amount, facing);
     if (result == BATTLE_ACTION_GRAZED) {
         amount *= 0.25;
     }
@@ -2082,10 +2075,7 @@ i32 ComputeGunDamage(Character* attacker, Character* target, i16 result) {
         amount *= 1.5;
     }
     damage = RoundToInt(amount * 100.0);
-    damage = ScaleActionValue(damage, g_attackResistance, 2);
-    damage = ScaleByMoonValue(damage, attacker->moonRow, 2);
-    damage = RandomPercent(damage, -20, 20);
-    damage = ClampInt(damage / 100, 0, 0x7fffffff);
+    FinalizeAttackDamage(damage, attacker);
     if (damage == 0) {
         SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
     }
@@ -2377,7 +2367,7 @@ void MarkPickDone(void) {
 }
 
 RVA(0x000094c0, 0x7)
-i16 GetPickMode(void) {
+GZ_ENUM_RETURN(PartyCommandPhase, i16) GetPickMode(void) {
     return s_pickMode;
 }
 
@@ -2692,7 +2682,7 @@ i16 GetMemberPickRange(i16 id) {
 // @identity-TODO: a second getter of the pick mode, called from another
 // module; whether it once differed is unknown.
 RVA(0x00009cf0, 0x7)
-i16 QueryPickMode(void) {
+GZ_ENUM_RETURN(PartyCommandPhase, i16) QueryPickMode(void) {
     return s_pickMode;
 }
 

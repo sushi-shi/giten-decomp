@@ -489,7 +489,7 @@ RVA(0x0002f710, 0x24)
 void OpAllocLongArray(void) {
     i16 index = ReadLongVarIndex();
     i16 count = ReadScriptValue();
-    SetScriptLongVar(index, CreateArrayHandle(count, 4));
+    SetScriptLongVar(index, CreateArrayHandle(count, sizeof(u32)));
 }
 
 RVA(0x0002f740, 0x26)
@@ -498,12 +498,16 @@ void OpFreeLongArray(void) {
     SetScriptLongVar(index, FreeHandle(GetScriptLongVar(index)));
 }
 
+// Script long variables hold handles to four-byte array elements here.
+#define ReadLongArray(index) ((u32*)HandleReadPtr(GetScriptLongVar(index)))
+#define WriteLongArray(index) ((u32*)HandleWritePtr(GetScriptLongVar(index)))
+
 RVA(0x0002f770, 0x3e)
 void OpGetLongArrayItem(void) {
     i16 array = ReadLongVarIndex();
     i16 item = ReadScriptValue();
     i16 index = ReadLongVarIndex();
-    SetScriptLongVar(index, ((u32*)HandleReadPtr(GetScriptLongVar(array)))[item]);
+    SetScriptLongVar(index, ReadLongArray(array)[item]);
 }
 
 RVA(0x0002f7b0, 0x34)
@@ -511,7 +515,7 @@ void OpSetLongArrayItem(void) {
     i16 array = ReadLongVarIndex();
     i16 item = ReadScriptValue();
     u32 value = ReadScriptValue();
-    ((u32*)HandleWritePtr(GetScriptLongVar(array)))[item] = value;
+    WriteLongArray(array)[item] = value;
 }
 
 // Loads data file `id` (of `kind`) into a handle stored in a long variable:
@@ -565,6 +569,7 @@ static __inline i32 ReadSizedDataInt(const u8* data, i16 offset, i16 size, i16 s
 // Reads a little-endian integer of `size` bytes (sign-extended when `size`
 // is negative) at `offset` into record `record` of a loaded data file (a
 // table of word offsets first).
+#define GetRecordDataOffset(data, record) (((i16*)(data))[record])
 RVA(0x0002f8a0, 0xa9)
 void OpReadRecordInt(void) {
     i16 array = ReadLongVarIndex();
@@ -580,7 +585,7 @@ void OpReadRecordInt(void) {
         size = -size;
     }
     data = HandleReadPtr(GetScriptLongVar(array));
-    offset += ((i16*)data)[record];
+    offset += GetRecordDataOffset(data, record);
     value = ReadSizedDataInt(data, offset, size, sign);
     SetScriptLongVar(index, value);
 }
@@ -630,7 +635,7 @@ void OpCaptureRecordString(void) {
     i16 record = ReadScriptValue();
     i16 offset = ReadScriptValue();
     char* data = HandleReadPtr(GetScriptLongVar(array));
-    SetCapturedText(data + (i16)(((i16*)data)[record] + offset));
+    SetCapturedText(data + (i16)(GetRecordDataOffset(data, record) + offset));
 }
 
 // Runs the formatted text line (0) or the captured text as a text script.

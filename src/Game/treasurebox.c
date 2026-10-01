@@ -11,6 +11,7 @@
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <File/DataTableId.h>
+#include <Game/AbortFlag.h>
 #include <Game/ActorFlag.h>
 #include <Game/Alignment.h>
 #include <Game/Analyze.h>
@@ -2806,7 +2807,7 @@ u8 GetGridByte(i32* grid, i16 x, i16 y) {
 RVA(0x0001ebe0, 0x2e)
 b16 IsRegionFlagOn(u8* list, i16 offset) {
     b16 invert = list[offset + 2] != 0;
-    return (IsCellFlagSet((CellHead*)list, offset) != false) ^ invert;
+    return (IsCellFlagSet(list, offset) != false) ^ invert;
 }
 
 // Marks the regions of a level's room list: entries of `stride` bytes (a

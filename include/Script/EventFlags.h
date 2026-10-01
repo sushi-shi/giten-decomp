@@ -84,6 +84,7 @@ b32 ModifyEventFlag(u16 bank, u16 index, GZ_ENUM_PARAM(BitChangeMode, i16) op);
 b32 TestEventFlag(u16 bank, u16 index);
 u32 GetFlagSettings(void);
 void SetFlagSettings(u32 packed);
+void SetFlagTag(u8* tag);
 
 void OpModifyEventFlagByValue(void);
 

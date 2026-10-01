@@ -5,6 +5,8 @@
 
 #include <Ints.h>
 
+#include <stddef.h>
+
 // A counted word list (count, then an allocated array): InitWordList allocates
 // it, ResetWordList frees and reallocates it.
 typedef struct WordList {
@@ -15,7 +17,7 @@ typedef struct WordList {
 #define InitEmptyWordList(list)                                                                    \
     do {                                                                                           \
         (list)->count = 0;                                                                         \
-        (list)->words = 0;                                                                         \
+        (list)->words = NULL;                                                                      \
     } while (0)
 
 static __inline i16 GetWordCount(const WordList* list) {

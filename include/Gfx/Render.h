@@ -3,29 +3,34 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Ints.h>
 
-extern i16 g_renderMode;
-
-// The frame renderer's mode (the index into its handler table 0x46bc58).
+// The frame renderer's mode, used to index its handler table.
 // @identity-TODO: modes 0 (event picture), 3 (the view with the field
 // composited) and 9 (layers and text only) are named from their handlers.
-#define RENDER_MODE_EVENT 0
-#define RENDER_MODE_VIEW 1
-#define RENDER_MODE_SCENE 2
-#define RENDER_MODE_VIEW_FRAME 3
-#define RENDER_MODE_PICTURE 4
-#define RENDER_MODE_PANEL 5
-#define RENDER_MODE_FIELD 6
-#define RENDER_MODE_BLANK 7
-#define RENDER_MODE_STATUS 8
-#define RENDER_MODE_LAYERS 9
-#define RENDER_MODE_SAVE 15
+GZ_ENUM_BEGIN_SPLIT(RenderMode, i16)
+    RENDER_MODE_EVENT = 0,
+    RENDER_MODE_VIEW = 1,
+    RENDER_MODE_SCENE = 2,
+    RENDER_MODE_VIEW_FRAME = 3,
+    RENDER_MODE_PICTURE = 4,
+    RENDER_MODE_PANEL = 5,
+    RENDER_MODE_FIELD = 6,
+    RENDER_MODE_BLANK = 7,
+    RENDER_MODE_STATUS = 8,
+    RENDER_MODE_LAYERS = 9,
+    RENDER_MODE_SAVE = 15
+GZ_ENUM_END_SPLIT(RenderMode)
+
+extern GZ_ENUM_STORAGE(RenderMode, i16) g_renderMode;
 
 // The blank screen's sub-modes (see StepBlankRenderMode).
-#define BLANK_STEP_NONE 0
-#define BLANK_STEP_FIRST 1
-#define BLANK_STEP_SECOND 2
+GZ_ENUM_BEGIN_SPLIT(BlankRenderStep, i32)
+    BLANK_STEP_NONE = 0,
+    BLANK_STEP_FIRST = 1,
+    BLANK_STEP_SECOND = 2
+GZ_ENUM_END_SPLIT(BlankRenderStep)
 
 // @identity-TODO: The naming of render modes is inferred from the mode-2 frame handler (0x4ea10
 // draws the background surface when 0x8d700 is set); unproven.
@@ -57,6 +62,6 @@ RVA_DECL(0x00049d10)
 void StepBlankRenderMode(void);
 
 RVA_DECL(0x00049d50)
-i16 GetRenderMode(void);
+GZ_ENUM_RETURN(RenderMode, i16) GetRenderMode(void);
 
 #endif // GITEN_GFX_RENDER_H

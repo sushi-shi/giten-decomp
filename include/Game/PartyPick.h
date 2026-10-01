@@ -1,6 +1,8 @@
 #ifndef GITEN_GAME_PARTYPICK_H
 #define GITEN_GAME_PARTYPICK_H
 
+#include <EnumDomain.h>
+#include <Game/PartyCommand.h>
 #include <Ints.h>
 
 // The party position saved when the command's target is confirmed; summoning
@@ -13,11 +15,11 @@ extern i16 g_commandPosition;
 void CloseFieldWindows(void);
 i16 CheckPickTarget(i16 index);
 void MarkPickDone(void);
-i16 GetPickMode(void);
+GZ_ENUM_RETURN(PartyCommandPhase, i16) GetPickMode(void);
 i16 RunMemberPickMenu(i16 id);
 void SetMemberPickRole(i16 id, i8 role);
 i16 GetMemberPickRange(i16 id);
-i16 QueryPickMode(void);
+GZ_ENUM_RETURN(PartyCommandPhase, i16) QueryPickMode(void);
 i16 GetTickElapsed(void);
 i16 SwapInForPick(i16 keep, i16 slot);
 void RestoreSwappedMember(void);

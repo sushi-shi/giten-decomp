@@ -81,9 +81,10 @@ typedef struct MenuBox {
     // entry indices (the bag discard menu), or a script menu's tag value.
     union {
         struct Character* character;
+        const void* raw;
         char** text;
         i16* entries;
-        struct MenuEntry* table;
+        const struct MenuEntry* table;
         struct SystemMenuEntry* systemTable;
         struct ItemStackList* itemList;
         struct PartyMemberList* memberList;
@@ -115,7 +116,7 @@ MenuBox* CreateMenuBox(MenuBox* old, i16 window, i16 panelRows);
 // Moves the menu's list to (x, y).
 void MoveMenuBox(MenuBox* menu, i16 x, i16 y);
 
-void SetMenuItems(MenuBox* menu, i16 pageRows, void* items, i16 itemCount, MenuHandler handler);
+void SetMenuItems(MenuBox* menu, i16 pageRows, const void* items, i16 itemCount, MenuHandler handler);
 
 GZ_ENUM_RETURN(TextEvent, i16) RunMenu(MenuBox* menu);
 void DispatchMenuEvent(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);

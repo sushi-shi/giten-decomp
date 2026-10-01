@@ -540,11 +540,11 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(GZ_ENUM_PARAM(ActorAlertMode, 
             AlertActor(g_curScript->actor, ATTITUDE_VERY_HOSTILE);
         }
         if (level == ACTOR_ALERT_IMMEDIATE) {
-            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining > ACTION_WAIT_QUEUED) {
+            if (GetCharacterActionWait(g_curScript->actor)->remaining > ACTION_WAIT_QUEUED) {
                 GetCharacterActionWait(g_curScript->actor)->remaining = ACTION_WAIT_QUEUED;
             }
         } else if (level == ACTOR_ALERT_DELAY) {
-            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining < ACTION_WAIT_EXTENDED) {
+            if (GetCharacterActionWait(g_curScript->actor)->remaining < ACTION_WAIT_EXTENDED) {
                 GetCharacterActionWait(g_curScript->actor)->remaining = ACTION_WAIT_EXTENDED;
             }
         }
@@ -822,8 +822,8 @@ void OpClampLongVar(void) {
 
 RVA(0x00033ac0, 0x35)
 void OpRollLongVar(void) {
-    i32 lo;
-    i32 hi;
+    i16 lo;
+    i16 hi;
     ReadLongVarIndex();
     lo = ReadScriptValue();
     hi = ReadScriptValue();
@@ -2161,7 +2161,7 @@ void OpListBagByCategory(void) {
         entries[count++] = i;
     }
     count += spare;
-    handle = CreateArrayHandle(count + spare, 4);
+    handle = CreateArrayHandle(count + spare, sizeof(*list));
     SetScriptLongVar(listVar, handle);
     SetScriptLongVar(countVar, count);
     list = HandleWritePtr(handle);
@@ -2235,7 +2235,7 @@ void OpOpenFusionScreen(GZ_ENUM_PARAM(FusionMenuStep, i16) kind) {
 
 RVA(0x00035bb0, 0x1c)
 void OpRunFusion(b16 triple) {
-    SetBlankStep(1);
+    SetBlankStep(BLANK_STEP_FIRST);
     if (!triple) {
         RunPairFusion();
     } else {
@@ -3764,7 +3764,7 @@ RVA(0x00037e80, 0x18)
 void OpSaveObjectConditions(void) {
     Character* object = ReadScriptObject();
     if (object) {
-        SetFlagTag(GetCharacterConditions(object));
+        SetFlagTag(GetCharacterConditions(object)->bits);
     }
 }
 

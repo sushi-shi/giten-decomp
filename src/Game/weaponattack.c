@@ -95,11 +95,7 @@ i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result) {
         amount *= 1.2;
     }
     facing = GetCombatantFacingDifference(g_actorId, g_targetId);
-    if (facing == FACING_FROM_BEHIND) {
-        amount *= 1.5;
-    } else if (facing != FACING_FACE_TO_FACE) {
-        amount *= 1.2;
-    }
+    ApplyFacingDamageBonus(amount, facing);
     if (result == BATTLE_ACTION_GRAZED) {
         amount *= 0.25;
     }
@@ -107,10 +103,7 @@ i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result) {
         amount *= 1.5;
     }
     damage = RoundToInt(amount * 100.0);
-    damage = ScaleActionValue(damage, g_attackResistance, 2);
-    damage = ScaleByMoonValue(damage, attacker->moonRow, 2);
-    damage = RandomPercent(damage, -20, 20);
-    damage = ClampInt(damage / 100, 0, 0x7fffffff);
+    FinalizeAttackDamage(damage, attacker);
     if (damage <= 0) {
         SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
     }

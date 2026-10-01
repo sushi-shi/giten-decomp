@@ -85,6 +85,10 @@ static i16 s_routeCount = 0;
 DATA(0x0007b73c)
 static b16 s_routeActive = false;
 
+// The handle's allocation stride is sizeof(MapCoord).
+#define WriteRoutePoints() ((MapCoord*)HandleWritePtr(s_route))
+#define ReadRoutePoints() ((MapCoord*)HandleReadPtr(s_route))
+
 static __inline void SetWorldTravelDestination(MapCoord destination) {
     g_destinationX = destination.x;
     g_destinationY = destination.y;
@@ -164,7 +168,7 @@ MapCoord ComputeWorldTravelStep(i16 layer, i16 x, i16 y, i16 destX, i16 destY, i
 RVA(0x000118b0, 0xcb)
 MapCoord FindWorldTravelStep(i16 layer, i16 x, i16 y, i16 destX, i16 destY) {
     MapCoord delta;
-    i16 direction;
+    GZ_ENUM_LOCAL(ViewDirection, i16) direction;
     i16 i;
     delta.x = destX - x;
     delta.y = destY - y;
@@ -184,7 +188,7 @@ MapCoord FindWorldTravelStep(i16 layer, i16 x, i16 y, i16 destX, i16 destY) {
 }
 
 RVA(0x00011980, 0x43)
-i16 GetWorldTravelDirection(i16 x, i16 y) {
+GZ_ENUM_RETURN(ViewDirection, i16) GetWorldTravelDirection(i16 x, i16 y) {
     if (abs(x) < abs(y)) {
         return y < 0 ? VIEW_NORTH : VIEW_SOUTH;
     }
@@ -192,7 +196,7 @@ i16 GetWorldTravelDirection(i16 x, i16 y) {
 }
 
 RVA(0x000119d0, 0x40)
-i16 GetWorldTravelLateralDelta(i16 x, i16 y, i16 direction) {
+i16 GetWorldTravelLateralDelta(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     switch (direction) {
         case VIEW_NORTH:
             return x;
@@ -230,7 +234,12 @@ DATA(0x000644f8)
 const u8 g_worldTravelTerrainFlags[16] = {0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
 
 RVA(0x00011a10, 0x120)
-void LoadWorldTravelCandidates(i16 layer, i16 x, i16 y, i16 direction) {
+void LoadWorldTravelCandidates(
+    i16 layer,
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction
+) {
     i16 row;
     i16 column;
     u8 code = 0;
@@ -317,7 +326,7 @@ void WeightWorldTravelCandidates(i16 lateral) {
 }
 
 RVA(0x00011cf0, 0x84)
-void PreferWorldTravelDestination(i16 x, i16 y, i16 direction) {
+void PreferWorldTravelDestination(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     i16 row = 0;
     i16 column = 0;
     GetWorldTravelGridOffset(x, y, direction, &row, &column);
@@ -331,7 +340,7 @@ void PreferWorldTravelDestination(i16 x, i16 y, i16 direction) {
 }
 
 RVA(0x00011d80, 0xd0)
-MapCoord GetBestWorldTravelStep(i16 direction) {
+MapCoord GetBestWorldTravelStep(GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     i16 bestRow = 0;
     i16 bestColumn = 0;
     u8 bestScore = 0;
@@ -371,7 +380,7 @@ MapCoord GetBestWorldTravelStep(i16 direction) {
 }
 
 RVA(0x00011e50, 0x7c)
-void ExcludeWorldTravelStep(i16 x, i16 y, i16 direction) {
+void ExcludeWorldTravelStep(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     i16 row = 0;
     i16 column = 0;
     GetWorldTravelGridOffset(x, y, direction, &row, &column);
@@ -391,7 +400,7 @@ void GrowRoute(i16 more) {
         s_routeActive = true;
     }
     s_routeCapacity += more;
-    s_route = ResizeHandle(s_route, s_routeCapacity * 4);
+    s_route = ResizeHandle(s_route, s_routeCapacity * sizeof(MapCoord));
 }
 
 RVA(0x00011f20, 0x28)
@@ -407,7 +416,7 @@ void PushRoutePoint(MapCoord point) {
     if (s_routeCount >= s_routeCapacity) {
         GrowRoute(1);
     }
-    ((MapCoord*)HandleWritePtr(s_route))[s_routeCount] = point;
+    WriteRoutePoints()[s_routeCount] = point;
     s_routeCount++;
 }
 
@@ -427,7 +436,7 @@ MapCoord PopRoutePoint(void) {
         s_routeActive = false;
         return point;
     }
-    point = ((MapCoord*)HandleReadPtr(s_route))[s_routeRead++];
+    point = ReadRoutePoints()[s_routeRead++];
     if (s_routeRead >= s_routeCount) {
         FreeRoute();
     }

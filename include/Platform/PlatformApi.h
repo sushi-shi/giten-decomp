@@ -1,6 +1,7 @@
 #ifndef GITEN_PLATFORM_PLATFORMAPI_H
 #define GITEN_PLATFORM_PLATFORMAPI_H
 
+#include <Gfx/Render.h>
 #include <Ints.h>
 #include <Platform/ScreenFade.h>
 
@@ -23,7 +24,7 @@ void ResetRenderMode(void);
 void EndSaveRenderMode(void);
 void SetPictureRenderMode(void);
 void SetLayersRenderMode(void);
-void SetBlankStep(i16 step);
+void SetBlankStep(GZ_ENUM_PARAM(BlankRenderStep, i16) step);
 
 void WaitFrames(i16 count);
 void RunFrame(void);

@@ -4,6 +4,7 @@
 #include <EnumDomain.h>
 #include <Enums.h>
 #include <Game/RoomRegion.h>
+#include <Gfx/Palette.h>
 #include <Ints.h>
 
 // The four facing bits selected by NPC cell codes 0x48..0x4e.
@@ -136,14 +137,10 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag23(void);
 GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void);
 GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag26(void);
 
-// fieldscreen's scene refresh.
-void RefreshFieldScene(void);
-
-// vram's palette calls, declared here rather than through <Gfx/Vram.h>:
+// vram's GRB converter is declared here rather than through <Gfx/Vram.h>:
 // retail's NPC palette loader pushes the GRB word unextended, so its
-// declaration of GrbToRgb took a 16-bit word while vram.c defines it on a
-// u32 (see docs/todos/rule-exceptions.tsv).
-b16 SetPaletteColor(u8 index, i16 color);
+// declaration took a 16-bit word while vram.c defines it on a u32
+// (see docs/todos/rule-exceptions.tsv).
 u32 GrbToRgb(u16 grb);
 
 // The six object textures (g_objectTextures): load `image` into slot `slot`

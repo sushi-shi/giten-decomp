@@ -81,7 +81,7 @@ extern "C" {
 
 #define SelectNpcBillboardTexture(texture, slot)                                                   \
     do {                                                                                           \
-        if ((slot) >= 0 && (slot) <= 5) {                                                          \
+        if ((slot) >= 0 && (slot) < OBJECT_TEXTURE_COUNT) {                                        \
             if (HasTextureHandle(&g_objectTextures[(slot)])) {                                     \
                 (texture) = &g_objectTextures[(slot)];                                             \
             } else {                                                                               \

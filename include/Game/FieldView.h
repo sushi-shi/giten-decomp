@@ -157,7 +157,8 @@ i16 GetWallAtOffsetClamped(
     i16 across,
     i16 along
 );
-i16 GetCellWall(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn, u16 cell);
+GZ_ENUM_RETURN(WallKind, i16) GetCellWall(
+    GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn, u16 cell);
 u16 GetRotatedWallAtOffset(
     i16 x,
     i16 y,
@@ -166,7 +167,8 @@ u16 GetRotatedWallAtOffset(
     i16 along
 );
 // Raw wall kind at x/y in an absolute direction; pass it to WallStops for a stop class.
-i16 GetMapWallKind(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
+GZ_ENUM_RETURN(WallKind, i16)
+GetMapWallKind(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 i16 StepMapCoord(
     i16* x,
     i16* y,

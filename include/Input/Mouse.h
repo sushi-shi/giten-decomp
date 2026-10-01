@@ -7,6 +7,7 @@
 
 // Mouse button bits as polled from DirectInput each frame.
 GZ_ENUM_FLAGS_BEGIN(MouseButtonBits, i16)
+    MOUSE_BUTTONS_NONE = 0,
     MOUSE_LEFT_DOWN = 0x01,
     MOUSE_LEFT_WAS_DOWN = 0x02,
     MOUSE_LEFT_PRESSED = 0x04,

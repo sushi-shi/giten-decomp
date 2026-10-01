@@ -6,6 +6,7 @@
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <File/DataTableId.h>
+#include <Game/AbortFlag.h>
 #include <Game/Analyze.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
@@ -178,6 +179,8 @@ static i32 s_autoMoves = 0;
 // 2 done).
 DATA(0x0007b7d0)
 static i32 s_eventStates = 0;
+
+#define GetObjectEventState(event) ((u8*)HandleWritePtr(s_eventStates) + (event))
 
 // Counts frames so the enemies act on every fourth.
 DATA(0x0007b7d4)
@@ -463,7 +466,7 @@ i16 RequestTalk(void) {
 
 RVA(0x00012880, 0x53)
 void SetReturnPoint(
-    i16 area,
+    GZ_ENUM_PARAM(MapAreaId, i16) area,
     i16 level,
     i16 x,
     i16 y,
@@ -485,7 +488,7 @@ void SetRebuildRoom(i16 rebuild) {
 }
 
 RVA(0x000128f0, 0x32)
-void MovePartyTo(i16 x, i16 y, i16 direction) {
+void MovePartyTo(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     g_party.field.pos.x = x;
     g_party.field.pos.y = y;
     g_party.field.pos.direction = direction;
@@ -784,9 +787,7 @@ b16 RunFieldExploration(void) {
                 PushGameState(GAME_STATE_LEVEL_UP);
                 PushScreenFade(SCREEN_FADE_TO_BLACK, 1);
                 PushWaitState(WAIT_INPUT_OR_FRAMES, WAIT_ON_ANY_INPUT, 0x50, -1);
-                MarkRewardsPending();
-                FormatLevelUpMessage(g_scratchBuffer, FindLevelUpSlot());
-                ShowMessage(g_scratchBuffer, 0x3c);
+                ShowPendingLevelUpMessage(g_scratchBuffer);
                 s_eventRunning = false;
                 return false;
             }
@@ -1216,7 +1217,7 @@ b16 RaiseObjectEvent(i16 event, i16 queued) {
     if (event < 0 || event >= 0x100) {
         event = 0;
     }
-    state = (u8*)HandleWritePtr(s_eventStates) + event;
+    state = GetObjectEventState(event);
     if (*state == OBJECT_EVENT_DONE) {
         return false;
     }
@@ -1238,7 +1239,7 @@ void QueueObjectEvent(i16 event) {
     if (event < 0 || event >= 0x100) {
         event = 0;
     }
-    state = (u8*)HandleWritePtr(s_eventStates) + event;
+    state = GetObjectEventState(event);
     if (*state == OBJECT_EVENT_QUEUED) {
         *state = OBJECT_EVENT_DONE;
     }

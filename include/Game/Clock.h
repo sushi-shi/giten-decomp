@@ -75,9 +75,6 @@ i16 ApplyMoonPhase(struct Character* character, GZ_ENUM_PARAM(MoonPhase, i16) mo
 // The party's periodic HP and MP cost for `minutes`.
 GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes);
 
-// scriptvars' countdown.
-void DrawDownCountdown(u16 amount);
-
 GZ_ENUM_RETURN(MoonPhase, i16) GetMoonPhase(void);
 
 // The clock as minutes since day 0.
@@ -91,11 +88,6 @@ u16 TimeUntilMoonPhase(i16 phase);
 // @identity-TODO: what the table holds is unrecovered.
 i16 GetMoonValue(i16 row);
 i32 ScaleByMoonValue(i32 value, i16 row, i16 percent);
-
-// @identity-TODO: What 0x181e0 (stores two words at 0x47be78/0x47be7c) plus PushGameState(GAME_STATE_FIELD_TEXT_SCENE)
-// do with the script position OpStartCountdown saved at 0x81690/0x81694 is unproven; decoding
-// 0x181e0 and state 0x15 would confirm it runs the handler. It is scriptvars.c's function.
-b16 FireCountdownEvent(void);
 
 // The clock's save-file section.
 i16 LoadClock(FILE* fp);

@@ -51,9 +51,10 @@ TU-dipped row) under its probe.
 
 ## Constants work list
 
-`giten verify constants` lists every numeric constant in `src/` and
-`include/`; each is open until it is written as a name (an enumerator, a
-named macro, `NULL`, `true`/`false`) or `config/constants.tsv` keeps it
-numeric with a reason. `--list [FILTER]` prints the open ones for a file or
-owner, `build/gen/constants_open.tsv` holds them all, and the committed floor
-of open constants never rises.
+`giten verify constants` lists numeric spellings exposed by the translation-unit
+AST in `src/` and `include/`; each is open until it is written as a name (an
+enumerator, a named macro, `NULL`, `true`/`false`) or `config/constants.tsv`
+keeps it numeric with a reason. `--list [FILTER]` prints the open ones for a
+file or owner, `build/gen/constants_open.tsv` holds them all, and the committed
+floor of open AST constants never rises. Macro replacement lists
+have a [separate source-spelling census](todos/macro-literals.md).

@@ -71,6 +71,12 @@ def _strip(text: str) -> str:
 # --- structural counters (ported verbatim; each earned its shape) ----------- #
 _TYPEDEF = re.compile(r"\b(?:struct|class)\s+(\w+)")
 _HEXRUN = re.compile(r"[0-9a-f]{4,}")
+_UNKNOWN_IDENTIFIER = re.compile(r"\b\w*[Uu]nknown\w*\b")
+
+
+def _count_unknown_identifiers(code: str) -> int:
+    # IUnknown is the Win32 COM interface, not an unresolved project name.
+    return sum(name != "IUnknown" for name in _UNKNOWN_IDENTIFIER.findall(code))
 
 
 def _is_placeholder(name: str) -> bool:
@@ -85,11 +91,32 @@ _ADDRESS_DERIVED_IDENTIFIER = re.compile(
     r"\b(?:local_[0-9a-f]+"
     r"|m_[0-9][0-9a-f]*(?:[A-Za-z_]\w*)?"
     r"|[gsm]_[A-Za-z_]\w*_[0-9a-f]{4,})\b")
+_OFFSET_FIELD_DECL = re.compile(
+    r"\b(?:[ui](?:8|16|32|64)|b(?:16|32)|BOOL|BYTE|WORD|DWORD)\s+"
+    r"((?:byte|word|dword)[0-9a-f]{2,})\b")
 
 
 def _count_address_derived_identifiers(code: str) -> int:
     return sum(1 for name in _ADDRESS_DERIVED_IDENTIFIER.findall(code)
                if any(c.isdigit() for c in name))
+
+
+def offset_field_declarations() -> list[tuple[str, int, str]]:
+    """Obvious byte/word plus hex offset field names, as declaration sites."""
+    out = []
+    for root in ROOTS:
+        base = REPO / root
+        if not base.is_dir():
+            continue
+        for path in sorted(base.rglob("*")):
+            if path.suffix not in EXTS or not path.is_file():
+                continue
+            code = _strip(path.read_text(errors="ignore"))
+            for match in _OFFSET_FIELD_DECL.finditer(code):
+                out.append((str(path.relative_to(REPO)),
+                            code.count("\n", 0, match.start()) + 1,
+                            match.group(1)))
+    return out
 
 
 _TYPEDEF_DEF = re.compile(
@@ -304,7 +331,8 @@ def _count_unexplained_casts(code: str) -> int:
 METRICS = (
     ("m_<hex> fields", re.compile(r"\bm_[0-9a-f]{2,}\b"), False),
     ("address-derived identifiers", _count_address_derived_identifiers, False),
-    ("Unknown ids", re.compile(r"\b\w*[Uu]nknown\w*\b"), False),
+    ("offset-derived field names", _OFFSET_FIELD_DECL, False),
+    ("Unknown ids", _count_unknown_identifiers, False),
     ("g_<hex> globals", re.compile(r"\bg_[0-9a-f]{4,}\b"), False),
     ("Method/Stub/FUN/Gap",
      re.compile(r"\b(?:(?:Method|Gap|Sub|Stub|Fwd|Func|FUN|Nullsub|Handler"
@@ -545,7 +573,15 @@ def main(argv=None) -> int:
                     help="MANUAL bless: rewrite the committed floor files")
     ap.add_argument("--dup-externs", action="store_true",
                     help="list symbols declared `extern` in more than one header")
+    ap.add_argument("--offset-fields", action="store_true",
+                    help="list byte/word plus hex-offset field declarations")
     a = ap.parse_args(argv)
+    if a.offset_fields:
+        fields = offset_field_declarations()
+        for path, line, name in fields:
+            print(f"{path}:{line}: {name}")
+        print(f"# {len(fields)} offset-derived field declaration(s)")
+        return 0
     if a.dup_externs:
         dups = duplicate_header_externs()
         for name in sorted(dups, key=lambda k: (-len(dups[k]), k)):

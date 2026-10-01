@@ -182,7 +182,7 @@ b32 CMidiStream::ConvertBuffer(MIDIHDR* dst, MIDIHDR* src) {
         outLeft -= length;
     }
     // The pun: the byte count of the DWORD events written.
-    dst->dwBytesRecorded = reinterpret_cast<BYTE*>(out) - reinterpret_cast<BYTE*>(dst->lpData);
+    dst->dwBytesRecorded = reinterpret_cast<char*>(out) - dst->lpData;
     return true;
 }
 

@@ -54,7 +54,7 @@ b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
     if (GetCombatantFacingDifference(g_actorId, g_targetId) != FACING_FACE_TO_FACE) {
         accuracy = accuracy * 150 / 100;
     }
-    itemValue = GetLoadedRecord(attacker->pickTarget)->params[0xc];
+    itemValue = GetItemHitPower(GetLoadedRecord(attacker->pickTarget));
     itemValue *= 100;
     value = WearSkillValue(itemValue + accuracy);
     itemValue = value;
@@ -98,19 +98,12 @@ i32 ComputeItemDamage(Character* attacker, Character* target, i16 hit) {
         amount *= 1.2;
     }
     facing = GetCombatantFacingDifference(g_actorId, g_targetId);
-    if (facing == FACING_FROM_BEHIND) {
-        amount *= 1.5;
-    } else if (facing != FACING_FACE_TO_FACE) {
-        amount *= 1.2;
-    }
+    ApplyFacingDamageBonus(amount, facing);
     if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
         amount *= 1.5;
     }
     damage = RoundToInt(amount * 100.0);
-    damage = ScaleActionValue(damage, g_attackResistance, 2);
-    damage = ScaleByMoonValue(damage, attacker->moonRow, 2);
-    damage = RandomPercent(damage, -20, 20);
-    damage = ClampInt(damage / 100, 0, 0x7fffffff);
+    FinalizeAttackDamage(damage, attacker);
     if (damage == 0) {
         SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
     }

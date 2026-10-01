@@ -33,7 +33,8 @@ i16 ComputeRestoreAmount(i16 code, Character* user, u16 max);
 GZ_ENUM_RETURN(RestoreResult, i16)
 ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* target, i16 mp);
 
-#define RestoreEffectAllowsCondition(result) ((result) >= 3 && (result) <= 5)
+#define RestoreEffectAllowsCondition(result)                                                       \
+    ((result) >= RESTORE_RESULT_EFFECT_REPORTED && (result) < RESTORE_RESULT_NO_EFFECT_REPORTED)
 
 // Clears a restoration group and records the last condition that was present.
 static __inline void

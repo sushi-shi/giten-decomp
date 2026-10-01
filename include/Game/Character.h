@@ -45,7 +45,7 @@ typedef struct ItemSlot {
 #define EmptyItemSlot(slot) ((slot)->item = ITEM_ID_EMPTY, (slot)->quantity = 0)
 
 static __inline void ClearItemSlot(ItemSlot* slot) {
-    SetItemSlotItem(slot, -1);
+    SetItemSlotItem(slot, ITEM_ID_EMPTY);
     slot->quantity = 0;
 }
 
@@ -133,6 +133,8 @@ GZ_ENUM_END_SPLIT(PickRole)
 // @identity-TODO: `fieldState` is set to 6 on every map actor after a party turn
 // of a field encounter and read as a script switch key; its values are unrecovered.
 #define FAMILIARITY_MAX 0x3f
+// Character ids below this limit are human members.
+#define HUMAN_ID_LIMIT 32
 // A character's affiliations are training kinds (BattleStatGroup) or
 // AFFILIATION_NONE, packed to the front.
 #define AFFILIATION_COUNT 3
@@ -329,7 +331,7 @@ static __inline void SetCharacterChanges(Character* character, i32 targetChange,
 
 #define IsCharacterHpLow(character) ((character)->pools.hp.cur * 5 < (character)->pools.hp.max)
 
-#define IsHumanCharacter(character) ((character)->id < 32)
+#define IsHumanCharacter(character) ((character)->id < HUMAN_ID_LIMIT)
 
 #define GetAlignmentClassA(character) AlignmentClass((character)->alignmentLevelA)
 #define GetAlignmentClassB(character) AlignmentClass((character)->alignmentLevelB)

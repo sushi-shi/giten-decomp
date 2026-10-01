@@ -1,5 +1,50 @@
 # Todo ledgers
 
+[Reconstruction cleanup](reconstruction-cleanup.md) maps the KF1 and Gruntz
+review methods to Giten's live worklists and records unresolved source models.
+
+## Source typing
+
+[C source cast census](cast-census.md) records the target-C written-site
+audit and gives pointer and scalar examples for the next type-model review.
+[Enum boundaries](enum-boundaries.md) records mixed-value protocols and
+unproven identities after strict syntax checks on all configured units.
+[Deferred constant identities](constants-handoff.md) records values with
+behavior-based names whose authored meanings still need evidence.
+[Game macro literal review](game-macro-literals.md) records proven substitutions
+and unresolved formula/domain values inside Game macro bodies.
+[Non-Game macro literal review](non-game-macro-literals.md) records proved
+size/bound names and the retained platform, graphics, text and sound values.
+[Macro replacement literals](macro-literals.md) records numeric spellings in
+macro replacement lists that the AST constants ledger does not cover.
+[Shared control-flow joins](goto-review.md) inventories the remaining written
+`goto` sites and the retail evidence needed for a structured rewrite.
+[Offset-derived field names](offset-fields.md) lists primitive fields still
+named by storage offset and the evidence needed to identify them.
+[Compiler warnings](compiler-warnings.md) records the full MSVC 5.0 warning
+census, resolved cases, and remaining source-model examples.
+[Script and graphics width boundaries](warning-width-boundaries.md) and
+[Game argument-width warnings](argument-width-warnings.md) record focused
+caller/callee evidence for retained narrowing sites.
+
+## Layout and buffer boundaries
+
+[Layout and buffer boundaries](layout-and-buffer-boundaries.md) records
+constructed objects, named layout spans and fixed-buffer operations whose
+current source does not yet support a cleanup.
+
+## Declaration placement
+
+[Declaration placement](declaration-placement.md) records the caller and owner
+ABI evidence behind the remaining cross-header function declarations.
+
+## Project helper reuse
+
+[Project helper reuse](project-helper-reuse.md) records repeated Giten helper
+expansions that require source-origin or instruction evidence before adoption.
+[Common code review](common-code-review.md) records recovered and unresolved
+inline or macro candidates across translation units.
+
 ## Vendor macros
 
 [Vendor macro recovery](vendor-macros.md) tracks plausible SDK/CRT macro
@@ -9,6 +54,10 @@ recovered; retain a semantic exclusion while it explains an apparent match
 that would change retail behavior.
 
 ## Data referents
+
+[Short data extent claims](data-extent-claims.md) records the two remaining
+claims, their retail bytes and references, and the evidence needed to name
+adjacent storage without inventing padding.
 
 - [ ] Clear the data debt and re-enable strict `data_matching` using the
   [build-system procedure](../build-system.md#re-enabling-data-matching). While

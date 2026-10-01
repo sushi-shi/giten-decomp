@@ -149,7 +149,8 @@ typedef struct EffectPalette {
 
 // Re-evaluate the palette pointer after updating the first entry.
 #define ApplyEffectPalette(palette)                                                                \
-    (SetPaletteEntry(14, (palette)->colors[0]), SetPaletteEntry(15, (palette)->colors[1]))
+    (SetPaletteEntry(PALETTE_SIZE - 2, (palette)->colors[0]),                                       \
+     SetPaletteEntry(PALETTE_SIZE - 1, (palette)->colors[1]))
 
 void SetSceneFlags(i32 bits);
 i16 GetSceneFlags(void);

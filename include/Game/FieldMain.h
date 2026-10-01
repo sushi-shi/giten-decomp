@@ -39,10 +39,16 @@ b16 RunFieldExploration(void);
 
 // Sets the return point the field leaves to (and resets the field objects
 // and the selected hotspot).
-void SetReturnPoint(i16 area, i16 level, i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
+void SetReturnPoint(
+    GZ_ENUM_PARAM(MapAreaId, i16) area,
+    i16 level,
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction
+);
 
 // Moves the party to x/y facing `direction` and rebuilds the view.
-void MovePartyTo(i16 x, i16 y, i16 direction);
+void MovePartyTo(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 // scenecell's scene hold, for the auto-move op. Codegen constraint: declared
 // here; in <Game/Scene.h> it perturbs scripttext (TU state).
@@ -64,10 +70,19 @@ GZ_ENUM_BEGIN_SPLIT(PartyMoveOutcome, i16)
 GZ_ENUM_END_SPLIT(PartyMoveOutcome)
 
 GZ_ENUM_RETURN(PartyMoveOutcome, i16) AdvancePartyMove(i16 command);
+
+// Completes a step the camera has slid through by advancing the clock and
+// party cell, then recording the visited automap cell.
+void CommitPartyStep(void);
+
+// Faces the party toward `direction` and updates step effects.
+void SetPartyDirection(i32 direction);
+
 void ResetLevelEvents(void);
 b32 TestLevelEvent(i16 level);
 b16 RaiseObjectEvent(i16 event, i16 queued);
 i16 SaveFieldMemory(FILE* fp);
+i16 LoadFieldMemory(FILE* fp);
 void LoadFieldEventTable(void);
 
 void MergeViewOcclusionMask(u8** table, i16 index, void* destination);
@@ -96,12 +111,9 @@ struct AreaNpc;
 void StartBoxScene(struct TreasureBox* box);
 void StartNpcScene(struct AreaNpc* npc);
 
-// Callees of the talk and analyze picks, declared here for fieldmain:
-// abortflag's exchange, analyze's target, fieldobj's talk scene start, and
-// the training-point add (0x41c6c0: kind 0..3 of Character.trainingPoints,
-// capped). Codegen constraint: SetAnalyzeTarget in <Game/Analyze.h> would
-// reach field.c.
-i16 ExchangeAbortPending(i16 pending);
+// Callees of the talk and analyze picks: the analyze target, talk scene,
+// and capped training-point add. Codegen constraint: SetAnalyzeTarget in
+// <Game/Analyze.h> would reach field.c.
 void SetAnalyzeTarget(Character* target);
 void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor);
 

@@ -228,7 +228,7 @@ void MarkObjectsOnMap(void);
 MapCoord GetObjectCoord(i16 index);
 
 #define GetFieldTargetCoord(id) ((id) < 0 ? GetMapCoord() : GetObjectCoord(id))
-i16 GetObjectDirection(i16 index);
+GZ_ENUM_RETURN(ViewDirection, i16) GetObjectDirection(i16 index);
 i16 ExchangeObjectCheckBypass(i16 bypass);
 i16 FlushObjectRedraws(void);
 GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeState(FieldObject* object);
@@ -280,9 +280,9 @@ b16 RunObjectStep(FieldObject* object, i16 index);
 void SaveFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer);
 void RestoreFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer);
 void ResetFieldLayer(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer);
-i16 GetLayerKind(i16 layer);
+GZ_ENUM_RETURN(ObjectRecordId, i16) GetLayerKind(i16 layer);
 u32 GetLayerImage(i16 layer);
-i16 FindLayerOfKind(i16 kind);
+i16 FindLayerOfKind(GZ_ENUM_PARAM(ObjectRecordId, i16) kind);
 
 // Where `entry` of script file `file` starts in a field layer's scripts (file
 // 0xff: the object script block). `layerSlot` is the layer index plus one;

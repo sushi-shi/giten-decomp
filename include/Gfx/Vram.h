@@ -49,15 +49,14 @@ PaletteState* SavePaletteState(PaletteState* state, i16 mode);
 PaletteState* RestorePaletteState(PaletteState* state, i16 release);
 u8 FindPaletteEntry(i16 color);
 void RetainPaletteEntry(u8 index);
-b16 SetPaletteColor(u8 index, i16 color);
 void SetPaletteEntry(u8 index, i16 color);
 u32 GrbToRgb(u32 grb);
 void ReleasePaletteEntry(u8 index);
 void MarkPaletteDirty(void);
-void SetAreaPaletteMode(i16 mode);
-i16 GetAreaPaletteMode(void);
-void SetViewPaletteMode(i16 mode);
-i16 GetViewPaletteMode(void);
+void SetAreaPaletteMode(GZ_ENUM_PARAM(CellPaletteMode, i16) mode);
+GZ_ENUM_RETURN(CellPaletteMode, i16) GetAreaPaletteMode(void);
+void SetViewPaletteMode(GZ_ENUM_PARAM(CellPaletteMode, i16) mode);
+GZ_ENUM_RETURN(CellPaletteMode, i16) GetViewPaletteMode(void);
 void QueuePaletteUpload(void);
 
 // The whole-file picture loaders: each opens the request's data file, reads

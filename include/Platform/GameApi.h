@@ -27,8 +27,10 @@ extern "C" {
 #include <Gfx/ScreenMode.h>
 #include <Gfx/Shot.h>
 #include <Gfx/Sprite.h>
+#include <Gfx/Vram.h>
 #include <Input/Mouse.h>
 #include <Mem/Alloc.h>
+#include <Mem/Handle.h>
 #include <Platform/GameCalls.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>

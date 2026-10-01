@@ -7,6 +7,7 @@
 #include <Game/CellCode.h>
 #include <Game/GameStateId.h>
 #include <Game/PartyStep.h>
+#include <Game/ViewDirection.h>
 #include <Game/WallKind.h>
 #include <Gfx/DDError.h>
 #include <Gfx/ScreenLayer.h>
@@ -31,7 +32,7 @@ extern Picture g_fightBannerPicture;
 extern b32 g_fixedLighting;
 
 // The direction the party faces (0..3).
-extern i32 g_viewDirection;
+extern GZ_ENUM_STORAGE(ViewDirection, i32) g_viewDirection;
 
 // The horizontal axis billboards are laid along (perpendicular to the view).
 // @identity-TODO: written by the turn step (0x44a970) from the sin/cos tables.
@@ -333,7 +334,7 @@ b32 LoadGraphics(void);
 // The layer code (layer.cpp): creating, freeing and repainting the layers,
 // hit-testing them and the navigation pad, the character panel's commands
 // and the dragging of the panel layers.
-b32 CreateScreenLayer(i32 slot);
+b32 CreateScreenLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot);
 void FreeScreenLayers(void);
 void UpdateLayerPanels(void);
 GZ_ENUM_RETURN(ScreenLayerSlot, i32) LayerAtPoint(u32 x, u32 y);
@@ -376,39 +377,48 @@ void ReleaseGraphics(void);
 // AnimateMove runs one frame of it. The low nibble (MOVE_STATE_KIND) picks
 // the step function, 0 for none; the high bits mark a step through a door,
 // which AnimateDoor opens instead (ahead, back, left, right).
-extern u32 g_moveState;
+GZ_ENUM_BEGIN_SPLIT(CameraMoveState, u32)
+    MOVE_STATE_NONE = 0,
+    MOVE_STATE_STEP = 1,
+    MOVE_STATE_BACK = 2,
+    MOVE_STATE_LEFT = 3,
+    MOVE_STATE_RIGHT = 4,
+    MOVE_STATE_TURN_LEFT = 5,
+    MOVE_STATE_TURN_RIGHT = 6,
+    MOVE_STATE_TURN_AROUND = 7,
+    MOVE_STATE_TURN_FIRST = MOVE_STATE_TURN_LEFT,
+    MOVE_STATE_TURN_LAST = MOVE_STATE_TURN_AROUND,
+    MOVE_STATE_DOOR_AHEAD = 0x10,
+    MOVE_STATE_DOOR_BACK = 0x20,
+    MOVE_STATE_DOOR_LEFT = 0x40,
+    MOVE_STATE_DOOR_RIGHT = 0x80,
+    MOVE_STATE_DOOR_FIRST = MOVE_STATE_DOOR_AHEAD
+GZ_ENUM_END_SPLIT(CameraMoveState)
 
-#define MOVE_STATE_NONE 0
-#define MOVE_STATE_STEP 1
-#define MOVE_STATE_BACK 2
-#define MOVE_STATE_LEFT 3
-#define MOVE_STATE_RIGHT 4
-#define MOVE_STATE_TURN_LEFT 5
-#define MOVE_STATE_TURN_RIGHT 6
-#define MOVE_STATE_TURN_AROUND 7
+extern GZ_ENUM_STORAGE(CameraMoveState, u32) g_moveState;
+
 #define MOVE_STATE_KIND 0x0f
-#define MOVE_STATE_DOOR_AHEAD 0x10
-#define MOVE_STATE_DOOR_BACK 0x20
-#define MOVE_STATE_DOOR_LEFT 0x40
-#define MOVE_STATE_DOOR_RIGHT 0x80
 
 // The buttons of the navigation pad on layer SCREEN_LAYER_NAVIGATION.
-#define PAD_NONE 0
-#define PAD_FORWARD 1
-#define PAD_BACK 2
-#define PAD_LEFT 3
-#define PAD_RIGHT 4
+GZ_ENUM_BEGIN_SPLIT(NavPadButton, i32)
+    PAD_RELEASED = -1,
+    PAD_NONE = 0,
+    PAD_FORWARD = 1,
+    PAD_BACK = 2,
+    PAD_LEFT = 3,
+    PAD_RIGHT = 4,
+    PAD_FIRST = PAD_FORWARD,
+    PAD_LAST = PAD_RIGHT
+GZ_ENUM_END_SPLIT(NavPadButton)
 
 // Draws pad button `button` up or pressed on the navigation layer.
-void PressPadButton(i32 button, BOOL pressed);
+void PressPadButton(GZ_ENUM_PARAM(NavPadButton, i32) button, BOOL pressed);
 
 // Draws pad button `button` (1..4) of the navigation pad on `surface`.
-b32 DrawPadButton(LPDIRECTDRAWSURFACE surface, i32 button, b32 pressed);
+b32 DrawPadButton(
+    LPDIRECTDRAWSURFACE surface, GZ_ENUM_PARAM(NavPadButton, i32) button, b32 pressed);
 
-// g_heldPadButton once the button is let go.
-#define PAD_RELEASED (-1)
-
-extern i32 g_heldPadButton;
+extern GZ_ENUM_STORAGE(NavPadButton, i32) g_heldPadButton;
 void RepeatPadMove(BOOL turn);
 
 // The menu bar on layer SCREEN_LAYER_MENU_BAR: its buttons' band and width,

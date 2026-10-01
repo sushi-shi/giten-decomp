@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Ints.h>
+#include <Text/TextPlane.h>
 #include <Util/BitChangeMode.h>
 
 // Panel input policy and row state; hidden, locked and disabled also apply to rows.
@@ -59,7 +60,8 @@ typedef struct Panel {
     PanelRow rows[1];
 } Panel;
 
-#define GetPanelTextCell(panel) (((panel)->top + (panel)->y) * 80 + (panel)->left + (panel)->x)
+#define GetPanelTextCell(panel)                                                                    \
+    (((panel)->top + (panel)->y) * TEXT_PLANE_MAX_COLS + (panel)->left + (panel)->x)
 
 static __inline i16 GetPanelRowCount(const Panel* panel) {
     return panel->count;

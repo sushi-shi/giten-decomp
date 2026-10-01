@@ -17,6 +17,9 @@ void RemoveFromParty(i16 slot);
 i16 CountPartyMembers(i16 skipDisabled);
 i16 FindRosterSlotById(i16 id);
 
+// The party position of roster member `id`, or -1.
+i16 FindPartyPositionOfId(i16 id);
+
 static __inline b32 RosterContainsId(i16 id) {
     return FindRosterSlotById(id) != ROSTER_SLOT_NONE;
 }
@@ -56,9 +59,6 @@ GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(struct ItemRecord* item);
 // CalcMagicAccuracyStat.
 void ChangePool(CurMax* pool, i32 amount);
 
-// Copies `from`'s skill list into `to` (resized to fit).
-// @identity-TODO: label-only until its TU is claimed.
-void CopySkillList(Character* from, WordList* to);
 b16 CanGroupEquip(i16 group, i16 item);
 i16 GetGunAmmoType(Character* character);
 GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(Character* character, i16 item);

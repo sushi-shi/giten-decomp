@@ -691,7 +691,7 @@ MapCoord GetObjectCoord(i16 index) {
 }
 
 RVA(0x0000de60, 0x16)
-i16 GetObjectDirection(i16 index) {
+GZ_ENUM_RETURN(ViewDirection, i16) GetObjectDirection(i16 index) {
     return s_objects[index].direction;
 }
 
@@ -1097,7 +1097,7 @@ void LoadEnemyGroupSlot(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer, i16 kind) {
 }
 
 RVA(0x0000e8f0, 0x15)
-i16 GetLayerKind(i16 layer) {
+GZ_ENUM_RETURN(ObjectRecordId, i16) GetLayerKind(i16 layer) {
     return s_layers[layer].record.id;
 }
 
@@ -1160,7 +1160,7 @@ u32 GetLayerImage(i16 layer) {
 }
 
 RVA(0x0000eaa0, 0x29)
-i16 FindLayerOfKind(i16 kind) {
+i16 FindLayerOfKind(GZ_ENUM_PARAM(ObjectRecordId, i16) kind) {
     i16 i;
     for (i = 0; i < FIELD_LAYER_COUNT; i++) {
         if (s_layers[i].record.id == kind) {
@@ -1452,7 +1452,7 @@ i16 RollEncounterSlot(i16 row) {
 
 RVA(0x0000f220, 0x1e)
 b16 RefreshIfTurned(b16 visible, b16 turned) {
-    if (visible != false && turned != false) {
+    if (visible && turned) {
         RequestFieldRefresh();
         return true;
     }
@@ -1938,7 +1938,7 @@ GZ_ENUM_RETURN(FusionFlagValue, i16) GetDemonFlagHigh(i16 id) {
     if (flags & DEMON_FLAG_HIGH_UNAVAILABLE) {
         return FUSION_FLAG_UNAVAILABLE;
     }
-    return (u8)((flags & DEMON_FLAG_HIGH_VALUE) >> 4);
+    return (u8)((flags & DEMON_FLAG_HIGH_VALUE) >> DEMON_FLAG_HIGH_SHIFT);
 }
 
 RVA(0x00010060, 0x12)

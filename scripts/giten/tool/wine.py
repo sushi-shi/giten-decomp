@@ -135,7 +135,8 @@ def shutdown_wineserver() -> None:
 
 def run(argv: list[str], *, cwd: Path | None = None,
         timeout: float | None = None,
-        success: Path | None = None) -> tuple[str, int]:
+        success: Path | None = None,
+        fail_on_timeout: bool = False) -> tuple[str, int]:
     """Run one wine tool hang-proof; return (combined output, returncode).
 
     Wine intermittently leaves a finished-but-unreaped grandchild
@@ -143,7 +144,8 @@ def run(argv: list[str], *, cwd: Path | None = None,
     PIPE forever even though the artifact is already written. So: output to a
     temp FILE, the tool in its own process group, a bounded wait; on a stall
     SIGKILL the group and let `success` (the artifact the caller expects)
-    decide the verdict.
+    decide the verdict. A diagnostic census can set `fail_on_timeout` to
+    reject even a finished artifact when its output may have been truncated.
     """
     os.environ.setdefault("WINEDEBUG", "fixme-all,err-kerberos")
     ensure_wineserver()
@@ -167,6 +169,9 @@ def run(argv: list[str], *, cwd: Path | None = None,
             except (ProcessLookupError, PermissionError):
                 pass
             proc.wait()
+            if fail_on_timeout:
+                raise ToolError(f"{argv[0]} timed out after {timeout:g}s; "
+                                "compiler diagnostics may be incomplete")
             rc = 0 if success is not None and success.exists() else 1
         logf.seek(0)
         return logf.read().decode("utf-8", "replace"), rc
@@ -253,15 +258,18 @@ def init_prefix(force: bool = False) -> None:
 
 
 def verify_prefix() -> None:
-    """Fail unless the registry INCLUDE exists and lists dx before msvc."""
+    """Fail unless registry INCLUDE names the current DX and MSVC headers."""
     got = _reg("query", _ENV_KEY, "/v", "INCLUDE", capture=True)
-    val = "".join(line for line in got.stdout.splitlines() if "REG_" in line).lower()
-    if "include" not in val:
+    val = next((line.split("REG_SZ", 1)[1].strip() for line in
+                got.stdout.splitlines() if "REG_SZ" in line), "")
+    if not val:
         raise ToolError("wine registry INCLUDE unset - run init_prefix() "
                         "(a cold wineserver can fail the first winepath)")
-    if "dx" not in val or val.find("dx") > val.find("msvc"):
-        raise ToolError("wine registry INCLUDE does not put dx/Include before "
-                        "msvc/include - run init_prefix(force=True)")
+    expected = ";".join((winepath(dxsdk_dir() / "Include"),
+                         winepath(toolchain_root() / "include")))
+    if val.lower() != expected.lower():
+        raise ToolError("wine registry INCLUDE does not match the current "
+                        "$DXSDK_DIR and $MSVC_DIR - run `giten init`")
 
 
 def main() -> int:

@@ -19,6 +19,17 @@ extern "C" {
 #define ClearDisplaySurface(surface, rect)                                                         \
     IDirectDrawSurface_Blt(surface, rect, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &g_clearBltFx)
 
+#define InitOffscreenSurfaceDesc(desc, width, height, pixelFormat)                                  \
+    do {                                                                                           \
+        ZeroMemory(&(desc), sizeof(desc));                                                          \
+        (desc).dwSize = sizeof(desc);                                                               \
+        (desc).dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;                  \
+        (desc).dwWidth = (width);                                                                   \
+        (desc).dwHeight = (height);                                                                 \
+        (desc).ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;                     \
+        (desc).ddpfPixelFormat = (pixelFormat);                                                     \
+    } while (0)
+
     // The 16-bit surface pixel format: each 8-bit channel is shifted right by
     // its loss and left by its shift to form a pixel.
     extern u8 g_redShift;

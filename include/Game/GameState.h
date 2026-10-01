@@ -68,8 +68,6 @@ typedef struct FieldStatus {
 #define ROSTER_SLOT_NONE (-1)
 #define PARTY_POSITION_NONE (-1)
 #define CHARACTER_ID_NONE (-1)
-// Character ids below this are human members.
-#define HUMAN_ID_LIMIT 32
 
 typedef struct Party {
     FieldState field;
@@ -110,6 +108,7 @@ i16 FindPartySlot(i16 slot);
 ItemSlot GetEquipSlot(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part);
 Character* GetRosterEntry(i16 slot);
 i16 GetPartySlot(i16 index);
+i16 GetRosterCapacity(void);
 
 // Puts roster slot `slot` into party position `index`; returns the slot it held.
 i16 ExchangePartySlot(i16 index, i16 slot);

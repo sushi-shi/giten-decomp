@@ -8,6 +8,7 @@ void LevelUpNop(void);
 #include <EnumDomain.h>
 #include <Enums.h>
 #include <Ints.h>
+#include <Ui/Message.h>
 
 // The experience a battle awards, cleared when the level-up screen closes.
 extern i32 g_rewardExperience;
@@ -57,6 +58,13 @@ void MarkRewardsPending(void);
 
 RVA_DECL(0x00019760)
 char* FormatLevelUpMessage(char* buf, i16 slot);
+
+#define ShowPendingLevelUpMessage(buffer)                                                          \
+    do {                                                                                           \
+        MarkRewardsPending();                                                                      \
+        FormatLevelUpMessage((buffer), FindLevelUpSlot());                                         \
+        ShowMessage((buffer), 0x3c);                                                                \
+    } while (0)
 
 // The phases of the level-up screen (RunLevelUp): open, close, pick the member,
 // skip, hand out levels and points (with a choice, or without for demons),

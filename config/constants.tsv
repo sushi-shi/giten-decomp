@@ -1,6 +1,7 @@
 # giten constants work list - numeric constants kept on purpose, one row each,
-# with the reason. Every other numeric spelling in src/ and include/ is open
-# until it is written as a name (enumerator, named macro, NULL, true/false).
+# with the reason. Every other AST-exposed numeric spelling in src/ and include/
+# is open until it is named (enumerator, macro, NULL, true/false). Numeric tokens
+# inside macro replacement lists have a separate, not-yet-gated census.
 # `giten verify constants --list [FILTER]` prints the open ones; the floor
 # never rises (`--update-floor` lowers it). Columns (tab-separated; `*` matches
 # anything; every field takes a glob): file owner spelling group detail reason.
@@ -178,7 +179,6 @@ src/Script/scriptactor.c	OpLoadRecord	*	*	*	a shop script (file 0x7f) entry and 
 *	*	*	call-argument	CreateTextPlane(*argument 1	a text-plane kind (its layout is s_planeLayouts[kind]; the kinds have no names)
 *	*	*	call-argument	CreateTextPlane(*argument 2	the text-plane creation argument
 src/Game/statestack.c	RunLevelUp	*	*	*GetGame[SS][tu][eb]*	the human/demon growth sub-step limits (three or four attempts); phase-local step cases have named domains
-src/Game/statestack.c	RunLevelUp	*	call-argument	SetGame[SS][tu][eb]*	a level-up sub-step advanced in order by NextGameSub; phase-local step cases have named domains
 src/Game/fieldobj.c	s_depthRise	*	data-or-extent	*	@identity-TODO: screen rise in pixels per view depth (0..-4)
 src/Game/fieldobj.c	s_approach[XY]	*	data-or-extent	*	@identity-TODO: approach offsets in pixels per step (0..-4)
 src/Game/fieldobj.c	s_facingSprite	*	data-or-extent	*	sprite per facing relative to the view (-1 mirrors the side sprite)
@@ -274,6 +274,8 @@ src/Game/fieldobj.c	FindNextOfRace	0x8000	*	*	@identity-TODO: the i16 best id wr
 src/Game/fieldobj.c	FindNextOfRace	-1	*	*	no demon found; levels from 0 count
 src/Game/fieldobj.c	FindNextOfRace	0	*	*	no wrap-around search
 src/Game/fieldobj.c	ScaleLevelGap	*	*	*	@identity-TODO: (a - b) * 42 / 20 clamped to a signed byte
+src/Game/fieldobj.c	StepObjectTowardParty	1	trivial-function-literal	1 for-init	@identity-TODO: word21d is cleared when an object slot is reset and set after a successful step; its reader and authored role are unrecovered
+src/Game/fieldobj.c	InitObjectFromRecord	0	existing-symbol	enum	The object uses the Character title byte, but a demon has no human title; zeroing it does not assert HUMAN_TITLE_GUSHA
 src/Game/fieldobj.c	InitObjectFromRecord	0	trivial-function-literal	0 store *	a new object starts with these fields clear
 src/Game/fieldobj.c	InitObjectFromRecord	0	trivial-function-literal	0 store	a new object starts with its conditions and flags clear
 src/Game/fieldobj.c	InitObjectFromRecord	*	*	*bits68*	a record's bits68 packs byte083 (bits 0-1), triggerRange (bits 2-4) and the pick flags (bits 5-6)
@@ -450,7 +452,6 @@ src/Platform/d3dapp.cpp	ZBufferDepth	*	*	*	a z-buffer bit depth
 src/Platform/d3dapp.cpp	*	*	store	store to operator()()	a D3DMATRIX element value
 src/Platform/d3dapp.cpp	*	*	store	store to g_*Loss	the bits a colour channel loses in the pixel format
 src/Text/font.cpp	s_identityMatrix	*	data-or-extent	*	the identity MAT2 GetGlyphOutline takes
-src/Text/font.cpp	s_padGrid	*	data-or-extent	*	the navigation pad's button under each 32x32 cell
 src/Text/font.cpp	s_scrollStripRect	*	data-or-extent	*	the strip each scroll clears, in pixels
 src/Text/font.cpp	s_glyphInfo	*	data-or-extent	*	the glyph DIB header: width, height, planes and bits per pixel
 src/Text/font.cpp	PaintLayer	*	arithmetic	*SCREEN_LAYER_FIRST_PANEL	the party panel number after SCREEN_LAYER_FIRST_PANEL
@@ -535,9 +536,7 @@ src/Script/scriptvm.c	ExecScriptOpcode	[12]	call-argument	OpIfDemonCount(*argume
 src/Game/partyaction.c	GetActionResistance	50	return	*	a same-side attack takes half resistance
 src/Game/partyaction.c	GetActionResistance	50	store	*	ATTACK_ATTRIBUTE_FIXED_HALF_RESISTANCE takes a 50-percent resistance value
 src/Game/partyaction.c	GetActionResistance	100	return	*	zombie resistance to attribute 6 is 100 percent
-src/Game/partyaction.c	GetActionResistance	0	trivial-function-literal	0 return	no actor has no resistance value
 src/Game/partyaction.c	GetActionResistance	1	trivial-function-literal	1 bound result	positive protection-check results proceed to the resistance byte
-src/Game/partyaction.c	ApplyResistanceOutcome	0	trivial-function-literal	*case	resistance zero applies no damage and records a separate action result
 src/Game/partyaction.c	ApplyResistanceOutcome	2	call-argument	SetCharacterChanges*	half the amount is assigned to each of the HP and MP changes
 src/Game/partyaction.c	ReadActionResultFlags	*	*	*	@identity-TODO: bank 15 bits 26..31 form an action-result bitmap; the message-script decoder is needed to name the bits
 src/Game/partyaction.c	PickActorAction	-1	trivial-function-literal	*return	no condition is active, so no condition action was picked
@@ -697,7 +696,6 @@ src/Script/scripttext.c	PollScriptPanels	*	*	*	panels are polled from the last o
 src/Script/scripttext.c	RunScriptMenuHandler	1	call-argument	SetScriptLongVar(*	@identity-TODO: the menu handler's script result 1
 src/Script/scripttext.c	OpSetMenuScroll	-1	*	*	-1 keeps the menu's scroll step or position
 src/Script/scripttext.c	WriteFormattedTextLine	0	*	*	an empty text line
-src/Script/scripttext.c	OpAllocLongArray	4	call-argument	CreateArrayHandle(*	a long array of 4-byte elements
 src/Script/scripttext.c	ReadSizedDataInt	*	*	*	little-endian bytes, sign-extended from the top byte (0x80)
 src/Script/scripttext.c	Op*Int	*	*	*	the operand's sign (1 or -1)
 src/Script/scripttext.c	OpSaveSceneCell	*	call-argument	CreateArrayHandle(*	a 16-byte scene-cell record
@@ -711,7 +709,6 @@ src/Game/savegame.c	LoadGame	*	*	*direction	turning around (a half turn of the f
 src/Game/savegame.c	LoadGame	*	call-argument	OffsetMapCoordFacing(*	one cell ahead
 src/Game/savegame.c	LoadGame	*	call-argument	ReadObjectRecordField(*	the equipment group: the 2-byte object-record field at 0x20
 src/Game/savegame.c	Read*	-1	trivial-function-literal	-1 return	the file cannot be read
-src/Game/savegame.c	Run*	[01]	trivial-function-literal	[01] case	a system sub-menu's steps: open it, then run it
 src/Game/savegame.c	Run*	2	call-argument	OpenSystemMenu(*	the two rows of the display and quit choices
 src/Game/savegame.c	RunQuitConfirm	*	*	*	row 0 of the quit choice quits; g_quitRequest 1 asks StepGame to end
 src/Game/savegame.c	ReadSaveSummary	0	*	*g_scratchBuffer*	an empty floor text
@@ -734,9 +731,7 @@ src/Game/*attack.c	*	*	*	*resistance	@identity-TODO: the attack formulas also us
 src/Game/*attack.c	*	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
 src/Game/*attack.c	*	*	comparison-or-bound	*amount	a damage amount below zero is none
 src/Game/*attack.c	*	*	store	*amount	a damage amount below zero is none; 0x7fff for an overkill
-src/Game/*attack.c	*	*	call-argument	ClampInt(*	damage as a percentage of the rolled value, clamped to 0..0x7fffffff
 src/Game/*attack.c	*	*	call-argument	RoundToInt(*	percent scaling (100 or 1/100)
-src/Game/*attack.c	*	2	call-argument	ScaleByMoonValue(*argument 3	@identity-TODO: ScaleByMoonValue's third argument, 2 for damage
 src/Game/*attack.c	*	*	call-argument	ScaleActionValue(*argument 1	value scales (4 for the hit roll, 10 for the condition roll)
 src/Game/*attack.c	*	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
 src/Game/*attack.c	*	0	trivial-function-literal	0 return	no damage
@@ -821,7 +816,6 @@ src/Game/clock.c	IsCellFlagSet	0	*	*	a clear cell flag byte
 src/Game/clock.c	CheckCellEvent	*	*	*	@identity-TODO: cell event parameters: the field pair (0, 1), layer 0xff (the world map), the world-map request 1, a facing mask of 0, scene script 7/8
 src/Game/clock.c	IsCellBlocked	*	*	*	@identity-TODO: the blocking-cell kinds 3, 6 and 0xb CheckBlockingCell tests, by mode (0 the party); 0 open, 1 blocked
 src/Game/clock.c	CheckBlockingCell	*	*	*	mode 0 is the party; -1 when the cell blocks
-src/Game/clock.c	GetEventCellCode	0	*	*	no event cell code
 src/Game/clock.c	IsStepBarred	*	*	*	@identity-TODO: a cell code's low nibble 0xb bars the step in the direction of its high nibble; 0 when not barred
 src/Game/clock.c	ClampMapCoord	0	*	*	the map's first column or row
 src/Game/clock.c	RevealAreaMapAt	0	*	*	no cell revealed
@@ -894,7 +888,6 @@ src/Script/scriptvars.c	ClearSystemVars	0	*	*	a cleared variable reads 0
 src/Script/scriptvars.c	SetScriptLongVar	-1	*	*	no variable (ReadLongVarIndex's -1)
 src/Script/scriptvars.c	Call*Name	*	call-argument	GetTextToken(*	the second member is slot 1's ref (SCRIPT_REF_SLOT_BASE - 1)
 src/Game/fieldmain.c	AdvancePartyMove	*	*	*	@identity-TODO: turn commands less 3 give quarter turns (3 = one left); door kinds and the named solid stop block a step that is not forward; a step takes 3..6 minutes; movement results are named
-src/Game/fieldmain.c	StepParty	*	*	*	door kinds and the named solid stop block a step that is not forward
 src/Game/fieldmain.c	CommitPartyStep	3	*	*	a step takes 3 minutes
 src/Game/fieldmain.c	*AutoMove*	*	*	*	the auto-move queue: read position and capacity reset to 0, grown by one; 0xff ends it; -1 once it is empty
 src/Game/fieldmain.c	SetReturnPoint	-1	*	*	no selected hotspot
@@ -1072,7 +1065,6 @@ src/Game/statuspanel.c	DrawStatusMemberPortrait	*	*	*	@identity-TODO: portraits 
 src/Game/statuspanel.c	DrawStatusName	*	*	*	the name buffer (36 bytes), an empty name, two lines down
 src/Game/statuspanel.c	DrawStatusVitals	*	call-argument	*	vitals layout: text column 3, the battle panel at 52
 src/Script/scriptactor.c	OpJumpUnlessCompanionHealthy	*	*	*	@identity-TODO: the companion slot refs -2, -3 and -7 (see the function comment)
-src/Script/scriptactor.c	AddScriptCharacterToRoster	0	call-argument	SetGamePhase(*	the roster replacement state's first phase
 src/Script/scriptactor.c	*CallFrame*	*	*	*	@identity-TODO: call frames: PushCallFrame's and PopCallFrame's flag words (0, 1)
 src/Script/scriptactor.c	CallScript	0	call-argument	*	@identity-TODO: PushCallFrame's second argument 0
 src/Script/scriptactor.c	OpPushReturnTarget	1	call-argument	*	@identity-TODO: PushCallFrame's second argument 1
@@ -1113,7 +1105,6 @@ src/Script/scriptactor.c	OpOpenItemListWindow	8	*	*	@identity-TODO: the item lis
 src/Script/scriptactor.c	OpQueueAutoMoves	*	*	*	the auto-move list ends at 0xff; the scene hold; the first move
 src/Script/scriptactor.c	OpRebalanceMemberStats	2	*	*	@identity-TODO: half the stat sum
 src/Script/scriptactor.c	OpRollActor*	0	*	*	no rolled spoils
-src/Script/scriptactor.c	OpRunFusion	1	call-argument	*	@identity-TODO: SetBlankStep's 1
 src/Script/scriptactor.c	OpScreenTransition	1	call-argument	*	@identity-TODO: SetLongFrame's 1
 src/Script/scriptactor.c	OpSetObjectFamiliarity	0	*	*	familiarity from 0
 src/Script/scriptactor.c	OpSetObjectField	*	*	*	@identity-TODO: object field 3 and the fourth group's level (battle-stat word 18)
@@ -1161,7 +1152,6 @@ src/Game/fusion.c	FusionListMenuHandler	*	*	*	@identity-TODO: the fusion list's 
 src/Game/fusion.c	*ScriptAnimation*	*	*	*	@identity-TODO: script animations: image files 0x3000, variant 0, flags 2, 16 frames, 8-pixel steps
 src/Game/fusion.c	CompareFusion*	*	*	*	sort order: -1 before, 0 equal
 src/Game/fusion.c	CountSpecialRaceFusionSlots	0	*	*	no special race
-src/Game/fusion.c	CountFusion*FlagOne	1	*	*	flag value 1
 src/Game/fusion.c	MatchFusionPair	*	*	*	-1 no match, 1 a match
 src/Game/fusion.c	CheckFusionRestrictedPair	*	*	*	restricted (1) or not (0)
 src/Game/fusion.c	ClassifyFusionSlot	*	*	*	@identity-TODO: slot classes 0 and 1
@@ -1257,7 +1247,6 @@ src/Game/partyaction.c	PrepareMemberPickTarget	-1	trivial-function-literal	-1 re
 src/Game/partyaction.c	ScaleActionValue	50	store	store to resistance	resistance is clamped at 50 then scaled as a percentage over 100
 src/Game/partyaction.c	ScaleActionValue	100	arithmetic	operator /	resistance is clamped at 50 then scaled as a percentage over 100
 src/Game/partyaction.c	GetPickedAttackAttribute	0	trivial-function-literal	0 store condition	@identity-TODO: attribute and inflicted-condition zero can denote no picked attack or no condition
-src/Game/partyaction.c	GetPickedAttackAttribute	0	trivial-function-literal	0 return	@identity-TODO: attribute and inflicted-condition zero can denote no picked attack or no condition
 src/Game/partyaction.c	TickFieldCount	1	trivial-function-literal	1 return	field count protocol: -1 unlimited, zero at timeout, -2 exhausted marker; return 1 for inactive, -1 at exact zero, 0 after exhaustion
 src/Game/partyaction.c	TickFieldCount	-1	trivial-function-literal	-1 equality count	field count protocol: -1 unlimited, zero at timeout, -2 exhausted marker; return 1 for inactive, -1 at exact zero, 0 after exhaustion
 src/Game/partyaction.c	TickFieldCount	0	trivial-function-literal	0 equality count	field count protocol: -1 unlimited, zero at timeout, -2 exhausted marker; return 1 for inactive, -1 at exact zero, 0 after exhaustion
@@ -1350,10 +1339,6 @@ src/Game/partyaction.c	ComputeGunDamage	1.5	arithmetic	compound assignment to am
 src/Game/partyaction.c	ComputeGunDamage	0.25	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
 src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 equality GetCombatantDistance()	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
 src/Game/partyaction.c	ComputeGunDamage	100.0	call-argument	RoundToInt(double) argument 1	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
-src/Game/partyaction.c	ComputeGunDamage	2	call-argument	ScaleByMoonValue(i32, i16, i16) argument 3	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
-src/Game/partyaction.c	ComputeGunDamage	100	call-argument	ClampInt(i32, i32, i32) argument 1	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
-src/Game/partyaction.c	ComputeGunDamage	0	call-argument	ClampInt(i32, i32, i32) argument 2	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
-src/Game/partyaction.c	ComputeGunDamage	0x7fffffff	call-argument	ClampInt(i32, i32, i32) argument 3	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
 src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 equality damage	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
 src/Game/partyaction.c	RollGunCondition	10	call-argument	ScaleActionValue(i32, i16, i16) argument 1	gun condition roll scales base power by ten before resistance and defense
 src/Game/partyaction.c	ResolveGunAttack	0	trivial-function-literal	0 equality result	@identity-TODO: zero means no exceptional hit; 0x7fff saturates lethal damage

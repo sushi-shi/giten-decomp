@@ -2,10 +2,11 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Game/ViewDirection.h>
 #include <Gfx/Texture.h>
 #include <Platform/GameApi.h>
-
-#define HOTSPOT_VIEW_BOTTOM 328
+#include <Platform/Scene3D.h>
 
 #define ClampHotspotTexel(value, extent)                                                           \
     do {                                                                                           \
@@ -20,7 +21,7 @@ RVA(0x00059180, 0x24f)
 b32 ClickHotspotAt(i32 x, i32 y) {
     i32 hit;
     i32 i;
-    i16 direction;
+    GZ_ENUM_LOCAL(ViewDirection, i16) direction;
     Hotspot* hotspot;
     Texture* texture;
     u8* pixels;
@@ -34,7 +35,7 @@ b32 ClickHotspotAt(i32 x, i32 y) {
     if (GetTextPlane(0)->visible) {
         return false;
     }
-    if (y > HOTSPOT_VIEW_BOTTOM - 1) {
+    if (y > VIEW_HEIGHT - 1) {
         return false;
     }
     hit = -1;

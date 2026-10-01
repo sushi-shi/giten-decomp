@@ -7,6 +7,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Gfx/DDraw.h>
 
 #define SCREEN_LAYER_COUNT 15
 
@@ -25,7 +26,8 @@ GZ_ENUM_BEGIN(ScreenLayerSlot)
     SCREEN_LAYER_FIRST_PANEL = 8,
     SCREEN_LAYER_DEFAULT_VISIBLE_BEGIN = SCREEN_LAYER_ICON,
     SCREEN_LAYER_DEFAULT_VISIBLE_END = SCREEN_LAYER_FIRST_PANEL,
-    SCREEN_LAYER_TEXT = 14
+    SCREEN_LAYER_TEXT = 14,
+    SCREEN_LAYER_NONE = SCREEN_LAYER_COUNT
 GZ_ENUM_END(ScreenLayerSlot);
 // clang-format on
 
@@ -71,6 +73,10 @@ typedef struct ScreenLayer {
     } while (0)
 
 extern ScreenLayer* g_screenLayers[SCREEN_LAYER_COUNT];
+
+#define ClearPanelLayerSurface()                                                                   \
+    g_screenLayers[SCREEN_LAYER_PANEL]                                                              \
+        ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx)
 
 i16 IsPanelLayerVisible(void);
 

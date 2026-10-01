@@ -1613,7 +1613,7 @@ RVA(0x00048e60, 0xbb)
 GZ_ENUM_RETURN(MouseButtonBits, u8) PollMouseButtons(void) {
     DIMOUSESTATE state;
     HRESULT result;
-    GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = MOUSE_UP;
+    u8 buttons = MOUSE_BUTTONS_NONE;
     u8 left;
     u8 right;
 
@@ -1648,7 +1648,7 @@ GZ_ENUM_RETURN(MouseButtonBits, u8) PollMouseButtons(void) {
         buttons |= MOUSE_RIGHT_DOWN;
     }
     RecordMouseButtonEdges(buttons, right, s_rightButton, MOUSE_RIGHT_SHIFT);
-    return buttons;
+    return static_cast<GZ_ENUM_RETURN(MouseButtonBits, u8)>(buttons);
 }
 
 // Clears the primary surface and, on the HAL device, the render target.

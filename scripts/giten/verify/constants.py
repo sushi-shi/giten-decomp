@@ -1,4 +1,4 @@
-"""giten.verify.constants - AST-backed bare numeric constant census.
+"""giten.verify.constants - AST-backed constants and macro-spelling censuses.
 
 This is deliberately a standalone audit rather than a default build tier: it
 parses every project translation unit.  The report is derived under build/gen
@@ -21,11 +21,13 @@ is zero or one.
     giten verify constants -v          # print every proven replacement
     giten verify constants --fix       # apply only compiler-proven replacements
     giten verify constants --gate      # nonzero while proven sites remain
+    giten verify constants --macro-list # written macro replacement literals
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import multiprocessing
 import re
@@ -40,6 +42,7 @@ from giten.verify.srcscan import blank_comments
 
 CDB = BUILD / "clangd/compile_commands.json"
 REPORT = BUILD / "gen/bare_constants.tsv"
+MACRO_REPORT = BUILD / "gen/macro_literals.tsv"
 _NUMBER = re.compile(rb"(?:0[xX][0-9A-Fa-f]+|[0-9]+)(?:[uUlL]*)(?![A-Za-z0-9_.])")
 _FLOAT = re.compile(rb"(?:[0-9]+\.[0-9]*|\.[0-9]+)(?:[eE][-+]?[0-9]+)?[fFlL]?"
                     rb"|[0-9]+[eE][-+]?[0-9]+[fFlL]?")
@@ -48,7 +51,8 @@ _BOOLEAN_TYPE_SPELLINGS = {"BOOL", "b16", "b32"}
 _LEGACY_BOOLEAN = re.compile(r"\b(?:FALSE|TRUE)\b")
 _STRING = re.compile(r'"(?:\\.|[^"\\\n])*"')
 _CHAR = re.compile(r"'(?:\\.|[^'\\\n])*'")
-_SOURCE_EXTENSIONS = {".cpp", ".cc", ".cxx", ".h", ".hpp", ".inl"}
+_SOURCE_EXTENSIONS = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".inl", ".inc"}
+_MACRO_DEFINE = re.compile(rb"^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)\b")
 
 
 @dataclass(frozen=True)
@@ -118,6 +122,133 @@ def _raw_number(path: Path, offset: int, cache: dict[Path, bytes],
     except ValueError:
         value = None
     return spelling, value
+
+
+def macro_body_literals(*, repo: Path = REPO) -> list[Site]:
+    """Written numbers in #define bodies, including unexpanded macros.
+    Work on latin-1-decoded bytes so spelling offsets remain exact."""
+    sites = []
+    snapshots = {}
+    paths = []
+    for root_name in ("src", "include"):
+        root = repo / root_name
+        if not root.is_dir():
+            raise RuntimeError(f"missing source tree for macro literal census: {root}")
+        paths.extend(path for path in root.rglob("*")
+                     if path.is_file() and path.suffix in _SOURCE_EXTENSIONS)
+    for path in sorted(paths):
+        try:
+            raw = path.read_bytes()
+        except OSError as exc:
+            raise RuntimeError(f"cannot read {path}: {exc}") from exc
+        snapshots[path] = hashlib.sha256(raw).digest()
+        code = blank_comments(raw.decode("latin1"))
+        code = _STRING.sub(lambda m: " " * len(m.group()), code)
+        code = _CHAR.sub(lambda m: " " * len(m.group()), code)
+        lines = code.encode("latin1").splitlines(keepends=True)
+        offsets = []
+        offset = 0
+        for line in lines:
+            offsets.append(offset)
+            offset += len(line)
+        i = 0
+        while i < len(lines):
+            match = _MACRO_DEFINE.match(lines[i])
+            if match is None:
+                i += 1
+                continue
+            end = i
+            while lines[end].rstrip(b"\r\n").rstrip().endswith(b"\\"):
+                end += 1
+                if end >= len(lines):
+                    raise RuntimeError(f"{path}: unterminated macro continuation")
+            body = b"".join(lines[i:end + 1])
+            name = match.group(1).decode("ascii")
+            kind = "object-like"
+            pos = match.end()
+            if pos < len(body) and body[pos] == ord("("):
+                kind = "function-like"
+                depth, close = 0, -1
+                for param_pos in range(pos, len(body)):
+                    if body[param_pos] == ord("("):
+                        depth += 1
+                    elif body[param_pos] == ord(")"):
+                        depth -= 1
+                        if depth == 0:
+                            close = param_pos
+                            break
+                if close < 0:
+                    raise RuntimeError(f"{path}:{i + 1}: unterminated macro parameters")
+                pos = close + 1
+            while pos < len(body):
+                previous = body[pos - 1] if pos else 0
+                if chr(previous).isalnum() or previous in b"_.":
+                    pos += 1
+                    continue
+                floating = _FLOAT.match(body, pos)
+                integer = _NUMBER.match(body, pos)
+                number = floating or integer
+                if number is None:
+                    pos += 1
+                    continue
+                spelling = number.group().decode("ascii")
+                value = None
+                if floating is None:
+                    try:
+                        value = int(_SUFFIX.sub("", spelling), 0)
+                    except ValueError:
+                        pass
+                start = pos
+                if pos and body[pos - 1] == ord("-") and (
+                        pos < 2 or body[pos - 2] != ord("-")):
+                    start -= 1
+                    spelling = "-" + spelling
+                    if value is not None:
+                        value = -value
+                absolute = offsets[i] + start
+                line = i + body[:start].count(b"\n") + 1
+                column = start - body.rfind(b"\n", 0, start)
+                sites.append(Site(
+                    str(path.relative_to(repo)), line, column, absolute,
+                    name, "macro-body", spelling, value, "review", "", kind,
+                    "macro-body", name,
+                    "written literal in macro replacement list"))
+                pos = number.end()
+            i = end + 1
+    current_paths = set()
+    for root_name in ("src", "include"):
+        root = repo / root_name
+        if root.is_dir():
+            current_paths.update(path for path in root.rglob("*")
+                                 if path.is_file() and path.suffix in _SOURCE_EXTENSIONS)
+    if current_paths != set(paths):
+        raise RuntimeError("source file set changed during macro literal census; rerun")
+    for path, digest in snapshots.items():
+        try:
+            current_digest = hashlib.sha256(path.read_bytes()).digest()
+        except OSError as exc:
+            raise RuntimeError(f"cannot re-read {path}: {exc}") from exc
+        if current_digest != digest:
+            raise RuntimeError(f"{path}: changed during macro literal census; rerun")
+    return sites
+
+
+def write_macro_report(path: Path, sites: list[Site]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = ["file\tline\tcolumn\toffset\tmacro\tkind\tspelling\tvalue"]
+    for site in sites:
+        lines.append("\t".join((site.file, str(site.line), str(site.column),
+                                str(site.offset), site.function, site.context_type,
+                                site.spelling,
+                                "" if site.value is None else str(site.value))))
+    path.write_text("\n".join(lines) + "\n")
+
+
+def macro_summary(sites: list[Site]) -> str:
+    kinds = Counter(site.context_type for site in sites)
+    return (f"{len(sites)} written macro literal(s): "
+            f"{kinds['function-like']} function-like, "
+            f"{kinds['object-like']} object-like")
 
 
 def _scope(cidx, stack) -> tuple[str, str]:
@@ -656,6 +787,9 @@ def _scan_entry(payload):
     import clang.cindex as cidx
 
     path = _source_path(entry, repo)
+    if not path.is_file():
+        return [], (f"{path}: missing source in compile database; "
+                    "regenerate it with `python3 -m giten.graph.compdb`")
     args = _flags(entry)
     try:
         _require_cl_mode(args)
@@ -763,13 +897,31 @@ def scan_entries(entries: list[dict], *, repo: Path = REPO, jobs: int = 1):
 
 def scan(*, cdb: Path = CDB, repo: Path = REPO, jobs: int = 1):
     if not cdb.is_file():
-        raise FileNotFoundError(f"{cdb}: no compile database; run giten configure")
-    entries = json.loads(cdb.read_text())
-    entries = [entry for entry in entries
-               if Path(entry["file"]).suffix in (".c", ".cpp")
-               and str(entry["file"]).replace("\\", "/").startswith("src/")]
+        raise FileNotFoundError(
+            f"{cdb}: no compile database; run `python3 -m giten.graph.compdb`")
+    entries = []
+    for entry in json.loads(cdb.read_text()):
+        path = _source_path(entry, repo)
+        try:
+            rel = path.relative_to(repo.resolve())
+        except ValueError:
+            continue
+        if rel.parts[0] == "src" and path.suffix in (".c", ".cpp"):
+            entries.append(entry)
     if not entries:
-        raise RuntimeError(f"{cdb}: no project C++ translation units")
+        raise RuntimeError(f"{cdb}: no project C/C++ translation units")
+    covered = {_source_path(entry, repo) for entry in entries}
+    expected = {path.resolve() for path in (repo / "src").rglob("*")
+                if path.is_file() and path.suffix in (".c", ".cpp")}
+    missing = sorted(expected - covered)
+    stale = sorted(covered - expected)
+    if missing or stale:
+        detail = ", ".join(str(path.relative_to(repo.resolve()))
+                           for path in (missing + stale)[:8])
+        raise RuntimeError(f"{cdb}: compile database misses {len(missing)} "
+                           f"source unit(s) and lists {len(stale)} stale unit(s): "
+                           f"{detail}; regenerate it with "
+                           "`python3 -m giten.graph.compdb`")
     return scan_entries(entries, repo=repo, jobs=jobs)
 
 
@@ -986,16 +1138,35 @@ def main(argv=None) -> int:
     parser.add_argument("--fix", action="store_true",
                         help="apply every compiler-proven replacement")
     parser.add_argument("--no-report", action="store_true",
-                        help="do not write build/gen/bare_constants.tsv")
+                        help="do not write derived numeric-literal reports")
     parser.add_argument("--list", metavar="FILTER", nargs="?", const="",
                         help="print the open constants whose file or owner "
                              "contains FILTER (all when empty)")
+    parser.add_argument("--macro-list", metavar="FILTER", nargs="?", const="",
+                        help="list numbers in macro replacement lists "
+                             "without parsing translation units")
     parser.add_argument("--update-floor", action="store_true",
                         help="lower the committed floor to the current open count")
     parser.add_argument("--jobs", type=int,
                         default=min(4, multiprocessing.cpu_count()),
                         help="parallel libclang workers (default: up to 4)")
     args = parser.parse_args(argv)
+    if args.macro_list is not None:
+        try:
+            macro_sites = macro_body_literals()
+        except RuntimeError as exc:
+            print(f"[constants] FATAL: {exc}")
+            return 2
+        if not args.no_report:
+            write_macro_report(MACRO_REPORT, macro_sites)
+        for site in macro_sites:
+            if not args.macro_list or args.macro_list in site.file \
+                    or args.macro_list in site.function:
+                print(f"{site.file}:{site.line}:{site.column}\t{site.function}\t"
+                      f"{site.spelling}\t{site.context_type}")
+        print(f"[constants] {macro_summary(macro_sites)}; "
+              "separate from the AST constants floor")
+        return 0
     try:
         sites, errors = scan(jobs=max(1, args.jobs))
     except (FileNotFoundError, RuntimeError) as exc:
@@ -1020,9 +1191,15 @@ def main(argv=None) -> int:
         return 0
     keeps, floor, worklist_errors = load_worklist()
     remaining, stale = open_sites(sites, keeps)
+    try:
+        macro_sites = macro_body_literals()
+    except RuntimeError as exc:
+        print(f"[constants] FATAL: {exc}")
+        return 2
     if not args.no_report:
         write_report(REPORT, sites)
         write_open_report(OPEN_REPORT, remaining)
+        write_macro_report(MACRO_REPORT, macro_sites)
     if args.list is not None:
         for site in remaining:
             if args.list in site.file or args.list == site.function or not args.list:
@@ -1037,6 +1214,8 @@ def main(argv=None) -> int:
             print(f"   {finding}")
     print(f"[constants] {summary(sites)}")
     print(f"[constants] legacy TRUE/FALSE spelling(s): {len(legacy_booleans)}")
+    print(f"[constants] {macro_summary(macro_sites)} "
+          "(separate source-spelling worklist)")
     if not args.no_report:
         print(f"[constants] report: {REPORT.relative_to(REPO)}")
     for unit in RETAIL_VIEW_UNITS:
@@ -1046,6 +1225,7 @@ def main(argv=None) -> int:
           f"({WORKLIST.relative_to(REPO)}: {len(keeps)} kept row(s))")
     if not args.no_report:
         print(f"[constants] open list: {OPEN_REPORT.relative_to(REPO)}")
+        print(f"[constants] macro list: {MACRO_REPORT.relative_to(REPO)}")
     for error in worklist_errors:
         print(f"   {error}")
     for keep in stale:

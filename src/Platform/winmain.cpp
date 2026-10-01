@@ -148,7 +148,7 @@ static u16 s_quadIndices[6] = {0, 1, 2, 0, 2, 3};
 
 // The direction the party faces (0..3).
 DATA(0x000847ac)
-i32 g_viewDirection;
+GZ_ENUM_STORAGE(ViewDirection, i32) g_viewDirection;
 
 DATA(0x000847b8)
 b32 g_fixedLighting;
@@ -164,13 +164,13 @@ DATA(0x00090ac0)
 static i16 s_frameCount;
 
 DATA(0x000847f8)
-static i32 s_blankStep;
+static GZ_ENUM_STORAGE(BlankRenderStep, i32) s_blankStep;
 
 DATA(0x0008f2e4)
 static u16 s_savedRenderMode;
 
 DATA(0x0008f310)
-i16 g_renderMode;
+GZ_ENUM_STORAGE(RenderMode, i16) g_renderMode;
 
 DATA(0x0008f60c)
 CMidiStream* g_midiStream;
@@ -528,7 +528,7 @@ void SaveScreenMode(void) {
 
 RVA(0x00049c80, 0x2a)
 void RestoreScreenMode(void) {
-    g_renderMode = s_savedRenderMode;
+    g_renderMode = static_cast<GZ_ENUM_STORAGE(RenderMode, i16)>(s_savedRenderMode);
     s_savedRenderMode = 0xffff;
     g_selectedHotspot = HOTSPOT_NONE;
     s_screenSaved = false;
@@ -557,7 +557,7 @@ void SetBlankRenderMode(void) {
 }
 
 RVA(0x00049d00, 0xb)
-void SetBlankStep(i16 step) {
+void SetBlankStep(GZ_ENUM_PARAM(BlankRenderStep, i16) step) {
     s_blankStep = step;
 }
 
@@ -573,7 +573,7 @@ void StepBlankRenderMode(void) {
 }
 
 RVA(0x00049d50, 0x7)
-i16 GetRenderMode(void) {
+GZ_ENUM_RETURN(RenderMode, i16) GetRenderMode(void) {
     return g_renderMode;
 }
 
@@ -618,7 +618,7 @@ DATA(0x0008f300)
 u32 g_turnStep;
 
 DATA(0x0008f444)
-u32 g_moveState;
+GZ_ENUM_STORAGE(CameraMoveState, u32) g_moveState;
 
 // The move's progress: camera units slid, or turn steps.
 DATA(0x0008f4d4)
@@ -626,7 +626,7 @@ static D3DVALUE s_moveProgress;
 
 // The previous frame's move state (a new move restarts its progress).
 DATA(0x0008f558)
-static u32 s_lastMoveState;
+static GZ_ENUM_STORAGE(CameraMoveState, u32) s_lastMoveState;
 
 DATA(0x0008f414)
 TreasureBox* g_openingBox;
@@ -721,7 +721,7 @@ void FinishScreenFade(void) {
     s_screenCovered = false;
     PollInput();
     ClearMouseClicks();
-    SetMouseState(MOUSE_UP, 0, 0);
+    SetMouseState(MOUSE_BUTTONS_NONE, 0, 0);
     ClearDisplaySurface(g_renderTarget, NULL);
 }
 
@@ -808,8 +808,7 @@ RVA(0x00049f50, 0x45)
 BOOL RunMoveCommand(i16 command, i16 nextPhase) {
     if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
         g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
-        g_screenLayers[SCREEN_LAYER_PANEL]
-            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+        ClearPanelLayerSurface();
     }
     return s_moveCommands[command & 7](nextPhase);
 }
@@ -1208,7 +1207,8 @@ static b32 TurnLeftStep(D3DVALUE* progress) {
     g_cameraFrom.x = dx * CAMERA_DISTANCE;
     g_cameraFrom.z = dz * CAMERA_DISTANCE;
     if (*progress == TURN_END) {
-        g_viewDirection = (g_viewDirection - 1) & 3;
+        g_viewDirection =
+            static_cast<GZ_ENUM_STORAGE(ViewDirection, i32)>((g_viewDirection - 1) & 3);
         SetPartyDirection(g_viewDirection);
         BlitImage(
             g_screenLayers[SCREEN_LAYER_NAVIGATION]->surface,
@@ -1254,7 +1254,8 @@ static b32 TurnRightStep(D3DVALUE* progress) {
     g_cameraFrom.x = dx * CAMERA_DISTANCE;
     g_cameraFrom.z = dz * CAMERA_DISTANCE;
     if (*progress == TURN_END) {
-        g_viewDirection = (g_viewDirection + 1) & 3;
+        g_viewDirection =
+            static_cast<GZ_ENUM_STORAGE(ViewDirection, i32)>((g_viewDirection + 1) & 3);
         SetPartyDirection(g_viewDirection);
         BlitImage(
             g_screenLayers[SCREEN_LAYER_NAVIGATION]->surface,
@@ -1300,7 +1301,8 @@ static b32 TurnAroundStep(D3DVALUE* progress) {
     g_cameraFrom.x = dx * CAMERA_DISTANCE;
     g_cameraFrom.z = dz * CAMERA_DISTANCE;
     if (*progress == TURN_END) {
-        g_viewDirection = (g_viewDirection + 1) & 3;
+        g_viewDirection =
+            static_cast<GZ_ENUM_STORAGE(ViewDirection, i32)>((g_viewDirection + 1) & 3);
         if (s_halfTurned) {
             s_halfTurned = false;
             BlitImage(
@@ -1325,7 +1327,7 @@ static b32 NoMoveStep(D3DVALUE* progress) {
 }
 
 RVA(0x0004ad40, 0x1d)
-void PressPadButton(i32 button, BOOL pressed) {
+void PressPadButton(GZ_ENUM_PARAM(NavPadButton, i32) button, BOOL pressed) {
     DrawPadButton(g_screenLayers[SCREEN_LAYER_NAVIGATION]->surface, button, pressed);
 }
 
@@ -1352,7 +1354,7 @@ static BOOL (*s_moveSteps[16])(D3DVALUE* progress) = {
 
 // The pad button each move kind presses.
 DATA(0x0006ba38)
-static i32 s_movePadButtons[8] = {
+static GZ_ENUM_STORAGE(NavPadButton, i32) s_movePadButtons[8] = {
     PAD_NONE,
     PAD_FORWARD,
     PAD_BACK,
@@ -2155,7 +2157,8 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 if (lit) {
                     imageCode &= FIELD_OBJECT_IMAGE_INDEX_MASK;
                 }
-                if (g_moveState >= 5 && g_moveState <= 7 && g_turnStep > 15) {
+                if (g_moveState >= MOVE_STATE_TURN_FIRST
+                    && g_moveState <= MOVE_STATE_TURN_LAST && g_turnStep > 15) {
                     if (g_moveState == MOVE_STATE_TURN_LEFT) {
                         imageCode = s_turnImageCodesLeft[imageCode + 1];
                     } else {
@@ -2850,14 +2853,14 @@ void DrawSceneSprites(void) {
 
 // The order BlitScreenLayers walks the first layers in when asked to.
 DATA(0x0006bc38)
-static i32 s_layerOrder[8] = {
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_layerOrder[8] = {
     SCREEN_LAYER_TEXT,
     SCREEN_LAYER_FIRST_PANEL,
-    SCREEN_LAYER_FIRST_PANEL + 1,
-    SCREEN_LAYER_FIRST_PANEL + 2,
-    SCREEN_LAYER_FIRST_PANEL + 3,
-    SCREEN_LAYER_FIRST_PANEL + 4,
-    SCREEN_LAYER_FIRST_PANEL + 5,
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 1),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 2),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 3),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 4),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 5),
     SCREEN_LAYER_MENU_BAR
 };
 
@@ -3064,13 +3067,14 @@ void RenderViewMode(BOOL draw) {
                 TraceD3DCallError("lpD3DDev->SetLightState()@Rend3D()-2 returns ", result);
             }
         }
-        if (g_moveState >= MOVE_STATE_DOOR_AHEAD) {
+        if (g_moveState >= MOVE_STATE_DOOR_FIRST) {
             if (g_bilinearFiltering) {
                 g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_NEAREST);
                 g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_NEAREST);
             }
             if (g_moveState == MOVE_STATE_DOOR_AHEAD) {
-                g_moveState = AnimateDoor(&g_doorMesh);
+                g_moveState = static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(
+                    AnimateDoor(&g_doorMesh));
                 if (g_moveState == MOVE_STATE_STEP) {
                     s_doorFrame = 0;
                     s_doorOpening = true;
@@ -3079,14 +3083,16 @@ void RenderViewMode(BOOL draw) {
             } else if (g_moveState == MOVE_STATE_DOOR_BACK) {
                 g_moveState = MOVE_STATE_BACK;
             } else if (g_moveState == MOVE_STATE_DOOR_LEFT) {
-                g_moveState = AnimateDoor(&g_doorMesh);
+                g_moveState = static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(
+                    AnimateDoor(&g_doorMesh));
                 if (g_moveState == MOVE_STATE_LEFT) {
                     s_doorFrame = 0;
                     s_doorOpening = true;
                     s_viewDirty = true;
                 }
             } else if (g_moveState == MOVE_STATE_DOOR_RIGHT) {
-                g_moveState = AnimateDoor(&g_doorMesh);
+                g_moveState = static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(
+                    AnimateDoor(&g_doorMesh));
                 if (g_moveState == MOVE_STATE_RIGHT) {
                     s_doorFrame = 0;
                     s_doorOpening = true;
@@ -3663,7 +3669,7 @@ static u16 s_ceilingIndices[6] = {0, 3, 2, 0, 2, 1};
 // matching ceiling cells.
 RVA(0x0004f3f0, 0x270)
 void BuildRoomMesh(Mesh* mesh, i32 cols, i32 rows) {
-    GZ_ENUM_STORAGE(ScreenLayerSlot, i32) layer;
+    i32 layer;
     i32 col;
     i32 row;
     i32 k;
@@ -3948,7 +3954,7 @@ i32 GetWallCode(i32 x, i32 y, i32 side, i32 width, i32 height) {
 // The pad button held down (PAD_FORWARD..PAD_RIGHT; PAD_RELEASED once let go).
 // @identity-TODO: set by the layer TU's mouse handling (0x4554e5).
 DATA(0x00090a64)
-i32 g_heldPadButton;
+GZ_ENUM_STORAGE(NavPadButton, i32) g_heldPadButton;
 
 // Repeats the held pad button's move while the 3D view shows and nothing
 // covers it: steps, or with `turn` the turns (forward still steps).
@@ -4689,13 +4695,13 @@ b32 RunJoystickMove(void) {
 // once it is below this.
 #define MENU_BAR_HIDE_Y 32
 
-// The layer the left and the right button went down on (SCREEN_LAYER_COUNT
+// The layer the left and the right button went down on (SCREEN_LAYER_NONE
 // for none).
 DATA(0x0006be94)
-static i32 s_pressedLayer = SCREEN_LAYER_COUNT;
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_pressedLayer = SCREEN_LAYER_NONE;
 
 DATA(0x0006be98)
-static i32 s_rightPressedLayer = SCREEN_LAYER_COUNT;
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_rightPressedLayer = SCREEN_LAYER_NONE;
 
 // Set while a navigation pad button is held down.
 DATA(0x0008f608)
@@ -4719,8 +4725,8 @@ RECT g_dragRect;
 #define JOY_DIRECTIONS (JOY_UP | JOY_DOWN | JOY_LEFT | JOY_RIGHT)
 
 // A left click released in place on a party panel in battle, held until a
-// pass on which a tick passes (SCREEN_LAYER_COUNT for none).
-static i32 s_heldPanelRelease = SCREEN_LAYER_COUNT;
+// pass on which a tick passes (SCREEN_LAYER_NONE for none).
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_heldPanelRelease = SCREEN_LAYER_NONE;
 
 // Set when the left button went down while no command was being entered.
 static b32 s_pressedOutsidePick;
@@ -4762,19 +4768,19 @@ static b32 CanPressPartyPanel(void) {
 // passes, through ReleasePartyPanel's gate as retail would have on that pass.
 // Drops it when a check that let it be held or its press through fails.
 static void ApplyHeldPanelRelease(void) {
-    i32 slot = s_heldPanelRelease;
+    GZ_ENUM_LOCAL(ScreenLayerSlot, i32) slot = s_heldPanelRelease;
 
-    if (slot == SCREEN_LAYER_COUNT) {
+    if (slot == SCREEN_LAYER_NONE) {
         return;
     }
     if (!CanHoldBattleInput() || !CanPressPartyPanel()) {
-        s_heldPanelRelease = SCREEN_LAYER_COUNT;
+        s_heldPanelRelease = SCREEN_LAYER_NONE;
         return;
     }
     if (!ClockTickedThisPass()) {
         return;
     }
-    s_heldPanelRelease = SCREEN_LAYER_COUNT;
+    s_heldPanelRelease = SCREEN_LAYER_NONE;
     ReleasePartyPanel(slot, false);
 }
 
@@ -4791,7 +4797,7 @@ static void ApplyHeldPanelRelease(void) {
 // A release in place in the battle view is kept only when neither its press
 // nor its release came while a command was being entered, and then waits for
 // the next pass on which a tick passes and goes through the retail gate there.
-static void ReleasePartyPanelOnTick(i32 slot, b32 dragged) {
+static void ReleasePartyPanelOnTick(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, b32 dragged) {
     if (dragged || !GetFieldBattleActive() || g_renderMode != RENDER_MODE_VIEW) {
         ReleasePartyPanel(slot, dragged);
         return;
@@ -4859,7 +4865,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
     switch (buttons & MOUSE_STATE_MASK) {
         case MOUSE_UP:
             if (s_layerDragging) {
-                s_pressedLayer = SCREEN_LAYER_COUNT;
+                s_pressedLayer = SCREEN_LAYER_NONE;
                 s_layerDragging = false;
             }
             break;
@@ -4891,7 +4897,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                 return;
             }
 #ifdef GITEN_BUGFIX
-            s_heldPanelRelease = SCREEN_LAYER_COUNT;
+            s_heldPanelRelease = SCREEN_LAYER_NONE;
             s_pressedOutsidePick = GetPickMode() == 0;
 #endif
             s_dragMoved = false;
@@ -4902,8 +4908,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                     s_clickedButton = ClickPanelCommand(g_cursorPos.y);
                     if (s_clickedButton > 0) {
                         g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
-                        g_screenLayers[SCREEN_LAYER_PANEL]
-                            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+                        ClearPanelLayerSurface();
                     }
                 }
                 return;
@@ -4915,8 +4920,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                 case SCREEN_LAYER_PANEL:
                     if (s_clickedButton > 0) {
                         g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
-                        g_screenLayers[SCREEN_LAYER_PANEL]
-                            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+                        ClearPanelLayerSurface();
                     }
                     return;
                 case SCREEN_LAYER_ICON:
@@ -4983,7 +4987,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                     PlaceDraggedLayer(s_pressedLayer);
                 }
             }
-            s_pressedLayer = SCREEN_LAYER_COUNT;
+            s_pressedLayer = SCREEN_LAYER_NONE;
             s_padHeld = false;
             return;
         default:
@@ -5030,10 +5034,9 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
         case MOUSE_LET_GO:
             if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
                 g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
-                g_screenLayers[SCREEN_LAYER_PANEL]
-                    ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+                ClearPanelLayerSurface();
             } else {
-                s_rightPressedLayer = SCREEN_LAYER_COUNT;
+                s_rightPressedLayer = SCREEN_LAYER_NONE;
                 s_padHeld = false;
             }
             break;
@@ -5113,7 +5116,7 @@ Texture g_textBoxTexture;
 RVA(0x00050ac0, 0x48e)
 b32 LoadGraphics(void) {
     i32 i;
-    GZ_ENUM_STORAGE(ScreenLayerSlot, i32) layer;
+    i32 layer;
     b32 failed;
 
     ClearHandleTable();
@@ -5170,7 +5173,7 @@ b32 LoadGraphics(void) {
     ResetRenderMode();
     failed = false;
     for (layer = 0; layer < SCREEN_LAYER_COUNT; layer++) {
-        failed |= CreateScreenLayer(layer);
+        failed |= CreateScreenLayer(static_cast<GZ_ENUM_PARAM(ScreenLayerSlot, i32)>(layer));
     }
     if (failed) {
         return false;

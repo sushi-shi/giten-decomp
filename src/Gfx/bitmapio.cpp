@@ -347,13 +347,7 @@ b32 CreatePicture(
         return false;
     }
     memset(picture, 0, sizeof(*picture));
-    ZeroMemory(&desc, sizeof(desc));
-    desc.dwSize = sizeof(desc);
-    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-    desc.dwWidth = surfaceWidth;
-    desc.dwHeight = surfaceHeight;
-    desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-    desc.ddpfPixelFormat = primaryDesc.ddpfPixelFormat;
+    InitOffscreenSurfaceDesc(desc, surfaceWidth, surfaceHeight, primaryDesc.ddpfPixelFormat);
     if (g_ddraw->CreateSurface(&desc, &picture->surface, NULL) != DD_OK) {
         return false;
     }

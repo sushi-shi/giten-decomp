@@ -11,10 +11,10 @@ void LoadObjectTexture(void* image, i16 slot) {
     }
     if (image == NULL) {
         ReleaseTexture(&g_objectTextures[slot]);
-        LoadTexture(&g_objectTextures[slot], "w\\npc.bmp", TRUE);
+        LoadTexture(&g_objectTextures[slot], "w\\npc.bmp", true);
     } else {
         ReleaseTexture(&g_objectTextures[slot]);
-        LoadTexture(&g_objectTextures[slot], image, FALSE);
+        LoadTexture(&g_objectTextures[slot], image, false);
     }
 }
 

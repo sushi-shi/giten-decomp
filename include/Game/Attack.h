@@ -46,6 +46,23 @@ static __inline i32 GetExceptionalAttackBase(Character* actor) {
         }                                                                                          \
     } while (0)
 
+#define FinalizeAttackDamage(damage, attacker)                                                      \
+    do {                                                                                           \
+        (damage) = ScaleActionValue((damage), g_attackResistance, 2);                              \
+        (damage) = ScaleByMoonValue((damage), (attacker)->moonRow, 2);                              \
+        (damage) = RandomPercent((damage), -20, 20);                                               \
+        (damage) = ClampInt((damage) / 100, 0, 0x7fffffff);                                         \
+    } while (0)
+
+#define ApplyFacingDamageBonus(amount, facing)                                                     \
+    do {                                                                                           \
+        if ((facing) == FACING_FROM_BEHIND) {                                                       \
+            (amount) *= 1.5;                                                                       \
+        } else if ((facing) != FACING_FACE_TO_FACE) {                                               \
+            (amount) *= 1.2;                                                                       \
+        }                                                                                          \
+    } while (0)
+
 b16 RollWeaponCondition(
     Character* attacker,
     Character* target,
