@@ -253,15 +253,18 @@ def init_prefix(force: bool = False) -> None:
 
 
 def verify_prefix() -> None:
-    """Fail unless the registry INCLUDE exists and lists dx before msvc."""
+    """Fail unless registry INCLUDE names the current DX and MSVC headers."""
     got = _reg("query", _ENV_KEY, "/v", "INCLUDE", capture=True)
-    val = "".join(line for line in got.stdout.splitlines() if "REG_" in line).lower()
-    if "include" not in val:
+    val = next((line.split("REG_SZ", 1)[1].strip() for line in
+                got.stdout.splitlines() if "REG_SZ" in line), "")
+    if not val:
         raise ToolError("wine registry INCLUDE unset - run init_prefix() "
                         "(a cold wineserver can fail the first winepath)")
-    if "dx" not in val or val.find("dx") > val.find("msvc"):
-        raise ToolError("wine registry INCLUDE does not put dx/Include before "
-                        "msvc/include - run init_prefix(force=True)")
+    expected = ";".join((winepath(dxsdk_dir() / "Include"),
+                         winepath(toolchain_root() / "include")))
+    if val.lower() != expected.lower():
+        raise ToolError("wine registry INCLUDE does not match the current "
+                        "$DXSDK_DIR and $MSVC_DIR - run `giten init`")
 
 
 def main() -> int:
