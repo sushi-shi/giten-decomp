@@ -6,6 +6,8 @@
 audit and gives pointer and scalar examples for the next type-model review.
 [Deferred constant identities](constants-handoff.md) records values with
 behavior-based names whose authored meanings still need evidence.
+[Shared control-flow joins](goto-review.md) inventories the remaining written
+`goto` sites and the retail evidence needed for a structured rewrite.
 
 ## Vendor macros
 
