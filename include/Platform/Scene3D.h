@@ -400,22 +400,25 @@ extern GZ_ENUM_STORAGE(CameraMoveState, u32) g_moveState;
 #define MOVE_STATE_KIND 0x0f
 
 // The buttons of the navigation pad on layer SCREEN_LAYER_NAVIGATION.
-#define PAD_NONE 0
-#define PAD_FORWARD 1
-#define PAD_BACK 2
-#define PAD_LEFT 3
-#define PAD_RIGHT 4
+GZ_ENUM_BEGIN_SPLIT(NavPadButton, i32)
+    PAD_RELEASED = -1,
+    PAD_NONE = 0,
+    PAD_FORWARD = 1,
+    PAD_BACK = 2,
+    PAD_LEFT = 3,
+    PAD_RIGHT = 4,
+    PAD_FIRST = PAD_FORWARD,
+    PAD_LAST = PAD_RIGHT
+GZ_ENUM_END_SPLIT(NavPadButton)
 
 // Draws pad button `button` up or pressed on the navigation layer.
-void PressPadButton(i32 button, BOOL pressed);
+void PressPadButton(GZ_ENUM_PARAM(NavPadButton, i32) button, BOOL pressed);
 
 // Draws pad button `button` (1..4) of the navigation pad on `surface`.
-b32 DrawPadButton(LPDIRECTDRAWSURFACE surface, i32 button, b32 pressed);
+b32 DrawPadButton(
+    LPDIRECTDRAWSURFACE surface, GZ_ENUM_PARAM(NavPadButton, i32) button, b32 pressed);
 
-// g_heldPadButton once the button is let go.
-#define PAD_RELEASED (-1)
-
-extern i32 g_heldPadButton;
+extern GZ_ENUM_STORAGE(NavPadButton, i32) g_heldPadButton;
 void RepeatPadMove(BOOL turn);
 
 // The menu bar on layer SCREEN_LAYER_MENU_BAR: its buttons' band and width,

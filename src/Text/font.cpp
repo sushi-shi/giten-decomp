@@ -5798,17 +5798,17 @@ DATA(0x0006db78)
 static POINT s_padPositions[4] = {{32, 0}, {32, 64}, {0, 32}, {64, 32}};
 
 DATA(0x0006db98)
-static i32 s_padGrid[10] = {
-    0,
+static GZ_ENUM_STORAGE(NavPadButton, i32) s_padGrid[10] = {
+    PAD_NONE,
     PAD_FORWARD,
-    0,
+    PAD_NONE,
     PAD_LEFT,
     PAD_RELEASED,
     PAD_RIGHT,
-    0,
+    PAD_NONE,
     PAD_BACK,
-    0,
-    0,
+    PAD_NONE,
+    PAD_NONE,
 };
 
 // The character panel's commands: the ids shown on its eight lines (-1 for
@@ -5838,7 +5838,7 @@ static void (*s_panelCommands[PANEL_COMMAND_COUNT])(i16 character) = {
 
 // The pad button last pressed down.
 DATA(0x00090bcc)
-static i32 s_pressedPadButton;
+static GZ_ENUM_STORAGE(NavPadButton, i32) s_pressedPadButton;
 
 // The party panels' last drawn states.
 DATA(0x00090af8)
@@ -5859,8 +5859,9 @@ void FreeScreenLayers(void) {
 }
 
 RVA(0x00055020, 0x3f)
-b32 DrawPadButton(LPDIRECTDRAWSURFACE surface, i32 button, b32 pressed) {
-    if (button < PAD_FORWARD || button > PAD_RIGHT) {
+b32 DrawPadButton(
+    LPDIRECTDRAWSURFACE surface, GZ_ENUM_PARAM(NavPadButton, i32) button, b32 pressed) {
+    if (button < PAD_FIRST || button > PAD_LAST) {
         return false;
     }
     return BlitImage(

@@ -1328,7 +1328,7 @@ static b32 NoMoveStep(D3DVALUE* progress) {
 }
 
 RVA(0x0004ad40, 0x1d)
-void PressPadButton(i32 button, BOOL pressed) {
+void PressPadButton(GZ_ENUM_PARAM(NavPadButton, i32) button, BOOL pressed) {
     DrawPadButton(g_screenLayers[SCREEN_LAYER_NAVIGATION]->surface, button, pressed);
 }
 
@@ -1355,7 +1355,7 @@ static BOOL (*s_moveSteps[16])(D3DVALUE* progress) = {
 
 // The pad button each move kind presses.
 DATA(0x0006ba38)
-static i32 s_movePadButtons[8] = {
+static GZ_ENUM_STORAGE(NavPadButton, i32) s_movePadButtons[8] = {
     PAD_NONE,
     PAD_FORWARD,
     PAD_BACK,
@@ -3955,7 +3955,7 @@ i32 GetWallCode(i32 x, i32 y, i32 side, i32 width, i32 height) {
 // The pad button held down (PAD_FORWARD..PAD_RIGHT; PAD_RELEASED once let go).
 // @identity-TODO: set by the layer TU's mouse handling (0x4554e5).
 DATA(0x00090a64)
-i32 g_heldPadButton;
+GZ_ENUM_STORAGE(NavPadButton, i32) g_heldPadButton;
 
 // Repeats the held pad button's move while the 3D view shows and nothing
 // covers it: steps, or with `turn` the turns (forward still steps).
