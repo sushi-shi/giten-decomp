@@ -39,6 +39,7 @@
 #include <Mem/Handle.h>
 #include <Script/EventFlags.h>
 #include <Script/ScenarioFlag.h>
+#include <Script/ScriptVars.h>
 #include <Sound/Sound.h>
 #include <Ui/Panel.h>
 #include <Util/BitSet.h>

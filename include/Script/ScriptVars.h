@@ -157,6 +157,9 @@ void OpSetTickCounter(void);
 
 void OpStartCountdown(void);
 
+void DrawDownCountdown(u16 amount);
+b16 FireCountdownEvent(void);
+
 // @identity-TODO: Looks like a PC-98 memory peek/poke whose two address operands are ignored on
 // Windows, one scratch dword 0x81648 standing in; the PC-98 overlay would confirm.
 RVA_DECL(0x0003bd40)
