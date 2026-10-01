@@ -649,8 +649,12 @@ MapCoord GetMouseWorldCell(void) {
     cell.y = MAP_COORD_NONE;
     cell.x = MAP_COORD_NONE;
     if (IsPointInWorldView(g_mousePosition.x, g_mousePosition.y)) {
-        cell.x = g_mousePosition.x + 0x70 + block % WORLD_BLOCK_COLUMNS * WORLD_BLOCK_WIDTH;
-        cell.y = g_mousePosition.y + 0x24 + block / WORLD_BLOCK_COLUMNS * WORLD_BLOCK_HEIGHT;
+        MapCoord origin;
+        origin.x = g_mousePosition.x + 0x70;
+        origin.y = g_mousePosition.y + 0x24;
+        origin.x += block % WORLD_BLOCK_COLUMNS * WORLD_BLOCK_WIDTH;
+        origin.y += block / WORLD_BLOCK_COLUMNS * WORLD_BLOCK_HEIGHT;
+        cell = origin;
     }
     return cell;
 }
@@ -838,7 +842,7 @@ i16 GetWallStopCode(u16 cell, GZ_ENUM_PARAM(WallStopMode, i16) mode) {
 // count, here only its byte; i16/u16 locals and casts tried.
 RVA(0x0000d2a0, 0xf)
 i32 GetFacingBit(void) {
-    return 1 << g_party.field.pos.direction;
+    return 1u << g_party.field.pos.direction;
 }
 
 // x1/y1 relative to x0/y0 in the frame of `direction`.

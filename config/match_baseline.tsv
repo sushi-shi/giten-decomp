@@ -833,10 +833,10 @@ fieldview	_DistanceFromParty	100.0000	100.0000	1	ast4:e1108a05e738	0xbe50	100.00
 fieldview	_FloodViewCells	100.0000	100.0000	3	ast4:f3b5d328e5e5	0xc120	100.0000	
 fieldview	_GetCellWall	100.0000	100.0000	1	ast4:0e984909cf08	0xd0f0	100.0000	
 fieldview	_GetCellWallStop	100.0000	100.0000	2	ast4:0d838135a3b1	0xd210	100.0000	
-fieldview	_GetFacingBit	98.7500	98.7500	2	ast4:0785f3ffd930	0xd2a0	98.7500	
+fieldview	_GetFacingBit	98.7500	98.7500	3	ast4:cce47cb08179	0xd2a0	98.7500	
 fieldview	_GetLayerOrigin	100.0000	100.0000	1	ast4:5ade59016d1a	0xcc60	100.0000	
 fieldview	_GetMapWallKind	100.0000	100.0000	2	ast4:26dd18f12aaf	0xd180	100.0000	
-fieldview	_GetMouseWorldCell	84.8913	84.8913	3	ast4:c8aae16daaf1	0xcdc0	84.8913	
+fieldview	_GetMouseWorldCell	88.6957	88.6957	4	ast4:e2d2af33d024	0xcdc0	88.6957	
 fieldview	_GetPartyView	100.0000	100.0000	2	ast4:e1a2ad5e04bc	0xbe20	100.0000	
 fieldview	_GetRotatedWallAtOffset	100.0000	100.0000	1	ast4:8d9a0a5a7984	0xd150	100.0000	
 fieldview	_GetWallAt	100.0000	100.0000	1	ast4:dca3d3461f57	0xc090	100.0000	
