@@ -37,5 +37,6 @@ typedef struct ImagePalette {
 } ImagePalette;
 
 void ReleaseImagePalette(ImagePalette* palette);
+b16 SetPaletteColor(u8 index, i16 color);
 
 #endif // GITEN_GFX_PALETTE_H

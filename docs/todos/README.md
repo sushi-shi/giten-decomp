@@ -5,7 +5,7 @@ review methods to Giten's live worklists and records unresolved source models.
 
 ## Source typing
 
-[C source cast census](cast-census.md) records the missing target-C written-site
+[C source cast census](cast-census.md) records the target-C written-site
 audit and gives pointer and scalar examples for the next type-model review.
 [Deferred constant identities](constants-handoff.md) records values with
 behavior-based names whose authored meanings still need evidence.
@@ -13,6 +13,11 @@ behavior-based names whose authored meanings still need evidence.
 `goto` sites and the retail evidence needed for a structured rewrite.
 [Offset-derived field names](offset-fields.md) lists primitive fields still
 named by storage offset and the evidence needed to identify them.
+
+## Declaration placement
+
+[Declaration placement](declaration-placement.md) records the caller and owner
+ABI evidence behind the remaining cross-header function declarations.
 
 ## Project helper reuse
 
