@@ -166,9 +166,8 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     g_backdropPicture.surface->SetColorKey(DDCKEY_SRCBLT, &key);
 }
 
-// @early-stop register allocation: retail extracts the vertical offset byte
-// before halving the height, which keeps the left edge in edi and the right
-// edge in ecx; every ordering of that sum emits the halving first here.
+// @early-stop register allocation: retail holds the vertical offset byte in dl
+// while this source keeps it in cl; the later rectangle arithmetic is the same.
 RVA(0x00058e40, 0x252)
 void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16 y) {
     BmpFile* bmp = imageData;
@@ -195,7 +194,8 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
     source.right = bmp->info.biWidth;
     source.bottom = bmp->info.biHeight;
     dest.left = screenX + GetEffectBitmapOffsetX(bmp) * 8;
-    dest.top = (screenY + GetEffectBitmapOffsetY(bmp) - bmp->info.biHeight / 2) * 11 / 10;
+    i8 verticalOffset = GetEffectBitmapOffsetY(bmp);
+    dest.top = (screenY + verticalOffset - bmp->info.biHeight / 2) * 11 / 10;
     dest.right = dest.left + bmp->info.biWidth;
     dest.bottom = dest.top + bmp->info.biHeight * 11 / 10;
     if (dest.left < 0) {
