@@ -96,12 +96,9 @@ struct AreaNpc;
 void StartBoxScene(struct TreasureBox* box);
 void StartNpcScene(struct AreaNpc* npc);
 
-// Callees of the talk and analyze picks, declared here for fieldmain:
-// abortflag's exchange, analyze's target, fieldobj's talk scene start, and
-// the training-point add (0x41c6c0: kind 0..3 of Character.trainingPoints,
-// capped). Codegen constraint: SetAnalyzeTarget in <Game/Analyze.h> would
-// reach field.c.
-i16 ExchangeAbortPending(i16 pending);
+// Callees of the talk and analyze picks: the analyze target, talk scene,
+// and capped training-point add. Codegen constraint: SetAnalyzeTarget in
+// <Game/Analyze.h> would reach field.c.
 void SetAnalyzeTarget(Character* target);
 void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor);
 

@@ -11,6 +11,7 @@
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <File/DataTableId.h>
+#include <Game/AbortFlag.h>
 #include <Game/ActorFlag.h>
 #include <Game/Alignment.h>
 #include <Game/Analyze.h>
