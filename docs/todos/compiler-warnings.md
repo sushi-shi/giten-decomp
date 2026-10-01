@@ -34,27 +34,22 @@ individual diagnostics, not distinct source lines.
 [Game argument-width warnings](argument-width-warnings.md) record reviewed
 source groups, retained conversions, and the evidence still needed for a
 change. To regenerate the individual written-site worklist after source or
-signature changes, run this from `nix develop`. It compiles each unit into
-ignored scratch objects and prints every C4761 diagnostic with its current
-source file and line; it does not link or run a test suite.
+signature changes, run this from `nix develop`:
 
 ```sh
-GITEN_DIR=$PWD PYTHONPATH=scripts python3 - <<'PY'
-from pathlib import Path
-import tomllib
-from giten.tool.cl import compile
-
-root = Path.cwd()
-manifest = tomllib.loads((root / "config/units.toml").read_text())
-for unit in manifest["unit"]:
-    output = compile(root / unit["source"],
-                     root / "build/warning-audit" / (unit["unit"] + ".obj"),
-                     manifest["flags"][unit["flags"]])
-    for line in output.splitlines():
-        if "warning C4761:" in line:
-            print(line.rstrip("\r"))
-PY
+giten verify compiler-warnings
+giten verify compiler-warnings --list C4761
 ```
+
+The command compiles all 82 configured units to disposable objects without
+linking or running a test suite. It publishes
+`build/gen/compiler_warnings.tsv` and
+`build/gen/compiler_warnings_coverage.json` only when every unit compiles and
+the source snapshot remains unchanged. Each TSV row retains the unit, source
+line, warning code, occurrence on that line, message and source spelling.
+VC5 gives line-only locations here, so the column is blank; repeated
+diagnostics on one line remain separate rows. The per-unit counts below are
+a review snapshot; the generated report is the current worklist.
 
 When one line contains multiple diagnostics, inspect the callee parameter
 types and each argument expression. For example, `RandomAverage(lo + 100,
