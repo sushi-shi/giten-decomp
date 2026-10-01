@@ -466,7 +466,7 @@ i16 RequestTalk(void) {
 
 RVA(0x00012880, 0x53)
 void SetReturnPoint(
-    i16 area,
+    GZ_ENUM_PARAM(MapAreaId, i16) area,
     i16 level,
     i16 x,
     i16 y,
@@ -488,7 +488,7 @@ void SetRebuildRoom(i16 rebuild) {
 }
 
 RVA(0x000128f0, 0x32)
-void MovePartyTo(i16 x, i16 y, i16 direction) {
+void MovePartyTo(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     g_party.field.pos.x = x;
     g_party.field.pos.y = y;
     g_party.field.pos.direction = direction;

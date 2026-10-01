@@ -148,7 +148,7 @@ static u16 s_quadIndices[6] = {0, 1, 2, 0, 2, 3};
 
 // The direction the party faces (0..3).
 DATA(0x000847ac)
-i32 g_viewDirection;
+GZ_ENUM_STORAGE(ViewDirection, i32) g_viewDirection;
 
 DATA(0x000847b8)
 b32 g_fixedLighting;
@@ -1208,7 +1208,8 @@ static b32 TurnLeftStep(D3DVALUE* progress) {
     g_cameraFrom.x = dx * CAMERA_DISTANCE;
     g_cameraFrom.z = dz * CAMERA_DISTANCE;
     if (*progress == TURN_END) {
-        g_viewDirection = (g_viewDirection - 1) & 3;
+        g_viewDirection =
+            static_cast<GZ_ENUM_STORAGE(ViewDirection, i32)>((g_viewDirection - 1) & 3);
         SetPartyDirection(g_viewDirection);
         BlitImage(
             g_screenLayers[SCREEN_LAYER_NAVIGATION]->surface,
@@ -1254,7 +1255,8 @@ static b32 TurnRightStep(D3DVALUE* progress) {
     g_cameraFrom.x = dx * CAMERA_DISTANCE;
     g_cameraFrom.z = dz * CAMERA_DISTANCE;
     if (*progress == TURN_END) {
-        g_viewDirection = (g_viewDirection + 1) & 3;
+        g_viewDirection =
+            static_cast<GZ_ENUM_STORAGE(ViewDirection, i32)>((g_viewDirection + 1) & 3);
         SetPartyDirection(g_viewDirection);
         BlitImage(
             g_screenLayers[SCREEN_LAYER_NAVIGATION]->surface,
@@ -1300,7 +1302,8 @@ static b32 TurnAroundStep(D3DVALUE* progress) {
     g_cameraFrom.x = dx * CAMERA_DISTANCE;
     g_cameraFrom.z = dz * CAMERA_DISTANCE;
     if (*progress == TURN_END) {
-        g_viewDirection = (g_viewDirection + 1) & 3;
+        g_viewDirection =
+            static_cast<GZ_ENUM_STORAGE(ViewDirection, i32)>((g_viewDirection + 1) & 3);
         if (s_halfTurned) {
             s_halfTurned = false;
             BlitImage(

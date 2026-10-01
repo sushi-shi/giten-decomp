@@ -7,6 +7,7 @@
 #include <Game/CellCode.h>
 #include <Game/GameStateId.h>
 #include <Game/PartyStep.h>
+#include <Game/ViewDirection.h>
 #include <Game/WallKind.h>
 #include <Gfx/DDError.h>
 #include <Gfx/ScreenLayer.h>
@@ -31,7 +32,7 @@ extern Picture g_fightBannerPicture;
 extern b32 g_fixedLighting;
 
 // The direction the party faces (0..3).
-extern i32 g_viewDirection;
+extern GZ_ENUM_STORAGE(ViewDirection, i32) g_viewDirection;
 
 // The horizontal axis billboards are laid along (perpendicular to the view).
 // @identity-TODO: written by the turn step (0x44a970) from the sin/cos tables.
