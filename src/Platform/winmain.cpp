@@ -3892,7 +3892,7 @@ void BuildRoomGeometry(void) {
                         g_wallMesh.vertices[g_wallMesh.vertexCount].sy =
                             corner < 2 ? WALL_TOP : 0.0f;
                         g_wallMesh.vertices[g_wallMesh.vertexCount].specular = 0;
-                        if (kind > WALL_KIND_FLAG_BARRED_DOOR && kind != WALL_KIND_UNBARRED_DOOR) {
+                        if (kind > WALL_KIND_PLAIN_ATLAS_LAST && kind != WALL_KIND_UNBARRED_DOOR) {
                             if (g_deviceType == D3D_DEVICE_HAL) {
                                 g_wallMesh.vertices[g_wallMesh.vertexCount].tu =
                                     s_hardwareAtlasUV[2][corner][0];

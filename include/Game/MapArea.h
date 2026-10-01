@@ -2,15 +2,17 @@
 #define GITEN_GAME_MAPAREA_H
 
 #include <EnumDomain.h>
+#include <Enums.h>
 
 // Map areas, named after their map files (translated or romanized), script
 // travel labels, or shopkeeper debug traces in OpLoadSprite. Several
 // map files can carry one place's name; the unqualified name goes to the one
 // the code tests. When neither is tested, layout or script routes distinguish them.
-// Area ids are bytes; the automap keeps a handle per possible area.
+// Map-file area ids are bytes; return points also hold them in words. The
+// automap keeps a handle per possible area.
 #define MAP_AREA_COUNT 256
 
-GZ_ENUM_BEGIN_SPLIT(MapAreaId, u8)
+GZ_ENUM_BEGIN(MapAreaId)
     MAP_AREA_HATSUDAI_SHELTER = 0x00,
     MAP_AREA_VIRTUAL_DUNGEON = 0x01,
     MAP_AREA_SUBSPACE_KISHIMOJIN_ROUTE = 0x02,
@@ -120,6 +122,6 @@ GZ_ENUM_BEGIN_SPLIT(MapAreaId, u8)
     MAP_AREA_OCHANOMIZU = 0x8a,
     MAP_AREA_UNDERGROUND_LABORATORY = 0x8b,
     MAP_AREA_WORLD_MAP = 0xff
-GZ_ENUM_END_SPLIT(MapAreaId)
+GZ_ENUM_END(MapAreaId)
 
 #endif // GITEN_GAME_MAPAREA_H

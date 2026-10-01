@@ -20,4 +20,8 @@ GZ_ENUM_BEGIN_SPLIT(WallKind, u8)
     WALL_KIND_PASSABLE_WALL = 12
 GZ_ENUM_END_SPLIT(WallKind)
 
+// The plain-wall atlas covers kinds through the flagged barred door, plus
+// the unbarred door handled separately.
+#define WALL_KIND_PLAIN_ATLAS_LAST WALL_KIND_FLAG_BARRED_DOOR
+
 #endif // GITEN_GAME_WALLKIND_H
