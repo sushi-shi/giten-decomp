@@ -33,17 +33,40 @@ separate `giten verify casts` review.
 
 ## Source-model review still open
 
-- `src/Game/clock.c` converts decoded map bytes into `AreaLevel*`, `u8*` and
-  `u16*` views. Some are genuine serialization boundaries; an owner or typed
-  accessor can replace a cast only if all producer and consumer paths support
-  that representation.
-- `src/Script/scripttext.c` reads handle payloads as `u32*`, `i16*` and
-  `char*` for different operations. Check the stored element kind and all
-  callers before claiming a single array type.
-- `src/Game/partyaction.c` casts `GetGamePhase()` and `GetGameStep()` to
-  `u16` for switches, and `src/Game/fieldview.c` narrows a direction before
-  indexing `s_wallStops`. Keep explicit narrowing where the retail access
-  width or encoded domain requires it.
+The C-source pointer audit started with 97 written sites across 68 C units.
+`IsRegionFlagOn` now passes its byte list to `IsCellFlagSet`, which accepts a
+generic record pointer and views its bytes inside the owner function. The
+affected C objects remain byte-identical. The remaining 96 source sites are
+grouped below; the command above supplies each current line, source type,
+target type and expansion context.
+
+| Source sites | Current boundary and evidence needed |
+| --- | --- |
+| `src/Game/character.c`, `fieldobj.c`, `skilluse.c`, `treasurebox.c`; `src/Script/scriptactor.c`, `scriptctx.c` | `FieldObject.kind` and the script actor pointer are viewed as `Character*` and `FieldActor*`. The latter has only a partial layout; e.g. `DistanceToParty((FieldActor*)g_curScript->actor)` and `GetFieldActor` use the same storage for different fields. Recover the shared object layout and all whole-object users before replacing these views. This family also includes two packed field-value reads and four script-var `ItemStack*` views, which need separate storage proofs. |
+| `src/Game/clock.c` | `DecodeAreaMap` rebases offsets from a serialized `u8*` record into typed `AreaLevel` lists; `CopyExitAt` copies the complete packed `ExitCell` through byte views. A decoded in-memory type does not replace the file-format view. Prove each source record's extent and alignment before removing its conversion. |
+| `src/Script/scripttext.c` | Script values and long vars carry menu pointers, handles, strings or numeric arrays in integer slots. For example, `OpAddMenuLine` converts `ReadScriptValue()` to `MenuBox*`, while `GetRecordDataOffset` views record bytes as 16-bit offsets. Recover the value tag and handle owner before claiming one pointer type. |
+| `src/Game/fieldmain.c`, `worldtravel.c`, `treasurebox.c`; `include/Game/AutomapData.h` | Named accessors turn generic handle payloads into event-state bytes, `MapCoord` route points and automap tables. These are real allocation/read boundaries; check all writers and the allocated size before moving the cast or changing the payload type. |
+| `src/Game/itemrecord.c`, `statestack.c`, `treasurebox.c`; `src/Gfx/displayconfig.c`, `motion.c`, `shot.c` | Byte or word views cross packed item text, scene cells, palette words, GUID registry bytes, effect-script offsets and the shot table. Examples: `strcpy(..., (char*)src)`, `StartEffectScript((u8*)record, record->script)`, and `(Body*)(s_shotData.bytes + offset)`. The source bytes or Win32 API type define the boundary; confirm format and alignment before replacing a cast. |
+
+The remaining source-site counts by unit are: `character` 1, `clock` 22,
+`fieldmain` 1, `fieldobj` 10, `itemrecord` 2, `skilluse` 1, `statestack` 1,
+`treasurebox` 5, `worldtravel` 2, `displayconfig` 1, `motion` 2, `shot` 1,
+`scriptactor` 32, `scriptctx` 1 and `scripttext` 14. These total 96.
+
+`IsCellFlagSet` now accepts a generic record pointer, but it cannot validate
+the offset without a list extent. Cell callers use offsets 3, 6 or 7; `MarkRegionList`
+passes offsets after a rectangle or marker and stops at the `ff ff` sentinel.
+The allocation length and bounds for every serialized room list remain to be
+recovered before adding a checked span or claiming the offset domain complete.
+`SpawnLevelObjects` retains `(u8*)cell` when calling `AddAreaNpc`: that callee
+walks all eight bytes of the `ObjectCell`. Passing `&cell->head.x` would start
+from the one-byte member rather than convert the complete record to its byte
+representation.
+
+Scalar casts remain a separate 49-site audit. Examples include the `u16` phase switches in
+`src/Game/partyaction.c` and the direction narrowed before indexing
+`s_wallStops` in `src/Game/fieldview.c`; their access width and encoded domain
+need evidence before a typed replacement.
 
 A lower cast count is a navigation signal, not proof of a better source model.
 Match the affected instructions, call signatures and referents before keeping

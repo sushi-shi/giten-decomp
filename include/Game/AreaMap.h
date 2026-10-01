@@ -291,7 +291,7 @@ extern i16 g_cellDestLevel;
 extern i16 g_cellDestArea;
 
 b16 IsCellAt(i16 x, i16 y, const CellHead* cell);
-b16 IsCellFlagSet(const CellHead* cell, i16 offset);
+b16 IsCellFlagSet(const void* record, i16 offset);
 const CellKind* FindCellKind(const CellHead* cell);
 
 // Latches the cell and the destination bytes at the given offsets (x, y, then

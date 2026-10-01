@@ -29,7 +29,33 @@ individual diagnostics, not distinct source lines.
 [Script and graphics width boundaries](warning-width-boundaries.md) and
 [Game argument-width warnings](argument-width-warnings.md) record reviewed
 source groups, retained conversions, and the evidence still needed for a
-change. The generated warning-site report remains a separate tooling worklist.
+change. To regenerate the individual written-site worklist after source or
+signature changes, run this from `nix develop`. It compiles each unit into
+ignored scratch objects and prints every C4761 diagnostic with its current
+source file and line; it does not link or run a test suite.
+
+```sh
+GITEN_DIR=$PWD PYTHONPATH=scripts python3 - <<'PY'
+from pathlib import Path
+import tomllib
+from giten.tool.cl import compile
+
+root = Path.cwd()
+manifest = tomllib.loads((root / "config/units.toml").read_text())
+for unit in manifest["unit"]:
+    output = compile(root / unit["source"],
+                     root / "build/warning-audit" / (unit["unit"] + ".obj"),
+                     manifest["flags"][unit["flags"]])
+    for line in output.splitlines():
+        if "warning C4761:" in line:
+            print(line.rstrip("\r"))
+PY
+```
+
+When one line contains multiple diagnostics, inspect the callee parameter
+types and each argument expression. For example, `RandomAverage(lo + 100,
+hi + 100, 0)` in `src/Util/range.c` produces two warnings on one line, one
+for each 32-bit bound passed to an `i16` parameter.
 
 | Unit | Count | Unit | Count | Unit | Count |
 | --- | ---: | --- | ---: | --- | ---: |
