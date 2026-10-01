@@ -618,7 +618,7 @@ DATA(0x0008f300)
 u32 g_turnStep;
 
 DATA(0x0008f444)
-u32 g_moveState;
+GZ_ENUM_STORAGE(CameraMoveState, u32) g_moveState;
 
 // The move's progress: camera units slid, or turn steps.
 DATA(0x0008f4d4)
@@ -626,7 +626,7 @@ static D3DVALUE s_moveProgress;
 
 // The previous frame's move state (a new move restarts its progress).
 DATA(0x0008f558)
-static u32 s_lastMoveState;
+static GZ_ENUM_STORAGE(CameraMoveState, u32) s_lastMoveState;
 
 DATA(0x0008f414)
 TreasureBox* g_openingBox;
@@ -2158,7 +2158,8 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 if (lit) {
                     imageCode &= FIELD_OBJECT_IMAGE_INDEX_MASK;
                 }
-                if (g_moveState >= 5 && g_moveState <= 7 && g_turnStep > 15) {
+                if (g_moveState >= MOVE_STATE_TURN_FIRST
+                    && g_moveState <= MOVE_STATE_TURN_LAST && g_turnStep > 15) {
                     if (g_moveState == MOVE_STATE_TURN_LEFT) {
                         imageCode = s_turnImageCodesLeft[imageCode + 1];
                     } else {
@@ -3067,13 +3068,14 @@ void RenderViewMode(BOOL draw) {
                 TraceD3DCallError("lpD3DDev->SetLightState()@Rend3D()-2 returns ", result);
             }
         }
-        if (g_moveState >= MOVE_STATE_DOOR_AHEAD) {
+        if (g_moveState >= MOVE_STATE_DOOR_FIRST) {
             if (g_bilinearFiltering) {
                 g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_NEAREST);
                 g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_NEAREST);
             }
             if (g_moveState == MOVE_STATE_DOOR_AHEAD) {
-                g_moveState = AnimateDoor(&g_doorMesh);
+                g_moveState = static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(
+                    AnimateDoor(&g_doorMesh));
                 if (g_moveState == MOVE_STATE_STEP) {
                     s_doorFrame = 0;
                     s_doorOpening = true;
@@ -3082,14 +3084,16 @@ void RenderViewMode(BOOL draw) {
             } else if (g_moveState == MOVE_STATE_DOOR_BACK) {
                 g_moveState = MOVE_STATE_BACK;
             } else if (g_moveState == MOVE_STATE_DOOR_LEFT) {
-                g_moveState = AnimateDoor(&g_doorMesh);
+                g_moveState = static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(
+                    AnimateDoor(&g_doorMesh));
                 if (g_moveState == MOVE_STATE_LEFT) {
                     s_doorFrame = 0;
                     s_doorOpening = true;
                     s_viewDirty = true;
                 }
             } else if (g_moveState == MOVE_STATE_DOOR_RIGHT) {
-                g_moveState = AnimateDoor(&g_doorMesh);
+                g_moveState = static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(
+                    AnimateDoor(&g_doorMesh));
                 if (g_moveState == MOVE_STATE_RIGHT) {
                     s_doorFrame = 0;
                     s_doorOpening = true;
