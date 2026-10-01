@@ -2161,7 +2161,7 @@ void OpListBagByCategory(void) {
         entries[count++] = i;
     }
     count += spare;
-    handle = CreateArrayHandle(count + spare, 4);
+    handle = CreateArrayHandle(count + spare, sizeof(*list));
     SetScriptLongVar(listVar, handle);
     SetScriptLongVar(countVar, count);
     list = HandleWritePtr(handle);
