@@ -34,8 +34,7 @@
 # [data_matching]	true
 # [units]	unit	n_functions	matched
 abortflag	16	15
-automap	1	1
-bitmapio	22	20
+bitmapio	50	45
 bitset	5	5
 blit	18	18
 character	171	163
@@ -46,24 +45,20 @@ datafile	19	19
 debugmenu	3	3
 devicesettings	2	2
 displayconfig	2	2
-effectdraw	3	1
 equipeffect	2	2
 eventflags	28	28
-fieldmain	59	53
-fieldobj	141	134
-fieldscreen	103	103
+fieldmain	59	55
+fieldobj	141	135
+fieldscreen	103	102
 fieldview	38	36
-font	150	144
+font	150	143
 fusion	114	110
 gameloop	7	7
 gamestate	7	7
 handle	33	31
-hotspot	6	6
-hotspotclick	1	0
 itemattack	4	4
 itemrecord	109	106
 joystick	2	2
-layertexture	2	2
 list	6	6
 menubox	12	12
 menuresult	2	2
@@ -72,7 +67,6 @@ midistream	35	34
 motion	43	42
 mouse	10	9
 nibble	4	3
-objecttexture	2	2
 partyaction	103	101
 playtime	4	4
 pool	6	6
@@ -93,11 +87,9 @@ scriptvm	2	2
 shot	15	15
 skillattack	5	4
 skilluse	53	50
-sprite	7	7
 statestack	127	123
 statusmenu	9	9
 statuspanel	49	46
-surfacecopy	1	1
 textapi	5	5
 textchar	1	0
 textstate	21	20
@@ -108,12 +100,10 @@ vram	44	39
 vramaccess	12	12
 vramcell	14	14
 waitstate	7	7
-walltexture	1	1
 weaponattack	5	4
 windowcolor	13	13
 windowtext	2	2
-winmain	128	120
-worldmapgfx	4	4
+winmain	128	119
 worldtravel	24	21
 # [functions]	unit	function	best_pct	cur_pct	tries	src_hash	rva	hist_pct	state
 abortflag	_AddSceneHotspot	100.0000	100.0000	2	ast4:b2b717a6f4ee	0x455b0	100.0000	
@@ -132,29 +122,56 @@ abortflag	_IsAbortPending	100.0000	100.0000	1	ast4:d68c464fd2e7	0x45550	100.0000
 abortflag	_PickSceneHotspot	100.0000	100.0000	3	ast4:93bedffb5bcf	0x456e0	100.0000	
 abortflag	_PollScenePointer	100.0000	100.0000	2	ast4:0ccbe069baba	0x45b30	100.0000	
 abortflag	_SetAbortPending	100.0000	100.0000	1	ast4:7cfd555cd9af	0x45560	100.0000	
-automap	_ScreenToAutomapCell	100.0000	100.0000	1	f9ff95d2ab3a	0x58500	100.0000	
 bitmapio	_BlitImage	100.0000	100.0000	2	ast4:3487b9bf148e	0x57290	100.0000	
+bitmapio	_ClearEffectLayer	100.0000	100.0000	3	ast4:4c8fef8eff57	0x58990	100.0000	
 bitmapio	_ClearScenePicture	100.0000	100.0000	4	ast4:e21d846682c9	0x57c40	100.0000	
 bitmapio	_ClearSceneSurfaces	100.0000	100.0000	5	ast4:5986e59d6797	0x57bf0	100.0000	
-bitmapio	_CopyResourceBitmap16	100.0000	99.6299	6	ast4:ac6074baf898	0x56f30	100.0000	
+bitmapio	_ClearSelectedHotspot	100.0000	100.0000	2	ast4:137e93cf09e1	0x58580	100.0000	
+bitmapio	_ClickHotspotAt	95.2963	92.8148	8	ast4:733b1efe7a7b	0x59180	95.2963	
+bitmapio	_CopyResourceBitmap16	100.0000	99.5130	6	ast4:ac6074baf898	0x56f30	100.0000	
 bitmapio	_CopyResourceBitmap8	100.0000	100.0000	7	ast4:8282ba4ca5e1	0x57120	100.0000	
+bitmapio	_CopySurfaceSquare	100.0000	100.0000	2	ast4:c845849c3372	0x590a0	100.0000	
+bitmapio	_CountFieldObjects	100.0000	100.0000	3	ast4:ce33962104b2	0x58640	100.0000	
 bitmapio	_CreatePicture	100.0000	100.0000	6	ast4:0bce18c7ed46	0x57380	100.0000	
+bitmapio	_DecodeLayerImage	100.0000	100.0000	5	ast4:4592e43e7e5b	0x57f20	100.0000	
+bitmapio	_DecodeLayerImageAlt	100.0000	100.0000	2	ast4:aa2c0576cd57	0x58040	100.0000	
+bitmapio	_DrawProjectedEffectSprite	96.0887	96.0887	13	ast4:586974a1739f	0x589e0	96.0887	
 bitmapio	_DrawResourceBitmap	100.0000	100.0000	4	ast4:0b48d7a18c77	0x572e0	100.0000	
+bitmapio	_DrawScreenEffectSprite	94.7111	94.7111	14	ast4:46c67582bcc7	0x58e40	94.7111	
+bitmapio	_DrawWorldMapCursor	100.0000	100.0000	2	ast4:ac8d604b9912	0x583f0	100.0000	
 bitmapio	_FreeBitmap	100.0000	100.0000	1	ast4:a902b38926b5	0x56ae0	100.0000	
-bitmapio	_LoadBitmapToSurface16	100.0000	93.3757	11	ast4:bf8ea529123d	0x56bd0	100.0000	
+bitmapio	_FreeSpriteImages	100.0000	100.0000	3	ast4:09ce38ffca6f	0x58820	100.0000	
+bitmapio	_GetSelectedHotspotObject	100.0000	100.0000	3	ast4:3ab46a153be7	0x585c0	100.0000	
+bitmapio	_GetSelectedHotspotValue	100.0000	100.0000	3	ast4:5f9755d83db7	0x585a0	100.0000	
+bitmapio	_HasHotspotTo	100.0000	100.0000	5	ast4:c89b13acd3ed	0x585f0	100.0000	
+bitmapio	_HitTestWorldMap	100.0000	100.0000	2	ast4:26f2ea1ad531	0x581b0	100.0000	
+bitmapio	_IsSpriteFrameLoaded	100.0000	100.0000	5	ast4:fe345ccb9ead	0x58870	100.0000	
+bitmapio	_IsSpritePlaced	100.0000	100.0000	4	ast4:b9d2fbd214d4	0x58800	100.0000	
+bitmapio	_IsWorldMapMarkerNearEdge	100.0000	100.0000	3	ast4:4e4f1681ff08	0x582c0	100.0000	
+bitmapio	_LoadBitmapToSurface16	100.0000	99.5665	11	ast4:bf8ea529123d	0x56bd0	100.0000	
 bitmapio	_LoadBitmapToSurface8	100.0000	100.0000	9	ast4:bc383ff02996	0x56de0	100.0000	
+bitmapio	_LoadObjectTexture	100.0000	100.0000	2	ast4:cbe380b37c4c	0x58110	100.0000	
 bitmapio	_LoadPictureFile	100.0000	100.0000	2	ast4:a6aac371e53a	0x57520	100.0000	
 bitmapio	_LoadScenePicture	100.0000	100.0000	3	ast4:413281073c05	0x57b90	100.0000	
+bitmapio	_LoadSpriteFrames	100.0000	100.0000	4	ast4:8e450d153c02	0x588c0	100.0000	
 bitmapio	_LoadTexture	100.0000	100.0000	12	ast4:3b7252b28741	0x577a0	100.0000	
+bitmapio	_LoadWallTextures	100.0000	100.0000	3	ast4:c476c4a72116	0x57e80	100.0000	
 bitmapio	_LoadWorldMapOverlay	100.0000	100.0000	4	ast4:dbb8180f6453	0x57d80	100.0000	
 bitmapio	_LoadWorldMapTile	100.0000	100.0000	4	ast4:144a9da3003e	0x57c70	100.0000	
 bitmapio	_OpenTextureBitmap	100.0000	100.0000	9	ast4:3f7709fb7959	0x57a70	100.0000	
+bitmapio	_PlaceSprite	100.0000	100.0000	3	ast4:13894aae6bb4	0x58780	100.0000	
 bitmapio	_ReadBitmapFile	100.0000	100.0000	1	ast4:ae8dc3ce4d81	0x56a70	100.0000	
+bitmapio	_ReadWorldMapTileCode	100.0000	100.0000	3	ast4:2c9d827e9d21	0x58330	100.0000	
+bitmapio	_ReleaseObjectTextures	100.0000	100.0000	2	ast4:d689cbf34592	0x58190	100.0000	
 bitmapio	_ReleaseTexture	100.0000	100.0000	3	ast4:cb365032531e	0x576d0	100.0000	
 bitmapio	_RestoreTexture	100.0000	100.0000	1	ast4:de83e9ebb959	0x57b30	100.0000	
+bitmapio	_ScreenToAutomapCell	100.0000	100.0000	1	ast4:76e7a1e841de	0x58500	100.0000	
 bitmapio	_SeekBitmap	100.0000	100.0000	4	ast4:969aaade2a10	0x56b00	100.0000	
+bitmapio	_SetSelectedHotspot	100.0000	100.0000	1	ast4:0ce948d9b36c	0x58590	100.0000	
 bitmapio	_ShadeTexture	100.0000	100.0000	4	ast4:d45fe4ad189c	0x57590	100.0000	
 bitmapio	_ShowScenePicture	100.0000	100.0000	1	ast4:0a674efb13f9	0x57b80	100.0000	
+bitmapio	_UnplaceAllSprites	100.0000	100.0000	4	ast4:901dc066e0e8	0x586d0	100.0000	
+bitmapio	_UnplaceSprite	100.0000	100.0000	4	ast4:d85d9d3396a0	0x58700	100.0000	
 bitset	_ChangeBit	100.0000	100.0000	3	ast4:a2f387df453e	0xb7c0	100.0000	
 bitset	_ClearBit	100.0000	100.0000	3	ast4:222fcf8394f1	0xb740	100.0000	
 bitset	_SetBit	100.0000	100.0000	3	ast4:a50cdb0dc12d	0xb700	100.0000	
@@ -228,7 +245,7 @@ character	_CopyCharacterCore	100.0000	100.0000	4	ast4:08611da5a9a9	0x3c990	100.0
 character	_CountFallenHumans	100.0000	100.0000	5	ast4:ef46bafce742	0x3fc30	100.0000	
 character	_CountPartyMembers	100.0000	100.0000	2	ast4:f055d4e94660	0x3f970	100.0000	
 character	_CountRosterEntries	100.0000	100.0000	3	ast4:6f8ef7f902cd	0x3f480	100.0000	
-character	_CreateStatusListMenu	100.0000	100.0000	2	ast4:88dc70976ce5	0x40a20	100.0000	
+character	_CreateStatusListMenu	100.0000	100.0000	3	ast4:07ea7fd91037	0x40a20	100.0000	
 character	_DamageParty	100.0000	100.0000	5	ast4:e6586dd80b91	0x3f9f0	100.0000	
 character	_DrainPool	100.0000	100.0000	1	ast4:c64f0f67e896	0x3d070	100.0000	
 character	_DrainUpkeep	100.0000	100.0000	8	ast4:45cb6c76b0b2	0x41180	100.0000	
@@ -444,7 +461,7 @@ d3dapp	?Magnitude@@YAMABU_D3DVECTOR@@@Z	100.0000	100.0000	1	header:96c4b6ace3bd	
 d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	100.0000	98.8902	1	ast4:732358446015	0x46230	100.0000	
 d3dapp	?Normalize@@YA?AU_D3DVECTOR@@ABU1@@Z	100.0000	100.0000	1	header:9f72dd33a7f5	0x49090	100.0000	
 d3dapp	?PollMouseButtons@@YAEXZ	98.0986	98.0986	9	ast4:26e39df368ec	0x48e60	98.0986	
-d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	93.9325	93.9325	5	ast4:4d4f30d092d9	0x46060	93.9325	
+d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	93.9325	93.8344	5	ast4:4d4f30d092d9	0x46060	93.9325	
 d3dapp	?QueryD3DDevices@@YAXXZ	100.0000	100.0000	4	ast4:55b16a9ac1b4	0x47c00	100.0000	
 d3dapp	?ReadSurfaceWord@@YAGPAUIDirectDrawSurface@@HHH@Z	100.0000	100.0000	2	ast4:8648ad348174	0x47e70	100.0000	
 d3dapp	?ReleaseDirectInput@@YAXXZ	100.0000	100.0000	3	ast4:5c20735f7b73	0x48db0	100.0000	
@@ -487,13 +504,10 @@ datafile	_SkipRawBlock	100.0000	100.0000	1	ast4:be0e35bd63fc	0x1cc0	100.0000
 debugmenu	_DebugMenuHandler	100.0000	100.0000	5	ast4:7248ff37da3d	0x1410	100.0000	
 debugmenu	_MagicMenuHandler	100.0000	100.0000	4	ast4:b0cd27250972	0x14d0	100.0000	
 debugmenu	_RunDebugMenu	100.0000	100.0000	6	ast4:c90c4e39482b	0x1000	100.0000	
-devicesettings	?GetDeviceSettingsValueName@@YIXPAD@Z	100.0000	100.0000	1	776d041bceed	0x45d60	100.0000	
-devicesettings	?LoadDeviceSettings@@YAHPAUDeviceSettings@@@Z	100.0000	100.0000	2	0ca62da03264	0x45ce0	100.0000	
-displayconfig	_LoadDisplayConfig	100.0000	100.0000	3	cdcf105faeb0	0x45bb0	100.0000	
-displayconfig	_SetDefaultDisplayConfig	100.0000	100.0000	2	9ec3ea0a3279	0x45ca0	100.0000	
-effectdraw	_ClearEffectLayer	100.0000	100.0000	3	ast4:4c8fef8eff57	0x58990	100.0000	
-effectdraw	_DrawProjectedEffectSprite	96.0887	96.0887	13	ast4:586974a1739f	0x589e0	96.0887	
-effectdraw	_DrawScreenEffectSprite	94.7111	94.7111	14	ast4:46c67582bcc7	0x58e40	94.7111	
+devicesettings	?GetDeviceSettingsValueName@@YIXPAD@Z	100.0000	100.0000	1	ast4:7487f06799b9	0x45d60	100.0000	
+devicesettings	?LoadDeviceSettings@@YAHPAUDeviceSettings@@@Z	100.0000	100.0000	2	ast4:7476e3823369	0x45ce0	100.0000	
+displayconfig	_LoadDisplayConfig	100.0000	100.0000	3	ast4:25b508f1f2d8	0x45bb0	100.0000	
+displayconfig	_SetDefaultDisplayConfig	100.0000	100.0000	2	ast4:39d118e8a628	0x45ca0	100.0000	
 equipeffect	_ApplyEquipmentEffects	100.0000	100.0000	3	ast4:636b44294097	0x26470	100.0000	
 equipeffect	_ApplyItemCurse	100.0000	100.0000	8	ast4:9c54db1d514f	0x26070	100.0000	
 eventflags	_ChangeEventFlag	100.0000	100.0000	4	ast4:c4e84ea25e1e	0x391f0	100.0000	
@@ -534,13 +548,13 @@ fieldmain	_FreeFieldImageCache	100.0000	100.0000	1	ast4:34f2adfa0c72	0x14410	100
 fieldmain	_GetFieldBusy	100.0000	100.0000	1	ast4:01200f1e67d1	0x12860	100.0000	
 fieldmain	_GetFieldExplorationActive	100.0000	100.0000	2	ast4:7a452ead0286	0x12b20	100.0000	
 fieldmain	_GetReturnPoint	100.0000	100.0000	2	ast4:5e45d07fde70	0x12930	100.0000	
-fieldmain	_GetViewVisibility	100.0000	99.8305	3	ast4:5ade3e946954	0x14340	100.0000	
+fieldmain	_GetViewVisibility	100.0000	100.0000	3	ast4:5ade3e946954	0x14340	100.0000	
 fieldmain	_GrowAutoMoves	100.0000	100.0000	1	ast4:0bd64cab1f03	0x12720	100.0000	
 fieldmain	_HasAutoMoves	100.0000	100.0000	2	ast4:8c3f457d419d	0x127a0	100.0000	
 fieldmain	_HasQueuedObjectEvents	100.0000	100.0000	1	ast4:a4d2903e9995	0x13c00	100.0000	
 fieldmain	_LoadFieldEventTable	100.0000	100.0000	2	ast4:cf8316f6d7ba	0x13d10	100.0000	
 fieldmain	_LoadFieldImage	100.0000	100.0000	2	ast4:8a8ba8e62637	0x144c0	100.0000	
-fieldmain	_LoadFieldMemory	100.0000	87.0270	2	ast4:aec093adb5c5	0x13ca0	100.0000	
+fieldmain	_LoadFieldMemory	100.0000	100.0000	2	ast4:aec093adb5c5	0x13ca0	100.0000	
 fieldmain	_MarkFieldViewCells	100.0000	100.0000	1	ast4:4f0707083593	0x13d70	100.0000	
 fieldmain	_MarkLevelEvent	100.0000	100.0000	1	ast4:dc2cad1634dc	0x13b20	100.0000	
 fieldmain	_MarkVisibleFieldCells	100.0000	100.0000	4	ast4:58c9fb00253c	0x13d90	100.0000	
@@ -587,7 +601,7 @@ fieldobj	_AddFamiliarity	100.0000	100.0000	1	ast4:063a4abf6382	0x10d30	100.0000
 fieldobj	_AddFamiliarityCount	100.0000	100.0000	1	ast4:e3bdf9b8e1ba	0x10bd0	100.0000	
 fieldobj	_AddLevelGap	100.0000	100.0000	1	ast4:9578cc461960	0x10ca0	100.0000	
 fieldobj	_AdvanceObjectAnims	100.0000	100.0000	1	ast4:0d79dfd0a5e2	0xe6b0	100.0000	
-fieldobj	_AlignmentConflicts	84.6364	84.4545	3	ast4:b654888d7d49	0x10db0	84.6364	
+fieldobj	_AlignmentConflicts	84.6364	84.6364	3	ast4:b654888d7d49	0x10db0	84.6364	
 fieldobj	_AnyObjectInReach	100.0000	100.0000	2	ast4:3cea882fceb3	0x11620	100.0000	
 fieldobj	_ApplyObjectConditions	100.0000	100.0000	3	ast4:02f1a391ea8d	0xe4e0	100.0000	
 fieldobj	_AssignWorldEncounterGroups	100.0000	100.0000	2	ast4:f9b4a1ef2dbb	0x11440	100.0000	
@@ -690,7 +704,7 @@ fieldobj	_ReadRecordIfWanted	100.0000	100.0000	1	ast4:827bd07863f5	0x10b00	100.0
 fieldobj	_RefreshFamiliarity	100.0000	100.0000	5	ast4:926d26bf8a9d	0x10bf0	100.0000	
 fieldobj	_RefreshIfTurned	100.0000	100.0000	3	ast4:5109de859888	0xf220	100.0000	
 fieldobj	_RefreshObjectDraw	100.0000	100.0000	1	ast4:c12878e7d72e	0xea50	100.0000	
-fieldobj	_RelativeFacing	100.0000	79.6667	1	ast4:06ed36dda83e	0xdf30	100.0000	
+fieldobj	_RelativeFacing	100.0000	100.0000	1	ast4:06ed36dda83e	0xdf30	100.0000	
 fieldobj	_RemoveFieldObject	100.0000	100.0000	7	ast4:6fbd895c7367	0xd7f0	100.0000	
 fieldobj	_ResetFieldLayer	100.0000	100.0000	2	ast4:c5461142d609	0xe7e0	100.0000	
 fieldobj	_ResetFieldObjects	100.0000	100.0000	2	ast4:9d8cdaca0228	0xd940	100.0000	
@@ -734,7 +748,7 @@ fieldscreen	_CanRevealAutomapNorth	100.0000	100.0000	5	ast4:52af4b7cb5d3	0x157b0
 fieldscreen	_CanRevealAutomapSouth	100.0000	100.0000	5	ast4:dadc54e450bd	0x15730	100.0000	
 fieldscreen	_ClearEncounterPending	100.0000	100.0000	2	ast4:cb70c19ac0f3	0x154b0	100.0000	
 fieldscreen	_ClearFieldPanelSelection	100.0000	100.0000	3	ast4:7da848677d65	0x169c0	100.0000	
-fieldscreen	_ClearPanel	100.0000	100.0000	4	ast4:27bc52c52c01	0x159e0	100.0000	
+fieldscreen	_ClearPanel	100.0000	99.8750	4	ast4:27bc52c52c01	0x159e0	100.0000	
 fieldscreen	_ClearPanelRow	100.0000	100.0000	4	ast4:d62e0f5de08d	0x15a40	100.0000	
 fieldscreen	_ClearWorldMapBlock	100.0000	100.0000	1	ast4:99cd42d365ec	0x163c0	100.0000	
 fieldscreen	_CommandRowHandler	100.0000	100.0000	1	ast4:bfbb829eeb12	0x158e0	100.0000	
@@ -941,7 +955,7 @@ font	_GetTextPlaneLineStepIf	100.0000	100.0000	2	ast4:7b1fd467f2a6	0x52b10	100.0
 font	_GetTextPlaneNormalAttr	100.0000	100.0000	2	ast4:46b282e22865	0x52750	100.0000	
 font	_GetTextPlaneOrigin	100.0000	100.0000	2	ast4:eca2538e6b7f	0x53ac0	100.0000	
 font	_GetTextPlaneOrigin2	100.0000	100.0000	2	ast4:eca2538e6b7f	0x53b10	100.0000	
-font	_GetTextPlanePageLines	100.0000	100.0000	3	ast4:05c8640e25a8	0x53010	100.0000	
+font	_GetTextPlanePageLines	100.0000	99.1667	3	ast4:05c8640e25a8	0x53010	100.0000	
 font	_GetTextPlaneRowText	100.0000	100.0000	3	ast4:6c65cd2d5977	0x53b60	100.0000	
 font	_GetTextPlaneSize	100.0000	100.0000	2	ast4:341f5c80b3ff	0x53f10	100.0000	
 font	_HideScreenLayer	100.0000	100.0000	6	ast4:2e6095cb840d	0x54390	100.0000	
@@ -1176,13 +1190,6 @@ handle	_PopListTail	100.0000	100.0000	1	ast4:28ef072f5694	0x46d0	100.0000
 handle	_ResizeHandle	100.0000	100.0000	1	ast4:35a4c2000c5a	0x45b0	100.0000	
 handle	_SetHandleEntry	100.0000	100.0000	3	ast4:dcc59b1f4bee	0x43f0	100.0000	
 handle	_SetHandlePtr	100.0000	100.0000	2	ast4:8e1c9895b562	0x4600	100.0000	
-hotspot	_ClearSelectedHotspot	100.0000	100.0000	1	ast4:ca714a99d550	0x58580	100.0000	
-hotspot	_CountFieldObjects	100.0000	100.0000	2	ast4:0bda3eb93027	0x58640	100.0000	
-hotspot	_GetSelectedHotspotObject	100.0000	100.0000	2	ast4:ec513da7414d	0x585c0	100.0000	
-hotspot	_GetSelectedHotspotValue	100.0000	100.0000	2	ast4:c0b0e067de2b	0x585a0	100.0000	
-hotspot	_HasHotspotTo	100.0000	100.0000	4	ast4:2502ada8fc62	0x585f0	100.0000	
-hotspot	_SetSelectedHotspot	100.0000	100.0000	1	ast4:0ce948d9b36c	0x58590	100.0000	
-hotspotclick	_ClickHotspotAt	95.2963	92.8148	8	ast4:733b1efe7a7b	0x59180	95.2963	
 itemattack	_ComputeItemDamage	100.0000	100.0000	10	ast4:8be2a9117f01	0xb320	100.0000	
 itemattack	_ResolveItemAttack	100.0000	100.0000	9	ast4:bf527c6fe89f	0xb0f0	100.0000	
 itemattack	_RollItemCondition	100.0000	100.0000	8	ast4:a92bc5476414	0xb4d0	100.0000	
@@ -1214,7 +1221,7 @@ itemrecord	_CountGemItems	100.0000	100.0000	4	ast4:27684ef36ead	0x24780	100.0000
 itemrecord	_CountGemItemsAt	100.0000	100.0000	4	ast4:f090ce1e2274	0x24750	100.0000	
 itemrecord	_CountHeldItem	100.0000	100.0000	2	ast4:e066f3a68d48	0x236b0	100.0000	
 itemrecord	_CountPoolEntries	100.0000	100.0000	4	ast4:acbbcf201512	0x237d0	100.0000	
-itemrecord	_CreateGiftMenu	100.0000	100.0000	2	ast4:50247f38bf35	0x25f60	100.0000	
+itemrecord	_CreateGiftMenu	100.0000	100.0000	3	ast4:d5dcd5cb4d81	0x25f60	100.0000	
 itemrecord	_DecodeItemRecord	97.8752	97.8752	8	ast4:039a3ad8921e	0x22d40	97.8752	
 itemrecord	_DetachBagEntryItem	100.0000	100.0000	2	ast4:1a2736f7c8da	0x244a0	100.0000	
 itemrecord	_DiscardMenuHandler	100.0000	100.0000	4	ast4:b784abd84b81	0x25db0	100.0000	
@@ -1270,7 +1277,7 @@ itemrecord	_ResolveInflictedCondition	100.0000	100.0000	3	ast4:4771a4f4cb62	0x25
 itemrecord	_RestoreBagEntries	100.0000	100.0000	2	ast4:8930795f7d29	0x23b10	100.0000	
 itemrecord	_RestoreGemItems	100.0000	100.0000	3	ast4:87899c6da272	0x24800	100.0000	
 itemrecord	_RollItemAmount	100.0000	100.0000	1	ast4:c0697ab03fe0	0x23540	100.0000	
-itemrecord	_RunBagDiscardMenu	100.0000	100.0000	5	ast4:92a1f04f9e79	0x25cb0	100.0000	
+itemrecord	_RunBagDiscardMenu	100.0000	100.0000	6	ast4:4e0974ac0cfb	0x25cb0	100.0000	
 itemrecord	_RunGemItemGift	100.0000	100.0000	3	ast4:9cfc4ed82c39	0x25e70	100.0000	
 itemrecord	_SaveGemItems	100.0000	100.0000	4	ast4:eca36c3bd841	0x247c0	100.0000	
 itemrecord	_SaveOrRestoreBag	100.0000	100.0000	1	ast4:800ea88c71fe	0x242b0	100.0000	
@@ -1292,20 +1299,18 @@ itemrecord	_TakePooledItems	100.0000	100.0000	5	ast4:3bbbd7352a11	0x23a30	100.00
 itemrecord	_UseAttackItem	100.0000	100.0000	5	ast4:1ae2c9cdf847	0x24a50	100.0000	
 itemrecord	_UseInertItem	100.0000	100.0000	2	ast4:b8b437622bb3	0x24b60	100.0000	
 itemrecord	_UseKind5Item	100.0000	100.0000	2	ast4:b8b437622bb3	0x24b20	100.0000	
-itemrecord	_UseRestoreItem	100.0000	99.1409	3	ast4:f28e8466796d	0x24950	100.0000	
+itemrecord	_UseRestoreItem	99.1409	99.1409	4	ast4:523ea143844e	0x24950	100.0000	
 itemrecord	_WaitMenuFrame	100.0000	100.0000	2	ast4:b3095ae220b7	0x25d90	100.0000	
 itemrecord	_WriteBag	100.0000	100.0000	1	ast4:c07c2f67bc81	0x24520	100.0000	
 itemrecord	_WriteGemItems	100.0000	100.0000	3	ast4:32eb7f684630	0x24830	100.0000	
 joystick	?InitJoystick@@YAXXZ	100.0000	100.0000	2	ast4:5def1ddd4db0	0x492b0	100.0000	
 joystick	?ReadJoystick@@YAIPAUJoystickState@@@Z	100.0000	100.0000	2	ast4:676daaa27c0f	0x49370	100.0000	
-layertexture	_DecodeLayerImage	100.0000	100.0000	5	ast4:4592e43e7e5b	0x57f20	100.0000	
-layertexture	_DecodeLayerImageAlt	100.0000	100.0000	2	ast4:aa2c0576cd57	0x58040	100.0000	
-list	_ListAppend	100.0000	100.0000	1	5a96405aed5d	0xbd30	100.0000	
-list	_ListInsertAfter	100.0000	100.0000	1	87883f1e0263	0xbd00	100.0000	
-list	_ListLast	100.0000	100.0000	3	a822a97ecba8	0xbce0	100.0000	
-list	_ListNext	100.0000	100.0000	1	6712be4d9ab3	0xbcd0	100.0000	
-list	_ListPopLast	100.0000	100.0000	1	78577c66c9d7	0xbda0	100.0000	
-list	_ListUnlink	100.0000	100.0000	1	baa4bfdeea33	0xbd70	100.0000	
+list	_ListAppend	100.0000	100.0000	1	ast4:e95a56217680	0xbd30	100.0000	
+list	_ListInsertAfter	100.0000	100.0000	1	ast4:417828bb2940	0xbd00	100.0000	
+list	_ListLast	100.0000	100.0000	3	ast4:2ee50af91093	0xbce0	100.0000	
+list	_ListNext	100.0000	100.0000	1	ast4:c1aae0ec15d5	0xbcd0	100.0000	
+list	_ListPopLast	100.0000	100.0000	1	ast4:c990fd56a574	0xbda0	100.0000	
+list	_ListUnlink	100.0000	100.0000	1	ast4:4dc161f63d68	0xbd70	100.0000	
 menubox	_BuildMenuPage	100.0000	100.0000	4	ast4:04df6dabe2d3	0x20830	100.0000	
 menubox	_CloseListMenu	100.0000	100.0000	1	ast4:aa844eb4ebeb	0x20af0	100.0000	
 menubox	_CreateMenuBox	100.0000	100.0000	3	ast4:addf536fee38	0x20750	100.0000	
@@ -1318,8 +1323,8 @@ menubox	_PollMenuBox	100.0000	100.0000	1	ast4:cfec9b7b0282	0x20990	100.0000
 menubox	_RunListMenu	100.0000	100.0000	1	ast4:d817a5ee15aa	0x20ad0	100.0000	
 menubox	_RunMenu	100.0000	100.0000	1	ast4:57a8b9900633	0x20a90	100.0000	
 menubox	_SetMenuItems	100.0000	100.0000	2	ast4:9ee46c5ac0c3	0x20800	100.0000	
-menuresult	_SetHoveredObject	100.0000	100.0000	1	1f91df72e286	0x45320	100.0000	
-menuresult	_SetSelectedObject	100.0000	100.0000	1	031860159bb8	0x45330	100.0000	
+menuresult	_SetHoveredObject	100.0000	100.0000	1	ast4:9583dd94f9b1	0x45320	100.0000	
+menuresult	_SetSelectedObject	100.0000	100.0000	1	ast4:1858ce94abd5	0x45330	100.0000	
 message	_CloseMessageWindow	100.0000	100.0000	2	ast4:412ff0fa61e9	0x2720	100.0000	
 message	_FinishMessageScene	100.0000	100.0000	2	ast4:838605c297ae	0x27d0	100.0000	
 message	_OpenMessageText	100.0000	100.0000	1	ast4:9497b6d023a2	0x2600	100.0000	
@@ -1427,8 +1432,6 @@ nibble	_SpreadLowNibble	100.0000	100.0000	1	ast4:e66dca005e4c	0x451d0	100.0000
 nibble	_SwapLowNibbles	100.0000	44.4545	2	ast4:34be4dd89923	0x45260	100.0000	
 nibble	_SwapMiddleNibbles	100.0000	100.0000	4	ast4:c64865ab2650	0x45230	100.0000	
 nibble	_SwapOuterNibbles	100.0000	100.0000	2	ast4:673258eec243	0x45200	100.0000	
-objecttexture	_LoadObjectTexture	100.0000	100.0000	1	ast4:acd1631b649e	0x58110	100.0000	
-objecttexture	_ReleaseObjectTextures	100.0000	100.0000	1	ast4:468f1d6250a1	0x58190	100.0000	
 partyaction	_ActorCommandMenuHandler	100.0000	100.0000	3	ast4:7a375623ea45	0x6390	100.0000	
 partyaction	_AdjustActorAction	100.0000	100.0000	1	ast4:5c34634da453	0x6180	100.0000	
 partyaction	_ApplyResistanceOutcome	100.0000	100.0000	4	ast4:77ad045a948b	0x6f20	100.0000	
@@ -1469,7 +1472,7 @@ partyaction	_GetFieldMap	100.0000	100.0000	1	ast4:78585f27cd85	0x71f0	100.0000
 partyaction	_GetFieldMarker	100.0000	100.0000	1	ast4:bb9d140b938d	0x7160	100.0000	
 partyaction	_GetGunAttackPower	100.0000	100.0000	3	ast4:efbcf217939f	0x8b20	100.0000	
 partyaction	_GetGunBurstRounds	100.0000	100.0000	4	ast4:77ae15d39982	0x9050	100.0000	
-partyaction	_GetGunRequirementPenalty	100.0000	91.5625	1	ast4:cc93ce01754a	0x91b0	100.0000	
+partyaction	_GetGunRequirementPenalty	100.0000	100.0000	1	ast4:cc93ce01754a	0x91b0	100.0000	
 partyaction	_GetItemResistance	100.0000	100.0000	1	ast4:72e4779b1a67	0x6dc0	100.0000	
 partyaction	_GetMemberPanelState	100.0000	100.0000	10	ast4:21bda5edbd34	0x5b80	100.0000	
 partyaction	_GetMemberPickRange	100.0000	100.0000	7	ast4:143c3944f789	0x9c20	100.0000	
@@ -1518,7 +1521,7 @@ partyaction	_RunMemberPickMenu	100.0000	100.0000	3	ast4:ed041d01ff01	0x94d0	100.
 partyaction	_RunPartyCommandInput	100.0000	100.0000	22	ast4:961b0c7db724	0x9620	100.0000	
 partyaction	_RunPartyTurn	100.0000	100.0000	9	ast4:2ddd815f7cf7	0x8330	100.0000	
 partyaction	_RunPickTargetWindow	100.0000	100.0000	7	ast4:843137d06bb2	0x9e30	100.0000	
-partyaction	_ScaleActionValue	100.0000	100.0000	1	ast4:9dbda73b5e56	0x6a40	100.0000	
+partyaction	_ScaleActionValue	100.0000	92.5000	1	ast4:9dbda73b5e56	0x6a40	100.0000	
 partyaction	_ScaleByFieldRate	100.0000	100.0000	1	ast4:6acb14ed2703	0x72a0	100.0000	
 partyaction	_SetFieldCounts	100.0000	100.0000	1	ast4:fe59ffe4c913	0x7210	100.0000	
 partyaction	_SetFieldPair	100.0000	100.0000	1	ast4:538d4c674ce4	0x7170	100.0000	
@@ -1532,16 +1535,16 @@ partyaction	_SwapPartyRows	100.0000	100.0000	4	ast4:1e9c916873e1	0x6140	100.0000
 partyaction	_TickFieldCount	100.0000	100.0000	2	ast4:97267d6e5eac	0x7230	100.0000	
 partyaction	_TickPartyConditionActions	100.0000	100.0000	9	ast4:5495e176c134	0x8200	100.0000	
 partyaction	_UpdatePartyActionWaits	100.0000	100.0000	1	ast4:50e43e368bee	0x8050	100.0000	
-playtime	_AdvancePlayTime	100.0000	100.0000	1	55307f0e0423	0x35e0	100.0000	
-playtime	_LoadPlayTime	100.0000	100.0000	1	52ec196f8144	0x37c0	100.0000	
-playtime	_ResetPlayTime	100.0000	100.0000	1	d7a06f8cb557	0x35b0	100.0000	
-playtime	_SavePlayTime	100.0000	100.0000	1	fa6198eba70a	0x36b0	100.0000	
-pool	_AllocatePool	100.0000	100.0000	2	8bacea4f272e	0x3440	100.0000	
-pool	_CreatePools	100.0000	100.0000	1	dee43b454197	0x3520	100.0000	
-pool	_FreePools	100.0000	100.0000	2	a58a3f21042e	0x3560	100.0000	
-pool	_GetLegacyPoolResetResult	100.0000	100.0000	3	3857dce78dd2	0x3550	100.0000	
-pool	_GetPoolChunk	100.0000	100.0000	2	287015a006d3	0x3570	100.0000	
-pool	_ResetPool	100.0000	100.0000	1	c37b151dd4f7	0x34e0	100.0000	
+playtime	_AdvancePlayTime	100.0000	100.0000	1	ast4:2fbd8463a961	0x35e0	100.0000	
+playtime	_LoadPlayTime	100.0000	100.0000	1	ast4:9585d7684ca8	0x37c0	100.0000	
+playtime	_ResetPlayTime	100.0000	100.0000	1	ast4:ebd1d4c2f60f	0x35b0	100.0000	
+playtime	_SavePlayTime	100.0000	100.0000	1	ast4:08bf86dc7a98	0x36b0	100.0000	
+pool	_AllocatePool	100.0000	100.0000	2	ast4:d2e0b128b704	0x3440	100.0000	
+pool	_CreatePools	100.0000	100.0000	1	ast4:8947b193c3be	0x3520	100.0000	
+pool	_FreePools	100.0000	100.0000	2	ast4:07fc03c6b52e	0x3560	100.0000	
+pool	_GetLegacyPoolResetResult	100.0000	100.0000	3	ast4:eba47d2547b9	0x3550	100.0000	
+pool	_GetPoolChunk	100.0000	100.0000	2	ast4:d00151f4e5c4	0x3570	100.0000	
+pool	_ResetPool	100.0000	100.0000	1	ast4:44db8061f7d4	0x34e0	100.0000	
 range	_AddCapped	100.0000	100.0000	1	ast4:7806f16084ac	0xba50	100.0000	
 range	_AddClampInt	100.0000	100.0000	1	ast4:6a9588b47e03	0xbac0	100.0000	
 range	_AddClampShort	100.0000	100.0000	1	ast4:48d287fdf21c	0xbae0	100.0000	
@@ -1627,15 +1630,15 @@ savegame	_SystemMenuHandler	100.0000	100.0000	4	ast4:8d41c6f373d5	0x3f70	100.000
 savegame	_TestFeatureMask	100.0000	100.0000	1	ast4:bd7cf8536c23	0x4370	100.0000	
 savegame	_TestModeFlags	100.0000	100.0000	1	ast4:d5165cb56966	0x4380	100.0000	
 savegame	_WriteSaveHeader	100.0000	100.0000	2	ast4:3b12780c3219	0x3ae0	100.0000	
-screensave	_AllocScreenSave	100.0000	100.0000	2	bd357a2bc50a	0x3930	100.0000	
-screensave	_ApplyTextCursor	100.0000	100.0000	1	5ceffe4f3ba9	0x3920	100.0000	
-screensave	_CaptureScreenSave	100.0000	100.0000	2	74c925d3ebcb	0x3950	100.0000	
-screensave	_FreeScreenSave	100.0000	100.0000	2	47f558714bff	0x3940	100.0000	
-screensave	_RedrawScreen	100.0000	100.0000	4	89d84415630e	0x3980	100.0000	
-screensave	_RequestRefresh	100.0000	100.0000	2	79cee425c46e	0x3970	100.0000	
-screensave	_RestoreSavedCursor	100.0000	100.0000	1	782f528a807a	0x3900	100.0000	
-screensave	_RestoreScreenSave	100.0000	100.0000	2	41d257937510	0x3960	100.0000	
-screensave	_SetTextCursorOffset	100.0000	100.0000	1	96dd073cdae0	0x38e0	100.0000	
+screensave	_AllocScreenSave	100.0000	100.0000	2	ast4:e5e5e774a9a3	0x3930	100.0000	
+screensave	_ApplyTextCursor	100.0000	100.0000	1	ast4:cb5593b81539	0x3920	100.0000	
+screensave	_CaptureScreenSave	100.0000	100.0000	2	ast4:e5e5e774a9a3	0x3950	100.0000	
+screensave	_FreeScreenSave	100.0000	100.0000	2	ast4:e5e5e774a9a3	0x3940	100.0000	
+screensave	_RedrawScreen	100.0000	100.0000	4	ast4:65f07a0de64a	0x3980	100.0000	
+screensave	_RequestRefresh	100.0000	100.0000	2	ast4:e680647bba3a	0x3970	100.0000	
+screensave	_RestoreSavedCursor	100.0000	100.0000	1	ast4:23788dc3f09d	0x3900	100.0000	
+screensave	_RestoreScreenSave	100.0000	100.0000	2	ast4:e5e5e774a9a3	0x3960	100.0000	
+screensave	_SetTextCursorOffset	100.0000	100.0000	1	ast4:8af308e8d48e	0x38e0	100.0000	
 scriptactor	_AddScriptCharacterToRoster	100.0000	100.0000	2	ast4:7081204c9f18	0x36160	100.0000	
 scriptactor	_AppendScriptChoice	100.0000	100.0000	1	ast4:5f2f95c27e6b	0x38390	100.0000	
 scriptactor	_CallScript	100.0000	100.0000	1	ast4:ef5d8bc384d0	0x33e40	100.0000	
@@ -1919,7 +1922,7 @@ scripttext	_OpCaptureDataString	100.0000	100.0000	1	ast4:8934d1feb39f	0x2fa30	10
 scripttext	_OpCaptureRecordString	100.0000	100.0000	1	ast4:c5d010cb1789	0x2fa70	100.0000	
 scripttext	_OpClearMenuHighlight	100.0000	100.0000	1	ast4:dbd16d731a29	0x2f460	100.0000	
 scripttext	_OpCloseScriptPanel	100.0000	100.0000	1	ast4:3629846858c1	0x2ef80	100.0000	
-scripttext	_OpCreateScriptMenu	100.0000	100.0000	4	ast4:78162814e3ea	0x2f1c0	100.0000	
+scripttext	_OpCreateScriptMenu	100.0000	100.0000	5	ast4:af62f1b9a3f9	0x2f1c0	100.0000	
 scripttext	_OpDestroyScriptMenu	100.0000	100.0000	1	ast4:f0cc37571ce7	0x2f370	100.0000	
 scripttext	_OpFormatCapturedText	100.0000	100.0000	2	ast4:e8d14ec4d472	0x2f640	100.0000	
 scripttext	_OpFormatNumber	100.0000	100.0000	2	ast4:53407647b525	0x2f5a0	100.0000	
@@ -2112,7 +2115,7 @@ skilluse	_IsSkillIdBlocked	100.0000	100.0000	7	ast4:f0cbeca973da	0x2c350	100.000
 skilluse	_IsSkillUsableNow	100.0000	100.0000	5	ast4:cd19d19c39be	0x2c440	100.0000	
 skilluse	_MemberSkillMenuHandler	100.0000	100.0000	9	ast4:10ee6e18e605	0x2c500	100.0000	
 skilluse	_NextTarget	100.0000	100.0000	1	ast4:28a1383c2940	0x2aaa0	100.0000	
-skilluse	_OpenMemberSkillMenu	100.0000	100.0000	5	ast4:397755eecb23	0x2c4a0	100.0000	
+skilluse	_OpenMemberSkillMenu	100.0000	100.0000	6	ast4:1b2556c397e3	0x2c4a0	100.0000	
 skilluse	_PaySkillCost	100.0000	100.0000	3	ast4:0d06115c52d7	0x2c3c0	100.0000	
 skilluse	_PlayActionEffect	100.0000	100.0000	6	ast4:4b1a1a16295c	0x2c050	100.0000	
 skilluse	_PrepareSkillAction	100.0000	100.0000	6	ast4:fc2dbf95a148	0x2db90	100.0000	
@@ -2138,14 +2141,7 @@ skilluse	_UseKind12Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d5e0	100.0000
 skilluse	_UseKind13Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d640	100.0000	
 skilluse	_UseKind14Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d6a0	100.0000	
 skilluse	_UseResetBattleStatsSkill	100.0000	100.0000	6	ast4:f3e5df0034be	0x2d400	100.0000	
-skilluse	_UseRestoreSkill	100.0000	99.0161	7	ast4:91d51a09c381	0x2ceb0	100.0000	
-sprite	_FreeSpriteImages	100.0000	100.0000	3	ast4:09ce38ffca6f	0x58820	100.0000	
-sprite	_IsSpriteFrameLoaded	100.0000	100.0000	5	ast4:fe345ccb9ead	0x58870	100.0000	
-sprite	_IsSpritePlaced	100.0000	100.0000	4	ast4:b9d2fbd214d4	0x58800	100.0000	
-sprite	_LoadSpriteFrames	100.0000	100.0000	4	ast4:8e450d153c02	0x588c0	100.0000	
-sprite	_PlaceSprite	100.0000	100.0000	3	ast4:13894aae6bb4	0x58780	100.0000	
-sprite	_UnplaceAllSprites	100.0000	100.0000	4	ast4:901dc066e0e8	0x586d0	100.0000	
-sprite	_UnplaceSprite	100.0000	100.0000	4	ast4:d85d9d3396a0	0x58700	100.0000	
+skilluse	_UseRestoreSkill	99.0161	99.0161	8	ast4:f69ed93ebae6	0x2ceb0	100.0000	
 statestack	@PushGameState@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16c00	100.0000	
 statestack	@SetGameState@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16a70	100.0000	
 statestack	@SetGameStep@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16b50	100.0000	
@@ -2286,9 +2282,9 @@ statuspanel	_AlignmentChartCell	100.0000	100.0000	1	ast4:5f45f3550e71	0x42ca0	10
 statuspanel	_AttachEntryMenuHandler	100.0000	100.0000	3	ast4:c32183a90bc7	0x444b0	100.0000	
 statuspanel	_AttachItemMenuHandler	100.0000	100.0000	4	ast4:ab2b7a253335	0x44340	100.0000	
 statuspanel	_AttachTextHook	100.0000	100.0000	2	ast4:6b77ed748171	0x44590	100.0000	
-statuspanel	_CreateAttachEntryMenu	100.0000	100.0000	1	ast4:60d570a6c7af	0x443d0	100.0000	
-statuspanel	_CreateAttachItemMenu	100.0000	100.0000	2	ast4:c4d61c813dba	0x442f0	100.0000	
-statuspanel	_CreateSkillMenu	100.0000	100.0000	5	ast4:1fca9a40de98	0x44df0	100.0000	
+statuspanel	_CreateAttachEntryMenu	100.0000	100.0000	2	ast4:af4b7d214907	0x443d0	100.0000	
+statuspanel	_CreateAttachItemMenu	100.0000	100.0000	3	ast4:414c74afd86d	0x442f0	100.0000	
+statuspanel	_CreateSkillMenu	100.0000	100.0000	6	ast4:010cac65c8bc	0x44df0	100.0000	
 statuspanel	_DrawAlignmentMarker	100.0000	100.0000	3	ast4:a31ed5fd9158	0x42c10	100.0000	
 statuspanel	_DrawBattleStatColumn	100.0000	100.0000	1	ast4:a65f3cc52c38	0x42920	100.0000	
 statuspanel	_DrawBattleStatsPanel	100.0000	100.0000	6	ast4:36e89524d394	0x42a00	100.0000	
@@ -2314,10 +2310,10 @@ statuspanel	_DrawStatusPools	100.0000	100.0000	2	ast4:e878986ddc77	0x41ba0	100.0
 statuspanel	_DrawStatusScreen	100.0000	100.0000	3	ast4:f6ef76abf8a6	0x42090	100.0000	
 statuspanel	_DrawStatusVitals	100.0000	100.0000	1	ast4:d0f435a47ab7	0x41cf0	100.0000	
 statuspanel	_EquipMenuHandler	100.0000	100.0000	9	ast4:978ade92b7f2	0x435a0	100.0000	
-statuspanel	_ItemListHandler	100.0000	100.0000	9	ast4:02d17fd73a27	0x44830	100.0000	
+statuspanel	_ItemListHandler	100.0000	100.0000	10	ast4:92284dd56026	0x44830	100.0000	
 statuspanel	_ListAttachEntries	100.0000	100.0000	2	ast4:9dbdc0dc09a2	0x44440	100.0000	
 statuspanel	_ListEquipCandidates	100.0000	100.0000	4	ast4:b7d435af21ae	0x42cd0	100.0000	
-statuspanel	_OpenEquipMenu	100.0000	100.0000	1	ast4:f6735d1171d9	0x43530	100.0000	
+statuspanel	_OpenEquipMenu	100.0000	100.0000	2	ast4:c078a5eff1d5	0x43530	100.0000	
 statuspanel	_OpenItemInfoPlane	100.0000	100.0000	2	ast4:c31aca401dd6	0x44bb0	100.0000	
 statuspanel	_OpenStatListWindow	100.0000	100.0000	1	ast4:6033e1182cff	0x42670	100.0000	
 statuspanel	_PollEquipPart	93.9683	93.9683	6	ast4:09549583f827	0x44fb0	93.9683	
@@ -2326,18 +2322,17 @@ statuspanel	_ResumeStatusPage	100.0000	100.0000	2	ast4:9576287eccc4	0x423e0	100.
 statuspanel	_RunAlignmentPage	100.0000	100.0000	3	ast4:004cca6cd101	0x42b00	100.0000	
 statuspanel	_RunAttachScreen	100.0000	100.0000	6	ast4:2797014676ca	0x43d10	100.0000	
 statuspanel	_RunEquipScreen	98.4465	98.4465	18	ast4:5371d2b039fd	0x42e60	98.4465	
-statuspanel	_RunItemPage	100.0000	100.0000	4	ast4:3fee068b6b42	0x44650	100.0000	
+statuspanel	_RunItemPage	100.0000	100.0000	5	ast4:82742e32b982	0x44650	100.0000	
 statuspanel	_RunSkillPage	100.0000	100.0000	3	ast4:7719aad087e3	0x44c30	100.0000	
 statuspanel	_RunStatPage	100.0000	100.0000	3	ast4:b421adfc732e	0x426a0	100.0000	
 statuspanel	_RunStatusCommands	100.0000	100.0000	2	ast4:54e0cd6660b2	0x42200	100.0000	
 statuspanel	_SkillListHandler	100.0000	100.0000	6	ast4:208db17c5dea	0x44e50	100.0000	
-surfacecopy	_CopySurfaceSquare	100.0000	100.0000	2	c6b52e26a688	0x590a0	100.0000	
 textapi	_CallTextPlaneHook	100.0000	100.0000	1	ast4:900cc85a6171	0x45300	100.0000	
 textapi	_PaintTextRun	100.0000	100.0000	2	ast4:b879be3ae9ac	0x452c0	100.0000	
 textapi	_RefreshTextPlane	100.0000	100.0000	1	ast4:c2fa9d2eb0fa	0x45280	100.0000	
 textapi	_SetTextPlaneHook	100.0000	100.0000	1	ast4:81c0b89d71ce	0x452f0	100.0000	
 textapi	_ToggleTextHighlight	100.0000	100.0000	1	ast4:afb09313b92f	0x45290	100.0000	
-textchar	_ReadTextChar	100.0000	99.5918	3	477cb7c60c88	0x1aa0	100.0000	
+textchar	_ReadTextChar	100.0000	99.5918	3	ast4:d46f8d04a286	0x1aa0	100.0000	
 textstate	_AdvanceTextDelay	100.0000	100.0000	1	ast4:a6ce37326500	0x32a40	100.0000	
 textstate	_ClearTextPeriod	100.0000	100.0000	1	ast4:0e588916f87a	0x32ca0	100.0000	
 textstate	_DisableTextDelay	100.0000	100.0000	1	ast4:7f61f5c9ac06	0x32ac0	100.0000	
@@ -2516,11 +2511,11 @@ vec3	_ProjectPoint	100.0000	100.0000	1	ast4:fdfba0a1dfc7	0xd3f0	100.0000
 vec3	_RotateOffset	100.0000	100.0000	1	ast4:71cd7d5524a6	0xd700	100.0000	
 vec3	_StepBody	100.0000	100.0000	1	ast4:c8c6694e1e24	0xd510	100.0000	
 vec3	_UnprojectPoint	100.0000	51.5000	2	ast4:047937f5bae7	0xd6b0	100.0000	
-videostate	_ClipViewportRect	100.0000	100.0000	2	6a677ef2ef93	0x45b80	100.0000	
-videostate	_GetPlaneData	100.0000	100.0000	3	e5f39f82f57a	0x45b40	100.0000	
-videostate	_GetPlaneHeader	100.0000	100.0000	3	6ea25e16dfad	0x45b60	100.0000	
-videostate	_RestoreVideoState	100.0000	100.0000	1	5ac645b9d98c	0x45ba0	100.0000	
-videostate	_SaveVideoState	100.0000	100.0000	1	5a25ea57e86c	0x45b90	100.0000	
+videostate	_ClipViewportRect	100.0000	100.0000	2	ast4:db0ecd92d79b	0x45b80	100.0000	
+videostate	_GetPlaneData	100.0000	100.0000	3	ast4:ad11490de647	0x45b40	100.0000	
+videostate	_GetPlaneHeader	100.0000	100.0000	3	ast4:5337de5469de	0x45b60	100.0000	
+videostate	_RestoreVideoState	100.0000	100.0000	1	ast4:06653a4c80cf	0x45ba0	100.0000	
+videostate	_SaveVideoState	100.0000	100.0000	1	ast4:06653a4c80cf	0x45b90	100.0000	
 vram	_ClearMaskSeam	100.0000	98.8889	1	ast4:cd6dc3039b59	0x2c70	100.0000	
 vram	_ClearMaskView	100.0000	100.0000	1	ast4:a600eb0f3418	0x2c60	100.0000	
 vram	_CopySpriteBitmap	100.0000	100.0000	1	ast4:f4fa69d3b401	0x33f0	100.0000	
@@ -2577,20 +2572,20 @@ vramaccess	_SaveDrawState	100.0000	100.0000	2	ast4:929399beecc5	0x28a0	100.0000
 vramaccess	_SaveScreenState	100.0000	100.0000	2	ast4:929399beecc5	0x29a0	100.0000	
 vramaccess	_SkipLegacyCellRestore	100.0000	100.0000	1	ast4:a600eb0f3418	0x29f0	100.0000	
 vramaccess	_SkipLegacyScreenRestore	100.0000	100.0000	1	ast4:a600eb0f3418	0x29e0	100.0000	
-vramcell	_AndCellMask	100.0000	100.0000	1	4faba26ef368	0x2320	100.0000	
-vramcell	_BuildCellMask	100.0000	100.0000	1	a001bbfd8519	0x22e0	100.0000	
-vramcell	_FillCell	100.0000	100.0000	1	1522a4e31a72	0x2360	100.0000	
-vramcell	_GetLegacyCellHeightResult	100.0000	100.0000	3	5f16acea0bc6	0x24d0	100.0000	
-vramcell	_GetLegacyCellMaskResult	100.0000	100.0000	3	5ec675c2c645	0x24b0	100.0000	
-vramcell	_GetLegacyCellPackResult	100.0000	100.0000	3	63352ccdc165	0x24a0	100.0000	
-vramcell	_GetLegacyCellPixelResult	100.0000	100.0000	3	c1091be765bd	0x24e0	100.0000	
-vramcell	_GetLegacyCellPlaneResult	100.0000	100.0000	3	9cc778bc509c	0x24f0	100.0000	
-vramcell	_GetLegacyCellWidthResult	100.0000	100.0000	3	ad02377a561d	0x24c0	100.0000	
-vramcell	_PackCell	100.0000	100.0000	2	8dd55f136be4	0x2370	100.0000	
-vramcell	_PackCell1	100.0000	100.0000	2	a0115bdb5ee3	0x2450	100.0000	
-vramcell	_PackCell2	100.0000	100.0000	2	8d26ae5ceafe	0x2400	100.0000	
-vramcell	_PackCell3	100.0000	100.0000	2	0965f6ef32ea	0x23b0	100.0000	
-vramcell	_RemapCellPlanes	100.0000	100.0000	1	e7baaed99a00	0x2350	100.0000	
+vramcell	_AndCellMask	100.0000	100.0000	1	ast4:ecd14016eb8d	0x2320	100.0000	
+vramcell	_BuildCellMask	100.0000	100.0000	1	ast4:bf4c7f7100dd	0x22e0	100.0000	
+vramcell	_FillCell	100.0000	100.0000	1	ast4:ffbe5f933769	0x2360	100.0000	
+vramcell	_GetLegacyCellHeightResult	100.0000	100.0000	3	ast4:929399beecc5	0x24d0	100.0000	
+vramcell	_GetLegacyCellMaskResult	100.0000	100.0000	3	ast4:eba47d2547b9	0x24b0	100.0000	
+vramcell	_GetLegacyCellPackResult	100.0000	100.0000	3	ast4:eba47d2547b9	0x24a0	100.0000	
+vramcell	_GetLegacyCellPixelResult	100.0000	100.0000	3	ast4:cbc872d9eabe	0x24e0	100.0000	
+vramcell	_GetLegacyCellPlaneResult	100.0000	100.0000	3	ast4:929399beecc5	0x24f0	100.0000	
+vramcell	_GetLegacyCellWidthResult	100.0000	100.0000	3	ast4:929399beecc5	0x24c0	100.0000	
+vramcell	_PackCell	100.0000	100.0000	2	ast4:800d16cb32c5	0x2370	100.0000	
+vramcell	_PackCell1	100.0000	100.0000	2	ast4:a91d621f3670	0x2450	100.0000	
+vramcell	_PackCell2	100.0000	100.0000	2	ast4:0715a05752fa	0x2400	100.0000	
+vramcell	_PackCell3	100.0000	100.0000	2	ast4:875e9daba580	0x23b0	100.0000	
+vramcell	_RemapCellPlanes	100.0000	100.0000	1	ast4:0f5fd325c466	0x2350	100.0000	
 waitstate	_FadeScreenAndWait	100.0000	100.0000	3	ast4:6fa3188a578c	0x1a9c0	100.0000	
 waitstate	_PushMessageBox	100.0000	100.0000	1	ast4:de7343848961	0x1a9f0	100.0000	
 waitstate	_PushScreenFade	100.0000	100.0000	3	ast4:f42af475194c	0x1a990	100.0000	
@@ -2598,7 +2593,6 @@ waitstate	_PushWaitState	100.0000	100.0000	2	ast4:c3ebd0305f24	0x1a930	100.0000
 waitstate	_RunMessageBoxState	100.0000	100.0000	3	ast4:b246528c5332	0x1aa40	100.0000	
 waitstate	_RunScreenFadeState	100.0000	100.0000	3	ast4:f61c0c698a69	0x1a960	100.0000	
 waitstate	_StepWaitState	100.0000	100.0000	5	ast4:ec2a4629d363	0x1a870	100.0000	
-walltexture	_LoadWallTextures	100.0000	100.0000	2	ast4:0b6b79518f4d	0x57e80	100.0000	
 weaponattack	_ComputeWeaponDamage	100.0000	100.0000	7	ast4:0aa45d7a89cb	0xa270	100.0000	
 weaponattack	_ResolveWeaponAttack	100.0000	100.0000	6	ast4:39814edf4145	0xa8a0	100.0000	
 weaponattack	_RollExceptionalWeaponAttack	100.0000	99.4444	5	ast4:1d911e270125	0xa690	100.0000	
@@ -2697,7 +2691,7 @@ winmain	?TurnLeftStep@@YAHPAM@Z	100.0000	100.0000	4	ast4:e84795e26501	0x4a970	10
 winmain	?TurnRightCommand@@YAHF@Z	100.0000	100.0000	2	ast4:7359e5947730	0x50400	100.0000	
 winmain	?TurnRightStep@@YAHPAM@Z	100.0000	100.0000	4	ast4:f38433e0120b	0x4aaa0	100.0000	
 winmain	?WaitMilliseconds@@YAXK@Z	100.0000	100.0000	1	ast4:ae7636073db1	0x497a0	100.0000	
-winmain	_AllocCleared	100.0000	100.0000	1	ast4:e76a2c7be95f	0x49640	100.0000	
+winmain	_AllocCleared	100.0000	99.9200	1	ast4:e76a2c7be95f	0x49640	100.0000	
 winmain	_AllocClearedLong	100.0000	92.7826	1	ast4:353a5b795032	0x49680	100.0000	
 winmain	_AllowImmediateInput	100.0000	100.0000	2	ast4:62c8a85be6f8	0x49b80	100.0000	
 winmain	_CancelLayerDrag	100.0000	100.0000	2	ast4:1e623f29ec84	0x49780	100.0000	
@@ -2747,10 +2741,6 @@ winmain	_StepScreenFade	91.2500	91.2500	7	ast4:6198d3c56082	0x49dd0	91.2500
 winmain	_StopMusic	100.0000	100.0000	1	ast4:9a90a9874845	0x49a50	100.0000	
 winmain	_WaitFrames	100.0000	100.0000	3	ast4:17fb5f9e053d	0x49f00	100.0000	
 winmain	_WinMain@16	98.4286	98.4286	8	ast4:43d27d6e7b94	0x50f50	98.4286	
-worldmapgfx	_DrawWorldMapCursor	100.0000	100.0000	2	ast4:ac8d604b9912	0x583f0	100.0000	
-worldmapgfx	_HitTestWorldMap	100.0000	100.0000	2	ast4:26f2ea1ad531	0x581b0	100.0000	
-worldmapgfx	_IsWorldMapMarkerNearEdge	100.0000	100.0000	3	ast4:4e4f1681ff08	0x582c0	100.0000	
-worldmapgfx	_ReadWorldMapTileCode	100.0000	100.0000	3	ast4:2c9d827e9d21	0x58330	100.0000	
 worldtravel	_ComputeWorldTravelStep	100.0000	100.0000	1	ast4:e12a994a4863	0x11880	100.0000	
 worldtravel	_DrawWorldMapPlaceName	100.0000	100.0000	3	ast4:d5f2fe4add25	0x121e0	100.0000	
 worldtravel	_ExcludeWorldTravelStep	100.0000	100.0000	2	ast4:1dfc13886e5a	0x11e50	100.0000	

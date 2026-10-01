@@ -19,6 +19,9 @@ giten verify status        # scores and regressions
 [compiler evidence](compiler-flags.md) explains the profiles. Add a TU by adding
 its `[[unit]]` entry, shared declarations, source definitions and labels, then build.
 
+For object grouping and the evidence behind recovered boundaries, see
+[translation-unit ownership](translation-units.md).
+
 | Stage | Implementation | Output under `build/` |
 | --- | --- | --- |
 | Configure | `giten.graph.emit` | `build.ninja` |

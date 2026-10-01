@@ -18,7 +18,7 @@ a partial function needs the first CFG and referent divergence inspected.
 | `src/Game/treasurebox.c` `GetCellTrapDamage` | 1 | `done` applies the common percentage scaling to known and default trap kinds | Its source comment records that an early zero return changes the shared signed division; keep that path in any rewrite. |
 | `src/Gfx/shot.c` `StepShot` | 4 | `moving` and `arrived` select bounds checks versus a shared clamp | Its source comment records the forward-depth edge and two bounds exits as a codegen constraint; any rewrite needs that evidence checked again. |
 | `src/Script/scriptactor.c` `ReadTextToken` | 12 | `readIndexedToken` and `readTokenValue` share operand reads among token kinds | Try grouped case labels only if both token families retain their distinct byte reads and call order. |
-| `src/Ui/hotspotclick.cpp` `ClickHotspotAt` | 4 | `nearerGreater` and `nearerLess` share directional depth comparisons | Preserve selected/candidate coordinates and tie policy for all four directions. |
+| `src/Gfx/bitmapio.cpp` `ClickHotspotAt` | 4 | `nearerGreater` and `nearerLess` share directional depth comparisons | Preserve selected/candidate coordinates and tie policy for all four directions. |
 
 The written-site inventory can be refreshed with
 `rg -n '^\s*goto\s+' src include --glob '*.{c,cpp,h}'`. This source search

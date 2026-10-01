@@ -145,11 +145,20 @@ u32 GrbToRgb(u16 grb);
 
 // The six object textures (g_objectTextures): load `image` into slot `slot`
 // (0..5), and release them all.
-// @identity-TODO: label-only until the texture TU claims them.
-RVA_DECL(0x00058110)
-void LoadObjectTexture(void* image, i16 slot);
-RVA_DECL(0x00058190)
-void ReleaseObjectTextures(void);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    RVA_DECL(0x00058110)
+    void LoadObjectTexture(void* image, i16 slot);
+    RVA_DECL(0x00058190)
+    void ReleaseObjectTextures(void);
+
+#ifdef __cplusplus
+}
+#endif
+
 void DrawAreaNpcs(void);
 u32 GetNpcTexture(i16 slot);
 u32 DrawNpcAt(i16 x, i16 y, i16 depth, AreaNpc* npc, i16 index);
