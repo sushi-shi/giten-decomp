@@ -658,7 +658,7 @@ def _scan_entry(payload):
     path = _source_path(entry, repo)
     if not path.is_file():
         return [], (f"{path}: missing source in compile database; "
-                    "regenerate it with `giten configure`")
+                    "regenerate it with `python3 -m giten.graph.compdb`")
     args = _flags(entry)
     try:
         _require_cl_mode(args)
@@ -766,7 +766,8 @@ def scan_entries(entries: list[dict], *, repo: Path = REPO, jobs: int = 1):
 
 def scan(*, cdb: Path = CDB, repo: Path = REPO, jobs: int = 1):
     if not cdb.is_file():
-        raise FileNotFoundError(f"{cdb}: no compile database; run giten configure")
+        raise FileNotFoundError(
+            f"{cdb}: no compile database; run `python3 -m giten.graph.compdb`")
     entries = []
     for entry in json.loads(cdb.read_text()):
         path = _source_path(entry, repo)
@@ -788,7 +789,8 @@ def scan(*, cdb: Path = CDB, repo: Path = REPO, jobs: int = 1):
                            for path in (missing + stale)[:8])
         raise RuntimeError(f"{cdb}: compile database misses {len(missing)} "
                            f"source unit(s) and lists {len(stale)} stale unit(s): "
-                           f"{detail}; regenerate it with `giten configure`")
+                           f"{detail}; regenerate it with "
+                           "`python3 -m giten.graph.compdb`")
     return scan_entries(entries, repo=repo, jobs=jobs)
 
 

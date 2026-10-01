@@ -54,6 +54,7 @@ _SUBS = ("status", "check", "bank", "readme", "fingerprints")
 #: question, they do not return findings.
 _GATES = {"board": "giten.verify.board", "bans": "giten.verify.bans",
           "casts": "giten.verify.casts",
+          "c-casts": "giten.verify.c_casts",
           "compiler-artifacts": "giten.verify.compiler_artifacts",
           "constants": "giten.verify.constants",
           "enum-domains": "giten.verify.enum_domains",
@@ -95,7 +96,7 @@ _QUERY_ONLY = ("layout", "library-data-refs", "vtable-scan")
 
 #: Audits that are deliberately explicit because they parse the whole source
 #: tree and are not part of a normal build tier.
-_STANDALONE = ("constants", "enum-reuse")
+_STANDALONE = ("c-casts", "constants", "enum-reuse")
 
 #: tier label -> verb, where the two spellings differ. giten.verify.tiers
 #: labels the bans row `vtable-bans`, while the module and verb are `bans`.
