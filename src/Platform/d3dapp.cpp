@@ -964,7 +964,7 @@ b32 InitDirectDraw(void) {
     if (g_ddraw->QueryInterface(IID_IDirectDraw2, reinterpret_cast<void**>(&g_ddraw2)) != DD_OK) {
         return false;
     }
-    if (g_deviceSettings.caps.hardwareOnly == true) {
+    if (g_deviceSettings.caps.hardwareOnly == 1) {
         g_deviceType = D3D_DEVICE_HAL;
     } else {
         QueryD3DDevices();

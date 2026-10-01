@@ -3764,7 +3764,7 @@ RVA(0x00037e80, 0x18)
 void OpSaveObjectConditions(void) {
     Character* object = ReadScriptObject();
     if (object) {
-        SetFlagTag(GetCharacterConditions(object));
+        SetFlagTag(GetCharacterConditions(object)->bits);
     }
 }
 

@@ -1,0 +1,44 @@
+# MSVC 5 compiler warnings
+
+An audit compiled all 82 configured translation units with their
+`config/units.toml` profiles and captured the compiler output. The baseline
+has 406 warnings, all located in project `src/` files; none point into the
+MSVC, SDK, or vendored headers. The compile driver normally discards successful
+compiler output, so these diagnostics are not shown by an ordinary build.
+
+Ten warnings have source-supported fixes: `OpSaveObjectConditions` now passes
+the five condition-bit bytes that `SetFlagTag` reads, and nine C++ comparisons
+of integer state fields with `bool true` now compare with integer `1`. The five
+affected translation units produce identical COFF objects after masking only
+the timestamp. The remaining baseline warnings are:
+
+| Warning | Count | Written site and evidence still needed |
+| --- | ---: | --- |
+| C4133, incompatible pointer | 1 | `DecodeAreaMap` in `src/Game/clock.c` assigns `base + src->doorsOffset` (`u8*`) to `AreaLevel.doors` (`DoorCell*`). The source is a packed area-record offset; recover the record's typed cell boundary before changing this conversion. |
+| C4090 plus C4022, dropped `const` and pointer mismatch | 4 | `RunDebugMenu` in `src/Game/debugmenu.c` passes both `static const MenuEntry` arrays to `SetMenuItems(..., void* items, ...)`. Its `MenuBox.items.table` view and handlers use mutable `MenuEntry*`, though they only read rows. A typed const table view must be propagated through the generic menu storage and every handler before changing the API; the arrays are retail initialized data. |
+| C4761, integral size mismatch in argument | 391 | Explicit width transitions at calls across 37 source files. For example, `RandomPercent` in `src/Util/range.c` passes 32-bit bounds to `RandomAverage(i16, i16, i16)`; `OpCloseScriptPanel` in `src/Script/scripttext.c` passes `ReadScriptValue()` to a narrower image key; `LoadNpcPalette` in `src/Game/treasurebox.c` passes an `i16` expression to a narrower palette API. Check each caller's value range and the retail argument width before altering a declaration or inserting a narrowing conversion. |
+
+The C4761 sites by translation unit are listed below so the full audit scope
+survives even though compiler output under `build/` is ignored. Counts are
+individual diagnostics, not distinct source lines.
+
+| Unit | Count | Unit | Count | Unit | Count |
+| --- | ---: | --- | ---: | --- | ---: |
+| `character.c` | 14 | `clock.c` | 13 | `debugmenu.c` | 3 |
+| `equipeffect.c` | 5 | `fieldmain.c` | 16 | `fieldobj.c` | 15 |
+| `fieldscreen.c` | 14 | `fieldview.c` | 25 | `fusion.c` | 8 |
+| `gameloop.c` | 1 | `itemattack.c` | 2 | `itemrecord.c` | 7 |
+| `partyaction.c` | 9 | `savegame.c` | 4 | `skillattack.c` | 3 |
+| `skilluse.c` | 6 | `statestack.c` | 27 | `statuspanel.c` | 43 |
+| `treasurebox.c` | 35 | `worldtravel.c` | 14 | `blit.c` | 4 |
+| `motion.c` | 1 | `vramaccess.c` | 2 | `mouse.c` | 2 |
+| `vec3.c` | 3 | `handle.c` | 5 | `eventflags.c` | 12 |
+| `scriptactor.c` | 48 | `scriptctx.c` | 5 | `scriptfield.c` | 3 |
+| `scriptswitch.c` | 10 | `scripttext.c` | 2 | `scriptvars.c` | 16 |
+| `scriptvm.c` | 3 | `windowcolor.c` | 5 | `windowtext.c` | 3 |
+| `range.c` | 3 | | | | |
+
+These warnings alone do not authorize wider parameters: changing a public
+parameter can alter C++ mangling, caller extension, stack slots, or MSVC code
+generation. Preserve the established ABI while recovering the actual domain
+and call boundary.

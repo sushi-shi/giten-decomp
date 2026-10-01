@@ -491,7 +491,7 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
     // Preserve the interface output address across surface creation.
     source = &texture->source;
     if (IDirectDraw_CreateSurface(g_ddraw, &sourceDesc, &texture->sourceSurface, NULL) != DD_OK) {
-        if (fromFile == true) {
+        if (fromFile == 1) {
             FreeBitmap(&bmp);
         }
         return false;
@@ -517,19 +517,19 @@ b32 LoadTexture(Texture* texture, const char* name, b32 fromFile) {
     }
     result = IDirectDraw_CreateSurface(g_ddraw, &desc, &texture->surface, NULL);
     if (result != DD_OK) {
-        if (fromFile == true) {
+        if (fromFile == 1) {
             FreeBitmap(&bmp);
         }
         return false;
     }
     if (IsPalettizedSurface(desc)
         && IDirectDrawSurface_SetPalette(texture->surface, texture->ddPalette) != DD_OK) {
-        if (fromFile == true) {
+        if (fromFile == 1) {
             FreeBitmap(&bmp);
         }
         return false;
     }
-    if (fromFile == true) {
+    if (fromFile == 1) {
         FreeBitmap(&bmp);
     }
     if (IDirectDrawSurface_QueryInterface(
@@ -560,7 +560,7 @@ BmpFile* OpenTextureBitmap(Texture* texture, const char* name, b32 fromFile) {
     if (HasTextureHandle(texture)) {
         return NULL;
     }
-    if (fromFile == true) {
+    if (fromFile == 1) {
         bmp = ReadBitmapFile(name);
         if (bmp == NULL) {
             return NULL;
