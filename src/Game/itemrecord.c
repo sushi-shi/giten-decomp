@@ -1463,7 +1463,7 @@ void AddItemStatPoints(i16 item, i16* stats) {
         return;
     }
     code = g_loadedItem.kind != ITEM_KIND_GEM ? GetItemPassiveEffectCode(&g_loadedItem)
-                                              : g_loadedItem.params[0xb];
+                                              : GetGemPassiveEffectCode(&g_loadedItem);
     switch (code) {
         case ITEM_PASSIVE_INTUITION_POINT:
         case ITEM_PASSIVE_MENTAL_STRENGTH_POINT:
@@ -1476,7 +1476,7 @@ void AddItemStatPoints(i16 item, i16* stats) {
         case ITEM_PASSIVE_DEXTERITY_POINT:
         case ITEM_PASSIVE_CHARM_POINT:
         case ITEM_PASSIVE_FORTUNE_POINT:
-            stats[g_loadedItem.params[0xb] - 1]++;
+            stats[GetGemPassiveEffectCode(&g_loadedItem) - 1]++;
             break;
         case ITEM_PASSIVE_STRENGTH_CHARM_POINTS:
             stats[STAT_STRENGTH]++;

@@ -54,7 +54,7 @@ b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
     if (GetCombatantFacingDifference(g_actorId, g_targetId) != FACING_FACE_TO_FACE) {
         accuracy = accuracy * 150 / 100;
     }
-    itemValue = GetLoadedRecord(attacker->pickTarget)->params[0xc];
+    itemValue = GetItemHitPower(GetLoadedRecord(attacker->pickTarget));
     itemValue *= 100;
     value = WearSkillValue(itemValue + accuracy);
     itemValue = value;

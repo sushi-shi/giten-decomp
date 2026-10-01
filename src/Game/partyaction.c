@@ -1014,7 +1014,7 @@ i16 GetSkillResistance(Character* actor, i16 skill, b16 report, b16 sameSide, i1
 
 RVA(0x00006dc0, 0x34)
 i16 GetItemResistance(Character* actor, i16 item, b16 report, b16 sameSide, i16* attribute) {
-    *attribute = GetLoadedRecord(item)->params[0xf];
+    *attribute = GetItemAttackAttribute(GetLoadedRecord(item));
     return GetActionResistance(actor, *attribute, ATTACK_MAGIC, report, sameSide);
 }
 
@@ -1881,7 +1881,7 @@ i16 GetEquipmentHitModifier(Character* attacker, Character* target) {
     AddArmorSlotHitModifier(&GetCharacterEquipment(target)[EQUIP_SLOT_ACCESSORY], &modifier);
     modifier = -modifier;
     if (attacker->pickTarget >= 1) {
-        modifier += GetLoadedRecord(attacker->pickTarget)->params[0x1c];
+        modifier += GetWeaponHitModifier(GetLoadedRecord(attacker->pickTarget));
     }
     return modifier;
 }

@@ -85,6 +85,9 @@ static __inline u8 GetItemHitPower(const ItemRecord* record) {
     return record->params[0xc];
 }
 
+#define GetItemAttackAttribute(record) ((record)->params[0xf])
+#define GetWeaponHitModifier(record) ((record)->params[0x1c])
+
 static __inline u8 GetItemShotId(const ItemRecord* record) {
     return record->params[0x32];
 }
@@ -244,6 +247,8 @@ GZ_ENUM_END(ItemPassiveEffect)
 
 // Selects the equipped item's stat, resistance, regeneration or drain effect.
 #define GetItemPassiveEffectCode(record) ((record)->params[0x25])
+
+#define GetGemPassiveEffectCode(record) ((record)->params[0xb])
 
 // The signed column in the character equipment-permission table; -1 means none.
 static __inline i16 GetItemEquipCode(ItemRecord* record) {
