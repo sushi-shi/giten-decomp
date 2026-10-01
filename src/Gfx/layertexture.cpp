@@ -90,6 +90,7 @@ void DecodeLayerImageAlt(BmpFile* data, i16 layer, i32 size) {
         bmp = data;
         bitmapSize = bmp->file.bfSize;
         LoadBitmapToSurface16(bmp, &g_enemyPictures[frame].surface, NULL);
+        // Byte-forced: each packed BMP starts after the preceding bfSize bytes.
         data = reinterpret_cast<BmpFile*>(reinterpret_cast<u8*>(data) + bitmapSize);
         consumed += bitmapSize;
     }

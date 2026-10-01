@@ -2,9 +2,9 @@
 #define GITEN_GAME_WAITSTATE_H
 
 #include <rva.h>
-#include <Platform/ScreenFade.h>
 
 #include <EnumDomain.h>
+#include <Platform/ScreenFade.h>
 
 GZ_ENUM_BEGIN_SPLIT(WaitMode, i16)
     WAIT_FRAMES = 0,

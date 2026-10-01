@@ -4,9 +4,9 @@
 #include <rva.h>
 
 #include <Game/Character.h>
+#include <Game/PoolFillMode.h>
 #include <Ints.h>
 #include <Util/CurMax.h>
-#include <Game/PoolFillMode.h>
 
 i32 ClampTo999(i16 value);
 i32 ClampTo100(i16 value);

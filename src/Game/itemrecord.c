@@ -29,8 +29,8 @@
 #include <Game/ItemRecord.h>
 #include <Game/Pool.h>
 #include <Game/SpecialItems.h>
-#include <Game/StatUpdate.h>
 #include <Game/StateStack.h>
+#include <Game/StatUpdate.h>
 #include <Input/Mouse.h>
 #include <Input/MouseClickState.h>
 #include <Mem/Alloc.h>

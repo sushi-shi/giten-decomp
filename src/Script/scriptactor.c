@@ -8,17 +8,17 @@
 
 #include <rva.h>
 
-#include <Game/Actor.h>
 #include <Game/ActionMark.h>
+#include <Game/Actor.h>
 #include <Game/Alignment.h>
 #include <Game/AnalyzeData.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
 #include <Game/BagItems.h>
 #include <Game/BattleEffect.h>
-#include <Game/CharInfo.h>
 #include <Game/Character.h>
 #include <Game/CharacterStat.h>
+#include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
@@ -38,7 +38,6 @@
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
 #include <Game/Growth.h>
-#include <Game/ObjectRecordId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
@@ -49,6 +48,7 @@
 #include <Game/LevelUp.h>
 #include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
 #include <Game/SaveGame.h>

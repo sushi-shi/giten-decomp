@@ -2,6 +2,7 @@
 #define GITEN_GFX_D3DSTATE_H
 
 #include <Win32.h>
+
 #include <Enums.h>
 
 #include <d3d.h>

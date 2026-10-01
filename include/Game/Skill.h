@@ -7,12 +7,11 @@
 #include <Enums.h>
 #include <Game/AttackAttribute.h>
 #include <Game/AttackMode.h>
-#include <Ints.h>
-
 #include <Game/SkillFamily.h>
 #include <Game/SkillMessage.h>
 #include <Game/TargetArea.h>
 #include <Game/TargetFlags.h>
+#include <Ints.h>
 
 // clang-format off
 GZ_ENUM_BEGIN(SkillUseModes)

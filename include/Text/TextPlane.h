@@ -7,8 +7,8 @@
 
 #include <Enums.h>
 #include <Ints.h>
-#include <Text/TextAttr.h>
 #include <Text/MenuLineFlags.h>
+#include <Text/TextAttr.h>
 #include <Text/TextEvent.h>
 
 #define TEXT_PLANE_COUNT 37

@@ -2,8 +2,8 @@
 #define GITEN_GAME_CHARACTERPOOLS_H
 
 #include <EnumDomain.h>
-#include <Util/CurMax.h>
 #include <Enums.h>
+#include <Util/CurMax.h>
 
 // clang-format off
 GZ_ENUM_FLAGS_BEGIN(CharacterPoolMask, u8)

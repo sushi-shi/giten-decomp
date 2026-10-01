@@ -2,8 +2,8 @@
 #define GITEN_GFX_MOTION_H
 
 #include <Enums.h>
-#include <Ints.h>
 #include <Gfx/Vram.h>
+#include <Ints.h>
 #include <Math/Vec3.h>
 
 #include <stdio.h>

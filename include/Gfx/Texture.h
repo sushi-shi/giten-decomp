@@ -4,8 +4,8 @@
 #include <Enums.h>
 #include <Gfx/Bitmap.h>
 #include <Ints.h>
-#include <Platform/Direct3D.h>
 #include <Platform/Com.h>
+#include <Platform/Direct3D.h>
 
 // clang-format off
 GZ_ENUM_BEGIN(TextureShade)

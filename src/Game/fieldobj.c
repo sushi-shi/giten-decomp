@@ -21,8 +21,8 @@
 #include <Game/AreaMap.h>
 #include <Game/Attitude.h>
 #include <Game/BattleEffect.h>
-#include <Game/CharInfo.h>
 #include <Game/Character.h>
+#include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
@@ -52,9 +52,9 @@
 #include <Game/RoomRegion.h>
 #include <Game/Skill.h>
 #include <Game/SkillUse.h>
-#include <Game/StatUpdate.h>
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
+#include <Game/StatUpdate.h>
 #include <Game/TargetFlags.h>
 #include <Game/WorldMap.h>
 #include <Gfx/ScreenMode.h>

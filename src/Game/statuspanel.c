@@ -7,8 +7,8 @@
 
 #include <Game/Alignment.h>
 #include <Game/BagItems.h>
-#include <Game/CharInfo.h>
 #include <Game/Character.h>
+#include <Game/CharInfo.h>
 #include <Game/ClickWait.h>
 #include <Game/ConditionAge.h>
 #include <Game/DemonTable.h>
@@ -18,12 +18,12 @@
 #include <Game/FieldSight.h>
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
-#include <Game/ObjectRecordId.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
 #include <Game/ObjectRecord.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/Party.h>
 #include <Game/Skill.h>
 #include <Game/StatBarRows.h>

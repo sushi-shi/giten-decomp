@@ -4,7 +4,6 @@
 #include <rva.h>
 
 #include <Input/Mouse.h>
-
 #include <Platform/WinMM.h>
 
 #include <dinput.h>

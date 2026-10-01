@@ -3,8 +3,8 @@
 
 #include <rva.h>
 
-#include <Ints.h>
 #include <Gfx/ScreenLayer.h>
+#include <Ints.h>
 
 #define ClearLocationCaption()                                                                     \
     DrawLayerText(                                                                                 \

@@ -27,9 +27,7 @@
 // The battle input fixes read the game clock. The matching build must not
 // include another header: it perturbs MSVC 5's register allocation.
 #ifdef GITEN_BUGFIX
-extern "C" {
 #include <Game/Clock.h>
-}
 #endif
 
 // Billboard brightness remains full within two cells, then attenuates by distance.
@@ -740,8 +738,40 @@ void WaitFrames(i16 count) {
     }
 }
 
+// Set while the application is active (MainWindowProc).
+DATA(0x000847a8)
+static BOOL s_appActive;
+
 #ifdef GITEN_COMPAT
-static void PumpMessages(void);
+// @bug Retail removes window messages only in WinMain's loop. A nested modal
+// loop that runs frames itself (RunBagDiscardMenu's, through RunFrame) takes
+// none for as long as the player keeps it open: Windows NT marks the window
+// Not Responding and ghosts it, a missed WM_ACTIVATEAPP leaves the input
+// acquired and the cursor confined after switching away, and wrappers such as
+// DxWnd that work through the message queue stall. And while the application
+// is inactive, WinMain's loop spins without waiting, dispatching the last
+// message again on every pass.
+// This removes and dispatches the pending messages as WinMain's loop does and
+// exits on WM_QUIT as it does; while the application is inactive it waits for
+// the next message instead of spinning. Its callers run outside any window
+// procedure, so the dispatch does not re-enter one.
+static void PumpMessages(void) {
+    MSG message;
+
+    for (;;) {
+        if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) {
+            if (message.message == WM_QUIT) {
+                exit(0);
+            }
+            TranslateMessage(&message);
+            DispatchMessage(&message);
+        } else if (s_appActive) {
+            return;
+        } else {
+            WaitMessage();
+        }
+    }
+}
 #endif
 
 RVA(0x00049f30, 0xf)
@@ -3462,10 +3492,6 @@ static void (*s_renderModes[16])(BOOL draw) = {
     RenderNothing,
 };
 
-// Set while the application is active (MainWindowProc).
-DATA(0x000847a8)
-static BOOL s_appActive;
-
 // When the last frame was drawn (timeGetTime).
 DATA(0x0008f2e8)
 static DWORD s_lastDrawTime;
@@ -3517,35 +3543,6 @@ static void WaitForFrame(void) {
     s_frameClockCount++;
 }
 
-// @bug Retail removes window messages only in WinMain's loop. A nested modal
-// loop that runs frames itself (RunBagDiscardMenu's, through RunFrame) takes
-// none for as long as the player keeps it open: Windows NT marks the window
-// Not Responding and ghosts it, a missed WM_ACTIVATEAPP leaves the input
-// acquired and the cursor confined after switching away, and wrappers such as
-// DxWnd that work through the message queue stall. And while the application
-// is inactive, WinMain's loop spins without waiting, dispatching the last
-// message again on every pass.
-// This removes and dispatches the pending messages as WinMain's loop does and
-// exits on WM_QUIT as it does; while the application is inactive it waits for
-// the next message instead of spinning. Its callers run outside any window
-// procedure, so the dispatch does not re-enter one.
-static void PumpMessages(void) {
-    MSG message;
-
-    for (;;) {
-        if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) {
-            if (message.message == WM_QUIT) {
-                exit(0);
-            }
-            TranslateMessage(&message);
-            DispatchMessage(&message);
-        } else if (s_appActive) {
-            return;
-        } else {
-            WaitMessage();
-        }
-    }
-}
 #endif
 
 // One frame: restores lost surfaces, steps the fade and runs the render mode's

@@ -2,6 +2,7 @@
 #define GITEN_PLATFORM_SCREENFADE_H
 
 #include <rva.h>
+
 #include <EnumDomain.h>
 #include <Enums.h>
 

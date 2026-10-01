@@ -21,8 +21,8 @@
 #include <Game/BagItems.h>
 #include <Game/Battle.h>
 #include <Game/BattleEffect.h>
-#include <Game/CharInfo.h>
 #include <Game/Character.h>
+#include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
@@ -40,7 +40,6 @@
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
 #include <Game/Growth.h>
-#include <Game/ObjectRecordId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemId.h>
 #include <Game/ItemMenu.h>
@@ -51,6 +50,7 @@
 #include <Game/MenuCursor.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/Party.h>
 #include <Game/PartyAction.h>
 #include <Game/PartyCommand.h>
