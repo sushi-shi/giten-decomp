@@ -16,3 +16,12 @@ because a matching semantic name or safe ownership boundary is unproven.
 
 This inventory is separate from the reviewed enum value ledger. A numeric
 match to an unrelated enum member does not justify a replacement.
+
+The object-like macro report contains source-written arithmetic too.
+`WORLD_TRAVEL_SPAN` in `src/Game/worldtravel.c` computes a square grid's
+width from `WORLD_TRAVEL_RADIUS`; `SIGHT_WIDTH` in `src/Game/fieldobj.c`
+computes a sight-grid width from `SIGHT_RADIUS`; and the gun-burst limit
+macros in `src/Game/partyaction.c` define target-count packing. These
+numbers describe geometry or encoding, not enum members. `ROSTER_SIZE` and
+`HUMAN_ID_LIMIT` are both 32 but denote roster capacity and the human-ID
+cutoff respectively. Their equal value does not give them one owner.

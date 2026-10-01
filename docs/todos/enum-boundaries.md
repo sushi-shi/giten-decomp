@@ -23,3 +23,18 @@ Several strict C enum warnings are expected for bit sets: `PanelFlags`,
 `PaletteUpdateFlags`, `PickFlags`, and `CellKindFlags` are combined or cleared
 with integer bit operations. `CellCode` also has the three unnamed table codes
 above. These warnings do not by themselves identify an enum reuse.
+
+The zero in `MOUSE_UP` is a per-button nibble state used by `HandleInput`'s
+state switch; `MOUSE_BUTTONS_NONE` is the zero value of the complete
+`MouseButtonBits` mask passed to `SetMouseState`. Their equal value is a
+representation coincidence, not enum reuse. The `ContestStat` and
+`CharacterStat` overlap at the `ReadContestValues` call is instead a real
+mixed-selector boundary, recorded in the table above.
+
+Argument-width warnings are a separate boundary from enum reuse. For
+example, `src/Script/scripttext.c` passes a script value to a narrower panel
+image key, and `src/Game/statestack.c` passes promoted phase arithmetic to a
+16-bit setter. Neither width transition gives the value an enum identity.
+The caller and ABI evidence for those sites is in
+[warning-width-boundaries.md](warning-width-boundaries.md) and
+[argument-width-warnings.md](argument-width-warnings.md).
