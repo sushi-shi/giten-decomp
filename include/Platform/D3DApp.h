@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <Input/Mouse.h>
 #include <Platform/DeviceSettings.h>
 #include <Platform/Direct3D.h>
 
@@ -46,7 +47,7 @@ b32 InitDirect3D(void);
 b32 InitDirectSound(void);
 b32 InitDirectInput(void);
 void AcquireInput(BOOL acquire);
-u8 PollMouseButtons(void);
+GZ_ENUM_RETURN(MouseButtonBits, u8) PollMouseButtons(void);
 void ClearScreenSurfaces(void);
 void ReleaseDirectX(void);
 b32 RestoreSurfaces(BOOL restore);
