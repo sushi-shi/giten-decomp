@@ -9,6 +9,11 @@ behavior-based names whose authored meanings still need evidence.
 [Shared control-flow joins](goto-review.md) inventories the remaining written
 `goto` sites and the retail evidence needed for a structured rewrite.
 
+## Project helper reuse
+
+[Project helper reuse](project-helper-reuse.md) records repeated Giten helper
+expansions that require source-origin or instruction evidence before adoption.
+
 ## Vendor macros
 
 [Vendor macro recovery](vendor-macros.md) tracks plausible SDK/CRT macro
