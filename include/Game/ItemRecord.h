@@ -8,6 +8,7 @@
 #include <Game/AttackAttribute.h>
 #include <Game/ItemId.h>
 #include <Game/ItemKind.h>
+#include <Game/Skill.h>
 #include <Game/SkillMessage.h>
 #include <Game/TargetArea.h>
 #include <Game/TargetFlags.h>
@@ -46,7 +47,7 @@ static __inline i32 GetItemRecordPrice(const ItemRecord* record) {
     return record->price;
 }
 
-static __inline u8 GetItemUseModes(const ItemRecord* record) {
+static __inline GZ_ENUM_RETURN(SkillUseModes, u8) GetItemUseModes(const ItemRecord* record) {
     return record->params[2];
 }
 

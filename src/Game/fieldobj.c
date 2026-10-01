@@ -21,8 +21,8 @@
 #include <Game/AreaMap.h>
 #include <Game/Attitude.h>
 #include <Game/BattleEffect.h>
-#include <Game/CharInfo.h>
 #include <Game/Character.h>
+#include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/CombatantId.h>
 #include <Game/Condition.h>
@@ -42,7 +42,6 @@
 #include <Game/FieldSupport.h>
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
-#include <Game/HumanId.h>
 #include <Game/ItemRecord.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
@@ -53,9 +52,9 @@
 #include <Game/RoomRegion.h>
 #include <Game/Skill.h>
 #include <Game/SkillUse.h>
-#include <Game/StatUpdate.h>
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
+#include <Game/StatUpdate.h>
 #include <Game/TargetFlags.h>
 #include <Game/WorldMap.h>
 #include <Gfx/ScreenMode.h>
@@ -1596,11 +1595,13 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     b16 picked;
     i16 count;
     i16 i;
+    GZ_ENUM_LOCAL(SkillKind, i16) kind;
     picked = false;
     if (CanUseSkill(skill, actor) <= 0) {
         return -1;
     }
-    if (GetSkillKind(skill) == SKILL_KIND_RESTORE) {
+    kind = GetSkillKind(skill);
+    if (kind == SKILL_KIND_RESTORE) {
         count = 0;
         for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             InitFieldSkillCandidate(&candidates[i]);

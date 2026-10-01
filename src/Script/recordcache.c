@@ -599,25 +599,18 @@ static __inline i16 RollCachedSkillWearPercent(void) {
     return min(percent, 100);
 }
 
-// @early-stop: retail keeps each discarded worn quotient's DWORD store to one
-// stack slot; cl /Ox deletes them with their arithmetic for every non-volatile
-// form tried (i32/i16 scalar, array, struct, union, address-taken local, inline
-// out-parameter or returning helper, optimize("g"/"a"/"w"/"y", off) probes).
+// Retail keeps the three discarded wear quotients in one volatile stack slot.
 RVA(0x0002e8a0, 0xad)
 void WearCachedSkill(void) {
     i16 percent;
-    i16 wear;
-    i32 worn;
+    volatile i32 worn;
     if (g_cachedRecordId == -1) {
         return;
     }
     percent = RollCachedSkillWearPercent();
-    wear = (100 - percent) * s_valueA;
-    worn = wear / 100;
-    wear = (100 - percent) * s_valueB;
-    worn = wear / 100;
-    wear = (100 - percent) * g_recordBaseValue;
-    worn = wear / 100;
+    worn = (i16)((100 - percent) * s_valueA) / 100;
+    worn = (i16)((100 - percent) * s_valueB) / 100;
+    worn = (i16)((100 - percent) * g_recordBaseValue) / 100;
     s_skillUses++;
 }
 

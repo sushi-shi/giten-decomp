@@ -29,6 +29,11 @@ void RecordMarkInLeader(void);
 i16 WriteSaveHeader(FILE* fp);
 i16 ReadSaveSummary(i16 slot, GZ_ENUM_PARAM(SaveSummaryField, i16) field);
 
+GZ_ENUM_BEGIN_SPLIT(SystemMenuChoiceStep, i16)
+    SYSTEM_CHOICE_OPEN = 0,
+    SYSTEM_CHOICE_POLL = 1
+GZ_ENUM_END_SPLIT(SystemMenuChoiceStep)
+
 // The system menu's game state (auto-mapping, auto-navigation, quit).
 b16 RunSystemMenu(void);
 

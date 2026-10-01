@@ -26,6 +26,7 @@ struct MidiStreamBuffer {
     char events[];
 };
 
+// Byte-forced: advance past the variable-length payload to the next buffer.
 #define GetNextMidiStreamBuffer(buffer)                                                            \
     reinterpret_cast<MidiStreamBuffer*>((buffer)->events + (buffer)->header.dwBufferLength)
 

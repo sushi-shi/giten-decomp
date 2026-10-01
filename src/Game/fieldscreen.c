@@ -20,9 +20,9 @@
 #include <Game/FieldSupport.h>
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
-#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemUse.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/PartyPick.h>
 #include <Game/SceneHotspotKind.h>
 #include <Game/StateStack.h>

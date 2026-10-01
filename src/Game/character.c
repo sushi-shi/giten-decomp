@@ -12,11 +12,11 @@
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <File/DataTableId.h>
-#include <Game/Alignment.h>
 #include <Game/ActorFlag.h>
-#include <Game/CharInfo.h>
+#include <Game/Alignment.h>
 #include <Game/Character.h>
 #include <Game/CharacterStat.h>
+#include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
@@ -31,7 +31,6 @@
 #include <Game/FieldSupport.h>
 #include <Game/GameState.h>
 #include <Game/Guest.h>
-#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
@@ -41,14 +40,15 @@
 #include <Game/LevelUp.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/Party.h>
 #include <Game/PartyPick.h>
 #include <Game/PartyStatus.h>
 #include <Game/Pool.h>
 #include <Game/SaveGame.h>
 #include <Game/SkillUse.h>
-#include <Game/StatUpdate.h>
 #include <Game/Stats.h>
+#include <Game/StatUpdate.h>
 #include <Game/StatusDraw.h>
 #include <Game/StatusScreen.h>
 #include <Game/WorldMap.h>
@@ -3070,6 +3070,18 @@ i16 AddHundredths(Character* character, i16 amount) {
     return whole;
 }
 
+#define PayPoolCost(pool, cost)                                                                    \
+    do {                                                                                           \
+        u16 costWord = (cost);                                                                     \
+        if ((pool)->cur >= costWord) {                                                             \
+            (pool)->cur -= (cost);                                                                 \
+            (cost) = 0;                                                                            \
+        } else {                                                                                   \
+            (cost) -= (pool)->cur;                                                                 \
+            (pool)->cur = 0;                                                                       \
+        }                                                                                          \
+    } while (0)
+
 // Pays `cost` from the hero's magnetite, then the hero's MP, then the
 // member's MP and HP; a member drained of HP dies (and a demon leaves the
 // party slot `position`). Returns 1 when the member died.
@@ -3154,17 +3166,16 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
     return PARTY_TIMER_INACTIVE;
 }
 
-// @early-stop prologue: retail pushes esi up front and forms the flags
-// pointer after the NULL test; assigning it after the test defers the push,
-// initialising it at the declaration hoists the lea (direct field use,
-// if-wrapped body and return-variable spellings tried).
+// @early-stop prologue: retail saves esi before the null guard and forms the
+// flags pointer after it; cl defers the save until the pointer is needed.
 RVA(0x000413f0, 0xb6)
 i16 ApplyMoonPhase(Character* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
-    u8* flags = GetCharacterFlags(character);
+    u8* flags;
     i16 changed = 0;
     if (character == NULL) {
         return 0;
     }
+    flags = GetCharacterFlags(character);
     if (TestBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
         changed = 1;
         ClearBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);

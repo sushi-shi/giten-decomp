@@ -2,8 +2,8 @@
 #define GITEN_GFX_PALETTE_H
 
 #include <EnumDomain.h>
-#include <Ints.h>
 #include <Enums.h>
+#include <Ints.h>
 
 // The hardware palette's entries, and the image-palette mark of an entry it
 // does not retain.

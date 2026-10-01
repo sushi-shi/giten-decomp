@@ -35,6 +35,9 @@ with the declaration, that storage names a declared domain rather than a
 constant group, that headers hold no bare `enum` blocks, and the range-test
 naming rule.
 
+The [enum reuse review](enum-reuse.md) compares evaluated values across
+domains and records which equal-value declarations actually share a type.
+
 ## Codegen constraint
 
 cl 5.0's output depends on the declarations a unit reads. An added

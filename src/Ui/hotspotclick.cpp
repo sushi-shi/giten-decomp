@@ -28,6 +28,8 @@ b32 ClickHotspotAt(i32 x, i32 y) {
     u32 height;
     i32 u;
     i32 v;
+    i32 candidateCoord;
+    i32 selectedCoord;
 
     if (GetTextPlane(0)->visible) {
         return false;
@@ -61,25 +63,31 @@ b32 ClickHotspotAt(i32 x, i32 y) {
             hotspot = GetHotspot(hit);
             switch (direction) {
                 case VIEW_NORTH:
-                    if (GetHotspot(i)->targetY > hotspot->targetY) {
-                        hit = i;
-                    }
-                    break;
+                    selectedCoord = hotspot->targetY;
+                    candidateCoord = GetHotspot(i)->targetY;
+                    goto nearerGreater;
                 case VIEW_EAST:
-                    if (GetHotspot(i)->targetX < hotspot->targetX) {
-                        hit = i;
-                    }
-                    break;
+                    selectedCoord = hotspot->targetX;
+                    candidateCoord = GetHotspot(i)->targetX;
+                    goto nearerLess;
                 case VIEW_SOUTH:
-                    if (GetHotspot(i)->targetY < hotspot->targetY) {
-                        hit = i;
-                    }
-                    break;
+                    selectedCoord = hotspot->targetY;
+                    candidateCoord = GetHotspot(i)->targetY;
+                    goto nearerLess;
                 default:
-                    if (GetHotspot(i)->targetX > hotspot->targetX) {
-                        hit = i;
-                    }
-                    break;
+                    selectedCoord = hotspot->targetX;
+                    candidateCoord = GetHotspot(i)->targetX;
+                    goto nearerGreater;
+            nearerGreater:
+                if (candidateCoord > selectedCoord) {
+                    hit = i;
+                }
+                break;
+            nearerLess:
+                if (candidateCoord < selectedCoord) {
+                    hit = i;
+                }
+                break;
             }
         } else {
             hit = i;

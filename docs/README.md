@@ -12,6 +12,7 @@
 - [Generated branches](branches.md): the `source`, `classic` and `port` branches.
 - [Permutation experiments](permuter.md) and [compiler patterns](patterns/INDEX.md).
 - [Enum domains](enum-domains.md): declaring and typing proven value domains.
+- [Enum reuse review](enum-reuse.md): comparing equal values and recording semantic dedup decisions.
 - [Source markers](comment-markers.md), [todo ledgers](todos/README.md), and [configuration](../config/README.md).
 
 Keep command options in `--help`, schemas beside their implementation, inputs

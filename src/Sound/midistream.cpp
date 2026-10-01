@@ -219,6 +219,7 @@ b32 CMidiStream::ReadBuffers(void* data, DWORD size, int part) {
         buffer->header.dwFlags = 0;
         buffer->header.dwUser = 0;
         buffer->header.lpNext = NULL;
+        // Byte-forced: MIDS records are read from a serialized byte buffer.
         MidsBuffer* block = reinterpret_cast<MidsBuffer*>(next);
         next = block->events;
         if (m_formats[part].flags & MDS_F_NOSTREAMID) {
@@ -235,6 +236,7 @@ b32 CMidiStream::ReadBuffers(void* data, DWORD size, int part) {
             memcpy(buffer->header.lpData, next, block->byteCount);
         }
         next += block->byteCount;
+        // Byte-forced: each prepared buffer owns a variable-length event payload.
         buffer = reinterpret_cast<MidiStreamBuffer*>(buffer->events + m_formats[part].maxBuffer);
     }
     GlobalFreePtr(blocks);

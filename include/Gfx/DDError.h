@@ -2,6 +2,7 @@
 #define GITEN_GFX_DDERROR_H
 
 #include <Win32.h>
+
 #include <Util/Debug.h>
 
 void TraceDDrawError(HRESULT result);

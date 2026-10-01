@@ -3,8 +3,8 @@
 
 #include <rva.h>
 
-#include <Ints.h>
 #include <EnumDomain.h>
+#include <Ints.h>
 
 #include <stdio.h>
 
@@ -57,6 +57,10 @@ static __inline void ResetClockPhaseAndTime(GameClock* clock) {
     clock->minute = 0;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern GameClock g_clock;
 
 GZ_ENUM_RETURN(ClockUpdate, i16) AdvanceClock(u16 minutes);
@@ -99,5 +103,9 @@ i16 SaveClock(FILE* fp);
 
 void InitClock(void);
 void LoadMoonTable(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // GITEN_GAME_CLOCK_H

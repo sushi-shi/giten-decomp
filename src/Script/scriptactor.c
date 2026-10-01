@@ -8,17 +8,17 @@
 
 #include <rva.h>
 
-#include <Game/Actor.h>
 #include <Game/ActionMark.h>
+#include <Game/Actor.h>
 #include <Game/Alignment.h>
 #include <Game/AnalyzeData.h>
 #include <Game/AreaMap.h>
 #include <Game/AreaNpc.h>
 #include <Game/BagItems.h>
 #include <Game/BattleEffect.h>
-#include <Game/CharInfo.h>
 #include <Game/Character.h>
 #include <Game/CharacterStat.h>
+#include <Game/CharInfo.h>
 #include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Game/ConditionAge.h>
@@ -38,7 +38,6 @@
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
 #include <Game/Growth.h>
-#include <Game/HumanId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
@@ -49,6 +48,7 @@
 #include <Game/LevelUp.h>
 #include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
 #include <Game/SaveGame.h>
@@ -1866,10 +1866,6 @@ static __inline Character* GetResolvedPartyCharacter(i16 id) {
 }
 
 // The same for the first of the companions -2, -3 and -7 in the roster.
-// @early-stop: with no companion and no invert, retail re-zeroes the jump
-// flag in its register before a duplicated call. A single call after an
-// `else if (!companion) jump = false;` arm is exact, but that assignment repeats
-// the initializer; the early return here passes the known-zero pointer.
 RVA(0x00035340, 0xb5)
 void OpJumpUnlessCompanionHealthy(i16 invert) {
     i16 conditions = 0;
@@ -1884,11 +1880,9 @@ void OpJumpUnlessCompanionHealthy(i16 invert) {
     }
     if (!companion && invert) {
         jump = true;
+    } else if (!companion) {
+        jump = false;
     } else {
-        if (!companion) {
-            ScriptJumpUnless(target, jump);
-            return;
-        }
         AccumulateConditionBits(GetCharacterConditions(companion), conditions);
         if (ScriptBooleanMatches(!conditions, invert)) {
             jump = true;
