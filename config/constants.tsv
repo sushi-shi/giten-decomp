@@ -731,9 +731,7 @@ src/Game/*attack.c	*	*	*	*resistance	@identity-TODO: the attack formulas also us
 src/Game/*attack.c	*	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
 src/Game/*attack.c	*	*	comparison-or-bound	*amount	a damage amount below zero is none
 src/Game/*attack.c	*	*	store	*amount	a damage amount below zero is none; 0x7fff for an overkill
-src/Game/*attack.c	*	*	call-argument	ClampInt(*	damage as a percentage of the rolled value, clamped to 0..0x7fffffff
 src/Game/*attack.c	*	*	call-argument	RoundToInt(*	percent scaling (100 or 1/100)
-src/Game/*attack.c	*	2	call-argument	ScaleByMoonValue(*argument 3	@identity-TODO: ScaleByMoonValue's third argument, 2 for damage
 src/Game/*attack.c	*	*	call-argument	ScaleActionValue(*argument 1	value scales (4 for the hit roll, 10 for the condition roll)
 src/Game/*attack.c	*	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
 src/Game/*attack.c	*	0	trivial-function-literal	0 return	no damage
@@ -1341,10 +1339,6 @@ src/Game/partyaction.c	ComputeGunDamage	1.5	arithmetic	compound assignment to am
 src/Game/partyaction.c	ComputeGunDamage	0.25	arithmetic	compound assignment to amount	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
 src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 equality GetCombatantDistance()	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
 src/Game/partyaction.c	ComputeGunDamage	100.0	call-argument	RoundToInt(double) argument 1	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
-src/Game/partyaction.c	ComputeGunDamage	2	call-argument	ScaleByMoonValue(i32, i16, i16) argument 3	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
-src/Game/partyaction.c	ComputeGunDamage	100	call-argument	ClampInt(i32, i32, i32) argument 1	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
-src/Game/partyaction.c	ComputeGunDamage	0	call-argument	ClampInt(i32, i32, i32) argument 2	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
-src/Game/partyaction.c	ComputeGunDamage	0x7fffffff	call-argument	ClampInt(i32, i32, i32) argument 3	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
 src/Game/partyaction.c	ComputeGunDamage	0	trivial-function-literal	0 equality damage	gun damage formula uses numeric ratios, multipliers, percentage scale and clamps
 src/Game/partyaction.c	RollGunCondition	10	call-argument	ScaleActionValue(i32, i16, i16) argument 1	gun condition roll scales base power by ten before resistance and defense
 src/Game/partyaction.c	ResolveGunAttack	0	trivial-function-literal	0 equality result	@identity-TODO: zero means no exceptional hit; 0x7fff saturates lethal damage

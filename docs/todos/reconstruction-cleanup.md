@@ -51,7 +51,11 @@ layout and owner-seam examples at their source locations.
   across calls that might change the record.
 - [Deferred constant identities](constants-handoff.md): review the complete
   producer/consumer domain before replacing a numeric value. `config/constants.tsv`
-  records every currently retained spelling with its reason.
+  records currently retained spellings with their reasons. The AST report does
+  not enumerate numeric tokens inside macro replacement lists: for example,
+  `FinalizeAttackDamage` in `include/Game/Attack.h` has the damage-scale and
+  clamp literals, but no corresponding `bare_constants.tsv` sites. Audit macro
+  bodies directly before treating an empty open list as complete.
 - Compiler warning dispositions have no tree-wide written-site ledger yet.
   A warning census must separate era-header and generated-tool diagnostics
   from source defects, retain the defining TU and compiler profile, and
