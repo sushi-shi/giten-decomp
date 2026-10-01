@@ -180,6 +180,8 @@ static i32 s_autoMoves = 0;
 DATA(0x0007b7d0)
 static i32 s_eventStates = 0;
 
+#define GetObjectEventState(event) ((u8*)HandleWritePtr(s_eventStates) + (event))
+
 // Counts frames so the enemies act on every fourth.
 DATA(0x0007b7d4)
 static i16 s_enemyTick = 0;
@@ -1217,7 +1219,7 @@ b16 RaiseObjectEvent(i16 event, i16 queued) {
     if (event < 0 || event >= 0x100) {
         event = 0;
     }
-    state = (u8*)HandleWritePtr(s_eventStates) + event;
+    state = GetObjectEventState(event);
     if (*state == OBJECT_EVENT_DONE) {
         return false;
     }
@@ -1239,7 +1241,7 @@ void QueueObjectEvent(i16 event) {
     if (event < 0 || event >= 0x100) {
         event = 0;
     }
-    state = (u8*)HandleWritePtr(s_eventStates) + event;
+    state = GetObjectEventState(event);
     if (*state == OBJECT_EVENT_QUEUED) {
         *state = OBJECT_EVENT_DONE;
     }
