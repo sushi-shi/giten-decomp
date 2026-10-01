@@ -493,7 +493,7 @@ displayconfig	_LoadDisplayConfig	100.0000	100.0000	3	ast4:25b508f1f2d8	0x45bb0	1
 displayconfig	_SetDefaultDisplayConfig	100.0000	100.0000	2	ast4:39d118e8a628	0x45ca0	100.0000	
 effectdraw	_ClearEffectLayer	100.0000	100.0000	3	ast4:4c8fef8eff57	0x58990	100.0000	
 effectdraw	_DrawProjectedEffectSprite	96.0887	96.0887	13	ast4:586974a1739f	0x589e0	96.0887	
-effectdraw	_DrawScreenEffectSprite	92.4667	92.4667	13	ast4:21f0b37909db	0x58e40	92.4667	
+effectdraw	_DrawScreenEffectSprite	94.7111	94.7111	14	ast4:46c67582bcc7	0x58e40	94.7111	
 equipeffect	_ApplyEquipmentEffects	100.0000	100.0000	3	ast4:636b44294097	0x26470	100.0000	
 equipeffect	_ApplyItemCurse	100.0000	100.0000	8	ast4:9c54db1d514f	0x26070	100.0000	
 eventflags	_ChangeEventFlag	100.0000	100.0000	4	ast4:c4e84ea25e1e	0x391f0	100.0000	
