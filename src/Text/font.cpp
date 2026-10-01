@@ -3845,8 +3845,8 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
     p->flags.indentEnabled = true;
     p->flags.savedIndentEnabled = 1;
     p->firstSelectableRow = 1;
-    p->highlightY = -1;
-    p->highlightX = -1;
+    p->highlightY = TEXT_MENU_HIGHLIGHT_NONE;
+    p->highlightX = TEXT_MENU_HIGHLIGHT_NONE;
     if (kind == TEXT_PLANE_KIND_TWO_COLUMN_MENU) {
         p->flags.twoColumns = true;
     } else {
@@ -4349,7 +4349,8 @@ i16 SetTextPlaneHighlightMode(i16 plane, i16 mode) {
 
 RVA(0x00052eb0, 0x20)
 void ResetTextPlaneHighlight(i16 plane) {
-    GetTextPlane(plane)->highlightX = GetTextPlane(plane)->highlightY = -1;
+    GetTextPlane(plane)->highlightX =
+        GetTextPlane(plane)->highlightY = TEXT_MENU_HIGHLIGHT_NONE;
 }
 
 RVA(0x00052ed0, 0x5c)
@@ -4363,9 +4364,9 @@ void ResetTextPlaneMenu(i16 plane, i16 line, i16 cancelEnabled) {
     if (cancelEnabled != -1) {
         p->flags.cancelEnabled = cancelEnabled != 0;
     }
-    p->highlightY = -1;
+    p->highlightY = TEXT_MENU_HIGHLIGHT_NONE;
     p->firstSelectableRow = p->lineStep * line;
-    p->highlightX = -1;
+    p->highlightX = TEXT_MENU_HIGHLIGHT_NONE;
 }
 
 // @dead-code
@@ -4394,8 +4395,8 @@ void ClearTextPlaneHighlight(i16 plane) {
     if (p->highlightX >= 0 && p->highlightY >= 0) {
         ToggleTextHighlight(plane, p->highlightX, p->highlightY);
     }
-    p->highlightY = -1;
-    p->highlightX = -1;
+    p->highlightY = TEXT_MENU_HIGHLIGHT_NONE;
+    p->highlightX = TEXT_MENU_HIGHLIGHT_NONE;
 }
 
 RVA(0x00052fc0, 0x42)
@@ -4835,21 +4836,21 @@ GZ_ENUM_RETURN(TextEvent, i16) PollMenuInput(i16 plane) {
     }
     x = TextPlaneCellAt(plane, g_cursorPos.x, g_cursorPos.y, &col, &row);
     if (x < 0) {
-        row = -1;
+        row = TEXT_MENU_HIGHLIGHT_NONE;
     }
     if (x < 0 || row < p->firstSelectableRow) {
-        row = -1;
+        row = TEXT_MENU_HIGHLIGHT_NONE;
     }
-    if (p->menuLines != NULL && row != -1) {
+    if (p->menuLines != NULL && row != TEXT_MENU_HIGHLIGHT_NONE) {
         line = GetMenuLine(plane, GetMenuLineAt(plane, x, row));
         if (line == NULL || (line->flags & MENU_LINE_DISABLED)) {
-            row = -1;
+            row = TEXT_MENU_HIGHLIGHT_NONE;
         }
     }
     if (row != GetTextPlane(plane)->highlightY || x != p->highlightX) {
         ClearTextPlaneHighlight(plane);
         CallTextPlaneHook(plane, TEXT_EVENT_UNHIGHLIGHT, GetTextPlane(plane)->highlightY);
-        if (row != -1) {
+        if (row != TEXT_MENU_HIGHLIGHT_NONE) {
             SetTextPlaneHighlight(plane, x, row);
             CallTextPlaneHook(plane, TEXT_EVENT_HIGHLIGHT, GetTextPlane(plane)->highlightY);
         }
@@ -4857,8 +4858,6 @@ GZ_ENUM_RETURN(TextEvent, i16) PollMenuInput(i16 plane) {
     return TEXT_EVENT_NONE;
 }
 
-// @identity-TODO: this and 0x53b10 are byte-identical; which callers want
-// which is unrecovered.
 RVA(0x00053ac0, 0x4f)
 void GetTextPlaneOrigin(i16 plane, i16* x, i16* y) {
     if (plane == TEXT_PLANE_NONE) {
@@ -4872,6 +4871,7 @@ void GetTextPlaneOrigin(i16 plane, i16* x, i16* y) {
 
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref --tree).
+// @identity-TODO: the original role of this unreferenced duplicate is unknown.
 RVA(0x00053b10, 0x4f)
 void GetTextPlaneOrigin2(i16 plane, i16* x, i16* y) {
     if (plane == TEXT_PLANE_NONE) {
@@ -5072,7 +5072,7 @@ i16 FindTextPlaneByKind(i16 kind) {
     i16 i;
 
     if (kind < 0 || kind > TEXT_PLANE_COUNT - 1) {
-        return -1;
+        return TEXT_PLANE_NONE;
     }
     for (i = TEXT_PLANE_COUNT - 1; i >= 0; i--) {
         if (GetTextPlane(i)->kind == kind) {
@@ -5080,7 +5080,7 @@ i16 FindTextPlaneByKind(i16 kind) {
         }
     }
     if (i == TEXT_PLANE_COUNT) {
-        i = -1;
+        i = TEXT_PLANE_NONE;
     }
     return i;
 }
@@ -5245,14 +5245,14 @@ void HighlightHotspot(i16 plane, i16 id, i16 on) {
     RECT rect;
     i16 keypad;
 
-    if (plane == TEXT_PLANE_NONE || id == -1) {
+    if (plane == TEXT_PLANE_NONE || id == HOTSPOT_AREA_NONE) {
         return;
     }
     if (plane == 0) {
         if (id >= AREA_KEYPAD_FIRST && id <= AREA_KEYPAD_LAST) {
             if (on == true) {
                 keypad = FindTextPlaneByKind(TEXT_PLANE_KIND_KEYPAD);
-                if (keypad != -1) {
+                if (keypad != TEXT_PLANE_NONE) {
                     i32 x = s_hotspotAreas[id].left - GetTextPlane(keypad)->left;
                     i32 y = s_hotspotAreas[id].top - GetTextPlane(keypad)->top;
                     BlitImage(GetTextPlane(keypad)->glyphSurface, GetHotspotAreaImage(id, 1), x, y);
@@ -5306,7 +5306,7 @@ i16 HitTestHotspot(i16 id, i16 x, i16 y, i16 strict) {
     i16 hit = -1;
     i16 plane;
 
-    if (id == -1) {
+    if (id == HOTSPOT_AREA_NONE) {
         return id;
     }
     if (s_hotspotAreas[id].left <= x && x <= s_hotspotAreas[id].right && s_hotspotAreas[id].top <= y

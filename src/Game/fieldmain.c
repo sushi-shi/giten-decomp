@@ -498,7 +498,7 @@ void MovePartyTo(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
 
 // Copies the return point into `out`; returns the pending world-map request.
 RVA(0x00012930, 0x41)
-i16 GetReturnPoint(ReturnPoint* out) {
+GZ_ENUM_RETURN(WorldMapRequest, i16) GetReturnPoint(ReturnPoint* out) {
     out->area = s_returnArea;
     out->level = s_returnLevel;
     out->x = s_returnX;
@@ -552,29 +552,30 @@ GZ_ENUM_RETURN(ViewDirection, i16) FindExitDirection(i16 x, i16 y) {
     return VIEW_NONE;
 }
 
-// With a key pending and the automap allowed, makes the object under the
-// selected hotspot the analyze target (one demon-interaction training point
-// for the player); returns its index, else -1.
+// With a right click pending off the navigation pad and the automap allowed,
+// makes the object under the selected hotspot the analyze target (one
+// demon-interaction training point for the player); returns its index or
+// FIELD_OBJECT_INDEX_NONE.
 RVA(0x00012a80, 0x78)
 i16 PickAnalyzeTarget(void) {
     i16 index;
     Character* target;
-    if (!GetPendingKey()) {
-        return -1;
+    if (!HasPendingNonNavigationRightClick()) {
+        return FIELD_OBJECT_INDEX_NONE;
     }
     if (!CanOpenAutomap()) {
-        return -1;
+        return FIELD_OBJECT_INDEX_NONE;
     }
     index = GetSelectedHotspotObject();
-    if (index == -1) {
+    if (index == FIELD_OBJECT_INDEX_NONE) {
         return index;
     }
     ClearMouseClicks();
     target = GetFieldActor(index);
     if (!target) {
-        return -1;
+        return FIELD_OBJECT_INDEX_NONE;
     }
-    ClearPendingKey();
+    ClearPendingNonNavigationRightClick();
     SetAnalyzeTarget(target);
     AddTrainingPoints(GetCharacters(), BATTLE_GROUP_DEMON_INTERACTION, 1);
     return index;
@@ -695,7 +696,8 @@ b16 RunFieldExploration(void) {
     i16 count;
 
     if (GetGamePhase() != FIELD_PHASE_LOAD_AREA) {
-        if (GetRenderMode() == RENDER_MODE_PANEL && g_worldMapRequest == 1) {
+        if (GetRenderMode() == RENDER_MODE_PANEL
+            && g_worldMapRequest == WORLD_MAP_REQUEST_SAVED_SPOT) {
             SetPanelRenderMode();
         } else {
             SetViewRenderMode();
@@ -706,7 +708,7 @@ b16 RunFieldExploration(void) {
             s_eventRunning = false;
             SetModeFlags(MODE_FIELD);
             ShowScreenLayer(SCREEN_LAYER_NAVIGATION);
-            if (g_worldMapRequest > 0) {
+            if (g_worldMapRequest > WORLD_MAP_REQUEST_NONE) {
                 if (GetRenderMode() == RENDER_MODE_PANEL) {
                     HideScreenLayer(SCREEN_LAYER_NAVIGATION);
                 }
@@ -714,13 +716,13 @@ b16 RunFieldExploration(void) {
                 return false;
             }
             SetViewRenderMode();
-            if (g_worldMapRequest < 0) {
+            if (g_worldMapRequest < WORLD_MAP_REQUEST_NONE) {
                 SetGamePhase(FIELD_PHASE_RETURN_TO_RETURN_POINT);
-                g_worldMapRequest = 0;
+                g_worldMapRequest = WORLD_MAP_REQUEST_NONE;
                 return false;
             }
             NextGamePhase();
-            g_worldMapRequest = 0;
+            g_worldMapRequest = WORLD_MAP_REQUEST_NONE;
             LoadAreaMap(g_party.field.pos.area, g_party.field.pos.level);
             SaveReturnPoint();
         case FIELD_PHASE_ENTER_CELL:
@@ -774,7 +776,7 @@ b16 RunFieldExploration(void) {
             }
             break;
         case FIELD_PHASE_EXPLORE:
-            if (g_worldMapRequest) {
+            if (g_worldMapRequest != WORLD_MAP_REQUEST_NONE) {
                 SetGamePhase(FIELD_PHASE_LOAD_AREA);
                 s_eventRunning = false;
                 return false;
@@ -917,7 +919,7 @@ b16 RunFieldExploration(void) {
             NextGamePhase();
             StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             g_party.savedDirection = -1;
-            g_worldMapRequest = 0;
+            g_worldMapRequest = WORLD_MAP_REQUEST_NONE;
             return FlushFieldScreen();
         case FIELD_PHASE_RETURN_TO_RETURN_POINT:
             s_eventRunning = false;
@@ -1069,7 +1071,7 @@ void RunCellEvent(void) {
                 g_cellDestLevel,
                 g_cellDestX,
                 g_cellDestY,
-                s_stayOnExit == true ? g_party.field.pos.direction : -1
+                s_stayOnExit == true ? g_party.field.pos.direction : VIEW_NONE
             );
             SetCellMark(
                 g_cellDestArea,

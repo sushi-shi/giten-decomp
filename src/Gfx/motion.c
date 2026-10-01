@@ -103,7 +103,7 @@ DATA(0x00078244)
 static u16 s_motionStep = 0;
 
 DATA(0x000683f4)
-static i16 s_currentEffect = -1;
+static i16 s_currentEffect = EFFECT_ID_NONE;
 
 DATA(0x000683f8)
 static i16 s_motionScale = 1;
@@ -244,6 +244,12 @@ void StartEffectScript(u8* base, u16 offset) {
     s_effectDelay = 0;
 }
 
+GZ_ENUM_BEGIN(EffectCommandResult)
+    EFFECT_COMMAND_ADVANCE = -1,
+    EFFECT_COMMAND_END = 0,
+    EFFECT_COMMAND_FRAME = 1
+GZ_ENUM_END(EffectCommandResult);
+
 RVA(0x00004c00, 0xc1)
 EffectCommand* StepEffectScript(void) {
     i16 result;
@@ -254,8 +260,8 @@ EffectCommand* StepEffectScript(void) {
     if (s_effectDelay > 0) {
         return s_effectScript;
     }
-    while ((result = ExecuteEffectCommand()) < 1) {
-        if (!result) {
+    while ((result = ExecuteEffectCommand()) < EFFECT_COMMAND_FRAME) {
+        if (result == EFFECT_COMMAND_END) {
             return s_effectScript;
         }
     }
@@ -281,11 +287,11 @@ i16 ExecuteEffectCommand(void) {
         case EFFECT_JUMP:
             if (!s_effectScript->jump.offset) {
                 s_effectScript = NULL;
-                return 0;
+                return EFFECT_COMMAND_END;
             }
             next = OffsetBy(s_effectScriptBase, s_effectScript->jump.offset);
             s_effectScript = next;
-            return -1;
+            return EFFECT_COMMAND_ADVANCE;
         case EFFECT_PALETTE:
             SetEffectPalette(s_effectScript->parameter.value);
             break;
@@ -293,11 +299,11 @@ i16 ExecuteEffectCommand(void) {
             PlaySoundEffect(MapEffectSoundId(s_effectScript->parameter.value));
             break;
         default:
-            return 1;
+            return EFFECT_COMMAND_FRAME;
     }
     next = &s_effectScript->parameter + 1;
     s_effectScript = next;
-    return -1;
+    return EFFECT_COMMAND_ADVANCE;
 }
 
 RVA(0x00004d50, 0xb)
@@ -320,8 +326,8 @@ EffectCommand* StepScreenEffectScript(void) {
     if (--s_effectDelay > 0) {
         return s_effectScript;
     }
-    while ((result = ExecuteEffectCommand()) < 1) {
-        if (!result) {
+    while ((result = ExecuteEffectCommand()) < EFFECT_COMMAND_FRAME) {
+        if (result == EFFECT_COMMAND_END) {
             return s_effectScript;
         }
     }

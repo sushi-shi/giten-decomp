@@ -93,7 +93,10 @@ _CLOBBER = {"mul": "eax edx", "imul": "eax edx", "div": "eax edx",
             "cwde": "eax", "lodsb": "eax esi", "lodsd": "eax esi",
             "lodsw": "eax esi", "stosb": "edi", "stosd": "edi", "stosw": "edi",
             "movsb": "esi edi", "movsd": "esi edi", "movsw": "esi edi",
-            "scasb": "edi", "scasd": "edi", "scasw": "edi"}
+            "scasb": "edi", "scasd": "edi", "scasw": "edi",
+            # objdump prints these unsuffixed with an explicit PTR operand.
+            "lods": "eax esi", "stos": "edi", "movs": "esi edi",
+            "scas": "edi", "cmps": "esi edi"}
 
 STRING_OPS = ("stos", "movs", "scas", "cmps", "lods")
 
@@ -255,7 +258,7 @@ def _fpu_tag(mnem, width):
     return {4: "f32", 8: "f64", 10: "f80"}.get(width, "f?")
 
 
-_ANDMASK = {"0xffff": 2, "0xff": 1}
+_ANDMASK = {"0xffff": 2, "0xff": 1, "0x7f": 1}
 
 
 def and_mask(dec, k, reg, window=6):
@@ -355,8 +358,6 @@ def derive(dec, seeds, in_data, stop=frozenset(), budget=48):
             mnem, ops = split_operands(asm)
             if _XFER.match(mnem):
                 break
-            if reg in _CLOBBER.get(mnem, ""):
-                break
             for i, op in enumerate(ops):
                 mem = parse_mem(op)
                 if not mem or mem[1] != reg or mem[2]:
@@ -378,6 +379,10 @@ def derive(dec, seeds, in_data, stop=frozenset(), budget=48):
                         "i" if mnem == "movsx" else "",
                     origin="derived", text=asm))
             # the register is redefined -> our provenance ends
+            # Its old value still addresses this instruction's operand (for
+            # example `rep scas` reads [edi] before advancing edi).
+            if reg in _CLOBBER.get(mnem, ""):
+                break
             if ops and ops[0].strip() == reg and mnem not in _READ_FIRST:
                 break
     return out
@@ -514,11 +519,11 @@ def sweep(img, model):
     owners = Owners(model)
     fstarts, fsize = owners.starts, owners.fsize
 
-    lows = [lo for _, lo, _ in dr]
-
     def in_data(rva):
-        k = bisect.bisect_right(lows, rva) - 1
-        return k >= 0 and rva < dr[k][2]
+        # The IAT lies inside .rdata in this image, so these ranges overlap
+        # and are not sorted by start. A bisect would silently discard every
+        # .data/.bss reference after the last, lower IAT start.
+        return any(lo <= rva < hi for _, lo, hi in dr)
 
     linear, anchored = disasm_text(img, fstarts, fsize)
 

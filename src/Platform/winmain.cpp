@@ -502,8 +502,6 @@ void EndSaveRenderMode(void) {
     }
 }
 
-// @identity-TODO: what render mode 4 shows over the cleared status picture is
-// unrecovered.
 RVA(0x00049c00, 0x25)
 void SetPictureRenderMode(void) {
     g_renderMode = RENDER_MODE_PICTURE;
@@ -593,7 +591,7 @@ DATA(0x0008d830)
 static b32 s_screenCovered;
 
 DATA(0x0008d834)
-static b16 s_pendingKey;
+static b16 s_pendingNonNavigationRightClick;
 
 // The running fade's mode (0 = none).
 DATA(0x0008f1d4)
@@ -860,16 +858,14 @@ u16 RotateByDirection(u16 mask, i16 direction) {
 
 // Set by a right click off the navigation pad (HandleInput) and cleared
 // while the right button is up.
-// @identity-TODO: the name is kept from before HandleInput was read; what its
-// readers do with it (a cancel?) is unconfirmed.
 RVA(0x0004a080, 0x7)
-i16 GetPendingKey(void) {
-    return s_pendingKey;
+i16 HasPendingNonNavigationRightClick(void) {
+    return s_pendingNonNavigationRightClick;
 }
 
 RVA(0x0004a090, 0xa)
-void ClearPendingKey(void) {
-    s_pendingKey = false;
+void ClearPendingNonNavigationRightClick(void) {
+    s_pendingNonNavigationRightClick = false;
 }
 
 RVA(0x0004a0a0, 0x17)
@@ -1001,7 +997,6 @@ b32 InitDirectX(void) {
 }
 
 // Set while the door ahead opens (AnimateDoor runs instead of the step).
-// @identity-TODO: set by 0x44e3d0 with s_doorFrame; read from its uses.
 DATA(0x00090ad0)
 static b32 s_doorOpening;
 
@@ -2076,8 +2071,9 @@ static i16 s_turnImageCodesLeft[8] = {0, 1, 2, -1, 1, 1, 0, 0};
 // billboards, spreading up to three sharing a cell, and makes each one in
 // view a hotspot. `shade` enables distance shading, `anyCell` skips the view
 // test and `byDistance` shades by distance (else fully lit).
-// @identity-TODO: the flag roles are read from the one call (1, 0, 1) and the
-// body; the lit-frame and 2D-fallback paths are undecoded beyond their data.
+// @identity-TODO: all three callers pass shade=true and anyCell=false; the two
+// byDistance values are exercised. The lit-frame and 2D-fallback paths are
+// undecoded beyond their data.
 // @early-stop x87 schedule: the billboard corner products, the height and the
 // translation stores are scheduled differently (retail stores the far corners
 // first and copies the near z corners through integer moves). Calls, CFG,
@@ -2399,7 +2395,7 @@ Picture g_targetPicture;
 // The hotspot the reticle marks, the hotspot count when one was last picked,
 // the reticle's frame and its centre.
 DATA(0x0006b4e4)
-static i32 s_markedHotspot = -1;
+static i32 s_markedHotspot = HOTSPOT_NONE;
 
 DATA(0x00090ad8)
 static u32 s_markedCount;
@@ -2435,13 +2431,13 @@ void DrawHotspotMarks(void) {
             if (GetHotspot(i)->kind == HOTSPOT_TARGET
                 && GetPartyView(GetHotspot(i)->targetX, GetHotspot(i)->targetY)
                 && (anyTarget || IsPartyAt(GetHotspot(i)->targetX, GetHotspot(i)->targetY))) {
-                s_markedHotspot = -1;
+                s_markedHotspot = HOTSPOT_NONE;
                 g_selectedHotspot = i;
                 break;
             }
         }
     }
-    if (g_selectedHotspot == -1) {
+    if (g_selectedHotspot == HOTSPOT_NONE) {
         return;
     }
     if (s_markedHotspot != g_selectedHotspot) {
@@ -4995,7 +4991,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
     }
     switch (buttons >> MOUSE_RIGHT_SHIFT) {
         case MOUSE_UP:
-            s_pendingKey = false;
+            s_pendingNonNavigationRightClick = false;
             if (!g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
                 if (g_screenLayers[SCREEN_LAYER_MENU_BAR]->visible) {
                     if (g_cursorPos.y > MENU_BAR_HIDE_Y) {
@@ -5028,7 +5024,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                     s_padHeld = true;
                 }
             } else {
-                s_pendingKey = true;
+                s_pendingNonNavigationRightClick = true;
             }
             break;
         case MOUSE_LET_GO:

@@ -17,10 +17,15 @@ particular, the scanner never calls an integer status, index, serialized width,
 mask, table payload, or arithmetic identity a boolean merely because its value
 is zero or one.
 
+The open floor counts only sites with no matching work-list row.  A matched
+site may still have a deferred identity; the kept-site report preserves its
+ledger reason, and the summary counts deferred and any-value matches.
+
     giten verify constants             # census + derived TSV
     giten verify constants -v          # print every proven replacement
-    giten verify constants --fix       # apply only compiler-proven replacements
-    giten verify constants --gate      # nonzero while proven sites remain
+    giten verify constants --fix       # apply untracked proven replacements
+    giten verify constants --gate      # reject untracked/proven and stale rows
+    giten verify constants --deferred-list # kept identity TODO sites
     giten verify constants --macro-list # written macro replacement literals
 """
 
@@ -43,6 +48,7 @@ from giten.verify.srcscan import blank_comments
 CDB = BUILD / "clangd/compile_commands.json"
 REPORT = BUILD / "gen/bare_constants.tsv"
 MACRO_REPORT = BUILD / "gen/macro_literals.tsv"
+KEPT_REPORT = BUILD / "gen/constants_kept.tsv"
 _NUMBER = re.compile(rb"(?:0[xX][0-9A-Fa-f]+|[0-9]+)(?:[uUlL]*)(?![A-Za-z0-9_.])")
 _FLOAT = re.compile(rb"(?:[0-9]+\.[0-9]*|\.[0-9]+)(?:[eE][-+]?[0-9]+)?[fFlL]?"
                     rb"|[0-9]+[eE][-+]?[0-9]+[fFlL]?")
@@ -1064,8 +1070,16 @@ def is_counted(site: Site) -> bool:
 
 def open_sites(sites: list[Site], keeps: list[Keep]) -> tuple[list[Site], list[Keep]]:
     """Counted sites no row keeps, and the rows that keep nothing (stale)."""
+    out, stale, _retained = classify_sites(sites, keeps)
+    return out, stale
+
+
+def classify_sites(sites: list[Site], keeps: list[Keep]
+                   ) -> tuple[list[Site], list[Keep], list[tuple[Site, Keep]]]:
+    """Partition numeric sites into open and ledger-kept, retaining the reason."""
     used: set[int] = set()
     out: list[Site] = []
+    retained: list[tuple[Site, Keep]] = []
     for site in sites:
         if not is_counted(site):
             continue
@@ -1074,7 +1088,35 @@ def open_sites(sites: list[Site], keeps: list[Keep]) -> tuple[list[Site], list[K
             out.append(site)
         else:
             used.add(keep.line)
-    return out, [k for k in keeps if k.line not in used]
+            retained.append((site, keep))
+    return out, [k for k in keeps if k.line not in used], retained
+
+
+def write_kept_report(path: Path, retained: list[tuple[Site, Keep]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = ["\t".join(("file", "line", "owner", "scope", "spelling", "group", "detail",
+                        "ledger_line", "deferred_identity", "reason"))]
+    for site, keep in retained:
+        lines.append("\t".join((site.file, str(site.line), site.function,
+                                site.scope, site.spelling, site.review_group,
+                                site.review_context, str(keep.line),
+                                "yes" if "@identity-TODO" in keep.reason else "no",
+                                keep.reason)))
+    path.write_text("\n".join(lines) + "\n")
+
+
+def kept_summary(retained: list[tuple[Site, Keep]]) -> str:
+    deferred = [site for site, keep in retained
+                if "@identity-TODO" in keep.reason]
+    deferred_scopes = Counter(site.scope for site in deferred)
+    any_value = sum(keep.spelling == "*" for _, keep in retained)
+    suggested = sum(site.proven for site, _keep in retained)
+    return (f"{len(retained)} ledger-kept numeric site(s): "
+            f"{len(deferred)} with deferred identity "
+            f"({deferred_scopes['function-body']} function-body, "
+            f"{deferred_scopes['data-initializer-or-extent']} data/extent), "
+            f"{any_value} accepted by any-value rows, "
+            f"{suggested} AST suggestions retained by a reason")
 
 
 def write_open_report(path: Path, sites: list[Site]) -> None:
@@ -1099,7 +1141,7 @@ def write_floor(path: Path, floor: int) -> None:
 def open_summary(sites: list[Site]) -> str:
     groups = Counter(site.review_group for site in sites)
     detail = ", ".join(f"{name} {count}" for name, count in groups.most_common())
-    return f"{len(sites)} open constant(s): {detail}"
+    return f"{len(sites)} open (untracked) numeric spelling(s): {detail}"
 
 
 def summary(sites: list[Site]) -> str:
@@ -1132,16 +1174,20 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="giten verify constants",
                                      description=__doc__)
     parser.add_argument("--gate", action="store_true",
-                        help="fail while any compiler-proven replacement remains")
+                        help="fail on open-floor increases, untracked proven "
+                             "sites, stale rows, or legacy boolean spellings")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="print every compiler-proven replacement")
     parser.add_argument("--fix", action="store_true",
-                        help="apply every compiler-proven replacement")
+                        help="apply untracked compiler-proven replacements")
     parser.add_argument("--no-report", action="store_true",
                         help="do not write derived numeric-literal reports")
     parser.add_argument("--list", metavar="FILTER", nargs="?", const="",
                         help="print the open constants whose file or owner "
                              "contains FILTER (all when empty)")
+    parser.add_argument("--deferred-list", metavar="FILTER", nargs="?", const="",
+                        help="print kept constants with @identity-TODO reasons "
+                             "whose file or owner contains FILTER")
     parser.add_argument("--macro-list", metavar="FILTER", nargs="?", const="",
                         help="list numbers in macro replacement lists "
                              "without parsing translation units")
@@ -1190,7 +1236,7 @@ def main(argv=None) -> int:
         print(f"[constants] applied {applied} compiler-proven replacement(s)")
         return 0
     keeps, floor, worklist_errors = load_worklist()
-    remaining, stale = open_sites(sites, keeps)
+    remaining, stale, retained = classify_sites(sites, keeps)
     try:
         macro_sites = macro_body_literals()
     except RuntimeError as exc:
@@ -1199,14 +1245,26 @@ def main(argv=None) -> int:
     if not args.no_report:
         write_report(REPORT, sites)
         write_open_report(OPEN_REPORT, remaining)
+        write_kept_report(KEPT_REPORT, retained)
         write_macro_report(MACRO_REPORT, macro_sites)
     if args.list is not None:
         for site in remaining:
-            if args.list in site.file or args.list == site.function or not args.list:
+            if args.list in site.file or args.list in site.function:
                 note = f" -> {site.replacement}" if site.replacement else ""
                 print(f"{site.file}:{site.line}:{site.column}\t{site.function}\t"
                       f"{site.spelling}\t{site.review_group}\t"
                       f"{site.review_context}{note}")
+    if args.deferred_list is not None:
+        for site, keep in retained:
+            if "@identity-TODO" not in keep.reason:
+                continue
+            if (args.deferred_list not in site.file
+                    and args.deferred_list not in site.function):
+                continue
+            print(f"{site.file}:{site.line}:{site.column}\t{site.function}\t"
+                  f"{site.spelling}\t{site.review_group}\t"
+                  f"{site.review_context}\t{WORKLIST.name}:{keep.line}\t"
+                  f"{keep.reason}")
     bad = findings(remaining)
     legacy_booleans = legacy_boolean_spellings(repo=REPO)
     if args.verbose:
@@ -1223,8 +1281,10 @@ def main(argv=None) -> int:
     print(f"[constants] {open_summary(remaining)}; floor "
           f"{floor if floor is not None else 'unset'} "
           f"({WORKLIST.relative_to(REPO)}: {len(keeps)} kept row(s))")
+    print(f"[constants] {kept_summary(retained)}; open floor excludes these sites")
     if not args.no_report:
         print(f"[constants] open list: {OPEN_REPORT.relative_to(REPO)}")
+        print(f"[constants] kept list: {KEPT_REPORT.relative_to(REPO)}")
         print(f"[constants] macro list: {MACRO_REPORT.relative_to(REPO)}")
     for error in worklist_errors:
         print(f"   {error}")

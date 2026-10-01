@@ -34,7 +34,7 @@ static __inline i16 GetMaskGridOffset(const MaskGrid* mask, i16 column, i16 line
     return (column - mask->rect.left) * mask->rect.height - mask->rect.top + line;
 }
 
-void ResetMask(i16 copySaved);
+void ResetMask(b16 copySaved);
 void LoadMask(void);
 void ClearMaskView(void);
 void ClearMaskSeam(i16 column);

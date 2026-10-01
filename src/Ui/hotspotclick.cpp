@@ -7,6 +7,7 @@
 #include <Gfx/Texture.h>
 #include <Platform/GameApi.h>
 #include <Platform/Scene3D.h>
+#include <Ui/Hotspot.h>
 
 #define ClampHotspotTexel(value, extent)                                                           \
     do {                                                                                           \
@@ -38,7 +39,7 @@ b32 ClickHotspotAt(i32 x, i32 y) {
     if (y > VIEW_HEIGHT - 1) {
         return false;
     }
-    hit = -1;
+    hit = HOTSPOT_NONE;
     direction = GetMapPosition()->direction;
     for (i = g_hotspotCount - 1; i >= 0; i--) {
         if (GetHotspot(i)->rect.left > x || GetHotspot(i)->rect.right <= x
@@ -60,7 +61,7 @@ b32 ClickHotspotAt(i32 x, i32 y) {
         if (pixels[v * width + u] == BMP_TRANSPARENT_INDEX) {
             continue;
         }
-        if (hit != -1) {
+        if (hit != HOTSPOT_NONE) {
             hotspot = GetHotspot(hit);
             switch (direction) {
                 case VIEW_NORTH:

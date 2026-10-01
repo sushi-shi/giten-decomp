@@ -31,6 +31,28 @@ For example, the current C units do not include `Platform/D3DApp.h`,
 `Sound/MidiStream.h` or `Text/FontApi.h`; their C++ casts belong to the
 separate `giten verify casts` review.
 
+## Per-site verdicts still needed
+
+The current generated census has 142 written C cast rows: 96 pointer casts and
+45 scalar casts in sources, plus one cast in a header. It records locations,
+types and expansion contexts, but has no individual retain/remove/model-debt
+verdict or owning function's current match state. The family reviews below
+explain many boundaries; they do not finish a site-by-site review. For each
+row, inspect the enclosing expression and callee, storage extent and alignment
+where relevant, and the retail instructions and referents before deciding
+whether the cast is necessary. The 48 C++ `reinterpret_cast` sites have a
+separate review in `typed-boundaries.md` and are outside this C count.
+
+In particular, the four `ItemStack*` conversions of `g_scriptVars` in
+`src/Script/scriptactor.c:2091-2097` need a verdict tied to the script-variable
+storage extent and the item-list callees. The two `i16*`/`i32*` reads from the
+record byte buffer in `src/Game/fieldobj.c:2305-2307` need their offset,
+alignment and encoded-width contracts checked separately. `DecodeAreaMap` in
+`src/Game/clock.c:549-571` rebases several serialized offsets into typed
+records; each target array needs its own extent and alignment evidence. None
+of these examples is a proven removable cast merely because its spelling is
+present in the census.
+
 ## Source-model review still open
 
 The C-source pointer audit started with 97 written sites across 68 C units.

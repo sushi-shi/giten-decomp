@@ -6,12 +6,12 @@ has `struct { float x, y; }` and objdiff compares four bytes, finds them equal
 and calls the section exact. This module reports which retail bytes NO enrolled
 datum covers, and what retail's own payload says about them.
 
-NEITHER SIDE ALONE TELLS PADDING FROM AN UNMODELLED FIELD - an uncovered byte
-retail READS is unmodelled data, an uncovered byte nothing ever touches is
-padding - so every row here carries the access map's verdict for the same
-range (`touched`/`sites`, from giten.verify.data_access's sweep).
+NEITHER SIDE ALONE TELLS PADDING FROM AN UNMODELLED FIELD. A retail touch is
+evidence that an uncovered byte is used; lack of a decoded touch does not prove
+padding (an untouched nonzero initializer may still be real data). Every row
+carries the access map's `touched`/`sites` evidence for the same range.
 
-THE ORACLES, ALL FROM RETAIL, NONE FROM OUR PAYLOAD
+THE INPUTS - retail bytes/accesses kept distinct from source/model claims
   claims   the MODEL's named data bindings (rva + extent + owner) - every
            datum this tree claims, initialized or not. The frozen tool used
            the delink manifest alone, which predates the census: a `.bss`
@@ -34,8 +34,8 @@ ADJACENCY PROVES NOTHING. A gap is reported, never closed by inventing an
 aggregate to fill it.
 
 VERDICTS
-  PAD          uncovered, all-zero, shorter than 8 B. cl's own inter-symbol
-               padding. Benign; the calibration floor.
+  PAD          uncovered, all-zero, shorter than 8 B. Candidate inter-symbol
+               padding, not proof that no source field owns the bytes.
   ZERO-GAP     uncovered, all-zero, too long to be padding.
   NONZERO      uncovered bytes that are not zero. Content nobody modelled.
   POINTER      NONZERO and retail relocates a word inside it - unmodelled
@@ -59,6 +59,7 @@ from giten.core.tsv import write as write_tsv
 MANIFEST = BUILD / "gen/delink_data_manifest.tsv"
 SECTIONS = BUILD / "gen/delink_data_section_manifest.tsv"
 GAPS_TSV = BUILD / "gen/data_coverage_gaps.tsv"
+IMAGE_TSV = BUILD / "gen/data_coverage_image.tsv"
 
 #: cl aligns a standalone global to its own element size, capped at 8 for the
 #: ordinary sections (16 needs `__declspec(align)`, which MSVC 5 lacks).
@@ -67,6 +68,9 @@ MAX_PAD = 8
 GAP_COLUMNS = ["rva", "length", "section", "verdict", "addressed", "touched",
                "sites", "payload_nonzero", "relocs", "prev_object",
                "prev_name", "next_object", "next_name", "first_bytes"]
+IMAGE_COLUMNS = ["rva", "length", "section", "status", "enrolled",
+                 "owner", "name", "addressed", "touched", "sites",
+                 "payload_nonzero", "relocs"]
 
 
 def load_claims(path=MANIFEST):
@@ -109,6 +113,69 @@ def coverage(claims, sections=()):
         else:
             merged.append([a, b])
     return [(a, b) for a, b in merged]
+
+
+def image_partition(img, claims, enrolled, sections, touched):
+    """Partition the entire initialized-data and zero-fill bands by claims.
+
+    This is an accounting map, not an extent proof: `model` means a source/model
+    claim covers the byte, `section-only` means an enrolled section covers it,
+    and `unknown` means neither does. `enrolled` separately records whether a
+    delink data manifest row covers a modelled byte. Retail payload and accesses
+    describe each unknown run without assigning bytes to a nearby declaration.
+    """
+    reg = img.pe.data_regions()
+    tstarts, tends, tsites = touched
+    rows = []
+    for band in ("data", "bss"):
+        lo, hi = reg[band]
+        boundaries = {lo, hi}
+        for item in (*claims, *sections):
+            start = max(lo, item["rva"])
+            end = min(hi, item["rva"] + item["size"])
+            if start < end:
+                boundaries.update((start, end))
+        ordered = sorted(boundaries)
+        for start, end in zip(ordered, ordered[1:]):
+            if start == end:
+                continue
+            owners = [c for c in claims
+                      if c["rva"] <= start < c["rva"] + c["size"]]
+            placed = [s for s in sections
+                      if s["rva"] <= start < s["rva"] + s["size"]]
+            matched = any(c["rva"] <= start < c["rva"] + c["size"]
+                          for c in enrolled)
+            if owners:
+                status = "model"
+                owner = ";".join(sorted({c["object"] for c in owners}))
+                name = ";".join(sorted({c["name"] for c in owners}))
+            elif placed:
+                status = "section-only"
+                owner = ";".join(sorted({s["object"] for s in placed}))
+                name = ";".join(sorted({s["name"] for s in placed}))
+            else:
+                status, owner, name = "unknown", "-", "-"
+            if status == "unknown":
+                pay = img.read(start, end - start) or b""
+                nonzero = sum(byte != 0 for byte in pay)
+                relocs = len(img.relocs_in(start, end))
+                addressed = len({target for _site, target
+                                 in img.refs_to_range(start, end)})
+                touched_bytes, sites = _touched(tstarts, tends, tsites, start, end)
+            else:
+                addressed = nonzero = relocs = touched_bytes = sites = 0
+            row = (start, end - start, band, status,
+                   "yes" if matched or placed else "no", owner, name,
+                   addressed, touched_bytes, sites, nonzero, relocs)
+            if rows and rows[-1][2:7] == row[2:7] and rows[-1][0] + rows[-1][1] == start:
+                previous = rows[-1]
+                rows[-1] = (previous[0], previous[1] + row[1], *row[2:7],
+                            previous[7] + row[7], previous[8] + row[8],
+                            previous[9] + row[9], previous[10] + row[10],
+                            previous[11] + row[11])
+            else:
+                rows.append(row)
+    return rows
 
 
 def overlaps(claims):
@@ -335,6 +402,9 @@ def main(argv=None) -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--tsv", nargs="?", const=GAPS_TSV,
                     help="write the join-shaped gap census")
+    ap.add_argument("--all-bytes", nargs="?", const=IMAGE_TSV,
+                    help="write a complete .data/.bss byte partition; "
+                         "model coverage is not independent extent proof")
     ap.add_argument("--overlaps", action="store_true",
                     help="list claims whose extents share a byte, and exit")
     ap.add_argument("--verdict",
@@ -353,7 +423,24 @@ def main(argv=None) -> int:
     if a.near:
         return _near(int(a.near, 0))
 
-    rows, claims, sections, _img = census()
+    rows, claims, sections, img = census()
+    if a.all_bytes:
+        _spine, starts, ends, sites = touched_index()
+        image_rows = image_partition(img, claims, load_claims(), sections,
+                                     (starts, ends, sites))
+        changed = write_tsv(
+            a.all_bytes,
+            ["# GENERATED by giten.verify.data_coverage - complete .data/.bss "
+             "partition; model claims are not retail extent proofs."],
+            IMAGE_COLUMNS,
+            [[f"0x{r[0]:06x}", r[1], *r[2:]] for r in image_rows])
+        totals = Counter()
+        for _rva, length, _band, status, *_rest in image_rows:
+            totals[status] += length
+        print(f"wrote {a.all_bytes} ({len(image_rows)} rows, "
+              f"{'updated' if changed else 'unchanged'}); "
+              f"model {totals['model']} B, section-only "
+              f"{totals['section-only']} B, unknown {totals['unknown']} B")
     if a.overlaps:
         ov = overlaps(claims)
         print(f"overlapping claims (different extents sharing a byte): "

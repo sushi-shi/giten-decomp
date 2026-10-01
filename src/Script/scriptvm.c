@@ -37,6 +37,12 @@
 DATA(0x00081228)
 GZ_ENUM_STORAGE(ScriptOpcode, u16) g_scriptOpcode = SCRIPT_OP_END;
 
+// The signed multiplier used by resource and HP/MP adjustment opcodes.
+GZ_ENUM_BEGIN_SPLIT(ScriptDeltaDirection, i16)
+    SCRIPT_DELTA_SUBTRACT = -1,
+    SCRIPT_DELTA_ADD = 1
+GZ_ENUM_END_SPLIT(ScriptDeltaDirection)
+
 // @dead-code
 // Zero-ref: no rel32 caller, data slot or address-taking (giten sema xref).
 RVA(0x0002ff40, 0x7)
@@ -46,8 +52,8 @@ GZ_ENUM_RETURN(ScriptOpcode, u16) GetScriptOpcode(void) {
 
 // Executes one script opcode for the text window `window`. Opcodes 29..31
 // prefix a second byte naming an extended opcode (0x300/0x200/0x100 + byte),
-// which is dispatched in turn. Returns 0 to continue, -1 to end the script
-// and -3 to yield until the next frame; some handlers return their own status.
+// which is dispatched in turn. Returns SCRIPT_CONTINUE, SCRIPT_END or
+// SCRIPT_YIELD; some handlers return their own status.
 RVA(0x0002ff50, 0x2560)
 GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(ScriptOpcode, u16) op) {
     u16 entry;
@@ -392,16 +398,16 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 ClearCallStack();
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_ADD_MACCA:
-                OpAddMacca(1);
+                OpAddMacca(SCRIPT_DELTA_ADD);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_SUBTRACT_MACCA:
-                OpAddMacca(-1);
+                OpAddMacca(SCRIPT_DELTA_SUBTRACT);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_ADD_MAGNETITE:
-                OpAddMagnetite(1);
+                OpAddMagnetite(SCRIPT_DELTA_ADD);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_SUBTRACT_MAGNETITE:
-                OpAddMagnetite(-1);
+                OpAddMagnetite(SCRIPT_DELTA_SUBTRACT);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_GIVE_ITEM:
                 OpGiveItem();
@@ -678,17 +684,17 @@ GZ_ENUM_RETURN(ScriptStatus, i16) ExecScriptOpcode(i16 window, GZ_ENUM_PARAM(Scr
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_INCREASE_HP:
             case SCRIPT_OP_INCREASE_HP_ALIAS:
-                OpChangeHp(1);
+                OpChangeHp(SCRIPT_DELTA_ADD);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_DECREASE_HP:
-                OpChangeHp(-1);
+                OpChangeHp(SCRIPT_DELTA_SUBTRACT);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_INCREASE_MP:
             case SCRIPT_OP_INCREASE_MP_ALIAS:
-                OpChangeMp(1);
+                OpChangeMp(SCRIPT_DELTA_ADD);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_DECREASE_MP:
-                OpChangeMp(-1);
+                OpChangeMp(SCRIPT_DELTA_SUBTRACT);
                 return SCRIPT_CONTINUE;
             case SCRIPT_OP_APPLY_OBJECT_CONDITION:
                 OpApplyObjectCondition();

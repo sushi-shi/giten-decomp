@@ -60,6 +60,7 @@
 #include <Game/Scene.h>
 #include <Game/ScreenEffect.h>
 #include <Game/Skill.h>
+#include <Game/SkillId.h>
 #include <Game/SkillList.h>
 #include <Game/SkillUse.h>
 #include <Game/StateStack.h>
@@ -237,9 +238,8 @@ static u32 s_sceneEntries[32] = {0};
 DATA(0x0007bdb8)
 i32 g_sceneFrameSaves[32] = {0};
 
-// Pending transition request: negative exits, positive marks the entry spot.
 DATA(0x0007be38)
-i16 g_worldMapRequest = 0;
+GZ_ENUM_STORAGE(WorldMapRequest, i16) g_worldMapRequest = WORLD_MAP_REQUEST_NONE;
 
 DATA(0x0007be3c)
 i16 g_statusMember = 0;
@@ -1325,7 +1325,7 @@ b16 RunCellScene(void) {
             SetSubscreenActive(1);
             g_fieldRedrawRequest = true;
             ClearMaskView();
-            ResetMask(1);
+            ResetMask(true);
             s_scenePaletteState = SavePaletteState(s_scenePaletteState, 1);
             RestoreBackground();
             LoadSceneSprites();
@@ -1358,9 +1358,9 @@ b16 RunCellScene(void) {
             PlayLevelMusic();
             LockStatusRedraw(false);
             SetRebuildRoom(1);
-            if (g_worldMapRequest < 0) {
+            if (g_worldMapRequest < WORLD_MAP_REQUEST_NONE) {
                 SetGameState(GAME_STATE_FIELD_EXPLORATION);
-            } else if (g_worldMapRequest > 0) {
+            } else if (g_worldMapRequest > WORLD_MAP_REQUEST_NONE) {
                 SetGameState(GAME_STATE_FIELD_EXPLORATION);
             } else if (!s_sceneHold) {
                 RestoreSavedPoint();
@@ -1438,10 +1438,10 @@ b16 RunFieldTextScene(void) {
             RefreshStatusPanel(1);
             RepaintTextPlane(g_infoPlane, 3);
             g_fieldRedrawRequest = true;
-            if (g_worldMapRequest < 0) {
+            if (g_worldMapRequest < WORLD_MAP_REQUEST_NONE) {
                 SetGameState(GAME_STATE_FIELD_EXPLORATION);
                 SetGamePhase(FIELD_PHASE_FADE_TO_RETURN_POINT);
-            } else if (g_worldMapRequest > 0) {
+            } else if (g_worldMapRequest > WORLD_MAP_REQUEST_NONE) {
                 SetGameState(GAME_STATE_FIELD_EXPLORATION);
             }
             s_sceneHold = 0;
@@ -1473,7 +1473,8 @@ b16 RunFrozenFieldScene(void) {
             s_scenePaletteState = RestorePaletteState(s_scenePaletteState, true);
             RefreshStatusPanel(1);
             g_fieldRedrawRequest = true;
-            if (g_worldMapRequest < 0 || g_worldMapRequest > 0) {
+            if (g_worldMapRequest < WORLD_MAP_REQUEST_NONE
+                || g_worldMapRequest > WORLD_MAP_REQUEST_NONE) {
                 SetGameState(GAME_STATE_FIELD_EXPLORATION);
                 StartScreenFadeAndWait(SCREEN_FADE_TO_BLACK, 1);
             }
@@ -1539,7 +1540,7 @@ b16 RunBackgroundScene(void) {
             SaveVideoState(g_sceneVideoState);
             g_fieldRedrawRequest = true;
             ClearMaskView();
-            ResetMask(1);
+            ResetMask(true);
             s_scenePaletteState = SavePaletteState(s_scenePaletteState, 1);
             RestoreBackground();
             LockStatusRedraw(true);
@@ -1939,7 +1940,7 @@ b16 RunLevelUp(void) {
                     break;
                 case LEVEL_UP_HUMAN_LEARN_SKILL:
                     skill = TakeLearnableSkill(member, s_learnableSkills);
-                    if (skill == -1) {
+                    if (skill == SKILL_ID_NONE) {
                         ReturnFromGameState();
                         return false;
                     }
@@ -2136,7 +2137,7 @@ i16 LearnAllSkills(Character* character, i16 source) {
     if (CollectLearnableSkills(character, source) < 1) {
         return 0;
     }
-    for (skill = TakeLearnableSkill(character, s_learnableSkills); skill != -1;
+    for (skill = TakeLearnableSkill(character, s_learnableSkills); skill != SKILL_ID_NONE;
          skill = TakeLearnableSkill(character, s_learnableSkills)) {
         count++;
         AddSkill(GetCharacterSkills(character), skill);
@@ -2246,7 +2247,7 @@ b16 RunWorldMap(void) {
             g_party.field.pos.direction = VIEW_NORTH;
             LoadAreaMap(MAP_AREA_WORLD_MAP, 0);
             SetModeFlags(MODE_WORLD_MAP);
-            if (g_worldMapRequest > 0) {
+            if (g_worldMapRequest > WORLD_MAP_REQUEST_NONE) {
                 g_worldMapX = s_savedSpotX;
                 g_worldMapY = s_savedSpotY;
                 MarkWorldMapEventSpot(s_savedSpotX, s_savedSpotY);
@@ -2255,27 +2256,27 @@ b16 RunWorldMap(void) {
             LoadWorldMapPlaces();
             LoadWorldMapEvents();
             LoadEncounterTables();
-            g_worldMapRequest = 0;
+            g_worldMapRequest = WORLD_MAP_REQUEST_NONE;
             SetFieldMenuMode(FIELD_MENU_NO_FIGHT_TALK_MAPPING);
         case WORLD_MAP_PHASE_SAVE_VIDEO:
             NextGamePhase();
             SaveVideoState(s_videoState);
         case WORLD_MAP_PHASE_ENTER:
             SetWorldMapActive(1);
-            if (g_worldMapRequest < 0) {
+            if (g_worldMapRequest < WORLD_MAP_REQUEST_NONE) {
                 SetGamePhase(WORLD_MAP_PHASE_CLOSE);
                 return false;
             }
-            if (g_worldMapRequest > 0) {
+            if (g_worldMapRequest > WORLD_MAP_REQUEST_NONE) {
                 g_worldMapX = s_savedSpotX;
                 g_worldMapY = s_savedSpotY;
                 MarkWorldMapEventSpot(s_savedSpotX, s_savedSpotY);
-                g_worldMapRequest = 0;
+                g_worldMapRequest = WORLD_MAP_REQUEST_NONE;
             }
             NextGamePhase();
             PlayMusic(0, true);
             ClearMaskView();
-            ResetMask(1);
+            ResetMask(true);
             SetFieldStatusBit11(true);
             ClearTextPlane(g_infoPlane);
             SetInfoBarLayout(0);
@@ -2298,7 +2299,7 @@ b16 RunWorldMap(void) {
             return false;
         case WORLD_MAP_PHASE_WAIT_DESTINATION:
             AllowImmediateInput();
-            if (g_worldMapRequest < 0) {
+            if (g_worldMapRequest < WORLD_MAP_REQUEST_NONE) {
                 SetGamePhase(WORLD_MAP_PHASE_FADE_OUT);
                 return false;
             }

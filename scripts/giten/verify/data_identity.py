@@ -328,7 +328,7 @@ def write_tsv(rows, path: Path = TSV) -> None:
 # the real inputs                                                             #
 # --------------------------------------------------------------------------- #
 def _model_inputs():
-    """(function_rva(unit, name), claims, {spelling: channel})."""
+    """(function_rva(unit, name), claims, channels by spelling and binding)."""
     from giten.model import resolve
     model = resolve()
     by_unit, by_name = {}, defaultdict(set)
@@ -343,13 +343,23 @@ def _model_inputs():
         rvas = by_name.get(name, ())
         return next(iter(rvas)) if len(rvas) == 1 else None
 
-    claims, channels = defaultdict(set), {}
+    claims, channels = defaultdict(set), defaultdict(dict)
     for b in model.data:
         for claim in (b, *b.aliases):
             if claim.name and claim.channel:
-                claims[claim.name].add((b.unit, b.rva))
-                channels.setdefault(claim.name, claim.channel)
+                spelling = mask(claim.name)
+                claims[spelling].add((b.unit, b.rva))
+                channels[spelling].setdefault((b.unit, b.rva), claim.channel)
     return function_rva, claims, channels
+
+
+def _site_channel(site: Site, channels) -> str | None:
+    """A masked local name is claimed only at its own unit and retail base."""
+    spelling = site.symbol.split(":", 1)[-1]
+    matches = [channel for (unit, rva), channel in channels.get(spelling, {}).items()
+               if rva == site.base and (not site.local or unit == site.unit)]
+    return next((channel for channel in matches if channel in _SOURCE_CHANNELS),
+                matches[0] if matches else None)
 
 
 def scan(stats=None):
@@ -373,8 +383,7 @@ def scan(stats=None):
         set(placeholders) - {site.key for site in sites})
     statuses = {}
     for site in sites:
-        spelling = site.symbol.split(":", 1)[-1]
-        channel = channels.get(spelling)
+        channel = _site_channel(site, channels)
         statuses[site.key] = (
             ("claimed" if channel in _SOURCE_CHANNELS else "provided")
             if channel else "placeholder" if site.key in placeholders

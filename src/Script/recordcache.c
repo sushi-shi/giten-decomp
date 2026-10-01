@@ -26,7 +26,7 @@
 
 // The id of the record held in the one-entry record cache (-1 = none).
 DATA(0x00069108)
-i16 g_cachedRecordId = -1;
+i16 g_cachedRecordId = SKILL_ID_NONE;
 
 DATA(0x00080d38)
 static char s_skillViewName[0x100] = {0};
@@ -284,7 +284,7 @@ i16 LearnLevelSkill(Character* character) {
 RVA(0x0002e110, 0x82)
 i16 RemoveLowestAffiliatedSkill(Character* character) {
     i16 lowestLevel = 1000;
-    i16 lowestSkill = -1;
+    i16 lowestSkill = SKILL_ID_NONE;
     WordList* list = GetCharacterSkills(character);
     i16 i;
     for (i = 0; i < GetWordCount(GetCharacterSkills(character)); i++) {
@@ -349,7 +349,7 @@ i32 BuildLearnableSkillRanks(Character* character) {
                 GetCharacterAffiliation(character, 2),
                 character->level
             );
-            if (skill != -1) {
+            if (skill != SKILL_ID_NONE) {
                 count++;
             }
         }
@@ -371,7 +371,7 @@ i32 BuildLearnableSkillRanks(Character* character) {
                 GetCharacterAffiliation(character, 2),
                 character->level
             );
-            if (skill == -1) {
+            if (skill == SKILL_ID_NONE) {
                 break;
             }
             level = GetSkillLevel(skill);
@@ -571,12 +571,12 @@ i16 FindSkill(i16 start, u16 a, u16 b, u16 c, i16 maxLevel) {
             }
         }
     }
-    return -1;
+    return SKILL_ID_NONE;
 }
 
 RVA(0x0002e820, 0x16)
 void ResetRecordCache(void) {
-    g_cachedRecordId = -1;
+    g_cachedRecordId = SKILL_ID_NONE;
     g_recordValue = g_recordBaseValue;
 }
 
@@ -604,7 +604,7 @@ RVA(0x0002e8a0, 0xad)
 void WearCachedSkill(void) {
     i16 percent;
     volatile i32 worn;
-    if (g_cachedRecordId == -1) {
+    if (g_cachedRecordId == SKILL_ID_NONE) {
         return;
     }
     percent = RollCachedSkillWearPercent();

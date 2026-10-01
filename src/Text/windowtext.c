@@ -3,6 +3,7 @@
 
 #include <rva.h>
 
+#include <Script/ScriptStatus.h>
 #include <Script/TextState.h>
 #include <Text/Font.h>
 #include <Text/TextPlane.h>
@@ -79,7 +80,7 @@ i16 PutTextChar(i16 plane, u16 ch, TextState* state, i16 choosing) {
     }
     if (ReserveTextPlaneCells(plane, width, slack)) {
         SetWindowDeferredChar(plane, ch);
-        return -2;
+        return SCRIPT_DEFERRED_CHAR;
     }
     x = GetTextPlaneCursorX(plane);
     y = GetTextPlaneCursorY(plane);

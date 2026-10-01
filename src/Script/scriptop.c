@@ -6,6 +6,7 @@
 #include <Game/FieldMain.h>
 #include <Game/GameState.h>
 #include <Game/SaveGame.h>
+#include <Game/WorldMap.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
 #include <Script/LongVar.h>
@@ -35,7 +36,7 @@ b16 OpSaveDataCommand(void) {
             result = 1;
             break;
         case SAVE_DATA_SAVE:
-            if (GetReturnPoint(&point) >= 0) {
+            if (GetReturnPoint(&point) >= WORLD_MAP_REQUEST_NONE) {
                 result = SaveGame(slot);
             } else {
                 savedPoint.area = g_party.field.pos.area;
@@ -92,7 +93,7 @@ void OpIfFlags(b16 all) {
     b32 skip;
     for (;;) {
         invert = ReadFlagOperand(&bank, &index);
-        if (invert == -1 && bank == FLAG_BANK_MASK) {
+        if (invert == FLAG_OPERAND_NEGATED && bank == FLAG_BANK_MASK) {
             break;
         }
         matched = (TestEventFlag(bank, index) != false) ^ (invert & 1);

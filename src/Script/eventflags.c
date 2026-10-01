@@ -117,7 +117,7 @@ i16 ReadFlagOperand(u16* bank, u16* index) {
     u16 first = ReadScriptByte();
     *index = ReadScriptByte();
     *bank = first & FLAG_BANK_MASK;
-    return (first & FLAG_NEGATE) ? -1 : 0;
+    return (first & FLAG_NEGATE) ? FLAG_OPERAND_NEGATED : FLAG_OPERAND_NORMAL;
 }
 
 // @identity-TODO: flag-condition words (bank 0..0x7e in bits 0-6, a negate

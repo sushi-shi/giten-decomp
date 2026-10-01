@@ -35,6 +35,9 @@ static i16 s_requestedId = 0;
 DATA(0x000716e4)
 static i16 s_openedId = 0;
 
+// OpenDataFile retries only when the selected family supplied a fallback id.
+#define DATA_FILE_NO_FALLBACK (-1)
+
 RVA(0x00001b20, 0x11)
 void SetCryptKey(u16 seed) {
     s_cryptKey = seed >> 8;
@@ -144,9 +147,7 @@ void ReadRawBlock(FILE* fp, void* buf) {
     fread(buf, 1, len, fp);
 }
 
-// @identity-TODO: `kind` selects the file family (face, map, event, sound,
-// ...); the enum names are not recovered, so the cases stay numeric.
-// A failed open retries once with the family's fallback id when it has one.
+// A failed open retries once with the file family's fallback id when it has one.
 RVA(0x00001dd0, 0x478)
 FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
     char name[64];
@@ -160,7 +161,7 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
     sprintf(name, "fc\\fc%.4x.bmp", id);
     fp = fopen(name, "rb");
     for (;;) {
-        fallback = -1;
+        fallback = DATA_FILE_NO_FALLBACK;
         switch (kind) {
             case DATA_FILE_IMAGE_VARIANT:
                 sprintf(name, "fc\\fc%.4x%01d.bin", id, variant);
@@ -260,7 +261,7 @@ FILE* OpenDataFile(i16 id, i32 kind, i16 variant) {
                 s_dataFile = fp;
                 return fp;
         }
-        if (fp != NULL || retried == true || fallback == -1) {
+        if (fp != NULL || retried == true || fallback == DATA_FILE_NO_FALLBACK) {
             break;
         }
         id = fallback;

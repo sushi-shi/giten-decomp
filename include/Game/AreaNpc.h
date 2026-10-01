@@ -46,6 +46,7 @@ typedef struct NpcTexture {
 // pictures. The texture table has twelve records; only the first
 // NPC_TEXTURE_SLOTS are used by the readers and loader.
 #define AREA_NPC_COUNT 16
+#define AREA_NPC_SLOT_NONE (-1)
 #define NPC_TEXTURE_SLOTS 6
 extern NpcTexture g_npcTextures[12];
 
@@ -83,6 +84,8 @@ u8 GetPrevRegion(i16 x, i16 y);
 u8* GetRoomData(i16 code);
 void EnterRoom(i16 code);
 
+// The cell's two object positions are 0 and 1; no matching object is -1.
+#define CELL_OBJECT_INDEX_NONE (-1)
 i16 FindCellObject(i16 id, i16 x, i16 y);
 i16 NextNpcSlot(void);
 void CountPlacedNpc(void);

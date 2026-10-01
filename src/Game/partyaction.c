@@ -534,7 +534,7 @@ GZ_ENUM_RETURN(ActorActionAdjustResult, i16) AdjustActorAction(i16 id, i16 actio
     ResetTextStateDelayed();
     do {
         result = RunScriptStep(window);
-        if (result == -2) {
+        if (result == SCRIPT_DEFERRED_CHAR) {
             OpenMessageWindow();
             RefreshMessageWindow();
         }
@@ -2839,7 +2839,7 @@ b16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
     i16 distance;
     void* actor;
     g_hoveredObjectId = GetSelectedHotspotValue();
-    if (g_hoveredObjectId != -1) {
+    if (g_hoveredObjectId != FIELD_OBJECT_INDEX_NONE) {
         // The field object's character prefix starts at its kind member.
         actor = &GetFieldObject(g_hoveredObjectId)->kind;
         distance = DistanceToParty(actor);

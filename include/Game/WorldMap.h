@@ -4,14 +4,20 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Enums.h>
 #include <Game/FieldObject.h>
 #include <Game/FieldView.h>
 #include <Game/ViewDirection.h>
 #include <Ints.h>
 
-// A world-map transition request consumed and cleared by its state machine:
-// negative leaves the map; positive marks the saved spot on entry.
-extern i16 g_worldMapRequest;
+// A world-map transition request consumed and cleared by its state machine.
+GZ_ENUM_BEGIN_SPLIT(WorldMapRequest, i16)
+    WORLD_MAP_REQUEST_EXIT = -1,
+    WORLD_MAP_REQUEST_NONE = 0,
+    WORLD_MAP_REQUEST_SAVED_SPOT = 1
+GZ_ENUM_END_SPLIT(WorldMapRequest)
+
+extern GZ_ENUM_STORAGE(WorldMapRequest, i16) g_worldMapRequest;
 
 // Copies the current world-map location name into the shared text buffer.
 char* FormatWorldMapLocation(void);
@@ -27,7 +33,6 @@ extern i16 g_fieldRedrawRequest;
 extern i16 g_infoPlane;
 
 #include <Game/GameState.h>
-#include <Enums.h>
 
 // The world map is laid out in blocks of WORLD_BLOCK_WIDTH x WORLD_BLOCK_HEIGHT
 // pixels, WORLD_BLOCK_COLUMNS to a row and WORLD_BLOCK_ROWS rows.

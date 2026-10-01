@@ -56,5 +56,8 @@ AST in `src/` and `include/`; each is open until it is written as a name (an
 enumerator, a named macro, `NULL`, `true`/`false`) or `config/constants.tsv`
 keeps it numeric with a reason. `--list [FILTER]` prints the open ones for a
 file or owner, `build/gen/constants_open.tsv` holds them all, and the committed
-floor of open AST constants never rises. Macro replacement lists
+floor of open AST constants never rises. This floor excludes ledger-kept
+numeric sites, including those whose reason still says `@identity-TODO`;
+`--deferred-list [FILTER]` lists those sites and `build/gen/constants_kept.tsv`
+records the matching reason for every kept site. Macro replacement lists
 have a [separate source-spelling census](todos/macro-literals.md).

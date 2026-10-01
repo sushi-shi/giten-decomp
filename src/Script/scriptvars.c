@@ -67,11 +67,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define SCRIPT_MESSAGE_HOOK_NONE (-1)
+#define SCRIPT_MESSAGE_HOOK_DISABLE_BYTE 0xff
+
 DATA(0x00069828)
-static i16 s_messageHookFile = -1;
+static i16 s_messageHookFile = SCRIPT_MESSAGE_HOOK_NONE;
 
 DATA(0x0006982c)
-static i16 s_messageHookEntry = -1;
+static i16 s_messageHookEntry = SCRIPT_MESSAGE_HOOK_NONE;
 
 DATA(0x000815a0)
 char g_formattedNumber[64] = {0};
@@ -723,7 +726,7 @@ b16 RunScriptScene(void) {
             break;
         }
         case SCRIPT_SCENE_STEP_END:
-            s_messageHookFile = s_messageHookEntry = -1;
+            s_messageHookFile = s_messageHookEntry = SCRIPT_MESSAGE_HOOK_NONE;
             SetCurrentScript(FreeScriptContext(GetCurrentScript()));
             PurgeScriptFiles();
             SaveAndResetTextPlaneAttrs(window);
@@ -860,7 +863,7 @@ b16 RunActorScene(void) {
                 break;
             }
             case SCRIPT_SCENE_STEP_END:
-                s_messageHookFile = s_messageHookEntry = -1;
+                s_messageHookFile = s_messageHookEntry = SCRIPT_MESSAGE_HOOK_NONE;
                 SetCurrentScript(FreeScriptContext(GetCurrentScript()));
                 PurgeScriptFiles();
                 CloseTextWindow(window);
@@ -875,9 +878,10 @@ b16 RunActorScene(void) {
 RVA(0x0003b590, 0x48)
 void OpSetMessageHook(void) {
     ReadScriptBytePair(&s_messageHookFile, &s_messageHookEntry);
-    if (s_messageHookFile == 0xff && s_messageHookEntry == 0xff) {
-        s_messageHookFile = -1;
-        s_messageHookEntry = -1;
+    if (s_messageHookFile == SCRIPT_MESSAGE_HOOK_DISABLE_BYTE
+        && s_messageHookEntry == SCRIPT_MESSAGE_HOOK_DISABLE_BYTE) {
+        s_messageHookFile = SCRIPT_MESSAGE_HOOK_NONE;
+        s_messageHookEntry = SCRIPT_MESSAGE_HOOK_NONE;
         g_textState.messageHookEnabled = false;
     } else {
         g_textState.messageHookEnabled = true;
@@ -886,7 +890,8 @@ void OpSetMessageHook(void) {
 
 RVA(0x0003b5e0, 0x5f)
 void RunMessageHook(void) {
-    if (s_messageHookFile != -1 && s_messageHookEntry != -1) {
+    if (s_messageHookFile != SCRIPT_MESSAGE_HOOK_NONE
+        && s_messageHookEntry != SCRIPT_MESSAGE_HOOK_NONE) {
         ScriptContext* saved = GetCurrentScript();
         StartScript(s_messageHookFile, s_messageHookEntry, NewScriptContext(0, NULL));
         RunCurrentScript();

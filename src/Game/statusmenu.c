@@ -116,7 +116,7 @@ void CheckStatusMenuItem(i16 item) {
 RVA(0x00041a70, 0x37)
 void SetStatusMenuItemsHidden(i16 on) {
     i16 i;
-    for (i = 0; s_switchedItems[i] != -1; i++) {
+    for (i = 0; s_switchedItems[i] != STATUS_COMMAND_NONE; i++) {
         SetStatusMenuItemFlag(s_switchedItems[i], PANEL_HIDDEN, on);
     }
 }

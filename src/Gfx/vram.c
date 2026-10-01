@@ -63,7 +63,7 @@ static __inline void StorePaletteColor(i16 index, i16 color) {
 }
 
 RVA(0x00002b70, 0x71)
-void ResetMask(i16 copySaved) {
+void ResetMask(b16 copySaved) {
     u16 size;
     s_mask->rect = s_savedMask->rect;
     size = s_mask->rect.height * s_mask->rect.width;
@@ -84,7 +84,7 @@ void LoadMask(void) {
     s_mask = &s_maskData;
     fread(s_savedMask, 1, size, fp);
     CloseDataFile(fp);
-    ResetMask(1);
+    ResetMask(true);
 }
 
 // @identity-TODO: called right before ResetMask(1) when a map or mode is

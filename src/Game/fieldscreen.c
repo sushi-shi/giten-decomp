@@ -236,7 +236,7 @@ b16 PrepareFieldRedraw(i16 force) {
     }
     g_fieldRedrawRequest = true;
     ClearMaskView();
-    ResetMask(1);
+    ResetMask(true);
     if (!s_viewHold) {
         RebuildFieldView();
         return true;

@@ -687,7 +687,7 @@ RVA(0x0002fba0, 0x1c)
 i16 TopScriptWindow(void) {
     ScriptWindowNode* node = ListLast(s_windowStack);
     if (!node) {
-        return -1;
+        return TEXT_PLANE_NONE;
     }
     return node->window;
 }

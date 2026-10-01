@@ -70,6 +70,12 @@ GZ_ENUM_END_SPLIT(ItemEffectFlag)
 #define FLAG_NEGATE 0x80
 #define FLAG_INDEX_MASK 0xff00
 
+// Signed result of ReadFlagOperand's encoded negate bit.
+GZ_ENUM_BEGIN_SPLIT(FlagOperandNegation, i16)
+    FLAG_OPERAND_NEGATED = -1,
+    FLAG_OPERAND_NORMAL = 0
+GZ_ENUM_END_SPLIT(FlagOperandNegation)
+
 i16 CheckFlagWord(u16* condition);
 b16 MatchFlagWord(u16* condition);
 

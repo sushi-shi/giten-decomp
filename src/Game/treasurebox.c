@@ -3057,30 +3057,31 @@ void FinishDoorStep(void) {
     }
 }
 
-// Which of the two objects of the cell at x/y is object `id`: 0 or 1, else -1
+// Which of the two objects of the cell at x/y is object `id`: 0 or 1, else
+// CELL_OBJECT_INDEX_NONE
 // (also when the cell holds no objects).
 RVA(0x0001f1d0, 0x75)
 i16 FindCellObject(i16 id, i16 x, i16 y) {
     i16 code = GetMapCellCode(x, y);
     DoorRegionData* table;
     if (!IsObjectCell(code)) {
-        return -1;
+        return CELL_OBJECT_INDEX_NONE;
     }
     table = GetCellObjectTable(code);
     if (!table) {
-        return -1;
+        return CELL_OBJECT_INDEX_NONE;
     }
     if (LookupCellObject(table, 0) == id) {
         return 0;
     }
-    return LookupCellObject(table, 1) != id ? -1 : 1;
+    return LookupCellObject(table, 1) != id ? CELL_OBJECT_INDEX_NONE : 1;
 }
 
-// The slot the next NPC takes, -1 when all AREA_NPC_COUNT are placed.
+// The slot the next NPC takes, AREA_NPC_SLOT_NONE when all are placed.
 RVA(0x0001f250, 0x11)
 i16 NextNpcSlot(void) {
     if (s_npcCount >= AREA_NPC_COUNT) {
-        return -1;
+        return AREA_NPC_SLOT_NONE;
     }
     return s_npcCount;
 }

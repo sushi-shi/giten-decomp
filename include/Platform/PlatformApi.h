@@ -31,8 +31,8 @@ void RunFrame(void);
 void ShowBusyCursor(void);
 void HideBusyCursor(void);
 
-i16 GetPendingKey(void);
-void ClearPendingKey(void);
+i16 HasPendingNonNavigationRightClick(void);
+void ClearPendingNonNavigationRightClick(void);
 
 // The wall code (0..15) on side `side` of map cell (x, y), for GetWallAt.
 i32 GetWallCode(i32 x, i32 y, i32 side, i32 width, i32 height);

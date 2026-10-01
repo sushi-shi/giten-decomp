@@ -79,20 +79,6 @@ ACCEPTED_MISMODELS: frozenset = frozenset({
     # three-byte record stride. The access index reports only the SIB scale 2.
     # The exact body reads code/mark/detail bytes of the same record.
     ("stride", 0x068b30),
-    # s_listedConditions (i16[], -1 terminated): IsListedCondition (0x3eea0, 100%)
-    # reads element 0 as `mov eax,[0x464710]` and uses only AX (`cmp ax,0xffff`,
-    # `cmp ax,dx`) - cl 5.0's full-width load of a narrow global, like the
-    # and-mask case above but with 16-bit compares instead of a mask.
-    ("width", 0x064710),
-    # s_switchedItems (i16[], -1 terminated): SetStatusMenuItemsDisabled
-    # (0x41a70, 100%) reads element 0 as `mov eax,[0x464988]` and uses only AX -
-    # the same full-width load of a narrow list head.
-    ("width", 0x064988),
-    # g_mapMarkImages (u16[28]) is followed by g_menuButtonX (u32[7]);
-    # HandleInput's g_menuButtonX[button - 3] folds the -3 bias into the
-    # displacement (0x46b764 = g_menuButtonX - 12), which lands inside the
-    # table: a dword read attributed to it by address, not a table access.
-    ("width", 0x06b738),
 })
 
 
@@ -178,6 +164,57 @@ def _run_kind(spine, run):
 
 def _widths(accs):
     return Counter(a.width for a in accs if a.width)
+
+
+def _aggregate_move(layout, claim, ac):
+    """A fixed-width MOV may copy several fields of one resolved object.
+
+    Require full byte coverage inside the claim and type, and at least two
+    distinct fields. An indexed access qualifies only when its SIB stride is
+    exactly the declared array element size and the move stays in one element.
+    A scalar, hole, or unresolved byte cannot justify the skip.
+    """
+    if ac.mnemonic != "mov" or ac.form not in ("direct", "indexed") \
+            or ac.width <= 1 \
+            or (claim.node or {}).get("k") not in ("arr", "rec"):
+        return False
+    off = ac.target_rva - claim.rva
+    if off < 0 or off + ac.width > claim.extent:
+        return False
+    if ac.form == "indexed":
+        node = claim.node
+        if node["k"] != "arr" or ac.base_reg or not ac.index_reg:
+            return False
+        _count, element = layout.element(node)
+        esz = layout.sizeof(element)
+        if esz != ac.scale or off % esz + ac.width > esz:
+            return False
+    fields = [layout.field_at(claim.node, off + n)
+              for n in range(ac.width)]
+    if any(not f.resolved or f.tag for f in fields):
+        return False
+    if fields[0].off != off:
+        return False
+    return len({(f.off, f.size, f.path) for f in fields}) > 1
+
+
+def _paired_zero_double(acc_at, off):
+    """Prove each narrow zero store is immediately completed to 8 bytes."""
+    low = [a for a in acc_at[off]
+           if a.width == 4 and "w" in a.rw]
+    high = acc_at[off + 4]
+    def zero_dword(a):
+        # `c7 05 <addr32> <zero32>` is 10 bytes. The access map's objdump
+        # line length can be 7 when the remaining three immediate bytes wrap.
+        return a.mnemonic == "mov" and a.form == "direct" and a.width == 4 \
+            and a.rw == "w" and a.site_rva == a.insn_rva + 2 \
+            and a.text.rstrip().endswith(",0x0")
+    return bool(low) and any(a.width == 8 and a.fpu == "f64"
+                             for a in acc_at[off]) and all(
+        zero_dword(a) and any(zero_dword(b)
+                and b.insn_rva == a.insn_rva + 10
+                for b in high)
+        for a in low)
 
 
 #: how far after an indexed access's relocated base a claim may start and still
@@ -465,6 +502,9 @@ def derive_findings(spine, accesses, cells, owners, trace=None):
             if ac.insn_rva in copied:
                 skip("width-skip-record-copy", c.name, off, [ac])
                 continue
+            if _aggregate_move(layout, c, ac):
+                skip("width-skip-aggregate-move", c.name, off, [ac])
+                continue
             acc_at[off].append(ac)
             seen[off][0][ac.width] += 1
             if ac.fpu:
@@ -481,7 +521,7 @@ def derive_findings(spine, accesses, cells, owners, trace=None):
             ev = " ".join(f"w{w}x{n}" for w, n in sorted(widths.items()))
             nxt = spine.next_start(c.rva)
             if set(forms) == {"indexed"} and nxt is not None \
-                    and 0 < nxt - (c.rva + off) <= 4:
+                    and 0 < nxt - (c.rva + off) <= NEG_ADDEND_WINDOW:
                 # `[reg + &next - k]` is the negative-addend spelling of the
                 # FOLLOWING symbol (a 1-based index into the next array), not an
                 # access to this claim - assert_relocs knows the same idiom
@@ -550,14 +590,23 @@ def derive_findings(spine, accesses, cells, owners, trace=None):
             elif pair:
                 # MSVC5 copies an 8-byte constant with a pair of dword loads
                 skip("width-skip-dword-pair", c.name, off, acc_at[off])
+            elif f.is_float and fsz == 8 and wmin == 4 \
+                    and _paired_zero_double(acc_at, off):
+                # MSVC5 stores a double zero as two adjacent dword immediates.
+                # The same object has an x87 qword access, so this proves a
+                # full 8-byte clear rather than a narrow scalar store.
+                skip("width-skip-double-zero-pair", c.name, off, acc_at[off])
             elif wmin < fsz and f.is_float and not fpus:
                 rows.append(("width", "high", c.rva, c.name, c.rva + off,
                              f"+0x{off:x} {path or '.'} declared {fty} ({fsz} B) "
                              f"but retail accesses {wmin} B with integer ops and "
                              f"never touches it with x87", ev))
                 st["width"] += 1
-            elif wmin < fsz and not f.is_ptr and not elem and stores(wmin):
-                # a sub-field STORE is strong: nobody writes half a scalar
+            elif wmin < fsz and not f.is_ptr and not elem and any(
+                    a.width == wmin and "w" in a.rw and a.mnemonic == "mov"
+                    for a in acc_at[off]):
+                # A narrow MOV store is evidence of a narrow scalar. A byte
+                # RMW (for example `or byte ptr` on an i16 flag word) is not.
                 rows.append(("width", "med", c.rva, c.name, c.rva + off,
                              f"+0x{off:x} {path or '.'} declared {fty} ({fsz} B) "
                              f"but retail STORES {wmin} B", ev))
@@ -616,6 +665,13 @@ def derive_findings(spine, accesses, cells, owners, trace=None):
             # the element WIDTH matches. The variable index proves a length >=
             # 2 that the claimed extent does not carry. Width/stride checks miss
             # this precisely because sc == elem.
+            if is_array and elem and sc < elem and elem % sc == 0:
+                # The SIB scale may be the element's smallest field width.
+                # Earlier LEAs can multiply the index by the remaining
+                # factor (EffectSlot: 3*2, EffectImageSet: 41*2), even when
+                # the array has only one element.
+                skip("stride-skip-subelement", c.name, 0)
+                continue
             if is_array and count <= 1:
                 rows.append(("undercount", "high", c.rva, c.name, c.rva,
                              f"indexed by *{sc} but declared with ONE element "

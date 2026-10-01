@@ -42,6 +42,8 @@ GZ_ENUM_END(FieldObjectImageCode);
 // magazine size.
 // The field object table, and the layer of an unused object slot.
 #define FIELD_OBJECT_COUNT 16
+// No field-object index was selected from a target hotspot.
+#define FIELD_OBJECT_INDEX_NONE (-1)
 // Field-object record kinds run from HUMAN_ID_LIMIT below OBJECT_KIND_END.
 #define OBJECT_KIND_END 0x2020
 // The skills an object record lists (a field object rolls them by slot).

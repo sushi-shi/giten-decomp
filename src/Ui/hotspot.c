@@ -25,7 +25,7 @@ void SetSelectedHotspot(i32 index) {
 RVA(0x000585a0, 0x1a)
 i16 GetSelectedHotspotValue(void) {
     if (g_selectedHotspot < 0) {
-        return -1;
+        return FIELD_OBJECT_INDEX_NONE;
     }
     return GetHotspot(g_selectedHotspot)->value;
 }
@@ -33,10 +33,10 @@ i16 GetSelectedHotspotValue(void) {
 RVA(0x000585c0, 0x2a)
 i16 GetSelectedHotspotObject(void) {
     if (g_selectedHotspot < 0) {
-        return -1;
+        return FIELD_OBJECT_INDEX_NONE;
     }
     if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
-        return -1;
+        return FIELD_OBJECT_INDEX_NONE;
     }
     return GetHotspot(g_selectedHotspot)->value;
 }

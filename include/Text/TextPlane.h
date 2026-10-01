@@ -37,6 +37,8 @@ void ForgetTextPlaneAttr(i16 plane);
 // TextPlaneFlags.highlight: the transform ToggleTextRunHighlight applies.
 #define TEXT_HIGHLIGHT_MIDDLE 0
 #define TEXT_HIGHLIGHT_OUTER 1
+// No menu text run is highlighted at this row or column.
+#define TEXT_MENU_HIGHLIGHT_NONE (-1)
 
 // @identity-TODO: the role of flag8 is unrecovered.
 typedef struct TextPlaneFlags {
@@ -88,7 +90,7 @@ typedef struct TextPlane {
     i16 firstSelectableRow;
     i16 menuX; // where the first menu line starts
     i16 menuY;
-    i16 highlightX; // -1 when no run is highlighted
+    i16 highlightX; // TEXT_MENU_HIGHLIGHT_NONE when no run is highlighted
     i16 highlightY;
     struct MenuLine* menuLines;
     b32 visible;

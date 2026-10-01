@@ -9,6 +9,7 @@
 #include <Game/GameState.h>
 #include <Game/MapArea.h>
 #include <Game/ViewDirection.h>
+#include <Game/WorldMap.h>
 #include <Ints.h>
 
 #include <stdio.h>
@@ -149,7 +150,7 @@ typedef struct ReturnPoint {
     GZ_ENUM_STORAGE(ViewDirection, i16) direction;
 } ReturnPoint;
 
-i16 GetReturnPoint(ReturnPoint* out);
+GZ_ENUM_RETURN(WorldMapRequest, i16) GetReturnPoint(ReturnPoint* out);
 b16 TickStepDamage(void);
 i16 TickFieldSteps(void);
 
