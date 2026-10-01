@@ -8,8 +8,6 @@
 #include <Platform/GameApi.h>
 #include <Platform/Scene3D.h>
 
-#define HOTSPOT_VIEW_BOTTOM VIEW_HEIGHT
-
 #define ClampHotspotTexel(value, extent)                                                           \
     do {                                                                                           \
         if ((value) < 0) {                                                                         \
@@ -37,7 +35,7 @@ b32 ClickHotspotAt(i32 x, i32 y) {
     if (GetTextPlane(0)->visible) {
         return false;
     }
-    if (y > HOTSPOT_VIEW_BOTTOM - 1) {
+    if (y > VIEW_HEIGHT - 1) {
         return false;
     }
     hit = -1;

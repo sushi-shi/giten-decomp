@@ -1452,7 +1452,7 @@ i16 RollEncounterSlot(i16 row) {
 
 RVA(0x0000f220, 0x1e)
 b16 RefreshIfTurned(b16 visible, b16 turned) {
-    if (visible != false && turned != false) {
+    if (visible && turned) {
         RequestFieldRefresh();
         return true;
     }

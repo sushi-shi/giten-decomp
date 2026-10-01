@@ -5221,7 +5221,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
     if (!LoadDeviceSettings(&g_deviceSettings)) {
         return 0;
     }
-    g_deviceType = g_deviceSettings.caps.hardwareOnly == 1 ? D3D_DEVICE_HAL : D3D_DEVICE_MMX;
+    g_deviceType = g_deviceSettings.caps.hardwareOnly == true ? D3D_DEVICE_HAL : D3D_DEVICE_MMX;
     g_instance = instance;
     if (!CreateMainWindow(instance)) {
         return 1;

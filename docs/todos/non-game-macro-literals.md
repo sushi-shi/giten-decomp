@@ -36,9 +36,8 @@ are geometry (`MARK_SIZE`, `PAD_SIZE`, `PARTY_PANEL_WIDTH`), counts
 (`OBJECT_TEXTURE_COUNT`, `ENEMY_PICTURE_COUNT`), packed masks
 (`MOUSE_STATE_MASK`, `FLAG_BANK_MASK`), and timing (`FRAME_INTERVAL`,
 `INPUT_DELAY_FRAMES`). They retain their separate owners. The clickable
-hotspot bottom edge did have a proved owner: `HOTSPOT_VIEW_BOTTOM` now names
-`VIEW_HEIGHT` because the hotspot rejection check bounds the same 328-pixel
-3D view.
+hotspot bottom edge did have a proved owner: its rejection check uses
+`VIEW_HEIGHT` because it bounds the same 328-pixel 3D view.
 
 Shared all-ones spellings also stay separate. `PALETTE_ENTRY_NONE=0xff`
 marks an image palette entry that retains no hardware slot, while

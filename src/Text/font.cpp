@@ -5250,7 +5250,7 @@ void HighlightHotspot(i16 plane, i16 id, i16 on) {
     }
     if (plane == 0) {
         if (id >= AREA_KEYPAD_FIRST && id <= AREA_KEYPAD_LAST) {
-            if (on == 1) {
+            if (on == true) {
                 keypad = FindTextPlaneByKind(TEXT_PLANE_KIND_KEYPAD);
                 if (keypad != -1) {
                     i32 x = s_hotspotAreas[id].left - GetTextPlane(keypad)->left;
@@ -6093,7 +6093,7 @@ void UpdateLayers(void) {}
 
 RVA(0x000556b0, 0x16)
 i16 GetShownPanelCharacter(void) {
-    if (g_screenLayers[SCREEN_LAYER_PANEL]->visible == 1) {
+    if (g_screenLayers[SCREEN_LAYER_PANEL]->visible == true) {
         return s_shownCharacter;
     }
     return -1;
