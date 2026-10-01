@@ -1,8 +1,8 @@
 #ifndef GITEN_PLATFORM_PLATFORMAPI_H
 #define GITEN_PLATFORM_PLATFORMAPI_H
 
-#include <Ints.h>
 #include <Gfx/Render.h>
+#include <Ints.h>
 #include <Platform/ScreenFade.h>
 
 // Platform-layer (winmain) functions the game code calls, declared apart from
