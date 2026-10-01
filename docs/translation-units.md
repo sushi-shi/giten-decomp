@@ -5,6 +5,9 @@ subsystem. Keep ordinary function bodies in retail RVA order. Adjacent bodies
 alone do not prove a shared object: use the compiler's ordinary data sections,
 initializers and emitted helper placement to distinguish joins from boundaries.
 Original source filenames can remain unknown after an object's extent is known.
+See [boundary decisions](translation-unit-boundaries.md) for compiler controls
+that require separation, the ownership assumptions, and unresolved neighboring
+fragments. The groups below are not an exhaustive recovery of original bounds.
 
 ## Bitmap and display operations
 
@@ -22,9 +25,11 @@ separate objects in code order cannot produce that data order if each global
 stays with its users. Combining the code explains the ordering. This is
 conditional ownership evidence: moving the globals into a separate data-owning
 object can preserve both orders, as the compiler control below demonstrates.
-The final `CopySurfaceSquare` and `ClickHotspotAt` functions have no independent
-data anchor establishing their inclusion; that trailing boundary remains an
-inference.
+The shared effect cache `s_effectImage` also connects `ClearEffectLayer`,
+`DrawProjectedEffectSprite` and `DrawScreenEffectSprite` under the current
+private-state ownership. The final `CopySurfaceSquare` and `ClickHotspotAt`
+functions have no independent data anchor establishing their inclusion; that
+trailing boundary remains an inference.
 
 `s_wallTextureNames` is a function-local static in `LoadWallTextures`. VC5 emits
 it after the earlier functions' literals, followed by its own string literals.
@@ -111,7 +116,8 @@ the variable, choice, timer and script-file operations. The hook defaults
 opcodes' diagnostic strings at `0x69830..0x69ecf`; the script-variable
 functions' literals follow at `0x69ed0`. Those file-scope hook defaults are
 shared by several functions, so moving them into a function cannot explain
-separate objects. Their shared `.data` contribution starts at `0x69828`.
+separate objects. Under that ownership the combined `.data` contribution starts
+at `0x69828`; a different data owner remains an alternative source model.
 
 The explicitly zero-initialized definitions start with `g_formattedNumber`
 at `0x815a0`, continue through the script-variable state, and end with
@@ -145,7 +151,8 @@ which is only used by `FilterTextMarks`. Separate objects would order both
 sections by their code contributions. The combined object reproduces the
 48-byte `.rdata` and 248-byte `.data` contributions exactly; its three BSS
 definitions lie at offsets `0`, `0x200` and `0x238` from retail RVA `0x78540`.
-The list helpers lie between the two code spans and share their owner.
+Under that ownership, the list helpers between the two code spans share their
+owner. This does not attach the neighboring bit or vector helpers.
 
 ## Initializer and helper boundaries
 
