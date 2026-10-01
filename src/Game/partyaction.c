@@ -37,6 +37,7 @@
 #include <Game/ItemRecord.h>
 #include <Game/LevelUp.h>
 #include <Game/ObjectRecordId.h>
+#include <Game/Party.h>
 #include <Game/PartyAction.h>
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>

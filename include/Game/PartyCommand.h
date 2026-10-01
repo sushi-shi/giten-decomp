@@ -30,9 +30,6 @@ GZ_ENUM_END_SPLIT(PartyCommandPhase)
 // for roles 1/2); returns how many command-input steps that settles.
 i16 PrepareMemberPickTarget(i16 id);
 
-// The party position of roster member `id`, or -1.
-i16 FindPartyPositionOfId(i16 id);
-
 // Two placement tests against the party cell. In the first, a supplied object
 // must share x but differ in y; without one, an object must occupy the party
 // cell. In the second, party-side pairs share that cell, while a mixed pair

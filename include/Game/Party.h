@@ -17,6 +17,9 @@ void RemoveFromParty(i16 slot);
 i16 CountPartyMembers(i16 skipDisabled);
 i16 FindRosterSlotById(i16 id);
 
+// The party position of roster member `id`, or -1.
+i16 FindPartyPositionOfId(i16 id);
+
 static __inline b32 RosterContainsId(i16 id) {
     return FindRosterSlotById(id) != ROSTER_SLOT_NONE;
 }
