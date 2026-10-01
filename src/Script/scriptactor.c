@@ -38,7 +38,7 @@
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
 #include <Game/Growth.h>
-#include <Game/HumanId.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>

@@ -18,7 +18,7 @@
 #include <Game/FieldSight.h>
 #include <Game/GameState.h>
 #include <Game/GemItems.h>
-#include <Game/HumanId.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/ItemBag.h>
 #include <Game/ItemBonus.h>
 #include <Game/ItemRecord.h>

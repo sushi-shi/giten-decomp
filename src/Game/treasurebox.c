@@ -44,7 +44,7 @@
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
 #include <Game/Growth.h>
-#include <Game/HumanId.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemMenu.h>
 #include <Game/ItemRecord.h>

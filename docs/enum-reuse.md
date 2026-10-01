@@ -52,6 +52,10 @@ different equipment parts, and `GetEquipSlot` maps between their orders.
 The display and quit choices likewise share the same `GetGameStep` open/poll
 protocol through `SystemMenuChoiceStep`; their different selection actions stay
 in their separate handlers.
+Equal-value grouping also misses reuse when two member sets are disjoint:
+human IDs and named object-record IDs both reach `Character.id`, so
+`ObjectRecordId` owns both sets. Row state and policy bits both occupy
+`PanelRow.flags`, so `PanelFlags` owns both sets.
 `BattleProtectionResult` and the final attack-resistance codes share negative
 reflection values, but zero means blocked in the former and immune in the
 latter, so their complete result domains cannot be merged.

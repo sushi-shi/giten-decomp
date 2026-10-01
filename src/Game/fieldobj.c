@@ -42,7 +42,6 @@
 #include <Game/FieldSupport.h>
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
-#include <Game/HumanId.h>
 #include <Game/ItemRecord.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
