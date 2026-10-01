@@ -18,6 +18,9 @@ census if the unit manifest changed.
 
 ## Open source models
 
+The [typed-boundary ledger](typed-boundaries.md) gives the remaining cast,
+layout and owner-seam examples at their source locations.
+
 | Boundary | Current evidence and next step |
 | --- | --- |
 | Shared actor and character layout | `include/Game/FieldSight.h` has a partial `FieldActor` view, and `FieldObject` repeats a `Character` prefix beginning at `kind`. Callers such as `GetCombatantCoord`, `KnockBack`, `SpawnActorGroup`, and script actor operations convert between these layouts. The exact-match exceptions identify the affected functions. Recover a single typed common prefix from whole-object copies, offsets, callers, and storage before replacing the casts; a whole `Character` would overlap the field object's script pointer. |
