@@ -1431,7 +1431,8 @@ i16 CollectTargetsAtCell(
     if (mode == TARGET_COUNT_RANDOM_TARGETS) {
         result = 0;
         for (i = 0; i < selected; i++) {
-            id = RandomUpTo(count - 1);
+            i16 lastIndex = count - 1;
+            id = RandomUpTo(lastIndex);
             result = AddCombatTarget(targets[id], 1);
         }
         ReturnCombatTargetsOrDefault(result, target);
