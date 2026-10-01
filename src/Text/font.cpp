@@ -3793,13 +3793,12 @@ i16 CreateTextPlane(u16 kind, i16 arg) {
     if (g_primarySurface->GetSurfaceDesc(&primary) != DD_OK) {
         return 0;
     }
-    ZeroMemory(&desc, sizeof(desc));
-    desc.dwSize = sizeof(desc);
-    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-    desc.dwWidth = s_planeLayouts[kind].width;
-    desc.dwHeight = s_planeLayouts[kind].height;
-    desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-    desc.ddpfPixelFormat = primary.ddpfPixelFormat;
+    InitOffscreenSurfaceDesc(
+        desc,
+        s_planeLayouts[kind].width,
+        s_planeLayouts[kind].height,
+        primary.ddpfPixelFormat
+    );
     if (g_ddraw->CreateSurface(&desc, &p->surface, NULL) != DD_OK) {
         return TEXT_PLANE_NONE;
     }
@@ -5949,13 +5948,12 @@ b32 CreateScreenLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot) {
     if (g_primarySurface->GetSurfaceDesc(&primary) != DD_OK) {
         return false;
     }
-    ZeroMemory(&desc, sizeof(desc));
-    desc.dwSize = sizeof(desc);
-    desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-    desc.dwWidth = s_layerSize[slot].cx;
-    desc.dwHeight = s_layerSize[slot].cy;
-    desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-    desc.ddpfPixelFormat = primary.ddpfPixelFormat;
+    InitOffscreenSurfaceDesc(
+        desc,
+        s_layerSize[slot].cx,
+        s_layerSize[slot].cy,
+        primary.ddpfPixelFormat
+    );
     if (g_ddraw->CreateSurface(&desc, &layer->surface, NULL) != DD_OK) {
         delete layer;
         return true;

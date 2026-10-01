@@ -1,6 +1,6 @@
 # Common-code recovery worklist
 
-The source contains 222 `inline` declaration lines and 1,225 `#define`
+The source contains 222 `inline` declaration lines and 1,226 `#define`
 declaration lines under `include/` and `src/` (including conditional
 variants and constant macros). Those counts are a search boundary, not a
 count of debt. Repeated operations should be shared only when their owner,
@@ -17,13 +17,14 @@ spellings.
 | `ApplyFacingDamageBonus` | The same four damage paths apply the same behind/side floating-point multipliers. |
 | `ShowPendingLevelUpMessage` | Field exploration and both encounter handlers mark pending rewards, format the next level-up message, and show it for the same lifetime. |
 | `ClearPanelLayerSurface` | Four `winmain.cpp` paths and both `font.cpp` paths color-fill the panel surface; the visibility decision stays with each caller. Both consumer objects are byte identical to their pre-extraction objects. |
+| `InitOffscreenSurfaceDesc` | `CreatePicture`, `CreateTextPlane`, and `CreateScreenLayer` prepare the same DirectDraw system-memory description with caller-selected dimensions and pixel format. Their edited function bodies retain their pre-extraction bytes. |
 
 ## Remaining source readings
 
 | Family and examples | Evidence needed before extraction |
 | --- | --- |
 | Navigation-pad pixel reads in `LayerAtPoint` and `PadButtonAtPoint` (`src/Text/font.cpp`) | Both lock the layer's DirectDraw surface, read a 16-bit pixel and unlock it. A focused `ReadLayerPixel` inline trial changed the first consumer at its entry and shortened the TU's `.text` by 112 bytes; the trial was removed. Recover the compiler-compatible local lifetime/call boundary before sharing it. |
-| DirectDraw surface descriptions in `CreateGlyphSurface`, `CreateTextPlane`, `CreateScreenLayer` (`src/Text/font.cpp`) and `LoadPictureFile` (`src/Gfx/bitmapio.cpp`) | All initialize `DDSURFACEDESC` with caps, width, height and sometimes pixel format. Surface type, target storage, error cleanup, and selected pixel format differ. Separate the common description initializer from the caller-specific creation policy; avoid the four `InitDirect3D` swapped-argument `memset` calls documented in the vendor worklist. |
+| Other DirectDraw surface descriptions in `CreateGlyphSurface` (`src/Text/font.cpp`) and `LoadPictureFile` (`src/Gfx/bitmapio.cpp`) | The glyph surface omits pixel format; the file texture selects caps by device type and writes its pixel format before caps. These do not use the recovered offscreen initializer. The four `InitDirect3D` swapped-argument `memset` calls in the vendor worklist also require their existing behavior. |
 | Lock descriptions in `LayerAtPoint`, `PadButtonAtPoint`, `CopySurfaceSquare` (`src/Gfx/surfacecopy.cpp`) and `InitDirect3D` (`src/Platform/d3dapp.cpp`) | The shared `DDSD_CAPS`/`DDSCAPS_SYSTEMMEMORY` fields precede distinct lock targets and readback rules. The navigation-pad trial above shows a straightforward inline is not yet codegen-compatible. |
 | Weapon/gun hit and exceptional rolls in `RollWeaponHit`, `RollGunHit`, `RollExceptionalWeaponAttack`, `RollExceptionalAttack` | Existing `GetExceptionalAttackLuck`, `GetExceptionalAttackBase`, and `ApplyAttackAccuracyConditions` capture proven suboperations. Nearby code still differs in weapon range, critical result, or caller policy; compare full ordered RNG calls and result assignments before combining a larger block. |
 | DirectX teardown in `ReleaseDirectX` (`src/Platform/d3dapp.cpp`) and `ReleaseGraphics` (`src/Platform/winmain.cpp`) | The COM releases overlap, but graphics teardown also releases pictures/layers and MIDI state, and the render-target/room-object order differs. `ReleaseComObject` already owns the common COM release operation. Do not merge the larger sequences without order evidence. |
