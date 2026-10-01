@@ -35,7 +35,7 @@ DATA(0x000919fa)
 GZ_ENUM_STORAGE(MouseClickState, i16) g_mouseRightClick;
 
 static __inline void LatchMouseButtonClick(
-    GZ_ENUM_PARAM(MouseButtonBits, i16) pressed,
+    b32 pressed,
     i16 x,
     i16 y,
     GZ_ENUM_STORAGE(MouseClickState, i16) * click,

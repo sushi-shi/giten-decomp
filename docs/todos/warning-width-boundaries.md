@@ -83,3 +83,19 @@ modeled in a separate lane. Its 13 C4761 diagnostics split as follows:
 | `:911` | `g_areaLevel->width * y + x` is promoted before the 16-bit room-bit index of `TestBit`. The map dimensions and bitmap extent must be considered together. |
 | `:1241` | A variable panel allocation size enters `AllocCleared`'s 16-bit size argument. This static inline helper is expanded at three callers, producing three diagnostics at one written site. The maximum row count is required before changing the allocation expression. |
 | `:1266,1285,1297` | `first + i` or `image + i` is promoted before the 16-bit row ID of `InitPanelRow`. Each table's ID domain and the packed panel-row ABI need to remain consistent. |
+
+## Input, Math, Mem, and Text gap
+
+The four remaining non-Game units outside the first audit had 13 C4761
+diagnostics. `src/Input/mouse.c` had two: its private inline
+`LatchMouseButtonClick` received the `int` result of a button-mask `&` in
+an `i16` parameter, then used that result only as a condition. It now takes
+`b32 pressed`. The complete COFF object is identical after timestamp
+masking; both C4761 diagnostics disappear with no replacement warning.
+The other three units retain 11 diagnostics:
+
+| Unit | Written warning sites and retained boundary |
+| --- | --- |
+| `src/Math/vec3.c` | `:31,36,41` shift each signed 8.8 fixed-point velocity component by eight. C promotes the shift result to `int` before `ClampDelta(i16 delta)`. The velocity storage is `i16`; its post-shift value fits the parameter, while widening `ClampDelta` would affect callers beyond this unit. |
+| `src/Mem/handle.c` | `:50,97` pass `u32` requested sizes to `AllocCleared(u16 size)`; `:59,109` pass `u32` sizes to the `u16` stored size in `SetHandleEntry`/`SetHandlePtr`; `:108` passes a `u32` size to `ReallocBlock(u16 size)`. `HandleEntry.size` is a 16-bit field and the heap wrappers take 16-bit sizes, so silently widening one declaration would change the handle and allocation contracts. Prove maximum requested size and overflow behavior before changing them. |
+| `src/Text/windowtext.c` | `:87` converts the text-column pixel expression `x * 8` to `DrawTextCell(i16 px)`; `:91` passes the high byte `ch >> 8` to `StoreTextCell(u8 byte)`; `:94` passes the whole `u16 ch` to that same byte writer for a single-byte character. The writer stores one byte and a 16-bit attribute in parallel rows; these conversions are part of the character-cell encoding. |
