@@ -2,6 +2,7 @@
 #define GITEN_PLATFORM_PLATFORMAPI_H
 
 #include <Ints.h>
+#include <Gfx/Render.h>
 #include <Platform/ScreenFade.h>
 
 // Platform-layer (winmain) functions the game code calls, declared apart from
@@ -23,7 +24,7 @@ void ResetRenderMode(void);
 void EndSaveRenderMode(void);
 void SetPictureRenderMode(void);
 void SetLayersRenderMode(void);
-void SetBlankStep(i16 step);
+void SetBlankStep(GZ_ENUM_PARAM(BlankRenderStep, i16) step);
 
 void WaitFrames(i16 count);
 void RunFrame(void);

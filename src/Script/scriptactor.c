@@ -2235,7 +2235,7 @@ void OpOpenFusionScreen(GZ_ENUM_PARAM(FusionMenuStep, i16) kind) {
 
 RVA(0x00035bb0, 0x1c)
 void OpRunFusion(b16 triple) {
-    SetBlankStep(1);
+    SetBlankStep(BLANK_STEP_FIRST);
     if (!triple) {
         RunPairFusion();
     } else {

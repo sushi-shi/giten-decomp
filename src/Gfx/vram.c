@@ -51,14 +51,12 @@ static i16 s_paletteRefs[PALETTE_SIZE] = {0};
 DATA(0x00075f7c)
 static GZ_ENUM_STORAGE(PaletteUpdateFlags, u8) s_paletteFlags = 0;
 
-// @identity-TODO: palette modes chosen from map-area tests (the area one at
-// the party's square, the view one at a derived position); the renderer picks
-// its alternate material set when either is set. Their game meaning is open.
+// The party cell and the cell ahead select the wall material independently.
 DATA(0x00075f80)
-static i16 s_areaPaletteMode = 0;
+static GZ_ENUM_STORAGE(CellPaletteMode, i16) s_areaPaletteMode = CELL_PALETTE_NORMAL;
 
 DATA(0x00075f84)
-static i16 s_viewPaletteMode = 0;
+static GZ_ENUM_STORAGE(CellPaletteMode, i16) s_viewPaletteMode = CELL_PALETTE_NORMAL;
 
 static __inline void StorePaletteColor(i16 index, i16 color) {
     s_paletteColors[index] = color;
@@ -273,7 +271,7 @@ void MarkPaletteDirty(void) {
 }
 
 RVA(0x00003020, 0x1d)
-void SetAreaPaletteMode(i16 mode) {
+void SetAreaPaletteMode(GZ_ENUM_PARAM(CellPaletteMode, i16) mode) {
     i16 changed = s_areaPaletteMode - mode;
     s_areaPaletteMode = mode;
     if (changed) {
@@ -282,17 +280,17 @@ void SetAreaPaletteMode(i16 mode) {
 }
 
 RVA(0x00003040, 0x7)
-i16 GetAreaPaletteMode(void) {
+GZ_ENUM_RETURN(CellPaletteMode, i16) GetAreaPaletteMode(void) {
     return s_areaPaletteMode;
 }
 
 RVA(0x00003050, 0xc)
-void SetViewPaletteMode(i16 mode) {
+void SetViewPaletteMode(GZ_ENUM_PARAM(CellPaletteMode, i16) mode) {
     s_viewPaletteMode = mode;
 }
 
 RVA(0x00003060, 0x7)
-i16 GetViewPaletteMode(void) {
+GZ_ENUM_RETURN(CellPaletteMode, i16) GetViewPaletteMode(void) {
     return s_viewPaletteMode;
 }
 

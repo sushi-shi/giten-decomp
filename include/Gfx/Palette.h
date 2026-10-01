@@ -17,6 +17,12 @@ GZ_ENUM_FLAGS_BEGIN(PaletteUpdateFlags, u8)
 GZ_ENUM_END(PaletteUpdateFlags);
 // clang-format on
 
+// The wall material selected for a normal or dark map cell.
+GZ_ENUM_BEGIN_SPLIT(CellPaletteMode, i16)
+    CELL_PALETTE_NORMAL = 0,
+    CELL_PALETTE_DARK = 1
+GZ_ENUM_END_SPLIT(CellPaletteMode)
+
 typedef struct PaletteState {
     i16 references[PALETTE_SIZE];
     i16 colors[PALETTE_SIZE];

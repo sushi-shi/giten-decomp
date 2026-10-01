@@ -11,6 +11,7 @@
 #include <Game/PartyAction.h>
 #include <Game/PartyStep.h>
 #include <Game/ViewDirection.h>
+#include <Gfx/Palette.h>
 #include <Ints.h>
 
 // Game functions and data the platform layer uses that their owners' headers
@@ -79,8 +80,8 @@ b32 AnyObjectInReach(void);
 void UpdateFieldHud(i16 x, i16 y, i16 direction);
 
 // The palette modes of the party's cell and of the cell ahead (vram.c).
-i16 GetAreaPaletteMode(void);
-i16 GetViewPaletteMode(void);
+GZ_ENUM_RETURN(CellPaletteMode, i16) GetAreaPaletteMode(void);
+GZ_ENUM_RETURN(CellPaletteMode, i16) GetViewPaletteMode(void);
 
 // The picture helpers of the texture TU: create a picture's surface (keyed
 // when `colorKey` is set), load a .bmp into one, draw a bitmap resource onto

@@ -1058,12 +1058,12 @@ i16 GetObjectsHidden(void) {
 RVA(0x00015ac0, 0x4e)
 void UpdateAreaPalette(void) {
     if (IsDarkCell(g_party.field.pos.x, g_party.field.pos.y)) {
-        SetAreaPaletteMode(1);
+        SetAreaPaletteMode(CELL_PALETTE_DARK);
         s_areaPaletteOn = true;
         return;
     }
     if (s_areaPaletteOn) {
-        SetAreaPaletteMode(0);
+        SetAreaPaletteMode(CELL_PALETTE_NORMAL);
         s_areaPaletteOn = false;
     }
 }
@@ -1079,10 +1079,10 @@ void UpdateViewPalette(void) {
     direction = TurnDirection(g_party.field.pos.direction, g_party.field.moveCommand);
     StepMapCoordBy(&x, &y, direction, 0, -1);
     if (IsDarkCell(x, y)) {
-        SetViewPaletteMode(1);
+        SetViewPaletteMode(CELL_PALETTE_DARK);
         return;
     }
-    SetViewPaletteMode(0);
+    SetViewPaletteMode(CELL_PALETTE_NORMAL);
 }
 
 void RedrawFieldViewAt(VideoPlane* header, i16 unused);

@@ -164,13 +164,13 @@ DATA(0x00090ac0)
 static i16 s_frameCount;
 
 DATA(0x000847f8)
-static i32 s_blankStep;
+static GZ_ENUM_STORAGE(BlankRenderStep, i32) s_blankStep;
 
 DATA(0x0008f2e4)
 static u16 s_savedRenderMode;
 
 DATA(0x0008f310)
-i16 g_renderMode;
+GZ_ENUM_STORAGE(RenderMode, i16) g_renderMode;
 
 DATA(0x0008f60c)
 CMidiStream* g_midiStream;
@@ -528,7 +528,7 @@ void SaveScreenMode(void) {
 
 RVA(0x00049c80, 0x2a)
 void RestoreScreenMode(void) {
-    g_renderMode = s_savedRenderMode;
+    g_renderMode = static_cast<GZ_ENUM_STORAGE(RenderMode, i16)>(s_savedRenderMode);
     s_savedRenderMode = 0xffff;
     g_selectedHotspot = HOTSPOT_NONE;
     s_screenSaved = false;
@@ -557,7 +557,7 @@ void SetBlankRenderMode(void) {
 }
 
 RVA(0x00049d00, 0xb)
-void SetBlankStep(i16 step) {
+void SetBlankStep(GZ_ENUM_PARAM(BlankRenderStep, i16) step) {
     s_blankStep = step;
 }
 
@@ -573,7 +573,7 @@ void StepBlankRenderMode(void) {
 }
 
 RVA(0x00049d50, 0x7)
-i16 GetRenderMode(void) {
+GZ_ENUM_RETURN(RenderMode, i16) GetRenderMode(void) {
     return g_renderMode;
 }
 
