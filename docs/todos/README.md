@@ -7,6 +7,8 @@ review methods to Giten's live worklists and records unresolved source models.
 
 [C source cast census](cast-census.md) records the target-C written-site
 audit and gives pointer and scalar examples for the next type-model review.
+[Enum boundaries](enum-boundaries.md) records mixed-value protocols and
+unproven identities after strict syntax checks on all configured units.
 [Deferred constant identities](constants-handoff.md) records values with
 behavior-based names whose authored meanings still need evidence.
 [Function macro literals](macro-literals.md) records numeric spellings in

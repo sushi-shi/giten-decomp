@@ -43,6 +43,9 @@ layout and owner-seam examples at their source locations.
 
 - [C written casts](cast-census.md): `giten verify c-casts` records target-C
   spelling locations and observed source/target types for all configured C units.
+- [Enum boundaries](enum-boundaries.md): strict syntax passes for all 82 units;
+  the remaining mixed-value protocols and raw index domains have concrete
+  producer/consumer examples.
 - [Union views](union-views.md): review the packed, variant and serialized
   overlays from whole-object use before deleting an alternate view.
 - [Shared `goto` joins](goto-review.md): every written site has a function and
