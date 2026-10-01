@@ -99,3 +99,16 @@ The other three units retain 11 diagnostics:
 | `src/Math/vec3.c` | `:31,36,41` shift each signed 8.8 fixed-point velocity component by eight. C promotes the shift result to `int` before `ClampDelta(i16 delta)`. The velocity storage is `i16`; its post-shift value fits the parameter, while widening `ClampDelta` would affect callers beyond this unit. |
 | `src/Mem/handle.c` | `:50,97` pass `u32` requested sizes to `AllocCleared(u16 size)`; `:59,109` pass `u32` sizes to the `u16` stored size in `SetHandleEntry`/`SetHandlePtr`; `:108` passes a `u32` size to `ReallocBlock(u16 size)`. `HandleEntry.size` is a 16-bit field and the heap wrappers take 16-bit sizes, so silently widening one declaration would change the handle and allocation contracts. Prove maximum requested size and overflow behavior before changing them. |
 | `src/Text/windowtext.c` | `:87` converts the text-column pixel expression `x * 8` to `DrawTextCell(i16 px)`; `:91` passes the high byte `ch >> 8` to `StoreTextCell(u8 byte)`; `:94` passes the whole `u16 ch` to that same byte writer for a single-byte character. The writer stores one byte and a 16-bit attribute in parallel rows; these conversions are part of the character-cell encoding. |
+
+## Complete warning report reconciliation
+
+The completed `giten verify compiler-warnings` report compiled all 82 configured
+units. Its 383 rows are 382 C4761 argument-width warnings in 36 units plus
+one C4133 packed-pointer warning at `clock.c:569`. Every C4761 unit and count
+agrees with the table in [compiler-warnings.md](compiler-warnings.md), and
+every warning-bearing unit appears either in this ledger or in
+[argument-width-warnings.md](argument-width-warnings.md). The generated rows
+for `vec3.c:31,36,41`, `handle.c:50,59,97,108,109`, and
+`windowtext.c:87,91,94` agree with the retained sites above; `mouse.c` has
+no remaining warning. The generated TSV is the precise current-site list
+when source or signatures change.
