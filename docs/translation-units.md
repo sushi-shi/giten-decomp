@@ -8,7 +8,7 @@ Original source filenames can remain unknown after an object's extent is known.
 
 ## Bitmap and display operations
 
-`src/Gfx/bitmapio.cpp` owns the continuous ordinary-code span from
+`src/Gfx/bitmapio.cpp` currently groups the continuous ordinary-code span from
 `ReadBitmapFile` through `ClickHotspotAt` (RVA span `[0x56a70, 0x593cf)`).
 This includes textures, world-map hit tests, automap coordinates, hotspots,
 sprites, effects and surface copies.
@@ -17,9 +17,14 @@ The ordinary `.data` contribution starts at RVA `0x6dbe8`. Its first definitions
 are `s_textureDiffuse`, `s_worldMapRegions`, `s_cursorPreviewRect`,
 `s_effectLateralOffsets` and `s_effectHeightOffsets`. The last three precede
 `ReadBitmapFile`'s `"rb"` literal even though their users follow the bitmap
-loaders in code. Separate objects in code order cannot produce that data order.
-Their definitions and every intervening ordinary function therefore belong to
-the same object.
+loaders in code. Under the inferred ordinary-section compiler/linker model,
+separate objects in code order cannot produce that data order if each global
+stays with its users. Combining the code explains the ordering. This is
+conditional ownership evidence: moving the globals into a separate data-owning
+object can preserve both orders, as the compiler control below demonstrates.
+The final `CopySurfaceSquare` and `ClickHotspotAt` functions have no independent
+data anchor establishing their inclusion; that trailing boundary remains an
+inference.
 
 `s_wallTextureNames` is a function-local static in `LoadWallTextures`. VC5 emits
 it after the earlier functions' literals, followed by its own string literals.
@@ -35,6 +40,68 @@ To reproduce the ownership check, run `giten build` and inspect
 `0x6dbe8`. Check the compiled section's bytes and ordered relocations as well;
 the constant difference alone does not prove the payloads. `giten build verify`
 checks code order, data ownership, identities, pointer referents and coverage.
+These manifests describe the reconstruction; neither their consistency nor a
+100% data match independently proves retail's original object boundaries.
+
+### VC5 compiler/linker control
+
+This minimal C++ example isolates the ordering mechanism without headers,
+section directives or COMDATs. Save it as `combined.cpp` under an ignored
+`build/` directory:
+
+```cpp
+extern "C" const char* ReadBitmapMode(void) { return "rb"; }
+static short offsets[4] = {0, 80, 56, 55};
+extern "C" int EffectOffset(int i) { return offsets[i]; }
+```
+
+For the ordinary split, put the first line in `bitmap.cpp` and the remaining
+two lines in `effect.cpp`. For the alternative with a separate data owner,
+keep `bitmap.cpp` and create `shared_data.cpp`:
+
+```cpp
+extern "C" { short offsets[4] = {0, 80, 56, 55}; }
+```
+
+and `external_effect.cpp`:
+
+```cpp
+extern "C" short offsets[4];
+extern "C" int EffectOffset(int i) { return offsets[i]; }
+```
+
+Inside `nix develop`, from that directory, compile and link with the repository's
+VC5 compiler and linker. The DLLs need no entry point or runtime libraries and
+are inspected, not executed:
+
+```sh
+for name in combined bitmap effect shared_data external_effect; do
+    wine "$MSVC_DIR/bin/CL.EXE" /c /Ox /Zp1 /ML "/Fo$name.obj" "$name.cpp"
+done
+wine "$MSVC_DIR/bin/link.exe" /dll /noentry /nodefaultlib /incremental:no /opt:noref /machine:ix86 /out:combined.dll /map:combined.map combined.obj
+wine "$MSVC_DIR/bin/link.exe" /dll /noentry /nodefaultlib /incremental:no /opt:noref /machine:ix86 /out:split_forward.dll /map:split_forward.map bitmap.obj effect.obj
+wine "$MSVC_DIR/bin/link.exe" /dll /noentry /nodefaultlib /incremental:no /opt:noref /machine:ix86 /out:split_reverse.dll /map:split_reverse.map effect.obj bitmap.obj
+wine "$MSVC_DIR/bin/link.exe" /dll /noentry /nodefaultlib /incremental:no /opt:noref /machine:ix86 /out:separate_data.dll /map:separate_data.map shared_data.obj bitmap.obj external_effect.obj
+llvm-readobj --sections --symbols --relocations --section-data combined.obj
+llvm-readobj --sections --section-data combined.dll split_forward.dll split_reverse.dll separate_data.dll
+```
+
+With compiler 11.00.7022 and linker 5.10.7303, the observed output is:
+
+| Arrangement | Function RVAs: bitmap / effect | `.data` payload order |
+| --- | --- | --- |
+| Combined | `0x1000` / `0x1010` | offsets, `"rb"` |
+| Bitmap object, effect object | `0x1000` / `0x1010` | `"rb"`, alignment, offsets |
+| Effect object, bitmap object | `0x1010` / `0x1000` | offsets, `"rb"` |
+| Data object, bitmap object, external-effect object | `0x1000` / `0x1010` | offsets, `"rb"` |
+
+Combined `.data` is `00 00 50 00 38 00 37 00 72 62 00`: the eight-byte
+array precedes the three-byte string despite its later source definition.
+The combined and separate-data arrangements produce identical RVAs and bytes
+for **all three `.text`, `.data` and `.reloc` sections**. Thus this compiler
+control establishes the ordering mechanism and disproves uniqueness from
+that ordering alone. It does not establish that retail used the alternative;
+additional ownership evidence is needed to distinguish the two.
 
 ## Script variables and sprite opcodes
 
