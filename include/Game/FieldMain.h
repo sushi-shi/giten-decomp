@@ -64,6 +64,14 @@ GZ_ENUM_BEGIN_SPLIT(PartyMoveOutcome, i16)
 GZ_ENUM_END_SPLIT(PartyMoveOutcome)
 
 GZ_ENUM_RETURN(PartyMoveOutcome, i16) AdvancePartyMove(i16 command);
+
+// Completes a step the camera has slid through by advancing the clock and
+// party cell, then recording the visited automap cell.
+void CommitPartyStep(void);
+
+// Faces the party toward `direction` and updates step effects.
+void SetPartyDirection(i32 direction);
+
 void ResetLevelEvents(void);
 b32 TestLevelEvent(i16 level);
 b16 RaiseObjectEvent(i16 event, i16 queued);

@@ -179,6 +179,9 @@ typedef struct MapSpawn {
 
 #define GetMapSpawnLayer(spawn) ((spawn)->xLayer >> 7)
 
+// The current map's wall words, one per cell (NULL without a map).
+u16* GetWallMap(void);
+
 // `walls` is the wall word of each cell (GetWallMap), `width`/`height` the
 // map size (GetMapSize, GetAreaSize), `music` the five choices and
 // `defaultMusic` the fallback PlayLevelMusic picks from.

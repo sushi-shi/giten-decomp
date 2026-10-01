@@ -56,12 +56,10 @@ i16 GetAreaNpcTextureSlot(i16 npc);
 struct AreaNpc;
 struct AreaNpc* GetAreaNpc(i16 npc);
 
-// From Game/StateStack.h and Game/FieldHud.h, declared here instead: including
-// those headers shifts winmain's TU state (AllocCleared, AllocClearedLong).
+// From Game/StateStack.h, declared here until that owner header is included.
 i16 NextGamePhase(void);
 GZ_ENUM_RETURN(GameStateId, i16) GetGameState(void);
 u16 GetGamePhase(void);
-void RedrawFieldAt(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 // The party's world-map marker: which of the six map screens shows it (-1
 // off the map) and its point on that screen.
@@ -78,10 +76,6 @@ b32 AnyObjectInReach(void);
 
 // Draws visible field messages in the left, center and right bands.
 void UpdateFieldHud(i16 x, i16 y, i16 direction);
-
-// The palette modes of the party's cell and of the cell ahead (vram.c).
-GZ_ENUM_RETURN(CellPaletteMode, i16) GetAreaPaletteMode(void);
-GZ_ENUM_RETURN(CellPaletteMode, i16) GetViewPaletteMode(void);
 
 // The picture helpers of the texture TU: create a picture's surface (keyed
 // when `colorKey` is set), load a .bmp into one, draw a bitmap resource onto
@@ -131,9 +125,6 @@ void CopySurfaceSquare(
     i32 size
 );
 
-// From Mem/Handle.h.
-void ClearHandleTable(void);
-
 // The font's 1x1 glyph scratch surface, and text drawn onto a layer's canvas
 // (font.cpp).
 b32 CreateGlyphSurface(void);
@@ -153,10 +144,6 @@ extern struct MarkerColor g_markerColors[4];
 void OpenFieldMenu(void);
 void OpenAutomap(void);
 
-// The current map's wall words, one per cell (NULL without a map).
-// @identity-TODO: read from its body only (the pointer at +4 of 0x47fe58).
-u16* GetWallMap(void);
-
 // The palette switches of the party's cell and of the cell ahead (fieldscreen).
 void UpdateAreaPalette(void);
 void UpdateViewPalette(void);
@@ -166,16 +153,5 @@ void UpdateViewPalette(void);
 // or STEP_DOOR when the cell's wall reports a door.
 // @identity-TODO: read from its body only; the field TU owns it.
 GZ_ENUM_RETURN(PartyStepResult, i16) StepParty(GZ_ENUM_PARAM(MoveCommand, i16) direction);
-
-// Completes a step the camera has slid through: advances the clock, moves the
-// party's cell and marks it on the automap.
-// @identity-TODO: read from its body only; the field TU owns it.
-void CommitPartyStep(void);
-
-// Faces the party toward `direction` (VIEW_NORTH..VIEW_WEST). The body reads
-// a word; the platform layer's prototype takes an int (0x44acec pushes the
-// dword g_viewDirection).
-// @identity-TODO: its two callees (0x412ca0, 0x412cf0) are undecoded.
-void SetPartyDirection(i32 direction);
 
 #endif // GITEN_PLATFORM_GAMECALLS_H
