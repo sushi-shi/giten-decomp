@@ -1938,7 +1938,7 @@ GZ_ENUM_RETURN(FusionFlagValue, i16) GetDemonFlagHigh(i16 id) {
     if (flags & DEMON_FLAG_HIGH_UNAVAILABLE) {
         return FUSION_FLAG_UNAVAILABLE;
     }
-    return (u8)((flags & DEMON_FLAG_HIGH_VALUE) >> 4);
+    return (u8)((flags & DEMON_FLAG_HIGH_VALUE) >> DEMON_FLAG_HIGH_SHIFT);
 }
 
 RVA(0x00010060, 0x12)

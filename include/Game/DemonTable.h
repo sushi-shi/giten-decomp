@@ -18,6 +18,8 @@ GZ_ENUM_FLAGS_BEGIN(DemonTableFlags, u8)
     DEMON_FLAG_HIGH_UNAVAILABLE = 0x40
 GZ_ENUM_FLAGS_END(DemonTableFlags)
 
+#define DEMON_FLAG_HIGH_SHIFT 4
+
 // Each fusion flag reports whether its bit is unavailable, clear or set.
 // The low and high bits have distinct game meanings still to recover.
 GZ_ENUM_BEGIN_SPLIT(FusionFlagValue, i16)

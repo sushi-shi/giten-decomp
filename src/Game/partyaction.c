@@ -1040,7 +1040,7 @@ GZ_ENUM_RETURN(AttackAttribute, i16) GetPickedAttackAttribute(Character* actor, 
             *condition = GetEquipmentInflictedCondition(GetLoadedRecord(actor->pickTarget));
             return GetEquipmentAttribute(GetLoadedRecord(actor->pickTarget));
     }
-    return 0;
+    return ATTACK_ATTRIBUTE_SWORD;
 }
 
 RVA(0x00006f20, 0x1a4)
