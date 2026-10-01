@@ -1097,7 +1097,7 @@ void LoadEnemyGroupSlot(GZ_ENUM_PARAM(FieldLayerIndex, i16) layer, i16 kind) {
 }
 
 RVA(0x0000e8f0, 0x15)
-i16 GetLayerKind(i16 layer) {
+GZ_ENUM_RETURN(ObjectRecordId, i16) GetLayerKind(i16 layer) {
     return s_layers[layer].record.id;
 }
 
@@ -1160,7 +1160,7 @@ u32 GetLayerImage(i16 layer) {
 }
 
 RVA(0x0000eaa0, 0x29)
-i16 FindLayerOfKind(i16 kind) {
+i16 FindLayerOfKind(GZ_ENUM_PARAM(ObjectRecordId, i16) kind) {
     i16 i;
     for (i = 0; i < FIELD_LAYER_COUNT; i++) {
         if (s_layers[i].record.id == kind) {

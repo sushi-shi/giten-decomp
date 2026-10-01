@@ -1150,7 +1150,7 @@ i16 GetFieldMap(void) {
 }
 
 RVA(0x00007200, 0x7)
-i16 GetFieldEntryState(void) {
+GZ_ENUM_RETURN(FieldMapOutcome, i16) GetFieldEntryState(void) {
     return s_fieldEntryState;
 }
 

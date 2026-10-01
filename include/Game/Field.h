@@ -38,7 +38,6 @@ void EnterFieldMap(
     GZ_ENUM_PARAM(FieldMapMode, i16) mode
 );
 i16 GetFieldMap(void);
-i16 GetFieldEntryState(void);
 void SetFieldCounts(i16 countA, i16 countB);
 i16 TickFieldCount(i16 side, b16 hold);
 i32 ScaleByFieldRate(i16 first, i16 second, i32 value);
@@ -71,6 +70,7 @@ GZ_ENUM_BEGIN(FieldMapOutcome)
     FIELD_MAP_WON = 1
 GZ_ENUM_END(FieldMapOutcome)
 
+GZ_ENUM_RETURN(FieldMapOutcome, i16) GetFieldEntryState(void);
 void LeaveFieldMap(GZ_ENUM_PARAM(FieldMapOutcome, i16) result);
 
 void ResetRosterFieldMarks(void);
