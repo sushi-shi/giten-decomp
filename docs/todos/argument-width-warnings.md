@@ -43,3 +43,20 @@ supported by the current evidence.
 Retyping these narrow APIs to `int` would change their source contracts;
 inserting narrow temporaries only moves the diagnostics to assignments, as
 the `character.c` trial showed. The reviewed source is unchanged.
+
+## Final Game call sites
+
+A final `/W4` pass found 27 more C4761 diagnostics in four Game units, plus
+the 15 already counted for `fieldobj.c`. The source-supported width for each
+callee remains narrow; no call rewrite satisfied both warning reduction and
+byte-identical COFF. The two same-type `u16` casts around state getters in
+`partyaction.c` were removed separately with identical COFF; they were not
+C4761 sites.
+
+| Unit | C4761 sites | Current boundary and rejected rewrite |
+| --- | ---: | --- |
+| `fieldmain.c` | 16 | `AdvanceClock(RandomUpTo(4) + 3)` supplies 3..7 minutes to an `u16` clock interface. Cell-event arithmetic supplies a `u16` game step, `OffsetMapCoord` receives a signed 16-bit lateral offset, and `RotateByDirection(wall, direction + 3)` receives a 16-bit direction. A new temporary would only move the conversion into an initializer. |
+| `skilluse.c` | 6 | `LaunchShot` receives the short vertical difference `to.y - from.y`; `RandomUpTo(lastIndex)` receives an 8-bit RNG bound; `OffsetMapCoord` receives short offsets `across - 3` and `along - 3`. `ClampTo999(base * 4)` keeps the helper's 16-bit input conversion. Wider callee types would change these established interfaces. |
+| `skillattack.c` | 3 | `WearSkillValue(skillValue + accuracy)` and the two other worn-power calls feed a 16-bit input. `WearSkillValue` in `src/Script/recordcache.c` reads that input as `i16` before its percentage and 1..30000 clamp. Widening the input would change the calculation; narrowing a new local would add C4244. |
+| `itemattack.c` | 2 | Both `WearSkillValue` calls similarly pass computed item power to its 16-bit input. The same reason keeps the conversions at the calls. |
+| `fieldobj.c` | 15, counted above | Rechecked resource IDs, map directions, object indices, RNG bounds and the packed flag-bank mode. The earlier table and flag-bank note give the specific sites; no new width evidence supports a change. |
