@@ -140,18 +140,18 @@ src/Game/worldtravel.c	g_worldTravelTerrainFlags	*	data-or-extent	*	the terrain 
 src/Game/fieldscreen.c	g_worldMapOverlayFlags	89	data-or-extent	*	the table's length: one flag per world-map tile variant
 *	*	*	data-or-extent	array extent	the element count of an array, written in its declaration
 *	*	0	data-or-extent	zero fill	the {0} zero fill of static storage
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*== level	a shopkeeper's map level, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality level	a shopkeeper's map level, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*== x	a shopkeeper's map x, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality x	a shopkeeper's map x, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*== y	a shopkeeper's map y, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality y	a shopkeeper's map y, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*== image	a shopkeeper's sprite image number
-src/Script/scriptsprite.c	OpPlaceSprite	*	*	store to [xy]	a sprite position in pixels
-src/Script/scriptsprite.c	OpPlaceSprite	*	*	*== [xy]	a sprite position in pixels
-src/Script/scriptsprite.c	Op*Sprite	*	*	*slot	a sprite slot
-src/Script/scriptsprite.c	Op*Sprite	*	*	*image	a sprite image number
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*arg	the sprite load argument of the Osaki-fox event image the developer trace names
+src/Script/scriptvars.c	OpLoadSprite	*	*	*== level	a shopkeeper's map level, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*equality level	a shopkeeper's map level, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*== x	a shopkeeper's map x, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*equality x	a shopkeeper's map x, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*== y	a shopkeeper's map y, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*equality y	a shopkeeper's map y, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*== image	a shopkeeper's sprite image number
+src/Script/scriptvars.c	OpPlaceSprite	*	*	store to [xy]	a sprite position in pixels
+src/Script/scriptvars.c	OpPlaceSprite	*	*	*== [xy]	a sprite position in pixels
+src/Script/scriptvars.c	Op*Sprite	*	*	*slot	a sprite slot
+src/Script/scriptvars.c	Op*Sprite	*	*	*image	a sprite image number
+src/Script/scriptvars.c	OpLoadSprite	*	*	*arg	the sprite load argument of the Osaki-fox event image the developer trace names
 src/Platform/winmain.cpp	[RD][er][na][dw]*	*	initializer-payload	*	vertex fields of a rendered primitive: screen or world position, colour and texture coordinates
 src/Platform/winmain.cpp	AnimateDoor	*	*	*	door animation geometry: corner offsets, widths and texture u per step
 src/Platform/winmain.cpp	Render[ENT]*	*	store	*	billboard geometry: offsets, spread and texture coordinates
@@ -563,13 +563,13 @@ src/Math/vec3.c	ProjectFloorPoint	0	call-argument	ProjectPoint(*argument 2	a poi
 src/Math/vec3.c	MoveBySubVelocity	8	call-argument	ClampDelta(*argument 2	velocity is kept in 1/256 units; the step adds its whole part
 src/Math/vec3.c	CellToField	*	arithmetic	*	field cell to 3D coordinates: 3x3 subcells per cell, 6 subcells per column or row step, 75 units per subcell, and the origin offsets
 src/Mem/handle.c	Clear*	0	call-argument	SetHandleEntry(*argument 3	a freed entry has size 0
-src/Util/range.c	PowerOfTwo	1	*	*	the power of two starts at 2^0
-src/Util/range.c	ClampToUShort	0	call-argument	ClampInt(*argument 2	the unsigned short range starts at 0
-src/Util/range.c	RoundToInt	*	*	*	rounding half away from zero
-src/Util/range.c	RandomPercent	*	*	*	percent arithmetic: scale by 100, round at 50
-src/Util/range.c	Capped*	0	trivial-function-literal	0 return	no change applied
-src/Util/range.c	FilterTextMarks	0	trivial-function-literal	*	an empty string / the text's terminator
-src/Util/range.c	FilterTextMarks	0x8197	comparison-or-bound	*	Shift-JIS '＠', the text mark (see Range.h); a wide character constant would not be the same code
+src/Game/fieldview.c	PowerOfTwo	1	*	*	the power of two starts at 2^0
+src/Game/fieldview.c	ClampToUShort	0	call-argument	ClampInt(*argument 2	the unsigned short range starts at 0
+src/Game/fieldview.c	RoundToInt	*	*	*	rounding half away from zero
+src/Game/fieldview.c	RandomPercent	*	*	*	percent arithmetic: scale by 100, round at 50
+src/Game/fieldview.c	Capped*	0	trivial-function-literal	0 return	no change applied
+src/Game/fieldview.c	FilterTextMarks	0	trivial-function-literal	*	an empty string / the text's terminator
+src/Game/fieldview.c	FilterTextMarks	0x8197	comparison-or-bound	*	Shift-JIS '＠', the text mark (see Range.h); a wide character constant would not be the same code
 src/Util/bitset.c	*	*	*	*	byte and bit of a bit index (8 bits per byte)
 src/Mem/pool.c	*	*	*	*	the dead element-pool API: four pools of 256-element chunks (index >> 8, low byte), sixteen chunks each; the size table ends at 0
 src/File/datafile.c	SetCryptKey	8	*	*	the crypt key folds the seed's high byte into its low byte
@@ -632,15 +632,15 @@ src/Gfx/videostate.c	GetPlane*	*	*	*	@identity-TODO: video planes 0..2 map to th
 src/Gfx/displayconfig.c	*	*	*	*	registry value sizes, key-open options and the display-config version (4) Win32 reads and writes
 src/Game/gameloop.c	InitGameData	0xc000	*	*	@identity-TODO: the feature bits set at start-up (TestFeatureMask); their meaning is unrecovered
 src/Game/gameloop.c	StepGame	*	*	*	-1 from the state dispatch or at the quit point asks to quit; the clock ticks with no extra time; a long frame advances play time 31 ms, a short one 24 ms
-src/Ui/hotspot.c	GetSelectedHotspot*	-1	*	*	no selected hotspot value
-src/Ui/hotspot.c	CountFieldObjects	*	*	*	the debug trace buffer size; -1 reports a pending abort in place of a count, which it clears
+src/Gfx/bitmapio.cpp	GetSelectedHotspot*	-1	*	*	no selected hotspot value
+src/Gfx/bitmapio.cpp	CountFieldObjects	*	*	*	the debug trace buffer size; -1 reports a pending abort in place of a count, which it clears
 src/Script/windowcolor.c	*	*	*	*	@identity-TODO: the alternate-text window switches: save flag 1, cursor column 0, scroll-top rows 0 and 2, and no text delay
 src/Game/waitstate.c	StepWaitState	1	*	*	a timed wait ends when its frame count reaches 1
 src/Game/waitstate.c	PushMessageBox	0	call-argument	PrintWindowText(*argument 3	attribute 0: print in the plane's own attribute
 src/Text/textchar.c	*	*	*	*	Shift-JIS decoding: a trail byte forms the low byte; codes 0xfe and up are two-byte escapes; a lead byte at the end reads as '※' (0x81a6)
 src/Script/scriptfield.c	OpIfBattleResult	*	*	*g_targetCount	target counts: exactly one, or two or more
 src/Script/scriptfield.c	OpCountObjectsAt	1	call-argument	*	@identity-TODO: CountObjectsAt's third argument, 1 for the script count
-src/Gfx/automap.c	ScreenToAutomapCell	*	*	*	automap screen geometry: an 8-pixel margin, 8 pixels per cell, 0x70 pixels (14 cells) across, and cell 7 at the centre
+src/Gfx/bitmapio.cpp	ScreenToAutomapCell	*	*	*	automap screen geometry: an 8-pixel margin, 8 pixels per cell, 0x70 pixels (14 cells) across, and cell 7 at the centre
 src/Game/equipeffect.c	ApplyItemCurse	*	*	*	curse effects: HP and MP drained per step and chances of 0x40 or 0x20 in RandomUpTo(0xff); items below 1 are none
 include/Game/WorldMap.h	ClampWorldMapViewOrigin	*	*	*	world-map view origin limits in pixels (1664 x 1872), aligned down to 8 pixels
 include/Game/FieldSight.h	PushFieldUsePrompt	*	call-argument	*	@identity-TODO: the use prompt's position (the centre subcell 4 of cell (0, 0), height 0xba) and its sub-state and mode 0
@@ -649,16 +649,35 @@ src/Platform/winmain.cpp	g_joystickKeys	*	data-or-extent	*	joystick button bits 
 src/Platform/winmain.cpp	ClickMenuBar	0	*	*	no menu-bar command handled
 src/Platform/d3dapp.cpp	*	*	*	*	DirectDraw, Direct3D, DirectSound and DirectInput setup: surface sizes (640x480, 640x328 view), bit depths, 4x4 matrices, the projection (160, 1281), light and material colours, the 22050 Hz 16-bit mono sound format, buffer sizes and volumes, and API flags left 0
 src/Sound/midistream.cpp	*	*	*	*	MIDI stream buffers: members cleared at construction, 3-word events (4-byte aligned lengths), 16 channels, one MIDI device, API flags left 0
-src/Gfx/bitmapio.cpp	*	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Gfx/bitmapio.cpp	SeekBitmap	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Gfx/bitmapio.cpp	LoadBitmapToSurface16	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Gfx/bitmapio.cpp	CopyResourceBitmap16	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Gfx/bitmapio.cpp	DrawResourceBitmap	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Gfx/bitmapio.cpp	CreatePicture	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Gfx/bitmapio.cpp	ShadeTexture	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Gfx/bitmapio.cpp	ReleaseTexture	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Gfx/bitmapio.cpp	OpenTextureBitmap	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Gfx/bitmapio.cpp	LoadWorldMapTile	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
+src/Gfx/bitmapio.cpp	LoadWorldMapOverlay	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
 src/Platform/joystick.cpp	*	*	*	*	joystick ranges: the axis centre (half the range) and a quarter-range dead zone; GetAsyncKeyState's down bit (0x8000); joystick 1 (id 0)
-src/Gfx/sprite.cpp	*	*	*	*	sprite placement: 8 pixels per column, one-slot shifts of the placement list, and demon images (0x2000..0x2fff) whose low nibble selects the half-size variant
-src/Gfx/layertexture.cpp	DecodeLayerImageAlt	*	*	*	the alternate decode's six pictures and the loaded check on g_enemyPictures[0]; decode offsets start at 0
-src/Gfx/layertexture.cpp	DecodeLayerImage	0	*	*consumed	decode offsets start at 0
-src/Gfx/walltexture.cpp	LoadWallTextures	*	*	*	wall sets: the low nibble selects the set, levels 1..3 its variant
-src/Gfx/effectdraw.cpp	*	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
-src/Platform/worldmap.cpp	*	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
+src/Gfx/bitmapio.cpp	UnplaceSprite	*	*	*	sprite placement: 8 pixels per column, one-slot shifts of the placement list, and demon images (0x2000..0x2fff) whose low nibble selects the half-size variant
+src/Gfx/bitmapio.cpp	PlaceSprite	*	*	*	sprite placement: 8 pixels per column, one-slot shifts of the placement list, and demon images (0x2000..0x2fff) whose low nibble selects the half-size variant
+src/Gfx/bitmapio.cpp	LoadSpriteFrames	*	*	*	sprite placement: 8 pixels per column, one-slot shifts of the placement list, and demon images (0x2000..0x2fff) whose low nibble selects the half-size variant
+src/Gfx/bitmapio.cpp	DecodeLayerImageAlt	*	*	*	the alternate decode's six pictures and the loaded check on g_enemyPictures[0]; decode offsets start at 0
+src/Gfx/bitmapio.cpp	DecodeLayerImage	0	*	*consumed	decode offsets start at 0
+src/Gfx/bitmapio.cpp	LoadWallTextures	*	*	*	wall sets: the low nibble selects the set, levels 1..3 its variant
+src/Gfx/bitmapio.cpp	ClearEffectLayer	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
+src/Gfx/bitmapio.cpp	DrawProjectedEffectSprite	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
+src/Gfx/bitmapio.cpp	DrawScreenEffectSprite	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
+src/Gfx/bitmapio.cpp	s_effectLateralOffsets	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
+src/Gfx/bitmapio.cpp	s_effectHeightOffsets	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
+src/Gfx/bitmapio.cpp	HitTestWorldMap	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
+src/Gfx/bitmapio.cpp	IsWorldMapMarkerNearEdge	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
+src/Gfx/bitmapio.cpp	ReadWorldMapTileCode	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
+src/Gfx/bitmapio.cpp	DrawWorldMapCursor	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
+src/Gfx/bitmapio.cpp	s_cursorPreviewRect	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
 src/Text/font.cpp	*	*	*	*	the Windows text-plane renderer: accessors answer 0 (lookups -1) for a missing plane, line or cell; 4-bit colour fields of text attributes; 8-pixel cells, 80 columns and glyph buffers; -1 for no highlight or no hit; hook values, header rows and line steps
-src/Gfx/surfacecopy.cpp	CopySurfaceSquare	0	call-argument	StretchBlt(*	the source and destination origins (0, 0)
+src/Gfx/bitmapio.cpp	CopySurfaceSquare	0	call-argument	StretchBlt(*	the source and destination origins (0, 0)
 src/Script/scriptswitch.c	SwitchOnValue	0	call-argument	PushCallFrame(*argument 2	@identity-TODO: PushCallFrame's second argument, 0 for a switch call
 src/Gfx/screensave.c	SetTextCursorOffset	80	*	*	the PC-98 text screen's 80 columns
 src/Gfx/screensave.c	RedrawScreen	*	call-argument	*	@identity-TODO: FieldScreenNop's 0 and RefreshInfoBar's 1 on a full redraw
@@ -669,7 +688,7 @@ include/Game/Clock.h	ResetClockPhaseAndTime	0	*	*	the clock restarts at moon pha
 include/Game/Character.h	ClearItemSlot	0	*	*quantity	an empty item slot holds none
 include/Game/Character.h	SetCharacterPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
 include/Game/FieldObject.h	SetFieldObjectPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
-src/Ui/hotspotclick.cpp	ClickHotspotAt	-1	*	*	no hotspot hit
+src/Gfx/bitmapio.cpp	ClickHotspotAt	-1	*	*	no hotspot hit
 src/Game/statusmenu.c	DrawStatusLine	2	*	*	two pixels below the line top
 src/Game/statusmenu.c	SetStatusMenuItemsHidden	-1	*	*	@identity-TODO: -1 marks an unswitched status-menu item
 src/Game/clickwait.c	TakeClickUnlessCancel	*	*	*	@identity-TODO: key code -2 cancels (-1); see the function comment
@@ -727,20 +746,44 @@ src/Script/scriptctx.c	RetakeDeferredChar	*	*	*	PutTextChar's -2 (deferred) and 
 src/Game/*.c	*	*	call-argument	Set*Result(*	@identity-TODO: mixed action-result codes outside the base combat outcomes; they are sent through GetActionValue to the message scripts
 src/Game/*.c	*	*	*	*g_actionResult*	@identity-TODO: the shared result word also holds restoration and field-effect codes and drain tags
 src/Game/*.c	*	*	*	*g_attackResistance*	@identity-TODO: GetActionResistance also holds ordinary damage rates alongside its named special results
-src/Game/*attack.c	*	*	*	*resistance	@identity-TODO: the attack formulas also use positive resistance rates and named special results
-src/Game/*attack.c	*	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
-src/Game/*attack.c	*	*	comparison-or-bound	*amount	a damage amount below zero is none
-src/Game/*attack.c	*	*	store	*amount	a damage amount below zero is none; 0x7fff for an overkill
-src/Game/*attack.c	*	*	call-argument	RoundToInt(*	percent scaling (100 or 1/100)
-src/Game/*attack.c	*	*	call-argument	ScaleActionValue(*argument 1	value scales (4 for the hit roll, 10 for the condition roll)
-src/Game/*attack.c	*	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
-src/Game/*attack.c	*	0	trivial-function-literal	0 return	no damage
-src/Game/*attack.c	*	0	trivial-function-literal	0 equality damage	no damage
-src/Game/*attack.c	*	0	trivial-function-literal	0 store hit	no hit
-src/Game/*attack.c	*	0	trivial-function-literal	0 equality result	the hit roll's result 0 (a miss)
-src/Game/*attack.c	*	*	comparison-or-bound	*< result	the exceptional-attack roll's results (2, 4, 5)
-src/Game/*attack.c	Run*Attack	0	call-argument	Resolve*Attack(*argument 3	a plain attack (mode 0)
-src/Game/skillattack.c	ResolveSkillAttack	0	call-argument	*argument 3	@identity-TODO: the weapon and gun attacks' mode, and RollSkillHit's sameSide, 0 against the enemy side
+src/Game/partyaction.c	RollExceptionalWeaponAttack	*	*	*resistance	@identity-TODO: the attack formulas also use positive resistance rates and named special results
+src/Game/partyaction.c	ComputeWeaponDamage	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
+src/Game/partyaction.c	RollWeaponHit	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
+src/Game/partyaction.c	RollExceptionalWeaponAttack	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
+src/Game/partyaction.c	RollSkillHit	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
+src/Game/partyaction.c	ComputeSkillDamage	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
+src/Game/partyaction.c	ResolveItemAttack	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
+src/Game/partyaction.c	ComputeItemDamage	*	arithmetic	*	attack formula coefficients: percentages, accuracy and defence scales, facing and adjacency multipliers, and level offsets
+src/Game/partyaction.c	ComputeWeaponDamage	*	comparison-or-bound	*amount	a damage amount below zero is none
+src/Game/partyaction.c	ComputeWeaponDamage	*	store	*amount	a damage amount below zero is none; 0x7fff for an overkill
+src/Game/partyaction.c	ResolveWeaponAttack	*	store	*amount	a damage amount below zero is none; 0x7fff for an overkill
+src/Game/partyaction.c	ComputeWeaponDamage	*	call-argument	RoundToInt(*	percent scaling (100 or 1/100)
+src/Game/partyaction.c	RollExceptionalWeaponAttack	*	call-argument	RoundToInt(*	percent scaling (100 or 1/100)
+src/Game/partyaction.c	ComputeSkillDamage	*	call-argument	RoundToInt(*	percent scaling (100 or 1/100)
+src/Game/partyaction.c	ComputeItemDamage	*	call-argument	RoundToInt(*	percent scaling (100 or 1/100)
+src/Game/partyaction.c	RollWeaponCondition	*	call-argument	ScaleActionValue(*argument 1	value scales (4 for the hit roll, 10 for the condition roll)
+src/Game/partyaction.c	RollSkillHit	*	call-argument	ScaleActionValue(*argument 1	value scales (4 for the hit roll, 10 for the condition roll)
+src/Game/partyaction.c	RollSkillCondition	*	call-argument	ScaleActionValue(*argument 1	value scales (4 for the hit roll, 10 for the condition roll)
+src/Game/partyaction.c	ResolveItemAttack	*	call-argument	ScaleActionValue(*argument 1	value scales (4 for the hit roll, 10 for the condition roll)
+src/Game/partyaction.c	RollItemCondition	*	call-argument	ScaleActionValue(*argument 1	value scales (4 for the hit roll, 10 for the condition roll)
+src/Game/partyaction.c	ComputeWeaponDamage	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
+src/Game/partyaction.c	RollWeaponHit	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
+src/Game/partyaction.c	RollSkillHit	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
+src/Game/partyaction.c	ComputeSkillDamage	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
+src/Game/partyaction.c	ResolveItemAttack	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
+src/Game/partyaction.c	ComputeItemDamage	0	trivial-function-literal	0 equality GetCombatantDistance()	adjacent combatants (distance 0)
+src/Game/partyaction.c	ComputeWeaponDamage	0	trivial-function-literal	0 return	no damage
+src/Game/partyaction.c	RollExceptionalWeaponAttack	0	trivial-function-literal	0 return	no damage
+src/Game/partyaction.c	ComputeSkillDamage	0	trivial-function-literal	0 return	no damage
+src/Game/partyaction.c	ComputeItemDamage	0	trivial-function-literal	0 return	no damage
+src/Game/partyaction.c	ComputeSkillDamage	0	trivial-function-literal	0 equality damage	no damage
+src/Game/partyaction.c	ComputeItemDamage	0	trivial-function-literal	0 equality damage	no damage
+src/Game/partyaction.c	ResolveSkillAttack	0	trivial-function-literal	0 store hit	no hit
+src/Game/partyaction.c	RunItemAttack	0	trivial-function-literal	0 store hit	no hit
+src/Game/partyaction.c	ResolveWeaponAttack	0	trivial-function-literal	0 equality result	the hit roll's result 0 (a miss)
+src/Game/partyaction.c	ResolveWeaponAttack	*	comparison-or-bound	*< result	the exceptional-attack roll's results (2, 4, 5)
+src/Game/partyaction.c	RunItemAttack	0	call-argument	Resolve*Attack(*argument 3	a plain attack (mode 0)
+src/Game/partyaction.c	ResolveSkillAttack	0	call-argument	*argument 3	@identity-TODO: the weapon and gun attacks' mode, and RollSkillHit's sameSide, 0 against the enemy side
 src/Game/*.c	*	0	call-argument	SetCharacterChanges(*	no change to that side (target or self)
 src/Game/restore.c	s_swappedPairOrder	*	data-or-extent	*	@identity-TODO: an unread table of the order 0..3 with the middle pair swapped (see its comment)
 src/Game/restore.c	s_fourBitMasks	*	data-or-extent	*	GetNpcImageOfCode indirectly reads these seven direction masks; its source referent remains an out-of-bounds physical-recovery array index

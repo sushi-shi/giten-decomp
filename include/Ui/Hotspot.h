@@ -49,6 +49,7 @@ extern i32 g_selectedHotspot;
 void ClearSelectedHotspot(void);
 void SetSelectedHotspot(i32 index);
 i16 GetSelectedHotspotValue(void);
+b16 HasHotspotTo(i16 x, i16 y);
 
 RVA_DECL(0x00058640)
 i16 CountFieldObjects(void);

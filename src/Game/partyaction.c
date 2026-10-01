@@ -1,9 +1,3 @@
-// @identity-TODO: the owning TU is unproven. One retail object: the .bss
-// statics of partyaction, field, attack and partypick interleave in a single
-// run, and their initialized data and string literals form one .data run. The
-// unreconstructed field-map routine and field state handler (about forty
-// unclaimed callees) use the field statics and belong to it.
-
 #include <rva.h>
 
 #include <File/DataFile.h>
@@ -979,9 +973,8 @@ i16 GetActionResistance(
             && attribute == ATTACK_ATTRIBUTE_EXPEL) {
             return 100;
         }
-        result = attribute == ATTACK_ATTRIBUTE_FIXED_HALF_RESISTANCE
-                     ? 50
-                     : actor->resistance[attribute];
+        result =
+            attribute == ATTACK_ATTRIBUTE_FIXED_HALF_RESISTANCE ? 50 : actor->resistance[attribute];
         if (result == ATTACK_RESIST_BYTE_REFLECT_HALF) {
             return ATTACK_RESIST_REFLECT_HALF;
         }
@@ -2875,4 +2868,573 @@ GZ_ENUM_RETURN(TargetPickResult, i16) PickPartySlotTarget(i16 minimumRange, i16 
     g_selectedObjectId = PartyCombatantId(g_hoveredObjectId);
     ClearMouseClicks();
     return TARGET_PICK_SELECTED;
+}
+
+RVA(0x0000a120, 0x142)
+b16 RollWeaponCondition(
+    Character* attacker,
+    Character* target,
+    i16 resistance,
+    i16 condition,
+    i16 mode
+) {
+    i16 luck;
+    i16 roll;
+    i16 defense;
+    i32 power;
+    g_statusCondition = INFLICT_NONE;
+    if (!condition) {
+        return false;
+    }
+    if (attacker->lastChange < GetConditionDamageThreshold(target)) {
+        return false;
+    }
+    if (g_actionResult >= BATTLE_ACTION_REFLECTED) {
+        return false;
+    }
+    if (mode && IsFieldConditionRestricted(condition)) {
+        return false;
+    }
+    roll = RandomAverage(0, 20, 0);
+    luck = GetStatTotal(attacker, STAT_FORTUNE);
+    luck += roll;
+    if (luck <= GetStatTotal(target, STAT_FORTUNE)) {
+        return false;
+    }
+    roll = RandomAverage(0, 40, 0);
+    defense = GetBattleStatShown(target, BATTLE_STAT_WEAPON_DEFENSE);
+    defense *= roll;
+    power = GetBattleStatShown(attacker, BATTLE_STAT_WEAPON_POWER);
+    ApplyWeaponPowerConditions(attacker, power);
+    if (ScaleActionValue(power * 10, resistance, 2) - defense <= 0) {
+        return false;
+    }
+    if (IsConditionResisted(target, g_attackCondition)) {
+        return false;
+    }
+    g_statusCondition = g_attackCondition;
+    InflictCondition(g_attackCondition, target);
+    return true;
+}
+
+RVA(0x0000a270, 0x21c)
+i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result) {
+    double power;
+    i16 defense;
+    double amount;
+    i32 facing;
+    i32 damage;
+    if (!result) {
+        return 0;
+    }
+    power = GetBattleStatShown(attacker, BATTLE_STAT_WEAPON_POWER);
+    ApplyWeaponPowerConditions(attacker, power);
+    defense = GetBattleStatShown(target, BATTLE_STAT_WEAPON_DEFENSE);
+    amount = -(defense * 0.2);
+    amount += power;
+    if (amount < 0.0) {
+        amount = 0.0;
+    }
+    if (defense) {
+        power /= defense;
+    }
+    if (GetBattleStatShown(attacker, BATTLE_STAT_WEAPON_POWER) >= defense) {
+        power += 2.2;
+    } else {
+        power += 1.0;
+    }
+    amount = sqrt(amount) * power;
+    if (result == BATTLE_ACTION_CRITICAL) {
+        amount += attacker->level + 5;
+    }
+    if (GetPickBlockingCondition(GetCharacterConditions(target))) {
+        amount *= 1.2;
+    }
+    facing = GetCombatantFacingDifference(g_actorId, g_targetId);
+    ApplyFacingDamageBonus(amount, facing);
+    if (result == BATTLE_ACTION_GRAZED) {
+        amount *= 0.25;
+    }
+    if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
+        amount *= 1.5;
+    }
+    damage = RoundToInt(amount * 100.0);
+    FinalizeAttackDamage(damage, attacker);
+    if (damage <= 0) {
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
+    }
+    return damage;
+}
+
+RVA(0x0000a490, 0x1f5)
+b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance) {
+    i32 accuracy;
+    i32 evasion;
+    i32 attack;
+    i32 defense;
+    i32 roll;
+    if (GetPickBlockingCondition(GetCharacterConditions(target))) {
+        SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
+        return true;
+    }
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) == FACING_FROM_BEHIND) {
+        SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
+        return true;
+    }
+    accuracy = GetBattleStatShown(attacker, BATTLE_STAT_WEAPON_ACCURACY);
+    ApplyAttackAccuracyConditions(attacker, accuracy);
+    evasion = GetBattleStatShown(target, BATTLE_STAT_WEAPON_EVASION);
+    if (GetAttackRangeExcess(g_actorId, g_targetId) < 0) {
+        attack = accuracy * 50;
+    } else {
+        attack = accuracy * 100;
+    }
+    if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
+        attack *= 2;
+    }
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) != FACING_FACE_TO_FACE) {
+        defense = evasion * 75;
+    } else {
+        defense = evasion * 100;
+    }
+    if (attack >= defense) {
+        roll = defense * RandomAverage(-2, 12, 1);
+        attack *= 8;
+        if (attack >= roll) {
+            SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
+            return true;
+        }
+    } else {
+        roll = defense * RandomAverage(0, 15, 0);
+        attack *= 8;
+        if (attack >= roll) {
+            SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
+            return true;
+        }
+    }
+    roll = defense * RandomAverage(0, 7, 0);
+    if (attack >= roll) {
+        SetActionResult(attacker, BATTLE_ACTION_GRAZED);
+        return true;
+    }
+    SetActionResult(attacker, BATTLE_ACTION_MISSED);
+    return false;
+}
+
+RVA(0x0000a690, 0x209)
+i16 RollExceptionalWeaponAttack(Character* attacker, Character* target, i16 mode, i16 resistance) {
+    i32 phase = (g_clock.moonPhase + 13) % 14 + 1;
+    i16 modifier;
+    i32 attack;
+    i32 defense;
+    double value;
+    if (phase * phase / 4 > RandomUpTo(255) && resistance != 0 && resistance != -6) {
+        modifier = GetEquipmentHitModifier(attacker, target);
+        if (!mode) {
+            value = GetExceptionalAttackLuck(attacker);
+            value *= RandomAverage(80, 120, 0);
+            value *= 0.01;
+            value += modifier;
+            attack = RoundToInt(value);
+            value = GetExceptionalAttackLuck(target);
+            defense = RoundToInt(value * RandomAverage(100, 200, 0) * 0.01);
+            if (attack > defense) {
+                return SetActionResult(attacker, BATTLE_ACTION_LETHAL);
+            }
+        }
+        attack = GetExceptionalAttackBase(attacker);
+        attack += RandomUpTo(7);
+        defense = GetExceptionalAttackBase(target);
+        defense += RandomUpTo(31);
+        if (modifier + attack > defense) {
+            return SetActionResult(attacker, BATTLE_ACTION_CRITICAL);
+        }
+        SetActionResult(attacker, BATTLE_ACTION_MISSED);
+    }
+    return 0;
+}
+
+RVA(0x0000a8a0, 0x179)
+b16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode) {
+    i16 result;
+    i32 amount = 0;
+    ResetActionOutcome();
+    g_hpChange = 0;
+    g_attackAttribute = GetPickedAttackAttribute(attacker, &g_attackCondition);
+    g_attackResistance = GetActionResistance(target, g_attackAttribute, ATTACK_WEAPON, true, false);
+    g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, g_attackAttribute);
+    result = RollExceptionalWeaponAttack(attacker, target, mode, g_attackResistance);
+    if (result != 0) {
+        AddTrainingPoints(attacker, BATTLE_GROUP_WEAPON, 1);
+    }
+    if (result < 5) {
+        if (result == 0) {
+            result = RollWeaponHit(attacker, target, g_attackResistance);
+            attacker->resultFlag = result;
+            if (result != 0) {
+                AddTrainingPoints(attacker, BATTLE_GROUP_WEAPON, 1);
+            }
+        } else {
+            SetCharacterResult(attacker, result, 1);
+        }
+        amount = ComputeWeaponDamage(attacker, target, attacker->result);
+        SetCharacterChanges(attacker, amount, 0);
+    } else if (result == BATTLE_ACTION_LETHAL) {
+        amount = 0x7fff;
+        SetCharacterChanges(attacker, amount, 0);
+        SetFlaggedActionResult(attacker, BATTLE_ACTION_LETHAL);
+        AddTrainingPoints(attacker, BATTLE_GROUP_WEAPON, 1);
+    }
+    ApplyResistanceOutcome(attacker, g_attackResistance, amount);
+    return RollWeaponCondition(attacker, target, g_attackResistance, g_attackCondition, mode);
+}
+
+RVA(0x0000aa20, 0x22c)
+b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
+    i16 attribute;
+    i32 accuracy;
+    i32 defense;
+    i32 skillValue;
+    i16 value;
+    i32 roll;
+    g_attackResistance =
+        GetSkillResistance(target, attacker->pickTarget, true, sameSide, &attribute);
+    g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, attribute);
+    if (g_attackResistance == -6) {
+        SetResistanceResult(attacker, -6, BATTLE_ACTION_PROTECTED);
+        return false;
+    }
+    SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
+    if (g_attackResistance <= -4) {
+        return true;
+    }
+    if (GetPickBlockingCondition(GetCharacterConditions(target))) {
+        return true;
+    }
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) == FACING_FROM_BEHIND) {
+        return true;
+    }
+    accuracy = GetRecordValue();
+    ApplyAttackAccuracyConditions(attacker, accuracy);
+    defense = GetBattleStatShown(target, BATTLE_STAT_MAGIC_EVASION);
+    if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
+        accuracy *= 200;
+    } else {
+        accuracy *= 100;
+    }
+    defense *= 100;
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) != FACING_FACE_TO_FACE) {
+        accuracy = accuracy * 150 / 100;
+    }
+    skillValue = GetSkillValueA(GetCachedSkill(attacker->pickTarget));
+    skillValue *= 100;
+    value = WearSkillValue(skillValue + accuracy);
+    skillValue = value;
+    if (accuracy >= defense) {
+        accuracy = ScaleActionValue(skillValue + defense * 4, g_attackResistance, 4);
+        roll = defense * RandomAverage(0, 14, 1);
+    } else {
+        accuracy = ScaleActionValue(skillValue * 4, g_attackResistance, 4);
+        roll = defense * RandomAverage(0, 15, 0);
+    }
+    if (accuracy > roll) {
+        return true;
+    }
+    SetActionResult(attacker, BATTLE_ACTION_MISSED);
+    return false;
+}
+
+RVA(0x0000ac50, 0x1ce)
+i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
+    SkillHeader* skill;
+    i16 power;
+    i16 defense;
+    double amount;
+    i32 facing;
+    i32 damage;
+    if (!hit) {
+        return 0;
+    }
+    skill = GetCachedSkill(attacker->pickTarget);
+    power = WearSkillValue(
+        GetSkillValueB(skill) + GetBattleStatShown(attacker, BATTLE_STAT_MAGIC_POWER)
+    );
+    defense = GetBattleStatShown(target, BATTLE_STAT_MAGIC_DEFENSE);
+    amount = power;
+    if (power < defense) {
+        amount *= 0.8;
+    }
+    amount = power * (amount - sqrt(defense));
+    if (defense) {
+        amount /= defense;
+    }
+    if (GetPickBlockingCondition(GetCharacterConditions(target))) {
+        amount *= 1.2;
+    }
+    facing = GetCombatantFacingDifference(g_actorId, g_targetId);
+    ApplyFacingDamageBonus(amount, facing);
+    if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
+        amount *= 1.5;
+    }
+    damage = RoundToInt(amount * 100.0);
+    if (CountElementGuards(target, GetSkillAttackAttribute(skill))) {
+        damage /= 2;
+    }
+    FinalizeAttackDamage(damage, attacker);
+    if (damage == 0) {
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
+    }
+    return damage;
+}
+
+RVA(0x0000ae20, 0x14d)
+b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i16 condition) {
+    i16 roll;
+    i16 luck;
+    i16 defense;
+    i32 value;
+    i16 power;
+    g_statusCondition = INFLICT_NONE;
+    if (!condition) {
+        return false;
+    }
+    if (attacker->lastChange < GetConditionDamageThreshold(target)) {
+        return false;
+    }
+    if (g_actionResult >= BATTLE_ACTION_REFLECTED) {
+        return false;
+    }
+    if (g_targetId >= 0 && IsFieldModeAtLeast(false) && IsFieldConditionRestricted(condition)) {
+        return false;
+    }
+    roll = RandomAverage(0, 20, 0);
+    luck = GetStatTotal(attacker, STAT_FORTUNE);
+    luck += roll;
+    if (luck <= GetStatTotal(target, STAT_FORTUNE)) {
+        return false;
+    }
+    roll = RandomAverage(0, 30, 0);
+    defense = GetBattleStatShown(target, BATTLE_STAT_WEAPON_DEFENSE);
+    defense *= roll;
+    value = GetSkillValueA(GetCachedSkill(attacker->pickTarget));
+    value += GetRecordValue();
+    power = WearSkillValue(value);
+    if (ScaleActionValue(power * 10, resistance, 2) - defense <= 0) {
+        return false;
+    }
+    if (IsConditionResisted(target, condition)) {
+        return false;
+    }
+    g_statusCondition = condition;
+    InflictCondition(condition, target);
+    return true;
+}
+
+RVA(0x0000af70, 0x38)
+GZ_ENUM_RETURN(ResistanceFollowup, i16)
+ApplySkillResistanceOutcome(Character* attacker, i32 amount) {
+    ApplyResistanceOutcome(attacker, g_attackResistance, amount);
+    if (g_actionResult == BATTLE_ACTION_REFLECTED) {
+        return RESISTANCE_FOLLOWUP_REFLECT;
+    }
+    return g_actionResult < BATTLE_ACTION_HP_ABSORBED;
+}
+
+RVA(0x0000afb0, 0x13e)
+b16 ResolveSkillAttack(Character* attacker, Character* target) {
+    GZ_ENUM_LOCAL(AttackMode, u16) mode = GetSkillMode(attacker->pickTarget);
+    i16 hit;
+    i32 damage;
+    if (mode == ATTACK_WEAPON) {
+        if (g_targetId >= 0) {
+            return ResolveWeaponAttack(attacker, target, IsFieldModeAtLeast(false));
+        } else {
+            return ResolveWeaponAttack(attacker, target, 0);
+        }
+    }
+    if (mode == ATTACK_GUN) {
+        if (g_targetId >= 0) {
+            return ResolveGunAttack(attacker, target, IsFieldModeAtLeast(false));
+        } else {
+            return ResolveGunAttack(attacker, target, 0);
+        }
+    }
+    hit = RollSkillHit(attacker, target, false);
+    if (hit) {
+        AddTrainingPoints(attacker, BATTLE_GROUP_MAGIC, 3);
+    }
+    damage = ComputeSkillDamage(attacker, target, hit);
+    if (hit && !damage) {
+        g_actionResult = 0;
+        hit = 0;
+    }
+    attacker->resultFlag = hit;
+    attacker->result = g_actionResult;
+    ApplySkillResistanceOutcome(attacker, damage);
+    return RollSkillCondition(
+        attacker,
+        target,
+        g_attackResistance,
+        GetSkillInflictedCondition(GetCachedSkill(attacker->pickTarget))
+    );
+}
+
+RVA(0x0000b0f0, 0x22c)
+b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
+    i16 attribute;
+    i32 accuracy;
+    i32 defense;
+    i32 itemValue;
+    i16 value;
+    i32 roll;
+    g_attackResistance =
+        GetItemResistance(target, attacker->pickTarget, true, sameSide, &attribute);
+    g_attackResistance = ScaleDamageByEquipment(attacker, g_attackResistance, attribute);
+    if (g_attackResistance == -6) {
+        SetResistanceResult(attacker, -6, BATTLE_ACTION_PROTECTED);
+        return false;
+    }
+    SetActionResult(attacker, BATTLE_ACTION_SUCCESS);
+    if (g_attackResistance <= -4) {
+        return true;
+    }
+    if (GetPickBlockingCondition(GetCharacterConditions(target))) {
+        return true;
+    }
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) == FACING_FROM_BEHIND) {
+        return true;
+    }
+    accuracy = GetRecordValue();
+    ApplyAttackAccuracyConditions(attacker, accuracy);
+    defense = GetBattleStatShown(target, BATTLE_STAT_MAGIC_EVASION);
+    if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
+        accuracy *= 200;
+    } else {
+        accuracy *= 100;
+    }
+    defense *= 100;
+    if (GetCombatantFacingDifference(g_actorId, g_targetId) != FACING_FACE_TO_FACE) {
+        accuracy = accuracy * 150 / 100;
+    }
+    itemValue = GetItemHitPower(GetLoadedRecord(attacker->pickTarget));
+    itemValue *= 100;
+    value = WearSkillValue(itemValue + accuracy);
+    itemValue = value;
+    if (accuracy >= defense) {
+        accuracy = ScaleActionValue(itemValue + defense * 4, g_attackResistance, 4);
+        roll = defense * RandomAverage(0, 14, 1);
+    } else {
+        accuracy = ScaleActionValue(itemValue * 4, g_attackResistance, 4);
+        roll = defense * RandomAverage(0, 15, 0);
+    }
+    if (accuracy > roll) {
+        return true;
+    }
+    SetActionResult(attacker, BATTLE_ACTION_MISSED);
+    return false;
+}
+
+RVA(0x0000b320, 0x1a7)
+i32 ComputeItemDamage(Character* attacker, Character* target, i16 hit) {
+    i16 power;
+    i16 defense;
+    double amount;
+    i32 facing;
+    i32 damage;
+    if (!hit) {
+        return 0;
+    }
+    power = GetItemDamagePower(GetLoadedRecord(attacker->pickTarget))
+            + GetBattleStatShown(attacker, BATTLE_STAT_MAGIC_POWER);
+    power = WearSkillValue(power);
+    amount = power;
+    defense = GetBattleStatShown(target, BATTLE_STAT_MAGIC_DEFENSE);
+    if (power < defense) {
+        amount *= 0.8;
+    }
+    amount = power * (amount - sqrt(defense));
+    if (defense) {
+        amount /= defense;
+    }
+    if (GetPickBlockingCondition(GetCharacterConditions(target))) {
+        amount *= 1.2;
+    }
+    facing = GetCombatantFacingDifference(g_actorId, g_targetId);
+    ApplyFacingDamageBonus(amount, facing);
+    if (GetCombatantDistance(g_actorId, g_targetId) == 0) {
+        amount *= 1.5;
+    }
+    damage = RoundToInt(amount * 100.0);
+    FinalizeAttackDamage(damage, attacker);
+    if (damage == 0) {
+        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
+    }
+    return damage;
+}
+
+RVA(0x0000b4d0, 0x14d)
+b16 RollItemCondition(Character* attacker, Character* target, i16 resistance, i16 condition) {
+    i16 roll;
+    i16 luck;
+    i16 defense;
+    i32 value;
+    i16 power;
+    g_statusCondition = INFLICT_NONE;
+    if (!condition) {
+        return false;
+    }
+    if (attacker->lastChange < GetConditionDamageThreshold(target)) {
+        return false;
+    }
+    if (g_actionResult >= BATTLE_ACTION_REFLECTED) {
+        return false;
+    }
+    if (g_targetId >= 0 && IsFieldModeAtLeast(false) && IsFieldConditionRestricted(condition)) {
+        return false;
+    }
+    roll = RandomAverage(0, 20, 0);
+    luck = GetStatTotal(attacker, STAT_FORTUNE);
+    luck += roll;
+    if (luck <= GetStatTotal(target, STAT_FORTUNE)) {
+        return false;
+    }
+    roll = RandomAverage(0, 30, 0);
+    defense = GetBattleStatShown(target, BATTLE_STAT_WEAPON_DEFENSE);
+    defense *= roll;
+    value = GetItemHitPower(GetLoadedRecord(attacker->pickTarget));
+    value += GetRecordValue();
+    power = WearSkillValue(value);
+    if (ScaleActionValue(power * 10, resistance, 2) - defense <= 0) {
+        return false;
+    }
+    if (IsConditionResisted(target, condition)) {
+        return false;
+    }
+    g_statusCondition = condition;
+    InflictCondition(condition, target);
+    return true;
+}
+
+RVA(0x0000b620, 0xaa)
+b16 RunItemAttack(Character* attacker, Character* target) {
+    i16 hit;
+    i32 damage;
+    hit = ResolveItemAttack(attacker, target, 0);
+    if (hit) {
+        AddTrainingPoints(attacker, BATTLE_GROUP_MAGIC, 3);
+    }
+    damage = ComputeItemDamage(attacker, target, hit);
+    if (hit && !damage) {
+        g_actionResult = 0;
+        hit = 0;
+    }
+    attacker->resultFlag = hit;
+    attacker->result = g_actionResult;
+    ApplySkillResistanceOutcome(attacker, damage);
+    return RollItemCondition(
+        attacker,
+        target,
+        g_attackResistance,
+        GetItemInflictedCondition(GetLoadedRecord(attacker->pickTarget))
+    );
 }

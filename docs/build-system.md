@@ -3,7 +3,7 @@
 Run inside `nix develop` with `GITEN_DIR=$PWD`; see [setup](../README.md#quickstart).
 
 ```sh
-giten match range          # compile, label, delink and compare one unit; no gates
+giten match fieldview      # compile, label, delink and compare one unit; no gates
 giten build                # every unit; no gates
 giten build verify         # merge checks
 giten verify status        # scores and regressions
@@ -18,6 +18,9 @@ giten verify status        # scores and regressions
 `config/units.toml` maps each unit to a source and a complete flag profile;
 [compiler evidence](compiler-flags.md) explains the profiles. Add a TU by adding
 its `[[unit]]` entry, shared declarations, source definitions and labels, then build.
+
+For object grouping and the evidence behind recovered boundaries, see
+[translation-unit ownership](translation-units.md).
 
 | Stage | Implementation | Output under `build/` |
 | --- | --- | --- |
