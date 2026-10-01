@@ -29,6 +29,10 @@ that would change retail behavior.
 
 ## Data referents
 
+[Short data extent claims](data-extent-claims.md) records the two remaining
+claims, their retail bytes and references, and the evidence needed to name
+adjacent storage without inventing padding.
+
 - [ ] Clear the data debt and re-enable strict `data_matching` using the
   [build-system procedure](../build-system.md#re-enabling-data-matching). While
   matching is relaxed, 100% can hide a wrong data target or member addend even
