@@ -16,6 +16,12 @@ named by storage offset and the evidence needed to identify them.
 [Compiler warnings](compiler-warnings.md) records the full MSVC 5.0 warning
 census, resolved cases, and remaining source-model examples.
 
+## Layout and buffer boundaries
+
+[Layout and buffer boundaries](layout-and-buffer-boundaries.md) records
+constructed objects, named layout spans and fixed-buffer operations whose
+current source does not yet support a cleanup.
+
 ## Declaration placement
 
 [Declaration placement](declaration-placement.md) records the caller and owner
