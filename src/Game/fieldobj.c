@@ -2164,12 +2164,12 @@ void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
     SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO], record->items[7]);
     if (GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item < 1) {
         EmptyItemSlot(&GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN]);
-        GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].attachment = -1;
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].attachment = GEM_ITEM_INDEX_NONE;
         EmptyItemSlot(&GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO]);
-        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].attachment = -1;
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].attachment = GEM_ITEM_INDEX_NONE;
     } else if (GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].item < 1) {
         EmptyItemSlot(&GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO]);
-        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].attachment = -1;
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].attachment = GEM_ITEM_INDEX_NONE;
     } else {
         GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].quantity = GetGunMagazineSize(
             GetLoadedRecord(GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item)

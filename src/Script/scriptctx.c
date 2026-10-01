@@ -73,7 +73,7 @@ i16 ResolveObjectId(i16 ref) {
         return GetCombatant(g_targetId)->id;
     }
     if (slot == 22 || slot == 23) {
-        return LoadFusionResultCharacter(GetCharacter(-1))->id;
+        return LoadFusionResultCharacter(GetCharacter(CHARACTER_SLOT_FUSION_RESULT))->id;
     }
     return GetCharacterId(slot);
 }
@@ -147,7 +147,7 @@ Character* ResolveScriptObject(i16 id) {
         return GetCombatant(g_targetId);
     }
     if (id == SCRIPT_REF_FUSION_RESULT || id == SCRIPT_REF_FUSION_RESULT_ALIAS) {
-        return LoadFusionResultCharacter(GetCharacter(-1));
+        return LoadFusionResultCharacter(GetCharacter(CHARACTER_SLOT_FUSION_RESULT));
     }
     if (id < 0) {
         return AsCharacter(GetCharacter(ObjectSlotOfId(id)));
@@ -422,7 +422,7 @@ i16 StepScript(i16 window, u16 ch) {
     }
     if (!CaptureTextChar(ch)) {
         result = PutTextChar(window, ch, &g_textState, g_inChoices);
-        if (result == -1) {
+        if (result == SCRIPT_END) {
             return result;
         }
         AdvanceTextDelay();
@@ -464,7 +464,7 @@ i16 RunScriptStep(i16 window) {
             window = top;
         }
         result = StepScript(window, NextScriptChar(window));
-    } while (result == 0);
+    } while (result == SCRIPT_CONTINUE);
     return result;
 }
 
@@ -483,7 +483,7 @@ i16 TickScript(i16 window) {
 RVA(0x00039180, 0x24)
 u16 RetakeDeferredChar(i16 window, i16 result, const char* caller) {
     i16 top;
-    if (result != -2) {
+    if (result != SCRIPT_DEFERRED_CHAR) {
         return 0;
     }
     top = GetScriptWindowOrDefault(window);

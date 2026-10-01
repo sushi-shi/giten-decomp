@@ -18,6 +18,25 @@ the enum decisions are in `config/reviews/enum-reuse.tsv`. Reports under
 the compile database with `python3 -m giten.graph.compdb` before a Clang
 census if the unit manifest changed.
 
+## Review coverage still open
+
+The source-wide counts above do not mean every site has a disposition. The C
+cast scanner covers 142 written locations, but [the cast review](cast-census.md)
+groups them by family rather than recording an individual verdict and match
+state for each. [The union review](union-views.md) lists all 20 definitions,
+but does not yet prove every member's use and contribution to object extent.
+[The goto review](goto-review.md) groups 39 jumps by function; each edge still
+needs its own retail CFG and shared-tail verdict. These are review gaps, not
+permission to remove casts, views, or jumps based on their counts.
+
+[The common-code worklist](common-code-review.md) records supported helpers
+and selected candidate families; it has not reconciled every reconstructed
+function with an inline/macro/helper decision. The fixed-buffer table in
+[the layout review](layout-and-buffer-boundaries.md) records known risks but is
+not an exhaustive proof that all pointer ranges and resource lengths are
+bounded. A source search found no manual `va_arg` cursor or member-pointer
+owner recovery; neither category has a complete AST-based census here.
+
 ## Open source models
 
 The [typed-boundary ledger](typed-boundaries.md) gives the remaining cast,
@@ -70,6 +89,9 @@ layout and owner-seam examples at their source locations.
 - [Compiler warnings](compiler-warnings.md): the MSVC 5.0 census covers all 82
   configured translation units and records remaining source warnings by family
   with examples; source corrections need byte and ABI checks.
+- [Platform and graphics identities](platform-gfx-sound-identities.md): the
+  remaining live function-level TODOs have caller evidence and a concrete
+  witness needed to name each boundary.
 
 The project unions are intentional overlapping representations until a usage
 audit proves one view unused: examples include `ItemStack`'s packed word and

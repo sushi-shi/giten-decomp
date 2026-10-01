@@ -58,7 +58,19 @@
 #include <string.h>
 
 DATA(0x0006a0f8)
-static i16 s_statusCommandHotspots[11] = {-1, -1, -1, 55, 56, 57, -1, -1, 60, 61, 62};
+static i16 s_statusCommandHotspots[11] = {
+    HOTSPOT_AREA_NONE,
+    HOTSPOT_AREA_NONE,
+    HOTSPOT_AREA_NONE,
+    55,
+    56,
+    57,
+    HOTSPOT_AREA_NONE,
+    HOTSPOT_AREA_NONE,
+    60,
+    61,
+    62
+};
 
 DATA(0x0006499c)
 static const i8 s_battleStatIcons[4] = {0, 1, 8, 9};
@@ -72,7 +84,7 @@ typedef struct StatusPage {
 } StatusPage;
 
 DATA(0x0006a110)
-static StatusPage s_statPage = {-1, -1};
+static StatusPage s_statPage = {TEXT_PLANE_NONE, STATUS_COMMAND_NONE};
 
 DATA(0x0006a118)
 char* g_statusStatNames[12] = {
@@ -102,7 +114,7 @@ char* g_statusBattleLabels[7] = {
 };
 
 DATA(0x0006a164)
-static StatusPage s_alignmentPage = {-1, -1};
+static StatusPage s_alignmentPage = {TEXT_PLANE_NONE, STATUS_COMMAND_NONE};
 
 DATA(0x0006a168)
 char* g_statusNumberLabels[40] = {
@@ -438,7 +450,7 @@ static i16 DrawStatList(i16 plane, Character* member) {
     i16 y;
 
     if (!member) {
-        return -1;
+        return TEXT_PLANE_NONE;
     }
     for (stat = 0; stat < 10; stat++) {
         SetTextPlaneCursorLine(plane, 0, stat);
@@ -523,7 +535,7 @@ i16 OpenStatListWindow(Character* character) {
     i16 plane;
 
     if (!character) {
-        return -1;
+        return TEXT_PLANE_NONE;
     }
     plane = CreateTextPlane(17, 0);
     DrawStatList(plane, character);
@@ -785,22 +797,30 @@ typedef struct EquipPage {
 // One object: the fields sit two bytes apart, where separate variables take
 // four-byte slots.
 DATA(0x0006a208)
-static EquipPage s_equipPage = {NULL, -1, -1, -1, false};
+static EquipPage s_equipPage = {
+    NULL,
+    TEXT_PLANE_NONE,
+    TEXT_PLANE_NONE,
+    STATUS_COMMAND_NONE,
+    false
+};
 
 // One object: retail reads `itemBase` and `item` with dword moves that run
 // into the next field.
 DATA(0x0006a218)
-static AttachPage s_attach = {NULL, NULL, NULL, 0, -1, -1, 0, 0, 0, 0};
+static AttachPage s_attach = {
+    NULL, NULL, NULL, 0, TEXT_PLANE_NONE, STATUS_COMMAND_NONE, 0, 0, 0, 0
+};
 
 // The item page: its menu, its info window, the sub-state to resume (and then
 // the item picked), and the copy of the bag it lists.
 DATA(0x0006a238)
-static EquipItemPage s_itemPage = {NULL, -1, -1, NULL};
+static EquipItemPage s_itemPage = {NULL, TEXT_PLANE_NONE, STATUS_COMMAND_NONE, NULL};
 
 // The skill page: its menu, its description window, and the sub-state to
 // resume (and then the skill picked).
 DATA(0x0006a248)
-static EquipSkillPage s_skillPage = {NULL, -1, -1};
+static EquipSkillPage s_skillPage = {NULL, TEXT_PLANE_NONE, STATUS_COMMAND_NONE};
 
 // The bag entries the equipment menu lists and the attach page lists.
 DATA(0x00083b50)
@@ -856,7 +876,7 @@ static const i16 s_equipPickCategories[8] = {
 };
 
 DATA(0x0006a250)
-static i16 s_equipPickPart = -1;
+static i16 s_equipPickPart = EQUIP_PART_NONE;
 
 RVA(0x00042cd0, 0x182)
 i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
@@ -924,8 +944,8 @@ static __inline i16 FinishEquipChange(i16 member) {
     RecalcCharacterStats(GetRosterCharacter(member));
     s_equipPage.changed = true;
     SetGameSub(MENU_STEP_CLOSE);
-    s_equipPage.pick = -1;
-    return -1;
+    s_equipPage.pick = STATUS_COMMAND_NONE;
+    return STATUS_COMMAND_NONE;
 }
 
 // Runs the equipment page one step for input `key` (-2 cancels): step 0
@@ -983,12 +1003,12 @@ i16 RunEquipScreen(i16 key) {
             }
             if (RunListMenu(s_equipPage.menu) == LIST_MENU_OPEN) {
                 part = PollEquipPart(g_statusMember, EQUIP_PICK_PART);
-                if (part == -2) {
+                if (part == STATUS_COMMAND_CANCEL) {
                     PrevGameSub();
                     s_equipPage.pick = STATUS_COMMAND_CANCEL;
                     return STATUS_COMMAND_NONE;
                 }
-                if (part == -1) {
+                if (part == EQUIP_PART_NONE) {
                     return STATUS_COMMAND_NONE;
                 }
                 s_equipPage.pick = part;
@@ -1113,7 +1133,7 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
             sprintf(
                 g_scratchBuffer,
                 "%c %-20.20s %2d",
-                GetBagEntryAttachment(s_equipEntries[index]) != -1 ? '*' : ' ',
+                GetBagEntryAttachment(s_equipEntries[index]) != ITEM_ID_EMPTY ? '*' : ' ',
                 GetLoadedRecordName(item),
                 GetBagEntryCount(s_equipEntries[index])
             );
@@ -1426,7 +1446,7 @@ i16 RunAttachScreen(i16 sub) {
                 // "をはめ込んだ" (fitted in)
                 sprintf(g_scratchBuffer, "\202\360\202\315\202\337\215\236\202\361\202\276");
             } else {
-                StoreBagItem(s_attach.item, 1, -1);
+                StoreBagItem(s_attach.item, 1, GEM_ITEM_INDEX_NONE);
                 // "と%sを付け替えた" (swapped for %s)
                 sprintf(
                     g_scratchBuffer,
@@ -1456,7 +1476,7 @@ i16 RunAttachScreen(i16 sub) {
                 sprintf(g_scratchBuffer, "\202\360\202\315\202\337\215\236\202\361\202\276");
             } else {
                 s_attach.item += s_attach.itemBase;
-                StoreBagItem(s_attach.item, 1, -1);
+                StoreBagItem(s_attach.item, 1, GEM_ITEM_INDEX_NONE);
                 // "と%sを付け替えた" (swapped for %s)
                 sprintf(
                     g_scratchBuffer,
@@ -1575,7 +1595,7 @@ static void AttachEntryMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuE
             sprintf(
                 g_scratchBuffer,
                 "%c %-20.20s %2d",
-                GetBagEntryAttachment(s_attachEntries[index].entry) != -1 ? '*' : ' ',
+                GetBagEntryAttachment(s_attachEntries[index].entry) != ITEM_ID_EMPTY ? '*' : ' ',
                 GetLoadedRecordName(GetBagItem(s_attachEntries[index].entry)),
                 s_attachEntries[index].count
             );
@@ -2002,8 +2022,8 @@ i16 PollEquipPart(i16 member, i16 mode) {
     i16 part;
 
     if (mode < EQUIP_PICK_PART) {
-        s_equipPickPart = -1;
-        return -1;
+        s_equipPickPart = EQUIP_PART_NONE;
+        return EQUIP_PART_NONE;
     }
     if (mode < EQUIP_PICK_CLEAR) {
         if (s_equipPickPart >= 0 && g_mouseLeftClick) {
@@ -2016,7 +2036,7 @@ i16 PollEquipPart(i16 member, i16 mode) {
                 part = y / 4;
                 if (part < EQUIP_SLOT_COUNT) {
                     if (s_equipPickPart == part) {
-                        return -1;
+                        return EQUIP_PART_NONE;
                     }
                     if (mode != EQUIP_PICK_ATTACH_TARGET
                         || (part != EQUIP_PART_GUN && part != EQUIP_PART_AMMO
@@ -2038,9 +2058,9 @@ i16 PollEquipPart(i16 member, i16 mode) {
                                         )
                                 )
                                 < 1) {
-                                s_equipPickPart = -1;
+                                s_equipPickPart = EQUIP_PART_NONE;
                             }
-                            return -1;
+                            return EQUIP_PART_NONE;
                         }
                     }
                 }
@@ -2048,8 +2068,8 @@ i16 PollEquipPart(i16 member, i16 mode) {
         }
     }
     UnhighlightEquipPart(member);
-    s_equipPickPart = -1;
-    return -1;
+    s_equipPickPart = EQUIP_PART_NONE;
+    return EQUIP_PART_NONE;
 }
 
 RVA(0x00045130, 0x9a)
@@ -2057,7 +2077,7 @@ i16 DrawEquipPickRow(i16 member, GZ_ENUM_PARAM(EquipPart, i16) part, i32 attr) {
     ItemSlot slot = GetRosterEquipSlot(member, part);
     char mark;
 
-    if (slot.attachment == -1) {
+    if (slot.attachment == GEM_ITEM_INDEX_NONE) {
         mark = ' ';
     } else {
         mark = '*';

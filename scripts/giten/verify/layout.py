@@ -170,7 +170,10 @@ class Layout:
             for moff, mname, mid in members:
                 if moff <= off:
                     msz = (self.node(mid) or {}).get("sz") or 0
-                    if node.get("u") or off < moff + max(msz, 1):
+                    # Even a union alias only covers its own declared extent.
+                    # A short, later alias must not hide a longer member at
+                    # offsets it cannot contain (Character.alignmentB).
+                    if off < moff + max(msz, 1):
                         hit = (moff, mname, mid)
             if hit is None:
                 first = min(m[0] for m in members)

@@ -79,6 +79,8 @@ void SetPanelImage(i16 image);
 Panel* CreateImagePanel(Panel* panel, i16 image, i16 count, i16 unused);
 Panel* CreateKindPanel(Panel* panel, i16 image, i16 count, i16 kind);
 Panel* CreateSequentialPanel(Panel* panel, i16 image, i16 count);
+// CreatePositionedPanel places a default coordinate at the origin.
+#define PANEL_POSITION_DEFAULT (-1)
 Panel* CreatePositionedPanel(Panel* panel, i16 x, i16 y, i16 count, i16 kind);
 Panel* ReleasePanel(Panel* panel, b16 freePanel);
 i16 PanelRowHandlerDefault(PanelRow* row, i16 value, i16 op);
@@ -137,6 +139,8 @@ i16 ApplyRowCheck(PanelRow* row, i16 value, GZ_ENUM_PARAM(BitChangeMode, i16) op
 
 // @identity-TODO: the hotspot helpers the panels use (0x453fd0 draws or
 // highlights hotspot `id` in `mode`; 0x454230 tests x/y against it).
+// No panel or text-plane hotspot area is assigned to this command.
+#define HOTSPOT_AREA_NONE (-1)
 void HighlightHotspot(i16 mode, i16 id, i16 on);
 
 i16 HitTestHotspot(i16 id, i16 x, i16 y, i16 strict);

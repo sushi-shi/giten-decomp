@@ -3,6 +3,14 @@
 King's Field's [cast, union and goto review](https://github.com/sushi-shi/kings-field-decomp/blob/master/docs/patterns/cast-union-goto-review.md) checks every union member against its consumers before removing a view. This is the corresponding source review for Giten's `src/` and `include/` tree. A union with several used views is a model of one packed value or serialized payload; the review does not establish that the original source spelled a union.
 
 There are 20 written union definitions. Every definition and its source consumers are listed below.
+This is a view-level review, not a completed member-by-member census: it does
+not count every member access across the compiled C and C++ variants or prove
+which member determines each union's extent. For each of the 20 definitions,
+resolve all member accesses, record unused members and compare the union size
+with its largest used view before removing any alternative. Check the owning
+functions' instructions and referents after a proposed change. A missing
+direct spelling can reflect access through a macro or typed pointer, and an
+unused member can still determine the size of a copied or stack object.
 
 | Union | Used views and evidence | Decision |
 | --- | --- | --- |
@@ -34,3 +42,6 @@ There are 20 written union definitions. Every definition and its source consumer
 ## Indirect view: `Character` alignment A
 
 The anonymous `Character` union has `AlignmentInfo alignmentA` and an alternate struct with `fieldPosition`, `facing` and `fieldStateReserved`. A direct spelling search found no `fieldPosition` or `fieldStateReserved` consumer, but `facing` is read and written through `GetFieldActor`, whose declared result is `Character*`. A trial replacing the union with `AlignmentInfo` compiled the `character` unit but broke `skilluse.c` and `partyaction.c`; it was reverted. The field actor's separate `FieldObject.pos` and `direction` declarations do not by themselves remove the typed `Character.facing` consumer. Any future canonical-owner split must trace those return types and callers before changing the shared layout.
+The per-member review should also establish whether the unused fields set any
+extent or offset that `AlignmentInfo` and `facing` do not already require;
+their absent direct reads alone are not a removal verdict.

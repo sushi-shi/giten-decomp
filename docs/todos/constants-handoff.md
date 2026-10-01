@@ -1,10 +1,15 @@
 # Deferred constant identities
 
 `config/constants.tsv` is the review ledger for numeric spellings exposed by
-the translation-unit AST in `src/` and `include/`. Its floor is zero: each
-AST-exposed literal is named or has a narrowly matched reason to stay numeric.
-`giten verify constants --list [FILTER]` shows any newly open AST sites, and
-`--gate` detects stale or unreviewed rows. Numeric spellings in macro
+the translation-unit AST in `src/` and `include/`. Its zero-open floor means
+each AST-exposed literal is named or matches a ledger reason to stay numeric;
+it does **not** mean every literal has a recovered identity. Some reasons
+explicitly defer that identity, and wildcard rows can cover several values.
+`giten verify constants --list [FILTER]` shows newly open AST sites;
+`--deferred-list [FILTER]` shows sites kept by an `@identity-TODO` reason.
+The generated `build/gen/constants_kept.tsv` maps every kept site to its
+ledger line and reason. `--gate` detects stale or unreviewed rows, but does
+not fail on deferred identities. Numeric spellings in macro
 definitions have a [separate source census](macro-literals.md); they do
 not yet participate in this floor.
 The generated `build/clangd/compile_commands.json` must list the current

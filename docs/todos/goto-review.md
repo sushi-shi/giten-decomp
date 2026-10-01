@@ -24,3 +24,9 @@ The written-site inventory can be refreshed with
 `rg -n '^\s*goto\s+' src include --glob '*.{c,cpp,h}'`. This source search
 found no header goto; it is not an AST proof that conditional preprocessing
 makes every site active. The source and retail CFG decide each disposition.
+
+This table is function-level triage, not a completed verdict for each of the
+39 jumps. `ReadTextToken` has seven jumps into `readIndexedToken` and five into
+`readTokenValue`; `RunPartyCommandInput` has four jumps into
+`target_selected`. Each edge still needs its predecessor, shared work, and
+retail CFG checked individually before the review can be called complete.

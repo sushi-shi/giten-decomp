@@ -762,7 +762,7 @@ GZ_ENUM_RETURN(CellEventKind, i16) CheckCellEvent(i16 x, i16 y, i16 level) {
                 return CELL_EVENT_SCRIPT;
             }
             SetWorldMapSpot(layer, link->spotX, link->spotY);
-            g_worldMapRequest = 1;
+            g_worldMapRequest = WORLD_MAP_REQUEST_SAVED_SPOT;
             return kind->kind;
         }
         if ((kind->flags & CELL_KIND_CHECK_FACING) && link->facings != 0
@@ -1305,7 +1305,11 @@ Panel* CreatePositionedPanel(Panel* panel, i16 x, i16 y, i16 count, i16 kind) {
         s_panelImage = 0x112;
     }
     panel = CreateKindPanel(panel, s_panelImage, count, kind);
-    SetPanelPosition(panel, x == -1 ? 0 : x, y == -1 ? 0 : y);
+    SetPanelPosition(
+        panel,
+        x == PANEL_POSITION_DEFAULT ? 0 : x,
+        y == PANEL_POSITION_DEFAULT ? 0 : y
+    );
     s_panelImage = -1;
     return panel;
 }

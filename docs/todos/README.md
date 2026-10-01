@@ -26,6 +26,8 @@ census, resolved cases, and remaining source-model examples.
 [Script and graphics width boundaries](warning-width-boundaries.md) and
 [Game argument-width warnings](argument-width-warnings.md) record focused
 caller/callee evidence for retained narrowing sites.
+[Platform and graphics identities](platform-gfx-sound-identities.md) records
+remaining live function TODOs and the evidence needed to close them.
 
 ## Layout and buffer boundaries
 
@@ -55,16 +57,20 @@ that would change retail behavior.
 
 ## Data referents
 
+[Game data band](game-data-band.md) accounts for every initialized `.data` and
+zero-filled `.bss` byte, distinguishing source/model claims from unidentified
+retail spans. It records the wall arrays and game-adjacent gaps without
+assigning unsupported storage.
 [Short data extent claims](data-extent-claims.md) records the two remaining
 claims, their retail bytes and references, and the evidence needed to name
 adjacent storage without inventing padding.
 
-- [ ] Clear the data debt and re-enable strict `data_matching` using the
-  [build-system procedure](../build-system.md#re-enabling-data-matching). While
-  matching is relaxed, 100% can hide a wrong data target or member addend even
-  when the instruction bytes match. `giten verify data-identity` checks paired
-  sites, but does not cover every relocation layout; audit ordered data
-  referents before treating an exact score as a full referent match.
+Strict `data_matching` is enabled in `config/compare.toml`, and the current
+build reports no unprovisioned identities or placeholder externs. It compares
+data targets and addends, while `giten verify data-access` checks retail reads
+against declared storage. Neither comparison proves the run-time index range
+of a register-indexed array read. The final `UpdateFieldHud` wall-row scan is
+recorded in [layout and buffer boundaries](layout-and-buffer-boundaries.md).
 
 ## Rule exceptions
 

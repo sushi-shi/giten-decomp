@@ -39,7 +39,13 @@ MenuBox* CreateMenuBox(MenuBox* old, i16 window, i16 panelRows) {
     menu = AllocCleared(1, sizeof(MenuBox));
     menu->plane = CreateTextPlane(window, 0);
     menu->pageRows = GetTextPlaneLineCount(menu->plane);
-    menu->list = CreatePositionedPanel(NULL, -1, -1, panelRows, window);
+    menu->list = CreatePositionedPanel(
+        NULL,
+        PANEL_POSITION_DEFAULT,
+        PANEL_POSITION_DEFAULT,
+        panelRows,
+        window
+    );
     menu->cursor = 0;
     menu->itemCount = 0;
     menu->items.text = NULL;

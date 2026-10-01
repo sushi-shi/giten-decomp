@@ -95,12 +95,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define SCRIPT_CHOICE_NONE (-1)
+
+GZ_ENUM_BEGIN_SPLIT(ScriptChoicePollResult, i16)
+    SCRIPT_CHOICE_CANCELLED = -1,
+    SCRIPT_CHOICE_WAITING = 0,
+    SCRIPT_CHOICE_SELECTED = 1
+GZ_ENUM_END_SPLIT(ScriptChoicePollResult)
+
 DATA(0x000646c8)
 static const i16 s_rewardLevelThresholds[GEM_ITEM_COUNT] =
     {20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140};
 
 DATA(0x00069130)
-static i16 s_hoveredChoice = -1;
+static i16 s_hoveredChoice = SCRIPT_CHOICE_NONE;
 
 // "Ａ", "Ｂ", "ＡＢ", "Ｏ".
 DATA(0x00069138)
@@ -266,7 +274,7 @@ void PlaceScriptActor(void) {
     }
     if (TestModeFlags(MODE_WORLD_MAP)) {
         layer = FindLayerOfKind(g_curScript->actor->id);
-        if (layer == -1) {
+        if (layer == FIELD_LAYER_NONE) {
             return;
         }
         SpawnFieldObject(
@@ -285,7 +293,7 @@ void PlaceScriptActor(void) {
             ((FieldActor*)g_curScript->actor)->pos.x,
             ((FieldActor*)g_curScript->actor)->pos.y
         );
-        if (layer == -1) {
+        if (layer == CELL_OBJECT_INDEX_NONE) {
             return;
         }
         SpawnMapObject(
@@ -293,7 +301,7 @@ void PlaceScriptActor(void) {
             ((FieldActor*)g_curScript->actor)->pos.x,
             ((FieldActor*)g_curScript->actor)->pos.y,
             ((FieldActor*)g_curScript->actor)->direction,
-            -1
+            FIELD_OBJECT_NO_EVENT
         );
     }
     RequestFieldRefresh();
@@ -440,7 +448,7 @@ i16 PickEquipmentReward(Character* character) {
         for (i = pick; i < count; i++) {
             items[i] = items[i + 1];
         }
-        items[count] = -1;
+        items[count] = ITEM_ID_EMPTY;
         if (count <= 3) {
             return 0;
         }
@@ -1025,9 +1033,9 @@ RVA(0x00033fb0, 0x21)
 i16 ReturnFromCall(void) {
     PopCallFrame(g_curScript, 0);
     if (g_curScript->codeBase) {
-        return 0;
+        return SCRIPT_CONTINUE;
     }
-    return -1;
+    return SCRIPT_END;
 }
 
 // Discards every call frame and continues at `entry` of script file `file`.
@@ -1811,7 +1819,7 @@ void OpJumpUnlessCanAfford(i16 invert) {
     if (object) {
         price = GetRankScore(object);
     }
-    price -= GetObjectMacca(-1);
+    price -= GetObjectMacca(SCRIPT_REF_SLOT_BASE);
     if ((price <= 0 && !invert) || (price > 0 && invert)) {
         jump = true;
     }
@@ -1865,18 +1873,18 @@ static __inline Character* GetResolvedPartyCharacter(i16 id) {
     return GetRosterCharacterById(ResolveObjectId(id), 1);
 }
 
-// The same for the first of the companions -2, -3 and -7 in the roster.
+// The first of the companions in script object slots 1, 2 and 6.
 RVA(0x00035340, 0xb5)
 void OpJumpUnlessCompanionHealthy(i16 invert) {
     i16 conditions = 0;
     b32 jump = false;
     i16 target = ReadBranchTarget();
-    Character* companion = GetResolvedPartyCharacter(-2);
+    Character* companion = GetResolvedPartyCharacter(ScriptObjectRefFromSlot(1));
     if (!companion) {
-        companion = GetResolvedPartyCharacter(-3);
+        companion = GetResolvedPartyCharacter(ScriptObjectRefFromSlot(2));
     }
     if (!companion) {
-        companion = GetResolvedPartyCharacter(-7);
+        companion = GetResolvedPartyCharacter(ScriptObjectRefFromSlot(6));
     }
     if (!companion && invert) {
         jump = true;
@@ -2011,7 +2019,7 @@ void OpGiveItem(void) {
     i16 item = ReadScriptValue();
     if (item > 0) {
         i16 quiet = SetBagQuiet(0);
-        StoreBagItem(item, 1, -1);
+        StoreBagItem(item, 1, GEM_ITEM_INDEX_NONE);
         SetBagQuiet(quiet);
     }
 }
@@ -2110,7 +2118,7 @@ void OpAdjustItemCount(void) {
     if (count < 0) {
         moved = count - TakeBagItems(item, count);
     } else {
-        moved = count - StoreBagItem(item, count, -1);
+        moved = count - StoreBagItem(item, count, GEM_ITEM_INDEX_NONE);
     }
     if (count > 0 && moved < 0) {
         moved = 0;
@@ -2335,7 +2343,7 @@ void OpChangeMap(void) {
     i16 x = ReadScriptValue();
     i16 y = ReadScriptValue();
     SetReturnPoint(area, level, x, y, ReadScriptValue());
-    g_worldMapRequest = -1;
+    g_worldMapRequest = WORLD_MAP_REQUEST_EXIT;
 }
 
 // Sets the world-map layer and spot the world map opens at.
@@ -2344,7 +2352,7 @@ void OpSetWorldMapSpot(void) {
     i16 layer = ReadScriptValue();
     i16 x = ReadScriptValue();
     SetWorldMapSpot(layer, x, ReadScriptValue());
-    g_worldMapRequest = 1;
+    g_worldMapRequest = WORLD_MAP_REQUEST_SAVED_SPOT;
 }
 
 // Adds a world-map route point: layer `layer`'s origin plus an x/y offset
@@ -2450,9 +2458,9 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpAddToRoster(void) {
     if (ref >= SCRIPT_REF_CHARACTER_BASE) {
         id = ref - SCRIPT_REF_CHARACTER_BASE;
     }
-    if (ref == -17 || ref == -19) {
+    if (ref == SCRIPT_REF_ACTOR || ref == SCRIPT_REF_ACTOR_ALIAS) {
         id = GetScriptActorId();
-        if (id != -1) {
+        if (id != CHARACTER_ID_NONE) {
             DespawnScriptActor();
             LoadScriptCharacterToRoster(id);
         }
@@ -2463,7 +2471,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpAddToRoster(void) {
         return SCRIPT_CONTINUE;
     }
     character = GetCharacter(ObjectSlotOfId(ref));
-    if (RosterSlotOfId(character->id) == -1) {
+    if (RosterSlotOfId(character->id) == ROSTER_SLOT_NONE) {
         AddScriptCharacterToRoster(character, 3);
         SetAnalyzed(character->id, 1);
         SortRoster();
@@ -2492,17 +2500,17 @@ i16 OpRemoveFromRoster(void) {
         return 0;
     } else if (id >= SCRIPT_REF_PARTY_BASE) {
         i16 slot = GetPartySlot(id - SCRIPT_REF_PARTY_BASE);
-        if (slot != -1) {
+        if (slot != ROSTER_SLOT_NONE) {
             RemoveFromRoster(slot);
         }
         return 0;
     } else {
-        if (id == -17 || id == -19) {
+        if (id == SCRIPT_REF_ACTOR || id == SCRIPT_REF_ACTOR_ALIAS) {
             return -1;
         }
-        if (id == -18) {
+        if (id == SCRIPT_REF_ACTOR_BY_ID) {
             id = GetScriptActorId();
-            if (id == -1) {
+            if (id == CHARACTER_ID_NONE) {
                 return -1;
             }
         }
@@ -2528,7 +2536,7 @@ i16 OpJoinActiveParty(void) {
             return -1;
         }
     }
-    if (ref == -17 || ref == -19) {
+    if (ref == SCRIPT_REF_ACTOR || ref == SCRIPT_REF_ACTOR_ALIAS) {
         id = GetScriptActorId();
         if (id == CHARACTER_ID_NONE) {
             return -1;
@@ -2537,14 +2545,14 @@ i16 OpJoinActiveParty(void) {
     if (id < 0) {
         id = ResolveObjectId(id);
     }
-    if (id < HUMAN_ID_LIMIT && RosterSlotOfId(id) == -1) {
+    if (id < HUMAN_ID_LIMIT && RosterSlotOfId(id) == ROSTER_SLOT_NONE) {
         Character* character = FindCharacterById(id);
         AddScriptCharacterToRoster(character, 3);
         SetAnalyzed(character->id, 1);
         SortRoster();
     }
     slot = RosterSlotOfId(id);
-    if (id >= 32 || FindPartyPositionOfId(id) == -1) {
+    if (id >= 32 || FindPartyPositionOfId(id) == PARTY_POSITION_NONE) {
         AddToParty(slot);
         RequestFieldRefresh();
     }
@@ -2564,7 +2572,7 @@ i16 OpLeaveActiveParty(void) {
             return -1;
         }
     }
-    if (ref == -17 || ref == -19) {
+    if (ref == SCRIPT_REF_ACTOR || ref == SCRIPT_REF_ACTOR_ALIAS) {
         id = GetScriptActorId();
         if (id == CHARACTER_ID_NONE) {
             return -1;
@@ -2624,12 +2632,12 @@ void OpIfObjectIsAlly(i16 negate) {
     b32 matches;
     if (id == SCRIPT_REF_BATTLE_ACTOR) {
         id = g_actorId;
-    } else if (id == -21) {
+    } else if (id == SCRIPT_REF_BATTLE_TARGET) {
         id = g_targetId;
-    } else if (id == -16) {
+    } else if (id == SCRIPT_REF_FAVOURED_MEMBER) {
         id = GetPartySlot(FindFavouredMember());
         if (id >= 0) {
-            id = -1 - id;
+            id = ScriptObjectRefFromSlot(id);
         }
     }
     matches = false;
@@ -4087,7 +4095,7 @@ void InitScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cance
     if (g_mouseLeftClick) {
         g_mouseLeftClick = MOUSE_CLICK_NONE;
     }
-    s_hoveredChoice = -1;
+    s_hoveredChoice = SCRIPT_CHOICE_NONE;
     s_highlightedChoice = NULL;
 }
 
@@ -4117,7 +4125,7 @@ i16 PollScriptChoiceMenu(void) {
             s_choiceMenu = FreeScriptChoices(s_choiceMenu);
         }
         PlaySoundEffect(2);
-        return -1;
+        return SCRIPT_CHOICE_CANCELLED;
     }
     hovered = FindScriptChoiceAtMouse();
     if (hovered != s_hoveredChoice) {
@@ -4127,10 +4135,10 @@ i16 PollScriptChoiceMenu(void) {
         ToggleScriptChoiceHighlight();
     }
     if (!TakeMouseLeftClick()) {
-        return 0;
+        return SCRIPT_CHOICE_WAITING;
     }
-    if (s_hoveredChoice == -1) {
-        return 0;
+    if (s_hoveredChoice == SCRIPT_CHOICE_NONE) {
+        return SCRIPT_CHOICE_WAITING;
     }
     g_hoveredObjectId = s_hoveredChoice;
     g_selectedObjectId = s_highlightedChoice->value;
@@ -4147,7 +4155,7 @@ i16 PollScriptChoiceMenu(void) {
         s_choiceMenu = FreeScriptChoices(s_choiceMenu);
     }
     PlaySoundEffect(1);
-    return 1;
+    return SCRIPT_CHOICE_SELECTED;
 }
 
 RVA(0x000386d0, 0xbf)
@@ -4173,7 +4181,7 @@ i16 FindScriptChoiceAtMouse(void) {
         index++;
     }
     s_hitChoice = NULL;
-    return -1;
+    return SCRIPT_CHOICE_NONE;
 }
 
 RVA(0x00038790, 0x53)

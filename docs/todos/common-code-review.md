@@ -6,7 +6,9 @@ variants and constant macros). Those counts are a search boundary, not a
 count of debt. Repeated operations should be shared only when their owner,
 evaluation order, and compiled call shape support the same boundary. The
 separate [vendor macro worklist](vendor-macros.md) records SDK and CRT
-spellings.
+spellings. This worklist reviews candidate families, not every reconstructed
+function. It has no function-by-function checklist reconciled with the retail
+function inventory, as the King's Field common-code review does.
 
 ## Recovered project operations
 
@@ -28,11 +30,12 @@ spellings.
 | Lock descriptions in `LayerAtPoint`, `PadButtonAtPoint`, `CopySurfaceSquare` (`src/Gfx/surfacecopy.cpp`) and `ReadSurfaceWord` (`src/Platform/d3dapp.cpp`) | The shared `DDSD_CAPS`/`DDSCAPS_SYSTEMMEMORY` fields precede distinct lock targets and readback rules. `ReadSurfaceWord` is already an out-of-line pixel accessor used by other callers; calling it from the navigation-pad functions would replace their in-place lock sequence. The focused inline trial above changed their code. Keep the four lock sequences pending a compatible boundary. |
 | Weapon/gun hit and exceptional rolls in `RollWeaponHit`, `RollGunHit`, `RollExceptionalWeaponAttack`, `RollExceptionalAttack` | Existing `GetExceptionalAttackLuck`, `GetExceptionalAttackBase`, and `ApplyAttackAccuracyConditions` capture proven suboperations. Gun hit adds DANCE evasion before the shared roll shape; the exceptional weapon path returns `SetActionResult` while the other sets the result then returns a constant. Keep those ordered result and RNG paths separate unless a smaller compiler-compatible operation is found. |
 | DirectX teardown in `ReleaseDirectX` (`src/Platform/d3dapp.cpp`) and `ReleaseGraphics` (`src/Platform/winmain.cpp`) | The COM releases overlap, but graphics teardown also releases pictures/layers and MIDI state, and the render-target/room-object order differs. `ReleaseComObject` already owns the common COM release operation. The larger sequences have different lifecycle policy and cannot share an ordered release body. |
+| Fusion detail formatting in `DrawFusionCharacterDetails` and `DrawFusionPreviewCard` (`src/Game/fusion.c`) | Both format HP, MP, and alignment labels into `g_scratchBuffer` before drawing them. The text coordinates differ and the preview card draws a name first. Inspect the formatting and buffer lifetime as a possible smaller shared operation; the full drawing sequences are distinct. |
+| Hotspot resets in three field render paths (`src/Platform/winmain.cpp`) | All three clear `g_hotspots` and `g_hotspotCount`. The first resets the count before clearing the array; the other two reverse that order. Check the retail instruction order and intervening effects before proposing a common reset operation. |
 
-These remaining families have been read through their callers and current
-helpers. Their next evidence is stated in the table; none supports another
-source extraction from the present call and object comparison. Exact
-duplicate windows were used to find leads; a shared three-line window alone
-does not establish a helper. The inline and macro declaration counts include
-established SDK wrappers, domain accessors, enum machinery, and constants
-that have no repeated operation to extract.
+The first five remaining families have been read through their callers and
+current helpers; the final two are new leads needing instruction comparison.
+Exact duplicate windows were used to find leads, but a shared three-line
+window alone does not establish a helper. The inline and macro declaration
+counts include established SDK wrappers, domain accessors, enum machinery,
+and constants that have no repeated operation to extract.

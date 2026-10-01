@@ -2583,7 +2583,7 @@ GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(ItemRecord* item) {
 
 RVA(0x00040310, 0x90)
 ItemSlot GetEquipSlot(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
-    ItemSlot none = {-1, -1, 0};
+    ItemSlot none = {ITEM_ID_EMPTY, GEM_ITEM_INDEX_NONE, 0};
     if (character != NULL) {
         switch (part) {
             case EQUIP_PART_WEAPON:

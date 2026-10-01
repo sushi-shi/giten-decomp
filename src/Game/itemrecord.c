@@ -566,7 +566,7 @@ i16 SetBagQuiet(i16 quiet) {
 
 RVA(0x000236b0, 0x30)
 i16 CountHeldItem(i16 id) {
-    if (GemItemIndex(id) != -1) {
+    if (GemItemIndex(id) != GEM_ITEM_INDEX_NONE) {
         return CountGemItems(id);
     }
     return CountBagItem(id);
@@ -580,7 +580,7 @@ i16 StoreBagItem(i16 item, i16 count, i16 attachment) {
     if (item < 1) {
         return count;
     }
-    if (GemItemIndex(item) != -1) {
+    if (GemItemIndex(item) != GEM_ITEM_INDEX_NONE) {
         stored = count;
         AddGemItems(item, count);
     } else {
@@ -613,7 +613,7 @@ i16 StoreBagItem(i16 item, i16 count, i16 attachment) {
 
 RVA(0x00023780, 0x40)
 i16 TakeBagItems(i16 item, i16 count) {
-    if (GemItemIndex(item) != -1) {
+    if (GemItemIndex(item) != GEM_ITEM_INDEX_NONE) {
         TakeGemItems(item, count);
         return count;
     }
@@ -709,7 +709,7 @@ i16 GivePooledItems(void) {
             } else {
                 item = GetItemStackItem(GetItemPoolEntry(i));
             }
-            amount -= StoreBagItem(item, amount, -1);
+            amount -= StoreBagItem(item, amount, GEM_ITEM_INDEX_NONE);
             if (amount < 0) {
                 amount = 0;
             }
@@ -865,7 +865,7 @@ i16 CountBagItem(i16 item) {
 RVA(0x00023d50, 0x70)
 void SetBagEntry(i16 index, i16 item, i16 attachment) {
     g_bagItems[index].item = item;
-    if (attachment != -1) {
+    if (attachment != GEM_ITEM_INDEX_NONE) {
         g_bagItems[index].attachment = attachment;
         g_bagItems[index].hasAttachment = true;
     } else {
@@ -898,7 +898,7 @@ i16 TakeFromBagEntry(i16 index, i16 amount) {
     amount &= 0xff;
     g_bagItems[index].count -= amount;
     if (GetItemStackCount(&g_bagItems[index]) == 0) {
-        SetBagEntry(index, -1, -1);
+        SetBagEntry(index, ITEM_ID_EMPTY, GEM_ITEM_INDEX_NONE);
     }
     return amount;
 }
@@ -1005,11 +1005,11 @@ static void CompactBagCore(void) {
     }
 #ifdef GITEN_BUGFIX
     for (i = 0; i < 48; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) != -1) {
+        if (GetItemStackItem(&g_bagItems[i]) != ITEM_ID_EMPTY) {
             continue;
         }
         for (j = 0; j < kept; j++) {
-            if (GetItemStackItem(&scenarioItems[j]) != -1) {
+            if (GetItemStackItem(&scenarioItems[j]) != ITEM_ID_EMPTY) {
                 g_bagItems[i] = scenarioItems[j];
                 ClearItemStack(&scenarioItems[j]);
                 break;
@@ -1078,7 +1078,7 @@ i16 AddScenarioBagItems(i16 item, i16 count) {
 
     for (i = BAG_ORDINARY_ENTRY_COUNT; i < BAG_ENTRY_COUNT; i++) {
         if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
-            SetBagEntry(i, item, -1);
+            SetBagEntry(i, item, GEM_ITEM_INDEX_NONE);
             count -= AddToBagEntry(i, count, limit);
             if (count <= 0) {
                 break;
@@ -1094,8 +1094,8 @@ i16 AddScenarioBagItems(i16 item, i16 count) {
     // closes. The rest goes to empty normal entries instead; the scenario
     // item's readers find it by item, in any entry.
     for (i = 0; i < 48 && count > 0; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) == -1) {
-            SetBagEntry(i, item, -1);
+        if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
+            SetBagEntry(i, item, GEM_ITEM_INDEX_NONE);
             count -= AddToBagEntry(i, count, limit);
         }
     }
@@ -1150,7 +1150,7 @@ void CompactBag(void) {
             while (next < BAG_ORDINARY_ENTRY_COUNT) {
                 if (GetItemStackItem(&g_bagItems[next]) != ITEM_ID_EMPTY) {
                     g_bagItems[i] = g_bagItems[next];
-                    SetBagEntry(next, -1, -1);
+                    SetBagEntry(next, ITEM_ID_EMPTY, GEM_ITEM_INDEX_NONE);
                     break;
                 }
                 next++;
@@ -1179,7 +1179,7 @@ RVA(0x000243f0, 0x80)
 i16 ReadBagEntry(i16 index, ItemSlot* slot, i16* count) {
     slot->item = GetBagItem(index);
     if (!HasItemStackAttachment(&g_bagItems[index])) {
-        slot->attachment = -1;
+        slot->attachment = GEM_ITEM_INDEX_NONE;
     } else {
         slot->attachment = g_bagItems[index].attachment;
     }
@@ -1191,7 +1191,7 @@ i16 ReadBagEntry(i16 index, ItemSlot* slot, i16* count) {
 RVA(0x00024470, 0x30)
 i16 GetBagEntryAttachment(i16 index) {
     if (!HasItemStackAttachment(&g_bagItems[index])) {
-        return -1;
+        return ITEM_ID_EMPTY;
     }
     return GetGemItemBase() + g_bagItems[index].attachment;
 }
@@ -1231,7 +1231,7 @@ i16 GemItemIndex(i16 id) {
     if (GetItemKind(id) == ITEM_KIND_GEM) {
         return id - s_gemItemBase;
     }
-    return -1;
+    return GEM_ITEM_INDEX_NONE;
 }
 
 RVA(0x000245b0, 0xb0)
@@ -2143,7 +2143,7 @@ void RunBagDiscardMenu(void) {
         WaitMenuFrame();
     }
     DestroyMenuBox(menu);
-    SetBagEntry(entries[g_selectedObjectId], -1, -1);
+    SetBagEntry(entries[g_selectedObjectId], ITEM_ID_EMPTY, GEM_ITEM_INDEX_NONE);
 #ifdef GITEN_BUGFIX
     return true;
 #endif

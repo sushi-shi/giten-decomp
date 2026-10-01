@@ -41,7 +41,7 @@ ItemStackList* CopyBagEntries(i16 first, i16 count, ItemStackList* list);
 // a NULL list).
 i16 RestoreBagEntries(ItemStackList* list);
 
-// Sets entry `index` to `item` with `attachment` (-1: none), holding nothing.
+// Sets entry `index` to `item` with `attachment` (GEM_ITEM_INDEX_NONE: none), holding nothing.
 void SetBagEntry(i16 index, i16 item, i16 attachment);
 
 // Takes up to `amount` from entry `index`, emptying it when none are left;

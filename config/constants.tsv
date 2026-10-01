@@ -284,7 +284,6 @@ src/Game/fieldobj.c	InitObjectFromRecord	*	*	operator &	a record's bits68 packs 
 src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 bitwise	a record's bits68 packs the pick flags in bits 5-6
 src/Game/fieldobj.c	InitObjectFromRecord	*	call-argument	ScaleLevelGap*	the record's two alignment bytes
 src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 bound item	item 0 is no item
-src/Game/fieldobj.c	InitObjectFromRecord	-1	*	*	an empty slot has no attachment
 src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 store byte096	@identity-TODO: byte096 starts at 1
 src/Game/fieldobj.c	InitObjectFromRecord	0x11	*	*	@identity-TODO: word098 starts at 0x11
 src/Game/fieldobj.c	ReadObjectRecordField	*	*	*	a field of one, two or four bytes
@@ -396,7 +395,6 @@ src/Game/treasurebox.c	LoadAreaNpcImages	*	*	*	@identity-TODO: the NPC record's 
 src/Game/treasurebox.c	AddAreaNpc	1	*	*	the texture slot follows the entry byte
 src/Game/treasurebox.c	GetNpcImageOfCode	4	*	*	retail's physical-recovery index lands on the adjacent direction-mask table at codes 0x48..0x4e; the out-of-bounds source referent remains to preserve its matched code shape
 src/Game/treasurebox.c	GetNpcTexture	0	*	*	no texture
-src/Game/treasurebox.c	NextNpcSlot	-1	*	*	no free slot
 src/Game/treasurebox.c	DrawNpcAt	*	*	*	only depths 0 and -1 draw an NPC
 src/Game/treasurebox.c	ShieldTarget	10	*	*	a shield of a tenth of the maximum HP
 src/Game/treasurebox.c	*	*	call-argument	HasObjectInReach(*	@identity-TODO: reach mode (1 from the party, 0 its own cell) and the party's combatant -1
@@ -529,7 +527,6 @@ src/Platform/winmain.cpp	BlitTextPlanes	*	*	*	text-plane blitting: the plane bit
 src/Platform/winmain.cpp	RunMoveCommand	7	*	*	the move-command table index mask (eight commands)
 src/Platform/winmain.cpp	PollJoystick	0xffff	*	*	all joystick button bits, to invert the last state
 src/Platform/winmain.cpp	HandleInput	0	call-argument	PostQuitMessage(*argument 1	the exit code
-src/Script/scriptvm.c	ExecScriptOpcode	[-1]*	call-argument	Op[AC][dh]*(*argument 1	the sign that scales the script operand (add or take away)
 src/Script/scriptvm.c	ExecScriptOpcode	[01]	call-argument	OpPlaceSprite(*argument 1	an argument the body never reads; what the two opcodes differ in is unrecovered (@identity-TODO in ScriptOps.h)
 src/Script/scriptvm.c	ExecScriptOpcode	1	call-argument	OpSkipJumpTarget(*argument 1	an argument the body never reads (@identity-TODO in ScriptOps.h)
 src/Script/scriptvm.c	ExecScriptOpcode	[12]	call-argument	OpIfDemonCount(*argument 2	the demon count the opcode tests against
@@ -601,7 +598,6 @@ src/Ui/message.c	RunTextWindowState	1	call-argument	TestFeatureMask(*	@identity-
 src/Ui/message.c	SetMessageLifetime	*	*	*	a lifetime under one tick falls back to 15 ticks
 src/Ui/message.c	TickMessageWindow	0	*	*	no ticks left
 src/Ui/menubox.c	*	0	call-argument	DispatchMenuEvent(*argument 2	page-level menu events carry no row (index 0)
-src/Ui/menubox.c	CreateMenuBox	-1	call-argument	CreatePositionedPanel(*	@identity-TODO: -1, -1 position the list panel by the window
 src/Ui/menubox.c	CreateMenuBox	0	*	*value	an empty menu context
 src/Ui/menubox.c	CreateMenuBox	-2	store	*repaintMode	@identity-TODO: repaint mode -2 of a new menu (RepaintTextPlane mode)
 src/Ui/menubox.c	BuildMenuPage	0	*	*	the page flags start clear; row 0 has no previous page
@@ -616,7 +612,6 @@ src/Gfx/shot.c	RunShotState	0	*	*	phase 0 starts the shot; StepShot's 0 means it
 src/Gfx/shot.c	RunClosingEffectState	0	call-argument	*	the effect's image set and record slot 0
 src/Text/windowtext.c	PrintWindowText	0	*	*inputWait	printed text waits for no input
 src/Text/windowtext.c	PutTextChar	*	*	*	a character's cell width (1 or 2, 8 pixels per cell), the slack its punctuation may use at the line end (0, -2 or -4), and -2 when the character is deferred to the next line
-src/Gfx/vram.c	LoadMask	1	call-argument	ResetMask(*	@identity-TODO: ResetMask's argument 1 when a mask file is loaded
 src/Gfx/vram.c	ClearMaskSeam	*	*	*	the seam's edge pixels: bit 0 of the left byte and bit 7 of the right
 src/Gfx/vram.c	*Mask*	*	*	*	mask geometry: 8 pixels per mask byte; 0 outside the mask
 src/Gfx/vram.c	ResetUpperPalette	*	*	*	dead: the upper eight palette entries (8..15) cleared to colour 0
@@ -632,7 +627,6 @@ src/Gfx/videostate.c	GetPlane*	*	*	*	@identity-TODO: video planes 0..2 map to th
 src/Gfx/displayconfig.c	*	*	*	*	registry value sizes, key-open options and the display-config version (4) Win32 reads and writes
 src/Game/gameloop.c	InitGameData	0xc000	*	*	@identity-TODO: the feature bits set at start-up (TestFeatureMask); their meaning is unrecovered
 src/Game/gameloop.c	StepGame	*	*	*	-1 from the state dispatch or at the quit point asks to quit; the clock ticks with no extra time; a long frame advances play time 31 ms, a short one 24 ms
-src/Ui/hotspot.c	GetSelectedHotspot*	-1	*	*	no selected hotspot value
 src/Ui/hotspot.c	CountFieldObjects	*	*	*	the debug trace buffer size; -1 reports a pending abort in place of a count, which it clears
 src/Script/windowcolor.c	*	*	*	*	@identity-TODO: the alternate-text window switches: save flag 1, cursor column 0, scroll-top rows 0 and 2, and no text delay
 src/Game/waitstate.c	StepWaitState	1	*	*	a timed wait ends when its frame count reaches 1
@@ -669,10 +663,7 @@ include/Game/Clock.h	ResetClockPhaseAndTime	0	*	*	the clock restarts at moon pha
 include/Game/Character.h	ClearItemSlot	0	*	*quantity	an empty item slot holds none
 include/Game/Character.h	SetCharacterPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
 include/Game/FieldObject.h	SetFieldObjectPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
-src/Ui/hotspotclick.cpp	ClickHotspotAt	-1	*	*	no hotspot hit
 src/Game/statusmenu.c	DrawStatusLine	2	*	*	two pixels below the line top
-src/Game/statusmenu.c	SetStatusMenuItemsHidden	-1	*	*	@identity-TODO: -1 marks an unswitched status-menu item
-src/Game/clickwait.c	TakeClickUnlessCancel	*	*	*	@identity-TODO: key code -2 cancels (-1); see the function comment
 include/Ui/Panel.h	InitPanelRow	0	*	*word04	@identity-TODO: panel row word +4 starts at 0
 include/Input/Mouse.h	ClearMouseSelection	-1	*	*	no hovered or selected object
 include/Game/DropTable.h	ClearDropSlot	0	*	*amount	an empty drop slot
@@ -701,7 +692,6 @@ src/Script/scripttext.c	Op*Int	*	*	*	the operand's sign (1 or -1)
 src/Script/scripttext.c	OpSaveSceneCell	*	call-argument	CreateArrayHandle(*	a 16-byte scene-cell record
 src/Script/scripttext.c	OpCallTextScript	0	*	*	@identity-TODO: text source 0
 src/Script/scripttext.c	OpenScriptWindow	2	call-argument	SetTextWindowScrollTop(*	@identity-TODO: a script window's scroll-top row 2
-src/Script/scripttext.c	TopScriptWindow	-1	*	*	no script window open
 src/Script/scripttext.c	OpPushScriptWindow	*	*	*	@identity-TODO: window kind 5 is remapped to 0xe (see the function comment); OpenScriptWindow's second argument 0
 src/Game/savegame.c	WriteSaveHeader	0	call-argument	GetCharacter(*	character slot 0, the hero
 src/Game/savegame.c	LoadGame	0	trivial-function-literal	0 return	no errors when the file cannot be opened
@@ -713,7 +703,6 @@ src/Game/savegame.c	Run*	2	call-argument	OpenSystemMenu(*	the two rows of the di
 src/Game/savegame.c	RunQuitConfirm	*	*	*	row 0 of the quit choice quits; g_quitRequest 1 asks StepGame to end
 src/Game/savegame.c	ReadSaveSummary	0	*	*g_scratchBuffer*	an empty floor text
 src/Script/scriptctx.c	ResolveObjectId	*	comparison-or-bound	*== slot	the special refs' slot forms: slot 16 (ref -17) through 23 (ref -24) run one past ResolveScriptObject's refs (-16..-23), as retail compares them
-src/Script/scriptctx.c	*	-1	call-argument	GetCharacter(*	the last character slot (out-of-range slots fall back to it), where the fusion result loads
 src/Script/scriptctx.c	ResolveScriptObject	14	call-argument	GetCharacter(*	@identity-TODO: character slot 14, the scratch slot a character id loads into
 src/Script/scriptctx.c	OpConvertCharacterRef	-15	store	*	@identity-TODO: -15 (slot 14's ref) when the character is not loaded
 src/Script/scriptctx.c	GetObject*	0	*	*	no such object: no macca or magnetite
@@ -721,7 +710,6 @@ src/Script/scriptctx.c	NewScriptContext	0	*	*	a new context has no call stack
 src/Script/scriptctx.c	Read*	*	*	*	script code decoding: little-endian bytes and words; 0 at the end of the code
 src/Script/scriptctx.c	StepScript	*	*	*	@identity-TODO: StepScript's -1 result and 0 return
 src/Script/scriptctx.c	RunScript	0	call-argument	NewScriptContext(*	@identity-TODO: NewScriptContext's first argument, 0 for RunScript
-src/Script/scriptctx.c	RunScriptStep	0	*	*	@identity-TODO: RunScriptStep's result 0
 src/Script/scriptctx.c	TickScript	0	*	*	no delay skip; 0 while the script runs on
 src/Script/scriptctx.c	RetakeDeferredChar	*	*	*	PutTextChar's -2 (deferred) and no character
 src/Game/*.c	*	*	call-argument	Set*Result(*	@identity-TODO: mixed action-result codes outside the base combat outcomes; they are sent through GetActionValue to the message scripts
@@ -753,7 +741,6 @@ src/Script/eventflags.c	ResetEventFlags	*	call-argument	*	flag 0 of bank 0 is th
 src/Script/eventflags.c	TestEventFlag	0	*	*	flag 0 of bank 0 always reads clear
 src/Script/eventflags.c	SetFlagSettings	0x3fc0ffff	*	*	@identity-TODO: the setting bits the system word keeps (the rest come from `packed`)
 src/Script/eventflags.c	SetFlagTag	5	*	*	the five tag bytes of the system bank
-src/Script/eventflags.c	ReadFlagOperand	*	*	*	-1 for a negated operand, else 0
 src/Script/eventflags.c	*FlagWord	*	*	*	a flag word's index in its high byte; a set, un-negated flag reads 1
 src/Script/eventflags.c	Op*EventFlagByValue	*	*	*	a script value packs a flag as bank | index << 8 (a byte each)
 src/Script/eventflags.c	*ScriptVars	0x100	*	*	the 256-byte script variable block
@@ -762,7 +749,6 @@ src/Gfx/motion.c	*Motion*	0	*	*	a motion restarts at step 0 with no delay
 src/Gfx/motion.c	MotionPoint	*	*	*	motion points: depth 731 and 14-bit fixed-point (16384) fractions
 src/Gfx/motion.c	ClampEffectCount	32	*	*	at most 32 effect repeats
 src/Gfx/motion.c	*EffectScript	*	*	*	effect scripts: no delay at the start; a delay under one tick runs the next command; the effect layer to clear (0 scene, 1 screen)
-src/Gfx/motion.c	ExecuteEffectCommand	*	trivial-function-literal	*	0 when the script ends, -1 to run the next command, 1 to wait
 src/Gfx/motion.c	*EffectImageSet	*	*	*	image sets: file ids 0x6000 + 16 * set, the loaded image's variant 0 and flags 2; slot 0 is reused when none is free
 src/Gfx/motion.c	AcquireEffectRecord	0	*	*	slot 0 is reused when none is free
 src/Gfx/motion.c	InitEffectImageSets	0	*	*	no image loaded
@@ -782,8 +768,6 @@ src/Script/recordcache.c	BuildLearnableSkillRanks	*	*	*	skill ids from 1; -1 end
 src/Script/recordcache.c	CheckSkillArea	*	*	*	the area flag's bit 0 is converted arithmetically to the named allowed/forbidden results
 src/Script/recordcache.c	HpMpLeftAfterCost	*	*	*	-1 with the pool already empty, else what is left (0 when spent)
 src/Script/recordcache.c	CanUseSkill	*	*	*	-1 when unusable, else 0
-src/Script/recordcache.c	FindSkill	-1	*	*	no skill found
-src/Script/recordcache.c	ResetRecordCache	-1	*	*	no cached record
 src/Script/recordcache.c	WearCachedSkill	*	*	*	percent wear of the cached skill's values; -1 when nothing is cached
 src/Script/recordcache.c	CacheSkill	1	*	*	a skill starts with one use
 src/Script/recordcache.c	WearSkillValue	*	*	*	percent wear, at least 1 and at most 30000
@@ -894,7 +878,6 @@ src/Game/fieldmain.c	SetReturnPoint	-1	*	*	no selected hotspot
 src/Game/fieldmain.c	MovePartyTo	1	*	*	@identity-TODO: SetRebuildRoom's 1
 src/Game/fieldmain.c	SetReturnPointAhead	3	*	*	@identity-TODO: a three-quarter turn of the facing
 src/Game/fieldmain.c	FindExitDirection	*	*	*	the four sides; WALL_KIND_DOOR marks an exit, WALL_KIND_NONE an open side
-src/Game/fieldmain.c	PickAnalyzeTarget	*	*	*	-1 when nothing is picked; analyzing trains the fourth battle-stat group (3, @identity-TODO in BattleStat.h)
 src/Game/fieldmain.c	RunPendingTalk	*	*	*	@identity-TODO: talk: the pick window's (3, 1, 0), actor scene script 0xe0 entry 0 with 1, the fourth group's training; -1 when no talk starts
 src/Game/fieldmain.c	TickStepDamage	*	*	*	damage every third step: one point (-1) to each member
 src/Game/fieldmain.c	TickFieldSteps	*	*	*	three steps between field ticks
@@ -951,8 +934,6 @@ src/Game/itemrecord.c	AddItemStatBonuses	*	*	*	the battle-stat bonus amounts Ite
 src/Game/itemrecord.c	GetItemStackLimit	1	*	*	equipment does not stack
 src/Game/itemrecord.c	RemapItem	*	*	*	the remap table's (from, to) pairs end at 0xffff; 0 when none
 src/Game/itemrecord.c	*	1	trivial-function-literal	1 bound item	item ids start at 1 (0 is none)
-src/Game/itemrecord.c	*	-1	trivial-function-literal	-1 equality GemItemIndex()	not a gem item
-src/Game/itemrecord.c	GemItemIndex	-1	*	*	not a gem item
 src/Game/itemrecord.c	*Gem*	-1	*	*	not a gem item or out of range
 src/Game/itemrecord.c	StoreBagItem	*	*	*	@identity-TODO: nothing stored yet; the quiet flag; AddBagItems' fourth argument 0
 src/Game/itemrecord.c	*Pool*	*	*	*	@identity-TODO: an empty pool stack; RollItemAmount's third argument 0; StoreBagItem's -1; the bag copy's quiet flag and its 16 fit tests
@@ -961,8 +942,6 @@ src/Game/itemrecord.c	AddDropSlot	*	*	*	-1 when the item is not dropped; no rema
 src/Game/itemrecord.c	FindBagItem	*	*	*	no matching item (-1), the first 48 ordinary and last 16 scenario slots, and reverse search order; group bits are named
 src/Game/itemrecord.c	*BagEntry*	*	*	*	@identity-TODO: bag-entry attachment and detail words: -1 for none, 0 cleared; a detached quantity of 1; SetBagEntry's (-1, -1) clears; the 0xff taken from a stack's count
 src/Game/itemrecord.c	AddBagItems	*	*	*	item ids from 1; 0 when nothing is added
-src/Game/itemrecord.c	AddScenarioBagItems	-1	call-argument	*	a cleared detail word
-src/Game/itemrecord.c	CompactBag	-1	call-argument	*	a cleared entry
 src/Game/itemrecord.c	UseRestoreItem	*	*	*	@identity-TODO: the restore item's params (7 and 8 the HP and MP amounts, 9 the restore effect); no pending condition
 src/Game/itemrecord.c	UseAttackItem	*	*	*	@identity-TODO: an attack item's result, params[0] and inflict code 0x21 and above
 src/Game/itemrecord.c	SetInertItemOutcome	0	*	*	@identity-TODO: result 0
@@ -1050,13 +1029,11 @@ src/Game/statuspanel.c	ClearEquipPreview	*	*	*	the stat totals at column 3, row 
 src/Game/statuspanel.c	RunStatusCommands	*	*	*	the first member; the stat totals at column 3
 src/Game/statuspanel.c	Run*Page	*	*	*	@identity-TODO: status pages: the bag copy's start 0, marks kept (1), and their window and menu geometry
 src/Game/statuspanel.c	ResumeStatusPage	0	*	*	@identity-TODO: hotspot plane 0
-src/Game/statuspanel.c	s_*Page	-1	data-or-extent	*	a page with no pick yet ({-1, -1})
 src/Game/statuspanel.c	s_attach	*	data-or-extent	*	an empty attach state (no picks, -1)
 src/Game/statuspanel.c	s_battleStatIcons	*	data-or-extent	*	@identity-TODO: battle-stat icon images
 src/Game/statuspanel.c	SkillListHandler	*	*	*	skill ids from 1; marks dropped (0)
 src/Game/statuspanel.c	*Attach*	*	*	*	@identity-TODO: the attach menus: 16 rows, text plane flag 8 set, an empty list, stackable items (limit 1 means not)
 src/Game/statuspanel.c	OpenEquipMenu	*	*	*	@identity-TODO: the equipment list's second pass (0) and text plane flag 8 set
-src/Game/statuspanel.c	OpenStatListWindow	-1	*	*	no window
 src/Game/statuspanel.c	ListEquipCandidates	*	*	*	item ids from 1; no candidates
 src/Game/statuspanel.c	AlignmentChartCell	*	*	*	the alignment chart: levels -128..127 scaled to 24 cells, origin 23
 src/Game/statuspanel.c	DrawStatusConditions	*	*	*	the conditions list: column 2 and at most 18 entries
@@ -1079,7 +1056,6 @@ src/Script/scriptactor.c	GetObject*	0	*	*	no object: 0
 src/Script/scriptactor.c	GetResolvedPartyCharacter	1	call-argument	*	@identity-TODO: GetRosterCharacterById's second argument 1
 src/Script/scriptactor.c	GetTextToken	0	*	*	the token text buffer's start
 src/Script/scriptactor.c	GotoScript	*	*	*	@identity-TODO: script file 0xde's entry 1 remapped to 9
-src/Script/scriptactor.c	InitScriptChoiceMenu	-1	*	*	no hovered choice
 src/Script/scriptactor.c	ListTail	1	*	*	loop until the list's end
 src/Script/scriptactor.c	OpAddToRoster	*	*	*	@identity-TODO: roster changes: AddScriptCharacterToRoster's mode 3, the character analyzed (1), -1 for no slot, 0 for none added
 src/Script/scriptactor.c	OpRemoveFromRoster	*	*	*	@identity-TODO: roster changes: AddScriptCharacterToRoster's mode 3, the character analyzed (1), -1 for no slot, 0 for none added
@@ -1088,7 +1064,6 @@ src/Script/scriptactor.c	Op*	1	call-argument	DrawMoneyCounters(*	redraw the mone
 src/Script/scriptactor.c	OpAdjustItemCount	*	*	*	nothing moved yet; the quiet bag; StoreBagItem's -1
 src/Script/scriptactor.c	OpApplyEventFlag	0	*	*	no result yet
 src/Script/scriptactor.c	OpBoostPool	*	*	*	@identity-TODO: pool selector 0 writes HP while any other value writes MP; the floor 0 and signed cap 0x7fff are numeric bounds; boost modes are named
-src/Script/scriptactor.c	OpChangeMap	-1	*	*	leave the map (a negative request)
 src/Script/scriptactor.c	OpClearBagEntry	0	*	*	no attachment
 src/Script/scriptactor.c	OpCloseItemListWindow	0x115	*	*	@identity-TODO: panel image 0x115, the item list window
 src/Script/scriptactor.c	OpDivLongVar	*	*	*	long-variable arithmetic: a zero operand divides by 1; percent scaling
@@ -1109,9 +1084,7 @@ src/Script/scriptactor.c	OpScreenTransition	1	call-argument	*	@identity-TODO: Se
 src/Script/scriptactor.c	OpSetObjectFamiliarity	0	*	*	familiarity from 0
 src/Script/scriptactor.c	OpSetObjectField	*	*	*	@identity-TODO: object field 3 and the fourth group's level (battle-stat word 18)
 src/Script/scriptactor.c	OpSetObjectPresence	1	*	*	@identity-TODO: SetAnalyzed's 1
-src/Script/scriptactor.c	OpSetWorldMapSpot	1	*	*	mark the saved spot (a positive request)
 src/Script/scriptactor.c	OpShiftPlayerAlignment*	*	*	*	@identity-TODO: alignment shift modes
-src/Script/scriptactor.c	PlaceScriptActor	*	*	*	@identity-TODO: no layer (-1); SpawnFieldObject's and SpawnMapObject's defaults (0, -1, 0)
 src/Script/scriptactor.c	PickEquipmentReward	*	*	*	@identity-TODO: the eight equipment slots picked from, item ids from 1, at most three candidates; 0 when none
 src/Script/scriptactor.c	ReadLongOperand	0	*	*	not in place
 src/Script/scriptactor.c	ResolveScriptEntry	*	*	*	script files 0xe0..0xff are the layer scripts; @identity-TODO: FindLayerScriptEntry's 1
@@ -1126,7 +1099,6 @@ src/Script/scriptactor.c	ReadTextToken	*	*	*	@identity-TODO: text tokens: the ob
 src/Script/scriptactor.c	ReadScriptOperand	*	*	*	@identity-TODO: operand scaling (a quarter of the price, doubling) and a zero value
 src/Script/scriptactor.c	ReadContestValues	*	*	*	contest values: none (0) for a missing object, and -1 for the other side when it has none
 src/Script/scriptactor.c	OpSetObjectFamiliarity	0xff	*	*	familiarity up to 0xff
-src/Script/scriptactor.c	PollScriptChoiceMenu	*	*	*	choice polls: 1 picked, -1 cancelled, 0 still open; no hovered choice (-1)
 src/Script/scriptactor.c	LoadScriptCharacterToRoster	*	call-argument	*	@identity-TODO: AddScriptCharacterToRoster's mode 3; analyzed (1)
 src/Script/scriptactor.c	OpSetLongVar	*	*	*	@identity-TODO: long variable 23 (a system variable) and sprite 0
 src/Script/scriptactor.c	OpCureRosterCondition	1	*	*	the roster's first slot
@@ -1228,7 +1200,6 @@ src/Game/partyaction.c	DelayActionSide	50	call-argument	DelayActionWait(ActionWa
 src/Game/partyaction.c	AdjustActorAction	0xdb	call-argument	StartScript(i16, i16, ScriptContext *) argument 1	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
 src/Game/partyaction.c	AdjustActorAction	1	call-argument	StartScript(i16, i16, ScriptContext *) argument 2	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
 src/Game/partyaction.c	AdjustActorAction	0	call-argument	NewScriptContext(i16, Character *) argument 1	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
-src/Game/partyaction.c	AdjustActorAction	-2	comparison-or-bound	operator == result	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
 src/Game/partyaction.c	AdjustActorAction	-1	trivial-function-literal	-1 equality result	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
 src/Game/partyaction.c	AdjustActorAction	60	call-argument	SetMessageLifetime(i16) argument 1	@identity-TODO: condition-action script file/entry, script-step status, context selector and message lifetime; these are protocol values, not action kinds
 src/Game/partyaction.c	FormatAttackCommand	1	trivial-function-literal	1 bound item	an item id below 1 has no decodable equipped weapon record
@@ -1385,7 +1356,6 @@ src/Game/partyaction.c	GetMemberPickRange	1	trivial-function-literal	1 bound pic
 src/Game/partyaction.c	GetSwappedMember	-2	return	return value	-2 distinguishes a nonmatching guest position from the ordinary empty-slot value -1
 src/Game/partyaction.c	IsGuestIndex	-2	return	return value	-2 distinguishes a nonmatching guest position from the ordinary empty-slot value -1
 src/Game/partyaction.c	RunPickTargetWindow	-1	trivial-function-literal	-1 store g_selectedObjectId	-1 clears selected and hovered object ids before a cancelled picker closes
-src/Game/partyaction.c	PickFieldObjectTarget	-1	trivial-function-literal	-1 equality g_hoveredObjectId	-1 from the hotspot means no field object is hovered
 src/Game/partyaction.c	PickPartySlotTarget	-1	trivial-function-literal	-1 equality g_hoveredObjectId	party-slot poll returns zero while waiting and -1 on cancel; hovered -1 means no party position
 src/Game/statestack.c	RunPictureTransition	1	call-argument	StartScreenFade(ScreenFadeMode, i16) argument 2	one frame is the fade speed used for the picture reveal
 src/Game/statestack.c	RunPictureTransition	0x2d	call-argument	StartDebugScene(i16, i16, i16) argument 1	@identity-TODO: fixed scene script 0x2d has no decoded title

@@ -7,6 +7,7 @@
 #include <Game/FieldHud.h>
 #include <Game/FieldSight.h>
 #include <Game/FieldView.h>
+#include <Game/MapCoord.h>
 #include <Game/TreasureBox.h>
 #include <Game/ViewCellAxis.h>
 #include <Game/WorldMap.h>
@@ -202,10 +203,10 @@ void ViewCellToMapCell(
     *col = x;
     *row = y;
     if (*col < 0 || *col >= width) {
-        *col = -1;
+        *col = MAP_COORD_NONE;
     }
     if (*row < 0 || *row >= height) {
-        *row = -1;
+        *row = MAP_COORD_NONE;
     }
 }
 
@@ -233,7 +234,7 @@ i32 ViewCellHasWall(
     i16 height
 ) {
     ViewCellToMapCell(x, y, dir, &col, &row, width, height);
-    if (col == -1 || row == -1) {
+    if (col == MAP_COORD_NONE || row == MAP_COORD_NONE) {
         return 1;
     }
     return GetWallAt(col, row, side, width, height);

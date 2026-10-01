@@ -13,6 +13,7 @@
 #include <Game/CharacterStat.h>
 #include <Game/Condition.h>
 #include <Game/EquipPart.h>
+#include <Game/GemItemIndex.h>
 #include <Game/HumanTitle.h>
 #include <Game/ItemId.h>
 #include <Game/MapCoord.h>
@@ -26,7 +27,7 @@
 #include <string.h>
 
 // One of the eight packed equipment slots. The attachment is a signed
-// index into the gem item group; -1 means no attachment. Quantity counts
+// index into the gem item group; GEM_ITEM_INDEX_NONE means no attachment. Quantity counts
 // the equipped items, including the ammunition remaining in a loaded gun.
 typedef struct ItemSlot {
     union {
@@ -39,7 +40,8 @@ typedef struct ItemSlot {
     };
 } ItemSlot;
 
-#define SetItemSlotItem(slot, value) ((slot)->item = (value), (slot)->attachment = -1)
+#define SetItemSlotItem(slot, value)                                                             \
+    ((slot)->item = (value), (slot)->attachment = GEM_ITEM_INDEX_NONE)
 
 // Removes the item and quantity while retaining its attachment index.
 #define EmptyItemSlot(slot) ((slot)->item = ITEM_ID_EMPTY, (slot)->quantity = 0)
@@ -376,6 +378,9 @@ static __inline i32 GetSummonMagnetiteCost(const Character* character) {
 
 // The character table: party members, loaded demons and scratch slots.
 #define CHARACTER_SLOT_COUNT 16
+// GetCharacter maps this out-of-range selector to scratch slot 15, where
+// script lookups load the pending fusion result.
+#define CHARACTER_SLOT_FUSION_RESULT (-1)
 
 extern Character g_characters[CHARACTER_SLOT_COUNT];
 

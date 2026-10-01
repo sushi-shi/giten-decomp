@@ -1052,8 +1052,7 @@ void QueryD3DDevices(void) {
                 } else if (info.halDesc.dwFlags & D3DDD_LINECAPS) {
                     g_deviceSettings.caps.primCaps[D3D_DEVICE_HAL] = info.halDesc.dpcLineCaps;
                 }
-                // @identity-TODO: the line-caps fallback tests the HAL description's
-                // flags, as retail does.
+                // Retail tests the HAL flags for both MMX and RAMP line fallbacks.
                 if (info.mmxDesc.dwFlags & D3DDD_TRICAPS) {
                     g_deviceSettings.caps.primCaps[D3D_DEVICE_MMX] = info.mmxDesc.dpcTriCaps;
                 } else if (info.halDesc.dwFlags & D3DDD_LINECAPS) {

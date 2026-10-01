@@ -1,6 +1,7 @@
 #ifndef GITEN_GAME_GEMITEMS_H
 #define GITEN_GAME_GEMITEMS_H
 
+#include <Game/GemItemIndex.h>
 #include <Game/ItemStack.h>
 #include <Ints.h>
 
@@ -19,7 +20,7 @@ extern ItemStack g_gemItems[GEM_ITEM_COUNT];
 // 12 and 14..18 (and unknown kinds).
 u16 GetItemStackLimit(i16 id);
 
-// The index of gem item `id` in the table, else -1.
+// The index of gem item `id` in the table, else GEM_ITEM_INDEX_NONE.
 i16 GemItemIndex(i16 id);
 
 // Adds `amount` to entry `index` up to the item's stack limit; returns the
