@@ -61,3 +61,25 @@ retain 37 diagnostics. These boundaries remain:
 | `gameloop.c` | `:182` chooses the literal 31 or 24 in an `int` conditional expression passed to `AdvancePlayTime(i16)`. The values fit; no typed domain is recovered from the choice alone. |
 | `equipeffect.c` | `:48,57,66,75,84` halve a stat total using promoted arithmetic before `ClampTo100(i16)`. `GetStatTotal` reads the stored stat, and `SetStatTotal` stores the clamped result; an intermediate cast or local only to suppress C4761 would obscure the call-time width. |
 | `itemrecord.c` | `:751` computes a variable allocation size for `AllocCleared(u16,u16)`; `:2093,2094` add a loop offset to special-item IDs before 16-bit calls (two diagnostics at `:2093`); `:2234,2235` add gift familiarity and item-base offsets before 16-bit calls; `:2268` adds a menu index to `s_giftItemBase` for `GetLoadedRecordName(i16)` inside `sprintf`. The allocation maximum and item-ID ranges need proof before changing these expressions. |
+
+## Debug menu and area/clock owner
+
+`src/Game/debugmenu.c` retains three diagnostics. At `:124` and `:180`, an
+`i16` selected menu row plus `MENU_STEP_PICK_FIRST` is promoted to `int`
+before `SetGameStep(u16)` or `SetGameSub(i16)`. At `:207`, unary minus promotes
+the stored `i16 s_shotRise` (cycled through 0..3) before passing it as the
+`i16` along offset of `MoveMapCoord`. The menu steps and shot distance are
+bounded, but changing their storage types would change data layout; inserting
+a temporary solely for warning suppression would add no recovered domain.
+
+`src/Game/clock.c` was reviewed read-only because its area/clock owner is being
+modeled in a separate lane. Its 13 C4761 diagnostics split as follows:
+
+| Site | Retained boundary |
+| --- | --- |
+| `:172,177` | Moon-phase comparisons yield `int` 0/1, then enter the 16-bit `BitChangeMode` argument of `ModifyEventFlag`. The boolean meaning is clear; the exact operation width remains the callee ABI. |
+| `:391,396` | `GetMapSpawnX` masks a packed byte using `& 0x7f`, yielding `int` for a 16-bit map coordinate. `:396` also passes the spawn index to `SpawnMapObject`'s 8-bit event argument. These are the packed spawn-record boundary. |
+| `:591` | `i + 1` is promoted before entering the 16-bit level index of `GetAreaLevelOffset` in the area-record copy length. This lies inside the owner whose packed layout is under review. |
+| `:911` | `g_areaLevel->width * y + x` is promoted before the 16-bit room-bit index of `TestBit`. The map dimensions and bitmap extent must be considered together. |
+| `:1241` | A variable panel allocation size enters `AllocCleared`'s 16-bit size argument. This static inline helper is expanded at three callers, producing three diagnostics at one written site. The maximum row count is required before changing the allocation expression. |
+| `:1266,1285,1297` | `first + i` or `image + i` is promoted before the 16-bit row ID of `InitPanelRow`. Each table's ID domain and the packed panel-row ABI need to remain consistent. |
