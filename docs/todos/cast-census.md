@@ -2,7 +2,7 @@
 
 The C++ cleanliness board counts selected C++ cast forms, and
 `giten verify casts` reviews `reinterpret_cast` seams in `.cpp` and headers.
-Neither command inventories written C casts in the 89 `.c` translation units.
+Neither command inventories written C casts in the 68 `.c` translation units.
 Those casts are valid C syntax, so the C++ zero-cast rule is not an appropriate
 gate for them. A source-wide written-site census would make type and ownership
 cleanup measurable, as KF1's [target-C cast audit](https://github.com/sushi-shi/kings-field-decomp/blob/master/docs/cast-audit.md)
