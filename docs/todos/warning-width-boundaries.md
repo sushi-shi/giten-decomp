@@ -103,10 +103,11 @@ The other three units retain 11 diagnostics:
 ## Complete warning report reconciliation
 
 The completed `giten verify compiler-warnings` report compiled all 82 configured
-units. Its 383 rows are 382 C4761 argument-width warnings in 36 units plus
-one C4133 packed-pointer warning at `clock.c:569`. Every C4761 unit and count
-agrees with the table in [compiler-warnings.md](compiler-warnings.md), and
-every warning-bearing unit appears either in this ledger or in
+units. Its 392 rows are 382 C4761 argument-width warnings in 36 units, one
+C4133 packed-pointer warning at `clock.c:569`, and nine retained C4805 boolean
+comparisons. Every C4761 unit and count agrees with the table in
+[compiler-warnings.md](compiler-warnings.md), and every C4761-bearing unit
+appears either in this ledger or in
 [argument-width-warnings.md](argument-width-warnings.md). The generated rows
 for `vec3.c:31,36,41`, `handle.c:50,59,97,108,109`, and
 `windowtext.c:87,91,94` agree with the retained sites above; `mouse.c` has
