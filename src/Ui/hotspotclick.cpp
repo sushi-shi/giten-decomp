@@ -6,8 +6,9 @@
 #include <Game/ViewDirection.h>
 #include <Gfx/Texture.h>
 #include <Platform/GameApi.h>
+#include <Platform/Scene3D.h>
 
-#define HOTSPOT_VIEW_BOTTOM 328
+#define HOTSPOT_VIEW_BOTTOM VIEW_HEIGHT
 
 #define ClampHotspotTexel(value, extent)                                                           \
     do {                                                                                           \

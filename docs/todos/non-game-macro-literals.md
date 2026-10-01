@@ -19,3 +19,15 @@ evidence before a semantic replacement.
 `src/Platform/winmain.cpp` also has the `SetDistanceLight` macro's float
 coefficients and address annotations. Its values describe lighting arithmetic
 and referents, not enum members.
+
+Most object-like report rows are declarations of their own constants rather
+than opportunities to substitute another name. `include/Giten/Resource.h`
+contains resource IDs; equal numeric IDs in unrelated Game, sound, or
+rendering domains do not identify shared types. Other object-like definitions
+are geometry (`MARK_SIZE`, `PAD_SIZE`, `PARTY_PANEL_WIDTH`), counts
+(`OBJECT_TEXTURE_COUNT`, `ENEMY_PICTURE_COUNT`), packed masks
+(`MOUSE_STATE_MASK`, `FLAG_BANK_MASK`), and timing (`FRAME_INTERVAL`,
+`INPUT_DELAY_FRAMES`). They retain their separate owners. The clickable
+hotspot bottom edge did have a proved owner: `HOTSPOT_VIEW_BOTTOM` now names
+`VIEW_HEIGHT` because the hotspot rejection check bounds the same 328-pixel
+3D view.
