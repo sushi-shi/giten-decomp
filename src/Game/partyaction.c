@@ -1490,9 +1490,9 @@ b16 RunFieldState(void) {
     i16 key;
     SetFieldRenderMode();
     SetInfoBarLayout(0);
-    switch ((u16)GetGamePhase()) {
+    switch (GetGamePhase()) {
         case FIELD_ENCOUNTER_PHASE_ENTER:
-            switch ((u16)GetGameStep()) {
+            switch (GetGameStep()) {
                 case FIELD_ENCOUNTER_STEP_SETUP:
                     ClearSceneSurfaces();
                     NextGameStep();
