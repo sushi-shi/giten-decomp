@@ -71,6 +71,12 @@ def _strip(text: str) -> str:
 # --- structural counters (ported verbatim; each earned its shape) ----------- #
 _TYPEDEF = re.compile(r"\b(?:struct|class)\s+(\w+)")
 _HEXRUN = re.compile(r"[0-9a-f]{4,}")
+_UNKNOWN_IDENTIFIER = re.compile(r"\b\w*[Uu]nknown\w*\b")
+
+
+def _count_unknown_identifiers(code: str) -> int:
+    # IUnknown is the Win32 COM interface, not an unresolved project name.
+    return sum(name != "IUnknown" for name in _UNKNOWN_IDENTIFIER.findall(code))
 
 
 def _is_placeholder(name: str) -> bool:
@@ -304,7 +310,7 @@ def _count_unexplained_casts(code: str) -> int:
 METRICS = (
     ("m_<hex> fields", re.compile(r"\bm_[0-9a-f]{2,}\b"), False),
     ("address-derived identifiers", _count_address_derived_identifiers, False),
-    ("Unknown ids", re.compile(r"\b\w*[Uu]nknown\w*\b"), False),
+    ("Unknown ids", _count_unknown_identifiers, False),
     ("g_<hex> globals", re.compile(r"\bg_[0-9a-f]{4,}\b"), False),
     ("Method/Stub/FUN/Gap",
      re.compile(r"\b(?:(?:Method|Gap|Sub|Stub|Fwd|Func|FUN|Nullsub|Handler"

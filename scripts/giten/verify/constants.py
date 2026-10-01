@@ -656,6 +656,9 @@ def _scan_entry(payload):
     import clang.cindex as cidx
 
     path = _source_path(entry, repo)
+    if not path.is_file():
+        return [], (f"{path}: missing source in compile database; "
+                    "regenerate it with `giten configure`")
     args = _flags(entry)
     try:
         _require_cl_mode(args)
