@@ -11,6 +11,8 @@ audit and gives pointer and scalar examples for the next type-model review.
 behavior-based names whose authored meanings still need evidence.
 [Shared control-flow joins](goto-review.md) inventories the remaining written
 `goto` sites and the retail evidence needed for a structured rewrite.
+[Offset-derived field names](offset-fields.md) lists primitive fields still
+named by storage offset and the evidence needed to identify them.
 
 ## Project helper reuse
 
