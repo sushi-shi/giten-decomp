@@ -68,6 +68,7 @@ void ResetLevelEvents(void);
 b32 TestLevelEvent(i16 level);
 b16 RaiseObjectEvent(i16 event, i16 queued);
 i16 SaveFieldMemory(FILE* fp);
+i16 LoadFieldMemory(FILE* fp);
 void LoadFieldEventTable(void);
 
 void MergeViewOcclusionMask(u8** table, i16 index, void* destination);

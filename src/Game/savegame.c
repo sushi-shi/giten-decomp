@@ -27,6 +27,7 @@
 #include <Input/Mouse.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>
+#include <Text/Font.h>
 #include <Text/TextAttr.h>
 #include <Text/TextPlane.h>
 #include <Text/TextWindow.h>

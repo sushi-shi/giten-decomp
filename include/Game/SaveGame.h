@@ -45,8 +45,6 @@ extern b16 g_loadedBefore;
 i16 LoadCharacters(FILE* fp);   // the sixteen character records
 i16 LoadFieldState(FILE* fp);   // g_party, member by member
 i16 LoadAutomapAreas(FILE* fp); // the automap area store
-i16 LoadFieldMemory(FILE* fp);  // the field memory handle and 0x47b740
-i16 LoadScreenLayers(FILE* fp); // the screen layer records (font.cpp)
 
 struct Character;
 i16 LoadCharacter(FILE* fp, struct Character* character);
@@ -58,11 +56,6 @@ i16 WriteCharacters(FILE* fp);
 
 // The automap store writer (automapbits).
 i16 WriteAutomapAreas(FILE* fp);
-
-// The screen-layer records writer (LoadScreenLayers' mirror).
-// @identity-TODO: label-only.
-RVA_DECL(0x00054bb0)
-i16 SaveScreenLayers(FILE* fp);
 
 // character.c's lookup, for the roster load.
 struct Character* FindCharacterById(i16 id);
