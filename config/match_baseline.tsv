@@ -1215,7 +1215,7 @@ itemrecord	_CountGemItemsAt	100.0000	100.0000	4	ast4:f090ce1e2274	0x24750	100.00
 itemrecord	_CountHeldItem	100.0000	100.0000	2	ast4:e066f3a68d48	0x236b0	100.0000	
 itemrecord	_CountPoolEntries	100.0000	100.0000	4	ast4:acbbcf201512	0x237d0	100.0000	
 itemrecord	_CreateGiftMenu	100.0000	100.0000	2	ast4:50247f38bf35	0x25f60	100.0000	
-itemrecord	_DecodeItemRecord	97.3803	97.3803	7	ast4:fe3ce3646255	0x22d40	97.3803	
+itemrecord	_DecodeItemRecord	97.8752	97.8752	8	ast4:039a3ad8921e	0x22d40	97.8752	
 itemrecord	_DetachBagEntryItem	100.0000	100.0000	2	ast4:1a2736f7c8da	0x244a0	100.0000	
 itemrecord	_DiscardMenuHandler	100.0000	100.0000	4	ast4:b784abd84b81	0x25db0	100.0000	
 itemrecord	_ExpireSpecialItem	100.0000	100.0000	2	ast4:ec15e7f1a857	0x25be0	100.0000	
