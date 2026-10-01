@@ -822,8 +822,8 @@ void OpClampLongVar(void) {
 
 RVA(0x00033ac0, 0x35)
 void OpRollLongVar(void) {
-    i32 lo;
-    i32 hi;
+    i16 lo;
+    i16 hi;
     ReadLongVarIndex();
     lo = ReadScriptValue();
     hi = ReadScriptValue();
