@@ -124,7 +124,7 @@ def _compile(unit: dict, scratch: Path) -> tuple[str, list[Warning]]:
     if not source.is_file():
         raise RuntimeError(f"{unit['unit']}: missing source {source}")
     object_path = scratch / f"{unit['unit']}.obj"
-    output = cl.compile(source, object_path, unit["cflags"])
+    output = cl.compile(source, object_path, unit["cflags"], strict_status=True)
     if not object_path.is_file():
         raise RuntimeError(f"{unit['unit']}: cl produced no object")
     defect = coff_defect(object_path.read_bytes())

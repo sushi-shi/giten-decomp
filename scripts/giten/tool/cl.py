@@ -37,8 +37,10 @@ def repo_include_flags() -> list[str]:
 
 
 def compile(src: Path | str, out: Path | str, flags: list[str], *,
-            extra_includes: list[Path] = (), timeout: float | None = None) -> str:
-    """Compile one TU; return cl's output. Raises ToolError without an .obj."""
+            extra_includes: list[Path] = (), timeout: float | None = None,
+            strict_status: bool = False) -> str:
+    """Compile one TU; return cl's output. `strict_status` also rejects a
+    timeout or nonzero status with an object, for complete diagnostic capture."""
     src, out = Path(src).resolve(), Path(out).resolve()
     if not src.exists():
         raise ToolError(f"source missing: {src}")
@@ -49,7 +51,8 @@ def compile(src: Path | str, out: Path | str, flags: list[str], *,
     argv = ["wine", str(cl_exe), *repo_include_flags(),
             *[f"/I{winepath(d)}" for d in extra_includes],
             *flags, f"/Fo{winepath(out)}", winepath(src)]
-    output, rc = run(argv, cwd=out.parent, timeout=timeout, success=out)
+    output, rc = run(argv, cwd=out.parent, timeout=timeout, success=out,
+                     fail_on_timeout=strict_status)
     if not out.exists():
         tail = "\n".join(output.strip().splitlines()[-12:]) or "(cl said nothing)"
         if not re.search(r"\b(error|fatal)\b", output, re.I):
@@ -59,6 +62,10 @@ def compile(src: Path | str, out: Path | str, flags: list[str], *,
             tail += (f"\n(cl reported no error; {out} simply is not there - "
                      "check the output tree, not the source)")
         raise ToolError(f"cl produced no object for {src.name} (rc={rc}):\n{tail}")
+    if strict_status and rc != 0:
+        tail = "\n".join(output.strip().splitlines()[-12:]) or "(cl said nothing)"
+        raise ToolError(f"cl returned {rc} for {src.name}; warning census "
+                        f"cannot trust its output:\n{tail}")
     return output
 
 
