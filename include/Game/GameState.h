@@ -110,6 +110,7 @@ i16 FindPartySlot(i16 slot);
 ItemSlot GetEquipSlot(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part);
 Character* GetRosterEntry(i16 slot);
 i16 GetPartySlot(i16 index);
+i16 GetRosterCapacity(void);
 
 // Puts roster slot `slot` into party position `index`; returns the slot it held.
 i16 ExchangePartySlot(i16 index, i16 slot);

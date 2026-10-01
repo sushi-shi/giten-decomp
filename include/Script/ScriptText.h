@@ -24,10 +24,7 @@ void SetCapturedText(const char* text);
 // scriptvars' runner for a text script.
 void CallTextScript(const char* text);
 
-// scriptflow/scriptctx's script call and run, for the script menu handler.
-// Codegen constraint: declared here; including <Script/Script.h> in
-// scripttext.c perturbs its data-reader loops (TU state).
-void CallScript(i16 file, i16 entry);
+// Script-runner call used by the script menu handler.
 void RunCurrentScript(void);
 
 void SetTextCapture(i16 on);

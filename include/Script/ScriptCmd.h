@@ -45,10 +45,6 @@ GZ_ENUM_END_SPLIT(ScriptChoiceSubstep)
 
 b16 RunScriptChoiceState(void);
 
-// eventflags' copy into bank 15's tag. Codegen constraint: declared here; in
-// <Script/EventFlags.h> it perturbs field.c and fieldobj.c (TU state).
-void SetFlagTag(u8* tag);
-
 void OpIfMemberHasCondition(void);
 // @identity-TODO: why the conditions are copied into bank 15's tag is unrecovered.
 void OpSaveObjectConditions(void);

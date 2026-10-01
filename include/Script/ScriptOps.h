@@ -335,13 +335,6 @@ void OpJumpUnlessRosterFull(i16 invert);
 
 void OpJumpUnlessAlignmentMatch(i16 invert);
 
-// gamestate's GetRosterCapacity and fieldobj's IsPartyInSight, for the
-// roster and sight branches.
-// Codegen constraint: declared here; in <Game/GameState.h> and
-// <Game/FieldSight.h> they perturb party and fieldobj (TU state).
-i16 GetRosterCapacity(void);
-i16 IsPartyInSight(i16 x, i16 y);
-
 // @identity-TODO: GetRankScore (rank*10) serving as the price is inferred.
 void OpJumpUnlessCanAfford(i16 invert);
 

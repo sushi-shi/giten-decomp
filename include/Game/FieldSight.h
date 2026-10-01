@@ -65,6 +65,7 @@ i16 DistanceToParty(FieldActor* actor);
 
 // Whether map cell x/y lies inside the current automap viewport.
 b16 IsCellInView(i16 x, i16 y);
+i16 IsPartyInSight(i16 x, i16 y);
 
 i16 CellCodeDiffers(i16 code, i16 x, i16 y);
 
