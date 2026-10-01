@@ -9,7 +9,8 @@ decide whether a cleanup is correct. Keep exact matches and record necessary
 exceptions in [rule-exceptions.tsv](rule-exceptions.tsv).
 
 The live worklists are `giten verify board`, `giten verify constants`,
-`giten verify c-casts`, `giten verify enum-reuse`, and `giten verify casts`.
+`giten verify c-casts`, `giten verify compiler-warnings`,
+`giten verify enum-reuse`, and `giten verify casts`.
 The board's measured rows
 and floors are in `scripts/giten/verify/board.py` and `config/cleanliness/`;
 the enum decisions are in `config/reviews/enum-reuse.tsv`. Reports under
