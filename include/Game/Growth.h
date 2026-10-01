@@ -35,7 +35,7 @@ i16 TakeLearnableSkill(Character* character, i16* skills);
 extern const i16 g_affiliationGrowthStats[BATTLE_GROUP_COUNT][2];
 
 #define GetAffiliationGrowthStat(affiliation, choice)                                              \
-    (g_affiliationGrowthStats[(affiliation) & 3][choice])
+    (g_affiliationGrowthStats[(affiliation) & (BATTLE_GROUP_COUNT - 1)][choice])
 
 // @identity-TODO: The role of the three signed bytes +0x42..+0x44 (0..3, +0x42 is
 // Character.affiliation) as growth types is inferred from this table lookup only.

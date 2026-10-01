@@ -5,6 +5,7 @@
 
 #include <Gfx/ScreenLayer.h>
 #include <Ints.h>
+#include <Text/TextAttr.h>
 
 #define ClearLocationCaption()                                                                     \
     DrawLayerText(                                                                                 \
@@ -12,7 +13,7 @@
         8,                                                                                         \
         8,                                                                                         \
         "\201@\201@\201@\201@\201@\201@\201@\201@\201@\201@",                                      \
-        0x3400                                                                                     \
+        TEXT_ATTR_FLAG1 | TEXT_ATTR_OPAQUE | TEXT_ATTR_DEFAULT                                     \
     )
 
 void DrawMoneyCounters(i16 mode);

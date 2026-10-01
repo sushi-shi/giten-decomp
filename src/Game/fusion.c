@@ -704,7 +704,7 @@ static __inline void ClassifyFusionSlot(
 #define StageTripleFusionCharacter(result, first, second, third, pairMode, thirdMode)              \
     do {                                                                                           \
         (result) = StagePairFusionCharacter((first), (second), (pairMode));                        \
-        if ((result) >= 32) {                                                                      \
+        if ((result) >= HUMAN_ID_LIMIT) {                                                          \
             (result) = StagePairFusionCharacter(0, (third), (thirdMode));                          \
         }                                                                                          \
     } while (0)

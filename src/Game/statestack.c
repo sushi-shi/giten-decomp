@@ -1123,7 +1123,7 @@ void LoadMoonTable(void) {
     CloseDataFile(fp);
 }
 
-#define MoonTableAt(row, phase) (s_moonTable[(phase) + (row) * 28])
+#define MoonTableAt(row, phase) (s_moonTable[(phase) + (row) * MOON_PHASE_COUNT])
 
 // Twice the moon table byte of `row` for the current moon phase.
 RVA(0x00017a10, 0x25)

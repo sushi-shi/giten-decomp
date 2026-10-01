@@ -68,8 +68,6 @@ typedef struct FieldStatus {
 #define ROSTER_SLOT_NONE (-1)
 #define PARTY_POSITION_NONE (-1)
 #define CHARACTER_ID_NONE (-1)
-// Character ids below this are human members.
-#define HUMAN_ID_LIMIT 32
 
 typedef struct Party {
     FieldState field;
