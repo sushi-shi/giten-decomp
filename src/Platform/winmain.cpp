@@ -5205,6 +5205,9 @@ HINSTANCE g_instance;
 // and renders one.
 // @identity-TODO: the two message box captions are empty zeroed arrays in
 // .bss (0x490ae8, 0x490aec); their declaration is unrecovered.
+// @early-stop import-call scheduling: retail keeps PeekMessage and
+// TranslateMessage pointers in registers, while this build keeps PeekMessage
+// and timeGetTime. The loop has the same calls and branches in the same order.
 RVA(0x00050f50, 0x1ad)
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int show) {
     MSG message;
