@@ -145,10 +145,10 @@ bitmapio	_LoadBitmapToSurface16	100.0000	93.3757	11	ast4:bf8ea529123d	0x56bd0	10
 bitmapio	_LoadBitmapToSurface8	100.0000	100.0000	9	ast4:bc383ff02996	0x56de0	100.0000	
 bitmapio	_LoadPictureFile	100.0000	100.0000	2	ast4:a6aac371e53a	0x57520	100.0000	
 bitmapio	_LoadScenePicture	100.0000	100.0000	3	ast4:413281073c05	0x57b90	100.0000	
-bitmapio	_LoadTexture	100.0000	100.0000	11	ast4:4ddbed182d61	0x577a0	100.0000	
+bitmapio	_LoadTexture	100.0000	100.0000	12	ast4:3b7252b28741	0x577a0	100.0000	
 bitmapio	_LoadWorldMapOverlay	100.0000	100.0000	4	ast4:dbb8180f6453	0x57d80	100.0000	
 bitmapio	_LoadWorldMapTile	100.0000	100.0000	4	ast4:144a9da3003e	0x57c70	100.0000	
-bitmapio	_OpenTextureBitmap	100.0000	100.0000	8	ast4:f9e3d47af173	0x57a70	100.0000	
+bitmapio	_OpenTextureBitmap	100.0000	100.0000	9	ast4:3f7709fb7959	0x57a70	100.0000	
 bitmapio	_ReadBitmapFile	100.0000	100.0000	1	ast4:ae8dc3ce4d81	0x56a70	100.0000	
 bitmapio	_ReleaseTexture	100.0000	100.0000	3	ast4:cb365032531e	0x576d0	100.0000	
 bitmapio	_RestoreTexture	100.0000	100.0000	1	ast4:de83e9ebb959	0x57b30	100.0000	
@@ -436,7 +436,7 @@ d3dapp	?ClearScreenSurfaces@@YAXXZ	100.0000	100.0000	3	ast4:054853ec20dd	0x48f20
 d3dapp	?CrossProduct@@YA?AU_D3DVECTOR@@ABU1@0@Z	100.0000	100.0000	1	header:c10460422f3d	0x49170	100.0000	
 d3dapp	?DotProduct@@YAMABU_D3DVECTOR@@0@Z	100.0000	100.0000	1	header:eda9abb1977f	0x49140	100.0000	
 d3dapp	?InitDirect3D@@YAHXZ	99.5451	99.5451	12	ast4:1a48b5fec5af	0x47ef0	99.5451	
-d3dapp	?InitDirectDraw@@YAHXZ	100.0000	100.0000	4	ast4:a4007bde746c	0x479a0	100.0000	
+d3dapp	?InitDirectDraw@@YAHXZ	100.0000	100.0000	5	ast4:9131b6471295	0x479a0	100.0000	
 d3dapp	?InitDirectInput@@YAHXZ	100.0000	100.0000	3	ast4:d153a14233f7	0x48ce0	100.0000	
 d3dapp	?InitDirectSound@@YAHXZ	100.0000	100.0000	3	ast4:1cc662cb2c10	0x488a0	100.0000	
 d3dapp	?KeepDeviceDesc@@YGJPAU_GUID@@PAD1PAU_D3DDeviceDesc@@2PAX@Z	100.0000	100.0000	1	ast4:88c22bd6cdae	0x477e0	100.0000	
@@ -688,7 +688,7 @@ fieldobj	_ReadObjectRecord	100.0000	100.0000	1	ast4:a3dba61f67af	0x10a20	100.000
 fieldobj	_ReadObjectRecordField	100.0000	100.0000	1	ast4:279a2508d80f	0x10b20	100.0000	
 fieldobj	_ReadRecordIfWanted	100.0000	100.0000	1	ast4:827bd07863f5	0x10b00	100.0000	
 fieldobj	_RefreshFamiliarity	100.0000	100.0000	5	ast4:926d26bf8a9d	0x10bf0	100.0000	
-fieldobj	_RefreshIfTurned	100.0000	100.0000	2	ast4:a10a4b0c44b2	0xf220	100.0000	
+fieldobj	_RefreshIfTurned	100.0000	100.0000	3	ast4:5109de859888	0xf220	100.0000	
 fieldobj	_RefreshObjectDraw	100.0000	100.0000	1	ast4:c12878e7d72e	0xea50	100.0000	
 fieldobj	_RelativeFacing	100.0000	79.6667	1	ast4:06ed36dda83e	0xdf30	100.0000	
 fieldobj	_RemoveFieldObject	100.0000	100.0000	7	ast4:6fbd895c7367	0xd7f0	100.0000	
@@ -925,7 +925,7 @@ font	_GetMenuLine	100.0000	100.0000	3	ast4:5addfffdf76b	0x53510	100.0000
 font	_GetMenuLineAt	100.0000	100.0000	3	ast4:a9f6e4c20267	0x53670	100.0000	
 font	_GetMenuLineAttr	100.0000	100.0000	2	ast4:232ed40a42d9	0x53580	100.0000	
 font	_GetMenuLinePos	100.0000	100.0000	3	ast4:3a8a96e36547	0x536c0	100.0000	
-font	_GetShownPanelCharacter	100.0000	100.0000	2	ast4:7b3d955dcacf	0x556b0	100.0000	
+font	_GetShownPanelCharacter	100.0000	100.0000	3	ast4:b1492a9a1ba0	0x556b0	100.0000	
 font	_GetTextPlaneAccentAttr	100.0000	100.0000	2	ast4:d2af26768d56	0x52780	100.0000	
 font	_GetTextPlaneAttr	100.0000	100.0000	2	ast4:a54f41fb823c	0x52540	100.0000	
 font	_GetTextPlaneAttrRow	100.0000	100.0000	3	ast4:0132d4588c9c	0x527d0	100.0000	
@@ -945,7 +945,7 @@ font	_GetTextPlanePageLines	100.0000	100.0000	3	ast4:05c8640e25a8	0x53010	100.00
 font	_GetTextPlaneRowText	100.0000	100.0000	3	ast4:6c65cd2d5977	0x53b60	100.0000	
 font	_GetTextPlaneSize	100.0000	100.0000	2	ast4:341f5c80b3ff	0x53f10	100.0000	
 font	_HideScreenLayer	100.0000	100.0000	6	ast4:2e6095cb840d	0x54390	100.0000	
-font	_HighlightHotspot	100.0000	100.0000	10	ast4:d5b845dffdb4	0x53fd0	100.0000	
+font	_HighlightHotspot	100.0000	100.0000	11	ast4:28438a52a487	0x53fd0	100.0000	
 font	_HitTestHotspot	100.0000	100.0000	1	ast4:23e6a00f4418	0x54230	100.0000	
 font	_HomeTextPlaneCursor	100.0000	100.0000	1	ast4:b5f086660e57	0x53cb0	100.0000	
 font	_IsPanelLayerVisible	100.0000	100.0000	2	ast4:9723c9442127	0x54350	100.0000	
@@ -2669,7 +2669,7 @@ winmain	?RenderFieldMode@@YAXH@Z	100.0000	100.0000	4	ast4:4bfaf9c92db0	0x4ef30	1
 winmain	?RenderFieldView@@YAXH@Z	100.0000	100.0000	9	ast4:ab8e7eceb96b	0x4ea90	100.0000	
 winmain	?RenderFrame@@YAXXZ	100.0000	100.0000	4	ast4:da9a027465d8	0x4f140	100.0000	
 winmain	?RenderLayersMode@@YAXH@Z	100.0000	100.0000	1	ast4:d974d0f37251	0x4f100	100.0000	
-winmain	?RenderNPC@@YAXH@Z	96.3814	96.1499	27	ast4:5567e556f23c	0x4c3c0	96.3814	
+winmain	?RenderNPC@@YAXH@Z	96.1499	96.1499	28	ast4:24794ff6f685	0x4c3c0	96.3814	
 winmain	?RenderNothing@@YAXH@Z	100.0000	100.0000	1	ast4:2175f5b9213b	0x4f130	100.0000	
 winmain	?RenderPanelMode@@YAXH@Z	100.0000	100.0000	4	ast4:36b0fcac3111	0x4ed80	100.0000	
 winmain	?RenderPictureMode@@YAXH@Z	100.0000	100.0000	4	ast4:4ba5ee3afdbd	0x4ece0	100.0000	
@@ -2746,7 +2746,7 @@ winmain	_StepBlankRenderMode	100.0000	100.0000	3	ast4:a58611a6f266	0x49d10	100.0
 winmain	_StepScreenFade	91.2500	91.2500	7	ast4:6198d3c56082	0x49dd0	91.2500	
 winmain	_StopMusic	100.0000	100.0000	1	ast4:9a90a9874845	0x49a50	100.0000	
 winmain	_WaitFrames	100.0000	100.0000	3	ast4:17fb5f9e053d	0x49f00	100.0000	
-winmain	_WinMain@16	98.4286	98.4286	7	ast4:4721ad566367	0x50f50	98.4286	
+winmain	_WinMain@16	98.4286	98.4286	8	ast4:43d27d6e7b94	0x50f50	98.4286	
 worldmapgfx	_DrawWorldMapCursor	100.0000	100.0000	2	ast4:ac8d604b9912	0x583f0	100.0000	
 worldmapgfx	_HitTestWorldMap	100.0000	100.0000	2	ast4:26f2ea1ad531	0x581b0	100.0000	
 worldmapgfx	_IsWorldMapMarkerNearEdge	100.0000	100.0000	3	ast4:4e4f1681ff08	0x582c0	100.0000	
