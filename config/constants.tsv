@@ -696,7 +696,6 @@ src/Script/scripttext.c	PollScriptPanels	*	*	*	panels are polled from the last o
 src/Script/scripttext.c	RunScriptMenuHandler	1	call-argument	SetScriptLongVar(*	@identity-TODO: the menu handler's script result 1
 src/Script/scripttext.c	OpSetMenuScroll	-1	*	*	-1 keeps the menu's scroll step or position
 src/Script/scripttext.c	WriteFormattedTextLine	0	*	*	an empty text line
-src/Script/scripttext.c	OpAllocLongArray	4	call-argument	CreateArrayHandle(*	a long array of 4-byte elements
 src/Script/scripttext.c	ReadSizedDataInt	*	*	*	little-endian bytes, sign-extended from the top byte (0x80)
 src/Script/scripttext.c	Op*Int	*	*	*	the operand's sign (1 or -1)
 src/Script/scripttext.c	OpSaveSceneCell	*	call-argument	CreateArrayHandle(*	a 16-byte scene-cell record
