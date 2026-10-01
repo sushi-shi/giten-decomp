@@ -334,7 +334,7 @@ b32 LoadGraphics(void);
 // The layer code (layer.cpp): creating, freeing and repainting the layers,
 // hit-testing them and the navigation pad, the character panel's commands
 // and the dragging of the panel layers.
-b32 CreateScreenLayer(i32 slot);
+b32 CreateScreenLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot);
 void FreeScreenLayers(void);
 void UpdateLayerPanels(void);
 GZ_ENUM_RETURN(ScreenLayerSlot, i32) LayerAtPoint(u32 x, u32 y);

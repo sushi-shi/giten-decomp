@@ -45,7 +45,7 @@ typedef struct ItemSlot {
 #define EmptyItemSlot(slot) ((slot)->item = ITEM_ID_EMPTY, (slot)->quantity = 0)
 
 static __inline void ClearItemSlot(ItemSlot* slot) {
-    SetItemSlotItem(slot, -1);
+    SetItemSlotItem(slot, ITEM_ID_EMPTY);
     slot->quantity = 0;
 }
 

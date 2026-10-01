@@ -721,7 +721,7 @@ void FinishScreenFade(void) {
     s_screenCovered = false;
     PollInput();
     ClearMouseClicks();
-    SetMouseState(MOUSE_UP, 0, 0);
+    SetMouseState(MOUSE_BUTTONS_NONE, 0, 0);
     ClearDisplaySurface(g_renderTarget, NULL);
 }
 
@@ -2853,14 +2853,14 @@ void DrawSceneSprites(void) {
 
 // The order BlitScreenLayers walks the first layers in when asked to.
 DATA(0x0006bc38)
-static i32 s_layerOrder[8] = {
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_layerOrder[8] = {
     SCREEN_LAYER_TEXT,
     SCREEN_LAYER_FIRST_PANEL,
-    SCREEN_LAYER_FIRST_PANEL + 1,
-    SCREEN_LAYER_FIRST_PANEL + 2,
-    SCREEN_LAYER_FIRST_PANEL + 3,
-    SCREEN_LAYER_FIRST_PANEL + 4,
-    SCREEN_LAYER_FIRST_PANEL + 5,
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 1),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 2),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 3),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 4),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 5),
     SCREEN_LAYER_MENU_BAR
 };
 
@@ -3669,7 +3669,7 @@ static u16 s_ceilingIndices[6] = {0, 3, 2, 0, 2, 1};
 // matching ceiling cells.
 RVA(0x0004f3f0, 0x270)
 void BuildRoomMesh(Mesh* mesh, i32 cols, i32 rows) {
-    GZ_ENUM_STORAGE(ScreenLayerSlot, i32) layer;
+    i32 layer;
     i32 col;
     i32 row;
     i32 k;
@@ -4695,13 +4695,13 @@ b32 RunJoystickMove(void) {
 // once it is below this.
 #define MENU_BAR_HIDE_Y 32
 
-// The layer the left and the right button went down on (SCREEN_LAYER_COUNT
+// The layer the left and the right button went down on (SCREEN_LAYER_NONE
 // for none).
 DATA(0x0006be94)
-static i32 s_pressedLayer = SCREEN_LAYER_COUNT;
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_pressedLayer = SCREEN_LAYER_NONE;
 
 DATA(0x0006be98)
-static i32 s_rightPressedLayer = SCREEN_LAYER_COUNT;
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_rightPressedLayer = SCREEN_LAYER_NONE;
 
 // Set while a navigation pad button is held down.
 DATA(0x0008f608)
@@ -4725,8 +4725,8 @@ RECT g_dragRect;
 #define JOY_DIRECTIONS (JOY_UP | JOY_DOWN | JOY_LEFT | JOY_RIGHT)
 
 // A left click released in place on a party panel in battle, held until a
-// pass on which a tick passes (SCREEN_LAYER_COUNT for none).
-static i32 s_heldPanelRelease = SCREEN_LAYER_COUNT;
+// pass on which a tick passes (SCREEN_LAYER_NONE for none).
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_heldPanelRelease = SCREEN_LAYER_NONE;
 
 // Set when the left button went down while no command was being entered.
 static b32 s_pressedOutsidePick;
@@ -4768,19 +4768,19 @@ static b32 CanPressPartyPanel(void) {
 // passes, through ReleasePartyPanel's gate as retail would have on that pass.
 // Drops it when a check that let it be held or its press through fails.
 static void ApplyHeldPanelRelease(void) {
-    i32 slot = s_heldPanelRelease;
+    GZ_ENUM_LOCAL(ScreenLayerSlot, i32) slot = s_heldPanelRelease;
 
-    if (slot == SCREEN_LAYER_COUNT) {
+    if (slot == SCREEN_LAYER_NONE) {
         return;
     }
     if (!CanHoldBattleInput() || !CanPressPartyPanel()) {
-        s_heldPanelRelease = SCREEN_LAYER_COUNT;
+        s_heldPanelRelease = SCREEN_LAYER_NONE;
         return;
     }
     if (!ClockTickedThisPass()) {
         return;
     }
-    s_heldPanelRelease = SCREEN_LAYER_COUNT;
+    s_heldPanelRelease = SCREEN_LAYER_NONE;
     ReleasePartyPanel(slot, false);
 }
 
@@ -4797,7 +4797,7 @@ static void ApplyHeldPanelRelease(void) {
 // A release in place in the battle view is kept only when neither its press
 // nor its release came while a command was being entered, and then waits for
 // the next pass on which a tick passes and goes through the retail gate there.
-static void ReleasePartyPanelOnTick(i32 slot, b32 dragged) {
+static void ReleasePartyPanelOnTick(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, b32 dragged) {
     if (dragged || !GetFieldBattleActive() || g_renderMode != RENDER_MODE_VIEW) {
         ReleasePartyPanel(slot, dragged);
         return;
@@ -4865,7 +4865,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
     switch (buttons & MOUSE_STATE_MASK) {
         case MOUSE_UP:
             if (s_layerDragging) {
-                s_pressedLayer = SCREEN_LAYER_COUNT;
+                s_pressedLayer = SCREEN_LAYER_NONE;
                 s_layerDragging = false;
             }
             break;
@@ -4897,7 +4897,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                 return;
             }
 #ifdef GITEN_BUGFIX
-            s_heldPanelRelease = SCREEN_LAYER_COUNT;
+            s_heldPanelRelease = SCREEN_LAYER_NONE;
             s_pressedOutsidePick = GetPickMode() == 0;
 #endif
             s_dragMoved = false;
@@ -4987,7 +4987,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                     PlaceDraggedLayer(s_pressedLayer);
                 }
             }
-            s_pressedLayer = SCREEN_LAYER_COUNT;
+            s_pressedLayer = SCREEN_LAYER_NONE;
             s_padHeld = false;
             return;
         default:
@@ -5036,7 +5036,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                 g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
                 ClearPanelLayerSurface();
             } else {
-                s_rightPressedLayer = SCREEN_LAYER_COUNT;
+                s_rightPressedLayer = SCREEN_LAYER_NONE;
                 s_padHeld = false;
             }
             break;
@@ -5116,7 +5116,7 @@ Texture g_textBoxTexture;
 RVA(0x00050ac0, 0x48e)
 b32 LoadGraphics(void) {
     i32 i;
-    GZ_ENUM_STORAGE(ScreenLayerSlot, i32) layer;
+    i32 layer;
     b32 failed;
 
     ClearHandleTable();
@@ -5173,7 +5173,7 @@ b32 LoadGraphics(void) {
     ResetRenderMode();
     failed = false;
     for (layer = 0; layer < SCREEN_LAYER_COUNT; layer++) {
-        failed |= CreateScreenLayer(layer);
+        failed |= CreateScreenLayer(static_cast<GZ_ENUM_PARAM(ScreenLayerSlot, i32)>(layer));
     }
     if (failed) {
         return false;

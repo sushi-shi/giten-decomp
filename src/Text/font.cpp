@@ -5934,7 +5934,7 @@ static b32 PaintLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, ScreenLayer* lay
 // in the primary's pixel format (and a second one for the slots that have a
 // work surface), painted for its slot; returns nonzero on failure.
 RVA(0x000551c0, 0x206)
-b32 CreateScreenLayer(i32 slot) {
+b32 CreateScreenLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot) {
     DDSURFACEDESC primary;
     DDSURFACEDESC desc;
     DDCOLORKEY key;
@@ -6000,7 +6000,7 @@ b32 CreateScreenLayer(i32 slot) {
     ((layer)->visible && (layer)->x <= (px) && (layer)->x + (layer)->source.right > (px)           \
      && (layer)->y <= (py) && (layer)->y + (layer)->source.bottom > (py))
 
-// The slot of the topmost layer at (x, y), SCREEN_LAYER_COUNT for none; on
+// The slot of the topmost layer at (x, y), SCREEN_LAYER_NONE for none; on
 // the navigation pad only its opaque pixels count, and the pad button under
 // them becomes the pressed and held one.
 RVA(0x000553d0, 0x142)
@@ -6038,7 +6038,7 @@ GZ_ENUM_RETURN(ScreenLayerSlot, i32) LayerAtPoint(u32 x, u32 y) {
     if (i < SCREEN_LAYER_COUNT - 1) {
         return g_layerStack[i]->slot;
     }
-    return SCREEN_LAYER_COUNT;
+    return SCREEN_LAYER_NONE;
 }
 
 // The stack index of the topmost layer at (x, y), -1 for none.
