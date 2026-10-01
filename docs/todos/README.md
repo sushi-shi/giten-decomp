@@ -1,5 +1,8 @@
 # Todo ledgers
 
+[Reconstruction cleanup](reconstruction-cleanup.md) maps the KF1 and Gruntz
+review methods to Giten's live worklists and records unresolved source models.
+
 ## Source typing
 
 [C source cast census](cast-census.md) records the missing target-C written-site

@@ -5,8 +5,9 @@
 narrowly matched reason to stay numeric. `giten verify constants --list [FILTER]`
 shows any newly open sites, and `--gate` detects stale or unreviewed rows.
 The generated `build/clangd/compile_commands.json` must list the current
-translation units; `giten configure` refreshes it after a unit is renamed or
-removed. A failed parse is an incomplete census, not a zero-open result.
+translation units; `python3 -m giten.graph.compdb` refreshes it after a unit
+is renamed or removed. `giten configure` only rewrites the Ninja manifest.
+A failed parse is an incomplete census, not a zero-open result.
 
 The cases below have behavior-based names or numeric review rows, but their
 authored identities remain open. A naming change needs code, record or string
