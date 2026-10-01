@@ -25,11 +25,14 @@ spellings.
 | --- | --- |
 | Navigation-pad pixel reads in `LayerAtPoint` and `PadButtonAtPoint` (`src/Text/font.cpp`) | Both lock the layer's DirectDraw surface, read a 16-bit pixel and unlock it. A focused `ReadLayerPixel` inline trial changed the first consumer at its entry and shortened the TU's `.text` by 112 bytes; the trial was removed. Recover the compiler-compatible local lifetime/call boundary before sharing it. |
 | Other DirectDraw surface descriptions in `CreateGlyphSurface` (`src/Text/font.cpp`) and `LoadPictureFile` (`src/Gfx/bitmapio.cpp`) | The glyph surface omits pixel format; the file texture selects caps by device type and writes its pixel format before caps. These do not use the recovered offscreen initializer. The four `InitDirect3D` swapped-argument `memset` calls in the vendor worklist also require their existing behavior. |
-| Lock descriptions in `LayerAtPoint`, `PadButtonAtPoint`, `CopySurfaceSquare` (`src/Gfx/surfacecopy.cpp`) and `InitDirect3D` (`src/Platform/d3dapp.cpp`) | The shared `DDSD_CAPS`/`DDSCAPS_SYSTEMMEMORY` fields precede distinct lock targets and readback rules. The navigation-pad trial above shows a straightforward inline is not yet codegen-compatible. |
-| Weapon/gun hit and exceptional rolls in `RollWeaponHit`, `RollGunHit`, `RollExceptionalWeaponAttack`, `RollExceptionalAttack` | Existing `GetExceptionalAttackLuck`, `GetExceptionalAttackBase`, and `ApplyAttackAccuracyConditions` capture proven suboperations. Nearby code still differs in weapon range, critical result, or caller policy; compare full ordered RNG calls and result assignments before combining a larger block. |
-| DirectX teardown in `ReleaseDirectX` (`src/Platform/d3dapp.cpp`) and `ReleaseGraphics` (`src/Platform/winmain.cpp`) | The COM releases overlap, but graphics teardown also releases pictures/layers and MIDI state, and the render-target/room-object order differs. `ReleaseComObject` already owns the common COM release operation. Do not merge the larger sequences without order evidence. |
+| Lock descriptions in `LayerAtPoint`, `PadButtonAtPoint`, `CopySurfaceSquare` (`src/Gfx/surfacecopy.cpp`) and `ReadSurfaceWord` (`src/Platform/d3dapp.cpp`) | The shared `DDSD_CAPS`/`DDSCAPS_SYSTEMMEMORY` fields precede distinct lock targets and readback rules. `ReadSurfaceWord` is already an out-of-line pixel accessor used by other callers; calling it from the navigation-pad functions would replace their in-place lock sequence. The focused inline trial above changed their code. Keep the four lock sequences pending a compatible boundary. |
+| Weapon/gun hit and exceptional rolls in `RollWeaponHit`, `RollGunHit`, `RollExceptionalWeaponAttack`, `RollExceptionalAttack` | Existing `GetExceptionalAttackLuck`, `GetExceptionalAttackBase`, and `ApplyAttackAccuracyConditions` capture proven suboperations. Gun hit adds DANCE evasion before the shared roll shape; the exceptional weapon path returns `SetActionResult` while the other sets the result then returns a constant. Keep those ordered result and RNG paths separate unless a smaller compiler-compatible operation is found. |
+| DirectX teardown in `ReleaseDirectX` (`src/Platform/d3dapp.cpp`) and `ReleaseGraphics` (`src/Platform/winmain.cpp`) | The COM releases overlap, but graphics teardown also releases pictures/layers and MIDI state, and the render-target/room-object order differs. `ReleaseComObject` already owns the common COM release operation. The larger sequences have different lifecycle policy and cannot share an ordered release body. |
 
-Exact duplicate windows were used to find leads; a shared three-line window
-alone does not establish a helper. The inline and macro declaration counts
-include established SDK wrappers, domain accessors, enum machinery, and
-constants that have no repeated operation to extract.
+These remaining families have been read through their callers and current
+helpers. Their next evidence is stated in the table; none supports another
+source extraction from the present call and object comparison. Exact
+duplicate windows were used to find leads; a shared three-line window alone
+does not establish a helper. The inline and macro declaration counts include
+established SDK wrappers, domain accessors, enum machinery, and constants
+that have no repeated operation to extract.
