@@ -44,13 +44,13 @@
 #include <Game/FieldView.h>
 #include <Game/GameState.h>
 #include <Game/Growth.h>
-#include <Game/ObjectRecordId.h>
 #include <Game/InfoBar.h>
 #include <Game/ItemMenu.h>
 #include <Game/ItemRecord.h>
 #include <Game/MapArea.h>
 #include <Game/ModeFlags.h>
 #include <Game/ObjectRecord.h>
+#include <Game/ObjectRecordId.h>
 #include <Game/Party.h>
 #include <Game/PartyCommand.h>
 #include <Game/PartyPick.h>
