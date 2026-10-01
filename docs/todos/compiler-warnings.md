@@ -6,16 +6,18 @@ has 406 warnings, all located in project `src/` files; none point into the
 MSVC, SDK, or vendored headers. The compile driver normally discards successful
 compiler output, so these diagnostics are not shown by an ordinary build.
 
-Ten warnings have source-supported fixes: `OpSaveObjectConditions` now passes
+Fourteen warnings have source-supported fixes: `OpSaveObjectConditions` now passes
 the five condition-bit bytes that `SetFlagTag` reads, and nine C++ comparisons
 of integer state fields with `bool true` now compare with integer `1`. The five
 affected translation units produce identical COFF objects after masking only
-the timestamp. The remaining baseline warnings are:
+the timestamp. The debug-menu's two const tables now pass through a const
+`SetMenuItems` parameter and a const `MenuEntry` view. Its handlers only read
+their rows; the integrated 82-unit compile/compare keeps the score unchanged.
+The remaining baseline warnings are:
 
 | Warning | Count | Written site and evidence still needed |
 | --- | ---: | --- |
 | C4133, incompatible pointer | 1 | `DecodeAreaMap` in `src/Game/clock.c` assigns `base + src->doorsOffset` (`u8*`) to `AreaLevel.doors` (`DoorCell*`). The source is a packed area-record offset; recover the record's typed cell boundary before changing this conversion. |
-| C4090 plus C4022, dropped `const` and pointer mismatch | 4 | `RunDebugMenu` in `src/Game/debugmenu.c` passes both `static const MenuEntry` arrays to `SetMenuItems(..., void* items, ...)`. Its `MenuBox.items.table` view and handlers use mutable `MenuEntry*`, though they only read rows. A typed const table view must be propagated through the generic menu storage and every handler before changing the API; the arrays are retail initialized data. |
 | C4761, integral size mismatch in argument | 391 | Explicit width transitions at calls across 37 source files. For example, `RandomPercent` in `src/Util/range.c` passes 32-bit bounds to `RandomAverage(i16, i16, i16)`; `OpCloseScriptPanel` in `src/Script/scripttext.c` passes `ReadScriptValue()` to a narrower image key; `LoadNpcPalette` in `src/Game/treasurebox.c` passes an `i16` expression to a narrower palette API. Check each caller's value range and the retail argument width before altering a declaration or inserting a narrowing conversion. |
 
 The C4761 sites by translation unit are listed below so the full audit scope

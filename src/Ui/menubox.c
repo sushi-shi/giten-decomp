@@ -63,13 +63,13 @@ void MoveMenuBox(MenuBox* menu, i16 x, i16 y) {
 }
 
 RVA(0x00020800, 0x2f)
-void SetMenuItems(MenuBox* menu, i16 pageRows, void* items, i16 itemCount, MenuHandler handler) {
+void SetMenuItems(MenuBox* menu, i16 pageRows, const void* items, i16 itemCount, MenuHandler handler) {
     if (menu) {
         if (pageRows != MENU_BOX_KEEP) {
             menu->pageRows = pageRows;
         }
         menu->itemCount = itemCount;
-        menu->items.text = items;
+        menu->items.raw = items;
         menu->handler = handler;
     }
 }
