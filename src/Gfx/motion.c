@@ -230,6 +230,10 @@ i32 ClampEffectCount(i16 count) {
     return count;
 }
 
+static __inline EffectSprite* GetEffectFrameEnd(EffectCommand* command) {
+    return &command->frame.sprites[command->frame.count];
+}
+
 // Starts the effect script at `offset` within `base`.
 RVA(0x00004bd0, 0x26)
 void StartEffectScript(u8* base, u16 offset) {
@@ -265,7 +269,7 @@ EffectCommand* StepEffectScript(void) {
             s_effectScript->frame.sprites[i].y
         );
     }
-    next = &s_effectScript->frame.sprites[s_effectScript->frame.count];
+    next = GetEffectFrameEnd(s_effectScript);
     s_effectScript = next;
     return s_effectScript;
 }
@@ -335,7 +339,7 @@ EffectCommand* StepScreenEffectScript(void) {
             );
         }
     }
-    next = &s_effectScript->frame.sprites[s_effectScript->frame.count];
+    next = GetEffectFrameEnd(s_effectScript);
     s_effectScript = next;
     return s_effectScript;
 }
