@@ -13,6 +13,8 @@ behavior-based names whose authored meanings still need evidence.
 `goto` sites and the retail evidence needed for a structured rewrite.
 [Offset-derived field names](offset-fields.md) lists primitive fields still
 named by storage offset and the evidence needed to identify them.
+[Compiler warnings](compiler-warnings.md) records the full MSVC 5.0 warning
+census, resolved cases, and remaining source-model examples.
 
 ## Declaration placement
 
@@ -23,6 +25,8 @@ ABI evidence behind the remaining cross-header function declarations.
 
 [Project helper reuse](project-helper-reuse.md) records repeated Giten helper
 expansions that require source-origin or instruction evidence before adoption.
+[Common code review](common-code-review.md) records recovered and unresolved
+inline or macro candidates across translation units.
 
 ## Vendor macros
 
