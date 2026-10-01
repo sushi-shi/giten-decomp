@@ -2098,7 +2098,7 @@ skilluse	_ChangeBattleStat	100.0000	100.0000	1	ast4:fb351fe93c87	0x2d340	100.000
 skilluse	_ClearBattleTally	100.0000	100.0000	4	ast4:e00bed61a638	0x2b680	100.0000	
 skilluse	_CollectTargets	100.0000	100.0000	1	ast4:a519c2fd66bb	0x2c740	100.0000	
 skilluse	_CollectTargetsAlongLine	100.0000	100.0000	3	ast4:86265ad7a556	0x2cb60	100.0000	
-skilluse	_CollectTargetsAtCell	98.7500	98.7500	3	ast4:6061339ef2d8	0x2c800	98.7500	
+skilluse	_CollectTargetsAtCell	100.0000	100.0000	4	ast4:dae0894500ca	0x2c800	100.0000	
 skilluse	_CollectTargetsInView	100.0000	100.0000	2	ast4:f1d0ecac02ff	0x2cc80	100.0000	
 skilluse	_CountCombatTargets	100.0000	100.0000	1	ast4:1e097f2ecd4e	0x2aa40	100.0000	
 skilluse	_CountUsableMemberSkills	100.0000	100.0000	9	ast4:5d9215671b42	0x2c6c0	100.0000	
