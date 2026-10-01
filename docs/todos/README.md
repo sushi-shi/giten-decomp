@@ -9,6 +9,8 @@ review methods to Giten's live worklists and records unresolved source models.
 audit and gives pointer and scalar examples for the next type-model review.
 [Deferred constant identities](constants-handoff.md) records values with
 behavior-based names whose authored meanings still need evidence.
+[Function macro literals](macro-literals.md) records numeric spellings in
+macro replacement lists that the AST constants ledger does not cover.
 [Shared control-flow joins](goto-review.md) inventories the remaining written
 `goto` sites and the retail evidence needed for a structured rewrite.
 [Offset-derived field names](offset-fields.md) lists primitive fields still

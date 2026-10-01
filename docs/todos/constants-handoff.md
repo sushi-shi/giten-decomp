@@ -1,9 +1,12 @@
 # Deferred constant identities
 
-`config/constants.tsv` is the current review ledger for numeric spellings in
-`src/` and `include/`. Its floor is zero: every literal is named or has a
-narrowly matched reason to stay numeric. `giten verify constants --list [FILTER]`
-shows any newly open sites, and `--gate` detects stale or unreviewed rows.
+`config/constants.tsv` is the review ledger for numeric spellings exposed by
+the translation-unit AST in `src/` and `include/`. Its floor is zero: each
+AST-exposed literal is named or has a narrowly matched reason to stay numeric.
+`giten verify constants --list [FILTER]` shows any newly open AST sites, and
+`--gate` detects stale or unreviewed rows. Numeric spellings in function-like
+macro definitions have a [separate source census](macro-literals.md); they do
+not yet participate in this floor.
 The generated `build/clangd/compile_commands.json` must list the current
 translation units; `python3 -m giten.graph.compdb` refreshes it after a unit
 is renamed or removed. `giten configure` only rewrites the Ninja manifest.
