@@ -25,11 +25,6 @@ cpp      = ["/nologo", "/c", "/Ox", "/Ob0", "/Zp1", "/ML", "/GX"]
 cpp-noeh = ["/nologo", "/c", "/Ox", "/Ob0", "/Zp1", "/ML"]
 
 [[unit]]
-unit = "range"
-source = "src/Util/range.c"
-flags = "c"
-
-[[unit]]
 unit = "nibble"
 source = "src/Util/nibble.c"
 flags = "c"
@@ -52,11 +47,6 @@ flags = "c"
 [[unit]]
 unit = "scriptvm"
 source = "src/Script/scriptvm.c"
-flags = "c"
-
-[[unit]]
-unit = "scriptsprite"
-source = "src/Script/scriptsprite.c"
 flags = "c"
 
 [[unit]]
@@ -295,11 +285,6 @@ source = "src/Game/restore.c"
 flags = "c"
 
 [[unit]]
-unit = "list"
-source = "src/Util/list.c"
-flags = "c"
-
-[[unit]]
 unit = "clock"
 source = "src/Game/clock.c"
 flags = "c"
@@ -332,21 +317,6 @@ flags = "c"
 [[unit]]
 unit = "worldtravel"
 source = "src/Game/worldtravel.c"
-flags = "c"
-
-[[unit]]
-unit = "weaponattack"
-source = "src/Game/weaponattack.c"
-flags = "c"
-
-[[unit]]
-unit = "skillattack"
-source = "src/Game/skillattack.c"
-flags = "c"
-
-[[unit]]
-unit = "itemattack"
-source = "src/Game/itemattack.c"
 flags = "c"
 
 [[unit]]

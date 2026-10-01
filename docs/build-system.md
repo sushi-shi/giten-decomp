@@ -3,7 +3,7 @@
 Run inside `nix develop` with `GITEN_DIR=$PWD`; see [setup](../README.md#quickstart).
 
 ```sh
-giten match range          # compile, label, delink and compare one unit; no gates
+giten match fieldview      # compile, label, delink and compare one unit; no gates
 giten build                # every unit; no gates
 giten build verify         # merge checks
 giten verify status        # scores and regressions
