@@ -52,12 +52,17 @@ level-specific ranges `5..15`, `12..22` and `20..40` to `RandomAverage`.
 establish a shared enum. Their `while (0)` sites are statement scaffolds.
 
 Other retained layout and packing values include the `256` palette entries
-and `24`-bit reserved-channel shift in `include/Gfx/Bitmap.h`, nibble shifts
-`8` and `4` and glyph widths `8` and `16` in `include/Text/TextAttr.h`, and
-effect palette entry indices `14` and `15` in `include/Gfx/Motion.h`. The
-remaining Gfx, Ui and Util function macros are mostly zero initializers,
-array bounds, vertex or cell indices, and `while (0)` scaffolds; their
-written values still appear in the report for review.
+and `24`-bit reserved-channel shift in `include/Gfx/Bitmap.h`, and nibble
+shifts `8` and `4` and glyph widths `8` and `16` in `include/Text/TextAttr.h`.
+`ApplyEffectPalette` in `include/Gfx/Motion.h` now selects the last two
+hardware palette entries with `PALETTE_SIZE - 2` and `PALETTE_SIZE - 1`.
+`SelectNpcBillboardTexture` uses `OBJECT_TEXTURE_COUNT`, and
+`GetPanelTextCell` uses `TEXT_PLANE_MAX_COLS`. The remaining Gfx, Ui and Util
+function macros are mostly zero initializers, array bounds, vertex or cell
+indices, and `while (0)` scaffolds; their written values still appear in the
+report for review. [Game](game-macro-literals.md) and
+[non-Game](non-game-macro-literals.md) macro notes record representative
+unresolved families.
 
 ## Numeric meanings still open
 
