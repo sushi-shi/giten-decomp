@@ -119,7 +119,7 @@ void SetStatusAnalyzeMode(b16 on);
 
 // Pending roster insertion and the script state it resumes.
 extern Character* g_rosterPendingMember;
-extern i16 g_rosterReturnState;
+extern GZ_ENUM_STORAGE(GameStateId, i16) g_rosterReturnState;
 extern u16 g_rosterReturnPhase;
 extern u16 g_rosterReturnStep;
 

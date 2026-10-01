@@ -353,7 +353,7 @@ DATA(0x0007bec8)
 Character* g_rosterPendingMember = NULL;
 
 DATA(0x0007becc)
-i16 g_rosterReturnState = 0;
+GZ_ENUM_STORAGE(GameStateId, i16) g_rosterReturnState = GAME_STATE_RETURN;
 
 DATA(0x0007bed0)
 u16 g_rosterReturnPhase = 0;
@@ -384,8 +384,9 @@ void PopGameState(void) {
 }
 
 RVA(0x00016a70, 0x24)
-i16 __fastcall SetGameState(GZ_ENUM_PARAM(GameStateId, i16) state) {
-    i16 old = s_gameState.state;
+GZ_ENUM_RETURN(GameStateId, i16) __fastcall SetGameState(
+    GZ_ENUM_PARAM(GameStateId, i16) state) {
+    GZ_ENUM_LOCAL(GameStateId, i16) old = s_gameState.state;
     s_gameState.state = state;
     s_gameState.phase = 0;
     s_gameState.step = 0;

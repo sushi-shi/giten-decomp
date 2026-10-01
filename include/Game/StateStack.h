@@ -22,7 +22,8 @@ typedef struct GameState {
 void ClearGameStateStack(void);
 void SaveGameState(void);
 void PopGameState(void);
-i16 __fastcall SetGameState(GZ_ENUM_PARAM(GameStateId, i16) state);
+GZ_ENUM_RETURN(GameStateId, i16) __fastcall SetGameState(
+    GZ_ENUM_PARAM(GameStateId, i16) state);
 i16 SetGamePhase(i16 phase);
 i16 NextGamePhase(void);
 i16 PrevGamePhase(void);
