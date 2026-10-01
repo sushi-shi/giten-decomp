@@ -3154,17 +3154,16 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
     return PARTY_TIMER_INACTIVE;
 }
 
-// @early-stop prologue: retail pushes esi up front and forms the flags
-// pointer after the NULL test; assigning it after the test defers the push,
-// initialising it at the declaration hoists the lea (direct field use,
-// if-wrapped body and return-variable spellings tried).
+// @early-stop prologue: retail saves esi before the null guard and forms the
+// flags pointer after it; cl defers the save until the pointer is needed.
 RVA(0x000413f0, 0xb6)
 i16 ApplyMoonPhase(Character* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
-    u8* flags = GetCharacterFlags(character);
+    u8* flags;
     i16 changed = 0;
     if (character == NULL) {
         return 0;
     }
+    flags = GetCharacterFlags(character);
     if (TestBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
         changed = 1;
         ClearBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
