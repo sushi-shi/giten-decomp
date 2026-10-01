@@ -25,3 +25,21 @@ The `fieldobj.c` flag-bank expression also contains a C-style cast. Its
 low-byte complement is shifted to choose the `BitChangeMode` clear/set
 value. That representation needs separate bit-level source recovery; replacing
 it only to silence C4761 would obscure the packed flag rule.
+
+## Further Game call sites
+
+Four more Game units have 75 C4761 diagnostics under the same `/W4` compile.
+Their reviewed arithmetic feeds narrow, established game interfaces; no
+callee width change or warning-free, COFF-preserving source correction is
+supported by the current evidence.
+
+| Unit | C4761 sites | Current boundary and next evidence |
+| --- | ---: | --- |
+| `fieldview.c` | 25 | `FloodViewCells` and `ViewCellHasWall` take 16-bit view-grid columns and rows. Calls such as `ViewCellHasWall(x, y, dir, col + 1, row + 1, side, width, height)` promote the two coordinates to `int`; the grid itself is only seven by four cells. The facing `dir` and wall `side` remain 32-bit by the current contract. |
+| `fieldscreen.c` | 14 | `RevealAutomapCells(cell, y + 1)` steps a 16-bit map coordinate; `LoadWorldMapBlockImage(block + 10, 5)` passes a neighboring 16-bit block index; `HitTestHotspot(id, x, y, flags & 1)` passes a one-bit strictness value to an `i16` parameter. `ReadWorldMapTileCode` similarly receives local coordinates after arithmetic. Prove a wider storage or API contract before changing them. |
+| `statestack.c` | 27 | `NextGamePhase`/`PrevGamePhase` and step/sub-step wrappers pass arithmetic to 16-bit state setters. `AddItemUseMenuLine` builds a 16-bit packed text attribute for `AddMenuLine`; `AdvanceClock(steps * 5)` passes minutes to an `u16` interface. The state storage, text-cell attribute and clock amount are narrow domains. |
+| `partyaction.c` | 9 | `FindPickablePartyMember(index + 1)`, `RandomAverage(0, count - 1, 0)`, and menu-row `index + 1` use narrow indices. `OppositeDirection` computes a value 0..3 for `SpawnFieldObject`'s 16-bit direction; `AccessScriptReg(1, 0, 1 - s_fieldLeftEarly)` writes a 16-bit script value. The expressions are bounded by their protocol, while the promotion is ordinary C arithmetic. |
+
+Retyping these narrow APIs to `int` would change their source contracts;
+inserting narrow temporaries only moves the diagnostics to assignments, as
+the `character.c` trial showed. The reviewed source is unchanged.
