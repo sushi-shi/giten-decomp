@@ -3397,6 +3397,9 @@ void FreeGlyphSurface(void) {
 
 // Draws `text` (Shift-JIS; tabs and newlines skipped) with attribute `attr`
 // at pixel (x, y) of layer `layer`'s work surface.
+// API-forced: the public text is char*; the decoder reads its encoded bytes.
+#define ReadStringTextChar(code, text, pos)                                                        \
+    ReadTextChar((code), reinterpret_cast<const u8*>(text), (pos))
 RVA(0x00051650, 0xf8)
 void DrawLayerText(i16 layer, i16 x, i16 y, const char* text, i32 attr) {
     HDC dc;
@@ -3410,8 +3413,7 @@ void DrawLayerText(i16 layer, i16 x, i16 y, const char* text, i32 attr) {
     while (text[pos] != 0) {
         u16 code;
 
-        // API-forced: ReadTextChar walks the Shift-JIS text as bytes
-        next = ReadTextChar(&code, reinterpret_cast<const u8*>(text), pos);
+        next = ReadStringTextChar(&code, text, pos);
         memset(glyph, 0, sizeof(glyph));
         if (code != '\t' && code != '\n') {
             BlitGlyph(x, y, attr, dc, RenderGlyph(code, glyph), GetTextGlyphWidth(attr));
@@ -3439,8 +3441,7 @@ void DrawPlaneText(i16 plane, i16 x, i16 y, const char* text, i32 attr) {
     while (text[pos] != 0) {
         u16 code;
 
-        // API-forced: ReadTextChar walks the Shift-JIS text as bytes
-        next = ReadTextChar(&code, reinterpret_cast<const u8*>(text), pos);
+        next = ReadStringTextChar(&code, text, pos);
         memset(glyph, 0, sizeof(glyph));
         if (code != '\t' && code != '\n') {
             BlitGlyph(x, y, attr, dc, RenderGlyph(code, glyph), GetTextGlyphWidth(attr));
@@ -3470,8 +3471,7 @@ void DrawStatusText(i16 x, i16 y, const char* text, i32 attr) {
     while (text[pos] != 0) {
         u16 code;
 
-        // API-forced: ReadTextChar walks the Shift-JIS text as bytes
-        next = ReadTextChar(&code, reinterpret_cast<const u8*>(text), pos);
+        next = ReadStringTextChar(&code, text, pos);
         memset(glyph, 0, sizeof(glyph));
         if (code != '\t' && code != '\n') {
             BlitGlyph(x, y, attr, dc, RenderGlyph(code, glyph), GetTextGlyphWidth(attr));
@@ -3517,8 +3517,7 @@ b16 DrawBandText(i16 x, i16 y, const char* text, i32 attr, i16 band) {
     while (text[pos] != 0) {
         u16 code;
 
-        // API-forced: ReadTextChar walks the Shift-JIS text as bytes
-        next = ReadTextChar(&code, reinterpret_cast<const u8*>(text), pos);
+        next = ReadStringTextChar(&code, text, pos);
         memset(glyph, 0, sizeof(glyph));
         if (code != '\t' && code != '\n') {
             BlitGlyph(px, 0, attr, dc, RenderGlyph(code, glyph), GetTextGlyphWidth(attr));
