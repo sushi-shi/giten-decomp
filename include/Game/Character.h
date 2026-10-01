@@ -248,7 +248,14 @@ typedef struct Character {
     i8 moonRow;
     // Roster characters retain alignment history; field actors reuse these
     // bytes for their map position, facing and removal state.
-    AlignmentInfo alignmentA;
+    union {
+        AlignmentInfo alignmentA;
+        struct {
+            MapCoord fieldPosition;
+            i16 facing;
+            u8 fieldStateReserved[10];
+        };
+    };
     union {
         AlignmentInfo alignmentB;
         i16 fieldHidden;
