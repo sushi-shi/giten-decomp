@@ -2377,7 +2377,7 @@ void MarkPickDone(void) {
 }
 
 RVA(0x000094c0, 0x7)
-i16 GetPickMode(void) {
+GZ_ENUM_RETURN(PartyCommandPhase, i16) GetPickMode(void) {
     return s_pickMode;
 }
 
@@ -2692,7 +2692,7 @@ i16 GetMemberPickRange(i16 id) {
 // @identity-TODO: a second getter of the pick mode, called from another
 // module; whether it once differed is unknown.
 RVA(0x00009cf0, 0x7)
-i16 QueryPickMode(void) {
+GZ_ENUM_RETURN(PartyCommandPhase, i16) QueryPickMode(void) {
     return s_pickMode;
 }
 

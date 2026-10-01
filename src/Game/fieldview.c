@@ -750,7 +750,8 @@ i16 GetWallAtOffsetClamped(
 // The wall kind on side `turn` (relative to `direction`) of a map cell word:
 // one nibble per side.
 RVA(0x0000d0f0, 0x60)
-i16 GetCellWall(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn, u16 cell) {
+GZ_ENUM_RETURN(WallKind, i16)
+GetCellWall(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn, u16 cell) {
     switch (TurnDirection(direction, turn)) {
         case VIEW_NORTH:
             return cell & 0xf;
@@ -778,7 +779,8 @@ u16 GetRotatedWallAtOffset(
 
 // The raw wall kind on the map cell's `direction` side (zero means no wall).
 RVA(0x0000d180, 0x23)
-i16 GetMapWallKind(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
+GZ_ENUM_RETURN(WallKind, i16)
+GetMapWallKind(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
     return GetCellWall(direction, 0, RevealAreaMapAt(x, y));
 }
 
