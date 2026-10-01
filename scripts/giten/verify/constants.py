@@ -767,12 +767,28 @@ def scan_entries(entries: list[dict], *, repo: Path = REPO, jobs: int = 1):
 def scan(*, cdb: Path = CDB, repo: Path = REPO, jobs: int = 1):
     if not cdb.is_file():
         raise FileNotFoundError(f"{cdb}: no compile database; run giten configure")
-    entries = json.loads(cdb.read_text())
-    entries = [entry for entry in entries
-               if Path(entry["file"]).suffix in (".c", ".cpp")
-               and str(entry["file"]).replace("\\", "/").startswith("src/")]
+    entries = []
+    for entry in json.loads(cdb.read_text()):
+        path = _source_path(entry, repo)
+        try:
+            rel = path.relative_to(repo.resolve())
+        except ValueError:
+            continue
+        if rel.parts[0] == "src" and path.suffix in (".c", ".cpp"):
+            entries.append(entry)
     if not entries:
-        raise RuntimeError(f"{cdb}: no project C++ translation units")
+        raise RuntimeError(f"{cdb}: no project C/C++ translation units")
+    covered = {_source_path(entry, repo) for entry in entries}
+    expected = {path.resolve() for path in (repo / "src").rglob("*")
+                if path.is_file() and path.suffix in (".c", ".cpp")}
+    missing = sorted(expected - covered)
+    stale = sorted(covered - expected)
+    if missing or stale:
+        detail = ", ".join(str(path.relative_to(repo.resolve()))
+                           for path in (missing + stale)[:8])
+        raise RuntimeError(f"{cdb}: compile database misses {len(missing)} "
+                           f"source unit(s) and lists {len(stale)} stale unit(s): "
+                           f"{detail}; regenerate it with `giten configure`")
     return scan_entries(entries, repo=repo, jobs=jobs)
 
 
