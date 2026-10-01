@@ -63,7 +63,8 @@ layout and owner-seam examples at their source locations.
   for example, `FinalizeAttackDamage` in `include/Game/Attack.h` has damage-scale
   and clamp literals absent from `bare_constants.tsv`. The macro literals lack
   complete semantic dispositions; [the Game macro review](game-macro-literals.md)
-  records the proved replacements and rejected families. An empty AST open
+  and [the non-Game review](non-game-macro-literals.md) record proved
+  replacements and rejected families. An empty AST open
   list is not full coverage.
 - [Compiler warnings](compiler-warnings.md): the MSVC 5.0 census covers all 82
   configured translation units and records remaining source warnings by family

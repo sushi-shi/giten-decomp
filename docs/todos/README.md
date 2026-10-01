@@ -13,6 +13,8 @@ unproven identities after strict syntax checks on all configured units.
 behavior-based names whose authored meanings still need evidence.
 [Game macro literal review](game-macro-literals.md) records proven substitutions
 and unresolved formula/domain values inside Game macro bodies.
+[Non-Game macro literal review](non-game-macro-literals.md) records proved
+size/bound names and the retained platform, graphics, text and sound values.
 [Macro replacement literals](macro-literals.md) records numeric spellings in
 macro replacement lists that the AST constants ledger does not cover.
 [Shared control-flow joins](goto-review.md) inventories the remaining written
