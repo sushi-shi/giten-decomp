@@ -64,3 +64,18 @@ wall access boundary in more detail.
 This complete partition is limited to `.data` and the BSS tail. HoMM3 also
 accounts for `.rdata` and distinguishes independently proven retail extents
 from source claims; those two broader checks remain open in Giten.
+
+## Zero-filled arrays with no observed writer
+
+`giten verify data-access --findings read-only-bss-array` reports zero-filled
+array claims that retail reads directly but never writes or passes by address
+at a decoded reference site. This is a review lead, not proof that an array
+stays zero: writes through pointers or unrecovered code can escape the access
+map. The finding is report-only for that reason.
+
+The current report has one row: `s_sceneEntries[32]` in `statestack.c` at
+`0x07bd38`. `GetSceneEntry` and `DrawSceneFrame` read it; no Windows loader
+or writer has been found. Its 128-byte retail storage and both read referents
+are real, so deleting the declaration would lose data identity. The three
+wall arrays in `fieldmain.c` have retail clears, fill writes, and HUD reads;
+they do not match this finding.

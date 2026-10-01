@@ -17,6 +17,8 @@ build/gen/data_access_map.tsv (the grep-able access table).
 CATEGORIES
   unclaimed   retail touches bytes no claim covers -> unmodelled data
   unaccessed  a claim nothing in the image references -> phantom candidate
+  read-only-bss-array  a zero-filled array read directly with no observed
+                       writer or address escape -> inert-state candidate
   width       access width/kind disagrees with the declared field -> wrong type
   stride      an index scale inside a claim disagrees with its element size
   undercount  a claim declared with ONE element is INDEXED -> under-declared
@@ -70,6 +72,8 @@ REPORT_ONLY = {
     "unaccessed": "phantom CANDIDATES only - a dead-but-correct datum "
                   "(g_unreferencedGitenMgrValues' bytes ARE retail's) and a library global "
                   "the game never calls look identical from here",
+    "read-only-bss-array": "inert-state CANDIDATES only - indirect writes "
+                           "and pointers in unrecovered code may be invisible",
 }
 
 #: (category, sym_rva) accepted despite firing - each a measured, documented
@@ -446,10 +450,13 @@ def derive_findings(spine, accesses, cells, owners, trace=None):
 
     # ---- 2. claimed but never referenced -> phantom candidates -------------
     pointed = set()
+    data_pointed = set()
     for cl in cells:
         c, _o = spine.locate(cl["target"])
         if c is not None:
             pointed.add(c.rva)
+            if spine.img.section_name(cl["site"]) != ".text":
+                data_pointed.add(c.rva)
         s, _so = spine.locate(cl["site"])      # a claim whose OWN bytes relocate
         if s is not None:
             pointed.add(s.rva)
@@ -468,6 +475,23 @@ def derive_findings(spine, accesses, cells, owners, trace=None):
                      f"unit={c.unit} channel={c.channel} section={c.section} "
                      f"type={layout.spelling(c.node) if c.node else '?'}"))
         st["unaccessed"] += 1
+
+    # A BSS array with only direct reads has storage and a real referent, so
+    # `unaccessed` cannot see it. Report the narrower pattern separately;
+    # absence of a decoded write is a lead, not proof that it stays zero.
+    for c in spine.claims:
+        acs = per[c.rva]
+        if (c.space != "bss" or not c.node or c.node.get("k") != "arr"
+                or not acs or c.rva in data_pointed):
+            continue
+        if any(a.form not in TOUCH or "w" in a.rw or "r" not in a.rw
+               for a in acs):
+            continue
+        rows.append(("read-only-bss-array", "med", c.rva, c.name, c.rva,
+                     f"{len(acs)} direct read site(s), no decoded write or "
+                     "address escape; check whether the array stays zero",
+                     f"unit={c.unit} extent=0x{c.extent:x}"))
+        st["read-only-bss-array"] += 1
 
     # ---- 3. access width vs the declared field -> wrong type ---------------
     # a `mov [obj+N],&??_7...` is a vptr STAMP, so +N is a base sub-object
