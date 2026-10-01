@@ -22,6 +22,7 @@ census if the unit manifest changed.
 | --- | --- |
 | Shared actor and character layout | `include/Game/FieldSight.h` has a partial `FieldActor` view, and `FieldObject` repeats a `Character` prefix beginning at `kind`. Callers such as `GetCombatantCoord`, `KnockBack`, `SpawnActorGroup`, and script actor operations convert between these layouts. The exact-match exceptions identify the affected functions. Recover a single typed common prefix from whole-object copies, offsets, callers, and storage before replacing the casts; a whole `Character` would overlap the field object's script pointer. |
 | Unread field-object bytes | `FieldObject.unknownAfterTraining[3]` lies between training points and drop chance. There is no interpreted source read. Keep the identity TODO until a retail reader or record-format witness establishes its role; changing the name to `pad` would merely hide the uncertainty. |
+| Address-derived member names | `FieldObject.byte083`, `byte096`, `word098`, `word21d/21f/221`, `Character.byte069`, and the area-map `byte24/25/3e/3f` still name offsets rather than roles. Some have only initialization or copy sites. Trace retail readers and complete record layouts before renaming them; the board's current generic address-name counter does not enumerate these member forms. |
 | Cross-layer function prototypes | `winmain.cpp` calls `RedrawFieldAt` and `SetMouseState` through function-pointer conversions, and passes unsigned map-size locals to `GetMapSize(i16*, i16*)`. The Windows and C declarations disagree at these seams. Recover the original per-unit declaration and argument width before removing a conversion; the current call bytes alone do not prove the authored prototype. |
 | Packed data conversions | `bitmapio.cpp` treats bitmap palette entries as DWORDs, and `d3dapp.cpp` passes float bit patterns as DWORD light state values. These are real representation boundaries until the SDK parameter and retail load widths support a typed replacement. `GetBitmapPixels` and `GetNextBitmap` use variable BMP record lengths, not fixed-member offset views. |
 | Heterogeneous texture argument | `OpenTextureBitmap(Texture*, const char* name, b32 fromFile)` takes a file path when `fromFile` is true and a borrowed `BmpFile*` otherwise; callers in `layertexture.cpp` and `objecttexture.c` pass bitmap data through the string-typed parameter. Retyping the C++ function changes mangling. Recover a typed wrapper or the original API boundary before removing the casts. |
@@ -36,6 +37,8 @@ census if the unit manifest changed.
 
 - [C written casts](cast-census.md): the C++ cast ledger is reviewed, but a
   target-C spelling-location census is needed to cover casts in all C units.
+- [Union views](union-views.md): review the packed, variant and serialized
+  overlays from whole-object use before deleting an alternate view.
 - [Shared `goto` joins](goto-review.md): every written site has a function and
   next review step. The `SortRoster`, decoder and shot-loop comments include
   compiler-shape evidence; structured spelling still needs a retail compare.
