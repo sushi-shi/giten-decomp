@@ -920,8 +920,8 @@ static __inline void ClearEquipPreview(void) {
     DrawStatTotals(3, 0x19, GetRosterCharacter(g_statusMember), NULL);
 }
 
-static __inline i16 FinishEquipChange(void) {
-    RecalcCharacterStats(GetRosterCharacter(g_statusMember));
+static __inline i16 FinishEquipChange(i16 member) {
+    RecalcCharacterStats(GetRosterCharacter(member));
     s_equipPage.changed = true;
     SetGameSub(MENU_STEP_CLOSE);
     s_equipPage.pick = -1;
@@ -932,10 +932,8 @@ static __inline i16 FinishEquipChange(void) {
 // opens it, 1 closes it, 2 waits for a bag item (menu) or an equipped part
 // (panel), 3/4 preview and equip a bag item, 5/6 preview and remove an
 // equipped one. A key other than -1/-2 restarts it at step 1 with that pick.
-// @early-stop register allocation: from the second magazine clamp on, cl
-// rotates the scratch registers one place against retail (ax/cx for dx/ax),
-// and the equip path joins the removal tail one instruction early; the
-// permuter found one compiler island.
+// @early-stop register allocation: the second magazine clamp rotates scratch
+// registers against retail; calls, branches and ordered referents match.
 RVA(0x00042e60, 0x6d0)
 i16 RunEquipScreen(i16 key) {
     ItemSlot slot;
@@ -1031,14 +1029,14 @@ i16 RunEquipScreen(i16 key) {
                     GetCharacterEquipment(GetRosterCharacter(g_statusMember))[EQUIP_SLOT_AMMO]
                         .quantity += slot.quantity;
                     TakeBagItems(slot.item, slot.quantity);
-                    return FinishEquipChange();
+                    return FinishEquipChange(g_statusMember);
                 }
                 LimitItemSlotToBag(&slot);
             } else {
                 slot.quantity = 1;
             }
             EquipItem(g_statusMember, slot, count, s_equipPage.pick);
-            return FinishEquipChange();
+            return FinishEquipChange(g_statusMember);
 
         case EQUIP_STEP_PREVIEW_REMOVE:
             NextGameSub();
@@ -1077,7 +1075,7 @@ i16 RunEquipScreen(i16 key) {
                     SetEquipSlot(g_statusMember, s_equipPage.pick, slot, 0);
                 }
             }
-            return FinishEquipChange();
+            return FinishEquipChange(g_statusMember);
     }
     return STATUS_COMMAND_NONE;
 }
