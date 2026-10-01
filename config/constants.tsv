@@ -1,6 +1,7 @@
 # giten constants work list - numeric constants kept on purpose, one row each,
-# with the reason. Every other numeric spelling in src/ and include/ is open
-# until it is written as a name (enumerator, named macro, NULL, true/false).
+# with the reason. Every other AST-exposed numeric spelling in src/ and include/
+# is open until it is named (enumerator, macro, NULL, true/false). Numeric tokens
+# inside macro replacement lists have a separate, not-yet-gated census.
 # `giten verify constants --list [FILTER]` prints the open ones; the floor
 # never rises (`--update-floor` lowers it). Columns (tab-separated; `*` matches
 # anything; every field takes a glob): file owner spelling group detail reason.
@@ -451,7 +452,6 @@ src/Platform/d3dapp.cpp	ZBufferDepth	*	*	*	a z-buffer bit depth
 src/Platform/d3dapp.cpp	*	*	store	store to operator()()	a D3DMATRIX element value
 src/Platform/d3dapp.cpp	*	*	store	store to g_*Loss	the bits a colour channel loses in the pixel format
 src/Text/font.cpp	s_identityMatrix	*	data-or-extent	*	the identity MAT2 GetGlyphOutline takes
-src/Text/font.cpp	s_padGrid	*	data-or-extent	*	the navigation pad's button under each 32x32 cell
 src/Text/font.cpp	s_scrollStripRect	*	data-or-extent	*	the strip each scroll clears, in pixels
 src/Text/font.cpp	s_glyphInfo	*	data-or-extent	*	the glyph DIB header: width, height, planes and bits per pixel
 src/Text/font.cpp	PaintLayer	*	arithmetic	*SCREEN_LAYER_FIRST_PANEL	the party panel number after SCREEN_LAYER_FIRST_PANEL

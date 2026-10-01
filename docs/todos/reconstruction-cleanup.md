@@ -9,7 +9,8 @@ decide whether a cleanup is correct. Keep exact matches and record necessary
 exceptions in [rule-exceptions.tsv](rule-exceptions.tsv).
 
 The live worklists are `giten verify board`, `giten verify constants`,
-`giten verify enum-reuse`, and `giten verify casts`. The board's measured rows
+`giten verify c-casts`, `giten verify enum-reuse`, and `giten verify casts`.
+The board's measured rows
 and floors are in `scripts/giten/verify/board.py` and `config/cleanliness/`;
 the enum decisions are in `config/reviews/enum-reuse.tsv`. Reports under
 `build/gen/` are derived and are not another handwritten ledger. Regenerate
@@ -30,12 +31,13 @@ layout and owner-seam examples at their source locations.
 | Packed data conversions | `bitmapio.cpp` treats bitmap palette entries as DWORDs, and `d3dapp.cpp` passes float bit patterns as DWORD light state values. These are real representation boundaries until the SDK parameter and retail load widths support a typed replacement. `GetBitmapPixels` and `GetNextBitmap` use variable BMP record lengths, not fixed-member offset views. |
 | Heterogeneous texture argument | `OpenTextureBitmap(Texture*, const char* name, b32 fromFile)` takes a file path when `fromFile` is true and a borrowed `BmpFile*` otherwise; callers in `layertexture.cpp` and `objecttexture.c` pass bitmap data through the string-typed parameter. Retyping the C++ function changes mangling. Recover a typed wrapper or the original API boundary before removing the casts. |
 | Conditional data claims | `giten.verify.placement.short_data_claims()` still reports `g_worldTravelTerrainFlags` (16 claimed bytes in a 72-byte row) and `s_messageWindow` (2 in 16). The apparent tail of `s_shotRise` was a separately referenced Shift-JIS string and now has its own data record. [The extent review](data-extent-claims.md) records the bytes and xrefs for the two remaining rows; do not pad a declaration merely to fill a row. |
-| Declaration ownership | `giten.verify.placement.misplaced_declarations()` is the live list. The scene-refresh, screen-layer, palette, handle-table, party-step, and script declarations have moved to their owners. The remaining 31 rows include 28 text-plane attribute declarations in `TextPlaneAttr.h` whose caller signatures disagree with `font.cpp`, plus palette and magic-defense prototype mismatches. Resolve their source and ABI widths before moving them. |
+| Declaration ownership | `giten.verify.placement.misplaced_declarations()` is the live list. The scene-refresh, screen-layer, palette, handle-table, party-step, and script declarations have moved to their owners. The remaining 30 rows include 28 text-plane attribute declarations in `TextPlaneAttr.h` whose caller signatures disagree with `font.cpp`, plus the `GrbToRgb` and magic-defense prototype mismatches. Resolve their source and ABI widths before moving them. |
 | Resource ID compares | The board's unnamed-domain comparisons are the paired sound-ID mappings in `MapEffectSoundId` and `MapSoundEffectId`. Both recognize IDs 11, 19, 23, 30, 32, 59, 62, 63, 64, 80, 83, 86, 99, 103, and 106; their treatment of 59 differs. The numbers are resource identifiers without proven names. A resource table or script label must establish names; numeric aliases would not improve the model. |
 | Relative directions and wall words | `RelativeDirection` returns observer-relative 0..3 except when the observer faces north, so making its whole return domain `ViewDirection` would merge two frames. `RotateByDirection` also accepts arithmetic quarter turns. `WallStops` accepts both a WallKind and a full rotated cell word before masking. `ObjectRecordId`'s unloaded-layer `-1` sentinel is likewise outside its record ID domain. Recover the conversion boundaries before annotating those raw parameters. |
 | Partly known display modes | `RenderMode`, `BlankRenderStep`, and `CellPaletteMode` now carry the renderer and palette paths. Several render-mode names still have `@identity-TODO` because they come from handler behavior rather than original symbols. Resolve those names through handler and caller evidence; keep the mode values typed. |
+| Screen-layer identities | `ScreenLayerSlot` now types layer creation and ordering, including the no-hit sentinel. `s_layerOrder` in `winmain.cpp` constructs party-panel slots 9..13 from `SCREEN_LAYER_FIRST_PANEL`; the individual panel identities have no source-backed names yet. Keep the typed arithmetic boundary until their consumers establish each role. |
 | State-local phases and steps | `GameState.phase` and `GameState.step`, plus `GetGamePhase` and `GetGameStep`, multiplex different domains according to `GameState.state`. In `statestack.c`, status, level-up, and world-map handlers each interpret phase and step differently. `SetGameState`'s old-state result and `g_rosterReturnState` are `GameStateId`; its phase and step fields stay raw until their state-specific domains can be carried without conflating them. |
-| Packed-list and map extents | Variable-length records such as `Panel.rows[1]`, `ShotFile.bytes`, and `MotionFile.bytes` have storage and serialized-size constraints. Use allocation sizes, whole-record reads, and retail data bounds to decide a stronger type or capacity; a C array bound alone is not proof of the original declaration. |
+| Packed-list and map extents | Variable-length records such as `Panel.rows[1]`, `ShotFile.bytes`, and `MotionFile.bytes` have storage and serialized-size constraints. [The layout and buffer review](layout-and-buffer-boundaries.md) lists the named spans and fixed-buffer callers with their current evidence. Use allocation sizes, whole-record reads, and retail data bounds to decide a stronger type or capacity; a C array bound alone is not proof of the original declaration. |
 
 ## Open review inventories
 
@@ -52,11 +54,11 @@ layout and owner-seam examples at their source locations.
   across calls that might change the record.
 - [Deferred constant identities](constants-handoff.md): review the complete
   producer/consumer domain before replacing a numeric value. `config/constants.tsv`
-  records currently retained spellings with their reasons. The AST report does
-  not enumerate numeric tokens inside macro replacement lists: for example,
-  `FinalizeAttackDamage` in `include/Game/Attack.h` has the damage-scale and
-  clamp literals, but no corresponding `bare_constants.tsv` sites. Audit macro
-  bodies directly before treating an empty open list as complete.
+  records AST-exposed spellings with their reasons. [The separate macro-literal
+  census](macro-literals.md) finds tokens in function-like replacement lists;
+  for example, `FinalizeAttackDamage` in `include/Game/Attack.h` has damage-scale
+  and clamp literals absent from `bare_constants.tsv`. The macro literals lack
+  semantic dispositions, so an empty AST open list is not full coverage.
 - [Compiler warnings](compiler-warnings.md): the MSVC 5.0 census covers all 82
   configured translation units and records remaining source warnings by family
   with examples; source corrections need byte and ABI checks.
