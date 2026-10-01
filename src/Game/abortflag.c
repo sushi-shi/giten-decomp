@@ -272,43 +272,42 @@ i16 DrawSceneSprite(
         }
         sprite->flags |= SCENE_SPRITE_INTERACTIVE;
         return AddSceneHotspot(object, kind, sprite);
-    } else {
-        if (centered) {
-            if (sprite->flags & SCENE_SPRITE_FLIP_X) {
-                x = -1 - x;
-            }
-            if (sprite->flags & SCENE_SPRITE_FLIP_Y) {
-                y = -1 - y;
-            }
-            x += 40;
-            y += 112;
-        } else {
-            if (sprite->flags & SCENE_SPRITE_FLIP_X) {
-                x = 79 - x;
-            }
-            if (sprite->flags & SCENE_SPRITE_FLIP_Y) {
-                y = 399 - y;
-            }
-        }
-        x += sprite->offsetX;
-        y += sprite->offsetY;
-        if (IsSceneObjectVisible(object, kind)) {
-            BlitSceneSprite(
-                sprite->image,
-                sprite->imageHandle,
-                x,
-                y,
-                g_spriteOriginX,
-                g_spriteOriginY,
-                g_spriteClipLeft,
-                g_spriteClipTop,
-                g_spriteClipRight,
-                g_spriteClipBottom,
-                sprite->flags
-            );
-        }
-        return AddSceneHotspot(object, kind, sprite);
     }
+    if (centered) {
+        if (sprite->flags & SCENE_SPRITE_FLIP_X) {
+            x = -1 - x;
+        }
+        if (sprite->flags & SCENE_SPRITE_FLIP_Y) {
+            y = -1 - y;
+        }
+        x += 40;
+        y += 112;
+    } else {
+        if (sprite->flags & SCENE_SPRITE_FLIP_X) {
+            x = 79 - x;
+        }
+        if (sprite->flags & SCENE_SPRITE_FLIP_Y) {
+            y = 399 - y;
+        }
+    }
+    x += sprite->offsetX;
+    y += sprite->offsetY;
+    if (IsSceneObjectVisible(object, kind)) {
+        BlitSceneSprite(
+            sprite->image,
+            sprite->imageHandle,
+            x,
+            y,
+            g_spriteOriginX,
+            g_spriteOriginY,
+            g_spriteClipLeft,
+            g_spriteClipTop,
+            g_spriteClipRight,
+            g_spriteClipBottom,
+            sprite->flags
+        );
+    }
+    return AddSceneHotspot(object, kind, sprite);
 }
 
 // @dead-code

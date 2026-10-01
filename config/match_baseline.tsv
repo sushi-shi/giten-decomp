@@ -81,7 +81,7 @@ recordcache	43	42
 restore	3	3
 savegame	14	13
 screensave	9	9
-scriptactor	202	201
+scriptactor	202	202
 scriptctx	35	35
 scriptfield	9	6
 scriptop	3	3
@@ -120,7 +120,7 @@ abortflag	_AddSceneHotspot	100.0000	100.0000	2	ast4:b2b717a6f4ee	0x455b0	100.000
 abortflag	_BeginBoxScene	100.0000	100.0000	1	ast4:d9bad84e3a3a	0x45820	100.0000	
 abortflag	_CountHotspotsOfKind	100.0000	100.0000	2	ast4:0145117bafca	0x45680	100.0000	
 abortflag	_DrawSceneObjects	100.0000	100.0000	1	ast4:0af75d7a2e55	0x458d0	100.0000	
-abortflag	_DrawSceneSprite	98.3882	98.3882	7	ast4:ecf983ecc29c	0x45930	98.3882	
+abortflag	_DrawSceneSprite	98.3882	98.3882	8	ast4:a2b63fe673e1	0x45930	98.3882	
 abortflag	_ExchangeAbortPending	100.0000	100.0000	1	ast4:13795957a62c	0x45660	100.0000	
 abortflag	_FlushPlaneUpdates	100.0000	100.0000	1	ast4:587306e214d7	0x45570	100.0000	
 abortflag	_GetHotspotKind	100.0000	100.0000	2	ast4:f9e59ba87945	0x457e0	100.0000	
@@ -1767,7 +1767,7 @@ scriptactor	_OpPercentLongVar	100.0000	100.0000	1	ast4:4c696ccc9289	0x337f0	100.
 scriptactor	_OpPushReturnTarget	100.0000	100.0000	2	ast4:7960ca1ce99a	0x33f10	100.0000	
 scriptactor	_OpQueueAutoMoves	100.0000	100.0000	2	ast4:ec6e80a2b72f	0x35cf0	100.0000	
 scriptactor	_OpRandLongVar	100.0000	100.0000	1	ast4:b461b0d97a04	0x33b00	100.0000	
-scriptactor	_OpRebalanceMemberStats	100.0000	99.7826	6	ast4:bbd6cad1862d	0x36560	100.0000	
+scriptactor	_OpRebalanceMemberStats	100.0000	100.0000	7	ast4:c45306fe8e20	0x36560	100.0000	
 scriptactor	_OpRecoverRosterPool	100.0000	100.0000	6	ast4:9017e85a85e3	0x382b0	100.0000	
 scriptactor	_OpRedrawItemListTotal	100.0000	100.0000	1	ast4:ec74365430b6	0x35770	100.0000	
 scriptactor	_OpRemoveFromRoster	100.0000	100.0000	2	ast4:51b8941d56bf	0x361b0	100.0000	
