@@ -1522,7 +1522,7 @@ i16 CollectTargetsAlongLine(
 ) {
     MapCoord origin;
     MapCoord offset;
-    i16 direction;
+    GZ_ENUM_LOCAL(ViewDirection, i16) direction;
     i16 x;
     i16 y;
     i16 count = 0;
@@ -1562,7 +1562,7 @@ i16 CollectTargetsInView(
 ) {
     MapCoord origin;
     i16 count = 0;
-    i16 direction = g_party.field.pos.direction;
+    GZ_ENUM_LOCAL(ViewDirection, i16) direction = g_party.field.pos.direction;
     i16 distance;
     i16 across;
     i16 along;

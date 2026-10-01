@@ -3,8 +3,10 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
 #include <Game/FieldObject.h>
 #include <Game/FieldView.h>
+#include <Game/ViewDirection.h>
 #include <Ints.h>
 
 // A world-map transition request consumed and cleared by its state machine:
@@ -97,17 +99,28 @@ i16 RollWorldMapEncounter(i16 x, i16 y);
 // @identity-TODO: What word 0x47be68 (passed as layer; bit 0 picks surface 0x48f5e4 vs 0x48d714
 // in 0x581b0) distinguishes is unrecovered.
 b16 PickWorldMapDestination(i16 layer);
-i16 GetWorldTravelDirection(i16 x, i16 y);
-i16 GetWorldTravelLateralDelta(i16 x, i16 y, i16 direction);
+GZ_ENUM_RETURN(ViewDirection, i16) GetWorldTravelDirection(i16 x, i16 y);
+i16 GetWorldTravelLateralDelta(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 i16 StepWorldMapTravel(i16 layer, i16 speed);
 MapCoord ComputeWorldTravelStep(i16 layer, i16 x, i16 y, i16 destX, i16 destY, i16 speed);
 MapCoord FindWorldTravelStep(i16 layer, i16 x, i16 y, i16 destX, i16 destY);
-void LoadWorldTravelCandidates(i16 layer, i16 x, i16 y, i16 direction);
+void LoadWorldTravelCandidates(
+    i16 layer,
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction
+);
 void MarkReachableWorldTravelCells(i16 row, i16 column);
 void WeightWorldTravelCandidates(i16 lateral);
 // Invalid directions leave the caller's row and column unchanged.
-static __inline void GetWorldTravelGridOffset(i16 x, i16 y, i16 direction, i16* row, i16* column) {
+static __inline void GetWorldTravelGridOffset(
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16* row,
+    i16* column
+) {
     switch (direction) {
         case VIEW_NORTH:
             *row = -y;
@@ -128,14 +141,14 @@ static __inline void GetWorldTravelGridOffset(i16 x, i16 y, i16 direction, i16* 
     }
 }
 
-void PreferWorldTravelDestination(i16 x, i16 y, i16 direction);
+void PreferWorldTravelDestination(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 // Initial reachability flags indexed by the four-bit map terrain code.
 extern const u8 g_worldTravelTerrainFlags[16];
 
 // The 128-cell travel history buffer.
 extern MapCoord g_worldTravelHistory[];
-MapCoord GetBestWorldTravelStep(i16 direction);
-void ExcludeWorldTravelStep(i16 x, i16 y, i16 direction);
+MapCoord GetBestWorldTravelStep(GZ_ENUM_PARAM(ViewDirection, i16) direction);
+void ExcludeWorldTravelStep(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction);
 
 // The world-map route queue: points walked one per travel step.
 void GrowRoute(i16 more);

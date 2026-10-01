@@ -2,6 +2,8 @@
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Game/ViewDirection.h>
 #include <Gfx/Texture.h>
 #include <Platform/GameApi.h>
 
@@ -20,7 +22,7 @@ RVA(0x00059180, 0x24f)
 b32 ClickHotspotAt(i32 x, i32 y) {
     i32 hit;
     i32 i;
-    i16 direction;
+    GZ_ENUM_LOCAL(ViewDirection, i16) direction;
     Hotspot* hotspot;
     Texture* texture;
     u8* pixels;

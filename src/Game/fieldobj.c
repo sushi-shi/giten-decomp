@@ -691,7 +691,7 @@ MapCoord GetObjectCoord(i16 index) {
 }
 
 RVA(0x0000de60, 0x16)
-i16 GetObjectDirection(i16 index) {
+GZ_ENUM_RETURN(ViewDirection, i16) GetObjectDirection(i16 index) {
     return s_objects[index].direction;
 }
 

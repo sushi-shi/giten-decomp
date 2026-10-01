@@ -228,7 +228,7 @@ void MarkObjectsOnMap(void);
 MapCoord GetObjectCoord(i16 index);
 
 #define GetFieldTargetCoord(id) ((id) < 0 ? GetMapCoord() : GetObjectCoord(id))
-i16 GetObjectDirection(i16 index);
+GZ_ENUM_RETURN(ViewDirection, i16) GetObjectDirection(i16 index);
 i16 ExchangeObjectCheckBypass(i16 bypass);
 i16 FlushObjectRedraws(void);
 GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeState(FieldObject* object);
