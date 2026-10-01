@@ -56,9 +56,6 @@ GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(struct ItemRecord* item);
 // CalcMagicAccuracyStat.
 void ChangePool(CurMax* pool, i32 amount);
 
-// Copies `from`'s skill list into `to` (resized to fit).
-// @identity-TODO: label-only until its TU is claimed.
-void CopySkillList(Character* from, WordList* to);
 b16 CanGroupEquip(i16 group, i16 item);
 i16 GetGunAmmoType(Character* character);
 GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(Character* character, i16 item);

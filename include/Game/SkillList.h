@@ -34,6 +34,9 @@ b16 RollSkillLearning(Character* character, i16 skill);
 
 i16 AddSkill(WordList* list, i16 skill);
 
+// Copies `from`'s skill list into `to` (resized to fit).
+void CopySkillList(Character* from, WordList* to);
+
 // The skills a character can know.
 #define SKILL_LIST_CAPACITY 30
 

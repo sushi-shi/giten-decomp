@@ -46,6 +46,7 @@
 #include <Game/PartyStatus.h>
 #include <Game/Pool.h>
 #include <Game/SaveGame.h>
+#include <Game/SkillList.h>
 #include <Game/SkillUse.h>
 #include <Game/Stats.h>
 #include <Game/StatUpdate.h>
