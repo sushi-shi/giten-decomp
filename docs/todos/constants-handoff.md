@@ -4,8 +4,8 @@
 the translation-unit AST in `src/` and `include/`. Its floor is zero: each
 AST-exposed literal is named or has a narrowly matched reason to stay numeric.
 `giten verify constants --list [FILTER]` shows any newly open AST sites, and
-`--gate` detects stale or unreviewed rows. Numeric spellings in function-like
-macro definitions have a [separate source census](macro-literals.md); they do
+`--gate` detects stale or unreviewed rows. Numeric spellings in macro
+definitions have a [separate source census](macro-literals.md); they do
 not yet participate in this floor.
 The generated `build/clangd/compile_commands.json` must list the current
 translation units; `python3 -m giten.graph.compdb` refreshes it after a unit

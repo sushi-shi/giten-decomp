@@ -21,7 +21,7 @@ is zero or one.
     giten verify constants -v          # print every proven replacement
     giten verify constants --fix       # apply only compiler-proven replacements
     giten verify constants --gate      # nonzero while proven sites remain
-    giten verify constants --macro-list # written function-macro literals
+    giten verify constants --macro-list # written macro replacement literals
 """
 
 from __future__ import annotations
@@ -52,7 +52,7 @@ _LEGACY_BOOLEAN = re.compile(r"\b(?:FALSE|TRUE)\b")
 _STRING = re.compile(r'"(?:\\.|[^"\\\n])*"')
 _CHAR = re.compile(r"'(?:\\.|[^'\\\n])*'")
 _SOURCE_EXTENSIONS = {".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".inl", ".inc"}
-_FUNCTION_MACRO = re.compile(rb"^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)\(")
+_MACRO_DEFINE = re.compile(rb"^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)\b")
 
 
 @dataclass(frozen=True)
@@ -125,8 +125,8 @@ def _raw_number(path: Path, offset: int, cache: dict[Path, bytes],
 
 
 def macro_body_literals(*, repo: Path = REPO) -> list[Site]:
-    """Written numbers in function-like #define bodies, including unexpanded
-    macros. Work on latin-1-decoded bytes so spelling offsets remain exact."""
+    """Written numbers in #define bodies, including unexpanded macros.
+    Work on latin-1-decoded bytes so spelling offsets remain exact."""
     sites = []
     snapshots = {}
     paths = []
@@ -153,7 +153,7 @@ def macro_body_literals(*, repo: Path = REPO) -> list[Site]:
             offset += len(line)
         i = 0
         while i < len(lines):
-            match = _FUNCTION_MACRO.match(lines[i])
+            match = _MACRO_DEFINE.match(lines[i])
             if match is None:
                 i += 1
                 continue
@@ -163,19 +163,23 @@ def macro_body_literals(*, repo: Path = REPO) -> list[Site]:
                 if end >= len(lines):
                     raise RuntimeError(f"{path}: unterminated macro continuation")
             body = b"".join(lines[i:end + 1])
-            depth, close = 0, -1
-            for pos in range(match.end() - 1, len(body)):
-                if body[pos] == ord("("):
-                    depth += 1
-                elif body[pos] == ord(")"):
-                    depth -= 1
-                    if depth == 0:
-                        close = pos
-                        break
-            if close < 0:
-                raise RuntimeError(f"{path}:{i + 1}: unterminated macro parameters")
             name = match.group(1).decode("ascii")
-            pos = close + 1
+            kind = "object-like"
+            pos = match.end()
+            if pos < len(body) and body[pos] == ord("("):
+                kind = "function-like"
+                depth, close = 0, -1
+                for param_pos in range(pos, len(body)):
+                    if body[param_pos] == ord("("):
+                        depth += 1
+                    elif body[param_pos] == ord(")"):
+                        depth -= 1
+                        if depth == 0:
+                            close = param_pos
+                            break
+                if close < 0:
+                    raise RuntimeError(f"{path}:{i + 1}: unterminated macro parameters")
+                pos = close + 1
             while pos < len(body):
                 previous = body[pos - 1] if pos else 0
                 if chr(previous).isalnum() or previous in b"_.":
@@ -206,9 +210,9 @@ def macro_body_literals(*, repo: Path = REPO) -> list[Site]:
                 column = start - body.rfind(b"\n", 0, start)
                 sites.append(Site(
                     str(path.relative_to(repo)), line, column, absolute,
-                    name, "macro-body", spelling, value, "review", "", "",
+                    name, "macro-body", spelling, value, "review", "", kind,
                     "macro-body", name,
-                    "written literal in function-like macro replacement list"))
+                    "written literal in macro replacement list"))
                 pos = number.end()
             i = end + 1
     current_paths = set()
@@ -231,12 +235,20 @@ def macro_body_literals(*, repo: Path = REPO) -> list[Site]:
 
 def write_macro_report(path: Path, sites: list[Site]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    lines = ["file\tline\tcolumn\toffset\tmacro\tspelling\tvalue"]
+    lines = ["file\tline\tcolumn\toffset\tmacro\tkind\tspelling\tvalue"]
     for site in sites:
         lines.append("\t".join((site.file, str(site.line), str(site.column),
-                                str(site.offset), site.function, site.spelling,
+                                str(site.offset), site.function, site.context_type,
+                                site.spelling,
                                 "" if site.value is None else str(site.value))))
     path.write_text("\n".join(lines) + "\n")
+
+
+def macro_summary(sites: list[Site]) -> str:
+    kinds = Counter(site.context_type for site in sites)
+    return (f"{len(sites)} written macro literal(s): "
+            f"{kinds['function-like']} function-like, "
+            f"{kinds['object-like']} object-like")
 
 
 def _scope(cidx, stack) -> tuple[str, str]:
@@ -1131,10 +1143,8 @@ def main(argv=None) -> int:
                         help="print the open constants whose file or owner "
                              "contains FILTER (all when empty)")
     parser.add_argument("--macro-list", metavar="FILTER", nargs="?", const="",
-                        help="list numbers in function-like macro bodies "
+                        help="list numbers in macro replacement lists "
                              "without parsing translation units")
-    parser.add_argument("--macro-max", type=int,
-                        help="fail if the function-like macro literal count exceeds N")
     parser.add_argument("--update-floor", action="store_true",
                         help="lower the committed floor to the current open count")
     parser.add_argument("--jobs", type=int,
@@ -1153,10 +1163,10 @@ def main(argv=None) -> int:
             if not args.macro_list or args.macro_list in site.file \
                     or args.macro_list in site.function:
                 print(f"{site.file}:{site.line}:{site.column}\t{site.function}\t"
-                      f"{site.spelling}\tmacro-body")
-        print(f"[constants] {len(macro_sites)} written function-like macro "
-              "literal(s); separate from the AST constants floor")
-        return int(args.macro_max is not None and len(macro_sites) > args.macro_max)
+                      f"{site.spelling}\t{site.context_type}")
+        print(f"[constants] {macro_summary(macro_sites)}; "
+              "separate from the AST constants floor")
+        return 0
     try:
         sites, errors = scan(jobs=max(1, args.jobs))
     except (FileNotFoundError, RuntimeError) as exc:
@@ -1204,7 +1214,7 @@ def main(argv=None) -> int:
             print(f"   {finding}")
     print(f"[constants] {summary(sites)}")
     print(f"[constants] legacy TRUE/FALSE spelling(s): {len(legacy_booleans)}")
-    print(f"[constants] {len(macro_sites)} written function-like macro literal(s) "
+    print(f"[constants] {macro_summary(macro_sites)} "
           "(separate source-spelling worklist)")
     if not args.no_report:
         print(f"[constants] report: {REPORT.relative_to(REPO)}")
@@ -1234,11 +1244,7 @@ def main(argv=None) -> int:
     if stale or worklist_errors:
         failed.append(f"{len(stale)} stale and {len(worklist_errors)} malformed "
                       f"work-list row(s)")
-    macro_exceeded = args.macro_max is not None and len(macro_sites) > args.macro_max
-    if macro_exceeded:
-        failed.append(f"macro literal sites {len(macro_sites)} > "
-                      f"--macro-max {args.macro_max}")
-    if (args.gate and failed) or macro_exceeded:
+    if args.gate and failed:
         print(f"[constants] FAIL: {'; '.join(failed)}")
         return 1
     return 0

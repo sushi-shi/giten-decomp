@@ -11,7 +11,7 @@ audit and gives pointer and scalar examples for the next type-model review.
 unproven identities after strict syntax checks on all configured units.
 [Deferred constant identities](constants-handoff.md) records values with
 behavior-based names whose authored meanings still need evidence.
-[Function macro literals](macro-literals.md) records numeric spellings in
+[Macro replacement literals](macro-literals.md) records numeric spellings in
 macro replacement lists that the AST constants ledger does not cover.
 [Shared control-flow joins](goto-review.md) inventories the remaining written
 `goto` sites and the retail evidence needed for a structured rewrite.
