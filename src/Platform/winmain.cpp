@@ -808,8 +808,7 @@ RVA(0x00049f50, 0x45)
 BOOL RunMoveCommand(i16 command, i16 nextPhase) {
     if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
         g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
-        g_screenLayers[SCREEN_LAYER_PANEL]
-            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+        ClearPanelLayerSurface();
     }
     return s_moveCommands[command & 7](nextPhase);
 }
@@ -4909,8 +4908,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                     s_clickedButton = ClickPanelCommand(g_cursorPos.y);
                     if (s_clickedButton > 0) {
                         g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
-                        g_screenLayers[SCREEN_LAYER_PANEL]
-                            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+                        ClearPanelLayerSurface();
                     }
                 }
                 return;
@@ -4922,8 +4920,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
                 case SCREEN_LAYER_PANEL:
                     if (s_clickedButton > 0) {
                         g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
-                        g_screenLayers[SCREEN_LAYER_PANEL]
-                            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+                        ClearPanelLayerSurface();
                     }
                     return;
                 case SCREEN_LAYER_ICON:
@@ -5037,8 +5034,7 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
         case MOUSE_LET_GO:
             if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
                 g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
-                g_screenLayers[SCREEN_LAYER_PANEL]
-                    ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+                ClearPanelLayerSurface();
             } else {
                 s_rightPressedLayer = SCREEN_LAYER_COUNT;
                 s_padHeld = false;

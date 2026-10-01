@@ -1,6 +1,6 @@
 # Common-code recovery worklist
 
-The source contains 222 `inline` declaration lines and 1,224 `#define`
+The source contains 222 `inline` declaration lines and 1,225 `#define`
 declaration lines under `include/` and `src/` (including conditional
 variants and constant macros). Those counts are a search boundary, not a
 count of debt. Repeated operations should be shared only when their owner,
@@ -16,13 +16,13 @@ spellings.
 | `FinalizeAttackDamage` | Item, skill, weapon, and gun damage apply resistance, moon scaling, random percentage, then clamp in the same order. |
 | `ApplyFacingDamageBonus` | The same four damage paths apply the same behind/side floating-point multipliers. |
 | `ShowPendingLevelUpMessage` | Field exploration and both encounter handlers mark pending rewards, format the next level-up message, and show it for the same lifetime. |
+| `ClearPanelLayerSurface` | Four `winmain.cpp` paths and both `font.cpp` paths color-fill the panel surface; the visibility decision stays with each caller. Both consumer objects are byte identical to their pre-extraction objects. |
 
 ## Remaining source readings
 
 | Family and examples | Evidence needed before extraction |
 | --- | --- |
 | Navigation-pad pixel reads in `LayerAtPoint` and `PadButtonAtPoint` (`src/Text/font.cpp`) | Both lock the layer's DirectDraw surface, read a 16-bit pixel and unlock it. A focused `ReadLayerPixel` inline trial changed the first consumer at its entry and shortened the TU's `.text` by 112 bytes; the trial was removed. Recover the compiler-compatible local lifetime/call boundary before sharing it. |
-| Panel hide/clear in `RunMoveCommand`, three `HandleInput` paths (`src/Platform/winmain.cpp`), and `ErasePictureSurface` (`src/Text/font.cpp`) | All set panel visibility false and color-fill the surface. `HideScreenLayer(SCREEN_LAYER_PANEL)` already implements this operation out of line, but substituting a call changes the consumer's call sequence. Establish whether an inline or macro spelling preserves the observed calls before replacing five sites. |
 | DirectDraw surface descriptions in `CreateGlyphSurface`, `CreateTextPlane`, `CreateScreenLayer` (`src/Text/font.cpp`) and `LoadPictureFile` (`src/Gfx/bitmapio.cpp`) | All initialize `DDSURFACEDESC` with caps, width, height and sometimes pixel format. Surface type, target storage, error cleanup, and selected pixel format differ. Separate the common description initializer from the caller-specific creation policy; avoid the four `InitDirect3D` swapped-argument `memset` calls documented in the vendor worklist. |
 | Lock descriptions in `LayerAtPoint`, `PadButtonAtPoint`, `CopySurfaceSquare` (`src/Gfx/surfacecopy.cpp`) and `InitDirect3D` (`src/Platform/d3dapp.cpp`) | The shared `DDSD_CAPS`/`DDSCAPS_SYSTEMMEMORY` fields precede distinct lock targets and readback rules. The navigation-pad trial above shows a straightforward inline is not yet codegen-compatible. |
 | Weapon/gun hit and exceptional rolls in `RollWeaponHit`, `RollGunHit`, `RollExceptionalWeaponAttack`, `RollExceptionalAttack` | Existing `GetExceptionalAttackLuck`, `GetExceptionalAttackBase`, and `ApplyAttackAccuracyConditions` capture proven suboperations. Nearby code still differs in weapon range, critical result, or caller policy; compare full ordered RNG calls and result assignments before combining a larger block. |

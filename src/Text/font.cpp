@@ -5337,8 +5337,7 @@ void ErasePictureSurface(i16 picture) {
         g_titleMenuPicture.surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
     } else {
         g_screenLayers[SCREEN_LAYER_PANEL]->visible = false;
-        g_screenLayers[SCREEN_LAYER_PANEL]
-            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+        ClearPanelLayerSurface();
     }
 }
 
@@ -5359,8 +5358,7 @@ RVA(0x00054390, 0x3a)
 void HideScreenLayer(i16 layer) {
     g_screenLayers[layer]->visible = false;
     if (layer == SCREEN_LAYER_PANEL) {
-        g_screenLayers[SCREEN_LAYER_PANEL]
-            ->surface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+        ClearPanelLayerSurface();
     }
 }
 
