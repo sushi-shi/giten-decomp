@@ -1595,11 +1595,13 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     b16 picked;
     i16 count;
     i16 i;
+    GZ_ENUM_LOCAL(SkillKind, i16) kind;
     picked = false;
     if (CanUseSkill(skill, actor) <= 0) {
         return -1;
     }
-    if (GetSkillKind(skill) == SKILL_KIND_RESTORE) {
+    kind = GetSkillKind(skill);
+    if (kind == SKILL_KIND_RESTORE) {
         count = 0;
         for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             InitFieldSkillCandidate(&candidates[i]);
