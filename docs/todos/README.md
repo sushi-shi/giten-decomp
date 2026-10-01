@@ -1,5 +1,12 @@
 # Todo ledgers
 
+## Source typing
+
+[C source cast census](cast-census.md) records the missing target-C written-site
+audit and gives pointer and scalar examples for the next type-model review.
+[Deferred constant identities](constants-handoff.md) records values with
+behavior-based names whose authored meanings still need evidence.
+
 ## Vendor macros
 
 [Vendor macro recovery](vendor-macros.md) tracks plausible SDK/CRT macro
