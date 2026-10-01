@@ -51,6 +51,24 @@ level-specific ranges `5..15`, `12..22` and `20..40` to `RandomAverage`.
 `RandomPercent`. These are contest formulas, and their equal numbers do not
 establish a shared enum. Their `while (0)` sites are statement scaffolds.
 
+Other retained layout and packing values include the `256` palette entries
+and `24`-bit reserved-channel shift in `include/Gfx/Bitmap.h`, nibble shifts
+`8` and `4` and glyph widths `8` and `16` in `include/Text/TextAttr.h`, and
+effect palette entry indices `14` and `15` in `include/Gfx/Motion.h`. The
+remaining Gfx, Ui and Util function macros are mostly zero initializers,
+array bounds, vertex or cell indices, and `while (0)` scaffolds; their
+written values still appear in the report for review.
+
+## Numeric meanings still open
+
+`GetSceneSpriteOffsetX` in `include/Gfx/Blit.h` mirrors an image offset around
+`79`, and `GetSceneSpriteOffsetY` shifts its offset by `3`. The geometry is
+visible, but the authored unit or width behind those values needs sprite data
+and caller evidence before a stronger name. `PackMidiVolumeMessage` in
+`include/Sound/MidiStream.h` packs `0xb0`, `7`, and byte shifts
+`8` and `16`; its byte layout is clear, but compare the WinMM message format
+and consumers before replacing these with named constants.
+
 Review the remaining macros at their use sites and restore proven domain
 names or keep documented structural literals. Then add a committed macro
 decision ledger and a gate for newly open macro sites. Preserve separate
