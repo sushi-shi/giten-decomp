@@ -887,70 +887,68 @@ GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
     GZ_ENUM_PARAM(AttackMode, i16) mode,
     b16 report
 ) {
-    GZ_ENUM_LOCAL(BattleTallyReportMode, i16)
-    reportMode = report ? BATTLE_TALLY_REMEMBER : BATTLE_TALLY_TEST_INDEX;
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_ALL_BLOCK]) {
-        ReportBattleTally(actor, BATTLE_TALLY_ALL_BLOCK, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_ALL_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_GUN_BLOCK]
         && (mode == ATTACK_MAGIC || mode == ATTACK_GUN)) {
-        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_GUN_BLOCK, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_GUN_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_SEAL] && mode == ATTACK_MAGIC) {
-        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_SEAL, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_SEAL, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_GUN_BLOCK] && mode == ATTACK_GUN) {
-        ReportBattleTally(actor, BATTLE_TALLY_GUN_BLOCK, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_GUN_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_FIRE_BLOCK]
         && attribute == ATTACK_ATTRIBUTE_FIRE) {
-        ReportBattleTally(actor, BATTLE_TALLY_FIRE_BLOCK, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_FIRE_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_ICE_BLOCK]
         && attribute == ATTACK_ATTRIBUTE_ICE) {
-        ReportBattleTally(actor, BATTLE_TALLY_ICE_BLOCK, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_ICE_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_ELECTRIC_BLOCK]
         && attribute == ATTACK_ATTRIBUTE_ELECTRIC) {
-        ReportBattleTally(actor, BATTLE_TALLY_ELECTRIC_BLOCK, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_ELECTRIC_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_EXPEL_BLOCK]
         && attribute == ATTACK_ATTRIBUTE_EXPEL) {
-        ReportBattleTally(actor, BATTLE_TALLY_EXPEL_BLOCK, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_EXPEL_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_DARK_BLOCK]
         && attribute == ATTACK_ATTRIBUTE_DARK) {
-        ReportBattleTally(actor, BATTLE_TALLY_DARK_BLOCK, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_DARK_BLOCK, report);
         return BATTLE_PROTECTION_BLOCKED;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_REFLECT] && mode == ATTACK_MAGIC) {
-        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_REFLECT, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_REFLECT, report);
         return BATTLE_PROTECTION_REFLECT;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_REFLECT_HALF] && mode == ATTACK_MAGIC) {
-        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_REFLECT_HALF, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_REFLECT_HALF, report);
         return BATTLE_PROTECTION_REFLECT_HALF;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_TETRAKARN]
         && attribute == ATTACK_ATTRIBUTE_SWORD) {
-        ReportBattleTally(actor, BATTLE_TALLY_TETRAKARN, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_TETRAKARN, report);
         return BATTLE_PROTECTION_REFLECT;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_PHYSICAL_REFLECT]
         && attribute == ATTACK_ATTRIBUTE_PHYSICAL) {
-        ReportBattleTally(actor, BATTLE_TALLY_PHYSICAL_REFLECT, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_PHYSICAL_REFLECT, report);
         return BATTLE_PROTECTION_REFLECT;
     }
     if (GetCharacterBattleTallies(actor)[BATTLE_TALLY_MAGIC_MP_ABSORB] && mode == ATTACK_MAGIC) {
-        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_MP_ABSORB, reportMode);
+        ReportBattleTally(actor, BATTLE_TALLY_MAGIC_MP_ABSORB, report);
         return BATTLE_PROTECTION_ABSORB_MP;
     }
     return BATTLE_PROTECTION_NORMAL;
