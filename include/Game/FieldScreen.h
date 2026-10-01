@@ -19,6 +19,7 @@ b16 CanCharacterOpenAutomap(Character* character);
 i16 PickAnalyzeTarget(void);
 
 void RequestFieldRefresh(void);
+void RefreshFieldScene(void);
 i16 ExchangeViewHold(i16 hold);
 void ResetFieldCursors(void);
 // @identity-TODO: empty Windows hook; callers pass a low-three-bit screen option.

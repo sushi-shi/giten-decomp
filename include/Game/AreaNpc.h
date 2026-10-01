@@ -136,9 +136,6 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag23(void);
 GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void);
 GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag26(void);
 
-// fieldscreen's scene refresh.
-void RefreshFieldScene(void);
-
 // vram's palette calls, declared here rather than through <Gfx/Vram.h>:
 // retail's NPC palette loader pushes the GRB word unextended, so its
 // declaration of GrbToRgb took a 16-bit word while vram.c defines it on a
