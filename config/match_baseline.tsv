@@ -231,7 +231,7 @@ character	_CountRosterEntries	100.0000	100.0000	3	ast4:6f8ef7f902cd	0x3f480	100.
 character	_CreateStatusListMenu	100.0000	100.0000	2	ast4:88dc70976ce5	0x40a20	100.0000	
 character	_DamageParty	100.0000	100.0000	5	ast4:e6586dd80b91	0x3f9f0	100.0000	
 character	_DrainPool	100.0000	100.0000	1	ast4:c64f0f67e896	0x3d070	100.0000	
-character	_DrainUpkeep	100.0000	100.0000	7	ast4:e31f7fa122cb	0x41180	100.0000	
+character	_DrainUpkeep	100.0000	100.0000	8	ast4:45cb6c76b0b2	0x41180	100.0000	
 character	_DrawPartyStatusSlot	100.0000	100.0000	5	ast4:28dadabdc154	0x3e1f0	100.0000	
 character	_EaseCondition	100.0000	100.0000	4	ast4:048ecb83ca73	0x3f220	100.0000	
 character	_EaseSleep	100.0000	100.0000	3	ast4:f565aa560749	0x3f290	100.0000	
@@ -2001,7 +2001,7 @@ scriptvars	_OpGetWindowScrollStep	100.0000	100.0000	1	ast4:483127971268	0x3ae60	
 scriptvars	_OpGetWindowScrollTop	100.0000	100.0000	1	ast4:6e70c8f5fd58	0x3adc0	100.0000	
 scriptvars	_OpHideSprite	100.0000	100.0000	2	ast4:408417758d19	0x3a350	100.0000	
 scriptvars	_OpMaskScreenCells	100.0000	100.0000	1	ast4:50fa373044c5	0x3a5b0	100.0000	
-scriptvars	_OpNextChoice	88.7216	83.8247	3	ast4:29201393547b	0x3a870	88.7216	
+scriptvars	_OpNextChoice	84.7526	84.7526	4	ast4:9efa769faba7	0x3a870	88.7216	
 scriptvars	_OpPauseTickCounter	100.0000	100.0000	1	ast4:150bc7f33631	0x3bb40	100.0000	
 scriptvars	_OpPeekPokeScratch	100.0000	100.0000	2	ast4:bf5ba6de5632	0x3bd40	100.0000	
 scriptvars	_OpPlayAnimation	100.0000	100.0000	1	ast4:6fad5d71ee44	0x3a6e0	100.0000	
