@@ -540,11 +540,11 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(GZ_ENUM_PARAM(ActorAlertMode, 
             AlertActor(g_curScript->actor, ATTITUDE_VERY_HOSTILE);
         }
         if (level == ACTOR_ALERT_IMMEDIATE) {
-            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining > ACTION_WAIT_QUEUED) {
+            if (GetCharacterActionWait(g_curScript->actor)->remaining > ACTION_WAIT_QUEUED) {
                 GetCharacterActionWait(g_curScript->actor)->remaining = ACTION_WAIT_QUEUED;
             }
         } else if (level == ACTOR_ALERT_DELAY) {
-            if ((u16)GetCharacterActionWait(g_curScript->actor)->remaining < ACTION_WAIT_EXTENDED) {
+            if (GetCharacterActionWait(g_curScript->actor)->remaining < ACTION_WAIT_EXTENDED) {
                 GetCharacterActionWait(g_curScript->actor)->remaining = ACTION_WAIT_EXTENDED;
             }
         }
