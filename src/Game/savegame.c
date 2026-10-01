@@ -77,7 +77,7 @@ static b16 RunDisplayChoice(void);
 static b16 RunQuitConfirm(void);
 
 // Opens the system menu's box listing `count` rows of `entries`.
-static __inline void OpenSystemMenu(SystemMenuEntry* entries, i32 count) {
+static __inline void OpenSystemMenu(SystemMenuEntry* entries, i16 count) {
     s_systemMenu = CreateMenuBox(s_systemMenu, 0x19, 2);
     MoveMenuBox(s_systemMenu, -8, -0x16);
     SetMenuItems(s_systemMenu, 9, entries, count, SystemMenuHandler);

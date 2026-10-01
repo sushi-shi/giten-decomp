@@ -1,4 +1,4 @@
-# C4761 width boundaries in Util, Gfx, and Script
+# C4761 width boundaries in Util, Gfx, Script, and selected Game units
 
 This ledger covers the 28 configured C translation units under `src/Util`,
 `src/Gfx`, and `src/Script`. A compile with each unit's `config/units.toml`
@@ -41,3 +41,23 @@ its previous object after masking only the timestamp. Warning counts are
 These are representative sites in each remaining group. The table above gives
 the full per-unit count; use compiler output for the exact duplicate warning
 sites on lines with multiple arguments.
+
+## Six Game units
+
+A second focused compile audited `src/Game/worldtravel.c`, `fusion.c`,
+`savegame.c`, `gameloop.c`, `equipeffect.c`, and `itemrecord.c` using their
+configured MSVC profiles. Initially they had 39 C4761 diagnostics: 14, 8,
+4, 1, 5, and 7 respectively. `OpenSystemMenu` in `savegame.c` now takes an
+`i16 count`: it forwards that count only to `SetMenuItems(i16 itemCount)`.
+The compiled COFF object is unchanged after timestamp masking, and its
+warning count falls from 4 to 2 without a replacement warning. The six units
+retain 37 diagnostics. These boundaries remain:
+
+| Unit | Written warning sites and boundary evidence |
+| --- | --- |
+| `worldtravel.c` | `:184` subtracts historical coordinates from a current `i16` position (two arguments); `:250,253,256,259` combines `i16` cell coordinates with row/column offsets (two arguments on each line); `:284,287,297,300` passes `row ± 1` to the 16-bit recursive scanner. The travel-grid range is bounded, but the callee ABI and promotion point are established by the current call shape. |
+| `fusion.c` | `:337,553,1461,1488` pass promoted level arithmetic to `ClampLevel(i16)`; `:681` passes promoted stat arithmetic to `ClampTo100(i16)`; `:1345` adds a resource base to the 16-bit `OpenDataFile` ID; `:1624` passes promoted display coordinates to `DrawPlaneText`; `:1643` adds an icon bias to the `DrawPlaneIconKeyed(i16)` icon argument. The 16-bit inputs are existing API boundaries, while `ClampLevel` itself returns `i32`. |
+| `savegame.c` | `:239` passes the stored `i32 s_systemEntryCount` into the now 16-bit `OpenSystemMenu` count parameter; its storage width cannot be changed from this call alone. `:251` adds a menu-row offset to a phase value before `SetGamePhase`. |
+| `gameloop.c` | `:182` chooses the literal 31 or 24 in an `int` conditional expression passed to `AdvancePlayTime(i16)`. The values fit; no typed domain is recovered from the choice alone. |
+| `equipeffect.c` | `:48,57,66,75,84` halve a stat total using promoted arithmetic before `ClampTo100(i16)`. `GetStatTotal` reads the stored stat, and `SetStatTotal` stores the clamped result; an intermediate cast or local only to suppress C4761 would obscure the call-time width. |
+| `itemrecord.c` | `:751` computes a variable allocation size for `AllocCleared(u16,u16)`; `:2093,2094` add a loop offset to special-item IDs before 16-bit calls (two diagnostics at `:2093`); `:2234,2235` add gift familiarity and item-base offsets before 16-bit calls; `:2268` adds a menu index to `s_giftItemBase` for `GetLoadedRecordName(i16)` inside `sprintf`. The allocation maximum and item-ID ranges need proof before changing these expressions. |
