@@ -19,6 +19,7 @@ public:
         SetErrorMode(mode);
         m_enable = NULL;
         if (m_user32 != NULL) {
+            // API-forced: GetProcAddress returns FARPROC, not this callback type.
             m_enable =
                 reinterpret_cast<WinnlsEnableImeProc>(GetProcAddress(m_user32, "WINNLSEnableIME"));
         }
