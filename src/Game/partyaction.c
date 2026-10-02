@@ -2243,8 +2243,8 @@ i16 GetGunRequirementPenalty(i16 stat, i16 requirement) {
 
 RVA(0x000091f0, 0xe2)
 i16 DistributeGunRounds(i16 rounds, i16 count) {
-    u8* table;
-    u8* rowEnd;
+    const u8* table;
+    const u8* rowEnd;
     i16 index;
     i16 remaining;
     i16 share;
