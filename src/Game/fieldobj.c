@@ -2411,7 +2411,7 @@ i16 AlignmentConflicts(Character* character) {
     }
     leaderClass = GetAlignmentClassB(GetRosterLeader());
     characterClass = GetAlignmentClassB(character);
-    if (characterClass + leaderClass == 0 && leaderClass != ALIGNMENT_NEUTRAL) {
+    if (leaderClass + characterClass == 0 && leaderClass != ALIGNMENT_NEUTRAL) {
         return -1;
     }
     return 0;

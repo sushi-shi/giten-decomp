@@ -587,7 +587,7 @@ fieldobj	_AddFamiliarity	100.0000	100.0000	1	ast4:063a4abf6382	0x10d30	100.0000
 fieldobj	_AddFamiliarityCount	100.0000	100.0000	1	ast4:e3bdf9b8e1ba	0x10bd0	100.0000	
 fieldobj	_AddLevelGap	100.0000	100.0000	1	ast4:9578cc461960	0x10ca0	100.0000	
 fieldobj	_AdvanceObjectAnims	100.0000	100.0000	1	ast4:0d79dfd0a5e2	0xe6b0	100.0000	
-fieldobj	_AlignmentConflicts	84.6364	84.6364	3	ast4:b654888d7d49	0x10db0	84.6364	
+fieldobj	_AlignmentConflicts	84.6364	84.6364	4	ast4:9cc68650457c	0x10db0	84.6364	
 fieldobj	_AnyObjectInReach	100.0000	100.0000	2	ast4:3cea882fceb3	0x11620	100.0000	
 fieldobj	_ApplyObjectConditions	100.0000	100.0000	3	ast4:02f1a391ea8d	0xe4e0	100.0000	
 fieldobj	_AssignWorldEncounterGroups	100.0000	100.0000	2	ast4:f9b4a1ef2dbb	0x11440	100.0000	
