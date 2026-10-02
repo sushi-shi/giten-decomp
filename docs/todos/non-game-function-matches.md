@@ -90,3 +90,14 @@ prototype or delaying the complete `ImagePalette` definition in the current
 TU did not restore exactness. The prototype is a sufficient trigger in the
 old TU, not a complete explanation
 of the current state. All probes were reverted.
+
+Fresh current-TU probes also kept `GrbToRgb` at 60.82: moving `Vram.h` to the
+front of `vram.c`'s includes, moving `Palette.h` below the other includes in
+`Vram.h`, and placing the `ReleaseImagePalette` prototype after
+`SetPaletteColor`. Moving `GetMaskGridOffset`, which is used only in `vram.c`,
+from `Vram.h` into that source kept the normalized `vram.obj` byte-identical
+(`5c31b75f30c6c7c31308cc83ea6061e52930b3b1807230f5f520bc51b13457f7`),
+but changed normalized objects in seven of the nine other direct `Vram.h`
+consumers; it was restored. Removing the unused `ReleaseImagePalette`
+prototype alongside that move also left `GrbToRgb` at 60.82. The current
+header definitions and u32 function ABI remain intact.
