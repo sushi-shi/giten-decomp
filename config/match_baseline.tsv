@@ -1182,7 +1182,7 @@ hotspot	_GetSelectedHotspotObject	100.0000	100.0000	2	ast4:ec513da7414d	0x585c0	
 hotspot	_GetSelectedHotspotValue	100.0000	100.0000	2	ast4:c0b0e067de2b	0x585a0	100.0000	
 hotspot	_HasHotspotTo	100.0000	100.0000	4	ast4:2502ada8fc62	0x585f0	100.0000	
 hotspot	_SetSelectedHotspot	100.0000	100.0000	1	ast4:0ce948d9b36c	0x58590	100.0000	
-hotspotclick	_ClickHotspotAt	92.8148	92.8148	12	ast4:a067622ad78a	0x59180	95.2963	
+hotspotclick	_ClickHotspotAt	92.8148	92.8148	13	ast4:2f1febe7112b	0x59180	95.2963	
 itemattack	_ComputeItemDamage	100.0000	100.0000	10	ast4:8be2a9117f01	0xb320	100.0000	
 itemattack	_ResolveItemAttack	100.0000	100.0000	9	ast4:bf527c6fe89f	0xb0f0	100.0000	
 itemattack	_RollItemCondition	100.0000	100.0000	8	ast4:a92bc5476414	0xb4d0	100.0000	
