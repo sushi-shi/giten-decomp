@@ -2119,7 +2119,7 @@ skilluse	_PrepareSkillAction	100.0000	100.0000	6	ast4:fc2dbf95a148	0x2db90	100.0
 skilluse	_PushPromptState	100.0000	100.0000	2	ast4:eb3e27ffec92	0x2ab40	100.0000	
 skilluse	_RemoveCombatTarget	100.0000	100.0000	2	ast4:c3b5b2e13407	0x2aae0	100.0000	
 skilluse	_ReportBattleTally	100.0000	100.0000	2	ast4:96065daffb89	0x2b5f0	100.0000	
-skilluse	_ResolveCombatAction	93.2619	93.2619	25	ast4:9b9601875939	0x2ac90	94.6053	
+skilluse	_ResolveCombatAction	93.2619	93.2619	26	ast4:43d275823503	0x2ac90	94.6053	
 skilluse	_ResolveKnockout	99.6667	99.6667	9	ast4:58e993bb0593	0x2b490	99.6667	
 skilluse	_RunBattleAction	100.0000	100.0000	24	ast4:b8bd603ccbf9	0x2b6a0	100.0000	
 skilluse	_RunFieldSkillUse	100.0000	100.0000	9	ast4:47689684ad0d	0x2d7c0	100.0000	
@@ -2138,7 +2138,7 @@ skilluse	_UseKind12Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d5e0	100.0000
 skilluse	_UseKind13Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d640	100.0000	
 skilluse	_UseKind14Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d6a0	100.0000	
 skilluse	_UseResetBattleStatsSkill	100.0000	100.0000	6	ast4:f3e5df0034be	0x2d400	100.0000	
-skilluse	_UseRestoreSkill	100.0000	100.0000	8	ast4:f69ed93ebae6	0x2ceb0	100.0000	
+skilluse	_UseRestoreSkill	100.0000	100.0000	9	ast4:91d51a09c381	0x2ceb0	100.0000	
 sprite	_FreeSpriteImages	100.0000	100.0000	3	ast4:09ce38ffca6f	0x58820	100.0000	
 sprite	_IsSpriteFrameLoaded	100.0000	100.0000	5	ast4:fe345ccb9ead	0x58870	100.0000	
 sprite	_IsSpritePlaced	100.0000	100.0000	4	ast4:b9d2fbd214d4	0x58800	100.0000	
