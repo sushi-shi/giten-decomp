@@ -369,15 +369,13 @@ b32 CMidiStream::Prepare() {
 // Message-shape, counter-type and permuter sweeps are flat.
 RVA(0x000563b0, 0xcd)
 b32 CMidiStream::SetVolume(DWORD volume, DWORD* channelVolumes) {
-    int channel;
-
     if (!m_playing) {
         return true;
     }
     m_volume = volume;
     if (channelVolumes != NULL) {
         m_channelVolumes = channelVolumes;
-        for (channel = 0; channel < 16; channel++) {
+        for (int channel = 0; channel < 16; channel++) {
             if (m_channelVolumes[channel] != 0) {
                 if (midiOutShortMsg(
                         GetMidiOutputHandle(m_stream),
@@ -389,7 +387,7 @@ b32 CMidiStream::SetVolume(DWORD volume, DWORD* channelVolumes) {
             }
         }
     } else {
-        for (channel = 0; channel < 16; channel++) {
+        for (int channel = 0; channel < 16; channel++) {
             if (midiOutShortMsg(
                     GetMidiOutputHandle(m_stream),
                     PackMidiVolumeMessage(channel, volume)
