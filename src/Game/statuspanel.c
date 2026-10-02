@@ -2015,7 +2015,7 @@ static __inline void UnhighlightEquipPart(i16 member) {
 }
 
 RVA(0x00044fb0, 0x17f)
-i16 PollEquipPart(i16 member, i16 mode) {
+i16 PollEquipPart(i16 member, GZ_ENUM_PARAM(EquipPickMode, i16) mode) {
     if (mode < EQUIP_PICK_PART) {
         s_equipPickPart = EQUIP_PART_NONE;
         return EQUIP_PART_NONE;
