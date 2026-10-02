@@ -367,7 +367,7 @@ clock	_CreateImagePanel	100.0000	100.0000	4	ast4:9bb78193ac21	0x226d0	100.0000
 clock	_CreateKindPanel	100.0000	100.0000	4	ast4:2a787680b556	0x227c0	100.0000	
 clock	_CreatePositionedPanel	100.0000	100.0000	2	ast4:2991c76a7efb	0x22910	100.0000	
 clock	_CreateSequentialPanel	100.0000	100.0000	4	ast4:bda2e42d1a63	0x22870	100.0000	
-clock	_DecodeAreaMap	76.4360	76.4360	12	ast4:09c3efd14a14	0x21470	76.4360	
+clock	_DecodeAreaMap	76.4826	76.4826	13	ast4:237d168f1cc8	0x21470	76.4826	
 clock	_FindCellKind	100.0000	100.0000	1	ast4:b62158c0f65a	0x21850	100.0000	
 clock	_FindTreasureBoxAt	100.0000	100.0000	2	ast4:a49ea29d4129	0x22560	100.0000	
 clock	_GetAreaLevelCount	100.0000	100.0000	1	ast4:c56d67c3ed6f	0x21710	100.0000	
@@ -2239,7 +2239,7 @@ statestack	_RunDdsSummon	100.0000	100.0000	2	ast4:0ef229a02bd9	0x174b0	100.0000
 statestack	_RunDismissMenuState	100.0000	100.0000	2	ast4:625b08262caf	0x17030	100.0000	
 statestack	_RunFieldTextScene	100.0000	100.0000	2	ast4:dbe77ebbe2ed	0x18230	100.0000	
 statestack	_RunFrozenFieldScene	100.0000	100.0000	7	ast4:35f19a52513f	0x18340	100.0000	
-statestack	_RunItemUse	97.7705	97.7705	14	ast4:8d78a69ab96c	0x1a400	97.7705	
+statestack	_RunItemUse	98.8151	98.8151	15	ast4:f4677a7cd35d	0x1a400	98.8151	
 statestack	_RunLevelUp	100.0000	100.0000	14	ast4:59026213957a	0x18b60	100.0000	
 statestack	_RunPartyPicker	100.0000	100.0000	2	ast4:5f287a57a3f5	0x19ea0	100.0000	
 statestack	_RunPickerMenu	100.0000	100.0000	1	ast4:d817a5ee15aa	0x19e60	100.0000	
