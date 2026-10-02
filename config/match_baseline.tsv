@@ -492,8 +492,8 @@ devicesettings	?LoadDeviceSettings@@YAHPAUDeviceSettings@@@Z	100.0000	100.0000	2
 displayconfig	_LoadDisplayConfig	100.0000	100.0000	3	cdcf105faeb0	0x45bb0	100.0000	
 displayconfig	_SetDefaultDisplayConfig	100.0000	100.0000	2	9ec3ea0a3279	0x45ca0	100.0000	
 effectdraw	_ClearEffectLayer	100.0000	100.0000	3	ast4:4c8fef8eff57	0x58990	100.0000	
-effectdraw	_DrawProjectedEffectSprite	94.6086	94.6086	14	ast4:8e4f7300a449	0x589e0	96.0887	
-effectdraw	_DrawScreenEffectSprite	94.7111	94.7111	16	ast4:3ea64ed0dc07	0x58e40	94.7111	
+effectdraw	_DrawProjectedEffectSprite	94.6086	94.6086	15	ast4:1dcc8e45074a	0x589e0	96.0887	
+effectdraw	_DrawScreenEffectSprite	94.7111	94.7111	17	ast4:ed2db314d08e	0x58e40	94.7111	
 equipeffect	_ApplyEquipmentEffects	100.0000	100.0000	3	ast4:636b44294097	0x26470	100.0000	
 equipeffect	_ApplyItemCurse	100.0000	100.0000	8	ast4:9c54db1d514f	0x26070	100.0000	
 eventflags	_ChangeEventFlag	100.0000	100.0000	4	ast4:c4e84ea25e1e	0x391f0	100.0000	
@@ -1110,7 +1110,7 @@ fusion	_ResolveSameClassTripleFusion	100.0000	100.0000	3	ast4:41209ffbf3ff	0x276
 fusion	_ResolveSameRaceFusion	100.0000	100.0000	2	ast4:87154308ac29	0x26940	100.0000	
 fusion	_ResolveSpecialRaceFusion	100.0000	100.0000	2	ast4:7a78804a03ff	0x26840	100.0000	
 fusion	_ResolveSpecialRaceTripleFusion	100.0000	100.0000	1	ast4:5ddc4ebef978	0x274b0	100.0000	
-fusion	_ResolveThreeSpecialRaceFusion	93.3168	93.3168	4	ast4:0268c6929d62	0x27180	93.3168	
+fusion	_ResolveThreeSpecialRaceFusion	93.3168	93.3168	5	ast4:0f56f4072778	0x27180	93.3168	
 fusion	_ResolveThreeUnrankedFusion	100.0000	100.0000	3	ast4:29e167cb62e2	0x27510	100.0000	
 fusion	_ResolveTwoSpecialRaceFusion	100.0000	100.0000	2	ast4:a852fce1c1e5	0x27340	100.0000	
 fusion	_ResolveTwoUnrankedFusion	100.0000	100.0000	2	ast4:2140045e4a70	0x27590	100.0000	
