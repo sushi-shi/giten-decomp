@@ -13,6 +13,7 @@ rva	unit	function	lost_max	cur
 0x01a400	itemuse	_RunItemUse	97.4486	97.3596
 0x03abc0	scriptvars	_ResizeScriptEntry	100.0000	98.0000
 0x00ac50	skillattack	_ComputeSkillDamage	100.0000	98.4266
+0x017520	statestack	_PickDdsSummon	100.0000	99.9161
 0x001aa0	textchar	_ReadTextChar	100.0000	99.5918
 0x01ebe0	treasurebox	_IsRegionFlagOn	100.0000	99.5000
 0x002fb0	vram	_GrbToRgb	100.0000	60.8182

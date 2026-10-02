@@ -918,8 +918,6 @@ b16 RunDdsSummon(void) {
 RVA(0x00017520, 0x1cc)
 GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
     i16 step;
-    i16 previous;
-    Character* character;
     switch (GetCursorLevel0(&s_summonCursor)) {
         case DDS_SUMMON_CURSOR_PICK_ROSTER:
             step = PickDdsRosterMember(GetCursorLevel1(&s_summonCursor));
@@ -931,7 +929,8 @@ GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
                 NextCursorLevel0(&s_summonCursor);
             }
             break;
-        case DDS_SUMMON_CURSOR_PICK_PARTY_SLOT:
+        case DDS_SUMMON_CURSOR_PICK_PARTY_SLOT: {
+            Character* character;
             if (!PollPartySlotSelection(PARTY_SLOT_ANY)) {
                 break;
             }
@@ -947,26 +946,31 @@ GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
             s_ddsPartySlot = g_selectedObjectId;
             NextCursorLevel0(&s_summonCursor);
             break;
+        }
         case DDS_SUMMON_CURSOR_TRANSITION:
             NextCursorLevel0(&s_summonCursor);
             break;
-        case DDS_SUMMON_CURSOR_EXCHANGE:
+        case DDS_SUMMON_CURSOR_EXCHANGE: {
+            i16 replacedRosterSlot;
+            Character* summoned;
+            Character* replaced;
             NextCursorLevel0(&s_summonCursor);
-            previous = ExchangePartySlot(s_ddsPartySlot, s_ddsRosterSlot);
-            character = GetRosterCharacter(s_ddsRosterSlot);
-            if (character != NULL) {
-                ClearActionWait(GetCharacterActionWait(character));
-                AddMagnetite(GetRosterCharacter(ROSTER_LEADER), -GetSummonMagnetiteCost(character));
-                ResetBattleTally(character);
+            replacedRosterSlot = ExchangePartySlot(s_ddsPartySlot, s_ddsRosterSlot);
+            summoned = GetRosterCharacter(s_ddsRosterSlot);
+            if (summoned != NULL) {
+                ClearActionWait(GetCharacterActionWait(summoned));
+                AddMagnetite(GetRosterCharacter(ROSTER_LEADER), -GetSummonMagnetiteCost(summoned));
+                ResetBattleTally(summoned);
             }
-            character = GetRosterCharacter(previous);
-            if (character != NULL) {
-                ClearBattleConditions(GetCharacterConditions(character));
-                ResetBattleTally(character);
+            replaced = GetRosterCharacter(replacedRosterSlot);
+            if (replaced != NULL) {
+                ClearBattleConditions(GetCharacterConditions(replaced));
+                ResetBattleTally(replaced);
             }
             MarkPickDone();
             PlaySoundEffect(0x20);
             break;
+        }
         case DDS_SUMMON_CURSOR_FINISHED:
             return DDS_ACTION_COMPLETED;
     }
