@@ -1901,13 +1901,13 @@ void RenderNPC(BOOL ownCellOnly) {
         D3DLVERTEX(D3DVECTOR(0.0f, 0.0f, 0.0f), 0xffffffff, 0xff000000, 1.0f, 1.0f),
         D3DLVERTEX(D3DVECTOR(0.0f, 0.0f, 0.0f), 0xffffffff, 0xff000000, 0.0f, 1.0f),
     };
-    MapPosition* position;
+    const MapPosition* position;
     i16 partyX;
     i16 partyY;
     i16 count;
     i16 npc;
     GZ_ENUM_LOCAL(UiHotspotKind, u32) kind;
-    i16* cell;
+    const i16* cell;
     i16 cellX;
     i16 cellY;
     i32 offsetX;
