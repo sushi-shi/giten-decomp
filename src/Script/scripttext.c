@@ -225,8 +225,6 @@ i16 PollScriptPanels(void) {
     ScriptPanel* node;
     ScriptPanel* last;
     i16 count;
-    i16 row;
-    ScriptPanelJump jump;
     PollScriptItemMenu();
     last = NULL;
     count = 0;
@@ -237,11 +235,13 @@ i16 PollScriptPanels(void) {
     if (last) {
         count++;
         while (count > 1) {
+            i16 row;
             count--;
             row = PollPanel(last->panel);
             if (row == PANEL_INPUT_NONE) {
                 last = last->prev;
             } else {
+                ScriptPanelJump jump;
                 jump = *GetScriptPanelJump(last, row);
                 if (jump.value != SCRIPT_PANEL_NO_JUMP) {
                     CallScript(jump.parts.file, jump.parts.entry);
