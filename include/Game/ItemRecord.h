@@ -263,18 +263,18 @@ extern ItemRecord g_loadedItem;
 extern char* g_itemNameText;
 extern char* g_itemDescriptionText;
 
-u8* GetItemRecordData(i16 id);
+const u8* GetItemRecordData(i16 id);
 
 // Loads the item records and auxiliary tables at game startup.
 void LoadItemFiles(void);
 
 ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id);
 
-u8* ReadItemValueRange(ItemRecord* item, u8* src);
-u8* ReadItemMessages(ItemRecord* item, u8* src, i16 first, i16 second);
-u8* ReadItemEquipEffect(ItemRecord* item, u8* src);
-u8* ReadItemExtraPair(ItemRecord* item, u8* src);
-u8* ReadItemValueRangeAlt(ItemRecord* item, u8* src);
+const u8* ReadItemValueRange(ItemRecord* item, const u8* src);
+const u8* ReadItemMessages(ItemRecord* item, const u8* src, i16 first, i16 second);
+const u8* ReadItemEquipEffect(ItemRecord* item, const u8* src);
+const u8* ReadItemExtraPair(ItemRecord* item, const u8* src);
+const u8* ReadItemValueRangeAlt(ItemRecord* item, const u8* src);
 
 // Accessors that decode item `id` into the shared record first.
 char* GetLoadedRecordName(i16 id);

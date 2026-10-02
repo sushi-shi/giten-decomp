@@ -130,7 +130,7 @@ static ItemTable* GetItemTableData(void) {
 }
 
 RVA(0x00022d10, 0x2b)
-u8* GetItemRecordData(i16 id) {
+const u8* GetItemRecordData(i16 id) {
     ItemTable* table = GetItemTableData();
     if (id >= table->count || id < 0) {
         id = ITEM_WOUND_MEDICINE;
@@ -141,14 +141,14 @@ u8* GetItemRecordData(i16 id) {
 #define ReadItemTargeting(record, src)                                                             \
     ((record)->params[4] = *(src)++, (record)->params[5] = *(src)++, (record)->params[6] = *(src)++)
 
-static __inline u8* ReadItemRestoreParameters(ItemRecord* record, u8* src) {
+static __inline const u8* ReadItemRestoreParameters(ItemRecord* record, const u8* src) {
     record->params[7] = *src++;
     record->params[8] = *src++;
     record->params[9] = *src++;
     return src;
 }
 
-static __inline u8* ReadItemAttackParameters(ItemRecord* record, u8* src) {
+static __inline const u8* ReadItemAttackParameters(ItemRecord* record, const u8* src) {
     record->params[0xc] = *src++;
     record->params[0xd] = *src++;
     record->params[0xe] = *src++;
@@ -164,7 +164,7 @@ static __inline u8* ReadItemAttackParameters(ItemRecord* record, u8* src) {
 // read and store in each arm before joining at ReadItemMessages.
 RVA(0x00022d40, 0x490)
 ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
-    u8* src = GetItemRecordData(id);
+    const u8* src = GetItemRecordData(id);
 
     memset(record, 0, sizeof(ItemRecord));
     record->params[0x15] = 0xff;
@@ -310,18 +310,18 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
             record->params[0xb] = 11;
             break;
     }
-    strcpy(g_itemNameText, (char*)src);
+    strcpy(g_itemNameText, (const char*)src);
     record->name = g_itemNameText;
     while (*src != 0) {
         src++;
     }
-    strcpy(g_itemDescriptionText, (char*)(src + 1));
+    strcpy(g_itemDescriptionText, (const char*)(src + 1));
     record->description = g_itemDescriptionText;
     return record;
 }
 
 RVA(0x000231d0, 0x21)
-u8* ReadItemValueRange(ItemRecord* item, u8* src) {
+const u8* ReadItemValueRange(ItemRecord* item, const u8* src) {
     item->params[0] = *src++;
     item->params[1] = *src++;
     item->params[2] = *src++;
@@ -330,7 +330,7 @@ u8* ReadItemValueRange(ItemRecord* item, u8* src) {
 }
 
 RVA(0x00023200, 0x31)
-u8* ReadItemMessages(ItemRecord* item, u8* src, i16 first, i16 second) {
+const u8* ReadItemMessages(ItemRecord* item, const u8* src, i16 first, i16 second) {
     if (first) {
         item->beforeMessage.script = *src++;
         item->beforeMessage.entry = *src++;
@@ -343,7 +343,7 @@ u8* ReadItemMessages(ItemRecord* item, u8* src, i16 first, i16 second) {
 }
 
 RVA(0x00023240, 0x21)
-u8* ReadItemEquipEffect(ItemRecord* item, u8* src) {
+const u8* ReadItemEquipEffect(ItemRecord* item, const u8* src) {
     item->params[0x15] = *src++;
     item->params[0x16] = *src++;
     item->params[0x17] = *src++;
@@ -352,14 +352,14 @@ u8* ReadItemEquipEffect(ItemRecord* item, u8* src) {
 }
 
 RVA(0x00023270, 0x15)
-u8* ReadItemExtraPair(ItemRecord* item, u8* src) {
+const u8* ReadItemExtraPair(ItemRecord* item, const u8* src) {
     item->params[0x22] = *src++;
     item->params[0x23] = *src++;
     return src;
 }
 
 RVA(0x00023290, 0x21)
-u8* ReadItemValueRangeAlt(ItemRecord* item, u8* src) {
+const u8* ReadItemValueRangeAlt(ItemRecord* item, const u8* src) {
     item->params[0] = *src++;
     item->params[1] = *src++;
     item->params[0x13] = *src++;
