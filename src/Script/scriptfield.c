@@ -45,8 +45,10 @@ RVA(0x00032560, 0x44)
 void OpIfEventObjectIs(void) {
     const i16 target = ReadBranchTarget();
     const i16 different = ReadScriptValue();
+    const i16 actorId = g_actorId;
+    const i16 targetId = g_targetId;
     b32 matches = false;
-    if (ScriptBooleanMatches(g_actorId == g_targetId, different)) {
+    if (ScriptBooleanMatches(actorId == targetId, different)) {
         matches = true;
     }
     ScriptJumpUnless(target, matches);
