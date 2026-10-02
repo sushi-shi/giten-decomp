@@ -680,7 +680,7 @@ fieldobj	_LoadLayerScripts	100.0000	100.0000	3	ast4:39493a8fb14b	0xeb00	100.0000
 fieldobj	_LoadObjectRecord	100.0000	100.0000	2	ast4:05721c5c74e2	0x10a00	100.0000	
 fieldobj	_LoadWorldEncounterBlock	100.0000	100.0000	3	ast4:ad89168465b0	0x11170	100.0000	
 fieldobj	_MarkObjectsOnMap	100.0000	100.0000	1	ast4:ac97a1acdbaf	0xdde0	100.0000	
-fieldobj	_PickWorldEncounterGroup	100.0000	97.2414	3	ast4:f9a0afe2b829	0x113a0	100.0000	
+fieldobj	_PickWorldEncounterGroup	97.2414	97.2414	4	ast4:54843644c43b	0x113a0	100.0000	
 fieldobj	_PrepareFieldRandom	100.0000	100.0000	5	ast4:d5be76f21f80	0x11510	100.0000	
 fieldobj	_PrepareWorldEncounter	100.0000	100.0000	2	ast4:7b72df74b204	0x11280	100.0000	
 fieldobj	_RandomNearOffset	100.0000	100.0000	1	ast4:b0a2cae9045a	0xedf0	100.0000	

@@ -2621,8 +2621,8 @@ i16 GetPartyEncounterSizeBonus(void) {
 
 RVA(0x000113a0, 0x9f)
 i16 PickWorldEncounterGroup(i16 weights, i16 choices) {
-    WorldEncounterWeights* table = HandleReadPtr(s_encounterWeights);
-    WorldEncounterChoices* groups;
+    const WorldEncounterWeights* table = HandleReadPtr(s_encounterWeights);
+    const WorldEncounterChoices* groups;
     i16 roll = RandomAverage(1, 100, 0);
     i16 total;
     i16 i;
