@@ -233,7 +233,8 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
             record->params[0x32] = src[1];
             src++;
         readItemMessages:
-            src = ReadItemMessages(record, src + 1, 1, 1);
+            src++;
+            src = ReadItemMessages(record, src, 1, 1);
             break;
         case ITEM_KIND_KEYCARD:
         case ITEM_KIND_SCENARIO:
