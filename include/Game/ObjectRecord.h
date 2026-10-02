@@ -60,7 +60,7 @@ typedef struct ObjectPicture {
 
 void LoadObjectRecord(i16 kind, FieldObject* object);
 void LoadLayerRecord(i16 kind, ObjectRecord* out);
-void InitObjectFromRecord(FieldObject* object, ObjectRecord* record);
+void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record);
 void CopyLeaderIntoObject(FieldObject* object);
 void ReadObjectRecord(i16 kind);
 i16 GetObjectRecordScriptSet(i16 kind);

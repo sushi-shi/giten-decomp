@@ -2121,7 +2121,7 @@ static __inline void RecalcObjectStats(FieldObject* object) {
 // (an empty gun clears its ammunition, else the ammunition count is the gun's
 // magazine size) and skills; Doppelganger then mirrors the first party member.
 RVA(0x00010470, 0x4b1)
-void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
+void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
     i16 i;
     memset(object, 0, sizeof(FieldObject));
     object->kind = record->id;
