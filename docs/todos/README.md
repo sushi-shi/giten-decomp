@@ -37,6 +37,8 @@ remaining character-unit compiler walls and the rejected null-pointer shape.
 [Fieldview and small function differences](fieldview-small-function-matches.md)
 records the remaining fieldview, scene-sprite, and banked-exact encoding
 differences inspected in the current pass.
+[Game function matching walls](game-function-walls.md) records open field
+exploration, occlusion, and fusion source questions.
 
 ## Layout and buffer boundaries
 
