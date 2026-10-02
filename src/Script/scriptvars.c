@@ -413,9 +413,8 @@ b16 OpNextChoice(i16 window) {
         if (y < size.y) {
             break;
         }
-        while (choice) {
+        for (; choice; choice = choice->next) {
             choice->y -= lineStep;
-            choice = choice->next;
         }
         s_choiceTop -= lineStep;
         ScrollTextWindowLine(window);
