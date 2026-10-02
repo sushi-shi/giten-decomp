@@ -193,10 +193,11 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
     source.left = source.top = 0;
     source.right = bmp->info.biWidth;
     source.bottom = bmp->info.biHeight;
-    i8 horizontalOffset = GetEffectBitmapOffsetX(bmp);
+    const i8 horizontalOffset = GetEffectBitmapOffsetX(bmp);
     dest.left = screenX + horizontalOffset * 8;
-    i8 verticalOffset = GetEffectBitmapOffsetY(bmp);
-    dest.top = (screenY + verticalOffset - bmp->info.biHeight / 2) * 11 / 10;
+    const i8 verticalOffset = GetEffectBitmapOffsetY(bmp);
+    const i32 topOffset = verticalOffset - bmp->info.biHeight / 2;
+    dest.top = (screenY + topOffset) * 11 / 10;
     dest.right = dest.left + bmp->info.biWidth;
     dest.bottom = dest.top + bmp->info.biHeight * 11 / 10;
     if (dest.left < 0) {
