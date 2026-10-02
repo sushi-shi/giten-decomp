@@ -19,7 +19,7 @@
     } while (0)
 
 RVA(0x00059180, 0x24f)
-b32 ClickHotspotAt(i32 x, i32 y) {
+b32 ClickHotspotAt(const i32 x, const i32 y) {
     if (GetTextPlane(0)->visible) {
         return false;
     }
