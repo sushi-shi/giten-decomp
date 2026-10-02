@@ -2644,21 +2644,21 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
             sprintf(
                 g_scratchBuffer,
                 "%-20.20s%2d",
-                GetLoadedRecordName(GetItemStackItem(GetItemListEntry(entries, index))),
+                GetLoadedRecordName(GetItemListItem(entries, index)),
                 GetItemStackCount(GetItemListEntry(entries, index))
             );
-            if ((GetItemStackItem(GetItemListEntry(entries, index)) == ITEM_KUSHINADA_JAR
+            if ((GetItemListItem(entries, index) == ITEM_KUSHINADA_JAR
                  && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_KUSHINADA_JAR_USED))
-                || (GetItemStackItem(GetItemListEntry(entries, index)) == ITEM_SOMA_CUP
+                || (GetItemListItem(entries, index) == ITEM_SOMA_CUP
                     && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_SOMA_CUP_USED))) {
                 AddItemUseMenuLine(
                     menu,
-                    GetItemStackItem(GetItemListEntry(entries, index)),
+                    GetItemListItem(entries, index),
                     MENU_LINE_DISABLED
                 );
                 return;
             }
-            record = GetLoadedRecord(GetItemStackItem(GetItemListEntry(entries, index)));
+            record = GetLoadedRecord(GetItemListItem(entries, index));
             modes = GetItemUseModes(record);
             if (ItemUseInvokesSkill(record->kind)) {
                 modes = GetSkillUseModes(GetSkillView(GetItemSkillId(record)));
@@ -2666,7 +2666,7 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
             if (CheckSkillArea(GetItemSkillId(record)) != SKILL_AREA_ALLOWED) {
                 AddItemUseMenuLine(
                     menu,
-                    GetItemStackItem(GetItemListEntry(entries, index)),
+                    GetItemListItem(entries, index),
                     MENU_LINE_DISABLED
                 );
                 return;
@@ -2674,12 +2674,12 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
             if (IsSkillUsableNow(modes) != 1) {
                 AddItemUseMenuLine(
                     menu,
-                    GetItemStackItem(GetItemListEntry(entries, index)),
+                    GetItemListItem(entries, index),
                     MENU_LINE_DISABLED
                 );
                 return;
             }
-            AddItemUseMenuLine(menu, GetItemStackItem(GetItemListEntry(entries, index)), 0);
+            AddItemUseMenuLine(menu, GetItemListItem(entries, index), 0);
             return;
         case MENU_EVENT_BEGIN_PAGE:
             AddMenuLine(

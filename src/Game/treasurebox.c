@@ -845,7 +845,7 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
                 for (i = 0; i < menu->itemCount; i++) {
                     if (GetItemStackCount(GetItemListEntry(list, i))) {
                         AddToPool(
-                            GetItemStackItem(GetItemListEntry(list, i)),
+                            GetItemListItem(list, i),
                             GetItemStackCount(GetItemListEntry(list, i))
                         );
                     }
@@ -977,7 +977,7 @@ i32 GetItemMenuTotal(ItemStackList* list, i32 numerator, i32 denominator) {
     i16 i;
     i32 total = 0;
     for (i = 0; i < GetItemListCount(list); i++) {
-        ItemRecord* record = GetLoadedRecord(GetItemStackItem(GetItemListEntry(list, i)));
+        ItemRecord* record = GetLoadedRecord(GetItemListItem(list, i));
         total += ScaleItemPrice(
             GetItemRecordPrice(record),
             numerator,
@@ -1034,7 +1034,7 @@ void AdjustItemMenuCount(MenuBox* menu, i16 row, i16 delta, i16 limit) {
     i16 count;
     i16 attr;
     i32 total;
-    if (GetItemKind(GetItemStackItem(GetItemListEntry(list, index))) == ITEM_KIND_AMMO) {
+    if (GetItemKind(GetItemListItem(list, index)) == ITEM_KIND_AMMO) {
         delta *= 10;
     }
     count = AddClampShort(GetItemStackCount(GetItemListEntry(list, index)), delta, 0, limit);
