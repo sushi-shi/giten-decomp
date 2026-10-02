@@ -447,8 +447,8 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
 // then handles knockouts and turns the struck object toward the party.
 // @early-stop CFG/register allocation: retail retains the fatal condition in
 // ebx and branches around zeroing it after the target-HP clamp; this build
-// keeps zero in ebx and the fatal condition in ebp. The later ChangePool
-// argument setup and tail joins still have different scheduling.
+// keeps zero in ebx, spills the condition, and hoists 0x7fff into ebp. The
+// later ChangePool argument setup and tail joins still schedule differently.
 RVA(0x0002ac90, 0x800)
 i16 ResolveCombatAction(void) {
     Character* attacker;
@@ -601,6 +601,9 @@ i16 ResolveCombatAction(void) {
     return targetHp->cur;
 }
 
+// @early-stop register allocation: retail keeps the personal-flags pointer
+// in ebx and the condition pointer in ebp; this build swaps them. Calls,
+// branches, ordered referents and instruction counts agree.
 RVA(0x0002b490, 0x160)
 void ResolveKnockout(i16 previousHp, i16 id) {
     Character* combatant = GetCombatant(id);
