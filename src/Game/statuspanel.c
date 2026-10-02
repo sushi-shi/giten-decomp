@@ -1039,8 +1039,7 @@ i16 RunEquipScreen(i16 key) {
                     GetLoadedRecord(GetRosterEquipSlot(g_statusMember, EQUIP_PART_GUN).item)
                 );
                 if (GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO).item == slot.item) {
-                    const ItemSlot loaded = GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO);
-                    slot.quantity -= loaded.quantity;
+                    slot.quantity -= GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO).quantity;
                     LimitItemSlotToBag(&slot);
                     if (slot.quantity < 0) {
                         slot.quantity = 0;

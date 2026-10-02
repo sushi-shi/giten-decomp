@@ -2325,7 +2325,7 @@ statuspanel	_PreviewEquipChange	100.0000	100.0000	14	ast4:49dab8d55b9e	0x43ac0	1
 statuspanel	_ResumeStatusPage	100.0000	100.0000	2	ast4:9576287eccc4	0x423e0	100.0000	
 statuspanel	_RunAlignmentPage	100.0000	100.0000	3	ast4:004cca6cd101	0x42b00	100.0000	
 statuspanel	_RunAttachScreen	100.0000	100.0000	6	ast4:2797014676ca	0x43d10	100.0000	
-statuspanel	_RunEquipScreen	98.4465	98.4465	19	ast4:53efa94f0f0b	0x42e60	98.4465	
+statuspanel	_RunEquipScreen	98.4465	98.4465	20	ast4:27481eaaf45b	0x42e60	98.4465	
 statuspanel	_RunItemPage	100.0000	100.0000	5	ast4:82742e32b982	0x44650	100.0000	
 statuspanel	_RunSkillPage	100.0000	100.0000	3	ast4:7719aad087e3	0x44c30	100.0000	
 statuspanel	_RunStatPage	100.0000	100.0000	3	ast4:b421adfc732e	0x426a0	100.0000	
