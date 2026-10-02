@@ -1486,7 +1486,7 @@ RVA(0x0000f290, 0x24d)
 b16 StepObjectTowardParty(
     FieldObject* object,
     GZ_ENUM_PARAM(MoveCommand, i16) turn,
-    GZ_ENUM_PARAM(ObjectPartyCellStop, i16) stop
+    const GZ_ENUM_PARAM(ObjectPartyCellStop, i16) stop
 ) {
     i16 x;
     i16 y;
@@ -1512,7 +1512,7 @@ b16 StepObjectTowardParty(
         direction = TurnDirection(direction, turn);
         SetObjectDirection(object, direction, turned);
         if (!DistanceFromParty(x, y) && stop == OBJECT_PARTY_CELL_STOP) {
-            b16 refreshed = RefreshIfTurned(visible, turned);
+            const b16 refreshed = RefreshIfTurned(visible, turned);
             return refreshed;
         }
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
