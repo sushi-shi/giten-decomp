@@ -709,9 +709,6 @@ static __inline void ClassifyFusionSlot(
         }                                                                                          \
     } while (0)
 
-// @early-stop register allocation: retail keeps the third slot in esi and the
-// staged result in edi; here those registers are exchanged. Call and branch
-// counts and ordered referents agree.
 RVA(0x00027180, 0x1c0)
 i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
     i16 primary[3];
