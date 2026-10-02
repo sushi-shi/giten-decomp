@@ -603,11 +603,11 @@ i16 ResolveCombatAction(void) {
 RVA(0x0002b490, 0x160)
 void ResolveKnockout(i16 previousHp, i16 id) {
     Character* combatant = GetCombatant(id);
-    ConditionSet* conditions;
     if (!combatant) {
         return;
     }
     if (!TestCharacterFlag(combatant, ACTOR_FLAG_DESAMAN)) {
+        ConditionSet* conditions;
         if (previousHp == 0) {
             return;
         }
