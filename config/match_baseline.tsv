@@ -49,7 +49,7 @@ displayconfig	2	2
 effectdraw	3	1
 equipeffect	2	2
 eventflags	28	28
-fieldmain	59	55
+fieldmain	59	56
 fieldobj	141	135
 fieldscreen	103	102
 fieldview	38	36
@@ -563,7 +563,7 @@ fieldmain	_ResetLevelEvents	100.0000	100.0000	1	ast4:d57599297dbb	0x13b00	100.00
 fieldmain	_RestoreSavedPoint	100.0000	100.0000	2	ast4:b28a2986363a	0x125d0	100.0000	
 fieldmain	_ReturnToCurrentCell	100.0000	100.0000	3	ast4:9f7000b47f25	0x13a80	100.0000	
 fieldmain	_RunCellEvent	100.0000	100.0000	8	ast4:8cb2078bca18	0x13640	100.0000	
-fieldmain	_RunFieldExploration	98.5330	98.5330	16	ast4:2420393da9b7	0x12d20	98.5330	
+fieldmain	_RunFieldExploration	100.0000	100.0000	17	ast4:d775cec1da58	0x12d20	100.0000	
 fieldmain	_RunPendingTalk	100.0000	100.0000	1	ast4:743013776103	0x12be0	100.0000	
 fieldmain	_SampleViewWalls	100.0000	100.0000	3	ast4:0430e400fb1b	0x140d0	100.0000	
 fieldmain	_SaveFieldMemory	100.0000	100.0000	1	ast4:196914c5aaf6	0x13c40	100.0000	

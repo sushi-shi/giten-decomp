@@ -685,13 +685,10 @@ i16 TickFieldSteps(void) {
 // map, enemy turns, commands), 3 runs a cell event, 4-6 the analyze window, 7
 // ends an event, 8 leaves for the world map, 9 returns to the return point, 10
 // leaves to the world map, and 11 closes the field.
-// @early-stop register allocation: retail keeps the constant 0 in esi for the
-// whole function (materialised before the phase test, which becomes cmp ax,si);
-// here cl materialises it per phase (test ax,ax; xor esi,esi in the later
-// phases; push 0 in phase 3). Call and branch counts and ordered referents match.
 RVA(0x00012d20, 0x88c)
 b16 RunFieldExploration(void) {
-    if (GetGamePhase() != FIELD_PHASE_LOAD_AREA) {
+    GZ_ENUM_LOCAL(FieldPhase, u16) initialPhase = GetGamePhase();
+    if (initialPhase != FIELD_PHASE_LOAD_AREA) {
         if (GetRenderMode() == RENDER_MODE_PANEL
             && g_worldMapRequest == WORLD_MAP_REQUEST_SAVED_SPOT) {
             SetPanelRenderMode();
