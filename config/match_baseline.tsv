@@ -2641,7 +2641,7 @@ winmain	?DrawDragOutline@@YAXXZ	100.0000	100.0000	5	ast4:b0408f2f36c8	0x4ba70	10
 winmain	?DrawHotspotMarks@@YAXXZ	100.0000	100.0000	4	ast4:3f9dd232d1fa	0x4d630	100.0000	
 winmain	?DrawMouseCursor@@YAXXZ	100.0000	100.0000	3	ast4:12c847ddc90b	0x498d0	100.0000	
 winmain	?DrawSceneOverlay@@YAXXZ	100.0000	100.0000	2	ast4:17d2e4032dc1	0x4da00	100.0000	
-winmain	?DrawSceneSprites@@YAXXZ	95.6042	95.6042	11	ast4:11f672a89974	0x4e090	96.8229	
+winmain	?DrawSceneSprites@@YAXXZ	96.8229	96.8229	12	ast4:a47a7fbc6a24	0x4e090	96.8229	
 winmain	?DrawScreenFade@@YAXXZ	100.0000	100.0000	5	ast4:f6e5d7e707f5	0x4bc20	100.0000	
 winmain	?DrawSprites@@YAHXZ	100.0000	100.0000	9	ast4:580ffbdc8855	0x4dcd0	100.0000	
 winmain	?DrawStairs@@YAXXZ	100.0000	100.0000	10	ast4:19f55e4533db	0x4da30	100.0000	
