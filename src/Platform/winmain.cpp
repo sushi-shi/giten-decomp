@@ -2806,18 +2806,17 @@ i32 DrawSprites(void) {
 // The tests, rectangle spill, coordinate arithmetic and blit match.
 RVA(0x0004e090, 0x134)
 void DrawSceneSprites(void) {
-    i32 i;
-    LPDIRECTDRAWSURFACE surface;
-    RECT dest;
-    RECT source;
-    i32 x;
-    i32 y;
-    i32 lift;
-
     if (s_screenSaved) {
         return;
     }
-    for (i = SPRITE_SLOT_COUNT - 1; i >= 0; i--) {
+    for (i32 i = SPRITE_SLOT_COUNT - 1; i >= 0; i--) {
+        LPDIRECTDRAWSURFACE surface;
+        RECT dest;
+        RECT source;
+        i32 x;
+        i32 y;
+        i32 lift;
+
         if (GetSpriteSlotFrame(GetSpriteSlot(i)) == SPRITE_UNPLACED) {
             continue;
         }

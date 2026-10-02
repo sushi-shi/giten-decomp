@@ -17,6 +17,7 @@ rva	unit	function	lost_max	cur
 0x01ebe0	treasurebox	_IsRegionFlagOn	100.0000	99.5000
 0x002fb0	vram	_GrbToRgb	100.0000	60.8182
 0x002ec0	vram	_ResetUpperPalette	76.5833	74.0833
+0x04e090	winmain	?DrawSceneSprites@@YAXXZ	96.8229	95.6042
 0x04cb30	winmain	?RenderEnemy@@YAXHHH@Z	84.7533	82.4373
 0x04c3c0	winmain	?RenderNPC@@YAXH@Z	96.3814	96.1499
 0x04bdd0	winmain	?RenderTBox@@YAXXZ	94.7506	92.3799
