@@ -309,7 +309,7 @@ RVA(0x0002e1a0, 0x37)
 i16 FindSkillAffiliation(Character* character, i16 skill) {
     i16 family = GetSkillFamily(skill);
     i16 i;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < AFFILIATION_COUNT; i++) {
         if (GetCharacterAffiliation(character, i)
             && family == GetCharacterAffiliation(character, i)) {
             return i;
