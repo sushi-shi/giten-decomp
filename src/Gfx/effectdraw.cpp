@@ -138,18 +138,18 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
         source.top = -dest.top / scaleY;
         dest.top = 0;
     }
-    if (dest.right > 640) {
-        source.right = (dest.right - 640) / scaleX;
+    if (dest.right > SCREEN_WIDTH) {
+        source.right = (dest.right - SCREEN_WIDTH) / scaleX;
         source.right = bmp->info.biWidth - source.right;
-        dest.right = 640;
+        dest.right = SCREEN_WIDTH;
     }
-    if (dest.bottom > 328) {
+    if (dest.bottom > VIEW_HEIGHT) {
         if (code.mirrorVertical) {
-            source.top = (dest.bottom - 328) / scaleY;
+            source.top = (dest.bottom - VIEW_HEIGHT) / scaleY;
         } else {
-            source.bottom = bmp->info.biHeight - static_cast<i32>((dest.bottom - 328) / scaleY);
+            source.bottom = bmp->info.biHeight - static_cast<i32>((dest.bottom - VIEW_HEIGHT) / scaleY);
         }
-        dest.bottom = 328;
+        dest.bottom = VIEW_HEIGHT;
     }
     InitEffectBlitFx(fx, code);
     g_backdropPicture.surface
@@ -205,13 +205,13 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
         dest.bottom -= dest.top;
         dest.top = 0;
     }
-    if (dest.right > 640) {
-        source.right = bmp->info.biWidth - dest.right + 640;
-        dest.right = 640;
+    if (dest.right > SCREEN_WIDTH) {
+        source.right = bmp->info.biWidth - dest.right + SCREEN_WIDTH;
+        dest.right = SCREEN_WIDTH;
     }
-    if (dest.bottom > 480) {
-        source.bottom = (bmp->info.biHeight - dest.bottom + 480) * 10 / 11;
-        dest.bottom = 480;
+    if (dest.bottom > SCREEN_HEIGHT) {
+        source.bottom = (bmp->info.biHeight - dest.bottom + SCREEN_HEIGHT) * 10 / 11;
+        dest.bottom = SCREEN_HEIGHT;
     }
     InitEffectBlitFx(fx, code);
     g_backdropPicture.surface
