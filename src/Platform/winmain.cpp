@@ -2828,14 +2828,11 @@ void DrawSceneSprites(void) {
             )) {
             continue;
         }
-        surface =
-            GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-                ->surface;
+        surface = GetSpriteSlotPicture(GetSpriteSlot(i))->surface;
         if (surface == NULL) {
             continue;
         }
-        dest = GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-                   ->rect;
+        dest = GetSpriteSlotPicture(GetSpriteSlot(i))->rect;
         x = GetSpriteSlot(i)->x - dest.right / 2;
         y = GetSpriteSlot(i)->y;
         lift = dest.bottom * 3 / 4;
@@ -2850,12 +2847,8 @@ void DrawSceneSprites(void) {
         dest.bottom += y;
         source.left = 0;
         source.top = 0;
-        source.right = GetPictureSurfaceWidth(
-            GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-        );
-        source.bottom = GetPictureSurfaceHeight(
-            GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-        );
+        source.right = GetPictureSurfaceWidth(GetSpriteSlotPicture(GetSpriteSlot(i)));
+        source.bottom = GetPictureSurfaceHeight(GetSpriteSlotPicture(GetSpriteSlot(i)));
         g_renderTarget->Blt(&dest, surface, &source, DDBLT_KEYSRC, NULL);
     }
 }
