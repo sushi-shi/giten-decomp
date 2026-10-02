@@ -2564,7 +2564,8 @@ i16 LoadAutomapAreas(FILE* fp) {
     }
     for (area = 0; area < MAP_AREA_COUNT; area++) {
         if (GetAutomapAreaHandle(area)) {
-            errors += 1 - fread(&levelHeader, 4, 1, fp);
+            size_t readCount = fread(&levelHeader, 4, 1, fp);
+            errors += 1 - readCount;
             count = levelHeader.count;
             handle = CreateArrayHandle(GetAutomapLevelTableSize(count), 1);
             s_areas[area] = handle;
