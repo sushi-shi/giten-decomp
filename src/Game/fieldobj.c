@@ -2399,8 +2399,8 @@ i32 RollCharacterMacca(Character* character) {
 // registers. Calls, branch destinations and return paths agree.
 RVA(0x00010db0, 0x8e)
 i16 AlignmentConflicts(Character* character) {
-    i16 leaderClass;
-    i16 characterClass;
+    GZ_ENUM_LOCAL(AlignmentSide, i16) leaderClass;
+    GZ_ENUM_LOCAL(AlignmentSide, i16) characterClass;
     if (character == NULL) {
         return -1;
     }
