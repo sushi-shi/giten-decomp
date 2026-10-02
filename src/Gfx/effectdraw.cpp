@@ -46,7 +46,6 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     i16 frame = ProjectEffectFrame(x, y, &screenX, &screenY);
     i32 size;
     BmpFile* bmp = GetEffectFrame(&size, frame);
-    u16 i;
     i16 left;
     i16 right;
     i16 top;
@@ -55,10 +54,7 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     RECT source;
     float scaleX;
     float scaleY;
-    DDBLTFX fx;
-    DDSURFACEDESC desc;
-    DDCOLORKEY key;
-    for (i = 0; i < code.frame; i++) {
+    for (u16 i = 0; i < code.frame; i++) {
         if (!HasBitmapFileSignature(&bmp->file)) {
             return;
         }
@@ -151,9 +147,12 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
         }
         dest.bottom = VIEW_HEIGHT;
     }
+    DDBLTFX fx;
     InitEffectBlitFx(fx, code);
     g_backdropPicture.surface
         ->Blt(&dest, g_effectFramePicture.surface, &source, DDBLT_DDFX | DDBLT_KEYSRC, &fx);
+    DDSURFACEDESC desc;
+    DDCOLORKEY key;
     key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_ALL;
