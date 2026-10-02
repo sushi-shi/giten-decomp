@@ -673,8 +673,6 @@ void StartScreenFade(GZ_ENUM_PARAM(ScreenFadeMode, i16) mode, i16 steps) {
 // (compound assignment, RGBA_SETALPHA, operand order) are flat or worse.
 RVA(0x00049dd0, 0xb3)
 void StepScreenFade(void) {
-    i32 alpha;
-
     if (g_fadeMode == SCREEN_FADE_NONE) {
         return;
     }
@@ -683,7 +681,7 @@ void StepScreenFade(void) {
     }
     s_screenCovered = false;
     s_fadeCountdown = s_fadeSteps;
-    alpha = s_fadeAlpha;
+    i32 alpha = s_fadeAlpha;
     if (IsScreenFadeIn(g_fadeMode)) {
         if (alpha <= 0) {
             g_fadeMode = SCREEN_FADE_NONE;
