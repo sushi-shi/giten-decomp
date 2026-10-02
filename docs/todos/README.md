@@ -30,6 +30,8 @@ caller/callee evidence for retained narrowing sites.
 remaining live function TODOs and the evidence needed to close them.
 [Non-Game function matching](non-game-function-matches.md) records the remaining
 compiler and access-shape walls in memory, graphics, platform, text and sound.
+[Character function matching](character-function-matches.md) records the three
+remaining character-unit compiler walls and the rejected null-pointer shape.
 
 ## Layout and buffer boundaries
 
