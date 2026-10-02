@@ -43,8 +43,8 @@ void OpEnterFieldMap(void) {
 // flag widths and declaration order do not recover that allocation.
 RVA(0x00032560, 0x44)
 void OpIfEventObjectIs(void) {
-    i16 target = ReadBranchTarget();
-    i16 different = ReadScriptValue();
+    const i16 target = ReadBranchTarget();
+    const i16 different = ReadScriptValue();
     b32 matches = false;
     if (ScriptBooleanMatches(g_actorId == g_targetId, different)) {
         matches = true;
@@ -78,7 +78,7 @@ i16 OpCountObjectsAt(void) {
 // occupy a different register permutation; the control-flow edges agree.
 RVA(0x00032660, 0x39)
 void OpIfStatusPositive(i16 invert) {
-    i16 target = ReadBranchTarget();
+    const i16 target = ReadBranchTarget();
     const i16 status = g_statusCondition;
     b32 matches = false;
     if ((status > 0 && !invert) || (status == INFLICT_NONE && invert)) {
@@ -91,8 +91,8 @@ void OpIfStatusPositive(i16 invert) {
 // the predicate in ecx; this build swaps them. Explicit state locals are flat.
 RVA(0x000326a0, 0x3b)
 void OpIfInBattle(void) {
-    i16 target = ReadBranchTarget();
-    i16 invert = ReadScriptValue();
+    const i16 target = ReadBranchTarget();
+    const i16 invert = ReadScriptValue();
     const i16 active = g_fieldBattleActive;
     b32 matches = false;
     if (ScriptBooleanMatches(active, invert)) {
