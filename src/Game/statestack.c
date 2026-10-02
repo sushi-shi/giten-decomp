@@ -2070,7 +2070,7 @@ static i16* BuildStatWeightRanges(Character* character, i16* ranges) {
         if (IsStatCapped(character, stat)) {
             *range = -1;
         } else {
-            i16 baseStat = GetBaseStat(character, stat);
+            const i16 baseStat = GetBaseStat(character, stat);
             if (baseStat == 0) {
                 total++;
                 *range = total;

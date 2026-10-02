@@ -2154,7 +2154,7 @@ statestack	_AddExperience	100.0000	100.0000	2	ast4:1aad7efad7da	0x187e0	100.0000
 statestack	_AppendLearnableSkills	100.0000	100.0000	1	ast4:2eb0cc182494	0x194c0	100.0000	
 statestack	_ApplyLevelStatGrowth	100.0000	100.0000	5	ast4:8c1e57bb9b58	0x18980	100.0000	
 statestack	_BackgroundParameterNop	100.0000	100.0000	1	ast4:0a5f584e0309	0x17ca0	100.0000	
-statestack	_BuildStatWeightRanges	95.3906	95.3906	6	ast4:8af749184a39	0x193d0	95.3906	
+statestack	_BuildStatWeightRanges	95.3906	95.3906	7	ast4:7973290bbbf6	0x193d0	95.3906	
 statestack	_CancelItemTargetMenu	100.0000	100.0000	1	ast4:b56f85fa494b	0x1a830	100.0000	
 statestack	_ClearGameStateStack	100.0000	100.0000	1	ast4:6d199536a55c	0x169e0	100.0000	
 statestack	_ClosePickerMenu	100.0000	100.0000	1	ast4:43cb7f3ac2c2	0x19e80	100.0000	
