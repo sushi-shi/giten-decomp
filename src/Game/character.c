@@ -3169,7 +3169,7 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
 // @early-stop prologue: retail saves esi before the null guard and forms the
 // flags pointer after it; cl defers the save until the pointer is needed.
 RVA(0x000413f0, 0xb6)
-i16 ApplyMoonPhase(Character* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
+i16 ApplyMoonPhase(Character* character, const GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
     i16 changed = 0;
     if (character == NULL) {
         return 0;
