@@ -1105,7 +1105,7 @@ void ClampMapPosition(i16* x, i16* y) {
 
 #define ReturnWarpCodeAt(firstWarp, mapX, mapY, codeFlags)                                         \
     do {                                                                                           \
-        WarpCell* warp;                                                                            \
+        const WarpCell* warp;                                                                      \
         for (warp = (firstWarp); !IsCellListEnd(&warp->head); warp++) {                            \
             if ((mapX) == warp->head.x && (mapY) == warp->head.y) {                                \
                 return warp->head.code | (codeFlags);                                              \
