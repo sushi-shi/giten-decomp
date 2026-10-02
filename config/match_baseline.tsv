@@ -1947,7 +1947,7 @@ scripttext	_OpSkipPanelOperands	100.0000	100.0000	1	ast4:3517256bf5ab	0x2f000	10
 scripttext	_OpStackMessageWindow	100.0000	100.0000	1	ast4:d4c2c905ac1d	0x2fbc0	100.0000	
 scripttext	_OpStepListMenu	100.0000	100.0000	2	ast4:1c1b0968f661	0x2fc70	100.0000	
 scripttext	_OpenScriptWindow	100.0000	100.0000	2	ast4:a2cf3b844ecf	0x2fb20	100.0000	
-scripttext	_PollScriptPanels	99.1379	99.1379	5	ast4:b68acf78d583	0x2f070	99.1379	
+scripttext	_PollScriptPanels	99.1379	99.1379	6	ast4:ab09fd6a27ed	0x2f070	99.1379	
 scripttext	_PopScriptWindow	100.0000	100.0000	1	ast4:ab585404f549	0x2fc30	100.0000	
 scripttext	_ResetScriptPanels	100.0000	100.0000	1	ast4:60c709caafa0	0x2edd0	100.0000	
 scripttext	_RunScriptMenuHandler	100.0000	100.0000	3	ast4:d96259e774f2	0x2f2d0	100.0000	

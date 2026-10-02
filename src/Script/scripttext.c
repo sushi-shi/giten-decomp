@@ -241,8 +241,7 @@ i16 PollScriptPanels(void) {
             if (row == PANEL_INPUT_NONE) {
                 last = last->prev;
             } else {
-                ScriptPanelJump jump;
-                jump = *GetScriptPanelJump(last, row);
+                const ScriptPanelJump jump = *GetScriptPanelJump(last, row);
                 if (jump.value != SCRIPT_PANEL_NO_JUMP) {
                     CallScript(jump.parts.file, jump.parts.entry);
                     SetScriptLongVar(0x19, row);
