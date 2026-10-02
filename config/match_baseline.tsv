@@ -587,7 +587,7 @@ fieldobj	_AddFamiliarity	100.0000	100.0000	1	ast4:063a4abf6382	0x10d30	100.0000
 fieldobj	_AddFamiliarityCount	100.0000	100.0000	1	ast4:e3bdf9b8e1ba	0x10bd0	100.0000	
 fieldobj	_AddLevelGap	100.0000	100.0000	1	ast4:9578cc461960	0x10ca0	100.0000	
 fieldobj	_AdvanceObjectAnims	100.0000	100.0000	1	ast4:0d79dfd0a5e2	0xe6b0	100.0000	
-fieldobj	_AlignmentConflicts	84.6364	84.6364	4	ast4:9cc68650457c	0x10db0	84.6364	
+fieldobj	_AlignmentConflicts	84.6364	84.6364	5	ast4:86d00ae5d1ed	0x10db0	84.6364	
 fieldobj	_AnyObjectInReach	100.0000	100.0000	2	ast4:3cea882fceb3	0x11620	100.0000	
 fieldobj	_ApplyObjectConditions	100.0000	100.0000	3	ast4:02f1a391ea8d	0xe4e0	100.0000	
 fieldobj	_AssignWorldEncounterGroups	100.0000	100.0000	2	ast4:f9b4a1ef2dbb	0x11440	100.0000	
@@ -1215,7 +1215,7 @@ itemrecord	_CountGemItemsAt	100.0000	100.0000	4	ast4:f090ce1e2274	0x24750	100.00
 itemrecord	_CountHeldItem	100.0000	100.0000	2	ast4:e066f3a68d48	0x236b0	100.0000	
 itemrecord	_CountPoolEntries	100.0000	100.0000	4	ast4:acbbcf201512	0x237d0	100.0000	
 itemrecord	_CreateGiftMenu	100.0000	100.0000	3	ast4:d5dcd5cb4d81	0x25f60	100.0000	
-itemrecord	_DecodeItemRecord	97.8752	97.8752	9	ast4:cbfa7b1fe34d	0x22d40	97.8752	
+itemrecord	_DecodeItemRecord	97.8752	97.8752	10	ast4:192cbf4aa284	0x22d40	97.8752	
 itemrecord	_DetachBagEntryItem	100.0000	100.0000	2	ast4:1a2736f7c8da	0x244a0	100.0000	
 itemrecord	_DiscardMenuHandler	100.0000	100.0000	4	ast4:b784abd84b81	0x25db0	100.0000	
 itemrecord	_ExpireSpecialItem	100.0000	100.0000	2	ast4:ec15e7f1a857	0x25be0	100.0000	
@@ -1237,7 +1237,7 @@ itemrecord	_GetItemMagicDefenseBonus	100.0000	100.0000	4	ast4:60db99b591a5	0x250
 itemrecord	_GetItemMagicPowerBonus	100.0000	100.0000	4	ast4:bebb43b75994	0x250d0	100.0000	
 itemrecord	_GetItemPhysicalEvasionBonus	100.0000	100.0000	4	ast4:fb8cf9eab315	0x250a0	100.0000	
 itemrecord	_GetItemPrice	100.0000	100.0000	3	ast4:76340af6cd25	0x23400	100.0000	
-itemrecord	_GetItemRecordData	100.0000	100.0000	3	ast4:e7c3a9f832d6	0x22d10	100.0000	
+itemrecord	_GetItemRecordData	100.0000	100.0000	4	ast4:df42f878921b	0x22d10	100.0000	
 itemrecord	_GetItemRewardAt	100.0000	100.0000	1	ast4:58a8636e0dd8	0x23380	100.0000	
 itemrecord	_GetItemStackLimit	100.0000	100.0000	4	ast4:d7599b8b4318	0x23480	100.0000	
 itemrecord	_GetItemTableData	100.0000	100.0000	2	ast4:926f224f5235	0x22d00	100.0000	
@@ -1259,11 +1259,11 @@ itemrecord	_PooledItemsFit	100.0000	100.0000	5	ast4:6aed73616166	0x23b40	100.000
 itemrecord	_ReadBag	100.0000	100.0000	1	ast4:aaec25718186	0x24550	100.0000	
 itemrecord	_ReadBagEntry	100.0000	100.0000	5	ast4:5b93a0707b1c	0x243f0	100.0000	
 itemrecord	_ReadGemItems	100.0000	100.0000	3	ast4:fd0833118048	0x24860	100.0000	
-itemrecord	_ReadItemEquipEffect	100.0000	100.0000	1	ast4:1c906f876bf7	0x23240	100.0000	
-itemrecord	_ReadItemExtraPair	100.0000	100.0000	1	ast4:f3f8c294834d	0x23270	100.0000	
-itemrecord	_ReadItemMessages	100.0000	100.0000	3	ast4:29fca93ba9d5	0x23200	100.0000	
-itemrecord	_ReadItemValueRange	100.0000	100.0000	1	ast4:22c2042b0120	0x231d0	100.0000	
-itemrecord	_ReadItemValueRangeAlt	100.0000	100.0000	1	ast4:c9e77423bb30	0x23290	100.0000	
+itemrecord	_ReadItemEquipEffect	100.0000	100.0000	2	ast4:00864341bea1	0x23240	100.0000	
+itemrecord	_ReadItemExtraPair	100.0000	100.0000	2	ast4:395385378c77	0x23270	100.0000	
+itemrecord	_ReadItemMessages	100.0000	100.0000	4	ast4:a701890e2ef6	0x23200	100.0000	
+itemrecord	_ReadItemValueRange	100.0000	100.0000	2	ast4:e4085842cd47	0x231d0	100.0000	
+itemrecord	_ReadItemValueRangeAlt	100.0000	100.0000	2	ast4:ddc516c9b8b2	0x23290	100.0000	
 itemrecord	_RemapItem	100.0000	100.0000	1	ast4:81946fdc709d	0x234f0	100.0000	
 itemrecord	_ResetGemItems	100.0000	100.0000	5	ast4:eb851f438d2b	0x246b0	100.0000	
 itemrecord	_ResolveInflictedCondition	100.0000	100.0000	3	ast4:4771a4f4cb62	0x25680	100.0000	
