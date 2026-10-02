@@ -1588,11 +1588,10 @@ b16 IsWithinRange(i16 range) {
 // was picked.
 RVA(0x0000f620, 0x26c)
 i16 UseObjectSkill(FieldObject* object, i16 skill) {
-    Character* actor = (Character*)&object->kind;
     b16 picked;
     GZ_ENUM_LOCAL(SkillKind, i16) kind;
     picked = false;
-    if (CanUseSkill(skill, actor) <= 0) {
+    if (CanUseSkill(skill, (Character*)&object->kind) <= 0) {
         return -1;
     }
     kind = GetSkillKind(skill);
@@ -1650,7 +1649,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     if (!GetFieldMarker() && !IsWithinRange(GetSkillAttackRange(skill))) {
         return -1;
     }
-    if (IsSkillIdBlocked(actor, skill) == true) {
+    if (IsSkillIdBlocked((Character*)&object->kind, skill) == true) {
         return -1;
     }
     return picked != false;
