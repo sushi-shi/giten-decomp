@@ -2320,7 +2320,7 @@ statuspanel	_ListEquipCandidates	100.0000	100.0000	4	ast4:b7d435af21ae	0x42cd0	1
 statuspanel	_OpenEquipMenu	100.0000	100.0000	2	ast4:c078a5eff1d5	0x43530	100.0000	
 statuspanel	_OpenItemInfoPlane	100.0000	100.0000	2	ast4:c31aca401dd6	0x44bb0	100.0000	
 statuspanel	_OpenStatListWindow	100.0000	100.0000	1	ast4:6033e1182cff	0x42670	100.0000	
-statuspanel	_PollEquipPart	93.9683	93.9683	6	ast4:09549583f827	0x44fb0	93.9683	
+statuspanel	_PollEquipPart	93.9683	93.9683	7	ast4:8d927732e79c	0x44fb0	93.9683	
 statuspanel	_PreviewEquipChange	100.0000	100.0000	14	ast4:49dab8d55b9e	0x43ac0	100.0000	
 statuspanel	_ResumeStatusPage	100.0000	100.0000	2	ast4:9576287eccc4	0x423e0	100.0000	
 statuspanel	_RunAlignmentPage	100.0000	100.0000	3	ast4:004cca6cd101	0x42b00	100.0000	

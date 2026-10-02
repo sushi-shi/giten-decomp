@@ -2014,14 +2014,13 @@ static __inline void UnhighlightEquipPart(i16 member) {
 
 RVA(0x00044fb0, 0x17f)
 i16 PollEquipPart(i16 member, i16 mode) {
-    i16 x;
-    i16 y;
-    i16 part;
-
     if (mode < EQUIP_PICK_PART) {
         s_equipPickPart = EQUIP_PART_NONE;
         return EQUIP_PART_NONE;
     } else if (mode < EQUIP_PICK_CLEAR) {
+        i16 x;
+        i16 y;
+        i16 part;
         if (s_equipPickPart >= 0 && g_mouseLeftClick) {
             return s_equipPickPart;
         }
