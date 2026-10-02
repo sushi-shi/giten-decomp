@@ -54,8 +54,8 @@ void OpIfEventObjectIs(void) {
 
 RVA(0x000325b0, 0x3e)
 void OpIfBattleResult(void) {
-    i16 target = ReadBranchTarget();
-    i16 multiple = ReadScriptValue();
+    const i16 target = ReadBranchTarget();
+    const i16 multiple = ReadScriptValue();
     b32 matches = false;
     if ((g_targetCount == 1 && multiple == false) || (g_targetCount >= 2 && multiple == true)) {
         matches = true;
