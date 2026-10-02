@@ -1376,7 +1376,12 @@ void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
 // edi; here those registers are exchanged and direction loads after the clears.
 // Calls, branch destinations and ordered referents agree.
 RVA(0x00013f10, 0x183)
-void BuildViewOcclusion(i16 x, i16 y, const i16 direction, i16 unused) {
+void BuildViewOcclusion(
+    i16 x,
+    i16 y,
+    const GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16 unused
+) {
     i16 along;
     i16 across;
     i16 opposite;
