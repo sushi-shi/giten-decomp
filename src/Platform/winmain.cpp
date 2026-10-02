@@ -662,8 +662,9 @@ void StartScreenFade(GZ_ENUM_PARAM(ScreenFadeMode, i16) mode, i16 steps) {
 
 #define SetScreenFadeAlpha(value)                                                                  \
     do {                                                                                           \
+        D3DCOLOR color = g_fadeColor;                                                              \
         s_fadeAlpha = (value);                                                                     \
-        g_fadeColor = RGBA_SETALPHA(g_fadeColor, (value));                                         \
+        g_fadeColor = RGBA_SETALPHA(color, (value));                                               \
     } while (0)
 
 // Advances the running fade by one frame.
