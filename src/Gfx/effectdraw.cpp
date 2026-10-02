@@ -174,8 +174,6 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
     RECT dest;
     RECT source;
     DDBLTFX fx;
-    DDSURFACEDESC desc;
-    DDCOLORKEY key;
     for (i = 0; i < code.frame; i++) {
         if (!HasBitmapFileSignature(&bmp->file)) {
             return;
@@ -216,6 +214,8 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
     InitEffectBlitFx(fx, code);
     g_backdropPicture.surface
         ->Blt(&dest, g_effectFramePicture.surface, &source, DDBLT_DDFX | DDBLT_KEYSRC, &fx);
+    DDSURFACEDESC desc;
+    DDCOLORKEY key;
     key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_ALL;
