@@ -949,7 +949,7 @@ void UpdateStatTotals(StatBlock* stats) {
     i16 i;
     i16 sum;
     for (i = 0; i < STAT_COUNT; i++) {
-        sum = stats->base[i] + stats->bonus[i] + stats->equipment[i] + stats->modifiers[i];
+        sum = stats->base[i] + stats->bonus[i] + stats->modifiers[i] + stats->equipment[i];
         stats->total[i] = ClampTo100(sum / 2);
     }
 }
