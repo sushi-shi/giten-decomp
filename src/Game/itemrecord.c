@@ -937,8 +937,6 @@ static void CompactBagCore(void) {
     ItemStack scenarioItems[BAG_SCENARIO_ENTRY_COUNT];
 #endif
     i16 kept = 0;
-    i16 limit;
-    i16 from;
     i16 i;
     i16 j;
 
@@ -964,6 +962,8 @@ static void CompactBagCore(void) {
     }
     for (i = 0; i < BAG_ENTRY_COUNT; i++) {
         ItemStack* entry = &g_bagItems[i];
+        i16 limit;
+        i16 from;
         if (GetItemStackItem(entry) == ITEM_ID_EMPTY) {
             continue;
         }
