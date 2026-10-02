@@ -1076,7 +1076,7 @@ fusion	_GetSecondFusionSlot	100.0000	100.0000	1	ast4:67da8a953772	0x288b0	100.00
 fusion	_GetThirdFusionSlot	100.0000	100.0000	1	ast4:66f45a359de5	0x288c0	100.0000	
 fusion	_GetTripleFusionLevel	100.0000	100.0000	2	ast4:16b10a472c5f	0x278d0	100.0000	
 fusion	_GetTripleFusionLevelBonus	100.0000	100.0000	1	ast4:82e2118ee61b	0x27880	100.0000	
-fusion	_GetTripleFusionSummary	96.7188	96.7188	5	ast4:1b0f73897577	0x27c30	100.0000	
+fusion	_GetTripleFusionSummary	96.7188	96.7188	6	ast4:7c9cffff9526	0x27c30	100.0000	
 fusion	_InheritFusionStat	100.0000	100.0000	3	ast4:aec84e748311	0x27130	100.0000	
 fusion	_InheritFusionStats	100.0000	100.0000	2	ast4:4a3c1efca236	0x270b0	100.0000	
 fusion	_IsFusionDemonRestricted	100.0000	100.0000	1	ast4:7ed3cc5cc08b	0x28650	100.0000	

@@ -1026,7 +1026,7 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
     i16 resultLevel;
     u8 clampedLevel;
     FusionSummary summary;
-    FusionSummary* output = &summary;
+    FusionSummary* const output = &summary;
     GetFusionResult(&demon, &kind);
     sourceLevel = GetRosterCharacter(first)->level;
     InitFusionSummary(&summary);
