@@ -842,7 +842,7 @@ i16 GetWallStopCode(u16 cell, GZ_ENUM_PARAM(WallStopMode, i16) mode) {
 // count, here only its byte; i16/u16 locals and casts tried.
 RVA(0x0000d2a0, 0xf)
 i32 GetFacingBit(void) {
-    return 1u << g_party.field.pos.direction;
+    return 1 << g_party.field.pos.direction;
 }
 
 // x1/y1 relative to x0/y0 in the frame of `direction`.
