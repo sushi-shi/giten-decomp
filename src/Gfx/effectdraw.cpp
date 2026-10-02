@@ -167,13 +167,7 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
 RVA(0x00058e40, 0x252)
 void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16 y) {
     BmpFile* bmp = imageData;
-    u16 i;
-    i16 screenX;
-    i16 screenY;
-    RECT dest;
-    RECT source;
-    DDBLTFX fx;
-    for (i = 0; i < code.frame; i++) {
+    for (u16 i = 0; i < code.frame; i++) {
         if (!HasBitmapFileSignature(&bmp->file)) {
             return;
         }
@@ -183,7 +177,11 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
         return;
     }
     CacheEffectFrame(bmp, code);
+    i16 screenX;
+    i16 screenY;
     GetScriptAnimationPosition(x, y, &screenX, &screenY);
+    RECT dest;
+    RECT source;
     source.left = source.top = 0;
     source.right = bmp->info.biWidth;
     source.bottom = bmp->info.biHeight;
@@ -210,6 +208,7 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
         source.bottom = (bmp->info.biHeight - dest.bottom + SCREEN_HEIGHT) * 10 / 11;
         dest.bottom = SCREEN_HEIGHT;
     }
+    DDBLTFX fx;
     InitEffectBlitFx(fx, code);
     g_backdropPicture.surface
         ->Blt(&dest, g_effectFramePicture.surface, &source, DDBLT_DDFX | DDBLT_KEYSRC, &fx);
