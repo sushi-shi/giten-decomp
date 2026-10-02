@@ -605,7 +605,7 @@ i16 ResolveCombatAction(void) {
 // branches, ordered referents and instruction counts agree.
 RVA(0x0002b490, 0x160)
 void ResolveKnockout(i16 previousHp, i16 id) {
-    Character* combatant = GetCombatant(id);
+    Character* const combatant = GetCombatant(id);
     if (!combatant) {
         return;
     }
