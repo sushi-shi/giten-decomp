@@ -28,6 +28,8 @@ census, resolved cases, and remaining source-model examples.
 caller/callee evidence for retained narrowing sites.
 [Platform and graphics identities](platform-gfx-sound-identities.md) records
 remaining live function TODOs and the evidence needed to close them.
+[Non-Game function matching](non-game-function-matches.md) records the remaining
+compiler and access-shape walls in memory, graphics, platform, text and sound.
 
 ## Layout and buffer boundaries
 
