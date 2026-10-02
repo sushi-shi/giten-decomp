@@ -445,17 +445,13 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
 // target: rolls it, pays its cost, plays the hit sound, applies the change by
 // the action's result code (the draining skills move HP, MP or experience),
 // then handles knockouts and turns the struck object toward the party.
-// @early-stop CFG/register allocation: retail retains the fatal condition in
-// ebx and branches around zeroing it after the target-HP clamp; this build
-// keeps zero in ebx, spills the condition, and hoists 0x7fff into ebp. The
-// later ChangePool argument setup and tail joins still schedule differently.
 RVA(0x0002ac90, 0x800)
 i16 ResolveCombatAction(void) {
     Character* attacker;
     Character* target;
     CurMax* targetHp;
     GZ_ENUM_LOCAL(ConditionId, i16) initialFatalCondition;
-    i16 hit;
+    b16 hit;
     i16 kind;
 
     s_actionOutcome = ACTION_OUTCOME_DEFAULT;
