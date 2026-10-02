@@ -1741,7 +1741,7 @@ void RenderTBox(void) {
         D3DLVERTEX(D3DVECTOR(0.0f, 0.0f, 0.0f), 0xffffffff, 0xff000000, 0.0f, 0.0f),
     };
     TreasureBox* box;
-    MapPosition* position;
+    const MapPosition* position;
     i16 partyX;
     i16 partyY;
     BOOL textureSet;
@@ -1826,10 +1826,10 @@ void RenderTBox(void) {
                 dx += 40;
                 break;
         }
-        double nearX = g_billboardX * DATA_COMPGEN(0x00064a78, 40.0);
-        double farX = -g_billboardX * 40.0;
-        double nearZ = g_billboardZ * 40.0;
-        double farZ = -g_billboardZ * 40.0;
+        const double nearX = g_billboardX * DATA_COMPGEN(0x00064a78, 40.0);
+        const double farX = -g_billboardX * 40.0;
+        const double nearZ = g_billboardZ * 40.0;
+        const double farZ = -g_billboardZ * 40.0;
         s_box[0].x = nearX;
         s_box[1].x = farX;
         s_box[0].z = nearZ;
