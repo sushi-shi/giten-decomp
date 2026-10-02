@@ -1,4 +1,5 @@
 rva	unit	function	lost_max	cur
+0x03e6d0	character	_AddCondition	99.9419	99.9273
 0x0413f0	character	_ApplyMoonPhase	97.2603	95.5479
 0x0589e0	effectdraw	_DrawProjectedEffectSprite	96.0887	94.6086
 0x058e40	effectdraw	_DrawScreenEffectSprite	98.0000	92.4556

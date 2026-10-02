@@ -1275,11 +1275,11 @@ b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
 // form (for/goto), nested-if returns, case 33/34 spelling and order were tried.
 RVA(0x0003e6d0, 0x700)
 GZ_ENUM_RETURN(ConditionAddResult, i16) AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
-    b16 blocked;
     i16 i;
 
     HasCondition(conditions, CONDITION_ZOMBIE);
     for (;;) {
+        b16 blocked;
         blocked = 0;
         switch (condition) {
             case CONDITION_POISON:
