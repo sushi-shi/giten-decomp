@@ -962,7 +962,7 @@ static void CompactBagCore(void) {
         }
     }
     for (i = 0; i < BAG_ENTRY_COUNT; i++) {
-        ItemStack* entry = &g_bagItems[i];
+        const ItemStack* entry = &g_bagItems[i];
         i16 limit;
         i16 from;
         if (GetItemStackItem(entry) == ITEM_ID_EMPTY) {

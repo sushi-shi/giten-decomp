@@ -1205,7 +1205,7 @@ itemrecord	_ClearBag	100.0000	100.0000	2	ast4:3dfe6e5dbfbb	0x23a80	100.0000
 itemrecord	_ClearDropSlots	100.0000	100.0000	2	ast4:7edd9c273302	0x23c00	100.0000	
 itemrecord	_ClearPool	100.0000	100.0000	3	ast4:2456cbb37973	0x23800	100.0000	
 itemrecord	_CompactBag	100.0000	100.0000	3	ast4:7c0b8f46e5fe	0x24310	100.0000	
-itemrecord	_CompactBagCore	98.3557	98.3557	10	ast4:65885d4c9fcd	0x23f20	98.3557	
+itemrecord	_CompactBagCore	98.3557	98.3557	11	ast4:ba3909025e0f	0x23f20	98.3557	
 itemrecord	_CopyBagEntries	100.0000	100.0000	4	ast4:f8a0bee75677	0x23aa0	100.0000	
 itemrecord	_CountBagEntries	100.0000	100.0000	3	ast4:b6bf1f637d9a	0x24280	100.0000	
 itemrecord	_CountBagItem	100.0000	100.0000	3	ast4:aac11f48a6b8	0x23d10	100.0000	
