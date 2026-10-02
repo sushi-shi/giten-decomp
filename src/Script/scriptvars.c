@@ -399,8 +399,7 @@ b16 FinishScriptChoice(i16 window) {
 RVA(0x0003a870, 0x12e)
 b16 OpNextChoice(i16 window) {
     i16 x, y;
-    ScriptChoice* choices = s_choices;
-    ScriptChoice* choice;
+    ScriptChoice* choice = s_choices;
     TextPoint size = GetTextPlaneSize(window);
     i16 lineStep = GetTextPlaneLineStep(window);
     FinishScriptChoice(window);
@@ -412,7 +411,6 @@ b16 OpNextChoice(i16 window) {
         if (y < size.y) {
             break;
         }
-        choice = choices;
         while (choice) {
             choice->y -= lineStep;
             choice = choice->next;
