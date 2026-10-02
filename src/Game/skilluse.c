@@ -603,6 +603,7 @@ i16 ResolveCombatAction(void) {
 RVA(0x0002b490, 0x160)
 void ResolveKnockout(i16 previousHp, i16 id) {
     Character* combatant = GetCombatant(id);
+    ConditionSet* conditions;
     if (!combatant) {
         return;
     }
@@ -610,8 +611,9 @@ void ResolveKnockout(i16 previousHp, i16 id) {
         if (previousHp == 0) {
             return;
         }
-        if (!GetFatalCondition(GetCharacterConditions(combatant))) {
-            if (HasCondition(GetCharacterConditions(combatant), CONDITION_ZOMBIE)) {
+        conditions = GetCharacterConditions(combatant);
+        if (!GetFatalCondition(conditions)) {
+            if (HasCondition(conditions, CONDITION_ZOMBIE)) {
                 if (combatant->pools.mp.cur != 0) {
                     return;
                 }
