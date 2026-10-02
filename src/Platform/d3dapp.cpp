@@ -1620,12 +1620,12 @@ void AcquireInput(BOOL acquire) {
 RVA(0x00048e60, 0xbb)
 GZ_ENUM_RETURN(MouseButtonBits, u8) PollMouseButtons(void) {
     DIMOUSESTATE state;
-    HRESULT result;
     u8 buttons = MOUSE_BUTTONS_NONE;
     u8 left;
     u8 right;
 
     if (g_mouseDevice != NULL) {
+        HRESULT result;
         for (;;) {
             result = g_mouseDevice->GetDeviceState(sizeof(state), &state);
             if (result != DIERR_INPUTLOST && result != DIERR_NOTACQUIRED
