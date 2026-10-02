@@ -2060,10 +2060,9 @@ i16 RollWeightedStat(Character* character) {
 RVA(0x000193d0, 0x9a)
 static i16* BuildStatWeightRanges(Character* character, i16* ranges) {
     i16 total = 0;
-    i16* range = ranges;
+    i16* range;
     i16 stat;
-    stat = 0;
-    while (stat < 10) {
+    for (stat = 0, range = ranges; stat < 10; stat++, range++) {
         if (IsStatCapped(character, stat)) {
             *range = -1;
         } else {
@@ -2073,8 +2072,6 @@ static i16* BuildStatWeightRanges(Character* character, i16* ranges) {
                 *range = total += GetBaseStat(character, stat) * 10;
             }
         }
-        stat++;
-        range++;
     }
     if (total == 0) {
         return NULL;
