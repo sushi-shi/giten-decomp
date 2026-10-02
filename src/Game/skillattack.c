@@ -74,6 +74,7 @@ b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
 RVA(0x0000ac50, 0x1ce)
 i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
     SkillHeader* skill;
+    i16 skillPower;
     i16 power;
     i16 defense;
     double amount;
@@ -83,7 +84,8 @@ i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
         return 0;
     }
     skill = GetCachedSkill(attacker->pickTarget);
-    power = GetSkillValueB(skill) + GetBattleStatShown(attacker, BATTLE_STAT_MAGIC_POWER);
+    skillPower = GetSkillValueB(skill);
+    power = skillPower + GetBattleStatShown(attacker, BATTLE_STAT_MAGIC_POWER);
     power = WearSkillValue(power);
     defense = GetBattleStatShown(target, BATTLE_STAT_MAGIC_DEFENSE);
     amount = power;

@@ -2082,7 +2082,7 @@ shot	_StartShot	100.0000	100.0000	3	ast4:c42daed6e872	0x5620	100.0000
 shot	_StepShot	100.0000	100.0000	2	ast4:106504969bdc	0x56e0	100.0000	
 shot	_StopShot	100.0000	100.0000	1	ast4:e12d9489e723	0x5800	100.0000	
 skillattack	_ApplySkillResistanceOutcome	100.0000	100.0000	1	ast4:3d98c4404356	0xaf70	100.0000	
-skillattack	_ComputeSkillDamage	98.4266	98.4266	9	ast4:fb21c7d753b2	0xac50	100.0000	
+skillattack	_ComputeSkillDamage	98.4266	98.4266	10	ast4:26e2e1f7ca3c	0xac50	100.0000	
 skillattack	_ResolveSkillAttack	100.0000	100.0000	5	ast4:de3dc07d29e5	0xafb0	100.0000	
 skillattack	_RollSkillCondition	100.0000	100.0000	9	ast4:ebf8c621321c	0xae20	100.0000	
 skillattack	_RollSkillHit	100.0000	100.0000	11	ast4:81bf49a3defd	0xaa20	100.0000	
