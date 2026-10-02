@@ -2241,13 +2241,10 @@ i16 GetGunRequirementPenalty(i16 stat, i16 requirement) {
     return ClampShort(5 - stat / requirement, 1, 0x7fff);
 }
 
-static __inline u8 GetGunRoundPercent(u8 (*table)[GUN_BURST_MAX_TARGETS], i16 count, i16 index) {
-    return table[count - 1][index];
-}
-
 RVA(0x000091f0, 0xe2)
 i16 DistributeGunRounds(i16 rounds, i16 count) {
     u8(*table)[GUN_BURST_MAX_TARGETS];
+    u8* row;
     i16 index;
     i16 remaining;
     i16 share;
@@ -2256,10 +2253,11 @@ i16 DistributeGunRounds(i16 rounds, i16 count) {
     table = HandleReadPtr(s_gunDistribution);
     remaining = rounds;
     for (index = 0; index < count; index++) {
-        if (rounds * GetGunRoundPercent(table, count, index) == 0 || remaining < 1) {
+        row = table[count - 1];
+        if (rounds * row[index] == 0 || remaining < 1) {
             break;
         }
-        share = rounds * GetGunRoundPercent(table, count, index);
+        share = rounds * row[index];
         share /= 100;
         if (share < 1) {
             share = 1;
