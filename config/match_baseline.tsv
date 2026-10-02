@@ -1059,7 +1059,7 @@ fusion	_GetFusionGrowthBonus	100.0000	100.0000	2	ast4:daa5b4b6b98c	0x26da0	100.0
 fusion	_GetFusionLevel	100.0000	100.0000	2	ast4:59820d078013	0x26770	100.0000	
 fusion	_GetFusionPairSide	100.0000	100.0000	1	ast4:5b32395efad3	0x28400	100.0000	
 fusion	_GetFusionPairSummaryCell	100.0000	100.0000	1	ast4:1981ef1ba475	0x290f0	100.0000	
-fusion	_GetFusionRaceEntry	88.3674	88.3674	3	ast4:8a33360e3ac0	0x28380	100.0000	
+fusion	_GetFusionRaceEntry	88.3674	88.3674	4	ast4:53d92d86820f	0x28380	100.0000	
 fusion	_GetFusionRacePair	100.0000	100.0000	3	ast4:5f19e4fb622a	0x27f40	100.0000	
 fusion	_GetFusionRestrictedClass	100.0000	100.0000	1	ast4:eda234e80849	0x28260	100.0000	
 fusion	_GetFusionResult	100.0000	100.0000	2	ast4:43d93f8283a8	0x27090	100.0000	
