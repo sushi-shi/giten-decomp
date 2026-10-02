@@ -2838,8 +2838,6 @@ void MarkRegionList(u8* list, i16 stride, u8 code, i16 width, i16 height) {
 
 // The data of entry `index` of a room list (after its rectangle or marker),
 // NULL past the end.
-// @early-stop: the returned address is formed as [offset + list] in retail
-// and [list + offset] here.
 RVA(0x0001ecc0, 0x60)
 u8* FindRegionData(u8* list, i16 stride, i16 index) {
     i16 offset = 0;
