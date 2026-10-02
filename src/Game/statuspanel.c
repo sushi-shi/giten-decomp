@@ -957,9 +957,6 @@ static __inline i16 FinishEquipChange(i16 member) {
 RVA(0x00042e60, 0x6d0)
 i16 RunEquipScreen(i16 key) {
     ItemSlot slot;
-    ItemSlot loaded;
-    i16 count;
-    i16 part;
 
     if (key != STATUS_COMMAND_NONE && key != STATUS_COMMAND_CANCEL) {
         SetGameSub(MENU_STEP_CLOSE);
@@ -995,7 +992,8 @@ i16 RunEquipScreen(i16 key) {
             PrevGameSub();
             return STATUS_COMMAND_NONE;
 
-        case MENU_STEP_RUN:
+        case MENU_STEP_RUN: {
+            i16 part;
             if (key == STATUS_COMMAND_CANCEL) {
                 PrevGameSub();
                 s_equipPage.pick = key;
@@ -1018,6 +1016,7 @@ i16 RunEquipScreen(i16 key) {
             NextGameSub();
             s_equipPage.pick = g_selectedObjectId;
             return STATUS_COMMAND_NONE;
+        }
 
         case EQUIP_STEP_PREVIEW_EQUIP:
             NextGameSub();
@@ -1025,7 +1024,8 @@ i16 RunEquipScreen(i16 key) {
             s_equipPage.infoPlane = OpenItemInfoPlane(GetBagItem(s_equipPage.pick));
             return STATUS_COMMAND_NONE;
 
-        case EQUIP_STEP_EQUIP:
+        case EQUIP_STEP_EQUIP: {
+            i16 count;
             if (key == STATUS_COMMAND_CANCEL) {
                 SetGameSub(MENU_STEP_RUN);
                 ClearEquipPreview();
@@ -1040,7 +1040,7 @@ i16 RunEquipScreen(i16 key) {
                     GetLoadedRecord(GetRosterEquipSlot(g_statusMember, EQUIP_PART_GUN).item)
                 );
                 if (GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO).item == slot.item) {
-                    loaded = GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO);
+                    const ItemSlot loaded = GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO);
                     slot.quantity -= loaded.quantity;
                     LimitItemSlotToBag(&slot);
                     if (slot.quantity < 0) {
@@ -1057,6 +1057,7 @@ i16 RunEquipScreen(i16 key) {
             }
             EquipItem(g_statusMember, slot, count, s_equipPage.pick);
             return FinishEquipChange(g_statusMember);
+        }
 
         case EQUIP_STEP_PREVIEW_REMOVE:
             NextGameSub();
