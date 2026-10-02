@@ -399,15 +399,18 @@ b16 FinishScriptChoice(i16 window) {
 RVA(0x0003a870, 0x12e)
 b16 OpNextChoice(i16 window) {
     i16 x, y;
-    i16 columns;
     ScriptChoice* choice = s_choices;
     TextPoint size = GetTextPlaneSize(window);
     i16 lineStep = GetTextPlaneLineStep(window);
     FinishScriptChoice(window);
     for (;;) {
-        columns = s_choiceColumns;
-        x = (s_choiceIndex % columns) * s_choiceColumnWidth;
-        y = s_choiceIndex / columns;
+        i32 columnIndex;
+        i32 rowIndex;
+        const i16 columns = s_choiceColumns;
+        columnIndex = s_choiceIndex % columns;
+        rowIndex = s_choiceIndex / columns;
+        x = columnIndex * s_choiceColumnWidth;
+        y = rowIndex;
         x += GetActiveTextPlaneIndent(window);
         y = lineStep * y + s_choiceTop;
         if (y < size.y) {
