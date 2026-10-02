@@ -83,9 +83,8 @@ i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
         return 0;
     }
     skill = GetCachedSkill(attacker->pickTarget);
-    power = WearSkillValue(
-        GetSkillValueB(skill) + GetBattleStatShown(attacker, BATTLE_STAT_MAGIC_POWER)
-    );
+    power = GetSkillValueB(skill) + GetBattleStatShown(attacker, BATTLE_STAT_MAGIC_POWER);
+    power = WearSkillValue(power);
     defense = GetBattleStatShown(target, BATTLE_STAT_MAGIC_DEFENSE);
     amount = power;
     if (power < defense) {
