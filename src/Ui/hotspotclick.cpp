@@ -21,7 +21,6 @@
 RVA(0x00059180, 0x24f)
 b32 ClickHotspotAt(i32 x, i32 y) {
     i32 i;
-    GZ_ENUM_LOCAL(ViewDirection, i16) direction;
     Texture* texture;
     u8* pixels;
     u32 width;
@@ -38,7 +37,7 @@ b32 ClickHotspotAt(i32 x, i32 y) {
         return false;
     }
     i32 hit = HOTSPOT_NONE;
-    direction = GetMapPosition()->direction;
+    GZ_ENUM_LOCAL(ViewDirection, i16) direction = GetMapPosition()->direction;
     for (i = g_hotspotCount - 1; i >= 0; i--) {
         Hotspot* candidate = GetHotspot(i);
         if (candidate->rect.left > x || candidate->rect.right <= x
