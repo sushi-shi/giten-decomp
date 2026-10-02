@@ -27,7 +27,7 @@ b32 ClickHotspotAt(i32 x, i32 y) {
         return false;
     }
     i32 hit = HOTSPOT_NONE;
-    GZ_ENUM_LOCAL(ViewDirection, i16) direction = GetMapPosition()->direction;
+    const GZ_ENUM_LOCAL(ViewDirection, i16) direction = GetMapPosition()->direction;
     for (i32 i = g_hotspotCount - 1; i >= 0; i--) {
         const Hotspot* candidate = GetHotspot(i);
         if (candidate->rect.left > x || candidate->rect.right <= x

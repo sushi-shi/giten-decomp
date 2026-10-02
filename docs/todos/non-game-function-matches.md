@@ -29,6 +29,17 @@ ordered relocations before changing their source.
 `@early-stop` comments at most sites carry the shorter local rationale. This
 list keeps the cross-function evidence and the rejected probes together.
 
+In `ClickHotspotAt`, replacing the cached candidate pointer with repeated
+`GetHotspot(i)` accesses preserved the complete normalized `hotspotclick.obj`
+byte-for-byte, including the `rect.left` pointer basis (SHA-256
+`61de1edd1b9949fed9f5f1e38135b3734103e713e3f933d5e2168b9911d6fa6b`).
+That less readable accessor-per-use probe was removed. Swapping the direction
+snapshot before the `hit` initializer moved the first divergence from `+0x36`
+to `+0x30`: the call then preceded retail's `hit = -1` store, and similarity
+fell to 88.19%. It was reverted. Marking the direction snapshot `const` keeps
+the whole normalized object byte-identical at 92.81%; it remains before the
+loop and read-only through all hit tests.
+
 ## Storage and owner checks
 
 - `HandleEntry` is an eight-byte table entry: `SetHandleEntry` writes flags at
