@@ -1393,7 +1393,7 @@ void BuildViewOcclusion(i16 x, i16 y, i16 direction, i16 unused) {
     for (along = 0; along >= -3; along--) {
         opposite = 0;
         for (across = 0; across <= 3; opposite--, across++) {
-            index = across - along * 4;
+            index = (-along) * 4 + across;
             wall = GetWallAtOffset(x, y, direction, across, along);
             if (GetCellWallStop(direction, 0, wall)) {
                 MergeViewOcclusionEntry(g_rightViewOcclusion, index + 16);
