@@ -2766,7 +2766,7 @@ worldtravel	_GetWorldTravelLateralDelta	100.0000	100.0000	1	ast4:524653425a26	0x
 worldtravel	_GrowRoute	100.0000	100.0000	3	ast4:332d5c98c688	0x11ed0	100.0000	
 worldtravel	_IsRouteActive	100.0000	100.0000	1	ast4:8648d5acf8d7	0x12010	100.0000	
 worldtravel	_LoadWorldMapPlaces	100.0000	100.0000	2	ast4:2e4ab7856898	0x12020	100.0000	
-worldtravel	_LoadWorldTravelCandidates	100.0000	69.6809	1	ast4:85b5d9bb7d81	0x11a10	100.0000	
+worldtravel	_LoadWorldTravelCandidates	100.0000	100.0000	2	ast4:8a9f21e2ff08	0x11a10	100.0000	
 worldtravel	_MarkReachableWorldTravelCells	100.0000	100.0000	1	ast4:58a65e422841	0x11b30	100.0000	
 worldtravel	_PickWorldMapDestination	100.0000	100.0000	3	ast4:784cb05214e4	0x11660	100.0000	
 worldtravel	_PopRoutePoint	100.0000	100.0000	2	ast4:ed67bdaf3911	0x11f90	100.0000	
