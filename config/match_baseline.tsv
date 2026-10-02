@@ -1418,7 +1418,7 @@ mouse	_GetMouseLeftClick	100.0000	100.0000	2	ast4:38ac63c09c96	0x2b60	100.0000
 mouse	_GetMouseRightClick	100.0000	100.0000	2	ast4:25cada3cea8b	0x2b50	100.0000	
 mouse	_GetMouseX	100.0000	100.0000	2	ast4:a11eff23e51b	0x2b30	100.0000	
 mouse	_GetMouseY	100.0000	100.0000	2	ast4:f1df68770597	0x2b40	100.0000	
-mouse	_LatchMouseClicks	99.4444	99.4444	6	ast4:51a47549db93	0x2a00	99.4444	
+mouse	_LatchMouseClicks	99.4444	99.4444	7	ast4:5f94daca9428	0x2a00	99.4444	
 mouse	_SetMouseState	100.0000	100.0000	3	ast4:1cfb15039842	0x2b00	100.0000	
 mouse	_TakeMouseCancel	100.0000	100.0000	3	ast4:c5d79dca9fd3	0x2a70	100.0000	
 mouse	_TakeMouseCancelSound	100.0000	100.0000	2	ast4:c5b1cf88e223	0x2ab0	100.0000	
@@ -2663,7 +2663,7 @@ winmain	?PollJoystick@@YAXXZ	100.0000	100.0000	1	ast4:3e742ec16180	0x4a0c0	100.0
 winmain	?PressPadButton@@YAXHH@Z	100.0000	100.0000	1	ast4:1909abad9206	0x4ad40	100.0000	
 winmain	?ReleaseGraphics@@YAXXZ	100.0000	100.0000	9	ast4:acdae81219e7	0x4a100	100.0000	
 winmain	?RenderBlankMode@@YAXH@Z	100.0000	100.0000	3	ast4:b069df9f5a25	0x4f010	100.0000	
-winmain	?RenderEnemy@@YAXHHH@Z	98.8067	98.8067	35	ast4:4f33ff3361a4	0x4cb30	98.8067	
+winmain	?RenderEnemy@@YAXHHH@Z	98.8067	98.8067	36	ast4:dd9e11e5db01	0x4cb30	98.8067	
 winmain	?RenderEventMode@@YAXH@Z	100.0000	100.0000	5	ast4:2e8505857145	0x4e910	100.0000	
 winmain	?RenderFieldMode@@YAXH@Z	100.0000	100.0000	4	ast4:4bfaf9c92db0	0x4ef30	100.0000	
 winmain	?RenderFieldView@@YAXH@Z	100.0000	100.0000	9	ast4:ab8e7eceb96b	0x4ea90	100.0000	
