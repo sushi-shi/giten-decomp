@@ -1588,7 +1588,6 @@ b16 IsWithinRange(i16 range) {
 // was picked.
 RVA(0x0000f620, 0x26c)
 i16 UseObjectSkill(FieldObject* object, i16 skill) {
-    FieldSkillCandidate best, candidates[FIELD_OBJECT_COUNT];
     Character* actor = (Character*)&object->kind;
     FieldObject* target;
     MapCoord coord;
@@ -1602,6 +1601,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     }
     kind = GetSkillKind(skill);
     if (kind == SKILL_KIND_RESTORE) {
+        FieldSkillCandidate best, candidates[FIELD_OBJECT_COUNT];
         count = 0;
         for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             InitFieldSkillCandidate(&candidates[i]);
