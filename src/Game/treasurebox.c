@@ -2558,7 +2558,8 @@ i16 LoadAutomapAreas(FILE* fp) {
     StoreAutomapLevel();
     FreeAutomap();
     EnsureAutomapStore();
-    errors = MAP_AREA_COUNT - fread(s_areas, 4, MAP_AREA_COUNT, fp);
+    errors = MAP_AREA_COUNT;
+    errors -= fread(s_areas, 4, MAP_AREA_COUNT, fp);
     if (errors) {
         return errors;
     }
