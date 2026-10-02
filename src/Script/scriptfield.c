@@ -79,7 +79,7 @@ i16 OpCountObjectsAt(void) {
 // @early-stop register allocation: the status, invert and predicate values
 // occupy a different register permutation; the control-flow edges agree.
 RVA(0x00032660, 0x39)
-void OpIfStatusPositive(GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert) {
+void OpIfStatusPositive(const GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert) {
     const i16 target = ReadBranchTarget();
     const i16 status = g_statusCondition;
     b32 matches = false;
@@ -95,7 +95,7 @@ RVA(0x000326a0, 0x3b)
 void OpIfInBattle(void) {
     const i16 target = ReadBranchTarget();
     const i16 invert = ReadScriptValue();
-    const i16 active = g_fieldBattleActive;
+    const b16 active = g_fieldBattleActive;
     b32 matches = false;
     if (ScriptBooleanMatches(active, invert)) {
         matches = true;
