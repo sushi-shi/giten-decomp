@@ -188,8 +188,8 @@ i16 TestMaskPixel(i16 x, i16 line) {
 RVA(0x00002ec0, 0x2b)
 void ResetUpperPalette(void) {
     i16 i;
-    memset(&s_paletteRefs[8], 0, 8 * sizeof(s_paletteRefs[0]));
-    for (i = 8; i < PALETTE_SIZE; i++) {
+    memset(&s_paletteRefs[PALETTE_SIZE / 2], 0, sizeof s_paletteRefs / 2);
+    for (i = PALETTE_SIZE / 2; i < PALETTE_SIZE; i++) {
         StorePaletteColor(i, 0);
     }
 }
