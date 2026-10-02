@@ -546,14 +546,14 @@ void LoadAreaMap(i16 area, i16 level) {
 // source, a next-index local) keeps `map` in ebx and spills the index.
 RVA(0x00021470, 0x206)
 void DecodeAreaMap(AreaMap* map, u8* record) {
-    AreaRecord* head = (AreaRecord*)record;
+    const AreaRecord* head = (const AreaRecord*)record;
     u16 headerGrowth;
     i16 i;
     map->name = (char*)record + head->nameOffset;
     map->levelCount = head->levelCount;
     headerGrowth = map->levelCount * 2 + 2;
     for (i = 0; i < map->levelCount; i++) {
-        AreaLevelRecord* src = (AreaLevelRecord*)(record + GetAreaLevelOffset(head, i));
+        const AreaLevelRecord* src = (const AreaLevelRecord*)(record + GetAreaLevelOffset(head, i));
         AreaLevel* level = (AreaLevel*)(
             (u8*)map + i * (sizeof(AreaLevel) - sizeof(AreaLevelRecord)) + headerGrowth
             + GetAreaLevelOffset(head, i)
