@@ -136,7 +136,7 @@ void OpIfBattleResult(void);
 
 i16 OpCountObjectsAt(void);
 
-void OpIfStatusPositive(i16 invert);
+void OpIfStatusPositive(GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert);
 
 RVA_DECL(0x000326a0)
 void OpIfInBattle(void);

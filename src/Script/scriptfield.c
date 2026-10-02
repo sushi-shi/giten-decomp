@@ -79,7 +79,7 @@ i16 OpCountObjectsAt(void) {
 // @early-stop register allocation: the status, invert and predicate values
 // occupy a different register permutation; the control-flow edges agree.
 RVA(0x00032660, 0x39)
-void OpIfStatusPositive(i16 invert) {
+void OpIfStatusPositive(GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert) {
     const i16 target = ReadBranchTarget();
     const i16 status = g_statusCondition;
     b32 matches = false;
