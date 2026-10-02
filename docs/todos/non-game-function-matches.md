@@ -28,3 +28,42 @@ ordered relocations before changing their source.
 
 `@early-stop` comments at most sites carry the shorter local rationale. This
 list keeps the cross-function evidence and the rejected probes together.
+
+## Storage and owner checks
+
+- `HandleEntry` is an eight-byte table entry: `SetHandleEntry` writes flags at
+  `+0`, size at `+2`, and pointer at `+4`; `GetHandleSize` reads `+2`, while
+  `HandlePtr` reads `+4`. `NewHandle`, resize and clear all use that writer.
+  The low score of `GetHandleSize` does not indicate a missing wider size
+  field. Retail xrefs to the table agree with these member offsets.
+- `MousePosition` has 16-bit X, Y and button fields at `+0`, `+2` and `+4`.
+  `SetMouseState` writes each field, and direct readers across Game, Script
+  and Platform use those offsets. Retail's 32-bit load beginning at Y in
+  `LatchMouseClicks` uses only its low word; it does not establish a 32-bit Y
+  member. A whole-struct copy changed the rest of the function substantially.
+- Retail references `s_paletteColors` only in `ResetUpperPalette` and
+  `SetPaletteColor`, both writers. `s_paletteRefs` has the expected retain,
+  release and reset references. No retail read supports adding `volatile` to
+  force separate palette stores. The current ordinary stores preserve the
+  observed final values.
+- `CMidiStream` has one virtual destructor slot. Constructors initialize
+  `m_channelVolumes` to null; `Play` and `Replay` retain the caller's pointer,
+  and `OnMessage` forwards it to replay and volume setting. The only
+  reconstructed external `Play` call passes null. The all-channel loop's
+  `eax`/`edx` swap is not evidence for a copied array or different stream
+  handle type.
+
+## Banked exact current dips
+
+These functions previously reached 100%, and the relevant source operations
+remain equivalent to their banked versions. Their current byte differences
+should be revisited through translation-unit
+composition or a supported source improvement, without changing a proven
+storage type merely to force a register allocation.
+
+| Function | Current distinction |
+| --- | --- |
+| `NewArrayHandle` | Retail loads `count` into `eax` and `size` into `ecx`; current MSVC reverses the two before the same masks and multiply. Swapping multiplication operands in source compiles identically. |
+| `GrbToRgb` | Retail copies the low input byte into `dl` and ORs red before blue; current MSVC copies the whole word into `edx` and ORs blue first. Named red, green and blue locals compile identically; removing the byte cast changes the code further. |
+| `MarkPaletteDirty` | Retail loads, ORs and stores the flag byte separately; current MSVC folds this into one memory OR. The palette flag has no asynchronous owner that would justify `volatile`. |
+| `QueuePaletteUpload` | Retail tests the flag, sets the queued bit with a load/store, then clears the dirty bit with a second load/store. Current MSVC combines the two changes into one load/store. The final byte is the same; a required observer between the stores has not been found. |

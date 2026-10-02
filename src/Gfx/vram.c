@@ -248,7 +248,10 @@ void SetPaletteEntry(u8 index, i16 color) {
 // PC-98 analog palette words are 0xGRB; swap the G and R nibbles.
 RVA(0x00002fb0, 0x21)
 u32 GrbToRgb(u32 grb) {
-    return ((grb >> 4) & 0xf0) | (((u8)grb & 0xf0) << 4) | (grb & 0x0f);
+    u32 green = (grb >> 4) & 0xf0;
+    u32 red = ((u8)grb & 0xf0) << 4;
+    u32 blue = grb & 0x0f;
+    return red | green | blue;
 }
 
 RVA(0x00002fe0, 0x26)
