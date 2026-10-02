@@ -1123,7 +1123,7 @@ fusion	_RunScriptAnimationState	100.0000	100.0000	2	ast4:de9056bebda4	0x286f0	10
 fusion	_RunSecondFusionPicker	100.0000	100.0000	3	ast4:5a886f12327d	0x29de0	100.0000	
 fusion	_RunThirdFusionPicker	100.0000	100.0000	2	ast4:de8cc04701d4	0x29f00	100.0000	
 fusion	_RunTripleFusion	100.0000	100.0000	2	ast4:d2a231998fdc	0x2a150	100.0000	
-fusion	_SelectRandomFusionDemon	100.0000	86.7021	1	ast4:81b3a026124b	0x26f90	100.0000	
+fusion	_SelectRandomFusionDemon	86.7021	86.7021	2	ast4:8f6b4133329c	0x26f90	100.0000	
 fusion	_SetFusionResult	100.0000	100.0000	2	ast4:5785c25acfa6	0x26550	100.0000	
 fusion	_SortFusionSlots	100.0000	100.0000	2	ast4:c14cf342a11d	0x2a5d0	100.0000	
 fusion	_StageFusionCharacter	100.0000	100.0000	3	ast4:133cb4f720c2	0x2a330	100.0000	
