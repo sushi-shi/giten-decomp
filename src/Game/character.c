@@ -249,7 +249,7 @@ static i16 s_affinity[5][3] = {
 };
 
 DATA(0x00069f00)
-static i16 s_selectedPartySlot = -1;
+static i16 s_selectedPartySlot = PARTY_POSITION_NONE;
 
 // Each condition's base chance (of 256) to wear off per roll; 0 never does.
 DATA(0x00069f08)
@@ -1061,8 +1061,8 @@ i16 PartyAlignmentClass(i16 axis) {
 
 static __inline i32 GetSelectedPartySlot(void) {
     i16 slot;
-    if (s_selectedPartySlot == -1) {
-        slot = -1;
+    if (s_selectedPartySlot == PARTY_POSITION_NONE) {
+        slot = PARTY_POSITION_NONE;
     } else {
         slot = s_selectedPartySlot;
     }
@@ -1094,7 +1094,7 @@ void RedrawPartyStatus(void) {
         }
     }
     ResetTextPlaneHighlight(g_infoPlane);
-    s_selectedPartySlot = -1;
+    s_selectedPartySlot = PARTY_POSITION_NONE;
     s_statusRedrawPending = false;
 }
 
@@ -1200,7 +1200,7 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
         slot = row / lineStep + (wordColumn ? 3 : 0);
         slot = FilterPartySlotSelection(slot, mode);
     } else {
-        slot = -1;
+        slot = PARTY_POSITION_NONE;
     }
     if (s_selectedPartySlot == slot) {
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
@@ -1208,7 +1208,7 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
     }
     s_selectedPartySlot = slot;
     ClearTextPlaneHighlight(g_infoPlane);
-    if (slot != -1) {
+    if (slot != PARTY_POSITION_NONE) {
         SetTextPlaneHighlight(g_infoPlane, wordColumn, row);
     }
     ResetTextPlaneLineStep(g_infoPlane, oldStep);
@@ -1236,7 +1236,7 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollPartySlotSelection(GZ_ENUM_PARAM(Pa
 
 RVA(0x0003e660, 0x19)
 void ClearPartySlotSelection(void) {
-    s_selectedPartySlot = -1;
+    s_selectedPartySlot = PARTY_POSITION_NONE;
     ClearTextPlaneHighlight(g_infoPlane);
 }
 
