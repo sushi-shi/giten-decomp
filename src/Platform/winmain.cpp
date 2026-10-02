@@ -5245,9 +5245,9 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
         );
         return 3;
     }
-    MSG message;
     DWORD nextTick = 0;
     for (;;) {
+        MSG message;
 #ifdef GITEN_COMPAT
         PumpMessages();
 #else
@@ -5275,7 +5275,6 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
             RenderFrame();
         }
     }
-    return message.wParam;
 }
 
 // The vector constructor iterator that this TU's new[] expressions emit.
