@@ -663,7 +663,7 @@ fieldobj	_GetSightCell	100.0000	100.0000	1	ast4:1f0b93c8b919	0xf0c0	100.0000
 fieldobj	_GetWorldEncounterMaximum	100.0000	100.0000	2	ast4:b70dbced2120	0x11300	100.0000	
 fieldobj	_HasAnalyzeData	100.0000	100.0000	2	ast4:5ee82306a2a8	0x10e90	100.0000	
 fieldobj	_InitFieldObjects	100.0000	100.0000	2	ast4:f1ed7ea2a2b6	0xd790	100.0000	
-fieldobj	_InitObjectFromRecord	97.8276	97.8276	24	ast4:11e0a66071fc	0x10470	97.8276	
+fieldobj	_InitObjectFromRecord	97.8276	97.8276	25	ast4:828c735b3938	0x10470	97.8276	
 fieldobj	_IsFieldActor	100.0000	100.0000	2	ast4:a72fc0042a09	0xd980	100.0000	
 fieldobj	_IsPartyInSight	100.0000	100.0000	1	ast4:4a914e7b4308	0xf120	100.0000	
 fieldobj	_IsWithinRange	100.0000	100.0000	5	ast4:438336496aad	0xf590	100.0000	
@@ -677,7 +677,7 @@ fieldobj	_LoadFieldTable	100.0000	100.0000	4	ast4:180f9e284312	0x11480	100.0000
 fieldobj	_LoadLayerRecord	100.0000	100.0000	2	ast4:1885a8fafaad	0x10ad0	100.0000	
 fieldobj	_LoadLayerScriptSet	100.0000	100.0000	4	ast4:5b03a2b8789a	0xeb70	100.0000	
 fieldobj	_LoadLayerScripts	100.0000	100.0000	3	ast4:39493a8fb14b	0xeb00	100.0000	
-fieldobj	_LoadObjectRecord	100.0000	100.0000	2	ast4:05721c5c74e2	0x10a00	100.0000	
+fieldobj	_LoadObjectRecord	100.0000	100.0000	3	ast4:0ca26b578a33	0x10a00	100.0000	
 fieldobj	_LoadWorldEncounterBlock	100.0000	100.0000	3	ast4:ad89168465b0	0x11170	100.0000	
 fieldobj	_MarkObjectsOnMap	100.0000	100.0000	1	ast4:ac97a1acdbaf	0xdde0	100.0000	
 fieldobj	_PickWorldEncounterGroup	100.0000	100.0000	5	ast4:30e4887b598f	0x113a0	100.0000	
@@ -2154,14 +2154,14 @@ statestack	_AddExperience	100.0000	100.0000	2	ast4:1aad7efad7da	0x187e0	100.0000
 statestack	_AppendLearnableSkills	100.0000	100.0000	1	ast4:2eb0cc182494	0x194c0	100.0000	
 statestack	_ApplyLevelStatGrowth	100.0000	100.0000	5	ast4:8c1e57bb9b58	0x18980	100.0000	
 statestack	_BackgroundParameterNop	100.0000	100.0000	1	ast4:0a5f584e0309	0x17ca0	100.0000	
-statestack	_BuildStatWeightRanges	95.3906	95.3906	7	ast4:7973290bbbf6	0x193d0	95.3906	
+statestack	_BuildStatWeightRanges	95.3906	95.3906	8	ast4:e086803e8155	0x193d0	95.3906	
 statestack	_CancelItemTargetMenu	100.0000	100.0000	1	ast4:b56f85fa494b	0x1a830	100.0000	
 statestack	_ClearGameStateStack	100.0000	100.0000	1	ast4:6d199536a55c	0x169e0	100.0000	
 statestack	_ClosePickerMenu	100.0000	100.0000	1	ast4:43cb7f3ac2c2	0x19e80	100.0000	
 statestack	_CollectLearnableSkills	100.0000	100.0000	1	ast4:9b5a6e4d9cf5	0x19470	100.0000	
 statestack	_CountPartyPendingLevels	100.0000	100.0000	1	ast4:68d4f935f8dd	0x18910	100.0000	
 statestack	_CountPendingLevels	100.0000	100.0000	2	ast4:1788bf489e5b	0x18890	100.0000	
-statestack	_CountRaisableStats	100.0000	100.0000	1	ast4:4361ae97722a	0x18a00	100.0000	
+statestack	_CountRaisableStats	100.0000	100.0000	2	ast4:dec1017c606b	0x18a00	100.0000	
 statestack	_DdsMenuHandler	100.0000	100.0000	5	ast4:d9c491908de6	0x17740	100.0000	
 statestack	_DispatchGameState	100.0000	100.0000	2	ast4:69ee2ef4b638	0x17160	100.0000	
 statestack	_DrawSceneFrame	100.0000	100.0000	2	ast4:11fa99dcab39	0x17e50	100.0000	
@@ -2173,7 +2173,7 @@ statestack	_FindFirstAbleMemberPosition	100.0000	100.0000	3	ast4:8032a3611d76	0x
 statestack	_FindLevelUpSlot	100.0000	100.0000	1	ast4:3b3c019c3696	0x18940	100.0000	
 statestack	_FormatLevelUpMessage	100.0000	100.0000	2	ast4:afe7e482f44c	0x19760	100.0000	
 statestack	_FreeSceneSprites	100.0000	100.0000	1	ast4:8a4cc02c7a74	0x18110	100.0000	
-statestack	_GainLevels	100.0000	100.0000	3	ast4:e679adceec9f	0x195c0	100.0000	
+statestack	_GainLevels	100.0000	100.0000	4	ast4:fa0f6aad9ed2	0x195c0	100.0000	
 statestack	_GetClockMinutes	100.0000	100.0000	1	ast4:b54dd2586969	0x179a0	100.0000	
 statestack	_GetCurrentRoomCode	100.0000	100.0000	1	ast4:7efca1009be7	0x1a180	100.0000	
 statestack	_GetCursorLevel0	100.0000	100.0000	2	ast4:f28c810e70e7	0x16d10	100.0000	
@@ -2193,7 +2193,7 @@ statestack	_GrantBattleRewards	100.0000	100.0000	2	ast4:cfda8dad2e23	0x18ad0	100
 statestack	_InitFieldPanels	100.0000	100.0000	1	ast4:941a1c3a91dd	0x1a1b0	100.0000	
 statestack	_IsOddMapLayer	100.0000	100.0000	1	ast4:a3e2c9aa5fc1	0x197a0	100.0000	
 statestack	_IsOnCellMark	100.0000	100.0000	3	ast4:fc2da01c2172	0x1a110	100.0000	
-statestack	_IsStatCapped	100.0000	100.0000	2	ast4:3b1935f10562	0x189d0	100.0000	
+statestack	_IsStatCapped	100.0000	100.0000	3	ast4:cc58e6ba29a5	0x189d0	100.0000	
 statestack	_ItemListMenuHandler	96.2817	96.2817	15	ast4:854e92cb372a	0x1a240	96.2817	
 statestack	_LearnAllSkills	100.0000	100.0000	2	ast4:81532348e97a	0x19550	100.0000	
 statestack	_LeaveStatusScreen	100.0000	100.0000	2	ast4:f2d27470af09	0x16ff0	100.0000	
@@ -2225,13 +2225,13 @@ statestack	_PrevGameSub	100.0000	100.0000	1	ast4:1b9dbd0de88c	0x16bb0	100.0000
 statestack	_RaiseExperienceToLevel	100.0000	100.0000	1	ast4:82df2c4c7e16	0x18aa0	100.0000	
 statestack	_ReplaceRosterMember	100.0000	100.0000	3	ast4:73ec94b95c1a	0x17090	100.0000	
 statestack	_ResetSubscreen	100.0000	100.0000	1	ast4:750d9b59d0de	0x1a1d0	100.0000	
-statestack	_ResolveRaisableStat	100.0000	100.0000	1	ast4:8790ae5bfe50	0x18a30	100.0000	
+statestack	_ResolveRaisableStat	100.0000	100.0000	2	ast4:716174918f01	0x18a30	100.0000	
 statestack	_RestoreBackground	100.0000	100.0000	2	ast4:23c04e3a3da6	0x17ba0	100.0000	
 statestack	_RestoreBackgroundParameter	100.0000	100.0000	1	ast4:a54d64c88fa8	0x17cb0	100.0000	
 statestack	_RestoreSceneFrame	100.0000	100.0000	1	ast4:f99af8d2a944	0x17d40	100.0000	
 statestack	_ReturnDdsMember	100.0000	100.0000	4	ast4:5e8248c7c77e	0x17870	100.0000	
 statestack	_ReturnFromGameState	100.0000	100.0000	1	ast4:5ebeb7a134b6	0x16c20	100.0000	
-statestack	_RollWeightedStat	100.0000	100.0000	1	ast4:a8b04ee515e8	0x19370	100.0000	
+statestack	_RollWeightedStat	100.0000	100.0000	2	ast4:0ea115dd555b	0x19370	100.0000	
 statestack	_RunBackgroundScene	100.0000	100.0000	6	ast4:4eaaf8ca0acb	0x18590	100.0000	
 statestack	_RunCellScene	100.0000	100.0000	6	ast4:68e4e2beacfe	0x17ef0	100.0000	
 statestack	_RunDdsMenu	100.0000	100.0000	4	ast4:2738e29b0ca9	0x17330	100.0000	
@@ -2240,7 +2240,7 @@ statestack	_RunDismissMenuState	100.0000	100.0000	2	ast4:625b08262caf	0x17030	10
 statestack	_RunFieldTextScene	100.0000	100.0000	2	ast4:dbe77ebbe2ed	0x18230	100.0000	
 statestack	_RunFrozenFieldScene	100.0000	100.0000	7	ast4:35f19a52513f	0x18340	100.0000	
 statestack	_RunItemUse	98.8151	98.8151	15	ast4:f4677a7cd35d	0x1a400	98.8151	
-statestack	_RunLevelUp	100.0000	100.0000	14	ast4:59026213957a	0x18b60	100.0000	
+statestack	_RunLevelUp	100.0000	100.0000	15	ast4:97c537ac29e3	0x18b60	100.0000	
 statestack	_RunPartyPicker	100.0000	100.0000	2	ast4:5f287a57a3f5	0x19ea0	100.0000	
 statestack	_RunPickerMenu	100.0000	100.0000	1	ast4:d817a5ee15aa	0x19e60	100.0000	
 statestack	_RunPictureTransition	100.0000	100.0000	6	ast4:4cab8a66c4ae	0x184a0	100.0000	
@@ -2675,7 +2675,7 @@ winmain	?RenderPanelMode@@YAXH@Z	100.0000	100.0000	4	ast4:36b0fcac3111	0x4ed80	1
 winmain	?RenderPictureMode@@YAXH@Z	100.0000	100.0000	4	ast4:4ba5ee3afdbd	0x4ece0	100.0000	
 winmain	?RenderSceneMode@@YAXH@Z	100.0000	100.0000	4	ast4:f2f4b14a8f58	0x4ea10	100.0000	
 winmain	?RenderStatusMode@@YAXH@Z	100.0000	100.0000	3	ast4:4d9070688124	0x4f0b0	100.0000	
-winmain	?RenderTBox@@YAXXZ	96.6156	96.6156	23	ast4:1ff83eb02d7f	0x4bdd0	96.6156	
+winmain	?RenderTBox@@YAXXZ	96.6156	96.6156	24	ast4:dbcda4f353fd	0x4bdd0	96.6156	
 winmain	?RenderViewMode@@YAXH@Z	100.0000	100.0000	11	ast4:cccc417fc04f	0x4e3d0	100.0000	
 winmain	?RepeatPadMove@@YAXH@Z	100.0000	100.0000	3	ast4:b114f72f2c28	0x4fc00	100.0000	
 winmain	?ResetCamera@@YAXXZ	100.0000	100.0000	2	ast4:e5431f4cce58	0x4f6e0	100.0000	
