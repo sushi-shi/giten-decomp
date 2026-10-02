@@ -2555,13 +2555,12 @@ i16 LoadAutomapAreas(FILE* fp) {
     for (area = 0; area < MAP_AREA_COUNT; area++) {
         if (GetAutomapAreaHandle(area)) {
             i16 level;
-            i16 count;
             i32 handle;
             AutomapLevelHeader levelHeader;
             AutomapLevels* levels;
             const size_t readCount = fread(&levelHeader, 4, 1, fp);
+            const i16 count = levelHeader.count;
             errors += 1 - readCount;
-            count = levelHeader.count;
             handle = CreateArrayHandle(GetAutomapLevelTableSize(count), 1);
             s_areas[area] = handle;
             levels = HandleWritePtr(handle);
