@@ -1136,17 +1136,19 @@ i16 GetWarpCodeAtOffset(i16 dx, i16 dy) {
 RVA(0x00022460, 0xd4)
 i16 GetCellAtOffset(i16 dx, i16 dy) {
     AreaLevel* level = g_areaLevel;
+    const MapPosition* position;
     if (level == NULL) {
         return 0;
     }
-    if (g_party.field.pos.x == 2 && g_party.field.pos.y == 5
-        && g_party.field.pos.area == MAP_AREA_SHINJUKU_TOCHO && g_party.field.pos.level == 6
+    position = &g_party.field.pos;
+    if (position->x == 2 && position->y == 5
+        && position->area == MAP_AREA_SHINJUKU_TOCHO && position->level == 6
         && dx == -1 && dy == 0) {
         return CELL_STAIRS_UP;
     }
-    ReturnWarpCodeAt(level->warps, g_party.field.pos.x, g_party.field.pos.y, 8);
-    dx += g_party.field.pos.x;
-    dy += g_party.field.pos.y;
+    ReturnWarpCodeAt(level->warps, position->x, position->y, 8);
+    dx += position->x;
+    dy += position->y;
     ReturnWarpCodeAt(level->warps, dx, dy, 0);
     return 0;
 }
