@@ -2243,8 +2243,8 @@ i16 GetGunRequirementPenalty(i16 stat, i16 requirement) {
 
 RVA(0x000091f0, 0xe2)
 i16 DistributeGunRounds(i16 rounds, i16 count) {
-    const u8* table;
-    const u8* rowEnd;
+    const u8 (*table)[GUN_BURST_MAX_TARGETS];
+    const u8 (*nextRow)[GUN_BURST_MAX_TARGETS];
     i16 index;
     i16 remaining;
     i16 share;
@@ -2254,12 +2254,12 @@ i16 DistributeGunRounds(i16 rounds, i16 count) {
     table = HandleReadPtr(s_gunDistribution);
     remaining = rounds;
     for (index = 0; index < count; index++) {
-        rowEnd = table + count * GUN_BURST_MAX_TARGETS;
-        weightedRounds = rounds * rowEnd[index - GUN_BURST_MAX_TARGETS];
+        nextRow = table + count;
+        weightedRounds = rounds * nextRow[-1][index];
         if (weightedRounds == 0 || remaining < 1) {
             break;
         }
-        share = rounds * rowEnd[index - GUN_BURST_MAX_TARGETS];
+        share = rounds * nextRow[-1][index];
         share /= 100;
         if (share < 1) {
             share = 1;
