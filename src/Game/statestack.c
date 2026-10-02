@@ -2717,12 +2717,10 @@ static __inline void SelectItemUserAsTarget(void) {
 RVA(0x0001a400, 0x3e0)
 b16 RunItemUse(void) {
     const ItemRecord* record;
-    Character* user;
     i16 flags;
     i16 range;
     i16 kind;
     i16 picked;
-    i16 position;
 
     switch (GetGamePhase()) {
         case ITEM_USE_PHASE_OPEN:
@@ -2820,7 +2818,9 @@ b16 RunItemUse(void) {
             s_itemMenu = DestroyMenuBox(s_itemMenu);
             return false;
 
-        case ITEM_USE_PHASE_PROMPT_ACTION:
+        case ITEM_USE_PHASE_PROMPT_ACTION: {
+            Character* user;
+            i16 position;
             NextGamePhase();
             position = FindPartyPositionOfId(s_useMemberId);
             user = GetPartyCharacter(position);
@@ -2843,6 +2843,7 @@ b16 RunItemUse(void) {
             }
             PushFieldUsePrompt();
             return false;
+        }
 
         case ITEM_USE_PHASE_FINISH:
             SetGamePhase(ITEM_USE_PHASE_CLOSE);

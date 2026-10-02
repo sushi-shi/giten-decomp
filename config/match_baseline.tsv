@@ -2239,7 +2239,7 @@ statestack	_RunDdsSummon	100.0000	100.0000	2	ast4:0ef229a02bd9	0x174b0	100.0000
 statestack	_RunDismissMenuState	100.0000	100.0000	2	ast4:625b08262caf	0x17030	100.0000	
 statestack	_RunFieldTextScene	100.0000	100.0000	2	ast4:dbe77ebbe2ed	0x18230	100.0000	
 statestack	_RunFrozenFieldScene	100.0000	100.0000	7	ast4:35f19a52513f	0x18340	100.0000	
-statestack	_RunItemUse	97.7705	97.7705	13	ast4:dc42741e3f0a	0x1a400	97.7705	
+statestack	_RunItemUse	97.7705	97.7705	14	ast4:8d78a69ab96c	0x1a400	97.7705	
 statestack	_RunLevelUp	100.0000	100.0000	14	ast4:59026213957a	0x18b60	100.0000	
 statestack	_RunPartyPicker	100.0000	100.0000	2	ast4:5f287a57a3f5	0x19ea0	100.0000	
 statestack	_RunPickerMenu	100.0000	100.0000	1	ast4:d817a5ee15aa	0x19e60	100.0000	
