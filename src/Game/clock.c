@@ -1133,7 +1133,8 @@ i16 GetWarpCodeAtOffset(i16 dx, i16 dy) {
 // place or x/dx and dy/y mixes each lose more.
 RVA(0x00022460, 0xd4)
 i16 GetCellAtOffset(i16 dx, i16 dy) {
-    if (g_areaLevel == NULL) {
+    AreaLevel* level = g_areaLevel;
+    if (level == NULL) {
         return 0;
     }
     if (g_party.field.pos.x == 2 && g_party.field.pos.y == 5
@@ -1141,10 +1142,10 @@ i16 GetCellAtOffset(i16 dx, i16 dy) {
         && dx == -1 && dy == 0) {
         return CELL_STAIRS_UP;
     }
-    ReturnWarpCodeAt(g_areaLevel->warps, g_party.field.pos.x, g_party.field.pos.y, 8);
+    ReturnWarpCodeAt(level->warps, g_party.field.pos.x, g_party.field.pos.y, 8);
     dx += g_party.field.pos.x;
     dy += g_party.field.pos.y;
-    ReturnWarpCodeAt(g_areaLevel->warps, dx, dy, 0);
+    ReturnWarpCodeAt(level->warps, dx, dy, 0);
     return 0;
 }
 
