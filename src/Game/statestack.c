@@ -2643,7 +2643,7 @@ static __inline void AddItemUseMenuLine(MenuBox* menu, i16 item, i16 disabled) {
 
 RVA(0x0001a240, 0x1bc)
 void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
-    ItemStackList* entries = menu->items.itemList;
+    ItemStackList* const entries = menu->items.itemList;
     switch (event) {
         case MENU_EVENT_ADD_ROW: {
             sprintf(
