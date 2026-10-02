@@ -9,7 +9,7 @@ or helper solely to recover register allocation.
 
 | Function (retail RVA) | Current evidence and next check |
 | --- | --- |
-| `LoadBitmapToSurface16` (`0x056bd0`) | First difference `+0xb8`; both sides have 174 instructions, three calls, ten branches, two returns and six relocations. Trace the bitmap scanline cursor and the owner TU changes after the exact bank. |
+| `LoadBitmapToSurface16` (`0x056bd0`) | The unchanged body has an exact bank. Both objects have 174 instructions, three calls, ten branches, two returns and six relocations. The first difference at `+0xb8` exchanges stack homes for two `PackSurfaceColor` channel-shift values; the inlined palette loop then exchanges `al`/`dl` for its blue and green byte loads while retaining the same shifts, stores and row walk. `CopyResourceBitmap16` in the same unit uses the same inline helper and remains exact, so changing that helper's channel order is unsupported. Trace the bitmap I/O translation-unit state or an authentic cursor lifetime before changing the shared helper. |
 | `CalcMagicEvasionStat` (`0x03d510`) | First difference `+0x7` in an 11-instruction, one-call body with the same control-flow and referent counts. Compare the stat helper argument and return register schedule with its exact bank. |
 | `CalcWeaponPowerStat` (`0x03d3f0`) | First difference `+0xf`; both sides have 36 instructions, two calls and one branch. Trace the weapon parameter lifetime before changing the calculation. |
 | `MultiplyMatrix` (`0x046230`) | First difference `+0x13`; 82 instructions and nine calls agree. Compare matrix operand evaluation and the owner TU's floating-point helper state with the exact bank. |
