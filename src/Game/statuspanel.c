@@ -957,9 +957,9 @@ static __inline i16 FinishEquipChange(i16 member) {
 RVA(0x00042e60, 0x6d0)
 i16 RunEquipScreen(i16 key) {
     ItemSlot slot;
+    ItemSlot loaded;
     i16 count;
     i16 part;
-    ItemSlot loaded;
 
     if (key != STATUS_COMMAND_NONE && key != STATUS_COMMAND_CANCEL) {
         SetGameSub(MENU_STEP_CLOSE);
