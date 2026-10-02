@@ -1189,7 +1189,7 @@ i16 GetFusionClassPair(i16 first, i16 second) {
 RVA(0x00028380, 0x78)
 i16 GetFusionRaceEntry(i16 index, i16 slot) {
     i16 race = GetFusionSlotRace(slot);
-    FusionRaceRows* table = HandleReadPtr(s_fusionRaceRows);
+    const FusionRaceRows* table = HandleReadPtr(s_fusionRaceRows);
     i16 count = table->count;
     i16 row;
     for (row = 0; row < count; row++) {
