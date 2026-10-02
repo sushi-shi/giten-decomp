@@ -366,7 +366,7 @@ b32 CMidiStream::Prepare() {
 
 // @early-stop register residue: in the all-channel loop retail builds the
 // message in eax and loads the stream handle into edx; here the two swap.
-// Message-shape, counter-type and permuter sweeps are flat.
+// The stream handle is read for each send.
 RVA(0x000563b0, 0xcd)
 b32 CMidiStream::SetVolume(DWORD volume, DWORD* channelVolumes) {
     if (!m_playing) {
