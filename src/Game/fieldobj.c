@@ -1496,7 +1496,7 @@ b16 StepObjectTowardParty(
     b16 retried;
     i16 code;
     b16 turned;
-    i16 direction;
+    GZ_ENUM_LOCAL(ViewDirection, i16) direction;
     retried = false;
     if (TestFieldObjectFlag(object, ACTOR_FLAG_ANCHORED)) {
         return false;
