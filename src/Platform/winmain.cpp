@@ -2271,10 +2271,14 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     SetQuadSpecular(s_enemy, 0xff000000);
                 }
                 double billboardWidth = width;
-                s_enemy[2].x = -g_billboardX * billboardWidth;
-                s_enemy[3].x = g_billboardX * billboardWidth;
-                s_enemy[3].z = g_billboardZ * billboardWidth;
-                s_enemy[2].z = -g_billboardZ * billboardWidth;
+                double farLeftX = -g_billboardX * billboardWidth;
+                double farRightX = g_billboardX * billboardWidth;
+                double farRightZ = g_billboardZ * billboardWidth;
+                double farLeftZ = -g_billboardZ * billboardWidth;
+                s_enemy[2].x = farLeftX;
+                s_enemy[3].x = farRightX;
+                s_enemy[3].z = farRightZ;
+                s_enemy[2].z = farLeftZ;
                 s_enemy[1].x = s_enemy[2].x;
                 s_enemy[0].x = s_enemy[3].x;
                 s_enemy[0].z = s_enemy[3].z;
