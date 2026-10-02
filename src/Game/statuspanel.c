@@ -2012,9 +2012,6 @@ static __inline void UnhighlightEquipPart(i16 member) {
     }
 }
 
-// @early-stop tail merge: retail keeps the negative-mode reset and return
-// at entry; this build shares the final reset. Assignment-return and
-// returned-state forms retain the merge, as does the unhighlight macro.
 RVA(0x00044fb0, 0x17f)
 i16 PollEquipPart(i16 member, i16 mode) {
     i16 x;

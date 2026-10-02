@@ -2,6 +2,8 @@
 
 [Reconstruction cleanup](reconstruction-cleanup.md) maps the KF1 and Gruntz
 review methods to Giten's live worklists and records unresolved source models.
+[Script and equipment matching boundaries](script-equipment-matching.md) records
+retail control-flow and caller evidence for unresolved Script/Game functions.
 
 ## Source typing
 
