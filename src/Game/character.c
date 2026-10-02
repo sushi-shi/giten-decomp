@@ -1177,9 +1177,9 @@ void RefreshStatusPanel(i16 force) {
 RVA(0x0003e3c0, 0x1c1)
 GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
     i16 oldStep = ResetTextPlaneLineStep(g_infoPlane, 3);
-    i16 x;
-    i16 y;
-    i16 column;
+    i16 cellColumn;
+    i16 row;
+    i16 wordColumn;
     i16 lineStep;
     i16 slot;
     SetTextPlaneHighlightMode(0, TEXT_HIGHLIGHT_OUTER);
@@ -1195,10 +1195,10 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
         return PARTY_SLOT_POLL_CANCELLED;
     }
-    column = TextPlaneCellAt(g_infoPlane, g_mousePosition.x, g_mousePosition.y, &x, &y);
-    if (column == 0 || column == 39) {
+    wordColumn = TextPlaneCellAt(g_infoPlane, g_mousePosition.x, g_mousePosition.y, &cellColumn, &row);
+    if (wordColumn == 0 || wordColumn == 39) {
         lineStep = GetTextPlaneLineStep(g_infoPlane);
-        slot = y / lineStep + (column ? 3 : 0);
+        slot = row / lineStep + (wordColumn ? 3 : 0);
         slot = FilterPartySlotSelection(slot, mode);
     } else {
         slot = -1;
@@ -1210,7 +1210,7 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
     s_selectedPartySlot = slot;
     ClearTextPlaneHighlight(g_infoPlane);
     if (slot != -1) {
-        SetTextPlaneHighlight(g_infoPlane, column, y);
+        SetTextPlaneHighlight(g_infoPlane, wordColumn, row);
     }
     ResetTextPlaneLineStep(g_infoPlane, oldStep);
     return PARTY_SLOT_POLL_WAITING;
