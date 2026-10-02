@@ -226,6 +226,7 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
             src = ReadItemAttackParameters(record, src);
             record->params[0xa] = *src;
             record->params[0x10] = *src++;
+            // Both serialized bytes target this slot; the second value wins.
             record->params[0x31] = *src++;
             record->params[0x31] = *src++;
             src = ReadItemRestoreParameters(record, src);
