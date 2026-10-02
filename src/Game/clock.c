@@ -589,11 +589,8 @@ void DecodeAreaMap(AreaMap* map, u8* record) {
         level->defaultMusic = src->defaultMusic;
         level->roomBits = base + src->roomBitsOffset;
         if (i < map->levelCount - 1) {
-            memcpy(
-                level + 1,
-                src + 1,
-                offsets[1] - offsets[0]
-            );
+            size_t span = offsets[1] - offsets[0];
+            memcpy(level + 1, src + 1, span);
         } else {
             memcpy(level + 1, src + 1, sizeof s_areaRecord - offsets[0]);
         }
