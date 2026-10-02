@@ -2001,7 +2001,7 @@ scriptvars	_OpGetWindowScrollStep	100.0000	100.0000	1	ast4:483127971268	0x3ae60	
 scriptvars	_OpGetWindowScrollTop	100.0000	100.0000	1	ast4:6e70c8f5fd58	0x3adc0	100.0000	
 scriptvars	_OpHideSprite	100.0000	100.0000	2	ast4:408417758d19	0x3a350	100.0000	
 scriptvars	_OpMaskScreenCells	100.0000	100.0000	1	ast4:50fa373044c5	0x3a5b0	100.0000	
-scriptvars	_OpNextChoice	91.4845	91.4845	9	ast4:502b624db2da	0x3a870	91.4845	
+scriptvars	_OpNextChoice	91.4845	91.4845	10	ast4:6dc1cef3c700	0x3a870	91.4845	
 scriptvars	_OpPauseTickCounter	100.0000	100.0000	1	ast4:150bc7f33631	0x3bb40	100.0000	
 scriptvars	_OpPeekPokeScratch	100.0000	100.0000	2	ast4:bf5ba6de5632	0x3bd40	100.0000	
 scriptvars	_OpPlayAnimation	100.0000	100.0000	1	ast4:6fad5d71ee44	0x3a6e0	100.0000	

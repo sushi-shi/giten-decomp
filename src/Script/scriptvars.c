@@ -400,7 +400,7 @@ RVA(0x0003a870, 0x12e)
 b16 OpNextChoice(i16 window) {
     i16 x, y;
     ScriptChoice* choice = s_choices;
-    TextPoint size = GetTextPlaneSize(window);
+    const TextPoint size = GetTextPlaneSize(window);
     const i16 lineStep = GetTextPlaneLineStep(window);
     FinishScriptChoice(window);
     for (;;) {
