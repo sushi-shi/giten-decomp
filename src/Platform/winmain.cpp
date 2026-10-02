@@ -3791,8 +3791,6 @@ static u16 s_wallQuadIndices[6] = {0, 1, 3, 0, 3, 2};
 // the party (wrapping around the map edge in the areas that wrap): each
 // nonzero wall side except WALL_KIND_INVISIBLE_BARRIER becomes a quad textured
 // with the wall quarter (kinds up to 2 and 11) or the door quarter of the atlas.
-// @early-stop register selection: the wrapped-start LEAs exchange base/index
-// operands; their addresses and the ordered referents agree.
 RVA(0x0004f780, 0x40b)
 void BuildRoomGeometry(void) {
     i32 partyX;
