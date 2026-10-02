@@ -2246,12 +2246,12 @@ i16 DistributeGunRounds(const i16 rounds, const i16 count) {
     const u8 (*table)[GUN_BURST_MAX_TARGETS];
     i16 index;
     i16 remaining;
-    i16 share;
     memset(s_gunRounds, 0, sizeof(s_gunRounds));
     memset(s_gunPower, 0, sizeof(s_gunPower));
     table = HandleReadPtr(s_gunDistribution);
     remaining = rounds;
     for (index = 0; index < count; index++) {
+        i16 share;
         const u8 (*nextRow)[GUN_BURST_MAX_TARGETS] = table + count;
         const i32 weightedRounds = rounds * nextRow[-1][index];
         if (weightedRounds == 0 || remaining < 1) {
