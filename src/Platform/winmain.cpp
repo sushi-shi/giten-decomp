@@ -683,14 +683,15 @@ void StepScreenFade(void) {
     }
     s_screenCovered = false;
     s_fadeCountdown = s_fadeSteps;
+    alpha = s_fadeAlpha;
     if (IsScreenFadeIn(g_fadeMode)) {
-        if (s_fadeAlpha <= 0) {
+        if (alpha <= 0) {
             g_fadeMode = SCREEN_FADE_NONE;
             return;
         }
-        alpha = s_fadeAlpha - 17;
+        alpha -= 17;
     } else {
-        if (s_fadeAlpha >= 0xff) {
+        if (alpha >= 0xff) {
             g_fadeMode = SCREEN_FADE_NONE;
             s_screenCovered = true;
             SetScreenFadeAlpha(0xff);
@@ -699,7 +700,7 @@ void StepScreenFade(void) {
             }
             return;
         }
-        alpha = s_fadeAlpha + 17;
+        alpha += 17;
     }
     SetScreenFadeAlpha(alpha);
 }
