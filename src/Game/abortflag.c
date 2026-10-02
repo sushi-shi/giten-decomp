@@ -240,11 +240,11 @@ static __inline b32 IsSceneObjectVisible(void* object, i16 kind) {
 // Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it.
 RVA(0x00045930, 0x1b7)
 i16 DrawSceneSprite(
-    i16 mode,
+    const i16 mode,
     SceneSprite* sprite,
     void* object,
     GZ_ENUM_PARAM(SceneHotspotKind, i16) kind,
-    i16 centered
+    const i16 centered
 ) {
     i16 x;
     i16 y;
