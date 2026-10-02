@@ -590,9 +590,8 @@ void OpReadRecordInt(void) {
 }
 
 // The same at `offset` into the data itself.
-// @early-stop: retail keeps the value in ecx and a pointer (data + offset +
-// size, decremented per byte) in edx; this spelling swaps the two registers
-// and the permuter's search is flat.
+// @early-stop register allocation: retail keeps the value in ECX and the
+// descending byte pointer in EDX; this caller assigns them oppositely.
 RVA(0x0002f950, 0x93)
 void OpReadDataInt(void) {
     i16 array = ReadLongVarIndex();
