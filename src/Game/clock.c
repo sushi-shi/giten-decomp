@@ -540,10 +540,6 @@ void LoadAreaMap(i16 area, i16 level) {
 
 // Decodes the area-map record into `map`: the name, then each level's header
 // (its list offsets rebased to pointers) and its data.
-// @early-stop register allocation: retail keeps the level index in bp and the
-// record in edx, spilling `map` (so the two data copies stay unmerged); every
-// ordering and local tried (offset/src/base locals, declaration order, shift
-// source, a next-index local) keeps `map` in ebx and spills the index.
 RVA(0x00021470, 0x206)
 void DecodeAreaMap(AreaMap* map, u8* record) {
     const AreaRecord* head = (const AreaRecord*)record;
@@ -551,7 +547,7 @@ void DecodeAreaMap(AreaMap* map, u8* record) {
     i16 i;
     map->name = (char*)record + head->nameOffset;
     map->levelCount = head->levelCount;
-    headerGrowth = map->levelCount * 2 + 2;
+    headerGrowth = (map->levelCount + 1) * sizeof(u16);
     for (i = 0; i < map->levelCount; i++) {
         const u16* offsets = head->levelOffsets + i;
         const AreaLevelRecord* src = (const AreaLevelRecord*)(record + offsets[0]);
