@@ -494,7 +494,7 @@ i32 ReleaseImageBlockHandle(i32 handle) {
 
 RVA(0x000033f0, 0x41)
 i32 CopySpriteBitmap(SpriteBitmap* image) {
-    i32 size = image->width * image->height * 2 + sizeof(SpriteBitmap);
+    i32 size = image->height * image->width * 2 + sizeof(SpriteBitmap);
     i32 handle = AllocHandle(size);
     void* copy = HandleWritePtr(handle);
     u16 copySize = size;
