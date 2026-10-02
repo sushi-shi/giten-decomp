@@ -24,7 +24,7 @@ ordered relocations before changing their source.
 | `0x04cb30` | `RenderEnemy` | Retail loads both billboard axes twice, calculates the four far-corner products before storing, then copies far Z to near Z with integer moves. The source now expresses far-corner ownership explicitly; MSVC still emits an early X store/reload, leaving an x87 scheduling residue. |
 | `0x04e090` | `DrawSceneSprites` | Retail walks pointers to sprite-slot frame words in `ebx`; current source recomputes the indexed slot. Replacing all indexed uses with a `SpriteSlot*` local changes the loop substantially, so the pointer's lifetime and access boundary need a narrower reconstruction. |
 | `0x002a00` | `LatchMouseClicks` | Retail loads a 32-bit word from the position's Y half and then a 16-bit X; the current compiler loads a 16-bit Y and 32-bit X. Whole-structure copying changes more code. The storage layout and caller semantics should decide the access shape. |
-| `0x0563b0` | `CMidiStream::SetVolume` | The all-channel MIDI loop has matching messages, branches and calls, but retail forms the message in `eax` and holds the output handle in `edx`; the current compiler swaps them. Explicit handle/message locals compiled identically. |
+| `0x0563b0` | `CMidiStream::SetVolume` | The all-channel MIDI loop has matching messages, branches and calls, but retail forms the message in `eax` and holds the output handle in `edx`; the current compiler swaps them. Explicit handle/message locals compiled identically. An inline wrapper for the two MIDI-send sites changed the call shape, so the direct calls remain. |
 
 `@early-stop` comments at most sites carry the shorter local rationale. This
 list keeps the cross-function evidence and the rejected probes together.
