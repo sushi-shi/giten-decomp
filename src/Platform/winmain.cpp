@@ -5217,8 +5217,6 @@ HINSTANCE g_instance;
 // .bss (0x490ae8, 0x490aec); their declaration is unrecovered.
 RVA(0x00050f50, 0x1ad)
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int show) {
-    MSG message;
-
     if (FindWindow("CLASSSDDSWIN", "DDSWIN")) {
         return 0;
     }
@@ -5255,6 +5253,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
         );
         return 3;
     }
+    MSG message;
     DWORD nextTick = 0;
     for (;;) {
 #ifdef GITEN_COMPAT
