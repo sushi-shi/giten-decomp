@@ -72,7 +72,7 @@ b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
 }
 
 RVA(0x0000ac50, 0x1ce)
-i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
+i32 ComputeSkillDamage(Character* attacker, Character* target, b16 hit) {
     SkillHeader* skill;
     i16 skillPower;
     i16 power;
@@ -171,7 +171,7 @@ ApplySkillResistanceOutcome(Character* attacker, i32 amount) {
 RVA(0x0000afb0, 0x13e)
 b16 ResolveSkillAttack(Character* attacker, Character* target) {
     GZ_ENUM_LOCAL(AttackMode, u16) mode = GetSkillMode(attacker->pickTarget);
-    i16 hit;
+    b16 hit;
     i32 damage;
     if (mode == ATTACK_WEAPON) {
         if (g_targetId >= 0) {
