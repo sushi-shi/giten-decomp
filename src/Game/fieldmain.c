@@ -691,8 +691,6 @@ i16 TickFieldSteps(void) {
 // phases; push 0 in phase 3). Call and branch counts and ordered referents match.
 RVA(0x00012d20, 0x88c)
 b16 RunFieldExploration(void) {
-    i16 count;
-
     if (GetGamePhase() != FIELD_PHASE_LOAD_AREA) {
         if (GetRenderMode() == RENDER_MODE_PANEL
             && g_worldMapRequest == WORLD_MAP_REQUEST_SAVED_SPOT) {
@@ -847,7 +845,7 @@ b16 RunFieldExploration(void) {
                 return FlushFieldScreen();
             }
             if (g_fieldBattleActive) {
-                count = CountFieldObjects();
+                i16 count = CountFieldObjects();
                 if (count <= 0) {
                     if (count < 0) {
                         s_eventRunning = true;
