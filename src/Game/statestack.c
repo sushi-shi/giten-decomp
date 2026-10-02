@@ -2069,7 +2069,8 @@ static i16* BuildStatWeightRanges(Character* character, i16* ranges) {
             if (GetBaseStat(character, stat) == 0) {
                 *range = ++total;
             } else {
-                *range = total += GetBaseStat(character, stat) * 10;
+                total += GetBaseStat(character, stat) * 10;
+                *range = total;
             }
         }
     }
