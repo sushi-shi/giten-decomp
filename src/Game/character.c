@@ -706,7 +706,7 @@ i32 CalcMagicPowerStat(i16* stats, i16 amount) {
 
 RVA(0x0003d510, 0x1e)
 i32 CalcMagicEvasionStat(i16* stats, i16 bonus) {
-    i16 sum = stats[4] + stats[3];
+    i16 sum = stats[STAT_PROTECTION] + stats[STAT_INTELLIGENCE];
     return ClampTo999(sum / 2);
 }
 
