@@ -2710,11 +2710,7 @@ static __inline void SelectItemUserAsTarget(void) {
 // cl across the action and target stores. Both preserve pickTargetHigh.
 RVA(0x0001a400, 0x3e0)
 b16 RunItemUse(void) {
-    const ItemRecord* record;
-    i16 flags;
-    i16 range;
     i16 kind;
-    i16 picked;
 
     switch (GetGamePhase()) {
         case ITEM_USE_PHASE_OPEN:
@@ -2731,7 +2727,8 @@ b16 RunItemUse(void) {
             s_useMemberId = -1;
             return false;
 
-        case ITEM_USE_PHASE_PICK_ITEM:
+        case ITEM_USE_PHASE_PICK_ITEM: {
+            i16 picked;
             picked = RunListMenu(s_itemMenu);
             if (picked == LIST_MENU_CANCELLED) {
                 PrevGamePhase();
@@ -2744,8 +2741,13 @@ b16 RunItemUse(void) {
             NextGamePhase();
             s_usePosition = FindFirstAbleMemberPosition();
             return false;
+        }
 
-        case ITEM_USE_PHASE_PICK_TARGET:
+        case ITEM_USE_PHASE_PICK_TARGET: {
+            const ItemRecord* record;
+            i16 flags;
+            i16 range;
+            i16 picked;
             record = GetLoadedRecord(s_useItem);
             kind = record->kind;
             if (ItemUseInvokesSkill(kind)) {
@@ -2806,6 +2808,7 @@ b16 RunItemUse(void) {
             }
             g_targetId = g_selectedObjectId;
             return false;
+        }
 
         case ITEM_USE_PHASE_DESTROY_MENU:
             NextGamePhase();
@@ -2814,6 +2817,7 @@ b16 RunItemUse(void) {
 
         case ITEM_USE_PHASE_PROMPT_ACTION: {
             Character* user;
+            const ItemRecord* record;
             i16 position;
             NextGamePhase();
             position = FindPartyPositionOfId(s_useMemberId);
