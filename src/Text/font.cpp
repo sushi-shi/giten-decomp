@@ -6141,7 +6141,7 @@ void ReleasePartyPanel(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, b32 dragged) {
         if (GetFieldBattleActive() && !GetTickElapsed()) {
             return;
         }
-        if (PickPartyMember(slot - SCREEN_LAYER_FIRST_PANEL) != PARTY_MEMBER_READY) {
+        if (PickPartyMember(slot - SCREEN_LAYER_FIRST_PANEL) <= PARTY_MEMBER_UNAVAILABLE) {
             return;
         }
         s_shownCharacter = GetPartyMemberId(slot - SCREEN_LAYER_FIRST_PANEL);
