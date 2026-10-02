@@ -2663,7 +2663,7 @@ winmain	?PollJoystick@@YAXXZ	100.0000	100.0000	1	ast4:3e742ec16180	0x4a0c0	100.0
 winmain	?PressPadButton@@YAXHH@Z	100.0000	100.0000	1	ast4:1909abad9206	0x4ad40	100.0000	
 winmain	?ReleaseGraphics@@YAXXZ	100.0000	100.0000	9	ast4:acdae81219e7	0x4a100	100.0000	
 winmain	?RenderBlankMode@@YAXH@Z	100.0000	100.0000	3	ast4:b069df9f5a25	0x4f010	100.0000	
-winmain	?RenderEnemy@@YAXHHH@Z	96.3467	96.3467	33	ast4:eb88ab8a9294	0x4cb30	96.3467	
+winmain	?RenderEnemy@@YAXHHH@Z	96.3467	96.3467	34	ast4:2796be6ce513	0x4cb30	96.3467	
 winmain	?RenderEventMode@@YAXH@Z	100.0000	100.0000	5	ast4:2e8505857145	0x4e910	100.0000	
 winmain	?RenderFieldMode@@YAXH@Z	100.0000	100.0000	4	ast4:4bfaf9c92db0	0x4ef30	100.0000	
 winmain	?RenderFieldView@@YAXH@Z	100.0000	100.0000	9	ast4:ab8e7eceb96b	0x4ea90	100.0000	
@@ -2701,7 +2701,7 @@ winmain	_AllocCleared	100.0000	100.0000	1	ast4:e76a2c7be95f	0x49640	100.0000
 winmain	_AllocClearedLong	100.0000	100.0000	1	ast4:353a5b795032	0x49680	100.0000	
 winmain	_AllowImmediateInput	100.0000	100.0000	2	ast4:62c8a85be6f8	0x49b80	100.0000	
 winmain	_CancelLayerDrag	100.0000	100.0000	2	ast4:1e623f29ec84	0x49780	100.0000	
-winmain	_ClearPendingNonNavigationRightClick	100.0000	100.0000	2	ast4:f7a7dfc943ba	0x4a090	100.0000	
+winmain	_ClearPendingNonNavigationRightClick	100.0000	100.0000	3	ast4:182ecdcfeb3f	0x4a090	100.0000	
 winmain	_CurrentMusicTrack	100.0000	100.0000	1	ast4:ac3102478e73	0x49b70	100.0000	
 winmain	_DebugTrace	100.0000	100.0000	1	ast4:d27298996680	0x49610	100.0000	
 winmain	_EndSaveRenderMode	100.0000	100.0000	2	ast4:2e11ecd22628	0x49be0	100.0000	
@@ -2713,7 +2713,7 @@ winmain	_GetScreenFade	100.0000	100.0000	2	ast4:843dd52f82ce	0x49e90	100.0000
 winmain	_GetSpriteMode	100.0000	100.0000	2	ast4:47d4fc55268a	0x49800	100.0000	
 winmain	_GetViewDirection	100.0000	100.0000	1	ast4:f91915cc6520	0x49790	100.0000	
 winmain	_GetWallCode	100.0000	100.0000	1	ast4:a6c40850caa1	0x4fb90	100.0000	
-winmain	_HasPendingNonNavigationRightClick	100.0000	100.0000	1	ast4:964a4e496d54	0x4a080	100.0000	
+winmain	_HasPendingNonNavigationRightClick	100.0000	100.0000	2	ast4:b7689829dfb2	0x4a080	100.0000	
 winmain	_HideBusyCursor	100.0000	100.0000	2	ast4:f465fcf1ef7b	0x49700	100.0000	
 winmain	_HideTextPlane	100.0000	100.0000	3	ast4:96e7385bd99b	0x4a0a0	100.0000	
 winmain	_InvalidateSelectedHotspot	100.0000	100.0000	1	ast4:137e93cf09e1	0x497c0	100.0000	
