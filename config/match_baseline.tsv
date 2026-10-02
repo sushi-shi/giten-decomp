@@ -550,7 +550,7 @@ fieldmain	_NextAutoMove	100.0000	100.0000	1	ast4:18b85de26f91	0x12b00	100.0000
 fieldmain	_PickAnalyzeTarget	100.0000	100.0000	2	ast4:46b180cee93d	0x12a80	100.0000	
 fieldmain	_PollFieldCommand	100.0000	100.0000	2	ast4:236c112a608f	0x135b0	100.0000	
 fieldmain	_PopAutoMove	100.0000	99.6667	2	ast4:6506c6f67e72	0x127c0	100.0000	
-fieldmain	_PushAutoMove	100.0000	99.3333	2	ast4:fd5c40a1cd7f	0x12760	100.0000	
+fieldmain	_PushAutoMove	99.3333	99.3333	3	ast4:2020c7258200	0x12760	100.0000	
 fieldmain	_QueueObjectEvent	100.0000	100.0000	1	ast4:ee754719cb8b	0x13bc0	100.0000	
 fieldmain	_RaiseObjectEvent	100.0000	100.0000	3	ast4:37d2bce22123	0x13b60	100.0000	
 fieldmain	_RecordWarpInLeader	100.0000	100.0000	3	ast4:6d887af90c2e	0x12980	100.0000	

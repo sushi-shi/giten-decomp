@@ -410,8 +410,7 @@ void PushAutoMove(u8 move) {
         GrowAutoMoves(1);
     }
     moves = HandleWritePtr(s_autoMoves);
-    moves[s_autoMoveCount] = move;
-    s_autoMoveCount++;
+    moves[s_autoMoveCount++] = move;
 }
 
 RVA(0x000127a0, 0x14)
