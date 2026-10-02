@@ -525,7 +525,7 @@ eventflags	_ToggleEventFlag	100.0000	100.0000	3	ast4:331619efc290	0x39370	100.00
 eventflags	_WriteEventFlags	100.0000	100.0000	1	ast4:c5c66d14cbc7	0x396f0	100.0000	
 eventflags	_WriteScriptVars	100.0000	100.0000	1	ast4:cbe75d9c0403	0x39750	100.0000	
 fieldmain	_AdvancePartyMove	100.0000	100.0000	5	ast4:3e617c039d5d	0x12280	100.0000	
-fieldmain	_BuildViewOcclusion	97.8235	97.8235	4	ast4:828d0a34a353	0x13f10	97.8235	
+fieldmain	_BuildViewOcclusion	97.8235	97.8235	5	ast4:bd71efa3b4f7	0x13f10	97.8235	
 fieldmain	_CancelFieldMap	100.0000	100.0000	2	ast4:5244d52f1a24	0x13600	100.0000	
 fieldmain	_CommitPartyStep	100.0000	100.0000	3	ast4:6a08daabe493	0x12510	100.0000	
 fieldmain	_FindExitDirection	100.0000	100.0000	1	ast4:497350ba125a	0x12a20	100.0000	

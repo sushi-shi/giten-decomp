@@ -689,8 +689,7 @@ i16 TickFieldSteps(void) {
 // @early-stop register allocation: retail keeps the constant 0 in esi for the
 // whole function (materialised before the phase test, which becomes cmp ax,si);
 // here cl materialises it per phase (test ax,ax; xor esi,esi in the later
-// phases; push 0 in phase 3). Calls, branches and every other instruction
-// match; a 32-island permute campaign is flat.
+// phases; push 0 in phase 3). Call and branch counts and ordered referents match.
 RVA(0x00012d20, 0x88c)
 b16 RunFieldExploration(void) {
     i16 count;
@@ -1379,10 +1378,11 @@ void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
 #define MergeViewOcclusionEntry(masks, index)                                                      \
     MergeViewOcclusionMask(HandleReadPtr(s_eventTable), (index), (masks) + (index))
 
-// @early-stop: direction/index exchange esi/edi and the direction load follows
-// the clears. A facing snapshot and TU-state controls leave this allocation flat.
+// @early-stop register allocation: retail holds direction in esi and index in
+// edi; here those registers are exchanged and direction loads after the clears.
+// Calls, branch destinations and ordered referents agree.
 RVA(0x00013f10, 0x183)
-void BuildViewOcclusion(i16 x, i16 y, i16 direction, i16 mode) {
+void BuildViewOcclusion(i16 x, i16 y, i16 direction, i16 unused) {
     i16 along;
     i16 across;
     i16 opposite;
