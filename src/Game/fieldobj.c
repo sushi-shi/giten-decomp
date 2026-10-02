@@ -1512,7 +1512,8 @@ b16 StepObjectTowardParty(
         direction = TurnDirection(direction, turn);
         SetObjectDirection(object, direction, turned);
         if (!DistanceFromParty(x, y) && stop == OBJECT_PARTY_CELL_STOP) {
-            return RefreshIfTurned(visible, turned);
+            b16 refreshed = RefreshIfTurned(visible, turned);
+            return refreshed;
         }
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
             StepMapCoord(&x, &y, object->direction, MOVE_FORWARD);
