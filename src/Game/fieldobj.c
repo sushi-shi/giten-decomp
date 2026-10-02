@@ -1947,7 +1947,7 @@ i16 GetDemonCount(void) {
 
 RVA(0x00010080, 0x19)
 GZ_ENUM_RETURN(DemonClass, i16) GetRaceClass(GZ_ENUM_PARAM(DemonRace, i16) race) {
-    u8* classes = HandleReadPtr(s_raceClasses);
+    const u8* classes = HandleReadPtr(s_raceClasses);
     return classes[race];
 }
 
