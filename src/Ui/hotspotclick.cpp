@@ -34,10 +34,10 @@ b32 ClickHotspotAt(i32 x, i32 y) {
             || candidate->rect.top > y || candidate->rect.bottom <= y) {
             continue;
         }
-        Texture* texture = candidate->texture;
-        u8* pixels = GetBitmapPixels(texture->image);
-        u32 width = texture->width;
-        u32 height = min(256, width);
+        const Texture* texture = candidate->texture;
+        const u8* pixels = GetBitmapPixels(texture->image);
+        const u32 width = texture->width;
+        const u32 height = min(256, width);
         i32 u = (x - candidate->rect.left) * width
             / (candidate->rect.right - candidate->rect.left);
         i32 v = height
