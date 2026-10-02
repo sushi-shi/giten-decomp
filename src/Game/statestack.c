@@ -2716,7 +2716,7 @@ static __inline void SelectItemUserAsTarget(void) {
 // flags update after the store, the statement order PC-98 shows.
 RVA(0x0001a400, 0x3e0)
 b16 RunItemUse(void) {
-    ItemRecord* record;
+    const ItemRecord* record;
     Character* user;
     i16 flags;
     i16 range;
