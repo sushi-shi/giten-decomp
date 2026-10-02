@@ -2021,7 +2021,6 @@ i16 PollEquipPart(i16 member, i16 mode) {
     } else if (mode < EQUIP_PICK_CLEAR) {
         i16 x;
         i16 y;
-        i16 part;
         if (s_equipPickPart >= 0 && g_mouseLeftClick) {
             return s_equipPickPart;
         }
@@ -2029,7 +2028,7 @@ i16 PollEquipPart(i16 member, i16 mode) {
         if (x >= 0 && x < 0x15) {
             y = (g_mousePosition.y - 40) / 8 - 3;
             if (y >= 0 && y % 4 != 2 && y % 4 != 3) {
-                part = y / 4;
+                const i16 part = y / 4;
                 if (part < EQUIP_SLOT_COUNT) {
                     if (s_equipPickPart == part) {
                         return EQUIP_PART_NONE;
