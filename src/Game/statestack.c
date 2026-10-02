@@ -1711,14 +1711,14 @@ b16 ApplyLevelStatGrowth(Character* character) {
 
 // Nonzero when one more point would take `stat` past its cap.
 RVA(0x000189d0, 0x24)
-i16 IsStatCapped(Character* character, i16 stat) {
+i16 IsStatCapped(const Character* character, i16 stat) {
     i16 raised = GetBaseStat(character, stat) + 1;
     return raised - ClampTo100(raised);
 }
 
 // How many of the ten stats can still take a point.
 RVA(0x00018a00, 0x2b)
-i16 CountRaisableStats(Character* character) {
+i16 CountRaisableStats(const Character* character) {
     i16 count = 0;
     i16 i;
     for (i = 0; i < STAT_FORTUNE; i++) {
@@ -1730,7 +1730,7 @@ i16 CountRaisableStats(Character* character) {
 // `stat`, or a random stat when negative, re-rolled until one can take a
 // point; -1 when none can.
 RVA(0x00018a30, 0x67)
-i16 ResolveRaisableStat(Character* character, i16 stat) {
+i16 ResolveRaisableStat(const Character* character, i16 stat) {
     if (!CountRaisableStats(character)) {
         return -1;
     }
@@ -2040,10 +2040,10 @@ void ShowStatPointPrompt(i16 points) {
     RepaintTextPlane(s_pointPrompt, -2);
 }
 
-static i16* BuildStatWeightRanges(Character* character, i16* ranges);
+static i16* BuildStatWeightRanges(const Character* character, i16* ranges);
 
 RVA(0x00019370, 0x5e)
-i16 RollWeightedStat(Character* character) {
+i16 RollWeightedStat(const Character* character) {
     i16 stat;
     i16 draw;
     if (BuildStatWeightRanges(character, s_statPicks) == NULL) {
@@ -2062,7 +2062,7 @@ i16 RollWeightedStat(Character* character) {
 // rotate across ebx, esi and edi. Calls, branches, stores and arithmetic
 // align; cursor initialization order does not change the allocation.
 RVA(0x000193d0, 0x9a)
-static i16* BuildStatWeightRanges(Character* character, i16* ranges) {
+static i16* BuildStatWeightRanges(const Character* character, i16* ranges) {
     i16 total = 0;
     i16* range;
     i16 stat;
