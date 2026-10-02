@@ -3654,13 +3654,12 @@ void RedrawTextPlane(i16 plane) {
 // plane pointer. The attribute and next-position registers are swapped.
 RVA(0x00051e40, 0xa6)
 void RedrawTextRun(i16 plane, i16 x, i16 y, i16 count) {
-    const TextPlane* p;
     i16 px = x * 8;
 
     if (plane == TEXT_PLANE_NONE) {
         return;
     }
-    p = GetTextPlane(plane);
+    const TextPlane* const p = GetTextPlane(plane);
     count += x;
     while (x < count) {
         DrawNextTextCell(plane, p, x, y, px);
