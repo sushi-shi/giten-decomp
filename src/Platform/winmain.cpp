@@ -1982,12 +1982,12 @@ void RenderNPC(BOOL ownCellOnly) {
         dx = (cellX - partyX) * 320 + offsetX;
         dz = (partyY - cellY) * 320 + offsetZ;
         s_npc[1].x = -g_billboardX * DATA_COMPGEN(0x00064a98, 128.0);
-        s_npc[2].x = -g_billboardX * 128.0;
         s_npc[1].z = -g_billboardZ * 128.0;
+        s_npc[2].x = -g_billboardX * 128.0;
         s_npc[2].z = -g_billboardZ * 128.0;
         s_npc[0].x = g_billboardX * 128.0;
-        s_npc[3].x = g_billboardX * 128.0;
         s_npc[0].z = g_billboardZ * 128.0;
+        s_npc[3].x = g_billboardX * 128.0;
         s_npc[3].z = g_billboardZ * 128.0;
         TranslateBillboard(s_npc, dx, dz);
         if (g_deviceType != D3D_DEVICE_RAMP && !g_fixedLighting) {
