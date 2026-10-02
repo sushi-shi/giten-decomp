@@ -1383,13 +1383,13 @@ void BuildViewOcclusion(i16 x, i16 y, i16 direction, i16 unused) {
     i16 along;
     i16 across;
     i16 opposite;
-    i16 index;
-    u16 wall;
     memset(g_leftViewOcclusion, 0, sizeof(g_leftViewOcclusion));
     memset(g_rightViewOcclusion, 0, sizeof(g_rightViewOcclusion));
     for (along = 0; along >= -3; along--) {
         opposite = 0;
         for (across = 0; across <= 3; opposite--, across++) {
+            i16 index;
+            u16 wall;
             index = (-along) * 4 + across;
             wall = GetWallAtOffset(x, y, direction, across, along);
             if (GetCellWallStop(direction, 0, wall)) {
