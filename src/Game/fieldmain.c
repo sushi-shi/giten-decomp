@@ -1386,21 +1386,24 @@ void BuildViewOcclusion(i16 x, i16 y, const i16 direction, i16 unused) {
         opposite = 0;
         for (across = 0; across <= 3; opposite--, across++) {
             i16 index;
-            u16 wall;
             index = (-along) * 4 + across;
-            wall = GetWallAtOffset(x, y, direction, across, along);
-            if (GetCellWallStop(direction, 0, wall)) {
-                MergeViewOcclusionEntry(g_rightViewOcclusion, index + 16);
+            {
+                const u16 rightWall = GetWallAtOffset(x, y, direction, across, along);
+                if (GetCellWallStop(direction, 0, rightWall)) {
+                    MergeViewOcclusionEntry(g_rightViewOcclusion, index + 16);
+                }
+                if (GetCellWallStop(direction, 1, rightWall)) {
+                    MergeViewOcclusionEntry(g_rightViewOcclusion, index);
+                }
             }
-            if (GetCellWallStop(direction, 1, wall)) {
-                MergeViewOcclusionEntry(g_rightViewOcclusion, index);
-            }
-            wall = GetWallAtOffset(x, y, direction, opposite, along);
-            if (GetCellWallStop(direction, 0, wall)) {
-                MergeViewOcclusionEntry(g_leftViewOcclusion, index + 16);
-            }
-            if (GetCellWallStop(direction, 3, wall)) {
-                MergeViewOcclusionEntry(g_leftViewOcclusion, index);
+            {
+                const u16 leftWall = GetWallAtOffset(x, y, direction, opposite, along);
+                if (GetCellWallStop(direction, 0, leftWall)) {
+                    MergeViewOcclusionEntry(g_leftViewOcclusion, index + 16);
+                }
+                if (GetCellWallStop(direction, 3, leftWall)) {
+                    MergeViewOcclusionEntry(g_leftViewOcclusion, index);
+                }
             }
         }
     }
