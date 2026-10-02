@@ -1084,7 +1084,7 @@ i16 RunEquipScreen(i16 key) {
                 ClearItemSlot(&slot);
                 SetEquipSlot(g_statusMember, s_equipPage.pick, slot, 0);
                 if (s_equipPage.pick == EQUIP_PART_GUN) {
-                    s_equipPage.pick = 2;
+                    s_equipPage.pick = EQUIP_PART_AMMO;
                 }
             }
             if (s_equipPage.pick == EQUIP_PART_AMMO) {
