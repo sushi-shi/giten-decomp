@@ -396,19 +396,18 @@ b16 FinishScriptChoice(i16 window) {
     return false;
 }
 
-// @early-stop CFG: retail spills the choice cursor across scrolling and has
-// separate entry and back-edge jumps for the choice walk. This body preserves
-// the cursor behavior, but cl merges those edges and retains it in edi.
 RVA(0x0003a870, 0x12e)
 b16 OpNextChoice(i16 window) {
     i16 x, y;
+    i16 columns;
     ScriptChoice* choice = s_choices;
     TextPoint size = GetTextPlaneSize(window);
     i16 lineStep = GetTextPlaneLineStep(window);
     FinishScriptChoice(window);
     for (;;) {
-        x = (s_choiceIndex % s_choiceColumns) * s_choiceColumnWidth;
-        y = s_choiceIndex / s_choiceColumns;
+        columns = s_choiceColumns;
+        x = (s_choiceIndex % columns) * s_choiceColumnWidth;
+        y = s_choiceIndex / columns;
         x += GetActiveTextPlaneIndent(window);
         y = lineStep * y + s_choiceTop;
         if (y < size.y) {
