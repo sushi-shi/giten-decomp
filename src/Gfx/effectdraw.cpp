@@ -51,9 +51,6 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     i16 right;
     i16 top;
     i16 bottom;
-    i32 width;
-    i32 height;
-    u16 dimensions;
     RECT dest;
     RECT source;
     float scaleX;
@@ -78,9 +75,9 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     CacheEffectFrame(bmp, code);
     left = GetEffectBitmapOffsetX(bmp) * 8;
     top = GetEffectBitmapOffsetY(bmp) * 8;
-    dimensions = bmp->file.bfReserved2;
-    width = LOBYTE(dimensions) * 8;
-    height = HIBYTE(dimensions) * 8;
+    const u16 dimensions = bmp->file.bfReserved2;
+    const i32 width = LOBYTE(dimensions) * 8;
+    const i32 height = HIBYTE(dimensions) * 8;
     if (code.mirrorHorizontal) {
         left = -1 - left;
         right = left - width + 1;
