@@ -357,7 +357,7 @@ void SetRotateZMatrix(D3DMATRIX& m, D3DVALUE degrees) {
 }
 
 // @early-stop operand order: the homogeneous row's direct expression preserves
-// the retail divide schedule, but cl emits its products x, z, y instead of
+// the retail divide schedule, but cl emits its products z, y, x instead of
 // the source's y, z, x order.
 RVA(0x00046060, 0x1cb)
 void ProjectVector(D3DMATRIX* matrix, D3DVECTOR* in, D3DVECTOR* out) {
