@@ -4489,9 +4489,6 @@ void MoveTextPlaneCursorToPrevLine(i16 plane) {
 
 // Moves the text rows below the header up by one line step, blanks the freed
 // line and moves the cursor up with it.
-// @early-stop register residue: the attribute rows' index (row + step) is
-// formed in edi in retail and in edx here; every call matches. Size and
-// clamp spellings tried.
 RVA(0x00053190, 0x118)
 void ScrollTextPlaneText(i16 plane) {
     TextPlane* p;
