@@ -454,7 +454,7 @@ i16 ResolveCombatAction(void) {
     Character* attacker;
     Character* target;
     CurMax* targetHp;
-    i16 fatal;
+    GZ_ENUM_LOCAL(ConditionId, i16) initialFatalCondition;
     i16 hit;
     i16 kind;
 
@@ -472,7 +472,7 @@ i16 ResolveCombatAction(void) {
     s_actorHpBefore = attacker->pools.hp.cur;
     s_targetHpBefore = target->pools.hp.cur;
     targetHp = &target->pools.hp;
-    fatal = GetFatalCondition(GetCharacterConditions(target));
+    initialFatalCondition = GetFatalCondition(GetCharacterConditions(target));
     if (attacker->id == OBJECT_RECORD_MARDUK && target->id == OBJECT_RECORD_PRIMROSE) {
         SetFieldCounts(-2, -2);
     }
@@ -519,7 +519,7 @@ i16 ResolveCombatAction(void) {
     if (g_hpChange >= 0x7fff) {
         g_actionResult = BATTLE_ACTION_LETHAL;
     }
-    if (fatal && GetFatalCondition(GetCharacterConditions(target))) {
+    if (initialFatalCondition && GetFatalCondition(GetCharacterConditions(target))) {
         SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
         g_statusCondition = INFLICT_NONE;
         attacker->lastChange = 0;
