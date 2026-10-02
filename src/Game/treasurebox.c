@@ -2545,15 +2545,6 @@ RVA(0x0001e520, 0x1d0)
 i16 LoadAutomapAreas(FILE* fp) {
     i16 errors;
     i16 area;
-    i16 level;
-    i16 count;
-    i16 bytes;
-    i32 handle;
-    i32 bitmap;
-    AutomapLevelHeader levelHeader;
-    AutomapBitmapHeader bitmapHeader;
-    AutomapLevels* levels;
-    AutomapBitmap* data;
     StoreAutomapLevel();
     FreeAutomap();
     EnsureAutomapStore();
@@ -2564,7 +2555,12 @@ i16 LoadAutomapAreas(FILE* fp) {
     }
     for (area = 0; area < MAP_AREA_COUNT; area++) {
         if (GetAutomapAreaHandle(area)) {
-            size_t readCount = fread(&levelHeader, 4, 1, fp);
+            i16 level;
+            i16 count;
+            i32 handle;
+            AutomapLevelHeader levelHeader;
+            AutomapLevels* levels;
+            const size_t readCount = fread(&levelHeader, 4, 1, fp);
             errors += 1 - readCount;
             count = levelHeader.count;
             handle = CreateArrayHandle(GetAutomapLevelTableSize(count), 1);
@@ -2575,6 +2571,10 @@ i16 LoadAutomapAreas(FILE* fp) {
             for (level = 0; level < count; level++) {
                 levels = HandleWritePtr(handle);
                 if (GetAutomapLevelHandle(levels, level)) {
+                    i16 bytes;
+                    i32 bitmap;
+                    AutomapBitmapHeader bitmapHeader;
+                    AutomapBitmap* data;
                     errors += 1 - fread(&bitmapHeader, 8, 1, fp);
                     bitmap = CreateArrayHandle(GetAutomapBitmapSize(&bitmapHeader), 1);
                     data = HandleWritePtr(bitmap);
