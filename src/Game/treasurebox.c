@@ -2543,12 +2543,11 @@ i16 WriteAutomapAreas(FILE* fp) {
 
 RVA(0x0001e520, 0x1d0)
 i16 LoadAutomapAreas(FILE* fp) {
-    i16 errors;
+    i16 errors = MAP_AREA_COUNT;
     i16 area;
     StoreAutomapLevel();
     FreeAutomap();
     EnsureAutomapStore();
-    errors = MAP_AREA_COUNT;
     errors -= fread(s_areas, 4, MAP_AREA_COUNT, fp);
     if (errors) {
         return errors;
