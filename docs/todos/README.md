@@ -39,6 +39,8 @@ records the remaining fieldview, scene-sprite, and banked-exact encoding
 differences inspected in the current pass.
 [Game function matching walls](game-function-walls.md) records open field
 exploration, occlusion, and fusion source questions.
+[Battle matching boundaries](battle-matching.md) records the remaining gun
+distribution and skill-damage instruction differences.
 
 ## Layout and buffer boundaries
 
