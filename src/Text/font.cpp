@@ -3630,7 +3630,7 @@ i16 DrawTextCell(i16 plane, u16 code, u16 attr, i16 px, i16 y) {
 
 RVA(0x00051d80, 0xb4)
 void RedrawTextPlane(i16 plane) {
-    TextPlane* p;
+    const TextPlane* p;
     i16 y;
     i16 x;
     i16 px;
@@ -3654,7 +3654,7 @@ void RedrawTextPlane(i16 plane) {
 // plane pointer. The attribute and next-position registers are swapped.
 RVA(0x00051e40, 0xa6)
 void RedrawTextRun(i16 plane, i16 x, i16 y, i16 count) {
-    TextPlane* p;
+    const TextPlane* p;
     i16 px = x * 8;
 
     if (plane == TEXT_PLANE_NONE) {
