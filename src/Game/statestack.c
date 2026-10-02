@@ -2714,8 +2714,8 @@ static __inline void SelectItemUserAsTarget(void) {
 // pick its target (a skill-bearing item, kind 11 or 19, targets as its skill),
 // then hand the user's pick to the action prompt. Returns 0.
 // @early-stop instruction scheduling: in the final phase's skill arm retail
-// reads the pick flags into bl before storing pickTarget; cl here keeps the
-// flags update after the store, the statement order PC-98 shows.
+// reads pickFlags into bl after the skill byte; here the prior flags stay in
+// cl across the action and target stores. Both preserve pickTargetHigh.
 RVA(0x0001a400, 0x3e0)
 b16 RunItemUse(void) {
     const ItemRecord* record;
@@ -2829,12 +2829,14 @@ b16 RunItemUse(void) {
             record = GetLoadedRecord(s_useItem);
             kind = record->kind;
             if (ItemUseInvokesSkill(kind)) {
+                u8 previousFlags;
                 g_actorId = PartyCombatantId(position);
                 user->pickObject = g_targetId;
                 user->pickRole = PICK_ROLE_MAGIC;
+                previousFlags = user->pickFlags;
                 g_actionId = GetItemSkillId(record);
                 user->pickTarget = GetItemSkillId(record);
-                user->pickFlags |= PICK_ITEM_SKILL;
+                user->pickFlags = previousFlags | PICK_ITEM_SKILL;
                 user->pickItem = s_useItem;
             } else {
                 g_actorId = PartyCombatantId(position);
