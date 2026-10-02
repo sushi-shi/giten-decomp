@@ -1,0 +1,17 @@
+# Fieldview and small function differences
+
+These are concrete differences in the normalized retail/current instruction
+pairs. Recheck them with `giten walls diagnose <rva> --asm` after changing a
+source owner or translation-unit composition.
+
+| Retail RVA | Function | Remaining distinction |
+| --- | --- | --- |
+| `0x00cdc0` | `GetMouseWorldCell` | Staging the mouse position and block offset in a `MapCoord origin` matches every calculation through the final coordinate store. MSVC duplicates the return block (two returns versus retail's one). Updating the returned cell directly gives one return but changes the earlier mouse-coordinate register allocation and division schedule; aggregate initialization and a post-branch copy also lowered the match. Keep the staged coordinate ownership while looking for a source form with one shared exit. |
+| `0x00d2a0` | `GetFacingBit` | Retail loads the facing word into `cx` before shifting; current MSVC loads only its low byte into `cl`. The facing storage is a 16-bit direction and the shift observes only `cl`. Narrow and wide local/cast spellings tried so far retain the byte load. |
+| `0x045930` | `DrawSceneSprite` | Retail holds the object pointer in `ecx` on the nonzero-mode path, while current MSVC takes `eax` and reloads the pointer before its second visibility check. The resulting add uses the one-byte-shorter `eax` encoding and changes the later flag/offset register allocation. Its 8 calls, 15 branches, 3 returns, and 20 ordered referents agree. A redundant pointer alias compiled to the same state; simplifying the proven `TestFieldObjectFlag(...) != true` check to logical negation changed the code and scored lower. |
+| `0x015940` | `DrawPanel` | Retail and current instructions differ only in which panel fields load first within the text-cell expression. `ClearPanel` uses the same `GetPanelTextCell` macro and is exact. Reversing the two commutative additions in that macro compiled to the same current state in both callers. |
+| `0x02e1a0` | `FindSkillAffiliation` | The only normalized difference is one SIB byte: retail encodes the affiliation byte load with the character pointer as base and index in `ecx`; current MSVC swaps the two address operands. Calls, edges, and values agree. |
+| `0x002c70` | `ClearMaskSeam` | Its two mask-loop byte loads and `lea` instructions encode the commutative base/index operands in the opposite order. All instruction counts, branches, and referents agree; the existing bank reached 100 with the same source behavior. |
+
+The SIB-only rows and `DrawPanel` have banked exact matches, so a later
+translation-unit change may recover them without a local source edit.

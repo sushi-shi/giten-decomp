@@ -34,6 +34,9 @@ remaining live function TODOs and the evidence needed to close them.
 compiler and access-shape walls in memory, graphics, platform, text and sound.
 [Character function matching](character-function-matches.md) records the three
 remaining character-unit compiler walls and the rejected null-pointer shape.
+[Fieldview and small function differences](fieldview-small-function-matches.md)
+records the remaining fieldview, scene-sprite, and banked-exact encoding
+differences inspected in the current pass.
 
 ## Layout and buffer boundaries
 
