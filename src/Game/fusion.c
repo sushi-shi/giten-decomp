@@ -693,7 +693,7 @@ static __inline void ClassifyFusionSlot(
     i16* other,
     i16* otherCount
 ) {
-    i16 side = GetFusionPairSide(slot);
+    const i16 side = GetFusionPairSide(slot);
     if (side == 0) {
         secondary[(*secondaryCount)++] = slot;
     } else if (side == 1) {
@@ -713,13 +713,13 @@ static __inline void ClassifyFusionSlot(
 
 RVA(0x00027180, 0x1c0)
 i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
+    i16 result = FindPrimaryFusionComplement(first, second, third);
     i16 primary[3];
     i16 secondary[3];
     i16 other[3];
     i16 primaryCount;
     i16 secondaryCount;
     i16 otherCount;
-    i16 result = FindPrimaryFusionComplement(first, second, third);
     if (result <= 1) {
         result = FindSecondaryFusionComplement(first, second, third);
     }
