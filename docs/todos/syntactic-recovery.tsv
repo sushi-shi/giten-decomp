@@ -6,6 +6,7 @@ rva	unit	function	lost_max	cur
 0x010080	fieldobj	_GetRaceClass	100.0000	98.5714
 0x0113a0	fieldobj	_PickWorldEncounterGroup	100.0000	97.2414
 0x028380	fusion	_GetFusionRaceEntry	100.0000	88.3674
+0x027c30	fusion	_GetTripleFusionSummary	100.0000	96.7188
 0x059180	hotspotclick	_ClickHotspotAt	95.2963	92.8148
 0x01a400	itemuse	_RunItemUse	97.4486	97.3596
 0x03abc0	scriptvars	_ResizeScriptEntry	100.0000	98.0000

@@ -1022,7 +1022,7 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
     i16 resultLevel;
     u8 clampedLevel;
     FusionSummary summary;
-    FusionSummary* result = &summary;
+    FusionSummary* output = &summary;
     GetFusionResult(&demon, &kind);
     sourceLevel = GetRosterCharacter(first)->level;
     InitFusionSummary(&summary);
@@ -1035,8 +1035,8 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
     }
     clampedLevel = ClampLevel(GetDemonLevel(demon));
     resultLevel = clampedLevel;
-    result->fields.highFlag = GetDemonFlagHigh(demon);
-    result->fields.lowFlag = GetDemonFlagLow(demon);
+    output->fields.highFlag = GetDemonFlagHigh(demon);
+    output->fields.lowFlag = GetDemonFlagLow(demon);
     SetFusionSummaryKind(&summary, kind, resultLevel, sourceLevel);
     if (GetCharacter(0)->level + s_fusionLevelAllowance < resultLevel) {
         summary.fields.overLevel = 1;
