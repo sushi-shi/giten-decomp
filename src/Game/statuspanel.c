@@ -2021,8 +2021,7 @@ i16 PollEquipPart(i16 member, i16 mode) {
     if (mode < EQUIP_PICK_PART) {
         s_equipPickPart = EQUIP_PART_NONE;
         return EQUIP_PART_NONE;
-    }
-    if (mode < EQUIP_PICK_CLEAR) {
+    } else if (mode < EQUIP_PICK_CLEAR) {
         if (s_equipPickPart >= 0 && g_mouseLeftClick) {
             return s_equipPickPart;
         }
