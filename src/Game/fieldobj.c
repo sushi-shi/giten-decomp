@@ -1482,9 +1482,6 @@ GetPartySide(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
 // aside, retries once towards the party's side. Returns whether a visible
 // change was refreshed. The stop mode keeps an object already on the party's
 // cell from stepping away.
-// @early-stop tail merge: the two visible/turned refresh exits coalesce here;
-// retail keeps them separate. Shared loop breaks retain that merge, while
-// routing the successful move through the same exit merges all three sites.
 RVA(0x0000f290, 0x24d)
 b16 StepObjectTowardParty(
     FieldObject* object,
@@ -1493,7 +1490,7 @@ b16 StepObjectTowardParty(
 ) {
     i16 x;
     i16 y;
-    b16 visible;
+    i32 visible;
     b16 retried;
     i16 code;
     b16 turned;

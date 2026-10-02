@@ -718,7 +718,7 @@ fieldobj	_SetSpawnInterval	100.0000	100.0000	2	ast4:8941fab4e643	0xec60	100.0000
 fieldobj	_SpawnFieldObject	100.0000	100.0000	7	ast4:e1fe2db07c92	0xda40	100.0000	
 fieldobj	_SpawnMapObject	100.0000	100.0000	2	ast4:cd78d8601330	0xdbf0	100.0000	
 fieldobj	_SpawnRandomEnemy	100.0000	100.0000	2	ast4:996531d51e1a	0xeca0	100.0000	
-fieldobj	_StepObjectTowardParty	81.7016	81.7016	8	ast4:3efb388c65e6	0xf290	81.7016	
+fieldobj	_StepObjectTowardParty	83.5707	83.5707	9	ast4:3899f037f317	0xf290	83.5707	
 fieldobj	_TestWorldEncounterChance	100.0000	100.0000	4	ast4:ac79802a1d72	0x11220	100.0000	
 fieldobj	_TickEnemySpawnTimer	100.0000	100.0000	3	ast4:de014e87bb01	0xee20	100.0000	
 fieldobj	_TraceSight	100.0000	100.0000	3	ast4:efc7edf8b1df	0xee70	100.0000	
