@@ -41,6 +41,9 @@ differences inspected in the current pass.
 exploration, occlusion, and fusion source questions.
 [Battle matching boundaries](battle-matching.md) records the remaining gun
 distribution and skill-damage instruction differences.
+[Banked exact function differences](banked-exact-function-dips.md) records
+current codegen differences in functions that matched exactly in an earlier
+source or translation-unit state.
 
 ## Layout and buffer boundaries
 
