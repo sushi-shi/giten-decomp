@@ -1131,7 +1131,7 @@ i16 GetWarpCodeAtOffset(i16 dx, i16 dy) {
 // place or x/dx and dy/y mixes each lose more.
 RVA(0x00022460, 0xd4)
 i16 GetCellAtOffset(i16 dx, i16 dy) {
-    AreaLevel* level = g_areaLevel;
+    const AreaLevel* level = g_areaLevel;
     const MapPosition* position;
     if (level == NULL) {
         return 0;
