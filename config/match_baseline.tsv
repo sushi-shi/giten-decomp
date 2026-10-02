@@ -1878,8 +1878,8 @@ scriptfield	_OpEnterFieldMap	100.0000	100.0000	1	ast4:d7ce906b73a4	0x324b0	100.0
 scriptfield	_OpGetBattleOutcome	100.0000	100.0000	1	ast4:484c926321b2	0x326e0	100.0000	
 scriptfield	_OpIfBattleResult	100.0000	100.0000	1	ast4:6eef2c9689e5	0x325b0	100.0000	
 scriptfield	_OpIfEventObjectIs	97.9167	97.9167	2	ast4:c1953a51776f	0x32560	97.9167	
-scriptfield	_OpIfInBattle	97.8571	97.8571	3	ast4:808ea84ce7d1	0x326a0	97.8571	
-scriptfield	_OpIfStatusPositive	97.7500	97.7500	2	ast4:04e5f33f73d5	0x32660	97.7500	
+scriptfield	_OpIfInBattle	97.8571	97.8571	4	ast4:77449e83a3d8	0x326a0	97.8571	
+scriptfield	_OpIfStatusPositive	97.7500	97.7500	3	ast4:c697f3213d98	0x32660	97.7500	
 scriptfield	_OpSetFieldOption	100.0000	100.0000	1	ast4:0f9a1829db37	0x32700	100.0000	
 scriptfield	_OpSetFieldParams	100.0000	100.0000	1	ast4:fafde4f73e74	0x32710	100.0000	
 scriptop	_OpIfFlags	100.0000	100.0000	1	ast4:6540ec4fe81c	0x2feb0	100.0000	

@@ -79,7 +79,7 @@ i16 OpCountObjectsAt(void) {
 RVA(0x00032660, 0x39)
 void OpIfStatusPositive(i16 invert) {
     i16 target = ReadBranchTarget();
-    i16 status = g_statusCondition;
+    const i16 status = g_statusCondition;
     b32 matches = false;
     if ((status > 0 && !invert) || (status == INFLICT_NONE && invert)) {
         matches = true;
@@ -93,8 +93,9 @@ RVA(0x000326a0, 0x3b)
 void OpIfInBattle(void) {
     i16 target = ReadBranchTarget();
     i16 invert = ReadScriptValue();
+    const i16 active = g_fieldBattleActive;
     b32 matches = false;
-    if (ScriptBooleanMatches(g_fieldBattleActive, invert)) {
+    if (ScriptBooleanMatches(active, invert)) {
         matches = true;
     }
     ScriptJumpUnless(target, matches);
