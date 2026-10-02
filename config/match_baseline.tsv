@@ -2194,7 +2194,7 @@ statestack	_InitFieldPanels	100.0000	100.0000	1	ast4:941a1c3a91dd	0x1a1b0	100.00
 statestack	_IsOddMapLayer	100.0000	100.0000	1	ast4:a3e2c9aa5fc1	0x197a0	100.0000	
 statestack	_IsOnCellMark	100.0000	100.0000	3	ast4:fc2da01c2172	0x1a110	100.0000	
 statestack	_IsStatCapped	100.0000	100.0000	2	ast4:3b1935f10562	0x189d0	100.0000	
-statestack	_ItemListMenuHandler	96.2817	96.2817	14	ast4:98275cdda3c9	0x1a240	96.2817	
+statestack	_ItemListMenuHandler	96.2817	96.2817	15	ast4:854e92cb372a	0x1a240	96.2817	
 statestack	_LearnAllSkills	100.0000	100.0000	2	ast4:81532348e97a	0x19550	100.0000	
 statestack	_LeaveStatusScreen	100.0000	100.0000	2	ast4:f2d27470af09	0x16ff0	100.0000	
 statestack	_LevelUpNop	100.0000	100.0000	1	ast4:a600eb0f3418	0x18730	100.0000	
