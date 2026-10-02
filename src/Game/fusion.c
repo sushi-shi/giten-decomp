@@ -600,9 +600,10 @@ i16 ResolveRandomFusion(void) {
 
 RVA(0x00026f90, 0x7c)
 i16 SelectRandomFusionDemon(void) {
-    i16 count = GetDemonCount();
+    const i16 count = GetDemonCount();
     i32 sum;
     i32 averageRoll;
+    i32 demonRange;
     i16 index;
     i16 demon;
     for (;;) {
@@ -611,7 +612,8 @@ i16 SelectRandomFusionDemon(void) {
             sum += rand();
         }
         averageRoll = sum / 3;
-        demon = averageRoll * (count - HUMAN_ID_LIMIT) / 32768 + HUMAN_ID_LIMIT;
+        demonRange = count - HUMAN_ID_LIMIT;
+        demon = averageRoll * demonRange / 32768 + HUMAN_ID_LIMIT;
         if (GetFusionRestrictedClass(demon)) {
             continue;
         }
