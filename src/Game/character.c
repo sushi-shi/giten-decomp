@@ -1176,7 +1176,7 @@ void RefreshStatusPanel(i16 force) {
 // highlight guard depends on the filtered slot.
 RVA(0x0003e3c0, 0x1c1)
 GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
-    i16 oldStep = ResetTextPlaneLineStep(g_infoPlane, 3);
+    const i16 oldStep = ResetTextPlaneLineStep(g_infoPlane, 3);
     i16 cellColumn;
     i16 row;
     i16 wordColumn;
