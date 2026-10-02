@@ -46,7 +46,7 @@ void OpIfEventObjectIs(void) {
     i16 target = ReadBranchTarget();
     i16 different = ReadScriptValue();
     b32 matches = false;
-    if ((g_actorId == g_targetId && !different) || (g_actorId != g_targetId && different)) {
+    if (ScriptBooleanMatches(g_actorId == g_targetId, different)) {
         matches = true;
     }
     ScriptJumpUnless(target, matches);
