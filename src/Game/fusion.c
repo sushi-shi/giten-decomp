@@ -714,7 +714,7 @@ static __inline void ClassifyFusionSlot(
     } while (0)
 
 RVA(0x00027180, 0x1c0)
-i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
+i16 ResolveThreeSpecialRaceFusion(const i16 first, const i16 second, const i16 third) {
     i16 result = FindPrimaryFusionComplement(first, second, third);
     i16 primary[3];
     i16 secondary[3];
