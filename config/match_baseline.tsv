@@ -61,7 +61,7 @@ handle	33	31
 hotspot	6	6
 hotspotclick	1	0
 itemattack	4	4
-itemrecord	109	106
+itemrecord	109	107
 joystick	2	2
 layertexture	2	2
 list	6	6
@@ -92,7 +92,7 @@ scriptvars	108	106
 scriptvm	2	2
 shot	15	15
 skillattack	5	4
-skilluse	53	50
+skilluse	53	51
 sprite	7	7
 statestack	127	123
 statusmenu	9	9
@@ -1292,7 +1292,7 @@ itemrecord	_TakePooledItems	100.0000	100.0000	5	ast4:3bbbd7352a11	0x23a30	100.00
 itemrecord	_UseAttackItem	100.0000	100.0000	5	ast4:1ae2c9cdf847	0x24a50	100.0000	
 itemrecord	_UseInertItem	100.0000	100.0000	2	ast4:b8b437622bb3	0x24b60	100.0000	
 itemrecord	_UseKind5Item	100.0000	100.0000	2	ast4:b8b437622bb3	0x24b20	100.0000	
-itemrecord	_UseRestoreItem	99.1409	99.1409	4	ast4:523ea143844e	0x24950	100.0000	
+itemrecord	_UseRestoreItem	100.0000	100.0000	4	ast4:523ea143844e	0x24950	100.0000	
 itemrecord	_WaitMenuFrame	100.0000	100.0000	2	ast4:b3095ae220b7	0x25d90	100.0000	
 itemrecord	_WriteBag	100.0000	100.0000	1	ast4:c07c2f67bc81	0x24520	100.0000	
 itemrecord	_WriteGemItems	100.0000	100.0000	3	ast4:32eb7f684630	0x24830	100.0000	
@@ -2138,7 +2138,7 @@ skilluse	_UseKind12Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d5e0	100.0000
 skilluse	_UseKind13Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d640	100.0000	
 skilluse	_UseKind14Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d6a0	100.0000	
 skilluse	_UseResetBattleStatsSkill	100.0000	100.0000	6	ast4:f3e5df0034be	0x2d400	100.0000	
-skilluse	_UseRestoreSkill	100.0000	99.0161	8	ast4:f69ed93ebae6	0x2ceb0	100.0000	
+skilluse	_UseRestoreSkill	100.0000	100.0000	8	ast4:f69ed93ebae6	0x2ceb0	100.0000	
 sprite	_FreeSpriteImages	100.0000	100.0000	3	ast4:09ce38ffca6f	0x58820	100.0000	
 sprite	_IsSpriteFrameLoaded	100.0000	100.0000	5	ast4:fe345ccb9ead	0x58870	100.0000	
 sprite	_IsSpritePlaced	100.0000	100.0000	4	ast4:b9d2fbd214d4	0x58800	100.0000	
