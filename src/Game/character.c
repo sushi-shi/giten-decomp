@@ -3170,29 +3170,27 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
 // flags pointer after it; cl defers the save until the pointer is needed.
 RVA(0x000413f0, 0xb6)
 i16 ApplyMoonPhase(Character* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
-    u8* flags;
     i16 changed = 0;
     if (character == NULL) {
         return 0;
     }
-    flags = GetCharacterFlags(character);
-    if (TestBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
         changed = 1;
-        ClearBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
+        ClearCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
     }
-    if (TestBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
         changed++;
-        ClearBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP);
-        SetBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
+        ClearCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP);
+        SetCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
     }
     if (moonPhase == MOON_PHASE_NEW) {
-        if (TestBit(flags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
+        if (TestCharacterFlag(character, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
             changed++;
-            ClearBit(flags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST);
+            ClearCharacterFlag(character, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST);
         }
-        if (TestBit(flags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
+        if (TestCharacterFlag(character, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
             changed++;
-            ClearBit(flags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING);
+            ClearCharacterFlag(character, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING);
             AddCondition(GetCharacterConditions(character), CONDITION_ASH);
         }
     }

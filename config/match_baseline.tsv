@@ -189,7 +189,7 @@ character	_AgeConditions	100.0000	100.0000	3	ast4:3c1bb1c4ce86	0x3ef60	100.0000
 character	_AlignmentClass	100.0000	100.0000	1	ast4:20167ea1c383	0x3e080	100.0000	
 character	_ApplyEmptyPools	100.0000	100.0000	5	ast4:7fd2226c9acc	0x3f0f0	100.0000	
 character	_ApplyItemStatBonuses	100.0000	100.0000	4	ast4:6afa4df41b17	0x3dce0	100.0000	
-character	_ApplyMoonPhase	97.2603	95.5479	4	ast4:6c8cf5bd1aa1	0x413f0	97.2603	
+character	_ApplyMoonPhase	95.5479	95.5479	5	ast4:9f53b89f98dd	0x413f0	97.2603	
 character	_ApplyStatFlags	100.0000	100.0000	5	ast4:fb210cb7f829	0x3da90	100.0000	
 character	_AsCharacter	100.0000	100.0000	1	ast4:325b9caf5987	0x3fe30	100.0000	
 character	_AttachEquipItem	100.0000	100.0000	2	ast4:323d15267af5	0x40590	100.0000	
