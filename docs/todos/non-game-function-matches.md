@@ -64,7 +64,7 @@ storage type merely to force a register allocation.
 | Function | Current distinction |
 | --- | --- |
 | `NewArrayHandle` | Retail loads `count` into `eax` and `size` into `ecx`; current MSVC reverses the two before the same masks and multiply. Swapping multiplication operands in source compiles identically. |
-| `GrbToRgb` | Retail copies the low input byte into `dl` and ORs red before blue; current MSVC copies the whole word into `edx` and ORs blue first. Named red, green and blue locals compile identically; removing the byte cast changes the code further. The same original expression and source hash `bbd6e306e233` had a recorded 100 at `249a6690` and a recorded 60.82 at `9ae45c8b`. Historical checkouts cannot complete a current `giten match` because their delink/report manifests are incomplete, so those records do not isolate a TU change. Do not change the input ABI to chase the old score. |
+| `GrbToRgb` | Retail copies the low input byte into `dl` and ORs red before blue; current MSVC copies the whole word into `edx` and ORs blue first. A fresh replay of the `249a6690` source and header with current tooling matched all 0x21 bytes. Adding the palette header's `ReleaseImagePalette` prototype before this function is sufficient to change the old TU's output; see the replay evidence below. Keep the proven `u32` ABI and palette types. |
 | `MarkPaletteDirty` | Retail loads, ORs and stores the flag byte separately; current MSVC folds this into one memory OR. The palette flag has no asynchronous owner that would justify `volatile`. |
 | `QueuePaletteUpload` | Retail tests the flag, sets the queued bit with a load/store, then clears the dirty bit with a second load/store. Current MSVC combines the two changes into one load/store. The final byte is the same; a required observer between the stores has not been found. |
 | `PushTextDelay` | Retail clears the `delayOn` bit with a byte mask after merging the saved bit through XOR; current MSVC applies a wide mask earlier. The surrounding bitfield reads and stores agree. Typed local probes worsened the match, and changing the signed bitfield storage would affect its other readers. |
@@ -72,3 +72,18 @@ storage type merely to force a register allocation.
 | `OpReadDataInt` | Retail holds the accumulated integer and descending byte pointer in the opposite registers. The shared `ReadSizedDataInt` helper also feeds the exact `OpReadRecordInt`; changing its signed-byte logic solely for this caller would lose that evidence. |
 | `ReadTextChar` | Two `text[pos]` loads have their SIB base and index reversed; the decoded bytes, branches, and return paths otherwise match. The unsigned byte decoder boundary is shared by its callers. |
 | `ClearTextPlaneLine` | The text-byte store has the same SIB base/index reversal as `ReadTextChar`; every other instruction matches. Keep the `TextPlaneTextRow` and `TextPlaneAttrRow` typed accessors. |
+
+The `GrbToRgb` replay used the current compiler and retail target. The old
+`vram.c` plus old `Vram.h` matched exactly. Substituting the current `Vram.h`,
+or adding only its new `Palette.h` include, changed the old function to a
+nonmatching register schedule with the same first divergence. An empty
+included header, the old `PaletteState` definition alone, or the
+`ImagePalette` layout alone left it exact. A forward declaration of
+`ImagePalette` plus the
+`ReleaseImagePalette` prototype changed it. The original expression and named
+colour components compile to the same current function bytes; a typed
+low-byte local kept the same first divergence and match score. Removing that
+prototype or delaying the complete `ImagePalette` definition in the current
+TU did not restore exactness. The prototype is a sufficient trigger in the
+old TU, not a complete explanation
+of the current state. All probes were reverted.
