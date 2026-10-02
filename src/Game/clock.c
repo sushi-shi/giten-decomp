@@ -547,17 +547,21 @@ void LoadAreaMap(i16 area, i16 level) {
 RVA(0x00021470, 0x206)
 void DecodeAreaMap(AreaMap* map, u8* record) {
     AreaRecord* head = (AreaRecord*)record;
-    u16 shift;
+    u16 headerGrowth;
     i16 i;
     map->name = (char*)record + head->nameOffset;
     map->levelCount = head->levelCount;
-    shift = map->levelCount * 2 + 2;
+    headerGrowth = map->levelCount * 2 + 2;
     for (i = 0; i < map->levelCount; i++) {
         AreaLevelRecord* src = (AreaLevelRecord*)(record + GetAreaLevelOffset(head, i));
-        AreaLevel* level = (AreaLevel*)((u8*)map + i * 28 + shift + GetAreaLevelOffset(head, i));
+        AreaLevel* level = (AreaLevel*)(
+            (u8*)map + i * (sizeof(AreaLevel) - sizeof(AreaLevelRecord)) + headerGrowth
+            + GetAreaLevelOffset(head, i)
+        );
         u8* base;
         map->levels[i] = level;
-        base = (u8*)map + (i + 1) * 28 + shift;
+        base = (u8*)map + (i + 1) * (sizeof(AreaLevel) - sizeof(AreaLevelRecord))
+               + headerGrowth;
         level->blockBits = base + src->blockBitsOffset;
         level->walls = (u16*)(base + src->wallsOffset);
         level->warps = (WarpCell*)(base + src->warpsOffset);
