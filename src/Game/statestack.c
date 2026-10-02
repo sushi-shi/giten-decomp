@@ -2646,8 +2646,6 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
     ItemStackList* entries = menu->items.itemList;
     switch (event) {
         case MENU_EVENT_ADD_ROW: {
-            const ItemRecord* record;
-            GZ_ENUM_LOCAL(SkillUseModes, u16) modes;
             sprintf(
                 g_scratchBuffer,
                 "%-20.20s%2d",
@@ -2665,29 +2663,23 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
                 );
                 return;
             }
-            record = GetLoadedRecord(GetItemListItem(entries, index));
-            modes = GetItemUseModes(record);
-            if (ItemUseInvokesSkill(record->kind)) {
-                modes = GetSkillUseModes(GetSkillView(GetItemSkillId(record)));
-            }
-            if (CheckSkillArea(GetItemSkillId(record)) != SKILL_AREA_ALLOWED) {
-                AddItemUseMenuLine(
-                    menu,
-                    GetItemListItem(entries, index),
-                    MENU_LINE_DISABLED
-                );
+            {
+                const ItemRecord* record = GetLoadedRecord(GetItemListItem(entries, index));
+                GZ_ENUM_LOCAL(SkillUseModes, u16) modes = GetItemUseModes(record);
+                if (ItemUseInvokesSkill(record->kind)) {
+                    modes = GetSkillUseModes(GetSkillView(GetItemSkillId(record)));
+                }
+                if (CheckSkillArea(GetItemSkillId(record)) != SKILL_AREA_ALLOWED) {
+                    AddItemUseMenuLine(menu, GetItemListItem(entries, index), MENU_LINE_DISABLED);
+                    return;
+                }
+                if (IsSkillUsableNow(modes) != 1) {
+                    AddItemUseMenuLine(menu, GetItemListItem(entries, index), MENU_LINE_DISABLED);
+                    return;
+                }
+                AddItemUseMenuLine(menu, GetItemListItem(entries, index), 0);
                 return;
             }
-            if (IsSkillUsableNow(modes) != 1) {
-                AddItemUseMenuLine(
-                    menu,
-                    GetItemListItem(entries, index),
-                    MENU_LINE_DISABLED
-                );
-                return;
-            }
-            AddItemUseMenuLine(menu, GetItemListItem(entries, index), 0);
-            return;
         }
         case MENU_EVENT_BEGIN_PAGE:
             AddMenuLine(
