@@ -397,7 +397,7 @@ b16 FinishScriptChoice(i16 window) {
 }
 
 RVA(0x0003a870, 0x12e)
-b16 OpNextChoice(i16 window) {
+b16 OpNextChoice(const i16 window) {
     i16 x, y;
     ScriptChoice* choice = s_choices;
     const TextPoint size = GetTextPlaneSize(window);
