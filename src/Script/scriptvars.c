@@ -401,7 +401,7 @@ b16 OpNextChoice(i16 window) {
     i16 x, y;
     ScriptChoice* choice = s_choices;
     TextPoint size = GetTextPlaneSize(window);
-    i16 lineStep = GetTextPlaneLineStep(window);
+    const i16 lineStep = GetTextPlaneLineStep(window);
     FinishScriptChoice(window);
     for (;;) {
         i32 columnIndex;
