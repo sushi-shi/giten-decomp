@@ -644,7 +644,7 @@ MapCoord GetWorldCellAt(i16 x, i16 y) {
 // The world cell under the mouse (-1/-1 outside the 640x328 view).
 RVA(0x0000cdc0, 0x83)
 MapCoord GetMouseWorldCell(void) {
-    i16 blockIndex = GetWorldBlock();
+    const i16 blockIndex = GetWorldBlock();
     MapCoord cell;
     cell.y = MAP_COORD_NONE;
     cell.x = MAP_COORD_NONE;
