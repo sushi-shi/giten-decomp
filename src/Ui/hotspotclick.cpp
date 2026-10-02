@@ -20,15 +20,6 @@
 
 RVA(0x00059180, 0x24f)
 b32 ClickHotspotAt(i32 x, i32 y) {
-    Texture* texture;
-    u8* pixels;
-    u32 width;
-    u32 height;
-    i32 u;
-    i32 v;
-    i32 candidateCoord;
-    i32 selectedCoord;
-
     if (GetTextPlane(0)->visible) {
         return false;
     }
@@ -38,18 +29,18 @@ b32 ClickHotspotAt(i32 x, i32 y) {
     i32 hit = HOTSPOT_NONE;
     GZ_ENUM_LOCAL(ViewDirection, i16) direction = GetMapPosition()->direction;
     for (i32 i = g_hotspotCount - 1; i >= 0; i--) {
-        Hotspot* candidate = GetHotspot(i);
+        const Hotspot* candidate = GetHotspot(i);
         if (candidate->rect.left > x || candidate->rect.right <= x
             || candidate->rect.top > y || candidate->rect.bottom <= y) {
             continue;
         }
-        texture = candidate->texture;
-        pixels = GetBitmapPixels(texture->image);
-        width = texture->width;
-        height = min(256, width);
-        u = (x - candidate->rect.left) * width
+        Texture* texture = candidate->texture;
+        u8* pixels = GetBitmapPixels(texture->image);
+        u32 width = texture->width;
+        u32 height = min(256, width);
+        i32 u = (x - candidate->rect.left) * width
             / (candidate->rect.right - candidate->rect.left);
-        v = height
+        i32 v = height
             - (y - candidate->rect.top) * height
                   / (candidate->rect.bottom - candidate->rect.top)
             - 1;
@@ -59,7 +50,9 @@ b32 ClickHotspotAt(i32 x, i32 y) {
             continue;
         }
         if (hit != HOTSPOT_NONE) {
-            Hotspot* selected = GetHotspot(hit);
+            const Hotspot* selected = GetHotspot(hit);
+            i32 candidateCoord;
+            i32 selectedCoord;
             switch (direction) {
                 case VIEW_NORTH:
                     selectedCoord = selected->targetY;
@@ -95,7 +88,7 @@ b32 ClickHotspotAt(i32 x, i32 y) {
     if (hit < 0) {
         return false;
     }
-    Hotspot* hotspot = GetHotspot(hit);
+    const Hotspot* hotspot = GetHotspot(hit);
     switch (hotspot->kind) {
         case HOTSPOT_BOX:
             StartBoxScene(static_cast<TreasureBox*>(hotspot->data));
