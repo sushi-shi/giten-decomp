@@ -2743,7 +2743,7 @@ winmain	_SetViewRenderMode	100.0000	100.0000	3	ast4:53aa756834cf	0x49ba0	100.000
 winmain	_ShowBusyCursor	100.0000	100.0000	3	ast4:0c2e5bb05b63	0x496e0	100.0000	
 winmain	_StartScreenFade	100.0000	100.0000	3	ast4:5a9793b1e11f	0x49d60	100.0000	
 winmain	_StepBlankRenderMode	100.0000	100.0000	3	ast4:a58611a6f266	0x49d10	100.0000	
-winmain	_StepScreenFade	91.2500	91.2500	7	ast4:6198d3c56082	0x49dd0	91.2500	
+winmain	_StepScreenFade	91.3750	91.3750	8	ast4:7486c4efbffc	0x49dd0	91.3750	
 winmain	_StopMusic	100.0000	100.0000	1	ast4:9a90a9874845	0x49a50	100.0000	
 winmain	_WaitFrames	100.0000	100.0000	3	ast4:17fb5f9e053d	0x49f00	100.0000	
 winmain	_WinMain@16	98.4286	98.4286	8	ast4:43d27d6e7b94	0x50f50	98.4286	
