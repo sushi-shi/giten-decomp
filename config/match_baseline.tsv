@@ -50,7 +50,7 @@ effectdraw	3	1
 equipeffect	2	2
 eventflags	28	28
 fieldmain	59	56
-fieldobj	141	135
+fieldobj	141	136
 fieldscreen	103	102
 fieldview	38	36
 font	150	146
@@ -680,7 +680,7 @@ fieldobj	_LoadLayerScripts	100.0000	100.0000	3	ast4:39493a8fb14b	0xeb00	100.0000
 fieldobj	_LoadObjectRecord	100.0000	100.0000	2	ast4:05721c5c74e2	0x10a00	100.0000	
 fieldobj	_LoadWorldEncounterBlock	100.0000	100.0000	3	ast4:ad89168465b0	0x11170	100.0000	
 fieldobj	_MarkObjectsOnMap	100.0000	100.0000	1	ast4:ac97a1acdbaf	0xdde0	100.0000	
-fieldobj	_PickWorldEncounterGroup	97.2414	97.2414	4	ast4:54843644c43b	0x113a0	100.0000	
+fieldobj	_PickWorldEncounterGroup	100.0000	100.0000	5	ast4:30e4887b598f	0x113a0	100.0000	
 fieldobj	_PrepareFieldRandom	100.0000	100.0000	5	ast4:d5be76f21f80	0x11510	100.0000	
 fieldobj	_PrepareWorldEncounter	100.0000	100.0000	2	ast4:7b72df74b204	0x11280	100.0000	
 fieldobj	_RandomNearOffset	100.0000	100.0000	1	ast4:b0a2cae9045a	0xedf0	100.0000	
@@ -723,7 +723,7 @@ fieldobj	_TestWorldEncounterChance	100.0000	100.0000	4	ast4:ac79802a1d72	0x11220
 fieldobj	_TickEnemySpawnTimer	100.0000	100.0000	3	ast4:de014e87bb01	0xee20	100.0000	
 fieldobj	_TraceSight	100.0000	100.0000	3	ast4:efc7edf8b1df	0xee70	100.0000	
 fieldobj	_UpdateFieldObjects	100.0000	100.0000	1	ast4:f25f231ca7e4	0xe400	100.0000	
-fieldobj	_UseObjectSkill	99.8213	99.8213	12	ast4:79f61872a8f6	0xf620	99.8213	
+fieldobj	_UseObjectSkill	99.8696	99.8696	13	ast4:fc12e29c2691	0xf620	99.8696	
 fieldscreen	_AllocLayerImage	100.0000	100.0000	1	ast4:e177d85e7789	0x168d0	100.0000	
 fieldscreen	_AreObjectsHidden	100.0000	100.0000	2	ast4:eaf064075ded	0x15cb0	100.0000	
 fieldscreen	_CanCharacterOpenAutomap	100.0000	100.0000	4	ast4:984308f8f0f8	0x15530	100.0000	

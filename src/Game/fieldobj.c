@@ -2631,7 +2631,8 @@ i16 PickWorldEncounterGroup(i16 weights, i16 choices) {
     }
     total = 0;
     for (i = 0; i < WORLD_ENCOUNTER_GROUPS; i++) {
-        total += table[weights].weights[i];
+        const u8* weightRow = table[weights].weights;
+        total += weightRow[i];
         if (roll < total) {
             groups = HandleReadPtr(s_encounterChoices);
             return groups[choices].groups[i];
