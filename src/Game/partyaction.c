@@ -2248,13 +2248,15 @@ i16 DistributeGunRounds(i16 rounds, i16 count) {
     i16 index;
     i16 remaining;
     i16 share;
+    i32 weightedRounds;
     memset(s_gunRounds, 0, sizeof(s_gunRounds));
     memset(s_gunPower, 0, sizeof(s_gunPower));
     table = HandleReadPtr(s_gunDistribution);
     remaining = rounds;
     for (index = 0; index < count; index++) {
         rowEnd = table + count * GUN_BURST_MAX_TARGETS;
-        if (rounds * rowEnd[index - GUN_BURST_MAX_TARGETS] == 0 || remaining < 1) {
+        weightedRounds = rounds * rowEnd[index - GUN_BURST_MAX_TARGETS];
+        if (weightedRounds == 0 || remaining < 1) {
             break;
         }
         share = rounds * rowEnd[index - GUN_BURST_MAX_TARGETS];
