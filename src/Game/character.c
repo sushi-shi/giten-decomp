@@ -1171,9 +1171,9 @@ void RefreshStatusPanel(i16 force) {
 
 // @dead-code
 // Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it.
-// @early-stop: column and selection mode exchange ebx/edi; calls and semantic
-// edges match. A separate filter result regresses both callers; C-safe TU states
-// retain the register exchange, with one also extending the line-step lifetime.
+// @early-stop: the word-start column and selection mode exchange ebx/edi;
+// calls and semantic edges match. The cell outputs remain i16, and the
+// highlight guard depends on the filtered slot.
 RVA(0x0003e3c0, 0x1c1)
 GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
     i16 oldStep = ResetTextPlaneLineStep(g_infoPlane, 3);
