@@ -959,7 +959,7 @@ font	_PartyPanelAtPoint	100.0000	100.0000	1	ast4:cd3c4b14d87c	0x54b90	100.0000
 font	_PollMenuInput	100.0000	100.0000	6	ast4:80adef1d85ff	0x53910	100.0000	
 font	_PrintMenuLines	100.0000	100.0000	3	ast4:2c5dfd57ae83	0x53e80	100.0000	
 font	_RedrawTextPlane	100.0000	100.0000	3	ast4:2689d02f7d94	0x51d80	100.0000	
-font	_RedrawTextRun	81.7167	81.7167	4	ast4:e25f81e29e64	0x51e40	81.7167	
+font	_RedrawTextRun	81.7167	81.7167	5	ast4:90442ef9e68f	0x51e40	81.7167	
 font	_RenderGlyph	100.0000	100.0000	3	ast4:622e0b765eb1	0x51230	100.0000	
 font	_RepaintTextPlane	100.0000	100.0000	6	ast4:95bdcf22e869	0x51b20	100.0000	
 font	_ReserveTextPlaneCells	100.0000	100.0000	1	ast4:1a9df777ef97	0x53c50	100.0000	
@@ -1877,9 +1877,9 @@ scriptfield	_OpCountObjectsAt	100.0000	100.0000	1	ast4:c3f81b7f9609	0x325f0	100.
 scriptfield	_OpEnterFieldMap	100.0000	100.0000	1	ast4:d7ce906b73a4	0x324b0	100.0000	
 scriptfield	_OpGetBattleOutcome	100.0000	100.0000	1	ast4:484c926321b2	0x326e0	100.0000	
 scriptfield	_OpIfBattleResult	100.0000	100.0000	1	ast4:6eef2c9689e5	0x325b0	100.0000	
-scriptfield	_OpIfEventObjectIs	97.9167	97.9167	2	ast4:c1953a51776f	0x32560	97.9167	
-scriptfield	_OpIfInBattle	97.8571	97.8571	4	ast4:77449e83a3d8	0x326a0	97.8571	
-scriptfield	_OpIfStatusPositive	97.7500	97.7500	3	ast4:c697f3213d98	0x32660	97.7500	
+scriptfield	_OpIfEventObjectIs	97.9167	97.9167	3	ast4:cf9b8c8444d6	0x32560	97.9167	
+scriptfield	_OpIfInBattle	97.8571	97.8571	5	ast4:0ef4245b278c	0x326a0	97.8571	
+scriptfield	_OpIfStatusPositive	97.7500	97.7500	4	ast4:f09d68dbd580	0x32660	97.7500	
 scriptfield	_OpSetFieldOption	100.0000	100.0000	1	ast4:0f9a1829db37	0x32700	100.0000	
 scriptfield	_OpSetFieldParams	100.0000	100.0000	1	ast4:fafde4f73e74	0x32710	100.0000	
 scriptop	_OpIfFlags	100.0000	100.0000	1	ast4:6540ec4fe81c	0x2feb0	100.0000	
@@ -2119,8 +2119,8 @@ skilluse	_PrepareSkillAction	100.0000	100.0000	6	ast4:fc2dbf95a148	0x2db90	100.0
 skilluse	_PushPromptState	100.0000	100.0000	2	ast4:eb3e27ffec92	0x2ab40	100.0000	
 skilluse	_RemoveCombatTarget	100.0000	100.0000	2	ast4:c3b5b2e13407	0x2aae0	100.0000	
 skilluse	_ReportBattleTally	100.0000	100.0000	2	ast4:96065daffb89	0x2b5f0	100.0000	
-skilluse	_ResolveCombatAction	93.2619	93.2619	27	ast4:0e3fc62a516d	0x2ac90	94.6053	
-skilluse	_ResolveKnockout	99.6667	99.6667	10	ast4:e64aaec2f7f6	0x2b490	99.6667	
+skilluse	_ResolveCombatAction	93.2619	93.2619	28	ast4:89237b611d4b	0x2ac90	94.6053	
+skilluse	_ResolveKnockout	99.6667	99.6667	11	ast4:cbc23bb5e19f	0x2b490	99.6667	
 skilluse	_RunBattleAction	100.0000	100.0000	24	ast4:b8bd603ccbf9	0x2b6a0	100.0000	
 skilluse	_RunFieldSkillUse	100.0000	100.0000	9	ast4:47689684ad0d	0x2d7c0	100.0000	
 skilluse	_SetActionOutcome	100.0000	100.0000	1	ast4:efc88edbbee4	0x2c2b0	100.0000	
@@ -2439,7 +2439,7 @@ treasurebox	_ItemMenuHandler	100.0000	100.0000	7	ast4:69367325ded9	0x1b7c0	100.0
 treasurebox	_KnockBack	100.0000	100.0000	5	ast4:2bd7de345ac1	0x1f7d0	100.0000	
 treasurebox	_KnockBackActor	100.0000	100.0000	1	ast4:bf4e51c191d5	0x1fae0	100.0000	
 treasurebox	_LoadAreaNpcImages	100.0000	100.0000	1	ast4:fc2d32679651	0x1f660	100.0000	
-treasurebox	_LoadAutomapAreas	91.0839	91.0839	9	ast4:af12318a69d0	0x1e520	91.0839	
+treasurebox	_LoadAutomapAreas	91.0839	91.0839	10	ast4:87d33eb82295	0x1e520	91.0839	
 treasurebox	_LoadAutomapLevel	100.0000	100.0000	6	ast4:46ebc538bdf1	0x1d050	100.0000	
 treasurebox	_LoadItemMenuStock	100.0000	100.0000	1	ast4:881ed945e3af	0x1c160	100.0000	
 treasurebox	_LoadLearnableSkillTables	100.0000	100.0000	1	ast4:e455d2922b57	0x1c250	100.0000	
