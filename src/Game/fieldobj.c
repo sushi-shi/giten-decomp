@@ -1589,11 +1589,7 @@ b16 IsWithinRange(i16 range) {
 RVA(0x0000f620, 0x26c)
 i16 UseObjectSkill(FieldObject* object, i16 skill) {
     Character* actor = (Character*)&object->kind;
-    FieldObject* target;
-    MapCoord coord;
     b16 picked;
-    i16 count;
-    i16 i;
     GZ_ENUM_LOCAL(SkillKind, i16) kind;
     picked = false;
     if (CanUseSkill(skill, actor) <= 0) {
@@ -1602,6 +1598,10 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     kind = GetSkillKind(skill);
     if (kind == SKILL_KIND_RESTORE) {
         FieldSkillCandidate best, candidates[FIELD_OBJECT_COUNT];
+        FieldObject* target;
+        MapCoord coord;
+        i16 count;
+        i16 i;
         count = 0;
         for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             InitFieldSkillCandidate(&candidates[i]);
