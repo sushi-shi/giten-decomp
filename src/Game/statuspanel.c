@@ -940,12 +940,11 @@ static __inline void ClearEquipPreview(void) {
     DrawStatTotals(3, 0x19, GetRosterCharacter(g_statusMember), NULL);
 }
 
-static __inline i16 FinishEquipChange(i16 member) {
+static __inline void FinishEquipChange(i16 member) {
     RecalcCharacterStats(GetRosterCharacter(member));
     s_equipPage.changed = true;
     SetGameSub(MENU_STEP_CLOSE);
     s_equipPage.pick = STATUS_COMMAND_NONE;
-    return STATUS_COMMAND_NONE;
 }
 
 // Runs the equipment page one step for input `key` (-2 cancels): step 0
@@ -1049,14 +1048,16 @@ i16 RunEquipScreen(i16 key) {
                     GetCharacterEquipment(GetRosterCharacter(g_statusMember))[EQUIP_SLOT_AMMO]
                         .quantity += slot.quantity;
                     TakeBagItems(slot.item, slot.quantity);
-                    return FinishEquipChange(g_statusMember);
+                    FinishEquipChange(g_statusMember);
+                    return STATUS_COMMAND_NONE;
                 }
                 LimitItemSlotToBag(&slot);
             } else {
                 slot.quantity = 1;
             }
             EquipItem(g_statusMember, slot, count, s_equipPage.pick);
-            return FinishEquipChange(g_statusMember);
+            FinishEquipChange(g_statusMember);
+            return STATUS_COMMAND_NONE;
         }
 
         case EQUIP_STEP_PREVIEW_REMOVE:
@@ -1096,7 +1097,8 @@ i16 RunEquipScreen(i16 key) {
                     SetEquipSlot(g_statusMember, s_equipPage.pick, slot, 0);
                 }
             }
-            return FinishEquipChange(g_statusMember);
+            FinishEquipChange(g_statusMember);
+            return STATUS_COMMAND_NONE;
     }
     return STATUS_COMMAND_NONE;
 }
