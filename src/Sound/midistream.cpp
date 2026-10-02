@@ -368,7 +368,7 @@ b32 CMidiStream::Prepare() {
 // message in eax and loads the stream handle into edx; here the two swap.
 // The stream handle is read for each send.
 RVA(0x000563b0, 0xcd)
-b32 CMidiStream::SetVolume(DWORD volume, DWORD* channelVolumes) {
+b32 CMidiStream::SetVolume(const DWORD volume, DWORD* channelVolumes) {
     if (!m_playing) {
         return true;
     }
