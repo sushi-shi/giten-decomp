@@ -452,7 +452,6 @@ i16 ResolveCombatAction(void) {
     CurMax* targetHp;
     GZ_ENUM_LOCAL(ConditionId, i16) initialFatalCondition;
     b16 hit;
-    i16 kind;
 
     s_actionOutcome = ACTION_OUTCOME_DEFAULT;
     s_knockedOut = 0x7fff;
@@ -582,6 +581,7 @@ i16 ResolveCombatAction(void) {
         AlertActor(target, ATTITUDE_VERY_HOSTILE);
         GetCharacterFlags(target)[1] |= 0x40;
         if (attacker->pickRole == PICK_ROLE_MAGIC) {
+            i16 kind;
             kind = GetCachedSkill(attacker->pickTarget)->parameters.type;
             if (kind == 2 || kind == 3 || kind == 4 || kind == 10 || kind == 11) {
                 return targetHp->cur;
