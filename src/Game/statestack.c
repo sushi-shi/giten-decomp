@@ -2645,7 +2645,7 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
     ItemStackList* entries = menu->items.itemList;
     switch (event) {
         case MENU_EVENT_ADD_ROW: {
-            ItemRecord* record;
+            const ItemRecord* record;
             GZ_ENUM_LOCAL(SkillUseModes, u16) modes;
             sprintf(
                 g_scratchBuffer,
