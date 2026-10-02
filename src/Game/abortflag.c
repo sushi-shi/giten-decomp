@@ -229,9 +229,10 @@ void DrawSceneObjects(i16 x, i16 y, i16 across, i16 along) {
     DrawAreaNpcs();
 }
 
-static __inline b32 IsSceneObjectVisible(FieldObject* object, i16 kind) {
+static __inline b32 IsSceneObjectVisible(void* object, i16 kind) {
+    FieldObject* fieldObject = object;
     return (kind != SCENE_HOTSPOT_OBJECT
-            || TestFieldObjectFlag(object, ACTOR_FLAG_INVISIBLE) != true)
+            || TestFieldObjectFlag(fieldObject, ACTOR_FLAG_INVISIBLE) != true)
            && !GetObjectsHidden();
 }
 
@@ -241,7 +242,7 @@ RVA(0x00045930, 0x1b7)
 i16 DrawSceneSprite(
     i16 mode,
     SceneSprite* sprite,
-    FieldObject* object,
+    void* object,
     GZ_ENUM_PARAM(SceneHotspotKind, i16) kind,
     i16 centered
 ) {
