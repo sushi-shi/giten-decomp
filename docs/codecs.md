@@ -117,13 +117,13 @@ overstate the outer RIFF length; the game and the Rust WAVE reader use the
 fixed PCM header and data-chunk length instead. The general RIFF iterator
 continues to validate its declared bounds.
 
-## Tooling checks
+## Codec bounds check
 
 ```sh
-(cd scripts && python3 -m unittest giten.codecs.test_codecs)
 CARGO_TARGET_DIR="$PWD/build/codecs/rust" cargo test --offline \
   --manifest-path tools/giten-codec/Cargo.toml
 ```
 
-These check protocol failure handling and codec boundaries. They do not assert
-that a reconstructed function's machine-code bytes equal retail.
+The retained check ensures truncated and oversized encoded records leave the
+output buffer untouched. It does not assert that a reconstructed function's
+machine-code bytes equal retail.
