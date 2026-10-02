@@ -8,7 +8,7 @@ ordered relocations before changing their source.
 | Retail RVA | Function | Remaining evidence and next lever |
 | --- | --- | --- |
 | `0x004430` | `GetHandleSize` | Retail loads `ax` directly into the index register and then masks `eax` to 16 bits; MSVC zeroes `eax` first for the current typed `u16` member. Return casts and local spellings leave the same code. Preserve the `HandleEntry` layout unless a whole-object witness refutes it. |
-| `0x002ec0` | `ResetUpperPalette` | Retail clears eight `s_paletteColors` words with an offset loop; the current nonvolatile C stores merge into four dword stores. Byte, word and dword counter/index forms did not recover that loop. A real writer or observer of individual stores is needed before marking palette storage volatile. |
+| `0x002ec0` | `ResetUpperPalette` | Retail emits four dword stores for `s_paletteRefs[8..15]`, then an eight-step word-store loop for `s_paletteColors[8..15]` (one back edge, five relocations). Current MSVC merges the nonvolatile colour stores into four more dword stores (no back edge, eight relocations). Byte, word, dword, pointer and index loop forms did not recover the loop. `SetPaletteColor` matches exactly with the same typed colour writer. The retail xref model has only that writer's base reference and this reset's `+0x10` reference to colour storage; no read justifies `volatile`. Keep the ordinary array until a real observer or store-order constraint is found. |
 | `0x051e40` | `RedrawTextRun` | Calls and branches match; retail schedules pixel-x initialization after plane lookup while holding the plane in `ebp`, and assigns the attribute/next-column registers differently. Moving initialization or changing pixel width spills the plane and loses the matching shape. Compare `DrawNextTextCell` expansion with `RedrawTextPlane` before changing the shared helper. |
 | `0x052840` | `SetTextPlaneColor` | In the dim-color arm, retail shifts color into `ecx`, masks the attribute in `eax`, then ORs into `ecx`. MSVC emits the equivalent attribute-first sequence for the tested expression orders. Other arms match. |
 | `0x049dd0` | `StepScreenFade` | Calls, branches and stores match. Retail uses `sub 17` and different registers for zero and the step reload; current source emits `add -17`. Alpha expression and macro spellings tested so far preserve the residue. |
@@ -41,11 +41,11 @@ list keeps the cross-function evidence and the rejected probes together.
   and Platform use those offsets. Retail's 32-bit load beginning at Y in
   `LatchMouseClicks` uses only its low word; it does not establish a 32-bit Y
   member. A whole-struct copy changed the rest of the function substantially.
-- Retail references `s_paletteColors` only in `ResetUpperPalette` and
-  `SetPaletteColor`, both writers. `s_paletteRefs` has the expected retain,
-  release and reset references. No retail read supports adding `volatile` to
-  force separate palette stores. The current ordinary stores preserve the
-  observed final values.
+- Retail references `s_paletteColors` only at its base from `SetPaletteColor`
+  and at `+0x10` from `ResetUpperPalette`, both writers. `s_paletteRefs` has
+  the expected retain, release and reset references. No retail read supports
+  adding `volatile` to force separate palette stores. The current ordinary
+  stores preserve the observed final values.
 - `CMidiStream` has one virtual destructor slot. Constructors initialize
   `m_channelVolumes` to null; `Play` and `Replay` retain the caller's pointer,
   and `OnMessage` forwards it to replay and volume setting. The only
