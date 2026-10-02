@@ -1180,7 +1180,6 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
     i16 cellColumn;
     i16 row;
     i16 wordColumn;
-    i16 lineStep;
     i16 slot;
     SetTextPlaneHighlightMode(0, TEXT_HIGHLIGHT_OUTER);
     if (g_mouseLeftClick) {
@@ -1197,7 +1196,7 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
     }
     wordColumn = TextPlaneCellAt(g_infoPlane, g_mousePosition.x, g_mousePosition.y, &cellColumn, &row);
     if (wordColumn == 0 || wordColumn == 39) {
-        lineStep = GetTextPlaneLineStep(g_infoPlane);
+        i16 lineStep = GetTextPlaneLineStep(g_infoPlane);
         slot = row / lineStep + (wordColumn ? 3 : 0);
         slot = FilterPartySlotSelection(slot, mode);
     } else {
