@@ -963,12 +963,13 @@ static void CompactBagCore(void) {
         }
     }
     for (i = 0; i < BAG_ENTRY_COUNT; i++) {
-        if (GetItemStackItem(&g_bagItems[i]) == ITEM_ID_EMPTY) {
+        ItemStack* entry = &g_bagItems[i];
+        if (GetItemStackItem(entry) == ITEM_ID_EMPTY) {
             continue;
         }
-        limit = GetItemStackLimit(GetItemStackItem(&g_bagItems[i]));
-        while (GetItemStackCount(&g_bagItems[i]) < limit) {
-            from = FindBagItem(GetItemStackItem(&g_bagItems[i]), BAG_SEARCH_ALL);
+        limit = GetItemStackLimit(GetItemStackItem(entry));
+        while (GetItemStackCount(entry) < limit) {
+            from = FindBagItem(GetItemStackItem(entry), BAG_SEARCH_ALL);
             if (from <= i) {
                 break;
             }
