@@ -2066,7 +2066,7 @@ static i16* BuildStatWeightRanges(Character* character, i16* ranges) {
     i16 total = 0;
     i16* range;
     i16 stat;
-    for (stat = 0, range = ranges; stat < 10; stat++, range++) {
+    for (stat = 0, range = ranges; stat < STAT_FORTUNE; stat++, range++) {
         if (IsStatCapped(character, stat)) {
             *range = -1;
         } else {
@@ -2082,7 +2082,7 @@ static i16* BuildStatWeightRanges(Character* character, i16* ranges) {
     if (total == 0) {
         return NULL;
     }
-    for (stat = 0; stat < 10; stat++) {
+    for (stat = 0; stat < STAT_FORTUNE; stat++) {
         if (ranges[stat] != -1) {
             ranges[stat] = ranges[stat] * 10000 / total;
         }
