@@ -594,7 +594,7 @@ void DecodeAreaMap(AreaMap* map, u8* record) {
                 GetAreaLevelOffset(head, i + 1) - GetAreaLevelOffset(head, i)
             );
         } else {
-            memcpy(level + 1, src + 1, 0x2800 - GetAreaLevelOffset(head, i));
+            memcpy(level + 1, src + 1, sizeof s_areaRecord - GetAreaLevelOffset(head, i));
         }
     }
 }
