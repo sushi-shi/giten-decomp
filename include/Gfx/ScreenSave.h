@@ -6,6 +6,9 @@
 #include <Gfx/VramAccess.h>
 #include <Ints.h>
 
+// Redraw request consumed by RedrawScreen and field state updates.
+extern i16 g_fieldRedrawRequest;
+
 void RestoreSavedCursor(i16* offset);
 
 void SetTextCursorOffset(i16* offset, i16 column, i16 row);

@@ -26,9 +26,6 @@ char* FormatWorldMapLocation(void);
 extern i16 g_worldMapX;
 extern i16 g_worldMapY;
 
-// Set when the field screen must be redrawn; RedrawScreen latches refresh requests.
-extern i16 g_fieldRedrawRequest;
-
 // The shared information text plane created during game startup.
 extern i16 g_infoPlane;
 

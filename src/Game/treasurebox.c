@@ -66,6 +66,7 @@
 #include <Game/StatusScreen.h>
 #include <Game/TreasureBox.h>
 #include <Game/WorldMap.h>
+#include <Gfx/ScreenSave.h>
 #include <Gfx/Background.h>
 #include <Gfx/Render.h>
 #include <Gfx/ScreenLayer.h>
