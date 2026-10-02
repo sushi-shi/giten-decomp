@@ -249,7 +249,7 @@ static i16 s_affinity[5][3] = {
 };
 
 DATA(0x00069f00)
-static i16 s_selectedPartySlot = -1;
+static i16 s_selectedPartySlot = PARTY_POSITION_NONE;
 
 // Each condition's base chance (of 256) to wear off per roll; 0 never does.
 DATA(0x00069f08)
@@ -706,7 +706,7 @@ i32 CalcMagicPowerStat(i16* stats, i16 amount) {
 
 RVA(0x0003d510, 0x1e)
 i32 CalcMagicEvasionStat(i16* stats, i16 bonus) {
-    i16 sum = stats[4] + stats[3];
+    i16 sum = stats[STAT_PROTECTION] + stats[STAT_INTELLIGENCE];
     return ClampTo999(sum / 2);
 }
 
@@ -949,7 +949,7 @@ void UpdateStatTotals(StatBlock* stats) {
     i16 i;
     i16 sum;
     for (i = 0; i < STAT_COUNT; i++) {
-        sum = stats->base[i] + stats->bonus[i] + stats->equipment[i] + stats->modifiers[i];
+        sum = stats->base[i] + stats->bonus[i] + stats->modifiers[i] + stats->equipment[i];
         stats->total[i] = ClampTo100(sum / 2);
     }
 }
@@ -1061,8 +1061,8 @@ i16 PartyAlignmentClass(i16 axis) {
 
 static __inline i32 GetSelectedPartySlot(void) {
     i16 slot;
-    if (s_selectedPartySlot == -1) {
-        slot = -1;
+    if (s_selectedPartySlot == PARTY_POSITION_NONE) {
+        slot = PARTY_POSITION_NONE;
     } else {
         slot = s_selectedPartySlot;
     }
@@ -1094,7 +1094,7 @@ void RedrawPartyStatus(void) {
         }
     }
     ResetTextPlaneHighlight(g_infoPlane);
-    s_selectedPartySlot = -1;
+    s_selectedPartySlot = PARTY_POSITION_NONE;
     s_statusRedrawPending = false;
 }
 
@@ -1171,16 +1171,15 @@ void RefreshStatusPanel(i16 force) {
 
 // @dead-code
 // Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it.
-// @early-stop: column and selection mode exchange ebx/edi; calls and semantic
-// edges match. A separate filter result regresses both callers; C-safe TU states
-// retain the register exchange, with one also extending the line-step lifetime.
+// @early-stop: the word-start column and selection mode exchange ebx/edi;
+// calls and semantic edges match. The cell outputs remain i16, and the
+// highlight guard depends on the filtered slot.
 RVA(0x0003e3c0, 0x1c1)
 GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
-    i16 oldStep = ResetTextPlaneLineStep(g_infoPlane, 3);
-    i16 x;
-    i16 y;
-    i16 column;
-    i16 lineStep;
+    const i16 oldStep = ResetTextPlaneLineStep(g_infoPlane, 3);
+    i16 cellColumn;
+    i16 row;
+    i16 wordColumn;
     i16 slot;
     SetTextPlaneHighlightMode(0, TEXT_HIGHLIGHT_OUTER);
     if (g_mouseLeftClick) {
@@ -1195,13 +1194,13 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
         return PARTY_SLOT_POLL_CANCELLED;
     }
-    column = TextPlaneCellAt(g_infoPlane, g_mousePosition.x, g_mousePosition.y, &x, &y);
-    if (column == 0 || column == 39) {
-        lineStep = GetTextPlaneLineStep(g_infoPlane);
-        slot = y / lineStep + (column ? 3 : 0);
+    wordColumn = TextPlaneCellAt(g_infoPlane, g_mousePosition.x, g_mousePosition.y, &cellColumn, &row);
+    if (wordColumn == 0 || wordColumn == 39) {
+        i16 lineStep = GetTextPlaneLineStep(g_infoPlane);
+        slot = row / lineStep + (wordColumn ? 3 : 0);
         slot = FilterPartySlotSelection(slot, mode);
     } else {
-        slot = -1;
+        slot = PARTY_POSITION_NONE;
     }
     if (s_selectedPartySlot == slot) {
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
@@ -1209,8 +1208,8 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
     }
     s_selectedPartySlot = slot;
     ClearTextPlaneHighlight(g_infoPlane);
-    if (slot != -1) {
-        SetTextPlaneHighlight(g_infoPlane, column, y);
+    if (slot != PARTY_POSITION_NONE) {
+        SetTextPlaneHighlight(g_infoPlane, wordColumn, row);
     }
     ResetTextPlaneLineStep(g_infoPlane, oldStep);
     return PARTY_SLOT_POLL_WAITING;
@@ -1237,7 +1236,7 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollPartySlotSelection(GZ_ENUM_PARAM(Pa
 
 RVA(0x0003e660, 0x19)
 void ClearPartySlotSelection(void) {
-    s_selectedPartySlot = -1;
+    s_selectedPartySlot = PARTY_POSITION_NONE;
     ClearTextPlaneHighlight(g_infoPlane);
 }
 
@@ -1276,11 +1275,11 @@ b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
 // form (for/goto), nested-if returns, case 33/34 spelling and order were tried.
 RVA(0x0003e6d0, 0x700)
 GZ_ENUM_RETURN(ConditionAddResult, i16) AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
-    i16 blocked;
     i16 i;
 
     HasCondition(conditions, CONDITION_ZOMBIE);
     for (;;) {
+        b16 blocked;
         blocked = 0;
         switch (condition) {
             case CONDITION_POISON:
@@ -3170,30 +3169,28 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
 // @early-stop prologue: retail saves esi before the null guard and forms the
 // flags pointer after it; cl defers the save until the pointer is needed.
 RVA(0x000413f0, 0xb6)
-i16 ApplyMoonPhase(Character* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
-    u8* flags;
+i16 ApplyMoonPhase(Character* character, const GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
     i16 changed = 0;
     if (character == NULL) {
         return 0;
     }
-    flags = GetCharacterFlags(character);
-    if (TestBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
         changed = 1;
-        ClearBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
+        ClearCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
     }
-    if (TestBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
         changed++;
-        ClearBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP);
-        SetBit(flags, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
+        ClearCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP);
+        SetCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN);
     }
     if (moonPhase == MOON_PHASE_NEW) {
-        if (TestBit(flags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
+        if (TestCharacterFlag(character, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
             changed++;
-            ClearBit(flags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST);
+            ClearCharacterFlag(character, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST);
         }
-        if (TestBit(flags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
+        if (TestCharacterFlag(character, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
             changed++;
-            ClearBit(flags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING);
+            ClearCharacterFlag(character, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING);
             AddCondition(GetCharacterConditions(character), CONDITION_ASH);
         }
     }

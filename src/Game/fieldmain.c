@@ -410,8 +410,7 @@ void PushAutoMove(u8 move) {
         GrowAutoMoves(1);
     }
     moves = HandleWritePtr(s_autoMoves);
-    moves[s_autoMoveCount] = move;
-    s_autoMoveCount++;
+    moves[s_autoMoveCount++] = move;
 }
 
 RVA(0x000127a0, 0x14)
@@ -686,16 +685,10 @@ i16 TickFieldSteps(void) {
 // map, enemy turns, commands), 3 runs a cell event, 4-6 the analyze window, 7
 // ends an event, 8 leaves for the world map, 9 returns to the return point, 10
 // leaves to the world map, and 11 closes the field.
-// @early-stop register allocation: retail keeps the constant 0 in esi for the
-// whole function (materialised before the phase test, which becomes cmp ax,si);
-// here cl materialises it per phase (test ax,ax; xor esi,esi in the later
-// phases; push 0 in phase 3). Calls, branches and every other instruction
-// match; a 32-island permute campaign is flat.
 RVA(0x00012d20, 0x88c)
 b16 RunFieldExploration(void) {
-    i16 count;
-
-    if (GetGamePhase() != FIELD_PHASE_LOAD_AREA) {
+    GZ_ENUM_LOCAL(FieldPhase, u16) initialPhase = GetGamePhase();
+    if (initialPhase != FIELD_PHASE_LOAD_AREA) {
         if (GetRenderMode() == RENDER_MODE_PANEL
             && g_worldMapRequest == WORLD_MAP_REQUEST_SAVED_SPOT) {
             SetPanelRenderMode();
@@ -849,7 +842,7 @@ b16 RunFieldExploration(void) {
                 return FlushFieldScreen();
             }
             if (g_fieldBattleActive) {
-                count = CountFieldObjects();
+                i16 count = CountFieldObjects();
                 if (count <= 0) {
                     if (count < 0) {
                         s_eventRunning = true;
@@ -1379,34 +1372,43 @@ void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction) {
 #define MergeViewOcclusionEntry(masks, index)                                                      \
     MergeViewOcclusionMask(HandleReadPtr(s_eventTable), (index), (masks) + (index))
 
-// @early-stop: direction/index exchange esi/edi and the direction load follows
-// the clears. A facing snapshot and TU-state controls leave this allocation flat.
+// @early-stop register allocation: retail holds direction in esi and index in
+// edi; here those registers are exchanged and direction loads after the clears.
+// Calls, branch destinations and ordered referents agree.
 RVA(0x00013f10, 0x183)
-void BuildViewOcclusion(i16 x, i16 y, i16 direction, i16 mode) {
+void BuildViewOcclusion(
+    i16 x,
+    i16 y,
+    const GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16 unused
+) {
     i16 along;
     i16 across;
     i16 opposite;
-    i16 index;
-    u16 wall;
     memset(g_leftViewOcclusion, 0, sizeof(g_leftViewOcclusion));
     memset(g_rightViewOcclusion, 0, sizeof(g_rightViewOcclusion));
     for (along = 0; along >= -3; along--) {
         opposite = 0;
         for (across = 0; across <= 3; opposite--, across++) {
-            index = across - along * 4;
-            wall = GetWallAtOffset(x, y, direction, across, along);
-            if (GetCellWallStop(direction, 0, wall)) {
-                MergeViewOcclusionEntry(g_rightViewOcclusion, index + 16);
+            i16 index;
+            index = (-along) * 4 + across;
+            {
+                const u16 rightWall = GetWallAtOffset(x, y, direction, across, along);
+                if (GetCellWallStop(direction, 0, rightWall)) {
+                    MergeViewOcclusionEntry(g_rightViewOcclusion, index + 16);
+                }
+                if (GetCellWallStop(direction, 1, rightWall)) {
+                    MergeViewOcclusionEntry(g_rightViewOcclusion, index);
+                }
             }
-            if (GetCellWallStop(direction, 1, wall)) {
-                MergeViewOcclusionEntry(g_rightViewOcclusion, index);
-            }
-            wall = GetWallAtOffset(x, y, direction, opposite, along);
-            if (GetCellWallStop(direction, 0, wall)) {
-                MergeViewOcclusionEntry(g_leftViewOcclusion, index + 16);
-            }
-            if (GetCellWallStop(direction, 3, wall)) {
-                MergeViewOcclusionEntry(g_leftViewOcclusion, index);
+            {
+                const u16 leftWall = GetWallAtOffset(x, y, direction, opposite, along);
+                if (GetCellWallStop(direction, 0, leftWall)) {
+                    MergeViewOcclusionEntry(g_leftViewOcclusion, index + 16);
+                }
+                if (GetCellWallStop(direction, 3, leftWall)) {
+                    MergeViewOcclusionEntry(g_leftViewOcclusion, index);
+                }
             }
         }
     }

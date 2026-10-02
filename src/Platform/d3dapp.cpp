@@ -356,21 +356,30 @@ void SetRotateZMatrix(D3DMATRIX& m, D3DVALUE degrees) {
     m(1, 1) = c;
 }
 
-// @early-stop operand order: retail evaluates each row's y and z products
-// before the x product. Every grouping and operand order of the three terms
-// emits the same canonical x, z, y order here, and unused-declaration probes
-// move only the w-row schedule, so the order is translation-unit state.
+// @early-stop operand order: the homogeneous row's direct expression preserves
+// the retail divide schedule, but cl emits its products z, y, x instead of
+// the source's y, z, x order.
 RVA(0x00046060, 0x1cb)
 void ProjectVector(D3DMATRIX* matrix, D3DVECTOR* in, D3DVECTOR* out) {
     D3DVALUE w;
+    D3DVALUE yz;
 
-    out->x = in->x * (*matrix)(0, 0) + (in->y * (*matrix)(1, 0) + in->z * (*matrix)(2, 0))
-             + (*matrix)(3, 0);
-    out->y = in->x * (*matrix)(0, 1) + (in->y * (*matrix)(1, 1) + in->z * (*matrix)(2, 1))
-             + (*matrix)(3, 1);
-    out->z = in->x * (*matrix)(0, 2) + (in->y * (*matrix)(1, 2) + in->z * (*matrix)(2, 2))
-             + (*matrix)(3, 2);
-    w = in->x * (*matrix)(0, 3) + (in->y * (*matrix)(1, 3) + in->z * (*matrix)(2, 3))
+    yz = in->y * (*matrix)(1, 0);
+    yz += in->z * (*matrix)(2, 0);
+    yz += in->x * (*matrix)(0, 0);
+    const D3DVALUE& translationX = (*matrix)(3, 0);
+    out->x = yz + translationX;
+    yz = in->y * (*matrix)(1, 1);
+    yz += in->z * (*matrix)(2, 1);
+    yz += in->x * (*matrix)(0, 1);
+    const D3DVALUE& translationY = (*matrix)(3, 1);
+    out->y = yz + translationY;
+    yz = in->y * (*matrix)(1, 2);
+    yz += in->z * (*matrix)(2, 2);
+    yz += in->x * (*matrix)(0, 2);
+    const D3DVALUE& translationZ = (*matrix)(3, 2);
+    out->z = yz + translationZ;
+    w = (in->y * (*matrix)(1, 3) + in->z * (*matrix)(2, 3)) + in->x * (*matrix)(0, 3)
         + (*matrix)(3, 3);
     out->x /= w;
     out->y /= w;
@@ -1611,12 +1620,12 @@ void AcquireInput(BOOL acquire) {
 RVA(0x00048e60, 0xbb)
 GZ_ENUM_RETURN(MouseButtonBits, u8) PollMouseButtons(void) {
     DIMOUSESTATE state;
-    HRESULT result;
     u8 buttons = MOUSE_BUTTONS_NONE;
     u8 left;
     u8 right;
 
     if (g_mouseDevice != NULL) {
+        HRESULT result;
         for (;;) {
             result = g_mouseDevice->GetDeviceState(sizeof(state), &state);
             if (result != DIERR_INPUTLOST && result != DIERR_NOTACQUIRED

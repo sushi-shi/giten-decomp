@@ -104,7 +104,7 @@ b16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode);
 b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode);
 
 b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide);
-i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit);
+i32 ComputeSkillDamage(Character* attacker, Character* target, b16 hit);
 b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
 
 // Whether a resistance result suppresses the follow-up, reflects it to the

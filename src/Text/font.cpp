@@ -3630,7 +3630,7 @@ i16 DrawTextCell(i16 plane, u16 code, u16 attr, i16 px, i16 y) {
 
 RVA(0x00051d80, 0xb4)
 void RedrawTextPlane(i16 plane) {
-    TextPlane* p;
+    const TextPlane* p;
     i16 y;
     i16 x;
     i16 px;
@@ -3654,13 +3654,12 @@ void RedrawTextPlane(i16 plane) {
 // plane pointer. The attribute and next-position registers are swapped.
 RVA(0x00051e40, 0xa6)
 void RedrawTextRun(i16 plane, i16 x, i16 y, i16 count) {
-    TextPlane* p;
     i16 px = x * 8;
 
     if (plane == TEXT_PLANE_NONE) {
         return;
     }
-    p = GetTextPlane(plane);
+    const TextPlane* const p = GetTextPlane(plane);
     count += x;
     while (x < count) {
         DrawNextTextCell(plane, p, x, y, px);
@@ -4489,9 +4488,6 @@ void MoveTextPlaneCursorToPrevLine(i16 plane) {
 
 // Moves the text rows below the header up by one line step, blanks the freed
 // line and moves the cursor up with it.
-// @early-stop register residue: the attribute rows' index (row + step) is
-// formed in edi in retail and in edx here; every call matches. Size and
-// clamp spellings tried.
 RVA(0x00053190, 0x118)
 void ScrollTextPlaneText(i16 plane) {
     TextPlane* p;
@@ -6141,7 +6137,7 @@ void ReleasePartyPanel(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, b32 dragged) {
         if (GetFieldBattleActive() && !GetTickElapsed()) {
             return;
         }
-        if (PickPartyMember(slot - SCREEN_LAYER_FIRST_PANEL) != PARTY_MEMBER_READY) {
+        if (PickPartyMember(slot - SCREEN_LAYER_FIRST_PANEL) <= PARTY_MEMBER_UNAVAILABLE) {
             return;
         }
         s_shownCharacter = GetPartyMemberId(slot - SCREEN_LAYER_FIRST_PANEL);

@@ -57,4 +57,6 @@ static __inline i16 GetItemListCount(const ItemStackList* list) {
 
 #define GetItemListEntry(list, index) (&(list)->entries[(index)])
 
+#define GetItemListItem(list, index) GetItemStackItem(GetItemListEntry((list), (index)))
+
 #endif // GITEN_GAME_ITEMSTACK_H

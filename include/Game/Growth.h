@@ -59,7 +59,7 @@ void ShowStatPointPrompt(i16 points);
 
 // Rolls one of ten stats by cumulative weights from uncapped base stats.
 // This is used on the level-up path without manual stat allocation.
-i16 RollWeightedStat(Character* character);
+i16 RollWeightedStat(const Character* character);
 
 // @identity-TODO: the meanings of list sources 0..2 are unrecovered; only id
 // zero gets sources 1 and 2 when source is -1.

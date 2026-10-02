@@ -51,9 +51,9 @@ static __inline void LatchMouseButtonClick(
 
 RVA(0x00002a00, 0x5d)
 void LatchMouseClicks(void) {
-    GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = g_mousePosition.buttons;
-    i16 y = g_mousePosition.y;
-    i16 x = g_mousePosition.x;
+    const GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = g_mousePosition.buttons;
+    const i16 y = g_mousePosition.y;
+    const i16 x = g_mousePosition.x;
     LatchMouseButtonClick(
         buttons & MOUSE_LEFT_PRESSED,
         x,

@@ -397,25 +397,27 @@ b16 FinishScriptChoice(i16 window) {
 }
 
 RVA(0x0003a870, 0x12e)
-b16 OpNextChoice(i16 window) {
+b16 OpNextChoice(const i16 window) {
     i16 x, y;
-    ScriptChoice* choices = s_choices;
-    ScriptChoice* choice;
-    TextPoint size = GetTextPlaneSize(window);
-    i16 lineStep = GetTextPlaneLineStep(window);
+    ScriptChoice* choice = s_choices;
+    const TextPoint size = GetTextPlaneSize(window);
+    const i16 lineStep = GetTextPlaneLineStep(window);
     FinishScriptChoice(window);
     for (;;) {
-        x = (s_choiceIndex % s_choiceColumns) * s_choiceColumnWidth;
-        y = s_choiceIndex / s_choiceColumns;
+        i32 columnIndex;
+        i32 rowIndex;
+        const i16 columns = s_choiceColumns;
+        columnIndex = s_choiceIndex % columns;
+        rowIndex = s_choiceIndex / columns;
+        x = columnIndex * s_choiceColumnWidth;
+        y = rowIndex;
         x += GetActiveTextPlaneIndent(window);
         y = lineStep * y + s_choiceTop;
         if (y < size.y) {
             break;
         }
-        choice = choices;
-        while (choice) {
+        for (; choice; choice = choice->next) {
             choice->y -= lineStep;
-            choice = choice->next;
         }
         s_choiceTop -= lineStep;
         ScrollTextWindowLine(window);

@@ -662,8 +662,9 @@ void StartScreenFade(GZ_ENUM_PARAM(ScreenFadeMode, i16) mode, i16 steps) {
 
 #define SetScreenFadeAlpha(value)                                                                  \
     do {                                                                                           \
+        const D3DCOLOR color = g_fadeColor;                                                        \
         s_fadeAlpha = (value);                                                                     \
-        g_fadeColor = RGBA_SETALPHA(g_fadeColor, (value));                                         \
+        g_fadeColor = RGBA_SETALPHA(color, (value));                                               \
     } while (0)
 
 // Advances the running fade by one frame.
@@ -673,8 +674,6 @@ void StartScreenFade(GZ_ENUM_PARAM(ScreenFadeMode, i16) mode, i16 steps) {
 // (compound assignment, RGBA_SETALPHA, operand order) are flat or worse.
 RVA(0x00049dd0, 0xb3)
 void StepScreenFade(void) {
-    i32 alpha;
-
     if (g_fadeMode == SCREEN_FADE_NONE) {
         return;
     }
@@ -683,14 +682,15 @@ void StepScreenFade(void) {
     }
     s_screenCovered = false;
     s_fadeCountdown = s_fadeSteps;
+    i32 alpha = s_fadeAlpha;
     if (IsScreenFadeIn(g_fadeMode)) {
-        if (s_fadeAlpha <= 0) {
+        if (alpha <= 0) {
             g_fadeMode = SCREEN_FADE_NONE;
             return;
         }
-        alpha = s_fadeAlpha - 17;
+        alpha -= 17;
     } else {
-        if (s_fadeAlpha >= 0xff) {
+        if (alpha >= 0xff) {
             g_fadeMode = SCREEN_FADE_NONE;
             s_screenCovered = true;
             SetScreenFadeAlpha(0xff);
@@ -699,7 +699,7 @@ void StepScreenFade(void) {
             }
             return;
         }
-        alpha = s_fadeAlpha + 17;
+        alpha += 17;
     }
     SetScreenFadeAlpha(alpha);
 }
@@ -1741,7 +1741,7 @@ void RenderTBox(void) {
         D3DLVERTEX(D3DVECTOR(0.0f, 0.0f, 0.0f), 0xffffffff, 0xff000000, 0.0f, 0.0f),
     };
     TreasureBox* box;
-    MapPosition* position;
+    const MapPosition* position;
     i16 partyX;
     i16 partyY;
     BOOL textureSet;
@@ -1826,10 +1826,14 @@ void RenderTBox(void) {
                 dx += 40;
                 break;
         }
-        s_box[0].x = g_billboardX * DATA_COMPGEN(0x00064a78, 40.0);
-        s_box[1].x = -g_billboardX * 40.0;
-        s_box[0].z = g_billboardZ * 40.0;
-        s_box[1].z = -g_billboardZ * 40.0;
+        const double nearX = g_billboardX * DATA_COMPGEN(0x00064a78, 40.0);
+        const double farX = -g_billboardX * 40.0;
+        const double nearZ = g_billboardZ * 40.0;
+        const double farZ = -g_billboardZ * 40.0;
+        s_box[0].x = nearX;
+        s_box[1].x = farX;
+        s_box[0].z = nearZ;
+        s_box[1].z = farZ;
         s_box[2].x = s_box[1].x;
         s_box[2].z = s_box[1].z;
         s_box[3].x = s_box[0].x;
@@ -1897,13 +1901,13 @@ void RenderNPC(BOOL ownCellOnly) {
         D3DLVERTEX(D3DVECTOR(0.0f, 0.0f, 0.0f), 0xffffffff, 0xff000000, 1.0f, 1.0f),
         D3DLVERTEX(D3DVECTOR(0.0f, 0.0f, 0.0f), 0xffffffff, 0xff000000, 0.0f, 1.0f),
     };
-    MapPosition* position;
+    const MapPosition* position;
     i16 partyX;
     i16 partyY;
     i16 count;
     i16 npc;
     GZ_ENUM_LOCAL(UiHotspotKind, u32) kind;
-    i16* cell;
+    const i16* cell;
     i16 cellX;
     i16 cellY;
     i32 offsetX;
@@ -1982,12 +1986,12 @@ void RenderNPC(BOOL ownCellOnly) {
         dx = (cellX - partyX) * 320 + offsetX;
         dz = (partyY - cellY) * 320 + offsetZ;
         s_npc[1].x = -g_billboardX * DATA_COMPGEN(0x00064a98, 128.0);
-        s_npc[2].x = -g_billboardX * 128.0;
         s_npc[1].z = -g_billboardZ * 128.0;
+        s_npc[2].x = -g_billboardX * 128.0;
         s_npc[2].z = -g_billboardZ * 128.0;
         s_npc[0].x = g_billboardX * 128.0;
-        s_npc[3].x = g_billboardX * 128.0;
         s_npc[0].z = g_billboardZ * 128.0;
+        s_npc[3].x = g_billboardX * 128.0;
         s_npc[3].z = g_billboardZ * 128.0;
         TranslateBillboard(s_npc, dx, dz);
         if (g_deviceType != D3D_DEVICE_RAMP && !g_fixedLighting) {
@@ -2269,11 +2273,19 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                     height = 256;
                     SetQuadSpecular(s_enemy, 0xff000000);
                 }
-                double billboardWidth = width;
-                s_enemy[1].x = s_enemy[2].x = -g_billboardX * billboardWidth;
-                s_enemy[0].x = s_enemy[3].x = g_billboardX * billboardWidth;
-                s_enemy[0].z = s_enemy[3].z = g_billboardZ * billboardWidth;
-                s_enemy[1].z = s_enemy[2].z = -g_billboardZ * billboardWidth;
+                const double billboardWidth = width;
+                const double farLeftX = -g_billboardX * billboardWidth;
+                const double farRightX = g_billboardX * billboardWidth;
+                const double farRightZ = g_billboardZ * billboardWidth;
+                const double farLeftZ = -g_billboardZ * billboardWidth;
+                s_enemy[2].x = farLeftX;
+                s_enemy[3].x = farRightX;
+                s_enemy[3].z = farRightZ;
+                s_enemy[2].z = farLeftZ;
+                s_enemy[1].x = s_enemy[2].x;
+                s_enemy[0].x = s_enemy[3].x;
+                s_enemy[0].z = s_enemy[3].z;
+                s_enemy[1].z = s_enemy[2].z;
                 layer = GetObjectLayer(index) & 1;
                 s_enemy[2].y = s_enemy[3].y = lift - g_enemyTextures[layer][0].bottomMargin;
                 s_enemy[1].y = s_enemy[2].y + height;
@@ -2794,37 +2806,34 @@ i32 DrawSprites(void) {
 // The tests, rectangle spill, coordinate arithmetic and blit match.
 RVA(0x0004e090, 0x134)
 void DrawSceneSprites(void) {
-    i32 i;
-    LPDIRECTDRAWSURFACE surface;
-    RECT dest;
-    RECT source;
-    i32 x;
-    i32 y;
-    i32 lift;
-
     if (s_screenSaved) {
         return;
     }
-    for (i = SPRITE_SLOT_COUNT - 1; i >= 0; i--) {
-        if (GetSpriteSlotFrame(GetSpriteSlot(i)) == SPRITE_UNPLACED) {
+    for (i32 i = SPRITE_SLOT_COUNT - 1; i >= 0; i--) {
+        const SpriteSlot* slot = GetSpriteSlot(i);
+        LPDIRECTDRAWSURFACE surface;
+        RECT dest;
+        RECT source;
+        i32 x;
+        i32 y;
+        i32 lift;
+
+        if (GetSpriteSlotFrame(slot) == SPRITE_UNPLACED) {
             continue;
         }
         if (IsSpriteFrameIndexOutOfRange(
-                GetSpriteSlot(i)->group,
-                GetSpriteSlotFrame(GetSpriteSlot(i))
+                slot->group,
+                GetSpriteSlotFrame(slot)
             )) {
             continue;
         }
-        surface =
-            GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-                ->surface;
+        surface = GetSpriteSlotPicture(slot)->surface;
         if (surface == NULL) {
             continue;
         }
-        dest = GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-                   ->rect;
-        x = GetSpriteSlot(i)->x - dest.right / 2;
-        y = GetSpriteSlot(i)->y;
+        dest = GetSpriteSlotPicture(slot)->rect;
+        x = slot->x - dest.right / 2;
+        y = slot->y;
         lift = dest.bottom * 3 / 4;
         if (y > lift) {
             y -= lift;
@@ -2837,12 +2846,8 @@ void DrawSceneSprites(void) {
         dest.bottom += y;
         source.left = 0;
         source.top = 0;
-        source.right = GetPictureSurfaceWidth(
-            GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-        );
-        source.bottom = GetPictureSurfaceHeight(
-            GetSpriteFramePicture(GetSpriteSlot(i)->group, GetSpriteSlotFrame(GetSpriteSlot(i)))
-        );
+        source.right = GetPictureSurfaceWidth(GetSpriteSlotPicture(slot));
+        source.bottom = GetPictureSurfaceHeight(GetSpriteSlotPicture(slot));
         g_renderTarget->Blt(&dest, surface, &source, DDBLT_KEYSRC, NULL);
     }
 }
@@ -3786,8 +3791,6 @@ static u16 s_wallQuadIndices[6] = {0, 1, 3, 0, 3, 2};
 // the party (wrapping around the map edge in the areas that wrap): each
 // nonzero wall side except WALL_KIND_INVISIBLE_BARRIER becomes a quad textured
 // with the wall quarter (kinds up to 2 and 11) or the door quarter of the atlas.
-// @early-stop register selection: the wrapped-start LEAs exchange base/index
-// operands; their addresses and the ordered referents agree.
 RVA(0x0004f780, 0x40b)
 void BuildRoomGeometry(void) {
     i32 partyX;
@@ -5206,10 +5209,6 @@ HINSTANCE g_instance;
 // .bss (0x490ae8, 0x490aec); their declaration is unrecovered.
 RVA(0x00050f50, 0x1ad)
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int show) {
-    MSG message;
-    DWORD nextTick;
-    GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons;
-
     if (FindWindow("CLASSSDDSWIN", "DDSWIN")) {
         return 0;
     }
@@ -5246,8 +5245,9 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
         );
         return 3;
     }
-    nextTick = 0;
+    DWORD nextTick = 0;
     for (;;) {
+        MSG message;
 #ifdef GITEN_COMPAT
         PumpMessages();
 #else
@@ -5262,7 +5262,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
         if (timeGetTime() > nextTick) {
             nextTick = timeGetTime() + 1;
             if (g_moveState == MOVE_STATE_NONE && g_fadeMode == SCREEN_FADE_NONE) {
-                buttons = PollInput();
+                GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = PollInput();
                 if (StepGame()) {
                     ReleaseGraphics();
                     RestoreCursorClip(&g_savedClipRect);
@@ -5275,7 +5275,6 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
             RenderFrame();
         }
     }
-    return message.wParam;
 }
 
 // The vector constructor iterator that this TU's new[] expressions emit.

@@ -2,6 +2,8 @@
 
 [Reconstruction cleanup](reconstruction-cleanup.md) maps the KF1 and Gruntz
 review methods to Giten's live worklists and records unresolved source models.
+[Script and equipment matching boundaries](script-equipment-matching.md) records
+retail control-flow and caller evidence for unresolved Script/Game functions.
 
 ## Source typing
 
@@ -28,6 +30,20 @@ census, resolved cases, and remaining source-model examples.
 caller/callee evidence for retained narrowing sites.
 [Platform and graphics identities](platform-gfx-sound-identities.md) records
 remaining live function TODOs and the evidence needed to close them.
+[Non-Game function matching](non-game-function-matches.md) records the remaining
+compiler and access-shape walls in memory, graphics, platform, text and sound.
+[Character function matching](character-function-matches.md) records the three
+remaining character-unit compiler walls and the rejected null-pointer shape.
+[Fieldview and small function differences](fieldview-small-function-matches.md)
+records the remaining fieldview, scene-sprite, and banked-exact encoding
+differences inspected in the current pass.
+[Game function matching walls](game-function-walls.md) records open field
+exploration, occlusion, and fusion source questions.
+[Battle matching boundaries](battle-matching.md) records the remaining gun
+distribution and skill-damage instruction differences.
+[Banked exact function differences](banked-exact-function-dips.md) records
+current codegen differences in functions that matched exactly in an earlier
+source or translation-unit state.
 
 ## Layout and buffer boundaries
 

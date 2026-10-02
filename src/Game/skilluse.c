@@ -111,9 +111,11 @@ static i16 s_promptMode = -1;
 DATA(0x000690d8)
 static i16 s_promptSub = -1;
 
-// The combatant defeated by the last action (0x7fff for none).
+#define KNOCKOUT_NONE 0x7fff
+
+// The combatant defeated by the last action, or KNOCKOUT_NONE.
 DATA(0x000690dc)
-static i16 s_knockedOut = 0x7fff;
+static i16 s_knockedOut = KNOCKOUT_NONE;
 
 DATA(0x000690e0)
 static GZ_ENUM_STORAGE(BattleTallyIndex, i16) s_reportedTally = BATTLE_TALLY_NONE;
@@ -445,21 +447,15 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
 // target: rolls it, pays its cost, plays the hit sound, applies the change by
 // the action's result code (the draining skills move HP, MP or experience),
 // then handles knockouts and turns the struck object toward the party.
-// @early-stop CFG/register allocation: retail retains the fatal condition in
-// ebx and branches around zeroing it after the target-HP clamp; this build
-// keeps zero in ebx and the fatal condition in ebp. The later ChangePool
-// argument setup and tail joins still have different scheduling.
 RVA(0x0002ac90, 0x800)
 i16 ResolveCombatAction(void) {
     Character* attacker;
     Character* target;
     CurMax* targetHp;
-    i16 fatal;
-    i16 hit;
-    i16 kind;
+    GZ_ENUM_LOCAL(ConditionId, i16) initialFatalCondition;
 
     s_actionOutcome = ACTION_OUTCOME_DEFAULT;
-    s_knockedOut = 0x7fff;
+    s_knockedOut = KNOCKOUT_NONE;
     attacker = GetCombatant(g_actorId);
     if (attacker == NULL) {
         return 0;
@@ -472,7 +468,7 @@ i16 ResolveCombatAction(void) {
     s_actorHpBefore = attacker->pools.hp.cur;
     s_targetHpBefore = target->pools.hp.cur;
     targetHp = &target->pools.hp;
-    fatal = GetFatalCondition(GetCharacterConditions(target));
+    initialFatalCondition = GetFatalCondition(GetCharacterConditions(target));
     if (attacker->id == OBJECT_RECORD_MARDUK && target->id == OBJECT_RECORD_PRIMROSE) {
         SetFieldCounts(-2, -2);
     }
@@ -509,17 +505,19 @@ i16 ResolveCombatAction(void) {
         WearCachedSkill();
     }
 
-    hit = attacker->lastChange != 0;
-    attacker->lastChange = ScaleByFieldRate(g_actorId, attacker->pickObject, attacker->lastChange);
-    if (hit && attacker->lastChange == 0) {
-        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
+    {
+        const b16 hit = attacker->lastChange != 0;
+        attacker->lastChange = ScaleByFieldRate(g_actorId, attacker->pickObject, attacker->lastChange);
+        if (hit && attacker->lastChange == 0) {
+            SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
+        }
     }
     TickFieldCount(g_actorId, false);
     g_hpChange = attacker->lastChange;
     if (g_hpChange >= 0x7fff) {
         g_actionResult = BATTLE_ACTION_LETHAL;
     }
-    if (fatal && GetFatalCondition(GetCharacterConditions(target))) {
+    if (initialFatalCondition && GetFatalCondition(GetCharacterConditions(target))) {
         SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
         g_statusCondition = INFLICT_NONE;
         attacker->lastChange = 0;
@@ -586,6 +584,7 @@ i16 ResolveCombatAction(void) {
         AlertActor(target, ATTITUDE_VERY_HOSTILE);
         GetCharacterFlags(target)[1] |= 0x40;
         if (attacker->pickRole == PICK_ROLE_MAGIC) {
+            i16 kind;
             kind = GetCachedSkill(attacker->pickTarget)->parameters.type;
             if (kind == 2 || kind == 3 || kind == 4 || kind == 10 || kind == 11) {
                 return targetHp->cur;
@@ -601,18 +600,23 @@ i16 ResolveCombatAction(void) {
     return targetHp->cur;
 }
 
+// @early-stop register allocation: retail keeps the personal-flags pointer
+// in ebx and the condition pointer in ebp; this build swaps them. Calls,
+// branches, ordered referents and instruction counts agree.
 RVA(0x0002b490, 0x160)
 void ResolveKnockout(i16 previousHp, i16 id) {
-    Character* combatant = GetCombatant(id);
+    Character* const combatant = GetCombatant(id);
     if (!combatant) {
         return;
     }
     if (!TestCharacterFlag(combatant, ACTOR_FLAG_DESAMAN)) {
+        ConditionSet* conditions;
         if (previousHp == 0) {
             return;
         }
-        if (!GetFatalCondition(GetCharacterConditions(combatant))) {
-            if (HasCondition(GetCharacterConditions(combatant), CONDITION_ZOMBIE)) {
+        conditions = GetCharacterConditions(combatant);
+        if (!GetFatalCondition(conditions)) {
+            if (HasCondition(conditions, CONDITION_ZOMBIE)) {
                 if (combatant->pools.mp.cur != 0) {
                     return;
                 }
@@ -1115,7 +1119,7 @@ void PlayActionEffect(i16 stage) {
 RVA(0x0002c210, 0x3d)
 void ShowKnockoutMessage(void) {
     i16 savedTarget;
-    if (s_knockedOut != 0x7fff) {
+    if (s_knockedOut != KNOCKOUT_NONE) {
         savedTarget = g_targetId;
         g_targetId = s_knockedOut;
         if (s_knockedOut < 0) {

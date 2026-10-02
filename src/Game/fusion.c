@@ -600,8 +600,10 @@ i16 ResolveRandomFusion(void) {
 
 RVA(0x00026f90, 0x7c)
 i16 SelectRandomFusionDemon(void) {
-    i16 count = GetDemonCount();
+    const i16 count = GetDemonCount();
     i32 sum;
+    i32 averageRoll;
+    i32 demonRange;
     i16 index;
     i16 demon;
     for (;;) {
@@ -609,7 +611,9 @@ i16 SelectRandomFusionDemon(void) {
         for (index = 0; index < 3; index++) {
             sum += rand();
         }
-        demon = (sum / 3) * (count - HUMAN_ID_LIMIT) / 32768 + HUMAN_ID_LIMIT;
+        averageRoll = sum / 3;
+        demonRange = count - HUMAN_ID_LIMIT;
+        demon = averageRoll * demonRange / 32768 + HUMAN_ID_LIMIT;
         if (GetFusionRestrictedClass(demon)) {
             continue;
         }
@@ -691,7 +695,7 @@ static __inline void ClassifyFusionSlot(
     i16* other,
     i16* otherCount
 ) {
-    i16 side = GetFusionPairSide(slot);
+    const i16 side = GetFusionPairSide(slot);
     if (side == 0) {
         secondary[(*secondaryCount)++] = slot;
     } else if (side == 1) {
@@ -710,14 +714,14 @@ static __inline void ClassifyFusionSlot(
     } while (0)
 
 RVA(0x00027180, 0x1c0)
-i16 ResolveThreeSpecialRaceFusion(i16 first, i16 second, i16 third) {
+i16 ResolveThreeSpecialRaceFusion(const i16 first, const i16 second, const i16 third) {
+    i16 result = FindPrimaryFusionComplement(first, second, third);
     i16 primary[3];
     i16 secondary[3];
     i16 other[3];
     i16 primaryCount;
     i16 secondaryCount;
     i16 otherCount;
-    i16 result = FindPrimaryFusionComplement(first, second, third);
     if (result <= 1) {
         result = FindSecondaryFusionComplement(first, second, third);
     }
@@ -1022,7 +1026,7 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
     i16 resultLevel;
     u8 clampedLevel;
     FusionSummary summary;
-    FusionSummary* result = &summary;
+    FusionSummary* const output = &summary;
     GetFusionResult(&demon, &kind);
     sourceLevel = GetRosterCharacter(first)->level;
     InitFusionSummary(&summary);
@@ -1035,8 +1039,8 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
     }
     clampedLevel = ClampLevel(GetDemonLevel(demon));
     resultLevel = clampedLevel;
-    result->fields.highFlag = GetDemonFlagHigh(demon);
-    result->fields.lowFlag = GetDemonFlagLow(demon);
+    output->fields.highFlag = GetDemonFlagHigh(demon);
+    output->fields.lowFlag = GetDemonFlagLow(demon);
     SetFusionSummaryKind(&summary, kind, resultLevel, sourceLevel);
     if (GetCharacter(0)->level + s_fusionLevelAllowance < resultLevel) {
         summary.fields.overLevel = 1;
@@ -1188,9 +1192,9 @@ i16 GetFusionClassPair(i16 first, i16 second) {
 
 RVA(0x00028380, 0x78)
 i16 GetFusionRaceEntry(i16 index, i16 slot) {
-    i16 race = GetFusionSlotRace(slot);
-    FusionRaceRows* table = HandleReadPtr(s_fusionRaceRows);
-    i16 count = table->count;
+    const i16 race = GetFusionSlotRace(slot);
+    const FusionRaceRows* table = HandleReadPtr(s_fusionRaceRows);
+    const i16 count = table->count;
     i16 row;
     for (row = 0; row < count; row++) {
         if (table->rows[row].values[0] == race) {

@@ -19,42 +19,30 @@
     } while (0)
 
 RVA(0x00059180, 0x24f)
-b32 ClickHotspotAt(i32 x, i32 y) {
-    i32 hit;
-    i32 i;
-    GZ_ENUM_LOCAL(ViewDirection, i16) direction;
-    Hotspot* hotspot;
-    Texture* texture;
-    u8* pixels;
-    u32 width;
-    u32 height;
-    i32 u;
-    i32 v;
-    i32 candidateCoord;
-    i32 selectedCoord;
-
+b32 ClickHotspotAt(const i32 x, const i32 y) {
     if (GetTextPlane(0)->visible) {
         return false;
     }
     if (y > VIEW_HEIGHT - 1) {
         return false;
     }
-    hit = HOTSPOT_NONE;
-    direction = GetMapPosition()->direction;
-    for (i = g_hotspotCount - 1; i >= 0; i--) {
-        if (GetHotspot(i)->rect.left > x || GetHotspot(i)->rect.right <= x
-            || GetHotspot(i)->rect.top > y || GetHotspot(i)->rect.bottom <= y) {
+    i32 hit = HOTSPOT_NONE;
+    const GZ_ENUM_LOCAL(ViewDirection, i16) direction = GetMapPosition()->direction;
+    for (i32 i = g_hotspotCount - 1; i >= 0; i--) {
+        const Hotspot* candidate = GetHotspot(i);
+        if (candidate->rect.left > x || candidate->rect.right <= x
+            || candidate->rect.top > y || candidate->rect.bottom <= y) {
             continue;
         }
-        texture = GetHotspot(i)->texture;
-        pixels = GetBitmapPixels(texture->image);
-        width = texture->width;
-        height = min(256, width);
-        u = (x - GetHotspot(i)->rect.left) * width
-            / (GetHotspot(i)->rect.right - GetHotspot(i)->rect.left);
-        v = height
-            - (y - GetHotspot(i)->rect.top) * height
-                  / (GetHotspot(i)->rect.bottom - GetHotspot(i)->rect.top)
+        const Texture* texture = candidate->texture;
+        const u8* pixels = GetBitmapPixels(texture->image);
+        const u32 width = texture->width;
+        const u32 height = min(256, width);
+        i32 u = (x - candidate->rect.left) * width
+            / (candidate->rect.right - candidate->rect.left);
+        i32 v = height
+            - (y - candidate->rect.top) * height
+                  / (candidate->rect.bottom - candidate->rect.top)
             - 1;
         ClampHotspotTexel(u, texture->width);
         ClampHotspotTexel(v, static_cast<i32>(height));
@@ -62,23 +50,25 @@ b32 ClickHotspotAt(i32 x, i32 y) {
             continue;
         }
         if (hit != HOTSPOT_NONE) {
-            hotspot = GetHotspot(hit);
+            const Hotspot* selected = GetHotspot(hit);
+            i32 candidateCoord;
+            i32 selectedCoord;
             switch (direction) {
                 case VIEW_NORTH:
-                    selectedCoord = hotspot->targetY;
-                    candidateCoord = GetHotspot(i)->targetY;
+                    selectedCoord = selected->targetY;
+                    candidateCoord = candidate->targetY;
                     goto nearerGreater;
                 case VIEW_EAST:
-                    selectedCoord = hotspot->targetX;
-                    candidateCoord = GetHotspot(i)->targetX;
+                    selectedCoord = selected->targetX;
+                    candidateCoord = candidate->targetX;
                     goto nearerLess;
                 case VIEW_SOUTH:
-                    selectedCoord = hotspot->targetY;
-                    candidateCoord = GetHotspot(i)->targetY;
+                    selectedCoord = selected->targetY;
+                    candidateCoord = candidate->targetY;
                     goto nearerLess;
                 default:
-                    selectedCoord = hotspot->targetX;
-                    candidateCoord = GetHotspot(i)->targetX;
+                    selectedCoord = selected->targetX;
+                    candidateCoord = candidate->targetX;
                     goto nearerGreater;
             nearerGreater:
                 if (candidateCoord > selectedCoord) {
@@ -98,7 +88,7 @@ b32 ClickHotspotAt(i32 x, i32 y) {
     if (hit < 0) {
         return false;
     }
-    hotspot = GetHotspot(hit);
+    const Hotspot* hotspot = GetHotspot(hit);
     switch (hotspot->kind) {
         case HOTSPOT_BOX:
             StartBoxScene(static_cast<TreasureBox*>(hotspot->data));

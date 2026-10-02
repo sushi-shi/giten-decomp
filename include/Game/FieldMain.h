@@ -88,7 +88,12 @@ void LoadFieldEventTable(void);
 
 void MergeViewOcclusionMask(u8** table, i16 index, void* destination);
 // @identity-TODO: the fourth argument is passed as zero and unused here.
-void BuildViewOcclusion(i16 x, i16 y, i16 direction, i16 mode);
+void BuildViewOcclusion(
+    i16 x,
+    i16 y,
+    GZ_ENUM_PARAM(ViewDirection, i16) direction,
+    i16 unused
+);
 void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction);
 void MarkFieldViewCells(i16 unused, i16 x, i16 y, i16 direction);
 i16 GetViewVisibility(i16 across, i16 along, i16 side);

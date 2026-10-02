@@ -918,8 +918,6 @@ b16 RunDdsSummon(void) {
 RVA(0x00017520, 0x1cc)
 GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
     i16 step;
-    i16 previous;
-    Character* character;
     switch (GetCursorLevel0(&s_summonCursor)) {
         case DDS_SUMMON_CURSOR_PICK_ROSTER:
             step = PickDdsRosterMember(GetCursorLevel1(&s_summonCursor));
@@ -931,7 +929,8 @@ GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
                 NextCursorLevel0(&s_summonCursor);
             }
             break;
-        case DDS_SUMMON_CURSOR_PICK_PARTY_SLOT:
+        case DDS_SUMMON_CURSOR_PICK_PARTY_SLOT: {
+            Character* character;
             if (!PollPartySlotSelection(PARTY_SLOT_ANY)) {
                 break;
             }
@@ -947,26 +946,31 @@ GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
             s_ddsPartySlot = g_selectedObjectId;
             NextCursorLevel0(&s_summonCursor);
             break;
+        }
         case DDS_SUMMON_CURSOR_TRANSITION:
             NextCursorLevel0(&s_summonCursor);
             break;
-        case DDS_SUMMON_CURSOR_EXCHANGE:
+        case DDS_SUMMON_CURSOR_EXCHANGE: {
+            i16 replacedRosterSlot;
+            Character* summoned;
+            Character* replaced;
             NextCursorLevel0(&s_summonCursor);
-            previous = ExchangePartySlot(s_ddsPartySlot, s_ddsRosterSlot);
-            character = GetRosterCharacter(s_ddsRosterSlot);
-            if (character != NULL) {
-                ClearActionWait(GetCharacterActionWait(character));
-                AddMagnetite(GetRosterCharacter(ROSTER_LEADER), -GetSummonMagnetiteCost(character));
-                ResetBattleTally(character);
+            replacedRosterSlot = ExchangePartySlot(s_ddsPartySlot, s_ddsRosterSlot);
+            summoned = GetRosterCharacter(s_ddsRosterSlot);
+            if (summoned != NULL) {
+                ClearActionWait(GetCharacterActionWait(summoned));
+                AddMagnetite(GetRosterCharacter(ROSTER_LEADER), -GetSummonMagnetiteCost(summoned));
+                ResetBattleTally(summoned);
             }
-            character = GetRosterCharacter(previous);
-            if (character != NULL) {
-                ClearBattleConditions(GetCharacterConditions(character));
-                ResetBattleTally(character);
+            replaced = GetRosterCharacter(replacedRosterSlot);
+            if (replaced != NULL) {
+                ClearBattleConditions(GetCharacterConditions(replaced));
+                ResetBattleTally(replaced);
             }
             MarkPickDone();
             PlaySoundEffect(0x20);
             break;
+        }
         case DDS_SUMMON_CURSOR_FINISHED:
             return DDS_ACTION_COMPLETED;
     }
@@ -1707,14 +1711,14 @@ b16 ApplyLevelStatGrowth(Character* character) {
 
 // Nonzero when one more point would take `stat` past its cap.
 RVA(0x000189d0, 0x24)
-i16 IsStatCapped(Character* character, i16 stat) {
+i16 IsStatCapped(const Character* character, i16 stat) {
     i16 raised = GetBaseStat(character, stat) + 1;
     return raised - ClampTo100(raised);
 }
 
 // How many of the ten stats can still take a point.
 RVA(0x00018a00, 0x2b)
-i16 CountRaisableStats(Character* character) {
+i16 CountRaisableStats(const Character* character) {
     i16 count = 0;
     i16 i;
     for (i = 0; i < STAT_FORTUNE; i++) {
@@ -1726,7 +1730,7 @@ i16 CountRaisableStats(Character* character) {
 // `stat`, or a random stat when negative, re-rolled until one can take a
 // point; -1 when none can.
 RVA(0x00018a30, 0x67)
-i16 ResolveRaisableStat(Character* character, i16 stat) {
+i16 ResolveRaisableStat(const Character* character, i16 stat) {
     if (!CountRaisableStats(character)) {
         return -1;
     }
@@ -2036,10 +2040,10 @@ void ShowStatPointPrompt(i16 points) {
     RepaintTextPlane(s_pointPrompt, -2);
 }
 
-static i16* BuildStatWeightRanges(Character* character, i16* ranges);
+static i16* BuildStatWeightRanges(const Character* character, i16* ranges);
 
 RVA(0x00019370, 0x5e)
-i16 RollWeightedStat(Character* character) {
+i16 RollWeightedStat(const Character* character) {
     i16 stat;
     i16 draw;
     if (BuildStatWeightRanges(character, s_statPicks) == NULL) {
@@ -2058,28 +2062,28 @@ i16 RollWeightedStat(Character* character) {
 // rotate across ebx, esi and edi. Calls, branches, stores and arithmetic
 // align; cursor initialization order does not change the allocation.
 RVA(0x000193d0, 0x9a)
-static i16* BuildStatWeightRanges(Character* character, i16* ranges) {
+static i16* BuildStatWeightRanges(const Character* character, i16* ranges) {
     i16 total = 0;
-    i16* range = ranges;
+    i16* range;
     i16 stat;
-    stat = 0;
-    while (stat < 10) {
+    for (stat = 0, range = ranges; stat < STAT_FORTUNE; stat++, range++) {
         if (IsStatCapped(character, stat)) {
             *range = -1;
         } else {
-            if (GetBaseStat(character, stat) == 0) {
-                *range = ++total;
+            const i16 baseStat = GetBaseStat(character, stat);
+            if (baseStat == 0) {
+                total++;
+                *range = total;
             } else {
-                *range = total += GetBaseStat(character, stat) * 10;
+                total += baseStat * 10;
+                *range = total;
             }
         }
-        stat++;
-        range++;
     }
     if (total == 0) {
         return NULL;
     }
-    for (stat = 0; stat < 10; stat++) {
+    for (stat = 0; stat < STAT_FORTUNE; stat++) {
         if (ranges[stat] != -1) {
             ranges[stat] = ranges[stat] * 10000 / total;
         }
@@ -2639,51 +2643,44 @@ static __inline void AddItemUseMenuLine(MenuBox* menu, i16 item, i16 disabled) {
 
 RVA(0x0001a240, 0x1bc)
 void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
-    ItemStackList* entries = menu->items.itemList;
-    ItemRecord* record;
-    GZ_ENUM_LOCAL(SkillUseModes, u16) modes;
+    ItemStackList* const entries = menu->items.itemList;
     switch (event) {
-        case MENU_EVENT_ADD_ROW:
+        case MENU_EVENT_ADD_ROW: {
             sprintf(
                 g_scratchBuffer,
                 "%-20.20s%2d",
-                GetLoadedRecordName(GetItemStackItem(GetItemListEntry(entries, index))),
+                GetLoadedRecordName(GetItemListItem(entries, index)),
                 GetItemStackCount(GetItemListEntry(entries, index))
             );
-            if ((GetItemStackItem(GetItemListEntry(entries, index)) == ITEM_KUSHINADA_JAR
+            if ((GetItemListItem(entries, index) == ITEM_KUSHINADA_JAR
                  && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_KUSHINADA_JAR_USED))
-                || (GetItemStackItem(GetItemListEntry(entries, index)) == ITEM_SOMA_CUP
+                || (GetItemListItem(entries, index) == ITEM_SOMA_CUP
                     && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_SOMA_CUP_USED))) {
                 AddItemUseMenuLine(
                     menu,
-                    GetItemStackItem(GetItemListEntry(entries, index)),
+                    GetItemListItem(entries, index),
                     MENU_LINE_DISABLED
                 );
                 return;
             }
-            record = GetLoadedRecord(GetItemStackItem(GetItemListEntry(entries, index)));
-            modes = GetItemUseModes(record);
-            if (ItemUseInvokesSkill(record->kind)) {
-                modes = GetSkillUseModes(GetSkillView(GetItemSkillId(record)));
-            }
-            if (CheckSkillArea(GetItemSkillId(record)) != SKILL_AREA_ALLOWED) {
-                AddItemUseMenuLine(
-                    menu,
-                    GetItemStackItem(GetItemListEntry(entries, index)),
-                    MENU_LINE_DISABLED
-                );
+            {
+                const ItemRecord* record = GetLoadedRecord(GetItemListItem(entries, index));
+                GZ_ENUM_LOCAL(SkillUseModes, u16) modes = GetItemUseModes(record);
+                if (ItemUseInvokesSkill(record->kind)) {
+                    modes = GetSkillUseModes(GetSkillView(GetItemSkillId(record)));
+                }
+                if (CheckSkillArea(GetItemSkillId(record)) != SKILL_AREA_ALLOWED) {
+                    AddItemUseMenuLine(menu, GetItemListItem(entries, index), MENU_LINE_DISABLED);
+                    return;
+                }
+                if (IsSkillUsableNow(modes) != 1) {
+                    AddItemUseMenuLine(menu, GetItemListItem(entries, index), MENU_LINE_DISABLED);
+                    return;
+                }
+                AddItemUseMenuLine(menu, GetItemListItem(entries, index), 0);
                 return;
             }
-            if (IsSkillUsableNow(modes) != 1) {
-                AddItemUseMenuLine(
-                    menu,
-                    GetItemStackItem(GetItemListEntry(entries, index)),
-                    MENU_LINE_DISABLED
-                );
-                return;
-            }
-            AddItemUseMenuLine(menu, GetItemStackItem(GetItemListEntry(entries, index)), 0);
-            return;
+        }
         case MENU_EVENT_BEGIN_PAGE:
             AddMenuLine(
                 menu->plane,
@@ -2709,17 +2706,11 @@ static __inline void SelectItemUserAsTarget(void) {
 // pick its target (a skill-bearing item, kind 11 or 19, targets as its skill),
 // then hand the user's pick to the action prompt. Returns 0.
 // @early-stop instruction scheduling: in the final phase's skill arm retail
-// reads the pick flags into bl before storing pickTarget; cl here keeps the
-// flags update after the store, the statement order PC-98 shows.
+// reads pickFlags into bl after the skill byte; here the prior flags stay in
+// cl across the action and target stores. Both preserve pickTargetHigh.
 RVA(0x0001a400, 0x3e0)
 b16 RunItemUse(void) {
-    ItemRecord* record;
-    Character* user;
-    i16 flags;
-    i16 range;
     i16 kind;
-    i16 picked;
-    i16 position;
 
     switch (GetGamePhase()) {
         case ITEM_USE_PHASE_OPEN:
@@ -2736,7 +2727,8 @@ b16 RunItemUse(void) {
             s_useMemberId = -1;
             return false;
 
-        case ITEM_USE_PHASE_PICK_ITEM:
+        case ITEM_USE_PHASE_PICK_ITEM: {
+            i16 picked;
             picked = RunListMenu(s_itemMenu);
             if (picked == LIST_MENU_CANCELLED) {
                 PrevGamePhase();
@@ -2749,8 +2741,13 @@ b16 RunItemUse(void) {
             NextGamePhase();
             s_usePosition = FindFirstAbleMemberPosition();
             return false;
+        }
 
-        case ITEM_USE_PHASE_PICK_TARGET:
+        case ITEM_USE_PHASE_PICK_TARGET: {
+            const ItemRecord* record;
+            i16 flags;
+            i16 range;
+            i16 picked;
             record = GetLoadedRecord(s_useItem);
             kind = record->kind;
             if (ItemUseInvokesSkill(kind)) {
@@ -2811,25 +2808,31 @@ b16 RunItemUse(void) {
             }
             g_targetId = g_selectedObjectId;
             return false;
+        }
 
         case ITEM_USE_PHASE_DESTROY_MENU:
             NextGamePhase();
             s_itemMenu = DestroyMenuBox(s_itemMenu);
             return false;
 
-        case ITEM_USE_PHASE_PROMPT_ACTION:
+        case ITEM_USE_PHASE_PROMPT_ACTION: {
+            Character* user;
+            const ItemRecord* record;
+            i16 position;
             NextGamePhase();
             position = FindPartyPositionOfId(s_useMemberId);
             user = GetPartyCharacter(position);
             record = GetLoadedRecord(s_useItem);
             kind = record->kind;
             if (ItemUseInvokesSkill(kind)) {
+                u8 previousFlags;
                 g_actorId = PartyCombatantId(position);
                 user->pickObject = g_targetId;
                 user->pickRole = PICK_ROLE_MAGIC;
+                previousFlags = user->pickFlags;
                 g_actionId = GetItemSkillId(record);
                 user->pickTarget = GetItemSkillId(record);
-                user->pickFlags |= PICK_ITEM_SKILL;
+                user->pickFlags = previousFlags | PICK_ITEM_SKILL;
                 user->pickItem = s_useItem;
             } else {
                 g_actorId = PartyCombatantId(position);
@@ -2840,6 +2843,7 @@ b16 RunItemUse(void) {
             }
             PushFieldUsePrompt();
             return false;
+        }
 
         case ITEM_USE_PHASE_FINISH:
             SetGamePhase(ITEM_USE_PHASE_CLOSE);

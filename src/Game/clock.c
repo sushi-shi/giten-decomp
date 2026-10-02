@@ -540,24 +540,25 @@ void LoadAreaMap(i16 area, i16 level) {
 
 // Decodes the area-map record into `map`: the name, then each level's header
 // (its list offsets rebased to pointers) and its data.
-// @early-stop register allocation: retail keeps the level index in bp and the
-// record in edx, spilling `map` (so the two data copies stay unmerged); every
-// ordering and local tried (offset/src/base locals, declaration order, shift
-// source, a next-index local) keeps `map` in ebx and spills the index.
 RVA(0x00021470, 0x206)
 void DecodeAreaMap(AreaMap* map, u8* record) {
-    AreaRecord* head = (AreaRecord*)record;
-    u16 shift;
+    const AreaRecord* head = (const AreaRecord*)record;
+    u16 headerGrowth;
     i16 i;
     map->name = (char*)record + head->nameOffset;
     map->levelCount = head->levelCount;
-    shift = map->levelCount * 2 + 2;
+    headerGrowth = (map->levelCount + 1) * sizeof(u16);
     for (i = 0; i < map->levelCount; i++) {
-        AreaLevelRecord* src = (AreaLevelRecord*)(record + GetAreaLevelOffset(head, i));
-        AreaLevel* level = (AreaLevel*)((u8*)map + i * 28 + shift + GetAreaLevelOffset(head, i));
+        const u16* offsets = head->levelOffsets + i;
+        const AreaLevelRecord* src = (const AreaLevelRecord*)(record + offsets[0]);
+        AreaLevel* level = (AreaLevel*)(
+            (u8*)map + i * (sizeof(AreaLevel) - sizeof(AreaLevelRecord)) + headerGrowth
+            + offsets[0]
+        );
         u8* base;
         map->levels[i] = level;
-        base = (u8*)map + (i + 1) * 28 + shift;
+        base = (u8*)map + (i + 1) * (sizeof(AreaLevel) - sizeof(AreaLevelRecord))
+               + headerGrowth;
         level->blockBits = base + src->blockBitsOffset;
         level->walls = (u16*)(base + src->wallsOffset);
         level->warps = (WarpCell*)(base + src->warpsOffset);
@@ -583,14 +584,11 @@ void DecodeAreaMap(AreaMap* map, u8* record) {
         level->music = src->music;
         level->defaultMusic = src->defaultMusic;
         level->roomBits = base + src->roomBitsOffset;
-        if (i < map->levelCount - 1) {
-            memcpy(
-                level + 1,
-                src + 1,
-                GetAreaLevelOffset(head, i + 1) - GetAreaLevelOffset(head, i)
-            );
+        if (i + 1 < map->levelCount) {
+            size_t span = offsets[1] - offsets[0];
+            memcpy(level + 1, src + 1, span);
         } else {
-            memcpy(level + 1, src + 1, 0x2800 - GetAreaLevelOffset(head, i));
+            memcpy(level + 1, src + 1, sizeof s_areaRecord - offsets[0]);
         }
     }
 }
@@ -1103,7 +1101,7 @@ void ClampMapPosition(i16* x, i16* y) {
 
 #define ReturnWarpCodeAt(firstWarp, mapX, mapY, codeFlags)                                         \
     do {                                                                                           \
-        WarpCell* warp;                                                                            \
+        const WarpCell* warp;                                                                      \
         for (warp = (firstWarp); !IsCellListEnd(&warp->head); warp++) {                            \
             if ((mapX) == warp->head.x && (mapY) == warp->head.y) {                                \
                 return warp->head.code | (codeFlags);                                              \
@@ -1133,18 +1131,21 @@ i16 GetWarpCodeAtOffset(i16 dx, i16 dy) {
 // place or x/dx and dy/y mixes each lose more.
 RVA(0x00022460, 0xd4)
 i16 GetCellAtOffset(i16 dx, i16 dy) {
-    if (g_areaLevel == NULL) {
+    const AreaLevel* level = g_areaLevel;
+    const MapPosition* position;
+    if (level == NULL) {
         return 0;
     }
-    if (g_party.field.pos.x == 2 && g_party.field.pos.y == 5
-        && g_party.field.pos.area == MAP_AREA_SHINJUKU_TOCHO && g_party.field.pos.level == 6
+    position = &g_party.field.pos;
+    if (position->x == 2 && position->y == 5
+        && position->area == MAP_AREA_SHINJUKU_TOCHO && position->level == 6
         && dx == -1 && dy == 0) {
         return CELL_STAIRS_UP;
     }
-    ReturnWarpCodeAt(g_areaLevel->warps, g_party.field.pos.x, g_party.field.pos.y, 8);
-    dx += g_party.field.pos.x;
-    dy += g_party.field.pos.y;
-    ReturnWarpCodeAt(g_areaLevel->warps, dx, dy, 0);
+    ReturnWarpCodeAt(level->warps, position->x, position->y, 8);
+    dx += position->x;
+    dy += position->y;
+    ReturnWarpCodeAt(level->warps, dx, dy, 0);
     return 0;
 }
 

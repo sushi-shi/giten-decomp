@@ -74,12 +74,12 @@ witness, not evidence for this compiler's code shape.
 
 ## Tests and repository hygiene
 
-- Matching/modeling runs no test suites: compile/compare is verification.
-  For tooling, run relevant retained `test_*.py` modules from `scripts/` with
-  `python3 -m unittest giten.<pkg>.test_<name>`, then the affected command.
-- Keep tests for scoring, banking, masked data identity, and safe writes.
-  Do not add retail snapshots, source-spelling or CLI-output tests, or require
-  a test for every gate.
+- Matching/modeling uses compile/compare for verification. Keep only small
+  controls for scoring, banking, data identity, the data-matching switch, and
+  safe writes; codec bounds have one Rust control. For tooling changes, run
+  the relevant retained control and the affected command. Do not add retail
+  snapshots, source-spelling or CLI-output tests, or require a test for every
+  gate.
 - Inputs go in `config/`, generated artifacts in ignored `build/`, history in
   Git. Docs explain current usage/contracts, not campaigns or score snapshots.
   [Patterns](docs/patterns/README.md) need distinct, reproducible mechanisms.

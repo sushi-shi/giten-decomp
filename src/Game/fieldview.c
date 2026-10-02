@@ -644,13 +644,17 @@ MapCoord GetWorldCellAt(i16 x, i16 y) {
 // The world cell under the mouse (-1/-1 outside the 640x328 view).
 RVA(0x0000cdc0, 0x83)
 MapCoord GetMouseWorldCell(void) {
-    i16 block = GetWorldBlock();
+    const i16 blockIndex = GetWorldBlock();
     MapCoord cell;
     cell.y = MAP_COORD_NONE;
     cell.x = MAP_COORD_NONE;
     if (IsPointInWorldView(g_mousePosition.x, g_mousePosition.y)) {
-        cell.x = g_mousePosition.x + 0x70 + block % WORLD_BLOCK_COLUMNS * WORLD_BLOCK_WIDTH;
-        cell.y = g_mousePosition.y + 0x24 + block / WORLD_BLOCK_COLUMNS * WORLD_BLOCK_HEIGHT;
+        MapCoord origin;
+        origin.x = g_mousePosition.x + 0x70;
+        origin.y = g_mousePosition.y + 0x24;
+        origin.x += blockIndex % WORLD_BLOCK_COLUMNS * WORLD_BLOCK_WIDTH;
+        origin.y += blockIndex / WORLD_BLOCK_COLUMNS * WORLD_BLOCK_HEIGHT;
+        cell = origin;
     }
     return cell;
 }

@@ -244,6 +244,7 @@ void LoadWorldTravelCandidates(
     i16 column;
     u8 code = 0;
     for (row = -WORLD_TRAVEL_RADIUS; row <= WORLD_TRAVEL_RADIUS; row++) {
+        u8* scoreRow = &s_travelScores[row + WORLD_TRAVEL_RADIUS][WORLD_TRAVEL_RADIUS];
         for (column = -WORLD_TRAVEL_RADIUS; column <= WORLD_TRAVEL_RADIUS; column++) {
             switch (direction) {
                 case VIEW_NORTH:
@@ -260,7 +261,7 @@ void LoadWorldTravelCandidates(
                     break;
             }
             code = g_worldTravelTerrainFlags[code];
-            s_travelScores[row + WORLD_TRAVEL_RADIUS][column + WORLD_TRAVEL_RADIUS] = code;
+            scoreRow[column] = code;
         }
     }
 }

@@ -66,6 +66,7 @@
 #include <Game/StatusScreen.h>
 #include <Game/TreasureBox.h>
 #include <Game/WorldMap.h>
+#include <Gfx/ScreenSave.h>
 #include <Gfx/Background.h>
 #include <Gfx/Render.h>
 #include <Gfx/ScreenLayer.h>
@@ -844,7 +845,7 @@ void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) eve
                 for (i = 0; i < menu->itemCount; i++) {
                     if (GetItemStackCount(GetItemListEntry(list, i))) {
                         AddToPool(
-                            GetItemStackItem(GetItemListEntry(list, i)),
+                            GetItemListItem(list, i),
                             GetItemStackCount(GetItemListEntry(list, i))
                         );
                     }
@@ -976,7 +977,7 @@ i32 GetItemMenuTotal(ItemStackList* list, i32 numerator, i32 denominator) {
     i16 i;
     i32 total = 0;
     for (i = 0; i < GetItemListCount(list); i++) {
-        ItemRecord* record = GetLoadedRecord(GetItemStackItem(GetItemListEntry(list, i)));
+        ItemRecord* record = GetLoadedRecord(GetItemListItem(list, i));
         total += ScaleItemPrice(
             GetItemRecordPrice(record),
             numerator,
@@ -1033,7 +1034,7 @@ void AdjustItemMenuCount(MenuBox* menu, i16 row, i16 delta, i16 limit) {
     i16 count;
     i16 attr;
     i32 total;
-    if (GetItemKind(GetItemStackItem(GetItemListEntry(list, index))) == ITEM_KIND_AMMO) {
+    if (GetItemKind(GetItemListItem(list, index)) == ITEM_KIND_AMMO) {
         delta *= 10;
     }
     count = AddClampShort(GetItemStackCount(GetItemListEntry(list, index)), delta, 0, limit);
@@ -1475,8 +1476,6 @@ i16 ApplyTraining(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind
 
 // Clamps the three affiliations to 0..3 (-1 otherwise), drops repeats and
 // packs the remaining ones to the front.
-// @early-stop: retail addresses the affiliation bytes as [character + index];
-// the spellings tried give [index + character].
 RVA(0x0001c830, 0x9b)
 void NormalizeAffiliations(Character* character) {
     i16 i;
@@ -2544,28 +2543,24 @@ i16 WriteAutomapAreas(FILE* fp) {
 
 RVA(0x0001e520, 0x1d0)
 i16 LoadAutomapAreas(FILE* fp) {
-    i16 errors;
+    i16 errors = MAP_AREA_COUNT;
     i16 area;
-    i16 level;
-    i16 count;
-    i16 bytes;
-    i32 handle;
-    i32 bitmap;
-    AutomapLevelHeader levelHeader;
-    AutomapBitmapHeader bitmapHeader;
-    AutomapLevels* levels;
-    AutomapBitmap* data;
     StoreAutomapLevel();
     FreeAutomap();
     EnsureAutomapStore();
-    errors = MAP_AREA_COUNT - fread(s_areas, 4, MAP_AREA_COUNT, fp);
+    errors -= fread(s_areas, 4, MAP_AREA_COUNT, fp);
     if (errors) {
         return errors;
     }
     for (area = 0; area < MAP_AREA_COUNT; area++) {
         if (GetAutomapAreaHandle(area)) {
-            errors += 1 - fread(&levelHeader, 4, 1, fp);
-            count = levelHeader.count;
+            i16 level;
+            i32 handle;
+            AutomapLevelHeader levelHeader;
+            AutomapLevels* levels;
+            const size_t readCount = fread(&levelHeader, 4, 1, fp);
+            const i16 count = levelHeader.count;
+            errors += 1 - readCount;
             handle = CreateArrayHandle(GetAutomapLevelTableSize(count), 1);
             s_areas[area] = handle;
             levels = HandleWritePtr(handle);
@@ -2574,6 +2569,10 @@ i16 LoadAutomapAreas(FILE* fp) {
             for (level = 0; level < count; level++) {
                 levels = HandleWritePtr(handle);
                 if (GetAutomapLevelHandle(levels, level)) {
+                    i16 bytes;
+                    i32 bitmap;
+                    AutomapBitmapHeader bitmapHeader;
+                    AutomapBitmap* data;
                     errors += 1 - fread(&bitmapHeader, 8, 1, fp);
                     bitmap = CreateArrayHandle(GetAutomapBitmapSize(&bitmapHeader), 1);
                     data = HandleWritePtr(bitmap);
@@ -2839,8 +2838,6 @@ void MarkRegionList(u8* list, i16 stride, u8 code, i16 width, i16 height) {
 
 // The data of entry `index` of a room list (after its rectangle or marker),
 // NULL past the end.
-// @early-stop: the returned address is formed as [offset + list] in retail
-// and [list + offset] here.
 RVA(0x0001ecc0, 0x60)
 u8* FindRegionData(u8* list, i16 stride, i16 index) {
     i16 offset = 0;

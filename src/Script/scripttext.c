@@ -222,11 +222,9 @@ void OpSetPanelEntryValue(void) {
 // recover that allocation.
 RVA(0x0002f070, 0xd2)
 i16 PollScriptPanels(void) {
-    ScriptPanel* node;
-    ScriptPanel* last;
+    const ScriptPanel* node;
+    const ScriptPanel* last;
     i16 count;
-    i16 row;
-    ScriptPanelJump jump;
     PollScriptItemMenu();
     last = NULL;
     count = 0;
@@ -237,12 +235,13 @@ i16 PollScriptPanels(void) {
     if (last) {
         count++;
         while (count > 1) {
+            i16 row;
             count--;
             row = PollPanel(last->panel);
             if (row == PANEL_INPUT_NONE) {
                 last = last->prev;
             } else {
-                jump = *GetScriptPanelJump(last, row);
+                const ScriptPanelJump jump = *GetScriptPanelJump(last, row);
                 if (jump.value != SCRIPT_PANEL_NO_JUMP) {
                     CallScript(jump.parts.file, jump.parts.entry);
                     SetScriptLongVar(0x19, row);
@@ -591,9 +590,8 @@ void OpReadRecordInt(void) {
 }
 
 // The same at `offset` into the data itself.
-// @early-stop: retail keeps the value in ecx and a pointer (data + offset +
-// size, decremented per byte) in edx; this spelling swaps the two registers
-// and the permuter's search is flat.
+// @early-stop register allocation: retail keeps the value in ECX and the
+// descending byte pointer in EDX; this caller assigns them oppositely.
 RVA(0x0002f950, 0x93)
 void OpReadDataInt(void) {
     i16 array = ReadLongVarIndex();

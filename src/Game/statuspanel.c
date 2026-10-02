@@ -940,12 +940,11 @@ static __inline void ClearEquipPreview(void) {
     DrawStatTotals(3, 0x19, GetRosterCharacter(g_statusMember), NULL);
 }
 
-static __inline i16 FinishEquipChange(i16 member) {
+static __inline void FinishEquipChange(i16 member) {
     RecalcCharacterStats(GetRosterCharacter(member));
     s_equipPage.changed = true;
     SetGameSub(MENU_STEP_CLOSE);
     s_equipPage.pick = STATUS_COMMAND_NONE;
-    return STATUS_COMMAND_NONE;
 }
 
 // Runs the equipment page one step for input `key` (-2 cancels): step 0
@@ -957,9 +956,6 @@ static __inline i16 FinishEquipChange(i16 member) {
 RVA(0x00042e60, 0x6d0)
 i16 RunEquipScreen(i16 key) {
     ItemSlot slot;
-    i16 count;
-    i16 part;
-    ItemSlot loaded;
 
     if (key != STATUS_COMMAND_NONE && key != STATUS_COMMAND_CANCEL) {
         SetGameSub(MENU_STEP_CLOSE);
@@ -995,7 +991,8 @@ i16 RunEquipScreen(i16 key) {
             PrevGameSub();
             return STATUS_COMMAND_NONE;
 
-        case MENU_STEP_RUN:
+        case MENU_STEP_RUN: {
+            i16 part;
             if (key == STATUS_COMMAND_CANCEL) {
                 PrevGameSub();
                 s_equipPage.pick = key;
@@ -1018,6 +1015,7 @@ i16 RunEquipScreen(i16 key) {
             NextGameSub();
             s_equipPage.pick = g_selectedObjectId;
             return STATUS_COMMAND_NONE;
+        }
 
         case EQUIP_STEP_PREVIEW_EQUIP:
             NextGameSub();
@@ -1025,7 +1023,8 @@ i16 RunEquipScreen(i16 key) {
             s_equipPage.infoPlane = OpenItemInfoPlane(GetBagItem(s_equipPage.pick));
             return STATUS_COMMAND_NONE;
 
-        case EQUIP_STEP_EQUIP:
+        case EQUIP_STEP_EQUIP: {
+            i16 count;
             if (key == STATUS_COMMAND_CANCEL) {
                 SetGameSub(MENU_STEP_RUN);
                 ClearEquipPreview();
@@ -1040,8 +1039,7 @@ i16 RunEquipScreen(i16 key) {
                     GetLoadedRecord(GetRosterEquipSlot(g_statusMember, EQUIP_PART_GUN).item)
                 );
                 if (GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO).item == slot.item) {
-                    loaded = GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO);
-                    slot.quantity -= loaded.quantity;
+                    slot.quantity -= GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO).quantity;
                     LimitItemSlotToBag(&slot);
                     if (slot.quantity < 0) {
                         slot.quantity = 0;
@@ -1049,14 +1047,17 @@ i16 RunEquipScreen(i16 key) {
                     GetCharacterEquipment(GetRosterCharacter(g_statusMember))[EQUIP_SLOT_AMMO]
                         .quantity += slot.quantity;
                     TakeBagItems(slot.item, slot.quantity);
-                    return FinishEquipChange(g_statusMember);
+                    FinishEquipChange(g_statusMember);
+                    return STATUS_COMMAND_NONE;
                 }
                 LimitItemSlotToBag(&slot);
             } else {
                 slot.quantity = 1;
             }
             EquipItem(g_statusMember, slot, count, s_equipPage.pick);
-            return FinishEquipChange(g_statusMember);
+            FinishEquipChange(g_statusMember);
+            return STATUS_COMMAND_NONE;
+        }
 
         case EQUIP_STEP_PREVIEW_REMOVE:
             NextGameSub();
@@ -1084,7 +1085,7 @@ i16 RunEquipScreen(i16 key) {
                 ClearItemSlot(&slot);
                 SetEquipSlot(g_statusMember, s_equipPage.pick, slot, 0);
                 if (s_equipPage.pick == EQUIP_PART_GUN) {
-                    s_equipPage.pick = 2;
+                    s_equipPage.pick = EQUIP_PART_AMMO;
                 }
             }
             if (s_equipPage.pick == EQUIP_PART_AMMO) {
@@ -1095,7 +1096,8 @@ i16 RunEquipScreen(i16 key) {
                     SetEquipSlot(g_statusMember, s_equipPage.pick, slot, 0);
                 }
             }
-            return FinishEquipChange(g_statusMember);
+            FinishEquipChange(g_statusMember);
+            return STATUS_COMMAND_NONE;
     }
     return STATUS_COMMAND_NONE;
 }
@@ -1715,7 +1717,7 @@ static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
             AddMenuLine(menu->plane, g_scratchBuffer, TEXT_ATTR_DEFAULT, -1, MENU_LINE_DISABLED);
             break;
         case MENU_EVENT_ADD_ROW:
-            item = GetItemStackItem(GetItemListEntry(s_itemPage.list, index));
+            item = GetItemListItem(s_itemPage.list, index);
             sprintf(
                 g_scratchBuffer,
                 "%c %-30.30s%2d",
@@ -2012,20 +2014,14 @@ static __inline void UnhighlightEquipPart(i16 member) {
     }
 }
 
-// @early-stop tail merge: retail keeps the negative-mode reset and return
-// at entry; this build shares the final reset. Assignment-return and
-// returned-state forms retain the merge, as does the unhighlight macro.
 RVA(0x00044fb0, 0x17f)
-i16 PollEquipPart(i16 member, i16 mode) {
-    i16 x;
-    i16 y;
-    i16 part;
-
+i16 PollEquipPart(i16 member, GZ_ENUM_PARAM(EquipPickMode, i16) mode) {
     if (mode < EQUIP_PICK_PART) {
         s_equipPickPart = EQUIP_PART_NONE;
         return EQUIP_PART_NONE;
-    }
-    if (mode < EQUIP_PICK_CLEAR) {
+    } else if (mode < EQUIP_PICK_CLEAR) {
+        i16 x;
+        i16 y;
         if (s_equipPickPart >= 0 && g_mouseLeftClick) {
             return s_equipPickPart;
         }
@@ -2033,7 +2029,7 @@ i16 PollEquipPart(i16 member, i16 mode) {
         if (x >= 0 && x < 0x15) {
             y = (g_mousePosition.y - 40) / 8 - 3;
             if (y >= 0 && y % 4 != 2 && y % 4 != 3) {
-                part = y / 4;
+                const i16 part = y / 4;
                 if (part < EQUIP_SLOT_COUNT) {
                     if (s_equipPickPart == part) {
                         return EQUIP_PART_NONE;

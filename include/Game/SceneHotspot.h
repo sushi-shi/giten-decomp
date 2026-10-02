@@ -54,7 +54,7 @@ void DrawSceneObjects(i16 x, i16 y, i16 across, i16 along);
 i16 DrawSceneSprite(
     i16 mode,
     SceneSprite* sprite,
-    struct FieldObject* object,
+    void* object,
     GZ_ENUM_PARAM(SceneHotspotKind, i16) kind,
     i16 centered
 );

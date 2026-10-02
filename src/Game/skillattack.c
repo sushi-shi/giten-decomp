@@ -72,8 +72,9 @@ b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
 }
 
 RVA(0x0000ac50, 0x1ce)
-i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
+i32 ComputeSkillDamage(Character* attacker, Character* target, b16 hit) {
     SkillHeader* skill;
+    i16 skillPower;
     i16 power;
     i16 defense;
     double amount;
@@ -83,9 +84,9 @@ i32 ComputeSkillDamage(Character* attacker, Character* target, i16 hit) {
         return 0;
     }
     skill = GetCachedSkill(attacker->pickTarget);
-    power = WearSkillValue(
-        GetSkillValueB(skill) + GetBattleStatShown(attacker, BATTLE_STAT_MAGIC_POWER)
-    );
+    skillPower = GetSkillValueB(skill);
+    power = skillPower + GetBattleStatShown(attacker, BATTLE_STAT_MAGIC_POWER);
+    power = WearSkillValue(power);
     defense = GetBattleStatShown(target, BATTLE_STAT_MAGIC_DEFENSE);
     amount = power;
     if (power < defense) {
@@ -170,7 +171,7 @@ ApplySkillResistanceOutcome(Character* attacker, i32 amount) {
 RVA(0x0000afb0, 0x13e)
 b16 ResolveSkillAttack(Character* attacker, Character* target) {
     GZ_ENUM_LOCAL(AttackMode, u16) mode = GetSkillMode(attacker->pickTarget);
-    i16 hit;
+    b16 hit;
     i32 damage;
     if (mode == ATTACK_WEAPON) {
         if (g_targetId >= 0) {

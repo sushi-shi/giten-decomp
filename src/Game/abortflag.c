@@ -229,9 +229,10 @@ void DrawSceneObjects(i16 x, i16 y, i16 across, i16 along) {
     DrawAreaNpcs();
 }
 
-static __inline b32 IsSceneObjectVisible(FieldObject* object, i16 kind) {
+static __inline b32 IsSceneObjectVisible(void* object, i16 kind) {
+    FieldObject* fieldObject = object;
     return (kind != SCENE_HOTSPOT_OBJECT
-            || TestFieldObjectFlag(object, ACTOR_FLAG_INVISIBLE) != true)
+            || TestFieldObjectFlag(fieldObject, ACTOR_FLAG_INVISIBLE) != true)
            && !GetObjectsHidden();
 }
 
@@ -239,11 +240,11 @@ static __inline b32 IsSceneObjectVisible(FieldObject* object, i16 kind) {
 // Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it.
 RVA(0x00045930, 0x1b7)
 i16 DrawSceneSprite(
-    i16 mode,
+    const i16 mode,
     SceneSprite* sprite,
-    FieldObject* object,
+    void* object,
     GZ_ENUM_PARAM(SceneHotspotKind, i16) kind,
-    i16 centered
+    const i16 centered
 ) {
     i16 x;
     i16 y;
@@ -272,43 +273,42 @@ i16 DrawSceneSprite(
         }
         sprite->flags |= SCENE_SPRITE_INTERACTIVE;
         return AddSceneHotspot(object, kind, sprite);
-    } else {
-        if (centered) {
-            if (sprite->flags & SCENE_SPRITE_FLIP_X) {
-                x = -1 - x;
-            }
-            if (sprite->flags & SCENE_SPRITE_FLIP_Y) {
-                y = -1 - y;
-            }
-            x += 40;
-            y += 112;
-        } else {
-            if (sprite->flags & SCENE_SPRITE_FLIP_X) {
-                x = 79 - x;
-            }
-            if (sprite->flags & SCENE_SPRITE_FLIP_Y) {
-                y = 399 - y;
-            }
-        }
-        x += sprite->offsetX;
-        y += sprite->offsetY;
-        if (IsSceneObjectVisible(object, kind)) {
-            BlitSceneSprite(
-                sprite->image,
-                sprite->imageHandle,
-                x,
-                y,
-                g_spriteOriginX,
-                g_spriteOriginY,
-                g_spriteClipLeft,
-                g_spriteClipTop,
-                g_spriteClipRight,
-                g_spriteClipBottom,
-                sprite->flags
-            );
-        }
-        return AddSceneHotspot(object, kind, sprite);
     }
+    if (centered) {
+        if (sprite->flags & SCENE_SPRITE_FLIP_X) {
+            x = -1 - x;
+        }
+        if (sprite->flags & SCENE_SPRITE_FLIP_Y) {
+            y = -1 - y;
+        }
+        x += 40;
+        y += 112;
+    } else {
+        if (sprite->flags & SCENE_SPRITE_FLIP_X) {
+            x = 79 - x;
+        }
+        if (sprite->flags & SCENE_SPRITE_FLIP_Y) {
+            y = 399 - y;
+        }
+    }
+    x += sprite->offsetX;
+    y += sprite->offsetY;
+    if (IsSceneObjectVisible(object, kind)) {
+        BlitSceneSprite(
+            sprite->image,
+            sprite->imageHandle,
+            x,
+            y,
+            g_spriteOriginX,
+            g_spriteOriginY,
+            g_spriteClipLeft,
+            g_spriteClipTop,
+            g_spriteClipRight,
+            g_spriteClipBottom,
+            sprite->flags
+        );
+    }
+    return AddSceneHotspot(object, kind, sprite);
 }
 
 // @dead-code

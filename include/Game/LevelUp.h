@@ -37,9 +37,9 @@ i16 FindLevelUpSlot(void);
 
 // The level's stat growth and the stat-point picks.
 b16 ApplyLevelStatGrowth(struct Character* character);
-i16 IsStatCapped(struct Character* character, i16 stat);
-i16 CountRaisableStats(struct Character* character);
-i16 ResolveRaisableStat(struct Character* character, i16 stat);
+i16 IsStatCapped(const struct Character* character, i16 stat);
+i16 CountRaisableStats(const struct Character* character);
+i16 ResolveRaisableStat(const struct Character* character, i16 stat);
 
 // The battle rewards: the reward screen's click, paying them out, and
 // marking them pending.

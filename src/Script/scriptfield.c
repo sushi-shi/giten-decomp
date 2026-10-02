@@ -43,10 +43,12 @@ void OpEnterFieldMap(void) {
 // flag widths and declaration order do not recover that allocation.
 RVA(0x00032560, 0x44)
 void OpIfEventObjectIs(void) {
-    i16 target = ReadBranchTarget();
-    i16 different = ReadScriptValue();
+    const i16 target = ReadBranchTarget();
+    const i16 different = ReadScriptValue();
+    const i16 actorId = g_actorId;
+    const i16 targetId = g_targetId;
     b32 matches = false;
-    if ((g_actorId == g_targetId && !different) || (g_actorId != g_targetId && different)) {
+    if (ScriptBooleanMatches(actorId == targetId, different)) {
         matches = true;
     }
     ScriptJumpUnless(target, matches);
@@ -54,8 +56,8 @@ void OpIfEventObjectIs(void) {
 
 RVA(0x000325b0, 0x3e)
 void OpIfBattleResult(void) {
-    i16 target = ReadBranchTarget();
-    i16 multiple = ReadScriptValue();
+    const i16 target = ReadBranchTarget();
+    const i16 multiple = ReadScriptValue();
     b32 matches = false;
     if ((g_targetCount == 1 && multiple == false) || (g_targetCount >= 2 && multiple == true)) {
         matches = true;
@@ -77,10 +79,11 @@ i16 OpCountObjectsAt(void) {
 // @early-stop register allocation: the status, invert and predicate values
 // occupy a different register permutation; the control-flow edges agree.
 RVA(0x00032660, 0x39)
-void OpIfStatusPositive(i16 invert) {
-    i16 target = ReadBranchTarget();
+void OpIfStatusPositive(const GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert) {
+    const i16 target = ReadBranchTarget();
+    const i16 status = g_statusCondition;
     b32 matches = false;
-    if ((g_statusCondition > 0 && !invert) || (g_statusCondition == INFLICT_NONE && invert)) {
+    if ((status > 0 && !invert) || (status == INFLICT_NONE && invert)) {
         matches = true;
     }
     ScriptJumpUnless(target, matches);
@@ -90,10 +93,11 @@ void OpIfStatusPositive(i16 invert) {
 // the predicate in ecx; this build swaps them. Explicit state locals are flat.
 RVA(0x000326a0, 0x3b)
 void OpIfInBattle(void) {
-    i16 target = ReadBranchTarget();
-    i16 invert = ReadScriptValue();
+    const i16 target = ReadBranchTarget();
+    const i16 invert = ReadScriptValue();
+    const b16 active = g_fieldBattleActive;
     b32 matches = false;
-    if (ScriptBooleanMatches(g_fieldBattleActive, invert)) {
+    if (ScriptBooleanMatches(active, invert)) {
         matches = true;
     }
     ScriptJumpUnless(target, matches);

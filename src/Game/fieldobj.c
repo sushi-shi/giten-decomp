@@ -1482,22 +1482,21 @@ GetPartySide(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction) {
 // aside, retries once towards the party's side. Returns whether a visible
 // change was refreshed. The stop mode keeps an object already on the party's
 // cell from stepping away.
-// @early-stop tail merge: the two visible/turned refresh exits coalesce here;
-// retail keeps them separate. Shared loop breaks retain that merge, while
-// routing the successful move through the same exit merges all three sites.
 RVA(0x0000f290, 0x24d)
 b16 StepObjectTowardParty(
     FieldObject* object,
     GZ_ENUM_PARAM(MoveCommand, i16) turn,
-    GZ_ENUM_PARAM(ObjectPartyCellStop, i16) stop
+    const GZ_ENUM_PARAM(ObjectPartyCellStop, i16) stop
 ) {
     i16 x;
     i16 y;
-    b16 visible;
+    // The visibility helpers return b16 in their retail bodies, but this caller
+    // uses their full EAX results. Its caller-side return contract is unresolved.
+    i32 visible;
     b16 retried;
     i16 code;
     b16 turned;
-    i16 direction;
+    GZ_ENUM_LOCAL(ViewDirection, i16) direction;
     retried = false;
     if (TestFieldObjectFlag(object, ACTOR_FLAG_ANCHORED)) {
         return false;
@@ -1513,7 +1512,8 @@ b16 StepObjectTowardParty(
         direction = TurnDirection(direction, turn);
         SetObjectDirection(object, direction, turned);
         if (!DistanceFromParty(x, y) && stop == OBJECT_PARTY_CELL_STOP) {
-            return RefreshIfTurned(visible, turned);
+            const b16 refreshed = RefreshIfTurned(visible, turned);
+            return refreshed;
         }
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
             StepMapCoord(&x, &y, object->direction, MOVE_FORWARD);
@@ -1588,20 +1588,19 @@ b16 IsWithinRange(i16 range) {
 // was picked.
 RVA(0x0000f620, 0x26c)
 i16 UseObjectSkill(FieldObject* object, i16 skill) {
-    FieldSkillCandidate best, candidates[FIELD_OBJECT_COUNT];
-    Character* actor = (Character*)&object->kind;
-    FieldObject* target;
-    MapCoord coord;
     b16 picked;
-    i16 count;
-    i16 i;
     GZ_ENUM_LOCAL(SkillKind, i16) kind;
     picked = false;
-    if (CanUseSkill(skill, actor) <= 0) {
+    if (CanUseSkill(skill, (Character*)&object->kind) <= 0) {
         return -1;
     }
     kind = GetSkillKind(skill);
     if (kind == SKILL_KIND_RESTORE) {
+        FieldSkillCandidate best, candidates[FIELD_OBJECT_COUNT];
+        FieldObject* target;
+        MapCoord coord;
+        i16 count;
+        i16 i;
         count = 0;
         for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             InitFieldSkillCandidate(&candidates[i]);
@@ -1650,7 +1649,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     if (!GetFieldMarker() && !IsWithinRange(GetSkillAttackRange(skill))) {
         return -1;
     }
-    if (IsSkillIdBlocked(actor, skill) == true) {
+    if (IsSkillIdBlocked((Character*)&object->kind, skill) == true) {
         return -1;
     }
     return picked != false;
@@ -1948,7 +1947,7 @@ i16 GetDemonCount(void) {
 
 RVA(0x00010080, 0x19)
 GZ_ENUM_RETURN(DemonClass, i16) GetRaceClass(GZ_ENUM_PARAM(DemonRace, i16) race) {
-    u8* classes = HandleReadPtr(s_raceClasses);
+    const u8* classes = HandleReadPtr(s_raceClasses);
     return classes[race];
 }
 
@@ -2122,7 +2121,7 @@ static __inline void RecalcObjectStats(FieldObject* object) {
 // (an empty gun clears its ammunition, else the ammunition count is the gun's
 // magazine size) and skills; Doppelganger then mirrors the first party member.
 RVA(0x00010470, 0x4b1)
-void InitObjectFromRecord(FieldObject* object, ObjectRecord* record) {
+void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
     i16 i;
     memset(object, 0, sizeof(FieldObject));
     object->kind = record->id;
@@ -2398,9 +2397,9 @@ i32 RollCharacterMacca(Character* character) {
 // saved-result moves differently, and the final sum uses different scratch
 // registers. Calls, branch destinations and return paths agree.
 RVA(0x00010db0, 0x8e)
-i16 AlignmentConflicts(Character* character) {
-    i16 leaderClass;
-    i16 characterClass;
+i16 AlignmentConflicts(const Character* character) {
+    GZ_ENUM_LOCAL(AlignmentSide, i16) leaderClass;
+    GZ_ENUM_LOCAL(AlignmentSide, i16) characterClass;
     if (character == NULL) {
         return -1;
     }
@@ -2412,7 +2411,7 @@ i16 AlignmentConflicts(Character* character) {
     }
     leaderClass = GetAlignmentClassB(GetRosterLeader());
     characterClass = GetAlignmentClassB(character);
-    if (characterClass + leaderClass == 0 && leaderClass != ALIGNMENT_NEUTRAL) {
+    if (leaderClass + characterClass == 0 && leaderClass != ALIGNMENT_NEUTRAL) {
         return -1;
     }
     return 0;
@@ -2622,8 +2621,8 @@ i16 GetPartyEncounterSizeBonus(void) {
 
 RVA(0x000113a0, 0x9f)
 i16 PickWorldEncounterGroup(i16 weights, i16 choices) {
-    WorldEncounterWeights* table = HandleReadPtr(s_encounterWeights);
-    WorldEncounterChoices* groups;
+    const WorldEncounterWeights* table = HandleReadPtr(s_encounterWeights);
+    const WorldEncounterChoices* groups;
     i16 roll = RandomAverage(1, 100, 0);
     i16 total;
     i16 i;
@@ -2632,7 +2631,8 @@ i16 PickWorldEncounterGroup(i16 weights, i16 choices) {
     }
     total = 0;
     for (i = 0; i < WORLD_ENCOUNTER_GROUPS; i++) {
-        total += table[weights].weights[i];
+        const u8* weightRow = table[weights].weights;
+        total += weightRow[i];
         if (roll < total) {
             groups = HandleReadPtr(s_encounterChoices);
             return groups[choices].groups[i];

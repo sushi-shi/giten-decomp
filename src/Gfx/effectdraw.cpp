@@ -46,22 +46,15 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     i16 frame = ProjectEffectFrame(x, y, &screenX, &screenY);
     i32 size;
     BmpFile* bmp = GetEffectFrame(&size, frame);
-    u16 i;
     i16 left;
     i16 right;
     i16 top;
     i16 bottom;
-    i32 width;
-    i32 height;
-    u16 dimensions;
     RECT dest;
     RECT source;
     float scaleX;
     float scaleY;
-    DDBLTFX fx;
-    DDSURFACEDESC desc;
-    DDCOLORKEY key;
-    for (i = 0; i < code.frame; i++) {
+    for (u16 i = 0; i < code.frame; i++) {
         if (!HasBitmapFileSignature(&bmp->file)) {
             return;
         }
@@ -78,9 +71,9 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     CacheEffectFrame(bmp, code);
     left = GetEffectBitmapOffsetX(bmp) * 8;
     top = GetEffectBitmapOffsetY(bmp) * 8;
-    dimensions = bmp->file.bfReserved2;
-    width = LOBYTE(dimensions) * 8;
-    height = HIBYTE(dimensions) * 8;
+    const u16 dimensions = bmp->file.bfReserved2;
+    const i32 width = LOBYTE(dimensions) * 8;
+    const i32 height = HIBYTE(dimensions) * 8;
     if (code.mirrorHorizontal) {
         left = -1 - left;
         right = left - width + 1;
@@ -141,22 +134,25 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
         source.top = -dest.top / scaleY;
         dest.top = 0;
     }
-    if (dest.right > 640) {
-        source.right = (dest.right - 640) / scaleX;
+    if (dest.right > SCREEN_WIDTH) {
+        source.right = (dest.right - SCREEN_WIDTH) / scaleX;
         source.right = bmp->info.biWidth - source.right;
-        dest.right = 640;
+        dest.right = SCREEN_WIDTH;
     }
-    if (dest.bottom > 328) {
+    if (dest.bottom > VIEW_HEIGHT) {
         if (code.mirrorVertical) {
-            source.top = (dest.bottom - 328) / scaleY;
+            source.top = (dest.bottom - VIEW_HEIGHT) / scaleY;
         } else {
-            source.bottom = bmp->info.biHeight - static_cast<i32>((dest.bottom - 328) / scaleY);
+            source.bottom = bmp->info.biHeight - static_cast<i32>((dest.bottom - VIEW_HEIGHT) / scaleY);
         }
-        dest.bottom = 328;
+        dest.bottom = VIEW_HEIGHT;
     }
+    DDBLTFX fx;
     InitEffectBlitFx(fx, code);
     g_backdropPicture.surface
         ->Blt(&dest, g_effectFramePicture.surface, &source, DDBLT_DDFX | DDBLT_KEYSRC, &fx);
+    DDSURFACEDESC desc;
+    DDCOLORKEY key;
     key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_ALL;
@@ -171,15 +167,7 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
 RVA(0x00058e40, 0x252)
 void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16 y) {
     BmpFile* bmp = imageData;
-    u16 i;
-    i16 screenX;
-    i16 screenY;
-    RECT dest;
-    RECT source;
-    DDBLTFX fx;
-    DDSURFACEDESC desc;
-    DDCOLORKEY key;
-    for (i = 0; i < code.frame; i++) {
+    for (u16 i = 0; i < code.frame; i++) {
         if (!HasBitmapFileSignature(&bmp->file)) {
             return;
         }
@@ -189,13 +177,19 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
         return;
     }
     CacheEffectFrame(bmp, code);
+    i16 screenX;
+    i16 screenY;
     GetScriptAnimationPosition(x, y, &screenX, &screenY);
+    RECT dest;
+    RECT source;
     source.left = source.top = 0;
     source.right = bmp->info.biWidth;
     source.bottom = bmp->info.biHeight;
-    dest.left = screenX + GetEffectBitmapOffsetX(bmp) * 8;
-    i8 verticalOffset = GetEffectBitmapOffsetY(bmp);
-    dest.top = (screenY + verticalOffset - bmp->info.biHeight / 2) * 11 / 10;
+    const i8 horizontalOffset = GetEffectBitmapOffsetX(bmp);
+    dest.left = screenX + horizontalOffset * 8;
+    const i8 verticalOffset = GetEffectBitmapOffsetY(bmp);
+    const i32 topOffset = verticalOffset - bmp->info.biHeight / 2;
+    dest.top = (screenY + topOffset) * 11 / 10;
     dest.right = dest.left + bmp->info.biWidth;
     dest.bottom = dest.top + bmp->info.biHeight * 11 / 10;
     if (dest.left < 0) {
@@ -206,17 +200,20 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
         dest.bottom -= dest.top;
         dest.top = 0;
     }
-    if (dest.right > 640) {
-        source.right = bmp->info.biWidth - dest.right + 640;
-        dest.right = 640;
+    if (dest.right > SCREEN_WIDTH) {
+        source.right = bmp->info.biWidth - dest.right + SCREEN_WIDTH;
+        dest.right = SCREEN_WIDTH;
     }
-    if (dest.bottom > 480) {
-        source.bottom = (bmp->info.biHeight - dest.bottom + 480) * 10 / 11;
-        dest.bottom = 480;
+    if (dest.bottom > SCREEN_HEIGHT) {
+        source.bottom = (bmp->info.biHeight - dest.bottom + SCREEN_HEIGHT) * 10 / 11;
+        dest.bottom = SCREEN_HEIGHT;
     }
+    DDBLTFX fx;
     InitEffectBlitFx(fx, code);
     g_backdropPicture.surface
         ->Blt(&dest, g_effectFramePicture.surface, &source, DDBLT_DDFX | DDBLT_KEYSRC, &fx);
+    DDSURFACEDESC desc;
+    DDCOLORKEY key;
     key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DDSD_ALL;

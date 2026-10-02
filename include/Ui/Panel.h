@@ -60,8 +60,9 @@ typedef struct Panel {
     PanelRow rows[1];
 } Panel;
 
-#define GetPanelTextCell(panel)                                                                    \
-    (((panel)->top + (panel)->y) * TEXT_PLANE_MAX_COLS + (panel)->left + (panel)->x)
+static __inline i16 GetPanelTextCell(const Panel* panel) {
+    return (panel->top + panel->y) * TEXT_PLANE_MAX_COLS + panel->left + panel->x;
+}
 
 static __inline i16 GetPanelRowCount(const Panel* panel) {
     return panel->count;

@@ -23,7 +23,7 @@
 #include <Game/PlayTime.h>
 #include <Game/SaveGame.h>
 #include <Game/StateStack.h>
-#include <Game/WorldMap.h>
+#include <Gfx/ScreenSave.h>
 #include <Input/Mouse.h>
 #include <Platform/PlatformApi.h>
 #include <Script/EventFlags.h>

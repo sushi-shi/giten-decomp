@@ -188,8 +188,8 @@ i16 TestMaskPixel(i16 x, i16 line) {
 RVA(0x00002ec0, 0x2b)
 void ResetUpperPalette(void) {
     i16 i;
-    memset(&s_paletteRefs[8], 0, 8 * sizeof(s_paletteRefs[0]));
-    for (i = 8; i < PALETTE_SIZE; i++) {
+    memset(&s_paletteRefs[PALETTE_SIZE / 2], 0, sizeof s_paletteRefs / 2);
+    for (i = PALETTE_SIZE / 2; i < PALETTE_SIZE; i++) {
         StorePaletteColor(i, 0);
     }
 }
@@ -248,7 +248,10 @@ void SetPaletteEntry(u8 index, i16 color) {
 // PC-98 analog palette words are 0xGRB; swap the G and R nibbles.
 RVA(0x00002fb0, 0x21)
 u32 GrbToRgb(u32 grb) {
-    return ((grb >> 4) & 0xf0) | (((u8)grb & 0xf0) << 4) | (grb & 0x0f);
+    u32 green = (grb >> 4) & 0xf0;
+    u32 red = ((u8)grb & 0xf0) << 4;
+    u32 blue = grb & 0x0f;
+    return red | green | blue;
 }
 
 RVA(0x00002fe0, 0x26)
@@ -491,7 +494,7 @@ i32 ReleaseImageBlockHandle(i32 handle) {
 
 RVA(0x000033f0, 0x41)
 i32 CopySpriteBitmap(SpriteBitmap* image) {
-    i32 size = image->width * image->height * 2 + sizeof(SpriteBitmap);
+    i32 size = image->height * image->width * 2 + sizeof(SpriteBitmap);
     i32 handle = AllocHandle(size);
     void* copy = HandleWritePtr(handle);
     u16 copySize = size;
