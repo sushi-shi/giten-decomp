@@ -60,6 +60,6 @@ void ShiftAlignmentA(
 // Nonzero (-1) when `character`'s alignment classes conflict with the roster
 // leader's (opposite sides on A, or opposite nonzero classes on B); also for
 // no character.
-i16 AlignmentConflicts(struct Character* character);
+i16 AlignmentConflicts(const struct Character* character);
 
 #endif // GITEN_GAME_ALIGNMENT_H
