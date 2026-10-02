@@ -111,9 +111,11 @@ static i16 s_promptMode = -1;
 DATA(0x000690d8)
 static i16 s_promptSub = -1;
 
-// The combatant defeated by the last action (0x7fff for none).
+#define KNOCKOUT_NONE 0x7fff
+
+// The combatant defeated by the last action, or KNOCKOUT_NONE.
 DATA(0x000690dc)
-static i16 s_knockedOut = 0x7fff;
+static i16 s_knockedOut = KNOCKOUT_NONE;
 
 DATA(0x000690e0)
 static GZ_ENUM_STORAGE(BattleTallyIndex, i16) s_reportedTally = BATTLE_TALLY_NONE;
@@ -451,10 +453,9 @@ i16 ResolveCombatAction(void) {
     Character* target;
     CurMax* targetHp;
     GZ_ENUM_LOCAL(ConditionId, i16) initialFatalCondition;
-    b16 hit;
 
     s_actionOutcome = ACTION_OUTCOME_DEFAULT;
-    s_knockedOut = 0x7fff;
+    s_knockedOut = KNOCKOUT_NONE;
     attacker = GetCombatant(g_actorId);
     if (attacker == NULL) {
         return 0;
@@ -504,10 +505,12 @@ i16 ResolveCombatAction(void) {
         WearCachedSkill();
     }
 
-    hit = attacker->lastChange != 0;
-    attacker->lastChange = ScaleByFieldRate(g_actorId, attacker->pickObject, attacker->lastChange);
-    if (hit && attacker->lastChange == 0) {
-        SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
+    {
+        const b16 hit = attacker->lastChange != 0;
+        attacker->lastChange = ScaleByFieldRate(g_actorId, attacker->pickObject, attacker->lastChange);
+        if (hit && attacker->lastChange == 0) {
+            SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
+        }
     }
     TickFieldCount(g_actorId, false);
     g_hpChange = attacker->lastChange;
@@ -1116,7 +1119,7 @@ void PlayActionEffect(i16 stage) {
 RVA(0x0002c210, 0x3d)
 void ShowKnockoutMessage(void) {
     i16 savedTarget;
-    if (s_knockedOut != 0x7fff) {
+    if (s_knockedOut != KNOCKOUT_NONE) {
         savedTarget = g_targetId;
         g_targetId = s_knockedOut;
         if (s_knockedOut < 0) {
