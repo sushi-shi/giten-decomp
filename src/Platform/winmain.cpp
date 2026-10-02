@@ -5210,8 +5210,6 @@ HINSTANCE g_instance;
 RVA(0x00050f50, 0x1ad)
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int show) {
     MSG message;
-    DWORD nextTick;
-    GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons;
 
     if (FindWindow("CLASSSDDSWIN", "DDSWIN")) {
         return 0;
@@ -5249,7 +5247,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
         );
         return 3;
     }
-    nextTick = 0;
+    DWORD nextTick = 0;
     for (;;) {
 #ifdef GITEN_COMPAT
         PumpMessages();
@@ -5265,7 +5263,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previous, LPSTR command, int sh
         if (timeGetTime() > nextTick) {
             nextTick = timeGetTime() + 1;
             if (g_moveState == MOVE_STATE_NONE && g_fadeMode == SCREEN_FADE_NONE) {
-                buttons = PollInput();
+                GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = PollInput();
                 if (StepGame()) {
                     ReleaseGraphics();
                     RestoreCursorClip(&g_savedClipRect);
