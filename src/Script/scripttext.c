@@ -222,8 +222,8 @@ void OpSetPanelEntryValue(void) {
 // recover that allocation.
 RVA(0x0002f070, 0xd2)
 i16 PollScriptPanels(void) {
-    ScriptPanel* node;
-    ScriptPanel* last;
+    const ScriptPanel* node;
+    const ScriptPanel* last;
     i16 count;
     PollScriptItemMenu();
     last = NULL;
