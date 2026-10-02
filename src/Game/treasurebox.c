@@ -1475,8 +1475,6 @@ i16 ApplyTraining(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind
 
 // Clamps the three affiliations to 0..3 (-1 otherwise), drops repeats and
 // packs the remaining ones to the front.
-// @early-stop: retail addresses the affiliation bytes as [character + index];
-// the spellings tried give [index + character].
 RVA(0x0001c830, 0x9b)
 void NormalizeAffiliations(Character* character) {
     i16 i;
