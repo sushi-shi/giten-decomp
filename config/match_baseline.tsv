@@ -104,7 +104,7 @@ textstate	21	20
 treasurebox	147	141
 vec3	10	8
 videostate	5	5
-vram	44	38
+vram	44	39
 vramaccess	12	12
 vramcell	14	14
 waitstate	7	7
@@ -836,7 +836,7 @@ fieldview	_GetCellWallStop	100.0000	100.0000	2	ast4:0d838135a3b1	0xd210	100.0000
 fieldview	_GetFacingBit	98.7500	98.7500	3	ast4:cce47cb08179	0xd2a0	98.7500	
 fieldview	_GetLayerOrigin	100.0000	100.0000	1	ast4:5ade59016d1a	0xcc60	100.0000	
 fieldview	_GetMapWallKind	100.0000	100.0000	2	ast4:26dd18f12aaf	0xd180	100.0000	
-fieldview	_GetMouseWorldCell	88.6957	88.6957	4	ast4:e2d2af33d024	0xcdc0	88.6957	
+fieldview	_GetMouseWorldCell	88.6957	88.6957	5	ast4:633644188871	0xcdc0	88.6957	
 fieldview	_GetPartyView	100.0000	100.0000	2	ast4:e1a2ad5e04bc	0xbe20	100.0000	
 fieldview	_GetRotatedWallAtOffset	100.0000	100.0000	1	ast4:8d9a0a5a7984	0xd150	100.0000	
 fieldview	_GetWallAt	100.0000	100.0000	1	ast4:dca3d3461f57	0xc090	100.0000	
@@ -2112,7 +2112,7 @@ skilluse	_IsSkillIdBlocked	100.0000	100.0000	7	ast4:f0cbeca973da	0x2c350	100.000
 skilluse	_IsSkillUsableNow	100.0000	100.0000	5	ast4:cd19d19c39be	0x2c440	100.0000	
 skilluse	_MemberSkillMenuHandler	100.0000	100.0000	9	ast4:10ee6e18e605	0x2c500	100.0000	
 skilluse	_NextTarget	100.0000	100.0000	1	ast4:28a1383c2940	0x2aaa0	100.0000	
-skilluse	_OpenMemberSkillMenu	100.0000	100.0000	5	ast4:397755eecb23	0x2c4a0	100.0000	
+skilluse	_OpenMemberSkillMenu	100.0000	100.0000	6	ast4:1b2556c397e3	0x2c4a0	100.0000	
 skilluse	_PaySkillCost	100.0000	100.0000	3	ast4:0d06115c52d7	0x2c3c0	100.0000	
 skilluse	_PlayActionEffect	100.0000	100.0000	6	ast4:4b1a1a16295c	0x2c050	100.0000	
 skilluse	_PrepareSkillAction	100.0000	100.0000	6	ast4:fc2dbf95a148	0x2db90	100.0000	
@@ -2138,7 +2138,7 @@ skilluse	_UseKind12Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d5e0	100.0000
 skilluse	_UseKind13Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d640	100.0000	
 skilluse	_UseKind14Skill	100.0000	100.0000	6	ast4:ce68b081abac	0x2d6a0	100.0000	
 skilluse	_UseResetBattleStatsSkill	100.0000	100.0000	6	ast4:f3e5df0034be	0x2d400	100.0000	
-skilluse	_UseRestoreSkill	100.0000	99.0161	7	ast4:91d51a09c381	0x2ceb0	100.0000	
+skilluse	_UseRestoreSkill	100.0000	99.0161	8	ast4:f69ed93ebae6	0x2ceb0	100.0000	
 sprite	_FreeSpriteImages	100.0000	100.0000	3	ast4:09ce38ffca6f	0x58820	100.0000	
 sprite	_IsSpriteFrameLoaded	100.0000	100.0000	5	ast4:fe345ccb9ead	0x58870	100.0000	
 sprite	_IsSpritePlaced	100.0000	100.0000	4	ast4:b9d2fbd214d4	0x58800	100.0000	
@@ -2523,7 +2523,7 @@ videostate	_RestoreVideoState	100.0000	100.0000	1	5ac645b9d98c	0x45ba0	100.0000
 videostate	_SaveVideoState	100.0000	100.0000	1	5a25ea57e86c	0x45b90	100.0000	
 vram	_ClearMaskSeam	100.0000	98.8889	1	ast4:cd6dc3039b59	0x2c70	100.0000	
 vram	_ClearMaskView	100.0000	100.0000	1	ast4:a600eb0f3418	0x2c60	100.0000	
-vram	_CopySpriteBitmap	100.0000	99.9231	1	ast4:f4fa69d3b401	0x33f0	100.0000	
+vram	_CopySpriteBitmap	100.0000	100.0000	1	ast4:f4fa69d3b401	0x33f0	100.0000	
 vram	_FindPaletteEntry	100.0000	100.0000	1	ast4:fa997015da50	0x2f10	100.0000	
 vram	_FreeImageFile	100.0000	100.0000	1	ast4:0cbb1db10bfa	0x3330	100.0000	
 vram	_FreeImageHandle	100.0000	100.0000	1	ast4:df80a6151b39	0x3120	100.0000	
@@ -2535,7 +2535,7 @@ vram	_GetLegacySpriteCopyResult	100.0000	100.0000	3	ast4:eba47d2547b9	0x3360	100
 vram	_GetMaskByte	100.0000	100.0000	3	ast4:b7d5f03d0db5	0x2d60	100.0000	
 vram	_GetMaskColumn	100.0000	100.0000	3	ast4:923f72c2b4d4	0x2ce0	100.0000	
 vram	_GetViewPaletteMode	100.0000	100.0000	1	ast4:ee12416276af	0x3060	100.0000	
-vram	_GrbToRgb	100.0000	60.8182	1	ast4:7be430927c05	0x2fb0	100.0000	
+vram	_GrbToRgb	60.8182	60.8182	2	ast4:ce8121b66b9d	0x2fb0	100.0000	
 vram	_LoadImageData	100.0000	100.0000	2	ast4:6e880266c551	0x3130	100.0000	
 vram	_LoadImageFile	100.0000	100.0000	2	ast4:a142db86779b	0x32d0	100.0000	
 vram	_LoadImageKind1	100.0000	100.0000	2	ast4:6ea0abaf9c20	0x3270	100.0000	
