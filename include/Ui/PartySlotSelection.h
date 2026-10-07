@@ -14,17 +14,18 @@ GZ_ENUM_BEGIN(PartySlotSelectionMode)
     PARTY_SLOT_EXCLUDE_HUMANS = 2
 GZ_ENUM_END(PartySlotSelectionMode)
 
-static __inline i16
-FilterPartySlotSelection(i16 slot, GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
-    if (mode == PARTY_SLOT_REQUIRE_OCCUPIED && GetPartySlot(slot) == PARTY_SLOT_EMPTY) {
-        slot = PARTY_POSITION_NONE;
-    }
-    if (mode == PARTY_SLOT_EXCLUDE_HUMANS && GetPartySlot(slot) != PARTY_SLOT_EMPTY
-        && GetPartyRosterId(slot) < HUMAN_ID_LIMIT) {
-        slot = PARTY_POSITION_NONE;
-    }
-    return slot;
-}
+// Filters the selected position in place; the poller register colors require
+// the slot to stay one variable rather than an inline parameter copy.
+#define FilterPartySlotSelection(slot, mode)                                                       \
+    do {                                                                                           \
+        if ((mode) == PARTY_SLOT_REQUIRE_OCCUPIED && GetPartySlot(slot) == PARTY_SLOT_EMPTY) {     \
+            (slot) = PARTY_POSITION_NONE;                                                          \
+        }                                                                                          \
+        if ((mode) == PARTY_SLOT_EXCLUDE_HUMANS && GetPartySlot(slot) != PARTY_SLOT_EMPTY          \
+            && GetPartyRosterId(slot) < HUMAN_ID_LIMIT) {                                          \
+            (slot) = PARTY_POSITION_NONE;                                                          \
+        }                                                                                          \
+    } while (0)
 
 // Both panel and text-plane pollers wait for a mouse click, then confirm or
 // cancel the selected party position.

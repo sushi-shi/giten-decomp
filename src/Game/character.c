@@ -1171,9 +1171,6 @@ void RefreshStatusPanel(i16 force) {
 
 // @dead-code
 // Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it.
-// @early-stop: the word-start column and selection mode exchange ebx/edi;
-// calls and semantic edges match. The cell outputs remain i16, and the
-// highlight guard depends on the filtered slot.
 RVA(0x0003e3c0, 0x1c1)
 GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARAM(PartySlotSelectionMode, i16) mode) {
     const i16 oldStep = ResetTextPlaneLineStep(g_infoPlane, 3);
@@ -1199,7 +1196,7 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
     if (wordColumn == 0 || wordColumn == 39) {
         i16 lineStep = GetTextPlaneLineStep(g_infoPlane);
         slot = row / lineStep + (wordColumn ? 3 : 0);
-        slot = FilterPartySlotSelection(slot, mode);
+        FilterPartySlotSelection(slot, mode);
     } else {
         slot = PARTY_POSITION_NONE;
     }
@@ -1209,9 +1206,11 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
     }
     s_selectedPartySlot = slot;
     ClearTextPlaneHighlight(g_infoPlane);
-    if (slot != PARTY_POSITION_NONE) {
-        SetTextPlaneHighlight(g_infoPlane, wordColumn, row);
+    if (slot == PARTY_POSITION_NONE) {
+        ResetTextPlaneLineStep(g_infoPlane, oldStep);
+        return PARTY_SLOT_POLL_WAITING;
     }
+    SetTextPlaneHighlight(g_infoPlane, wordColumn, row);
     ResetTextPlaneLineStep(g_infoPlane, oldStep);
     return PARTY_SLOT_POLL_WAITING;
 }
@@ -1230,7 +1229,7 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollPartySlotSelection(GZ_ENUM_PARAM(Pa
         return PARTY_SLOT_POLL_CANCELLED;
     }
     slot = PartyPanelAtPoint(g_mousePosition.x, g_mousePosition.y);
-    slot = FilterPartySlotSelection(slot, mode);
+    FilterPartySlotSelection(slot, mode);
     s_selectedPartySlot = slot;
     return PARTY_SLOT_POLL_WAITING;
 }

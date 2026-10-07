@@ -2646,6 +2646,15 @@ RVA(0x0001a240, 0x1bc)
 void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     ItemStackList* const entries = GetMenuItemList(menu);
     switch (event) {
+        case MENU_EVENT_BEGIN_PAGE:
+            AddMenuLine(
+                menu->plane,
+                "<\203A\203C\203e\203\200>",
+                TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
+                0,
+                MENU_LINE_DISABLED
+            );
+            return;
         case MENU_EVENT_ADD_ROW: {
             sprintf(
                 g_scratchBuffer,
@@ -2653,10 +2662,13 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
                 GetLoadedRecordName(GetItemListItem(entries, index)),
                 GetItemStackCount(GetItemListEntry(entries, index))
             );
-            if ((GetItemListItem(entries, index) == ITEM_KUSHINADA_JAR
-                 && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_KUSHINADA_JAR_USED))
-                || (GetItemListItem(entries, index) == ITEM_SOMA_CUP
-                    && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_SOMA_CUP_USED))) {
+            if (GetItemListItem(entries, index) == ITEM_KUSHINADA_JAR
+                && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_KUSHINADA_JAR_USED)) {
+                AddItemUseMenuLine(menu, GetItemListItem(entries, index), MENU_LINE_DISABLED);
+                return;
+            }
+            if (GetItemListItem(entries, index) == ITEM_SOMA_CUP
+                && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_SOMA_CUP_USED)) {
                 AddItemUseMenuLine(menu, GetItemListItem(entries, index), MENU_LINE_DISABLED);
                 return;
             }
@@ -2678,15 +2690,6 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
                 return;
             }
         }
-        case MENU_EVENT_BEGIN_PAGE:
-            AddMenuLine(
-                menu->plane,
-                "<\203A\203C\203e\203\200>",
-                TEXT_ATTR_FLAG1 | TEXT_ATTR(TEXT_COLOR_WHITE, TEXT_COLOR_RED, TEXT_COLOR_BLACK),
-                0,
-                MENU_LINE_DISABLED
-            );
-            return;
         case MENU_EVENT_DESTROY:
             menu->items.itemList = FreeBlock(entries);
             menu->itemCount = 0;

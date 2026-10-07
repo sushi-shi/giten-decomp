@@ -159,9 +159,6 @@ static __inline const u8* ReadItemAttackParameters(ItemRecord* record, const u8*
 // Decodes item `id`'s data-file entry into `record`: the price, the kind, the
 // kind's parameter bytes (in the order the entry stores them), then the name
 // and the description strings.
-// @early-stop control flow: kind 1 and kind 9 share the message call, but
-// the compiler merges their final parameter read; retail retains a separate
-// read and store in each arm before joining at ReadItemMessages.
 RVA(0x00022d40, 0x490)
 ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
     const u8* src = GetItemRecordData(id);
@@ -179,8 +176,9 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
             src = ReadItemRestoreParameters(record, src);
             record->params[0x10] = *src;
             record->params[0xa] = *src++;
-            record->params[0x32] = *src;
-            goto readItemMessages;
+            record->params[0x32] = *src++;
+            src = ReadItemMessages(record, src, 1, 1);
+            break;
         case ITEM_KIND_INCENSE:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
@@ -219,6 +217,10 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
             ReadItemTargeting(record, src);
             record->params[0x14] = *src++;
             break;
+        case ITEM_KIND_KEYCARD:
+            src = ReadItemValueRange(record, src);
+            ReadItemTargeting(record, src);
+            break;
         case ITEM_KIND_GEM:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);
@@ -230,14 +232,10 @@ ItemRecord* DecodeItemRecord(ItemRecord* record, i16 id) {
             record->params[0x31] = *src++;
             record->params[0x31] = *src++;
             src = ReadItemRestoreParameters(record, src);
-            record->params[0xa] = *src;
-            record->params[0x32] = src[1];
-            src++;
-        readItemMessages:
-            src++;
+            record->params[0xa] = *src++;
+            record->params[0x32] = *src++;
             src = ReadItemMessages(record, src, 1, 1);
             break;
-        case ITEM_KIND_KEYCARD:
         case ITEM_KIND_SCENARIO:
             src = ReadItemValueRange(record, src);
             ReadItemTargeting(record, src);

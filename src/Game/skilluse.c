@@ -601,9 +601,6 @@ i16 ResolveCombatAction(void) {
     return targetHp->cur;
 }
 
-// @early-stop register allocation: retail keeps the personal-flags pointer
-// in ebx and the condition pointer in ebp; this build swaps them. Calls,
-// branches, ordered referents and instruction counts agree.
 RVA(0x0002b490, 0x160)
 void ResolveKnockout(i16 previousHp, i16 id) {
     Character* const combatant = GetCombatant(id);
@@ -646,16 +643,19 @@ void ResolveKnockout(i16 previousHp, i16 id) {
         if (combatant->dropChance > RandomUpTo(99)) {
             AddDropSlot(combatant->pickItem, 1);
         }
+        ResetObjectAnim(id);
+        RunFieldIdle();
+        RemoveCombatTarget(id);
     } else {
         if (id < 0) {
             RemoveCombatTarget(id);
             return;
         }
         ClearCharacterFlag(combatant, ACTOR_FLAG_DESAMAN);
+        ResetObjectAnim(id);
+        RunFieldIdle();
+        RemoveCombatTarget(id);
     }
-    ResetObjectAnim(id);
-    RunFieldIdle();
-    RemoveCombatTarget(id);
 }
 
 RVA(0x0002b5f0, 0x82)

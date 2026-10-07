@@ -34,42 +34,18 @@ i16 g_selectedObjectId;
 DATA(0x000919fa)
 GZ_ENUM_STORAGE(MouseClickState, i16) g_mouseRightClick;
 
-static __inline void LatchMouseButtonClick(
-    b32 pressed,
-    i16 x,
-    i16 y,
-    GZ_ENUM_STORAGE(MouseClickState, i16) * click,
-    i16* clickX,
-    i16* clickY
-) {
-    if (pressed && *click == MOUSE_CLICK_NONE) {
-        *click = MOUSE_CLICK_PRESENT;
-        *clickX = x;
-        *clickY = y;
-    }
-}
-
 RVA(0x00002a00, 0x5d)
 void LatchMouseClicks(void) {
-    const GZ_ENUM_LOCAL(MouseButtonBits, u8) buttons = g_mousePosition.buttons;
-    const i16 y = g_mousePosition.y;
-    const i16 x = g_mousePosition.x;
-    LatchMouseButtonClick(
-        buttons & MOUSE_LEFT_PRESSED,
-        x,
-        y,
-        &g_mouseLeftClick,
-        &g_mouseLeftClickX,
-        &g_mouseLeftClickY
-    );
-    LatchMouseButtonClick(
-        buttons & MOUSE_RIGHT_PRESSED,
-        x,
-        y,
-        &g_mouseRightClick,
-        &g_mouseRightClickX,
-        &g_mouseRightClickY
-    );
+    if ((g_mousePosition.buttons & MOUSE_LEFT_PRESSED) && g_mouseLeftClick == MOUSE_CLICK_NONE) {
+        g_mouseLeftClick = MOUSE_CLICK_PRESENT;
+        g_mouseLeftClickX = g_mousePosition.x;
+        g_mouseLeftClickY = g_mousePosition.y;
+    }
+    if ((g_mousePosition.buttons & MOUSE_RIGHT_PRESSED) && g_mouseRightClick == MOUSE_CLICK_NONE) {
+        g_mouseRightClick = MOUSE_CLICK_PRESENT;
+        g_mouseRightClickX = g_mousePosition.x;
+        g_mouseRightClickY = g_mousePosition.y;
+    }
 }
 
 RVA(0x00002a60, 0xf)

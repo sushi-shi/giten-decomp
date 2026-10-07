@@ -33,12 +33,12 @@
 # Query: python3 -m giten.verify status | check | bank
 # [data_matching]	true
 # [units]	unit	n_functions	matched
-abortflag	16	15
+abortflag	16	16
 automap	1	1
 bitmapio	22	20
 bitset	5	5
 blit	18	18
-character	171	163
+character	171	166
 clickwait	1	1
 clock	74	72
 d3dapp	41	37
@@ -61,7 +61,7 @@ handle	33	32
 hotspot	6	6
 hotspotclick	1	0
 itemattack	4	4
-itemrecord	109	107
+itemrecord	109	108
 joystick	2	2
 layertexture	2	2
 list	6	6
@@ -70,7 +70,7 @@ menuresult	2	2
 message	15	15
 midistream	35	34
 motion	43	42
-mouse	10	9
+mouse	10	10
 nibble	4	3
 objecttexture	2	2
 partyaction	103	101
@@ -92,9 +92,9 @@ scriptvars	108	107
 scriptvm	2	2
 shot	15	15
 skillattack	5	4
-skilluse	53	51
+skilluse	53	52
 sprite	7	7
-statestack	127	123
+statestack	127	124
 statusmenu	9	9
 statuspanel	49	46
 surfacecopy	1	1
@@ -120,7 +120,7 @@ abortflag	_AddSceneHotspot	100.0000	100.0000	2	ast4:b2b717a6f4ee	0x455b0	100.000
 abortflag	_BeginBoxScene	100.0000	100.0000	1	ast4:d9bad84e3a3a	0x45820	100.0000	
 abortflag	_CountHotspotsOfKind	100.0000	100.0000	2	ast4:0145117bafca	0x45680	100.0000	
 abortflag	_DrawSceneObjects	100.0000	100.0000	1	ast4:0af75d7a2e55	0x458d0	100.0000	
-abortflag	_DrawSceneSprite	98.3882	98.3882	9	ast4:6f3ca8f535c2	0x45930	98.3882	
+abortflag	_DrawSceneSprite	100.0000	100.0000	10	ast4:678bce30dbe8	0x45930	100.0000	
 abortflag	_ExchangeAbortPending	100.0000	100.0000	1	ast4:13795957a62c	0x45660	100.0000	
 abortflag	_FlushPlaneUpdates	100.0000	100.0000	1	ast4:587306e214d7	0x45570	100.0000	
 abortflag	_GetHotspotKind	100.0000	100.0000	2	ast4:f9e59ba87945	0x457e0	100.0000	
@@ -196,9 +196,9 @@ character	_AttachEquipItem	100.0000	100.0000	2	ast4:323d15267af5	0x40590	100.000
 character	_BuildStatusSlots	100.0000	100.0000	2	ast4:70ceb6d77e6b	0x40f40	100.0000	
 character	_CalcGunAccuracyStat	100.0000	100.0000	3	ast4:d1f986db0e56	0x3d2c0	100.0000	
 character	_CalcGunEvasionStat	100.0000	100.0000	3	ast4:52177ff8f0e7	0x3d340	100.0000	
-character	_CalcMagicAccuracyStat	100.0000	100.0000	4	ast4:9cff42d2efd6	0x3d4d0	100.0000	
+character	_CalcMagicAccuracyStat	100.0000	99.8182	4	ast4:9cff42d2efd6	0x3d4d0	100.0000	
 character	_CalcMagicDefenseStat	100.0000	100.0000	4	ast4:090fb8d5e01c	0x3d530	100.0000	
-character	_CalcMagicEvasionStat	100.0000	99.8182	3	ast4:44073d208ebc	0x3d510	100.0000	
+character	_CalcMagicEvasionStat	100.0000	100.0000	3	ast4:44073d208ebc	0x3d510	100.0000	
 character	_CalcMagicPowerStat	100.0000	100.0000	3	ast4:f7a2cf1ab61a	0x3d4f0	100.0000	
 character	_CalcMaxHp	100.0000	100.0000	2	ast4:64f8b517ac03	0x3cec0	100.0000	
 character	_CalcMaxMp	100.0000	100.0000	5	ast4:25eff3aa1670	0x3cf70	100.0000	
@@ -307,13 +307,13 @@ character	_NormalizeEquipSlots	100.0000	100.0000	2	ast4:23ec30c06822	0x40830	100
 character	_NormalizeItemSlot	100.0000	100.0000	4	ast4:395448c587cd	0x408b0	100.0000	
 character	_PartyAlignmentClass	100.0000	100.0000	3	ast4:12ce0a2411e9	0x3e100	100.0000	
 character	_PayStepUpkeep	100.0000	100.0000	6	ast4:e39ff559073d	0x40fa0	100.0000	
-character	_PollPartySlotSelection	100.0000	100.0000	3	ast4:a38f1665f3f8	0x3e590	100.0000	
-character	_PollTextPartySlotSelection	99.4558	96.2585	4	ast4:6853bdfbdd70	0x3e3c0	99.4558	
+character	_PollPartySlotSelection	100.0000	100.0000	4	ast4:09a8b29e7b87	0x3e590	100.0000	
+character	_PollTextPartySlotSelection	100.0000	100.0000	5	ast4:9cb7224434ef	0x3e3c0	100.0000	
 character	_PoolState	100.0000	100.0000	1	ast4:1af164f989da	0x3d030	100.0000	
 character	_ProcessPartyCasualties	100.0000	100.0000	3	ast4:90003100ced4	0x3fce0	100.0000	
 character	_RecalcCharacterStats	100.0000	100.0000	8	ast4:b39f6afbbdfe	0x3c8b0	100.0000	
 character	_RecalcDerivedStats	100.0000	100.0000	7	ast4:06fec908a1f3	0x3d560	100.0000	
-character	_RecalcStatTotals	100.0000	99.5000	1	ast4:1c54ecc469b1	0x3dc60	100.0000	
+character	_RecalcStatTotals	100.0000	100.0000	1	ast4:1c54ecc469b1	0x3dc60	100.0000	
 character	_RecoverCondition	100.0000	100.0000	8	ast4:bd5dd108506c	0x3f030	100.0000	
 character	_RecoverConditions	100.0000	100.0000	1	ast4:2e1bc0128fff	0x3f000	100.0000	
 character	_RedrawPartyStatus	100.0000	100.0000	3	ast4:0438f9ced4d0	0x3e160	100.0000	
@@ -325,7 +325,7 @@ character	_ResetRosterBattleState	100.0000	100.0000	5	ast4:2fada377ca70	0x3fb30	
 character	_ResetRosterStatModifiers	100.0000	100.0000	6	ast4:9f88d59388f0	0x3ce20	100.0000	
 character	_RosterSlotOfId	100.0000	100.0000	1	ast4:f1464c926f34	0x40020	100.0000	
 character	_RunStatusListPicker	100.0000	100.0000	1	ast4:db9a63108e05	0x409a0	100.0000	
-character	_ScalePercent999	100.0000	99.8461	1	ast4:1159e1592ecd	0x3dbe0	100.0000	
+character	_ScalePercent999	100.0000	100.0000	1	ast4:1159e1592ecd	0x3dbe0	100.0000	
 character	_SetEquipSlot	100.0000	100.0000	5	ast4:e3cc98f5f1d7	0x403e0	100.0000	
 character	_SetPartySlot	100.0000	100.0000	4	ast4:2ccaa70e120c	0x3ff60	100.0000	
 character	_SetRosterEntry	100.0000	100.0000	2	ast4:08eca45bf323	0x3fed0	100.0000	
@@ -1215,7 +1215,7 @@ itemrecord	_CountGemItemsAt	100.0000	100.0000	4	ast4:f090ce1e2274	0x24750	100.00
 itemrecord	_CountHeldItem	100.0000	100.0000	2	ast4:e066f3a68d48	0x236b0	100.0000	
 itemrecord	_CountPoolEntries	100.0000	100.0000	4	ast4:acbbcf201512	0x237d0	100.0000	
 itemrecord	_CreateGiftMenu	100.0000	100.0000	3	ast4:d5dcd5cb4d81	0x25f60	100.0000	
-itemrecord	_DecodeItemRecord	97.8752	97.8752	10	ast4:192cbf4aa284	0x22d40	97.8752	
+itemrecord	_DecodeItemRecord	100.0000	100.0000	11	ast4:28a02bd39545	0x22d40	100.0000	
 itemrecord	_DetachBagEntryItem	100.0000	100.0000	2	ast4:1a2736f7c8da	0x244a0	100.0000	
 itemrecord	_DiscardMenuHandler	100.0000	100.0000	4	ast4:b784abd84b81	0x25db0	100.0000	
 itemrecord	_ExpireSpecialItem	100.0000	100.0000	2	ast4:ec15e7f1a857	0x25be0	100.0000	
@@ -1418,7 +1418,7 @@ mouse	_GetMouseLeftClick	100.0000	100.0000	2	ast4:38ac63c09c96	0x2b60	100.0000
 mouse	_GetMouseRightClick	100.0000	100.0000	2	ast4:25cada3cea8b	0x2b50	100.0000	
 mouse	_GetMouseX	100.0000	100.0000	2	ast4:a11eff23e51b	0x2b30	100.0000	
 mouse	_GetMouseY	100.0000	100.0000	2	ast4:f1df68770597	0x2b40	100.0000	
-mouse	_LatchMouseClicks	99.4444	99.4444	7	ast4:5f94daca9428	0x2a00	99.4444	
+mouse	_LatchMouseClicks	100.0000	100.0000	8	ast4:9a07fd346123	0x2a00	100.0000	
 mouse	_SetMouseState	100.0000	100.0000	3	ast4:1cfb15039842	0x2b00	100.0000	
 mouse	_TakeMouseCancel	100.0000	100.0000	3	ast4:c5d79dca9fd3	0x2a70	100.0000	
 mouse	_TakeMouseCancelSound	100.0000	100.0000	2	ast4:c5b1cf88e223	0x2ab0	100.0000	
@@ -1469,7 +1469,7 @@ partyaction	_GetFieldMap	100.0000	100.0000	1	ast4:78585f27cd85	0x71f0	100.0000
 partyaction	_GetFieldMarker	100.0000	100.0000	1	ast4:bb9d140b938d	0x7160	100.0000	
 partyaction	_GetGunAttackPower	100.0000	100.0000	3	ast4:efbcf217939f	0x8b20	100.0000	
 partyaction	_GetGunBurstRounds	100.0000	100.0000	4	ast4:77ae15d39982	0x9050	100.0000	
-partyaction	_GetGunRequirementPenalty	100.0000	100.0000	1	ast4:cc93ce01754a	0x91b0	100.0000	
+partyaction	_GetGunRequirementPenalty	100.0000	91.5625	1	ast4:cc93ce01754a	0x91b0	100.0000	
 partyaction	_GetItemResistance	100.0000	100.0000	1	ast4:72e4779b1a67	0x6dc0	100.0000	
 partyaction	_GetMemberPanelState	100.0000	100.0000	10	ast4:21bda5edbd34	0x5b80	100.0000	
 partyaction	_GetMemberPickRange	100.0000	100.0000	7	ast4:143c3944f789	0x9c20	100.0000	
@@ -1507,7 +1507,7 @@ partyaction	_ResetPartyTurnState	100.0000	100.0000	5	ast4:930d0e4e9a75	0x6a00	10
 partyaction	_ResetRosterFieldMarks	100.0000	100.0000	3	ast4:28b1ec58768b	0x7a70	100.0000	
 partyaction	_ResolveGunAttack	100.0000	100.0000	8	ast4:d68a01f690b1	0x8e60	100.0000	
 partyaction	_RestoreSwappedMember	100.0000	100.0000	1	ast4:1f8a2791a0b8	0x9dc0	100.0000	
-partyaction	_RollExceptionalAttack	100.0000	99.9739	5	ast4:f0c25749fe9f	0x8700	100.0000	
+partyaction	_RollExceptionalAttack	100.0000	100.0000	5	ast4:f0c25749fe9f	0x8700	100.0000	
 partyaction	_RollGunCondition	100.0000	100.0000	11	ast4:ba0d28c4c348	0x8d30	100.0000	
 partyaction	_RollGunHit	100.0000	100.0000	9	ast4:b0d7f70f8f51	0x8910	100.0000	
 partyaction	_RollProximityEvent	100.0000	100.0000	5	ast4:3ed23697d997	0x7f80	100.0000	
@@ -2120,7 +2120,7 @@ skilluse	_PushPromptState	100.0000	100.0000	2	ast4:eb3e27ffec92	0x2ab40	100.0000
 skilluse	_RemoveCombatTarget	100.0000	100.0000	2	ast4:c3b5b2e13407	0x2aae0	100.0000	
 skilluse	_ReportBattleTally	100.0000	100.0000	2	ast4:96065daffb89	0x2b5f0	100.0000	
 skilluse	_ResolveCombatAction	96.1504	96.1504	30	ast4:d47be50421ac	0x2ac90	96.1504	
-skilluse	_ResolveKnockout	99.6667	99.6667	11	ast4:cbc23bb5e19f	0x2b490	99.6667	
+skilluse	_ResolveKnockout	100.0000	100.0000	12	ast4:6417c4e63747	0x2b490	100.0000	
 skilluse	_RunBattleAction	100.0000	100.0000	24	ast4:b8bd603ccbf9	0x2b6a0	100.0000	
 skilluse	_RunFieldSkillUse	100.0000	100.0000	9	ast4:47689684ad0d	0x2d7c0	100.0000	
 skilluse	_SetActionOutcome	100.0000	100.0000	1	ast4:efc88edbbee4	0x2c2b0	100.0000	
@@ -2194,7 +2194,7 @@ statestack	_InitFieldPanels	100.0000	100.0000	1	ast4:941a1c3a91dd	0x1a1b0	100.00
 statestack	_IsOddMapLayer	100.0000	100.0000	1	ast4:a3e2c9aa5fc1	0x197a0	100.0000	
 statestack	_IsOnCellMark	100.0000	100.0000	3	ast4:fc2da01c2172	0x1a110	100.0000	
 statestack	_IsStatCapped	100.0000	100.0000	3	ast4:cc58e6ba29a5	0x189d0	100.0000	
-statestack	_ItemListMenuHandler	96.2817	96.2817	16	ast4:5de7ab23f9c3	0x1a240	96.2817	
+statestack	_ItemListMenuHandler	100.0000	100.0000	17	ast4:16b0dbc59012	0x1a240	100.0000	
 statestack	_LearnAllSkills	100.0000	100.0000	2	ast4:81532348e97a	0x19550	100.0000	
 statestack	_LeaveStatusScreen	100.0000	100.0000	2	ast4:f2d27470af09	0x16ff0	100.0000	
 statestack	_LevelUpNop	100.0000	100.0000	1	ast4:a600eb0f3418	0x18730	100.0000	
