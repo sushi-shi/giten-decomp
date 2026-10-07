@@ -2119,7 +2119,7 @@ skilluse	_PrepareSkillAction	100.0000	100.0000	6	ast4:fc2dbf95a148	0x2db90	100.0
 skilluse	_PushPromptState	100.0000	100.0000	2	ast4:eb3e27ffec92	0x2ab40	100.0000	
 skilluse	_RemoveCombatTarget	100.0000	100.0000	2	ast4:c3b5b2e13407	0x2aae0	100.0000	
 skilluse	_ReportBattleTally	100.0000	100.0000	2	ast4:96065daffb89	0x2b5f0	100.0000	
-skilluse	_ResolveCombatAction	93.2619	93.2619	28	ast4:89237b611d4b	0x2ac90	94.6053	
+skilluse	_ResolveCombatAction	96.1504	96.1504	29	ast4:11d797da5f21	0x2ac90	96.1504	
 skilluse	_ResolveKnockout	99.6667	99.6667	11	ast4:cbc23bb5e19f	0x2b490	99.6667	
 skilluse	_RunBattleAction	100.0000	100.0000	24	ast4:b8bd603ccbf9	0x2b6a0	100.0000	
 skilluse	_RunFieldSkillUse	100.0000	100.0000	9	ast4:47689684ad0d	0x2d7c0	100.0000	

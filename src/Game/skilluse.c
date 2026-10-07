@@ -452,7 +452,7 @@ i16 ResolveCombatAction(void) {
     Character* attacker;
     Character* target;
     CurMax* targetHp;
-    GZ_ENUM_LOCAL(ConditionId, i16) initialFatalCondition;
+    GZ_ENUM_LOCAL(ConditionId, i16) fatalCondition;
 
     s_actionOutcome = ACTION_OUTCOME_DEFAULT;
     s_knockedOut = KNOCKOUT_NONE;
@@ -468,7 +468,7 @@ i16 ResolveCombatAction(void) {
     s_actorHpBefore = attacker->pools.hp.cur;
     s_targetHpBefore = target->pools.hp.cur;
     targetHp = &target->pools.hp;
-    initialFatalCondition = GetFatalCondition(GetCharacterConditions(target));
+    fatalCondition = GetFatalCondition(GetCharacterConditions(target));
     if (attacker->id == OBJECT_RECORD_MARDUK && target->id == OBJECT_RECORD_PRIMROSE) {
         SetFieldCounts(-2, -2);
     }
@@ -507,7 +507,8 @@ i16 ResolveCombatAction(void) {
 
     {
         const b16 hit = attacker->lastChange != 0;
-        attacker->lastChange = ScaleByFieldRate(g_actorId, attacker->pickObject, attacker->lastChange);
+        attacker->lastChange =
+            ScaleByFieldRate(g_actorId, attacker->pickObject, attacker->lastChange);
         if (hit && attacker->lastChange == 0) {
             SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
         }
@@ -517,7 +518,7 @@ i16 ResolveCombatAction(void) {
     if (g_hpChange >= 0x7fff) {
         g_actionResult = BATTLE_ACTION_LETHAL;
     }
-    if (initialFatalCondition && GetFatalCondition(GetCharacterConditions(target))) {
+    if (fatalCondition && (fatalCondition = GetFatalCondition(GetCharacterConditions(target)))) {
         SetActionResult(attacker, BATTLE_ACTION_NO_EFFECT);
         g_statusCondition = INFLICT_NONE;
         attacker->lastChange = 0;
