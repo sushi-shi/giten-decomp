@@ -601,7 +601,7 @@ fieldobj	_ClearAnalyzed	100.0000	100.0000	2	ast4:3032eb5ed8a0	0x10e40	100.0000
 fieldobj	_ClearObjectStuns	100.0000	100.0000	5	ast4:78b077124553	0xe470	100.0000	
 fieldobj	_CopyLeaderIntoObject	100.0000	100.0000	11	ast4:89af2b8ac1ed	0x10930	100.0000	
 fieldobj	_CopyObjectRecordName	100.0000	100.0000	1	ast4:5e3588b13a14	0x101b0	100.0000	
-fieldobj	_CountActiveObjects	100.0000	100.0000	1	ast4:d2eb38d99c2f	0xe680	100.0000	
+fieldobj	_CountActiveObjects	100.0000	100.0000	2	ast4:3a890c7cc839	0xe680	100.0000	
 fieldobj	_CountObjectsAt	100.0000	100.0000	1	ast4:aa00f31ec495	0xe380	100.0000	
 fieldobj	_DirectionToParty	100.0000	100.0000	2	ast4:3a7b4562025c	0xf150	100.0000	
 fieldobj	_DistanceToParty	100.0000	100.0000	1	ast4:f4bd8070fdf4	0xf550	100.0000	
@@ -615,7 +615,7 @@ fieldobj	_FindDemonOfRace	100.0000	100.0000	1	ast4:f3e83a61cafb	0x10250	100.0000
 fieldobj	_FindLayerOfKind	100.0000	100.0000	2	ast4:53633b184271	0xeaa0	100.0000	
 fieldobj	_FindLayerScriptEntry	100.0000	100.0000	6	ast4:5952ced1bd68	0xe910	100.0000	
 fieldobj	_FindNextOfRace	100.0000	100.0000	1	ast4:a22f3c0c9502	0x10330	100.0000	
-fieldobj	_FindObjectAt	100.0000	100.0000	2	ast4:47442c49aa18	0xe2b0	100.0000	
+fieldobj	_FindObjectAt	100.0000	100.0000	3	ast4:870eb06aaa03	0xe2b0	100.0000	
 fieldobj	_FindObjectAtParty	100.0000	100.0000	1	ast4:4ff5dd550c65	0xe3d0	100.0000	
 fieldobj	_FindObjectOnLayer	100.0000	100.0000	1	ast4:5656e0b6e7d6	0xd9d0	100.0000	
 fieldobj	_FindStrongestOfClass	100.0000	100.0000	1	ast4:5ee87346826d	0x102c0	100.0000	
@@ -641,7 +641,7 @@ fieldobj	_GetFieldObject	100.0000	100.0000	1	ast4:b5c002ffc189	0xdda0	100.0000
 fieldobj	_GetHumanTitleName	100.0000	100.0000	4	ast4:76328970268a	0x10180	100.0000	
 fieldobj	_GetLayerImage	100.0000	100.0000	1	ast4:9ea658a6dda7	0xea80	100.0000	
 fieldobj	_GetLayerKind	100.0000	100.0000	2	ast4:d865ea4b3f97	0xe8f0	100.0000	
-fieldobj	_GetLiveObject	100.0000	100.0000	1	ast4:b6e5fd0baa6f	0xdc70	100.0000	
+fieldobj	_GetLiveObject	100.0000	100.0000	2	ast4:5559f8158fa3	0xdc70	100.0000	
 fieldobj	_GetObjectAnim	100.0000	100.0000	1	ast4:21992956b740	0xe590	100.0000	
 fieldobj	_GetObjectCoord	100.0000	100.0000	1	ast4:78854aff58e1	0xde30	100.0000	
 fieldobj	_GetObjectCoordPtr	100.0000	100.0000	1	ast4:33514cd567dc	0xe550	100.0000	
@@ -722,7 +722,7 @@ fieldobj	_StepObjectTowardParty	100.0000	100.0000	13	ast4:19ab74147455	0xf290	10
 fieldobj	_TestWorldEncounterChance	100.0000	100.0000	4	ast4:ac79802a1d72	0x11220	100.0000	
 fieldobj	_TickEnemySpawnTimer	100.0000	100.0000	3	ast4:de014e87bb01	0xee20	100.0000	
 fieldobj	_TraceSight	100.0000	100.0000	3	ast4:efc7edf8b1df	0xee70	100.0000	
-fieldobj	_UpdateFieldObjects	100.0000	100.0000	1	ast4:f25f231ca7e4	0xe400	100.0000	
+fieldobj	_UpdateFieldObjects	100.0000	100.0000	2	ast4:2df3854bfdc3	0xe400	100.0000	
 fieldobj	_UseObjectSkill	99.8696	99.8696	14	ast4:fb0e27467964	0xf620	99.8696	
 fieldscreen	_AllocLayerImage	100.0000	100.0000	1	ast4:e177d85e7789	0x168d0	100.0000	
 fieldscreen	_AreObjectsHidden	100.0000	100.0000	2	ast4:eaf064075ded	0x15cb0	100.0000	
@@ -1296,7 +1296,7 @@ itemrecord	_UseRestoreItem	100.0000	100.0000	5	ast4:f28e8466796d	0x24950	100.000
 itemrecord	_WaitMenuFrame	100.0000	100.0000	2	ast4:b3095ae220b7	0x25d90	100.0000	
 itemrecord	_WriteBag	100.0000	100.0000	1	ast4:c07c2f67bc81	0x24520	100.0000	
 itemrecord	_WriteGemItems	100.0000	100.0000	3	ast4:32eb7f684630	0x24830	100.0000	
-joystick	?InitJoystick@@YAXXZ	100.0000	100.0000	2	ast4:5def1ddd4db0	0x492b0	100.0000	
+joystick	?InitJoystick@@YAXXZ	100.0000	100.0000	3	ast4:848d27350f66	0x492b0	100.0000	
 joystick	?ReadJoystick@@YAIPAUJoystickState@@@Z	100.0000	100.0000	2	ast4:676daaa27c0f	0x49370	100.0000	
 layertexture	_DecodeLayerImage	100.0000	100.0000	5	ast4:4592e43e7e5b	0x57f20	100.0000	
 layertexture	_DecodeLayerImageAlt	100.0000	100.0000	2	ast4:aa2c0576cd57	0x58040	100.0000	
