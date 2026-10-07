@@ -827,30 +827,60 @@ i16 SumArmorDefenseBonus(Character* character) {
 RVA(0x0003da90, 0x14b)
 void ApplyStatFlags(Character* character) {
     if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
-        character->battleStatsShown[BATTLE_STAT_WEAPON_ACCURACY] =
-            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_ACCURACY), 50);
-        character->battleStatsShown[BATTLE_STAT_WEAPON_EVASION] =
-            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_EVASION), 50);
-        character->battleStatsShown[BATTLE_STAT_GUN_ACCURACY] =
-            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_ACCURACY), 50);
-        character->battleStatsShown[BATTLE_STAT_GUN_EVASION] =
-            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 50);
+        SetBattleStatShown(
+            character,
+            BATTLE_STAT_WEAPON_ACCURACY,
+            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_ACCURACY), 50)
+        );
+        SetBattleStatShown(
+            character,
+            BATTLE_STAT_WEAPON_EVASION,
+            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_EVASION), 50)
+        );
+        SetBattleStatShown(
+            character,
+            BATTLE_STAT_GUN_ACCURACY,
+            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_ACCURACY), 50)
+        );
+        SetBattleStatShown(
+            character,
+            BATTLE_STAT_GUN_EVASION,
+            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 50)
+        );
     }
     if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_UP) == true) {
-        character->battleStatsShown[BATTLE_STAT_WEAPON_ACCURACY] =
-            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_ACCURACY), 150);
-        character->battleStatsShown[BATTLE_STAT_WEAPON_EVASION] =
-            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_EVASION), 150);
-        character->battleStatsShown[BATTLE_STAT_GUN_ACCURACY] =
-            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_ACCURACY), 150);
-        character->battleStatsShown[BATTLE_STAT_GUN_EVASION] =
-            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 150);
+        SetBattleStatShown(
+            character,
+            BATTLE_STAT_WEAPON_ACCURACY,
+            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_ACCURACY), 150)
+        );
+        SetBattleStatShown(
+            character,
+            BATTLE_STAT_WEAPON_EVASION,
+            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_EVASION), 150)
+        );
+        SetBattleStatShown(
+            character,
+            BATTLE_STAT_GUN_ACCURACY,
+            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_ACCURACY), 150)
+        );
+        SetBattleStatShown(
+            character,
+            BATTLE_STAT_GUN_EVASION,
+            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_GUN_EVASION), 150)
+        );
     }
     if (TestCharacterFlag(character, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
-        character->battleStatsShown[BATTLE_STAT_WEAPON_POWER] =
-            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_POWER), 150);
-        character->battleStatsShown[BATTLE_STAT_WEAPON_DEFENSE] =
-            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_DEFENSE), 150);
+        SetBattleStatShown(
+            character,
+            BATTLE_STAT_WEAPON_POWER,
+            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_POWER), 150)
+        );
+        SetBattleStatShown(
+            character,
+            BATTLE_STAT_WEAPON_DEFENSE,
+            ScalePercent999(GetBattleStatShown(character, BATTLE_STAT_WEAPON_DEFENSE), 150)
+        );
     }
 }
 

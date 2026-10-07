@@ -355,6 +355,8 @@ static __inline i16 GetAlignmentLevelB(const Character* character) {
 
 #define GetBattleStatShown(character, stat) ((character)->battleStatsShown[(stat)])
 
+#define SetBattleStatShown(character, stat, value) ((character)->battleStatsShown[(stat)] = (value))
+
 static __inline i16*
 GetBattleStatGroup(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) group) {
     return &character->battleStatsShown[group * BATTLE_STATS_PER_GROUP];

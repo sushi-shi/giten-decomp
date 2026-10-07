@@ -3482,7 +3482,7 @@ void OpSetObjectField(void) {
             object->id = value;
             return;
         case SCRIPT_OPERAND_OBJECT_WEAPON_DEFENSE:
-            object->battleStatsShown[BATTLE_STAT_WEAPON_DEFENSE] = value;
+            SetBattleStatShown(object, BATTLE_STAT_WEAPON_DEFENSE, value);
             return;
         case SCRIPT_OPERAND_OBJECT_FOURTH_GROUP_BASE:
             object->battleStats[18] = value;
