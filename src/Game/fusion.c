@@ -26,6 +26,7 @@
 #include <Game/StateStack.h>
 #include <Game/Stats.h>
 #include <Game/StatusScreen.h>
+#include <Gfx/EffectDraw.h>
 #include <Gfx/Motion.h>
 #include <Gfx/Render.h>
 #include <Gfx/ScreenLayer.h>

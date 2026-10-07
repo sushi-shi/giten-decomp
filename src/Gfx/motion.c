@@ -10,6 +10,7 @@
 #include <Game/ScreenEffect.h>
 #include <Game/WaitLoop.h>
 #include <Gfx/Background.h>
+#include <Gfx/EffectDraw.h>
 #include <Gfx/Motion.h>
 #include <Gfx/Shot.h>
 #include <Gfx/Vram.h>
@@ -248,7 +249,8 @@ GZ_ENUM_BEGIN(EffectCommandResult)
     EFFECT_COMMAND_ADVANCE = -1,
     EFFECT_COMMAND_END = 0,
     EFFECT_COMMAND_FRAME = 1
-GZ_ENUM_END(EffectCommandResult);
+GZ_ENUM_END(EffectCommandResult)
+;
 
 RVA(0x00004c00, 0xc1)
 EffectCommand* StepEffectScript(void) {

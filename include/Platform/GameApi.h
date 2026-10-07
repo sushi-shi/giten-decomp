@@ -20,6 +20,7 @@ extern "C" {
 #include <Gfx/D3DState.h>
 #include <Gfx/DDraw.h>
 #include <Gfx/DisplayConfig.h>
+#include <Gfx/EffectDraw.h>
 #include <Gfx/Motion.h>
 #include <Gfx/Render.h>
 #include <Gfx/Scene.h>

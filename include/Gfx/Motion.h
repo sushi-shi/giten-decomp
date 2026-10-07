@@ -2,6 +2,7 @@
 #define GITEN_GFX_MOTION_H
 
 #include <Enums.h>
+#include <Gfx/EffectImageCode.h>
 #include <Gfx/Vram.h>
 #include <Ints.h>
 #include <Math/Vec3.h>
@@ -15,16 +16,6 @@ GZ_ENUM_BEGIN(EffectOpcode)
     EFFECT_JUMP = 0xff
 GZ_ENUM_END(EffectOpcode);
 // clang-format on
-
-typedef struct EffectImageCode {
-    u16 frame : 14;
-    u16 mirrorVertical : 1;
-    u16 mirrorHorizontal : 1;
-} EffectImageCode;
-
-#define EffectImagesDiffer(first, second)                                                          \
-    ((first).frame != (second).frame || (first).mirrorVertical != (second).mirrorVertical          \
-     || (first).mirrorHorizontal != (second).mirrorHorizontal)
 
 typedef struct EffectSprite {
     EffectImageCode image;
@@ -149,7 +140,7 @@ typedef struct EffectPalette {
 
 // Re-evaluate the palette pointer after updating the first entry.
 #define ApplyEffectPalette(palette)                                                                \
-    (SetPaletteEntry(PALETTE_SIZE - 2, (palette)->colors[0]),                                       \
+    (SetPaletteEntry(PALETTE_SIZE - 2, (palette)->colors[0]),                                      \
      SetPaletteEntry(PALETTE_SIZE - 1, (palette)->colors[1]))
 
 void SetSceneFlags(i32 bits);
@@ -185,18 +176,6 @@ void LoadEffectPalettes(FILE* fp);
 void ReleaseEffectPalette(void);
 i16 SetEffectPalette(i16 index);
 void ReleaseEffectPalettes(void);
-
-// @identity-TODO: clears the effect drawing surface (a colour-fill blit) and
-// re-reads the shot position; the argument is not read.
-RVA_DECL(0x00058990)
-void ClearEffectLayer(i16 unused);
-
-// Draws a motion-projected sprite; the image word includes flip flags.
-RVA_DECL(0x000589e0)
-void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y);
-
-RVA_DECL(0x00058e40)
-void DrawScreenEffectSprite(struct BmpFile* imageData, EffectImageCode code, i16 x, i16 y);
 
 void ResetSceneInput(void);
 

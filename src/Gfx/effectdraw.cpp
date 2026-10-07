@@ -2,6 +2,7 @@
 
 #include <Gfx/Bitmap.h>
 #include <Gfx/DDraw.h>
+#include <Gfx/EffectDraw.h>
 #include <Platform/GameApi.h>
 #include <Platform/Scene3D.h>
 
@@ -143,7 +144,8 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
         if (code.mirrorVertical) {
             source.top = (dest.bottom - VIEW_HEIGHT) / scaleY;
         } else {
-            source.bottom = bmp->info.biHeight - static_cast<i32>((dest.bottom - VIEW_HEIGHT) / scaleY);
+            source.bottom =
+                bmp->info.biHeight - static_cast<i32>((dest.bottom - VIEW_HEIGHT) / scaleY);
         }
         dest.bottom = VIEW_HEIGHT;
     }
