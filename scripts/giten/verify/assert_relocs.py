@@ -8,6 +8,8 @@ same extent. Works below 100%, where objdiff's aligned residue is hard to
 read; also reports FABRICATED externals (a '?' symbol nothing defines - a
 guaranteed unresolved external at link).
 
+An explicit RVA selects that function regardless of its match percentage.
+
 Ground truth is read, never guessed (the ported design): the retail-side
 value comes from the IMAGE at each delinked reloc site's rva (DIR32 = the
 stored VA, REL32 = site+4+disp), thunk-chased - so delinker naming артефacts
@@ -189,7 +191,7 @@ def audit(unit_filter=None, review_rva=None):
     _path, sc = report_scores()
     near: dict[str, list[str]] = {}
     for (u, sym), pct in sc.items():
-        if pct >= THRESHOLD:
+        if review_rva is not None or pct >= THRESHOLD:
             near.setdefault(u, []).append(sym)
     findings, seen = [], 0
     for unit in sorted(near):
@@ -311,15 +313,20 @@ def main(argv=None) -> int:
     for u, n, p in findings:
         print(f"  {u:<22} {n[:46]:<46} {p}")
     fake = sum(1 for _u, _n, p in findings if p.startswith("FAKE"))
-    print(f"\nassert-relocs: {seen} near-exact fn(s) audited "
-          f"(>={THRESHOLD}%), {len(findings)} defect(s) [{fake} FAKE, "
+    scope = f"rva 0x{review:x}" if review is not None else f">={THRESHOLD}%"
+    print(f"\nassert-relocs: {seen} fn(s) audited "
+          f"({scope}), {len(findings)} defect(s) [{fake} FAKE, "
           f"{len(findings) - fake} WRONG]")
+    if not seen:
+        print("Nothing was audited: check the requested scope and the built "
+              "report/Model entries.", file=sys.stderr)
+        return 2
     if findings:
         print("A FAKE ref is a symbol nothing DEFINES; a WRONG row points at "
               "an address retail never references from this body.",
               file=sys.stderr)
         return 1
-    print("relocs OK: every near-exact function's targets resolve to the "
+    print("relocs OK: every audited function's targets resolve to the "
           "retail address multiset.")
     return 0
 
