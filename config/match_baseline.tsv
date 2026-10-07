@@ -2439,8 +2439,8 @@ treasurebox	_ItemMenuHandler	100.0000	100.0000	8	ast4:8bb76417b0a4	0x1b7c0	100.0
 treasurebox	_KnockBack	100.0000	100.0000	5	ast4:2bd7de345ac1	0x1f7d0	100.0000	
 treasurebox	_KnockBackActor	100.0000	100.0000	1	ast4:bf4e51c191d5	0x1fae0	100.0000	
 treasurebox	_LoadAreaNpcImages	100.0000	100.0000	1	ast4:fc2d32679651	0x1f660	100.0000	
-treasurebox	_LoadAutomapAreas	89.3357	89.3357	11	ast4:57e056f4ba89	0x1e520	91.0839	
-treasurebox	_LoadAutomapLevel	100.0000	100.0000	6	ast4:46ebc538bdf1	0x1d050	100.0000	
+treasurebox	_LoadAutomapAreas	89.3357	89.3357	12	ast4:3a89a41c2f19	0x1e520	91.0839	
+treasurebox	_LoadAutomapLevel	100.0000	100.0000	7	ast4:d228bcff9d38	0x1d050	100.0000	
 treasurebox	_LoadItemMenuStock	100.0000	100.0000	1	ast4:881ed945e3af	0x1c160	100.0000	
 treasurebox	_LoadLearnableSkillTables	100.0000	100.0000	1	ast4:e455d2922b57	0x1c250	100.0000	
 treasurebox	_LoadNpcPalette	100.0000	100.0000	1	ast4:2e1625a72479	0x1f620	100.0000	
@@ -2498,14 +2498,14 @@ treasurebox	_ShieldTarget	100.0000	100.0000	2	ast4:525c92fa9fdc	0x1f930	100.0000
 treasurebox	_SpawnActorGroup	100.0000	100.0000	1	ast4:f38dbf45d962	0x1fb30	100.0000	
 treasurebox	_StepItemBuyMenu	100.0000	100.0000	2	ast4:39723a9b8c45	0x1b660	100.0000	
 treasurebox	_StepItemSellMenu	100.0000	100.0000	4	ast4:c5b0adf52f79	0x1be70	100.0000	
-treasurebox	_StoreAutomapLevel	100.0000	100.0000	7	ast4:ade227d8ff5a	0x1cfc0	100.0000	
+treasurebox	_StoreAutomapLevel	100.0000	100.0000	8	ast4:663343ab5c5e	0x1cfc0	100.0000	
 treasurebox	_TakeLearnableSkill	100.0000	100.0000	3	ast4:123561f6e20c	0x1c330	100.0000	
 treasurebox	_TrainingThreshold	100.0000	100.0000	1	ast4:ef653e6fe1ad	0x1c650	100.0000	
 treasurebox	_TransformAutomapPoint	100.0000	100.0000	1	ast4:52170a1be960	0x1d380	100.0000	
 treasurebox	_UpdateAutomapScrollPanel	100.0000	98.1469	3	ast4:0d20708e69ab	0x1d890	100.0000	
 treasurebox	_UpdateCurrentRoom	100.0000	100.0000	2	ast4:e1d142da7cf8	0x1f070	100.0000	
 treasurebox	_UpdateInfoBar	100.0000	100.0000	3	ast4:da7f1c8a2bf9	0x1ea50	100.0000	
-treasurebox	_WriteAutomapAreas	100.0000	100.0000	7	ast4:eac977f656cb	0x1e3c0	100.0000	
+treasurebox	_WriteAutomapAreas	100.0000	100.0000	8	ast4:991d721f9276	0x1e3c0	100.0000	
 vec3	_CellToField	100.0000	54.2121	1	ast4:3ce4a2327556	0xd650	100.0000	
 vec3	_CheckFieldBounds	100.0000	100.0000	1	ast4:033bf6b72c67	0xd580	100.0000	
 vec3	_ClampToField	100.0000	100.0000	1	ast4:a9c7e440974e	0xd5f0	100.0000	

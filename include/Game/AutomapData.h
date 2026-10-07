@@ -25,7 +25,7 @@ typedef struct AutomapBitmap {
     u8 bits[0x1000];
 } AutomapBitmap;
 
-static __inline i32 GetAutomapBitmapSize(const AutomapBitmapHeader* header) {
+static __inline u16 GetAutomapBitmapSize(const AutomapBitmapHeader* header) {
     return header->size + sizeof(AutomapBitmapHeader);
 }
 

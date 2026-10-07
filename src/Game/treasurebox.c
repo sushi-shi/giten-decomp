@@ -1866,7 +1866,7 @@ void LoadAutomapLevel(i16 area, i16 level) {
         return;
     }
     data = HandleReadPtr(bitmap);
-    memmove(s_levelBitmap, data, (u16)(GetAutomapBitmapSize(&data->header)));
+    memmove(s_levelBitmap, data, GetAutomapBitmapSize(&data->header));
     s_levelArea = area;
     s_levelIndex = level;
 }
