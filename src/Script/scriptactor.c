@@ -2874,7 +2874,7 @@ char* ReadTextToken(void) {
             ReadScriptValue();
             id = g_actionId;
             object = GetCombatant(g_actorId);
-            if (object && g_actorId < 0 && (object->pickFlags & PICK_ITEM_SKILL)) {
+            if (object && g_actorId < 0 && (object->pickFlags.itemSkill)) {
                 id = object->pickItem;
             }
             break;
@@ -2885,7 +2885,7 @@ char* ReadTextToken(void) {
             ReadScriptValue();
             id = g_actionId;
             object = GetCombatant(g_actorId);
-            if (object && g_actorId < 0 && (object->pickFlags & PICK_ITEM_SKILL)) {
+            if (object && g_actorId < 0 && (object->pickFlags.itemSkill)) {
                 id = object->pickItem;
             }
             break;

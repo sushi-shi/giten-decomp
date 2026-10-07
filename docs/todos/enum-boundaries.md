@@ -20,7 +20,7 @@ existing named boundary until the payload path is established.
 | Sound IDs | `MapEffectSoundId` and `MapSoundEffectId` in `src/Platform/d3dapp.cpp` compare fifteen numeric IDs each; ID 59 maps to different outputs in the two directions. | The numeric comparisons need resource or caller evidence before a named sound enum or shared conversion table is justified. |
 
 Several strict C enum warnings are expected for bit sets: `PanelFlags`,
-`PaletteUpdateFlags`, `PickFlags`, and `CellKindFlags` are combined or cleared
+`PaletteUpdateFlags` and `CellKindFlags` are combined or cleared
 with integer bit operations. `CellCode` also has the three unnamed table codes
 above. These warnings do not by themselves identify an enum reuse.
 

@@ -1,11 +1,16 @@
 #ifndef GITEN_GAME_PICKFLAGS_H
 #define GITEN_GAME_PICKFLAGS_H
 
-#include <EnumDomain.h>
 #include <Ints.h>
 
-GZ_ENUM_BEGIN_SPLIT(PickFlags, u8)
-    PICK_ITEM_SKILL = 4,
-GZ_ENUM_END_SPLIT(PickFlags)
+// While itemSkill is set, pickItem holds the item and pickTarget its skill.
+// @identity-TODO: recordFlagA and recordFlagB are copied from ObjectRecordFlags
+// and have no scalar reader.
+typedef struct PickFlags {
+    // Signed storage preserves the first record-bit assignment's operand order.
+    i8 recordFlagA : 1;
+    u8 recordFlagB : 1;
+    u8 itemSkill : 1;
+} PickFlags;
 
 #endif // GITEN_GAME_PICKFLAGS_H

@@ -479,7 +479,7 @@ i16 ResolveCombatAction(void) {
     ResetActionWait(GetCharacterActionWait(attacker));
     ResetActionOutcome();
     attacker->pickNoEffect = false;
-    if (attacker->pickFlags & PICK_ITEM_SKILL) {
+    if (attacker->pickFlags.itemSkill) {
         attacker->pickCostPaid = true;
     }
 
@@ -851,7 +851,7 @@ b16 RunBattleAction(void) {
                     );
                 }
             } else {
-                if ((actor->pickFlags & PICK_ITEM_SKILL) && GetItemValueHigh(actor->pickItem)) {
+                if ((actor->pickFlags.itemSkill) && GetItemValueHigh(actor->pickItem)) {
                     TakeBagItems(actor->pickItem, 1);
                 }
                 g_battleOutcome = 1;
@@ -1019,7 +1019,7 @@ b16 RunBattleAction(void) {
                 ClearActionActors();
                 s_actionRoleKept = 0;
                 s_actionPickKept = 0;
-                actor->pickFlags &= ~PICK_ITEM_SKILL;
+                actor->pickFlags.itemSkill = false;
                 if (g_actorId < 0) {
                     actor->pickItem = 0;
                 }
@@ -1082,7 +1082,7 @@ void PlayActionEffect(i16 stage) {
         }
     } else {
         user = GetCombatant(g_actorId);
-        if (user->pickFlags & PICK_ITEM_SKILL) {
+        if (user->pickFlags.itemSkill) {
             item = GetLoadedRecord(user->pickItem);
             if (item->kind == ITEM_KIND_WEAPON) {
                 before.script = 0xde;

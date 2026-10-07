@@ -2499,7 +2499,7 @@ i16 RunPartyCommandInput(void) {
             if (character->pickRole == PICK_ROLE_ITEM) {
                 kind = GetLoadedRecord(character->pickTarget)->kind;
                 if (ItemUseInvokesSkill(kind)) {
-                    character->pickFlags |= PICK_ITEM_SKILL;
+                    character->pickFlags.itemSkill = true;
                     character->pickItem = character->pickTarget;
                     character->pickRole = PICK_ROLE_MAGIC;
                     character->pickTarget = GetItemSkillId(GetLoadedRecord(character->pickTarget));
@@ -2576,7 +2576,7 @@ i16 RunPartyCommandInput(void) {
                 if (s_pickMode < PARTY_COMMAND_PREPARE_MEMBER) {
                     s_pickMode = PARTY_COMMAND_PREPARE_MEMBER;
                 }
-                if (character->pickFlags & PICK_ITEM_SKILL) {
+                if (character->pickFlags.itemSkill) {
                     character->pickRole = PICK_ROLE_ITEM;
                 }
             }
@@ -2623,7 +2623,7 @@ i16 RunPartyCommandInput(void) {
             if (result == TARGET_PICK_CANCELLED) {
                 RestoreSwappedMember();
                 s_pickMode = PARTY_COMMAND_PICK_TARGET;
-                if (character->pickFlags & PICK_ITEM_SKILL) {
+                if (character->pickFlags.itemSkill) {
                     character->pickRole = PICK_ROLE_ITEM;
                 }
             }

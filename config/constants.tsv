@@ -278,10 +278,6 @@ src/Game/fieldobj.c	StepObjectTowardParty	1	trivial-function-literal	1 for-init	
 src/Game/fieldobj.c	InitObjectFromRecord	0	existing-symbol	enum	The object uses the Character title byte, but a demon has no human title; zeroing it does not assert HUMAN_TITLE_GUSHA
 src/Game/fieldobj.c	InitObjectFromRecord	0	trivial-function-literal	0 store *	a new object starts with these fields clear
 src/Game/fieldobj.c	InitObjectFromRecord	0	trivial-function-literal	0 store	a new object starts with its conditions and flags clear
-src/Game/fieldobj.c	InitObjectFromRecord	*	*	*bits68*	a record's bits68 packs byte083 (bits 0-1), triggerRange (bits 2-4) and the pick flags (bits 5-6)
-src/Game/fieldobj.c	InitObjectFromRecord	*	*	operator & pickFlags	a record's bits68 bits 5-6 replace the pick flags' bits 0-2
-src/Game/fieldobj.c	InitObjectFromRecord	*	*	operator &	a record's bits68 packs byte083 (bits 0-1), triggerRange (bits 2-4) and the pick flags (bits 5-6)
-src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 bitwise	a record's bits68 packs the pick flags in bits 5-6
 src/Game/fieldobj.c	InitObjectFromRecord	*	call-argument	ScaleLevelGap*	the record's two alignment bytes
 src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 bound item	item 0 is no item
 src/Game/fieldobj.c	InitObjectFromRecord	1	trivial-function-literal	1 store byte096	@identity-TODO: byte096 starts at 1

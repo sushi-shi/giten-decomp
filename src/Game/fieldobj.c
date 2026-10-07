@@ -2138,7 +2138,7 @@ void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
     object->rank = record->level;
     object->title = 0;
     object->experience = record->experience;
-    object->byte083 = record->bits68 & 3;
+    object->byte083 = record->flags.unknownObjectBits;
     object->pantheon = GetDemonPantheon(record->id);
     object->alignmentLevelB = ScaleLevelGap(record->alignB[0], record->alignB[1]);
     object->alignmentLevelA = ScaleLevelGap(record->alignA[0], record->alignA[1]);
@@ -2192,7 +2192,7 @@ void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
     object->acting = false;
     object->word098 = 0x11;
     object->attitude = ATTITUDE_NORMAL;
-    object->triggerRange = (record->bits68 >> 2) & 7;
+    object->triggerRange = record->flags.triggerRange;
     object->mode = ACTOR_MODE_NONE;
     object->fieldState = 0;
     object->encounterRow = record->encounterRow;
@@ -2202,8 +2202,9 @@ void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
     }
     object->moonRow = record->moonRow;
     object->equipGroup = record->equipGroup;
-    object->pickFlags = (object->pickFlags & ~1) | ((record->bits68 >> 5) & 1);
-    object->pickFlags = (object->pickFlags & ~6) | ((record->bits68 >> 5) & 2);
+    object->pickFlags.recordFlagA = record->flags.pickFlagA;
+    object->pickFlags.recordFlagB = record->flags.pickFlagB;
+    object->pickFlags.itemSkill = false;
     object->dropChance = record->dropChance;
     object->pickItem = record->pickItem;
     for (i = 0; i < AFFILIATION_COUNT; i++) {

@@ -2825,14 +2825,15 @@ b16 RunItemUse(void) {
             record = GetLoadedRecord(s_useItem);
             kind = record->kind;
             if (ItemUseInvokesSkill(kind)) {
-                u8 previousFlags;
+                PickFlags previousFlags;
                 g_actorId = PartyCombatantId(position);
                 user->pickObject = g_targetId;
                 user->pickRole = PICK_ROLE_MAGIC;
                 previousFlags = user->pickFlags;
                 g_actionId = GetItemSkillId(record);
                 user->pickTarget = GetItemSkillId(record);
-                user->pickFlags = previousFlags | PICK_ITEM_SKILL;
+                previousFlags.itemSkill = true;
+                user->pickFlags = previousFlags;
                 user->pickItem = s_useItem;
             } else {
                 g_actorId = PartyCombatantId(position);

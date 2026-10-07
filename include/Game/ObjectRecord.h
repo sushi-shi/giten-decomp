@@ -11,6 +11,14 @@
 
 #include <stdio.h>
 
+typedef struct ObjectRecordFlags {
+    // @identity-TODO: two serialized bits copied to FieldObject.byte083.
+    u8 unknownObjectBits : 2;
+    u8 triggerRange : 3;
+    u8 pickFlagA : 1;
+    u8 pickFlagB : 1;
+} ObjectRecordFlags;
+
 // A field object's 0x7a-byte record (data file kind 10, id 0x2000 + kind),
 // read into the shared buffer 0x47afd8 and turned into a FieldObject by
 // InitObjectFromRecord.
@@ -18,8 +26,8 @@
 // (experience/macca/magnetite, the HP/MP pools, the eight skills and item
 // slots, the id and the 17-byte name, the level, the stat bytes, ...);
 // `alignB`/`alignA` are the pairs ScaleLevelGap turns into the object's
-// alignment levels; `bits68` packs the fields copied to byte083 (bits 0-1),
-// triggerRange (bits 2-4) and pickFlags (bits 5 and 6). The picture uses
+// alignment levels; flags contains the fields copied to byte083, triggerRange
+// and pickFlags. The picture uses
 // imageIndex/imageVariant; scriptSet selects three extra script files.
 typedef struct ObjectRecord {
     i32 experience;
@@ -43,7 +51,7 @@ typedef struct ObjectRecord {
     i8 affiliation[AFFILIATION_COUNT];
     u8 actionSpeed;
     u8 dropChance;
-    u8 bits68;
+    ObjectRecordFlags flags;
     u8 pad69;
     u8 encounterRow;
     i16 imageIndex;

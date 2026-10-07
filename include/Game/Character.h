@@ -166,8 +166,7 @@ typedef struct Character {
     // The group whose row of the equipment table (0x483b38) says what it can
     // equip.
     i16 equipGroup;
-    // PICK_ITEM_SKILL keeps the original item in pickItem while pickTarget names its skill.
-    GZ_ENUM_STORAGE(PickFlags, u8) pickFlags;
+    PickFlags pickFlags;
     u32 trainingPoints[4];
     u8 pad058[3];
     u8 dropChance;

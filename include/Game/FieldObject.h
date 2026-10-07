@@ -93,7 +93,7 @@ typedef struct FieldObject {
     u8 resistance[10];
     i8 affiliation[AFFILIATION_COUNT];
     i16 equipGroup;
-    GZ_ENUM_STORAGE(PickFlags, u8) pickFlags;
+    PickFlags pickFlags;
     u32 trainingPoints[4];
     // @identity-TODO: three bytes between training points and drop chance.
     u8 unknownAfterTraining[3];

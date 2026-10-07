@@ -22,3 +22,4 @@ Short observations, not a wall database. [Scope and admission rules](README.md).
 - [Signed remainder](signed-modulo-pow2-abs-restore.md) — sign correction around a power-of-two mask.
 - [Extraction and consumer widths](wide-extraction-narrow-consumer.md) — a wide mask can feed a narrow index without a runtime copy.
 - [Signed word and unsigned mask](signed-word-unsigned-mask.md) — a mask literal's type can select an in-place word widening sequence.
+- [Signed bitfield stores](signed-bitfield-store-or-order.md) — a byte field's signedness can decide the OR destination and surrounding load order.
