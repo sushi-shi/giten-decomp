@@ -80,6 +80,7 @@ ScriptContext* NewScriptContext(i16 mode, Character* actor);
 ScriptContext* FreeScriptContext(ScriptContext* script);
 u16 NextScriptChar(i16 window);
 i16 StepScript(i16 window, u16 ch);
+#define StepNextScriptChar(window) StepScript((window), NextScriptChar((window)))
 i16 RunScript(i16 file, i16 entry, i16 window);
 void RunCurrentScript(void);
 i16 RunScriptStep(i16 window);

@@ -438,7 +438,7 @@ i16 RunScript(i16 file, i16 entry, i16 window) {
     StartScript(file, entry, NewScriptContext(0, NULL));
     ResetTextStateInstant();
     do {
-        result = StepScript(window, NextScriptChar(window));
+        result = StepNextScriptChar(window);
     } while (result >= 0);
     EndScript(GetCurrentScript());
     return window;
@@ -450,7 +450,7 @@ void RunCurrentScript(void) {
     i16 window;
     do {
         window = TopScriptWindow();
-    } while (StepScript(window, NextScriptChar(window)) >= 0);
+    } while (StepNextScriptChar(window) >= 0);
 }
 
 // Runs the current script until a step does something (its newest window,
@@ -463,7 +463,7 @@ i16 RunScriptStep(i16 window) {
         if (top >= 0) {
             window = top;
         }
-        result = StepScript(window, NextScriptChar(window));
+        result = StepNextScriptChar(window);
     } while (result == SCRIPT_CONTINUE);
     return result;
 }
