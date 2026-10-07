@@ -17,6 +17,7 @@ rva	unit	function	lost_max	cur
 0x017520	statestack	_PickDdsSummon	100.0000	99.9161
 0x001aa0	textchar	_ReadTextChar	100.0000	99.5918
 0x01ebe0	treasurebox	_IsRegionFlagOn	100.0000	99.5000
+0x01e520	treasurebox	_LoadAutomapAreas	91.0839	89.3357
 0x002fb0	vram	_GrbToRgb	100.0000	60.8182
 0x002ec0	vram	_ResetUpperPalette	76.5833	74.0833
 0x04e090	winmain	?DrawSceneSprites@@YAXXZ	96.8229	95.6042

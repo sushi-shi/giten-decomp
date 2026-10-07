@@ -2439,7 +2439,7 @@ treasurebox	_ItemMenuHandler	100.0000	100.0000	7	ast4:69367325ded9	0x1b7c0	100.0
 treasurebox	_KnockBack	100.0000	100.0000	5	ast4:2bd7de345ac1	0x1f7d0	100.0000	
 treasurebox	_KnockBackActor	100.0000	100.0000	1	ast4:bf4e51c191d5	0x1fae0	100.0000	
 treasurebox	_LoadAreaNpcImages	100.0000	100.0000	1	ast4:fc2d32679651	0x1f660	100.0000	
-treasurebox	_LoadAutomapAreas	91.0839	91.0839	10	ast4:87d33eb82295	0x1e520	91.0839	
+treasurebox	_LoadAutomapAreas	89.3357	89.3357	11	ast4:57e056f4ba89	0x1e520	91.0839	
 treasurebox	_LoadAutomapLevel	100.0000	100.0000	6	ast4:46ebc538bdf1	0x1d050	100.0000	
 treasurebox	_LoadItemMenuStock	100.0000	100.0000	1	ast4:881ed945e3af	0x1c160	100.0000	
 treasurebox	_LoadLearnableSkillTables	100.0000	100.0000	1	ast4:e455d2922b57	0x1c250	100.0000	
