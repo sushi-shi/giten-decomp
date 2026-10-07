@@ -508,10 +508,10 @@ i32 CalcMaxHp(Character* character) {
     value *= character->stats.total[STAT_VITALITY];
     value *= 0.5;
     value += character->stats.total[STAT_PROTECTION] + character->stats.total[STAT_FORTUNE] + 5;
-    if (TestBit(character->personalFlags, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
         value += value;
     }
-    if (TestBit(character->personalFlags, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
+    if (TestCharacterFlag(character, ACTOR_FLAG_MAX_POOLS_DOUBLE_ASH_PENDING) == true) {
         value += value;
     }
     if (value > 9999.0) {

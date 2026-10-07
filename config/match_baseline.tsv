@@ -200,7 +200,7 @@ character	_CalcMagicAccuracyStat	100.0000	99.8182	4	ast4:9cff42d2efd6	0x3d4d0	10
 character	_CalcMagicDefenseStat	100.0000	100.0000	4	ast4:090fb8d5e01c	0x3d530	100.0000	
 character	_CalcMagicEvasionStat	100.0000	100.0000	3	ast4:44073d208ebc	0x3d510	100.0000	
 character	_CalcMagicPowerStat	100.0000	100.0000	3	ast4:f7a2cf1ab61a	0x3d4f0	100.0000	
-character	_CalcMaxHp	100.0000	100.0000	1	ast4:d2b7f54ae7a0	0x3cec0	100.0000	
+character	_CalcMaxHp	100.0000	100.0000	2	ast4:64f8b517ac03	0x3cec0	100.0000	
 character	_CalcMaxMp	100.0000	100.0000	5	ast4:25eff3aa1670	0x3cf70	100.0000	
 character	_CalcPhysicalDefenseStat	100.0000	100.0000	3	ast4:ed814705bdc7	0x3d240	100.0000	
 character	_CalcWeaponAccuracyStat	100.0000	100.0000	3	ast4:e3ccd4c65b31	0x3d390	100.0000	
