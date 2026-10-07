@@ -2498,7 +2498,7 @@ i16 RunPartyCommandInput(void) {
             }
             if (character->pickRole == PICK_ROLE_ITEM) {
                 kind = GetLoadedRecord(character->pickTarget)->kind;
-                if (kind == ITEM_KIND_WEAPON || kind == ITEM_KIND_ACCESSORY) {
+                if (ItemUseInvokesSkill(kind)) {
                     character->pickFlags |= PICK_ITEM_SKILL;
                     character->pickItem = character->pickTarget;
                     character->pickRole = PICK_ROLE_MAGIC;

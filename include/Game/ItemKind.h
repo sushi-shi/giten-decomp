@@ -27,4 +27,6 @@ GZ_ENUM_BEGIN_SPLIT(ItemKind, u8)
 GZ_ENUM_END_SPLIT(ItemKind)
 // clang-format on
 
+#define ItemUseInvokesSkill(kind) ((kind) == ITEM_KIND_WEAPON || (kind) == ITEM_KIND_ACCESSORY)
+
 #endif // GITEN_GAME_ITEMKIND_H

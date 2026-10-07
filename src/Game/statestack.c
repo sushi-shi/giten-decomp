@@ -2626,8 +2626,6 @@ MenuBox* OpenItemListMenu(void) {
     return menu;
 }
 
-#define ItemUseInvokesSkill(kind) ((kind) == ITEM_KIND_WEAPON || (kind) == ITEM_KIND_ACCESSORY)
-
 static __inline void AddItemUseMenuLine(MenuBox* menu, i16 item, i16 disabled) {
     AddMenuLine(
         menu->plane,
