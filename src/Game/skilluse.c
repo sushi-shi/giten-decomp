@@ -2018,7 +2018,7 @@ void SetSkillPick(i16 position) {
 
     if (user != NULL) {
         user->pickObject = g_targetId;
-        user->pickRole = PICK_ROLE_MAGIC;
+        SetCharacterPickRole(user, PICK_ROLE_MAGIC);
         g_actionId = s_skillPicked;
         user->pickTarget = s_skillPicked;
     }

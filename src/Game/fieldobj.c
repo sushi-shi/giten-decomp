@@ -1721,7 +1721,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             }
             g_actorId = index;
             object->mode = ACTOR_MODE_IDLE;
-            object->pickRole = PICK_ROLE_ATTACK;
+            SetFieldObjectPickRole(object, PICK_ROLE_ATTACK);
             SetFieldObjectPickTarget(
                 object,
                 GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON].item
@@ -1734,14 +1734,14 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                     g_actionId = object->skills[slot - 1];
                     object->pickTarget = g_actionId;
                     object->pickTargetHigh = 1;
-                    object->pickRole = PICK_ROLE_MAGIC;
+                    SetFieldObjectPickRole(object, PICK_ROLE_MAGIC);
                     result = UseObjectSkill(object, g_actionId);
                     if (result < 0) {
                         if (++tries < 4) {
                             continue;
                         }
                         g_actionId = 1;
-                        object->pickRole = PICK_ROLE_ATTACK;
+                        SetFieldObjectPickRole(object, PICK_ROLE_ATTACK);
                         SetFieldObjectPickTarget(
                             object,
                             GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON].item
@@ -1752,7 +1752,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                     }
                 } else {
                     object->mode = ACTOR_MODE_IDLE;
-                    object->pickRole = PICK_ROLE_ATTACK;
+                    SetFieldObjectPickRole(object, PICK_ROLE_ATTACK);
                     SetFieldObjectPickTarget(
                         object,
                         GetFieldObjectEquipment(object)[EQUIP_SLOT_WEAPON].item

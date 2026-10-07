@@ -2832,7 +2832,7 @@ b16 RunItemUse(void) {
                 PickFlags previousFlags;
                 g_actorId = PartyCombatantId(position);
                 user->pickObject = g_targetId;
-                user->pickRole = PICK_ROLE_MAGIC;
+                SetCharacterPickRole(user, PICK_ROLE_MAGIC);
                 previousFlags = user->pickFlags;
                 g_actionId = GetItemSkillId(record);
                 user->pickTarget = GetItemSkillId(record);
@@ -2842,7 +2842,7 @@ b16 RunItemUse(void) {
             } else {
                 g_actorId = PartyCombatantId(position);
                 user->pickObject = g_targetId;
-                user->pickRole = PICK_ROLE_ITEM;
+                SetCharacterPickRole(user, PICK_ROLE_ITEM);
                 g_actionId = s_useItem;
                 user->pickTarget = s_useItem;
             }

@@ -184,6 +184,8 @@ static __inline void SetFieldObjectPickTarget(FieldObject* actor, i16 target) {
         }                                                                                          \
     } while (0)
 
+#define SetFieldObjectPickRole(object, role) ((object)->pickRole = (role))
+
 #define GetFieldObjectEquipment(object) ((object)->slots)
 
 #define GetFieldObjectHpPool(object) (&(object)->pools.hp)

@@ -292,6 +292,8 @@ static __inline u8* GetCharacterBattleTallies(Character* character) {
         }                                                                                          \
     } while (0)
 
+#define SetCharacterPickRole(character, role) ((character)->pickRole = (role))
+
 static __inline b32 IsSkillAction(const Character* character) {
     return character->pickRole == PICK_ROLE_MAGIC || character->pickRole == PICK_ROLE_EXTRA;
 }

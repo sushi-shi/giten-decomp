@@ -366,7 +366,7 @@ i16 PickActorAction(Character* actor) {
 
 static __inline void SetBasicAttackPick(Character* actor, i16 target) {
     actor->mode = ACTOR_MODE_ATTACK;
-    actor->pickRole = PICK_ROLE_ATTACK;
+    SetCharacterPickRole(actor, PICK_ROLE_ATTACK);
     SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item);
     actor->pickObject = target;
 }
@@ -686,7 +686,7 @@ i16 RunActorCommandMenu(i16 id) {
             return result;
         }
         CloseActorCommandMenu();
-        actor->pickRole = g_selectedObjectId;
+        SetCharacterPickRole(actor, g_selectedObjectId);
         return g_selectedObjectId;
     }
     CloseActorCommandMenu();
@@ -1792,7 +1792,7 @@ void MarkActorActionReady(Character* actor) {
             break;
         case ACTOR_MODE_FLEE:
             if (!IsHumanCharacter(actor)) {
-                actor->pickRole = PICK_ROLE_RETURN;
+                SetCharacterPickRole(actor, PICK_ROLE_RETURN);
                 MarkPickDone();
                 break;
             }
@@ -1805,7 +1805,7 @@ void MarkActorActionReady(Character* actor) {
         case ACTOR_MODE_WANDER:
         case ACTOR_MODE_IDLE:
         case ACTOR_MODE_TALK:
-            actor->pickRole = PICK_ROLE_DEFENCE;
+            SetCharacterPickRole(actor, PICK_ROLE_DEFENCE);
             MarkPickDone();
             break;
     }
@@ -2417,7 +2417,7 @@ void SetMemberPickRole(i16 id, i8 role) {
     s_pickedIndex = id;
     character = GetCharacterById(id);
     if (character != NULL) {
-        character->pickRole = role;
+        SetCharacterPickRole(character, role);
     }
 }
 
@@ -2501,7 +2501,7 @@ i16 RunPartyCommandInput(void) {
                 if (ItemUseInvokesSkill(kind)) {
                     character->pickFlags.itemSkill = true;
                     character->pickItem = character->pickTarget;
-                    character->pickRole = PICK_ROLE_MAGIC;
+                    SetCharacterPickRole(character, PICK_ROLE_MAGIC);
                     character->pickTarget = GetItemSkillId(GetLoadedRecord(character->pickTarget));
                 }
             }
@@ -2577,7 +2577,7 @@ i16 RunPartyCommandInput(void) {
                     s_pickMode = PARTY_COMMAND_PREPARE_MEMBER;
                 }
                 if (character->pickFlags.itemSkill) {
-                    character->pickRole = PICK_ROLE_ITEM;
+                    SetCharacterPickRole(character, PICK_ROLE_ITEM);
                 }
             }
             if (result < TARGET_PICK_SELECTED) {
@@ -2624,7 +2624,7 @@ i16 RunPartyCommandInput(void) {
                 RestoreSwappedMember();
                 s_pickMode = PARTY_COMMAND_PICK_TARGET;
                 if (character->pickFlags.itemSkill) {
-                    character->pickRole = PICK_ROLE_ITEM;
+                    SetCharacterPickRole(character, PICK_ROLE_ITEM);
                 }
             }
             if (result < TARGET_PICK_SELECTED) {
