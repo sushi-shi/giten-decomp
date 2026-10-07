@@ -86,19 +86,19 @@ void ApplyItemCurse(
             return;
         case ITEM_CURSE_DRAIN_HP:
             if (timing == EQUIP_EFFECT_STEP_TICK) {
-                ChangePool(&character->pools.hp, -1);
+                ChangePool(GetCharacterHpPool(character), -1);
                 ApplyEmptyPools(character);
             }
             return;
         case ITEM_CURSE_DRAIN_HP_HEAVY:
             if (timing == EQUIP_EFFECT_STEP_TICK) {
-                ChangePool(&character->pools.hp, -3);
+                ChangePool(GetCharacterHpPool(character), -3);
                 ApplyEmptyPools(character);
             }
             return;
         case ITEM_CURSE_DRAIN_MP:
             if (timing == EQUIP_EFFECT_STEP_TICK) {
-                ChangePool(&character->pools.mp, -1);
+                ChangePool(GetCharacterMpPool(character), -1);
             }
             return;
         case ITEM_CURSE_BURNING:

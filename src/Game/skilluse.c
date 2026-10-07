@@ -385,7 +385,7 @@ void AlertActor(Character* actor, GZ_ENUM_PARAM(Attitude, i16) state) {
 
 static __inline void ApplyReflectedDamage(Character* actor) {
     g_hpChange = actor->selfChange;
-    ChangePool(&actor->pools.hp, -actor->selfChange);
+    ChangePool(GetCharacterHpPool(actor), -actor->selfChange);
 }
 
 #define ApplyShieldedDamage(target, amount)                                                        \
@@ -393,7 +393,7 @@ static __inline void ApplyReflectedDamage(Character* actor) {
         if ((target)->shield != 0) {                                                               \
             AbsorbShieldDamage((target), (amount));                                                \
         } else {                                                                                   \
-            ChangePool(&(target)->pools.hp, -(amount));                                            \
+            ChangePool(GetCharacterHpPool((target)), -(amount));                                   \
         }                                                                                          \
     } while (0)
 
@@ -404,17 +404,17 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
         switch (kind) {
             case SKILL_KIND_MP_DAMAGE:
                 if (target->shield == 0) {
-                    ChangePool(&target->pools.mp, -attacker->lastChange);
+                    ChangePool(GetCharacterMpPool(target), -attacker->lastChange);
                 }
                 g_mpChange = attacker->lastChange;
                 return;
             case SKILL_KIND_HP_DRAIN:
-                ChangePool(&attacker->pools.hp, attacker->lastChange);
+                ChangePool(GetCharacterHpPool(attacker), attacker->lastChange);
                 g_actionResult |= ACTION_DRAIN_HP;
                 break;
             case SKILL_KIND_MP_DRAIN:
-                ChangePool(&attacker->pools.mp, attacker->lastChange);
-                ChangePool(&target->pools.mp, -attacker->lastChange);
+                ChangePool(GetCharacterMpPool(attacker), attacker->lastChange);
+                ChangePool(GetCharacterMpPool(target), -attacker->lastChange);
                 g_actionResult |= ACTION_DRAIN_MP;
                 g_mpChange = attacker->lastChange;
                 return;
@@ -436,9 +436,9 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
             GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_WEAPON].item)
         );
         if (kind == ITEM_PASSIVE_WEAPON_HP_DRAIN) {
-            ChangePool(&attacker->pools.hp, attacker->lastChange);
+            ChangePool(GetCharacterHpPool(attacker), attacker->lastChange);
         } else if (kind == ITEM_PASSIVE_WEAPON_MP_DRAIN) {
-            ChangePool(&attacker->pools.mp, attacker->lastChange);
+            ChangePool(GetCharacterMpPool(attacker), attacker->lastChange);
         }
     }
 }
@@ -467,7 +467,7 @@ i16 ResolveCombatAction(void) {
     }
     s_actorHpBefore = attacker->pools.hp.cur;
     s_targetHpBefore = target->pools.hp.cur;
-    targetHp = &target->pools.hp;
+    targetHp = GetCharacterHpPool(target);
     fatalCondition = GetFatalCondition(GetCharacterConditions(target));
     if (attacker->id == OBJECT_RECORD_MARDUK && target->id == OBJECT_RECORD_PRIMROSE) {
         SetFieldCounts(-2, -2);
@@ -553,7 +553,7 @@ i16 ResolveCombatAction(void) {
             ApplyReflectedDamage(attacker);
             ApplyShieldedDamage(target, attacker->lastChange);
         } else if (attacker->result == -3) {
-            ChangePool(&target->pools.mp, attacker->lastChange);
+            ChangePool(GetCharacterMpPool(target), attacker->lastChange);
         } else if (attacker->result == -1) {
             ChangePool(targetHp, attacker->lastChange);
         } else if (attacker->result == -2) {
@@ -1213,13 +1213,13 @@ void PaySkillCost(i16 who, i16 skill) {
         if (cost == SKILL_COST_WHOLE_MP) {
             cost = character->pools.mp.cur;
         }
-        DrainPool(&character->pools.mp, cost);
+        DrainPool(GetCharacterMpPool(character), cost);
     } else {
         cost = -cost;
         if (cost == SKILL_COST_WHOLE_HP) {
             cost = character->pools.hp.cur;
         }
-        DrainPool(&character->pools.hp, cost);
+        DrainPool(GetCharacterHpPool(character), cost);
     }
 }
 

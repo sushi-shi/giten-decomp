@@ -40,7 +40,7 @@ typedef struct ItemSlot {
     };
 } ItemSlot;
 
-#define SetItemSlotItem(slot, value)                                                             \
+#define SetItemSlotItem(slot, value)                                                               \
     ((slot)->item = (value), (slot)->attachment = GEM_ITEM_INDEX_NONE)
 
 // Removes the item and quantity while retaining its attachment index.
@@ -298,6 +298,10 @@ static __inline b32 IsSkillAction(const Character* character) {
 }
 
 #define GetCharacterActionWait(character) (&(character)->actionWait)
+
+#define GetCharacterHpPool(character) (&(character)->pools.hp)
+
+#define GetCharacterMpPool(character) (&(character)->pools.mp)
 
 static __inline ConditionSet* GetCharacterConditions(Character* character) {
     return &character->conditions;

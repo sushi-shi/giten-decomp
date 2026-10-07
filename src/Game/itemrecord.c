@@ -1792,8 +1792,8 @@ PoolRegen ApplyEquipmentRegen(Character* character) {
     AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, &regen);
     AddItemRegen(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, &regen);
     if (GetFatalCondition(GetCharacterConditions(character)) == 0) {
-        FillPool(&character->pools.hp, regen.hp, POOL_FILL_TO_DOUBLE_MAX);
-        FillPool(&character->pools.mp, regen.mp, POOL_FILL_TO_DOUBLE_MAX);
+        FillPool(GetCharacterHpPool(character), regen.hp, POOL_FILL_TO_DOUBLE_MAX);
+        FillPool(GetCharacterMpPool(character), regen.mp, POOL_FILL_TO_DOUBLE_MAX);
     }
     return regen;
 }

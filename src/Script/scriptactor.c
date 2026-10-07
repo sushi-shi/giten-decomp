@@ -1321,14 +1321,14 @@ void RequestQuit(void) {
 RVA(0x000345b0, 0x2c)
 void OpChangeHp(i16 sign) {
     Character* character = ReadScriptObject();
-    ChangePool(&character->pools.hp, ReadScriptValue() * sign);
+    ChangePool(GetCharacterHpPool(character), ReadScriptValue() * sign);
     RequestFieldRefresh();
 }
 
 RVA(0x000345e0, 0x2c)
 void OpChangeMp(i16 sign) {
     Character* character = ReadScriptObject();
-    ChangePool(&character->pools.mp, ReadScriptValue() * sign);
+    ChangePool(GetCharacterMpPool(character), ReadScriptValue() * sign);
     RequestFieldRefresh();
 }
 
@@ -2653,8 +2653,8 @@ void OpRebalanceMemberStats(void) {
     if (character) {
         i16 i;
         for (i = 0; i < STAT_COUNT; i++) {
-            i16 sum = character->stats.bonus[i] + character->stats.modifiers[i] +
-                      character->stats.equipment[i] + GetBaseStat(character, i);
+            i16 sum = character->stats.bonus[i] + character->stats.modifiers[i]
+                      + character->stats.equipment[i] + GetBaseStat(character, i);
             if (HasCondition(GetCharacterConditions(character), CONDITION_ZOMBIE)) {
                 sum /= 2;
             }
@@ -3998,9 +3998,9 @@ void OpRecoverRosterPool(GZ_ENUM_PARAM(CharacterPoolMask, i16) pool) {
     for (i = 0; i < ROSTER_SIZE; i++) {
         if (RosterMemberAt(i) && (mask & bit)) {
             if (pool == POOL_MASK_HP) {
-                FillPool(&RosterMemberAt(i)->pools.hp, amount, POOL_FILL_TO_MAX);
+                FillPool(GetCharacterHpPool(RosterMemberAt(i)), amount, POOL_FILL_TO_MAX);
             } else {
-                FillPool(&RosterMemberAt(i)->pools.mp, amount, POOL_FILL_TO_MAX);
+                FillPool(GetCharacterMpPool(RosterMemberAt(i)), amount, POOL_FILL_TO_MAX);
             }
         }
         bit <<= 1;

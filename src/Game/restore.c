@@ -176,8 +176,8 @@ ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* ta
     sleep = CONDITION_CHANGE_NONE;
     reportCondition = true;
     revival = false;
-    hpPool = &target->pools.hp;
-    mpPool = &target->pools.mp;
+    hpPool = GetCharacterHpPool(target);
+    mpPool = GetCharacterMpPool(target);
     oldHp = hpPool->cur;
     oldMp = mpPool->cur;
     conditions = GetCharacterConditions(target);

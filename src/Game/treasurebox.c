@@ -1580,7 +1580,7 @@ void RunCellTrap(i16 mode, i16 x, i16 y) {
                         continue;
                     }
                 }
-                ChangePool(&member->pools.hp, -damage);
+                ChangePool(GetCharacterHpPool(member), -damage);
                 if (hp && !member->pools.hp.cur) {
                     ApplyEmptyPools(member);
                 }

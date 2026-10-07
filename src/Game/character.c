@@ -1194,7 +1194,8 @@ GZ_ENUM_RETURN(PartySlotPollResult, i16) PollTextPartySlotSelection(GZ_ENUM_PARA
         ResetTextPlaneLineStep(g_infoPlane, oldStep);
         return PARTY_SLOT_POLL_CANCELLED;
     }
-    wordColumn = TextPlaneCellAt(g_infoPlane, g_mousePosition.x, g_mousePosition.y, &cellColumn, &row);
+    wordColumn =
+        TextPlaneCellAt(g_infoPlane, g_mousePosition.x, g_mousePosition.y, &cellColumn, &row);
     if (wordColumn == 0 || wordColumn == 39) {
         i16 lineStep = GetTextPlaneLineStep(g_infoPlane);
         slot = row / lineStep + (wordColumn ? 3 : 0);
@@ -1661,9 +1662,9 @@ b16 RecoverCondition(Character* character, GZ_ENUM_PARAM(ConditionId, i16) condi
              + s_recoveryChance[condition];
     if (chance <= RandomUpTo(0xff)) {
         if (condition == CONDITION_DANCE) {
-            DrainPool(&character->pools.hp, RandomUpTo(4) + 1);
+            DrainPool(GetCharacterHpPool(character), RandomUpTo(4) + 1);
         } else if (condition == CONDITION_SUFFOCATION) {
-            DrainPool(&character->pools.hp, RandomUpTo(0x20) + 1);
+            DrainPool(GetCharacterHpPool(character), RandomUpTo(0x20) + 1);
         }
         return false;
     }
@@ -1963,7 +1964,7 @@ i16 FindMemberByPoolState(i16 start, i16 mode, GZ_ENUM_PARAM(PoolStateKind, i16)
         character = RosterMemberAt(slot);
         if (character && FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
             if (pools & POOL_MASK_HP) {
-                pool = PoolState(&character->pools.hp);
+                pool = PoolState(GetCharacterHpPool(character));
                 if (pool == state) {
                     return slot;
                 }
@@ -1972,7 +1973,7 @@ i16 FindMemberByPoolState(i16 start, i16 mode, GZ_ENUM_PARAM(PoolStateKind, i16)
                 }
             }
             if (pools & POOL_MASK_MP) {
-                pool = PoolState(&character->pools.mp);
+                pool = PoolState(GetCharacterMpPool(character));
                 if (pool == state) {
                     return slot;
                 }
@@ -2140,10 +2141,10 @@ i16 DamageParty(i16 percent, b16 skipNewton) {
                 continue;
             }
             if (percent < 0) {
-                ChangePool(&character->pools.hp, percent);
+                ChangePool(GetCharacterHpPool(character), percent);
             } else {
-                amount = PoolPercentAmount(&character->pools.hp, percent);
-                ChangePool(&character->pools.hp, -amount);
+                amount = PoolPercentAmount(GetCharacterHpPool(character), percent);
+                ChangePool(GetCharacterHpPool(character), -amount);
             }
             ApplyEmptyPools(character);
             hit++;
@@ -2164,10 +2165,10 @@ i16 HealParty(i16 percent) {
         character = GetPartyCharacter(i);
         if (character && !GetFatalCondition(GetCharacterConditions(character))) {
             if (percent < 0) {
-                ChangePool(&character->pools.hp, -percent);
+                ChangePool(GetCharacterHpPool(character), -percent);
             } else {
-                amount = PoolPercentAmount(&character->pools.hp, percent);
-                ChangePool(&character->pools.hp, amount);
+                amount = PoolPercentAmount(GetCharacterHpPool(character), percent);
+                ChangePool(GetCharacterHpPool(character), amount);
             }
             ApplyEmptyPools(character);
             healed++;
@@ -2310,12 +2311,12 @@ i16 TickPartySteps(void) {
                 if (HasCondition(GetCharacterConditions(character), CONDITION_SEVERE_POISON)
                     && !IsConditionResisted(character, CONDITION_SEVERE_POISON)) {
                     changed |= 1;
-                    DrainPool(&character->pools.hp, 4);
+                    DrainPool(GetCharacterHpPool(character), 4);
                 }
                 if (HasCondition(GetCharacterConditions(character), CONDITION_POISON)
                     && !IsConditionResisted(character, CONDITION_POISON)) {
                     changed |= 1;
-                    DrainPool(&character->pools.hp, 1);
+                    DrainPool(GetCharacterHpPool(character), 1);
                 }
             }
         }
@@ -3026,7 +3027,7 @@ i16 PayStepUpkeep(void) {
             if (whole == 0) {
                 continue;
             }
-            FillPool(&member->pools.hp, whole * 2, POOL_FILL_TO_MAX);
+            FillPool(GetCharacterHpPool(member), whole * 2, POOL_FILL_TO_MAX);
             died += DrainUpkeep(hero, member, whole * 8, i);
         } else if (HasCondition(GetCharacterConditions(member), CONDITION_ZOMBIE)) {
             class = GetDemonClass(member->id);
@@ -3039,7 +3040,7 @@ i16 PayStepUpkeep(void) {
             if (whole == 0) {
                 continue;
             }
-            FillPool(&member->pools.hp, whole * 2, POOL_FILL_TO_MAX);
+            FillPool(GetCharacterHpPool(member), whole * 2, POOL_FILL_TO_MAX);
             died += DrainUpkeep(hero, member, whole * 8, i);
         } else {
             class = GetDemonClass(member->id);
@@ -3098,11 +3099,11 @@ b16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position) {
     if (cost < 1) {
         return false;
     }
-    PayPoolCost(&hero->pools.mp, cost);
+    PayPoolCost(GetCharacterMpPool(hero), cost);
     if (cost < 1) {
         return false;
     }
-    PayPoolCost(&member->pools.mp, cost);
+    PayPoolCost(GetCharacterMpPool(member), cost);
     if (cost < 1) {
         return false;
     }
@@ -3151,8 +3152,8 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
             if (GetFatalCondition(GetCharacterConditions(character))) {
                 return PARTY_TIMER_UNCHANGED;
             }
-            ChangePool(&character->pools.mp, -count);
-            ChangePool(&character->pools.hp, -count);
+            ChangePool(GetCharacterMpPool(character), -count);
+            ChangePool(GetCharacterHpPool(character), -count);
             ApplyEmptyPools(character);
             RequestStatusRedraw();
             if (g_clock.moonPhase <= 14) {

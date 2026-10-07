@@ -229,7 +229,7 @@ character	_CountFallenHumans	100.0000	100.0000	5	ast4:ef46bafce742	0x3fc30	100.0
 character	_CountPartyMembers	100.0000	100.0000	2	ast4:f055d4e94660	0x3f970	100.0000	
 character	_CountRosterEntries	100.0000	100.0000	3	ast4:6f8ef7f902cd	0x3f480	100.0000	
 character	_CreateStatusListMenu	100.0000	100.0000	3	ast4:07ea7fd91037	0x40a20	100.0000	
-character	_DamageParty	100.0000	100.0000	5	ast4:e6586dd80b91	0x3f9f0	100.0000	
+character	_DamageParty	100.0000	100.0000	6	ast4:f2e65f876e24	0x3f9f0	100.0000	
 character	_DrainPool	100.0000	100.0000	1	ast4:c64f0f67e896	0x3d070	100.0000	
 character	_DrainUpkeep	100.0000	100.0000	8	ast4:45cb6c76b0b2	0x41180	100.0000	
 character	_DrawPartyStatusSlot	100.0000	100.0000	5	ast4:28dadabdc154	0x3e1f0	100.0000	
@@ -245,7 +245,7 @@ character	_FilterPartyMember	100.0000	100.0000	1	ast4:022b29f7c3a3	0x3f780	100.0
 character	_FindCharacter	100.0000	100.0000	1	ast4:3a0e02660026	0x3cdb0	100.0000	
 character	_FindCharacterById	100.0000	100.0000	1	ast4:0cb148d7a525	0x3cde0	100.0000	
 character	_FindEmptySlot	100.0000	100.0000	1	ast4:603076a41e9c	0x3f450	100.0000	
-character	_FindMemberByPoolState	100.0000	100.0000	6	ast4:f0fdec1a491c	0x3f6d0	100.0000	
+character	_FindMemberByPoolState	100.0000	100.0000	7	ast4:36cd709a2b43	0x3f6d0	100.0000	
 character	_FindPartyPositionOfId	100.0000	100.0000	1	ast4:7d6084676d47	0x40060	100.0000	
 character	_FindPartySlot	100.0000	100.0000	2	ast4:a85a2e33dd32	0x3fe90	100.0000	
 character	_FindReadyMember	100.0000	100.0000	4	ast4:7333813a365c	0x3f5f0	100.0000	
@@ -287,7 +287,7 @@ character	_GetRosterEquipSlot	100.0000	100.0000	2	ast4:8a49b461c4be	0x403a0	100.
 character	_GetRosterId	100.0000	100.0000	1	ast4:7c66bf959847	0x3feb0	100.0000	
 character	_GetRosterLeader	100.0000	100.0000	2	ast4:f24b1f5286f4	0x3fe40	100.0000	
 character	_HasCondition	100.0000	100.0000	3	ast4:16f2687e4d3e	0x3e6b0	100.0000	
-character	_HealParty	100.0000	100.0000	4	ast4:e25f743e4717	0x3faa0	100.0000	
+character	_HealParty	100.0000	100.0000	5	ast4:99f5fde0e127	0x3faa0	100.0000	
 character	_InitCharacterSlot	100.0000	100.0000	3	ast4:4acc33f46270	0x3cc00	100.0000	
 character	_InitCharacters	100.0000	100.0000	4	ast4:193248433886	0x3ca40	100.0000	
 character	_IsFieldConditionRestricted	100.0000	100.0000	3	ast4:01c35ad0143f	0x3eea0	100.0000	
@@ -306,7 +306,7 @@ character	_NextConditionName	100.0000	100.0000	2	ast4:71294a9c4d47	0x3f2f0	100.0
 character	_NormalizeEquipSlots	100.0000	100.0000	2	ast4:23ec30c06822	0x40830	100.0000	
 character	_NormalizeItemSlot	100.0000	100.0000	4	ast4:395448c587cd	0x408b0	100.0000	
 character	_PartyAlignmentClass	100.0000	100.0000	3	ast4:12ce0a2411e9	0x3e100	100.0000	
-character	_PayStepUpkeep	100.0000	100.0000	5	ast4:85eaf90b2380	0x40fa0	100.0000	
+character	_PayStepUpkeep	100.0000	100.0000	6	ast4:e39ff559073d	0x40fa0	100.0000	
 character	_PollPartySlotSelection	100.0000	100.0000	3	ast4:a38f1665f3f8	0x3e590	100.0000	
 character	_PollTextPartySlotSelection	99.4558	99.4558	4	ast4:6853bdfbdd70	0x3e3c0	99.4558	
 character	_PoolState	100.0000	100.0000	1	ast4:1af164f989da	0x3d030	100.0000	
@@ -314,7 +314,7 @@ character	_ProcessPartyCasualties	100.0000	100.0000	3	ast4:90003100ced4	0x3fce0	
 character	_RecalcCharacterStats	100.0000	100.0000	8	ast4:b39f6afbbdfe	0x3c8b0	100.0000	
 character	_RecalcDerivedStats	100.0000	100.0000	7	ast4:06fec908a1f3	0x3d560	100.0000	
 character	_RecalcStatTotals	100.0000	100.0000	1	ast4:1c54ecc469b1	0x3dc60	100.0000	
-character	_RecoverCondition	100.0000	100.0000	7	ast4:dde995183935	0x3f030	100.0000	
+character	_RecoverCondition	100.0000	100.0000	8	ast4:bd5dd108506c	0x3f030	100.0000	
 character	_RecoverConditions	100.0000	100.0000	1	ast4:2e1bc0128fff	0x3f000	100.0000	
 character	_RedrawPartyStatus	100.0000	100.0000	3	ast4:0438f9ced4d0	0x3e160	100.0000	
 character	_RefreshStatusPanel	100.0000	100.0000	2	ast4:91d357dc9379	0x3e390	100.0000	
@@ -342,8 +342,8 @@ character	_SwapPartySlots	100.0000	100.0000	3	ast4:97d5e834c804	0x40180	100.0000
 character	_TickActionWait	100.0000	100.0000	2	ast4:7f2d07091576	0x3f510	100.0000	
 character	_TickPartyActionWaits	100.0000	100.0000	3	ast4:7a357b196393	0x3f570	100.0000	
 character	_TickPartyConditions	100.0000	100.0000	2	ast4:df0c240fcf97	0x3f9b0	100.0000	
-character	_TickPartySteps	100.0000	100.0000	7	ast4:8ae4b78a5850	0x3fd70	100.0000	
-character	_TickPartyTimers	100.0000	100.0000	10	ast4:8f7d01b94dbd	0x412a0	100.0000	
+character	_TickPartySteps	100.0000	100.0000	8	ast4:53a2d33002f4	0x3fd70	100.0000	
+character	_TickPartyTimers	100.0000	100.0000	11	ast4:6a8979d8be56	0x412a0	100.0000	
 character	_UnequipPart	100.0000	100.0000	5	ast4:bd8b3dff5f41	0x404f0	100.0000	
 character	_UpdateStatTotals	100.0000	100.0000	2	ast4:cba2b2634ff0	0x3dee0	100.0000	
 character	_WriteCharacter	100.0000	100.0000	5	ast4:7a77ac7f6628	0x415b0	100.0000	
@@ -495,7 +495,7 @@ effectdraw	_ClearEffectLayer	100.0000	100.0000	3	ast4:4c8fef8eff57	0x58990	100.0
 effectdraw	_DrawProjectedEffectSprite	94.6086	94.6086	15	ast4:1dcc8e45074a	0x589e0	96.0887	
 effectdraw	_DrawScreenEffectSprite	94.7111	94.7111	17	ast4:ed2db314d08e	0x58e40	94.7111	
 equipeffect	_ApplyEquipmentEffects	100.0000	100.0000	3	ast4:636b44294097	0x26470	100.0000	
-equipeffect	_ApplyItemCurse	100.0000	100.0000	8	ast4:9c54db1d514f	0x26070	100.0000	
+equipeffect	_ApplyItemCurse	100.0000	100.0000	9	ast4:0789504a6cc9	0x26070	100.0000	
 eventflags	_ChangeEventFlag	100.0000	100.0000	4	ast4:c4e84ea25e1e	0x391f0	100.0000	
 eventflags	_CheckFlagWord	100.0000	100.0000	1	ast4:f3664083b139	0x39420	100.0000	
 eventflags	_ClearEventFlag	100.0000	100.0000	3	ast4:ab9db6631292	0x39250	100.0000	
@@ -1197,7 +1197,7 @@ itemrecord	_AddItemStatPoints	100.0000	100.0000	7	ast4:3e8876052b02	0x24ba0	100.
 itemrecord	_AddScenarioBagItems	100.0000	100.0000	4	ast4:617ef933f893	0x24210	100.0000	
 itemrecord	_AddToBagEntry	100.0000	100.0000	2	ast4:7676672f05f3	0x23dc0	100.0000	
 itemrecord	_AddToPool	100.0000	100.0000	5	ast4:7c6d2932e379	0x23820	100.0000	
-itemrecord	_ApplyEquipmentRegen	100.0000	100.0000	6	ast4:41b95cce0570	0x254b0	100.0000	
+itemrecord	_ApplyEquipmentRegen	100.0000	100.0000	7	ast4:3e045a59b61e	0x254b0	100.0000	
 itemrecord	_ApplyItemDamageRatio	100.0000	100.0000	3	ast4:d6379a6be5fd	0x25100	100.0000	
 itemrecord	_ApplyItemEffect	100.0000	100.0000	4	ast4:7319daf64d26	0x24890	100.0000	
 itemrecord	_AttachBagEntryItem	100.0000	100.0000	3	ast4:8b9a39e5c2bf	0x244d0	100.0000	
@@ -1610,7 +1610,7 @@ recordcache	_SaveScriptState	100.0000	100.0000	1	ast4:75285708a685	0x2e9d0	100.0
 recordcache	_StripZeroWords	100.0000	100.0000	2	ast4:cc57cd28fb02	0x2dea0	100.0000	
 recordcache	_WearCachedSkill	100.0000	100.0000	5	ast4:539614eeadaa	0x2e8a0	100.0000	
 recordcache	_WearSkillValue	100.0000	100.0000	4	ast4:0a22fd878a91	0x2e960	100.0000	
-restore	_ApplyRestoreEffect	100.0000	100.0000	13	ast4:f7f54d42345f	0x1fe90	100.0000	
+restore	_ApplyRestoreEffect	100.0000	100.0000	14	ast4:8f1b473b1083	0x1fe90	100.0000	
 restore	_ComputeRestoreAmount	100.0000	100.0000	4	ast4:1b2bfbf19cbe	0x1fdc0	100.0000	
 restore	_ConditionKindApplies	100.0000	100.0000	2	ast4:6e6421ca5807	0x20580	100.0000	
 savegame	_ClearModeFlags	100.0000	100.0000	1	ast4:f9d9bfa4ef06	0x43b0	100.0000	
@@ -1681,9 +1681,9 @@ scriptactor	_OpApplyObjectCondition	100.0000	100.0000	2	ast4:ba4a245aeeb9	0x37ea
 scriptactor	_OpBoostPool	100.0000	100.0000	3	ast4:ba2e21827f75	0x34610	100.0000	
 scriptactor	_OpBranchOnItemsFit	100.0000	100.0000	1	ast4:426ea5dddd93	0x381c0	100.0000	
 scriptactor	_OpCallSubScene	100.0000	100.0000	1	ast4:beb592ca0490	0x35b20	100.0000	
-scriptactor	_OpChangeHp	100.0000	100.0000	2	ast4:0e958d074f2c	0x345b0	100.0000	
+scriptactor	_OpChangeHp	100.0000	100.0000	3	ast4:f234fbc5e086	0x345b0	100.0000	
 scriptactor	_OpChangeMap	100.0000	100.0000	1	ast4:714b2690bf65	0x35db0	100.0000	
-scriptactor	_OpChangeMp	100.0000	100.0000	2	ast4:4139ec4a88ff	0x345e0	100.0000	
+scriptactor	_OpChangeMp	100.0000	100.0000	3	ast4:e462f13a1580	0x345e0	100.0000	
 scriptactor	_OpClampLongVar	100.0000	100.0000	1	ast4:a8054078dabd	0x33a80	100.0000	
 scriptactor	_OpClearBagEntry	100.0000	100.0000	2	ast4:c5bf3a13c187	0x35a70	100.0000	
 scriptactor	_OpClearObjectCondition	100.0000	100.0000	4	ast4:dea96abc594f	0x37ed0	100.0000	
@@ -1732,7 +1732,7 @@ scriptactor	_OpJumpIf	100.0000	100.0000	1	ast4:a39811179a40	0x35be0	100.0000
 scriptactor	_OpJumpScript	100.0000	100.0000	1	ast4:6acf839ffe9a	0x33e70	100.0000	
 scriptactor	_OpJumpUnlessActorCanStep	100.0000	100.0000	4	ast4:c07a72fd1da9	0x33390	100.0000	
 scriptactor	_OpJumpUnlessActorVisible	100.0000	100.0000	2	ast4:e88646236fc4	0x35070	100.0000	
-scriptactor	_OpJumpUnlessAlignmentMatch	100.0000	100.0000	2	ast4:51dd3776cf0d	0x35190	100.0000	
+scriptactor	_OpJumpUnlessAlignmentMatch	100.0000	100.0000	3	ast4:855fa8ff8b23	0x35190	100.0000	
 scriptactor	_OpJumpUnlessCanAfford	100.0000	100.0000	1	ast4:a20ee383f630	0x351e0	100.0000	
 scriptactor	_OpJumpUnlessCompanionHealthy	100.0000	100.0000	8	ast4:1afc53f79fc4	0x35340	100.0000	
 scriptactor	_OpJumpUnlessCompare	100.0000	100.0000	2	ast4:651acc16d60b	0x34740	100.0000	
@@ -1768,7 +1768,7 @@ scriptactor	_OpPushReturnTarget	100.0000	100.0000	2	ast4:7960ca1ce99a	0x33f10	10
 scriptactor	_OpQueueAutoMoves	100.0000	100.0000	2	ast4:ec6e80a2b72f	0x35cf0	100.0000	
 scriptactor	_OpRandLongVar	100.0000	100.0000	1	ast4:b461b0d97a04	0x33b00	100.0000	
 scriptactor	_OpRebalanceMemberStats	100.0000	100.0000	8	ast4:d94eabca063f	0x36560	100.0000	
-scriptactor	_OpRecoverRosterPool	100.0000	100.0000	6	ast4:9017e85a85e3	0x382b0	100.0000	
+scriptactor	_OpRecoverRosterPool	100.0000	100.0000	7	ast4:fdff38d4ad11	0x382b0	100.0000	
 scriptactor	_OpRedrawItemListTotal	100.0000	100.0000	1	ast4:ec74365430b6	0x35770	100.0000	
 scriptactor	_OpRemoveFromRoster	100.0000	100.0000	2	ast4:51b8941d56bf	0x361b0	100.0000	
 scriptactor	_OpRemovePendingItem	100.0000	100.0000	1	ast4:4bb88777801a	0x381f0	100.0000	
@@ -2113,13 +2113,13 @@ skilluse	_IsSkillUsableNow	100.0000	100.0000	5	ast4:cd19d19c39be	0x2c440	100.000
 skilluse	_MemberSkillMenuHandler	100.0000	100.0000	9	ast4:10ee6e18e605	0x2c500	100.0000	
 skilluse	_NextTarget	100.0000	100.0000	1	ast4:28a1383c2940	0x2aaa0	100.0000	
 skilluse	_OpenMemberSkillMenu	100.0000	100.0000	6	ast4:1b2556c397e3	0x2c4a0	100.0000	
-skilluse	_PaySkillCost	100.0000	100.0000	3	ast4:0d06115c52d7	0x2c3c0	100.0000	
+skilluse	_PaySkillCost	100.0000	100.0000	4	ast4:844cce8c84d4	0x2c3c0	100.0000	
 skilluse	_PlayActionEffect	100.0000	100.0000	6	ast4:4b1a1a16295c	0x2c050	100.0000	
 skilluse	_PrepareSkillAction	100.0000	100.0000	6	ast4:fc2dbf95a148	0x2db90	100.0000	
 skilluse	_PushPromptState	100.0000	100.0000	2	ast4:eb3e27ffec92	0x2ab40	100.0000	
 skilluse	_RemoveCombatTarget	100.0000	100.0000	2	ast4:c3b5b2e13407	0x2aae0	100.0000	
 skilluse	_ReportBattleTally	100.0000	100.0000	2	ast4:96065daffb89	0x2b5f0	100.0000	
-skilluse	_ResolveCombatAction	96.1504	96.1504	29	ast4:11d797da5f21	0x2ac90	96.1504	
+skilluse	_ResolveCombatAction	96.1504	96.1504	30	ast4:d47be50421ac	0x2ac90	96.1504	
 skilluse	_ResolveKnockout	99.6667	99.6667	11	ast4:cbc23bb5e19f	0x2b490	99.6667	
 skilluse	_RunBattleAction	100.0000	100.0000	24	ast4:b8bd603ccbf9	0x2b6a0	100.0000	
 skilluse	_RunFieldSkillUse	100.0000	100.0000	9	ast4:47689684ad0d	0x2d7c0	100.0000	
@@ -2477,7 +2477,7 @@ treasurebox	_RoomRegionsChanged	100.0000	100.0000	4	ast4:21a244b9f793	0x1ed70	10
 treasurebox	_RotateAutomapRegion	100.0000	100.0000	2	ast4:e5095112ab89	0x1d210	100.0000	
 treasurebox	_RunAnalyzeWindow	100.0000	100.0000	13	ast4:4e0cbd85e97a	0x1ad50	100.0000	
 treasurebox	_RunAutomapState	100.0000	100.0000	7	ast4:2fb5ac4064ca	0x1d530	100.0000	
-treasurebox	_RunCellTrap	100.0000	100.0000	5	ast4:5ef1e94aacfb	0x1c9f0	100.0000	
+treasurebox	_RunCellTrap	100.0000	100.0000	6	ast4:d265bfcc32b3	0x1c9f0	100.0000	
 treasurebox	_RunFieldEffect	100.0000	100.0000	1	ast4:9ce6d91a063d	0x1f700	100.0000	
 treasurebox	_RunItemBuyMenu	100.0000	100.0000	2	ast4:503df3d296a6	0x1be10	100.0000	
 treasurebox	_RunItemSellMenu	100.0000	100.0000	2	ast4:756a7fc0c833	0x1bf80	100.0000	
