@@ -1,10 +1,12 @@
 rva	unit	function	lost_max	cur
 0x03e6d0	character	_AddCondition	99.9419	99.9273
 0x0413f0	character	_ApplyMoonPhase	97.2603	95.5479
+0x021470	clock	_DecodeAreaMap	76.4826	76.4360
 0x0589e0	effectdraw	_DrawProjectedEffectSprite	96.0887	94.6086
 0x058e40	effectdraw	_DrawScreenEffectSprite	98.0000	92.4556
 0x012760	fieldmain	_PushAutoMove	100.0000	99.3333
 0x010080	fieldobj	_GetRaceClass	100.0000	98.5714
+0x00f290	fieldobj	_StepObjectTowardParty	83.5707	81.7016
 0x028380	fusion	_GetFusionRaceEntry	100.0000	88.3674
 0x027c30	fusion	_GetTripleFusionSummary	100.0000	96.7188
 0x026f90	fusion	_SelectRandomFusionDemon	100.0000	86.7021

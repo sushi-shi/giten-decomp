@@ -1490,9 +1490,7 @@ b16 StepObjectTowardParty(
 ) {
     i16 x;
     i16 y;
-    // The visibility helpers return b16 in their retail bodies, but this caller
-    // uses their full EAX results. Its caller-side return contract is unresolved.
-    i32 visible;
+    b16 visible;
     b16 retried;
     i16 code;
     b16 turned;

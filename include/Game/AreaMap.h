@@ -269,7 +269,7 @@ typedef struct AreaRecord {
     u16 levelOffsets[1];
 } AreaRecord;
 
-static __inline u16 GetAreaLevelOffset(const AreaRecord* record, i16 level) {
+static __inline u16 GetAreaLevelOffset(const AreaRecord* record, i32 level) {
     return record->levelOffsets[level];
 }
 

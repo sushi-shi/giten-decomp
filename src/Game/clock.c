@@ -549,16 +549,12 @@ void DecodeAreaMap(AreaMap* map, u8* record) {
     map->levelCount = head->levelCount;
     headerGrowth = (map->levelCount + 1) * sizeof(u16);
     for (i = 0; i < map->levelCount; i++) {
-        const u16* offsets = head->levelOffsets + i;
-        const AreaLevelRecord* src = (const AreaLevelRecord*)(record + offsets[0]);
-        AreaLevel* level = (AreaLevel*)(
-            (u8*)map + i * (sizeof(AreaLevel) - sizeof(AreaLevelRecord)) + headerGrowth
-            + offsets[0]
-        );
+        const AreaLevelRecord* src = (const AreaLevelRecord*)(record + GetAreaLevelOffset(head, i));
+        AreaLevel* level = (AreaLevel*)((u8*)map + i * (sizeof(AreaLevel) - sizeof(AreaLevelRecord))
+                                        + headerGrowth + GetAreaLevelOffset(head, i));
         u8* base;
         map->levels[i] = level;
-        base = (u8*)map + (i + 1) * (sizeof(AreaLevel) - sizeof(AreaLevelRecord))
-               + headerGrowth;
+        base = (u8*)map + (i + 1) * (sizeof(AreaLevel) - sizeof(AreaLevelRecord)) + headerGrowth;
         level->blockBits = base + src->blockBitsOffset;
         level->walls = (u16*)(base + src->wallsOffset);
         level->warps = (WarpCell*)(base + src->warpsOffset);
@@ -584,11 +580,14 @@ void DecodeAreaMap(AreaMap* map, u8* record) {
         level->music = src->music;
         level->defaultMusic = src->defaultMusic;
         level->roomBits = base + src->roomBitsOffset;
-        if (i + 1 < map->levelCount) {
-            size_t span = offsets[1] - offsets[0];
-            memcpy(level + 1, src + 1, span);
+        if (i < map->levelCount - 1) {
+            memcpy(
+                level + 1,
+                src + 1,
+                GetAreaLevelOffset(head, i + 1) - GetAreaLevelOffset(head, i)
+            );
         } else {
-            memcpy(level + 1, src + 1, sizeof s_areaRecord - offsets[0]);
+            memcpy(level + 1, src + 1, sizeof s_areaRecord - GetAreaLevelOffset(head, i));
         }
     }
 }
@@ -1027,8 +1026,7 @@ i16 IsStepBarred(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 
     }
     facing = TurnDirection(direction, turn);
     for (door = g_areaLevel->doors; !IsCellListEnd(&door->head); door++) {
-        if ((door->head.code & 0xf) != WALL_KIND_UNBARRED_DOOR
-            && (door->head.code >> 4) == facing
+        if ((door->head.code & 0xf) != WALL_KIND_UNBARRED_DOOR && (door->head.code >> 4) == facing
             && IsCellAt(x, y, &door->head) && !IsCellFlagSet(door, 3)) {
             return door->head.code;
         }
@@ -1137,9 +1135,8 @@ i16 GetCellAtOffset(i16 dx, i16 dy) {
         return 0;
     }
     position = &g_party.field.pos;
-    if (position->x == 2 && position->y == 5
-        && position->area == MAP_AREA_SHINJUKU_TOCHO && position->level == 6
-        && dx == -1 && dy == 0) {
+    if (position->x == 2 && position->y == 5 && position->area == MAP_AREA_SHINJUKU_TOCHO
+        && position->level == 6 && dx == -1 && dy == 0) {
         return CELL_STAIRS_UP;
     }
     ReturnWarpCodeAt(level->warps, position->x, position->y, 8);
