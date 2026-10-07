@@ -2669,7 +2669,7 @@ winmain	?RenderFieldMode@@YAXH@Z	100.0000	100.0000	4	ast4:4bfaf9c92db0	0x4ef30	1
 winmain	?RenderFieldView@@YAXH@Z	100.0000	100.0000	9	ast4:ab8e7eceb96b	0x4ea90	100.0000	
 winmain	?RenderFrame@@YAXXZ	100.0000	100.0000	4	ast4:da9a027465d8	0x4f140	100.0000	
 winmain	?RenderLayersMode@@YAXH@Z	100.0000	100.0000	1	ast4:d974d0f37251	0x4f100	100.0000	
-winmain	?RenderNPC@@YAXH@Z	96.1499	96.1499	30	ast4:e99c7d8b7f87	0x4c3c0	96.3814	
+winmain	?RenderNPC@@YAXH@Z	96.3814	96.3814	31	ast4:0e20b9114cc3	0x4c3c0	96.3814	
 winmain	?RenderNothing@@YAXH@Z	100.0000	100.0000	1	ast4:2175f5b9213b	0x4f130	100.0000	
 winmain	?RenderPanelMode@@YAXH@Z	100.0000	100.0000	4	ast4:36b0fcac3111	0x4ed80	100.0000	
 winmain	?RenderPictureMode@@YAXH@Z	100.0000	100.0000	4	ast4:4ba5ee3afdbd	0x4ece0	100.0000	
