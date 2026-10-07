@@ -19,8 +19,9 @@ GZ_ENUM_FLAGS_END(NpcDirectionMask)
 // A 42-byte record of an NPC placed in the current area: its cell, legacy
 // direction mask, the event flag that marks it gone, and its map-record values.
 // `script`/`entry` are the scene script StartNpcScene runs.
-// @identity-TODO: the first 0x14 bytes (passed whole to 0x41f6d0 when the NPCs
-// are drawn) are unrecovered. Windows writes but never reads `directionMask`.
+// @identity-TODO: the leading bytes are unrecovered. DrawNpcAt receives the
+// complete AreaNpc pointer but reads only textureSlot. Windows writes but
+// never reads directionMask.
 typedef struct AreaNpc {
     u8 pad00[0x14];
     i16 x;
