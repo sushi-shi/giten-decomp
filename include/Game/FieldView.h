@@ -189,7 +189,7 @@ GZ_ENUM_CONST_END(WallStopClass)
 u8 WallStops(i16 wall, GZ_ENUM_PARAM(WallStopMode, i16) mode);
 i16 GetCellWallStop(GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 turn, u16 cell);
 i16 GetWallStopCode(u16 cell, GZ_ENUM_PARAM(WallStopMode, i16) mode);
-i32 GetFacingBit(void);
+i16 GetFacingBit(void);
 MapCoord
 RelativeOffset(i16 x0, i16 y0, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 x1, i16 y1);
 void OffsetMapCoordFacing(

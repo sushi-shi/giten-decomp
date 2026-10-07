@@ -38,11 +38,9 @@ u32 HandleSize(i32 handle) {
     return GetHandleSize(handle);
 }
 
-// @early-stop: retail widens the loaded size in place (mov ax; and eax,0xffff)
-// where this build zeroes first; return-type and local spellings are flat.
 RVA(0x00004430, 0x12)
 u32 GetHandleSize(i32 handle) {
-    return GetHandleEntry(handle)->size;
+    return GetHandleEntry(handle)->size & 0xFFFFu;
 }
 
 RVA(0x00004450, 0x1c)

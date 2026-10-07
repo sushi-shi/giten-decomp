@@ -1502,7 +1502,7 @@ b16 StepObjectTowardParty(
     code = GetMapCellCode(object->pos.x, object->pos.y);
     visible = GetPartyView(object->pos.x, object->pos.y);
     visible |= IsCellInView(object->pos.x, object->pos.y);
-    for (;;) {
+    while (1) {
         x = object->pos.x;
         y = object->pos.y;
         turned = false;
@@ -1510,25 +1510,14 @@ b16 StepObjectTowardParty(
         direction = TurnDirection(direction, turn);
         SetObjectDirection(object, direction, turned);
         if (!DistanceFromParty(x, y) && stop == OBJECT_PARTY_CELL_STOP) {
-            const b16 refreshed = RefreshIfTurned(visible, turned);
-            return refreshed;
+            return RefreshIfTurned(visible, turned);
         }
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
             StepMapCoord(&x, &y, object->direction, MOVE_FORWARD);
             WrapMapPosition(&x, &y);
             if (!CellCodeDiffers(code, x, y)
                 && !IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y)) {
-                visible |= GetPartyView(x, y);
-                object->pos.y = y;
-                object->pos.x = x;
-                object->word21d = 1;
-                if (!DistanceFromParty(x, y)) {
-                    InvalidateSelectedHotspot();
-                }
-                if (GetGameState() == GAME_STATE_FIELD) {
-                    ClearSelectedHotspot();
-                }
-                return RefreshIfTurned(visible, true);
+                break;
             }
         }
         if (turn != MOVE_FORWARD || retried != false) {
@@ -1537,6 +1526,17 @@ b16 StepObjectTowardParty(
         retried = true;
         turn = GetPartySide(object->pos.x, object->pos.y, direction);
     }
+    visible |= GetPartyView(x, y);
+    object->pos.x = x;
+    object->pos.y = y;
+    object->word21d = 1;
+    if (!DistanceFromParty(x, y)) {
+        InvalidateSelectedHotspot();
+    }
+    if (GetGameState() == GAME_STATE_FIELD) {
+        ClearSelectedHotspot();
+    }
+    return RefreshIfTurned(visible, true);
 }
 
 // Faces the party plus `turn` quarter turns; refreshes when turned in view.
@@ -2400,9 +2400,6 @@ i32 RollCharacterMacca(Character* character) {
     return RollCharacterFunds(character);
 }
 
-// @early-stop register scheduling: the alignment argument loads cross the
-// saved-result moves differently, and the final sum uses different scratch
-// registers. Calls, branch destinations and return paths agree.
 RVA(0x00010db0, 0x8e)
 i16 AlignmentConflicts(const Character* character) {
     GZ_ENUM_LOCAL(AlignmentSide, i16) leaderClass;
@@ -2410,14 +2407,14 @@ i16 AlignmentConflicts(const Character* character) {
     if (character == NULL) {
         return -1;
     }
-    leaderClass = GetAlignmentClassA(GetRosterLeader());
-    characterClass = GetAlignmentClassA(character);
+    leaderClass = AlignmentClass(GetAlignmentLevelA(GetRosterLeader()));
+    characterClass = AlignmentClass(GetAlignmentLevelA(character));
     if ((characterClass < ALIGNMENT_NEUTRAL && leaderClass >= ALIGNMENT_NEUTRAL)
         || (characterClass >= ALIGNMENT_NEUTRAL && leaderClass < ALIGNMENT_NEUTRAL)) {
         return -1;
     }
-    leaderClass = GetAlignmentClassB(GetRosterLeader());
-    characterClass = GetAlignmentClassB(character);
+    leaderClass = AlignmentClass(GetAlignmentLevelB(GetRosterLeader()));
+    characterClass = AlignmentClass(GetAlignmentLevelB(character));
     if (leaderClass + characterClass == 0 && leaderClass != ALIGNMENT_NEUTRAL) {
         return -1;
     }

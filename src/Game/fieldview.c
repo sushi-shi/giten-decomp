@@ -648,14 +648,13 @@ MapCoord GetMouseWorldCell(void) {
     MapCoord cell;
     cell.y = MAP_COORD_NONE;
     cell.x = MAP_COORD_NONE;
-    if (IsPointInWorldView(g_mousePosition.x, g_mousePosition.y)) {
-        MapCoord origin;
-        origin.x = g_mousePosition.x + 0x70;
-        origin.y = g_mousePosition.y + 0x24;
-        origin.x += blockIndex % WORLD_BLOCK_COLUMNS * WORLD_BLOCK_WIDTH;
-        origin.y += blockIndex / WORLD_BLOCK_COLUMNS * WORLD_BLOCK_HEIGHT;
-        cell = origin;
+    if (!IsPointInWorldView(g_mousePosition.x, g_mousePosition.y)) {
+        return cell;
     }
+    cell.x = g_mousePosition.x + 0x70;
+    cell.y = g_mousePosition.y + 0x24;
+    cell.x += blockIndex % WORLD_BLOCK_COLUMNS * WORLD_BLOCK_WIDTH;
+    cell.y += blockIndex / WORLD_BLOCK_COLUMNS * WORLD_BLOCK_HEIGHT;
     return cell;
 }
 
@@ -838,11 +837,11 @@ i16 GetWallStopCode(u16 cell, GZ_ENUM_PARAM(WallStopMode, i16) mode) {
 }
 
 // 1 << the party's facing direction.
-// @early-stop retail loads the direction word (mov cx, word) as the shift
-// count, here only its byte; i16/u16 locals and casts tried.
 RVA(0x0000d2a0, 0xf)
-i32 GetFacingBit(void) {
-    return 1 << g_party.field.pos.direction;
+i16 GetFacingBit(void) {
+    i16 bit = 1;
+    bit <<= g_party.field.pos.direction;
+    return bit;
 }
 
 // x1/y1 relative to x0/y0 in the frame of `direction`.

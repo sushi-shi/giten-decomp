@@ -339,11 +339,16 @@ static __inline void SetCharacterChanges(Character* character, i32 targetChange,
 
 #define IsHumanCharacter(character) ((character)->id < HUMAN_ID_LIMIT)
 
-#define GetAlignmentLevelA(character) ((character)->alignmentLevelA)
-#define GetAlignmentLevelB(character) ((character)->alignmentLevelB)
+static __inline i16 GetAlignmentLevelA(const Character* character) {
+    return character->alignmentLevelA;
+}
 
-#define GetAlignmentClassA(character) AlignmentClass(GetAlignmentLevelA(character))
-#define GetAlignmentClassB(character) AlignmentClass(GetAlignmentLevelB(character))
+static __inline i16 GetAlignmentLevelB(const Character* character) {
+    return character->alignmentLevelB;
+}
+
+#define GetAlignmentClassA(character) AlignmentClass((character)->alignmentLevelA)
+#define GetAlignmentClassB(character) AlignmentClass((character)->alignmentLevelB)
 
 #define GetCharacterExperience(character) ((character)->experience)
 

@@ -17,7 +17,7 @@ GZ_ENUM_FLAGS_END(HandleFlags)
 
 typedef struct HandleEntry {
     GZ_ENUM_STORAGE(HandleFlags, u16) flags;
-    u16 size;
+    i16 size;
     void* ptr;
 } HandleEntry;
 

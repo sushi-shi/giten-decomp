@@ -217,40 +217,39 @@ void OpSetPanelEntryValue(void) {
     SetLastPanelRowState(index, flags);
 }
 
-// @early-stop register allocation: retail holds count in esi and last in edi;
-// cl swaps them. Declaration, initialization and loop statement order do not
-// recover that allocation.
 RVA(0x0002f070, 0xd2)
 i16 PollScriptPanels(void) {
     const ScriptPanel* node;
     const ScriptPanel* last;
     i16 count;
     PollScriptItemMenu();
-    last = NULL;
     count = 0;
+    last = NULL;
     for (node = s_scriptPanels; node; node = node->next) {
         last = node;
         count++;
     }
-    if (last) {
-        count++;
-        while (count > 1) {
-            i16 row;
-            count--;
-            row = PollPanel(last->panel);
-            if (row == PANEL_INPUT_NONE) {
-                last = last->prev;
-            } else {
-                const ScriptPanelJump jump = *GetScriptPanelJump(last, row);
-                if (jump.value != SCRIPT_PANEL_NO_JUMP) {
-                    CallScript(jump.parts.file, jump.parts.entry);
-                    SetScriptLongVar(0x19, row);
-                    SetScriptLongVar(0x18, IsPanelRowChecked(last->panel, row));
-                    SetScriptLongVar(0x17, !WasPanelRightClicked(last->panel));
-                    SetScriptLongVar(0x16, count);
-                }
-                return row;
+    if (last == NULL) {
+        return PANEL_INPUT_NONE;
+    }
+    count++;
+    node = last;
+    while (count > 1) {
+        i16 row;
+        count--;
+        row = PollPanel(node->panel);
+        if (row == PANEL_INPUT_NONE) {
+            node = node->prev;
+        } else {
+            const ScriptPanelJump jump = *GetScriptPanelJump(node, row);
+            if (jump.value != SCRIPT_PANEL_NO_JUMP) {
+                CallScript(jump.parts.file, jump.parts.entry);
+                SetScriptLongVar(0x19, row);
+                SetScriptLongVar(0x18, IsPanelRowChecked(node->panel, row));
+                SetScriptLongVar(0x17, !WasPanelRightClicked(node->panel));
+                SetScriptLongVar(0x16, count);
             }
+            return row;
         }
     }
     return PANEL_INPUT_NONE;

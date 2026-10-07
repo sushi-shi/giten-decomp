@@ -398,14 +398,14 @@ b16 FinishScriptChoice(i16 window) {
 
 RVA(0x0003a870, 0x12e)
 b16 OpNextChoice(const i16 window) {
+    i32 columnIndex;
+    i32 rowIndex;
     i16 x, y;
     ScriptChoice* choice = s_choices;
     const TextPoint size = GetTextPlaneSize(window);
     const i16 lineStep = GetTextPlaneLineStep(window);
     FinishScriptChoice(window);
     for (;;) {
-        i32 columnIndex;
-        i32 rowIndex;
         const i16 columns = s_choiceColumns;
         columnIndex = s_choiceIndex % columns;
         rowIndex = s_choiceIndex / columns;

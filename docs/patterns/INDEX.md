@@ -21,3 +21,4 @@ Short observations, not a wall database. [Scope and admission rules](README.md).
 - [Object boundaries from data](object-membership-from-data-layout.md) — interleaved statics, data order and literal runs show which units form one object.
 - [Signed remainder](signed-modulo-pow2-abs-restore.md) — sign correction around a power-of-two mask.
 - [Extraction and consumer widths](wide-extraction-narrow-consumer.md) — a wide mask can feed a narrow index without a runtime copy.
+- [Signed word and unsigned mask](signed-word-unsigned-mask.md) — a mask literal's type can select an in-place word widening sequence.
