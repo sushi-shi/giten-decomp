@@ -75,7 +75,6 @@ storage type merely to force a register allocation.
 | Function | Current distinction |
 | --- | --- |
 | `NewArrayHandle` | Retail loads `count` into `eax` and `size` into `ecx`; current MSVC reverses the two before the same masks and multiply. Swapping multiplication operands in source compiles identically. |
-| `GrbToRgb` | Retail copies the low input byte into `dl` and ORs red before blue; current MSVC copies the whole word into `edx` and ORs blue first. A fresh replay of the `249a6690` source and header with current tooling matched all 0x21 bytes. Adding the palette header's `ReleaseImagePalette` prototype before this function is sufficient to change the old TU's output; see the replay evidence below. Keep the proven `u32` ABI and palette types. |
 | `MarkPaletteDirty` | Retail loads, ORs and stores the flag byte separately; current MSVC folds this into one memory OR. The palette flag has no asynchronous owner that would justify `volatile`. |
 | `QueuePaletteUpload` | Retail tests the flag, sets the queued bit with a load/store, then clears the dirty bit with a second load/store. Current MSVC combines the two changes into one load/store. The final byte is the same; a required observer between the stores has not been found. |
 | `PushTextDelay` | Retail clears the `delayOn` bit with a byte mask after merging the saved bit through XOR; current MSVC applies a wide mask earlier. The surrounding bitfield reads and stores agree. Typed local probes worsened the match, and changing the signed bitfield storage would affect its other readers. |
@@ -87,29 +86,3 @@ storage type merely to force a register allocation.
 | `MultiplyMatrix` | Current and retail bodies are both 220 bytes, 82 instructions, nine matrix-indexer calls, two branches and nine relocations. Retail calls the right matrix's indexer for rows 0 through 3 before the left matrix; the current source compiles the left matrix's four calls first. Reversing the operands of each scalar multiplication recovers that call order and raises current similarity from 98.89 to 99.93, but the temporary pointer spill slots and left-matrix column read order still differ. Regrouping the middle sum changes the initial indexer order and does not improve the score. The existing expression previously banked exact, so retain its source until a TU-state or precision witness distinguishes an authentic rewrite. |
 | `ShadeMesh` | Current and retail bodies are both 476 bytes, 156 instructions, ten calls, ten branches, three returns and 26 relocations. The full-brightness arms match. At the first shaded vertex, current code calls `g_viewMatrix(2, 3)` and multiplies `sz` first; retail calls `(0, 3)` and multiplies `sx` first. The same Z-first versus X-first order recurs in the depth numerator. Reordering the three source terms to Z/X/Y leaves the generated body unchanged; nesting the Y/Z sum changes the fuzzy score only from 98.41 to 98.44 while keeping that first call difference and changing rounding. The exact bank and unchanged original source favor investigating translation-unit state before altering this arithmetic. |
 | `BuildRoomGeometry` | Current and retail bodies are both 1035 bytes, 279 instructions, five calls, 39 branches, one return and 53 relocations. The first difference is one equivalent wrapped-Y `lea` encoding at `+0xb0`: current uses `height` as base and `partyY` as index, retail uses `partyY` as base and `height` as index. Reversing the two source addition operands compiles identically. The body reached exact previously; retain its source and remove the stale `@early-stop` claim while investigating translation-unit state. |
-
-The `GrbToRgb` replay used the current compiler and retail target. The old
-`vram.c` plus old `Vram.h` matched exactly. Substituting the current `Vram.h`,
-or adding only its new `Palette.h` include, changed the old function to a
-nonmatching register schedule with the same first divergence. An empty
-included header, the old `PaletteState` definition alone, or the
-`ImagePalette` layout alone left it exact. A forward declaration of
-`ImagePalette` plus the
-`ReleaseImagePalette` prototype changed it. The original expression and named
-colour components compile to the same current function bytes; a typed
-low-byte local kept the same first divergence and match score. Removing that
-prototype or delaying the complete `ImagePalette` definition in the current
-TU did not restore exactness. The prototype is a sufficient trigger in the
-old TU, not a complete explanation
-of the current state. All probes were reverted.
-
-Fresh current-TU probes also kept `GrbToRgb` at 60.82: moving `Vram.h` to the
-front of `vram.c`'s includes, moving `Palette.h` below the other includes in
-`Vram.h`, and placing the `ReleaseImagePalette` prototype after
-`SetPaletteColor`. Moving `GetMaskGridOffset`, which is used only in `vram.c`,
-from `Vram.h` into that source kept the normalized `vram.obj` byte-identical
-(`5c31b75f30c6c7c31308cc83ea6061e52930b3b1807230f5f520bc51b13457f7`),
-but changed normalized objects in seven of the nine other direct `Vram.h`
-consumers; it was restored. Removing the unused `ReleaseImagePalette`
-prototype alongside that move also left `GrbToRgb` at 60.82. The current
-header definitions and u32 function ABI remain intact.

@@ -71,10 +71,6 @@ b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
     return false;
 }
 
-// @early-stop memory-operand selection: cl preloads the shown magic power
-// into dx before the byte skill-power load; retail folds that read into
-// the word add. Single-expression, accumulator and byte-local forms retain
-// the preload; FP operations, control flow and ordered referents agree.
 RVA(0x0000ac50, 0x1ce)
 i32 ComputeSkillDamage(Character* attacker, Character* target, b16 hit) {
     SkillHeader* skill;
