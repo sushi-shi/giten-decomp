@@ -2923,9 +2923,9 @@ i16 FormatStatusLine(i16 slot, i16 row) {
         row + 1,
         FormatFullName(text, member)
     );
-    strcat(g_scratchBuffer, FormatAlignmentLetter(1, member->alignmentLevelA, text));
+    strcat(g_scratchBuffer, FormatAlignmentLetter(1, GetAlignmentLevelA(member), text));
     strcat(g_scratchBuffer, "/");
-    strcat(g_scratchBuffer, FormatAlignmentLetter(0, member->alignmentLevelB, text));
+    strcat(g_scratchBuffer, FormatAlignmentLetter(0, GetAlignmentLevelB(member), text));
     sprintf(text, " %2d ", member->level);
     strcat(g_scratchBuffer, text);
     strcat(g_scratchBuffer, FormatCurMax(member->pools.hp, text, 4));

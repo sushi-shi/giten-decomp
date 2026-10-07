@@ -339,8 +339,11 @@ static __inline void SetCharacterChanges(Character* character, i32 targetChange,
 
 #define IsHumanCharacter(character) ((character)->id < HUMAN_ID_LIMIT)
 
-#define GetAlignmentClassA(character) AlignmentClass((character)->alignmentLevelA)
-#define GetAlignmentClassB(character) AlignmentClass((character)->alignmentLevelB)
+#define GetAlignmentLevelA(character) ((character)->alignmentLevelA)
+#define GetAlignmentLevelB(character) ((character)->alignmentLevelB)
+
+#define GetAlignmentClassA(character) AlignmentClass(GetAlignmentLevelA(character))
+#define GetAlignmentClassB(character) AlignmentClass(GetAlignmentLevelB(character))
 
 #define GetBattleStatBase(character, stat) ((character)->battleStats[(stat)])
 

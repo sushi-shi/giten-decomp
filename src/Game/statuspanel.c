@@ -763,8 +763,8 @@ static void DrawAlignmentMarker(i16 slot, Character* member) {
     if (!member) {
         return;
     }
-    x = AlignmentChartCell(member->alignmentLevelB);
-    y = AlignmentChartCell(member->alignmentLevelA);
+    x = AlignmentChartCell(GetAlignmentLevelB(member));
+    y = AlignmentChartCell(GetAlignmentLevelA(member));
     SetTextPlaneCursorLine(s_alignmentPage.plane, x, y);
     sprintf(g_scratchBuffer, "%s", g_statusNumberLabels[slot + 1]);
     DrawPlaneText(s_alignmentPage.plane, x * 8, y * 8, g_scratchBuffer, TEXT_ATTR_NORMAL);
@@ -797,20 +797,13 @@ typedef struct EquipPage {
 // One object: the fields sit two bytes apart, where separate variables take
 // four-byte slots.
 DATA(0x0006a208)
-static EquipPage s_equipPage = {
-    NULL,
-    TEXT_PLANE_NONE,
-    TEXT_PLANE_NONE,
-    STATUS_COMMAND_NONE,
-    false
-};
+static EquipPage s_equipPage = {NULL, TEXT_PLANE_NONE, TEXT_PLANE_NONE, STATUS_COMMAND_NONE, false};
 
 // One object: retail reads `itemBase` and `item` with dword moves that run
 // into the next field.
 DATA(0x0006a218)
-static AttachPage s_attach = {
-    NULL, NULL, NULL, 0, TEXT_PLANE_NONE, STATUS_COMMAND_NONE, 0, 0, 0, 0
-};
+static AttachPage s_attach =
+    {NULL, NULL, NULL, 0, TEXT_PLANE_NONE, STATUS_COMMAND_NONE, 0, 0, 0, 0};
 
 // The item page: its menu, its info window, the sub-state to resume (and then
 // the item picked), and the copy of the bag it lists.

@@ -3820,7 +3820,7 @@ i32 GetObjectAlignmentLevelB(i16 ref) {
     if (!object) {
         return 0;
     }
-    return object->alignmentLevelB;
+    return GetAlignmentLevelB(object);
 }
 
 RVA(0x00037f60, 0x17)
@@ -3829,7 +3829,7 @@ i32 GetObjectAlignmentLevelA(i16 ref) {
     if (!object) {
         return 0;
     }
-    return object->alignmentLevelA;
+    return GetAlignmentLevelA(object);
 }
 
 RVA(0x00037f80, 0x22)
