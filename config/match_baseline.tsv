@@ -1439,7 +1439,7 @@ partyaction	_ComputeGunBurstPower	100.0000	100.0000	2	ast4:afb78321b06d	0x92e0	1
 partyaction	_ComputeGunDamage	100.0000	100.0000	8	ast4:1805fd392f9d	0x8b40	100.0000	
 partyaction	_CountPickablePartyMembers	100.0000	100.0000	1	ast4:369e30c28b32	0x5b50	100.0000	
 partyaction	_DelayActionSide	100.0000	100.0000	6	ast4:1ac8d9a790c1	0x5ff0	100.0000	
-partyaction	_DistributeGunRounds	97.5676	97.5676	9	ast4:98dc0c1533df	0x91f0	97.7027	
+partyaction	_DistributeGunRounds	97.7027	97.7027	10	ast4:6b7288518640	0x91f0	97.7027	
 partyaction	_EnterFieldMap	100.0000	100.0000	1	ast4:e9dba8b8c087	0x7190	100.0000	
 partyaction	_ExchangeFieldOption	100.0000	100.0000	1	ast4:7c0125f8a0d0	0x70e0	100.0000	
 partyaction	_FillCharacterCommands	100.0000	100.0000	2	ast4:9400e07c8860	0x6900	100.0000	

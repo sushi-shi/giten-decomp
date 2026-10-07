@@ -979,9 +979,8 @@ i16 GetActionResistance(
             && attribute == ATTACK_ATTRIBUTE_EXPEL) {
             return 100;
         }
-        result = attribute == ATTACK_ATTRIBUTE_FIXED_HALF_RESISTANCE
-                     ? 50
-                     : actor->resistance[attribute];
+        result =
+            attribute == ATTACK_ATTRIBUTE_FIXED_HALF_RESISTANCE ? 50 : actor->resistance[attribute];
         if (result == ATTACK_RESIST_BYTE_REFLECT_HALF) {
             return ATTACK_RESIST_REFLECT_HALF;
         }
@@ -2241,9 +2240,15 @@ i16 GetGunRequirementPenalty(i16 stat, i16 requirement) {
     return ClampShort(5 - stat / requirement, 1, 0x7fff);
 }
 
+static __inline u8
+GetGunRoundPercent(const u8 (*table)[GUN_BURST_MAX_TARGETS], i16 count, i16 index) {
+    const u8(*nextRow)[GUN_BURST_MAX_TARGETS] = table + count;
+    return nextRow[-1][index];
+}
+
 RVA(0x000091f0, 0xe2)
 i16 DistributeGunRounds(const i16 rounds, const i16 count) {
-    const u8 (*table)[GUN_BURST_MAX_TARGETS];
+    const u8(*table)[GUN_BURST_MAX_TARGETS];
     i16 index;
     i16 remaining;
     memset(s_gunRounds, 0, sizeof(s_gunRounds));
@@ -2252,12 +2257,11 @@ i16 DistributeGunRounds(const i16 rounds, const i16 count) {
     remaining = rounds;
     for (index = 0; index < count; index++) {
         i16 share;
-        const u8 (*nextRow)[GUN_BURST_MAX_TARGETS] = table + count;
-        const i32 weightedRounds = rounds * nextRow[-1][index];
+        const i32 weightedRounds = rounds * GetGunRoundPercent(table, count, index);
         if (weightedRounds == 0 || remaining < 1) {
             break;
         }
-        share = rounds * nextRow[-1][index];
+        share = rounds * GetGunRoundPercent(table, count, index);
         share /= 100;
         if (share < 1) {
             share = 1;
