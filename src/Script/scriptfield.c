@@ -38,17 +38,14 @@ void OpEnterFieldMap(void) {
     }
 }
 
-// @early-stop register allocation: retail keeps the predicate in ecx and
-// the actor ids in dx/si; this build uses esi and cx/dx. State locals,
-// flag widths and declaration order do not recover that allocation.
 RVA(0x00032560, 0x44)
 void OpIfEventObjectIs(void) {
     const i16 target = ReadBranchTarget();
     const i16 different = ReadScriptValue();
-    const i16 actorId = g_actorId;
-    const i16 targetId = g_targetId;
     b32 matches = false;
-    if (ScriptBooleanMatches(actorId == targetId, different)) {
+    if (g_actorId == g_targetId && !different) {
+        matches = true;
+    } else if (g_actorId != g_targetId && different) {
         matches = true;
     }
     ScriptJumpUnless(target, matches);
@@ -76,28 +73,26 @@ i16 OpCountObjectsAt(void) {
     return count;
 }
 
-// @early-stop register allocation: the status, invert and predicate values
-// occupy a different register permutation; the control-flow edges agree.
 RVA(0x00032660, 0x39)
 void OpIfStatusPositive(const GZ_ENUM_PARAM(ScriptTestPolarity, i16) invert) {
     const i16 target = ReadBranchTarget();
-    const i16 status = g_statusCondition;
     b32 matches = false;
-    if ((status > 0 && !invert) || (status == INFLICT_NONE && invert)) {
+    if (g_statusCondition > 0 && !invert) {
+        matches = true;
+    } else if (g_statusCondition == INFLICT_NONE && invert) {
         matches = true;
     }
     ScriptJumpUnless(target, matches);
 }
 
-// @early-stop register allocation: retail holds the active state in dx and
-// the predicate in ecx; this build swaps them. Explicit state locals are flat.
 RVA(0x000326a0, 0x3b)
 void OpIfInBattle(void) {
     const i16 target = ReadBranchTarget();
     const i16 invert = ReadScriptValue();
-    const b16 active = g_fieldBattleActive;
     b32 matches = false;
-    if (ScriptBooleanMatches(active, invert)) {
+    if (g_fieldBattleActive && !invert) {
+        matches = true;
+    } else if (!g_fieldBattleActive && invert) {
         matches = true;
     }
     ScriptJumpUnless(target, matches);

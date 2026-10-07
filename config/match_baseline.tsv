@@ -83,7 +83,7 @@ savegame	14	14
 screensave	9	9
 scriptactor	202	202
 scriptctx	35	35
-scriptfield	9	6
+scriptfield	9	9
 scriptop	3	3
 scriptsprite	2	2
 scriptswitch	10	10
@@ -1877,9 +1877,9 @@ scriptfield	_OpCountObjectsAt	100.0000	100.0000	1	ast4:c3f81b7f9609	0x325f0	100.
 scriptfield	_OpEnterFieldMap	100.0000	100.0000	1	ast4:d7ce906b73a4	0x324b0	100.0000	
 scriptfield	_OpGetBattleOutcome	100.0000	100.0000	1	ast4:484c926321b2	0x326e0	100.0000	
 scriptfield	_OpIfBattleResult	100.0000	100.0000	2	ast4:8d288b5b79da	0x325b0	100.0000	
-scriptfield	_OpIfEventObjectIs	97.9167	97.9167	3	ast4:cf9b8c8444d6	0x32560	97.9167	
-scriptfield	_OpIfInBattle	97.8571	97.8571	5	ast4:0ef4245b278c	0x326a0	97.8571	
-scriptfield	_OpIfStatusPositive	97.7500	97.7500	5	ast4:cae1a52729bb	0x32660	97.7500	
+scriptfield	_OpIfEventObjectIs	100.0000	100.0000	4	ast4:f97c65238168	0x32560	100.0000	
+scriptfield	_OpIfInBattle	100.0000	100.0000	6	ast4:cb71cafa36da	0x326a0	100.0000	
+scriptfield	_OpIfStatusPositive	100.0000	100.0000	6	ast4:ee4018fc604a	0x32660	100.0000	
 scriptfield	_OpSetFieldOption	100.0000	100.0000	1	ast4:0f9a1829db37	0x32700	100.0000	
 scriptfield	_OpSetFieldParams	100.0000	100.0000	1	ast4:fafde4f73e74	0x32710	100.0000	
 scriptop	_OpIfFlags	100.0000	100.0000	1	ast4:6540ec4fe81c	0x2feb0	100.0000	
