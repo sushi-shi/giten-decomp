@@ -356,9 +356,8 @@ void SetRotateZMatrix(D3DMATRIX& m, D3DVALUE degrees) {
     m(1, 1) = c;
 }
 
-// @early-stop operand order: the homogeneous row's direct expression preserves
-// the retail divide schedule, but cl emits its products z, y, x instead of
-// the source's y, z, x order.
+// @early-stop x87 tail: the row products and divide setup agree, but cl restores
+// esi early and stores projected depth before the final screen-y subtraction.
 RVA(0x00046060, 0x1cb)
 void ProjectVector(D3DMATRIX* matrix, D3DVECTOR* in, D3DVECTOR* out) {
     D3DVALUE w;
@@ -379,8 +378,8 @@ void ProjectVector(D3DMATRIX* matrix, D3DVECTOR* in, D3DVECTOR* out) {
     yz += in->x * (*matrix)(0, 2);
     const D3DVALUE& translationZ = (*matrix)(3, 2);
     out->z = yz + translationZ;
-    w = (in->y * (*matrix)(1, 3) + in->z * (*matrix)(2, 3)) + in->x * (*matrix)(0, 3)
-        + (*matrix)(3, 3);
+    yz = in->y * (*matrix)(1, 3);
+    w = (yz + in->z * (*matrix)(2, 3)) + in->x * (*matrix)(0, 3) + (*matrix)(3, 3);
     out->x /= w;
     out->y /= w;
     out->z /= w;
