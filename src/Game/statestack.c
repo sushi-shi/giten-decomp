@@ -1714,7 +1714,7 @@ b16 ApplyLevelStatGrowth(Character* character) {
 
 // Nonzero when one more point would take `stat` past its cap.
 RVA(0x000189d0, 0x24)
-i16 IsStatCapped(const Character* character, i16 stat) {
+i16 IsStatCapped(const Character* character, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
     i16 raised = GetBaseStat(character, stat) + 1;
     return raised - ClampTo100(raised);
 }
@@ -1723,7 +1723,7 @@ i16 IsStatCapped(const Character* character, i16 stat) {
 RVA(0x00018a00, 0x2b)
 i16 CountRaisableStats(const Character* character) {
     i16 count = 0;
-    i16 i;
+    GZ_ENUM_LOCAL(CharacterStat, i16) i;
     for (i = 0; i < STAT_FORTUNE; i++) {
         count += !IsStatCapped(character, i);
     }
@@ -2072,7 +2072,7 @@ RVA(0x000193d0, 0x9a)
 static i16* BuildStatWeightRanges(const Character* character, i16* ranges) {
     i16 total = 0;
     i16* range;
-    i16 stat;
+    GZ_ENUM_LOCAL(CharacterStat, i16) stat;
     for (stat = 0, range = ranges; stat < STAT_FORTUNE; stat++, range++) {
         if (IsStatCapped(character, stat)) {
             *range = -1;

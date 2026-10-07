@@ -7,6 +7,7 @@ void LevelUpNop(void);
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/CharacterStat.h>
 #include <Ints.h>
 #include <Ui/Message.h>
 
@@ -37,7 +38,7 @@ i16 FindLevelUpSlot(void);
 
 // The level's stat growth and the stat-point picks.
 b16 ApplyLevelStatGrowth(struct Character* character);
-i16 IsStatCapped(const struct Character* character, i16 stat);
+i16 IsStatCapped(const struct Character* character, GZ_ENUM_PARAM(CharacterStat, i16) stat);
 i16 CountRaisableStats(const struct Character* character);
 i16 ResolveRaisableStat(const struct Character* character, i16 stat);
 
@@ -63,7 +64,7 @@ char* FormatLevelUpMessage(char* buf, i16 slot);
     do {                                                                                           \
         MarkRewardsPending();                                                                      \
         FormatLevelUpMessage((buffer), FindLevelUpSlot());                                         \
-        ShowMessage((buffer), 0x3c);                                                                \
+        ShowMessage((buffer), 0x3c);                                                               \
     } while (0)
 
 // The phases of the level-up screen (RunLevelUp): open, close, pick the member,
