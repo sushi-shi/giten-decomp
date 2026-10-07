@@ -549,9 +549,10 @@ void DecodeAreaMap(AreaMap* map, u8* record) {
     map->levelCount = head->levelCount;
     headerGrowth = (map->levelCount + 1) * sizeof(u16);
     for (i = 0; i < map->levelCount; i++) {
-        const AreaLevelRecord* src = (const AreaLevelRecord*)(record + GetAreaLevelOffset(head, i));
+        const u32 offset = GetAreaLevelOffset(head, i);
+        const AreaLevelRecord* src = (const AreaLevelRecord*)(record + offset);
         AreaLevel* level = (AreaLevel*)((u8*)map + i * (sizeof(AreaLevel) - sizeof(AreaLevelRecord))
-                                        + headerGrowth + GetAreaLevelOffset(head, i));
+                                        + headerGrowth + offset);
         u8* base;
         map->levels[i] = level;
         base = (u8*)map + (i + 1) * (sizeof(AreaLevel) - sizeof(AreaLevelRecord)) + headerGrowth;
