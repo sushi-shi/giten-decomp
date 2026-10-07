@@ -2043,6 +2043,10 @@ void ShowStatPointPrompt(i16 points) {
     RepaintTextPlane(s_pointPrompt, -2);
 }
 
+static __inline i16 ScaleStatWeight(i32 value, i16 total) {
+    return value * 10000 / total;
+}
+
 static i16* BuildStatWeightRanges(const Character* character, i16* ranges);
 
 RVA(0x00019370, 0x5e)
@@ -2052,7 +2056,7 @@ i16 RollWeightedStat(const Character* character) {
     if (BuildStatWeightRanges(character, s_statPicks) == NULL) {
         return -1;
     }
-    draw = rand() * 10000 / RAND_MAX;
+    draw = ScaleStatWeight(rand(), RAND_MAX);
     for (stat = 0; stat < STAT_FORTUNE && s_statPicks[stat] < draw; stat++) {
     }
     if (stat >= STAT_FORTUNE) {
@@ -2088,7 +2092,7 @@ static i16* BuildStatWeightRanges(const Character* character, i16* ranges) {
     }
     for (stat = 0; stat < STAT_FORTUNE; stat++) {
         if (ranges[stat] != -1) {
-            ranges[stat] = ranges[stat] * 10000 / total;
+            ranges[stat] = ScaleStatWeight(ranges[stat], total);
         }
     }
     return ranges;

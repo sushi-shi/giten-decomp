@@ -2154,7 +2154,7 @@ statestack	_AddExperience	100.0000	100.0000	2	ast4:1aad7efad7da	0x187e0	100.0000
 statestack	_AppendLearnableSkills	100.0000	100.0000	1	ast4:2eb0cc182494	0x194c0	100.0000	
 statestack	_ApplyLevelStatGrowth	100.0000	100.0000	5	ast4:8c1e57bb9b58	0x18980	100.0000	
 statestack	_BackgroundParameterNop	100.0000	100.0000	1	ast4:0a5f584e0309	0x17ca0	100.0000	
-statestack	_BuildStatWeightRanges	95.3906	95.3906	8	ast4:e086803e8155	0x193d0	95.3906	
+statestack	_BuildStatWeightRanges	95.3906	95.3906	9	ast4:98a95b3ba5dc	0x193d0	95.3906	
 statestack	_CancelItemTargetMenu	100.0000	100.0000	1	ast4:b56f85fa494b	0x1a830	100.0000	
 statestack	_ClearGameStateStack	100.0000	100.0000	1	ast4:6d199536a55c	0x169e0	100.0000	
 statestack	_ClosePickerMenu	100.0000	100.0000	1	ast4:43cb7f3ac2c2	0x19e80	100.0000	
@@ -2231,7 +2231,7 @@ statestack	_RestoreBackgroundParameter	100.0000	100.0000	1	ast4:a54d64c88fa8	0x1
 statestack	_RestoreSceneFrame	100.0000	100.0000	1	ast4:f99af8d2a944	0x17d40	100.0000	
 statestack	_ReturnDdsMember	100.0000	100.0000	4	ast4:5e8248c7c77e	0x17870	100.0000	
 statestack	_ReturnFromGameState	100.0000	100.0000	1	ast4:5ebeb7a134b6	0x16c20	100.0000	
-statestack	_RollWeightedStat	100.0000	100.0000	2	ast4:0ea115dd555b	0x19370	100.0000	
+statestack	_RollWeightedStat	100.0000	100.0000	3	ast4:2556870d6d74	0x19370	100.0000	
 statestack	_RunBackgroundScene	100.0000	100.0000	6	ast4:4eaaf8ca0acb	0x18590	100.0000	
 statestack	_RunCellScene	100.0000	100.0000	6	ast4:68e4e2beacfe	0x17ef0	100.0000	
 statestack	_RunDdsMenu	100.0000	100.0000	4	ast4:2738e29b0ca9	0x17330	100.0000	
