@@ -192,6 +192,9 @@ static __inline void SetFieldObjectPickTarget(FieldObject* actor, i16 target) {
 
 #define GetFieldObjectMpPool(object) (&(object)->pools.mp)
 
+#define IsFieldObjectActive(object)                                                                \
+    ((object)->layer != FIELD_LAYER_NONE && (object)->hidden == false)
+
 static __inline ActionWait* GetFieldObjectActionWait(FieldObject* actor) {
     return &actor->actionWait;
 }

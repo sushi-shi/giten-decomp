@@ -607,8 +607,7 @@ i16 SpawnMapObject(i16 layer, i16 x, i16 y, i16 direction, i8 event) {
 RVA(0x0000dc70, 0x41)
 i16 GetLiveObject(i16 index) {
     if (s_objectCheckBypass == 0) {
-        if (index < 0 || index >= FIELD_OBJECT_COUNT || s_objects[index].layer == FIELD_LAYER_NONE
-            || s_objects[index].hidden != false) {
+        if (index < 0 || index >= FIELD_OBJECT_COUNT || !IsFieldObjectActive(&s_objects[index])) {
             return -1;
         }
     }
@@ -846,7 +845,7 @@ RVA(0x0000e2b0, 0xc8)
 i16 FindObjectAt(i16 x, i16 y, i16 start, GZ_ENUM_PARAM(ObjectKindMatch, i16) mode, i16 kind) {
     i16 i;
     for (i = start; i < FIELD_OBJECT_COUNT; i++) {
-        if (s_objects[i].layer == FIELD_LAYER_NONE || s_objects[i].hidden != false) {
+        if (!IsFieldObjectActive(&s_objects[i])) {
             continue;
         }
         if (FindLayerOfKind(s_objects[i].kind) < 0) {
@@ -891,8 +890,7 @@ RVA(0x0000e400, 0x48)
 void UpdateFieldObjects(void) {
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
-        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].hidden == false
-            && s_objects[i].pos.y >= 4) {
+        if (IsFieldObjectActive(&s_objects[i]) && s_objects[i].pos.y >= 4) {
             ResetObjectAnim(i);
             s_objects[i].hidden = true;
         }
@@ -996,7 +994,7 @@ i16 CountActiveObjects(void) {
     i16 count = 0;
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
-        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].hidden == false) {
+        if (IsFieldObjectActive(&s_objects[i])) {
             count++;
         }
     }
