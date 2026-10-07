@@ -101,6 +101,10 @@ typedef struct MenuBox {
     };
 } MenuBox;
 
+static __inline struct ItemStackList* GetMenuItemList(const MenuBox* menu) {
+    return menu->items.itemList;
+}
+
 static __inline void RequestMenuRedraw(MenuBox* menu) {
     menu->flagBits.redraw = true;
 }
@@ -116,7 +120,13 @@ MenuBox* CreateMenuBox(MenuBox* old, i16 window, i16 panelRows);
 // Moves the menu's list to (x, y).
 void MoveMenuBox(MenuBox* menu, i16 x, i16 y);
 
-void SetMenuItems(MenuBox* menu, i16 pageRows, const void* items, i16 itemCount, MenuHandler handler);
+void SetMenuItems(
+    MenuBox* menu,
+    i16 pageRows,
+    const void* items,
+    i16 itemCount,
+    MenuHandler handler
+);
 
 GZ_ENUM_RETURN(TextEvent, i16) RunMenu(MenuBox* menu);
 void DispatchMenuEvent(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);

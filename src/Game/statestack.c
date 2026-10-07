@@ -384,8 +384,7 @@ void PopGameState(void) {
 }
 
 RVA(0x00016a70, 0x24)
-GZ_ENUM_RETURN(GameStateId, i16) __fastcall SetGameState(
-    GZ_ENUM_PARAM(GameStateId, i16) state) {
+GZ_ENUM_RETURN(GameStateId, i16) __fastcall SetGameState(GZ_ENUM_PARAM(GameStateId, i16) state) {
     GZ_ENUM_LOCAL(GameStateId, i16) old = s_gameState.state;
     s_gameState.state = state;
     s_gameState.phase = 0;
@@ -2643,7 +2642,7 @@ static __inline void AddItemUseMenuLine(MenuBox* menu, i16 item, i16 disabled) {
 
 RVA(0x0001a240, 0x1bc)
 void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
-    ItemStackList* const entries = menu->items.itemList;
+    ItemStackList* const entries = GetMenuItemList(menu);
     switch (event) {
         case MENU_EVENT_ADD_ROW: {
             sprintf(
@@ -2656,11 +2655,7 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
                  && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_KUSHINADA_JAR_USED))
                 || (GetItemListItem(entries, index) == ITEM_SOMA_CUP
                     && IsEventFlagSet(EVENT_FLAG_BANK_ITEM_EFFECTS, ITEM_EFFECT_SOMA_CUP_USED))) {
-                AddItemUseMenuLine(
-                    menu,
-                    GetItemListItem(entries, index),
-                    MENU_LINE_DISABLED
-                );
+                AddItemUseMenuLine(menu, GetItemListItem(entries, index), MENU_LINE_DISABLED);
                 return;
             }
             {

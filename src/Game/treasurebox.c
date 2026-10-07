@@ -836,7 +836,7 @@ MenuBox* CreateItemMenu(MenuBox* old, ItemStackList* entries, i16 count) {
 
 RVA(0x0001b7c0, 0x196)
 void ItemMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
-    ItemStackList* list = menu->items.itemList;
+    ItemStackList* list = GetMenuItemList(menu);
     i16 i;
     switch (event) {
         case MENU_EVENT_DESTROY:
@@ -1028,7 +1028,7 @@ void DrawItemMenuTotal(i16 plane, i32 total, b16 redraw, i16 line) {
 
 RVA(0x0001bca0, 0x10b)
 void AdjustItemMenuCount(MenuBox* menu, i16 row, i16 delta, i16 limit) {
-    ItemStackList* list = menu->items.itemList;
+    ItemStackList* list = GetMenuItemList(menu);
     i16 index = menu->cursor + row;
     i16 previous = GetItemStackCount(GetItemListEntry(list, index));
     i16 count;
