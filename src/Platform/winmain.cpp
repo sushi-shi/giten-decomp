@@ -669,9 +669,8 @@ void StartScreenFade(GZ_ENUM_PARAM(ScreenFadeMode, i16) mode, i16 steps) {
 
 // Advances the running fade by one frame.
 // @early-stop register residue: ecx/edx swap for the zero and the step
-// reload, `add -17` for retail's `sub 17`, and the colour's or-operands in
-// the other order; the CFG and every store match. Alpha spellings
-// (compound assignment, RGBA_SETALPHA, operand order) are flat or worse.
+// reload, and the colour's or-operands in the other order; the CFG, every
+// store and the `sub 17` step match.
 RVA(0x00049dd0, 0xb3)
 void StepScreenFade(void) {
     if (g_fadeMode == SCREEN_FADE_NONE) {
@@ -682,15 +681,14 @@ void StepScreenFade(void) {
     }
     s_screenCovered = false;
     s_fadeCountdown = s_fadeSteps;
-    i32 alpha = s_fadeAlpha;
     if (IsScreenFadeIn(g_fadeMode)) {
-        if (alpha <= 0) {
+        if (s_fadeAlpha <= 0) {
             g_fadeMode = SCREEN_FADE_NONE;
             return;
         }
-        alpha -= 17;
+        s_fadeAlpha -= 17;
     } else {
-        if (alpha >= 0xff) {
+        if (s_fadeAlpha >= 0xff) {
             g_fadeMode = SCREEN_FADE_NONE;
             s_screenCovered = true;
             SetScreenFadeAlpha(0xff);
@@ -699,9 +697,9 @@ void StepScreenFade(void) {
             }
             return;
         }
-        alpha += 17;
+        s_fadeAlpha += 17;
     }
-    SetScreenFadeAlpha(alpha);
+    SetScreenFadeAlpha(s_fadeAlpha);
 }
 
 RVA(0x00049e90, 0x7)
@@ -1729,8 +1727,10 @@ static D3DVALUE s_boxUV[4][4][2] = {
 
 // Draws the treasure boxes within three cells of the party as billboards and
 // makes the box in front of the party a hotspot.
-// @early-stop x87 schedule: the billboard corner products and copies differ;
-// retail rounds the -x corner through a temporary. Calls and CFG match.
+// @early-stop x87 schedule: each corner repeats its product, and cl shares the
+// float conversion of each pair as retail does (the -x pair through a stack
+// temporary, the z pairs as rounded copies), but computes the -x product before
+// the +z one and converts dx/dz between the corner stores. Calls and CFG match.
 RVA(0x0004bdd0, 0x5dc)
 void RenderTBox(void) {
     DATA(0x0008fd00)
@@ -1826,18 +1826,14 @@ void RenderTBox(void) {
                 dx += 40;
                 break;
         }
-        const double nearX = g_billboardX * DATA_COMPGEN(0x00064a78, 40.0);
-        const double farX = -g_billboardX * 40.0;
-        const double nearZ = g_billboardZ * 40.0;
-        const double farZ = -g_billboardZ * 40.0;
-        s_box[0].x = nearX;
-        s_box[1].x = farX;
-        s_box[0].z = nearZ;
-        s_box[1].z = farZ;
-        s_box[2].x = s_box[1].x;
-        s_box[2].z = s_box[1].z;
-        s_box[3].x = s_box[0].x;
-        s_box[3].z = s_box[0].z;
+        s_box[0].x = g_billboardX * DATA_COMPGEN(0x00064a78, 40.0);
+        s_box[3].x = g_billboardX * 40.0;
+        s_box[1].x = -g_billboardX * 40.0;
+        s_box[2].x = -g_billboardX * 40.0;
+        s_box[0].z = g_billboardZ * 40.0;
+        s_box[3].z = g_billboardZ * 40.0;
+        s_box[1].z = -g_billboardZ * 40.0;
+        s_box[2].z = -g_billboardZ * 40.0;
         for (i = 0; i < 4; i++) {
             s_box[i].x += dx;
             s_box[i].z += dz;
@@ -2078,10 +2074,10 @@ static i16 s_turnImageCodesLeft[8] = {0, 1, 2, -1, 1, 1, 0, 0};
 // @identity-TODO: all three callers pass shade=true and anyCell=false; the two
 // byDistance values are exercised. The lit-frame and 2D-fallback paths are
 // undecoded beyond their data.
-// @early-stop x87 schedule: the billboard corner products, the height and the
-// translation stores are scheduled differently (retail stores the far corners
-// first and copies the near z corners through integer moves). Calls, CFG,
-// block placement and the integer code match.
+// @early-stop x87 schedule: retail writes both far x corners before their z
+// corners and copies both near z values through integer moves; cl interleaves
+// the far right x/z stores and copies the near left x value instead. Product,
+// height and translation scheduling also differ. Calls and CFG match.
 RVA(0x0004cb30, 0xaec)
 void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
     DATA(0x0008f4d8)
@@ -2157,8 +2153,8 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 if (lit) {
                     imageCode &= FIELD_OBJECT_IMAGE_INDEX_MASK;
                 }
-                if (g_moveState >= MOVE_STATE_TURN_FIRST
-                    && g_moveState <= MOVE_STATE_TURN_LAST && g_turnStep > 15) {
+                if (g_moveState >= MOVE_STATE_TURN_FIRST && g_moveState <= MOVE_STATE_TURN_LAST
+                    && g_turnStep > 15) {
                     if (g_moveState == MOVE_STATE_TURN_LEFT) {
                         imageCode = s_turnImageCodesLeft[imageCode + 1];
                     } else {
@@ -2278,9 +2274,9 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 const double farRightX = g_billboardX * billboardWidth;
                 const double farRightZ = g_billboardZ * billboardWidth;
                 const double farLeftZ = -g_billboardZ * billboardWidth;
-                s_enemy[2].x = farLeftX;
                 s_enemy[3].x = farRightX;
                 s_enemy[3].z = farRightZ;
+                s_enemy[2].x = farLeftX;
                 s_enemy[2].z = farLeftZ;
                 s_enemy[1].x = s_enemy[2].x;
                 s_enemy[0].x = s_enemy[3].x;
@@ -2821,10 +2817,7 @@ void DrawSceneSprites(void) {
         if (GetSpriteSlotFrame(slot) == SPRITE_UNPLACED) {
             continue;
         }
-        if (IsSpriteFrameIndexOutOfRange(
-                slot->group,
-                GetSpriteSlotFrame(slot)
-            )) {
+        if (IsSpriteFrameIndexOutOfRange(slot->group, GetSpriteSlotFrame(slot))) {
             continue;
         }
         surface = GetSpriteSlotPicture(slot)->surface;
@@ -3074,8 +3067,8 @@ void RenderViewMode(BOOL draw) {
                 g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_NEAREST);
             }
             if (g_moveState == MOVE_STATE_DOOR_AHEAD) {
-                g_moveState = static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(
-                    AnimateDoor(&g_doorMesh));
+                g_moveState =
+                    static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(AnimateDoor(&g_doorMesh));
                 if (g_moveState == MOVE_STATE_STEP) {
                     s_doorFrame = 0;
                     s_doorOpening = true;
@@ -3084,16 +3077,16 @@ void RenderViewMode(BOOL draw) {
             } else if (g_moveState == MOVE_STATE_DOOR_BACK) {
                 g_moveState = MOVE_STATE_BACK;
             } else if (g_moveState == MOVE_STATE_DOOR_LEFT) {
-                g_moveState = static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(
-                    AnimateDoor(&g_doorMesh));
+                g_moveState =
+                    static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(AnimateDoor(&g_doorMesh));
                 if (g_moveState == MOVE_STATE_LEFT) {
                     s_doorFrame = 0;
                     s_doorOpening = true;
                     s_viewDirty = true;
                 }
             } else if (g_moveState == MOVE_STATE_DOOR_RIGHT) {
-                g_moveState = static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(
-                    AnimateDoor(&g_doorMesh));
+                g_moveState =
+                    static_cast<GZ_ENUM_STORAGE(CameraMoveState, u32)>(AnimateDoor(&g_doorMesh));
                 if (g_moveState == MOVE_STATE_RIGHT) {
                     s_doorFrame = 0;
                     s_doorOpening = true;

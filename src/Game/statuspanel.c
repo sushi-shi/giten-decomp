@@ -2012,12 +2012,12 @@ RVA(0x00044fb0, 0x17f)
 i16 PollEquipPart(i16 member, GZ_ENUM_PARAM(EquipPickMode, i16) mode) {
     if (mode < EQUIP_PICK_PART) {
         s_equipPickPart = EQUIP_PART_NONE;
-        return EQUIP_PART_NONE;
+        goto returnPick;
     } else if (mode < EQUIP_PICK_CLEAR) {
         i16 x;
         i16 y;
         if (s_equipPickPart >= 0 && g_mouseLeftClick) {
-            return s_equipPickPart;
+            goto returnPick;
         }
         x = g_mousePosition.x / 8 - 0x37;
         if (x >= 0 && x < 0x15) {
@@ -2060,6 +2060,10 @@ i16 PollEquipPart(i16 member, GZ_ENUM_PARAM(EquipPickMode, i16) mode) {
     UnhighlightEquipPart(member);
     s_equipPickPart = EQUIP_PART_NONE;
     return EQUIP_PART_NONE;
+    // The reset and held pick share a value-returning exit to preserve the
+    // separate reset return emitted by cl 5.0.
+returnPick:
+    return s_equipPickPart;
 }
 
 RVA(0x00045130, 0x9a)

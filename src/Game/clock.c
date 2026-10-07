@@ -549,12 +549,13 @@ void DecodeAreaMap(AreaMap* map, u8* record) {
     map->levelCount = head->levelCount;
     headerGrowth = (map->levelCount + 1) * sizeof(u16);
     for (i = 0; i < map->levelCount; i++) {
-        const u32 offset = GetAreaLevelOffset(head, i);
-        const AreaLevelRecord* src = (const AreaLevelRecord*)(record + offset);
-        AreaLevel* level = (AreaLevel*)((u8*)map + i * (sizeof(AreaLevel) - sizeof(AreaLevelRecord))
-                                        + headerGrowth + offset);
+        const u16* offsets = head->levelOffsets + i;
+        const AreaLevelRecord* src = (const AreaLevelRecord*)(record + offsets[0]);
+        AreaLevel* level;
         u8* base;
-        map->levels[i] = level;
+        level = map->levels[i] =
+            (AreaLevel*)((u8*)map + i * (sizeof(AreaLevel) - sizeof(AreaLevelRecord)) + headerGrowth
+                         + offsets[0]);
         base = (u8*)map + (i + 1) * (sizeof(AreaLevel) - sizeof(AreaLevelRecord)) + headerGrowth;
         level->blockBits = base + src->blockBitsOffset;
         level->walls = (u16*)(base + src->wallsOffset);
@@ -582,13 +583,10 @@ void DecodeAreaMap(AreaMap* map, u8* record) {
         level->defaultMusic = src->defaultMusic;
         level->roomBits = base + src->roomBitsOffset;
         if (i < map->levelCount - 1) {
-            memcpy(
-                level + 1,
-                src + 1,
-                GetAreaLevelOffset(head, i + 1) - GetAreaLevelOffset(head, i)
-            );
+            size_t span = offsets[1] - offsets[0];
+            memcpy(level + 1, src + 1, span);
         } else {
-            memcpy(level + 1, src + 1, sizeof s_areaRecord - GetAreaLevelOffset(head, i));
+            memcpy(level + 1, src + 1, sizeof s_areaRecord - offsets[0]);
         }
     }
 }
@@ -1123,15 +1121,14 @@ i16 GetWarpCodeAtOffset(i16 dx, i16 dy) {
 // The warp code at (dx, dy) from the party: a warp under the party itself
 // answers with bit 3 set, and one fixed spot (area 9, level 6, at 2/5 looking
 // one cell west) answers 0x42.
-// @early-stop register allocation: retail keeps dy in esi and dx in memory,
-// loads the party x as a dword and y as a word, forms the offset x in edx and
-// spills the offset y into dy's slot; the in-place dx/dy update (as in
-// GetWarpCodeAtOffset) keeps dx/dy in ebp/ebx, and x/y locals updated in
-// place or x/dx and dy/y mixes each lose more.
+// @early-stop register allocation: retail leaves dx in its parameter home
+// and stores the summed y through dy's slot; this build keeps dx in ebp.
 RVA(0x00022460, 0xd4)
 i16 GetCellAtOffset(i16 dx, i16 dy) {
     const AreaLevel* level = g_areaLevel;
     const MapPosition* position;
+    i16 x;
+    i16 y;
     if (level == NULL) {
         return 0;
     }
@@ -1141,9 +1138,9 @@ i16 GetCellAtOffset(i16 dx, i16 dy) {
         return CELL_STAIRS_UP;
     }
     ReturnWarpCodeAt(level->warps, position->x, position->y, 8);
-    dx += position->x;
-    dy += position->y;
-    ReturnWarpCodeAt(level->warps, dx, dy, 0);
+    x = dx + position->x;
+    y = dy + position->y;
+    ReturnWarpCodeAt(level->warps, x, y, 0);
     return 0;
 }
 

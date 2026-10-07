@@ -367,13 +367,13 @@ clock	_CreateImagePanel	100.0000	100.0000	4	ast4:9bb78193ac21	0x226d0	100.0000
 clock	_CreateKindPanel	100.0000	100.0000	4	ast4:2a787680b556	0x227c0	100.0000	
 clock	_CreatePositionedPanel	100.0000	100.0000	2	ast4:2991c76a7efb	0x22910	100.0000	
 clock	_CreateSequentialPanel	100.0000	100.0000	4	ast4:bda2e42d1a63	0x22870	100.0000	
-clock	_DecodeAreaMap	77.1047	74.8081	15	ast4:36d2085ff49d	0x21470	77.1047	
+clock	_DecodeAreaMap	96.6570	96.6570	16	ast4:16c4c5728279	0x21470	96.6570	
 clock	_FindCellKind	100.0000	100.0000	1	ast4:b62158c0f65a	0x21850	100.0000	
 clock	_FindTreasureBoxAt	100.0000	100.0000	2	ast4:a49ea29d4129	0x22560	100.0000	
 clock	_GetAreaLevelCount	100.0000	100.0000	1	ast4:c56d67c3ed6f	0x21710	100.0000	
 clock	_GetAreaName	100.0000	100.0000	1	ast4:e59332a44479	0x21750	100.0000	
 clock	_GetAreaSize	100.0000	100.0000	2	ast4:40c76d8a0654	0x21720	100.0000	
-clock	_GetCellAtOffset	82.0988	82.0988	7	ast4:0dbe354f7ad8	0x22460	82.0988	
+clock	_GetCellAtOffset	84.2593	84.2593	8	ast4:e4dee9f34742	0x22460	84.2593	
 clock	_GetCurrentArea	100.0000	100.0000	1	ast4:4286ae9f0cf0	0x21700	100.0000	
 clock	_GetEventCellCode	100.0000	100.0000	3	ast4:749d56816fcc	0x22120	100.0000	
 clock	_GetLevelFloor	100.0000	100.0000	2	ast4:ca85edb6d0d1	0x21770	100.0000	
@@ -2320,7 +2320,7 @@ statuspanel	_ListEquipCandidates	100.0000	100.0000	4	ast4:b7d435af21ae	0x42cd0	1
 statuspanel	_OpenEquipMenu	100.0000	100.0000	2	ast4:c078a5eff1d5	0x43530	100.0000	
 statuspanel	_OpenItemInfoPlane	100.0000	100.0000	2	ast4:c31aca401dd6	0x44bb0	100.0000	
 statuspanel	_OpenStatListWindow	100.0000	100.0000	1	ast4:6033e1182cff	0x42670	100.0000	
-statuspanel	_PollEquipPart	93.9683	93.9683	8	ast4:5897962fbf4b	0x44fb0	93.9683	
+statuspanel	_PollEquipPart	99.1191	99.1191	9	ast4:384ee2cd8d2e	0x44fb0	99.1191	
 statuspanel	_PreviewEquipChange	100.0000	100.0000	14	ast4:49dab8d55b9e	0x43ac0	100.0000	
 statuspanel	_ResumeStatusPage	100.0000	100.0000	2	ast4:9576287eccc4	0x423e0	100.0000	
 statuspanel	_RunAlignmentPage	100.0000	100.0000	3	ast4:004cca6cd101	0x42b00	100.0000	
@@ -2663,7 +2663,7 @@ winmain	?PollJoystick@@YAXXZ	100.0000	100.0000	1	ast4:3e742ec16180	0x4a0c0	100.0
 winmain	?PressPadButton@@YAXHH@Z	100.0000	100.0000	1	ast4:1909abad9206	0x4ad40	100.0000	
 winmain	?ReleaseGraphics@@YAXXZ	100.0000	100.0000	9	ast4:acdae81219e7	0x4a100	100.0000	
 winmain	?RenderBlankMode@@YAXH@Z	100.0000	100.0000	3	ast4:b069df9f5a25	0x4f010	100.0000	
-winmain	?RenderEnemy@@YAXHHH@Z	98.8067	98.8067	36	ast4:dd9e11e5db01	0x4cb30	98.8067	
+winmain	?RenderEnemy@@YAXHHH@Z	99.0733	99.0733	37	ast4:4d239cdc0076	0x4cb30	99.0733	
 winmain	?RenderEventMode@@YAXH@Z	100.0000	100.0000	5	ast4:2e8505857145	0x4e910	100.0000	
 winmain	?RenderFieldMode@@YAXH@Z	100.0000	100.0000	4	ast4:4bfaf9c92db0	0x4ef30	100.0000	
 winmain	?RenderFieldView@@YAXH@Z	100.0000	100.0000	9	ast4:ab8e7eceb96b	0x4ea90	100.0000	
@@ -2675,7 +2675,7 @@ winmain	?RenderPanelMode@@YAXH@Z	100.0000	100.0000	4	ast4:36b0fcac3111	0x4ed80	1
 winmain	?RenderPictureMode@@YAXH@Z	100.0000	100.0000	4	ast4:4ba5ee3afdbd	0x4ece0	100.0000	
 winmain	?RenderSceneMode@@YAXH@Z	100.0000	100.0000	4	ast4:f2f4b14a8f58	0x4ea10	100.0000	
 winmain	?RenderStatusMode@@YAXH@Z	100.0000	100.0000	3	ast4:4d9070688124	0x4f0b0	100.0000	
-winmain	?RenderTBox@@YAXXZ	96.6156	96.6156	24	ast4:dbcda4f353fd	0x4bdd0	96.6156	
+winmain	?RenderTBox@@YAXXZ	96.6545	96.6545	25	ast4:6be6ca33d59b	0x4bdd0	96.6545	
 winmain	?RenderViewMode@@YAXH@Z	100.0000	100.0000	11	ast4:cccc417fc04f	0x4e3d0	100.0000	
 winmain	?RepeatPadMove@@YAXH@Z	100.0000	100.0000	3	ast4:b114f72f2c28	0x4fc00	100.0000	
 winmain	?ResetCamera@@YAXXZ	100.0000	100.0000	2	ast4:e5431f4cce58	0x4f6e0	100.0000	
@@ -2743,7 +2743,7 @@ winmain	_SetViewRenderMode	100.0000	100.0000	3	ast4:53aa756834cf	0x49ba0	100.000
 winmain	_ShowBusyCursor	100.0000	100.0000	3	ast4:0c2e5bb05b63	0x496e0	100.0000	
 winmain	_StartScreenFade	100.0000	100.0000	3	ast4:5a9793b1e11f	0x49d60	100.0000	
 winmain	_StepBlankRenderMode	100.0000	100.0000	3	ast4:a58611a6f266	0x49d10	100.0000	
-winmain	_StepScreenFade	91.3750	91.3750	8	ast4:7486c4efbffc	0x49dd0	91.3750	
+winmain	_StepScreenFade	92.8750	92.8750	9	ast4:c256fa277206	0x49dd0	92.8750	
 winmain	_StopMusic	100.0000	100.0000	1	ast4:9a90a9874845	0x49a50	100.0000	
 winmain	_WaitFrames	100.0000	100.0000	3	ast4:17fb5f9e053d	0x49f00	100.0000	
 winmain	_WinMain@16	98.4286	98.4286	9	ast4:6477381416d5	0x50f50	98.4286	
