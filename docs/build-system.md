@@ -85,6 +85,9 @@ CUR/MAX/HIST are defined in [AGENTS.md](../AGENTS.md#scores-and-workflow).
 The ledger is `config/match_baseline.tsv`; fingerprints are generated in
 `build/gen/func_fingerprints.tsv`. `state=absent` retains an unscored historical row.
 The per-function classifier, not aggregate exact counts, determines regression.
+The fingerprint cache tracks each unit's source, transitive local includes and
+clang compilation database. Changed inputs trigger a reparse; only a changed
+function AST resets MAX. Header comments and equivalent typedefs remain neutral.
 
 Stage the reviewed source snapshot before `giten verify bank`. Banking writes
 the ledger explicitly; normal builds may refresh only the README's generated

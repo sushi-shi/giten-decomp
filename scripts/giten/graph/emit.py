@@ -132,7 +132,7 @@ LINK_MODS = _mods("graph/link.py", "graph/implib.py", "tool/link.py",
                   "core/pe.py") + TOOL_MODS
 VERIFY_MODS = _mods("verify/", "model.py", "core/tsv.py", "core/paths.py",
                     "core/msvc_names.py", "core/data_matching.py",
-                    "walls/pairscan.py")
+                    "walls/pairscan.py", "graph/scan.py")
 #: committed inputs of the default-tier verify gates (fast+normal): the MAX
 #: ledger and every gate's own baseline/allowlist. Named so a bless re-runs
 #: the check edge.
@@ -657,15 +657,15 @@ def emit(out: Path | None = None) -> tuple[int, int]:
 
         w.comment("=== verify: fingerprints (beside compare) + the tiered "
                   "check (after) ===")
-        # The fingerprint cache is BINDINGS x sources x clangd; it needs no
-        # report, so ninja may schedule it alongside the compare leg - the
+        # The fingerprint cache is BINDINGS x source/header closure x clangd.
+        # It needs no report, so ninja may schedule it alongside compare. The
         # ordering that matters is fingerprints-before-CHECK, and the check
         # edge's inputs state it. The cache keeps the MAX gate's edit
         # detection honest (a stale cache degrades TOUCHED/REGRESS).
         w.rule("verify_fp", command="$py -m giten.verify fingerprints",
                description="verify fingerprints", restat=True)
         w.build(FINGERPRINTS, "verify_fp",
-                inputs=[u["source"] for u in units],
+                inputs=sorted(scan.scanned()),
                 implicit=[graph.BINDINGS, MANIFEST, COMPDB, *VERIFY_MODS])
         # The fast+normal tiers, opt-in via the `verify` target: gates run
         # when preparing a merge, never in the matching loop. The full/link
