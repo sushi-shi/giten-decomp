@@ -658,7 +658,7 @@ fieldobj	_GetObjectSlot	100.0000	100.0000	1	ast4:c154aa479619	0xe570	100.0000
 fieldobj	_GetObjectsFrozen	100.0000	100.0000	1	ast4:8c7e056e61a4	0xe520	100.0000	
 fieldobj	_GetPartyEncounterSizeBonus	100.0000	100.0000	5	ast4:28a6d5fefc9a	0x11330	100.0000	
 fieldobj	_GetPartySide	100.0000	100.0000	2	ast4:e5eec00aed76	0xf240	100.0000	
-fieldobj	_GetRaceClass	98.5714	98.5714	3	ast4:5daf6e27da49	0x10080	100.0000	
+fieldobj	_GetRaceClass	100.0000	98.5714	3	ast4:5daf6e27da49	0x10080	100.0000	
 fieldobj	_GetSightCell	100.0000	100.0000	1	ast4:1f0b93c8b919	0xf0c0	100.0000	
 fieldobj	_GetWorldEncounterMaximum	100.0000	100.0000	2	ast4:b70dbced2120	0x11300	100.0000	
 fieldobj	_HasAnalyzeData	100.0000	100.0000	2	ast4:5ee82306a2a8	0x10e90	100.0000	
