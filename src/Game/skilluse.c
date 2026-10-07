@@ -419,8 +419,8 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
                 g_mpChange = attacker->lastChange;
                 return;
             case SKILL_KIND_EXPERIENCE_DRAIN:
-                if (target->experience < attacker->lastChange) {
-                    attacker->lastChange = target->experience;
+                if (GetCharacterExperience(target) < attacker->lastChange) {
+                    attacker->lastChange = GetCharacterExperience(target);
                 }
                 target->experience -= attacker->lastChange;
                 attacker->experience += attacker->lastChange;
@@ -642,7 +642,7 @@ void ResolveKnockout(i16 previousHp, i16 id) {
         }
         g_rewardMacca += combatant->macca;
         g_rewardMagnetite += combatant->magnetite;
-        g_rewardExperience += combatant->experience;
+        g_rewardExperience += GetCharacterExperience(combatant);
         if (combatant->dropChance > RandomUpTo(99)) {
             AddDropSlot(combatant->pickItem, 1);
         }

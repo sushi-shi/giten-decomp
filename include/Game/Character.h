@@ -345,6 +345,8 @@ static __inline void SetCharacterChanges(Character* character, i32 targetChange,
 #define GetAlignmentClassA(character) AlignmentClass(GetAlignmentLevelA(character))
 #define GetAlignmentClassB(character) AlignmentClass(GetAlignmentLevelB(character))
 
+#define GetCharacterExperience(character) ((character)->experience)
+
 #define GetBattleStatBase(character, stat) ((character)->battleStats[(stat)])
 
 #define GetBattleStatShown(character, stat) ((character)->battleStatsShown[(stat)])

@@ -1635,7 +1635,11 @@ i32 AddExperience(Character* character, i32 amount) {
         return -1;
     }
     character->experience += amount;
-    return ExperienceToLevel(character->level + 1, character->experience, character->id);
+    return ExperienceToLevel(
+        character->level + 1,
+        GetCharacterExperience(character),
+        character->id
+    );
 }
 
 // Shares twice `amount` among the party's able members; how many reached a
@@ -1664,7 +1668,7 @@ i16 CountPendingLevels(i16 slot) {
         return 0;
     }
     for (level = character->level;
-         ExperienceToLevel(level + 1, character->experience, character->id) >= 0;
+         ExperienceToLevel(level + 1, GetCharacterExperience(character), character->id) >= 0;
          level++) {
     }
     return level - character->level;
@@ -1746,7 +1750,7 @@ i16 ResolveRaisableStat(const Character* character, i16 stat) {
 RVA(0x00018aa0, 0x23)
 void RaiseExperienceToLevel(Character* character) {
     u32 floor = ExperienceForLevel(character->level, character->id);
-    if (character->experience < floor) {
+    if (GetCharacterExperience(character) < floor) {
         character->experience = floor;
     }
 }

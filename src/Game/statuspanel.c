@@ -131,7 +131,7 @@ RVA(0x00041ad0, 0xc5)
 static i16 DrawStatusExperience(i16 x, i16 y, Character* member) {
     i32 remaining;
 
-    sprintf(g_scratchBuffer, "EXP %10ld", member->experience);
+    sprintf(g_scratchBuffer, "EXP %10ld", GetCharacterExperience(member));
     y = DrawStatusLine(
         x,
         y,
@@ -141,7 +141,8 @@ static i16 DrawStatusExperience(i16 x, i16 y, Character* member) {
     if (member->level >= 99) {
         strcpy(g_scratchBuffer, "\215\305\215\202\203\214\203\170\203\213\202\305\202\267");
     } else {
-        remaining = ExperienceForLevel(member->level + 1, member->id) - member->experience;
+        remaining =
+            ExperienceForLevel(member->level + 1, member->id) - GetCharacterExperience(member);
         if (remaining < 0) {
             remaining = 0;
         }

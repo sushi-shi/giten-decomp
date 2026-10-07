@@ -473,7 +473,7 @@ void GrantActorSpoil(GZ_ENUM_PARAM(ActorSpoilKind, i16) kind) {
         i32 amount = 0;
         switch (kind) {
             case ACTOR_SPOIL_EXPERIENCE:
-                amount = g_curScript->actor->experience;
+                amount = GetCharacterExperience(g_curScript->actor);
                 g_rewardExperience += amount;
                 MarkRewardsPending();
                 break;
@@ -3235,7 +3235,7 @@ i32* ReadScriptOperand(void) {
             if (object == NULL) {
                 break;
             }
-            s_operand = object->experience;
+            s_operand = GetCharacterExperience(object);
             return &s_operand;
         case SCRIPT_OPERAND_OBJECT_LEVEL_BONUS:
             object = ReadScriptObject();
