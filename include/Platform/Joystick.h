@@ -44,6 +44,12 @@ struct JoystickRange {
     i32 rHalf;
 };
 
+#define SetJoystickAxisRange(center, half, minimum, maximum)                                       \
+    do {                                                                                           \
+        (half) = ((maximum) - (minimum)) / 2;                                                      \
+        (center) = (minimum) + (half);                                                             \
+    } while (0)
+
 // A key standing in for a joystick bit.
 struct JoystickKey {
     u32 bit;

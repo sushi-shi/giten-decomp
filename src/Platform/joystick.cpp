@@ -28,14 +28,30 @@ void InitJoystick(void) {
     for (i = 0; i < s_joystickCount; i++) {
         ZeroMemory(&caps, sizeof(caps));
         joyGetDevCaps(i, &caps, sizeof(caps));
-        s_joystickRanges[i].xHalf = (caps.wXmax - caps.wXmin) / 2;
-        s_joystickRanges[i].xCenter = caps.wXmin + s_joystickRanges[i].xHalf;
-        s_joystickRanges[i].yHalf = (caps.wYmax - caps.wYmin) / 2;
-        s_joystickRanges[i].yCenter = caps.wYmin + s_joystickRanges[i].yHalf;
-        s_joystickRanges[i].zHalf = (caps.wZmax - caps.wZmin) / 2;
-        s_joystickRanges[i].zCenter = caps.wZmin + s_joystickRanges[i].zHalf;
-        s_joystickRanges[i].rHalf = (caps.wRmax - caps.wRmin) / 2;
-        s_joystickRanges[i].rCenter = caps.wRmin + s_joystickRanges[i].rHalf;
+        SetJoystickAxisRange(
+            s_joystickRanges[i].xCenter,
+            s_joystickRanges[i].xHalf,
+            caps.wXmin,
+            caps.wXmax
+        );
+        SetJoystickAxisRange(
+            s_joystickRanges[i].yCenter,
+            s_joystickRanges[i].yHalf,
+            caps.wYmin,
+            caps.wYmax
+        );
+        SetJoystickAxisRange(
+            s_joystickRanges[i].zCenter,
+            s_joystickRanges[i].zHalf,
+            caps.wZmin,
+            caps.wZmax
+        );
+        SetJoystickAxisRange(
+            s_joystickRanges[i].rCenter,
+            s_joystickRanges[i].rHalf,
+            caps.wRmin,
+            caps.wRmax
+        );
     }
 }
 
