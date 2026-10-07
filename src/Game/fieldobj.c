@@ -572,7 +572,7 @@ i16 SpawnFieldObject(
         s_objects[slot].magnetite = 0;
         s_objects[slot].pickItem = 0;
         s_objects[slot].dropChance = 0;
-        s_objects[slot].pools.hp.cur = s_objects[slot].rank;
+        GetFieldObjectHpPool(&s_objects[slot])->cur = s_objects[slot].rank;
         s_objects[slot].experience = s_objects[slot].rank;
     }
     SetObjectEventFlag(slot, FIELD_OBJECT_NO_FLAG, FIELD_OBJECT_NO_FLAG);
@@ -1609,8 +1609,13 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
                     target = GetFieldObject(i);
                     coord = GetObjectCoord(i);
                     if (GetSightCell(object->pos.x, object->pos.y, coord.x, coord.y)
-                        && object->pools.hp.cur <= (u16)((object->pools.hp.max >> 2) * 3)) {
-                        SetFieldSkillCandidate(&candidates[count], i, object->pools.hp.cur);
+                        && GetFieldObjectHpPool(object)->cur
+                               <= (u16)((GetFieldObjectHpPool(object)->max >> 2) * 3)) {
+                        SetFieldSkillCandidate(
+                            &candidates[count],
+                            i,
+                            GetFieldObjectHpPool(object)->cur
+                        );
                         count++;
                     }
                 }
@@ -1625,7 +1630,11 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
                             GetSkillEffectCode(GetCachedSkill(skill)),
                             GetFieldObjectConditions(target)
                         )) {
-                        SetFieldSkillCandidate(&candidates[count], i, object->pools.hp.cur);
+                        SetFieldSkillCandidate(
+                            &candidates[count],
+                            i,
+                            GetFieldObjectHpPool(object)->cur
+                        );
                         count++;
                     }
                 }
@@ -2210,8 +2219,8 @@ void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
     object->battleStats[BATTLE_STAT_MAGIC_LEVEL] = 0;
     object->battleStats[BATTLE_STAT_DEMON_INTERACTION_LEVEL] = 0;
     RecalcObjectStats(object);
-    InitCurMax(&object->pools.hp, record->hp);
-    InitCurMax(&object->pools.mp, record->mp);
+    InitCurMax(GetFieldObjectHpPool(object), record->hp);
+    InitCurMax(GetFieldObjectMpPool(object), record->mp);
     if (object->kind == OBJECT_RECORD_DOPPELGANGER) {
         CopyLeaderIntoObject(object);
     }
@@ -2228,8 +2237,8 @@ void CopyLeaderIntoObject(FieldObject* object) {
     object->stats = leader->stats;
     GetFieldObjectActionWait(object)->remaining = GetCharacterActionWait(leader)->remaining;
     RecalcObjectStats(object);
-    InitCurMax(&object->pools.hp, leader->pools.hp.max);
-    InitCurMax(&object->pools.mp, leader->pools.mp.max);
+    InitCurMax(GetFieldObjectHpPool(object), GetCharacterHpPool(leader)->max);
+    InitCurMax(GetFieldObjectMpPool(object), GetCharacterMpPool(leader)->max);
 }
 
 // Loads the object record `kind` into `object`.

@@ -186,6 +186,10 @@ static __inline void SetFieldObjectPickTarget(FieldObject* actor, i16 target) {
 
 #define GetFieldObjectEquipment(object) ((object)->slots)
 
+#define GetFieldObjectHpPool(object) (&(object)->pools.hp)
+
+#define GetFieldObjectMpPool(object) (&(object)->pools.mp)
+
 static __inline ActionWait* GetFieldObjectActionWait(FieldObject* actor) {
     return &actor->actionWait;
 }
