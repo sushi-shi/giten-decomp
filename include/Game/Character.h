@@ -391,6 +391,7 @@ static __inline i32 GetSummonMagnetiteCost(const Character* character) {
 
 extern Character g_characters[CHARACTER_SLOT_COUNT];
 
+Character* GetCharacters(void);
 Character* GetCharacter(i16 slot);
 i16 GetCharacterId(i16 slot);
 

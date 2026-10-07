@@ -69,9 +69,4 @@ ObjectPicture GetObjectRecordPicture(i16 kind);
 void ReadRecordIfWanted(FILE* fp, void* out);
 i32 ReadObjectRecordField(i16 kind, i16 offset, i16 size);
 
-// Defined in Game/character.c; declared here, not in Game/Character.h,
-// because an extra declaration there perturbs the register allocation of
-// unrelated functions in the TUs that include it (TU state).
-Character* GetCharacters(void);
-
 #endif // GITEN_GAME_OBJECTRECORD_H
