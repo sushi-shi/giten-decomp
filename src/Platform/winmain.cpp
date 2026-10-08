@@ -5219,3 +5219,6 @@ RVA_COMPGEN(0x000511e0, 0x2a, ??_H@YGXPAXIHP6EX0@Z@Z)
 
 // The empty D3DTLVERTEX ctor that new[] passes to the iterator.
 RVA_COMPGEN(0x000568c0, 0x3, ??0_D3DTLVERTEX@@QAE@XZ)
+
+// The empty matrix ctor used by the view and projection globals.
+RVA_COMPGEN(0x000568c0, 0x3, ??0_D3DMATRIX@@QAE@XZ)
