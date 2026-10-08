@@ -1893,6 +1893,12 @@ static __inline void EnsureAutomapStore(void) {
     }
 }
 
+#define CreateAutomapAreaTable(handle, slot, count)                                                \
+    do {                                                                                           \
+        (handle) = CreateArrayHandle(GetAutomapLevelTableSize(count), 1);                          \
+        *(slot) = (handle);                                                                        \
+    } while (0)
+
 RVA(0x0001cde0, 0x2e)
 void InitAutomap(void) {
     s_levelBitmap = &s_levelBuffer;
@@ -1917,8 +1923,7 @@ void AllocAutomapLevels(void) {
     slot = &s_areas[area];
     levels = *slot;
     if (levels == HANDLE_NONE) {
-        levels = CreateArrayHandle(GetAutomapLevelTableSize(count), 1);
-        *slot = levels;
+        CreateAutomapAreaTable(levels, slot, count);
         ((AutomapLevels*)HandleWritePtr(levels))->header.count = count;
     }
     for (level = 0; level < count; level++) {
@@ -2695,8 +2700,7 @@ i16 LoadAutomapAreas(FILE* fp) {
             AutomapLevels* levels;
             errors += 1 - fread(&levelHeader, 4, 1, fp);
             count = levelHeader.count;
-            handle = CreateArrayHandle(GetAutomapLevelTableSize(count), 1);
-            s_areas[area] = handle;
+            CreateAutomapAreaTable(handle, &s_areas[area], count);
             levels = HandleWritePtr(handle);
             levels->header = levelHeader;
             errors += count - fread(levels->levels, 4, count, fp);

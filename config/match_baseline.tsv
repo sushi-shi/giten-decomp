@@ -2351,7 +2351,7 @@ treasurebox	_AddAreaNpc	100.0000	100.0000	3	ast4:4fe6477a3765	0x1f2b0	100.0000
 treasurebox	_AddTrainingPoints	100.0000	100.0000	2	ast4:bc8f99aae4ab	0x1c6c0	100.0000	
 treasurebox	_AddTrainingPointsRaw	100.0000	100.0000	3	ast4:e45c9ffbd01a	0x1c690	100.0000	
 treasurebox	_AdjustItemMenuCount	100.0000	100.0000	7	ast4:437cd8b5df3a	0x1bca0	100.0000	
-treasurebox	_AllocAutomapLevels	100.0000	100.0000	5	ast4:adceec46e197	0x1ce10	100.0000	
+treasurebox	_AllocAutomapLevels	100.0000	100.0000	6	ast4:954d9bc17141	0x1ce10	100.0000	
 treasurebox	_AllocItemMenuStock	100.0000	100.0000	1	ast4:5569be25bc1a	0x1c210	100.0000	
 treasurebox	_AnalyzeMenuHandler	100.0000	100.0000	5	ast4:3d4eec639f70	0x1b340	100.0000	
 treasurebox	_ApplyRestoreEffect	100.0000	100.0000	16	ast4:ca2bcbfa55f5	0x1fe90	100.0000	
@@ -2430,7 +2430,7 @@ treasurebox	_ItemMenuHandler	100.0000	100.0000	8	ast4:8bb76417b0a4	0x1b7c0	100.0
 treasurebox	_KnockBack	100.0000	100.0000	6	ast4:6ccf4f33ee5c	0x1f7d0	100.0000	
 treasurebox	_KnockBackActor	100.0000	100.0000	1	ast4:bf4e51c191d5	0x1fae0	100.0000	
 treasurebox	_LoadAreaNpcImages	100.0000	100.0000	1	ast4:fc2d32679651	0x1f660	100.0000	
-treasurebox	_LoadAutomapAreas	89.3357	89.3357	12	ast4:3a89a41c2f19	0x1e520	91.0839	
+treasurebox	_LoadAutomapAreas	89.3357	89.3357	13	ast4:26e1a8ac95fc	0x1e520	91.0839	
 treasurebox	_LoadAutomapLevel	100.0000	100.0000	7	ast4:d228bcff9d38	0x1d050	100.0000	
 treasurebox	_LoadItemMenuStock	100.0000	100.0000	1	ast4:881ed945e3af	0x1c160	100.0000	
 treasurebox	_LoadLearnableSkillTables	100.0000	100.0000	1	ast4:e455d2922b57	0x1c250	100.0000	
