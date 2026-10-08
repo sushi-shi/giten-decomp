@@ -696,10 +696,10 @@ static __inline void ClassifyFusionSlot(
     i16* other,
     i16* otherCount
 ) {
-    const i16 side = GetFusionPairSide(slot);
-    if (side == 0) {
+    const GZ_ENUM_LOCAL(FusionPairSide, i16) side = GetFusionPairSide(slot);
+    if (side == FUSION_PAIR_SECONDARY) {
         secondary[(*secondaryCount)++] = slot;
-    } else if (side == 1) {
+    } else if (side == FUSION_PAIR_PRIMARY) {
         primary[(*primaryCount)++] = slot;
     } else {
         other[(*otherCount)++] = slot;
@@ -1206,19 +1206,19 @@ i16 GetFusionRaceEntry(i16 index, i16 slot) {
 }
 
 RVA(0x00028400, 0x63)
-i16 GetFusionPairSide(i16 slot) {
+GZ_ENUM_RETURN(FusionPairSide, i16) GetFusionPairSide(i16 slot) {
     i16 demon = GetRosterId(slot);
     FusionDemonPair* pairs = HandleReadPtr(s_fusionPairs);
     i16 index;
     for (index = 0; pairs[index].first != -1; index++) {
         if (pairs[index].first == demon) {
-            return 1;
+            return FUSION_PAIR_PRIMARY;
         }
         if (pairs[index].second == demon) {
-            return 0;
+            return FUSION_PAIR_SECONDARY;
         }
     }
-    return -1;
+    return FUSION_PAIR_UNMATCHED;
 }
 
 RVA(0x00028470, 0x7b)

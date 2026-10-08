@@ -205,7 +205,6 @@ extern struct Mesh g_wallMesh;
 // CELL_STAIRS_NEAR marks those half a cell nearer.
 // @identity-TODO: how the "steps" pair (0x90, 0x91) differs from the stairs
 // is unrecovered; the up/down texture split is DrawStairs' low-bit test.
-#define CELL_STAIRS_NEAR 0x08
 
 // The stairs quad: its half width and its distance ahead.
 #define STAIRS_HALF_WIDTH 160
@@ -416,7 +415,10 @@ void PressPadButton(GZ_ENUM_PARAM(NavPadButton, i32) button, BOOL pressed);
 
 // Draws pad button `button` (1..4) of the navigation pad on `surface`.
 b32 DrawPadButton(
-    LPDIRECTDRAWSURFACE surface, GZ_ENUM_PARAM(NavPadButton, i32) button, b32 pressed);
+    LPDIRECTDRAWSURFACE surface,
+    GZ_ENUM_PARAM(NavPadButton, i32) button,
+    b32 pressed
+);
 
 extern GZ_ENUM_STORAGE(NavPadButton, i32) g_heldPadButton;
 void RepeatPadMove(BOOL turn);

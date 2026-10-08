@@ -4,13 +4,14 @@
 #include <rva.h>
 
 #include <Ints.h>
+#include <Text/TextColorPart.h>
 
 // The text-plane attribute and cursor calls the script's window colour ops
 // make (defined in the font TU). Codegen constraint: kept out of
 // <Text/TextPlane.h>, which the font TU itself includes.
 void ResetTextPlaneAttr(i16 plane);
 void ReverseTextPlaneAttr(i16 plane);
-void SetTextPlaneColor(i16 plane, i16 which, u16 color);
+void SetTextPlaneColor(i16 plane, GZ_ENUM_PARAM(TextColorPart, i16) which, u16 color);
 void SaveTextPlaneAttr(i16 plane);
 void RestoreTextPlaneAttr(i16 plane);
 // Callers test only the low word (the font TU defines it returning i32).

@@ -1412,7 +1412,7 @@ u32 AddTrainingPointsRaw(
     GZ_ENUM_PARAM(BattleStatGroup, i16) kind,
     u32 amount
 ) {
-    u32* points = &character->trainingPoints[kind];
+    u32* points = &GetTrainingPoints(character, kind);
     u32 limit;
     amount += *points;
     limit = TrainingThreshold(99);

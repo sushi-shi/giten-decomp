@@ -81,7 +81,13 @@ typedef struct FusionDemonPair {
     i16 second;
 } FusionDemonPair;
 
-i16 GetFusionPairSide(i16 slot);
+GZ_ENUM_BEGIN_SPLIT(FusionPairSide, i16)
+    FUSION_PAIR_UNMATCHED = -1,
+    FUSION_PAIR_SECONDARY = 0,
+    FUSION_PAIR_PRIMARY = 1
+GZ_ENUM_END_SPLIT(FusionPairSide)
+
+GZ_ENUM_RETURN(FusionPairSide, i16) GetFusionPairSide(i16 slot);
 i16 MatchFusionPair(i16 first, i16 second);
 i16 FindSecondaryFusionComplement(i16 first, i16 second, i16 third);
 i16 FindPrimaryFusionComplement(i16 first, i16 second, i16 third);

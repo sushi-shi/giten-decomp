@@ -1137,7 +1137,7 @@ i16 GetCellAtOffset(i16 dx, i16 dy) {
         && position->level == 6 && dx == -1 && dy == 0) {
         return CELL_STAIRS_UP;
     }
-    ReturnWarpCodeAt(level->warps, position->x, position->y, 8);
+    ReturnWarpCodeAt(level->warps, position->x, position->y, CELL_STAIRS_NEAR);
     x = dx + position->x;
     y = dy + position->y;
     ReturnWarpCodeAt(level->warps, x, y, 0);

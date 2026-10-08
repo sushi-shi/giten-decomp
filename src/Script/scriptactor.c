@@ -3519,7 +3519,7 @@ void OpSetObjectField(void) {
         case SCRIPT_OPERAND_OBJECT_TRAINING_1:
         case SCRIPT_OPERAND_OBJECT_TRAINING_2:
         case SCRIPT_OPERAND_OBJECT_TRAINING_3:
-            object->trainingPoints[kind - SCRIPT_OPERAND_OBJECT_TRAINING_0] = (i16)value;
+            GetTrainingPoints(object, kind - SCRIPT_OPERAND_OBJECT_TRAINING_0) = (i16)value;
             return;
         case SCRIPT_OPERAND_OBJECT_AFFILIATION_0:
         case SCRIPT_OPERAND_OBJECT_AFFILIATION_1:

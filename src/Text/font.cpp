@@ -3535,7 +3535,7 @@ b16 DrawBandText(i16 x, i16 y, const char* text, i32 attr, i16 band) {
         g_renderTarget->BltFast(x, y, picture->surface, &source, DDBLTFAST_SRCCOLORKEY);
         return false;
     }
-    g_renderTarget->BltFast(x, y, picture->surface, &picture->rect, DDBLTFAST_SRCCOLORKEY);
+    BlitPicture(g_renderTarget, x, y, picture, DDBLTFAST_SRCCOLORKEY);
     return false;
 }
 
@@ -4063,7 +4063,7 @@ void ReverseTextPlaneAttr(i16 plane) {
 // colour first and ORs the masked attribute into it; cl canonicalizes both
 // spellings to the attribute-first order here. The rest matches.
 RVA(0x00052840, 0x67)
-void SetTextPlaneColor(i16 plane, i16 which, u16 color) {
+void SetTextPlaneColor(i16 plane, GZ_ENUM_PARAM(TextColorPart, i16) which, u16 color) {
     u16 attr;
 
     color &= 0x0f;

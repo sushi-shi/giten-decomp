@@ -8,6 +8,7 @@
 #include <Gfx/Bitmap.h>
 #include <Text/TextAttr.h>
 #include <Text/TextBand.h>
+#include <Text/TextColorPart.h>
 #include <Text/TextPlane.h>
 
 #include <stdio.h>
@@ -75,7 +76,7 @@ void ScrollTextWindowLine(i16 plane);
 void SetMenuLineText(i16 plane, i16 index, const char* text);
 u16 SetTextPlaneAccentAttr(i16 plane, u16 attr);
 u16 SetTextPlaneAttr(i16 plane, u16 attr);
-void SetTextPlaneColor(i16 plane, i16 which, u16 color);
+void SetTextPlaneColor(i16 plane, GZ_ENUM_PARAM(TextColorPart, i16) which, u16 color);
 void SetTextPlaneCursorLine(i16 plane, i16 x, i16 line);
 i16 SetTextPlaneIndentEnabled(i16 plane, i16 on);
 i16 SetTextPlaneCancelEnabled(i16 plane, i16 on);
@@ -189,12 +190,6 @@ typedef struct TextColor {
     u8 g;
     u8 b;
 } TextColor;
-
-// The colours SetTextPlaneColor sets: the glyph, the dim colour and the
-// background.
-#define TEXT_COLOR_GLYPH 0
-#define TEXT_COLOR_DIM 1
-#define TEXT_COLOR_BG 2
 
 // A text plane kind's window: screen position, size and text grid.
 typedef struct TextPlaneLayout {

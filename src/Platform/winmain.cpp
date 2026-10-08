@@ -2554,13 +2554,7 @@ void BlitFieldBackground(void) {
 RVA(0x0004da00, 0x29)
 void DrawSceneOverlay(void) {
     if (GetGameState() == GAME_STATE_SCRIPT_ANIMATION) {
-        g_renderTarget->BltFast(
-            0,
-            0,
-            g_backdropPicture.surface,
-            &g_backdropPicture.rect,
-            DDBLTFAST_SRCCOLORKEY
-        );
+        BlitPicture(g_renderTarget, 0, 0, &g_backdropPicture, DDBLTFAST_SRCCOLORKEY);
     }
 }
 
@@ -2707,13 +2701,7 @@ i32 DrawSprites(void) {
                 g_spritePicture.id = 0;
             }
         } else if (image < SPRITE_IMAGE_INSET_END && image > SPRITE_IMAGE_INSET_EXCLUSIVE_BEGIN) {
-            g_renderTarget->BltFast(
-                0,
-                0,
-                g_spritePicture.surface,
-                &g_spritePicture.rect,
-                DDBLTFAST_SRCCOLORKEY
-            );
+            BlitPicture(g_renderTarget, 0, 0, &g_spritePicture, DDBLTFAST_SRCCOLORKEY);
         }
         if (image < SPRITE_IMAGE_INSET_END && image > SPRITE_IMAGE_INSET_EXCLUSIVE_BEGIN) {
             if (g_spritePicture.id == SPRITE_IMAGE_CACHED_BACKDROP) {
@@ -2734,13 +2722,7 @@ i32 DrawSprites(void) {
                 DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY
             );
             g_scenePicture.visible = false;
-            g_renderTarget->BltFast(
-                204,
-                112,
-                g_spritePicture.surface,
-                &g_spritePicture.rect,
-                DDBLTFAST_SRCCOLORKEY
-            );
+            BlitPicture(g_renderTarget, 204, 112, &g_spritePicture, DDBLTFAST_SRCCOLORKEY);
         } else if (image == SPRITE_IMAGE_CACHED_OVERLAY) {
             g_scenePicture.visible = false;
             g_renderTarget->BltFast(
@@ -2951,7 +2933,7 @@ void RenderViewMode(BOOL draw) {
         moved = true;
     }
     if (g_scenePicture.visible) {
-        g_renderTarget->BltFast(0, 0, g_scenePicture.surface, &g_scenePicture.rect, DDBLTFAST_WAIT);
+        BlitPicture(g_renderTarget, 0, 0, &g_scenePicture, DDBLTFAST_WAIT);
     }
     if (!draw) {
         if ((g_moveState == MOVE_STATE_DOOR_AHEAD || g_moveState == MOVE_STATE_DOOR_LEFT
@@ -2966,8 +2948,7 @@ void RenderViewMode(BOOL draw) {
         if (!g_fixedLighting) {
             g_renderTarget->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &g_clearBltFx);
         } else {
-            g_renderTarget
-                ->BltFast(0, 0, g_whitePicture.surface, &g_whitePicture.rect, DDBLTFAST_WAIT);
+            BlitPicture(g_renderTarget, 0, 0, &g_whitePicture, DDBLTFAST_WAIT);
         }
         ShadeMesh(&g_roomMesh);
         ShadeMesh(&g_wallMesh);
@@ -3048,7 +3029,7 @@ void RenderViewMode(BOOL draw) {
             s_viewDirty = false;
         }
     } else {
-        g_renderTarget->BltFast(0, 0, g_viewCachePicture.surface, &g_viewCachePicture.rect, 0);
+        BlitPicture(g_renderTarget, 0, 0, &g_viewCachePicture, 0);
         g_d3dDevice->BeginScene();
         texture = GetAreaPaletteMode() ? &g_darkWallTexture : &g_roomTexture;
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, texture->handle);
@@ -3117,30 +3098,18 @@ void RenderViewMode(BOOL draw) {
         DrawDragOutline();
     }
     if (!s_viewDirty && GetFieldBattleActive()) {
-        g_renderTarget->BltFast(
-            208,
-            0,
-            g_fightBannerPicture.surface,
-            &g_fightBannerPicture.rect,
-            DDBLTFAST_SRCCOLORKEY
-        );
+        BlitPicture(g_renderTarget, 208, 0, &g_fightBannerPicture, DDBLTFAST_SRCCOLORKEY);
     }
 }
 
 RVA(0x0004e910, 0xf8)
 void RenderEventMode(BOOL draw) {
     if (g_scenePicture.visible) {
-        g_renderTarget->BltFast(0, 0, g_scenePicture.surface, &g_scenePicture.rect, DDBLTFAST_WAIT);
+        BlitPicture(g_renderTarget, 0, 0, &g_scenePicture, DDBLTFAST_WAIT);
     } else {
         ClearDisplaySurface(g_renderTarget, NULL);
     }
-    g_renderTarget->BltFast(
-        240,
-        365,
-        g_titleMenuPicture.surface,
-        &g_titleMenuPicture.rect,
-        DDBLTFAST_SRCCOLORKEY
-    );
+    BlitPicture(g_renderTarget, 240, 365, &g_titleMenuPicture, DDBLTFAST_SRCCOLORKEY);
     if ((g_scenePicture.id > EVENT_CURSOR_DELAY_EXCLUSIVE_BEGIN
          && g_scenePicture.id < EVENT_CURSOR_DELAY_END)
         || g_scenePicture.id == EVENT_CURSOR_DELAY_SINGLE) {
@@ -3171,8 +3140,7 @@ RVA(0x0004ea10, 0x7d)
 void RenderSceneMode(BOOL draw) {
     if (draw) {
         if (g_scenePicture.visible) {
-            g_renderTarget
-                ->BltFast(0, 0, g_scenePicture.surface, &g_scenePicture.rect, DDBLTFAST_WAIT);
+            BlitPicture(g_renderTarget, 0, 0, &g_scenePicture, DDBLTFAST_WAIT);
         } else {
             ClearDisplaySurface(g_renderTarget, NULL);
         }
@@ -3206,7 +3174,7 @@ void RenderFieldView(BOOL draw) {
     if (!draw) {
         return;
     }
-    g_renderTarget->BltFast(0, 0, g_scenePicture.surface, &g_scenePicture.rect, DDBLTFAST_WAIT);
+    BlitPicture(g_renderTarget, 0, 0, &g_scenePicture, DDBLTFAST_WAIT);
     if (IsFieldObjectImageLit(GetObjectImageCode(0))) {
         level = GetObjectAnim(0);
         if (level > 8) {
@@ -3231,13 +3199,7 @@ void RenderFieldView(BOOL draw) {
     BlitScreenLayers(0, 15, 0);
     BlitTextPlanes(0, 37, 0);
     if (GetFieldBattleActive()) {
-        g_renderTarget->BltFast(
-            208,
-            0,
-            g_fightBannerPicture.surface,
-            &g_fightBannerPicture.rect,
-            DDBLTFAST_SRCCOLORKEY
-        );
+        BlitPicture(g_renderTarget, 208, 0, &g_fightBannerPicture, DDBLTFAST_SRCCOLORKEY);
     }
 }
 
@@ -3254,18 +3216,12 @@ RVA(0x0004ece0, 0x97)
 void RenderPictureMode(BOOL draw) {
     if (draw) {
         ClearDisplaySurface(g_renderTarget, NULL);
-        g_renderTarget->BltFast(
-            16,
-            16,
-            g_commandBarPicture.surface,
-            &g_commandBarPicture.rect,
-            DDBLTFAST_SRCCOLORKEY
-        );
-        g_renderTarget->BltFast(
+        BlitPicture(g_renderTarget, 16, 16, &g_commandBarPicture, DDBLTFAST_SRCCOLORKEY);
+        BlitPicture(
+            g_renderTarget,
             0,
             40,
-            g_statusPicture.surface,
-            &g_statusPicture.rect,
+            &g_statusPicture,
             DDBLTFAST_SRCCOLORKEY | DDBLTFAST_WAIT
         );
         if (GetGameState() == GAME_STATE_STATUS && GetGamePhase() != STATUS_PHASE_NO_LAYERS) {
@@ -3340,37 +3296,25 @@ void RenderPanelMode(BOOL draw) {
         }
         if (g_scenePicture.visible) {
             if (IsOddMapLayer()) {
-                g_renderTarget->BltFast(
+                BlitPicture(
+                    g_renderTarget,
                     0,
                     0,
-                    g_viewCachePicture.surface,
-                    &g_viewCachePicture.rect,
+                    &g_viewCachePicture,
                     DDBLTFAST_SRCCOLORKEY | DDBLTFAST_WAIT
                 );
                 if (screen >= 0 && screen < MAP_SCREEN_COUNT) {
-                    g_renderTarget->BltFast(
-                        x,
-                        y,
-                        g_mapMarkerPicture.surface,
-                        &g_mapMarkerPicture.rect,
-                        DDBLTFAST_SRCCOLORKEY
-                    );
+                    BlitPicture(g_renderTarget, x, y, &g_mapMarkerPicture, DDBLTFAST_SRCCOLORKEY);
                 }
             } else {
                 if (screen >= 0 && screen < MAP_SCREEN_COUNT) {
-                    g_renderTarget->BltFast(
-                        x,
-                        y,
-                        g_mapMarkerPicture.surface,
-                        &g_mapMarkerPicture.rect,
-                        DDBLTFAST_SRCCOLORKEY
-                    );
+                    BlitPicture(g_renderTarget, x, y, &g_mapMarkerPicture, DDBLTFAST_SRCCOLORKEY);
                 }
-                g_renderTarget->BltFast(
+                BlitPicture(
+                    g_renderTarget,
                     0,
                     0,
-                    g_viewCachePicture.surface,
-                    &g_viewCachePicture.rect,
+                    &g_viewCachePicture,
                     DDBLTFAST_SRCCOLORKEY | DDBLTFAST_WAIT
                 );
             }
@@ -3389,7 +3333,7 @@ void RenderPanelMode(BOOL draw) {
 RVA(0x0004ef30, 0xdd)
 void RenderFieldMode(BOOL draw) {
     if (draw) {
-        g_renderTarget->BltFast(0, 0, g_scenePicture.surface, &g_scenePicture.rect, DDBLTFAST_WAIT);
+        BlitPicture(g_renderTarget, 0, 0, &g_scenePicture, DDBLTFAST_WAIT);
         g_viewport->Clear(1, &g_viewClearRect, D3DCLEAR_ZBUFFER);
         g_d3dDevice->BeginScene();
         if (g_deviceType != D3D_DEVICE_MMX) {
@@ -3404,13 +3348,7 @@ void RenderFieldMode(BOOL draw) {
         BlitScreenLayers(0, SCREEN_LAYER_COUNT, 0);
         BlitTextPlanes(0, TEXT_PLANE_COUNT, 0);
         if (GetFieldBattleActive()) {
-            g_renderTarget->BltFast(
-                208,
-                0,
-                g_fightBannerPicture.surface,
-                &g_fightBannerPicture.rect,
-                DDBLTFAST_SRCCOLORKEY
-            );
+            BlitPicture(g_renderTarget, 208, 0, &g_fightBannerPicture, DDBLTFAST_SRCCOLORKEY);
         }
     }
 }
@@ -3422,19 +3360,18 @@ void RenderBlankMode(BOOL draw) {
     if (draw) {
         ClearDisplaySurface(g_renderTarget, NULL);
         if (s_blankStep == BLANK_STEP_FIRST) {
-            g_renderTarget->BltFast(
+            BlitPicture(
+                g_renderTarget,
                 0,
                 40,
-                g_statusPicture.surface,
-                &g_statusPicture.rect,
+                &g_statusPicture,
                 DDBLTFAST_SRCCOLORKEY | DDBLTFAST_WAIT
             );
             BlitTextPlanes(1, TEXT_PLANE_COUNT, 0);
             return;
         }
         if (s_blankStep == BLANK_STEP_SECOND) {
-            g_renderTarget
-                ->BltFast(0, 0, g_scenePicture.surface, &g_scenePicture.rect, DDBLTFAST_WAIT);
+            BlitPicture(g_renderTarget, 0, 0, &g_scenePicture, DDBLTFAST_WAIT);
             DrawSceneSprites();
             DrawSceneOverlay();
         }
@@ -3447,11 +3384,11 @@ RVA(0x0004f0b0, 0x4f)
 void RenderStatusMode(BOOL draw) {
     if (draw) {
         ClearDisplaySurface(g_renderTarget, NULL);
-        g_renderTarget->BltFast(
+        BlitPicture(
+            g_renderTarget,
             0,
             40,
-            g_statusPicture.surface,
-            &g_statusPicture.rect,
+            &g_statusPicture,
             DDBLTFAST_SRCCOLORKEY | DDBLTFAST_WAIT
         );
         BlitTextPlanes(1, TEXT_PLANE_COUNT, 0);

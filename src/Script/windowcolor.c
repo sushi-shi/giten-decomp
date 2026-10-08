@@ -26,9 +26,8 @@ void SetWindowReverse(i16 window, GZ_ENUM_PARAM(WindowReverseMode, i16) mode) {
     }
 }
 
-// @identity-TODO: which of the three nibbles is foreground/background is unproven
 RVA(0x0002ead0, 0x19)
-void OpSetWindowColor(i16 window, i16 part) {
+void OpSetWindowColor(i16 window, GZ_ENUM_PARAM(TextColorPart, i16) part) {
     SetTextPlaneColor(window, part, ReadScriptValue());
 }
 

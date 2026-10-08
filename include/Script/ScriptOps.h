@@ -13,6 +13,7 @@
 #include <Script/ScriptPanel.h>
 #include <Script/ScriptStatus.h>
 #include <Script/WindowReverseMode.h>
+#include <Text/TextColorPart.h>
 #include <Util/Compare.h>
 
 GZ_ENUM_BEGIN(ScriptFlagAction)
@@ -28,7 +29,7 @@ GZ_ENUM_END(ScriptFlagAction)
 
 void SetWindowReverse(i16 window, GZ_ENUM_PARAM(WindowReverseMode, i16) mode);
 
-void OpSetWindowColor(i16 window, i16 part);
+void OpSetWindowColor(i16 window, GZ_ENUM_PARAM(TextColorPart, i16) part);
 
 void StashWindowColor(i16 window, i32 save);
 

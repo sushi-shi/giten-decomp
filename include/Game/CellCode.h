@@ -78,4 +78,6 @@ GZ_ENUM_BEGIN(CellCode)
     CELL_CODE_TABLE_END = 0xff
 GZ_ENUM_END(CellCode)
 
+#define CELL_STAIRS_NEAR 0x08
+
 #endif // GITEN_GAME_CELLCODE_H

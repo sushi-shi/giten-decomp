@@ -34,6 +34,9 @@ typedef struct Picture {
 } Picture;
 // clang-format on
 
+#define BlitPicture(destination, x, y, picture, flags)                                             \
+    (destination)->BltFast((x), (y), (picture)->surface, &(picture)->rect, (flags))
+
 #define GetPictureSurfaceWidth(picture) ((picture)->surfaceWidth)
 #define GetPictureSurfaceHeight(picture) ((picture)->surfaceHeight)
 
