@@ -160,6 +160,33 @@ extern i32 g_hotspotObject;
 extern i32 g_hotspotCellX;
 extern i32 g_hotspotCellY;
 
+// The party's move under way: a move command (RunMoveCommand) starts it and
+// AnimateMove runs one frame of it. The low nibble (MOVE_STATE_KIND) picks
+// the step function, 0 for none; the high bits mark a step through a door,
+// which AnimateDoor opens instead (ahead, back, left, right).
+GZ_ENUM_BEGIN_SPLIT(CameraMoveState, u32)
+    MOVE_STATE_NONE = 0,
+    MOVE_STATE_STEP = 1,
+    MOVE_STATE_BACK = 2,
+    MOVE_STATE_LEFT = 3,
+    MOVE_STATE_RIGHT = 4,
+    MOVE_STATE_TURN_LEFT = 5,
+    MOVE_STATE_TURN_RIGHT = 6,
+    MOVE_STATE_TURN_AROUND = 7,
+    MOVE_STATE_TURN_FIRST = MOVE_STATE_TURN_LEFT,
+    MOVE_STATE_TURN_LAST = MOVE_STATE_TURN_AROUND,
+    MOVE_STATE_DOOR_AHEAD = 0x10,
+    MOVE_STATE_DOOR_BACK = 0x20,
+    MOVE_STATE_DOOR_LEFT = 0x40,
+    MOVE_STATE_DOOR_RIGHT = 0x80,
+    MOVE_STATE_DOOR_FIRST = MOVE_STATE_DOOR_AHEAD
+GZ_ENUM_END_SPLIT(CameraMoveState)
+
+// cl 5 reverses equal-key BSS declaration chains; keep this before the cursors.
+extern GZ_ENUM_STORAGE(CameraMoveState, u32) g_moveState;
+
+#define MOVE_STATE_KIND 0x0f
+
 // The mouse cursor and the busy cursor (32x32 pictures).
 extern Picture g_cursorPicture;
 extern Picture g_busyCursorPicture;
@@ -371,32 +398,6 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons);
 // Releases every surface, texture and mesh of the display and the DirectX
 // objects.
 void ReleaseGraphics(void);
-
-// The party's move under way: a move command (RunMoveCommand) starts it and
-// AnimateMove runs one frame of it. The low nibble (MOVE_STATE_KIND) picks
-// the step function, 0 for none; the high bits mark a step through a door,
-// which AnimateDoor opens instead (ahead, back, left, right).
-GZ_ENUM_BEGIN_SPLIT(CameraMoveState, u32)
-    MOVE_STATE_NONE = 0,
-    MOVE_STATE_STEP = 1,
-    MOVE_STATE_BACK = 2,
-    MOVE_STATE_LEFT = 3,
-    MOVE_STATE_RIGHT = 4,
-    MOVE_STATE_TURN_LEFT = 5,
-    MOVE_STATE_TURN_RIGHT = 6,
-    MOVE_STATE_TURN_AROUND = 7,
-    MOVE_STATE_TURN_FIRST = MOVE_STATE_TURN_LEFT,
-    MOVE_STATE_TURN_LAST = MOVE_STATE_TURN_AROUND,
-    MOVE_STATE_DOOR_AHEAD = 0x10,
-    MOVE_STATE_DOOR_BACK = 0x20,
-    MOVE_STATE_DOOR_LEFT = 0x40,
-    MOVE_STATE_DOOR_RIGHT = 0x80,
-    MOVE_STATE_DOOR_FIRST = MOVE_STATE_DOOR_AHEAD
-GZ_ENUM_END_SPLIT(CameraMoveState)
-
-extern GZ_ENUM_STORAGE(CameraMoveState, u32) g_moveState;
-
-#define MOVE_STATE_KIND 0x0f
 
 // The buttons of the navigation pad on layer SCREEN_LAYER_NAVIGATION.
 GZ_ENUM_BEGIN_SPLIT(NavPadButton, i32)

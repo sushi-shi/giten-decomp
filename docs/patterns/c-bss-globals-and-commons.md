@@ -44,6 +44,22 @@ slots. A static that retail places after a zero-initialized global in the
 same run therefore has a zero initializer itself and is defined after that
 global.
 
+Equal name-hash keys use reverse order of the first declarations, including
+`extern` declarations in headers. Moving a definition cannot change that
+order once a header has declared it. Preserve the first declaration order
+when recovering an uninitialized run; a scalar followed by an eight-aligned
+record can require different alignment bytes than the same objects in reverse
+order. This compiler ordering applies to ordinary object `.bss`, not LINK's
+COMMON allocation.
+
+Evidence: compile a C++ unit containing the existing `g_moveState` and
+`g_busyCursorPicture` definitions through their owner header. Their identifiers
+have the same hash key. Reversing their first declarations reverses their COFF
+member order without changing types or function bodies. Compare the complete
+`.bss` contribution and its next aligned boundary as well as the code and
+ordered references. This mechanism does not recover names or justify aliases
+chosen to fit a hash window.
+
 Signature: an object's `.bss` run that interleaves globals read by other
 objects with statics, or that follows the order in which its code reads
 them (counters from the smallest unit up, a queue's handle, capacity, read
