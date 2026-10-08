@@ -39,95 +39,95 @@ DATA(0x0008420c)
 IDirect3DDevice2* g_screenDevice;
 
 DATA(0x00084250)
-IUnknown* g_roomObject;
+IUnknown* g_roomObject = NULL;
 
 DATA(0x00084254)
-LPDIRECTSOUNDBUFFER g_shortSoundBuffer;
+LPDIRECTSOUNDBUFFER g_shortSoundBuffer = NULL;
 
 DATA(0x00084258)
-LPDIRECTSOUNDBUFFER g_longSoundBuffer;
+LPDIRECTSOUNDBUFFER g_longSoundBuffer = NULL;
 
 DATA(0x0008425c)
-LPDIRECT3D2 g_d3d;
+LPDIRECT3D2 g_d3d = NULL;
 
 DATA(0x00084260)
-LPDIRECTDRAW2 g_ddraw2;
+LPDIRECTDRAW2 g_ddraw2 = NULL;
 
 DATA(0x00084264)
-static DWORD s_shortBufferSize;
+static DWORD s_shortBufferSize = 0;
 
 DATA(0x00084268)
-static DWORD s_longBufferSize;
+static DWORD s_longBufferSize = 0;
 
 DATA(0x0008426c)
-static u8 s_leftButton;
+static u8 s_leftButton = 0;
 
 DATA(0x00084270)
-b32 g_soundEnabled;
+b32 g_soundEnabled = 0;
 
 // Initialized for black colour fills by InitDirectX.
 DATA(0x00084278)
-DDBLTFX g_clearBltFx;
+DDBLTFX g_clearBltFx = {0};
 
 DATA(0x000842dc)
-IDirect3DViewport2* g_screenViewport;
+IDirect3DViewport2* g_screenViewport = NULL;
 
 DATA(0x000842e0)
-IDirect3DViewport2* g_viewport;
+IDirect3DViewport2* g_viewport = NULL;
 
 DATA(0x000842e4)
-LPDIRECTDRAWSURFACE g_primarySurface;
+LPDIRECTDRAWSURFACE g_primarySurface = NULL;
 
 DATA(0x000842e8)
-static u8 s_rightButton;
+static u8 s_rightButton = 0;
 
 DATA(0x000842ec)
-LPDIRECTDRAWSURFACE g_renderTarget;
+LPDIRECTDRAWSURFACE g_renderTarget = NULL;
 
 DATA(0x000842f0)
-D3DDeviceKind g_deviceType;
+D3DDeviceKind g_deviceType = D3D_DEVICE_HAL;
 
 DATA(0x000842f4)
-IDirect3DDevice2* g_d3dDevice;
+IDirect3DDevice2* g_d3dDevice = NULL;
 
 DATA(0x000842f8)
-LPDIRECTINPUT g_directInput;
+LPDIRECTINPUT g_directInput = NULL;
 
 DATA(0x000842fc)
-LPDIRECTINPUTDEVICE g_mouseDevice;
+LPDIRECTINPUTDEVICE g_mouseDevice = NULL;
 
 DATA(0x00084300)
-LPDIRECTINPUTDEVICE g_keyboardDevice;
+LPDIRECTINPUTDEVICE g_keyboardDevice = NULL;
 
 DATA(0x00084304)
-DWORD g_redMask;
+DWORD g_redMask = 0;
 
 DATA(0x00084308)
-DWORD g_greenMask;
+DWORD g_greenMask = 0;
 
 DATA(0x0008430c)
-DWORD g_blueMask;
+DWORD g_blueMask = 0;
 
 DATA(0x00084310)
-u8 g_redShift;
+u8 g_redShift = 0;
 
 DATA(0x00084314)
-u8 g_greenShift;
+u8 g_greenShift = 0;
 
 DATA(0x00084318)
-u8 g_blueShift;
+u8 g_blueShift = 0;
 
 DATA(0x0008431c)
-u8 g_redLoss;
+u8 g_redLoss = 0;
 
 DATA(0x00084320)
-u8 g_greenLoss;
+u8 g_greenLoss = 0;
 
 DATA(0x00084324)
-u8 g_blueLoss;
+u8 g_blueLoss = 0;
 
 DATA(0x00084328)
-BOOL g_bilinearFiltering;
+BOOL g_bilinearFiltering = 0;
 
 // The WAVE resource of each sound effect (0 = none), sound 1 first.
 DATA(0x0006a6c8)

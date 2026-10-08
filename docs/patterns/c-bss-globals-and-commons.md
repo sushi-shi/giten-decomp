@@ -7,6 +7,14 @@ the trailing block after LIBC's `.bss`. A definition with an explicit zero
 initializer (`int g = 0;`, `T g[4] = {0};`) is emitted in the object's own
 `.bss`, like a `static`. Uninitialized C++ globals are not COMMONs either.
 
+C++ also distinguishes the hashed uninitialized block from the ordered
+explicit-zero block. Adding `= 0`, `= NULL`, or `= {0}` to existing plain
+definitions retains ordinary `.bss` storage but puts them in definition
+order. A constructor-backed object can remain in the hashed block; preserve
+its separately evidenced constructor initializer when recovering surrounding
+zero definitions. This permits recovery of an ordered suffix without knowing
+the original names of the preceding uninitialized objects.
+
 Signature: a C global whose retail address lies inside a run of one object's
 `.bss` statics. Spell it with a zero initializer. A datum in the trailing
 COMMON block is an uninitialized C global with external linkage, never a
@@ -53,6 +61,14 @@ Uninitialized statics named for a route queue (`s_route`, `s_routeCapacity`,
 `s_routeRead`, ...) come out scattered. Arrays and structures of 8, 12, 16
 and 64 bytes after a two-byte static all start eight-byte aligned, with or
 without `/Zp1`, `/O1` or `/Od`.
+
+For the C++ distinction, compile the same six file-scope pointer/scalar
+definitions twice, first without initializers and then with explicit zeros.
+Keep their names, types, declaration order and function uses identical.
+The first object's `.bss` symbol offsets follow the hashed order; the second's
+follow declaration order. Neither object contains COMMON definitions. In a
+complete owner with a matrix constructor, compare the constructor code and
+`.CRT$XCU` separately from the plain zero-defined suffix.
 
 Limits: the hashed order of uninitialized statics orders objects, not
 source declarations, and cannot be reproduced without the original names.
