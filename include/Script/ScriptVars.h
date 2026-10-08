@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Input/MouseCancelMode.h>
 #include <Ints.h>
 #include <Script/ScriptBlock.h>
 #include <Script/ScriptStatus.h>
@@ -70,7 +71,7 @@ extern b16 g_inChoices;
 // The script engine's numbered variables (saved and loaded as one block).
 extern i32 g_scriptVars[256];
 
-void SetWindowOption(i16 option);
+void SetWindowOption(GZ_ENUM_PARAM(MouseCancelMode, i16) option);
 b16 SetHold(b16 on);
 
 b16 OpBeginChoices(i16 window);

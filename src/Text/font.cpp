@@ -4815,7 +4815,7 @@ GZ_ENUM_RETURN(TextEvent, i16) PollMenuInput(i16 plane) {
     p = GetTextPlane(plane);
     cancelEnabled = IsTextPlaneCancelEnabled(plane);
     if (cancelEnabled) {
-        if (TakeMouseCancel(true)) {
+        if (TakeMouseCancel(MOUSE_CANCEL_ACCEPT)) {
             CallTextPlaneHook(plane, TEXT_EVENT_CANCEL, 0);
             return TEXT_EVENT_CANCEL;
         }

@@ -156,7 +156,7 @@ DATA(0x0008167c)
 static i16 s_choiceDisabled = 0;
 
 DATA(0x00081680)
-i16 g_windowOption = 0;
+GZ_ENUM_STORAGE(MouseCancelMode, i16) g_windowOption = MOUSE_CANCEL_IGNORE;
 
 // Whether the field objects were frozen when a script thawed them.
 DATA(0x00081684)
@@ -863,7 +863,7 @@ void OpSwapScreenState(void) {
 }
 
 RVA(0x0003a740, 0xc)
-void SetWindowOption(i16 option) {
+void SetWindowOption(GZ_ENUM_PARAM(MouseCancelMode, i16) option) {
     g_windowOption = option;
 }
 

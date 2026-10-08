@@ -2,6 +2,7 @@
 #define GITEN_INPUT_MOUSE_H
 
 #include <EnumDomain.h>
+#include <Input/MouseCancelMode.h>
 #include <Input/MouseClickState.h>
 #include <Ints.h>
 
@@ -72,7 +73,7 @@ static __inline void ClearMouseSelection(void) {
 
 void LatchMouseClicks(void);
 void ClearMouseClicks(void);
-GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancel(i16 clearSelection);
+GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancel(GZ_ENUM_PARAM(MouseCancelMode, i16) clearSelection);
 GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancelSound(void);
 GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseLeftClick(void);
 void SetMouseState(GZ_ENUM_PARAM(MouseButtonBits, i16) buttons, i16 x, i16 y);

@@ -7,6 +7,7 @@
 #include <Game/AlignmentSide.h>
 #include <Game/CharacterPools.h>
 #include <Game/CharacterStat.h>
+#include <Input/MouseCancelMode.h>
 #include <Ints.h>
 
 GZ_ENUM_BEGIN_SPLIT(ItemCountScope, i16)
@@ -34,8 +35,18 @@ ScriptChoice* AppendScriptChoice(ScriptChoice** head);
 ScriptChoice* FreeScriptChoices(ScriptChoice* head);
 ScriptChoice*
 PrintScriptChoice(i16 window, ScriptChoice** head, const char* text, i16 value, i16 disabled);
-ScriptChoice* PushScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode);
-void InitScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode);
+ScriptChoice* PushScriptChoiceMenu(
+    ScriptChoice* choices,
+    i16 window,
+    i16 keep,
+    GZ_ENUM_PARAM(MouseCancelMode, i16) cancelMode
+);
+void InitScriptChoiceMenu(
+    ScriptChoice* choices,
+    i16 window,
+    i16 keep,
+    GZ_ENUM_PARAM(MouseCancelMode, i16) cancelMode
+);
 i16 FindScriptChoiceAtMouse(void);
 i16 PollScriptChoiceMenu(void);
 GZ_ENUM_BEGIN_SPLIT(ScriptChoiceSubstep, i16)

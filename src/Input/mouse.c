@@ -57,12 +57,12 @@ void ClearMouseClicks(void) {
 // A pending right-click cancels: consume the clicks, optionally drop the
 // hovered and selected objects, and play the cancel sound.
 RVA(0x00002a70, 0x40)
-GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancel(i16 clearSelection) {
+GZ_ENUM_RETURN(MouseClickState, i16) TakeMouseCancel(GZ_ENUM_PARAM(MouseCancelMode, i16) clearSelection) {
     if (g_mouseRightClick == MOUSE_CLICK_NONE) {
         return MOUSE_CLICK_NONE;
     }
     ClearMouseClicks();
-    if (clearSelection == 0) {
+    if (clearSelection == MOUSE_CANCEL_IGNORE) {
         return MOUSE_CLICK_NONE;
     }
     ClearMouseSelection();

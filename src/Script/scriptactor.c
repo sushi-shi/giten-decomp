@@ -125,7 +125,7 @@ DATA(0x00081334)
 static i16 s_keepChoices = 0;
 
 DATA(0x00081338)
-static i16 s_choiceCancelMode = 0;
+static GZ_ENUM_STORAGE(MouseCancelMode, i16) s_choiceCancelMode = MOUSE_CANCEL_IGNORE;
 
 DATA(0x0008133c)
 static ScriptChoice* s_highlightedChoice = NULL;
@@ -4076,8 +4076,12 @@ ScriptChoice* FreeScriptChoices(ScriptChoice* head) {
     return head;
 }
 
-static __inline void
-SetScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode) {
+static __inline void SetScriptChoiceMenu(
+    ScriptChoice* choices,
+    i16 window,
+    i16 keep,
+    GZ_ENUM_PARAM(MouseCancelMode, i16) cancelMode
+) {
     s_choiceMenu = choices;
     s_choiceWindow = window;
     s_keepChoices = keep;
@@ -4085,14 +4089,24 @@ SetScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode)
 }
 
 RVA(0x00038460, 0x39)
-ScriptChoice* PushScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode) {
+ScriptChoice* PushScriptChoiceMenu(
+    ScriptChoice* choices,
+    i16 window,
+    i16 keep,
+    GZ_ENUM_PARAM(MouseCancelMode, i16) cancelMode
+) {
     SetScriptChoiceMenu(choices, window, keep, cancelMode);
     PushGameState(GAME_STATE_SCRIPT_CHOICE);
     return NULL;
 }
 
 RVA(0x000384a0, 0x4c)
-void InitScriptChoiceMenu(ScriptChoice* choices, i16 window, i16 keep, i16 cancelMode) {
+void InitScriptChoiceMenu(
+    ScriptChoice* choices,
+    i16 window,
+    i16 keep,
+    GZ_ENUM_PARAM(MouseCancelMode, i16) cancelMode
+) {
     SetScriptChoiceMenu(choices, window, keep, cancelMode);
     if (g_mouseLeftClick) {
         g_mouseLeftClick = MOUSE_CLICK_NONE;
