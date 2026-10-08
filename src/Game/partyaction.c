@@ -167,7 +167,7 @@ DATA(0x00078520)
 static MenuBox* s_pickMenu = NULL;
 
 DATA(0x00078528)
-u8 g_pickScreenSave[16] = {0};
+i32 g_pickScreenSave[4] = {0};
 
 DATA(0x00078538)
 char g_unavailableCommandText[8] = {0};

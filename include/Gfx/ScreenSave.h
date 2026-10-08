@@ -13,24 +13,22 @@ void RestoreSavedCursor(i16* offset);
 
 void SetTextCursorOffset(i16* offset, i16 column, i16 row);
 
-// @identity-TODO: empty Windows bodies. Text drawing calls the first after
-// computing a cursor offset; the others bracket a screen area kept in an
-// object: allocate, capture (inside a draw-state pair), and on close restore
-// (inside a draw-state pair) and free. Their argument types are not
-// recovered, so they are declared without a prototype.
+// @identity-TODO: ApplyTextCursor is an empty Windows body; its argument
+// type is unrecovered.
+// Screen saves contain four handles, one per 100-scanline strip.
 void ApplyTextCursor();
-b32 AllocScreenSave();
-b32 FreeScreenSave();
-b32 CaptureScreenSave();
-b32 RestoreScreenSave();
+b32 AllocScreenSave(i32* save);
+b32 FreeScreenSave(i32* save);
+b32 CaptureScreenSave(i32* save);
+b32 RestoreScreenSave(i32* save);
 
-static __inline void CaptureScreenSaveWithState(void* save) {
+static __inline void CaptureScreenSaveWithState(i32* save) {
     i16 state = SaveDrawState();
     CaptureScreenSave(save);
     RestoreDrawState(state);
 }
 
-static __inline void RestoreScreenSaveWithState(void* save) {
+static __inline void RestoreScreenSaveWithState(i32* save) {
     i16 state = SaveDrawState();
     RestoreScreenSave(save);
     RestoreDrawState(state);

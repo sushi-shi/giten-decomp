@@ -62,8 +62,8 @@ GZ_ENUM_RETURN(TargetPickResult, i16) RunPickTargetWindow(i16 minimumRange, i16 
 b16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange);
 GZ_ENUM_RETURN(TargetPickResult, i16) PickPartySlotTarget(i16 minimumRange, i16 mode);
 
-// The sixteen-byte screen-save area used while picking a target.
-extern u8 g_pickScreenSave[];
+// Four screen-save handles used while picking a target.
+extern i32 g_pickScreenSave[4];
 
 i16 RunPartyCommandInput(void);
 

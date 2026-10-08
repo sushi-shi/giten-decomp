@@ -155,7 +155,7 @@ DATA(0x00080a0c)
 static Character* s_savedFusionCharacter = NULL;
 
 DATA(0x00080a10)
-u8 g_fusionPreviewSave[16] = {0};
+i32 g_fusionPreviewSave[4] = {0};
 
 DATA(0x00080a20)
 PaletteState* g_fusionPaletteState = NULL;

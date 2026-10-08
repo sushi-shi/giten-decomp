@@ -39,22 +39,22 @@ RVA(0x00003920, 0x1)
 void ApplyTextCursor() {}
 
 RVA(0x00003930, 0x3)
-b32 AllocScreenSave() {
+b32 AllocScreenSave(i32* save) {
     return false;
 }
 
 RVA(0x00003940, 0x3)
-b32 FreeScreenSave() {
+b32 FreeScreenSave(i32* save) {
     return false;
 }
 
 RVA(0x00003950, 0x3)
-b32 CaptureScreenSave() {
+b32 CaptureScreenSave(i32* save) {
     return false;
 }
 
 RVA(0x00003960, 0x3)
-b32 RestoreScreenSave() {
+b32 RestoreScreenSave(i32* save) {
     return false;
 }
 

@@ -47,8 +47,8 @@ displayconfig	2	2
 equipeffect	2	2
 eventflags	28	28
 fieldmain	59	55
-fieldobj	141	138
-fieldscreen	103	103
+fieldobj	141	137
+fieldscreen	103	101
 fieldview	69	68
 font	150	146
 fusion	114	111
@@ -66,7 +66,7 @@ modeflags	4	2
 motion	43	42
 mouse	10	10
 nibble	4	3
-partyaction	117	113
+partyaction	117	115
 playtime	4	4
 pool	6	6
 recordcache	43	41
@@ -82,12 +82,12 @@ scriptvars	110	109
 scriptvm	2	2
 shot	15	14
 skilluse	53	51
-statestack	127	124
+statestack	127	125
 statuspanel	59	56
 textapi	5	5
 textchar	1	0
 textstate	21	20
-treasurebox	150	148
+treasurebox	150	147
 vec3	10	8
 videostate	5	5
 vram	44	38
@@ -96,7 +96,7 @@ vramcell	14	14
 waitstate	7	7
 windowcolor	13	13
 windowtext	2	2
-winmain	128	120
+winmain	128	121
 worldtravel	24	24
 # [functions]	unit	function	best_pct	cur_pct	tries	src_hash	rva	hist_pct	state
 abortflag	_AddSceneHotspot	100.0000	100.0000	2	ast4:b2b717a6f4ee	0x455b0	100.0000	
@@ -696,7 +696,7 @@ fieldobj	_ReadRecordIfWanted	100.0000	100.0000	1	ast4:827bd07863f5	0x10b00	100.0
 fieldobj	_RefreshFamiliarity	100.0000	100.0000	6	ast4:7e90c960d46b	0x10bf0	100.0000	
 fieldobj	_RefreshIfTurned	100.0000	100.0000	3	ast4:5109de859888	0xf220	100.0000	
 fieldobj	_RefreshObjectDraw	100.0000	100.0000	2	ast4:31a0d9fd9052	0xea50	100.0000	
-fieldobj	_RelativeFacing	100.0000	100.0000	1	ast4:06ed36dda83e	0xdf30	100.0000	
+fieldobj	_RelativeFacing	100.0000	79.6667	1	ast4:06ed36dda83e	0xdf30	100.0000	
 fieldobj	_RemoveFieldObject	100.0000	100.0000	8	ast4:4e93d92e9828	0xd7f0	100.0000	
 fieldobj	_ResetFieldLayer	100.0000	100.0000	2	ast4:c5461142d609	0xe7e0	100.0000	
 fieldobj	_ResetFieldObjects	100.0000	100.0000	2	ast4:9d8cdaca0228	0xd940	100.0000	
@@ -740,7 +740,7 @@ fieldscreen	_CanRevealAutomapNorth	100.0000	100.0000	5	ast4:52af4b7cb5d3	0x157b0
 fieldscreen	_CanRevealAutomapSouth	100.0000	100.0000	5	ast4:dadc54e450bd	0x15730	100.0000	
 fieldscreen	_ClearEncounterPending	100.0000	100.0000	2	ast4:cb70c19ac0f3	0x154b0	100.0000	
 fieldscreen	_ClearFieldPanelSelection	100.0000	100.0000	3	ast4:7da848677d65	0x169c0	100.0000	
-fieldscreen	_ClearPanel	100.0000	100.0000	5	ast4:cd7b284a60f2	0x159e0	100.0000	
+fieldscreen	_ClearPanel	100.0000	99.8750	5	ast4:cd7b284a60f2	0x159e0	100.0000	
 fieldscreen	_ClearPanelRow	100.0000	100.0000	4	ast4:d62e0f5de08d	0x15a40	100.0000	
 fieldscreen	_ClearWorldMapBlock	100.0000	100.0000	1	ast4:99cd42d365ec	0x163c0	100.0000	
 fieldscreen	_CommandRowHandler	100.0000	100.0000	1	ast4:bfbb829eeb12	0x158e0	100.0000	
@@ -749,7 +749,7 @@ fieldscreen	_DdsRowHandler	100.0000	100.0000	2	ast4:597ed93fea0b	0x14b90	100.000
 fieldscreen	_DefenceCommand	100.0000	100.0000	3	ast4:fcd0e329927b	0x153b0	100.0000	
 fieldscreen	_DiscardWorldMapScreenSave	100.0000	100.0000	1	ast4:c68232b36509	0x167d0	100.0000	
 fieldscreen	_DrawFieldMessage	100.0000	100.0000	6	ast4:9ded681ee4fb	0x160c0	100.0000	
-fieldscreen	_DrawPanel	100.0000	100.0000	5	ast4:bca9378a0ab8	0x15940	100.0000	
+fieldscreen	_DrawPanel	100.0000	99.8947	5	ast4:bca9378a0ab8	0x15940	100.0000	
 fieldscreen	_DrawPanelRow	100.0000	100.0000	4	ast4:f3695090acbf	0x159a0	100.0000	
 fieldscreen	_DrawWorldMapBlock	100.0000	100.0000	1	ast4:a2faa92a1a36	0x16460	100.0000	
 fieldscreen	_DropLayerImage	100.0000	100.0000	1	ast4:99e83718a6f9	0x16910	100.0000	
@@ -1060,7 +1060,7 @@ fusion	_CalculatePairFusion	100.0000	100.0000	3	ast4:c8a281528ccf	0x26580	100.00
 fusion	_CalculateTripleFusion	100.0000	100.0000	3	ast4:9cd2204201a0	0x27b30	100.0000	
 fusion	_CheckFusionRestrictedPair	100.0000	100.0000	1	ast4:e6e2509a8c4e	0x26680	100.0000	
 fusion	_CloseFusionPicker	100.0000	100.0000	1	ast4:daa29de8726d	0x29660	100.0000	
-fusion	_CloseFusionPreview	100.0000	100.0000	3	ast4:531600115118	0x2a060	100.0000	
+fusion	_CloseFusionPreview	100.0000	100.0000	4	ast4:4038e8e02053	0x2a060	100.0000	
 fusion	_CloseFusionPreviewOnClick	100.0000	100.0000	2	ast4:fff2f2197636	0x299a0	100.0000	
 fusion	_CommitPairFusion	100.0000	100.0000	2	ast4:858331d1971a	0x2a1f0	100.0000	
 fusion	_CommitTripleFusion	100.0000	100.0000	3	ast4:3b9fd75752cb	0x2a250	100.0000	
@@ -1128,7 +1128,7 @@ fusion	_MoveSpecialFusionSlot	100.0000	100.0000	2	ast4:cf253a865738	0x2a620	100.
 fusion	_MoveSpecialRaceFusionSlot	100.0000	100.0000	2	ast4:7634d271eec3	0x2a6a0	100.0000	
 fusion	_MoveUnrankedFusionSlot	100.0000	100.0000	2	ast4:ea7a2f59a6fb	0x2a6e0	100.0000	
 fusion	_OpenFusionPreviewOnClick	100.0000	100.0000	4	ast4:fac45eeca710	0x29a10	100.0000	
-fusion	_PreviewFusionCharacter	100.0000	100.0000	4	ast4:e662887f6ad1	0x29fe0	100.0000	
+fusion	_PreviewFusionCharacter	100.0000	100.0000	5	ast4:0ba852fd129a	0x29fe0	100.0000	
 fusion	_PushFusionMenu	100.0000	100.0000	1	ast4:4270845753dd	0x2a760	100.0000	
 fusion	_PushScriptAnimation	100.0000	100.0000	1	ast4:a35922947f87	0x286c0	100.0000	
 fusion	_ReleaseFusionSelectionResources	100.0000	100.0000	2	ast4:b0031977ba23	0x28860	100.0000	
@@ -1493,7 +1493,7 @@ partyaction	_GetFieldMap	100.0000	100.0000	1	ast4:78585f27cd85	0x71f0	100.0000
 partyaction	_GetFieldMarker	100.0000	100.0000	1	ast4:bb9d140b938d	0x7160	100.0000	
 partyaction	_GetGunAttackPower	100.0000	100.0000	5	ast4:3e51f1438965	0x8b20	100.0000	
 partyaction	_GetGunBurstRounds	100.0000	100.0000	6	ast4:6ece7560b142	0x9050	100.0000	
-partyaction	_GetGunRequirementPenalty	100.0000	91.5625	1	ast4:cc93ce01754a	0x91b0	100.0000	
+partyaction	_GetGunRequirementPenalty	100.0000	100.0000	1	ast4:cc93ce01754a	0x91b0	100.0000	
 partyaction	_GetItemResistance	100.0000	100.0000	2	ast4:ccc455e552f2	0x6dc0	100.0000	
 partyaction	_GetMemberPanelState	100.0000	100.0000	11	ast4:05ed9b9c46b3	0x5b80	100.0000	
 partyaction	_GetMemberPickRange	100.0000	100.0000	8	ast4:1bc05107f8ef	0x9c20	100.0000	
@@ -1535,7 +1535,7 @@ partyaction	_ResolveSkillAttack	100.0000	100.0000	6	ast4:8799480c2a6c	0xafb0	100
 partyaction	_ResolveWeaponAttack	100.0000	100.0000	7	ast4:437a759f97b2	0xa8a0	100.0000	
 partyaction	_RestoreSwappedMember	100.0000	100.0000	1	ast4:1f8a2791a0b8	0x9dc0	100.0000	
 partyaction	_RollExceptionalAttack	100.0000	100.0000	7	ast4:1ae49878c61f	0x8700	100.0000	
-partyaction	_RollExceptionalWeaponAttack	100.0000	99.9739	7	ast4:5ca3917acf9c	0xa690	100.0000	
+partyaction	_RollExceptionalWeaponAttack	100.0000	100.0000	7	ast4:5ca3917acf9c	0xa690	100.0000	
 partyaction	_RollGunCondition	100.0000	100.0000	12	ast4:c86f2aa46241	0x8d30	100.0000	
 partyaction	_RollGunHit	100.0000	100.0000	10	ast4:a023cab16310	0x8910	100.0000	
 partyaction	_RollItemCondition	100.0000	100.0000	9	ast4:420983c6677f	0xb4d0	100.0000	
@@ -1551,7 +1551,7 @@ partyaction	_RunItemAttack	100.0000	100.0000	4	ast4:5d94b5820adb	0xb620	100.0000
 partyaction	_RunMemberPickMenu	100.0000	100.0000	4	ast4:b7394ca2acf7	0x94d0	100.0000	
 partyaction	_RunPartyCommandInput	100.0000	100.0000	24	ast4:46cb059a18cf	0x9620	100.0000	
 partyaction	_RunPartyTurn	100.0000	100.0000	10	ast4:c3ff99887e48	0x8330	100.0000	
-partyaction	_RunPickTargetWindow	100.0000	100.0000	8	ast4:8e9fa1348c0e	0x9e30	100.0000	
+partyaction	_RunPickTargetWindow	100.0000	100.0000	9	ast4:97dc2ab18702	0x9e30	100.0000	
 partyaction	_ScaleActionValue	100.0000	100.0000	1	ast4:9dbda73b5e56	0x6a40	100.0000	
 partyaction	_ScaleByFieldRate	100.0000	100.0000	1	ast4:6acb14ed2703	0x72a0	100.0000	
 partyaction	_SetFieldCounts	100.0000	100.0000	1	ast4:fe59ffe4c913	0x7210	100.0000	
@@ -1629,14 +1629,14 @@ savegame	_RunSystemMenu	100.0000	100.0000	3	ast4:9a4f7347fb4c	0x3e50	100.0000
 savegame	_SaveGame	100.0000	100.0000	2	ast4:72f86f3a4711	0x3a00	100.0000	
 savegame	_SystemMenuHandler	100.0000	100.0000	4	ast4:8d41c6f373d5	0x3f70	100.0000	
 savegame	_WriteSaveHeader	100.0000	100.0000	3	ast4:8bf60fc9b746	0x3ae0	100.0000	
-screensave	_AllocScreenSave	100.0000	100.0000	2	ast4:e5e5e774a9a3	0x3930	100.0000	
+screensave	_AllocScreenSave	100.0000	100.0000	3	ast4:ed50ff9e990e	0x3930	100.0000	
 screensave	_ApplyTextCursor	100.0000	100.0000	1	ast4:cb5593b81539	0x3920	100.0000	
-screensave	_CaptureScreenSave	100.0000	100.0000	2	ast4:e5e5e774a9a3	0x3950	100.0000	
-screensave	_FreeScreenSave	100.0000	100.0000	2	ast4:e5e5e774a9a3	0x3940	100.0000	
+screensave	_CaptureScreenSave	100.0000	100.0000	3	ast4:ed50ff9e990e	0x3950	100.0000	
+screensave	_FreeScreenSave	100.0000	100.0000	3	ast4:ed50ff9e990e	0x3940	100.0000	
 screensave	_RedrawScreen	100.0000	100.0000	4	ast4:65f07a0de64a	0x3980	100.0000	
 screensave	_RequestRefresh	100.0000	100.0000	2	ast4:e680647bba3a	0x3970	100.0000	
 screensave	_RestoreSavedCursor	100.0000	100.0000	1	ast4:23788dc3f09d	0x3900	100.0000	
-screensave	_RestoreScreenSave	100.0000	100.0000	2	ast4:e5e5e774a9a3	0x3960	100.0000	
+screensave	_RestoreScreenSave	100.0000	100.0000	3	ast4:ed50ff9e990e	0x3960	100.0000	
 screensave	_SetTextCursorOffset	100.0000	100.0000	1	ast4:8af308e8d48e	0x38e0	100.0000	
 scriptactor	_AddScriptCharacterToRoster	100.0000	100.0000	2	ast4:7081204c9f18	0x36160	100.0000	
 scriptactor	_AppendScriptChoice	100.0000	100.0000	1	ast4:5f2f95c27e6b	0x38390	100.0000	
@@ -2202,7 +2202,7 @@ statestack	_OpenPartyPicker	100.0000	100.0000	4	ast4:43eb429893d1	0x19f50	100.00
 statestack	_PartyPickerHandler	100.0000	100.0000	6	ast4:81b48241a9f7	0x19fb0	100.0000	
 statestack	_PickDdsPurgeMember	100.0000	100.0000	1	ast4:a59746bf640f	0x17900	100.0000	
 statestack	_PickDdsRosterMember	100.0000	100.0000	1	ast4:357b5156b734	0x176f0	100.0000	
-statestack	_PickDdsSummon	99.9161	99.9161	8	ast4:a949a892a4a7	0x17520	100.0000	
+statestack	_PickDdsSummon	100.0000	100.0000	8	ast4:a949a892a4a7	0x17520	100.0000	
 statestack	_PickStatusMember	100.0000	100.0000	2	ast4:0860ae5a5d5a	0x16d30	100.0000	
 statestack	_PlaceSceneSprites	100.0000	100.0000	1	ast4:6e5fa040c50e	0x18170	100.0000	
 statestack	_PollRewardClick	100.0000	100.0000	6	ast4:c1e626c92aaa	0x18740	100.0000	
@@ -2230,7 +2230,7 @@ statestack	_RunDismissMenuState	100.0000	100.0000	2	ast4:625b08262caf	0x17030	10
 statestack	_RunFieldTextScene	100.0000	100.0000	2	ast4:dbe77ebbe2ed	0x18230	100.0000	
 statestack	_RunFrozenFieldScene	100.0000	100.0000	7	ast4:35f19a52513f	0x18340	100.0000	
 statestack	_RunItemUse	98.8151	98.8151	17	ast4:c0ca9e259ef7	0x1a400	98.8151	
-statestack	_RunLevelUp	100.0000	100.0000	16	ast4:c189744fb1a8	0x18b60	100.0000	
+statestack	_RunLevelUp	100.0000	100.0000	17	ast4:68178f004257	0x18b60	100.0000	
 statestack	_RunPartyPicker	100.0000	100.0000	2	ast4:5f287a57a3f5	0x19ea0	100.0000	
 statestack	_RunPickerMenu	100.0000	100.0000	1	ast4:d817a5ee15aa	0x19e60	100.0000	
 statestack	_RunPictureTransition	100.0000	100.0000	6	ast4:4cab8a66c4ae	0x184a0	100.0000	
@@ -2407,7 +2407,7 @@ treasurebox	_GetAreaNpcCount	100.0000	100.0000	1	ast4:d55746da311d	0x1f420	100.0
 treasurebox	_GetAreaNpcTextureSlot	100.0000	100.0000	2	ast4:8275daeef11d	0x1f480	100.0000	
 treasurebox	_GetCellObjectTable	100.0000	100.0000	2	ast4:3323fa5c4320	0x1efb0	100.0000	
 treasurebox	_GetCellSpawnRate	100.0000	100.0000	2	ast4:d019d64d9be7	0x1eef0	100.0000	
-treasurebox	_GetCellTrapDamage	100.0000	100.0000	4	ast4:1edb8b715d6d	0x1c920	100.0000	
+treasurebox	_GetCellTrapDamage	100.0000	98.8571	4	ast4:1edb8b715d6d	0x1c920	100.0000	
 treasurebox	_GetGridByte	100.0000	100.0000	3	ast4:0cf11f404c5d	0x1eba0	100.0000	
 treasurebox	_GetItemMenuStock	100.0000	100.0000	2	ast4:3d24e7938324	0x1c120	100.0000	
 treasurebox	_GetItemMenuTotal	100.0000	100.0000	6	ast4:d108c9d8168a	0x1bb60	100.0000	
@@ -2495,7 +2495,7 @@ treasurebox	_StoreAutomapLevel	100.0000	100.0000	8	ast4:663343ab5c5e	0x1cfc0	100
 treasurebox	_TakeLearnableSkill	100.0000	100.0000	5	ast4:9fbfc6467450	0x1c330	100.0000	
 treasurebox	_TrainingThreshold	100.0000	100.0000	1	ast4:ef653e6fe1ad	0x1c650	100.0000	
 treasurebox	_TransformAutomapPoint	100.0000	100.0000	1	ast4:52170a1be960	0x1d380	100.0000	
-treasurebox	_UpdateAutomapScrollPanel	100.0000	98.9510	3	ast4:0d20708e69ab	0x1d890	100.0000	
+treasurebox	_UpdateAutomapScrollPanel	100.0000	98.2168	3	ast4:0d20708e69ab	0x1d890	100.0000	
 treasurebox	_UpdateCurrentRoom	100.0000	100.0000	2	ast4:e1d142da7cf8	0x1f070	100.0000	
 treasurebox	_UpdateInfoBar	100.0000	100.0000	3	ast4:da7f1c8a2bf9	0x1ea50	100.0000	
 treasurebox	_WriteAutomapAreas	100.0000	100.0000	8	ast4:991d721f9276	0x1e3c0	100.0000	
@@ -2671,7 +2671,7 @@ winmain	?ResetFrameCount@@YAXXZ	100.0000	100.0000	1	ast4:06e8cafedce0	0x49830	10
 winmain	?RestoreCursorClip@@YAXPAUtagRECT@@@Z	100.0000	100.0000	1	ast4:7f528cb8206d	0x498b0	100.0000	
 winmain	?RestoreTextures@@YAXXZ	100.0000	100.0000	2	ast4:be22f1c0e01c	0x4fdf0	100.0000	
 winmain	?RunJoystickMove@@YAHXZ	100.0000	100.0000	2	ast4:60704f75dd0f	0x504c0	100.0000	
-winmain	?ShadeMesh@@YAXPAUMesh@@@Z	100.0000	98.4103	2	ast4:470ee4861236	0x4ae30	100.0000	
+winmain	?ShadeMesh@@YAXPAUMesh@@@Z	100.0000	100.0000	2	ast4:470ee4861236	0x4ae30	100.0000	
 winmain	?SlideBack@@YAHPAM@Z	100.0000	100.0000	2	ast4:12a3709f7430	0x4a640	100.0000	
 winmain	?SlideForward@@YAHPAM@Z	100.0000	100.0000	3	ast4:8b1c364b6320	0x4a530	100.0000	
 winmain	?SlideLeft@@YAHPAM@Z	100.0000	100.0000	2	ast4:3d1c05b8ac94	0x4a750	100.0000	

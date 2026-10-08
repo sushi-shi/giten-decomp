@@ -9,8 +9,8 @@
 #include <Gfx/Palette.h>
 #include <Ui/MenuBox.h>
 
-// The sixteen-byte screen-save area used by the fusion preview.
-extern u8 g_fusionPreviewSave[];
+// Four screen-save handles used by the fusion preview.
+extern i32 g_fusionPreviewSave[4];
 // Text buffers used by the fusion screen.
 extern char g_fusionNameBuffer[128];
 extern char g_fusionMissingRace[];

@@ -730,12 +730,6 @@ b32 g_fixedLighting;
 DATA(0x0008fb08)
 static b32 s_layerDragging;
 
-DATA(0x00090abc)
-static GZ_ENUM_STORAGE(SpriteLayerMode, i16) s_spriteMode;
-
-DATA(0x00090ac0)
-static i16 s_frameCount;
-
 DATA(0x000847f8)
 static GZ_ENUM_STORAGE(BlankRenderStep, i32) s_blankStep;
 
@@ -751,20 +745,78 @@ CMidiStream* g_midiStream;
 DATA(0x0008fc60)
 static b32 s_immediateInput;
 
+
+
+
+
+
+
+// The pad button held down (PAD_FORWARD..PAD_RIGHT; PAD_RELEASED once let go).
+// @identity-TODO: set by the layer TU's mouse handling (0x4554e5).
+DATA(0x00090a64)
+GZ_ENUM_STORAGE(NavPadButton, i32) g_heldPadButton = PAD_NONE;
+
+// The 640x400 picture DrawSprites composes large sprites through.
+// @identity-TODO: its id word tracks the image drawn into it.
+DATA(0x00090a68)
+Picture g_spritePicture = {0};
+
+// The pictures LoadGraphics creates besides the scene, view and mode ones.
+DATA(0x00090a90)
+Picture g_statusPicture = {0};
+
+// Set once the dragged layer has moved since the button went down.
+DATA(0x00090ab4)
+static b32 s_dragMoved = false;
+
 DATA(0x00090ab8)
-static b32 s_cursorArmed;
+static b32 s_cursorArmed = false;
+
+DATA(0x00090abc)
+static GZ_ENUM_STORAGE(SpriteLayerMode, i16) s_spriteMode = SPRITE_LAYERS_ALL;
+
+DATA(0x00090ac0)
+static i16 s_frameCount = 0;
 
 DATA(0x00090ac4)
-static i32 s_busyFrame;
+static i32 s_busyFrame = 0;
 
 DATA(0x00090ac8)
-static b32 s_screenSaved;
+static b32 s_screenSaved = false;
 
+// Set between the two quarter turns of a turn around.
+DATA(0x00090acc)
+static b32 s_halfTurned = false;
 
+// Set while the door ahead opens (AnimateDoor runs instead of the step).
+DATA(0x00090ad0)
+static b32 s_doorOpening = false;
 
+DATA(0x00090ad4)
+static i32 s_doorFrame = 0;
 
+DATA(0x00090ad8)
+static u32 s_markedCount = 0;
 
+DATA(0x00090adc)
+static i32 s_markFrame = 0;
 
+// Keypad blits since its pressed-key highlights were last cleared.
+DATA(0x00090ae0)
+static i32 s_keypadHighlightFrames = 0;
+
+// The menu bar button's layer (ClickMenuBar) or the character panel's
+// command result (ClickPanelCommand) of the last left click.
+DATA(0x00090ae4)
+static i32 s_clickedButton = 0;
+
+// The captions of WinMain's failure boxes: empty.
+// @identity-TODO: zeroed arrays in .bss; their declared form is unrecovered.
+DATA(0x00090ae8)
+static char s_directXErrorCaption[4] = {0};
+
+DATA(0x00090aec)
+static char s_loadErrorCaption[4] = {0};
 
 RVA(0x00049610, 0x1)
 void DebugTrace(const char* message) {}
@@ -1544,13 +1596,6 @@ b32 InitDirectX(void) {
     return true;
 }
 
-// Set while the door ahead opens (AnimateDoor runs instead of the step).
-DATA(0x00090ad0)
-static b32 s_doorOpening;
-
-DATA(0x00090ad4)
-static i32 s_doorFrame;
-
 // The camera's slide per frame of a step, and the cell size it slides across.
 #define STEP_SLIDE DATA_COMPGEN(0x00064a38, 40.0f)
 #define CELL_UNITS 320.0f
@@ -1702,10 +1747,6 @@ static b32 SlideRight(D3DVALUE* progress) {
 #define TURN_SPEED 3.0f
 #define TURN_END 30.0f
 #define CAMERA_DISTANCE 160.0f
-
-// Set between the two quarter turns of a turn around.
-DATA(0x00090acc)
-static b32 s_halfTurned;
 
 // Turns the camera one frame of a quarter turn left; at its end the party
 // faces the new way. Returns whether the turn ended.
@@ -2846,12 +2887,6 @@ Picture g_targetPicture;
 
 
 
-DATA(0x00090ad8)
-static u32 s_markedCount;
-
-DATA(0x00090adc)
-static i32 s_markFrame;
-
 DATA(0x0008f208)
 static u32 s_markX;
 
@@ -3286,10 +3321,6 @@ void BlitScreenLayers(i32 first, i32 last, u32 flags) {
         }
     }
 }
-
-// Keypad blits since its pressed-key highlights were last cleared.
-DATA(0x00090ae0)
-static i32 s_keypadHighlightFrames;
 
 RVA(0x0004e2d0, 0xf8)
 i32 BlitTextPlanes(i32 first, i32 last, u32 skip) {
@@ -4238,11 +4269,6 @@ i32 GetWallCode(i32 x, i32 y, i32 side, i32 width, i32 height) {
     return wall;
 }
 
-// The pad button held down (PAD_FORWARD..PAD_RIGHT; PAD_RELEASED once let go).
-// @identity-TODO: set by the layer TU's mouse handling (0x4554e5).
-DATA(0x00090a64)
-GZ_ENUM_STORAGE(NavPadButton, i32) g_heldPadButton;
-
 // Repeats the held pad button's move while the 3D view shows and nothing
 // covers it: steps, or with `turn` the turns (forward still steps).
 RVA(0x0004fc00, 0xd0)
@@ -4733,15 +4759,6 @@ b32 RunJoystickMove(void) {
 DATA(0x0008f608)
 static b32 s_padHeld;
 
-// Set once the dragged layer has moved since the button went down.
-DATA(0x00090ab4)
-static b32 s_dragMoved;
-
-// The menu bar button's layer (ClickMenuBar) or the character panel's
-// command result (ClickPanelCommand) of the last left click.
-DATA(0x00090ae4)
-static i32 s_clickedButton;
-
 // The dragged layer's screen rectangle.
 DATA(0x0008f560)
 RECT g_dragRect;
@@ -5070,10 +5087,6 @@ void HandleInput(GZ_ENUM_PARAM(MouseButtonBits, u8) buttons) {
     return;
 }
 
-// The pictures LoadGraphics creates besides the scene, view and mode ones.
-DATA(0x00090a90)
-Picture g_statusPicture;
-
 DATA(0x000847d0)
 Picture g_titleMenuPicture;
 
@@ -5116,11 +5129,6 @@ Picture g_effectFramePicture;
 // The full-screen backdrop BlitFieldBackground and DrawSceneOverlay blit.
 DATA(0x00084c40)
 Picture g_backdropPicture;
-
-// The 640x400 picture DrawSprites composes large sprites through.
-// @identity-TODO: its id word tracks the image drawn into it.
-DATA(0x00090a68)
-Picture g_spritePicture;
 
 DATA(0x00084368)
 Texture g_npcTexture;
@@ -5214,14 +5222,6 @@ b32 LoadGraphics(void) {
     );
     return true;
 }
-
-// The captions of WinMain's failure boxes: empty.
-// @identity-TODO: zeroed arrays in .bss; their declared form is unrecovered.
-DATA(0x00090ae8)
-static char s_directXErrorCaption[4];
-
-DATA(0x00090aec)
-static char s_loadErrorCaption[4];
 
 // The application instance (WinMain).
 DATA(0x0008fb0c)

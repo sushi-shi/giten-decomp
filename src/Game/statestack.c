@@ -344,10 +344,9 @@ static u8* s_moonTable = NULL;
 DATA(0x0007beb0)
 static MenuBox* s_ddsMenu = NULL;
 
-// @identity-TODO: the screen area kept while the level-up screen is open; its
-// layout is not recovered (the Windows build's save/restore bodies are empty).
+// Four screen-save handles kept while the level-up screen is open.
 DATA(0x0007beb8)
-static u8 s_screenSave[16] = {0};
+static i32 s_screenSave[4] = {0};
 
 DATA(0x0007bec8)
 Character* g_rosterPendingMember = NULL;
