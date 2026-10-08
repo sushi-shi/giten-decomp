@@ -1634,7 +1634,7 @@ i32 AddExperience(CharacterCore* character, i32 amount) {
     if (character->level >= 99) {
         return -1;
     }
-    character->experience += amount;
+    SetCharacterExperience(character, GetCharacterExperience(character) + amount);
     return ExperienceToLevel(
         character->level + 1,
         GetCharacterExperience(character),
@@ -1751,7 +1751,7 @@ RVA(0x00018aa0, 0x23)
 void RaiseExperienceToLevel(CharacterCore* character) {
     u32 floor = ExperienceForLevel(character->level, character->id);
     if (GetCharacterExperience(character) < floor) {
-        character->experience = floor;
+        SetCharacterExperience(character, floor);
     }
 }
 

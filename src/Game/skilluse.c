@@ -420,8 +420,14 @@ static __inline void ApplyCombatDamage(CharacterCore* attacker, CharacterCore* t
                 if (GetCharacterExperience(target) < attacker->lastChange) {
                     attacker->lastChange = GetCharacterExperience(target);
                 }
-                target->experience -= attacker->lastChange;
-                attacker->experience += attacker->lastChange;
+                SetCharacterExperience(
+                    target,
+                    GetCharacterExperience(target) - attacker->lastChange
+                );
+                SetCharacterExperience(
+                    attacker,
+                    GetCharacterExperience(attacker) + attacker->lastChange
+                );
                 g_actionResult |= ACTION_DRAIN_EXPERIENCE;
                 g_drainAmount = attacker->lastChange;
                 return;

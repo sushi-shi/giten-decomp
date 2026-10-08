@@ -343,6 +343,8 @@ static __inline i16 GetAlignmentLevelB(const CharacterCore* character) {
 
 #define GetCharacterExperience(character) ((character)->experience)
 
+#define SetCharacterExperience(character, value) ((character)->experience = (value))
+
 #define GetBattleStatBase(character, stat) ((character)->battleStats[(stat)])
 
 #define GetBattleStatShown(character, stat) ((character)->battleStatsShown[(stat)])

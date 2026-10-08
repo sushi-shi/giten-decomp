@@ -667,7 +667,7 @@ fieldobj	_GetSightCell	100.0000	100.0000	1	ast4:1f0b93c8b919	0xf0c0	100.0000
 fieldobj	_GetWorldEncounterMaximum	100.0000	100.0000	2	ast4:b70dbced2120	0x11300	100.0000	
 fieldobj	_HasAnalyzeData	100.0000	100.0000	2	ast4:5ee82306a2a8	0x10e90	100.0000	
 fieldobj	_InitFieldObjects	100.0000	100.0000	3	ast4:b64f3c5c79db	0xd790	100.0000	
-fieldobj	_InitObjectFromRecord	100.0000	100.0000	29	ast4:5c5c82b355b7	0x10470	100.0000	
+fieldobj	_InitObjectFromRecord	100.0000	100.0000	30	ast4:245fcbc40ca8	0x10470	100.0000	
 fieldobj	_IsFieldActor	100.0000	100.0000	3	ast4:3989281f311e	0xd980	100.0000	
 fieldobj	_IsPartyInSight	100.0000	100.0000	1	ast4:4a914e7b4308	0xf120	100.0000	
 fieldobj	_IsWithinRange	100.0000	100.0000	5	ast4:438336496aad	0xf590	100.0000	
@@ -719,7 +719,7 @@ fieldobj	_SetFamiliarityCount	100.0000	100.0000	1	ast4:a10601bc0bc1	0x10ba0	100.
 fieldobj	_SetLevelGap	100.0000	100.0000	2	ast4:1bee73a7f3db	0x10c70	100.0000	
 fieldobj	_SetObjectEventFlag	100.0000	100.0000	1	ast4:7b93e276b79b	0xda00	100.0000	
 fieldobj	_SetSpawnInterval	100.0000	100.0000	2	ast4:8941fab4e643	0xec60	100.0000	
-fieldobj	_SpawnFieldObject	100.0000	100.0000	9	ast4:cd6e61319935	0xda40	100.0000	
+fieldobj	_SpawnFieldObject	100.0000	100.0000	10	ast4:d6edc544d471	0xda40	100.0000	
 fieldobj	_SpawnMapObject	100.0000	100.0000	2	ast4:cd78d8601330	0xdbf0	100.0000	
 fieldobj	_SpawnRandomEnemy	100.0000	100.0000	2	ast4:996531d51e1a	0xeca0	100.0000	
 fieldobj	_StepObjectTowardParty	100.0000	100.0000	14	ast4:96dee9f6d1e1	0xf290	100.0000	
@@ -2138,7 +2138,7 @@ statestack	@PushGameState@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16c00	100.000
 statestack	@SetGameState@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16a70	100.0000	
 statestack	@SetGameStep@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16b50	100.0000	
 statestack	@SetGameSub@4	100.0000	100.0000	1	cpp:846e0b839bc4	0x16b90	100.0000	
-statestack	_AddExperience	100.0000	100.0000	3	ast4:1b749efe2d46	0x187e0	100.0000	
+statestack	_AddExperience	100.0000	100.0000	4	ast4:f1f391fdff33	0x187e0	100.0000	
 statestack	_AppendLearnableSkills	100.0000	100.0000	2	ast4:16c7f73a3616	0x194c0	100.0000	
 statestack	_ApplyLevelStatGrowth	100.0000	100.0000	6	ast4:9e81fae27b7b	0x18980	100.0000	
 statestack	_BackgroundParameterNop	100.0000	100.0000	1	ast4:0a5f584e0309	0x17ca0	100.0000	

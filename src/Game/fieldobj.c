@@ -573,7 +573,7 @@ i16 SpawnFieldObject(
         s_objects[slot].actor.core.pickItem = 0;
         s_objects[slot].actor.core.dropChance = 0;
         GetFieldObjectHpPool(&s_objects[slot])->cur = s_objects[slot].actor.core.level;
-        s_objects[slot].actor.core.experience = s_objects[slot].actor.core.level;
+        SetCharacterExperience(&s_objects[slot].actor.core, s_objects[slot].actor.core.level);
     }
     SetObjectEventFlag(slot, FIELD_OBJECT_NO_FLAG, FIELD_OBJECT_NO_FLAG);
     ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_CLEAR);
@@ -2139,7 +2139,7 @@ void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
     object->actor.core.magnetite = record->magnetite;
     object->actor.core.level = record->level;
     object->actor.core.title = 0;
-    object->actor.core.experience = record->experience;
+    SetCharacterExperience(&object->actor.core, record->experience);
     object->actor.core.unknownIdentityByte = record->flags.unknownObjectBits;
     object->actor.core.pantheon = GetDemonPantheon(record->id);
     object->actor.core.alignmentLevelB = ScaleLevelGap(record->alignB[0], record->alignB[1]);
