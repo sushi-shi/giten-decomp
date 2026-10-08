@@ -116,12 +116,12 @@ def _default_drive_path(p: Path | str, env: dict[str, str] | None = None) -> str
     return 'Z:' + str(path).replace('/', '\\')
 
 
-def ensure_wineserver() -> None:
+def ensure_wineserver(env: dict[str, str] | None = None) -> None:
     """`wineserver -p`: persist the server past the last client, so parallel
     `wine cl` invocations under ninja skip the cold start. Idempotent."""
     ws = shutil.which("wineserver")
     if ws:
-        subprocess.run([ws, "-p"], check=False, stdin=subprocess.DEVNULL,
+        subprocess.run([ws, "-p"], check=False, env=env, stdin=subprocess.DEVNULL,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
@@ -136,7 +136,8 @@ def shutdown_wineserver() -> None:
 def run(argv: list[str], *, cwd: Path | None = None,
         timeout: float | None = None,
         success: Path | None = None,
-        fail_on_timeout: bool = False) -> tuple[str, int]:
+        fail_on_timeout: bool = False,
+        env: dict[str, str] | None = None) -> tuple[str, int]:
     """Run one wine tool hang-proof; return (combined output, returncode).
 
     Wine intermittently leaves a finished-but-unreaped grandchild
@@ -147,13 +148,17 @@ def run(argv: list[str], *, cwd: Path | None = None,
     decide the verdict. A diagnostic census can set `fail_on_timeout` to
     reject even a finished artifact when its output may have been truncated.
     """
-    os.environ.setdefault("WINEDEBUG", "fixme-all,err-kerberos")
-    ensure_wineserver()
+    if env is None:
+        os.environ.setdefault("WINEDEBUG", "fixme-all,err-kerberos")
+    else:
+        env = dict(env)
+        env.setdefault("WINEDEBUG", "fixme-all,err-kerberos")
+    ensure_wineserver(env)
     if timeout is None:
         timeout = float(os.environ.get("GITEN_WINE_TIMEOUT", "300"))
     with tempfile.TemporaryFile() as logf:
         try:
-            proc = subprocess.Popen(argv, cwd=str(cwd) if cwd else None,
+            proc = subprocess.Popen(argv, cwd=str(cwd) if cwd else None, env=env,
                                     stdin=subprocess.DEVNULL, stdout=logf,
                                     stderr=subprocess.STDOUT,
                                     start_new_session=True)

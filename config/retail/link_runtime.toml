@@ -1,0 +1,16 @@
+# User-supplied original disc-root runtime; identity is verified by SHA-256.
+artifact = "build/local/runtime/msvcrt.dll"
+sha256 = "e390b0529fb9ee1214bb68302a4658b578134d92ab76bc5eb48f3badd843d210"
+version = "5.00.7303"
+source_file = "MSVCRT.DLL"
+iso_lba = 412
+file_size = 277776
+sector_format = "MODE1/2352, 2048-byte payload at offset 16"
+raw_range_start = 969024
+raw_range_end = 1288895
+linker_sha256 = "04c892989f4cc8076ef45e033215eb7aefbdf1459cbee9b13a81f8ddb718b579"
+
+[dependencies]
+"msdis100.dll" = "c54d1bf7bc7bf321ad8a903f083f34b0f12ec984761c0280ff9a72190798c0cb"
+"mspdb50.dll" = "06aaaca9c928bdef790259c9c30328529e10d1ec2f77da09c4ff74de7734fe69"
+"msvcp50.dll" = "91cd76f9fa3b25008decb12c005c194bdf66c8d6526a954de7051bec9aae462a"

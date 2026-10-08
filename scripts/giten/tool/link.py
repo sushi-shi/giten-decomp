@@ -82,20 +82,26 @@ def check_clock(paths: list[Path], at: str) -> None:
 
 def link(args: list[str], *, cwd: Path | None = None,
          expect: list[Path] = (), timeout: float | None = None,
-         at: str | None = None) -> str:
+         at: str | None = None, native_runtime: bool = False) -> str:
     """Run link.exe with `args`; verify every `expect` path exists after."""
-    argv = clock_args(["wine", str(era_tool("link.exe")), *args], at)
     ensure_link_deps()
+    executable, environment = era_tool("link.exe"), None
+    if native_runtime:
+        from giten.tool import link_runtime
+        executable, environment = link_runtime.prepare()
+    argv = clock_args(["wine", str(executable), *args], at)
     expect = [Path(p) for p in expect]
     for p in expect:
         p.unlink(missing_ok=True)
     output, rc = run(argv, cwd=cwd, timeout=timeout,
-                     success=expect[0] if expect else None)
+                     success=expect[0] if expect else None, env=environment)
     missing = [p for p in expect if not p.exists()]
     if missing or (not expect and rc != 0):
         tail = "\n".join(output.strip().splitlines()[-12:])
         what = missing[0].name if missing else f"rc={rc}"
         raise ToolError(f"link failed ({what}):\n{tail}")
+    if native_runtime:
+        link_runtime.verifynativeload(output, executable, environment)
     if at is not None:
         check_clock(expect, at)
     return output
@@ -108,11 +114,14 @@ def main() -> int:
     ap.add_argument("--expect", action="append", default=[],
                     help="artifact that must exist afterwards (repeatable)")
     ap.add_argument("--at", help="freeze wall clock at UTC YYYY-MM-DD HH:MM:SS")
+    ap.add_argument("--native-runtime", action="store_true",
+                    help="use the pinned retail-era native MSVCRT in an isolated prefix")
     ap.add_argument("args", nargs=argparse.REMAINDER)
     a = ap.parse_args()
     args = a.args[1:] if a.args and a.args[0] == "--" else a.args
     try:
-        out = link(args, expect=[Path(p) for p in a.expect], at=a.at)
+        out = link(args, expect=[Path(p) for p in a.expect], at=a.at,
+                   native_runtime=a.native_runtime)
         if out.strip():
             print(out)
     except (ToolError, OSError) as e:

@@ -218,6 +218,7 @@ def candidate(out: Path, objs_dir: Path, *, mapfile: Path | None = None,
               entry: str | None = None,
               fold_identical: bool = True,
               real_time: bool = False,
+              builtin_runtime: bool = False,
               extra_flags: list[str] = (), dry_run: bool = False) -> dict:
     """Link the candidate image; returns {objs, libs, unresolved, duplicates}.
 
@@ -285,7 +286,8 @@ def candidate(out: Path, objs_dir: Path, *, mapfile: Path | None = None,
     logf = out.parent / f"{out.stem}.link.log"
     try:
         output = link_tool.link([f"@{winepath(rsp)}"], cwd=out.parent,
-                                expect=[out, mapf], at=at)
+                                expect=[out, mapf], at=at,
+                                native_runtime=not builtin_runtime)
     except ToolError as e:
         logf.write_text(str(e))
         raise
@@ -360,6 +362,8 @@ def main() -> int:
                     help="assemble the response file and stop before link.exe")
     ap.add_argument("--real-time", action="store_true",
                     help="use the current clock for contribution analysis instead of retail's UTC timestamp")
+    ap.add_argument("--builtin-runtime", action="store_true",
+                    help="use Wine's runtime for contribution analysis instead of the pinned native MSVCRT")
     ap.add_argument("flags", nargs=argparse.REMAINDER,
                     help="extra link flags after `--`")
     a = ap.parse_args()
@@ -370,6 +374,7 @@ def main() -> int:
                   incremental=a.incremental, base=a.base,
                   keep_all=a.keep_all, entry=a.entry,
                   fold_identical=a.fold_identical, real_time=a.real_time,
+                  builtin_runtime=a.builtin_runtime,
                   extra_flags=extra, dry_run=a.dry_run)
     except (ToolError, OSError) as e:
         print(f"[link] {e}", file=sys.stderr)

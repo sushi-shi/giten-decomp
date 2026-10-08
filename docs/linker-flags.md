@@ -35,6 +35,29 @@ the current clock for contribution analysis. The lower-level
 that command keeps the current clock. This does not change Wine's runtime
 selection or shared prefix configuration.
 
+LINK uses the original DDSWIN disc-root `MSVCRT.DLL` version 5.00.7303,
+supplied at `build/local/runtime/msvcrt.dll`. The SHA and original disc-file
+extent are recorded in [the runtime contract](../config/retail/link_runtime.toml);
+the full source disc hash has not been verified. This runtime reproduces the
+retail import-slot ordering with the reconstructed contribution order.
+The runtime module verifies the DLL, pinned LINK and its dependencies, and
+copies LINK and its dependencies into `build/link-runtime/bin`. It boots a dedicated
+`build/link-runtime/prefix` before freezing the clock and installs the native
+DLL in that prefix's `drive_c/windows/syswow64/msvcrt.dll` slot, with native MSVCRT
+selected only for the unchanged LINK clone named `LINKNCRT.EXE`.
+After installation and registry setup, it stops and waits for only that
+prefix's Wine server. This discards KnownDLL sections created from Wine's
+builtin DLL before replacement; the next LINK starts with the native file
+already installed. Setup and shutdown happen before the frozen linker clock.
+Serialized links may reuse that prefix; compiler, game and Wine infrastructure
+runtime selection is unchanged. Each candidate link must prove that the actual LINK
+thread loaded the hash-verified private native DLL. The 32-bit loader may report
+the logical `C:\windows\system32` path through WOW redirection; its private
+32-bit slot and drive mapping are verified. Missing inputs, different
+hashes, builtin fallback or ambiguous loader evidence fail the link.
+`giten tool link --native-runtime` selects the same isolated runtime for a
+lower-level invocation.
+
 `config/retail/imports.tsv` records all observed DLL lookup identities, including
 ordinal imports, with the caller symbols and SHA-pinned SDK archive members.
 The import generator preserves genuine SDK members and both archive indexes,

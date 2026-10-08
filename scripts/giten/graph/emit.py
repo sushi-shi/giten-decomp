@@ -130,6 +130,7 @@ PROJECT_MODS = _mods("compare/project.py", "compare/normalize.py", "manifest.py"
 REPORT_MODS = _mods("tool/objdiff.py")
 LINK_MODS = _mods("graph/link.py", "graph/implib.py", "graph/import_contract.py",
                   "graph/static_libraries.py", "tool/link.py",
+                  "tool/link_runtime.py",
                   "core/pe.py") + TOOL_MODS
 VERIFY_MODS = _mods("verify/", "model.py", "core/tsv.py", "core/paths.py",
                     "core/msvc_names.py", "core/data_matching.py",
@@ -352,7 +353,8 @@ def emit_link_phase(w: ninja_syntax.Writer, base_objs: list[str], retail: str) -
             inputs=base_objs,
             implicit=[graph.RESOURCE_RES, MANIFEST, graph.TOOLCHAIN_ID, "build/local/DDS.EXE",
                       "config/retail/link_order.tsv", "config/retail/imports.tsv",
-                      "config/retail/link_libraries.tsv", "build/local/lib/dxguid.lib"] + LINK_MODS)
+                      "config/retail/link_libraries.tsv", "build/local/lib/dxguid.lib",
+                      "config/retail/link_runtime.toml", "build/local/runtime/msvcrt.dll"] + LINK_MODS)
     w.build("candidate", "phony", inputs=[graph.CANDIDATE_EXE, graph.CANDIDATE_MAP])
     w.newline()
 
@@ -447,7 +449,8 @@ def emit_play_phase(w: ninja_syntax.Writer, cl_edges: list[tuple],
     w.build([graph.PLAY_EXE, graph.PLAY_MAP], "play_link", inputs=link_objs,
             implicit=[graph.RESOURCE_RES, MANIFEST, graph.TOOLCHAIN_ID, "build/local/DDS.EXE",
                       "config/retail/link_order.tsv", "config/retail/imports.tsv",
-                      "config/retail/link_libraries.tsv", "build/local/lib/dxguid.lib"] + LINK_MODS,
+                      "config/retail/link_libraries.tsv", "build/local/lib/dxguid.lib",
+                      "config/retail/link_runtime.toml", "build/local/runtime/msvcrt.dll"] + LINK_MODS,
             variables={"objs": " ".join(f"--obj {o}" for o in link_objs)})
     w.build("play", "phony", inputs=[graph.PLAY_EXE])
     w.newline()

@@ -24,6 +24,11 @@ Linking also requires the authentic DirectX Foundations 6.1 SDK
 payload identities are in [the library contract](config/retail/link_libraries.tsv);
 see [linker inputs](docs/linker-flags.md) for extraction and validation.
 
+Supply the original DDSWIN disc-root `MSVCRT.DLL` as
+`build/local/runtime/msvcrt.dll` for linking. Its SHA-pinned
+[runtime contract](config/retail/link_runtime.toml) records version 5.00.7303
+and disc provenance; LINK uses it in a separate Wine prefix.
+
 ```sh
 nix develop                 # initializes the build Wine prefix
 export GITEN_DIR=$PWD       # select this worktree
