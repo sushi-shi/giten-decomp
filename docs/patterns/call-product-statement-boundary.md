@@ -16,9 +16,9 @@ if (attack >= roll) {
 ```
 
 The separate assignment reproduces the retail allocation in
-[RollGunHit](../../src/Game/attack.c) and
-[RollWeaponHit](../../src/Game/weaponattack.c). To reproduce the observation,
-compile either full TU with `giten match`, combine its final assignment and
+[RollGunHit](../../src/Game/partyaction.c) and
+[RollWeaponHit](../../src/Game/partyaction.c). To reproduce the observation,
+compile the full `partyaction` TU with `giten match`, combine either final assignment and
 comparison, and compare again with all headers and other source fixed. The
 instruction changes extend earlier than the edited expression; the named
 value does not require a new declaration or a stack store.

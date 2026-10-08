@@ -724,7 +724,7 @@ src/Game/*attack.c	*	0	trivial-function-literal	0 store hit	no hit
 src/Game/*attack.c	*	0	trivial-function-literal	0 equality result	the hit roll's result 0 (a miss)
 src/Game/*attack.c	*	*	comparison-or-bound	*< result	the exceptional-attack roll's results (2, 4, 5)
 src/Game/*attack.c	Run*Attack	0	call-argument	Resolve*Attack(*argument 3	a plain attack (mode 0)
-src/Game/skillattack.c	ResolveSkillAttack	0	call-argument	*argument 3	@identity-TODO: the weapon and gun attacks' mode, and RollSkillHit's sameSide, 0 against the enemy side
+src/Game/partyaction.c	ResolveSkillAttack	0	call-argument	*argument 3	@identity-TODO: the weapon and gun attacks' mode, and RollSkillHit's sameSide, 0 against the enemy side
 src/Game/*.c	*	0	call-argument	SetCharacterChanges(*	no change to that side (target or self)
 src/Game/restore.c	s_swappedPairOrder	*	data-or-extent	*	@identity-TODO: an unread table of the order 0..3 with the middle pair swapped (see its comment)
 src/Game/restore.c	s_fourBitMasks	*	data-or-extent	*	GetNpcImageOfCode indirectly reads these seven direction masks; its source referent remains an out-of-bounds physical-recovery array index

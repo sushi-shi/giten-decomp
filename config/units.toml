@@ -350,21 +350,6 @@ source = "src/Game/worldtravel.c"
 flags = "c"
 
 [[unit]]
-unit = "weaponattack"
-source = "src/Game/weaponattack.c"
-flags = "c"
-
-[[unit]]
-unit = "skillattack"
-source = "src/Game/skillattack.c"
-flags = "c"
-
-[[unit]]
-unit = "itemattack"
-source = "src/Game/itemattack.c"
-flags = "c"
-
-[[unit]]
 unit = "waitstate"
 source = "src/Game/waitstate.c"
 flags = "c"

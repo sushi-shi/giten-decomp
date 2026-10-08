@@ -60,7 +60,6 @@ gamestate	7	7
 handle	33	32
 hotspot	6	6
 hotspotclick	1	0
-itemattack	4	4
 itemrecord	109	108
 joystick	2	2
 layertexture	2	2
@@ -73,7 +72,7 @@ motion	43	42
 mouse	10	10
 nibble	4	3
 objecttexture	2	2
-partyaction	103	100
+partyaction	117	113
 playtime	4	4
 pool	6	6
 range	25	24
@@ -91,7 +90,6 @@ scripttext	59	58
 scriptvars	108	107
 scriptvm	2	2
 shot	15	14
-skillattack	5	5
 skilluse	53	51
 sprite	7	7
 statestack	127	124
@@ -109,7 +107,6 @@ vramaccess	12	12
 vramcell	14	14
 waitstate	7	7
 walltexture	1	1
-weaponattack	5	4
 windowcolor	13	13
 windowtext	2	2
 winmain	128	121
@@ -1183,10 +1180,6 @@ hotspot	_GetSelectedHotspotValue	100.0000	100.0000	2	ast4:c0b0e067de2b	0x585a0	1
 hotspot	_HasHotspotTo	100.0000	100.0000	4	ast4:2502ada8fc62	0x585f0	100.0000	
 hotspot	_SetSelectedHotspot	100.0000	100.0000	1	ast4:0ce948d9b36c	0x58590	100.0000	
 hotspotclick	_ClickHotspotAt	92.8148	92.8148	14	ast4:9b8365f9adcf	0x59180	95.2963	
-itemattack	_ComputeItemDamage	100.0000	100.0000	11	ast4:bc5d803cf672	0xb320	100.0000	
-itemattack	_ResolveItemAttack	100.0000	100.0000	10	ast4:1bc7d5d9656a	0xb0f0	100.0000	
-itemattack	_RollItemCondition	100.0000	100.0000	9	ast4:420983c6677f	0xb4d0	100.0000	
-itemattack	_RunItemAttack	100.0000	100.0000	4	ast4:5d94b5820adb	0xb620	100.0000	
 itemrecord	_AddBagItems	100.0000	100.0000	4	ast4:dec596e96b36	0x24190	100.0000	
 itemrecord	_AddDropSlot	100.0000	100.0000	3	ast4:09ea76b4ea1f	0x23c20	100.0000	
 itemrecord	_AddGemItems	100.0000	100.0000	4	ast4:c91086f13420	0x246f0	100.0000	
@@ -1432,11 +1425,15 @@ objecttexture	_ReleaseObjectTextures	100.0000	100.0000	1	ast4:468f1d6250a1	0x581
 partyaction	_ActorCommandMenuHandler	100.0000	100.0000	4	ast4:e5bdc2efc097	0x6390	100.0000	
 partyaction	_AdjustActorAction	100.0000	100.0000	2	ast4:f4a54ead4242	0x6180	100.0000	
 partyaction	_ApplyResistanceOutcome	100.0000	100.0000	5	ast4:1840a2dc2ec7	0x6f20	100.0000	
+partyaction	_ApplySkillResistanceOutcome	100.0000	100.0000	2	ast4:3d09b2eb6856	0xaf70	100.0000	
 partyaction	_CheckBattleProtection	100.0000	100.0000	3	ast4:9b3604e03c71	0x6a80	100.0000	
 partyaction	_CheckPickTarget	100.0000	100.0000	5	ast4:3d535502d16a	0x9420	100.0000	
 partyaction	_CloseFieldWindows	100.0000	100.0000	3	ast4:ba29f6114a50	0x93e0	100.0000	
 partyaction	_ComputeGunBurstPower	100.0000	100.0000	2	ast4:afb78321b06d	0x92e0	100.0000	
 partyaction	_ComputeGunDamage	100.0000	100.0000	9	ast4:54f076f4e05a	0x8b40	100.0000	
+partyaction	_ComputeItemDamage	100.0000	100.0000	11	ast4:bc5d803cf672	0xb320	100.0000	
+partyaction	_ComputeSkillDamage	100.0000	100.0000	11	ast4:5beecb3f9114	0xac50	100.0000	
+partyaction	_ComputeWeaponDamage	100.0000	100.0000	8	ast4:5b1daa63cf87	0xa270	100.0000	
 partyaction	_CountPickablePartyMembers	100.0000	100.0000	1	ast4:369e30c28b32	0x5b50	100.0000	
 partyaction	_DelayActionSide	100.0000	100.0000	7	ast4:ae793f3a6563	0x5ff0	100.0000	
 partyaction	_DistributeGunRounds	97.7027	97.7027	10	ast4:6b7288518640	0x91f0	97.7027	
@@ -1506,14 +1503,24 @@ partyaction	_ResetActionWaits	100.0000	100.0000	6	ast4:9067c769ea44	0x6060	100.0
 partyaction	_ResetPartyTurnState	100.0000	100.0000	6	ast4:af41e5dc39c0	0x6a00	100.0000	
 partyaction	_ResetRosterFieldMarks	100.0000	100.0000	4	ast4:f02ec9c1ab87	0x7a70	100.0000	
 partyaction	_ResolveGunAttack	100.0000	100.0000	9	ast4:86875ac62e62	0x8e60	100.0000	
+partyaction	_ResolveItemAttack	100.0000	100.0000	10	ast4:1bc7d5d9656a	0xb0f0	100.0000	
+partyaction	_ResolveSkillAttack	100.0000	100.0000	6	ast4:8799480c2a6c	0xafb0	100.0000	
+partyaction	_ResolveWeaponAttack	100.0000	100.0000	7	ast4:437a759f97b2	0xa8a0	100.0000	
 partyaction	_RestoreSwappedMember	100.0000	100.0000	1	ast4:1f8a2791a0b8	0x9dc0	100.0000	
 partyaction	_RollExceptionalAttack	99.9739	99.9739	7	ast4:1ae49878c61f	0x8700	100.0000	
+partyaction	_RollExceptionalWeaponAttack	99.9869	99.9869	7	ast4:5ca3917acf9c	0xa690	100.0000	
 partyaction	_RollGunCondition	100.0000	100.0000	12	ast4:c86f2aa46241	0x8d30	100.0000	
 partyaction	_RollGunHit	100.0000	100.0000	10	ast4:a023cab16310	0x8910	100.0000	
+partyaction	_RollItemCondition	100.0000	100.0000	9	ast4:420983c6677f	0xb4d0	100.0000	
 partyaction	_RollProximityEvent	100.0000	100.0000	6	ast4:90f76185bdc8	0x7f80	100.0000	
+partyaction	_RollSkillCondition	100.0000	100.0000	10	ast4:6e522798eaa5	0xae20	100.0000	
+partyaction	_RollSkillHit	100.0000	100.0000	12	ast4:412ab7e73695	0xaa20	100.0000	
+partyaction	_RollWeaponCondition	100.0000	100.0000	11	ast4:cf8c24730e0e	0xa120	100.0000	
+partyaction	_RollWeaponHit	100.0000	100.0000	10	ast4:6b1c35f34fed	0xa490	100.0000	
 partyaction	_RunActorCommandMenu	100.0000	100.0000	6	ast4:ffb160627811	0x6460	100.0000	
 partyaction	_RunFieldEncounter	100.0000	100.0000	12	ast4:9d9a97ab753d	0x7390	100.0000	
 partyaction	_RunFieldState	100.0000	100.0000	11	ast4:33e2a0c14617	0x7aa0	100.0000	
+partyaction	_RunItemAttack	100.0000	100.0000	4	ast4:5d94b5820adb	0xb620	100.0000	
 partyaction	_RunMemberPickMenu	100.0000	100.0000	4	ast4:b7394ca2acf7	0x94d0	100.0000	
 partyaction	_RunPartyCommandInput	100.0000	100.0000	24	ast4:46cb059a18cf	0x9620	100.0000	
 partyaction	_RunPartyTurn	100.0000	100.0000	10	ast4:c3ff99887e48	0x8330	100.0000	
@@ -2081,11 +2088,6 @@ shot	_ShotRelativePoint	100.0000	100.0000	1	ast4:1c4df7cabbcc	0x57c0	100.0000
 shot	_StartShot	100.0000	100.0000	3	ast4:c42daed6e872	0x5620	100.0000	
 shot	_StepShot	100.0000	90.1077	2	ast4:106504969bdc	0x56e0	100.0000	
 shot	_StopShot	100.0000	100.0000	1	ast4:e12d9489e723	0x5800	100.0000	
-skillattack	_ApplySkillResistanceOutcome	100.0000	100.0000	2	ast4:3d09b2eb6856	0xaf70	100.0000	
-skillattack	_ComputeSkillDamage	100.0000	100.0000	11	ast4:5beecb3f9114	0xac50	100.0000	
-skillattack	_ResolveSkillAttack	100.0000	100.0000	6	ast4:8799480c2a6c	0xafb0	100.0000	
-skillattack	_RollSkillCondition	100.0000	100.0000	10	ast4:6e522798eaa5	0xae20	100.0000	
-skillattack	_RollSkillHit	100.0000	100.0000	12	ast4:412ab7e73695	0xaa20	100.0000	
 skilluse	_AddCombatTarget	100.0000	100.0000	2	ast4:1f75a7b8326f	0x2aa50	100.0000	
 skilluse	_AddObjectTargetsAtCell	100.0000	100.0000	1	ast4:05347fa240d5	0x2caa0	100.0000	
 skilluse	_AddPartyTargetsAtCell	100.0000	100.0000	2	ast4:5ade4d4ce323	0x2cb00	100.0000	
@@ -2599,11 +2601,6 @@ waitstate	_RunMessageBoxState	100.0000	100.0000	3	ast4:b246528c5332	0x1aa40	100.
 waitstate	_RunScreenFadeState	100.0000	100.0000	3	ast4:f61c0c698a69	0x1a960	100.0000	
 waitstate	_StepWaitState	100.0000	100.0000	5	ast4:ec2a4629d363	0x1a870	100.0000	
 walltexture	_LoadWallTextures	100.0000	100.0000	2	ast4:0b6b79518f4d	0x57e80	100.0000	
-weaponattack	_ComputeWeaponDamage	100.0000	100.0000	8	ast4:5b1daa63cf87	0xa270	100.0000	
-weaponattack	_ResolveWeaponAttack	100.0000	100.0000	7	ast4:437a759f97b2	0xa8a0	100.0000	
-weaponattack	_RollExceptionalWeaponAttack	99.4183	99.4183	7	ast4:5ca3917acf9c	0xa690	100.0000	
-weaponattack	_RollWeaponCondition	100.0000	100.0000	11	ast4:cf8c24730e0e	0xa120	100.0000	
-weaponattack	_RollWeaponHit	100.0000	100.0000	10	ast4:6b1c35f34fed	0xa490	100.0000	
 windowcolor	_BeginWindowAltText	100.0000	100.0000	1	ast4:8e2c884706a2	0x2ebc0	100.0000	
 windowcolor	_BeginWindowInstantText	100.0000	100.0000	1	ast4:d35c13e34b8a	0x2ec10	100.0000	
 windowcolor	_EndWindowAltText	100.0000	100.0000	1	ast4:024783b839da	0x2ebf0	100.0000	
