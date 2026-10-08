@@ -14,11 +14,6 @@
 // The x of the record ending the box list.
 #define TREASURE_BOX_END 0xff
 
-typedef struct TreasureBoxCell {
-    u8 x;
-    u8 y;
-} TreasureBoxCell;
-
 static __inline b32 IsTreasureBoxOpen(TreasureBox* box) {
     return IsEventFlagSet(box->flagBank, box->flagIndex) != false;
 }

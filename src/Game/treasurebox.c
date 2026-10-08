@@ -72,6 +72,7 @@
 #include <Game/StatusDraw.h>
 #include <Game/StatusScreen.h>
 #include <Game/TreasureBox.h>
+#include <Game/TreasureBoxView.h>
 #include <Game/WorldMap.h>
 #include <Gfx/Background.h>
 #include <Gfx/Render.h>
@@ -366,16 +367,10 @@ static AutomapBitmap s_levelBuffer = {0};
 DATA(0x0007d300)
 static AreaNpc s_npcs[AREA_NPC_COUNT] = {0};
 
-// The treasure box in view: its cell, and the party's map position with x/y
-// set to the view's lateral and depth position. Nothing reads either back.
-// @identity-TODO: retail keeps the two adjacent inside one record (cl gives
-// no standalone datum their addresses), but nothing references its leading
-// bytes or uses it whole, so the record's type is unrecovered.
-DATA(0x0007d5b2)
-static TreasureBoxCell s_boxCell = {0};
-
-DATA(0x0007d5b4)
-static MapPosition s_boxPosition = {0};
+// The viewed box's sprite and party position. Windows fills only the cell
+// and position; the PC-98 renderer consumes the complete sprite.
+DATA(0x0007d5a0)
+static TreasureBoxView s_viewedBox = {0};
 
 DATA(0x0007d5c0)
 static ItemStackList* s_itemMenuLimits = NULL;
@@ -485,10 +480,10 @@ void PrepareViewedTreasureBox(void) {
     if (box) {
         IsTreasureBoxOpen(box);
         GetApproachOffset(g_viewLateral, g_viewDepth);
-        s_boxPosition = g_party.field.pos;
-        s_boxPosition.x = g_viewLateral;
-        s_boxPosition.y = g_viewDepth;
-        memcpy(&s_boxCell, &box->head, sizeof(s_boxCell));
+        s_viewedBox.position = g_party.field.pos;
+        s_viewedBox.position.x = g_viewLateral;
+        s_viewedBox.position.y = g_viewDepth;
+        memcpy(&s_viewedBox.sprite.cellX, &box->head, 2);
     }
 }
 
