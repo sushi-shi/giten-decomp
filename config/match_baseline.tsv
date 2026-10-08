@@ -46,7 +46,7 @@ devicesettings	2	2
 displayconfig	2	2
 equipeffect	2	2
 eventflags	28	28
-fieldmain	59	55
+fieldmain	59	56
 fieldobj	141	138
 fieldscreen	103	102
 fieldview	69	68
@@ -544,7 +544,7 @@ fieldmain	_HasAutoMoves	100.0000	100.0000	2	ast4:8c3f457d419d	0x127a0	100.0000
 fieldmain	_HasQueuedObjectEvents	100.0000	100.0000	1	ast4:a4d2903e9995	0x13c00	100.0000	
 fieldmain	_LoadFieldEventTable	100.0000	100.0000	2	ast4:cf8316f6d7ba	0x13d10	100.0000	
 fieldmain	_LoadFieldImage	100.0000	100.0000	2	ast4:8a8ba8e62637	0x144c0	100.0000	
-fieldmain	_LoadFieldMemory	100.0000	87.0270	2	ast4:aec093adb5c5	0x13ca0	100.0000	
+fieldmain	_LoadFieldMemory	100.0000	100.0000	2	ast4:aec093adb5c5	0x13ca0	100.0000	
 fieldmain	_MarkFieldViewCells	100.0000	100.0000	1	ast4:4f0707083593	0x13d70	100.0000	
 fieldmain	_MarkLevelEvent	100.0000	100.0000	1	ast4:dc2cad1634dc	0x13b20	100.0000	
 fieldmain	_MarkVisibleFieldCells	100.0000	100.0000	4	ast4:58c9fb00253c	0x13d90	100.0000	

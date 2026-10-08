@@ -16,6 +16,13 @@ DATA(0x00064288)
 static const i16 s_poolElementSizes[5] =
     {8 * sizeof(CellRow), 8 * sizeof(CellRow3), 8 * sizeof(CellRow2), 8 * sizeof(CellRow1), 0};
 
+// @identity-TODO: the original names are unknown; the decoder has no Windows reader.
+DATA(0x00068304)
+static i16 s_fontBufferFill = 64;
+
+DATA(0x00068308)
+static i16 s_fontBufferPos = 64;
+
 // @dead-code
 // Zero-ref: no direct caller or address-taking reaches this allocator.
 // @identity-TODO: retail uses the pool pointer as a numbered memory handle

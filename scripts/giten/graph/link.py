@@ -37,9 +37,10 @@ import collections
 import re
 import struct
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
-from giten.core.paths import REPO, RETAIL
+from giten.core.paths import BUILD, REPO, RETAIL
 from giten.tool import ToolError
 from giten.tool.wine import era_tool, run, winepath
 
@@ -219,6 +220,7 @@ def candidate(out: Path, objs_dir: Path, *, mapfile: Path | None = None,
               base: str = "0x400000", keep_all: bool = False,
               entry: str | None = None,
               fold_identical: bool = True,
+              real_time: bool = False,
               extra_flags: list[str] = (), dry_run: bool = False) -> dict:
     """Link the candidate image; returns {objs, libs, unresolved, duplicates}.
 
@@ -228,6 +230,11 @@ def candidate(out: Path, objs_dir: Path, *, mapfile: Path | None = None,
     from giten.graph import implib
     from giten.tool import link as link_tool
 
+    at = None if real_time else datetime.fromtimestamp(
+        link_tool.pe_stamp(BUILD / "local/DDS.EXE"), timezone.utc
+    ).strftime("%Y-%m-%d %H:%M:%S")
+    if at is not None:
+        print(f"[link] expected clock: {at} UTC")
     out = Path(out).resolve()
     mapf = Path(mapfile).resolve() if mapfile else out.with_suffix(".map")
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -277,7 +284,7 @@ def candidate(out: Path, objs_dir: Path, *, mapfile: Path | None = None,
     logf = out.parent / f"{out.stem}.link.log"
     try:
         output = link_tool.link([f"@{winepath(rsp)}"], cwd=out.parent,
-                                expect=[out, mapf])
+                                expect=[out, mapf], at=at)
     except ToolError as e:
         logf.write_text(str(e))
         raise
@@ -350,6 +357,8 @@ def main() -> int:
                     help="keep identical COMDATs separate for contribution analysis")
     ap.add_argument("--dry-run", action="store_true",
                     help="assemble the response file and stop before link.exe")
+    ap.add_argument("--real-time", action="store_true",
+                    help="use the current clock for contribution analysis instead of retail's UTC timestamp")
     ap.add_argument("flags", nargs=argparse.REMAINDER,
                     help="extra link flags after `--`")
     a = ap.parse_args()
@@ -359,7 +368,8 @@ def main() -> int:
                   explicit=a.obj, extra_libs=a.lib, engine_lib=a.engine_lib,
                   incremental=a.incremental, base=a.base,
                   keep_all=a.keep_all, entry=a.entry,
-                  fold_identical=a.fold_identical, extra_flags=extra, dry_run=a.dry_run)
+                  fold_identical=a.fold_identical, real_time=a.real_time,
+                  extra_flags=extra, dry_run=a.dry_run)
     except (ToolError, OSError) as e:
         print(f"[link] {e}", file=sys.stderr)
         return 1

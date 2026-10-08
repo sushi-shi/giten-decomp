@@ -275,6 +275,7 @@
         (python3.withPackages (ps: [ ps.pyghidra ps.libclang ps.fonttools ]))   # pyghidra (Ghidra scripting) + libclang (clang.cindex: the permuter's precedence-correct AST mutations) + fonttools (`giten play`'s MS Gothic stand-in)
         ghidra
         ninja
+        libfaketime     # reproduce the original link's UTC wall clock
 
         llvm            # llvm-pdbutil
         # clang-unwrapped provides the clang DRIVER (ghidra_metadata_generate/gen_labels, via

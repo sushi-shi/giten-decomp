@@ -201,6 +201,10 @@ static i16 s_fieldImageCacheKey = -1;
 DATA(0x00068650)
 static i16 s_fieldImageCacheVariant = -1;
 
+// @identity-TODO: original name unknown; geometry-stop wall-frame offsets.
+DATA(0x00064508)
+static const i16 s_wallFrameOffsets[16] = {-1};
+
 // Each wall contributes a 16-byte mask within these 48-byte work areas.
 DATA(0x00091260)
 u8 g_leftViewOcclusion[48];

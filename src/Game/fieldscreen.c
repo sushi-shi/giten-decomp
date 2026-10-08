@@ -153,6 +153,10 @@ static struct {
      {0, 6, 0, WorldRowHandler}},
 };
 
+// @identity-TODO: role, domain, signedness and original name are unknown.
+DATA(0x00064528)
+static const i16 s_panelValues[9] = {6, 2, 4, 3, 5, 1, 6, 0, 4};
+
 DATA(0x00068708)
 static WorldMapBlock s_worldBlocks[6] = {
     {0, -1},

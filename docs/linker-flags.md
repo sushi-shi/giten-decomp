@@ -22,6 +22,17 @@ USER32, GDI32, ADVAPI32, DDRAW, DSOUND, DINPUT, WINMM), with `dxguid.lib` last.
 Use the generated response file to inspect the exact object order, libraries,
 and options for a particular build.
 
+Candidate linking freezes the linker process's wall clock at the UTC time
+decoded from the original `build/local/DDS.EXE` COFF header. The Nix environment
+supplies `libfaketime`; the wrapper uses `faketime -f` with `TZ=UTC` and
+`FAKETIME_DONT_FAKE_MONOTONIC=1`, leaving timeout clocks running normally.
+The linker writes its own PE and map timestamps, and both must equal the
+requested value. No image bytes are patched afterwards. `--real-time` uses
+the current clock for contribution analysis. The lower-level
+`giten tool link --at 'YYYY-MM-DD HH:MM:SS'` accepts an explicit frozen UTC time; without `--at`
+that command keeps the current clock. This does not change Wine's runtime
+selection or shared prefix configuration.
+
 `config/retail/imports.tsv` records all observed DLL lookup identities, including
 ordinal imports, with the caller symbols and SHA-pinned SDK archive members.
 The import generator preserves genuine SDK members and both archive indexes,
