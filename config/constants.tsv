@@ -556,13 +556,13 @@ src/Math/vec3.c	ProjectFloorPoint	0	call-argument	ProjectPoint(*argument 2	a poi
 src/Math/vec3.c	MoveBySubVelocity	8	call-argument	ClampDelta(*argument 2	velocity is kept in 1/256 units; the step adds its whole part
 src/Math/vec3.c	CellToField	*	arithmetic	*	field cell to 3D coordinates: 3x3 subcells per cell, 6 subcells per column or row step, 75 units per subcell, and the origin offsets
 src/Mem/handle.c	Clear*	0	call-argument	SetHandleEntry(*argument 3	a freed entry has size 0
-src/Util/range.c	PowerOfTwo	1	*	*	the power of two starts at 2^0
-src/Util/range.c	ClampToUShort	0	call-argument	ClampInt(*argument 2	the unsigned short range starts at 0
-src/Util/range.c	RoundToInt	*	*	*	rounding half away from zero
-src/Util/range.c	RandomPercent	*	*	*	percent arithmetic: scale by 100, round at 50
-src/Util/range.c	Capped*	0	trivial-function-literal	0 return	no change applied
-src/Util/range.c	FilterTextMarks	0	trivial-function-literal	*	an empty string / the text's terminator
-src/Util/range.c	FilterTextMarks	0x8197	comparison-or-bound	*	Shift-JIS '＠', the text mark (see Range.h); a wide character constant would not be the same code
+src/Game/fieldview.c	PowerOfTwo	1	*	*	the power of two starts at 2^0
+src/Game/fieldview.c	ClampToUShort	0	call-argument	ClampInt(*argument 2	the unsigned short range starts at 0
+src/Game/fieldview.c	RoundToInt	*	*	*	rounding half away from zero
+src/Game/fieldview.c	RandomPercent	*	*	*	percent arithmetic: scale by 100, round at 50
+src/Game/fieldview.c	Capped*	0	trivial-function-literal	0 return	no change applied
+src/Game/fieldview.c	FilterTextMarks	0	trivial-function-literal	*	an empty string / the text's terminator
+src/Game/fieldview.c	FilterTextMarks	0x8197	comparison-or-bound	*	Shift-JIS '＠', the text mark (see Range.h); a wide character constant would not be the same code
 src/Util/bitset.c	*	*	*	*	byte and bit of a bit index (8 bits per byte)
 src/Mem/pool.c	*	*	*	*	the dead element-pool API: four pools of 256-element chunks (index >> 8, low byte), sixteen chunks each; the size table ends at 0
 src/File/datafile.c	SetCryptKey	8	*	*	the crypt key folds the seed's high byte into its low byte

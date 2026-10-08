@@ -17,7 +17,7 @@ its previous object after masking only the timestamp. Warning counts are
 
 | Unit | Remaining C4761 | Unit | Remaining C4761 |
 | --- | ---: | --- | ---: |
-| `src/Util/range.c` | 3 | `src/Gfx/blit.c` | 4 |
+| `src/Game/fieldview.c` (range helpers) | 3 | `src/Gfx/blit.c` | 4 |
 | `src/Gfx/motion.c` | 1 | `src/Gfx/vramaccess.c` | 2 |
 | `src/Script/eventflags.c` | 9 | `src/Script/scriptactor.c` | 46 |
 | `src/Script/scriptctx.c` | 5 | `src/Script/scriptfield.c` | 3 |
@@ -35,7 +35,7 @@ its previous object after masking only the timestamp. Warning counts are
 | Packed flag words are masked or shifted into 16-bit arguments | `eventflags.c:134,149,164,191,200`; `scriptvars.c:1312` (system-variable offset becomes a flag index) | The pack format establishes bank and index ranges, but the exact extraction boundary and retained sign/zero extension need COFF comparison. |
 | Storage size is narrowed by an allocator or offset helper | `vramaccess.c:31` (`AllocCleared` takes a 16-bit size), `scriptvars.c:536,541,556` (`ShiftScriptEntries` and `OffsetBy` take 16-bit spans), `scriptactor.c:2164` (array-handle count) | Maximum encoded payload size. Silencing C4761 by widening the allocator or helper can change truncation and break the recorded layout. |
 | A 32-bit getter feeds a 16-bit stored attribute | `windowcolor.c:71,84` (`GetTextPlaneNormalAttr`/`GetTextPlaneAccentAttr` to `SwitchWindowAttr`), `windowcolor.c:32,106,116` (script value to color attributes), `scriptvars.c:605,617,630,646` (text-plane settings) | The getter's full return contract and the high-word behavior of the attribute before changing its return type. |
-| Random or byte-key result enters a narrower API | `range.c:106,115` (`RandomUpTo` and `RandomAverage`), `scriptswitch.c:82,87,106,121`, `scriptactor.c:830` (sample count) | Input range and call-time truncation. A trial moving `OpRollLongVar`'s sample narrowing into a new local changed its COFF object, so the direct call remains. |
+| Random or byte-key result enters a narrower API | `fieldview.c` (`RandomUpTo` and `RandomAverage`), `scriptswitch.c:82,87,106,121`, `scriptactor.c:830` (sample count) | Input range and call-time truncation. A trial moving `OpRollLongVar`'s sample narrowing into a new local changed its COFF object, so the direct call remains. |
 | File offsets and dispatch values mix 16- and 32-bit expressions | `motion.c:508` (`OpenDataFile` offset), `scriptvm.c:80` (`CallScript` bank from opcode), `scriptactor.c:922` (`FindLayerScriptEntry`) | The file and opcode encoding bounds and the retail argument width. |
 
 These are representative sites in each remaining group. The table above gives

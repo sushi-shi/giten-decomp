@@ -23,7 +23,7 @@ The remaining reviewed warning groups are:
 | --- | ---: | --- |
 | C4805, mixed `bool` and integer comparison | 9 | `LoadTexture` and `OpenTextureBitmap` compare their integer-backed `fromFile` parameter with `true` at five sites; `InitDirectDraw` and `WinMain` compare the Win32 `BOOL` registry field `hardwareOnly` at two; `HighlightHotspot` compares its integer `on` parameter; and `GetShownPanelCharacter` compares the screen layer's integer `visible` member. MSVC 5 compiles these as strict comparisons with 1, which the retail bytes support. Direct truthiness changes the generated functions. The registry record is not validated, so a noncanonical nonzero `hardwareOnly` can reach this check; the other callers currently pass canonical 0/1 values. Keep the boolean spelling and the warning until a stronger type or ownership model preserves the match. |
 | C4133, incompatible pointer | 1 | `DecodeAreaMap` in `src/Game/clock.c` assigns `base + src->doorsOffset` (`u8*`) to `AreaLevel.doors` (`DoorCell*`). The source is a packed area-record offset; recover the record's typed cell boundary before changing this conversion. |
-| C4761, integral size mismatch in argument | 382 | Explicit width transitions at calls across 36 source files. For example, `RandomPercent` in `src/Util/range.c` passes 32-bit bounds to `RandomAverage(i16, i16, i16)`; `OpCloseScriptPanel` in `src/Script/scripttext.c` passes `ReadScriptValue()` to a narrower image key; `LoadNpcPalette` in `src/Game/treasurebox.c` passes an `i16` expression to a narrower palette API. Check each caller's value range and the retail argument width before altering a declaration or inserting a narrowing conversion. See [the focused width audit](warning-width-boundaries.md). |
+| C4761, integral size mismatch in argument | 382 | Explicit width transitions at calls across 36 source files. For example, `RandomPercent` in `src/Game/fieldview.c` passes 32-bit bounds to `RandomAverage(i16, i16, i16)`; `OpCloseScriptPanel` in `src/Script/scripttext.c` passes `ReadScriptValue()` to a narrower image key; `LoadNpcPalette` in `src/Game/treasurebox.c` passes an `i16` expression to a narrower palette API. Check each caller's value range and the retail argument width before altering a declaration or inserting a narrowing conversion. See [the focused width audit](warning-width-boundaries.md). |
 
 The C4761 sites by translation unit are listed below so the full audit scope
 survives even though compiler output under `build/` is ignored. Counts are
@@ -52,7 +52,7 @@ a review snapshot; the generated report is the current worklist.
 
 When one line contains multiple diagnostics, inspect the callee parameter
 types and each argument expression. For example, `RandomAverage(lo + 100,
-hi + 100, 0)` in `src/Util/range.c` produces two warnings on one line, one
+hi + 100, 0)` in `src/Game/fieldview.c` produces two warnings on one line, one
 for each 32-bit bound passed to an `i16` parameter.
 
 | Unit | Count | Unit | Count | Unit | Count |

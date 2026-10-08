@@ -25,11 +25,6 @@ cpp      = ["/nologo", "/c", "/Ox", "/Ob0", "/Zp1", "/ML", "/GX"]
 cpp-noeh = ["/nologo", "/c", "/Ox", "/Ob0", "/Zp1", "/ML"]
 
 [[unit]]
-unit = "range"
-source = "src/Util/range.c"
-flags = "c"
-
-[[unit]]
 unit = "nibble"
 source = "src/Util/nibble.c"
 flags = "c"
@@ -297,11 +292,6 @@ flags = "c"
 [[unit]]
 unit = "restore"
 source = "src/Game/restore.c"
-flags = "c"
-
-[[unit]]
-unit = "list"
-source = "src/Util/list.c"
 flags = "c"
 
 [[unit]]

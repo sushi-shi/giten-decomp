@@ -105,7 +105,7 @@ retained source casts occur in these units:
 
 | Conversion family | Current example and reason to retain |
 | --- | --- |
-| Floating point to integral | `CalcMaxHp` and `CalcMaxMp` in `character.c`, `RoundToInt` in `range.c`, `OpSqrtLongVar` in `scriptactor.c`, and the shot/status drawing calculations select truncation at that expression. Remove only if the rounding and destination range are proved equivalent. |
+| Floating point to integral | `CalcMaxHp` and `CalcMaxMp` in `character.c`, `RoundToInt` in `fieldview.c`, `OpSqrtLongVar` in `scriptactor.c`, and the shot/status drawing calculations select truncation at that expression. Remove only if the rounding and destination range are proved equivalent. |
 | Narrow before later arithmetic | `recordcache.c` narrows a product to `i16` before dividing; `fieldobj.c` narrows a coordinate difference before dividing; `treasurebox.c` narrows map area before adding seven and dividing. Moving the cast to the final assignment changes overflow and division behavior. `scripttext.c` narrows a record offset before pointer addition. |
 | Protocol bytes and encoded bits | `fieldmain.c` and `fieldobj.c` store directions and object ids in bytes; `fieldobj.c` casts a complemented flag bank to `u8` before shifting, so sign extension cannot leak into the result. `fieldview.c`, `scriptop.c`, `scriptvars.c` and `vram.c` similarly extract or pass encoded byte values. Check the full domain before replacing a cast with a wider temporary. |
 | Signedness and comparison range | `character.c` converts an armor bonus and a pool cost to `u16`; `scriptctx.c` widens a code word to `u32` before shifting by 16. `DrawDownCountdown` in `scriptvars.c` narrows only after comparing with a `u16` amount. |

@@ -52,7 +52,7 @@ eventflags	28	28
 fieldmain	59	55
 fieldobj	141	137
 fieldscreen	103	101
-fieldview	38	38
+fieldview	69	68
 font	150	144
 fusion	114	111
 gameloop	7	7
@@ -63,7 +63,6 @@ hotspotclick	1	0
 itemrecord	109	108
 joystick	2	2
 layertexture	2	2
-list	6	6
 menubox	12	12
 menuresult	2	2
 message	15	15
@@ -75,7 +74,6 @@ objecttexture	2	2
 partyaction	117	113
 playtime	4	4
 pool	6	6
-range	25	24
 recordcache	43	42
 restore	3	3
 savegame	14	13
@@ -823,9 +821,22 @@ fieldscreen	_UpdateFieldHud	100.0000	100.0000	5	ast4:d5c725e14e25	0x15d40	100.00
 fieldscreen	_UpdateFieldScreen	100.0000	100.0000	2	ast4:d3cb3668063b	0x14800	100.0000	
 fieldscreen	_UpdateViewPalette	100.0000	100.0000	2	ast4:34dfcac9e24d	0x15b10	100.0000	
 fieldscreen	_WorldRowHandler	100.0000	100.0000	1	ast4:97ec77189250	0x16990	100.0000	
+fieldview	_AddCapped	100.0000	100.0000	1	ast4:7806f16084ac	0xba50	100.0000	
+fieldview	_AddClampInt	100.0000	100.0000	1	ast4:6a9588b47e03	0xbac0	100.0000	
+fieldview	_AddClampShort	100.0000	100.0000	1	ast4:48d287fdf21c	0xbae0	100.0000	
 fieldview	_CanFloodViewCell	100.0000	100.0000	2	ast4:2b1ba6009839	0xbed0	100.0000	
+fieldview	_CappedDecrease	100.0000	100.0000	1	ast4:2005de7ad297	0xba70	100.0000	
+fieldview	_CappedIncrease	100.0000	100.0000	1	ast4:8f7d64ce053d	0xba20	100.0000	
+fieldview	_ClampDelta	100.0000	100.0000	3	ast4:f2efde560c5c	0xb9f0	100.0000	
+fieldview	_ClampInt	100.0000	100.0000	1	ast4:ec4b2b695ad8	0xb850	100.0000	
+fieldview	_ClampShort	100.0000	100.0000	1	ast4:15b98c094df7	0xb870	100.0000	
+fieldview	_ClampToShort	100.0000	100.0000	1	ast4:cb23e0a07b3f	0xb8b0	100.0000	
+fieldview	_ClampToUShort	100.0000	100.0000	1	ast4:89fbb53095eb	0xb8d0	100.0000	
+fieldview	_ClampUShort	100.0000	100.0000	1	ast4:2ebe300c3c6c	0xb890	100.0000	
 fieldview	_ClearDrawTable	100.0000	100.0000	1	ast4:e136af251477	0xbdd0	100.0000	
+fieldview	_Direction4	100.0000	100.0000	1	ast4:7a9cd9287fb4	0xbb10	100.0000	
 fieldview	_DistanceFromParty	100.0000	100.0000	1	ast4:e1108a05e738	0xbe50	100.0000	
+fieldview	_FilterTextMarks	100.0000	100.0000	2	ast4:067cc7bd6755	0xbc30	100.0000	
 fieldview	_FloodViewCells	100.0000	100.0000	3	ast4:f3b5d328e5e5	0xc120	100.0000	
 fieldview	_GetCellWall	100.0000	100.0000	1	ast4:0e984909cf08	0xd0f0	100.0000	
 fieldview	_GetCellWallStop	100.0000	100.0000	2	ast4:0d838135a3b1	0xd210	100.0000	
@@ -844,17 +855,35 @@ fieldview	_GetWorldBlockX	100.0000	100.0000	1	ast4:f8229efbeba5	0xcd30	100.0000
 fieldview	_GetWorldBlockY	100.0000	100.0000	1	ast4:d8e5ca90e527	0xcd50	100.0000	
 fieldview	_GetWorldCellAt	100.0000	100.0000	2	ast4:ae961068308a	0xcd70	100.0000	
 fieldview	_GetWorldMapBlock	100.0000	100.0000	1	ast4:8a8bce3c314f	0xccf0	100.0000	
+fieldview	_GridDistance	100.0000	100.0000	1	ast4:49fb4d8573cf	0xbbe0	100.0000	
 fieldview	_IsCellInViewCone	100.0000	100.0000	3	ast4:1b1689f499d1	0xcba0	100.0000	
 fieldview	_IsWorldCellInMap	100.0000	100.0000	2	ast4:18bc817be615	0xce50	100.0000	
+fieldview	_ListAppend	100.0000	100.0000	1	ast4:e95a56217680	0xbd30	100.0000	
+fieldview	_ListInsertAfter	100.0000	100.0000	1	ast4:417828bb2940	0xbd00	100.0000	
+fieldview	_ListLast	100.0000	100.0000	3	ast4:2ee50af91093	0xbce0	100.0000	
+fieldview	_ListNext	100.0000	100.0000	1	ast4:c1aae0ec15d5	0xbcd0	100.0000	
+fieldview	_ListPopLast	100.0000	100.0000	1	ast4:c990fd56a574	0xbda0	100.0000	
+fieldview	_ListUnlink	100.0000	100.0000	1	ast4:4dc161f63d68	0xbd70	100.0000	
 fieldview	_MarkDrawCell	100.0000	100.0000	2	ast4:af630af08ac4	0xbdf0	100.0000	
 fieldview	_MoveMapCoord	100.0000	100.0000	3	ast4:8679b9801f68	0xce90	100.0000	
+fieldview	_OffsetBy	100.0000	100.0000	4	ast4:9493e66ed5d0	0xb840	100.0000	
+fieldview	_OffsetByWord	100.0000	65.8333	1	ast4:8b33d0680819	0xb830	100.0000	
 fieldview	_OffsetCoordClamped	100.0000	100.0000	3	ast4:83d8252d7fa1	0xcf20	100.0000	
 fieldview	_OffsetMapCoord	100.0000	100.0000	1	ast4:45ea23ba56ce	0xcfb0	100.0000	
 fieldview	_OffsetMapCoordFacing	100.0000	100.0000	3	ast4:b0b2a535399f	0xd320	100.0000	
+fieldview	_PowerOfTwo	100.0000	100.0000	1	ast4:f33917e3373a	0xb810	100.0000	
+fieldview	_RandomAverage	100.0000	100.0000	2	ast4:dac325c64bae	0xb960	100.0000	
+fieldview	_RandomPercent	100.0000	100.0000	1	ast4:82de5800b30d	0xb9a0	100.0000	
+fieldview	_RandomUpTo	100.0000	100.0000	1	ast4:3bdab35de186	0xb940	100.0000	
+fieldview	_RelativeDirection	100.0000	100.0000	1	ast4:a3057110f17a	0xbb70	100.0000	
 fieldview	_RelativeOffset	100.0000	100.0000	2	ast4:6fc0700b4827	0xd2b0	100.0000	
+fieldview	_RoundToInt	100.0000	100.0000	1	ast4:5bc3d7e67b79	0xb8f0	100.0000	
+fieldview	_RoundToShort	100.0000	100.0000	1	ast4:991c7c40380d	0xb920	100.0000	
+fieldview	_SortShortPair	100.0000	100.0000	1	ast4:7daaf5b9128f	0xbc10	100.0000	
 fieldview	_StepMapCoord	100.0000	100.0000	1	ast4:9c452dc923a8	0xd1b0	100.0000	
 fieldview	_StepMapCoordBy	100.0000	100.0000	1	ast4:c1d46f724337	0xd050	100.0000	
 fieldview	_StepViewCell	100.0000	100.0000	2	ast4:4a55801ddcac	0xbe80	100.0000	
+fieldview	_SubCapped	100.0000	100.0000	1	ast4:0eb19f3e5080	0xbaa0	100.0000	
 fieldview	_TurnDirection	100.0000	100.0000	1	ast4:9c56afec8423	0xce80	100.0000	
 fieldview	_UpdateViewCells	100.0000	100.0000	5	ast4:d4a396fd7ab4	0xc330	100.0000	
 fieldview	_ViewCellHasWall	100.0000	100.0000	1	ast4:2cf2bd539985	0xc0c0	100.0000	
@@ -1292,12 +1321,6 @@ joystick	?InitJoystick@@YAXXZ	100.0000	100.0000	3	ast4:848d27350f66	0x492b0	100.
 joystick	?ReadJoystick@@YAIPAUJoystickState@@@Z	100.0000	100.0000	2	ast4:676daaa27c0f	0x49370	100.0000	
 layertexture	_DecodeLayerImage	100.0000	100.0000	5	ast4:4592e43e7e5b	0x57f20	100.0000	
 layertexture	_DecodeLayerImageAlt	100.0000	100.0000	2	ast4:aa2c0576cd57	0x58040	100.0000	
-list	_ListAppend	100.0000	100.0000	1	ast4:e95a56217680	0xbd30	100.0000	
-list	_ListInsertAfter	100.0000	100.0000	1	ast4:417828bb2940	0xbd00	100.0000	
-list	_ListLast	100.0000	100.0000	3	ast4:2ee50af91093	0xbce0	100.0000	
-list	_ListNext	100.0000	100.0000	1	ast4:c1aae0ec15d5	0xbcd0	100.0000	
-list	_ListPopLast	100.0000	100.0000	1	ast4:c990fd56a574	0xbda0	100.0000	
-list	_ListUnlink	100.0000	100.0000	1	ast4:4dc161f63d68	0xbd70	100.0000	
 menubox	_BuildMenuPage	100.0000	100.0000	4	ast4:04df6dabe2d3	0x20830	100.0000	
 menubox	_CloseListMenu	100.0000	100.0000	1	ast4:aa844eb4ebeb	0x20af0	100.0000	
 menubox	_CreateMenuBox	100.0000	100.0000	3	ast4:addf536fee38	0x20750	100.0000	
@@ -1548,31 +1571,6 @@ pool	_FreePools	100.0000	100.0000	2	ast4:07fc03c6b52e	0x3560	100.0000
 pool	_GetLegacyPoolResetResult	100.0000	100.0000	3	ast4:eba47d2547b9	0x3550	100.0000	
 pool	_GetPoolChunk	100.0000	100.0000	2	ast4:d00151f4e5c4	0x3570	100.0000	
 pool	_ResetPool	100.0000	100.0000	1	ast4:44db8061f7d4	0x34e0	100.0000	
-range	_AddCapped	100.0000	100.0000	1	ast4:7806f16084ac	0xba50	100.0000	
-range	_AddClampInt	100.0000	100.0000	1	ast4:6a9588b47e03	0xbac0	100.0000	
-range	_AddClampShort	100.0000	100.0000	1	ast4:48d287fdf21c	0xbae0	100.0000	
-range	_CappedDecrease	100.0000	100.0000	1	ast4:2005de7ad297	0xba70	100.0000	
-range	_CappedIncrease	100.0000	100.0000	1	ast4:8f7d64ce053d	0xba20	100.0000	
-range	_ClampDelta	100.0000	100.0000	3	ast4:f2efde560c5c	0xb9f0	100.0000	
-range	_ClampInt	100.0000	100.0000	1	ast4:ec4b2b695ad8	0xb850	100.0000	
-range	_ClampShort	100.0000	100.0000	1	ast4:15b98c094df7	0xb870	100.0000	
-range	_ClampToShort	100.0000	100.0000	1	ast4:cb23e0a07b3f	0xb8b0	100.0000	
-range	_ClampToUShort	100.0000	100.0000	1	ast4:89fbb53095eb	0xb8d0	100.0000	
-range	_ClampUShort	100.0000	100.0000	1	ast4:2ebe300c3c6c	0xb890	100.0000	
-range	_Direction4	100.0000	100.0000	1	ast4:7a9cd9287fb4	0xbb10	100.0000	
-range	_FilterTextMarks	100.0000	100.0000	2	ast4:067cc7bd6755	0xbc30	100.0000	
-range	_GridDistance	100.0000	100.0000	1	ast4:49fb4d8573cf	0xbbe0	100.0000	
-range	_OffsetBy	100.0000	100.0000	4	ast4:9493e66ed5d0	0xb840	100.0000	
-range	_OffsetByWord	100.0000	65.8333	1	ast4:8b33d0680819	0xb830	100.0000	
-range	_PowerOfTwo	100.0000	100.0000	1	ast4:f33917e3373a	0xb810	100.0000	
-range	_RandomAverage	100.0000	100.0000	2	ast4:dac325c64bae	0xb960	100.0000	
-range	_RandomPercent	100.0000	100.0000	1	ast4:82de5800b30d	0xb9a0	100.0000	
-range	_RandomUpTo	100.0000	100.0000	1	ast4:3bdab35de186	0xb940	100.0000	
-range	_RelativeDirection	100.0000	100.0000	1	ast4:a3057110f17a	0xbb70	100.0000	
-range	_RoundToInt	100.0000	100.0000	1	ast4:5bc3d7e67b79	0xb8f0	100.0000	
-range	_RoundToShort	100.0000	100.0000	1	ast4:991c7c40380d	0xb920	100.0000	
-range	_SortShortPair	100.0000	100.0000	1	ast4:7daaf5b9128f	0xbc10	100.0000	
-range	_SubCapped	100.0000	100.0000	1	ast4:0eb19f3e5080	0xbaa0	100.0000	
 recordcache	_AddSkill	100.0000	100.0000	4	ast4:14af91fec18f	0x2dce0	100.0000	
 recordcache	_BuildLearnableSkillRanks	100.0000	100.0000	6	ast4:1968a265a0c4	0x2e240	100.0000	
 recordcache	_CacheSkill	100.0000	100.0000	3	ast4:94191c267e2e	0x2e840	100.0000	
