@@ -50,11 +50,19 @@ typedef struct NpcTexture {
 #define AREA_NPC_COUNT 16
 #define AREA_NPC_SLOT_NONE (-1)
 #define NPC_TEXTURE_SLOTS 6
-extern NpcTexture g_npcTextures[12];
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// The map cell the field view is drawing.
-extern i16 g_viewCellX;
-extern i16 g_viewCellY;
+    extern NpcTexture g_npcTextures[12];
+
+    // The map cell the field view is drawing.
+    extern i16 g_viewCellX;
+    extern i16 g_viewCellY;
+
+#ifdef __cplusplus
+}
+#endif
 
 // The scene script (file, entry) a cell or an NPC starts.
 typedef struct SceneScript {
@@ -64,41 +72,49 @@ typedef struct SceneScript {
 
 struct TreasureBox;
 
-// Latches a treasure box's cell as the scene cell and returns the script its
-// bytes 5/6 name.
-SceneScript BeginBoxScene(struct TreasureBox* box);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// An NPC's scene script (its words +0x22/+0x24).
-SceneScript GetNpcScript(AreaNpc* npc);
+    // Latches a treasure box's cell as the scene cell and returns the script its
+    // bytes 5/6 name.
+    SceneScript BeginBoxScene(struct TreasureBox* box);
 
-// The room-region grid and its helpers (areanpc.c).
-void FillRegionRect(i16 x0, i16 y0, i16 x1, i16 y1, u8 value);
-void SetRoomRegion(i16 x, i16 y, u8 value);
-void SetGridByte(i32* grid, i16 x, i16 y, u8 value);
-void FillEmptyRegions(i16 width, i16 height, u8 value);
-u8 GetRoomRegion(i16 x, i16 y);
-u8 GetGridByte(i32* grid, i16 x, i16 y);
-b16 IsRegionFlagOn(u8* list, i16 offset);
-void MarkRegionList(u8* list, i16 stride, u8 code, i16 width, i16 height);
-u8* FindRegionData(u8* list, i16 stride, i16 index);
-void SetPrevRegion(i16 x, i16 y, u8 value);
-u8 GetPrevRegion(i16 x, i16 y);
-u8* GetRoomData(i16 code);
-void EnterRoom(i16 code);
+    // An NPC's scene script (its words +0x22/+0x24).
+    SceneScript GetNpcScript(AreaNpc* npc);
+
+    // The room-region grid and its helpers (areanpc.c).
+    void FillRegionRect(i16 x0, i16 y0, i16 x1, i16 y1, u8 value);
+    void SetRoomRegion(i16 x, i16 y, u8 value);
+    void SetGridByte(i32* grid, i16 x, i16 y, u8 value);
+    void FillEmptyRegions(i16 width, i16 height, u8 value);
+    u8 GetRoomRegion(i16 x, i16 y);
+    u8 GetGridByte(i32* grid, i16 x, i16 y);
+    b16 IsRegionFlagOn(u8* list, i16 offset);
+    void MarkRegionList(u8* list, i16 stride, u8 code, i16 width, i16 height);
+    u8* FindRegionData(u8* list, i16 stride, i16 index);
+    void SetPrevRegion(i16 x, i16 y, u8 value);
+    u8 GetPrevRegion(i16 x, i16 y);
+    u8* GetRoomData(i16 code);
+    void EnterRoom(i16 code);
 
 // The cell's two object positions are 0 and 1; no matching object is -1.
 #define CELL_OBJECT_INDEX_NONE (-1)
-i16 FindCellObject(i16 id, i16 x, i16 y);
-i16 NextNpcSlot(void);
-void CountPlacedNpc(void);
-GZ_ENUM_RETURN(NpcDirectionMask, i16) GetNpcImageOfCode(GZ_ENUM_PARAM(CellCode, i16) code);
-void ClearAreaNpcs(void);
-void AddAreaNpc(const u8* record);
-void MarkAreaNpcs(void);
-void ReleaseNpcTextures(void);
-void LoadNpcTexture(i16 slot, i16 code, i16 mode);
-u16* LoadNpcPalette(u16* colors);
-void LoadAreaNpcImages(u8* record);
+    i16 FindCellObject(i16 id, i16 x, i16 y);
+    i16 NextNpcSlot(void);
+    void CountPlacedNpc(void);
+    GZ_ENUM_RETURN(NpcDirectionMask, i16) GetNpcImageOfCode(GZ_ENUM_PARAM(CellCode, i16) code);
+    void ClearAreaNpcs(void);
+    void AddAreaNpc(const u8* record);
+    void MarkAreaNpcs(void);
+    void ReleaseNpcTextures(void);
+    void LoadNpcTexture(i16 slot, i16 code, i16 mode);
+    u16* LoadNpcPalette(u16* colors);
+    void LoadAreaNpcImages(u8* record);
+
+#ifdef __cplusplus
+}
+#endif
 
 // Field-effect codes identified by the skill records and their handlers.
 // clang-format off
@@ -128,43 +144,39 @@ GZ_ENUM_BEGIN(FieldEffectResult)
     FIELD_EFFECT_DONE = 1
 GZ_ENUM_END(FieldEffectResult)
 
-GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectCode, i16) effect);
-GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBack(i16 who);
-GZ_ENUM_RETURN(FieldEffectResult, i16) ShieldTarget(void);
-GZ_ENUM_RETURN(FieldEffectResult, i16) SetTargetFlag21(void);
-b16 ScatterObjects(void);
-b16 ReturnToLeaderWarp(void);
-b16 ReturnToLeaderMark(void);
-GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBackActor(void);
-GZ_ENUM_RETURN(FieldEffectResult, i16) SpawnActorGroup(void);
-GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void);
-GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag23(void);
-GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void);
-GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag26(void);
-
-// vram's GRB converter is declared here rather than through <Gfx/Vram.h>:
-// retail's NPC palette loader pushes the GRB word unextended, so its
-// declaration took a 16-bit word while vram.c defines it on a u32
-// (see docs/todos/rule-exceptions.tsv).
-u32 GrbToRgb(u16 grb);
-
-// The six object textures (g_objectTextures): load `image` into slot `slot`
-// (0..5), and release them all.
-// @identity-TODO: label-only until the texture TU claims them.
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+    GZ_ENUM_RETURN(FieldEffectResult, i16) RunFieldEffect(GZ_ENUM_PARAM(FieldEffectCode, i16) effect);
+    GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBack(i16 who);
+    GZ_ENUM_RETURN(FieldEffectResult, i16) ShieldTarget(void);
+    GZ_ENUM_RETURN(FieldEffectResult, i16) SetTargetFlag21(void);
+    b16 ScatterObjects(void);
+    b16 ReturnToLeaderWarp(void);
+    b16 ReturnToLeaderMark(void);
+    GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBackActor(void);
+    GZ_ENUM_RETURN(FieldEffectResult, i16) SpawnActorGroup(void);
+    GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void);
+    GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag23(void);
+    GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void);
+    GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag26(void);
+
+    // The six object textures (g_objectTextures): load `image` into slot `slot`
+    // (0..5), and release them all.
+    // @identity-TODO: label-only until the texture TU claims them.
 
     RVA_DECL(0x00058110)
     void LoadObjectTexture(void* image, i16 slot);
     RVA_DECL(0x00058190)
     void ReleaseObjectTextures(void);
+
+    void DrawAreaNpcs(void);
+    u32 GetNpcTexture(i16 slot);
+    u32 DrawNpcAt(i16 x, i16 y, i16 depth, AreaNpc* npc, i16 index);
+
 #ifdef __cplusplus
 }
 #endif
-
-void DrawAreaNpcs(void);
-u32 GetNpcTexture(i16 slot);
-u32 DrawNpcAt(i16 x, i16 y, i16 depth, AreaNpc* npc, i16 index);
 
 #endif // GITEN_GAME_AREANPC_H

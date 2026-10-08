@@ -46,7 +46,7 @@ devicesettings	2	2
 displayconfig	2	2
 equipeffect	2	2
 eventflags	28	28
-fieldmain	59	56
+fieldmain	59	55
 fieldobj	141	138
 fieldscreen	103	102
 fieldview	69	68
@@ -85,7 +85,7 @@ statuspanel	59	56
 textapi	5	5
 textchar	1	0
 textstate	21	20
-treasurebox	150	147
+treasurebox	150	148
 vec3	10	8
 videostate	5	5
 vram	44	39
@@ -119,7 +119,7 @@ bitmapio	_ClearScenePicture	100.0000	100.0000	4	ast4:e21d846682c9	0x57c40	100.00
 bitmapio	_ClearSceneSurfaces	100.0000	100.0000	5	ast4:5986e59d6797	0x57bf0	100.0000	
 bitmapio	_ClearSelectedHotspot	100.0000	100.0000	2	ast4:137e93cf09e1	0x58580	100.0000	
 bitmapio	_ClickHotspotAt	92.8148	92.8148	14	ast4:9b8365f9adcf	0x59180	95.2963	
-bitmapio	_CopyResourceBitmap16	100.0000	99.9221	6	ast4:ac6074baf898	0x56f30	100.0000	
+bitmapio	_CopyResourceBitmap16	100.0000	88.7922	6	ast4:ac6074baf898	0x56f30	100.0000	
 bitmapio	_CopyResourceBitmap8	100.0000	100.0000	7	ast4:8282ba4ca5e1	0x57120	100.0000	
 bitmapio	_CopySurfaceSquare	100.0000	100.0000	2	ast4:c845849c3372	0x590a0	100.0000	
 bitmapio	_CountFieldObjects	100.0000	100.0000	3	ast4:ce33962104b2	0x58640	100.0000	
@@ -544,7 +544,7 @@ fieldmain	_HasAutoMoves	100.0000	100.0000	2	ast4:8c3f457d419d	0x127a0	100.0000
 fieldmain	_HasQueuedObjectEvents	100.0000	100.0000	1	ast4:a4d2903e9995	0x13c00	100.0000	
 fieldmain	_LoadFieldEventTable	100.0000	100.0000	2	ast4:cf8316f6d7ba	0x13d10	100.0000	
 fieldmain	_LoadFieldImage	100.0000	100.0000	2	ast4:8a8ba8e62637	0x144c0	100.0000	
-fieldmain	_LoadFieldMemory	100.0000	100.0000	2	ast4:aec093adb5c5	0x13ca0	100.0000	
+fieldmain	_LoadFieldMemory	100.0000	87.0270	2	ast4:aec093adb5c5	0x13ca0	100.0000	
 fieldmain	_MarkFieldViewCells	100.0000	100.0000	1	ast4:4f0707083593	0x13d70	100.0000	
 fieldmain	_MarkLevelEvent	100.0000	100.0000	1	ast4:dc2cad1634dc	0x13b20	100.0000	
 fieldmain	_MarkVisibleFieldCells	100.0000	100.0000	4	ast4:58c9fb00253c	0x13d90	100.0000	
@@ -2405,7 +2405,7 @@ treasurebox	_GetAreaNpcCount	100.0000	100.0000	1	ast4:d55746da311d	0x1f420	100.0
 treasurebox	_GetAreaNpcTextureSlot	100.0000	100.0000	2	ast4:8275daeef11d	0x1f480	100.0000	
 treasurebox	_GetCellObjectTable	100.0000	100.0000	2	ast4:3323fa5c4320	0x1efb0	100.0000	
 treasurebox	_GetCellSpawnRate	100.0000	100.0000	2	ast4:d019d64d9be7	0x1eef0	100.0000	
-treasurebox	_GetCellTrapDamage	100.0000	98.8571	4	ast4:1edb8b715d6d	0x1c920	100.0000	
+treasurebox	_GetCellTrapDamage	100.0000	100.0000	4	ast4:1edb8b715d6d	0x1c920	100.0000	
 treasurebox	_GetGridByte	100.0000	100.0000	3	ast4:0cf11f404c5d	0x1eba0	100.0000	
 treasurebox	_GetItemMenuStock	100.0000	100.0000	2	ast4:3d24e7938324	0x1c120	100.0000	
 treasurebox	_GetItemMenuTotal	100.0000	100.0000	6	ast4:d108c9d8168a	0x1bb60	100.0000	
@@ -2493,7 +2493,7 @@ treasurebox	_StoreAutomapLevel	100.0000	100.0000	8	ast4:663343ab5c5e	0x1cfc0	100
 treasurebox	_TakeLearnableSkill	100.0000	100.0000	5	ast4:9fbfc6467450	0x1c330	100.0000	
 treasurebox	_TrainingThreshold	100.0000	100.0000	1	ast4:ef653e6fe1ad	0x1c650	100.0000	
 treasurebox	_TransformAutomapPoint	100.0000	100.0000	1	ast4:52170a1be960	0x1d380	100.0000	
-treasurebox	_UpdateAutomapScrollPanel	100.0000	98.2168	3	ast4:0d20708e69ab	0x1d890	100.0000	
+treasurebox	_UpdateAutomapScrollPanel	100.0000	98.9510	3	ast4:0d20708e69ab	0x1d890	100.0000	
 treasurebox	_UpdateCurrentRoom	100.0000	100.0000	2	ast4:e1d142da7cf8	0x1f070	100.0000	
 treasurebox	_UpdateInfoBar	100.0000	100.0000	3	ast4:da7f1c8a2bf9	0x1ea50	100.0000	
 treasurebox	_WriteAutomapAreas	100.0000	100.0000	8	ast4:991d721f9276	0x1e3c0	100.0000	

@@ -3355,6 +3355,11 @@ void LoadNpcTexture(i16 slot, i16 code, i16 mode) {
     FreeImageFile(image);
 }
 
+// ABI constraint: this caller sees a WORD argument; vram defines the C
+// converter with a DWORD argument. Retail pushes the palette word unextended.
+// See docs/todos/rule-exceptions.tsv.
+u32 GrbToRgb(u16 grb);
+
 // Sets palette colours 8..13 from six GRB words; returns the data after them.
 RVA(0x0001f620, 0x32)
 u16* LoadNpcPalette(u16* colors) {
