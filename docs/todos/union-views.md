@@ -2,10 +2,10 @@
 
 King's Field's [cast, union and goto review](https://github.com/sushi-shi/kings-field-decomp/blob/master/docs/patterns/cast-union-goto-review.md) checks every union member against its consumers before removing a view. This is the corresponding source review for Giten's `src/` and `include/` tree. A union with several used views is a model of one packed value or serialized payload; the review does not establish that the original source spelled a union.
 
-There are 20 written union definitions. Every definition and its source consumers are listed below.
+There are 18 written union definitions. Every definition and its source consumers are listed below.
 This is a view-level review, not a completed member-by-member census: it does
 not count every member access across the compiled C and C++ variants or prove
-which member determines each union's extent. For each of the 20 definitions,
+which member determines each union's extent. For each of the 18 definitions,
 resolve all member accesses, record unused members and compare the union size
 with its largest used view before removing any alternative. Check the owning
 functions' instructions and referents after a proposed change. A missing
@@ -24,9 +24,7 @@ unused member can still determine the size of a copied or stack object.
 | `MenuBox` flags (`include/Ui/MenuBox.h`) | `flags` in game/script callers; `flagBits.redraw` and `flagBits.repaintMode` in `src/Ui/menubox.c`. | Keep packed flag and bit view. |
 | `FusionSummary` (`include/Game/Fusion.h`) | `value` and all four `fields` bits in `src/Game/fusion.c`. | Keep packed result and decoded bits. |
 | `ItemStack` (`include/Game/ItemStack.h`) | Packed `value` in `src/Script/scriptactor.c`; all item/count/attachment fields in `src/Game/itemrecord.c`. | Keep packed script value and item fields. |
-| `ItemSlot` (`include/Game/Character.h`) | Packed `value` in `src/Script/scriptactor.c`; `item`, `attachment`, `quantity` in `src/Game/itemrecord.c` and other equipment callers. | Keep packed equipment value and fields. |
-| `Character` alignment A (`include/Game/Character.h`) | `alignmentA` in `src/Game/character.c`; `facing` through `GetFieldActor(...)->facing` in `src/Game/skilluse.c` and `src/Game/partyaction.c`. | Keep roster/actor overlap; see below. |
-| `Character` alignment B (`include/Game/Character.h`) | `alignmentB` in `src/Game/character.c`; `fieldHidden` in `src/Script/scriptactor.c`. | Keep roster/actor overlap. |
+| `ItemSlot` (`include/Game/CharacterCore.h`) | Packed `value` in `src/Script/scriptactor.c`; `item`, `attachment`, `quantity` in `src/Game/itemrecord.c` and other equipment callers. | Keep packed equipment value and fields. |
 | `TextAttr` (`include/Text/TextAttr.h`) | `value` in `src/Text/font.cpp`; `fg`, `bg`, `dim` in `src/Util/nibble.c`; `flags` in `include/Text/TextAttr.h`. | Keep packed text attribute and nibbles. |
 | `ShotFile` (`include/Gfx/Shot.h`) | `table.offsets` and `bytes` in `src/Gfx/shot.c`. | Keep file header and byte-offset views. |
 | `EffectCommand` (`include/Gfx/Motion.h`) | `opcode`, `frame`, `jump`, `parameter` in `src/Gfx/motion.c`. | Keep command variants. |
@@ -39,9 +37,15 @@ unused member can still determine the size of a copied or stack object.
 
 `RunCellTrap` copies one `ExitCell` and reads only that view. The other seven `MapCell` members have no direct source consumer. A focused MSVC 5.0 control replacing the local `MapCell` with `ExitCell` changed its stack reservation from 16 to 12 bytes and moved every argument/local stack address in the exact retail body. The source was restored. A narrower union must preserve a supported 16-byte object without inventing trailing padding or using an unrelated member merely for size; neither is established yet. Resolve the local object's complete extent from retail stack writes and the `CopyExitAt` contract before changing this definition.
 
-## Indirect view: `Character` alignment A
+## Separate character and field-actor tails
 
-The anonymous `Character` union has `AlignmentInfo alignmentA` and an alternate struct with `fieldPosition`, `facing` and `fieldStateReserved`. A direct spelling search found no `fieldPosition` or `fieldStateReserved` consumer, but `facing` is read and written through `GetFieldActor`, whose declared result is `Character*`. A trial replacing the union with `AlignmentInfo` compiled the `character` unit but broke `skilluse.c` and `partyaction.c`; it was reverted. The field actor's separate `FieldObject.pos` and `direction` declarations do not by themselves remove the typed `Character.facing` consumer. Any future canonical-owner split must trace those return types and callers before changing the shared layout.
-The per-member review should also establish whether the unused fields set any
-extent or offset that `AlignmentInfo` and `facing` do not already require;
-their absent direct reads alone are not a removal verdict.
+`CharacterCore` contains the shared prefix. `Character` stores `alignmentA`
+and `alignmentB` after that prefix; `FieldActor` instead stores map position,
+direction and field state there. These are separate record types, rather than
+alternative union members of `Character`.
+
+`GetFieldActor` returns `FieldActor*`. Generic character operations borrow its
+`core` member through `GetFieldActorCore`; they do not interpret field state as
+roster alignment records. Whole-character allocation and serialization use
+`Character`. The field actor's complete standalone extent and original type
+name remain open, as recorded in `include/Game/FieldActor.h`.
