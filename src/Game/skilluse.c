@@ -1884,7 +1884,7 @@ static __inline void LocateFieldSkillUser(void) {
 RVA(0x0002d7c0, 0x370)
 b16 RunFieldSkillUse(void) {
     i16 flags;
-    i16 picked;
+    GZ_ENUM_LOCAL(TargetPickResult, i16) picked;
 
     switch (GetGamePhase()) {
         case SKILL_USE_PHASE_START:

@@ -2709,7 +2709,7 @@ void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part) {
 }
 
 RVA(0x00040590, 0x4d)
-i16 AttachEquipItem(i16 member, i16 part, i16 index) {
+i16 AttachEquipItem(i16 member, GZ_ENUM_PARAM(EquipPart, i16) part, i16 index) {
     ItemSlot item = GetRosterEquipSlot(member, part);
     i16 previous = item.attachment;
     item.attachment = index;

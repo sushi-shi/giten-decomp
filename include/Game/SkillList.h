@@ -30,7 +30,7 @@ static __inline SkillRank* GetSkillRank(SkillRankList* list, i16 index) {
 i32 BuildLearnableSkillRanks(CharacterCore* character);
 int CompareSkillRanks(const void* left, const void* right);
 
-b16 RollSkillLearning(CharacterCore* character, i16 skill);
+b16 RollSkillLearning(const CharacterCore* character, i16 skill);
 
 i16 AddSkill(WordList* list, i16 skill);
 
@@ -40,7 +40,7 @@ void CopySkillList(CharacterCore* from, WordList* to);
 // The skills a character can know.
 #define SKILL_LIST_CAPACITY 30
 
-static __inline b32 IsSkillListFull(WordList* list) {
+static __inline b32 IsSkillListFull(const WordList* list) {
     return GetWordCount(list) >= SKILL_LIST_CAPACITY;
 }
 
@@ -52,7 +52,7 @@ i16 RemoveLowestAffiliatedSkill(CharacterCore* character);
 
 // Index of the matching character affiliation, or -1.
 RVA_DECL(0x0002e1a0)
-i16 FindSkillAffiliation(CharacterCore* character, i16 skill);
+i16 FindSkillAffiliation(const CharacterCore* character, i16 skill);
 
 // Highest level among a character's skills matching an affiliation; -1 if none.
 RVA_DECL(0x0002e1e0)

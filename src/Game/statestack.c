@@ -2714,7 +2714,7 @@ static __inline void SelectItemUserAsTarget(void) {
 // cl across the action and target stores. Both preserve pickTargetHigh.
 RVA(0x0001a400, 0x3e0)
 b16 RunItemUse(void) {
-    i16 kind;
+    GZ_ENUM_LOCAL(ItemKind, i16) kind;
 
     switch (GetGamePhase()) {
         case ITEM_USE_PHASE_OPEN:
@@ -2751,7 +2751,7 @@ b16 RunItemUse(void) {
             const ItemRecord* record;
             i16 flags;
             i16 range;
-            i16 picked;
+            GZ_ENUM_LOCAL(TargetPickResult, i16) picked;
             record = GetLoadedRecord(s_useItem);
             kind = record->kind;
             if (ItemUseInvokesSkill(kind)) {

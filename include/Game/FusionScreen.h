@@ -50,9 +50,9 @@ GZ_ENUM_BEGIN_SPLIT(FusionPickerState, i16)
     FUSION_PICKER_PREVIEW = 3
 GZ_ENUM_END_SPLIT(FusionPickerState)
 
-i16 RunFirstFusionPicker(i16 step, i16 triple);
-i16 RunSecondFusionPicker(i16 step);
-i16 RunThirdFusionPicker(i16 step);
+GZ_ENUM_RETURN(FusionPickerState, i16) RunFirstFusionPicker(GZ_ENUM_PARAM(FusionPickerState, i16) step, i16 triple);
+GZ_ENUM_RETURN(FusionPickerState, i16) RunSecondFusionPicker(GZ_ENUM_PARAM(FusionPickerState, i16) step);
+GZ_ENUM_RETURN(FusionPickerState, i16) RunThirdFusionPicker(GZ_ENUM_PARAM(FusionPickerState, i16) step);
 void DrawFusionSummaryGrid(void);
 i16 BuildPairFusionCandidates(i16 skipCalculation);
 i16 BuildTripleFusionSummaries(i16 third);
@@ -61,7 +61,7 @@ FusionSummary* GetFusionPairSummaryCell(i16 first, i16 second);
 i16 CreateFusionList(i16 window, i16 count);
 void FusionListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 void FusionSelectionTextHook(i16 plane, i16 event, i16 value);
-i32 CloseFusionPicker(i16 selection);
+GZ_ENUM_RETURN(FusionPickerState, i32) CloseFusionPicker(i16 selection);
 i16 CreateFusionInfoPlane(i16 unused);
 void DrawFusionCharacterDetails(i16 plane, CharacterCore* character);
 void DrawFusionStatGroup(i16 plane, i16 x, i16* stats);

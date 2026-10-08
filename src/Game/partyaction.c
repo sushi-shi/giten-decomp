@@ -2437,7 +2437,10 @@ static __inline i16 CurrentMemberCombatantId(void) {
     return PartyCombatantId(FindPartyPositionOfId(s_pickedIndex));
 }
 
-static __inline i16 PickMemberActionTarget(CharacterCore* character, i16 flags, i16 range) {
+static __inline GZ_ENUM_RETURN(
+    TargetPickResult,
+    i16
+) PickMemberActionTarget(CharacterCore* character, i16 flags, i16 range) {
     if (character->pickRole == PICK_ROLE_MAGIC) {
         if (character->pickTarget == SKILL_FUSION) {
             return RunPickTargetWindow(0, range, TARGET_PICK_FIELD_OBJECT, 0);

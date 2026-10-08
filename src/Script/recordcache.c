@@ -103,7 +103,7 @@ void ResetWordList(WordList* list, i16 count) {
 }
 
 RVA(0x0002dc60, 0x3b)
-i16* CopyWordArray(i16* words, i16 count) {
+i16* CopyWordArray(const i16* words, i16 count) {
     i16* copy;
     i16 i;
     AllocWordArray(&copy, count);
@@ -114,7 +114,7 @@ i16* CopyWordArray(i16* words, i16 count) {
 }
 
 RVA(0x0002dca0, 0x32)
-i16 FindWord(WordList* list, i16 word) {
+i16 FindWord(const WordList* list, i16 word) {
     i16 i;
     if (list) {
         for (i = 0; i < list->count; i++) {
@@ -229,7 +229,7 @@ void CopySkillList(CharacterCore* from, WordList* to) {
 }
 
 RVA(0x0002dfb0, 0x42)
-b16 RollSkillLearning(CharacterCore* character, i16 skill) {
+b16 RollSkillLearning(const CharacterCore* character, i16 skill) {
     i16 chance = character->level;
     chance = (chance - GetSkillLevel(skill)) * 10 + GetStatTotal(character, STAT_INTELLIGENCE);
     return chance > RandomAverage(10, 60, 2);
@@ -306,7 +306,7 @@ i16 RemoveLowestAffiliatedSkill(CharacterCore* character) {
 // Which of the character's three affiliations (0..2) matches the family of
 // skill `skill`; -1 when none does.
 RVA(0x0002e1a0, 0x37)
-i16 FindSkillAffiliation(CharacterCore* character, i16 skill) {
+i16 FindSkillAffiliation(const CharacterCore* character, i16 skill) {
     GZ_ENUM_LOCAL(SkillFamily, i16) family = GetSkillFamily(skill);
     i16 i;
     for (i = 0; i < AFFILIATION_COUNT; i++) {

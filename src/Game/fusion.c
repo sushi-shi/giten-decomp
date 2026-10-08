@@ -1508,7 +1508,7 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
 }
 
 RVA(0x00028be0, 0x290)
-i16 RunFirstFusionPicker(i16 step, i16 triple) {
+GZ_ENUM_RETURN(FusionPickerState, i16) RunFirstFusionPicker(GZ_ENUM_PARAM(FusionPickerState, i16) step, i16 triple) {
     i16 count;
     i16 result;
     i16 oldOffset;
@@ -1865,7 +1865,7 @@ void DrawFusionStatGroup(i16 plane, i16 x, i16* stats) {
 }
 
 RVA(0x00029660, 0x85)
-i32 CloseFusionPicker(i16 selection) {
+GZ_ENUM_RETURN(FusionPickerState, i32) CloseFusionPicker(i16 selection) {
     if (s_secondFusionDetailPlane >= 0) {
         s_secondFusionDetailPlane = CloseTextWindow(s_secondFusionDetailPlane);
     }
@@ -2113,7 +2113,7 @@ i16 CreateFusionPreviewCard(i16 window, i16 slot) {
 }
 
 RVA(0x00029de0, 0x11f)
-i16 RunSecondFusionPicker(i16 step) {
+GZ_ENUM_RETURN(FusionPickerState, i16) RunSecondFusionPicker(GZ_ENUM_PARAM(FusionPickerState, i16) step) {
     i16 count;
     GZ_ENUM_LOCAL(TextEvent, i16) result;
     switch (step) {
@@ -2153,7 +2153,7 @@ i16 RunSecondFusionPicker(i16 step) {
 }
 
 RVA(0x00029f00, 0xd4)
-i16 RunThirdFusionPicker(i16 step) {
+GZ_ENUM_RETURN(FusionPickerState, i16) RunThirdFusionPicker(GZ_ENUM_PARAM(FusionPickerState, i16) step) {
     i16 count;
     GZ_ENUM_LOCAL(TextEvent, i16) result;
     switch (step) {

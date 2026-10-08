@@ -49,7 +49,7 @@ void ResetWordList(WordList* list, i16 count);
 
 // Index of a matching word, or WORD_NONE.
 RVA_DECL(0x0002dca0)
-i16 FindWord(WordList* list, i16 word);
+i16 FindWord(const WordList* list, i16 word);
 
 #define ContainsWord(list, word) (FindWord((list), (word)) >= 0)
 
@@ -61,7 +61,7 @@ void MoveWord(WordList* list, i16 from, i16 to);
 RVA_DECL(0x0002de10)
 i16 RemoveWord(WordList* list, i16 word);
 
-i16* CopyWordArray(i16* words, i16 count);
+i16* CopyWordArray(const i16* words, i16 count);
 
 void StripZeroWords(WordList* list);
 i16 KeepFirstSixWords(WordList* list);

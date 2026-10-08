@@ -628,7 +628,7 @@ RVA(0x00012be0, 0xb3)
 i16 RunPendingTalk(void) {
     b16 abort = ExchangeAbortPending(false);
     i16 objects = CountFieldObjects();
-    i16 picked;
+    GZ_ENUM_LOCAL(TargetPickResult, i16) picked;
     FieldActor* actor;
     ExchangeAbortPending(abort);
     if (!objects) {
