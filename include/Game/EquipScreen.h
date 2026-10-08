@@ -62,7 +62,7 @@ extern char g_emptyEquipPickLabel[];
 
 // The equipment part under the cursor, or -1 when none is picked. Reset
 // forgets the selection; clear restores its normal appearance before forgetting it.
-i16 PollEquipPart(i16 member, GZ_ENUM_PARAM(EquipPickMode, i16) mode);
+GZ_ENUM_RETURN(EquipPart, i16) PollEquipPart(i16 member, GZ_ENUM_PARAM(EquipPickMode, i16) mode);
 
 // The status screen's attach page: fits a gem item into a bag entry or an
 // equipped part (sub-state 0 opens it, 1 closes it; 2..8 pick the item, the

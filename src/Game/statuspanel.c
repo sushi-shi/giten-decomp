@@ -858,7 +858,7 @@ DATA(0x00083c94)
 char g_emptyEquipPickLabel[4] = {0};
 
 DATA(0x000649b8)
-static const i16 s_equipPickCategories[8] = {
+static const GZ_ENUM_STORAGE(EquipPart, i16) s_equipPickCategories[8] = {
     EQUIP_PART_WEAPON,
     EQUIP_PART_GUN,
     EQUIP_PART_AMMO,
@@ -870,7 +870,7 @@ static const i16 s_equipPickCategories[8] = {
 };
 
 DATA(0x0006a250)
-static i16 s_equipPickPart = EQUIP_PART_NONE;
+static GZ_ENUM_STORAGE(EquipPart, i16) s_equipPickPart = EQUIP_PART_NONE;
 
 RVA(0x00042cd0, 0x182)
 i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
@@ -2009,7 +2009,7 @@ static __inline void UnhighlightEquipPart(i16 member) {
 }
 
 RVA(0x00044fb0, 0x17f)
-i16 PollEquipPart(i16 member, GZ_ENUM_PARAM(EquipPickMode, i16) mode) {
+GZ_ENUM_RETURN(EquipPart, i16) PollEquipPart(i16 member, GZ_ENUM_PARAM(EquipPickMode, i16) mode) {
     if (mode < EQUIP_PICK_PART) {
         s_equipPickPart = EQUIP_PART_NONE;
         goto returnPick;
