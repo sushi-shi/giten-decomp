@@ -1999,7 +1999,7 @@ void RenderNPC(BOOL ownCellOnly) {
         textureSlot = GetAreaNpcTextureSlot(npc);
         SelectNpcBillboardTexture(texture, textureSlot);
         g_d3dDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, GetTextureHandle(texture));
-        bottomMargin = texture->bottomMargin;
+        bottomMargin = GetTextureBottomMargin(texture);
         if (g_deviceType == D3D_DEVICE_RAMP) {
             result = g_d3dDevice->SetLightState(
                 D3DLIGHTSTATE_MATERIAL,
@@ -2283,7 +2283,8 @@ void RenderEnemy(BOOL shade, BOOL anyCell, BOOL byDistance) {
                 s_enemy[0].z = s_enemy[3].z;
                 s_enemy[1].z = s_enemy[2].z;
                 layer = GetObjectLayer(index) & 1;
-                s_enemy[2].y = s_enemy[3].y = lift - g_enemyTextures[layer][0].bottomMargin;
+                s_enemy[2].y = s_enemy[3].y =
+                    lift - GetTextureBottomMargin(&g_enemyTextures[layer][0]);
                 s_enemy[1].y = s_enemy[2].y + height;
                 s_enemy[0].y = s_enemy[1].y;
                 TranslateBillboard(s_enemy, dx, dz);
@@ -2673,7 +2674,7 @@ i32 DrawSprites(void) {
         if (frame == SPRITE_UNPLACED) {
             continue;
         }
-        group = GetSpriteSlot(slot)->group;
+        group = GetSpriteSlotGroup(GetSpriteSlot(slot));
         if (IsSpriteFrameIndexOutOfRange(group, frame)) {
             continue;
         }
@@ -2799,7 +2800,7 @@ void DrawSceneSprites(void) {
         if (GetSpriteSlotFrame(slot) == SPRITE_UNPLACED) {
             continue;
         }
-        if (IsSpriteFrameIndexOutOfRange(slot->group, GetSpriteSlotFrame(slot))) {
+        if (IsSpriteFrameIndexOutOfRange(GetSpriteSlotGroup(slot), GetSpriteSlotFrame(slot))) {
             continue;
         }
         surface = GetSpriteSlotPicture(slot)->surface;

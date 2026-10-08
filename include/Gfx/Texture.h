@@ -36,6 +36,8 @@ typedef struct Texture {
     u16 bottomMargin;
 } Texture;
 
+#define GetTextureBottomMargin(texture) ((texture)->bottomMargin)
+
 #define GetTextureHandle(texture) ((texture)->handle)
 
 #define HasTextureHandle(texture) (GetTextureHandle(texture) != 0)
