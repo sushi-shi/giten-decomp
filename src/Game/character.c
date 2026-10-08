@@ -1288,7 +1288,7 @@ void RequestStatusRedraw(void) {
 
 RVA(0x0003e6b0, 0x13)
 b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
-    return TestBit(conditions->bits, condition);
+    return TestBit(GetConditionBits(conditions), condition);
 }
 
 #define AccumulateCollapseOrPetrification(blocked, conditions)                                     \
@@ -1568,7 +1568,7 @@ GZ_ENUM_RETURN(ConditionAddResult, i16) AddCondition(ConditionSet* conditions, G
         }
         break;
     }
-    SetBit(conditions->bits, condition);
+    SetBit(GetConditionBits(conditions), condition);
     SetConditionAge(conditions, condition, 0);
     return CONDITION_ADD_ADDED;
 }
@@ -1793,7 +1793,7 @@ RVA(0x0003f2b0, 0x3e)
 const char* GetFirstConditionName(ConditionSet* conditions) {
     i16 i;
     for (i = 0; i < sizeof(s_conditionNames) / sizeof(s_conditionNames[0]); i++) {
-        if (TestBit(conditions->bits, s_conditionNames[i].bit)) {
+        if (TestBit(GetConditionBits(conditions), s_conditionNames[i].bit)) {
             return s_conditionNames[i].name;
         }
     }
@@ -1805,7 +1805,7 @@ const char* GetFirstConditionName(ConditionSet* conditions) {
 RVA(0x0003f2f0, 0x5a)
 const char* NextConditionName(ConditionSet* conditions, i16* cursor) {
     for (; *cursor < sizeof(s_conditionNames) / sizeof(s_conditionNames[0]); (*cursor)++) {
-        if (TestBit(conditions->bits, s_conditionNames[*cursor].bit)) {
+        if (TestBit(GetConditionBits(conditions), s_conditionNames[*cursor].bit)) {
             return s_conditionNames[*cursor].name;
         }
     }
@@ -1830,7 +1830,7 @@ RVA(0x0003f380, 0x3c)
 i16 GetFirstConditionIndex(CharacterCore* character) {
     i16 i;
     for (i = 0; i < sizeof(s_conditionNames) / sizeof(s_conditionNames[0]); i++) {
-        if (TestBit(GetCharacterConditions(character)->bits, s_conditionNames[i].bit)) {
+        if (TestBit(GetConditionBits(GetCharacterConditions(character)), s_conditionNames[i].bit)) {
             return i;
         }
     }

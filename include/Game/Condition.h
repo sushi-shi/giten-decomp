@@ -17,16 +17,19 @@ typedef struct ConditionSet {
     u8 ages[CONDITION_COUNT];
 } ConditionSet;
 
+// The five-byte condition bitmap borrowed by bit operations and flag tags.
+#define GetConditionBits(conditions) ((conditions)->bits)
+
 static __inline void
 ClearCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition) {
-    ClearBit(conditions->bits, condition);
+    ClearBit(GetConditionBits(conditions), condition);
 }
 
 #define AccumulateConditionBits(conditions, found)                                                 \
     do {                                                                                           \
         i16 conditionByte;                                                                         \
         for (conditionByte = 0; conditionByte < 5; conditionByte++) {                              \
-            (found) |= (conditions)->bits[conditionByte];                                          \
+            (found) |= GetConditionBits(conditions)[conditionByte];                                \
         }                                                                                          \
     } while (0)
 

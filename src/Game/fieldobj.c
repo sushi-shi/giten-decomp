@@ -2184,8 +2184,8 @@ void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
         );
     }
     NormalizeEquipSlots(&object->actor.core);
-    for (i = 0; i < sizeof(object->actor.core.conditions.bits); i++) {
-        GetFieldObjectConditions(object)->bits[i] = 0;
+    for (i = 0; i < sizeof(GetConditionBits(GetFieldObjectConditions(object))); i++) {
+        GetConditionBits(GetFieldObjectConditions(object))[i] = 0;
     }
     for (i = 0; i < sizeof(object->actor.core.personalFlags); i++) {
         GetFieldObjectFlags(object)[i] = 0;
