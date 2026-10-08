@@ -81,14 +81,14 @@ recordcache	43	42
 restore	3	3
 savegame	14	13
 screensave	9	9
-scriptactor	202	202
+scriptactor	202	201
 scriptctx	35	35
 scriptfield	9	9
 scriptop	3	3
 scriptsprite	2	2
 scriptswitch	10	10
 scripttext	59	58
-scriptvars	108	108
+scriptvars	108	107
 scriptvm	2	2
 shot	15	14
 skillattack	5	5
@@ -1767,7 +1767,7 @@ scriptactor	_OpPercentLongVar	100.0000	100.0000	1	ast4:4c696ccc9289	0x337f0	100.
 scriptactor	_OpPushReturnTarget	100.0000	100.0000	2	ast4:7960ca1ce99a	0x33f10	100.0000	
 scriptactor	_OpQueueAutoMoves	100.0000	100.0000	2	ast4:ec6e80a2b72f	0x35cf0	100.0000	
 scriptactor	_OpRandLongVar	100.0000	100.0000	1	ast4:b461b0d97a04	0x33b00	100.0000	
-scriptactor	_OpRebalanceMemberStats	100.0000	100.0000	9	ast4:f674b65749c3	0x36560	100.0000	
+scriptactor	_OpRebalanceMemberStats	100.0000	99.7826	9	ast4:f674b65749c3	0x36560	100.0000	
 scriptactor	_OpRecoverRosterPool	100.0000	100.0000	8	ast4:23c1c0cdc7a1	0x382b0	100.0000	
 scriptactor	_OpRedrawItemListTotal	100.0000	100.0000	1	ast4:ec74365430b6	0x35770	100.0000	
 scriptactor	_OpRemoveFromRoster	100.0000	100.0000	2	ast4:51b8941d56bf	0x361b0	100.0000	
@@ -2036,7 +2036,7 @@ scriptvars	_PreloadScriptFiles	100.0000	100.0000	1	ast4:86fb5758afa7	0x3b6c0	100
 scriptvars	_PurgeScriptFiles	100.0000	100.0000	2	ast4:f8b500cc117c	0x3b840	100.0000	
 scriptvars	_PushCallFrame	100.0000	100.0000	1	ast4:1a9bdf47d20e	0x3c1f0	100.0000	
 scriptvars	_ReadScriptBlock	100.0000	100.0000	1	ast4:5222408bafab	0x3aa90	100.0000	
-scriptvars	_ReadScriptEntry	100.0000	100.0000	1	ast4:26830310f156	0x3ab10	100.0000	
+scriptvars	_ReadScriptEntry	100.0000	99.8551	1	ast4:26830310f156	0x3ab10	100.0000	
 scriptvars	_ReleaseScriptFiles	100.0000	100.0000	2	ast4:dc83edef2b1d	0x3b810	100.0000	
 scriptvars	_ResizeScriptEntry	100.0000	100.0000	3	ast4:ed41dca651ba	0x3abc0	100.0000	
 scriptvars	_RestoreSystemVars	100.0000	100.0000	1	ast4:4294376734d5	0x3bf30	100.0000	

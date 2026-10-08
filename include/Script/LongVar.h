@@ -2,30 +2,31 @@
 #define GITEN_SCRIPT_LONGVAR_H
 
 #include <Ints.h>
+#include <Script/LongOperandMode.h>
 
 // The long-variable script opcodes: each reads a variable index (and
 // operands) from the script, works in an accumulator and writes the variable
 // back. `inPlace` takes the variable's own value as the first operand instead
 // of an immediate.
 i16 ReadLongVarIndex(void);
-i32 ReadLongOperand(i16 inPlace);
-void LoadLongOperands(i16 inPlace);
+i32 ReadLongOperand(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void LoadLongOperands(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
 i32 StoreLongResult(void);
 void LoadLongVar(void);
 void StoreLongVar(void);
 void OpSetLongVar(void);
-void OpMulLongVar(i16 inPlace);
-void OpDivLongVar(i16 inPlace);
-void OpAddLongVar(i16 inPlace);
-void OpSubLongVar(i16 inPlace);
-void OpAndLongVar(i16 inPlace);
-void OpOrLongVar(i16 inPlace);
-void OpXorLongVar(i16 inPlace);
-void OpShlLongVar(i16 inPlace);
-void OpSarLongVar(i16 inPlace);
-void OpPercentLongVar(i16 inPlace);
-void OpSqrtLongVar(i16 inPlace);
-void OpModLongVar(i16 inPlace);
+void OpMulLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpDivLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpAddLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpSubLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpAndLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpOrLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpXorLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpShlLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpSarLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpPercentLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpSqrtLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
+void OpModLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace);
 void OpSwapLongVars(void);
 void OpCopyLongVar(void);
 void OpUnsetLongVar(void);

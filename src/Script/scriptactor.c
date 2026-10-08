@@ -600,15 +600,15 @@ i16 ReadLongVarIndex(void) {
 }
 
 RVA(0x000335c0, 0x1d)
-i32 ReadLongOperand(i16 inPlace) {
-    if (inPlace == 0) {
+i32 ReadLongOperand(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
+    if (inPlace == LONG_OPERAND_EXPLICIT) {
         return ReadScriptValue();
     }
     return GetScriptLongVar(s_longVarIndex);
 }
 
 RVA(0x000335e0, 0x22)
-void LoadLongOperands(i16 inPlace) {
+void LoadLongOperands(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     ReadLongVarIndex();
     s_longAcc = ReadLongOperand(inPlace);
     s_longOperand = ReadScriptValue();
@@ -621,14 +621,14 @@ i32 StoreLongResult(void) {
 }
 
 RVA(0x00033630, 0x25)
-void OpMulLongVar(i16 inPlace) {
+void OpMulLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     LoadLongOperands(inPlace);
     s_longAcc *= s_longOperand;
     StoreLongResult();
 }
 
 RVA(0x00033660, 0x34)
-void OpDivLongVar(i16 inPlace) {
+void OpDivLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     LoadLongOperands(inPlace);
     if (s_longOperand == 0) {
         s_longOperand = 1;
@@ -638,49 +638,49 @@ void OpDivLongVar(i16 inPlace) {
 }
 
 RVA(0x000336a0, 0x24)
-void OpAddLongVar(i16 inPlace) {
+void OpAddLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     LoadLongOperands(inPlace);
     s_longAcc += s_longOperand;
     StoreLongResult();
 }
 
 RVA(0x000336d0, 0x24)
-void OpSubLongVar(i16 inPlace) {
+void OpSubLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     LoadLongOperands(inPlace);
     s_longAcc -= s_longOperand;
     StoreLongResult();
 }
 
 RVA(0x00033700, 0x24)
-void OpAndLongVar(i16 inPlace) {
+void OpAndLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     LoadLongOperands(inPlace);
     s_longAcc &= s_longOperand;
     StoreLongResult();
 }
 
 RVA(0x00033730, 0x24)
-void OpOrLongVar(i16 inPlace) {
+void OpOrLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     LoadLongOperands(inPlace);
     s_longAcc |= s_longOperand;
     StoreLongResult();
 }
 
 RVA(0x00033760, 0x24)
-void OpXorLongVar(i16 inPlace) {
+void OpXorLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     LoadLongOperands(inPlace);
     s_longAcc ^= s_longOperand;
     StoreLongResult();
 }
 
 RVA(0x00033790, 0x24)
-void OpShlLongVar(i16 inPlace) {
+void OpShlLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     LoadLongOperands(inPlace);
     s_longAcc <<= s_longOperand;
     StoreLongResult();
 }
 
 RVA(0x000337c0, 0x24)
-void OpSarLongVar(i16 inPlace) {
+void OpSarLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     LoadLongOperands(inPlace);
     s_longAcc >>= s_longOperand;
     StoreLongResult();
@@ -688,7 +688,7 @@ void OpSarLongVar(i16 inPlace) {
 
 // The accumulator as a percentage of the operand.
 RVA(0x000337f0, 0x3d)
-void OpPercentLongVar(i16 inPlace) {
+void OpPercentLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     i32 scaled;
     LoadLongOperands(inPlace);
     scaled = s_longAcc * 100;
@@ -700,14 +700,14 @@ void OpPercentLongVar(i16 inPlace) {
 }
 
 RVA(0x00033830, 0x2b)
-void OpSqrtLongVar(i16 inPlace) {
+void OpSqrtLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     ReadLongVarIndex();
     s_longAcc = (i32)sqrt(ReadLongOperand(inPlace));
     StoreLongResult();
 }
 
 RVA(0x00033860, 0x24)
-void OpModLongVar(i16 inPlace) {
+void OpModLongVar(GZ_ENUM_PARAM(LongOperandMode, i16) inPlace) {
     LoadLongOperands(inPlace);
     s_longAcc %= s_longOperand;
     StoreLongResult();
