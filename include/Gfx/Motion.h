@@ -17,6 +17,13 @@ GZ_ENUM_BEGIN(EffectOpcode)
 GZ_ENUM_END(EffectOpcode);
 // clang-format on
 
+GZ_ENUM_BEGIN(EffectCommandResult)
+    EFFECT_COMMAND_ADVANCE = -1,
+    EFFECT_COMMAND_END = 0,
+    EFFECT_COMMAND_FRAME = 1
+GZ_ENUM_END(EffectCommandResult)
+;
+
 typedef struct EffectSprite {
     EffectImageCode image;
     i16 x;
@@ -154,7 +161,7 @@ void StopEffectScript(void);
 EffectCommand* GetEffectScript(void);
 EffectCommand* StepEffectScript(void);
 EffectCommand* StepScreenEffectScript(void);
-i16 ExecuteEffectCommand(void);
+GZ_ENUM_RETURN(EffectCommandResult, i16) ExecuteEffectCommand(void);
 
 void InitEffectImageSets(void);
 b16 ExchangeEffectSkipping(b16 skipping);

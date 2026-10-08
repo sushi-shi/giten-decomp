@@ -245,16 +245,9 @@ void StartEffectScript(u8* base, u16 offset) {
     s_effectDelay = 0;
 }
 
-GZ_ENUM_BEGIN(EffectCommandResult)
-    EFFECT_COMMAND_ADVANCE = -1,
-    EFFECT_COMMAND_END = 0,
-    EFFECT_COMMAND_FRAME = 1
-GZ_ENUM_END(EffectCommandResult)
-;
-
 RVA(0x00004c00, 0xc1)
 EffectCommand* StepEffectScript(void) {
-    i16 result;
+    GZ_ENUM_LOCAL(EffectCommandResult, i16) result;
     i16 count;
     i16 i;
     void* next;
@@ -283,7 +276,7 @@ EffectCommand* StepEffectScript(void) {
 }
 
 RVA(0x00004cd0, 0x7f)
-i16 ExecuteEffectCommand(void) {
+GZ_ENUM_RETURN(EffectCommandResult, i16) ExecuteEffectCommand(void) {
     void* next;
     switch (s_effectScript->opcode) {
         case EFFECT_JUMP:
@@ -320,7 +313,7 @@ EffectCommand* GetEffectScript(void) {
 
 RVA(0x00004d70, 0xc7)
 EffectCommand* StepScreenEffectScript(void) {
-    i16 result;
+    GZ_ENUM_LOCAL(EffectCommandResult, i16) result;
     i16 count;
     i16 i;
     void* next;

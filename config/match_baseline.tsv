@@ -51,7 +51,7 @@ fieldmain	59	56
 fieldobj	141	137
 fieldscreen	103	102
 fieldview	69	68
-font	150	144
+font	150	145
 fusion	114	111
 gameloop	7	7
 gamestate	7	7
@@ -78,7 +78,7 @@ scriptfield	9	9
 scriptop	3	3
 scriptswitch	10	10
 scripttext	59	58
-scriptvars	110	110
+scriptvars	110	109
 scriptvm	2	2
 shot	15	14
 skilluse	53	51
@@ -97,7 +97,7 @@ vramcell	14	14
 waitstate	7	7
 windowcolor	13	13
 windowtext	2	2
-winmain	128	120
+winmain	128	121
 worldtravel	24	24
 # [functions]	unit	function	best_pct	cur_pct	tries	src_hash	rva	hist_pct	state
 abortflag	_AddSceneHotspot	100.0000	100.0000	2	ast4:b2b717a6f4ee	0x455b0	100.0000	
@@ -122,7 +122,7 @@ bitmapio	_ClearScenePicture	100.0000	100.0000	4	ast4:e21d846682c9	0x57c40	100.00
 bitmapio	_ClearSceneSurfaces	100.0000	100.0000	5	ast4:5986e59d6797	0x57bf0	100.0000	
 bitmapio	_ClearSelectedHotspot	100.0000	100.0000	2	ast4:137e93cf09e1	0x58580	100.0000	
 bitmapio	_ClickHotspotAt	92.8148	92.8148	14	ast4:9b8365f9adcf	0x59180	95.2963	
-bitmapio	_CopyResourceBitmap16	100.0000	99.9221	6	ast4:ac6074baf898	0x56f30	100.0000	
+bitmapio	_CopyResourceBitmap16	100.0000	99.8052	6	ast4:ac6074baf898	0x56f30	100.0000	
 bitmapio	_CopyResourceBitmap8	100.0000	100.0000	7	ast4:8282ba4ca5e1	0x57120	100.0000	
 bitmapio	_CopySurfaceSquare	100.0000	100.0000	2	ast4:c845849c3372	0x590a0	100.0000	
 bitmapio	_CountFieldObjects	100.0000	100.0000	3	ast4:ce33962104b2	0x58640	100.0000	
@@ -142,7 +142,7 @@ bitmapio	_HitTestWorldMap	100.0000	100.0000	2	ast4:26f2ea1ad531	0x581b0	100.0000
 bitmapio	_IsSpriteFrameLoaded	100.0000	100.0000	5	ast4:fe345ccb9ead	0x58870	100.0000	
 bitmapio	_IsSpritePlaced	100.0000	100.0000	4	ast4:b9d2fbd214d4	0x58800	100.0000	
 bitmapio	_IsWorldMapMarkerNearEdge	100.0000	100.0000	3	ast4:4e4f1681ff08	0x582c0	100.0000	
-bitmapio	_LoadBitmapToSurface16	100.0000	98.7283	11	ast4:bf8ea529123d	0x56bd0	100.0000	
+bitmapio	_LoadBitmapToSurface16	100.0000	90.5087	11	ast4:bf8ea529123d	0x56bd0	100.0000	
 bitmapio	_LoadBitmapToSurface8	100.0000	100.0000	9	ast4:bc383ff02996	0x56de0	100.0000	
 bitmapio	_LoadObjectTexture	100.0000	100.0000	2	ast4:cbe380b37c4c	0x58110	100.0000	
 bitmapio	_LoadPictureFile	100.0000	100.0000	2	ast4:a6aac371e53a	0x57520	100.0000	
@@ -452,7 +452,7 @@ d3dapp	?InitDirectInput@@YAHXZ	100.0000	100.0000	3	ast4:d153a14233f7	0x48ce0	100
 d3dapp	?InitDirectSound@@YAHXZ	100.0000	100.0000	3	ast4:1cc662cb2c10	0x488a0	100.0000	
 d3dapp	?KeepDeviceDesc@@YGJPAU_GUID@@PAD1PAU_D3DDeviceDesc@@2PAX@Z	100.0000	100.0000	1	ast4:88c22bd6cdae	0x477e0	100.0000	
 d3dapp	?Magnitude@@YAMABU_D3DVECTOR@@@Z	100.0000	100.0000	1	header:96c4b6ace3bd	0x490f0	100.0000	
-d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	100.0000	98.9024	1	ast4:732358446015	0x46230	100.0000	
+d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	100.0000	98.8902	1	ast4:732358446015	0x46230	100.0000	
 d3dapp	?Normalize@@YA?AU_D3DVECTOR@@ABU1@@Z	100.0000	100.0000	1	header:9f72dd33a7f5	0x49090	100.0000	
 d3dapp	?PollMouseButtons@@YAEXZ	98.0986	98.0986	10	ast4:6a5b5372d855	0x48e60	98.0986	
 d3dapp	?ProjectVector@@YAXPAU_D3DMATRIX@@PAU_D3DVECTOR@@1@Z	96.7546	96.7546	7	ast4:7aba9abf6d3b	0x46060	96.7546	
@@ -1023,7 +1023,7 @@ font	_ScrollPlaneMapLeft	100.0000	100.0000	3	ast4:f4c554f84df4	0x54dd0	100.0000
 font	_ScrollPlaneMapRight	100.0000	100.0000	3	ast4:830c82b2ae13	0x54f30	100.0000	
 font	_ScrollPlaneMapUp	100.0000	100.0000	3	ast4:b3a76b3a3cb3	0x54e80	100.0000	
 font	_ScrollTextPlaneSurface	100.0000	100.0000	5	ast4:91a67c6d0d28	0x532b0	100.0000	
-font	_ScrollTextPlaneText	100.0000	97.6111	4	ast4:ad819ffa3742	0x53190	100.0000	
+font	_ScrollTextPlaneText	100.0000	100.0000	4	ast4:ad819ffa3742	0x53190	100.0000	
 font	_ScrollTextWindowLine	100.0000	100.0000	1	ast4:9e3676402126	0x53370	100.0000	
 font	_SetMenuLineAttr	100.0000	100.0000	2	ast4:35950b0ec058	0x53550	100.0000	
 font	_SetMenuLineText	100.0000	100.0000	2	ast4:29963dd170c9	0x535a0	100.0000	
@@ -2043,7 +2043,7 @@ scriptvars	_PreloadScriptFiles	100.0000	100.0000	1	ast4:86fb5758afa7	0x3b6c0	100
 scriptvars	_PurgeScriptFiles	100.0000	100.0000	2	ast4:f8b500cc117c	0x3b840	100.0000	
 scriptvars	_PushCallFrame	100.0000	100.0000	1	ast4:1a9bdf47d20e	0x3c1f0	100.0000	
 scriptvars	_ReadScriptBlock	100.0000	100.0000	1	ast4:5222408bafab	0x3aa90	100.0000	
-scriptvars	_ReadScriptEntry	100.0000	100.0000	1	ast4:26830310f156	0x3ab10	100.0000	
+scriptvars	_ReadScriptEntry	100.0000	99.8551	1	ast4:26830310f156	0x3ab10	100.0000	
 scriptvars	_ReleaseScriptFiles	100.0000	100.0000	2	ast4:dc83edef2b1d	0x3b810	100.0000	
 scriptvars	_ResizeScriptEntry	100.0000	100.0000	3	ast4:ed41dca651ba	0x3abc0	100.0000	
 scriptvars	_RestoreSystemVars	100.0000	100.0000	1	ast4:4294376734d5	0x3bf30	100.0000	
@@ -2086,7 +2086,7 @@ shot	_SetShotPosition	100.0000	100.0000	1	ast4:4f223ee2bd4f	0x58d0	100.0000
 shot	_SetShotPower	100.0000	100.0000	1	ast4:12fccbfec036	0x5900	100.0000	
 shot	_ShotRelativePoint	100.0000	100.0000	1	ast4:1c4df7cabbcc	0x57c0	100.0000	
 shot	_StartShot	100.0000	100.0000	3	ast4:c42daed6e872	0x5620	100.0000	
-shot	_StepShot	100.0000	90.1077	2	ast4:106504969bdc	0x56e0	100.0000	
+shot	_StepShot	100.0000	89.6462	2	ast4:106504969bdc	0x56e0	100.0000	
 shot	_StopShot	100.0000	100.0000	1	ast4:e12d9489e723	0x5800	100.0000	
 skilluse	_AddCombatTarget	100.0000	100.0000	2	ast4:1f75a7b8326f	0x2aa50	100.0000	
 skilluse	_AddObjectTargetsAtCell	100.0000	100.0000	1	ast4:05347fa240d5	0x2caa0	100.0000	
@@ -2672,7 +2672,7 @@ winmain	?ResetFrameCount@@YAXXZ	100.0000	100.0000	1	ast4:06e8cafedce0	0x49830	10
 winmain	?RestoreCursorClip@@YAXPAUtagRECT@@@Z	100.0000	100.0000	1	ast4:7f528cb8206d	0x498b0	100.0000	
 winmain	?RestoreTextures@@YAXXZ	100.0000	100.0000	2	ast4:be22f1c0e01c	0x4fdf0	100.0000	
 winmain	?RunJoystickMove@@YAHXZ	100.0000	100.0000	2	ast4:60704f75dd0f	0x504c0	100.0000	
-winmain	?ShadeMesh@@YAXPAUMesh@@@Z	100.0000	98.4103	2	ast4:470ee4861236	0x4ae30	100.0000	
+winmain	?ShadeMesh@@YAXPAUMesh@@@Z	100.0000	100.0000	2	ast4:470ee4861236	0x4ae30	100.0000	
 winmain	?SlideBack@@YAHPAM@Z	100.0000	100.0000	2	ast4:12a3709f7430	0x4a640	100.0000	
 winmain	?SlideForward@@YAHPAM@Z	100.0000	100.0000	3	ast4:8b1c364b6320	0x4a530	100.0000	
 winmain	?SlideLeft@@YAHPAM@Z	100.0000	100.0000	2	ast4:3d1c05b8ac94	0x4a750	100.0000	
