@@ -7,6 +7,7 @@ rva	unit	function	lost_max	cur
 0x059180	hotspotclick	_ClickHotspotAt	95.2963	92.8148
 0x01a400	itemuse	_RunItemUse	97.4486	97.3596
 0x03abc0	scriptvars	_ResizeScriptEntry	100.0000	98.0000
+0x02b6a0	skilluse	_RunBattleAction	100.0000	99.9817
 0x001aa0	textchar	_ReadTextChar	100.0000	99.5918
 0x01e520	treasurebox	_LoadAutomapAreas	91.0839	89.3357
 0x002ec0	vram	_ResetUpperPalette	76.5833	74.0833

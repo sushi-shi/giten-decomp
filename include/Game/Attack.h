@@ -98,7 +98,7 @@ i16 GetCombatantAttackRange(i16 id);
 i16 GetAttackRangeExcess(i16 first, i16 second);
 i16 RollExceptionalAttack(CharacterCore* attacker, CharacterCore* target, i16 mode, i16 resistance);
 b16 RollGunHit(CharacterCore* attacker, CharacterCore* target, i16 resistance);
-i16 GetGunAttackPower(CharacterCore* attacker);
+i16 GetGunAttackPower(const CharacterCore* attacker);
 i32 ComputeGunDamage(CharacterCore* attacker, CharacterCore* target, i16 result);
 b16 RollGunCondition(CharacterCore* attacker, CharacterCore* target, i16 resistance, i16 condition);
 
@@ -138,9 +138,9 @@ b16 ResolveSkillAttack(CharacterCore* attacker, CharacterCore* target);
 void SpendGunRounds(CharacterCore* attacker);
 
 // Keeps the gun's targets up to the rounds loaded; returns the new count.
-i16 FilterGunTargets(CharacterCore* attacker, i16 count);
-i16 GetGunBurstRounds(CharacterCore* attacker);
-i16 PrepareGunBurst(CharacterCore* attacker, i16 count);
+i16 FilterGunTargets(const CharacterCore* attacker, i16 count);
+i16 GetGunBurstRounds(const CharacterCore* attacker);
+i16 PrepareGunBurst(const CharacterCore* attacker, i16 count);
 i16 GetGunRequirementPenalty(i16 stat, i16 requirement);
 i16 DistributeGunRounds(i16 rounds, i16 count);
 i16 ComputeGunBurstPower(i16 rounds);

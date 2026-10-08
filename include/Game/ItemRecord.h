@@ -251,7 +251,7 @@ GZ_ENUM_END(ItemPassiveEffect)
 #define GetGemPassiveEffectCode(record) ((record)->params[0xb])
 
 // The signed column in the character equipment-permission table; -1 means none.
-static __inline i16 GetItemEquipCode(ItemRecord* record) {
+static __inline i16 GetItemEquipCode(const ItemRecord* record) {
     i8 code = record->params[0x15];
     return code;
 }

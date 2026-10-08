@@ -1297,7 +1297,6 @@ b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condi
         (blocked) |= HasCondition((conditions), CONDITION_STONE);                                  \
     } while (0)
 
-// The last condition of `list` that is set, or 0.
 // Adds `condition` to a condition set under the conditions' precedence rules:
 // returns 1 when added (its byte reset), -1 when already held, 0 when a
 // fatal or overriding condition blocks it, and 2 when frozen and burning only
@@ -1579,9 +1578,10 @@ GZ_ENUM_RETURN(ConditionId, i16) GetFatalCondition(ConditionSet* conditions) {
     return LastConditionIn(conditions, s_fatalConditions);
 }
 
+// The last condition of `list` that is set, or 0.
 RVA(0x0003edf0, 0x43)
-i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list) {
-    i16 found = 0;
+GZ_ENUM_RETURN(ConditionId, i16) LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list) {
+    GZ_ENUM_LOCAL(ConditionId, i16) found = 0;
     i16 i;
     for (i = 0; list[i] != CONDITION_LIST_END; i++) {
         if (HasCondition(conditions, list[i])) {
@@ -2736,7 +2736,7 @@ i16 GetGunAmmoType(const CharacterCore* character) {
 // allowed for the character's equipment group.
 RVA(0x00040620, 0x82)
 GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(const CharacterCore* character, i16 item) {
-    ItemRecord* record;
+    const ItemRecord* record;
     i16 part;
     if (item < 1) {
         return EQUIP_PART_NONE;

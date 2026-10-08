@@ -329,7 +329,7 @@ i16 ReadActionResultFlags(void) {
 }
 
 RVA(0x00005cb0, 0x18)
-i16 GetActionCondition(CharacterCore* actor) {
+GZ_ENUM_RETURN(ConditionId, i16) GetActionCondition(CharacterCore* actor) {
     return LastConditionIn(GetCharacterConditions(actor), s_actionConditions);
 }
 
@@ -2029,7 +2029,7 @@ b16 RollGunHit(CharacterCore* attacker, CharacterCore* target, i16 resistance) {
 }
 
 RVA(0x00008b20, 0x17)
-i16 GetGunAttackPower(CharacterCore* attacker) {
+i16 GetGunAttackPower(const CharacterCore* attacker) {
     if (s_gunPower[0]) {
         return s_gunPower[0];
     }
@@ -2176,7 +2176,7 @@ void LoadGunDistributionTable(void) {
 }
 
 RVA(0x00009010, 0x38)
-i16 FilterGunTargets(CharacterCore* attacker, i16 count) {
+i16 FilterGunTargets(const CharacterCore* attacker, i16 count) {
     i16 rounds = GetGunBurstRounds(attacker);
     if (rounds < 1) {
         return 0;
@@ -2185,7 +2185,7 @@ i16 FilterGunTargets(CharacterCore* attacker, i16 count) {
 }
 
 RVA(0x00009050, 0x62)
-i16 GetGunBurstRounds(CharacterCore* attacker) {
+i16 GetGunBurstRounds(const CharacterCore* attacker) {
     i16 rounds;
     i16 limit;
     if (GetCharacterEquipment(attacker)[EQUIP_SLOT_GUN].item < 1) {
@@ -2206,8 +2206,9 @@ i16 GetGunBurstRounds(CharacterCore* attacker) {
 }
 
 RVA(0x000090c0, 0xe7)
-i16 PrepareGunBurst(CharacterCore* attacker, i16 count) {
-    ItemRecord* record = GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_GUN].item);
+i16 PrepareGunBurst(const CharacterCore* attacker, i16 count) {
+    const ItemRecord* record =
+        GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_GUN].item);
     u8 limits;
     i16 minimum;
     i16 maximum;

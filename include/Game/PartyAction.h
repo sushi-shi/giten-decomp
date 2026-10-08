@@ -32,7 +32,7 @@ GZ_ENUM_END_SPLIT(MemberPanelState)
 
 GZ_ENUM_RETURN(MemberPanelState, i16) GetMemberPanelState(i16 member);
 i16 ReadActionResultFlags(void);
-i16 GetActionCondition(CharacterCore* actor);
+GZ_ENUM_RETURN(ConditionId, i16) GetActionCondition(CharacterCore* actor);
 i16 PickActorAction(CharacterCore* actor);
 
 // The random-target picker searches living party members, visible field

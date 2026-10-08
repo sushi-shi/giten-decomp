@@ -49,7 +49,7 @@ GZ_ENUM_BEGIN(ConditionAddResult)
 GZ_ENUM_END(ConditionAddResult)
 
 GZ_ENUM_RETURN(ConditionAddResult, i16) AddCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
-i16 LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
+GZ_ENUM_RETURN(ConditionId, i16) LastConditionIn(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
 void ClearConditionList(ConditionSet* conditions, const GZ_ENUM_STORAGE(ConditionId, i16) * list);
 GZ_ENUM_RETURN(ConditionId, i16) GetDisablingCondition(ConditionSet* conditions);
 void ClearBattleConditions(ConditionSet* conditions);

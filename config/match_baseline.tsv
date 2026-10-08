@@ -214,7 +214,7 @@ character	_CalcPhysicalDefenseStat	100.0000	100.0000	3	ast4:ed814705bdc7	0x3d240
 character	_CalcWeaponAccuracyStat	100.0000	100.0000	3	ast4:e3ccd4c65b31	0x3d390	100.0000	
 character	_CalcWeaponEvasionStat	100.0000	100.0000	3	ast4:be26a699e6c0	0x3d470	100.0000	
 character	_CalcWeaponPowerStat	100.0000	93.0000	3	ast4:fef729562124	0x3d3f0	100.0000	
-character	_CanEquipItem	100.0000	100.0000	7	ast4:79029fc48709	0x40620	100.0000	
+character	_CanEquipItem	100.0000	100.0000	8	ast4:698fc1b28f68	0x40620	100.0000	
 character	_CanGroupEquip	100.0000	100.0000	2	ast4:6670bbd9fbe0	0x40250	100.0000	
 character	_ChangePool	100.0000	100.0000	2	ast4:f26bc8b2eb2c	0x3d130	100.0000	
 character	_ClampLevel	100.0000	100.0000	2	ast4:90b73b3c7f34	0x3dec0	100.0000	
@@ -1215,14 +1215,14 @@ itemrecord	_AddBagItems	100.0000	100.0000	4	ast4:dec596e96b36	0x24190	100.0000
 itemrecord	_AddDropSlot	100.0000	100.0000	3	ast4:09ea76b4ea1f	0x23c20	100.0000	
 itemrecord	_AddGemItems	100.0000	100.0000	4	ast4:c91086f13420	0x246f0	100.0000	
 itemrecord	_AddGemItemsAt	100.0000	100.0000	7	ast4:e3b4ff2b9ce9	0x245b0	100.0000	
-itemrecord	_AddItemRegen	100.0000	100.0000	3	ast4:c901e751de95	0x25600	100.0000	
-itemrecord	_AddItemStatBonuses	100.0000	100.0000	16	ast4:f22a07a17c44	0x24d50	100.0000	
-itemrecord	_AddItemStatPoints	100.0000	100.0000	7	ast4:3e8876052b02	0x24ba0	100.0000	
+itemrecord	_AddItemRegen	100.0000	100.0000	4	ast4:f11a1daf3639	0x25600	100.0000	
+itemrecord	_AddItemStatBonuses	100.0000	100.0000	17	ast4:ccd89ce5c704	0x24d50	100.0000	
+itemrecord	_AddItemStatPoints	100.0000	100.0000	8	ast4:61864f76257a	0x24ba0	100.0000	
 itemrecord	_AddScenarioBagItems	100.0000	100.0000	4	ast4:617ef933f893	0x24210	100.0000	
 itemrecord	_AddToBagEntry	100.0000	100.0000	2	ast4:7676672f05f3	0x23dc0	100.0000	
 itemrecord	_AddToPool	100.0000	100.0000	5	ast4:7c6d2932e379	0x23820	100.0000	
 itemrecord	_ApplyEquipmentRegen	100.0000	100.0000	8	ast4:231464d13258	0x254b0	100.0000	
-itemrecord	_ApplyItemDamageRatio	100.0000	100.0000	3	ast4:d6379a6be5fd	0x25100	100.0000	
+itemrecord	_ApplyItemDamageRatio	100.0000	100.0000	4	ast4:4084c5223b0e	0x25100	100.0000	
 itemrecord	_ApplyItemEffect	100.0000	100.0000	5	ast4:e3db045a9ba8	0x24890	100.0000	
 itemrecord	_AttachBagEntryItem	100.0000	100.0000	3	ast4:8b9a39e5c2bf	0x244d0	100.0000	
 itemrecord	_ClearBag	100.0000	100.0000	2	ast4:3dfe6e5dbfbb	0x23a80	100.0000	
@@ -1274,10 +1274,10 @@ itemrecord	_GiftMenuHandler	100.0000	100.0000	4	ast4:71b59ac2f270	0x25fb0	100.00
 itemrecord	_GivePooledItems	100.0000	100.0000	6	ast4:fb2ad3f4894f	0x23990	100.0000	
 itemrecord	_InflictCondition	100.0000	100.0000	6	ast4:5dab67fbc923	0x25840	100.0000	
 itemrecord	_IsConditionResisted	100.0000	100.0000	4	ast4:59d2d660a703	0x258c0	100.0000	
-itemrecord	_IsEquipCurseActive	100.0000	100.0000	6	ast4:3f770b69f482	0x235a0	100.0000	
-itemrecord	_IsItemGuardingElement	100.0000	100.0000	4	ast4:c95829b51792	0x25350	100.0000	
+itemrecord	_IsEquipCurseActive	100.0000	100.0000	7	ast4:dca69642a9e9	0x235a0	100.0000	
+itemrecord	_IsItemGuardingElement	100.0000	100.0000	5	ast4:7859e25afe65	0x25350	100.0000	
 itemrecord	_IsSpecialItemExpired	100.0000	100.0000	1	ast4:bff9d22c2a1b	0x25c30	100.0000	
-itemrecord	_ItemResistsCondition	100.0000	100.0000	4	ast4:4bb209f81467	0x259d0	100.0000	
+itemrecord	_ItemResistsCondition	100.0000	100.0000	5	ast4:de3dbcb6b046	0x259d0	100.0000	
 itemrecord	_LoadItemFiles	100.0000	100.0000	5	ast4:c40c502f6ead	0x232c0	100.0000	
 itemrecord	_PooledItemsFit	100.0000	100.0000	5	ast4:6aed73616166	0x23b40	100.0000	
 itemrecord	_ReadBag	100.0000	100.0000	1	ast4:aaec25718186	0x24550	100.0000	
@@ -1451,7 +1451,7 @@ partyaction	_CheckBattleProtection	100.0000	100.0000	3	ast4:9b3604e03c71	0x6a80	
 partyaction	_CheckPickTarget	100.0000	100.0000	5	ast4:3d535502d16a	0x9420	100.0000	
 partyaction	_CloseFieldWindows	100.0000	100.0000	3	ast4:ba29f6114a50	0x93e0	100.0000	
 partyaction	_ComputeGunBurstPower	100.0000	100.0000	2	ast4:afb78321b06d	0x92e0	100.0000	
-partyaction	_ComputeGunDamage	100.0000	100.0000	9	ast4:54f076f4e05a	0x8b40	100.0000	
+partyaction	_ComputeGunDamage	100.0000	100.0000	10	ast4:0c7e4052fc13	0x8b40	100.0000	
 partyaction	_ComputeItemDamage	100.0000	100.0000	11	ast4:bc5d803cf672	0xb320	100.0000	
 partyaction	_ComputeSkillDamage	100.0000	98.4266	11	ast4:5beecb3f9114	0xac50	100.0000	
 partyaction	_ComputeWeaponDamage	100.0000	100.0000	8	ast4:5b1daa63cf87	0xa270	100.0000	
@@ -1461,7 +1461,7 @@ partyaction	_DistributeGunRounds	97.7027	97.7027	10	ast4:6b7288518640	0x91f0	97.
 partyaction	_EnterFieldMap	100.0000	100.0000	1	ast4:e9dba8b8c087	0x7190	100.0000	
 partyaction	_ExchangeFieldOption	100.0000	100.0000	1	ast4:7c0125f8a0d0	0x70e0	100.0000	
 partyaction	_FillCharacterCommands	100.0000	100.0000	3	ast4:dee1f9b55283	0x6900	100.0000	
-partyaction	_FilterGunTargets	100.0000	100.0000	2	ast4:47c0c95d4975	0x9010	100.0000	
+partyaction	_FilterGunTargets	100.0000	100.0000	3	ast4:fe8269e186ed	0x9010	100.0000	
 partyaction	_FindAbleHumanMember	100.0000	100.0000	4	ast4:b54de2b11df5	0x81b0	100.0000	
 partyaction	_FindFirstAblePartyMember	100.0000	100.0000	3	ast4:32f2b32b4bdf	0x8170	100.0000	
 partyaction	_FindPickablePartyMember	100.0000	100.0000	1	ast4:eb780fcd61bd	0x5b10	100.0000	
@@ -1485,8 +1485,8 @@ partyaction	_GetFacingWall	100.0000	100.0000	2	ast4:8dea4d4b558c	0x7340	100.0000
 partyaction	_GetFieldEntryState	100.0000	100.0000	1	ast4:544d36768e7a	0x7200	100.0000	
 partyaction	_GetFieldMap	100.0000	100.0000	1	ast4:78585f27cd85	0x71f0	100.0000	
 partyaction	_GetFieldMarker	100.0000	100.0000	1	ast4:bb9d140b938d	0x7160	100.0000	
-partyaction	_GetGunAttackPower	100.0000	100.0000	4	ast4:4ea48cea0da6	0x8b20	100.0000	
-partyaction	_GetGunBurstRounds	100.0000	100.0000	5	ast4:558e78023212	0x9050	100.0000	
+partyaction	_GetGunAttackPower	100.0000	100.0000	5	ast4:3e51f1438965	0x8b20	100.0000	
+partyaction	_GetGunBurstRounds	100.0000	100.0000	6	ast4:6ece7560b142	0x9050	100.0000	
 partyaction	_GetGunRequirementPenalty	100.0000	100.0000	1	ast4:cc93ce01754a	0x91b0	100.0000	
 partyaction	_GetItemResistance	100.0000	100.0000	2	ast4:ccc455e552f2	0x6dc0	100.0000	
 partyaction	_GetMemberPanelState	100.0000	100.0000	11	ast4:05ed9b9c46b3	0x5b80	100.0000	
@@ -1516,7 +1516,7 @@ partyaction	_PickRandomAttack	100.0000	100.0000	4	ast4:648f3d30d4bc	0x60c0	100.0
 partyaction	_PickRandomCombatant	100.0000	100.0000	6	ast4:2449cc20c128	0x5e50	100.0000	
 partyaction	_PickRandomOpponentAttack	100.0000	100.0000	4	ast4:77d6e0166764	0x5dc0	100.0000	
 partyaction	_PollActorCommandMenu	100.0000	100.0000	1	ast4:d817a5ee15aa	0x6440	100.0000	
-partyaction	_PrepareGunBurst	100.0000	100.0000	9	ast4:e51e87252acf	0x90c0	100.0000	
+partyaction	_PrepareGunBurst	100.0000	100.0000	10	ast4:a9741274d1e8	0x90c0	100.0000	
 partyaction	_PrepareMemberPickTarget	100.0000	100.0000	5	ast4:1735b0b3db9d	0x6840	100.0000	
 partyaction	_QueryPickMode	100.0000	100.0000	1	ast4:3564721fc679	0x9cf0	100.0000	
 partyaction	_ReadActionResultFlags	100.0000	100.0000	1	ast4:ca384ea6822e	0x5c60	100.0000	
@@ -2116,7 +2116,7 @@ skilluse	_RemoveCombatTarget	100.0000	100.0000	2	ast4:c3b5b2e13407	0x2aae0	100.0
 skilluse	_ReportBattleTally	100.0000	100.0000	3	ast4:c93887177fff	0x2b5f0	100.0000	
 skilluse	_ResolveCombatAction	96.1504	96.1504	32	ast4:6252670aa4db	0x2ac90	96.1504	
 skilluse	_ResolveKnockout	100.0000	100.0000	13	ast4:e956ffc48a2a	0x2b490	100.0000	
-skilluse	_RunBattleAction	100.0000	99.9817	26	ast4:68e9bbbe6895	0x2b6a0	100.0000	
+skilluse	_RunBattleAction	99.9817	99.9817	27	ast4:50ab3055312f	0x2b6a0	100.0000	
 skilluse	_RunFieldSkillUse	100.0000	100.0000	9	ast4:47689684ad0d	0x2d7c0	100.0000	
 skilluse	_SetActionOutcome	100.0000	100.0000	1	ast4:efc88edbbee4	0x2c2b0	100.0000	
 skilluse	_SetFieldSkillUser	100.0000	100.0000	1	ast4:87064b9eecf9	0x2dbe0	100.0000	
@@ -2396,7 +2396,7 @@ treasurebox	_FindCellObject	100.0000	100.0000	2	ast4:11538dcf1801	0x1f1d0	100.00
 treasurebox	_FindPanelRowAt	100.0000	100.0000	7	ast4:3a26dfd6752a	0x1cc00	100.0000	
 treasurebox	_FindRegionData	100.0000	100.0000	1	ast4:918d532456d1	0x1ecc0	100.0000	
 treasurebox	_FinishDoorStep	100.0000	100.0000	2	ast4:d9c6c0eb0a68	0x1f130	100.0000	
-treasurebox	_FormatItemMenuEntry	100.0000	100.0000	11	ast4:1e62a19ef290	0x1b960	100.0000	
+treasurebox	_FormatItemMenuEntry	100.0000	100.0000	12	ast4:cd8b0e1803c5	0x1b960	100.0000	
 treasurebox	_FreeAutomap	100.0000	100.0000	5	ast4:a890f0477b3b	0x1cf40	100.0000	
 treasurebox	_FreeWorldMapEvents	100.0000	100.0000	1	ast4:f2244f18e3aa	0x1b390	100.0000	
 treasurebox	_GetAreaNpc	100.0000	100.0000	2	ast4:2f7a81203589	0x1f4a0	100.0000	
