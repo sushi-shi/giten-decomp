@@ -15,6 +15,10 @@
 #include <Ui/Message.h>
 #include <Ui/MessageScript.h>
 
+// @identity-TODO: the original name, reader and signedness are unknown.
+DATA(0x000682fc)
+static i16 s_legacyMessageValue = 60;
+
 // The shared message window: its handle (-1 while closed), the ticks left
 // before it closes by itself, and whether it is held open (no countdown).
 DATA(0x00068300)

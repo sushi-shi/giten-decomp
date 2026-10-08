@@ -1,3 +1,4 @@
 config/match_baseline.tsv whitespace=-blank-at-eol
+config/retail/data.tsv whitespace=-blank-at-eol
 config/reviews/enum-reuse.tsv whitespace=-blank-at-eol
 config/units.toml merge=units
