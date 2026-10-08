@@ -3,7 +3,7 @@
     python3 -m giten.graph.link [--out E] [--objs-dir D] [--res R] [--order F]
 
 Graph phase 2, opt-in (`ninja candidate` / `giten link`): the genuine VC5
-link.exe (5.10.7303 - the linker that built retail) run under wine over our
+pinned link.exe (5.10.7303) run under wine over our
 base objects. The deliverable is the `.map`: every function's link-assigned
 RVA and its source object, which cross-referenced with the retail RVAs is what
 recovers the original build order (intra-TU order = source-definition order,

@@ -2,9 +2,12 @@
 
 Retail DDS.EXE supports MSVC 5.0 / Visual Studio 97 SP3:
 
-- PE linker version 5.10; the matching linker is `5.10.7303` (SP2 is `5.02.7132`).
-- Rich records include `(19, 8034)`, untagged pre-Rich compiler objects, and
-  `(6, 1668)` for `cvtres 5.00.1668`.
+- PE linker version 5.10 records only major and minor versions. The pinned
+  linker is `5.10.7303`; retail does not establish that exact linker build.
+- Rich records contain `(19, 8034)` six times, `(0, 0)` 298 times and
+  `(6, 1668)` once. These aggregate input-object provenance, including
+  untagged objects and `cvtres 5.00.1668`, rather than establishing the
+  final linker build or the game compiler backend revision.
 - Relocation-masked library matching identifies SP3 `LIBC.LIB`; `__setmbcp`,
   `_setSBCS` and `__output` distinguish it from SP2. Absence of `Tls*` imports
   also supports the single-threaded `/ML` runtime.
