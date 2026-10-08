@@ -38,6 +38,10 @@ static MaskGrid* s_savedMask = NULL;
 DATA(0x00075f04)
 static MaskGrid* s_mask = NULL;
 
+// @identity-TODO: the original name is unknown; the upload has no Windows reader.
+DATA(0x00075f08)
+static u8 s_paletteRgb[PALETTE_SIZE][3] = {0};
+
 // The 16 analog palette entries (0xGRB) and how many users hold each one.
 // Nothing in this image reads the colours back.
 DATA(0x00075f38)
@@ -45,6 +49,10 @@ static i16 s_paletteColors[PALETTE_SIZE] = {0};
 
 DATA(0x00075f58)
 static i16 s_paletteRefs[PALETTE_SIZE] = {0};
+
+// @identity-TODO: the original name is unknown; the upload has no Windows reader.
+DATA(0x00075f78)
+static u8* s_paletteRgbTarget = NULL;
 
 // Bit 0x40: a palette entry or mode changed; bit 0x80: a change awaits
 // upload. No reader of the queued bit survives in this image.

@@ -89,7 +89,7 @@ textstate	21	20
 treasurebox	150	148
 vec3	10	8
 videostate	5	5
-vram	44	39
+vram	44	38
 vramaccess	12	12
 vramcell	14	14
 waitstate	7	7
@@ -2515,7 +2515,7 @@ videostate	_RestoreVideoState	100.0000	100.0000	1	ast4:06653a4c80cf	0x45ba0	100.
 videostate	_SaveVideoState	100.0000	100.0000	1	ast4:06653a4c80cf	0x45b90	100.0000	
 vram	_ClearMaskSeam	100.0000	98.8889	1	ast4:cd6dc3039b59	0x2c70	100.0000	
 vram	_ClearMaskView	100.0000	100.0000	1	ast4:a600eb0f3418	0x2c60	100.0000	
-vram	_CopySpriteBitmap	100.0000	100.0000	2	ast4:40b07b84cc16	0x33f0	100.0000	
+vram	_CopySpriteBitmap	100.0000	99.9231	2	ast4:40b07b84cc16	0x33f0	100.0000	
 vram	_FindPaletteEntry	100.0000	100.0000	1	ast4:fa997015da50	0x2f10	100.0000	
 vram	_FreeImageFile	100.0000	100.0000	1	ast4:0cbb1db10bfa	0x3330	100.0000	
 vram	_FreeImageHandle	100.0000	100.0000	1	ast4:df80a6151b39	0x3120	100.0000	
