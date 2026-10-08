@@ -223,7 +223,9 @@ def strict_report(retail_path: Path, expected_partials: int | None = None) -> di
                     if body is None:
                         errors.append("function missing from owner object")
                     elif size != binding.size:
-                        errors.append("trimmed owner-object extent differs from retail model extent")
+                        row.setdefault("diagnostics", []).append(
+                            "trimmed owner-object extent differs from retail model extent; "
+                            "heuristic extent is not an independent linked-body size oracle")
             row["candidate_object_size"] = size
             row["object_extent_method"] = "next-defined-member, trailing CC/NOP trimmed" if size is not None else None
             if obj_path.is_file() and obj_path.stat().st_mtime > CAND.stat().st_mtime:

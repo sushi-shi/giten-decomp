@@ -81,6 +81,51 @@ class StrictLinkControls(unittest.TestCase):
                 self.assertFalse(result["summary"]["equal"])
                 self.assertTrue(any(expected in f for f in result["findings"]))
 
+    def test_owner_trim_is_diagnostic_but_raw_alignment_bytes_still_compare(self):
+        blob = bytearray(0x400)
+        struct.pack_into("<I", blob, 0x3c, 0x80)
+        blob[0x80:0x84] = b"PE\0\0"
+        struct.pack_into("<HHI", blob, 0x84, 0x14c, 1, 0x1234)
+        struct.pack_into("<H", blob, 0x94, 0xe0)
+        struct.pack_into("<H", blob, 0x98, 0x10b)
+        struct.pack_into("<I", blob, 0x98 + 28, 0x400000)
+        struct.pack_into("<I", blob, 0x98 + 60, 0x200)
+        blob[0x178:0x180] = b".text\0\0\0"
+        struct.pack_into("<IIII", blob, 0x180, 12, 0x1000, 0x200, 0x200)
+        code = b"\x33\xc0\x90\xc3" + b"\xcc" * 8
+        blob[0x200:0x20c] = code
+        coff = struct.pack("<HHIIIHH", 0x14c, 1, 0, 60 + len(code), 1, 0, 0)
+        coff += struct.pack("<8sIIIIIIHHI", b".text\0\0\0", 0, 0,
+                            len(code), 60, 0, 0, 0, 0, 0x60000020)
+        coff += code + struct.pack("<8sIhHBB", b"_F\0\0\0\0\0\0", 0, 1, 0x20, 2, 0)
+        coff += struct.pack("<I", 4)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            owner = root / "objdiff/base/u.obj"
+            owner.parent.mkdir(parents=True)
+            owner.write_bytes(coff)
+            retail, candidate, cmap = root / "retail.exe", root / "candidate.exe", root / "candidate.map"
+            retail.write_bytes(blob)
+            candidate.write_bytes(blob)
+            cmap.write_text("Preferred load address is 00400000\nTimestamp is 1234\n"
+                            " 0001:00000000 _F 00401000 f u.obj\n")
+            binding = SimpleNamespace(name="_F", unit="u", rva=0x1000, size=12)
+            with patch.object(link, "BUILD", root), patch.object(link, "CAND", candidate), \
+                    patch.object(link, "CMAP", cmap), \
+                    patch("giten.model.resolve", return_value=SimpleNamespace(functions=[binding])), \
+                    patch("giten.verify.baseline.load", return_value={}):
+                result = link.strict_report(retail)
+                self.assertTrue(result["summary"]["equal"], result["findings"])
+                self.assertEqual(result["functions"][0]["candidate_object_size"], 4)
+                self.assertEqual(result["functions"][0]["retail_size"], 12)
+                self.assertTrue(result["functions"][0]["diagnostics"])
+                blob[0x20b] = 0x90
+                candidate.write_bytes(blob)
+                different = link.strict_report(retail)
+            self.assertFalse(different["summary"]["equal"])
+            self.assertFalse(different["file"]["equal"])
+            self.assertFalse(different["functions"][0]["raw_bytes"]["equal"])
+
 
 if __name__ == "__main__":
     unittest.main()
