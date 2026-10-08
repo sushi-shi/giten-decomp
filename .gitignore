@@ -5,7 +5,7 @@
 # ---------------------------------------------------------------------------
 # Large / non-distributable artifacts — never committed.
 # ---------------------------------------------------------------------------
-# Retail game binaries (copyright; fetched from archive.org via the flake) and
+# User-supplied retail game binaries and
 # cloned reference repos. NOTE: refs/vostok is a PRIVATE upstream — keep it out
 # of any public history.
 /binaries/
