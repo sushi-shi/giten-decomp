@@ -28,6 +28,22 @@ that alignment is a member of a larger COMMON; the enclosing object starts
 at an address its own size aligns, and the code that clears or copies it
 shows which neighbours it holds.
 
+Check COMMON order through the native link's `/VERBOSE` Pass2 module sequence
+and the defining COFF symbol indices. In the measured single-defining-owner
+family, allocation follows that module sequence, with descending defining
+symbol indices within each module. Earlier undefined references and generic
+external-name hash buckets do not predict this order. This observation does
+not establish how duplicate tentative definitions would be selected.
+
+Evidence: retain the native map and Pass2 log; extract external section-zero,
+nonzero-size symbols from the actual objects and selected archive members.
+Select the identities allocated as `<common>` in the map, excluding tentative
+symbols superseded by strong definitions. Compare the complete ordered set,
+then calculate alignment gaps from those fresh addresses and actual sizes.
+Interleaved retail identities from different reconstructed owners can expose
+an unresolved original owner or header boundary; they do not justify moving
+definitions solely to reproduce addresses.
+
 Evidence: compile `int a; int b = 0; static int c;` with the `c` profile and
 read the COFF symbol table (`b` and `c` are in `.bss`, `a` has section 0);
 link two such objects and read the map (`<common>` entries follow both
