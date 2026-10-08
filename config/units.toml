@@ -280,11 +280,6 @@ source = "src/Game/statusmenu.c"
 flags = "c"
 
 [[unit]]
-unit = "restore"
-source = "src/Game/restore.c"
-flags = "c"
-
-[[unit]]
 unit = "clock"
 source = "src/Game/clock.c"
 flags = "c"

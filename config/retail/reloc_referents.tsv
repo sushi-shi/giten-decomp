@@ -8,6 +8,7 @@ function_rva	target_rva	site_rva	owner	addend	occurrences	provenance
 0x0000c330	0x0006858e	0x0000c3c6	_s_viewCellOrder$S	0xfffffffe	1	view-cell order indexed from one, row member
 0x00011b30	0x0007b4fb	0x00011ba7	_s_travelScores$S	0xfffffffb	1	travel-score preceding-row index
 0x00011b30	0x0007b4fb	0x00011c19	_s_travelScores$S	0xfffffffb	1	travel-score preceding-row index
+0x0001f290	0x000645a0	0x0001f299	_s_npcDirectionMasks$S	0xffffff70	1	NPC direction mask indexed by cell code
 0x00043ac0	0x0006498a	0x00043bd9	_s_equipCountSlots$S	0xffffffea	1	equipment-kind table index minus weapon kind
 0x000489f0	0x0006a6c6	0x00048a48	_s_soundResources$S	0xfffffffe	1	sound resource indexed from one
 0x0004a100	0x0008d224	0x0004a13b	_g_spriteImages	0x00004814	1	sprite-picture loop end at surface member

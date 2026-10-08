@@ -38,8 +38,6 @@ const char* GetConditionName(GZ_ENUM_PARAM(ConditionId, i16) bit);
 b16 HasCondition(ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
 i16 ConditionKindApplies(GZ_ENUM_PARAM(RestoreEffect, i16) kind, ConditionSet* conditions);
 
-// The physical ailments selected by restoration kind 57.
-extern const i16 g_physicalRecoveryConditions[8];
 // What AddCondition did: the condition was already held, was blocked (a
 // fatal or overriding condition), was added, or instead cleared the opposing
 // condition it cancels.
