@@ -15,10 +15,12 @@ it retains unused CRT signal handlers and an import absent from retail.
 `--no-icf` keeps identical COMDATs separate. Retail shares the three identical
 CRT member-call wrappers and the pinned empty SDK constructor bodies. The
 object order comes from the complete, evidence-backed
-`config/retail/link_order.tsv`; an explicit `--order` overrides it. The library
-line puts `libc.lib`
-first and then the eight DLLs in retail's import-descriptor order (KERNEL32,
-USER32, GDI32, ADVAPI32, DDRAW, DSOUND, DINPUT, WINMM), with `dxguid.lib` last.
+`config/retail/link_order.tsv`; an explicit `--order` overrides it. The explicit
+library line names KERNEL32, USER32, GDI32, ADVAPI32, DDRAW, DSOUND, DINPUT and
+WINMM, followed by DXGUID and UUID. The objects' `/ML` directives supply LIBC
+and OLDNAMES after those SDK libraries. This places the genuine DirectInput
+format tables and SDK thunks before CRT text, and DXGUID/UUID before CRT
+readonly data, as in retail. DLL lookup ordering is a separate linker sort.
 Use the generated response file to inspect the exact object order, libraries,
 and options for a particular build.
 

@@ -44,14 +44,11 @@ from giten.core.paths import BUILD, REPO, RETAIL
 from giten.tool import ToolError
 from giten.tool.wine import era_tool, run, winepath
 
-#: The explicit library line. Order is load-bearing: link.exe emits a DLL's
-#: `__IMPORT_DESCRIPTOR_*` when a library search first satisfies an undefined
-#: symbol, so LIB ORDER = DESCRIPTOR ORDER. Retail's descriptors run KERNEL32,
-#: USER32, GDI32, ADVAPI32, DDRAW, DSOUND, DINPUT, WINMM; the CRT is searched
-#: first so its own kernel32 references land in the same descriptor. `dxguid`
-#: is static GUID data, contributes no descriptor, so it rides at the end.
-LINK_LIBS = ["libc.lib",
-             "kernel32.lib", "user32.lib", "gdi32.lib", "advapi32.lib",
+#: Explicit SDK libraries precede the objects' default LIBC/OLDNAMES search.
+#: Retail places DirectInput's format tables and SDK thunks before CRT text,
+#: and DXGUID/UUID before CRT readonly data. Naming LIBC here pulls those CRT
+#: contributions ahead of the SDK bands. DLL lookup order is a separate sort.
+LINK_LIBS = ["kernel32.lib", "user32.lib", "gdi32.lib", "advapi32.lib",
              "ddraw.lib", "dsound.lib", "dinput.lib", "winmm.lib", "dxguid.lib", "uuid.lib"]
 
 #: LIBC defines _WinMainCRTStartup; the game defines the _WinMain@16 it calls.
