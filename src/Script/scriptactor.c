@@ -3487,9 +3487,8 @@ void OpSetObjectField(void) {
             return;
         case SCRIPT_OPERAND_OBJECT_AMMO:
             GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].item = value;
-            GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].quantity = GetGunMagazineSize(
-                GetLoadedRecord(GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item)
-            );
+            GetCharacterEquipment(object)[EQUIP_SLOT_AMMO].quantity =
+                GetItemMagazineSize(GetCharacterEquipment(object)[EQUIP_SLOT_GUN].item);
             return;
         case SCRIPT_OPERAND_OBJECT_WEAPON_GROUP_BASE:
             object->battleStats[BATTLE_STAT_WEAPON_LEVEL] = value;

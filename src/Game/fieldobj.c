@@ -2179,9 +2179,8 @@ void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
         EmptyItemSlot(&GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO]);
         GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].attachment = GEM_ITEM_INDEX_NONE;
     } else {
-        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].quantity = GetGunMagazineSize(
-            GetLoadedRecord(GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item)
-        );
+        GetFieldObjectEquipment(object)[EQUIP_SLOT_AMMO].quantity =
+            GetItemMagazineSize(GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item);
     }
     NormalizeEquipSlots(&object->actor.core);
     for (i = 0; i < sizeof(GetConditionBits(GetFieldObjectConditions(object))); i++) {

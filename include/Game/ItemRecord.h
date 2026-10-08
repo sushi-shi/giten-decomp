@@ -287,4 +287,8 @@ i16 GetItemValueHigh(i16 id);
 i16 GetItemValueLow(i16 id);
 ItemRecord* GetLoadedRecord(i16 id);
 
+static __inline u8 GetItemMagazineSize(i16 id) {
+    return GetGunMagazineSize(GetLoadedRecord(id));
+}
+
 #endif // GITEN_GAME_ITEMRECORD_H

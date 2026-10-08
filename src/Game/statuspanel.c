@@ -1149,9 +1149,8 @@ i16 RunEquipScreen(i16 key) {
             }
             ReadBagEntry(s_equipPage.pick, &slot, &count);
             if (GetItemKind(slot.item) == ITEM_KIND_AMMO) {
-                slot.quantity = GetGunMagazineSize(
-                    GetLoadedRecord(GetRosterEquipSlot(g_statusMember, EQUIP_PART_GUN).item)
-                );
+                slot.quantity =
+                    GetItemMagazineSize(GetRosterEquipSlot(g_statusMember, EQUIP_PART_GUN).item);
                 if (GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO).item == slot.item) {
                     slot.quantity -= GetRosterEquipSlot(g_statusMember, EQUIP_PART_AMMO).quantity;
                     LimitItemSlotToBag(&slot);
@@ -1430,9 +1429,7 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
         ReadBagEntry(index, &slot, &count);
         kind = GetItemKind(slot.item);
         if (kind == ITEM_KIND_AMMO) {
-            slot.quantity = GetGunMagazineSize(
-                GetLoadedRecord(GetCharacterEquipment(member)[EQUIP_SLOT_GUN].item)
-            );
+            slot.quantity = GetItemMagazineSize(GetCharacterEquipment(member)[EQUIP_SLOT_GUN].item);
             LimitItemSlotToBag(&slot);
         } else if (kind == ITEM_KIND_FULL_BODY_ARMOR) {
             EmptyItemSlot(&GetCharacterEquipment(member)[EQUIP_SLOT_HEAD]);
