@@ -31,7 +31,7 @@ import struct
 from pathlib import Path
 
 from giten.core.paths import BUILD
-from giten.delink import coffx, eh_band, implib, static_dtors
+from giten.delink import coffx, eh_band, global_initializers, implib, static_dtors
 from giten.delink.image import retail, sections_of
 from giten.model import Model
 
@@ -792,6 +792,9 @@ def synth(model: Model, out_yaml: Path | None = None, out_pdb: Path | None = Non
     local_dtors = static_dtors.provision(model, names_map, base_dir, retail())
     names_map.update(local_dtors)
     log(f"local-static destructors: provisioned {len(local_dtors)} pinned callback(s)")
+    globals_ = global_initializers.provision(model, names_map, base_dir, retail())
+    names_map.update(globals_)
+    log(f"global initializers: provisioned {len(globals_)} pinned helper(s)")
     band = eh_band.groups(exe, names_map)
     band_spans = [(g.start, g.end) for g in band]
     for rva, name, unit, size in eh_band.records(band):

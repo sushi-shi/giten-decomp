@@ -68,6 +68,14 @@ with [retail providers](../config/README.md); conflicting identities or extents
 are violations. A definition supersedes its declaration-only claim.
 See [data attribution](data-attribution.md) for literals, header statics and COMMONs.
 
+`RVA_DYNINIT` pins an owner, not a compiler `$E` ordinal. Delinking derives
+global helper identities from the owner's data, typed constructors/destructors,
+and CRT/atexit registration edges. An incomplete or ambiguous graph fails
+instead of leaving its pinned bodies unpaired. Local-static callbacks derive
+from their owning function's atexit calls. The emitted helper code and ordered
+relocations are compared normally; dynamic initializer rows remain outside
+the reconstruction score totals.
+
 Normalization writes disposable copies, preserving original objects. It handles
 compiler-private names, weak externals, COMMON storage and same-function table
 labels. Explicit function aliases require matching complete retail bodies;
