@@ -19,10 +19,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// The memory DC holding the text font.
-DATA(0x00090bd0)
-HDC g_fontDC;
-
 // The built-in 8x16 half-width glyphs for codes 0x20-0xdf, one byte per row.
 DATA(0x0006c230)
 static u8 s_halfWidthGlyphs[192][16] = {
@@ -3175,6 +3171,38 @@ static MAT2 s_identityMatrix = {{0, 1}, {0, 0}, {0, 0}, {0, 1}};
 DATA(0x0006cfd0)
 static i32 s_glyphRowOffset[24] = {28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2};
 
+// The font's DC holds a 1x1 scratch surface's; the font is 17-pixel thin
+// modern type.
+DATA(0x00090af0)
+static HFONT s_glyphFont = NULL;
+
+DATA(0x00090af4)
+static LPDIRECTDRAWSURFACE s_glyphSurface = NULL;
+
+// The party panels' last drawn states.
+DATA(0x00090af8)
+static i32 s_panelStates[PARTY_PANEL_COUNT] = {0};
+
+DATA(0x00090b10)
+static i16 s_shownCharacter = 0;
+
+// The layers' visibility and positions as a save file keeps them.
+DATA(0x00090b18)
+static SavedLayer s_savedScreenLayers[SCREEN_LAYER_COUNT] = {0};
+
+// The pad button last pressed down.
+DATA(0x00090bcc)
+static GZ_ENUM_STORAGE(NavPadButton, i32) s_pressedPadButton = PAD_NONE;
+
+// The memory DC holding the text font.
+DATA(0x00090bd0)
+HDC g_fontDC = NULL;
+
+// The character panel's commands: the ids shown on its eight lines (-1 for
+// none), the character it shows, and the handlers by command id.
+DATA(0x00090bd8)
+static i16 s_panelCommandIds[PANEL_COMMAND_ROWS] = {0};
+
 // Renders `code` as a 16x16 one-bit glyph (two bytes per row) into `glyph`.
 RVA(0x00051230, 0x113)
 u8* RenderGlyph(u16 code, u8* glyph) {
@@ -3338,14 +3366,6 @@ void BlitGlyph(i32 x, i32 y, u16 attr, HDC dc, u8* glyph, i32 width) {
         SRCCOPY
     );
 }
-
-// The font's DC holds a 1x1 scratch surface's; the font is 17-pixel thin
-// modern type.
-DATA(0x00090af0)
-static HFONT s_glyphFont;
-
-DATA(0x00090af4)
-static LPDIRECTDRAWSURFACE s_glyphSurface;
 
 // Creates the glyph scratch surface and selects the text font into its DC
 // (g_fontDC); FALSE on failure.
@@ -5648,10 +5668,6 @@ i16 PartyPanelAtPoint(i16 x, i16 y) {
     return FindPartyPanel(x, y);
 }
 
-// The layers' visibility and positions as a save file keeps them.
-DATA(0x00090b18)
-static SavedLayer s_savedScreenLayers[SCREEN_LAYER_COUNT];
-
 // Writes the layers' visibility and positions to `file`; 0 on success.
 RVA(0x00054bb0, 0x51)
 i16 SaveScreenLayers(FILE* file) {
@@ -5803,14 +5819,6 @@ static GZ_ENUM_STORAGE(NavPadButton, i32) s_padGrid[10] = {
     PAD_NONE,
 };
 
-// The character panel's commands: the ids shown on its eight lines (-1 for
-// none), the character it shows, and the handlers by command id.
-DATA(0x00090bd8)
-static i16 s_panelCommandIds[PANEL_COMMAND_ROWS];
-
-DATA(0x00090b10)
-static i16 s_shownCharacter;
-
 // the pun: DdsCommand, StatusCommand and SetEncounterPending take no
 // argument; the table calls every command with the character. Id 8 (the
 // encounter command FillCharacterCommands lists in render mode 6) is the
@@ -5827,14 +5835,6 @@ static void (*s_panelCommands[PANEL_COMMAND_COUNT])(i16 character) = {
     reinterpret_cast<void (*)(i16)>(StatusCommand),       // the pun: see the table
     reinterpret_cast<void (*)(i16)>(SetEncounterPending), // the pun: see the table
 };
-
-// The pad button last pressed down.
-DATA(0x00090bcc)
-static GZ_ENUM_STORAGE(NavPadButton, i32) s_pressedPadButton;
-
-// The party panels' last drawn states.
-DATA(0x00090af8)
-static i32 s_panelStates[PARTY_PANEL_COUNT];
 
 // Frees every layer: its surfaces and the record.
 RVA(0x00054fd0, 0x4e)

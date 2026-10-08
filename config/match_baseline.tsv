@@ -50,7 +50,7 @@ fieldmain	59	55
 fieldobj	141	137
 fieldscreen	103	101
 fieldview	69	68
-font	150	146
+font	150	145
 fusion	114	111
 gameloop	7	7
 gamestate	7	7
@@ -978,7 +978,7 @@ font	_GetTextPlaneLineStepIf	100.0000	100.0000	2	ast4:7b1fd467f2a6	0x52b10	100.0
 font	_GetTextPlaneNormalAttr	100.0000	100.0000	2	ast4:46b282e22865	0x52750	100.0000	
 font	_GetTextPlaneOrigin	100.0000	100.0000	2	ast4:eca2538e6b7f	0x53ac0	100.0000	
 font	_GetTextPlaneOrigin2	100.0000	100.0000	2	ast4:eca2538e6b7f	0x53b10	100.0000	
-font	_GetTextPlanePageLines	100.0000	100.0000	3	ast4:05c8640e25a8	0x53010	100.0000	
+font	_GetTextPlanePageLines	100.0000	99.1667	3	ast4:05c8640e25a8	0x53010	100.0000	
 font	_GetTextPlaneRowText	100.0000	100.0000	3	ast4:6c65cd2d5977	0x53b60	100.0000	
 font	_GetTextPlaneSize	100.0000	100.0000	2	ast4:341f5c80b3ff	0x53f10	100.0000	
 font	_HideScreenLayer	100.0000	100.0000	6	ast4:2e6095cb840d	0x54390	100.0000	
