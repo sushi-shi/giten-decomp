@@ -15,6 +15,7 @@
 #include <Platform/Scene3D.h>
 #include <Platform/WindowsX.h>
 #include <Platform/WinMain.h>
+#include <Platform/WinMainInternal.h>
 #include <Platform/WinMM.h>
 #include <Sound/MidiStream.h>
 #include <Text/TextAttr.h>
@@ -49,6 +50,591 @@ RECT g_windowRect;
 
 DATA(0x0006b4e0)
 i32 g_selectedHotspot = HOTSPOT_NONE;
+
+// The hotspot the reticle marks, the hotspot count when one was last picked,
+// the reticle's frame and its centre.
+DATA(0x0006b4e4)
+static i32 s_markedHotspot = HOTSPOT_NONE;
+
+// The image each layer slot is painted with (0 for the slots painted
+// otherwise).
+DATA(0x0006b4e8)
+u16 g_layerImages[16] = {
+    IDB_BITMAP68,
+    0,
+    0,
+    IDB_BITMAP1,
+    IDB_BITMAP2,
+    IDB_BITMAP3,
+    IDB_BITMAP4,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    IDB_BITMAP11,
+    0
+};
+
+// The party panels' images by member state.
+DATA(0x0006b508)
+u16 g_panelImages[8] =
+    {IDB_BITMAP326, IDB_BITMAP327, IDB_BITMAP329, IDB_BITMAP328, IDB_BITMAP330, 0, 0, 0};
+
+// The menu bar's buttons: their images up and pressed, and their left edges.
+DATA(0x0006b518)
+MenuButtonImages g_menuButtonImages[MENU_BUTTON_COUNT] = {
+    {IDB_BITMAP72, IDB_BITMAP71},
+    {IDB_BITMAP76, IDB_BITMAP75},
+    {IDB_BITMAP74, IDB_BITMAP73},
+    {IDB_BITMAP78, IDB_BITMAP77},
+    {IDB_BITMAP80, IDB_BITMAP79},
+    {IDB_BITMAP297, IDB_BITMAP298},
+    {IDB_BITMAP70, IDB_BITMAP69},
+};
+
+// The command images of the character panel (layer 1), up and pressed.
+DATA(0x0006b538)
+MenuButtonImages g_commandImages[10] = {
+    {IDB_BITMAP33, IDB_BITMAP34},
+    {IDB_BITMAP35, IDB_BITMAP36},
+    {IDB_BITMAP39, IDB_BITMAP40},
+    {IDB_BITMAP37, IDB_BITMAP38},
+    {IDB_BITMAP31, IDB_BITMAP32},
+    {IDB_BITMAP43, IDB_BITMAP44},
+    {IDB_BITMAP29, IDB_BITMAP30},
+    {IDB_BITMAP41, IDB_BITMAP42},
+    {IDB_BITMAP56, IDB_BITMAP57},
+    {0, 0},
+};
+
+// The icon layer's (slot 2) images.
+DATA(0x0006b560)
+u16 g_iconLayerImages[28] = {
+    IDB_BITMAP9,   IDB_BITMAP301, IDB_BITMAP302, IDB_BITMAP303, IDB_BITMAP304, IDB_BITMAP305,
+    IDB_BITMAP306, IDB_BITMAP307, IDB_BITMAP308, IDB_BITMAP309, IDB_BITMAP310, IDB_BITMAP311,
+    IDB_BITMAP312, IDB_BITMAP313, IDB_BITMAP10,  IDB_BITMAP314, IDB_BITMAP315, IDB_BITMAP316,
+    IDB_BITMAP317, IDB_BITMAP318, IDB_BITMAP319, IDB_BITMAP320, IDB_BITMAP321, IDB_BITMAP322,
+    IDB_BITMAP323, IDB_BITMAP324, IDB_BITMAP325, IDB_BITMAP300,
+};
+
+// The compass image for each facing.
+DATA(0x0006b598)
+u16 g_compassImages[4] = {IDB_BITMAP5, IDB_BITMAP7, IDB_BITMAP6, IDB_BITMAP8};
+
+// The navigation pad buttons' images (up, pressed).
+DATA(0x0006b5a0)
+u16 g_padImages[4][2] = {
+    {IDB_BITMAP20, IDB_BITMAP19},
+    {IDB_BITMAP21, IDB_BITMAP22},
+    {IDB_BITMAP25, IDB_BITMAP26},
+    {IDB_BITMAP23, IDB_BITMAP24}
+};
+
+// The text plane kinds' frame images (CreateTextPlane; 0 for none).
+DATA(0x0006b5b0)
+u16 g_textPlaneImages[40] = {
+    IDB_BITMAP12,
+    IDB_BITMAP172,
+    IDB_BITMAP173,
+    IDB_BITMAP174,
+    IDB_BITMAP175,
+    IDB_BITMAP176,
+    IDB_BITMAP177,
+    IDB_BITMAP178,
+    IDB_BITMAP178,
+    IDB_BITMAP179,
+    IDB_BITMAP180,
+    IDB_BITMAP178,
+    IDB_BITMAP346,
+    0,
+    IDB_BITMAP16,
+    IDB_BITMAP17,
+    IDB_BITMAP13,
+    IDB_BITMAP181,
+    IDB_BITMAP182,
+    IDB_BITMAP183,
+    0,
+    IDB_BITMAP184,
+    0,
+    0,
+    0,
+    IDB_BITMAP185,
+    IDB_BITMAP186,
+    0,
+    IDB_BITMAP187,
+    0,
+    IDB_BITMAP18,
+    IDB_BITMAP299,
+    IDB_BITMAP188,
+    IDB_BITMAP189,
+    IDB_BITMAP190,
+    IDB_BITMAP331,
+    IDB_BITMAP191,
+    0,
+    0,
+    0
+};
+
+// @identity-TODO: the status image set roles remain unnamed.
+DATA(0x0006b600)
+u16 g_statusImages[10] = {
+    IDB_BITMAP67,
+    IDB_BITMAP62,
+    IDB_BITMAP58,
+    IDB_BITMAP63,
+    IDB_BITMAP59,
+    IDB_BITMAP64,
+    IDB_BITMAP61,
+    IDB_BITMAP66,
+    IDB_BITMAP65,
+    IDB_BITMAP60
+};
+
+// The marks DrawStatBar uses for base, bonus, empty and equipment segments.
+DATA(0x0006b618)
+u16 g_statBarMarkImages[5] = {IDB_BITMAP47, IDB_BITMAP46, IDB_BITMAP45, IDB_BITMAP49, IDB_BITMAP48};
+
+// The fusion summary grid: result icons and keyed level/growth overlays.
+DATA(0x0006b628)
+u16 g_fusionSummaryImages[17][3] = {
+    {IDB_BITMAP81, IDB_BITMAP83, IDB_BITMAP82},
+    {IDB_BITMAP84, IDB_BITMAP86, IDB_BITMAP85},
+    {IDB_BITMAP87, IDB_BITMAP89, IDB_BITMAP88},
+    {IDB_BITMAP90, IDB_BITMAP92, IDB_BITMAP91},
+    {IDB_BITMAP93, IDB_BITMAP95, IDB_BITMAP94},
+    {IDB_BITMAP96, IDB_BITMAP98, IDB_BITMAP97},
+    {IDB_BITMAP99, IDB_BITMAP101, IDB_BITMAP100},
+    {IDB_BITMAP102, IDB_BITMAP104, IDB_BITMAP103},
+    {IDB_BITMAP105, IDB_BITMAP107, IDB_BITMAP106},
+    {IDB_BITMAP108, IDB_BITMAP110, IDB_BITMAP109},
+    {IDB_BITMAP111, IDB_BITMAP113, IDB_BITMAP112},
+    {IDB_BITMAP114, IDB_BITMAP116, IDB_BITMAP115},
+    {IDB_BITMAP117, IDB_BITMAP119, IDB_BITMAP118},
+    {IDB_BITMAP120, IDB_BITMAP122, IDB_BITMAP121},
+    {IDB_BITMAP123, IDB_BITMAP125, IDB_BITMAP124},
+    {IDB_BITMAP126, IDB_BITMAP126, IDB_BITMAP126},
+    {IDB_BITMAP127, IDB_BITMAP127, IDB_BITMAP127},
+};
+
+// The automap's tile images (by tile) and mark images (by mark).
+DATA(0x0006b690)
+u16 g_mapTileImages[84] = {
+    IDB_BITMAP272,
+    IDB_BITMAP193,
+    IDB_BITMAP194,
+    IDB_BITMAP195,
+    IDB_BITMAP196,
+    IDB_BITMAP197,
+    IDB_BITMAP198,
+    IDB_BITMAP199,
+    IDB_BITMAP200,
+    IDB_BITMAP201,
+    IDB_BITMAP202,
+    IDB_BITMAP203,
+    IDB_BITMAP204,
+    IDB_BITMAP205,
+    IDB_BITMAP206,
+    IDB_BITMAP207,
+    IDB_BITMAP208,
+    IDB_BITMAP209,
+    IDB_BITMAP210,
+    IDB_BITMAP211,
+    IDB_BITMAP212,
+    IDB_BITMAP213,
+    IDB_BITMAP214,
+    IDB_BITMAP215,
+    IDB_BITMAP216,
+    IDB_BITMAP217,
+    IDB_BITMAP218,
+    IDB_BITMAP219,
+    IDB_BITMAP220,
+    IDB_BITMAP221,
+    IDB_BITMAP222,
+    IDB_BITMAP223,
+    IDB_BITMAP224,
+    IDB_BITMAP225,
+    IDB_BITMAP226,
+    IDB_BITMAP227,
+    IDB_BITMAP228,
+    IDB_BITMAP229,
+    IDB_BITMAP230,
+    IDB_BITMAP231,
+    IDB_BITMAP232,
+    IDB_BITMAP233,
+    IDB_BITMAP234,
+    IDB_BITMAP235,
+    IDB_BITMAP236,
+    IDB_BITMAP237,
+    IDB_BITMAP238,
+    IDB_BITMAP239,
+    IDB_BITMAP240,
+    IDB_BITMAP241,
+    IDB_BITMAP242,
+    IDB_BITMAP243,
+    IDB_BITMAP244,
+    IDB_BITMAP245,
+    IDB_BITMAP246,
+    IDB_BITMAP247,
+    IDB_BITMAP248,
+    IDB_BITMAP249,
+    IDB_BITMAP250,
+    IDB_BITMAP251,
+    IDB_BITMAP252,
+    IDB_BITMAP253,
+    IDB_BITMAP254,
+    IDB_BITMAP255,
+    IDB_BITMAP256,
+    IDB_BITMAP257,
+    IDB_BITMAP258,
+    IDB_BITMAP259,
+    IDB_BITMAP260,
+    IDB_BITMAP261,
+    IDB_BITMAP262,
+    IDB_BITMAP263,
+    IDB_BITMAP264,
+    IDB_BITMAP265,
+    IDB_BITMAP266,
+    IDB_BITMAP267,
+    IDB_BITMAP268,
+    IDB_BITMAP269,
+    IDB_BITMAP270,
+    IDB_BITMAP271,
+    IDB_BITMAP192,
+    0,
+    0,
+    0,
+};
+
+DATA(0x0006b738)
+u16 g_mapMarkImages[28] = {
+    IDB_BITMAP296,
+    IDB_BITMAP294,
+    IDB_BITMAP295,
+    IDB_BITMAP293,
+    IDB_BITMAP285,
+    IDB_BITMAP279,
+    IDB_BITMAP287,
+    IDB_BITMAP280,
+    IDB_BITMAP291,
+    IDB_BITMAP276,
+    IDB_BITMAP278,
+    IDB_BITMAP284,
+    IDB_BITMAP275,
+    IDB_BITMAP273,
+    IDB_BITMAP281,
+    IDB_BITMAP277,
+    IDB_BITMAP283,
+    IDB_BITMAP282,
+    IDB_BITMAP288,
+    IDB_BITMAP286,
+    IDB_BITMAP292,
+    IDB_BITMAP274,
+    IDB_BITMAP290,
+    IDB_BITMAP289,
+    IDB_BITMAP272,
+    0,
+    0,
+    0,
+};
+
+DATA(0x0006b770)
+u32 g_menuButtonX[MENU_BUTTON_COUNT] = {8, 40, 72, 104, 136, 168, 200};
+
+// Where each of the six world-map screens shows its part of the map.
+DATA(0x0006b790)
+MapScreenOffset g_mapScreenOffsets[MAP_SCREEN_COUNT] = {
+    {-112, -36},
+    {176, -36},
+    {464, -36},
+    {-112, 164},
+    {176, 164},
+    {464, 164},
+};
+
+DATA(0x0006b7a8)
+JoystickKey g_joystickKeys[8] = {
+    {JOY_UP, VK_UP},
+    {JOY_DOWN, VK_DOWN},
+    {JOY_LEFT, VK_LEFT},
+    {JOY_RIGHT, VK_RIGHT},
+    {1 << JOY_BUTTON_SHIFT, VK_RETURN},
+    {2 << JOY_BUTTON_SHIFT, VK_SPACE},
+    {4 << JOY_BUTTON_SHIFT, VK_SHIFT},
+    {0, 0},
+};
+
+// sin(3 * i degrees) for the turn steps 0..30 (the last entry is unused).
+DATA(0x0006b7e8)
+static D3DVALUE s_turnSine[32] = {
+    0.0f,      0.052336f, 0.104528f, 0.156434f, 0.207912f, 0.258819f, 0.309017f, 0.358368f,
+    0.406737f, 0.45399f,  0.5f,      0.544639f, 0.587785f, 0.62932f,  0.669131f, 0.707107f,
+    0.743145f, 0.777146f, 0.809017f, 0.838671f, 0.866025f, 0.891007f, 0.913545f, 0.93358f,
+    0.951057f, 0.965926f, 0.978148f, 0.987688f, 0.994522f, 0.99863f,  1.0f,      0.0f,
+};
+
+// The room texture quarters: [quarter][corner][tu, tv].
+DATA(0x0006b868)
+static D3DVALUE s_hardwareAtlasUV[4][4][2] = {
+    {{0.502f, 0.502f}, {0.998f, 0.502f}, {0.998f, 0.998f}, {0.502f, 0.998f}},
+    {{0.002f, 0.002f}, {0.498f, 0.002f}, {0.498f, 0.498f}, {0.002f, 0.498f}},
+    {{0.502f, 0.002f}, {0.998f, 0.002f}, {0.502f, 0.498f}, {0.998f, 0.498f}},
+    {{0.002f, 0.502f}, {0.498f, 0.502f}, {0.002f, 0.998f}, {0.498f, 0.998f}}
+};
+
+DATA(0x0006b8e8)
+static D3DVALUE s_softwareAtlasUV[4][4][2] = {
+    {{0.506f, 0.506f}, {0.994f, 0.506f}, {0.994f, 0.994f}, {0.506f, 0.994f}},
+    {{0.006f, 0.006f}, {0.494f, 0.006f}, {0.494f, 0.494f}, {0.006f, 0.494f}},
+    {{0.506f, 0.006f}, {0.994f, 0.006f}, {0.506f, 0.494f}, {0.994f, 0.494f}},
+    {{0.006f, 0.506f}, {0.494f, 0.506f}, {0.006f, 0.994f}, {0.494f, 0.994f}}
+};
+
+// The busy cursor animates while this is set; it starts set until the first
+// frame clears it.
+DATA(0x0006b968)
+static b32 s_busyCursor = true;
+
+// The music track PlayMusic last started (-1 = none).
+DATA(0x0006b96c)
+static i16 s_musicTrack = -1;
+
+DATA(0x0006b970)
+static const char* s_musicFiles[26] = {
+    "s\\sm000.mds", "s\\sm001.mds", "s\\sm002.mds", "s\\sm003.mds", "s\\sm004.mds", "s\\sm005.mds",
+    "s\\sm006.mds", "s\\sm007.mds", "s\\sm008.mds", "s\\sm009.mds", "s\\sm00a.mds", "s\\sm00b.mds",
+    "s\\sm00c.mds", "s\\sm00d.mds", "s\\sm00e.mds", "s\\sm00f.mds", "s\\sm010.mds", "s\\sm011.mds",
+    "s\\bgm00.mds", "s\\bgm01.mds", "s\\bgm02.mds", "s\\bgm03.mds", "s\\bgm04.mds", "s\\bgm05.mds",
+    NULL,           NULL,
+};
+
+// The move commands by command number.
+DATA(0x0006b9d8)
+static BOOL (*s_moveCommands[8])(i16 nextPhase) = {
+    MoveForwardCommand,
+    MoveRightCommand,
+    MoveBackCommand,
+    MoveLeftCommand,
+    TurnRightCommand,
+    TurnAroundCommand,
+    TurnLeftCommand,
+    NoMoveCommand,
+};
+
+// The step functions by move kind (g_moveState's low nibble).
+DATA(0x0006b9f8)
+static BOOL (*s_moveSteps[16])(D3DVALUE* progress) = {
+    NoMoveStep,
+    SlideForward,
+    SlideBack,
+    SlideLeft,
+    SlideRight,
+    TurnLeftStep,
+    TurnRightStep,
+    TurnAroundStep,
+    NoMoveStep,
+    NoMoveStep,
+    NoMoveStep,
+    NoMoveStep,
+    NoMoveStep,
+    NoMoveStep,
+    NoMoveStep,
+    NoMoveStep,
+};
+
+// The pad button each move kind presses.
+DATA(0x0006ba38)
+static GZ_ENUM_STORAGE(NavPadButton, i32) s_movePadButtons[8] = {
+    PAD_NONE,
+    PAD_FORWARD,
+    PAD_BACK,
+    PAD_LEFT,
+    PAD_RIGHT,
+    PAD_LEFT,
+    PAD_RIGHT,
+    PAD_BACK,
+};
+
+// The door frame's corner offsets per facing (x, z pairs for its four corners)
+// and, per animation step, the half-width of the opening and the texture u of
+// the leaves' inner edges.
+DATA(0x0006ba58)
+static i32 s_doorCorners[4][4][2] = {
+    {{-1, 1}, {1, 1}, {1, 1}, {-1, 1}},
+    {{1, 1}, {1, -1}, {1, -1}, {1, 1}},
+    {{1, -1}, {-1, -1}, {-1, -1}, {1, -1}},
+    {{-1, -1}, {-1, 1}, {-1, 1}, {-1, -1}},
+};
+
+DATA(0x0006bad8)
+static i32 s_doorWidths[16] = {
+    120,
+    113,
+    105,
+    98,
+    90,
+    83,
+    75,
+    68,
+    60,
+    53,
+    45,
+    38,
+    30,
+    23,
+    15,
+    8,
+};
+
+DATA(0x0006bb18)
+static D3DVALUE s_doorEdgeU[16] = {
+    0.2f,
+    0.1875f,
+    0.175f,
+    0.1625f,
+    0.15f,
+    0.1375f,
+    0.125f,
+    0.1125f,
+    0.1f,
+    0.0875f,
+    0.075f,
+    0.0625f,
+    0.05f,
+    0.0375f,
+    0.025f,
+    0.0125f,
+};
+
+// Texture coordinates for the normal and lower-half treasure-box frames,
+// closed then open, clockwise from the top left.
+DATA(0x0006bb58)
+static D3DVALUE s_boxUV[4][4][2] = {
+    {{0.01f, 0.01f}, {0.49f, 0.01f}, {0.49f, 0.49f}, {0.01f, 0.49f}},
+    {{0.51f, 0.01f}, {0.99f, 0.01f}, {0.99f, 0.49f}, {0.51f, 0.49f}},
+    {{0.01f, 0.51f}, {0.49f, 0.51f}, {0.49f, 0.99f}, {0.01f, 0.99f}},
+    {{0.51f, 0.51f}, {0.99f, 0.51f}, {0.99f, 0.99f}, {0.51f, 0.99f}},
+};
+
+// The billboard size of each enemy animation frame.
+DATA(0x0006bbd8)
+static i32 s_enemySizes[8][2] = {
+    {128, 232},
+    {128, 184},
+    {128, 136},
+    {128, 88},
+    {112, 40},
+    {80, 64},
+    {48, 128},
+    {16, 256},
+};
+
+// Image variants as the view turns; a negative entry mirrors the image.
+// Facing image code -1 occupies element zero.
+DATA(0x0006bc18)
+static i16 s_turnImageCodesRight[8] = {2, -1, 0, 1, -1, -1, 0, 0};
+
+DATA(0x0006bc28)
+static i16 s_turnImageCodesLeft[8] = {0, 1, 2, -1, 1, 1, 0, 0};
+
+// The order BlitScreenLayers walks the first layers in when asked to.
+DATA(0x0006bc38)
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_layerOrder[8] = {
+    SCREEN_LAYER_TEXT,
+    SCREEN_LAYER_FIRST_PANEL,
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 1),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 2),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 3),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 4),
+    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 5),
+    SCREEN_LAYER_MENU_BAR
+};
+
+// The frame handlers by render mode.
+DATA(0x0006bc58)
+static void (*s_renderModes[16])(BOOL draw) = {
+    RenderEventMode,
+    RenderViewMode,
+    RenderSceneMode,
+    RenderFieldView,
+    RenderPictureMode,
+    RenderPanelMode,
+    RenderFieldMode,
+    RenderBlankMode,
+    RenderStatusMode,
+    RenderLayersMode,
+    RenderNothing,
+    RenderNothing,
+    RenderNothing,
+    RenderNothing,
+    RenderNothing,
+    RenderNothing,
+};
+
+// The 24 quad vertices' screen y, four per quad.
+DATA(0x0006bc98)
+static i32 s_quadY[24] = {
+    320, 320, 0, 0, 320, 320, 0, 0, 320, 320, 0,   0,
+    320, 320, 0, 0, 320, 320, 0, 0, 320, 320, 284, 284,
+};
+
+DATA(0x0006bcf8)
+static D3DVALUE s_quadUV[24][2] = {
+    {0.0f, 0.0f},    {0.0f, 0.0f},      {0.0f, 0.0f},   {0.0f, 0.0f},      {0.0f, 0.505f},
+    {0.25f, 0.505f}, {0.25f, 1.0f},     {0.0f, 1.0f},   {0.25f, 0.505f},   {0.5f, 0.505f},
+    {0.5f, 1.0f},    {0.25f, 1.0f},     {0.0f, 0.505f}, {0.0625f, 0.505f}, {0.0625f, 1.0f},
+    {0.0f, 1.0f},    {0.4375f, 0.505f}, {0.5f, 0.505f}, {0.5f, 1.0f},      {0.4375f, 1.0f},
+    {0.0f, 0.505f},  {0.5f, 0.505f},    {0.5f, 0.563f}, {0.0f, 0.563f},
+};
+
+DATA(0x0006bdb8)
+static u16 s_quadIndices[6] = {0, 1, 2, 0, 2, 3};
+
+// A room cell's four corners around its centre: {x, z}.
+DATA(0x0006bdc8)
+static i32 s_cellCorner[4][2] = {{-160, 160}, {160, 160}, {160, -160}, {-160, -160}};
+
+// The two triangles of a floor cell, and of a ceiling cell (reversed winding).
+DATA(0x0006bde8)
+static u16 s_floorIndices[6] = {0, 1, 2, 0, 2, 3};
+
+DATA(0x0006bdf8)
+static u16 s_ceilingIndices[6] = {0, 3, 2, 0, 2, 1};
+
+// The camera's offset from its target and the billboards' axis per facing.
+DATA(0x0006be08)
+static i32 s_cameraOffsets[4][2] = {{0, -160}, {-160, 0}, {0, 160}, {160, 0}};
+
+DATA(0x0006be28)
+static D3DVALUE s_billboardAxes[4][2] = {{-1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, -1.0f}};
+
+// A wall quad's corners per side (north, east, south, west: two corners each,
+// x then z) and the quad's two triangles.
+DATA(0x0006be48)
+static i32 s_wallCorners[8][2] = {
+    {-161, 161},
+    {161, 161},
+    {161, 161},
+    {161, -161},
+    {161, -161},
+    {-161, -161},
+    {-161, -161},
+    {-161, 161},
+};
+
+DATA(0x0006be88)
+static u16 s_wallQuadIndices[6] = {0, 1, 3, 0, 3, 2};
+
+// The layer the left and the right button went down on (SCREEN_LAYER_NONE
+// for none).
+DATA(0x0006be94)
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_pressedLayer = SCREEN_LAYER_NONE;
+
+DATA(0x0006be98)
+static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_rightPressedLayer = SCREEN_LAYER_NONE;
+
 
 DATA(0x00084800)
 Texture g_roomTexture;
@@ -127,24 +713,11 @@ RVA_DYNINIT(0x00049600, 0xa, g_ime)
 DATA(0x00084358)
 CIme g_ime;
 
-// The 24 quad vertices' screen y, four per quad.
-DATA(0x0006bc98)
-static i32 s_quadY[24] = {
-    320, 320, 0, 0, 320, 320, 0, 0, 320, 320, 0,   0,
-    320, 320, 0, 0, 320, 320, 0, 0, 320, 320, 284, 284,
-};
 
-DATA(0x0006bcf8)
-static D3DVALUE s_quadUV[24][2] = {
-    {0.0f, 0.0f},    {0.0f, 0.0f},      {0.0f, 0.0f},   {0.0f, 0.0f},      {0.0f, 0.505f},
-    {0.25f, 0.505f}, {0.25f, 1.0f},     {0.0f, 1.0f},   {0.25f, 0.505f},   {0.5f, 0.505f},
-    {0.5f, 1.0f},    {0.25f, 1.0f},     {0.0f, 0.505f}, {0.0625f, 0.505f}, {0.0625f, 1.0f},
-    {0.0f, 1.0f},    {0.4375f, 0.505f}, {0.5f, 0.505f}, {0.5f, 1.0f},      {0.4375f, 1.0f},
-    {0.0f, 0.505f},  {0.5f, 0.505f},    {0.5f, 0.563f}, {0.0f, 0.563f},
-};
 
-DATA(0x0006bdb8)
-static u16 s_quadIndices[6] = {0, 1, 2, 0, 2, 3};
+
+
+
 
 // The direction the party faces (0..3).
 DATA(0x000847ac)
@@ -187,23 +760,11 @@ static i32 s_busyFrame;
 DATA(0x00090ac8)
 static b32 s_screenSaved;
 
-// The busy cursor animates while this is set; it starts set until the first
-// frame clears it.
-DATA(0x0006b968)
-static b32 s_busyCursor = true;
 
-// The music track PlayMusic last started (-1 = none).
-DATA(0x0006b96c)
-static i16 s_musicTrack = -1;
 
-DATA(0x0006b970)
-static const char* s_musicFiles[26] = {
-    "s\\sm000.mds", "s\\sm001.mds", "s\\sm002.mds", "s\\sm003.mds", "s\\sm004.mds", "s\\sm005.mds",
-    "s\\sm006.mds", "s\\sm007.mds", "s\\sm008.mds", "s\\sm009.mds", "s\\sm00a.mds", "s\\sm00b.mds",
-    "s\\sm00c.mds", "s\\sm00d.mds", "s\\sm00e.mds", "s\\sm00f.mds", "s\\sm010.mds", "s\\sm011.mds",
-    "s\\bgm00.mds", "s\\bgm01.mds", "s\\bgm02.mds", "s\\bgm03.mds", "s\\bgm04.mds", "s\\bgm05.mds",
-    NULL,           NULL,
-};
+
+
+
 
 RVA(0x00049610, 0x1)
 void DebugTrace(const char* message) {}
@@ -786,18 +1347,7 @@ static b32 NoMoveCommand(i16 nextPhase) {
     return true;
 }
 
-// The move commands by command number.
-DATA(0x0006b9d8)
-static BOOL (*s_moveCommands[8])(i16 nextPhase) = {
-    MoveForwardCommand,
-    MoveRightCommand,
-    MoveBackCommand,
-    MoveLeftCommand,
-    TurnRightCommand,
-    TurnAroundCommand,
-    TurnLeftCommand,
-    NoMoveCommand,
-};
+
 
 // Hides layer 1's panel and runs move command `command` (0..7).
 RVA(0x00049f50, 0x45)
@@ -1142,18 +1692,9 @@ static b32 SlideRight(D3DVALUE* progress) {
     return done;
 }
 
-// sin(3 * i degrees) for the turn steps 0..30 (the last entry is unused).
-DATA(0x0006b7e8)
-static D3DVALUE s_turnSine[32] = {
-    0.0f,      0.052336f, 0.104528f, 0.156434f, 0.207912f, 0.258819f, 0.309017f, 0.358368f,
-    0.406737f, 0.45399f,  0.5f,      0.544639f, 0.587785f, 0.62932f,  0.669131f, 0.707107f,
-    0.743145f, 0.777146f, 0.809017f, 0.838671f, 0.866025f, 0.891007f, 0.913545f, 0.93358f,
-    0.951057f, 0.965926f, 0.978148f, 0.987688f, 0.994522f, 0.99863f,  1.0f,      0.0f,
-};
 
-// The compass image for each facing.
-DATA(0x0006b598)
-u16 g_compassImages[4] = {IDB_BITMAP5, IDB_BITMAP7, IDB_BITMAP6, IDB_BITMAP8};
+
+
 
 // A quarter turn is 30 steps of 3 degrees; the camera circles its target at
 // this distance.
@@ -1324,39 +1865,9 @@ void PressPadButton(GZ_ENUM_PARAM(NavPadButton, i32) button, BOOL pressed) {
     DrawPadButton(g_screenLayers[SCREEN_LAYER_NAVIGATION]->surface, button, pressed);
 }
 
-// The step functions by move kind (g_moveState's low nibble).
-DATA(0x0006b9f8)
-static BOOL (*s_moveSteps[16])(D3DVALUE* progress) = {
-    NoMoveStep,
-    SlideForward,
-    SlideBack,
-    SlideLeft,
-    SlideRight,
-    TurnLeftStep,
-    TurnRightStep,
-    TurnAroundStep,
-    NoMoveStep,
-    NoMoveStep,
-    NoMoveStep,
-    NoMoveStep,
-    NoMoveStep,
-    NoMoveStep,
-    NoMoveStep,
-    NoMoveStep,
-};
 
-// The pad button each move kind presses.
-DATA(0x0006ba38)
-static GZ_ENUM_STORAGE(NavPadButton, i32) s_movePadButtons[8] = {
-    PAD_NONE,
-    PAD_FORWARD,
-    PAD_BACK,
-    PAD_LEFT,
-    PAD_RIGHT,
-    PAD_LEFT,
-    PAD_RIGHT,
-    PAD_BACK,
-};
+
+
 
 // Runs one frame of the move under way (a new move starts from progress 0),
 // then re-aims the camera; at the move's end the pad button comes up and the
@@ -1392,56 +1903,11 @@ b32 AnimateMove(void) {
     return moving;
 }
 
-// The door frame's corner offsets per facing (x, z pairs for its four corners)
-// and, per animation step, the half-width of the opening and the texture u of
-// the leaves' inner edges.
-DATA(0x0006ba58)
-static i32 s_doorCorners[4][4][2] = {
-    {{-1, 1}, {1, 1}, {1, 1}, {-1, 1}},
-    {{1, 1}, {1, -1}, {1, -1}, {1, 1}},
-    {{1, -1}, {-1, -1}, {-1, -1}, {1, -1}},
-    {{-1, -1}, {-1, 1}, {-1, 1}, {-1, -1}},
-};
 
-DATA(0x0006bad8)
-static i32 s_doorWidths[16] = {
-    120,
-    113,
-    105,
-    98,
-    90,
-    83,
-    75,
-    68,
-    60,
-    53,
-    45,
-    38,
-    30,
-    23,
-    15,
-    8,
-};
 
-DATA(0x0006bb18)
-static D3DVALUE s_doorEdgeU[16] = {
-    0.2f,
-    0.1875f,
-    0.175f,
-    0.1625f,
-    0.15f,
-    0.1375f,
-    0.125f,
-    0.1125f,
-    0.1f,
-    0.0875f,
-    0.075f,
-    0.0625f,
-    0.05f,
-    0.0375f,
-    0.025f,
-    0.0125f,
-};
+
+
+
 
 // The depth past which vertices darken, and the shading curve's constants.
 #define SHADE_NEAR 1120.0
@@ -1715,15 +2181,7 @@ void DrawScreenFade(void) {
 // The atexit callback of DrawScreenFade's vertex table (nothing to destroy).
 RVA_DYNINIT(0x0004bdc0, 0x1, DrawScreenFade)
 
-// Texture coordinates for the normal and lower-half treasure-box frames,
-// closed then open, clockwise from the top left.
-DATA(0x0006bb58)
-static D3DVALUE s_boxUV[4][4][2] = {
-    {{0.01f, 0.01f}, {0.49f, 0.01f}, {0.49f, 0.49f}, {0.01f, 0.49f}},
-    {{0.51f, 0.01f}, {0.99f, 0.01f}, {0.99f, 0.49f}, {0.51f, 0.49f}},
-    {{0.01f, 0.51f}, {0.49f, 0.51f}, {0.49f, 0.99f}, {0.01f, 0.99f}},
-    {{0.51f, 0.51f}, {0.99f, 0.51f}, {0.99f, 0.99f}, {0.51f, 0.99f}},
-};
+
 
 // Draws the treasure boxes within three cells of the party as billboards and
 // makes the box in front of the party a hotspot.
@@ -2047,25 +2505,10 @@ void RenderNPC(BOOL ownCellOnly) {
 // The atexit callback of RenderNPC's vertex table (nothing to destroy).
 RVA_DYNINIT(0x0004cb20, 0x1, RenderNPC)
 
-// The billboard size of each enemy animation frame.
-DATA(0x0006bbd8)
-static i32 s_enemySizes[8][2] = {
-    {128, 232},
-    {128, 184},
-    {128, 136},
-    {128, 88},
-    {112, 40},
-    {80, 64},
-    {48, 128},
-    {16, 256},
-};
 
-// Image variants as the view turns; a negative entry mirrors the image.
-// Facing image code -1 occupies element zero.
-DATA(0x0006bc18)
-static i16 s_turnImageCodesRight[8] = {2, -1, 0, 1, -1, -1, 0, 0};
-DATA(0x0006bc28)
-static i16 s_turnImageCodesLeft[8] = {0, 1, 2, -1, 1, 1, 0, 0};
+
+
+
 
 // Draws the field objects (enemies) within three cells of the party as
 // billboards, spreading up to three sharing a cell, and makes each one in
@@ -2401,10 +2844,7 @@ RVA_DYNINIT(0x0004d620, 0x1, RenderEnemy)
 DATA(0x00084ce8)
 Picture g_targetPicture;
 
-// The hotspot the reticle marks, the hotspot count when one was last picked,
-// the reticle's frame and its centre.
-DATA(0x0006b4e4)
-static i32 s_markedHotspot = HOTSPOT_NONE;
+
 
 DATA(0x00090ad8)
 static u32 s_markedCount;
@@ -2828,18 +3268,7 @@ void DrawSceneSprites(void) {
     }
 }
 
-// The order BlitScreenLayers walks the first layers in when asked to.
-DATA(0x0006bc38)
-static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_layerOrder[8] = {
-    SCREEN_LAYER_TEXT,
-    SCREEN_LAYER_FIRST_PANEL,
-    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 1),
-    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 2),
-    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 3),
-    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 4),
-    static_cast<GZ_ENUM_STORAGE(ScreenLayerSlot, i32)>(SCREEN_LAYER_FIRST_PANEL + 5),
-    SCREEN_LAYER_MENU_BAR
-};
+
 
 RVA(0x0004e1d0, 0xfd)
 void BlitScreenLayers(i32 first, i32 last, u32 flags) {
@@ -3235,28 +3664,9 @@ void RenderPictureMode(BOOL draw) {
 // Render mode handlers (the table 0x46bc58, indexed by the render mode); each
 // takes whether the frame is drawn.
 
-// Where each of the six world-map screens shows its part of the map.
-DATA(0x0006b790)
-MapScreenOffset g_mapScreenOffsets[MAP_SCREEN_COUNT] = {
-    {-112, -36},
-    {176, -36},
-    {464, -36},
-    {-112, 164},
-    {176, 164},
-    {464, 164},
-};
 
-DATA(0x0006b7a8)
-JoystickKey g_joystickKeys[8] = {
-    {JOY_UP, VK_UP},
-    {JOY_DOWN, VK_DOWN},
-    {JOY_LEFT, VK_LEFT},
-    {JOY_RIGHT, VK_RIGHT},
-    {1 << JOY_BUTTON_SHIFT, VK_RETURN},
-    {2 << JOY_BUTTON_SHIFT, VK_SPACE},
-    {4 << JOY_BUTTON_SHIFT, VK_SHIFT},
-    {0, 0},
-};
+
+
 
 DATA(0x0008f570)
 MarkerColor g_markerColors[4];
@@ -3409,26 +3819,7 @@ void RenderLayersMode(BOOL draw) {
 RVA(0x0004f130, 0x1)
 void RenderNothing(BOOL draw) {}
 
-// The frame handlers by render mode.
-DATA(0x0006bc58)
-static void (*s_renderModes[16])(BOOL draw) = {
-    RenderEventMode,
-    RenderViewMode,
-    RenderSceneMode,
-    RenderFieldView,
-    RenderPictureMode,
-    RenderPanelMode,
-    RenderFieldMode,
-    RenderBlankMode,
-    RenderStatusMode,
-    RenderLayersMode,
-    RenderNothing,
-    RenderNothing,
-    RenderNothing,
-    RenderNothing,
-    RenderNothing,
-    RenderNothing,
-};
+
 
 // When the last frame was drawn (timeGetTime).
 DATA(0x0008f2e8)
@@ -3569,33 +3960,15 @@ void FreeMesh(Mesh* mesh) {
     mesh->vertexCount = 0;
 }
 
-// The room texture quarters: [quarter][corner][tu, tv].
-DATA(0x0006b868)
-static D3DVALUE s_hardwareAtlasUV[4][4][2] = {
-    {{0.502f, 0.502f}, {0.998f, 0.502f}, {0.998f, 0.998f}, {0.502f, 0.998f}},
-    {{0.002f, 0.002f}, {0.498f, 0.002f}, {0.498f, 0.498f}, {0.002f, 0.498f}},
-    {{0.502f, 0.002f}, {0.998f, 0.002f}, {0.502f, 0.498f}, {0.998f, 0.498f}},
-    {{0.002f, 0.502f}, {0.498f, 0.502f}, {0.002f, 0.998f}, {0.498f, 0.998f}}
-};
 
-DATA(0x0006b8e8)
-static D3DVALUE s_softwareAtlasUV[4][4][2] = {
-    {{0.506f, 0.506f}, {0.994f, 0.506f}, {0.994f, 0.994f}, {0.506f, 0.994f}},
-    {{0.006f, 0.006f}, {0.494f, 0.006f}, {0.494f, 0.494f}, {0.006f, 0.494f}},
-    {{0.506f, 0.006f}, {0.994f, 0.006f}, {0.506f, 0.494f}, {0.994f, 0.494f}},
-    {{0.006f, 0.506f}, {0.494f, 0.506f}, {0.006f, 0.994f}, {0.494f, 0.994f}}
-};
 
-// A room cell's four corners around its centre: {x, z}.
-DATA(0x0006bdc8)
-static i32 s_cellCorner[4][2] = {{-160, 160}, {160, 160}, {160, -160}, {-160, -160}};
 
-// The two triangles of a floor cell, and of a ceiling cell (reversed winding).
-DATA(0x0006bde8)
-static u16 s_floorIndices[6] = {0, 1, 2, 0, 2, 3};
 
-DATA(0x0006bdf8)
-static u16 s_ceilingIndices[6] = {0, 3, 2, 0, 2, 1};
+
+
+
+
+
 
 // Builds a cols x rows grid of 320-unit floor cells and, 320 units up, the
 // matching ceiling cells.
@@ -3667,12 +4040,9 @@ void AllocWallMesh(Mesh* mesh) {
     mesh->indices = new u16[2904];
 }
 
-// The camera's offset from its target and the billboards' axis per facing.
-DATA(0x0006be08)
-static i32 s_cameraOffsets[4][2] = {{0, -160}, {-160, 0}, {0, 160}, {160, 0}};
 
-DATA(0x0006be28)
-static D3DVALUE s_billboardAxes[4][2] = {{-1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, -1.0f}};
+
+
 
 // Faces the camera the party's way: its offset, the billboard axis, the view
 // transform and the compass.
@@ -3701,22 +4071,9 @@ Mesh g_wallMesh;
 DATA(0x0008fca0)
 Mesh g_doorMesh;
 
-// A wall quad's corners per side (north, east, south, west: two corners each,
-// x then z) and the quad's two triangles.
-DATA(0x0006be48)
-static i32 s_wallCorners[8][2] = {
-    {-161, 161},
-    {161, 161},
-    {161, 161},
-    {161, -161},
-    {161, -161},
-    {-161, -161},
-    {-161, -161},
-    {-161, 161},
-};
 
-DATA(0x0006be88)
-static u16 s_wallQuadIndices[6] = {0, 1, 3, 0, 3, 2};
+
+
 
 // Rebuilds g_wallMesh from the wall words of the cells within ROOM_RADIUS of
 // the party (wrapping around the map edge in the areas that wrap): each
@@ -3930,288 +4287,31 @@ void RepeatPadMove(BOOL turn) {
     }
 }
 
-// The image each layer slot is painted with (0 for the slots painted
-// otherwise).
-DATA(0x0006b4e8)
-u16 g_layerImages[16] = {
-    IDB_BITMAP68,
-    0,
-    0,
-    IDB_BITMAP1,
-    IDB_BITMAP2,
-    IDB_BITMAP3,
-    IDB_BITMAP4,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    IDB_BITMAP11,
-    0
-};
 
-// The party panels' images by member state.
-DATA(0x0006b508)
-u16 g_panelImages[8] =
-    {IDB_BITMAP326, IDB_BITMAP327, IDB_BITMAP329, IDB_BITMAP328, IDB_BITMAP330, 0, 0, 0};
 
-// The command images of the character panel (layer 1), up and pressed.
-DATA(0x0006b538)
-MenuButtonImages g_commandImages[10] = {
-    {IDB_BITMAP33, IDB_BITMAP34},
-    {IDB_BITMAP35, IDB_BITMAP36},
-    {IDB_BITMAP39, IDB_BITMAP40},
-    {IDB_BITMAP37, IDB_BITMAP38},
-    {IDB_BITMAP31, IDB_BITMAP32},
-    {IDB_BITMAP43, IDB_BITMAP44},
-    {IDB_BITMAP29, IDB_BITMAP30},
-    {IDB_BITMAP41, IDB_BITMAP42},
-    {IDB_BITMAP56, IDB_BITMAP57},
-    {0, 0},
-};
 
-// The icon layer's (slot 2) images.
-DATA(0x0006b560)
-u16 g_iconLayerImages[28] = {
-    IDB_BITMAP9,   IDB_BITMAP301, IDB_BITMAP302, IDB_BITMAP303, IDB_BITMAP304, IDB_BITMAP305,
-    IDB_BITMAP306, IDB_BITMAP307, IDB_BITMAP308, IDB_BITMAP309, IDB_BITMAP310, IDB_BITMAP311,
-    IDB_BITMAP312, IDB_BITMAP313, IDB_BITMAP10,  IDB_BITMAP314, IDB_BITMAP315, IDB_BITMAP316,
-    IDB_BITMAP317, IDB_BITMAP318, IDB_BITMAP319, IDB_BITMAP320, IDB_BITMAP321, IDB_BITMAP322,
-    IDB_BITMAP323, IDB_BITMAP324, IDB_BITMAP325, IDB_BITMAP300,
-};
 
-// The navigation pad buttons' images (up, pressed).
-DATA(0x0006b5a0)
-u16 g_padImages[4][2] = {
-    {IDB_BITMAP20, IDB_BITMAP19},
-    {IDB_BITMAP21, IDB_BITMAP22},
-    {IDB_BITMAP25, IDB_BITMAP26},
-    {IDB_BITMAP23, IDB_BITMAP24}
-};
 
-// @identity-TODO: the status image set roles remain unnamed.
-DATA(0x0006b600)
-u16 g_statusImages[10] = {
-    IDB_BITMAP67,
-    IDB_BITMAP62,
-    IDB_BITMAP58,
-    IDB_BITMAP63,
-    IDB_BITMAP59,
-    IDB_BITMAP64,
-    IDB_BITMAP61,
-    IDB_BITMAP66,
-    IDB_BITMAP65,
-    IDB_BITMAP60
-};
 
-// The marks DrawStatBar uses for base, bonus, empty and equipment segments.
-DATA(0x0006b618)
-u16 g_statBarMarkImages[5] = {IDB_BITMAP47, IDB_BITMAP46, IDB_BITMAP45, IDB_BITMAP49, IDB_BITMAP48};
 
-// The fusion summary grid: result icons and keyed level/growth overlays.
-DATA(0x0006b628)
-u16 g_fusionSummaryImages[17][3] = {
-    {IDB_BITMAP81, IDB_BITMAP83, IDB_BITMAP82},
-    {IDB_BITMAP84, IDB_BITMAP86, IDB_BITMAP85},
-    {IDB_BITMAP87, IDB_BITMAP89, IDB_BITMAP88},
-    {IDB_BITMAP90, IDB_BITMAP92, IDB_BITMAP91},
-    {IDB_BITMAP93, IDB_BITMAP95, IDB_BITMAP94},
-    {IDB_BITMAP96, IDB_BITMAP98, IDB_BITMAP97},
-    {IDB_BITMAP99, IDB_BITMAP101, IDB_BITMAP100},
-    {IDB_BITMAP102, IDB_BITMAP104, IDB_BITMAP103},
-    {IDB_BITMAP105, IDB_BITMAP107, IDB_BITMAP106},
-    {IDB_BITMAP108, IDB_BITMAP110, IDB_BITMAP109},
-    {IDB_BITMAP111, IDB_BITMAP113, IDB_BITMAP112},
-    {IDB_BITMAP114, IDB_BITMAP116, IDB_BITMAP115},
-    {IDB_BITMAP117, IDB_BITMAP119, IDB_BITMAP118},
-    {IDB_BITMAP120, IDB_BITMAP122, IDB_BITMAP121},
-    {IDB_BITMAP123, IDB_BITMAP125, IDB_BITMAP124},
-    {IDB_BITMAP126, IDB_BITMAP126, IDB_BITMAP126},
-    {IDB_BITMAP127, IDB_BITMAP127, IDB_BITMAP127},
-};
 
-// The text plane kinds' frame images (CreateTextPlane; 0 for none).
-DATA(0x0006b5b0)
-u16 g_textPlaneImages[40] = {
-    IDB_BITMAP12,
-    IDB_BITMAP172,
-    IDB_BITMAP173,
-    IDB_BITMAP174,
-    IDB_BITMAP175,
-    IDB_BITMAP176,
-    IDB_BITMAP177,
-    IDB_BITMAP178,
-    IDB_BITMAP178,
-    IDB_BITMAP179,
-    IDB_BITMAP180,
-    IDB_BITMAP178,
-    IDB_BITMAP346,
-    0,
-    IDB_BITMAP16,
-    IDB_BITMAP17,
-    IDB_BITMAP13,
-    IDB_BITMAP181,
-    IDB_BITMAP182,
-    IDB_BITMAP183,
-    0,
-    IDB_BITMAP184,
-    0,
-    0,
-    0,
-    IDB_BITMAP185,
-    IDB_BITMAP186,
-    0,
-    IDB_BITMAP187,
-    0,
-    IDB_BITMAP18,
-    IDB_BITMAP299,
-    IDB_BITMAP188,
-    IDB_BITMAP189,
-    IDB_BITMAP190,
-    IDB_BITMAP331,
-    IDB_BITMAP191,
-    0,
-    0,
-    0
-};
 
-// The automap's tile images (by tile) and mark images (by mark).
-DATA(0x0006b690)
-u16 g_mapTileImages[84] = {
-    IDB_BITMAP272,
-    IDB_BITMAP193,
-    IDB_BITMAP194,
-    IDB_BITMAP195,
-    IDB_BITMAP196,
-    IDB_BITMAP197,
-    IDB_BITMAP198,
-    IDB_BITMAP199,
-    IDB_BITMAP200,
-    IDB_BITMAP201,
-    IDB_BITMAP202,
-    IDB_BITMAP203,
-    IDB_BITMAP204,
-    IDB_BITMAP205,
-    IDB_BITMAP206,
-    IDB_BITMAP207,
-    IDB_BITMAP208,
-    IDB_BITMAP209,
-    IDB_BITMAP210,
-    IDB_BITMAP211,
-    IDB_BITMAP212,
-    IDB_BITMAP213,
-    IDB_BITMAP214,
-    IDB_BITMAP215,
-    IDB_BITMAP216,
-    IDB_BITMAP217,
-    IDB_BITMAP218,
-    IDB_BITMAP219,
-    IDB_BITMAP220,
-    IDB_BITMAP221,
-    IDB_BITMAP222,
-    IDB_BITMAP223,
-    IDB_BITMAP224,
-    IDB_BITMAP225,
-    IDB_BITMAP226,
-    IDB_BITMAP227,
-    IDB_BITMAP228,
-    IDB_BITMAP229,
-    IDB_BITMAP230,
-    IDB_BITMAP231,
-    IDB_BITMAP232,
-    IDB_BITMAP233,
-    IDB_BITMAP234,
-    IDB_BITMAP235,
-    IDB_BITMAP236,
-    IDB_BITMAP237,
-    IDB_BITMAP238,
-    IDB_BITMAP239,
-    IDB_BITMAP240,
-    IDB_BITMAP241,
-    IDB_BITMAP242,
-    IDB_BITMAP243,
-    IDB_BITMAP244,
-    IDB_BITMAP245,
-    IDB_BITMAP246,
-    IDB_BITMAP247,
-    IDB_BITMAP248,
-    IDB_BITMAP249,
-    IDB_BITMAP250,
-    IDB_BITMAP251,
-    IDB_BITMAP252,
-    IDB_BITMAP253,
-    IDB_BITMAP254,
-    IDB_BITMAP255,
-    IDB_BITMAP256,
-    IDB_BITMAP257,
-    IDB_BITMAP258,
-    IDB_BITMAP259,
-    IDB_BITMAP260,
-    IDB_BITMAP261,
-    IDB_BITMAP262,
-    IDB_BITMAP263,
-    IDB_BITMAP264,
-    IDB_BITMAP265,
-    IDB_BITMAP266,
-    IDB_BITMAP267,
-    IDB_BITMAP268,
-    IDB_BITMAP269,
-    IDB_BITMAP270,
-    IDB_BITMAP271,
-    IDB_BITMAP192,
-    0,
-    0,
-    0,
-};
 
-DATA(0x0006b738)
-u16 g_mapMarkImages[28] = {
-    IDB_BITMAP296,
-    IDB_BITMAP294,
-    IDB_BITMAP295,
-    IDB_BITMAP293,
-    IDB_BITMAP285,
-    IDB_BITMAP279,
-    IDB_BITMAP287,
-    IDB_BITMAP280,
-    IDB_BITMAP291,
-    IDB_BITMAP276,
-    IDB_BITMAP278,
-    IDB_BITMAP284,
-    IDB_BITMAP275,
-    IDB_BITMAP273,
-    IDB_BITMAP281,
-    IDB_BITMAP277,
-    IDB_BITMAP283,
-    IDB_BITMAP282,
-    IDB_BITMAP288,
-    IDB_BITMAP286,
-    IDB_BITMAP292,
-    IDB_BITMAP274,
-    IDB_BITMAP290,
-    IDB_BITMAP289,
-    IDB_BITMAP272,
-    0,
-    0,
-    0,
-};
 
-// The menu bar's buttons: their images up and pressed, and their left edges.
-DATA(0x0006b518)
-MenuButtonImages g_menuButtonImages[MENU_BUTTON_COUNT] = {
-    {IDB_BITMAP72, IDB_BITMAP71},
-    {IDB_BITMAP76, IDB_BITMAP75},
-    {IDB_BITMAP74, IDB_BITMAP73},
-    {IDB_BITMAP78, IDB_BITMAP77},
-    {IDB_BITMAP80, IDB_BITMAP79},
-    {IDB_BITMAP297, IDB_BITMAP298},
-    {IDB_BITMAP70, IDB_BITMAP69},
-};
 
-DATA(0x0006b770)
-u32 g_menuButtonX[MENU_BUTTON_COUNT] = {8, 40, 72, 104, 136, 168, 200};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // A click at (x, y) on the menu bar: draws the button pressed, then toggles
 // the layer of buttons 0..4 (in the panel mode, button 4 only hides its
@@ -4625,13 +4725,9 @@ b32 RunJoystickMove(void) {
 // once it is below this.
 #define MENU_BAR_HIDE_Y 32
 
-// The layer the left and the right button went down on (SCREEN_LAYER_NONE
-// for none).
-DATA(0x0006be94)
-static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_pressedLayer = SCREEN_LAYER_NONE;
 
-DATA(0x0006be98)
-static GZ_ENUM_STORAGE(ScreenLayerSlot, i32) s_rightPressedLayer = SCREEN_LAYER_NONE;
+
+
 
 // Set while a navigation pad button is held down.
 DATA(0x0008f608)

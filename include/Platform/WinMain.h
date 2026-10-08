@@ -16,6 +16,10 @@ LRESULT CALLBACK MainWindowProc(HWND window, UINT message, WPARAM wparam, LPARAM
 // clear-blit parameters) and seeds rand.
 void ResetDisplayGlobals(void);
 
+void RenderSceneMode(BOOL draw);
+void RenderPictureMode(BOOL draw);
+void RenderBlankMode(BOOL draw);
+
 b32 CreateMainWindow(HINSTANCE instance);
 
 #endif // GITEN_PLATFORM_WINMAIN_H
