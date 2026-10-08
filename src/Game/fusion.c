@@ -687,6 +687,10 @@ void InheritFusionStat(
     }
 }
 
+static __inline void AppendFusionSlot(i16* slots, i16* count, i16 slot) {
+    slots[(*count)++] = slot;
+}
+
 static __inline void ClassifyFusionSlot(
     i16 slot,
     i16* primary,
@@ -698,11 +702,11 @@ static __inline void ClassifyFusionSlot(
 ) {
     const GZ_ENUM_LOCAL(FusionPairSide, i16) side = GetFusionPairSide(slot);
     if (side == FUSION_PAIR_SECONDARY) {
-        secondary[(*secondaryCount)++] = slot;
+        AppendFusionSlot(secondary, secondaryCount, slot);
     } else if (side == FUSION_PAIR_PRIMARY) {
-        primary[(*primaryCount)++] = slot;
+        AppendFusionSlot(primary, primaryCount, slot);
     } else {
-        other[(*otherCount)++] = slot;
+        AppendFusionSlot(other, otherCount, slot);
     }
 }
 
@@ -1888,7 +1892,7 @@ i16 BuildPairFusionCandidates(i16 skipCalculation) {
     s_fusionCandidateCount = 0;
     for (first = 0; first < ROSTER_SIZE; first++) {
         if (GetRosterId(first) >= HUMAN_ID_LIMIT) {
-            s_fusionSlots[s_fusionCandidateCount++] = first;
+            AppendFusionSlot(s_fusionSlots, &s_fusionCandidateCount, first);
         }
         for (second = 0; second < ROSTER_SIZE; second++) {
             s_pendingFusionResultId = -1;

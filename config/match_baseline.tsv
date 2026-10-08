@@ -1052,7 +1052,7 @@ font	_ToggleCurrentTextHighlight	100.0000	100.0000	2	ast4:1f81b8dedf63	0x52f30	1
 font	_ToggleTextRunHighlight	100.0000	100.0000	7	ast4:b9cee76b2cdc	0x51ef0	100.0000	
 fusion	_AcquireFusionSelectionMode	100.0000	100.0000	2	ast4:823f8f950abe	0x28840	100.0000	
 fusion	_ApplyFusionRankChange	100.0000	100.0000	2	ast4:939498de6a9f	0x26910	100.0000	
-fusion	_BuildPairFusionCandidates	100.0000	100.0000	2	ast4:dec1341359cd	0x296f0	100.0000	
+fusion	_BuildPairFusionCandidates	100.0000	100.0000	3	ast4:eb3739e4e877	0x296f0	100.0000	
 fusion	_BuildTripleFusionSummaries	100.0000	100.0000	4	ast4:f738dcb2163a	0x29870	100.0000	
 fusion	_CalculatePairFusion	100.0000	100.0000	3	ast4:c8a281528ccf	0x26580	100.0000	
 fusion	_CalculateTripleFusion	100.0000	100.0000	3	ast4:9cd2204201a0	0x27b30	100.0000	
