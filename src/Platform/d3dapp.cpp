@@ -485,21 +485,6 @@ HRESULT CALLBACK ChooseTextureFormat(LPDDSURFACEDESC desc, LPVOID context) {
 RVA(0x00046750, 0xca0)
 void TraceDDrawError(HRESULT result) {
     switch (result) {
-        case DDERR_UNSUPPORTED:
-            OutputDebugString("DDERR_UNSUPPORTED");
-            break;
-        case DDERR_GENERIC:
-            OutputDebugString("DDERR_GENERIC");
-            break;
-        case DDERR_NOTINITIALIZED:
-            OutputDebugString("DDERR_NOTINITIALIZED");
-            break;
-        case DDERR_OUTOFMEMORY:
-            OutputDebugString("DDERR_OUTOFMEMORY");
-            break;
-        case DDERR_INVALIDPARAMS:
-            OutputDebugString("DDERR_INVALIDPARAMS");
-            break;
         case DDERR_ALREADYINITIALIZED:
             OutputDebugString("DDERR_ALREADYINITIALIZED");
             break;
@@ -514,6 +499,9 @@ void TraceDDrawError(HRESULT result) {
             break;
         case DDERR_EXCEPTION:
             OutputDebugString("DDERR_EXCEPTION");
+            break;
+        case DDERR_GENERIC:
+            OutputDebugString("DDERR_GENERIC");
             break;
         case DDERR_HEIGHTALIGN:
             OutputDebugString("DDERR_HEIGHTALIGN");
@@ -533,6 +521,9 @@ void TraceDDrawError(HRESULT result) {
         case DDERR_INVALIDOBJECT:
             OutputDebugString("DDERR_INVALIDOBJECT");
             break;
+        case DDERR_INVALIDPARAMS:
+            OutputDebugString("DDERR_INVALIDPARAMS");
+            break;
         case DDERR_INVALIDPIXELFORMAT:
             OutputDebugString("DDERR_INVALIDPIXELFORMAT");
             break;
@@ -551,14 +542,14 @@ void TraceDDrawError(HRESULT result) {
         case DDERR_NOCLIPLIST:
             OutputDebugString("DDERR_NOCLIPLIST");
             break;
-        case DDERR_NOCOLORKEY:
-            OutputDebugString("DDERR_NOCOLORKEY");
+        case DDERR_NOCOLORCONVHW:
+            OutputDebugString("DDERR_NOCOLORCONVHW");
             break;
         case DDERR_NOCOOPERATIVELEVELSET:
             OutputDebugString("DDERR_NOCOOPERATIVELEVELSET");
             break;
-        case DDERR_NOCOLORCONVHW:
-            OutputDebugString("DDERR_NOCOLORCONVHW");
+        case DDERR_NOCOLORKEY:
+            OutputDebugString("DDERR_NOCOLORKEY");
             break;
         case DDERR_NOCOLORKEYHW:
             OutputDebugString("DDERR_NOCOLORKEYHW");
@@ -593,14 +584,14 @@ void TraceDDrawError(HRESULT result) {
         case DDERR_NOSTRETCHHW:
             OutputDebugString("DDERR_NOSTRETCHHW");
             break;
-        case DDERR_NOT8BITCOLOR:
-            OutputDebugString("DDERR_NOT8BITCOLOR");
+        case DDERR_NOT4BITCOLOR:
+            OutputDebugString("DDERR_NOT4BITCOLOR");
             break;
         case DDERR_NOT4BITCOLORINDEX:
             OutputDebugString("DDERR_NOT4BITCOLORINDEX");
             break;
-        case DDERR_NOT4BITCOLOR:
-            OutputDebugString("DDERR_NOT4BITCOLOR");
+        case DDERR_NOT8BITCOLOR:
+            OutputDebugString("DDERR_NOT8BITCOLOR");
             break;
         case DDERR_NOTEXTUREHW:
             OutputDebugString("DDERR_NOTEXTUREHW");
@@ -616,6 +607,9 @@ void TraceDDrawError(HRESULT result) {
             break;
         case DDERR_OUTOFCAPS:
             OutputDebugString("DDERR_OUTOFCAPS");
+            break;
+        case DDERR_OUTOFMEMORY:
+            OutputDebugString("DDERR_OUTOFMEMORY");
             break;
         case DDERR_OUTOFVIDEOMEMORY:
             OutputDebugString("DDERR_OUTOFVIDEOMEMORY");
@@ -661,6 +655,9 @@ void TraceDDrawError(HRESULT result) {
             break;
         case DDERR_TOOBIGWIDTH:
             OutputDebugString("DDERR_TOOBIGWIDTH");
+            break;
+        case DDERR_UNSUPPORTED:
+            OutputDebugString("DDERR_UNSUPPORTED");
             break;
         case DDERR_UNSUPPORTEDFORMAT:
             OutputDebugString("DDERR_UNSUPPORTEDFORMAT");
@@ -784,6 +781,9 @@ void TraceDDrawError(HRESULT result) {
             break;
         case DDERR_NOTPAGELOCKED:
             OutputDebugString("DDERR_NOTPAGELOCKED");
+            break;
+        case DDERR_NOTINITIALIZED:
+            OutputDebugString("DDERR_NOTINITIALIZED");
             break;
         default:
             OutputDebugString("Unknown Error");

@@ -46,7 +46,7 @@ devicesettings	2	2
 displayconfig	2	2
 equipeffect	2	2
 eventflags	28	28
-fieldmain	59	56
+fieldmain	59	55
 fieldobj	141	138
 fieldscreen	103	102
 fieldview	69	68
@@ -62,6 +62,7 @@ menuresult	2	2
 message	15	15
 midistream	33	32
 mmio	2	2
+modeflags	4	2
 motion	43	42
 mouse	10	10
 nibble	4	3
@@ -69,7 +70,7 @@ partyaction	117	113
 playtime	4	4
 pool	6	6
 recordcache	43	41
-savegame	14	14
+savegame	10	10
 screensave	9	9
 scriptactor	202	202
 scriptctx	35	35
@@ -95,7 +96,7 @@ vramcell	14	14
 waitstate	7	7
 windowcolor	13	13
 windowtext	2	2
-winmain	128	121
+winmain	128	120
 worldtravel	24	24
 # [functions]	unit	function	best_pct	cur_pct	tries	src_hash	rva	hist_pct	state
 abortflag	_AddSceneHotspot	100.0000	100.0000	2	ast4:b2b717a6f4ee	0x455b0	100.0000	
@@ -120,7 +121,7 @@ bitmapio	_ClearScenePicture	100.0000	100.0000	4	ast4:e21d846682c9	0x57c40	100.00
 bitmapio	_ClearSceneSurfaces	100.0000	100.0000	5	ast4:5986e59d6797	0x57bf0	100.0000	
 bitmapio	_ClearSelectedHotspot	100.0000	100.0000	2	ast4:137e93cf09e1	0x58580	100.0000	
 bitmapio	_ClickHotspotAt	92.8148	92.8148	14	ast4:9b8365f9adcf	0x59180	95.2963	
-bitmapio	_CopyResourceBitmap16	100.0000	88.7922	6	ast4:ac6074baf898	0x56f30	100.0000	
+bitmapio	_CopyResourceBitmap16	100.0000	88.8896	6	ast4:ac6074baf898	0x56f30	100.0000	
 bitmapio	_CopyResourceBitmap8	100.0000	100.0000	7	ast4:8282ba4ca5e1	0x57120	100.0000	
 bitmapio	_CopySurfaceSquare	100.0000	100.0000	2	ast4:c845849c3372	0x590a0	100.0000	
 bitmapio	_CountFieldObjects	100.0000	100.0000	3	ast4:ce33962104b2	0x58640	100.0000	
@@ -140,7 +141,7 @@ bitmapio	_HitTestWorldMap	100.0000	100.0000	2	ast4:26f2ea1ad531	0x581b0	100.0000
 bitmapio	_IsSpriteFrameLoaded	100.0000	100.0000	5	ast4:fe345ccb9ead	0x58870	100.0000	
 bitmapio	_IsSpritePlaced	100.0000	100.0000	4	ast4:b9d2fbd214d4	0x58800	100.0000	
 bitmapio	_IsWorldMapMarkerNearEdge	100.0000	100.0000	3	ast4:4e4f1681ff08	0x582c0	100.0000	
-bitmapio	_LoadBitmapToSurface16	100.0000	98.3988	11	ast4:bf8ea529123d	0x56bd0	100.0000	
+bitmapio	_LoadBitmapToSurface16	100.0000	98.7283	11	ast4:bf8ea529123d	0x56bd0	100.0000	
 bitmapio	_LoadBitmapToSurface8	100.0000	100.0000	9	ast4:bc383ff02996	0x56de0	100.0000	
 bitmapio	_LoadObjectTexture	100.0000	100.0000	2	ast4:cbe380b37c4c	0x58110	100.0000	
 bitmapio	_LoadPictureFile	100.0000	100.0000	2	ast4:a6aac371e53a	0x57520	100.0000	
@@ -468,7 +469,7 @@ d3dapp	?SetViewMatrix@@YAXAAU_D3DMATRIX@@AAU_D3DVECTOR@@1@Z	100.0000	100.0000	1	
 d3dapp	?SetZeroMatrix@@YAXAAU_D3DMATRIX@@@Z	100.0000	100.0000	1	ast4:b08c82da25a7	0x45de0	100.0000	
 d3dapp	?SquareMagnitude@@YAMABU_D3DVECTOR@@@Z	100.0000	100.0000	1	header:0df7c25c957f	0x49100	100.0000	
 d3dapp	?TraceD3DError@@YAXJ@Z	100.0000	100.0000	1	ast4:de6eb0db786c	0x473f0	100.0000	
-d3dapp	?TraceDDrawError@@YAXJ@Z	100.0000	100.0000	2	ast4:41db2582ee4a	0x46750	100.0000	
+d3dapp	?TraceDDrawError@@YAXJ@Z	100.0000	100.0000	3	ast4:feff6113d76c	0x46750	100.0000	
 d3dapp	?ZBufferDepth@@YIKPAU_D3DDeviceDesc@@@Z	100.0000	100.0000	1	ast4:964b32dd935c	0x47db0	100.0000	
 d3dapp	_MapEffectSoundId	100.0000	100.0000	1	ast4:c1fda9095f99	0x48b80	100.0000	
 d3dapp	_MapSoundEffectId	100.0000	100.0000	1	ast4:d0b75bdd13af	0x48c30	100.0000	
@@ -539,7 +540,7 @@ fieldmain	_FreeFieldImageCache	100.0000	100.0000	1	ast4:34f2adfa0c72	0x14410	100
 fieldmain	_GetFieldBusy	100.0000	100.0000	1	ast4:01200f1e67d1	0x12860	100.0000	
 fieldmain	_GetFieldExplorationActive	100.0000	100.0000	2	ast4:7a452ead0286	0x12b20	100.0000	
 fieldmain	_GetReturnPoint	100.0000	100.0000	2	ast4:5e45d07fde70	0x12930	100.0000	
-fieldmain	_GetViewVisibility	100.0000	100.0000	3	ast4:5ade3e946954	0x14340	100.0000	
+fieldmain	_GetViewVisibility	100.0000	99.8305	3	ast4:5ade3e946954	0x14340	100.0000	
 fieldmain	_GrowAutoMoves	100.0000	100.0000	1	ast4:0bd64cab1f03	0x12720	100.0000	
 fieldmain	_HasAutoMoves	100.0000	100.0000	2	ast4:8c3f457d419d	0x127a0	100.0000	
 fieldmain	_HasQueuedObjectEvents	100.0000	100.0000	1	ast4:a4d2903e9995	0x13c00	100.0000	
@@ -1387,6 +1388,10 @@ midistream	?Stop@CMidiStream@@QAEHXZ	100.0000	100.0000	2	ast4:7b423bde9cb0	0x55b
 midistream	?StreamProc@CMidiStream@@KGXPAXIKKK@Z	100.0000	100.0000	1	ast4:fc99cff63a90	0x56760	100.0000	
 mmio	?Open@CMMIO@@QAEXAAVCMMMemoryIOInfo@@@Z	100.0000	100.0000	2	ast4:c71b691dae03	0x56a50	100.0000	
 mmio	?Open@CMMIO@@QAEXPADK@Z	100.0000	100.0000	2	ast4:c71b691dae03	0x56a30	100.0000	
+modeflags	_ClearModeFlags	100.0000	100.0000	1	ast4:f9d9bfa4ef06	0x43b0	100.0000	
+modeflags	_SetModeFlags	100.0000	100.0000	1	ast4:6205ef08f58d	0x4390	100.0000	
+modeflags	_TestFeatureMask	100.0000	70.0000	1	ast4:bd7cf8536c23	0x4370	100.0000	
+modeflags	_TestModeFlags	100.0000	70.0000	1	ast4:d5165cb56966	0x4380	100.0000	
 motion	_AcquireEffectImageSet	100.0000	100.0000	1	ast4:a53c79acf100	0x4fb0	100.0000	
 motion	_AcquireEffectRecord	100.0000	100.0000	1	ast4:806dd0ddbf97	0x5240	100.0000	
 motion	_ClampEffectCount	100.0000	100.0000	1	ast4:636ac4d4c050	0x4bb0	100.0000	
@@ -1614,7 +1619,6 @@ recordcache	_SaveScriptState	100.0000	100.0000	1	ast4:75285708a685	0x2e9d0	100.0
 recordcache	_StripZeroWords	100.0000	100.0000	3	ast4:c1064b14effe	0x2dea0	100.0000	
 recordcache	_WearCachedSkill	100.0000	100.0000	5	ast4:539614eeadaa	0x2e8a0	100.0000	
 recordcache	_WearSkillValue	100.0000	100.0000	4	ast4:0a22fd878a91	0x2e960	100.0000	
-savegame	_ClearModeFlags	100.0000	100.0000	1	ast4:f9d9bfa4ef06	0x43b0	100.0000	
 savegame	_LoadGame	100.0000	100.0000	4	ast4:5eba73ee4fde	0x3c30	100.0000	
 savegame	_ReadSaveHeader	100.0000	100.0000	1	ast4:b0e4d8a2d512	0x3da0	100.0000	
 savegame	_ReadSaveSummary	100.0000	100.0000	2	ast4:695fca07c557	0x4230	100.0000	
@@ -1623,10 +1627,7 @@ savegame	_RunDisplayChoice	100.0000	100.0000	4	ast4:1f1513479ede	0x4070	100.0000
 savegame	_RunQuitConfirm	100.0000	100.0000	3	ast4:2f39d913c724	0x4170	100.0000	
 savegame	_RunSystemMenu	100.0000	100.0000	3	ast4:9a4f7347fb4c	0x3e50	100.0000	
 savegame	_SaveGame	100.0000	100.0000	2	ast4:72f86f3a4711	0x3a00	100.0000	
-savegame	_SetModeFlags	100.0000	100.0000	1	ast4:6205ef08f58d	0x4390	100.0000	
 savegame	_SystemMenuHandler	100.0000	100.0000	4	ast4:8d41c6f373d5	0x3f70	100.0000	
-savegame	_TestFeatureMask	100.0000	100.0000	1	ast4:bd7cf8536c23	0x4370	100.0000	
-savegame	_TestModeFlags	100.0000	100.0000	1	ast4:d5165cb56966	0x4380	100.0000	
 savegame	_WriteSaveHeader	100.0000	100.0000	3	ast4:8bf60fc9b746	0x3ae0	100.0000	
 screensave	_AllocScreenSave	100.0000	100.0000	2	ast4:e5e5e774a9a3	0x3930	100.0000	
 screensave	_ApplyTextCursor	100.0000	100.0000	1	ast4:cb5593b81539	0x3920	100.0000	
@@ -2454,7 +2455,7 @@ treasurebox	_PickGrowthStats	100.0000	100.0000	6	ast4:6f75b0739435	0x1c460	100.0
 treasurebox	_PickReorderSlot	100.0000	100.0000	1	ast4:7269d4f0da2d	0x1ad00	100.0000	
 treasurebox	_PollPanel	100.0000	100.0000	1	ast4:683406837bb7	0x1cd30	100.0000	
 treasurebox	_PollScriptItemMenu	100.0000	100.0000	1	ast4:37cf94119e06	0x1c0e0	100.0000	
-treasurebox	_PrepareViewedTreasureBox	100.0000	100.0000	5	ast4:32a532647546	0x1aaa0	100.0000	
+treasurebox	_PrepareViewedTreasureBox	100.0000	100.0000	6	ast4:34dada939d7f	0x1aaa0	100.0000	
 treasurebox	_RaiseAffiliationLevels	100.0000	100.0000	3	ast4:e714403669c8	0x1c8d0	100.0000	
 treasurebox	_RaiseTargetFlag23	100.0000	100.0000	5	ast4:ecf4351e51d8	0x1fc70	100.0000	
 treasurebox	_RaiseTargetFlag25	100.0000	100.0000	5	ast4:bc02d690ac29	0x1fce0	100.0000	
@@ -2670,7 +2671,7 @@ winmain	?ResetFrameCount@@YAXXZ	100.0000	100.0000	1	ast4:06e8cafedce0	0x49830	10
 winmain	?RestoreCursorClip@@YAXPAUtagRECT@@@Z	100.0000	100.0000	1	ast4:7f528cb8206d	0x498b0	100.0000	
 winmain	?RestoreTextures@@YAXXZ	100.0000	100.0000	2	ast4:be22f1c0e01c	0x4fdf0	100.0000	
 winmain	?RunJoystickMove@@YAHXZ	100.0000	100.0000	2	ast4:60704f75dd0f	0x504c0	100.0000	
-winmain	?ShadeMesh@@YAXPAUMesh@@@Z	100.0000	100.0000	2	ast4:470ee4861236	0x4ae30	100.0000	
+winmain	?ShadeMesh@@YAXPAUMesh@@@Z	100.0000	98.4103	2	ast4:470ee4861236	0x4ae30	100.0000	
 winmain	?SlideBack@@YAHPAM@Z	100.0000	100.0000	2	ast4:12a3709f7430	0x4a640	100.0000	
 winmain	?SlideForward@@YAHPAM@Z	100.0000	100.0000	3	ast4:8b1c364b6320	0x4a530	100.0000	
 winmain	?SlideLeft@@YAHPAM@Z	100.0000	100.0000	2	ast4:3d1c05b8ac94	0x4a750	100.0000	

@@ -180,6 +180,11 @@ source = "src/Game/savegame.c"
 flags = "c"
 
 [[unit]]
+unit = "modeflags"
+source = "src/Game/modeflags.c"
+flags = "c"
+
+[[unit]]
 unit = "displayconfig"
 source = "src/Gfx/displayconfig.c"
 flags = "c"

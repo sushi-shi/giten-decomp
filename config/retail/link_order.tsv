@@ -16,54 +16,55 @@ seq	unit	start	end	class	module	n	evidence	notes
 11	pool	0x003440	0x0035b0	cmdline	-	6	functions.tsv+source-owner-pins	original-module-unproven
 12	playtime	0x0035b0	0x0038e0	cmdline	-	4	functions.tsv+source-owner-pins	original-module-unproven
 13	screensave	0x0038e0	0x003a00	cmdline	-	9	functions.tsv+source-owner-pins	original-module-unproven
-14	savegame	0x003a00	0x0043d0	cmdline	-	14	functions.tsv+source-owner-pins	original-module-unproven
-15	handle	0x0043d0	0x004920	cmdline	-	33	functions.tsv+source-owner-pins	original-module-unproven
-16	motion	0x004920	0x005480	cmdline	-	43	functions.tsv+source-owner-pins	original-module-unproven
-17	shot	0x005480	0x005a80	cmdline	-	15	functions.tsv+source-owner-pins	original-module-unproven
-18	partyaction	0x005a80	0x00b6d0	cmdline	-	117	functions.tsv+source-owner-pins	original-module-unproven
-19	bitset	0x00b6d0	0x00b810	cmdline	-	5	functions.tsv+source-owner-pins	original-module-unproven
-20	fieldview	0x00b810	0x00d3f0	cmdline	-	69	functions.tsv+source-owner-pins	original-module-unproven
-21	vec3	0x00d3f0	0x00d790	cmdline	-	10	functions.tsv+source-owner-pins	original-module-unproven
-22	fieldobj	0x00d790	0x011660	cmdline	-	141	functions.tsv+source-owner-pins	original-module-unproven
-23	worldtravel	0x011660	0x012260	cmdline	-	24	functions.tsv+source-owner-pins	original-module-unproven
-24	fieldmain	0x012260	0x014730	cmdline	-	59	functions.tsv+source-owner-pins	original-module-unproven
-25	fieldscreen	0x014730	0x0169e0	cmdline	-	103	functions.tsv+source-owner-pins	original-module-unproven
-26	statestack	0x0169e0	0x01a870	cmdline	-	127	functions.tsv+source-owner-pins	original-module-unproven
-27	waitstate	0x01a870	0x01aaa0	cmdline	-	7	functions.tsv+source-owner-pins	original-module-unproven
-28	treasurebox	0x01aaa0	0x0206e0	cmdline	-	150	functions.tsv+source-owner-pins	original-module-unproven
-29	menubox	0x0206e0	0x020b00	cmdline	-	12	functions.tsv+source-owner-pins	original-module-unproven
-30	clock	0x020b00	0x022d00	cmdline	-	74	functions.tsv+source-owner-pins	original-module-unproven
-31	itemrecord	0x022d00	0x026070	cmdline	-	109	functions.tsv+source-owner-pins	original-module-unproven
-32	equipeffect	0x026070	0x026550	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
-33	fusion	0x026550	0x02aa20	cmdline	-	114	functions.tsv+source-owner-pins	original-module-unproven
-34	skilluse	0x02aa20	0x02dbf0	cmdline	-	53	functions.tsv+source-owner-pins	original-module-unproven
-35	recordcache	0x02dbf0	0x02ea80	cmdline	-	43	functions.tsv+source-owner-pins	original-module-unproven
-36	windowcolor	0x02ea80	0x02ece0	cmdline	-	13	functions.tsv+source-owner-pins	original-module-unproven
-37	scripttext	0x02ece0	0x02fd00	cmdline	-	59	functions.tsv+source-owner-pins	original-module-unproven
-38	scriptop	0x02fd00	0x02ff40	cmdline	-	3	functions.tsv+source-owner-pins	original-module-unproven
-39	scriptvm	0x02ff40	0x0324b0	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
-40	scriptfield	0x0324b0	0x032740	cmdline	-	9	functions.tsv+source-owner-pins	original-module-unproven
-41	scriptswitch	0x032740	0x0329e0	cmdline	-	10	functions.tsv+source-owner-pins	original-module-unproven
-42	textstate	0x0329e0	0x032cf0	cmdline	-	21	functions.tsv+source-owner-pins	original-module-unproven
-43	scriptactor	0x032cf0	0x0387f0	cmdline	-	202	functions.tsv+source-owner-pins	original-module-unproven
-44	scriptctx	0x0387f0	0x0391b0	cmdline	-	35	functions.tsv+source-owner-pins	original-module-unproven
-45	eventflags	0x0391b0	0x0397b0	cmdline	-	28	functions.tsv+source-owner-pins	original-module-unproven
-46	scriptvars	0x0397b0	0x03c6a0	cmdline	-	110	functions.tsv+source-owner-pins	original-module-unproven
-47	gamestate	0x03c6a0	0x03c810	cmdline	-	7	functions.tsv+source-owner-pins	original-module-unproven
-48	character	0x03c810	0x041910	cmdline	-	171	functions.tsv+source-owner-pins	original-module-unproven
-49	statuspanel	0x041910	0x0451d0	cmdline	-	59	functions.tsv+source-owner-pins	original-module-unproven
-50	nibble	0x0451d0	0x045280	cmdline	-	4	functions.tsv+source-owner-pins	original-module-unproven
-51	textapi	0x045280	0x045320	cmdline	-	5	functions.tsv+source-owner-pins	original-module-unproven
-52	menuresult	0x045320	0x045340	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
-53	windowtext	0x045340	0x045550	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
-54	abortflag	0x045550	0x045b40	cmdline	-	16	functions.tsv+source-owner-pins	original-module-unproven
-55	videostate	0x045b40	0x045bb0	cmdline	-	5	functions.tsv+source-owner-pins	original-module-unproven
-56	displayconfig	0x045bb0	0x045ce0	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
-57	devicesettings	0x045ce0	0x045d90	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
-58	d3dapp	0x045d90	0x0492b0	cmdline	-	43	functions.tsv+source-owner-pins	original-module-unproven; includes-owner-pinned-global-initializers
-59	joystick	0x0492b0	0x049530	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
-60	winmain	0x049530	0x051230	cmdline	-	147	functions.tsv+source-owner-pins	original-module-unproven; includes-owner-pinned-global-initializers
-61	font	0x051230	0x055a00	cmdline	-	150	functions.tsv+source-owner-pins	original-module-unproven
-62	midistream	0x055a00	0x056a30	cmdline	-	33	functions.tsv+source-owner-pins	original-module-unproven; shared-SDK-COMDAT-alias-at-0x0568c0-not-owner-evidence
-63	mmio	0x056a30	0x056a70	cmdline	-	2	retail-primary-section-COMDAT-seam+CMMIO-owner	original-module-unproven; ordinary-Open-methods-follow-midistream-COMDATs
-64	bitmapio	0x056a70	0x0593d0	cmdline	-	50	functions.tsv+source-owner-pins	original-module-unproven; excludes-IAT-thunks-from-0x0593d0
+14	savegame	0x003a00	0x004370	cmdline	-	10	functions.tsv+source-owner-pins	original-module-unproven
+15	modeflags	0x004370	0x0043d0	cmdline	-	4	retail-literal-before-initialized-data-seam+source-owner-pins	original-module-unproven; following-handle-membership-unproven
+16	handle	0x0043d0	0x004920	cmdline	-	33	functions.tsv+source-owner-pins	original-module-unproven
+17	motion	0x004920	0x005480	cmdline	-	43	functions.tsv+source-owner-pins	original-module-unproven
+18	shot	0x005480	0x005a80	cmdline	-	15	functions.tsv+source-owner-pins	original-module-unproven
+19	partyaction	0x005a80	0x00b6d0	cmdline	-	117	functions.tsv+source-owner-pins	original-module-unproven
+20	bitset	0x00b6d0	0x00b810	cmdline	-	5	functions.tsv+source-owner-pins	original-module-unproven
+21	fieldview	0x00b810	0x00d3f0	cmdline	-	69	functions.tsv+source-owner-pins	original-module-unproven
+22	vec3	0x00d3f0	0x00d790	cmdline	-	10	functions.tsv+source-owner-pins	original-module-unproven
+23	fieldobj	0x00d790	0x011660	cmdline	-	141	functions.tsv+source-owner-pins	original-module-unproven
+24	worldtravel	0x011660	0x012260	cmdline	-	24	functions.tsv+source-owner-pins	original-module-unproven
+25	fieldmain	0x012260	0x014730	cmdline	-	59	functions.tsv+source-owner-pins	original-module-unproven
+26	fieldscreen	0x014730	0x0169e0	cmdline	-	103	functions.tsv+source-owner-pins	original-module-unproven
+27	statestack	0x0169e0	0x01a870	cmdline	-	127	functions.tsv+source-owner-pins	original-module-unproven
+28	waitstate	0x01a870	0x01aaa0	cmdline	-	7	functions.tsv+source-owner-pins	original-module-unproven
+29	treasurebox	0x01aaa0	0x0206e0	cmdline	-	150	functions.tsv+source-owner-pins	original-module-unproven
+30	menubox	0x0206e0	0x020b00	cmdline	-	12	functions.tsv+source-owner-pins	original-module-unproven
+31	clock	0x020b00	0x022d00	cmdline	-	74	functions.tsv+source-owner-pins	original-module-unproven
+32	itemrecord	0x022d00	0x026070	cmdline	-	109	functions.tsv+source-owner-pins	original-module-unproven
+33	equipeffect	0x026070	0x026550	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
+34	fusion	0x026550	0x02aa20	cmdline	-	114	functions.tsv+source-owner-pins	original-module-unproven
+35	skilluse	0x02aa20	0x02dbf0	cmdline	-	53	functions.tsv+source-owner-pins	original-module-unproven
+36	recordcache	0x02dbf0	0x02ea80	cmdline	-	43	functions.tsv+source-owner-pins	original-module-unproven
+37	windowcolor	0x02ea80	0x02ece0	cmdline	-	13	functions.tsv+source-owner-pins	original-module-unproven
+38	scripttext	0x02ece0	0x02fd00	cmdline	-	59	functions.tsv+source-owner-pins	original-module-unproven
+39	scriptop	0x02fd00	0x02ff40	cmdline	-	3	functions.tsv+source-owner-pins	original-module-unproven
+40	scriptvm	0x02ff40	0x0324b0	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
+41	scriptfield	0x0324b0	0x032740	cmdline	-	9	functions.tsv+source-owner-pins	original-module-unproven
+42	scriptswitch	0x032740	0x0329e0	cmdline	-	10	functions.tsv+source-owner-pins	original-module-unproven
+43	textstate	0x0329e0	0x032cf0	cmdline	-	21	functions.tsv+source-owner-pins	original-module-unproven
+44	scriptactor	0x032cf0	0x0387f0	cmdline	-	202	functions.tsv+source-owner-pins	original-module-unproven
+45	scriptctx	0x0387f0	0x0391b0	cmdline	-	35	functions.tsv+source-owner-pins	original-module-unproven
+46	eventflags	0x0391b0	0x0397b0	cmdline	-	28	functions.tsv+source-owner-pins	original-module-unproven
+47	scriptvars	0x0397b0	0x03c6a0	cmdline	-	110	functions.tsv+source-owner-pins	original-module-unproven
+48	gamestate	0x03c6a0	0x03c810	cmdline	-	7	functions.tsv+source-owner-pins	original-module-unproven
+49	character	0x03c810	0x041910	cmdline	-	171	functions.tsv+source-owner-pins	original-module-unproven
+50	statuspanel	0x041910	0x0451d0	cmdline	-	59	functions.tsv+source-owner-pins	original-module-unproven
+51	nibble	0x0451d0	0x045280	cmdline	-	4	functions.tsv+source-owner-pins	original-module-unproven
+52	textapi	0x045280	0x045320	cmdline	-	5	functions.tsv+source-owner-pins	original-module-unproven
+53	menuresult	0x045320	0x045340	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
+54	windowtext	0x045340	0x045550	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
+55	abortflag	0x045550	0x045b40	cmdline	-	16	functions.tsv+source-owner-pins	original-module-unproven
+56	videostate	0x045b40	0x045bb0	cmdline	-	5	functions.tsv+source-owner-pins	original-module-unproven
+57	displayconfig	0x045bb0	0x045ce0	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
+58	devicesettings	0x045ce0	0x045d90	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
+59	d3dapp	0x045d90	0x0492b0	cmdline	-	43	functions.tsv+source-owner-pins	original-module-unproven; includes-owner-pinned-global-initializers
+60	joystick	0x0492b0	0x049530	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
+61	winmain	0x049530	0x051230	cmdline	-	147	functions.tsv+source-owner-pins	original-module-unproven; includes-owner-pinned-global-initializers
+62	font	0x051230	0x055a00	cmdline	-	150	functions.tsv+source-owner-pins	original-module-unproven
+63	midistream	0x055a00	0x056a30	cmdline	-	33	functions.tsv+source-owner-pins	original-module-unproven; shared-SDK-COMDAT-alias-at-0x0568c0-not-owner-evidence
+64	mmio	0x056a30	0x056a70	cmdline	-	2	retail-primary-section-COMDAT-seam+CMMIO-owner	original-module-unproven; ordinary-Open-methods-follow-midistream-COMDATs
+65	bitmapio	0x056a70	0x0593d0	cmdline	-	50	functions.tsv+source-owner-pins	original-module-unproven; excludes-IAT-thunks-from-0x0593d0
