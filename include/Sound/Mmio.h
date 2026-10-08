@@ -61,10 +61,7 @@ public:
 
     void Open(char* name, DWORD flags);
 
-    RVA(0x00056a50, 0x18)
-    void Open(CMMMemoryIOInfo& info) {
-        m_hmmio = mmioOpen(NULL, &info, MMIO_READWRITE);
-    }
+    void Open(CMMMemoryIOInfo& info);
 
     RVA(0x00056990, 0x16)
     LONG Read(void* buffer, LONG size) {

@@ -1370,8 +1370,8 @@ midistream	?FreeBuffers@CMidiStream@@IAEXXZ	100.0000	100.0000	2	ast4:5e70babd170
 midistream	?HasBuffers@CMidiStream@@IAEHXZ	100.0000	100.0000	1	cpp:3324492bb851	0x56a10	100.0000	
 midistream	?LoadFile@CMidiStream@@IAEHPBDH@Z	100.0000	100.0000	2	ast4:bb0c5ae2a53f	0x560c0	100.0000	
 midistream	?OnMessage@CMidiStream@@IAEXPAXIKK@Z	100.0000	100.0000	2	ast4:a9162eae75a2	0x56790	100.0000	
-midistream	?Open@CMMIO@@QAEXAAVCMMMemoryIOInfo@@@Z	100.0000	100.0000	1	ast4:3659fcda52c4	0x56a50	100.0000	
-midistream	?Open@CMMIO@@QAEXPADK@Z	100.0000	100.0000	1	ast4:3659fcda52c4	0x56a30	100.0000	
+midistream	?Open@CMMIO@@QAEXAAVCMMMemoryIOInfo@@@Z	100.0000	100.0000	2	ast4:c71b691dae03	0x56a50	100.0000	
+midistream	?Open@CMMIO@@QAEXPADK@Z	100.0000	100.0000	2	ast4:c71b691dae03	0x56a30	100.0000	
 midistream	?Open@CMidiStream@@QAEHPBD0@Z	100.0000	100.0000	3	ast4:9ced4e0601c7	0x561d0	100.0000	
 midistream	?OpenStream@CMidiStream@@IAEHXZ	100.0000	100.0000	2	ast4:af4299bfeffa	0x56220	100.0000	
 midistream	?Pause@CMidiStream@@QAEHXZ	100.0000	100.0000	3	ast4:564cee87a5da	0x56730	100.0000	
