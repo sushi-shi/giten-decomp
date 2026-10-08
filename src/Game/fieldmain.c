@@ -509,7 +509,7 @@ GZ_ENUM_RETURN(WorldMapRequest, i16) GetReturnPoint(ReturnPoint* out) {
 // Records the return point in the roster leader (see Character.returnPosition).
 RVA(0x00012980, 0x38)
 void RecordWarpInLeader(void) {
-    Character* leader = GetRosterCharacter(ROSTER_LEADER);
+    CharacterCore* leader = GetRosterCharacter(ROSTER_LEADER);
     SetSavedMapPosition(
         &leader->returnPosition,
         s_returnArea,
@@ -558,7 +558,7 @@ GZ_ENUM_RETURN(ViewDirection, i16) FindExitDirection(i16 x, i16 y) {
 RVA(0x00012a80, 0x78)
 i16 PickAnalyzeTarget(void) {
     i16 index;
-    Character* target;
+    CharacterCore* target;
     if (!HasPendingNonNavigationRightClick()) {
         return FIELD_OBJECT_INDEX_NONE;
     }
@@ -570,13 +570,13 @@ i16 PickAnalyzeTarget(void) {
         return index;
     }
     ClearMouseClicks();
-    target = GetFieldActor(index);
+    target = GetFieldActorCore(GetFieldActor(index));
     if (!target) {
         return FIELD_OBJECT_INDEX_NONE;
     }
     ClearPendingNonNavigationRightClick();
     SetAnalyzeTarget(target);
-    AddTrainingPoints(GetCharacters(), BATTLE_GROUP_DEMON_INTERACTION, 1);
+    AddTrainingPoints(&GetCharacters()->core, BATTLE_GROUP_DEMON_INTERACTION, 1);
     return index;
 }
 
@@ -629,7 +629,7 @@ i16 RunPendingTalk(void) {
     b16 abort = ExchangeAbortPending(false);
     i16 objects = CountFieldObjects();
     i16 picked;
-    Character* actor;
+    FieldActor* actor;
     ExchangeAbortPending(abort);
     if (!objects) {
         g_pendingTalk = objects;
@@ -644,11 +644,11 @@ i16 RunPendingTalk(void) {
         return -1;
     }
     actor = GetFieldActor(g_selectedObjectId);
-    objects = FindLayerOfKind(actor->id);
+    objects = FindLayerOfKind(actor->core.id);
     CloseMessageWindow();
     StartActorScene(0xe0, 0, objects + 1, actor);
     g_pendingTalk = false;
-    AddTrainingPoints(GetCharacters(), BATTLE_GROUP_DEMON_INTERACTION, 3);
+    AddTrainingPoints(&GetCharacters()->core, BATTLE_GROUP_DEMON_INTERACTION, 3);
     return 1;
 }
 

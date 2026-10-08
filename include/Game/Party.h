@@ -10,7 +10,7 @@
 // Installs `character` as roster entry `slot` and returns the previous entry.
 Character* SetRosterEntry(i16 slot, Character* character);
 i16 GetRosterId(i16 slot);
-i16 GetEquipItem(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part);
+i16 GetEquipItem(CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part);
 void SetPartySlot(i16 index, i16 slot);
 void ClearPartyPosition(i16 index);
 void RemoveFromParty(i16 slot);
@@ -37,9 +37,9 @@ i16 FilterPartyMember(i16 slot, GZ_ENUM_PARAM(RosterMemberFilter, i16) mode);
 i16 DamageParty(i16 percent, b16 skipNewton);
 i16 HealParty(i16 percent);
 Character* CopyCharacter(Character* src, Character* dst);
-i32 AddMacca(Character* character, i32 amount);
+i32 AddMacca(CharacterCore* character, i32 amount);
 // Adds `amount` magnetite to `character`, clamped to 0..9999999.
-i32 AddMagnetite(Character* character, i32 amount);
+i32 AddMagnetite(CharacterCore* character, i32 amount);
 i16 CompareMacca(i16 who, i32 amount);
 i16 GetPartyMemberId(i16 index);
 void SwapPartySlots(i16 a, i16 b);
@@ -60,9 +60,9 @@ GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(struct ItemRecord* item);
 void ChangePool(CurMax* pool, i32 amount);
 
 b16 CanGroupEquip(i16 group, i16 item);
-i16 GetGunAmmoType(Character* character);
-GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(Character* character, i16 item);
-void NormalizeEquipSlots(Character* character);
+i16 GetGunAmmoType(CharacterCore* character);
+GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(CharacterCore* character, i16 item);
+void NormalizeEquipSlots(CharacterCore* character);
 void NormalizeItemSlot(ItemSlot* slot);
 
 ItemSlot GetRosterEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part);

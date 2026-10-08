@@ -61,40 +61,40 @@ static __inline void ResetClockPhaseAndTime(GameClock* clock) {
 extern "C" {
 #endif
 
-extern GameClock g_clock;
+    extern GameClock g_clock;
 
-GZ_ENUM_RETURN(ClockUpdate, i16) AdvanceClock(u16 minutes);
-GZ_ENUM_RETURN(ClockUpdate, i16) TickClock(u16 minutes);
-void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed);
-void ClearMoonFlags(void);
-GZ_ENUM_RETURN(ClockUpdate, i16) TickGameClock(i16 paused);
+    GZ_ENUM_RETURN(ClockUpdate, i16) AdvanceClock(u16 minutes);
+    GZ_ENUM_RETURN(ClockUpdate, i16) TickClock(u16 minutes);
+    void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed);
+    void ClearMoonFlags(void);
+    GZ_ENUM_RETURN(ClockUpdate, i16) TickGameClock(i16 paused);
 
-// Steps a character's moon-driven personal flags; the count changed.
-i16 ApplyMoonPhase(struct Character* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase);
+    // Steps a character's moon-driven personal flags; the count changed.
+    i16 ApplyMoonPhase(struct CharacterCore* character, GZ_ENUM_PARAM(MoonPhase, i16) moonPhase);
 
-// The party's periodic HP and MP cost for `minutes`.
-GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes);
+    // The party's periodic HP and MP cost for `minutes`.
+    GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes);
 
-GZ_ENUM_RETURN(MoonPhase, i16) GetMoonPhase(void);
+    GZ_ENUM_RETURN(MoonPhase, i16) GetMoonPhase(void);
 
-// The clock as minutes since day 0.
-u32 GetClockMinutes(void);
+    // The clock as minutes since day 0.
+    u32 GetClockMinutes(void);
 
-// The time until the moon reaches `phase`.
-u16 TimeUntilMoonPhase(i16 phase);
+    // The time until the moon reaches `phase`.
+    u16 TimeUntilMoonPhase(i16 phase);
 
-// Twice the moon table's entry for `row` at the current phase (defined in
-// Game/scenecell.c).
-// @identity-TODO: what the table holds is unrecovered.
-i16 GetMoonValue(i16 row);
-i32 ScaleByMoonValue(i32 value, i16 row, i16 percent);
+    // Twice the moon table's entry for `row` at the current phase (defined in
+    // Game/scenecell.c).
+    // @identity-TODO: what the table holds is unrecovered.
+    i16 GetMoonValue(i16 row);
+    i32 ScaleByMoonValue(i32 value, i16 row, i16 percent);
 
-// The clock's save-file section.
-i16 LoadClock(FILE* fp);
-i16 SaveClock(FILE* fp);
+    // The clock's save-file section.
+    i16 LoadClock(FILE* fp);
+    i16 SaveClock(FILE* fp);
 
-void InitClock(void);
-void LoadMoonTable(void);
+    void InitClock(void);
+    void LoadMoonTable(void);
 
 #ifdef __cplusplus
 }

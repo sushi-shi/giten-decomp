@@ -218,7 +218,7 @@ i16 KeepFirstSixWords(WordList* list) {
 }
 
 RVA(0x0002df60, 0x4f)
-void CopySkillList(Character* from, WordList* to) {
+void CopySkillList(CharacterCore* from, WordList* to) {
     i16 i;
     if (from) {
         ResetWordList(to, GetWordCount(GetCharacterSkills(from)));
@@ -229,14 +229,14 @@ void CopySkillList(Character* from, WordList* to) {
 }
 
 RVA(0x0002dfb0, 0x42)
-b16 RollSkillLearning(Character* character, i16 skill) {
+b16 RollSkillLearning(CharacterCore* character, i16 skill) {
     i16 chance = character->level;
     chance = (chance - GetSkillLevel(skill)) * 10 + GetStatTotal(character, STAT_INTELLIGENCE);
     return chance > RandomAverage(10, 60, 2);
 }
 
 RVA(0x0002e000, 0x108)
-i16 LearnLevelSkill(Character* character) {
+i16 LearnLevelSkill(CharacterCore* character) {
     i16 skill = -1;
     i32 handle = BuildLearnableSkillRanks(character);
     WordList* skills;
@@ -282,7 +282,7 @@ i16 LearnLevelSkill(Character* character) {
 }
 
 RVA(0x0002e110, 0x82)
-i16 RemoveLowestAffiliatedSkill(Character* character) {
+i16 RemoveLowestAffiliatedSkill(CharacterCore* character) {
     i16 lowestLevel = 1000;
     i16 lowestSkill = SKILL_ID_NONE;
     WordList* list = GetCharacterSkills(character);
@@ -306,7 +306,7 @@ i16 RemoveLowestAffiliatedSkill(Character* character) {
 // Which of the character's three affiliations (0..2) matches the family of
 // skill `skill`; -1 when none does.
 RVA(0x0002e1a0, 0x37)
-i16 FindSkillAffiliation(Character* character, i16 skill) {
+i16 FindSkillAffiliation(CharacterCore* character, i16 skill) {
     i16 family = GetSkillFamily(skill);
     i16 i;
     for (i = 0; i < AFFILIATION_COUNT; i++) {
@@ -319,7 +319,7 @@ i16 FindSkillAffiliation(Character* character, i16 skill) {
 }
 
 RVA(0x0002e1e0, 0x54)
-i16 HighestAffiliatedSkillLevel(Character* character) {
+i16 HighestAffiliatedSkillLevel(CharacterCore* character) {
     i16 best = -1;
     i16 i;
     for (i = 0; i < GetWordCount(GetCharacterSkills(character)); i++) {
@@ -335,7 +335,7 @@ i16 HighestAffiliatedSkillLevel(Character* character) {
 }
 
 RVA(0x0002e240, 0x13b)
-i32 BuildLearnableSkillRanks(Character* character) {
+i32 BuildLearnableSkillRanks(CharacterCore* character) {
     i16 count = 0;
     i16 skill;
     i32 handle;
@@ -488,7 +488,7 @@ GZ_ENUM_RETURN(SkillAreaAvailability, i16) CheckSkillArea(i16 id) {
 // positive costs MP; -128 and 127 spend the whole pool. Returns what would be left
 // (negative: not affordable), or -1 with the pool already empty.
 RVA(0x0002e5d0, 0x51)
-i16 HpMpLeftAfterCost(i16 cost, Character* character) {
+i16 HpMpLeftAfterCost(i16 cost, CharacterCore* character) {
     i16 pool;
     if (cost < 0) {
         cost = -cost;
@@ -514,7 +514,7 @@ i16 HpMpLeftAfterCost(i16 cost, Character* character) {
 // -1 when the skill does not work in this mode, 0 when `character` cannot pay
 // its cost, else CheckSkillArea's verdict.
 RVA(0x0002e630, 0x53)
-i16 CanUseSkill(i16 id, Character* character) {
+i16 CanUseSkill(i16 id, CharacterCore* character) {
     if (IsSkillUsableNow(GetSkillUseModes(GetCachedSkill(id))) < 0) {
         return -1;
     }

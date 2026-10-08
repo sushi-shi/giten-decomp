@@ -215,7 +215,7 @@ DATA(0x0006842c)
 static i16 s_fieldParamSecond = -1;
 
 DATA(0x00068430)
-static i16 (*s_commandLabels[ACTOR_COMMAND_COUNT])(Character*) = {
+static i16 (*s_commandLabels[ACTOR_COMMAND_COUNT])(CharacterCore*) = {
     FormatAttackCommand,
     FormatGunCommand,
     FormatCompCommand,
@@ -243,7 +243,7 @@ static i16 s_actionConditions[] = {
 
 RVA(0x00005a80, 0x86)
 GZ_ENUM_RETURN(PartyMemberPickResult, i16) PickPartyMember(i16 index) {
-    Character* member;
+    CharacterCore* member;
     if (PartySlotAt(index) == PARTY_SLOT_EMPTY) {
         return PARTY_MEMBER_EMPTY;
     }
@@ -282,13 +282,15 @@ i16 CountPickablePartyMembers(void) {
     return count;
 }
 
-static __inline GZ_ENUM_RETURN(MemberPanelState, i16) GetReadyMemberPanelState(Character* member) {
+static __inline GZ_ENUM_RETURN(MemberPanelState, i16) GetReadyMemberPanelState(
+    CharacterCore* member
+) {
     return IsCharacterHpLow(member) ? MEMBER_PANEL_LOW_HP : MEMBER_PANEL_READY;
 }
 
 RVA(0x00005b80, 0xdf)
 GZ_ENUM_RETURN(MemberPanelState, i16) GetMemberPanelState(i16 index) {
-    Character* member = g_panelMembers[index];
+    CharacterCore* member = g_panelMembers[index];
     GZ_ENUM_LOCAL(MemberPanelState, i16) state = MEMBER_PANEL_UNAVAILABLE;
     if (!member) {
         return MEMBER_PANEL_EMPTY;
@@ -328,12 +330,12 @@ i16 ReadActionResultFlags(void) {
 }
 
 RVA(0x00005cb0, 0x18)
-i16 GetActionCondition(Character* actor) {
+i16 GetActionCondition(CharacterCore* actor) {
     return LastConditionIn(GetCharacterConditions(actor), s_actionConditions);
 }
 
 RVA(0x00005cd0, 0xe9)
-i16 PickActorAction(Character* actor) {
+i16 PickActorAction(CharacterCore* actor) {
     i16 result;
     if (!GetActionCondition(actor)) {
         actor->conditionActionTicks = 0;
@@ -364,7 +366,7 @@ i16 PickActorAction(Character* actor) {
     return result;
 }
 
-static __inline void SetBasicAttackPick(Character* actor, i16 target) {
+static __inline void SetBasicAttackPick(CharacterCore* actor, i16 target) {
     actor->mode = ACTOR_MODE_ATTACK;
     SetCharacterPickRole(actor, PICK_ROLE_ATTACK);
     SetCharacterPickTarget(actor, GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item);
@@ -373,7 +375,7 @@ static __inline void SetBasicAttackPick(Character* actor, i16 target) {
 
 RVA(0x00005dc0, 0x83)
 GZ_ENUM_RETURN(ActorActionAdjustResult, i16) PickRandomOpponentAttack(i16 id) {
-    Character* actor = GetCombatant(id);
+    CharacterCore* actor = GetCombatant(id);
     i16 target;
     if (id < 0) {
         target = PickRandomCombatant(COMBATANT_SIDE_FIELD);
@@ -391,7 +393,7 @@ RVA(0x00005e50, 0xda)
 i16 PickRandomCombatant(GZ_ENUM_PARAM(CombatantSide, u8) sides) {
     i16 targets[PARTY_SIZE + FIELD_OBJECT_COUNT];
     MapCoord pos;
-    Character* member;
+    CharacterCore* member;
     i16 count = 0;
     i16 index;
     i16 object;
@@ -423,7 +425,7 @@ i16 PickRandomCombatant(GZ_ENUM_PARAM(CombatantSide, u8) sides) {
 
 RVA(0x00005f30, 0x83)
 GZ_ENUM_RETURN(ActorActionAdjustResult, i16) PickRandomAllyAttack(i16 id) {
-    Character* actor = GetCombatant(id);
+    CharacterCore* actor = GetCombatant(id);
     i16 target;
     if (id < 0) {
         target = PickRandomCombatant(COMBATANT_SIDE_PARTY);
@@ -451,7 +453,7 @@ b16 DelayActionSide(i16 id) {
     FieldObject* fieldObject;
     i16 i;
     i16 object;
-    Character* member;
+    CharacterCore* member;
     if (id < 0) {
         for (i = 0; i < PARTY_SIZE; i++) {
             member = GetPartyCharacter(i);
@@ -476,7 +478,7 @@ RVA(0x00006060, 0x57)
 b16 ResetActionWaits(void) {
     i16 i;
     i16 object;
-    Character* member;
+    CharacterCore* member;
     for (i = 0; i < PARTY_SIZE; i++) {
         member = GetPartyCharacter(i);
         if (member) {
@@ -495,7 +497,7 @@ b16 ResetActionWaits(void) {
 
 RVA(0x000060c0, 0x77)
 GZ_ENUM_RETURN(ActorActionAdjustResult, i16) PickRandomAttack(i16 id) {
-    Character* actor = GetCombatant(id);
+    CharacterCore* actor = GetCombatant(id);
     i16 target = PickRandomCombatant(COMBATANT_SIDE_BOTH);
     if (target == RANDOM_COMBATANT_NONE) {
         return ACTOR_ACTION_NONE;
@@ -523,7 +525,7 @@ GZ_ENUM_RETURN(ActorActionAdjustResult, i16) AdjustActorAction(i16 id, i16 actio
     b16 hold;
     i16 window;
     i16 result;
-    Character* actor;
+    CharacterCore* actor;
     g_actorId = id;
     ClearFlagBank(EVENT_FLAG_BANK_SCRATCH);
     hold = SetHold(true);
@@ -594,7 +596,7 @@ GZ_ENUM_RETURN(ActorActionAdjustResult, i16) AdjustActorAction(i16 id, i16 actio
 
 RVA(0x00006340, 0x4f)
 MenuBox* OpenActorCommandMenu(i16 id) {
-    Character* actor = GetCharacterById(id);
+    CharacterCore* actor = GetCharacterCore(GetCharacterById(id));
     MenuBox* menu;
     if (!actor) {
         return NULL;
@@ -613,7 +615,7 @@ MenuBox* OpenActorCommandMenu(i16 id) {
 
 RVA(0x00006390, 0xaf)
 void ActorCommandMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
-    Character* actor = menu->items.character;
+    CharacterCore* actor = menu->items.character;
     switch (event) {
         case MENU_EVENT_DESTROY:
             menu->itemCount = 0;
@@ -671,7 +673,7 @@ static __inline void CloseActorCommandMenu(void) {
 // Zero-ref: no direct call/jmp, relocated reference or data slot reaches it.
 RVA(0x00006460, 0x9e)
 i16 RunActorCommandMenu(i16 id) {
-    Character* actor = GetCharacterById(id);
+    CharacterCore* actor = GetCharacterCore(GetCharacterById(id));
     i16 result;
     if (actor && !GetPickBlockingCondition(GetCharacterConditions(actor))) {
         if (!s_commandMenu) {
@@ -694,7 +696,7 @@ i16 RunActorCommandMenu(i16 id) {
 }
 
 RVA(0x00006500, 0xaa)
-b16 FormatAttackCommand(Character* actor) {
+b16 FormatAttackCommand(CharacterCore* actor) {
     ItemRecord record;
     if (GetCharacterEquipment(actor)[EQUIP_SLOT_WEAPON].item < 1) {
         strcpy(g_scratchBuffer, "ATTACK");
@@ -710,7 +712,7 @@ b16 FormatAttackCommand(Character* actor) {
 }
 
 RVA(0x000065b0, 0xb0)
-b16 FormatGunCommand(Character* actor) {
+b16 FormatGunCommand(CharacterCore* actor) {
     ItemRecord record;
     if (GetCharacterEquipment(actor)[EQUIP_SLOT_GUN].item < 1) {
         return false;
@@ -731,7 +733,7 @@ b16 FormatGunCommand(Character* actor) {
 }
 
 RVA(0x00006660, 0x77)
-b16 FormatMagicCommand(Character* actor) {
+b16 FormatMagicCommand(CharacterCore* actor) {
     i16 index;
     strcpy(g_scratchBuffer, "MAGIC");
     if (!GetWordCount(GetCharacterSkills(actor))) {
@@ -746,7 +748,7 @@ b16 FormatMagicCommand(Character* actor) {
 }
 
 RVA(0x000066e0, 0x39)
-b16 FormatItemCommand(Character* actor) {
+b16 FormatItemCommand(CharacterCore* actor) {
     strcpy(g_scratchBuffer, "ITEM");
     if (!actor) {
         return false;
@@ -758,13 +760,13 @@ b16 FormatItemCommand(Character* actor) {
 }
 
 RVA(0x00006720, 0x2a)
-b16 FormatCompCommand(Character* actor) {
+b16 FormatCompCommand(CharacterCore* actor) {
     strcpy(g_scratchBuffer, "COMP");
     return actor->compState == 1;
 }
 
 RVA(0x00006750, 0x76)
-b16 FormatExtraCommand(Character* actor) {
+b16 FormatExtraCommand(CharacterCore* actor) {
     i16 index;
     strcpy(g_scratchBuffer, "EXTRA");
     if (!GetWordCount(GetCharacterSkills(actor))) {
@@ -779,7 +781,7 @@ b16 FormatExtraCommand(Character* actor) {
 }
 
 RVA(0x000067d0, 0x40)
-b16 FormatReturnCommand(Character* actor) {
+b16 FormatReturnCommand(CharacterCore* actor) {
     if (!g_fieldBattleActive) {
         return false;
     }
@@ -788,7 +790,7 @@ b16 FormatReturnCommand(Character* actor) {
 }
 
 RVA(0x00006810, 0x27)
-b16 FormatDefenceCommand(Character* actor) {
+b16 FormatDefenceCommand(CharacterCore* actor) {
     if (!actor) {
         return false;
     }
@@ -798,7 +800,7 @@ b16 FormatDefenceCommand(Character* actor) {
 
 RVA(0x00006840, 0xb4)
 i16 PrepareMemberPickTarget(i16 id) {
-    Character* actor = GetCharacterById(id);
+    CharacterCore* actor = GetCharacterCore(GetCharacterById(id));
     if (actor) {
         switch (actor->pickRole) {
             case PICK_ROLE_ATTACK:
@@ -826,7 +828,7 @@ i16 PrepareMemberPickTarget(i16 id) {
 
 RVA(0x00006900, 0xf9)
 void FillCharacterCommands(i16* list, i16 id) {
-    Character* actor = GetCharacterById(id);
+    CharacterCore* actor = GetCharacterCore(GetCharacterById(id));
     i16 count = 0;
     if (actor) {
         list[count++] = PANEL_COMMAND_FIGHT;
@@ -861,10 +863,10 @@ void FillCharacterCommands(i16* list, i16 id) {
 RVA(0x00006a00, 0x39)
 b16 ResetPartyTurnState(void) {
     i16 index;
-    Character* actor;
+    CharacterCore* actor;
     for (index = 0; index < PARTY_SIZE; index++) {
         if (PartySlotAt(index) != PARTY_SLOT_EMPTY) {
-            actor = GetPartyEntry(index);
+            actor = GetCharacterCore(GetPartyEntry(index));
             ClearActionWait(GetCharacterActionWait(actor));
         }
     }
@@ -883,7 +885,7 @@ i32 ScaleActionValue(i32 value, i16 resistance, i16 multiplier) {
 
 RVA(0x00006a80, 0x21a)
 GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
-    Character* actor,
+    CharacterCore* actor,
     i16 attribute,
     GZ_ENUM_PARAM(AttackMode, i16) mode,
     b16 report
@@ -957,7 +959,7 @@ GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
 
 RVA(0x00006ca0, 0xcd)
 i16 GetActionResistance(
-    Character* actor,
+    CharacterCore* actor,
     i16 attribute,
     GZ_ENUM_PARAM(AttackMode, i16) mode,
     b16 report,
@@ -1001,7 +1003,7 @@ i16 GetActionResistance(
 }
 
 RVA(0x00006d70, 0x4d)
-i16 GetSkillResistance(Character* actor, i16 skill, b16 report, b16 sameSide, i16* attribute) {
+i16 GetSkillResistance(CharacterCore* actor, i16 skill, b16 report, b16 sameSide, i16* attribute) {
     *attribute = GetSkillAttackAttribute(GetCachedSkill(skill));
     return GetActionResistance(
         actor,
@@ -1013,13 +1015,13 @@ i16 GetSkillResistance(Character* actor, i16 skill, b16 report, b16 sameSide, i1
 }
 
 RVA(0x00006dc0, 0x34)
-i16 GetItemResistance(Character* actor, i16 item, b16 report, b16 sameSide, i16* attribute) {
+i16 GetItemResistance(CharacterCore* actor, i16 item, b16 report, b16 sameSide, i16* attribute) {
     *attribute = GetItemAttackAttribute(GetLoadedRecord(item));
     return GetActionResistance(actor, *attribute, ATTACK_MAGIC, report, sameSide);
 }
 
 RVA(0x00006e00, 0x114)
-GZ_ENUM_RETURN(AttackAttribute, i16) GetPickedAttackAttribute(Character* actor, i16* condition) {
+GZ_ENUM_RETURN(AttackAttribute, i16) GetPickedAttackAttribute(CharacterCore* actor, i16* condition) {
     switch (actor->pickRole) {
         case PICK_ROLE_ATTACK:
             *condition = 0;
@@ -1044,7 +1046,7 @@ GZ_ENUM_RETURN(AttackAttribute, i16) GetPickedAttackAttribute(Character* actor, 
 }
 
 RVA(0x00006f20, 0x1a4)
-void ApplyResistanceOutcome(Character* actor, i16 resistance, i32 amount) {
+void ApplyResistanceOutcome(CharacterCore* actor, i16 resistance, i32 amount) {
     switch (resistance) {
         case ATTACK_RESIST_PROTECTED:
             SetCharacterChanges(actor, 0, 0);
@@ -1246,7 +1248,7 @@ b16 RunFieldEncounter(void) {
     i16 y;
     i16 i;
     i16 allFallen;
-    Character* actor;
+    CharacterCore* actor;
 
     if (!(GetGameStep() | GetGamePhase())) {
         SaveScreenMode();
@@ -1328,7 +1330,7 @@ b16 RunFieldEncounter(void) {
                     }
                     RequestFieldRefresh();
                     for (i = 0; i < s_fieldParamThird + s_fieldParamFirst; i++) {
-                        actor = GetFieldActor(i);
+                        actor = GetFieldActorCore(GetFieldActor(i));
                         AlertActor(actor, ATTITUDE_VERY_HOSTILE);
                     }
                     break;
@@ -1348,7 +1350,8 @@ b16 RunFieldEncounter(void) {
             }
             allFallen = true;
             for (i = 0; i < s_fieldParamThird + s_fieldParamFirst; i++) {
-                allFallen &= GetFatalCondition(GetCharacterConditions(GetFieldActor(i)));
+                allFallen &=
+                    GetFatalCondition(GetCharacterConditions(GetFieldActorCore(GetFieldActor(i))));
             }
             if (s_fieldMode >= FIELD_MAP_CELL_EVENT && CountFieldObjects() <= 0) {
                 LeaveFieldMap(FIELD_MAP_WON);
@@ -1382,7 +1385,7 @@ b16 RunFieldEncounter(void) {
                 break;
             }
             for (i = 0; i < s_fieldParamThird + s_fieldParamFirst; i++) {
-                actor = GetFieldActor(i);
+                actor = GetFieldActorCore(GetFieldActor(i));
                 if (actor != NULL) {
                     actor->fieldState = 6;
                 }
@@ -1473,7 +1476,7 @@ void LeaveFieldMap(GZ_ENUM_PARAM(FieldMapOutcome, i16) result) {
 // Clears every roster member's field marks.
 RVA(0x00007a70, 0x2a)
 void ResetRosterFieldMarks(void) {
-    Character* character;
+    CharacterCore* character;
     i16 slot;
     for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
@@ -1666,7 +1669,7 @@ b16 RollProximityEvent(void) {
             index = RandomAverage(5, 15, 0);
             break;
     }
-    distance = GetStatTotal(GetRosterLeader(), STAT_FORTUNE);
+    distance = GetStatTotal(&GetRosterLeader()->core, STAT_FORTUNE);
     return distance >= index;
 }
 
@@ -1685,7 +1688,7 @@ b16 HasObjectInReach(GZ_ENUM_PARAM(ReachTestMode, i16) mode, i16 first, i16 seco
         case REACH_VERTICAL_OR_OCCUPIED:
             if (first >= 0) {
                 object = GetFieldObject(first);
-                if (pos.x != object->pos.x || pos.y == object->pos.y) {
+                if (pos.x != object->actor.pos.x || pos.y == object->actor.pos.y) {
                     return false;
                 }
             } else if (!CountObjectsAt(pos.x, pos.y, OBJECT_MATCH_ANY, 0)) {
@@ -1704,7 +1707,7 @@ b16 HasObjectInReach(GZ_ENUM_PARAM(ReachTestMode, i16) mode, i16 first, i16 seco
             } else {
                 object = GetFieldObject(second);
             }
-            if (pos.x != object->pos.x || pos.y != object->pos.y) {
+            if (pos.x != object->actor.pos.x || pos.y != object->actor.pos.y) {
                 return false;
             }
             break;
@@ -1723,9 +1726,9 @@ b32 IsPartyAt(i32 x, i32 y) {
 RVA(0x00008170, 0x35)
 i16 FindFirstAblePartyMember(void) {
     i16 index;
-    Character* member;
+    CharacterCore* member;
     for (index = 0; index < PARTY_SIZE; index++) {
-        member = GetPartyEntry(index);
+        member = GetCharacterCore(GetPartyEntry(index));
         if (member && !GetDisablingCondition(GetCharacterConditions(member))) {
             return index;
         }
@@ -1736,7 +1739,7 @@ i16 FindFirstAblePartyMember(void) {
 RVA(0x000081b0, 0x4b)
 i16 FindAbleHumanMember(void) {
     i16 index;
-    Character* member;
+    CharacterCore* member;
     for (index = 0; index < PARTY_SIZE; index++) {
         member = GetPartyCharacter(index);
         if (member
@@ -1753,7 +1756,7 @@ RVA(0x00008200, 0xbc)
 void TickPartyConditionActions(void) {
     i16 index;
     i16 action;
-    Character* actor;
+    CharacterCore* actor;
     for (index = 0; index < PARTY_SIZE; index++) {
         actor = GetPartyCharacter(index);
         if (actor && !GetPickState(actor) && !IsActionWaitMarked(GetCharacterActionWait(actor))) {
@@ -1784,7 +1787,7 @@ void TickPartyConditionActions(void) {
 }
 
 RVA(0x000082c0, 0x67)
-void MarkActorActionReady(Character* actor) {
+void MarkActorActionReady(CharacterCore* actor) {
     GetCharacterActionWait(actor)->ready = true;
     switch (actor->mode) {
         case ACTOR_MODE_ATTACK:
@@ -1816,7 +1819,7 @@ i16 RunPartyTurn(i16 ticks) {
     i16 index;
     i16 id;
     i16 action;
-    Character* actor;
+    CharacterCore* actor;
     if (!RunPartyCommandInput()) {
         return -1;
     }
@@ -1868,7 +1871,7 @@ static __inline void AddArmorSlotHitModifier(ItemSlot* slot, i16* modifier) {
 }
 
 RVA(0x00008480, 0x11b)
-i16 GetEquipmentHitModifier(Character* attacker, Character* target) {
+i16 GetEquipmentHitModifier(CharacterCore* attacker, CharacterCore* target) {
     i16 modifier = 0;
     AddArmorSlotHitModifier(&GetCharacterEquipment(target)[EQUIP_SLOT_HEAD], &modifier);
     AddArmorSlotHitModifier(&GetCharacterEquipment(target)[EQUIP_SLOT_BODY], &modifier);
@@ -1886,7 +1889,7 @@ static __inline i16 GetCombatantFacing(i16 id) {
     if (id < 0) {
         return g_party.field.pos.direction;
     }
-    return GetFieldActor(id)->facing;
+    return GetFieldActor(id)->direction;
 }
 
 RVA(0x000085a0, 0x65)
@@ -1912,7 +1915,7 @@ i16 GetCombatantDistance(i16 first, i16 second) {
 
 RVA(0x00008670, 0x51)
 i16 GetCombatantAttackRange(i16 id) {
-    Character* actor = GetCombatant(id);
+    CharacterCore* actor = GetCombatant(id);
     if (actor->pickTarget < 1) {
         return 1;
     }
@@ -1929,7 +1932,12 @@ i16 GetAttackRangeExcess(i16 first, i16 second) {
 }
 
 RVA(0x00008700, 0x209)
-i16 RollExceptionalAttack(Character* attacker, Character* target, i16 mode, i16 resistance) {
+i16 RollExceptionalAttack(
+    CharacterCore* attacker,
+    CharacterCore* target,
+    i16 mode,
+    i16 resistance
+) {
     i32 phase = (g_clock.moonPhase + 13) % 14 + 1;
     i16 modifier;
     i32 attack;
@@ -1964,7 +1972,7 @@ i16 RollExceptionalAttack(Character* attacker, Character* target, i16 mode, i16 
 }
 
 RVA(0x00008910, 0x207)
-b16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
+b16 RollGunHit(CharacterCore* attacker, CharacterCore* target, i16 resistance) {
     i32 accuracy;
     i32 evasion;
     i32 attack;
@@ -2022,7 +2030,7 @@ b16 RollGunHit(Character* attacker, Character* target, i16 resistance) {
 }
 
 RVA(0x00008b20, 0x17)
-i16 GetGunAttackPower(Character* attacker) {
+i16 GetGunAttackPower(CharacterCore* attacker) {
     if (s_gunPower[0]) {
         return s_gunPower[0];
     }
@@ -2030,7 +2038,7 @@ i16 GetGunAttackPower(Character* attacker) {
 }
 
 RVA(0x00008b40, 0x1e9)
-i32 ComputeGunDamage(Character* attacker, Character* target, i16 result) {
+i32 ComputeGunDamage(CharacterCore* attacker, CharacterCore* target, i16 result) {
     i16 power;
     i16 defense;
     double ratio;
@@ -2082,7 +2090,12 @@ i32 ComputeGunDamage(Character* attacker, Character* target, i16 result) {
 }
 
 RVA(0x00008d30, 0x124)
-b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16 condition) {
+b16 RollGunCondition(
+    CharacterCore* attacker,
+    CharacterCore* target,
+    i16 resistance,
+    i16 condition
+) {
     i16 luck;
     i16 roll;
     i16 defense;
@@ -2122,7 +2135,7 @@ b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16
 }
 
 RVA(0x00008e60, 0x176)
-b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode) {
+b16 ResolveGunAttack(CharacterCore* attacker, CharacterCore* target, i16 mode) {
     i16 result;
     i32 amount = 0;
     ResetActionOutcome();
@@ -2164,7 +2177,7 @@ void LoadGunDistributionTable(void) {
 }
 
 RVA(0x00009010, 0x38)
-i16 FilterGunTargets(Character* attacker, i16 count) {
+i16 FilterGunTargets(CharacterCore* attacker, i16 count) {
     i16 rounds = GetGunBurstRounds(attacker);
     if (rounds < 1) {
         return 0;
@@ -2173,7 +2186,7 @@ i16 FilterGunTargets(Character* attacker, i16 count) {
 }
 
 RVA(0x00009050, 0x62)
-i16 GetGunBurstRounds(Character* attacker) {
+i16 GetGunBurstRounds(CharacterCore* attacker) {
     i16 rounds;
     i16 limit;
     if (GetCharacterEquipment(attacker)[EQUIP_SLOT_GUN].item < 1) {
@@ -2194,7 +2207,7 @@ i16 GetGunBurstRounds(Character* attacker) {
 }
 
 RVA(0x000090c0, 0xe7)
-i16 PrepareGunBurst(Character* attacker, i16 count) {
+i16 PrepareGunBurst(CharacterCore* attacker, i16 count) {
     ItemRecord* record = GetLoadedRecord(GetCharacterEquipment(attacker)[EQUIP_SLOT_GUN].item);
     u8 limits;
     i16 minimum;
@@ -2292,7 +2305,7 @@ i16 ComputeGunBurstPower(i16 rounds) {
 }
 
 RVA(0x00009320, 0x85)
-void SpendGunRounds(Character* attacker) {
+void SpendGunRounds(CharacterCore* attacker) {
     i16 rounds;
     i16 index;
     if (g_actorId < 0) {
@@ -2314,7 +2327,7 @@ void SpendGunRounds(Character* attacker) {
 }
 
 RVA(0x000093b0, 0x28)
-void SpendAllGunRounds(Character* attacker) {
+void SpendAllGunRounds(CharacterCore* attacker) {
     if (attacker) {
         while (s_gunRounds[0]) {
             SpendGunRounds(attacker);
@@ -2340,7 +2353,7 @@ void CloseFieldWindows(void) {
 // the done flag.
 RVA(0x00009420, 0x90)
 i16 CheckPickTarget(i16 index) {
-    Character* character = GetPartyCharacter(index);
+    CharacterCore* character = GetPartyCharacter(index);
     i16 selection;
     if (character == NULL) {
         return 0;
@@ -2377,7 +2390,7 @@ GZ_ENUM_RETURN(PartyCommandPhase, i16) GetPickMode(void) {
 // 1 when the role needs no menu, -1 while open, -2 when cancelled or blocked.
 RVA(0x000094d0, 0x118)
 i16 RunMemberPickMenu(i16 id) {
-    Character* character = GetCharacterById(id);
+    CharacterCore* character = GetCharacterCore(GetCharacterById(id));
     i16 result;
     if (character == NULL || GetPickBlockingCondition(GetCharacterConditions(character))) {
         s_pickMenu = CloseListMenu(s_pickMenu);
@@ -2413,9 +2426,9 @@ i16 RunMemberPickMenu(i16 id) {
 
 RVA(0x000095f0, 0x22)
 void SetMemberPickRole(i16 id, i8 role) {
-    Character* character;
+    CharacterCore* character;
     s_pickedIndex = id;
-    character = GetCharacterById(id);
+    character = GetCharacterCore(GetCharacterById(id));
     if (character != NULL) {
         SetCharacterPickRole(character, role);
     }
@@ -2425,7 +2438,7 @@ static __inline i16 CurrentMemberCombatantId(void) {
     return PartyCombatantId(FindPartyPositionOfId(s_pickedIndex));
 }
 
-static __inline i16 PickMemberActionTarget(Character* character, i16 flags, i16 range) {
+static __inline i16 PickMemberActionTarget(CharacterCore* character, i16 flags, i16 range) {
     if (character->pickRole == PICK_ROLE_MAGIC) {
         if (character->pickTarget == SKILL_FUSION) {
             return RunPickTargetWindow(0, range, TARGET_PICK_FIELD_OBJECT, 0);
@@ -2446,7 +2459,7 @@ static __inline i16 PickMemberActionTarget(Character* character, i16 flags, i16 
 // menu, pick the target, then confirm. Returns the tick flag.
 RVA(0x00009620, 0x600)
 i16 RunPartyCommandInput(void) {
-    Character* character;
+    CharacterCore* character;
     i16 result;
     i16 kind;
     i16 range;
@@ -2467,7 +2480,7 @@ i16 RunPartyCommandInput(void) {
             HideScreenLayer(SCREEN_LAYER_PANEL);
             return g_tickElapsed;
         case PARTY_COMMAND_PREPARE_MEMBER:
-            GetCharacterById(s_pickedIndex)->conditionActionTicks = 0;
+            GetCharacterCore(GetCharacterById(s_pickedIndex))->conditionActionTicks = 0;
             SetFieldBusy(true);
             s_pickMode++;
             g_tickElapsed = 0;
@@ -2477,7 +2490,7 @@ i16 RunPartyCommandInput(void) {
             }
             break;
         case PARTY_COMMAND_PICK_ACTION:
-            GetCharacterById(s_pickedIndex)->conditionActionTicks = 0;
+            GetCharacterCore(GetCharacterById(s_pickedIndex))->conditionActionTicks = 0;
             SetFieldBusy(true);
             g_tickElapsed = 0;
             result = RunMemberPickMenu(s_pickedIndex);
@@ -2490,7 +2503,7 @@ i16 RunPartyCommandInput(void) {
             s_pickMode++;
             return g_tickElapsed;
         case PARTY_COMMAND_PICK_TARGET:
-            character = GetCharacterById(s_pickedIndex);
+            character = GetCharacterCore(GetCharacterById(s_pickedIndex));
             character->conditionActionTicks = 0;
             if (GetPickBlockingCondition(GetCharacterConditions(character))) {
                 ResetPartyCommandPick();
@@ -2592,7 +2605,7 @@ i16 RunPartyCommandInput(void) {
                 );
                 return g_tickElapsed;
             }
-            character = GetCharacterById(s_pickedIndex);
+            character = GetCharacterCore(GetCharacterById(s_pickedIndex));
             if (flags != 0) {
                 g_selectedObjectId =
                     SwapInForPick(FindPartyPositionOfId(s_pickedIndex), g_selectedObjectId);
@@ -2602,7 +2615,7 @@ i16 RunPartyCommandInput(void) {
             g_tickElapsed = 0;
             break;
         case PARTY_COMMAND_CONFIRM:
-            character = GetCharacterById(s_pickedIndex);
+            character = GetCharacterCore(GetCharacterById(s_pickedIndex));
             if (character != NULL) {
                 if (!GetPickBlockingCondition(GetCharacterConditions(character))) {
                     QueueActionWait(GetCharacterActionWait(character));
@@ -2617,7 +2630,7 @@ i16 RunPartyCommandInput(void) {
             ResetPartyCommandPick();
             return g_tickElapsed;
         case PARTY_COMMAND_PICK_SUMMON_POSITION:
-            character = GetCharacterById(s_pickedIndex);
+            character = GetCharacterCore(GetCharacterById(s_pickedIndex));
             g_tickElapsed = 0;
             result = RunPickTargetWindow(0, 0, TARGET_PICK_PARTY_SLOT, 0);
             if (result == TARGET_PICK_CANCELLED) {
@@ -2643,7 +2656,7 @@ i16 RunPartyCommandInput(void) {
 // The targeting range for member `id`'s pending action.
 RVA(0x00009c20, 0xcb)
 i16 GetMemberPickRange(i16 id) {
-    Character* character = GetCharacterById(id);
+    CharacterCore* character = GetCharacterCore(GetCharacterById(id));
     GZ_ENUM_LOCAL(PickRole, i8) role = character->pickRole;
     i16 item;
     if (role == PICK_ROLE_NONE) {
@@ -2768,7 +2781,7 @@ i16 IsGuestIndex(i16 index) {
 
 RVA(0x00009e30, 0x214)
 GZ_ENUM_RETURN(TargetPickResult, i16) RunPickTargetWindow(i16 minimumRange, i16 maximumRange, i16 kind, i16 id) {
-    Character* character = GetCharacterById(id);
+    CharacterCore* character = GetCharacterCore(GetCharacterById(id));
     i16 result;
     if (kind & TARGET_PICK_ROSTER_LIST) {
         if (id && (!character || GetPickBlockingCondition(GetCharacterConditions(character)))) {
@@ -2843,7 +2856,7 @@ b16 PickFieldObjectTarget(i16 minimumRange, i16 maximumRange) {
     g_hoveredObjectId = GetSelectedHotspotValue();
     if (g_hoveredObjectId != FIELD_OBJECT_INDEX_NONE) {
         // The field object's character prefix starts at its kind member.
-        actor = &GetFieldObject(g_hoveredObjectId)->kind;
+        actor = &GetFieldObject(g_hoveredObjectId)->actor.core.id;
         distance = DistanceToParty(actor);
         if (distance >= minimumRange && distance <= maximumRange) {
             g_selectedObjectId = g_hoveredObjectId;

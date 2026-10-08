@@ -156,11 +156,11 @@ void CacheSkill(i16 id, i16 value);
 i32 WearSkillValue(i16 value);
 void ResetRecordCache(void);
 i16 GetRecordValue(void);
-i16 HpMpLeftAfterCost(i16 cost, struct Character* character);
+i16 HpMpLeftAfterCost(i16 cost, struct CharacterCore* character);
 SkillView* GetSkillView(i16 id);
 void LoadSkillFiles(void);
 GZ_ENUM_RETURN(SkillAreaAvailability, i16) CheckSkillArea(i16 id);
-i16 CanUseSkill(i16 id, struct Character* character);
+i16 CanUseSkill(i16 id, struct CharacterCore* character);
 GZ_ENUM_RETURN(SkillKind, i32) GetSkillKind(i16 id);
 GZ_ENUM_RETURN(AttackMode, u16) GetSkillMode(i16 id);
 u16 GetSkillFamily(i16 id);
@@ -168,7 +168,7 @@ u16 GetSkillLevel(i16 id);
 i16 FindSkill(i16 start, u16 a, u16 b, u16 c, i16 maxLevel);
 
 // Applies the effect of skill `skill` used by `user` on `target`.
-void ApplySkillEffect(i16 skill, struct Character* user, struct Character* target);
+void ApplySkillEffect(i16 skill, struct CharacterCore* user, struct CharacterCore* target);
 
 // Evaluates wear for the cached skill and advances its use count.
 void WearCachedSkill(void);

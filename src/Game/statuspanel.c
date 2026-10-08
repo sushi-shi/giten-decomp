@@ -128,7 +128,7 @@ char* g_statusNumberLabels[40] = {
 };
 
 RVA(0x00041ad0, 0xc5)
-static i16 DrawStatusExperience(i16 x, i16 y, Character* member) {
+static i16 DrawStatusExperience(i16 x, i16 y, CharacterCore* member) {
     i32 remaining;
 
     sprintf(g_scratchBuffer, "EXP %10ld", GetCharacterExperience(member));
@@ -157,7 +157,7 @@ static i16 DrawStatusExperience(i16 x, i16 y, Character* member) {
 }
 
 RVA(0x00041ba0, 0x89)
-static i16 DrawStatusPools(i16 x, i16 y, Character* member) {
+static i16 DrawStatusPools(i16 x, i16 y, CharacterCore* member) {
     sprintf(g_scratchBuffer, "HP  %4d\201\136%4d", member->pools.hp.cur, member->pools.hp.max);
     y = DrawStatusLine(
         x,
@@ -175,7 +175,7 @@ static i16 DrawStatusPools(i16 x, i16 y, Character* member) {
 }
 
 RVA(0x00041c30, 0xb3)
-static i16 DrawStatusLevel(i16 x, i16 y, Character* member) {
+static i16 DrawStatusLevel(i16 x, i16 y, CharacterCore* member) {
     sprintf(g_scratchBuffer, "LEVEL %8d", member->level);
     y = DrawStatusLine(
         x,
@@ -193,7 +193,7 @@ static i16 DrawStatusLevel(i16 x, i16 y, Character* member) {
 
 RVA(0x00041cf0, 0x5b)
 void DrawStatusVitals(i16 slot) {
-    Character* member = GetRosterCharacter(slot);
+    CharacterCore* member = GetRosterCharacter(slot);
 
     if (member) {
         DrawStatusLevel(3, 8, member);
@@ -205,7 +205,7 @@ void DrawStatusVitals(i16 slot) {
 }
 
 RVA(0x00041d50, 0x92)
-static i16 DrawStatusConditions(i16 x, i16 y, Character* member) {
+static i16 DrawStatusConditions(i16 x, i16 y, CharacterCore* member) {
     i16 cursor = 0;
     i16 entry;
     const char* name;
@@ -223,7 +223,7 @@ static i16 DrawStatusConditions(i16 x, i16 y, Character* member) {
 }
 
 RVA(0x00041df0, 0xe1)
-static void DrawStatusMemberPortrait(i16 x, i16 y, Character* member) {
+static void DrawStatusMemberPortrait(i16 x, i16 y, CharacterCore* member) {
     ObjectPicture picture;
     ImageRequest request;
     void* image;
@@ -270,7 +270,7 @@ static void DrawStatusMemberPortrait(i16 x, i16 y, Character* member) {
 }
 
 RVA(0x00041ee0, 0x6c)
-static i16 DrawStatusCapacity(i16 x, i16 y, Character* member) {
+static i16 DrawStatusCapacity(i16 x, i16 y, CharacterCore* member) {
     if (IsHumanCharacter(member)) {
         sprintf(
             g_scratchBuffer,
@@ -285,7 +285,7 @@ static i16 DrawStatusCapacity(i16 x, i16 y, Character* member) {
 }
 
 RVA(0x00041f50, 0x131)
-static i16 DrawStatusName(i16 x, i16 y, Character* member) {
+static i16 DrawStatusName(i16 x, i16 y, CharacterCore* member) {
     char name[36];
 
     sprintf(g_scratchBuffer, "%-16.16s", FormatFullName(name, member));
@@ -304,7 +304,7 @@ static i16 DrawStatusName(i16 x, i16 y, Character* member) {
 
 RVA(0x00042090, 0x16d)
 void DrawStatusScreen(i16 slot) {
-    Character* member;
+    CharacterCore* member;
 
     if (g_statusMember < 0) {
         g_statusMember = 0;
@@ -446,7 +446,7 @@ static i16 DrawStatBarSegment(
 );
 
 RVA(0x00042450, 0xc3)
-static i16 DrawStatList(i16 plane, Character* member) {
+static i16 DrawStatList(i16 plane, CharacterCore* member) {
     i16 stat;
     i16 y;
 
@@ -532,7 +532,7 @@ static i16 DrawStatBarSegment(
 }
 
 RVA(0x00042670, 0x2e)
-i16 OpenStatListWindow(Character* character) {
+i16 OpenStatListWindow(CharacterCore* character) {
     i16 plane;
 
     if (!character) {
@@ -573,7 +573,7 @@ i16 RunStatPage(i16 command) {
 }
 
 RVA(0x00042780, 0xa5)
-i16 DrawStatTotals(i16 x, i16 y, Character* member, Character* compare) {
+i16 DrawStatTotals(i16 x, i16 y, CharacterCore* member, CharacterCore* compare) {
     i16 stat;
     i32 attr;
 
@@ -603,7 +603,7 @@ i16 DrawStatTotals(i16 x, i16 y, Character* member, Character* compare) {
 }
 
 RVA(0x00042830, 0xf0)
-void DrawStatLine(Character* member, i16 stat, i16 highlight, i16 window) {
+void DrawStatLine(CharacterCore* member, i16 stat, i16 highlight, i16 window) {
     if (stat >= 10) {
         return;
     }
@@ -673,7 +673,7 @@ static i16 DrawStatusNumber(i16 x, i16 y, i16 value) {
 }
 
 RVA(0x00042a00, 0xf3)
-void DrawBattleStatsPanel(i16 x, i16 y, Character* member, i16 hideIcons) {
+void DrawBattleStatsPanel(i16 x, i16 y, CharacterCore* member, i16 hideIcons) {
     i16 row;
     i16 startY = y;
     i16 icon = -hideIcons * 4;
@@ -722,7 +722,7 @@ void DrawBattleStatsPanel(i16 x, i16 y, Character* member, i16 hideIcons) {
     }
 }
 
-static void DrawAlignmentMarker(i16 slot, Character* member);
+static void DrawAlignmentMarker(i16 slot, CharacterCore* member);
 
 RVA(0x00042b00, 0x108)
 i16 RunAlignmentPage(i16 command) {
@@ -757,7 +757,7 @@ i16 RunAlignmentPage(i16 command) {
 }
 
 RVA(0x00042c10, 0x88)
-static void DrawAlignmentMarker(i16 slot, Character* member) {
+static void DrawAlignmentMarker(i16 slot, CharacterCore* member) {
     i16 x;
     i16 y;
 
@@ -874,7 +874,7 @@ static i16 s_equipPickPart = EQUIP_PART_NONE;
 
 RVA(0x00042cd0, 0x182)
 i16 ListEquipCandidates(i16 member, i16 anyEquipped) {
-    Character* character = GetRosterCharacter(member);
+    CharacterCore* character = GetRosterCharacter(member);
     i16 count;
     i16 item;
     GZ_ENUM_LOCAL(ItemKind, i16) kind;
@@ -1112,7 +1112,7 @@ MenuBox* OpenEquipMenu(i16 member, MenuBox* old) {
 
 RVA(0x000435a0, 0x278)
 static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
-    Character* member;
+    CharacterCore* member;
     ItemRecord* record;
     i16 item;
     i16 cursed;
@@ -1214,7 +1214,7 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
 static i16 DrawStatColumn(i16 x, i16 y, i16* stats, i16* preview);
 
 RVA(0x00043820, 0x10a)
-void DrawEquipPanel(Character* member, Character* preview) {
+void DrawEquipPanel(CharacterCore* member, CharacterCore* preview) {
     i16 x;
     i16 y;
     i16 i;
@@ -1295,7 +1295,7 @@ static void AttachTextHook(i16 plane, i16 event, i16 value);
 
 RVA(0x00043ac0, 0x24f)
 void PreviewEquipChange(i16 index, i16 fromEquipped) {
-    Character* member = GetRosterCharacter(g_statusMember);
+    CharacterCore* member = GetRosterCharacter(g_statusMember);
     Character* saved;
     ItemSlot slot;
     i16 count;
@@ -1307,7 +1307,7 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
         return;
     }
     saved = GetCharacter(14);
-    memcpy(saved, member, offsetof(Character, alignmentA));
+    saved->core = *member;
     if (!fromEquipped) {
         ReadBagEntry(index, &slot, &count);
         kind = GetItemKind(slot.item);
@@ -1323,7 +1323,7 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
         } else {
             // Kind 19 selects index 7, overwriting returnPosition.area in
             // the saved preview copy; retain this original store.
-            saved->ammoCounts[s_equipCountSlots[kind - ITEM_KIND_WEAPON]] = count;
+            saved->core.ammoCounts[s_equipCountSlots[kind - ITEM_KIND_WEAPON]] = count;
             slot.quantity = 1;
         }
         if (kind == ITEM_KIND_GUN) {
@@ -1343,10 +1343,10 @@ void PreviewEquipChange(i16 index, i16 fromEquipped) {
         }
     }
     RecalcCharacterStats(member);
-    DrawEquipPanel(saved, member);
-    DrawStatTotals(3, 0x19, saved, member);
-    memcpy(member, saved, offsetof(Character, alignmentA));
-    InitWordList(GetCharacterSkills(saved), 0);
+    DrawEquipPanel(GetCharacterCore(saved), member);
+    DrawStatTotals(3, 0x19, GetCharacterCore(saved), member);
+    *member = saved->core;
+    InitWordList(GetCharacterSkills(GetCharacterCore(saved)), 0);
 }
 
 RVA(0x00043d10, 0x5e0)
@@ -1731,10 +1731,10 @@ static void ItemListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
 }
 
 static void
-DrawEquipLine(i16 part, i16 item, i16 attach, i16 x, i16 y, Character* character, i16 gunItem);
+DrawEquipLine(i16 part, i16 item, i16 attach, i16 x, i16 y, CharacterCore* character, i16 gunItem);
 
 RVA(0x00044940, 0x18a)
-void DrawEquipLines(Character* character, i16 x, i16 y) {
+void DrawEquipLines(CharacterCore* character, i16 x, i16 y) {
     DrawEquipLine(
         0,
         GetCharacterEquipment(character)[EQUIP_SLOT_WEAPON].item,
@@ -1811,7 +1811,7 @@ void DrawEquipLines(Character* character, i16 x, i16 y) {
 
 RVA(0x00044ad0, 0xd4)
 static void
-DrawEquipLine(i16 part, i16 item, i16 attach, i16 x, i16 y, Character* character, i16 gunItem) {
+DrawEquipLine(i16 part, i16 item, i16 attach, i16 x, i16 y, CharacterCore* character, i16 gunItem) {
     char mark;
 
     if (attach >= 0 && attach <= 15) {
@@ -1920,7 +1920,7 @@ static void SkillListHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
 
 RVA(0x00044df0, 0x55)
 static MenuBox* CreateSkillMenu(i16 member, MenuBox* old) {
-    Character* character = GetRosterCharacter(member);
+    CharacterCore* character = GetRosterCharacter(member);
     MenuBox* menu = CreateMenuBox(old, 9, 2);
 
     SetMenuItems(

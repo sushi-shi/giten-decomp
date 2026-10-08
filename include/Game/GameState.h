@@ -102,10 +102,10 @@ MapPosition* GetMapPosition(void);
 GZ_ENUM_RETURN(MapAreaId, u8) GetMapArea(void);
 u8 GetMapLevel(void);
 MapCoord GetMapCoord(void);
-Character* AsCharacter(Character* character);
-Character* GetRosterCharacter(i16 slot);
+CharacterCore* AsCharacter(Character* character);
+CharacterCore* GetRosterCharacter(i16 slot);
 i16 FindPartySlot(i16 slot);
-ItemSlot GetEquipSlot(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part);
+ItemSlot GetEquipSlot(CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part);
 Character* GetRosterEntry(i16 slot);
 i16 GetPartySlot(i16 index);
 i16 GetRosterCapacity(void);
@@ -113,7 +113,7 @@ i16 GetRosterCapacity(void);
 // Puts roster slot `slot` into party position `index`; returns the slot it held.
 i16 ExchangePartySlot(i16 index, i16 slot);
 Character* GetPartyEntry(i16 index);
-Character* GetPartyCharacter(i16 index);
+CharacterCore* GetPartyCharacter(i16 index);
 Character* GetRosterLeader(void);
 
 // The roster member whose id is `id` (NULL when none).

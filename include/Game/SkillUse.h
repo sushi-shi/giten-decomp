@@ -15,8 +15,8 @@
 
 // The member (negative id: party slot -1 - id) or field object `id` stands
 // for; NULL for an object that is gone.
-Character* GetCombatant(i16 id);
-i16 CountUsableMemberSkills(Character* character, i16 checkCost);
+CharacterCore* GetCombatant(i16 id);
+i16 CountUsableMemberSkills(CharacterCore* character, i16 checkCost);
 
 // Makes field object `object` flash when `change` is not 0; 1 when it did.
 b16 FlashHitObject(i16 object, i32 change);
@@ -36,9 +36,9 @@ i16 AddCombatTarget(i16 id, i16 allowDuplicate);
 i16 CountCombatTargets(void);
 
 void SetActionOutcome(i16 outcome);
-b32 CannotPaySkill(Character* character, SkillParameters* skill);
-b32 IsSkillBlocked(Character* character, SkillParameters* skill);
-b32 IsSkillIdBlocked(Character* character, i16 id);
+b32 CannotPaySkill(CharacterCore* character, SkillParameters* skill);
+b32 IsSkillBlocked(CharacterCore* character, SkillParameters* skill);
+b32 IsSkillIdBlocked(CharacterCore* character, i16 id);
 void PaySkillCost(i16 who, i16 skill);
 
 // NextTarget's value once the target list is empty.
@@ -93,9 +93,9 @@ i16 AddPartyTargetsAtCell(i16 x, i16 y);
 // The zero-initialized empty skill label.
 extern char g_emptySkillMenuLabel[];
 
-void UseAttackSkill(Character* user, Character* target);
-void UseRestoreSkill(Character* user, Character* target);
-void UseBattleTallySkill(Character* user, Character* target);
+void UseAttackSkill(CharacterCore* user, CharacterCore* target);
+void UseRestoreSkill(CharacterCore* user, CharacterCore* target);
+void UseBattleTallySkill(CharacterCore* user, CharacterCore* target);
 GZ_ENUM_BEGIN_SPLIT(BattleStatEffectKind, u8)
     BATTLE_STAT_EFFECT_WEAPON_GUN_POWER = 0,
     BATTLE_STAT_EFFECT_WEAPON_GUN_ACCURACY = 1,
@@ -110,7 +110,7 @@ GZ_ENUM_CONST_BEGIN(BattleStatEffectEncoding)
     BATTLE_STAT_EFFECT_KIND_MASK = 0x7f
 GZ_ENUM_CONST_END(BattleStatEffectEncoding)
 
-void UseBattleStatSkill(Character* user, Character* target);
+void UseBattleStatSkill(CharacterCore* user, CharacterCore* target);
 i16 ChangeBattleStat(i16* value, i16 amount, i16 base);
 
 #define ChangeCharacterBattleStat(character, stat, amount)                                         \
@@ -120,16 +120,16 @@ i16 ChangeBattleStat(i16* value, i16 amount, i16 base);
         GetBattleStatBase(character, stat)                                                         \
     )
 
-void UseClearBattleTallySkill(Character* user, Character* target);
-void UseResetBattleStatsSkill(Character* user, Character* target);
+void UseClearBattleTallySkill(CharacterCore* user, CharacterCore* target);
+void UseResetBattleStatsSkill(CharacterCore* user, CharacterCore* target);
 
 // @identity-TODO: kinds 12..14 share the field-effect operation; their
 // separate domain meanings are unproven.
-void UseKind12Skill(Character* user, Character* target);
-void UseKind13Skill(Character* user, Character* target);
-void UseKind14Skill(Character* user, Character* target);
-void UseFieldEffectSkill(Character* user, Character* target);
-void UseInertSkill(Character* user, Character* target);
+void UseKind12Skill(CharacterCore* user, CharacterCore* target);
+void UseKind13Skill(CharacterCore* user, CharacterCore* target);
+void UseKind14Skill(CharacterCore* user, CharacterCore* target);
+void UseFieldEffectSkill(CharacterCore* user, CharacterCore* target);
+void UseInertSkill(CharacterCore* user, CharacterCore* target);
 
 // Runs the action's message script (stage 0 before, 1 after the change).
 void PlayActionEffect(i16 stage);
@@ -170,15 +170,15 @@ GZ_ENUM_BEGIN_SPLIT(BattleTallyReportMode, i16)
 GZ_ENUM_END_SPLIT(BattleTallyReportMode)
 
 i16 ReportBattleTally(
-    Character* combatant,
+    CharacterCore* combatant,
     GZ_ENUM_PARAM(BattleTallyIndex, i16) index,
     GZ_ENUM_PARAM(BattleTallyReportMode, i16) mode
 );
 
 // Clears the combatant's 14 battle tally bytes.
-void ClearBattleTally(Character* combatant);
+void ClearBattleTally(CharacterCore* combatant);
 
-static __inline void ClearAllBattleTallies(Character* combatant) {
+static __inline void ClearAllBattleTallies(CharacterCore* combatant) {
     i16 index;
     for (index = 0; index < sizeof(combatant->battleTally); index++) {
         GetCharacterBattleTallies(combatant)[index] = 0;

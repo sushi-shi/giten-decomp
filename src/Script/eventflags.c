@@ -36,7 +36,7 @@ void ClearFlagBank(i16 bank) {
 RVA(0x000391f0, 0x52)
 b32 ChangeEventFlag(u16 bank, u16 index, GZ_ENUM_PARAM(BitChangeMode, i16) op) {
     if (bank == EVENT_FLAG_BANK_ACTOR && g_curScript->actor != NULL) {
-        return ChangeCharacterFlag(g_curScript->actor, index, op);
+        return ChangeCharacterFlag(GetFieldActorCore(g_curScript->actor), index, op);
     }
     return ChangeBit(g_eventFlags[bank].bits, index, op);
 }
@@ -66,7 +66,7 @@ b32 TestEventFlag(u16 bank, u16 index) {
         return false;
     }
     if (bank == EVENT_FLAG_BANK_ACTOR && g_curScript->actor != NULL) {
-        return TestCharacterFlag(g_curScript->actor, index);
+        return TestCharacterFlag(GetFieldActorCore(g_curScript->actor), index);
     }
     return TestBit(g_eventFlags[bank].bits, index);
 }
@@ -217,7 +217,7 @@ void OpLoadScriptVar(void) {
 // Changes a flag; bank 14 addresses the referenced object's own flags.
 RVA(0x00039620, 0x5e)
 void OpModifyEventFlag(void) {
-    Character* object = ReadScriptObject();
+    CharacterCore* object = ReadScriptObject();
     u16 bank;
     u16 index;
     GZ_ENUM_LOCAL(BitChangeMode, i16) op;
@@ -232,7 +232,7 @@ void OpModifyEventFlag(void) {
 
 RVA(0x00039680, 0x69)
 void OpTestEventFlag(void) {
-    Character* object = ReadScriptObject();
+    CharacterCore* object = ReadScriptObject();
     u16 bank;
     u16 index;
     i16 dest;

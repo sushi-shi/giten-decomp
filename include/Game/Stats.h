@@ -17,8 +17,8 @@ void DrainPool(CurMax* pool, i32 amount);
 i16 FillPool(CurMax* pool, i32 amount, GZ_ENUM_PARAM(PoolFillMode, i16) mode);
 i16 EmptyPoolMask(CharacterPools* pools);
 
-void RecalcDerivedStats(Character* character);
-i16 SumArmorDefenseBonus(Character* character);
+void RecalcDerivedStats(CharacterCore* character);
+i16 SumArmorDefenseBonus(CharacterCore* character);
 
 i16 RecalcStatTotals(StatBlock* stats);
 

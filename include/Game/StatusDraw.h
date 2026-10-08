@@ -8,7 +8,7 @@
 
 i16 LockStatusRedraw(i16 lock);
 void RequestStatusRedraw(void);
-void DrawPartyStatusSlot(i16 slot, Character* character);
+void DrawPartyStatusSlot(i16 slot, CharacterCore* character);
 
 void FlushStatusRedraw(i16 force);
 

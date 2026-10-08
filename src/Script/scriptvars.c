@@ -800,10 +800,10 @@ void AdvanceScriptTextWindow(i16 window) {
 }
 
 RVA(0x0003b340, 0x10f)
-void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor) {
+void StartActorScene(i16 scene, i16 entry, i16 index, FieldActor* actor) {
     i16 window;
     CloseMessageWindow();
-    actor->facing = OppositeDirection(g_party.field.pos.direction);
+    actor->direction = OppositeDirection(g_party.field.pos.direction);
     RequestFieldRefresh();
     RedrawFieldView();
     PushGameState(GAME_STATE_ACTOR_SCENE);
@@ -1084,7 +1084,7 @@ void CallActorName(void) {
 
 RVA(0x0003b9c0, 0x5e)
 void OpPrintRosterName(void) {
-    Character* character = GetRosterCharacter(ReadScriptValue());
+    CharacterCore* character = GetRosterCharacter(ReadScriptValue());
     if (character != NULL) {
         FormatFullName(g_scratchBuffer, character);
     } else {
@@ -1213,7 +1213,7 @@ i16 FindFavouredMember(void) {
     u8 bestFamiliarity = 0;
     i16 bestId = -1;
     i16 i;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && IsHumanCharacter(character) && character->gender == GENDER_FEMALE

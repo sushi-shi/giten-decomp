@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Game/Character.h>
+#include <Game/FieldActor.h>
 #include <Game/GameState.h>
 #include <Ints.h>
 #include <Script/ObjectRef.h>
@@ -16,7 +17,7 @@
 // handle) at +0x0a; +0x06 is the handle list of its call frames.
 typedef struct ScriptContext {
     i16 mode; // @identity-TODO: set at creation (0, or 1 for an actor's script)
-    Character* actor;
+    FieldActor* actor;
     i32 callStack;
     u32 codeBase;
     u16 pc;
@@ -50,7 +51,7 @@ extern i16 g_scriptRegs[16];
 extern i16 g_scriptArgA;
 extern i16 g_scriptArgB;
 
-Character* GetScriptActor(void);
+FieldActor* GetScriptActor(void);
 i16 GetScriptActorId(void);
 i16 ObjectSlotOfId(i16 id);
 
@@ -76,7 +77,7 @@ i16 ScriptEntryPc(u32 code, i16 entry);
 void StartScript(i16 file, i16 entry, ScriptContext* script);
 void StartScriptInCode(u32 code, i16 arg, i16 entry, ScriptContext* script);
 void EndScript(ScriptContext* script);
-ScriptContext* NewScriptContext(i16 mode, Character* actor);
+ScriptContext* NewScriptContext(i16 mode, FieldActor* actor);
 ScriptContext* FreeScriptContext(ScriptContext* script);
 u16 NextScriptChar(i16 window);
 i16 StepScript(i16 window, u16 ch);
@@ -98,7 +99,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) SetActorMode(GZ_ENUM_PARAM(ActorMode, i16) mod
 
 // Resolves a script object id (negative: party slots; 1000+/2000+/3000+:
 // other ranges; -16..-23: special objects) to its record.
-Character* ResolveScriptObject(i16 id);
+CharacterCore* ResolveScriptObject(i16 id);
 MapCoord ResolveScriptObjectCoord(i16 id);
 
 RVA_DECL(0x00038900)
@@ -122,7 +123,7 @@ u16 ReadScriptWord(void);
 u32 ReadScriptLong(void);
 u16 ReadScriptChar(void);
 i32 ReadObjectRef(void);
-Character* ReadScriptObject(void);
+CharacterCore* ReadScriptObject(void);
 
 // The id of the object an operand names (the operand itself when it names
 // none).

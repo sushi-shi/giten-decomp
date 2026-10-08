@@ -88,12 +88,7 @@ void LoadFieldEventTable(void);
 
 void MergeViewOcclusionMask(u8** table, i16 index, void* destination);
 // @identity-TODO: the fourth argument is passed as zero and unused here.
-void BuildViewOcclusion(
-    i16 x,
-    i16 y,
-    GZ_ENUM_PARAM(ViewDirection, i16) direction,
-    i16 unused
-);
+void BuildViewOcclusion(i16 x, i16 y, GZ_ENUM_PARAM(ViewDirection, i16) direction, i16 unused);
 void MarkVisibleFieldCells(i16 unused, i16 x, i16 y, i16 direction);
 void MarkFieldViewCells(i16 unused, i16 x, i16 y, i16 direction);
 i16 GetViewVisibility(i16 across, i16 along, i16 side);
@@ -120,11 +115,15 @@ void StartNpcScene(struct AreaNpc* npc);
 // Callees of the talk and analyze picks: the analyze target, talk scene,
 // and capped training-point add. Codegen constraint: SetAnalyzeTarget in
 // <Game/Analyze.h> would reach field.c.
-void SetAnalyzeTarget(Character* target);
-void StartActorScene(i16 scene, i16 entry, i16 index, Character* actor);
+void SetAnalyzeTarget(CharacterCore* target);
+void StartActorScene(i16 scene, i16 entry, i16 index, FieldActor* actor);
 
 // @identity-TODO: label-only; the cap (0x41c650(99)) is unrecovered.
-u32 AddTrainingPoints(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind, i16 amount);
+u32 AddTrainingPoints(
+    CharacterCore* character,
+    GZ_ENUM_PARAM(BattleStatGroup, i16) kind,
+    i16 amount
+);
 
 // The object index under the selected hotspot, -1 for none.
 // @identity-TODO: label-only; the hotspot table 0x48802c is Ui/Hotspot's.
@@ -168,7 +167,7 @@ i16 TickPartySteps(void);
 // The per-step party upkeep (charsave) and the magnetite/MP/HP drain it
 // pays through.
 i16 PayStepUpkeep(void);
-i16 AddHundredths(Character* character, i16 amount);
-b16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position);
+i16 AddHundredths(CharacterCore* character, i16 amount);
+b16 DrainUpkeep(CharacterCore* hero, CharacterCore* member, i16 cost, i16 position);
 
 #endif // GITEN_GAME_FIELDMAIN_H

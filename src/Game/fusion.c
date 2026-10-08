@@ -441,7 +441,7 @@ i16 ResolveFusionFallbackPair(i16 first, i16 second) {
 
 RVA(0x00026a60, 0xb1)
 i16 ResolveFusionRankPair(i16 first, i16 second) {
-    Character* members[2];
+    CharacterCore* members[2];
     i16 selected;
     if (GetDemonFlagLow(GetRosterId(first)) != FUSION_FLAG_UNAVAILABLE) {
         return 0;
@@ -463,9 +463,9 @@ i16 ResolveFusionRankPair(i16 first, i16 second) {
 
 RVA(0x00026b20, 0x17f)
 i16 ResolveMixedRankFusion(i16 first, i16 second) {
-    Character* members[2];
-    Character* ranked;
-    Character* other;
+    CharacterCore* members[2];
+    CharacterCore* ranked;
+    CharacterCore* other;
     i16 side = -1;
     i16 level;
     i16 demon;
@@ -662,7 +662,7 @@ void GetFusionResult(i16* demon, i16* kind) {
 }
 
 RVA(0x000270b0, 0x72)
-void InheritFusionStats(Character* first, Character* second, Character* result) {
+void InheritFusionStats(CharacterCore* first, CharacterCore* second, CharacterCore* result) {
     GZ_ENUM_LOCAL(CharacterStat, i16) stat;
     for (stat = STAT_INTUITION; stat <= STAT_FORTUNE; stat++) {
         if (first->stats.base[stat] < second->stats.base[stat]) {
@@ -677,8 +677,8 @@ void InheritFusionStats(Character* first, Character* second, Character* result) 
 
 RVA(0x00027130, 0x44)
 void InheritFusionStat(
-    Character* source,
-    Character* result,
+    CharacterCore* source,
+    CharacterCore* result,
     GZ_ENUM_PARAM(CharacterStat, i16) stat
 ) {
     i16 difference = GetBaseStat(source, stat) - GetBaseStat(result, stat);
@@ -1043,7 +1043,7 @@ FusionSummary GetTripleFusionSummary(i16 first, i16 second, i16 third) {
     output->fields.highFlag = GetDemonFlagHigh(demon);
     output->fields.lowFlag = GetDemonFlagLow(demon);
     SetFusionSummaryKind(&summary, kind, resultLevel, sourceLevel);
-    if (GetCharacter(0)->level + s_fusionLevelAllowance < resultLevel) {
+    if (GetCharacter(0)->core.level + s_fusionLevelAllowance < resultLevel) {
         summary.fields.overLevel = 1;
     }
     return summary;
@@ -1462,10 +1462,11 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
         case FUSION_SUMMARY_GAIN_TWO_LEVELS:
             MoveSpecialFusionCharacters(&firstCharacter, &secondCharacter, &first, &second);
             result = CopyCharacter(firstCharacter, NULL);
-            GainLevels(result, s_fusionSummary.fields.kind);
-            result->level = ClampLevel(result->level + GetFusionGrowthBonus(first, second));
-            RaiseExperienceToLevel(result);
-            FullyRestoreCharacter(result);
+            GainLevels(GetCharacterCore(result), s_fusionSummary.fields.kind);
+            result->core.level =
+                ClampLevel(result->core.level + GetFusionGrowthBonus(first, second));
+            RaiseExperienceToLevel(GetCharacterCore(result));
+            FullyRestoreCharacter(GetCharacterCore(result));
             return result;
         case FUSION_SUMMARY_MERGE_POOLS:
         case FUSION_SUMMARY_MERGE_POOLS_CLEANSE:
@@ -1473,10 +1474,10 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
             MoveSpecialFusionCharacters(&firstCharacter, &secondCharacter, &first, &second);
             result = CopyCharacter(firstCharacter, NULL);
             if (s_fusionSummary.fields.kind <= FUSION_SUMMARY_MERGE_POOLS_CLEANSE) {
-                result->pools.hp.cur += secondCharacter->pools.hp.cur;
-                result->pools.mp.cur += secondCharacter->pools.mp.cur;
+                result->core.pools.hp.cur += secondCharacter->core.pools.hp.cur;
+                result->core.pools.mp.cur += secondCharacter->core.pools.mp.cur;
                 if (s_fusionSummary.fields.kind == FUSION_SUMMARY_MERGE_POOLS_CLEANSE) {
-                    ClearAllConditions(GetCharacterConditions(result));
+                    ClearAllConditions(GetCharacterConditions(GetCharacterCore(result)));
                 }
             }
             break;
@@ -1489,12 +1490,17 @@ Character* CreatePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
         default:
         createCharacter:
             result = LoadCharacterCore(s_fusionResultId, NULL);
-            InheritFusionStats(firstCharacter, secondCharacter, result);
-            result->level = ClampLevel(result->level + GetFusionGrowthBonus(first, second));
-            RaiseExperienceToLevel(result);
-            FullyRestoreCharacter(result);
+            InheritFusionStats(
+                GetCharacterCore(firstCharacter),
+                GetCharacterCore(secondCharacter),
+                GetCharacterCore(result)
+            );
+            result->core.level =
+                ClampLevel(result->core.level + GetFusionGrowthBonus(first, second));
+            RaiseExperienceToLevel(GetCharacterCore(result));
+            FullyRestoreCharacter(GetCharacterCore(result));
             if (s_fusionSummary.fields.kind == FUSION_SUMMARY_RANK_UP_GAIN_LEVEL) {
-                GainLevels(result, 1);
+                GainLevels(GetCharacterCore(result), 1);
             }
             break;
     }
@@ -1678,7 +1684,7 @@ i16 CreateFusionList(i16 window, i16 count) {
 
 RVA(0x000291b0, 0x198)
 void FusionListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
-    Character* character;
+    CharacterCore* character;
     switch (event) {
         case MENU_EVENT_DESTROY:
             menu->itemCount = 0;
@@ -1743,7 +1749,7 @@ void FusionListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i1
 
 RVA(0x00029350, 0x94)
 void FusionSelectionTextHook(i16 plane, i16 event, i16 value) {
-    Character* character;
+    CharacterCore* character;
     i16 index;
     if (plane == TEXT_PLANE_NONE) {
         return;
@@ -1768,7 +1774,7 @@ void FusionSelectionTextHook(i16 plane, i16 event, i16 value) {
 }
 
 RVA(0x000293f0, 0x192)
-void DrawFusionCharacterDetails(i16 plane, Character* character) {
+void DrawFusionCharacterDetails(i16 plane, CharacterCore* character) {
     ClearTextPlane(plane);
     sprintf(g_scratchBuffer, "%4d  %4d", character->pools.hp.cur, character->pools.hp.max);
     DrawPlaneText(
@@ -2010,11 +2016,11 @@ i16 OpenFusionPreviewOnClick(void) {
         }
         plane = CreateTextPlane(11, 0);
         ResetTextPlaneLineStep(plane, 3);
-        DrawFusionPreviewCard(plane, character);
+        DrawFusionPreviewCard(plane, GetCharacterCore(character));
         s_firstFusionDetailPlane = CreateFusionPreviewCard(7, second);
         s_secondFusionDetailPlane = CreateFusionPreviewCard(8, first);
         RepaintTextPlane(plane, -2);
-        FreeWordList(GetCharacterSkills(character));
+        FreeWordList(GetCharacterSkills(GetCharacterCore(character)));
         FreeBlock(character);
         return plane;
     } else {
@@ -2024,7 +2030,7 @@ i16 OpenFusionPreviewOnClick(void) {
         character = GetCharacter(13);
         plane = CreateTextPlane(12, 0);
         ResetTextPlaneLineStep(plane, 3);
-        DrawFusionPreviewCard(plane, character);
+        DrawFusionPreviewCard(plane, GetCharacterCore(character));
         s_firstFusionDetailPlane = CreateFusionPreviewCard(7, g_fusionThirdSlot);
         s_secondFusionDetailPlane = CreateFusionPreviewCard(8, second);
         s_thirdFusionDetailPlane = CreateFusionPreviewCard(11, first);
@@ -2034,7 +2040,7 @@ i16 OpenFusionPreviewOnClick(void) {
 }
 
 RVA(0x00029bf0, 0x19f)
-void DrawFusionPreviewCard(i16 plane, Character* character) {
+void DrawFusionPreviewCard(i16 plane, CharacterCore* character) {
     ClearTextPlane(plane);
     FormatFullName(g_fusionNameBuffer, character);
     sprintf(
@@ -2185,7 +2191,7 @@ i16 RunThirdFusionPicker(i16 step) {
 RVA(0x00029fe0, 0x7e)
 b16 PreviewFusionCharacter(Character* character) {
     Character* previous = SetRosterEntry(0, character);
-    RaiseExperienceToLevel(character);
+    RaiseExperienceToLevel(GetCharacterCore(character));
     AllocScreenSave(g_fusionPreviewSave);
     CaptureScreenSaveWithState(g_fusionPreviewSave);
     g_fusionPaletteState = SavePaletteState(g_fusionPaletteState, 2);
@@ -2217,10 +2223,10 @@ void RunPairFusion(void) {
     s_pendingFusionResultId = -1;
     result = CreatePairFusionCharacter(g_fusionFirstSlot, g_fusionSecondSlot, 0);
     if (result != NULL) {
-        s_pendingFusionResultId = result->id;
+        s_pendingFusionResultId = result->core.id;
         s_cachedFusionSummary = GetPairFusionSummary(g_fusionFirstSlot, g_fusionSecondSlot);
         PreviewFusionCharacter(result);
-        FreeWordList(GetCharacterSkills(result));
+        FreeWordList(GetCharacterSkills(GetCharacterCore(result)));
         FreeBlock(result);
     }
 }
@@ -2237,7 +2243,7 @@ void RunTripleFusion(void) {
     s_fusionSummary = s_cachedFusionSummary;
     result = GetCharacter(13);
     PreviewFusionCharacter(result);
-    id = result->id;
+    id = result->core.id;
     s_pendingFusionResultId = id;
     s_fusionResultId = id;
 }
@@ -2257,7 +2263,7 @@ i16 CommitPairFusion(void) {
     RemoveFromRoster(g_fusionFirstSlot);
     RemoveFromRoster(g_fusionSecondSlot);
     AddToRoster(result);
-    return result->id;
+    return result->core.id;
 }
 
 RVA(0x0002a250, 0xd6)
@@ -2277,18 +2283,18 @@ i16 CommitTripleFusion(void) {
     RemoveFromRoster(g_fusionSecondSlot);
     result = AllocCleared(1, sizeof(Character));
     memcpy(result, GetCharacter(13), sizeof(Character));
-    id = result->id;
+    id = result->core.id;
     s_fusionResultId = id;
     AddToRoster(result);
     temporary = GetCharacter(13);
-    InitWordList(GetCharacterSkills(temporary), 0);
+    InitWordList(GetCharacterSkills(GetCharacterCore(temporary)), 0);
     return id;
 }
 
 RVA(0x0002a330, 0x50)
 b16 StageFusionCharacter(i16 id) {
     Character* character = GetCharacter(13);
-    FreeWordList(GetCharacterSkills(character));
+    FreeWordList(GetCharacterSkills(GetCharacterCore(character)));
     if (id >= 32) {
         character = LoadCharacterCore(id, character);
     }
@@ -2303,11 +2309,11 @@ i16 StagePairFusionCharacter(i16 first, i16 second, i16 rankChanges) {
     i16 result = ResolvePairFusion(first, second, rankChanges);
     Character* temporary = GetCharacter(13);
     Character* fusion;
-    FreeWordList(GetCharacterSkills(temporary));
+    FreeWordList(GetCharacterSkills(GetCharacterCore(temporary)));
     fusion = CreatePairFusionCharacter(first, second, rankChanges);
     if (fusion != NULL) {
         memcpy(temporary, fusion, sizeof(Character));
-        InitWordList(GetCharacterSkills(fusion), 0);
+        InitWordList(GetCharacterSkills(GetCharacterCore(fusion)), 0);
         FreeBlock(fusion);
     }
     if (s_savedFusionCharacter == NULL) {
@@ -2332,7 +2338,7 @@ b32 RestoreFusionCharacter(void) {
 }
 
 RVA(0x0002a480, 0x130)
-i16 CompareFusionCharacters(Character* first, Character* second) {
+i16 CompareFusionCharacters(CharacterCore* first, CharacterCore* second) {
     i16 result;
     i16 firstStat;
     i16 secondStat;
@@ -2386,8 +2392,8 @@ i16 CompareFusionValues(i16 first, i16 second) {
 
 RVA(0x0002a5d0, 0x44)
 i16 SortFusionSlots(i16* first, i16* second) {
-    Character* firstCharacter = GetRosterCharacter(*first);
-    Character* secondCharacter = GetRosterCharacter(*second);
+    CharacterCore* firstCharacter = GetRosterCharacter(*first);
+    CharacterCore* secondCharacter = GetRosterCharacter(*second);
     i16 result = CompareFusionCharacters(firstCharacter, secondCharacter);
     if (result == 0) {
         SwapFusionSlotValues(first, second);

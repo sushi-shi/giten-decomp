@@ -276,7 +276,7 @@ DATA(0x00083b1c)
 static b16 s_statusRedrawPending = false;
 
 DATA(0x00083b20)
-Character* g_panelMembers[6] = {NULL};
+CharacterCore* g_panelMembers[6] = {NULL};
 
 // Per character group, the 40-bit set of items the group can equip.
 DATA(0x00083b38)
@@ -302,7 +302,7 @@ static char s_emptyCharacterName[1] = "";
 // Action speed from agility, reduced by armor defense scaled by vitality;
 // never below 1.
 RVA(0x0003c810, 0x97)
-i16 ComputeActionSpeed(Character* character) {
+i16 ComputeActionSpeed(CharacterCore* character) {
     double base = sqrt(GetStatTotal(character, STAT_AGILITY)) * 4.0;
     double burden = (u16)SumArmorDefenseBonus(character);
     double root = sqrt(GetStatTotal(character, STAT_VITALITY));
@@ -321,7 +321,7 @@ i16 ComputeActionSpeed(Character* character) {
 }
 
 RVA(0x0003c8b0, 0xa6)
-void RecalcCharacterStats(Character* character) {
+void RecalcCharacterStats(CharacterCore* character) {
     RecalcEquippedStatTotals(&character->stats, GetCharacterEquipment(character));
     ApplyEquipmentEffects(character, EQUIP_EFFECT_STAT_UPDATE);
     character->pools.hp.max = CalcMaxHp(character);
@@ -337,46 +337,46 @@ void RecalcCharacterStats(Character* character) {
 
 // Recomputes the character's stats and fills its HP and MP.
 RVA(0x0003c960, 0x2c)
-void FullyRestoreCharacter(Character* character) {
+void FullyRestoreCharacter(CharacterCore* character) {
     RecalcCharacterStats(character);
     character->pools.hp.cur = character->pools.hp.max;
     character->pools.mp.cur = character->pools.mp.max;
 }
 
 RVA(0x0003c990, 0x7d)
-Character* CopyCharacterCore(Character* source, Character* destination) {
+Character* CopyCharacterCore(CharacterCore* source, Character* destination) {
     if (!destination) {
         destination = AllocCleared(sizeof(Character), 1);
     } else {
-        FreeWordList(GetCharacterSkills(destination));
+        FreeWordList(GetCharacterSkills(GetCharacterCore(destination)));
     }
-    memcpy(destination, source, offsetof(Character, alignmentA));
-    destination->skills.words = CopyWordArray(
+    destination->core = *source;
+    destination->core.skills.words = CopyWordArray(
         GetWordArray(GetCharacterSkills(source)),
         GetWordCount(GetCharacterSkills(source))
     );
-    destination->skills.count = GetWordCount(GetCharacterSkills(source));
-    destination->actionSpeed = ComputeActionSpeed(destination);
+    destination->core.skills.count = GetWordCount(GetCharacterSkills(source));
+    destination->core.actionSpeed = ComputeActionSpeed(GetCharacterCore(destination));
     return destination;
 }
 
 RVA(0x0003ca10, 0x25)
 Character* LoadCharacterCore(i16 id, Character* destination) {
     LoadObjectRecord(id, &s_characterLoadObject);
-    // The object loader exposes a character prefix beginning at its kind.
-    return CopyCharacterCore((Character*)&s_characterLoadObject.kind, destination);
+    // The object loader exposes the shared actor state.
+    return CopyCharacterCore(&s_characterLoadObject.actor.core, destination);
 }
 
 static __inline void CopyCharacterWithoutSkills(Character* destination, const Character* source) {
     *destination = *source;
-    InitEmptyWordList(&destination->skills);
+    InitEmptyWordList(&destination->core.skills);
 }
 
 RVA(0x0003ca40, 0x1b9)
 void InitCharacters(void) {
     i16 i;
     for (i = 0; i < CHARACTER_SLOT_COUNT; i++) {
-        InitEmptyWordList(&g_characters[i].skills);
+        InitEmptyWordList(&g_characters[i].core.skills);
     }
     InitCharacterSlot(0, HUMAN_KATSURAGI, "\212\213\217\351", "\216\152\220\154", GENDER_MALE);
     InitCharacterSlot(1, HUMAN_TACHIBANA, "\213\153", "\227\122\211\106\215\201", GENDER_FEMALE);
@@ -411,24 +411,28 @@ void InitCharacterSlot(
     GZ_ENUM_PARAM(Gender, i16) gender
 ) {
     LoadCharacterCore(id, &g_characters[slot]);
-    NormalizeAffiliations(&g_characters[slot]);
-    g_characters[slot].byte069 = gender;
-    g_characters[slot].gender = gender;
-    g_characters[slot].id = id;
-    memset(g_characters[slot].namePrefix, 0, sizeof(g_characters[slot].namePrefix));
-    memset(g_characters[slot].name, 0, sizeof(g_characters[slot].name));
-    memset(g_characters[slot].ammoCounts, 0, sizeof(g_characters[slot].ammoCounts));
-    memset(&g_characters[slot].returnPosition, 0, sizeof(g_characters[slot].returnPosition));
-    memset(&g_characters[slot].markPosition, 0, sizeof(g_characters[slot].markPosition));
-    strcpy(g_characters[slot].namePrefix, prefix);
-    strcpy(g_characters[slot].name, name);
-    FullyRestoreCharacter(&g_characters[slot]);
+    NormalizeAffiliations(&g_characters[slot].core);
+    g_characters[slot].core.unknownIdentityByte = gender;
+    g_characters[slot].core.gender = gender;
+    g_characters[slot].core.id = id;
+    memset(g_characters[slot].core.namePrefix, 0, sizeof(g_characters[slot].core.namePrefix));
+    memset(g_characters[slot].core.name, 0, sizeof(g_characters[slot].core.name));
+    memset(g_characters[slot].core.ammoCounts, 0, sizeof(g_characters[slot].core.ammoCounts));
+    memset(
+        &g_characters[slot].core.returnPosition,
+        0,
+        sizeof(g_characters[slot].core.returnPosition)
+    );
+    memset(&g_characters[slot].core.markPosition, 0, sizeof(g_characters[slot].core.markPosition));
+    strcpy(g_characters[slot].core.namePrefix, prefix);
+    strcpy(g_characters[slot].core.name, name);
+    FullyRestoreCharacter(&g_characters[slot].core);
     g_characters[slot].unusedValue = 10000;
     g_characters[slot].unusedBytes[0] = 0;
     g_characters[slot].unusedBytes[1] = 1;
     InitAlignmentInfo(&g_characters[slot].alignmentA);
     InitAlignmentInfo(&g_characters[slot].alignmentB);
-    StripZeroWords(GetCharacterSkills(&g_characters[slot]));
+    StripZeroWords(GetCharacterSkills(&g_characters[slot].core));
 }
 
 // Out-of-range slots fall back to the last record.
@@ -442,7 +446,7 @@ Character* GetCharacter(i16 slot) {
 
 RVA(0x0003cd90, 0x1a)
 i16 GetCharacterId(i16 slot) {
-    Character* character = GetCharacter(slot);
+    CharacterCore* character = GetCharacterCore(GetCharacter(slot));
     if (character == NULL) {
         return CHARACTER_ID_NONE;
     }
@@ -453,7 +457,7 @@ RVA(0x0003cdb0, 0x2d)
 i16 FindCharacter(i16 id) {
     i16 slot;
     for (slot = 0; slot < CHARACTER_SLOT_COUNT; slot++) {
-        if (g_characters[slot].id == id) {
+        if (g_characters[slot].core.id == id) {
             return slot;
         }
     }
@@ -482,7 +486,7 @@ Character* GetCharacters(void) {
 RVA(0x0003ce20, 0x91)
 void ResetRosterStatModifiers(void) {
     i16 slot;
-    Character* character;
+    CharacterCore* character;
     for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
         if (character) {
@@ -503,7 +507,7 @@ void ResetRosterStatModifiers(void) {
 }
 
 RVA(0x0003cec0, 0xa3)
-i32 CalcMaxHp(Character* character) {
+i32 CalcMaxHp(CharacterCore* character) {
     double value = character->level;
     value *= character->stats.total[STAT_VITALITY];
     value *= 0.5;
@@ -521,7 +525,7 @@ i32 CalcMaxHp(Character* character) {
 }
 
 RVA(0x0003cf70, 0x8c)
-i32 CalcMaxMp(Character* character) {
+i32 CalcMaxMp(CharacterCore* character) {
     double scaled = sqrt(character->level);
     double value =
         GetStatTotal(character, STAT_CHARM) + GetStatTotal(character, STAT_MENTAL_STRENGTH);
@@ -721,7 +725,7 @@ i32 CalcMagicDefenseStat(i16* stats, i32 amount) {
 // bonuses of its eight item slots (each slot's item, then its indexed gem
 // item); stats 0, 6, 12 and 18 are kept, 13 and 19..23 are set to 1.
 RVA(0x0003d560, 0x3e0)
-void RecalcDerivedStats(Character* character) {
+void RecalcDerivedStats(CharacterCore* character) {
     i16 kept12 = GetBattleStatBase(character, BATTLE_STAT_MAGIC_LEVEL);
     i16 kept18 = GetBattleStatBase(character, BATTLE_STAT_DEMON_INTERACTION_LEVEL);
     i16 level = GetBattleStatBase(character, BATTLE_STAT_WEAPON_LEVEL);
@@ -803,7 +807,7 @@ void RecalcDerivedStats(Character* character) {
 
 // The physical-defense bonuses of armor slots 0..4 and their attached gems.
 RVA(0x0003d940, 0x150)
-i16 SumArmorDefenseBonus(Character* character) {
+i16 SumArmorDefenseBonus(CharacterCore* character) {
     i16 bonuses[24];
 
     memset(bonuses, 0, sizeof(bonuses));
@@ -825,7 +829,7 @@ i16 SumArmorDefenseBonus(Character* character) {
 }
 
 RVA(0x0003da90, 0x14b)
-void ApplyStatFlags(Character* character) {
+void ApplyStatFlags(CharacterCore* character) {
     if (TestCharacterFlag(character, ACTOR_FLAG_MOON_ACCURACY_EVASION_DOWN) == true) {
         SetBattleStatShown(
             character,
@@ -1051,14 +1055,14 @@ RVA(0x0003e0a0, 0x27)
 void ShiftAlignmentB(Character* character, i16 amount, GZ_ENUM_PARAM(AlignmentSide, i16) step) {
     AlignmentInfo* alignment = &character->alignmentB;
     MoveAlignment(alignment, amount, step);
-    character->alignmentLevelB = GetAlignmentValue(alignment);
+    character->core.alignmentLevelB = GetAlignmentValue(alignment);
 }
 
 RVA(0x0003e0d0, 0x27)
 void ShiftAlignmentA(Character* character, i16 amount, GZ_ENUM_PARAM(AlignmentSide, i16) step) {
     AlignmentInfo* alignment = &character->alignmentA;
     MoveAlignment(alignment, amount, step);
-    character->alignmentLevelA = GetAlignmentValue(alignment);
+    character->core.alignmentLevelA = GetAlignmentValue(alignment);
 }
 
 // The alignment class of the party's average alignment on one axis (0 reads
@@ -1117,7 +1121,7 @@ void RedrawPartyStatus(void) {
             if (swapped == -1) {
                 DrawPartyStatusSlot(slot, NULL);
             } else if (swapped == -2) {
-                DrawPartyStatusSlot(slot, GetPartyEntry(slot));
+                DrawPartyStatusSlot(slot, GetCharacterCore(GetPartyEntry(slot)));
             } else {
                 DrawPartyStatusSlot(slot, GetRosterCharacter(swapped));
             }
@@ -1129,7 +1133,7 @@ void RedrawPartyStatus(void) {
 }
 
 RVA(0x0003e1f0, 0x164)
-void DrawPartyStatusSlot(i16 slot, Character* character) {
+void DrawPartyStatusSlot(i16 slot, CharacterCore* character) {
     char name[36];
     i16 partySlot = slot;
     slot += SCREEN_LAYER_FIRST_PANEL;
@@ -1666,7 +1670,7 @@ b16 AgeCondition(i16 amount, ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId
 // Rolls every held condition of `character` for recovery; nonzero when any
 // wore off.
 RVA(0x0003f000, 0x25)
-i16 RecoverConditions(Character* character) {
+i16 RecoverConditions(CharacterCore* character) {
     i16 recovered = 0;
     i16 i;
     for (i = 0; i < CONDITION_COUNT; i++) {
@@ -1679,7 +1683,7 @@ i16 RecoverConditions(Character* character) {
 // 0..255. A condition that stays can hurt: dancing (19) drains 1..5 HP,
 // suffocation (11) 1..33.
 RVA(0x0003f030, 0xb6)
-b16 RecoverCondition(Character* character, GZ_ENUM_PARAM(ConditionId, i16) condition) {
+b16 RecoverCondition(CharacterCore* character, GZ_ENUM_PARAM(ConditionId, i16) condition) {
     i16 chance;
     if (!HasCondition(GetCharacterConditions(character), condition)) {
         return false;
@@ -1707,7 +1711,7 @@ b16 RecoverCondition(Character* character, GZ_ENUM_PARAM(ConditionId, i16) condi
 // dying, 2 when HP is out while dying, else 0.
 // @identity-TODO: condition 8's role here is unrecovered.
 RVA(0x0003f0f0, 0xd0)
-GZ_ENUM_RETURN(EmptyPoolOutcome, i16) ApplyEmptyPools(Character* character) {
+GZ_ENUM_RETURN(EmptyPoolOutcome, i16) ApplyEmptyPools(CharacterCore* character) {
     switch (EmptyPoolMask(&character->pools)) {
         case POOL_MASK_NONE:
             break;
@@ -1823,7 +1827,7 @@ const char* GetConditionName(GZ_ENUM_PARAM(ConditionId, i16) bit) {
 // The display-order index of the first condition `character` holds; -1 when
 // none.
 RVA(0x0003f380, 0x3c)
-i16 GetFirstConditionIndex(Character* character) {
+i16 GetFirstConditionIndex(CharacterCore* character) {
     i16 i;
     for (i = 0; i < sizeof(s_conditionNames) / sizeof(s_conditionNames[0]); i++) {
         if (TestBit(GetCharacterConditions(character)->bits, s_conditionNames[i].bit)) {
@@ -1836,8 +1840,8 @@ i16 GetFirstConditionIndex(Character* character) {
 // Frees a non-human character's record (and its skill list); returns NULL.
 RVA(0x0003f3c0, 0x2b)
 Character* FreeCharacterRecord(Character* character) {
-    if (character && !IsHumanCharacter(character)) {
-        FreeWordList(GetCharacterSkills(character));
+    if (character && !IsHumanCharacter(GetCharacterCore(character))) {
+        FreeWordList(GetCharacterSkills(GetCharacterCore(character)));
         FreeBlock(character);
     }
     return NULL;
@@ -1855,7 +1859,7 @@ i16 FindRosterSlotIn(i16 id, i16 inParty) {
 }
 
 RVA(0x0003f430, 0x1c)
-Character* GetRosterCharacterById(i16 id, i16 inParty) {
+CharacterCore* GetRosterCharacterById(i16 id, i16 inParty) {
     return GetRosterCharacter(FindRosterSlotIn(id, inParty));
 }
 
@@ -1869,7 +1873,7 @@ i16 FindEmptySlot(b16 inParty) {
 }
 
 RVA(0x0003f470, 0xf)
-i32 GetRankScore(Character* character) {
+i32 GetRankScore(CharacterCore* character) {
     return character->level * 10;
 }
 
@@ -1878,7 +1882,8 @@ i16 CountRosterEntries(i16 all) {
     i16 count = 0;
     i16 i;
     for (i = 0; i < ROSTER_SIZE; i++) {
-        if (RosterMemberAt(i) != NULL && (all || !IsHumanCharacter(RosterMemberAt(i)))) {
+        if (RosterMemberAt(i) != NULL
+            && (all || !IsHumanCharacter(GetCharacterCore(RosterMemberAt(i))))) {
             count++;
         }
     }
@@ -1886,7 +1891,7 @@ i16 CountRosterEntries(i16 all) {
 }
 
 RVA(0x0003f4b0, 0x59)
-char* FormatFullName(char* buf, Character* character) {
+char* FormatFullName(char* buf, CharacterCore* character) {
     strcpy(buf, character->namePrefix);
     strcat(buf, character->name);
     return buf;
@@ -1913,10 +1918,10 @@ RVA(0x0003f570, 0x50)
 i16 TickPartyActionWaits(void) {
     i16 count = 0;
     i16 index;
-    Character* actor;
+    CharacterCore* actor;
     for (index = 0; index < PARTY_SIZE; index++) {
         if (GetPartySlot(index) >= 0) {
-            actor = GetPartyEntry(index);
+            actor = GetCharacterCore(GetPartyEntry(index));
             if (actor) {
                 if (!TickActionWait(GetCharacterActionWait(actor), actor->actionSpeed)) {
                     CheckPickTarget(index);
@@ -1929,7 +1934,7 @@ i16 TickPartyActionWaits(void) {
 }
 
 RVA(0x0003f5c0, 0x30)
-GZ_ENUM_RETURN(MemberPickState, i16) GetPickState(Character* character) {
+GZ_ENUM_RETURN(MemberPickState, i16) GetPickState(CharacterCore* character) {
     if (GetPickBlockingCondition(GetCharacterConditions(character))) {
         return MEMBER_PICK_CONDITION_BLOCKED;
     }
@@ -1942,7 +1947,7 @@ GZ_ENUM_RETURN(MemberPickState, i16) GetPickState(Character* character) {
 RVA(0x0003f5f0, 0x4c)
 i16 FindReadyMember(i16 needMark) {
     i16 i;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && !GetPickState(character)) {
@@ -1960,7 +1965,7 @@ i16 FindReadyMember(i16 needMark) {
 RVA(0x0003f640, 0x8e)
 PartyMemberList* ListPickableMembers(PartyMemberList* list, i16 max, i16 idleOnly) {
     i16 i;
-    Character* character;
+    CharacterCore* character;
     if (!list) {
         list = AllocCleared(1, max * sizeof(list->ids[0]) + offsetof(PartyMemberList, ids));
     }
@@ -1987,10 +1992,10 @@ PartyMemberList* ListPickableMembers(PartyMemberList* list, i16 max, i16 idleOnl
 RVA(0x0003f6d0, 0xa6)
 i16 FindMemberByPoolState(i16 start, i16 mode, GZ_ENUM_PARAM(PoolStateKind, i16) state, u8 pools) {
     i16 slot;
-    Character* character;
+    CharacterCore* character;
     GZ_ENUM_LOCAL(PoolStateKind, i16) pool;
     for (slot = start; slot < ROSTER_SIZE; slot++) {
-        character = RosterMemberAt(slot);
+        character = GetCharacterCore(RosterMemberAt(slot));
         if (character && FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
             if (pools & POOL_MASK_HP) {
                 pool = PoolState(GetCharacterHpPool(character));
@@ -2035,20 +2040,20 @@ i16 FilterPartyMember(i16 slot, GZ_ENUM_PARAM(RosterMemberFilter, i16) mode) {
 RVA(0x0003f7c0, 0x8a)
 i16 AddToRoster(Character* character) {
     i16 slot;
-    if (!IsHumanCharacter(character) && CountRosterEntries(false) >= 26) {
+    if (!IsHumanCharacter(GetCharacterCore(character)) && CountRosterEntries(false) >= 26) {
         return ROSTER_SLOT_NONE;
     }
     slot = FindEmptySlot(false);
     if (slot != -1) {
         SetRosterEntry(slot, character);
-        if (IsHumanCharacter(character)) {
-            StripZeroWords(GetCharacterSkills(character));
+        if (IsHumanCharacter(GetCharacterCore(character))) {
+            StripZeroWords(GetCharacterSkills(GetCharacterCore(character)));
             AddToParty(slot);
-            RaiseExperienceToLevel(character);
+            RaiseExperienceToLevel(GetCharacterCore(character));
             return slot;
         }
-        KeepFirstSixWords(GetCharacterSkills(character));
-        RaiseExperienceToLevel(character);
+        KeepFirstSixWords(GetCharacterSkills(GetCharacterCore(character)));
+        RaiseExperienceToLevel(GetCharacterCore(character));
     }
     return slot;
 }
@@ -2064,8 +2069,8 @@ i16 RemoveFromRoster(i16 slot) {
     }
     index = FindPartySlot(slot);
     SetPartySlot(index, PARTY_SLOT_EMPTY);
-    if (!IsHumanCharacter(character)) {
-        FreeWordList(GetCharacterSkills(character));
+    if (!IsHumanCharacter(GetCharacterCore(character))) {
+        FreeWordList(GetCharacterSkills(GetCharacterCore(character)));
         FreeBlock(character);
     }
     SetRosterEntry(slot, NULL);
@@ -2119,7 +2124,7 @@ RVA(0x0003f970, 0x40)
 i16 CountPartyMembers(i16 skipDisabled) {
     i16 count = 0;
     i16 i;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character) {
@@ -2137,7 +2142,7 @@ RVA(0x0003f9b0, 0x40)
 i16 TickPartyConditions(void) {
     i16 recovered = 0;
     i16 i;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character) {
@@ -2162,7 +2167,7 @@ i16 DamageParty(i16 percent, b16 skipNewton) {
     i16 hit = 0;
     i16 i;
     i32 amount;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && !GetFatalCondition(GetCharacterConditions(character))) {
@@ -2189,7 +2194,7 @@ i16 HealParty(i16 percent) {
     i16 healed = 0;
     i16 i;
     i32 amount;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character && !GetFatalCondition(GetCharacterConditions(character))) {
@@ -2211,7 +2216,7 @@ i16 HealParty(i16 percent) {
 RVA(0x0003fb30, 0x4a)
 void ResetRosterBattleState(void) {
     i16 slot;
-    Character* character;
+    CharacterCore* character;
     for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
         if (character) {
@@ -2226,7 +2231,7 @@ void ResetRosterBattleState(void) {
 RVA(0x0003fb80, 0x35)
 void ClearRosterConditions(void) {
     i16 slot;
-    Character* character;
+    CharacterCore* character;
     for (slot = 0; slot < ROSTER_SIZE; slot++) {
         character = GetRosterCharacter(slot);
         if (character) {
@@ -2246,11 +2251,11 @@ Character* CopyCharacter(Character* src, Character* dst) {
     if (!dst) {
         dst = AllocCleared(1, sizeof(Character));
     } else {
-        FreeWordList(GetCharacterSkills(dst));
+        FreeWordList(GetCharacterSkills(GetCharacterCore(dst)));
     }
     *dst = *src;
-    InitEmptyWordList(&dst->skills);
-    CopySkillList(src, GetCharacterSkills(dst));
+    InitEmptyWordList(&dst->core.skills);
+    CopySkillList(GetCharacterCore(src), GetCharacterSkills(GetCharacterCore(dst)));
     return dst;
 }
 
@@ -2264,7 +2269,7 @@ i16 CountFallenHumans(void) {
     i16 fallen = 0;
     b16 found = false;
     i16 i;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character) {
@@ -2285,7 +2290,7 @@ i16 CountFallenHumans(void) {
 
 RVA(0x0003fcb0, 0x2c)
 i16 IsPartyMemberFallen(i16 index) {
-    Character* character = GetPartyCharacter(index);
+    CharacterCore* character = GetPartyCharacter(index);
     if (!character) {
         return -1;
     }
@@ -2300,7 +2305,7 @@ RVA(0x0003fce0, 0x8e)
 i16 ProcessPartyCasualties(void) {
     i16 count = 0;
     i16 i;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (!character) {
@@ -2330,7 +2335,7 @@ RVA(0x0003fd70, 0xbb)
 i16 TickPartySteps(void) {
     i16 changed = 0;
     i16 index;
-    Character* character;
+    CharacterCore* character;
     for (index = 0; index < PARTY_SIZE; index++) {
         character = GetPartyCharacter(index);
         if (character) {
@@ -2357,8 +2362,8 @@ i16 TickPartySteps(void) {
 // @identity-TODO: an identity conversion every script-object lookup ends in
 // (for the party table and the pointer slots alike).
 RVA(0x0003fe30, 0x5)
-Character* AsCharacter(Character* character) {
-    return character;
+CharacterCore* AsCharacter(Character* character) {
+    return GetCharacterCore(character);
 }
 
 RVA(0x0003fe40, 0x6)
@@ -2375,7 +2380,7 @@ Character* GetRosterEntry(i16 slot) {
 }
 
 RVA(0x0003fe70, 0x17)
-Character* GetRosterCharacter(i16 slot) {
+CharacterCore* GetRosterCharacter(i16 slot) {
     return AsCharacter(GetRosterEntry(slot));
 }
 
@@ -2392,7 +2397,7 @@ i16 FindPartySlot(i16 slot) {
 
 RVA(0x0003feb0, 0x1a)
 i16 GetRosterId(i16 slot) {
-    Character* character = GetRosterCharacter(slot);
+    CharacterCore* character = GetRosterCharacter(slot);
     if (character == NULL) {
         return CHARACTER_ID_NONE;
     }
@@ -2420,7 +2425,7 @@ Character* GetPartyEntry(i16 index) {
 }
 
 RVA(0x0003ff40, 0x17)
-Character* GetPartyCharacter(i16 index) {
+CharacterCore* GetPartyCharacter(i16 index) {
     return AsCharacter(GetPartyEntry(index));
 }
 
@@ -2428,7 +2433,7 @@ Character* GetPartyCharacter(i16 index) {
 // member displaced from a non-guest position loses its leave conditions.
 RVA(0x0003ff60, 0x6b)
 void SetPartySlot(i16 index, i16 slot) {
-    Character* character;
+    CharacterCore* character;
     if (index < 0 || index >= PARTY_SIZE) {
         return;
     }
@@ -2611,7 +2616,7 @@ GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(ItemRecord* item) {
 }
 
 RVA(0x00040310, 0x90)
-ItemSlot GetEquipSlot(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
+ItemSlot GetEquipSlot(CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
     ItemSlot none = {ITEM_ID_EMPTY, GEM_ITEM_INDEX_NONE, 0};
     if (character != NULL) {
         switch (part) {
@@ -2642,13 +2647,13 @@ ItemSlot GetRosterEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part) {
 }
 
 RVA(0x000403c0, 0x1b)
-i16 GetEquipItem(Character* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
+i16 GetEquipItem(CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
     return GetEquipSlot(character, part).item;
 }
 
 RVA(0x000403e0, 0x110)
 GZ_ENUM_RETURN(EquipPart, i16) SetEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part, ItemSlot item, i16 check) {
-    Character* character = GetRosterCharacter(slot);
+    CharacterCore* character = GetRosterCharacter(slot);
     if (!character) {
         return EQUIP_PART_NONE;
     }
@@ -2716,7 +2721,7 @@ i16 AttachEquipItem(i16 member, i16 part, i16 index) {
 // -1 without a character or a gun.
 // @identity-TODO: that slot 6 holds the gun is inferred from this use.
 RVA(0x000405e0, 0x36)
-i16 GetGunAmmoType(Character* character) {
+i16 GetGunAmmoType(CharacterCore* character) {
     if (!character) {
         return -1;
     }
@@ -2730,7 +2735,7 @@ i16 GetGunAmmoType(Character* character) {
 // -1. Ammunition (kind 13) must match the equipped gun; anything else must be
 // allowed for the character's equipment group.
 RVA(0x00040620, 0x82)
-GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(Character* character, i16 item) {
+GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(CharacterCore* character, i16 item) {
     ItemRecord* record;
     i16 part;
     if (item < 1) {
@@ -2769,7 +2774,7 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
     GZ_ENUM_STORAGE(EquipPart, i16) result;
     ItemSlot old = SwapEquipSlot(slot, item, &result);
     if (result != EQUIP_PART_NONE) {
-        Character* character = GetRosterCharacter(slot);
+        CharacterCore* character = GetRosterCharacter(slot);
         if (item.item != ITEM_ID_EMPTY) {
             GZ_ENUM_LOCAL(ItemKind, i16) kind = GetItemKind(item.item);
             if (kind != ITEM_KIND_AMMO) {
@@ -2800,7 +2805,7 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
 
 // Normalises all eight equipment slots.
 RVA(0x00040830, 0x7f)
-void NormalizeEquipSlots(Character* character) {
+void NormalizeEquipSlots(CharacterCore* character) {
     NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_HEAD]);
     NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_BODY]);
     NormalizeItemSlot(&GetCharacterEquipment(character)[EQUIP_SLOT_ARMS]);
@@ -2826,7 +2831,7 @@ void NormalizeItemSlot(ItemSlot* slot) {
 // Adds `amount` to the character's macca, kept in 0..9999999; returns the new
 // total (0 without a character).
 RVA(0x000408f0, 0x2a)
-i32 AddMacca(Character* character, i32 amount) {
+i32 AddMacca(CharacterCore* character, i32 amount) {
     if (!character) {
         return 0;
     }
@@ -2835,7 +2840,7 @@ i32 AddMacca(Character* character, i32 amount) {
 
 // The same for magnetite.
 RVA(0x00040920, 0x2a)
-i32 AddMagnetite(Character* character, i32 amount) {
+i32 AddMagnetite(CharacterCore* character, i32 amount) {
     if (!character) {
         return 0;
     }
@@ -2937,7 +2942,7 @@ void StatusListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i1
 RVA(0x00040b30, 0x394)
 i16 FormatStatusLine(i16 slot, i16 row) {
     char text[36];
-    Character* member;
+    CharacterCore* member;
     i32 cost;
 
     member = GetRosterCharacter(slot);
@@ -3020,7 +3025,7 @@ char* FormatCurMax(CurMax value, char* buf, i16 width) {
 RVA(0x00040f40, 0x51)
 i16 BuildStatusSlots(void) {
     i16 slot;
-    Character* character;
+    CharacterCore* character;
     g_statusSlotCount = 0;
     for (slot = 0; slot < ROSTER_SIZE; slot++) {
         if (s_statusColumn != STATUS_LIST_ALL) {
@@ -3041,10 +3046,10 @@ i16 BuildStatusSlots(void) {
 RVA(0x00040fa0, 0x183)
 i16 PayStepUpkeep(void) {
     i16 died = 0;
-    Character* hero = GetRosterCharacter(ROSTER_LEADER);
+    CharacterCore* hero = GetRosterCharacter(ROSTER_LEADER);
     i16 i;
     for (i = 0; i < PARTY_SIZE; i++) {
-        Character* member = GetPartyCharacter(i);
+        CharacterCore* member = GetPartyCharacter(i);
         i16 whole;
         GZ_ENUM_LOCAL(DemonClass, i16) class;
         i16 rate;
@@ -3093,7 +3098,7 @@ i16 PayStepUpkeep(void) {
 // compound assignment, separate total, cast placement) loads the field first,
 // and the permuter found a single island.
 RVA(0x00041130, 0x42)
-i16 AddHundredths(Character* character, i16 amount) {
+i16 AddHundredths(CharacterCore* character, i16 amount) {
     u16 total = amount + character->hundredths;
     i16 whole = total / 100;
     character->hundredths = total % 100;
@@ -3116,7 +3121,7 @@ i16 AddHundredths(Character* character, i16 amount) {
 // member's MP and HP; a member drained of HP dies (and a demon leaves the
 // party slot `position`). Returns 1 when the member died.
 RVA(0x00041180, 0x118)
-b16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position) {
+b16 DrainUpkeep(CharacterCore* hero, CharacterCore* member, i16 cost, i16 position) {
     b16 died = false;
     if (hero->magnetite >= cost) {
         hero->magnetite -= cost;
@@ -3155,7 +3160,7 @@ b16 DrainUpkeep(Character* hero, Character* member, i16 cost, i16 position) {
 // no such member is in the party, 0 when no period passed (or it is down).
 RVA(0x000412a0, 0x150)
 GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
-    Character* character;
+    CharacterCore* character;
     i16 i;
     i16 count;
     if (IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_HEROINE_REVIVAL_1)
@@ -3164,7 +3169,7 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
     }
     for (i = 0; i < PARTY_SIZE; i++) {
         if (PartySlotAt(i) != PARTY_SLOT_EMPTY
-            && (character = RosterMemberAt(PartySlotAt(i))) != NULL
+            && (character = GetCharacterCore(RosterMemberAt(PartySlotAt(i)))) != NULL
             && character->id == HUMAN_TACHIBANA) {
             if (TestModeFlags(MODE_WORLD_MAP)) {
                 s_timerMinutes += minutes;
@@ -3199,7 +3204,7 @@ GZ_ENUM_RETURN(PartyTimerOutcome, i16) TickPartyTimers(u16 minutes) {
 // @early-stop prologue: retail saves esi before the null guard and forms the
 // flags pointer after it; cl defers the save until the pointer is needed.
 RVA(0x000413f0, 0xb6)
-i16 ApplyMoonPhase(Character* character, const GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
+i16 ApplyMoonPhase(CharacterCore* character, const GZ_ENUM_PARAM(MoonPhase, i16) moonPhase) {
     i16 changed = 0;
     if (character == NULL) {
         return 0;
@@ -3246,7 +3251,7 @@ i16 WriteFieldState(FILE* fp) {
         if (*slot == NULL) {
             failed |= 1 - fwrite(&id, 2, 1, fp);
         } else {
-            id = (*slot)->id;
+            id = (*slot)->core.id;
             failed |= 1 - fwrite(&id, 2, 1, fp);
             if (id >= 0x20) {
                 failed |= WriteCharacter(fp, *slot);
@@ -3261,9 +3266,11 @@ i16 WriteFieldState(FILE* fp) {
 RVA(0x000415b0, 0x52)
 i16 WriteCharacter(FILE* fp, Character* character) {
     i16 failed = 1 - fwrite(character, sizeof(Character), 1, fp);
-    i16 count = GetWordCount(GetCharacterSkills(character));
+    i16 count = GetWordCount(GetCharacterSkills(GetCharacterCore(character)));
     if (count > 0) {
-        failed |= count - fwrite(GetWordArray(GetCharacterSkills(character)), 2, count, fp);
+        failed |=
+            count
+            - fwrite(GetWordArray(GetCharacterSkills(GetCharacterCore(character))), 2, count, fp);
     }
     return failed;
 }
@@ -3320,18 +3327,20 @@ static __inline void ClearLoadedNameTail(char* name, i16 size) {
 RVA(0x00041750, 0x13f)
 i16 LoadCharacter(FILE* fp, Character* character) {
     i16 failed = 1 - fread(character, sizeof(Character), 1, fp);
-    i16 count = GetWordCount(GetCharacterSkills(character));
-    character->clearedOnLoad[0] = 0;
-    character->clearedOnLoad[1] = 0;
-    character->skills.words = NULL;
+    i16 count = GetWordCount(GetCharacterSkills(GetCharacterCore(character)));
+    character->core.clearedOnLoad[0] = 0;
+    character->core.clearedOnLoad[1] = 0;
+    character->core.skills.words = NULL;
     if (count > 0) {
-        character->skills.words = AllocCleared(count, 2);
-        failed |= count - fread(GetWordArray(GetCharacterSkills(character)), 2, count, fp);
-        StripZeroWords(GetCharacterSkills(character));
+        character->core.skills.words = AllocCleared(count, 2);
+        failed |=
+            count
+            - fread(GetWordArray(GetCharacterSkills(GetCharacterCore(character))), 2, count, fp);
+        StripZeroWords(GetCharacterSkills(GetCharacterCore(character)));
     }
-    character->actionSpeed = ComputeActionSpeed(character);
-    ClearLoadedNameTail(character->namePrefix, sizeof(character->namePrefix));
-    ClearLoadedNameTail(character->name, sizeof(character->name));
+    character->core.actionSpeed = ComputeActionSpeed(GetCharacterCore(character));
+    ClearLoadedNameTail(character->core.namePrefix, sizeof(character->core.namePrefix));
+    ClearLoadedNameTail(character->core.name, sizeof(character->core.name));
     return failed;
 }
 
@@ -3342,9 +3351,9 @@ i16 LoadCharacters(FILE* fp) {
     i16 failed = 1 - fread(&count, 2, 1, fp);
     i16 i;
     for (i = 0; i < count; i++) {
-        FreeWordList(GetCharacterSkills(&g_characters[i]));
+        FreeWordList(GetCharacterSkills(&g_characters[i].core));
         failed |= LoadCharacter(fp, &g_characters[i]);
-        NormalizeAffiliations(&g_characters[i]);
+        NormalizeAffiliations(&g_characters[i].core);
     }
     return failed;
 }

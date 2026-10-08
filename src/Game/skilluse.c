@@ -236,10 +236,10 @@ static i16 s_targetHpBefore = 0;
 // The action's actor and target, and the actor's role and pick, kept until
 // the action ends.
 DATA(0x00080d20)
-static Character* s_actionActor = NULL;
+static CharacterCore* s_actionActor = NULL;
 
 DATA(0x00080d24)
-static Character* s_actionTarget = NULL;
+static CharacterCore* s_actionTarget = NULL;
 
 DATA(0x00080d28)
 static i16 s_actionRoleKept = 0;
@@ -337,7 +337,7 @@ RVA(0x0002aba0, 0x40)
 MapCoord GetCombatantCoord(i16 id) {
     if (id >= 0) {
         MapCoord point;
-        FieldActor* actor = (FieldActor*)GetFieldActor(id);
+        FieldActor* actor = GetFieldActor(id);
         point.x = actor->pos.x;
         point.y = actor->pos.y;
         return point;
@@ -346,7 +346,7 @@ MapCoord GetCombatantCoord(i16 id) {
 }
 
 RVA(0x0002abe0, 0x33)
-Character* GetCombatant(i16 id) {
+CharacterCore* GetCombatant(i16 id) {
     if (id < 0) {
         return GetPartyCharacter(CombatantPartyPosition(id));
     }
@@ -354,7 +354,7 @@ Character* GetCombatant(i16 id) {
     if (id < 0) {
         return NULL;
     }
-    return GetFieldActor(id);
+    return GetFieldActorCore(GetFieldActor(id));
 }
 
 RVA(0x0002ac20, 0x29)
@@ -368,7 +368,7 @@ b16 FlashHitObject(i16 object, i32 change) {
 }
 
 RVA(0x0002ac50, 0x40)
-void AlertActor(Character* actor, GZ_ENUM_PARAM(Attitude, i16) state) {
+void AlertActor(CharacterCore* actor, GZ_ENUM_PARAM(Attitude, i16) state) {
     if (actor) {
         if (state >= 0) {
             actor->attitude = state;
@@ -383,7 +383,7 @@ void AlertActor(Character* actor, GZ_ENUM_PARAM(Attitude, i16) state) {
     (!IsEventFlagSet(EVENT_FLAG_BANK_SCENARIO_2, SCENARIO_2_PARTY_COMBAT_EFFECTS_SUPPRESSED)       \
      || (id) >= 0)
 
-static __inline void ApplyReflectedDamage(Character* actor) {
+static __inline void ApplyReflectedDamage(CharacterCore* actor) {
     g_hpChange = actor->selfChange;
     ChangePool(GetCharacterHpPool(actor), -actor->selfChange);
 }
@@ -397,7 +397,7 @@ static __inline void ApplyReflectedDamage(Character* actor) {
         }                                                                                          \
     } while (0)
 
-static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
+static __inline void ApplyCombatDamage(CharacterCore* attacker, CharacterCore* target) {
     GZ_ENUM_LOCAL(SkillKind, i16) kind;
     if (IsSkillAction(attacker)) {
         kind = GetSkillKind(attacker->pickTarget);
@@ -449,8 +449,8 @@ static __inline void ApplyCombatDamage(Character* attacker, Character* target) {
 // then handles knockouts and turns the struck object toward the party.
 RVA(0x0002ac90, 0x800)
 i16 ResolveCombatAction(void) {
-    Character* attacker;
-    Character* target;
+    CharacterCore* attacker;
+    CharacterCore* target;
     CurMax* targetHp;
     GZ_ENUM_LOCAL(ConditionId, i16) fatalCondition;
 
@@ -581,7 +581,7 @@ i16 ResolveCombatAction(void) {
         GetCharacterFlags(attacker)[1] |= 0x80;
     }
     if (g_targetId >= 0) {
-        GetFieldActor(g_targetId)->facing = OppositeDirection(g_party.field.pos.direction);
+        GetFieldActor(g_targetId)->direction = OppositeDirection(g_party.field.pos.direction);
         AlertActor(target, ATTITUDE_VERY_HOSTILE);
         GetCharacterFlags(target)[1] |= 0x40;
         if (attacker->pickRole == PICK_ROLE_MAGIC) {
@@ -603,7 +603,7 @@ i16 ResolveCombatAction(void) {
 
 RVA(0x0002b490, 0x160)
 void ResolveKnockout(i16 previousHp, i16 id) {
-    Character* const combatant = GetCombatant(id);
+    CharacterCore* const combatant = GetCombatant(id);
     if (!combatant) {
         return;
     }
@@ -660,7 +660,7 @@ void ResolveKnockout(i16 previousHp, i16 id) {
 
 RVA(0x0002b5f0, 0x82)
 i16 ReportBattleTally(
-    Character* combatant,
+    CharacterCore* combatant,
     GZ_ENUM_PARAM(BattleTallyIndex, i16) index,
     GZ_ENUM_PARAM(BattleTallyReportMode, i16) mode
 ) {
@@ -686,7 +686,7 @@ i16 ReportBattleTally(
 }
 
 RVA(0x0002b680, 0x18)
-void ClearBattleTally(Character* combatant) {
+void ClearBattleTally(CharacterCore* combatant) {
     i16 index;
     for (index = 0; index < 14; index++) {
         GetCharacterBattleTallies(combatant)[index] = 0;
@@ -739,7 +739,7 @@ static __inline void ResetReportedBattleTally(void) {
 // an in-loop return or a post-loop sentinel test changes the shared tail.
 RVA(0x0002b6a0, 0x9b0)
 b16 RunBattleAction(void) {
-    Character* actor;
+    CharacterCore* actor;
     ItemRecord* record;
     SkillHeader* skill;
     MapCoord from;
@@ -957,7 +957,7 @@ b16 RunBattleAction(void) {
             }
             if (s_reportedTally != BATTLE_TALLY_NONE) {
                 if (g_actionResult >= BATTLE_ACTION_GRAZED) {
-                    Character* target = GetCombatant(g_targetId);
+                    CharacterCore* target = GetCombatant(g_targetId);
                     ReportBattleTally(target, s_reportedTally, BATTLE_TALLY_TEST_REMEMBERED);
                 }
                 if (s_tallyMessage != BATTLE_TALLY_NONE) {
@@ -1054,7 +1054,7 @@ void PlayActionEffect(i16 stage) {
     SkillMessage after;
     ItemRecord* item;
     SkillMessage* message;
-    Character* user;
+    CharacterCore* user;
     i16 weapon;
     if (s_actionRole == PICK_ROLE_ITEM) {
         item = GetLoadedRecord(g_actionId);
@@ -1134,7 +1134,7 @@ void ShowKnockoutMessage(void) {
 
 RVA(0x0002c250, 0x50)
 void DropFlaggedMember(i16 id) {
-    Character* character;
+    CharacterCore* character;
     if (id < 0) {
         character = GetCombatant(id);
         if (character && TestCharacterFlag(character, ACTOR_FLAG_DESAMAN)) {
@@ -1157,7 +1157,7 @@ void SetActionOutcome(i16 outcome) {
 
 // Nonzero when `character` cannot pay the skill's HP or MP cost.
 RVA(0x0002c2c0, 0x22)
-b32 CannotPaySkill(Character* character, SkillParameters* skill) {
+b32 CannotPaySkill(CharacterCore* character, SkillParameters* skill) {
     return HpMpLeftAfterCost(GetSkillParameterCost(skill), character) < 0;
 }
 
@@ -1166,7 +1166,7 @@ b32 CannotPaySkill(Character* character, SkillParameters* skill) {
 // Nonzero when a condition or the member's lock keeps it from using `skill`;
 // skills with a mode are never blocked here.
 RVA(0x0002c2f0, 0x5d)
-b32 IsSkillBlocked(Character* character, SkillParameters* skill) {
+b32 IsSkillBlocked(CharacterCore* character, SkillParameters* skill) {
     if (GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
@@ -1184,7 +1184,7 @@ b32 IsSkillBlocked(Character* character, SkillParameters* skill) {
 // The same check by skill id; Traport is also blocked while the first
 // roster member's byte +0x30 is clear.
 RVA(0x0002c350, 0x69)
-b32 IsSkillIdBlocked(Character* character, i16 id) {
+b32 IsSkillIdBlocked(CharacterCore* character, i16 id) {
     if (GetSkillMode(id)) {
         return false;
     }
@@ -1202,7 +1202,7 @@ b32 IsSkillIdBlocked(Character* character, i16 id) {
 
 RVA(0x0002c3c0, 0x71)
 void PaySkillCost(i16 who, i16 skill) {
-    Character* character;
+    CharacterCore* character;
     i16 cost;
     if (skill < SKILL_AGI) {
         return;
@@ -1239,7 +1239,7 @@ i16 IsSkillUsableNow(GZ_ENUM_PARAM(SkillUseModes, u16) usable) {
 
 RVA(0x0002c4a0, 0x60)
 MenuBox* OpenMemberSkillMenu(i16 id) {
-    Character* character = GetCharacterById(id);
+    CharacterCore* character = GetCharacterCore(GetCharacterById(id));
     MenuBox* menu = CreateMenuBox(NULL, 5, 2);
     menu->flags |= 0x1e;
     SetMenuItems(
@@ -1255,7 +1255,7 @@ MenuBox* OpenMemberSkillMenu(i16 id) {
 
 RVA(0x0002c500, 0x1c0)
 void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
-    Character* character = menu->items.character;
+    CharacterCore* character = menu->items.character;
     SkillView* skill;
     i16 disabled;
     i16 style;
@@ -1330,7 +1330,7 @@ void MemberSkillMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
 }
 
 RVA(0x0002c6c0, 0x7b)
-i16 CountUsableMemberSkills(Character* character, i16 checkCost) {
+i16 CountUsableMemberSkills(CharacterCore* character, i16 checkCost) {
     i16 index;
     i16 count = 0;
     for (index = 0; index < GetWordCount(GetCharacterSkills(character)); index++) {
@@ -1596,7 +1596,7 @@ i16 CollectTargetsInView(
 }
 
 RVA(0x0002cd80, 0x130)
-void UseAttackSkill(Character* user, Character* target) {
+void UseAttackSkill(CharacterCore* user, CharacterCore* target) {
     ResetActionOutcome();
     ResetPoolChanges();
     user->lastChange = 0;
@@ -1632,7 +1632,7 @@ void UseAttackSkill(Character* user, Character* target) {
 }
 
 RVA(0x0002ceb0, 0xe0)
-void UseRestoreSkill(Character* user, Character* target) {
+void UseRestoreSkill(CharacterCore* user, CharacterCore* target) {
     i16 hit;
     i16 amount;
     GZ_ENUM_LOCAL(RestoreResult, i16) result;
@@ -1653,7 +1653,7 @@ void UseRestoreSkill(Character* user, Character* target) {
 }
 
 RVA(0x0002cf90, 0xd0)
-void UseBattleTallySkill(Character* user, Character* target) {
+void UseBattleTallySkill(CharacterCore* user, CharacterCore* target) {
     i16 tally;
     target->pickNoEffect = true;
     user->pickNoEffect = true;
@@ -1679,7 +1679,7 @@ void UseBattleTallySkill(Character* user, Character* target) {
     SetActionOutcome(ACTION_OUTCOME_BATTLE_TALLY);
 }
 
-static __inline void PrepareBattleStatSkill(Character* user) {
+static __inline void PrepareBattleStatSkill(CharacterCore* user) {
     user->pickNoEffect = true;
     g_statusCondition = INFLICT_NONE;
     g_hpChange = 0;
@@ -1688,7 +1688,7 @@ static __inline void PrepareBattleStatSkill(Character* user) {
 }
 
 RVA(0x0002d060, 0x2e0)
-void UseBattleStatSkill(Character* user, Character* target) {
+void UseBattleStatSkill(CharacterCore* user, CharacterCore* target) {
     double power = sqrt(GetStatTotal(user, STAT_MAGIC)) + GetSkillValueB(&s_effectSkill);
     i32 changed = 0;
     i16 amount = RoundToShort(RandomAverage(80, 120, 0) * power * 0.01);
@@ -1759,7 +1759,7 @@ i16 ChangeBattleStat(i16* value, i16 amount, i16 base) {
     return change;
 }
 
-static __inline void PrepareNonDamageSkill(Character* user, Character* target) {
+static __inline void PrepareNonDamageSkill(CharacterCore* user, CharacterCore* target) {
     target->pickNoEffect = true;
     user->pickNoEffect = true;
     g_statusCondition = INFLICT_NONE;
@@ -1768,7 +1768,7 @@ static __inline void PrepareNonDamageSkill(Character* user, Character* target) {
 }
 
 RVA(0x0002d390, 0x70)
-void UseClearBattleTallySkill(Character* user, Character* target) {
+void UseClearBattleTallySkill(CharacterCore* user, CharacterCore* target) {
     PrepareNonDamageSkill(user, target);
     SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
     if (RollSkillHit(user, target, false) > 0) {
@@ -1777,7 +1777,7 @@ void UseClearBattleTallySkill(Character* user, Character* target) {
 }
 
 RVA(0x0002d400, 0x80)
-void UseResetBattleStatsSkill(Character* user, Character* target) {
+void UseResetBattleStatsSkill(CharacterCore* user, CharacterCore* target) {
     PrepareBattleStatSkill(user);
     SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
     RecalcDerivedStats(target);
@@ -1786,7 +1786,7 @@ void UseResetBattleStatsSkill(Character* user, Character* target) {
 }
 
 RVA(0x0002d480, 0x160)
-void ApplySkillEffect(i16 skill, Character* user, Character* target) {
+void ApplySkillEffect(i16 skill, CharacterCore* user, CharacterCore* target) {
     CopySkillHeader(skill, &s_effectSkill);
     s_effectSkillId = skill;
     if (skill == SKILL_SELF_RECOVERY) {
@@ -1831,34 +1831,34 @@ void ApplySkillEffect(i16 skill, Character* user, Character* target) {
 }
 
 RVA(0x0002d5e0, 0x60)
-void UseKind12Skill(Character* user, Character* target) {
+void UseKind12Skill(CharacterCore* user, CharacterCore* target) {
     PrepareNonDamageSkill(user, target);
     RunFieldEffect(GetSkillEffectCode(&s_effectSkill));
     SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 RVA(0x0002d640, 0x60)
-void UseKind13Skill(Character* user, Character* target) {
+void UseKind13Skill(CharacterCore* user, CharacterCore* target) {
     PrepareNonDamageSkill(user, target);
     RunFieldEffect(GetSkillEffectCode(&s_effectSkill));
     SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 RVA(0x0002d6a0, 0x60)
-void UseKind14Skill(Character* user, Character* target) {
+void UseKind14Skill(CharacterCore* user, CharacterCore* target) {
     PrepareNonDamageSkill(user, target);
     RunFieldEffect(GetSkillEffectCode(&s_effectSkill));
     SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
 
 RVA(0x0002d700, 0x50)
-void UseFieldEffectSkill(Character* user, Character* target) {
+void UseFieldEffectSkill(CharacterCore* user, CharacterCore* target) {
     PrepareNonDamageSkill(user, target);
     RunFieldEffect(GetSkillEffectCode(&s_effectSkill));
 }
 
 RVA(0x0002d750, 0x50)
-void UseInertSkill(Character* user, Character* target) {
+void UseInertSkill(CharacterCore* user, CharacterCore* target) {
     PrepareNonDamageSkill(user, target);
     SetFlaggedActionResult(user, BATTLE_ACTION_SUCCESS);
 }
@@ -2014,7 +2014,7 @@ b16 RunFieldSkillUse(void) {
 // (same bits); the permuter found one compiler island.
 RVA(0x0002db30, 0x60)
 void SetSkillPick(i16 position) {
-    Character* user = GetPartyCharacter(position);
+    CharacterCore* user = GetPartyCharacter(position);
 
     if (user != NULL) {
         user->pickObject = g_targetId;

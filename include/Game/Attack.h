@@ -14,14 +14,14 @@ extern i16 g_attackResistance;
 extern GZ_ENUM_STORAGE(AttackAttribute, i16) g_attackAttribute;
 extern i16 g_attackCondition;
 
-static __inline double GetExceptionalAttackLuck(Character* actor) {
+static __inline double GetExceptionalAttackLuck(CharacterCore* actor) {
     double value = GetStatTotal(actor, STAT_INTUITION);
     value *= 0.5;
     value += GetStatTotal(actor, STAT_FORTUNE);
     return value;
 }
 
-static __inline i32 GetExceptionalAttackBase(Character* actor) {
+static __inline i32 GetExceptionalAttackBase(CharacterCore* actor) {
     return GetStatTotal(actor, STAT_PROTECTION) + GetStatTotal(actor, STAT_INTUITION);
 }
 
@@ -46,35 +46,40 @@ static __inline i32 GetExceptionalAttackBase(Character* actor) {
         }                                                                                          \
     } while (0)
 
-#define FinalizeAttackDamage(damage, attacker)                                                      \
+#define FinalizeAttackDamage(damage, attacker)                                                     \
     do {                                                                                           \
         (damage) = ScaleActionValue((damage), g_attackResistance, 2);                              \
-        (damage) = ScaleByMoonValue((damage), (attacker)->moonRow, 2);                              \
+        (damage) = ScaleByMoonValue((damage), (attacker)->moonRow, 2);                             \
         (damage) = RandomPercent((damage), -20, 20);                                               \
-        (damage) = ClampInt((damage) / 100, 0, 0x7fffffff);                                         \
+        (damage) = ClampInt((damage) / 100, 0, 0x7fffffff);                                        \
     } while (0)
 
 #define ApplyFacingDamageBonus(amount, facing)                                                     \
     do {                                                                                           \
-        if ((facing) == FACING_FROM_BEHIND) {                                                       \
+        if ((facing) == FACING_FROM_BEHIND) {                                                      \
             (amount) *= 1.5;                                                                       \
-        } else if ((facing) != FACING_FACE_TO_FACE) {                                               \
+        } else if ((facing) != FACING_FACE_TO_FACE) {                                              \
             (amount) *= 1.2;                                                                       \
         }                                                                                          \
     } while (0)
 
 b16 RollWeaponCondition(
-    Character* attacker,
-    Character* target,
+    CharacterCore* attacker,
+    CharacterCore* target,
     i16 resistance,
     i16 condition,
     i16 mode
 );
-i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result);
-b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance);
-i16 RollExceptionalWeaponAttack(Character* attacker, Character* target, i16 mode, i16 resistance);
+i32 ComputeWeaponDamage(CharacterCore* attacker, CharacterCore* target, i16 result);
+b16 RollWeaponHit(CharacterCore* attacker, CharacterCore* target, i16 resistance);
+i16 RollExceptionalWeaponAttack(
+    CharacterCore* attacker,
+    CharacterCore* target,
+    i16 mode,
+    i16 resistance
+);
 
-i16 GetEquipmentHitModifier(Character* attacker, Character* target);
+i16 GetEquipmentHitModifier(CharacterCore* attacker, CharacterCore* target);
 // GetCombatantFacingDifference: face to face, or `first` behind `second` (both
 // facing the same way); the other two values are side-on.
 GZ_ENUM_CONST_BEGIN(CombatFacing)
@@ -86,11 +91,11 @@ i16 GetCombatantFacingDifference(i16 first, i16 second);
 i16 GetCombatantDistance(i16 first, i16 second);
 i16 GetCombatantAttackRange(i16 id);
 i16 GetAttackRangeExcess(i16 first, i16 second);
-i16 RollExceptionalAttack(Character* attacker, Character* target, i16 mode, i16 resistance);
-b16 RollGunHit(Character* attacker, Character* target, i16 resistance);
-i16 GetGunAttackPower(Character* attacker);
-i32 ComputeGunDamage(Character* attacker, Character* target, i16 result);
-b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
+i16 RollExceptionalAttack(CharacterCore* attacker, CharacterCore* target, i16 mode, i16 resistance);
+b16 RollGunHit(CharacterCore* attacker, CharacterCore* target, i16 resistance);
+i16 GetGunAttackPower(CharacterCore* attacker);
+i32 ComputeGunDamage(CharacterCore* attacker, CharacterCore* target, i16 result);
+b16 RollGunCondition(CharacterCore* attacker, CharacterCore* target, i16 resistance, i16 condition);
 
 // The field battle's attack rolls; each sets the attacker's `lastChange` and
 // `result` and the action globals of Game/BattleEffect.h.
@@ -98,14 +103,19 @@ b16 RollGunCondition(Character* attacker, Character* target, i16 resistance, i16
 // 0) changes is unrecovered.
 
 // An attack with the weapon (equipment slot 5).
-b16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode);
+b16 ResolveWeaponAttack(CharacterCore* attacker, CharacterCore* target, i16 mode);
 
 // An attack with the gun (slot 6) and its ammunition (slot 7).
-b16 ResolveGunAttack(Character* attacker, Character* target, i16 mode);
+b16 ResolveGunAttack(CharacterCore* attacker, CharacterCore* target, i16 mode);
 
-b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide);
-i32 ComputeSkillDamage(Character* attacker, Character* target, b16 hit);
-b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i16 condition);
+b16 RollSkillHit(CharacterCore* attacker, CharacterCore* target, b16 sameSide);
+i32 ComputeSkillDamage(CharacterCore* attacker, CharacterCore* target, b16 hit);
+b16 RollSkillCondition(
+    CharacterCore* attacker,
+    CharacterCore* target,
+    i16 resistance,
+    i16 condition
+);
 
 // Whether a resistance result suppresses the follow-up, reflects it to the
 // user, or leaves it for the target.
@@ -116,22 +126,22 @@ GZ_ENUM_BEGIN_SPLIT(ResistanceFollowup, i16)
 GZ_ENUM_END_SPLIT(ResistanceFollowup)
 
 GZ_ENUM_RETURN(ResistanceFollowup, i16)
-ApplySkillResistanceOutcome(Character* attacker, i32 amount);
-b16 ResolveSkillAttack(Character* attacker, Character* target);
+ApplySkillResistanceOutcome(CharacterCore* attacker, i32 amount);
+b16 ResolveSkillAttack(CharacterCore* attacker, CharacterCore* target);
 
 // Spends the rounds a party member's gun attack used.
-void SpendGunRounds(Character* attacker);
+void SpendGunRounds(CharacterCore* attacker);
 
 // Keeps the gun's targets up to the rounds loaded; returns the new count.
-i16 FilterGunTargets(Character* attacker, i16 count);
-i16 GetGunBurstRounds(Character* attacker);
-i16 PrepareGunBurst(Character* attacker, i16 count);
+i16 FilterGunTargets(CharacterCore* attacker, i16 count);
+i16 GetGunBurstRounds(CharacterCore* attacker);
+i16 PrepareGunBurst(CharacterCore* attacker, i16 count);
 i16 GetGunRequirementPenalty(i16 stat, i16 requirement);
 i16 DistributeGunRounds(i16 rounds, i16 count);
 i16 ComputeGunBurstPower(i16 rounds);
 
 // Spends every round the gun attack used.
-void SpendAllGunRounds(Character* attacker);
+void SpendAllGunRounds(CharacterCore* attacker);
 
 // The percentage weights that divide a gun burst among its targets.
 void LoadGunDistributionTable(void);

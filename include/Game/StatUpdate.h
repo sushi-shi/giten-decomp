@@ -8,8 +8,8 @@
 // StatAverage functions depend on.
 i16 ClearStatModifiers(StatBlock* stats);
 void UpdateStatTotals(StatBlock* stats);
-void ApplyStatFlags(Character* character);
-i32 CalcMaxHp(Character* character);
-i32 CalcMaxMp(Character* character);
+void ApplyStatFlags(CharacterCore* character);
+i32 CalcMaxHp(CharacterCore* character);
+i32 CalcMaxMp(CharacterCore* character);
 
 #endif // GITEN_GAME_STATUPDATE_H

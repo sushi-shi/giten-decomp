@@ -7,7 +7,7 @@
 #include <Enums.h>
 #include <Ints.h>
 
-struct Character;
+struct CharacterCore;
 
 // Set during field battles; gates party turns, rewards and the FIGHT banner.
 extern i16 g_fieldBattleActive;
@@ -97,7 +97,7 @@ i16 FindFirstAblePartyMember(void);
 
 void UpdatePartyActionWaits(void);
 void TickPartyConditionActions(void);
-void MarkActorActionReady(struct Character* actor);
+void MarkActorActionReady(struct CharacterCore* actor);
 // The tick argument is retained for the retail caller ABI but is unused.
 i16 RunPartyTurn(i16 ticks);
 

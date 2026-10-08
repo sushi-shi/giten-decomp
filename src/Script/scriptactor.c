@@ -229,25 +229,25 @@ static char* s_affiliationNames[4] = {
 
 RVA(0x00032cf0, 0x1b)
 void DespawnScriptActor(void) {
-    Character* actor = g_curScript->actor;
+    FieldActor* actor = g_curScript->actor;
     if (actor != NULL) {
-        actor->fieldHidden = 1;
+        actor->hidden = 1;
         RequestFieldRefresh();
     }
 }
 
 RVA(0x00032d10, 0x20)
 void RetireScriptActor(void) {
-    Character* actor = g_curScript->actor;
+    FieldActor* actor = g_curScript->actor;
     if (actor != NULL) {
-        SetAnalyzed(actor->id, 1);
+        SetAnalyzed(actor->core.id, 1);
         DespawnScriptActor();
     }
 }
 
 RVA(0x00032d30, 0x41)
 GZ_ENUM_RETURN(ScriptStatus, i16) StepScriptActor(GZ_ENUM_PARAM(MoveCommand, i16) turn) {
-    FieldActor* actor = (FieldActor*)g_curScript->actor;
+    FieldActor* actor = g_curScript->actor;
     if (actor == NULL) {
         return SCRIPT_CONTINUE;
     }
@@ -260,7 +260,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) StepScriptActor(GZ_ENUM_PARAM(MoveCommand, i16
 RVA(0x00032d80, 0x3b)
 void OpStoreActorDistance(void) {
     i16 index = ReadLongVarIndex();
-    FieldActor* actor = (FieldActor*)g_curScript->actor;
+    FieldActor* actor = g_curScript->actor;
     if (actor != NULL) {
         SetScriptLongVar(index, DistanceFromParty(actor->pos.x, actor->pos.y));
     }
@@ -273,34 +273,34 @@ void PlaceScriptActor(void) {
         return;
     }
     if (TestModeFlags(MODE_WORLD_MAP)) {
-        layer = FindLayerOfKind(g_curScript->actor->id);
+        layer = FindLayerOfKind(g_curScript->actor->core.id);
         if (layer == FIELD_LAYER_NONE) {
             return;
         }
         SpawnFieldObject(
             layer,
-            ((FieldActor*)g_curScript->actor)->pos.x,
-            ((FieldActor*)g_curScript->actor)->pos.y,
-            ((FieldActor*)g_curScript->actor)->direction,
-            g_curScript->actor->id,
+            g_curScript->actor->pos.x,
+            g_curScript->actor->pos.y,
+            g_curScript->actor->direction,
+            g_curScript->actor->core.id,
             false,
             FIELD_OBJECT_NO_EVENT,
             false
         );
     } else {
         layer = FindCellObject(
-            g_curScript->actor->id,
-            ((FieldActor*)g_curScript->actor)->pos.x,
-            ((FieldActor*)g_curScript->actor)->pos.y
+            g_curScript->actor->core.id,
+            g_curScript->actor->pos.x,
+            g_curScript->actor->pos.y
         );
         if (layer == CELL_OBJECT_INDEX_NONE) {
             return;
         }
         SpawnMapObject(
             layer,
-            ((FieldActor*)g_curScript->actor)->pos.x,
-            ((FieldActor*)g_curScript->actor)->pos.y,
-            ((FieldActor*)g_curScript->actor)->direction,
+            g_curScript->actor->pos.x,
+            g_curScript->actor->pos.y,
+            g_curScript->actor->direction,
             FIELD_OBJECT_NO_EVENT
         );
     }
@@ -325,7 +325,7 @@ void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind) {
             case ACTOR_REWARD_GEM: {
                 i16 roll = RandomAverage(0, 100, 100);
                 if (g_curScript->actor != NULL) {
-                    roll += g_curScript->actor->level;
+                    roll += g_curScript->actor->core.level;
                 }
                 for (kind = 0; kind < GEM_ITEM_COUNT; kind++) {
                     if (roll <= s_rewardLevelThresholds[kind]) {
@@ -343,7 +343,7 @@ void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind) {
                 if (g_curScript->actor == NULL) {
                     return;
                 }
-                reward = g_curScript->actor->pickItem;
+                reward = g_curScript->actor->core.pickItem;
                 break;
             case ACTOR_REWARD_SPOIL_MACCA:
             case ACTOR_REWARD_SPOIL_MAGNETITE:
@@ -372,7 +372,7 @@ void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind) {
                     if (g_curScript->actor == NULL) {
                         return;
                     }
-                    reward = PickEquipmentReward(g_curScript->actor);
+                    reward = PickEquipmentReward(GetFieldActorCore(g_curScript->actor));
                     kind = ACTOR_REWARD_PICK_ITEM;
                     if (reward < 1) {
                         continue;
@@ -381,7 +381,7 @@ void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind) {
                     if (g_curScript->actor == NULL) {
                         return;
                     }
-                    reward = g_curScript->actor->id;
+                    reward = g_curScript->actor->core.id;
                     kind = ACTOR_REWARD_HEALED;
                     HealParty(reward);
                     RequestFieldRefresh();
@@ -410,13 +410,13 @@ void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind) {
                         return;
                     }
                     kind = ACTOR_REWARD_BOMB_ATTACK;
-                    reward = g_curScript->actor->level;
+                    reward = g_curScript->actor->core.level;
                 } else {
                     if (g_curScript->actor == NULL) {
                         return;
                     }
                     kind = ACTOR_REWARD_PUNCH_ATTACK;
-                    reward = g_curScript->actor->level;
+                    reward = g_curScript->actor->core.level;
                 }
                 break;
             }
@@ -431,7 +431,7 @@ void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind) {
 }
 
 RVA(0x00033160, 0xaf)
-i16 PickEquipmentReward(Character* character) {
+i16 PickEquipmentReward(CharacterCore* character) {
     i16 items[8];
     i16 count = 8;
     i16 i;
@@ -473,17 +473,17 @@ void GrantActorSpoil(GZ_ENUM_PARAM(ActorSpoilKind, i16) kind) {
         i32 amount = 0;
         switch (kind) {
             case ACTOR_SPOIL_EXPERIENCE:
-                amount = GetCharacterExperience(g_curScript->actor);
+                amount = GetCharacterExperience(GetFieldActorCore(g_curScript->actor));
                 g_rewardExperience += amount;
                 MarkRewardsPending();
                 break;
             case ACTOR_SPOIL_MAGNETITE:
-                amount = g_curScript->actor->magnetite;
+                amount = g_curScript->actor->core.magnetite;
                 AdjustActorSpoilAmount(amount);
                 AddMagnetite(GetRosterCharacter(ROSTER_LEADER), amount);
                 break;
             case ACTOR_SPOIL_MACCA:
-                amount = g_curScript->actor->macca;
+                amount = g_curScript->actor->core.macca;
                 AdjustActorSpoilAmount(amount);
                 AddMacca(GetRosterCharacter(ROSTER_LEADER), amount);
                 break;
@@ -509,7 +509,7 @@ void DismissTalkTarget(void) {
         FlashHitObject(g_targetId, 0x37);
         ResetObjectAnim(g_targetId);
     } else {
-        GetFieldActor(g_targetId)->fieldHidden = 1;
+        GetFieldActor(g_targetId)->hidden = 1;
         RequestFieldRefresh();
     }
 }
@@ -523,9 +523,9 @@ void OpJumpUnlessActorCanStep(
     i16 blocked = 1;
     i16 target = ReadBranchTarget();
     if (g_curScript->actor != NULL) {
-        i16 x = ((FieldActor*)g_curScript->actor)->pos.x;
-        i16 y = ((FieldActor*)g_curScript->actor)->pos.y;
-        i16 direction = ((FieldActor*)g_curScript->actor)->direction;
+        i16 x = g_curScript->actor->pos.x;
+        i16 y = g_curScript->actor->pos.y;
+        i16 direction = g_curScript->actor->direction;
         i16 relative = RelativeDirection(x, y, g_party.field.pos.x, g_party.field.pos.y, direction);
         turn = (relative + turn) & 3;
         blocked = GetMapWallKind(x, y, (direction + turn) & 3);
@@ -545,15 +545,19 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpSetActorAlert(GZ_ENUM_PARAM(ActorAlertMode, 
     ReadScriptValue();
     if (g_curScript->actor != NULL) {
         if (level != ACTOR_ALERT_DELAY) {
-            AlertActor(g_curScript->actor, ATTITUDE_VERY_HOSTILE);
+            AlertActor(GetFieldActorCore(g_curScript->actor), ATTITUDE_VERY_HOSTILE);
         }
         if (level == ACTOR_ALERT_IMMEDIATE) {
-            if (GetCharacterActionWait(g_curScript->actor)->remaining > ACTION_WAIT_QUEUED) {
-                GetCharacterActionWait(g_curScript->actor)->remaining = ACTION_WAIT_QUEUED;
+            if (GetCharacterActionWait(GetFieldActorCore(g_curScript->actor))->remaining
+                > ACTION_WAIT_QUEUED) {
+                GetCharacterActionWait(GetFieldActorCore(g_curScript->actor))->remaining =
+                    ACTION_WAIT_QUEUED;
             }
         } else if (level == ACTOR_ALERT_DELAY) {
-            if (GetCharacterActionWait(g_curScript->actor)->remaining < ACTION_WAIT_EXTENDED) {
-                GetCharacterActionWait(g_curScript->actor)->remaining = ACTION_WAIT_EXTENDED;
+            if (GetCharacterActionWait(GetFieldActorCore(g_curScript->actor))->remaining
+                < ACTION_WAIT_EXTENDED) {
+                GetCharacterActionWait(GetFieldActorCore(g_curScript->actor))->remaining =
+                    ACTION_WAIT_EXTENDED;
             }
         }
     }
@@ -564,7 +568,7 @@ RVA(0x00033510, 0x87)
 void OpJumpUnlessPlayerInLine(i16 invert) {
     b32 matches = false;
     i16 target = ReadBranchTarget();
-    FieldActor* actor = (FieldActor*)g_curScript->actor;
+    FieldActor* actor = g_curScript->actor;
     if (actor != NULL) {
         MapCoord offset = RelativeOffset(
             actor->pos.x,
@@ -926,7 +930,7 @@ RVA(0x00033ca0, 0xca)
 ScriptEntry ResolveScriptEntry(i16 file, i16 entry) {
     ScriptEntry result;
     if (file >= 0xe0 && file <= 0xff) {
-        i16 layer = FindLayerOfKind(g_curScript->actor->id);
+        i16 layer = FindLayerOfKind(g_curScript->actor->core.id);
         return FindLayerScriptEntry(layer + 1, file, entry);
     }
     result = FindCachedScriptEntry(file, entry);
@@ -1320,14 +1324,14 @@ void RequestQuit(void) {
 
 RVA(0x000345b0, 0x2c)
 void OpChangeHp(i16 sign) {
-    Character* character = ReadScriptObject();
+    CharacterCore* character = ReadScriptObject();
     ChangePool(GetCharacterHpPool(character), ReadScriptValue() * sign);
     RequestFieldRefresh();
 }
 
 RVA(0x000345e0, 0x2c)
 void OpChangeMp(i16 sign) {
-    Character* character = ReadScriptObject();
+    CharacterCore* character = ReadScriptObject();
     ChangePool(GetCharacterMpPool(character), ReadScriptValue() * sign);
     RequestFieldRefresh();
 }
@@ -1341,7 +1345,7 @@ GZ_ENUM_END_SPLIT(ScriptPoolBoostMode)
 // Retail uses the MP pair as the input even when writing the HP result.
 RVA(0x00034610, 0x6b)
 void OpBoostPool(void) {
-    Character* character = ReadScriptObject();
+    CharacterCore* character = ReadScriptObject();
     i16 which = ReadScriptValue();
     i16 amount = ReadScriptValue();
     GZ_ENUM_LOCAL(ScriptPoolBoostMode, i16) mode = ReadScriptValue();
@@ -1666,14 +1670,11 @@ void OpJumpUnlessPlayerInView(i16 invert) {
     i16 target = ReadBranchTarget();
     i16 seen;
     BuildSightGrid(
-        ((FieldActor*)g_curScript->actor)->pos.x,
-        ((FieldActor*)g_curScript->actor)->pos.y,
-        ((FieldActor*)g_curScript->actor)->direction
+        g_curScript->actor->pos.x,
+        g_curScript->actor->pos.y,
+        g_curScript->actor->direction
     );
-    seen = IsPartyInSight(
-        ((FieldActor*)g_curScript->actor)->pos.x,
-        ((FieldActor*)g_curScript->actor)->pos.y
-    );
+    seen = IsPartyInSight(g_curScript->actor->pos.x, g_curScript->actor->pos.y);
     if ((seen == true && invert == false) || (seen == false && invert == true)) {
         jump = true;
     }
@@ -1686,9 +1687,9 @@ void OpJumpUnlessPlayerInView(i16 invert) {
 RVA(0x00034e60, 0x7f)
 void OpJumpUnlessHpPercentRoll(ComparisonOperator op) {
     i16 target = ReadBranchTarget();
-    Character* actor = g_curScript->actor;
+    FieldActor* actor = g_curScript->actor;
     i32 roll = RandomAverage(0, 100, 0);
-    i32 value = actor->pools.hp.cur * 100 / actor->pools.hp.max + actor->hpRollBonus;
+    i32 value = actor->core.pools.hp.cur * 100 / actor->core.pools.hp.max + actor->core.hpRollBonus;
     value += RandomAverage(0, 15, 0);
     ScriptJumpUnless(target, CompareByOp(op, roll, value));
 }
@@ -1698,9 +1699,9 @@ void OpJumpUnlessHpPercentRoll(ComparisonOperator op) {
 RVA(0x00034ee0, 0x56)
 void OpJumpUnlessHpQuarterRoll(ComparisonOperator op) {
     i16 target = ReadBranchTarget();
-    Character* actor = g_curScript->actor;
-    i32 quarter = actor->pools.hp.max;
-    i32 hp = actor->pools.hp.cur;
+    FieldActor* actor = g_curScript->actor;
+    i32 quarter = actor->core.pools.hp.max;
+    i32 hp = actor->core.pools.hp.cur;
     quarter >>= 2;
     quarter += RandomAverage(0, quarter, 0);
     ScriptJumpUnless(target, CompareByOp(op, hp, quarter));
@@ -1712,23 +1713,17 @@ void OpJumpUnlessPlayerNearFront(i16 invert) {
     b32 jump = false;
     i16 target = ReadBranchTarget();
     MapCoord coord = GetMapCoord();
-    if (GridDistance(
-            ((FieldActor*)g_curScript->actor)->pos.x,
-            ((FieldActor*)g_curScript->actor)->pos.y,
-            coord.x,
-            coord.y
-        )
-        > 4) {
+    if (GridDistance(g_curScript->actor->pos.x, g_curScript->actor->pos.y, coord.x, coord.y) > 4) {
         if (invert != false) {
             jump = true;
         }
     } else {
         i16 side = RelativeDirection(
-            ((FieldActor*)g_curScript->actor)->pos.x,
-            ((FieldActor*)g_curScript->actor)->pos.y,
+            g_curScript->actor->pos.x,
+            g_curScript->actor->pos.y,
             coord.x,
             coord.y,
-            ((FieldActor*)g_curScript->actor)->direction
+            g_curScript->actor->direction
         );
         if ((side == 0 && invert == false) || (side != 0 && invert == true)) {
             jump = true;
@@ -1742,12 +1737,12 @@ void OpJumpUnlessPlayerNearFront(i16 invert) {
 RVA(0x00034ff0, 0x7a)
 void OpJumpUnlessPlayerAtRange(i16 invert) {
     b32 jump = false;
-    i16 range = g_curScript->actor->triggerRange;
+    i16 range = g_curScript->actor->core.triggerRange;
     i16 target = ReadBranchTarget();
     if (GetFieldMarker()) {
         jump = invert == false;
     } else {
-        i16 distance = DistanceToParty((FieldActor*)g_curScript->actor);
+        i16 distance = DistanceToParty(g_curScript->actor);
         if ((range != distance && invert) || (range == distance && !invert)) {
             jump = true;
         }
@@ -1762,10 +1757,7 @@ void OpJumpUnlessActorVisible(i16 invert) {
     if (GetFieldMarker()) {
         jump = invert == false;
     } else {
-        b16 view = GetPartyView(
-            ((FieldActor*)g_curScript->actor)->pos.x,
-            ((FieldActor*)g_curScript->actor)->pos.y
-        );
+        b16 view = GetPartyView(g_curScript->actor->pos.x, g_curScript->actor->pos.y);
         if ((invert == false && view) || (invert == true && !view)) {
             jump = true;
         }
@@ -1815,7 +1807,7 @@ void OpJumpUnlessCanAfford(i16 invert) {
     i32 price = 0x7fffffff;
     b32 jump = false;
     i16 target = ReadBranchTarget();
-    Character* object = ReadScriptObject();
+    CharacterCore* object = ReadScriptObject();
     if (object) {
         price = GetRankScore(object);
     }
@@ -1855,7 +1847,7 @@ void OpJumpUnlessHealthy(i16 invert) {
     i16 conditions = 0;
     b32 jump = false;
     i16 target = ReadBranchTarget();
-    Character* object = ReadScriptObject();
+    CharacterCore* object = ReadScriptObject();
     if (!object && invert) {
         jump = true;
     } else {
@@ -1869,7 +1861,7 @@ void OpJumpUnlessHealthy(i16 invert) {
     ScriptJumpUnless(target, jump);
 }
 
-static __inline Character* GetResolvedPartyCharacter(i16 id) {
+static __inline CharacterCore* GetResolvedPartyCharacter(i16 id) {
     return GetRosterCharacterById(ResolveObjectId(id), 1);
 }
 
@@ -1879,7 +1871,7 @@ void OpJumpUnlessCompanionHealthy(i16 invert) {
     i16 conditions = 0;
     b32 jump = false;
     i16 target = ReadBranchTarget();
-    Character* companion = GetResolvedPartyCharacter(ScriptObjectRefFromSlot(1));
+    CharacterCore* companion = GetResolvedPartyCharacter(ScriptObjectRefFromSlot(1));
     if (!companion) {
         companion = GetResolvedPartyCharacter(ScriptObjectRefFromSlot(2));
     }
@@ -1904,7 +1896,7 @@ RVA(0x00035400, 0x4d)
 void OpJumpUnlessHeroEquipped(i16 invert) {
     b32 jump = false;
     i16 target = ReadBranchTarget();
-    Character* player = ResolveScriptObject(SCRIPT_REF_SLOT_BASE);
+    CharacterCore* player = ResolveScriptObject(SCRIPT_REF_SLOT_BASE);
     if ((GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item != ITEM_ID_EMPTY && !invert)
         || (GetCharacterEquipment(player)[EQUIP_SLOT_GUN].item == ITEM_ID_EMPTY && invert)) {
         jump = true;
@@ -1966,7 +1958,7 @@ RVA(0x00035560, 0x63)
 void OpIfObjectHasCondition(i16 negate) {
     b32 jump = false;
     i16 target = ReadBranchTarget();
-    Character* object = ReadScriptObject();
+    CharacterCore* object = ReadScriptObject();
     i16 has = ReadScriptValue();
     if (!object && negate) {
         jump = true;
@@ -2415,7 +2407,7 @@ void OpIfBlockedToward(
         StepMapCoord(&x, &y, direction, turn);
         blocked = IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y);
         if (!blocked && g_curScript->actor != NULL) {
-            blocked = DistanceToParty((FieldActor*)g_curScript->actor) == 0;
+            blocked = DistanceToParty(g_curScript->actor) == 0;
         }
     }
     if ((!blocked && !negate) || (blocked && negate)) {
@@ -2446,7 +2438,7 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpScreenTransition(void) {
 
 static __inline void LoadScriptCharacterToRoster(i16 id) {
     Character* character = LoadCharacterCore(id, NULL);
-    SetAnalyzed(character->id, 1);
+    SetAnalyzed(character->core.id, 1);
     AddScriptCharacterToRoster(character, 3);
 }
 
@@ -2471,9 +2463,9 @@ GZ_ENUM_RETURN(ScriptStatus, i16) OpAddToRoster(void) {
         return SCRIPT_CONTINUE;
     }
     character = GetCharacter(ObjectSlotOfId(ref));
-    if (RosterSlotOfId(character->id) == ROSTER_SLOT_NONE) {
+    if (RosterSlotOfId(character->core.id) == ROSTER_SLOT_NONE) {
         AddScriptCharacterToRoster(character, 3);
-        SetAnalyzed(character->id, 1);
+        SetAnalyzed(character->core.id, 1);
         SortRoster();
     }
     return SCRIPT_CONTINUE;
@@ -2548,7 +2540,7 @@ i16 OpJoinActiveParty(void) {
     if (id < HUMAN_ID_LIMIT && RosterSlotOfId(id) == ROSTER_SLOT_NONE) {
         Character* character = FindCharacterById(id);
         AddScriptCharacterToRoster(character, 3);
-        SetAnalyzed(character->id, 1);
+        SetAnalyzed(character->core.id, 1);
         SortRoster();
     }
     slot = RosterSlotOfId(id);
@@ -2649,7 +2641,7 @@ void OpIfObjectIsAlly(i16 negate) {
 
 RVA(0x00036560, 0x79)
 void OpRebalanceMemberStats(void) {
-    Character* character = GetRosterCharacter(ReadScriptValue());
+    CharacterCore* character = GetRosterCharacter(ReadScriptValue());
     if (character) {
         i16 i;
         for (i = 0; i < STAT_COUNT; i++) {
@@ -2668,7 +2660,7 @@ RVA(0x000365e0, 0x2f)
 void OpAddMemberSkill(void) {
     i16 index = ReadScriptValue();
     i16 skill = ReadScriptValue();
-    Character* character = GetRosterCharacter(index);
+    CharacterCore* character = GetRosterCharacter(index);
     if (character != NULL) {
         AddSkill(GetCharacterSkills(character), skill);
     }
@@ -2684,7 +2676,7 @@ void OpSwitchOnMoonPhase(i16 call) {
 RVA(0x00036630, 0x38)
 void OpGetActorMoonValue(void) {
     i16 index = ReadLongVarIndex();
-    i16 half = GetMoonValue(g_curScript->actor->moonRow) / 2;
+    i16 half = GetMoonValue(g_curScript->actor->core.moonRow) / 2;
     SetScriptLongVar(index, half);
 }
 
@@ -2720,7 +2712,7 @@ void OpGetTimeOfDay(void) {
 RVA(0x00036700, 0x218)
 char* GetTextToken(GZ_ENUM_PARAM(TextTokenKind, i16) kind, b16 byId, i16 id) {
     const char* text = NULL;
-    Character* object;
+    CharacterCore* object;
     s_tokenText[0] = '\0';
     switch (kind) {
         case TEXT_TOKEN_FULL_NAME:
@@ -2831,7 +2823,7 @@ char* ReadTextToken(void) {
     i16 kind;
     i16 byId;
     i16 id;
-    Character* object;
+    CharacterCore* object;
     char* text;
     s_tokenText[0] = '\0';
     kind = ReadScriptByte();
@@ -2920,9 +2912,9 @@ i32 g_rolledMagnetite;
 
 RVA(0x00036aa0, 0x23)
 void OpRollActorMagnetite(void) {
-    Character* actor = GetScriptActor();
+    FieldActor* actor = GetScriptActor();
     if (actor != NULL) {
-        g_rolledMagnetite = RollCharacterMagnetite(actor);
+        g_rolledMagnetite = RollCharacterMagnetite(GetFieldActorCore(actor));
     } else {
         g_rolledMagnetite = 0;
     }
@@ -2930,9 +2922,9 @@ void OpRollActorMagnetite(void) {
 
 RVA(0x00036ad0, 0x23)
 void OpRollActorMacca(void) {
-    Character* actor = GetScriptActor();
+    FieldActor* actor = GetScriptActor();
     if (actor != NULL) {
-        g_rolledMacca = RollCharacterMacca(actor);
+        g_rolledMacca = RollCharacterMacca(GetFieldActorCore(actor));
     } else {
         // Retail clears magnetite here, leaving the previous macca roll intact.
         g_rolledMagnetite = 0;
@@ -2946,7 +2938,7 @@ void OpRollActorMacca(void) {
 RVA(0x00036b00, 0x8e0)
 i32* ReadScriptOperand(void) {
     GZ_ENUM_LOCAL(ScriptOperandKind, i16) kind = ReadScriptByte();
-    Character* object;
+    CharacterCore* object;
     i8 byteValue;
     i16 wordValue;
 
@@ -3361,7 +3353,7 @@ i32 ReadScriptValue(void) {
 // `swap` exchanges the sides.
 RVA(0x000374a0, 0x110)
 void ReadContestValues(GZ_ENUM_PARAM(ContestStat, i16) stat, i32* own, i32* other, i16 swap) {
-    Character* object;
+    CharacterCore* object;
     i32 kept;
 
     switch (stat) {
@@ -3424,7 +3416,7 @@ void ReadContestValues(GZ_ENUM_PARAM(ContestStat, i16) stat, i32* own, i32* othe
 // levels, and to 3 also teaches it every skill of that axis.
 RVA(0x000375b0, 0x3a0)
 void OpSetObjectField(void) {
-    Character* object = ReadScriptObject();
+    CharacterCore* object = ReadScriptObject();
     GZ_ENUM_LOCAL(ScriptOperandKind, i16) kind = ReadScriptByte();
     i32 value = ReadScriptValue();
 
@@ -3599,11 +3591,11 @@ void OpFindMemberWithCondition(i16 all) {
     i16 mode = ReadScriptValue() + 1;
     i32 result = -1;
     i16 slot;
-    Character* character;
+    CharacterCore* character;
     if (!all) {
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
-                character = RosterMemberAt(slot);
+                character = GetCharacterCore(RosterMemberAt(slot));
                 if (character && HasCondition(GetCharacterConditions(character), condition)) {
                     result = slot;
                     break;
@@ -3614,7 +3606,7 @@ void OpFindMemberWithCondition(i16 all) {
         result = 0;
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
-                character = RosterMemberAt(slot);
+                character = GetCharacterCore(RosterMemberAt(slot));
                 if (character && HasCondition(GetCharacterConditions(character), condition)) {
                     result |= PowerOfTwo(slot);
                 }
@@ -3631,7 +3623,7 @@ void OpFindMemberByAlignmentA(i16 all) {
     i16 mode = ReadScriptValue() + 1;
     i32 result = -1;
     i16 slot;
-    Character* character;
+    CharacterCore* character;
     if (!all) {
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
@@ -3663,7 +3655,7 @@ void OpFindMemberByAlignmentB(i16 all) {
     i16 mode = ReadScriptValue() + 1;
     i32 result = -1;
     i16 slot;
-    Character* character;
+    CharacterCore* character;
     if (!all) {
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
             if (FilterPartyMember(slot, mode) != ROSTER_SLOT_NONE) {
@@ -3696,7 +3688,7 @@ void OpCountItemOwned(void) {
     i16 mode = ReadScriptValue();
     GZ_ENUM_STORAGE(ItemCountScope, i16) scope = ReadScriptValue();
     i16 slot;
-    Character* character;
+    CharacterCore* character;
     mode++;
     if (scope == ITEM_COUNT_EQUIPMENT || scope == ITEM_COUNT_BAG_AND_EQUIPMENT) {
         for (slot = 0; slot < ROSTER_SIZE; slot++) {
@@ -3751,7 +3743,7 @@ void OpIfMemberHasCondition(void) {
     b32 jump = false;
     i16 target = ReadBranchTarget();
     i16 expect = ReadScriptValue();
-    Character* character = GetRosterCharacter(ReadScriptValue());
+    CharacterCore* character = GetRosterCharacter(ReadScriptValue());
     // The condition, then whether the member has it (no member: tested as
     // read).
     i16 has = ReadScriptValue();
@@ -3770,7 +3762,7 @@ void OpIfMemberHasCondition(void) {
 
 RVA(0x00037e80, 0x18)
 void OpSaveObjectConditions(void) {
-    Character* object = ReadScriptObject();
+    CharacterCore* object = ReadScriptObject();
     if (object) {
         SetFlagTag(GetCharacterConditions(object)->bits);
     }
@@ -3778,7 +3770,7 @@ void OpSaveObjectConditions(void) {
 
 RVA(0x00037ea0, 0x28)
 void OpApplyObjectCondition(void) {
-    Character* object = ReadScriptObject();
+    CharacterCore* object = ReadScriptObject();
     i16 condition = ReadScriptValue();
     if (object) {
         AddCondition(GetCharacterConditions(object), condition);
@@ -3788,7 +3780,7 @@ void OpApplyObjectCondition(void) {
 
 RVA(0x00037ed0, 0x28)
 void OpClearObjectCondition(void) {
-    Character* object = ReadScriptObject();
+    CharacterCore* object = ReadScriptObject();
     i16 condition = ReadScriptValue();
     if (object) {
         ClearCondition(GetCharacterConditions(object), condition);
@@ -3798,7 +3790,7 @@ void OpClearObjectCondition(void) {
 
 RVA(0x00037f00, 0x20)
 i32 GetObjectStatTotal(i16 ref, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
-    Character* object = ResolveScriptObject(ref);
+    CharacterCore* object = ResolveScriptObject(ref);
     if (!object) {
         return 0;
     }
@@ -3807,7 +3799,7 @@ i32 GetObjectStatTotal(i16 ref, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
 
 RVA(0x00037f20, 0x1a)
 i32 GetObjectLevel(i16 ref) {
-    Character* object = ResolveScriptObject(ref);
+    CharacterCore* object = ResolveScriptObject(ref);
     if (!object) {
         return 0;
     }
@@ -3816,7 +3808,7 @@ i32 GetObjectLevel(i16 ref) {
 
 RVA(0x00037f40, 0x17)
 i32 GetObjectAlignmentLevelB(i16 ref) {
-    Character* object = ResolveScriptObject(ref);
+    CharacterCore* object = ResolveScriptObject(ref);
     if (!object) {
         return 0;
     }
@@ -3825,7 +3817,7 @@ i32 GetObjectAlignmentLevelB(i16 ref) {
 
 RVA(0x00037f60, 0x17)
 i32 GetObjectAlignmentLevelA(i16 ref) {
-    Character* object = ResolveScriptObject(ref);
+    CharacterCore* object = ResolveScriptObject(ref);
     if (!object) {
         return 0;
     }
@@ -3889,48 +3881,50 @@ static __inline i16 ReadScriptDelta(i16 negate) {
 // The script actor's familiarity count (negated with `negate`).
 RVA(0x00038060, 0x27)
 void OpAddFamiliarityCount(i16 negate) {
-    Character* actor = g_curScript->actor;
+    FieldActor* actor = g_curScript->actor;
     i16 delta = ReadScriptDelta(negate);
-    AddFamiliarityCount(actor->id, delta);
+    AddFamiliarityCount(actor->core.id, delta);
 }
 
 RVA(0x00038090, 0x22)
 void OpAddActorFamiliarity(i16 negate) {
     i16 delta = ReadScriptDelta(negate);
-    AddFamiliarity(g_curScript->actor, delta);
+    AddFamiliarity(GetFieldActorCore(g_curScript->actor), delta);
 }
 
 RVA(0x000380c0, 0x22)
 void OpAddActorLevelGap(i16 negate) {
     i16 delta = ReadScriptDelta(negate);
-    AddLevelGap(g_curScript->actor, delta);
+    AddLevelGap(GetFieldActorCore(g_curScript->actor), delta);
 }
 
 RVA(0x000380f0, 0x18)
 void OpSetActorFamiliarity(void) {
-    SetFamiliarity(g_curScript->actor, ReadScriptValue());
+    i16 familiarity = ReadScriptValue();
+    SetFamiliarity(GetFieldActorCore(g_curScript->actor), familiarity);
 }
 
 RVA(0x00038110, 0x18)
 void OpSetActorLevelGap(void) {
-    SetLevelGap(g_curScript->actor, ReadScriptValue());
+    i16 gap = ReadScriptValue();
+    SetLevelGap(GetFieldActorCore(g_curScript->actor), gap);
 }
 
 RVA(0x00038130, 0x15)
 void OpSetActorAttitude(void) {
-    g_curScript->actor->attitude = ReadScriptValue();
+    g_curScript->actor->core.attitude = ReadScriptValue();
 }
 
 RVA(0x00038150, 0x15)
 void OpSetActorFieldState(void) {
-    g_curScript->actor->fieldState = ReadScriptValue();
+    g_curScript->actor->core.fieldState = ReadScriptValue();
 }
 
 // Sets an object's familiarity (0..255; negated with `negate`) and its
 // personal flag 0.
 RVA(0x00038170, 0x44)
 void OpSetObjectFamiliarity(i16 negate) {
-    Character* object = ReadScriptObject();
+    CharacterCore* object = ReadScriptObject();
     i32 value = ReadScriptValue();
     u8 familiarity;
     if (negate) {
@@ -3978,7 +3972,7 @@ void OpMaskRosterByKind(void) {
     i16 i;
     for (i = 0; i < ROSTER_SIZE; i++) {
         if (FilterPartyMember(i, mode) != ROSTER_SLOT_NONE && RosterMemberAt(i)
-            && race == GetDemonRace(RosterMemberAt(i)->id)) {
+            && race == GetDemonRace(RosterMemberAt(i)->core.id)) {
             mask |= PowerOfTwo(i);
         }
     }
@@ -3998,9 +3992,17 @@ void OpRecoverRosterPool(GZ_ENUM_PARAM(CharacterPoolMask, i16) pool) {
     for (i = 0; i < ROSTER_SIZE; i++) {
         if (RosterMemberAt(i) && (mask & bit)) {
             if (pool == POOL_MASK_HP) {
-                FillPool(GetCharacterHpPool(RosterMemberAt(i)), amount, POOL_FILL_TO_MAX);
+                FillPool(
+                    GetCharacterHpPool(GetCharacterCore(RosterMemberAt(i))),
+                    amount,
+                    POOL_FILL_TO_MAX
+                );
             } else {
-                FillPool(GetCharacterMpPool(RosterMemberAt(i)), amount, POOL_FILL_TO_MAX);
+                FillPool(
+                    GetCharacterMpPool(GetCharacterCore(RosterMemberAt(i))),
+                    amount,
+                    POOL_FILL_TO_MAX
+                );
             }
         }
         bit <<= 1;
@@ -4018,7 +4020,7 @@ void OpCureRosterCondition(void) {
     condition = ReadScriptValue();
     for (i = 0; i < ROSTER_SIZE; i++) {
         if (mask & bit) {
-            Character* character = GetRosterCharacter(i);
+            CharacterCore* character = GetRosterCharacter(i);
             if (character && HasCondition(GetCharacterConditions(character), condition)) {
                 ClearCondition(GetCharacterConditions(character), condition);
             }

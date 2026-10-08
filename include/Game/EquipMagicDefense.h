@@ -11,6 +11,6 @@
 // passes the result to a 32-bit parameter with no sign extension.
 // Declared apart from <Game/Stats.h>: there it shifts charpool's
 // CalcMagicAccuracyStat.
-i32 SumEquippedMagicDefenseBonus(Character* character, u8 groups);
+i32 SumEquippedMagicDefenseBonus(CharacterCore* character, u8 groups);
 
 #endif // GITEN_GAME_EQUIPMAGICDEFENSE_H

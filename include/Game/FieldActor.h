@@ -4,8 +4,31 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
-#include <Game/Character.h>
+#include <Game/CharacterCore.h>
 #include <Game/FieldLayerIndex.h>
+#include <Game/MapCoord.h>
+#include <Game/ViewDirection.h>
+
+// @identity-TODO: this aggregate boundary is inferred from borrower accesses;
+// no standalone allocation or whole-record copy proves its original extent
+// or type name.
+typedef struct FieldActor {
+    CharacterCore core;
+    MapCoord pos;
+    GZ_ENUM_STORAGE(ViewDirection, i16) direction;
+    u8 pad219;
+    u8 byte21a;
+    u8 byte21b;
+    u8 pad21c;
+    i16 word21d;
+    i16 word21f;
+    i16 word221;
+    i16 hidden;
+} FieldActor;
+
+static __inline CharacterCore* GetFieldActorCore(FieldActor* character) {
+    return character ? &character->core : NULL;
+}
 
 // The field map's actor slots (enemies and NPCs on the map) and the enemy
 // group slots they are spawned from.

@@ -41,6 +41,6 @@ void CompactBag(void);
 
 // Applies the effect of using item `item` by `user` on `target` (a copy of
 // its record picks the handler by kind, <Game/ItemEffect.h>).
-void ApplyItemEffect(i16 item, Character* user, Character* target);
+void ApplyItemEffect(i16 item, CharacterCore* user, CharacterCore* target);
 
 #endif // GITEN_GAME_ITEMBAG_H

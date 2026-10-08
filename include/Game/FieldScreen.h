@@ -15,7 +15,7 @@
 // action, AdvanceObjectAnims count in 0x12d20, 0 gates 0x135b0); name its reader 0x12860.
 i16 SetFieldBusy(i16 busy);
 
-b16 CanCharacterOpenAutomap(Character* character);
+b16 CanCharacterOpenAutomap(CharacterCore* character);
 i16 PickAnalyzeTarget(void);
 
 void RequestFieldRefresh(void);

@@ -316,19 +316,19 @@ MapCoord GetMouseTravelCell(void) {
 // blocking condition) is present on a cell that allows it.
 RVA(0x00014960, 0x93)
 b16 CanOpenAutomap(void) {
-    Character* character;
+    CharacterCore* character;
     if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) == true) {
         return false;
     }
-    character = GetCharacterById(HUMAN_KATSURAGI);
+    character = GetCharacterCore(GetCharacterById(HUMAN_KATSURAGI));
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
-    character = GetCharacterById(HUMAN_YAMASE);
+    character = GetCharacterCore(GetCharacterById(HUMAN_YAMASE));
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
-    character = GetCharacterById(HUMAN_KIRISHIMA);
+    character = GetCharacterCore(GetCharacterById(HUMAN_KIRISHIMA));
     if (character != NULL && !GetPickBlockingCondition(GetCharacterConditions(character))) {
         return true;
     }
@@ -400,7 +400,7 @@ i16 ItemRowHandler(PanelRow* row, i16 value, i16 op) {
 RVA(0x00014b50, 0x3b)
 b16 CanHumanMemberAct(void) {
     i16 i;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && IsHumanCharacter(character)
@@ -714,7 +714,7 @@ void ItemCommand(i16 id) {
 RVA(0x00015350, 0x51)
 b16 CanMemberAct(i16 id) {
     i16 i;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && character->id == id) {
@@ -821,7 +821,7 @@ void OpenAutomap(void) {
 
 // Whether this character can use the automap command on the current cell.
 RVA(0x00015530, 0x56)
-b16 CanCharacterOpenAutomap(Character* character) {
+b16 CanCharacterOpenAutomap(CharacterCore* character) {
     if (IsCellCommandBlocked(g_party.field.pos.x, g_party.field.pos.y) != true && character != NULL
         && (character->id == HUMAN_KATSURAGI || character->id == HUMAN_YAMASE
             || character->id == HUMAN_KIRISHIMA)

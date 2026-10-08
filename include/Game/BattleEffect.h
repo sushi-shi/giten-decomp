@@ -21,7 +21,7 @@ GZ_ENUM_BEGIN_SPLIT(BattleActionResult, i16)
     BATTLE_ACTION_MP_ABSORBED = 9,
     BATTLE_ACTION_PROTECTED = 10
 GZ_ENUM_END_SPLIT(BattleActionResult)
-// clang-format on
+    // clang-format on
 
 // Composite tags added to the result word after a draining skill lands.
 GZ_ENUM_CONST_BEGIN(ActionDrainTag)
@@ -52,7 +52,7 @@ static __inline void ResetActionOutcome(void) {
 }
 
 static __inline void SetResistanceResult(
-    Character* actor,
+    CharacterCore* actor,
     i16 result,
     GZ_ENUM_PARAM(BattleActionResult, i16) actionResult
 ) {
@@ -61,17 +61,17 @@ static __inline void SetResistanceResult(
 }
 
 static __inline void
-SetFlaggedActionResult(Character* actor, GZ_ENUM_PARAM(BattleActionResult, i16) result) {
+SetFlaggedActionResult(CharacterCore* actor, GZ_ENUM_PARAM(BattleActionResult, i16) result) {
     g_actionResult = result;
     SetCharacterResult(actor, result, 1);
 }
 
-static __inline i32 GetConditionDamageThreshold(Character* target) {
+static __inline i32 GetConditionDamageThreshold(CharacterCore* target) {
     return target->level / 2 + 1;
 }
 
 static __inline GZ_ENUM_RETURN(BattleActionResult, i16) SetActionResult(
-    Character* actor,
+    CharacterCore* actor,
     GZ_ENUM_PARAM(BattleActionResult, i16) result
 ) {
     actor->result = result;

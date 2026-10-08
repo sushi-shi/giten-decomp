@@ -18,7 +18,7 @@
 #include <math.h>
 
 RVA(0x0000b0f0, 0x22c)
-b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
+b16 ResolveItemAttack(CharacterCore* attacker, CharacterCore* target, i16 sameSide) {
     i16 attribute;
     i32 accuracy;
     i32 defense;
@@ -73,7 +73,7 @@ b16 ResolveItemAttack(Character* attacker, Character* target, i16 sameSide) {
 }
 
 RVA(0x0000b320, 0x1a7)
-i32 ComputeItemDamage(Character* attacker, Character* target, i16 hit) {
+i32 ComputeItemDamage(CharacterCore* attacker, CharacterCore* target, i16 hit) {
     i16 power;
     i16 defense;
     double amount;
@@ -111,7 +111,12 @@ i32 ComputeItemDamage(Character* attacker, Character* target, i16 hit) {
 }
 
 RVA(0x0000b4d0, 0x14d)
-b16 RollItemCondition(Character* attacker, Character* target, i16 resistance, i16 condition) {
+b16 RollItemCondition(
+    CharacterCore* attacker,
+    CharacterCore* target,
+    i16 resistance,
+    i16 condition
+) {
     i16 roll;
     i16 luck;
     i16 defense;
@@ -154,7 +159,7 @@ b16 RollItemCondition(Character* attacker, Character* target, i16 resistance, i1
 }
 
 RVA(0x0000b620, 0xaa)
-b16 RunItemAttack(Character* attacker, Character* target) {
+b16 RunItemAttack(CharacterCore* attacker, CharacterCore* target) {
     i16 hit;
     i32 damage;
     hit = ResolveItemAttack(attacker, target, 0);

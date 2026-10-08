@@ -30,9 +30,9 @@ GZ_ENUM_END_SPLIT(EmptyPoolOutcome);
 // conditions an empty pool brings, plus easing and the name walk.
 i16 AgeConditions(ConditionSet* conditions, i16 amount);
 b16 AgeCondition(i16 amount, ConditionSet* conditions, GZ_ENUM_PARAM(ConditionId, i16) condition);
-i16 RecoverConditions(Character* character);
-b16 RecoverCondition(Character* character, GZ_ENUM_PARAM(ConditionId, i16) condition);
-GZ_ENUM_RETURN(EmptyPoolOutcome, i16) ApplyEmptyPools(Character* character);
+i16 RecoverConditions(CharacterCore* character);
+b16 RecoverCondition(CharacterCore* character, GZ_ENUM_PARAM(ConditionId, i16) condition);
+GZ_ENUM_RETURN(EmptyPoolOutcome, i16) ApplyEmptyPools(CharacterCore* character);
 GZ_ENUM_RETURN(ConditionChangeResult, i16) EscalateCondition(
     ConditionSet* conditions,
     GZ_ENUM_PARAM(ConditionId, i16) mild,
@@ -44,6 +44,6 @@ GZ_ENUM_RETURN(ConditionChangeResult, i16) EaseCondition(
     GZ_ENUM_PARAM(ConditionId, i16) severe
 );
 const char* NextConditionName(ConditionSet* conditions, i16* cursor);
-i16 GetFirstConditionIndex(Character* character);
+i16 GetFirstConditionIndex(CharacterCore* character);
 
 #endif // GITEN_GAME_CONDITIONAGE_H

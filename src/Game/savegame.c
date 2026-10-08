@@ -119,9 +119,9 @@ i16 WriteSaveHeader(FILE* fp) {
     i16 floor;
     i16 failed;
     memset(g_scratchBuffer, 0, SAVE_TEXT_SIZE);
-    FormatFullName(g_scratchBuffer, leader);
+    FormatFullName(g_scratchBuffer, GetCharacterCore(leader));
     failed = SAVE_TEXT_SIZE - fwrite(g_scratchBuffer, 1, SAVE_TEXT_SIZE, fp);
-    value = leader->level;
+    value = leader->core.level;
     failed |= 1 - fwrite(&value, 1, 1, fp);
     value = SAVE_FORMAT_VERSION;
     failed |= 1 - fwrite(&value, 1, 1, fp);
@@ -137,7 +137,7 @@ i16 WriteSaveHeader(FILE* fp) {
 // leader (see Character.markPosition).
 RVA(0x00003bf0, 0x38)
 void RecordMarkInLeader(void) {
-    Character* leader = GetRosterCharacter(ROSTER_LEADER);
+    CharacterCore* leader = GetRosterCharacter(ROSTER_LEADER);
     SetSavedMapPosition(
         &leader->markPosition,
         g_party.field.pos.area,
@@ -195,7 +195,7 @@ i16 LoadGame(i16 slot, b16 keepField) {
     }
     CompactBag();
     for (i = 0; i < ROSTER_SIZE; i++) {
-        Character* character = GetRosterCharacter(i);
+        CharacterCore* character = GetRosterCharacter(i);
         if (character) {
             character->equipGroup = ReadObjectRecordField(character->id, 0x20, 2);
             NormalizeEquipSlots(character);

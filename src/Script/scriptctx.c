@@ -44,11 +44,11 @@ i16 ObjectSlotOfId(i16 id) {
 
 RVA(0x00038800, 0x12)
 i16 GetScriptActorId(void) {
-    Character* actor = GetScriptActor();
+    FieldActor* actor = GetScriptActor();
     if (actor == NULL) {
         return CHARACTER_ID_NONE;
     }
-    return actor->id;
+    return actor->core.id;
 }
 
 RVA(0x00038820, 0xb7)
@@ -73,7 +73,7 @@ i16 ResolveObjectId(i16 ref) {
         return GetCombatant(g_targetId)->id;
     }
     if (slot == 22 || slot == 23) {
-        return LoadFusionResultCharacter(GetCharacter(CHARACTER_SLOT_FUSION_RESULT))->id;
+        return LoadFusionResultCharacter(GetCharacter(CHARACTER_SLOT_FUSION_RESULT))->core.id;
     }
     return GetCharacterId(slot);
 }
@@ -122,23 +122,23 @@ void OpConvertCharacterRef(void) {
 }
 
 RVA(0x00038a40, 0x9)
-Character* GetScriptActor(void) {
+FieldActor* GetScriptActor(void) {
     return g_curScript->actor;
 }
 
 RVA(0x00038a50, 0x134)
-Character* ResolveScriptObject(i16 id) {
+CharacterCore* ResolveScriptObject(i16 id) {
     if (id == SCRIPT_REF_FAVOURED_MEMBER) {
         return GetPartyCharacter(FindFavouredMember());
     }
     if (id == SCRIPT_REF_ACTOR) {
-        return GetScriptActor();
+        return GetFieldActorCore(GetScriptActor());
     }
     if (id == SCRIPT_REF_ACTOR_BY_ID) {
-        return GetCharacterById(GetScriptActorId());
+        return GetCharacterCore(GetCharacterById(GetScriptActorId()));
     }
     if (id == SCRIPT_REF_ACTOR_ALIAS) {
-        return GetScriptActor();
+        return GetFieldActorCore(GetScriptActor());
     }
     if (id == SCRIPT_REF_BATTLE_ACTOR) {
         return GetCombatant(g_actorId);
@@ -147,7 +147,9 @@ Character* ResolveScriptObject(i16 id) {
         return GetCombatant(g_targetId);
     }
     if (id == SCRIPT_REF_FUSION_RESULT || id == SCRIPT_REF_FUSION_RESULT_ALIAS) {
-        return LoadFusionResultCharacter(GetCharacter(CHARACTER_SLOT_FUSION_RESULT));
+        return GetCharacterCore(
+            LoadFusionResultCharacter(GetCharacter(CHARACTER_SLOT_FUSION_RESULT))
+        );
     }
     if (id < 0) {
         return AsCharacter(GetCharacter(ObjectSlotOfId(id)));
@@ -155,7 +157,7 @@ Character* ResolveScriptObject(i16 id) {
     if (id >= SCRIPT_REF_CHARACTER_BASE) {
         Character* character = GetCharacter(14);
         LoadCharacterCore(id - SCRIPT_REF_CHARACTER_BASE, character);
-        return character;
+        return GetCharacterCore(character);
     }
     if (id >= SCRIPT_REF_ROSTER_BASE) {
         return GetRosterCharacter(id - SCRIPT_REF_ROSTER_BASE);
@@ -163,7 +165,7 @@ Character* ResolveScriptObject(i16 id) {
     if (id >= SCRIPT_REF_PARTY_BASE) {
         return GetPartyCharacter(id - SCRIPT_REF_PARTY_BASE);
     }
-    return GetFieldActor(id);
+    return GetFieldActorCore(GetFieldActor(id));
 }
 
 RVA(0x00038b90, 0xa6)
@@ -177,7 +179,7 @@ MapCoord ResolveScriptObjectCoord(i16 id) {
         return GetMapCoord();
     }
     if (id == SCRIPT_REF_ACTOR || id == SCRIPT_REF_ACTOR_ALIAS) {
-        FieldActor* actor = (FieldActor*)g_curScript->actor;
+        FieldActor* actor = g_curScript->actor;
         if (actor != NULL) {
             point.x = actor->pos.x;
             point.y = actor->pos.y;
@@ -210,14 +212,14 @@ i32 ReadObjectRef(void) {
 }
 
 RVA(0x00038c90, 0xf)
-Character* ReadScriptObject(void) {
+CharacterCore* ReadScriptObject(void) {
     return ResolveScriptObject(ReadObjectRef());
 }
 
 RVA(0x00038ca0, 0x20)
 i16 ReadObjectId(void) {
     i32 id = ReadObjectRef();
-    Character* object = ResolveScriptObject(id);
+    CharacterCore* object = ResolveScriptObject(id);
     if (object == NULL) {
         return id;
     }
@@ -226,7 +228,7 @@ i16 ReadObjectId(void) {
 
 RVA(0x00038cc0, 0x48)
 i32 GetObjectMacca(i16 ref) {
-    Character* character;
+    CharacterCore* character;
     if (ref == SCRIPT_REF_ROLLED_SPOILS) {
         strcpy(g_numberUnit, "\203}\203b\203J");
         return g_rolledMacca;
@@ -240,7 +242,7 @@ i32 GetObjectMacca(i16 ref) {
 
 RVA(0x00038d10, 0x48)
 i32 GetObjectMagnetite(i16 ref) {
-    Character* character;
+    CharacterCore* character;
     if (ref == SCRIPT_REF_ROLLED_SPOILS) {
         strcpy(g_numberUnit, "\202l\202`\202f");
         return g_rolledMagnetite;
@@ -284,7 +286,7 @@ void EndScript(ScriptContext* script) {
 }
 
 RVA(0x00038df0, 0x28)
-ScriptContext* NewScriptContext(i16 mode, Character* actor) {
+ScriptContext* NewScriptContext(i16 mode, FieldActor* actor) {
     ScriptContext* script = AllocCleared(1, sizeof(ScriptContext));
     script->mode = mode;
     script->actor = actor;

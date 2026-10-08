@@ -17,7 +17,7 @@
 #include <math.h>
 
 RVA(0x0000aa20, 0x22c)
-b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
+b16 RollSkillHit(CharacterCore* attacker, CharacterCore* target, b16 sameSide) {
     i16 attribute;
     i32 accuracy;
     i32 defense;
@@ -72,7 +72,7 @@ b16 RollSkillHit(Character* attacker, Character* target, b16 sameSide) {
 }
 
 RVA(0x0000ac50, 0x1ce)
-i32 ComputeSkillDamage(Character* attacker, Character* target, b16 hit) {
+i32 ComputeSkillDamage(CharacterCore* attacker, CharacterCore* target, b16 hit) {
     SkillHeader* skill;
     i16 skillPower;
     i16 power;
@@ -116,7 +116,12 @@ i32 ComputeSkillDamage(Character* attacker, Character* target, b16 hit) {
 }
 
 RVA(0x0000ae20, 0x14d)
-b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i16 condition) {
+b16 RollSkillCondition(
+    CharacterCore* attacker,
+    CharacterCore* target,
+    i16 resistance,
+    i16 condition
+) {
     i16 roll;
     i16 luck;
     i16 defense;
@@ -160,7 +165,7 @@ b16 RollSkillCondition(Character* attacker, Character* target, i16 resistance, i
 
 RVA(0x0000af70, 0x38)
 GZ_ENUM_RETURN(ResistanceFollowup, i16)
-ApplySkillResistanceOutcome(Character* attacker, i32 amount) {
+ApplySkillResistanceOutcome(CharacterCore* attacker, i32 amount) {
     ApplyResistanceOutcome(attacker, g_attackResistance, amount);
     if (g_actionResult == BATTLE_ACTION_REFLECTED) {
         return RESISTANCE_FOLLOWUP_REFLECT;
@@ -169,7 +174,7 @@ ApplySkillResistanceOutcome(Character* attacker, i32 amount) {
 }
 
 RVA(0x0000afb0, 0x13e)
-b16 ResolveSkillAttack(Character* attacker, Character* target) {
+b16 ResolveSkillAttack(CharacterCore* attacker, CharacterCore* target) {
     GZ_ENUM_LOCAL(AttackMode, u16) mode = GetSkillMode(attacker->pickTarget);
     b16 hit;
     i32 damage;

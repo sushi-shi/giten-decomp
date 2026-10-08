@@ -901,7 +901,7 @@ b16 RunDdsSummon(void) {
             if (result) {
                 NextGameStep();
                 if (result > 0) {
-                    AddTrainingPoints(GetCharacters(), BATTLE_GROUP_DEMON_INTERACTION, 8);
+                    AddTrainingPoints(&GetCharacters()->core, BATTLE_GROUP_DEMON_INTERACTION, 8);
                 }
             }
             break;
@@ -929,7 +929,7 @@ GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
             }
             break;
         case DDS_SUMMON_CURSOR_PICK_PARTY_SLOT: {
-            Character* character;
+            CharacterCore* character;
             if (!PollPartySlotSelection(PARTY_SLOT_ANY)) {
                 break;
             }
@@ -951,8 +951,8 @@ GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
             break;
         case DDS_SUMMON_CURSOR_EXCHANGE: {
             i16 replacedRosterSlot;
-            Character* summoned;
-            Character* replaced;
+            CharacterCore* summoned;
+            CharacterCore* replaced;
             NextCursorLevel0(&s_summonCursor);
             replacedRosterSlot = ExchangePartySlot(s_ddsPartySlot, s_ddsRosterSlot);
             summoned = GetRosterCharacter(s_ddsRosterSlot);
@@ -1001,7 +1001,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
     i16 slot;
     i16 disabled;
     i32 attribute;
-    Character* character;
+    CharacterCore* character;
     GetGamePhase();
     items = menu->items.text;
     switch (event) {
@@ -1055,7 +1055,7 @@ void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) even
 
 RVA(0x00017870, 0x8a)
 GZ_ENUM_RETURN(DdsActionResult, i16) ReturnDdsMember(void) {
-    Character* character;
+    CharacterCore* character;
     if (!PollPartySlotSelection(PARTY_SLOT_REQUIRE_OCCUPIED)) {
         return DDS_ACTION_PENDING;
     }
@@ -1624,7 +1624,7 @@ i32 ExperienceToLevel(i16 level, u32 experience, i16 id) {
 // Adds experience to a living character; how far it is past the next level
 // (negative: not reached), 0 for none or a disabled one, -1 at level 99.
 RVA(0x000187e0, 0x54)
-i32 AddExperience(Character* character, i32 amount) {
+i32 AddExperience(CharacterCore* character, i32 amount) {
     if (character == NULL) {
         return 0;
     }
@@ -1659,7 +1659,7 @@ i32 ShareExperience(i32 amount) {
 // The levels roster member `slot` has earned but not taken yet.
 RVA(0x00018890, 0x79)
 i16 CountPendingLevels(i16 slot) {
-    Character* character = GetRosterCharacter(slot);
+    CharacterCore* character = GetRosterCharacter(slot);
     u16 level;
     if (character == NULL) {
         return 0;
@@ -1700,7 +1700,7 @@ i16 FindLevelUpSlot(void) {
 // Raises fortune by one on every second level of a human and every third
 // level of a demon; 1 when it grew.
 RVA(0x00018980, 0x4b)
-b16 ApplyLevelStatGrowth(Character* character) {
+b16 ApplyLevelStatGrowth(CharacterCore* character) {
     if (IsHumanCharacter(character)) {
         if (character->level & 1) {
             return false;
@@ -1714,14 +1714,14 @@ b16 ApplyLevelStatGrowth(Character* character) {
 
 // Nonzero when one more point would take `stat` past its cap.
 RVA(0x000189d0, 0x24)
-i16 IsStatCapped(const Character* character, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
+i16 IsStatCapped(const CharacterCore* character, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
     i16 raised = GetBaseStat(character, stat) + 1;
     return raised - ClampTo100(raised);
 }
 
 // How many of the ten stats can still take a point.
 RVA(0x00018a00, 0x2b)
-i16 CountRaisableStats(const Character* character) {
+i16 CountRaisableStats(const CharacterCore* character) {
     i16 count = 0;
     GZ_ENUM_LOCAL(CharacterStat, i16) i;
     for (i = 0; i < STAT_FORTUNE; i++) {
@@ -1733,7 +1733,7 @@ i16 CountRaisableStats(const Character* character) {
 // `stat`, or a random stat when negative, re-rolled until one can take a
 // point; -1 when none can.
 RVA(0x00018a30, 0x67)
-i16 ResolveRaisableStat(const Character* character, i16 stat) {
+i16 ResolveRaisableStat(const CharacterCore* character, i16 stat) {
     if (!CountRaisableStats(character)) {
         return -1;
     }
@@ -1748,7 +1748,7 @@ i16 ResolveRaisableStat(const Character* character, i16 stat) {
 
 // Raises `experience` to at least the start of the character's level.
 RVA(0x00018aa0, 0x23)
-void RaiseExperienceToLevel(Character* character) {
+void RaiseExperienceToLevel(CharacterCore* character) {
     u32 floor = ExperienceForLevel(character->level, character->id);
     if (GetCharacterExperience(character) < floor) {
         character->experience = floor;
@@ -1759,7 +1759,7 @@ void RaiseExperienceToLevel(Character* character) {
 // experience; the party's pending level count (0 with nothing pending).
 RVA(0x00018ad0, 0x76)
 i16 GrantBattleRewards(void) {
-    Character* leader;
+    CharacterCore* leader;
     if (s_rewardsPending) {
         leader = GetRosterCharacter(ROSTER_LEADER);
         AddMacca(leader, g_rewardMacca);
@@ -1780,18 +1780,18 @@ void MarkRewardsPending(void) {
     s_rewardsPending = true;
 }
 
-static __inline void FinishLevelGain(Character* character) {
+static __inline void FinishLevelGain(CharacterCore* character) {
     ApplyLevelStatGrowth(character);
     FullyRestoreCharacter(character);
 }
 
-static __inline void ApplyPickedStatGain(Character* member) {
+static __inline void ApplyPickedStatGain(CharacterCore* member) {
     member->stats.base[s_raisedStat]++;
     SaveGameState();
     SetGamePhase(LEVEL_UP_PHASE_REDRAW_STAT);
 }
 
-static __inline void ShowRaisedStat(Character* member, i16 highlighted) {
+static __inline void ShowRaisedStat(CharacterCore* member, i16 highlighted) {
     FullyRestoreCharacter(member);
     DrawStatLine(member, s_raisedStat, highlighted, s_statWindow);
     PushWaitState(WAIT_FRAMES, WAIT_ON_ANY_INPUT, 10, 0);
@@ -1803,7 +1803,7 @@ static __inline void ShowRaisedStat(Character* member, i16 highlighted) {
 // raised stat, and 1 closes the screen.
 RVA(0x00018b60, 0x780)
 b16 RunLevelUp(void) {
-    Character* member;
+    CharacterCore* member;
     GZ_ENUM_LOCAL(TextEvent, i16) key;
     i16 skill;
 
@@ -2047,10 +2047,10 @@ static __inline i16 ScaleStatWeight(i32 value, i16 total) {
     return value * 10000 / total;
 }
 
-static i16* BuildStatWeightRanges(const Character* character, i16* ranges);
+static i16* BuildStatWeightRanges(const CharacterCore* character, i16* ranges);
 
 RVA(0x00019370, 0x5e)
-i16 RollWeightedStat(const Character* character) {
+i16 RollWeightedStat(const CharacterCore* character) {
     i16 stat;
     i16 draw;
     if (BuildStatWeightRanges(character, s_statPicks) == NULL) {
@@ -2069,7 +2069,7 @@ i16 RollWeightedStat(const Character* character) {
 // rotate across ebx, esi and edi. Calls, branches, stores and arithmetic
 // align; cursor initialization order does not change the allocation.
 RVA(0x000193d0, 0x9a)
-static i16* BuildStatWeightRanges(const Character* character, i16* ranges) {
+static i16* BuildStatWeightRanges(const CharacterCore* character, i16* ranges) {
     i16 total = 0;
     i16* range;
     GZ_ENUM_LOCAL(CharacterStat, i16) stat;
@@ -2098,10 +2098,10 @@ static i16* BuildStatWeightRanges(const Character* character, i16* ranges) {
     return ranges;
 }
 
-static i16 AppendLearnableSkills(Character* character, i16 count, i16 source);
+static i16 AppendLearnableSkills(CharacterCore* character, i16 count, i16 source);
 
 RVA(0x00019470, 0x4e)
-i16 CollectLearnableSkills(Character* character, i16 source) {
+i16 CollectLearnableSkills(CharacterCore* character, i16 source) {
     i16 count;
     if (source == -1) {
         count = AppendLearnableSkills(character, 0, 0);
@@ -2115,7 +2115,7 @@ i16 CollectLearnableSkills(Character* character, i16 source) {
 }
 
 RVA(0x000194c0, 0x87)
-static i16 AppendLearnableSkills(Character* character, i16 count, i16 source) {
+static i16 AppendLearnableSkills(CharacterCore* character, i16 count, i16 source) {
     i16* skills;
     i16 index;
     s_learnableSkills[count] = -1;
@@ -2141,7 +2141,7 @@ static i16 AppendLearnableSkills(Character* character, i16 count, i16 source) {
 // Teaches `character` every skill it can learn from `source`; returns how
 // many it learned.
 RVA(0x00019550, 0x63)
-i16 LearnAllSkills(Character* character, i16 source) {
+i16 LearnAllSkills(CharacterCore* character, i16 source) {
     i16 count = 0;
     i16 skill;
 
@@ -2157,7 +2157,7 @@ i16 LearnAllSkills(Character* character, i16 source) {
 }
 
 RVA(0x000195c0, 0x199)
-void GainLevels(Character* character, i16 count) {
+void GainLevels(CharacterCore* character, i16 count) {
     i16 index;
     i16 stat;
     u8 level;
@@ -2517,12 +2517,12 @@ MenuBox* OpenPartyPicker(PartyMemberList* entries) {
 RVA(0x00019fb0, 0xd4)
 void PartyPickerHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event) {
     PartyMemberList* entries = menu->items.memberList;
-    Character* character;
+    CharacterCore* character;
     i16 enabled;
     switch (event) {
         case MENU_EVENT_ADD_ROW:
             enabled = true;
-            character = GetCharacterById(entries->ids[index]);
+            character = GetCharacterCore(GetCharacterById(entries->ids[index]));
             switch (s_partyPickerMode) {
                 case PARTY_PICKER_ALL:
                     break;
@@ -2820,7 +2820,7 @@ b16 RunItemUse(void) {
             return false;
 
         case ITEM_USE_PHASE_PROMPT_ACTION: {
-            Character* user;
+            CharacterCore* user;
             const ItemRecord* record;
             i16 position;
             NextGamePhase();

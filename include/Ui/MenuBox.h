@@ -8,7 +8,7 @@
 #include <Ints.h>
 #include <Text/TextEvent.h>
 
-struct Character;
+struct CharacterCore;
 struct MenuBox;
 struct Panel;
 struct ItemStackList;
@@ -80,7 +80,7 @@ typedef struct MenuBox {
     // What the handler lists, read as its handler needs: item strings, bag
     // entry indices (the bag discard menu), or a script menu's tag value.
     union {
-        struct Character* character;
+        struct CharacterCore* character;
         const void* raw;
         char** text;
         i16* entries;

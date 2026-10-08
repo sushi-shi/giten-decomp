@@ -215,7 +215,7 @@ RVA(0x00020cf0, 0x149)
 void ApplyClockChanges(GZ_ENUM_PARAM(ClockUpdate, i16) changed) {
     i16 i;
     u8* flags;
-    Character* character;
+    CharacterCore* character;
     if (!(changed & CLOCK_UPDATE_MOON)) {
         return;
     }

@@ -222,8 +222,8 @@ GZ_ENUM_END(ActorRewardKind)
 
 void GrantActorReward(GZ_ENUM_PARAM(ActorRewardKind, i16) kind);
 
-struct Character;
-i16 PickEquipmentReward(struct Character* character);
+struct CharacterCore;
+i16 PickEquipmentReward(struct CharacterCore* character);
 
 RVA_DECL(0x00033210)
 void GrantActorSpoil(GZ_ENUM_PARAM(ActorSpoilKind, i16) kind);

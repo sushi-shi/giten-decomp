@@ -505,7 +505,7 @@ i16 RollItemAmount(i16 item, i16 count, i16 random) {
 }
 
 RVA(0x000235a0, 0x50)
-b16 IsEquipCurseActive(Character* character, i16 part) {
+b16 IsEquipCurseActive(CharacterCore* character, i16 part) {
     ItemSlot slot = GetEquipSlot(character, part);
     ItemRecord* record;
 
@@ -1350,7 +1350,7 @@ i16 ReadGemItems(FILE* fp) {
 }
 
 RVA(0x00024890, 0xc0)
-void ApplyItemEffect(i16 item, Character* user, Character* target) {
+void ApplyItemEffect(i16 item, CharacterCore* user, CharacterCore* target) {
     s_usedItem = *GetLoadedRecord(item);
     switch (s_usedItem.kind) {
         case ITEM_KIND_RESTORATIVE:
@@ -1382,7 +1382,7 @@ void ApplyItemEffect(i16 item, Character* user, Character* target) {
 }
 
 RVA(0x00024950, 0x100)
-void UseRestoreItem(Character* user, Character* target) {
+void UseRestoreItem(CharacterCore* user, CharacterCore* target) {
     i16 mp;
     i16 hp;
     GZ_ENUM_LOCAL(RestoreResult, i16) result;
@@ -1411,7 +1411,7 @@ void UseRestoreItem(Character* user, Character* target) {
 }
 
 RVA(0x00024a50, 0xd0)
-void UseAttackItem(Character* user, Character* target) {
+void UseAttackItem(CharacterCore* user, CharacterCore* target) {
     user->result = 0;
     ResetActionOutcome();
     if (GetItemDamagePower(&s_usedItem) == 0) {
@@ -1435,7 +1435,7 @@ void UseAttackItem(Character* user, Character* target) {
     }
 }
 
-static __inline void SetInertItemOutcome(Character* user, Character* target) {
+static __inline void SetInertItemOutcome(CharacterCore* user, CharacterCore* target) {
     ResetActionOutcome();
     user->result = 0;
     user->pickNoEffect = true;
@@ -1443,12 +1443,12 @@ static __inline void SetInertItemOutcome(Character* user, Character* target) {
 }
 
 RVA(0x00024b20, 0x40)
-void UseKind5Item(Character* user, Character* target) {
+void UseKind5Item(CharacterCore* user, CharacterCore* target) {
     SetInertItemOutcome(user, target);
 }
 
 RVA(0x00024b60, 0x40)
-void UseInertItem(Character* user, Character* target) {
+void UseInertItem(CharacterCore* user, CharacterCore* target) {
     SetInertItemOutcome(user, target);
 }
 
@@ -1624,7 +1624,7 @@ void AddItemStatBonuses(i16 item, i16* bonuses, i16 indexed) {
 }
 
 RVA(0x00024f40, 0x100)
-i16 SumEquippedMagicDefenseBonus(Character* character, u8 groups) {
+i16 SumEquippedMagicDefenseBonus(CharacterCore* character, u8 groups) {
     i16 total = 0;
     if (groups & 1) {
         total += GetItemMagicDefenseBonus(GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item);
@@ -1708,7 +1708,7 @@ void ApplyItemDamageRatio(i16 item, i16* ratios) {
 }
 
 RVA(0x000251c0, 0x18b)
-i16 ScaleDamageByEquipment(Character* character, i16 damage, i16 element) {
+i16 ScaleDamageByEquipment(CharacterCore* character, i16 damage, i16 element) {
     i16 ratios[10];
     i32 value;
     i16 i;
@@ -1756,7 +1756,7 @@ b16 IsItemGuardingElement(i16 item, i16 element) {
 }
 
 RVA(0x000253a0, 0x104)
-i16 CountElementGuards(Character* character, i16 element) {
+i16 CountElementGuards(CharacterCore* character, i16 element) {
     i16 count;
 
     if (element < 0 || element >= 10) {
@@ -1776,7 +1776,7 @@ i16 CountElementGuards(Character* character, i16 element) {
 }
 
 RVA(0x000254b0, 0x143)
-PoolRegen ApplyEquipmentRegen(Character* character) {
+PoolRegen ApplyEquipmentRegen(CharacterCore* character) {
     PoolRegen regen;
 
     regen.hp = 0;
@@ -1825,7 +1825,7 @@ void AddItemRegen(i16 item, PoolRegen* regen) {
 }
 
 RVA(0x00025680, 0x1c0)
-GZ_ENUM_RETURN(ConditionId, i16) ResolveInflictedCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target) {
+GZ_ENUM_RETURN(ConditionId, i16) ResolveInflictedCondition(GZ_ENUM_PARAM(InflictCode, i16) code, CharacterCore* target) {
     GZ_ENUM_LOCAL(ConditionId, i16) condition = CONDITION_NONE;
     i16 roll;
 
@@ -1917,7 +1917,7 @@ GZ_ENUM_RETURN(ConditionId, i16) ResolveInflictedCondition(GZ_ENUM_PARAM(Inflict
 }
 
 RVA(0x00025840, 0x7c)
-void InflictCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target) {
+void InflictCondition(GZ_ENUM_PARAM(InflictCode, i16) code, CharacterCore* target) {
     b16 had = HasCondition(GetCharacterConditions(target), CONDITION_ZOMBIE);
     i16 condition = ResolveInflictedCondition(code, target);
 
@@ -1932,7 +1932,7 @@ void InflictCondition(GZ_ENUM_PARAM(InflictCode, i16) code, Character* target) {
 }
 
 RVA(0x000258c0, 0x103)
-i16 IsConditionResisted(Character* target, i16 code) {
+i16 IsConditionResisted(CharacterCore* target, i16 code) {
     i16 condition = ResolveInflictedCondition(code, target);
     i16 resisted;
 
@@ -2206,7 +2206,7 @@ static void GiftMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i
 RVA(0x00025e70, 0xf0)
 b16 RunGemItemGift(void) {
     i16 pick;
-    Character* actor;
+    CharacterCore* actor;
 
     switch (GetGamePhase()) {
         case MENU_STEP_OPEN:
@@ -2227,7 +2227,7 @@ b16 RunGemItemGift(void) {
             if (pick == LIST_MENU_CANCELLED) {
                 break;
             }
-            actor = GetScriptActor();
+            actor = GetFieldActorCore(GetScriptActor());
             if (actor == NULL) {
                 break;
             }

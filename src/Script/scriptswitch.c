@@ -108,12 +108,12 @@ void OpSwitchOnRange(i16 call) {
 
 RVA(0x00032980, 0x20)
 void OpSwitchOnActorAttrA(i16 call) {
-    SwitchOnValue(g_curScript->actor->attitude, call, true);
+    SwitchOnValue(g_curScript->actor->core.attitude, call, true);
 }
 
 RVA(0x000329a0, 0x20)
 void OpSwitchOnActorAttrB(i16 call) {
-    SwitchOnValue(g_curScript->actor->fieldState, call, true);
+    SwitchOnValue(g_curScript->actor->core.fieldState, call, true);
 }
 
 RVA(0x000329c0, 0x16)

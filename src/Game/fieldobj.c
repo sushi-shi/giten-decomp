@@ -420,7 +420,7 @@ b16 InitFieldObjects(void) {
         s_objects[i].redraw = false;
         s_objects[i].anim = 0;
         s_objects[i].script = NULL;
-        InitWordList(&s_objects[i].list, 0);
+        InitWordList(&s_objects[i].actor.core.skills, 0);
     }
     ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_SET);
     return false;
@@ -454,9 +454,9 @@ void RemoveFieldObject(i16 index, b16 announce) {
     s_objects[index].redraw = false;
     s_objects[index].anim = 0;
     s_objects[index].script = FreeScriptBlock(s_objects[index].script);
-    s_objects[index].hidden = false;
+    s_objects[index].actor.hidden = false;
     ClearCondition(GetFieldObjectConditions(&s_objects[index]), CONDITION_ZOMBIE);
-    ResetWordList(&s_objects[index].list, 0);
+    ResetWordList(&s_objects[index].actor.core.skills, 0);
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         if (s_objects[i].layer != FIELD_LAYER_NONE) {
             return;
@@ -485,7 +485,7 @@ RVA(0x0000d980, 0x30)
 b16 IsFieldActor(const void* actor) {
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
-        if (&s_objects[i].kind == actor) {
+        if (&s_objects[i].actor == actor) {
             return true;
         }
     }
@@ -544,15 +544,15 @@ i16 SpawnFieldObject(
     s_objects[slot].redraw = false;
     s_objects[slot].anim = 0;
     s_objects[slot].layer = layer;
-    s_objects[slot].byte21a = 0;
-    s_objects[slot].byte21b = 0;
-    s_objects[slot].pos.x = x;
-    s_objects[slot].pos.y = y;
-    s_objects[slot].direction = (u8)direction;
-    s_objects[slot].word21d = 0;
-    s_objects[slot].word221 = 0;
-    s_objects[slot].word21f = 0;
-    s_objects[slot].hidden = false;
+    s_objects[slot].actor.byte21a = 0;
+    s_objects[slot].actor.byte21b = 0;
+    s_objects[slot].actor.pos.x = x;
+    s_objects[slot].actor.pos.y = y;
+    s_objects[slot].actor.direction = (u8)direction;
+    s_objects[slot].actor.word21d = 0;
+    s_objects[slot].actor.word221 = 0;
+    s_objects[slot].actor.word21f = 0;
+    s_objects[slot].actor.hidden = false;
     if (alternate != false) {
         file = OpenDataFile(0x6802, DATA_FILE_SCRIPT, 0);
     } else if (TestModeFlags(MODE_WORLD_MAP)) {
@@ -568,12 +568,12 @@ i16 SpawnFieldObject(
         SetBit(GetFieldObjectFlags(&s_objects[slot]), ACTOR_FLAG_ANCHORED);
     }
     if (fresh != false) {
-        s_objects[slot].macca = 0;
-        s_objects[slot].magnetite = 0;
-        s_objects[slot].pickItem = 0;
-        s_objects[slot].dropChance = 0;
-        GetFieldObjectHpPool(&s_objects[slot])->cur = s_objects[slot].rank;
-        s_objects[slot].experience = s_objects[slot].rank;
+        s_objects[slot].actor.core.macca = 0;
+        s_objects[slot].actor.core.magnetite = 0;
+        s_objects[slot].actor.core.pickItem = 0;
+        s_objects[slot].actor.core.dropChance = 0;
+        GetFieldObjectHpPool(&s_objects[slot])->cur = s_objects[slot].actor.core.level;
+        s_objects[slot].actor.core.experience = s_objects[slot].actor.core.level;
     }
     SetObjectEventFlag(slot, FIELD_OBJECT_NO_FLAG, FIELD_OBJECT_NO_FLAG);
     ModifyEventFlag(EVENT_FLAG_BANK_LEVEL, LEVEL_FLAG_NO_ENEMIES, BIT_CHANGE_CLEAR);
@@ -623,16 +623,16 @@ i16 RespawnFieldObject(i16 index, b16 alternate, i8 event, b16 fresh) {
     if (live < 0) {
         return -1;
     }
-    layer = FindLayerOfKind(s_objects[live].kind);
+    layer = FindLayerOfKind(s_objects[live].actor.core.id);
     if (layer < 0) {
         return -1;
     }
     slot = SpawnFieldObject(
         layer,
-        s_objects[live].pos.x,
-        s_objects[live].pos.y,
-        s_objects[live].direction,
-        s_objects[live].kind,
+        s_objects[live].actor.pos.x,
+        s_objects[live].actor.pos.y,
+        s_objects[live].actor.direction,
+        s_objects[live].actor.core.id,
         alternate,
         event,
         fresh
@@ -664,9 +664,9 @@ FieldObject* GetFieldObject(i16 index) {
 }
 
 RVA(0x0000ddc0, 0x15)
-// The character record that starts at `kind` (conditions land at +0x170).
-Character* GetFieldActor(i16 index) {
-    return (Character*)&s_objects[index].kind;
+// Borrows the map actor stored in the field object.
+FieldActor* GetFieldActor(i16 index) {
+    return &s_objects[index].actor;
 }
 
 RVA(0x0000dde0, 0x43)
@@ -675,7 +675,7 @@ void MarkObjectsOnMap(void) {
     if (s_objectsFrozen == false) {
         for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
             if (s_objects[i].layer != FIELD_LAYER_NONE) {
-                MarkMapCell(MAP_MARK_OBJECT, s_objects[i].pos.x, s_objects[i].pos.y);
+                MarkMapCell(MAP_MARK_OBJECT, s_objects[i].actor.pos.x, s_objects[i].actor.pos.y);
             }
         }
     }
@@ -684,14 +684,14 @@ void MarkObjectsOnMap(void) {
 RVA(0x0000de30, 0x2d)
 MapCoord GetObjectCoord(i16 index) {
     MapCoord coord;
-    coord.x = s_objects[index].pos.x;
-    coord.y = s_objects[index].pos.y;
+    coord.x = s_objects[index].actor.pos.x;
+    coord.y = s_objects[index].actor.pos.y;
     return coord;
 }
 
 RVA(0x0000de60, 0x16)
 GZ_ENUM_RETURN(ViewDirection, i16) GetObjectDirection(i16 index) {
-    return s_objects[index].direction;
+    return s_objects[index].actor.direction;
 }
 
 RVA(0x0000de80, 0x12)
@@ -723,7 +723,7 @@ GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeState(FieldObject* object) {
     if (object->layer == FIELD_LAYER_NONE) {
         return OBJECT_LIFE_ABSENT;
     }
-    if (FindLayerOfKind(object->kind) < 0) {
+    if (FindLayerOfKind(object->actor.core.id) < 0) {
         return OBJECT_LIFE_ABSENT;
     }
     return (GetFatalCondition(GetFieldObjectConditions(object)) != 0) + OBJECT_LIFE_ACTIVE;
@@ -765,7 +765,7 @@ b16 DrawFieldObject(FieldObject* object, u32 image, i16 index, i16 total, i16 dr
     if (drawn > 8) {
         drawn = 8;
     }
-    facing = RelativeFacing(g_viewFacing, object->direction);
+    facing = RelativeFacing(g_viewFacing, object->actor.direction);
     point = GetApproachOffset(g_viewLateral, g_viewDepth);
     sprite = s_facingSprite[facing];
     CellToField(g_viewLateral, g_viewDepth, FIELD_SUBCELL_CENTER, &cell);
@@ -814,7 +814,7 @@ GZ_ENUM_RETURN(ObjectSlotState, i16) CheckObjectState(i16 index) {
     if (s_objects[index].layer == FIELD_LAYER_NONE) {
         return OBJECT_SLOT_FREE;
     }
-    if (s_objects[index].hidden == false) {
+    if (s_objects[index].actor.hidden == false) {
         return OBJECT_SLOT_LIVE;
     }
     if (s_objectRemovalDeferred) {
@@ -831,7 +831,11 @@ void RunFieldIdle(void) {
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         if (CheckObjectState(i) >= OBJECT_SLOT_LIVE) {
-            BuildSightGrid(s_objects[i].pos.x, s_objects[i].pos.y, s_objects[i].direction);
+            BuildSightGrid(
+                s_objects[i].actor.pos.x,
+                s_objects[i].actor.pos.y,
+                s_objects[i].actor.direction
+            );
             if (RunObjectStep(&s_objects[i], i)) {
                 return;
             }
@@ -848,19 +852,19 @@ i16 FindObjectAt(i16 x, i16 y, i16 start, GZ_ENUM_PARAM(ObjectKindMatch, i16) mo
         if (!IsFieldObjectActive(&s_objects[i])) {
             continue;
         }
-        if (FindLayerOfKind(s_objects[i].kind) < 0) {
+        if (FindLayerOfKind(s_objects[i].actor.core.id) < 0) {
             continue;
         }
         if (GetFatalCondition(GetFieldObjectConditions(&s_objects[i]))) {
             continue;
         }
-        if (x != s_objects[i].pos.x || y != s_objects[i].pos.y) {
+        if (x != s_objects[i].actor.pos.x || y != s_objects[i].actor.pos.y) {
             continue;
         }
-        if (mode == OBJECT_MATCH_KIND && kind != s_objects[i].kind) {
+        if (mode == OBJECT_MATCH_KIND && kind != s_objects[i].actor.core.id) {
             continue;
         }
-        if (mode == OBJECT_MATCH_OTHER_KIND && kind == s_objects[i].kind) {
+        if (mode == OBJECT_MATCH_OTHER_KIND && kind == s_objects[i].actor.core.id) {
             continue;
         }
         return i;
@@ -890,9 +894,9 @@ RVA(0x0000e400, 0x48)
 void UpdateFieldObjects(void) {
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
-        if (IsFieldObjectActive(&s_objects[i]) && s_objects[i].pos.y >= 4) {
+        if (IsFieldObjectActive(&s_objects[i]) && s_objects[i].actor.pos.y >= 4) {
             ResetObjectAnim(i);
-            s_objects[i].hidden = true;
+            s_objects[i].actor.hidden = true;
         }
     }
 }
@@ -911,7 +915,7 @@ void ClearObjectStuns(i16* cleared) {
     i16 i;
     for (i = 0; i < FIELD_OBJECT_COUNT; i++) {
         cleared[i] = 0;
-        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].hidden != false) {
+        if (s_objects[i].layer != FIELD_LAYER_NONE && s_objects[i].actor.hidden != false) {
             cleared[i] = 1;
             ClearCondition(GetFieldObjectConditions(&s_objects[i]), CONDITION_ASH);
             ClearCondition(GetFieldObjectConditions(&s_objects[i]), CONDITION_DEAD);
@@ -943,7 +947,7 @@ GZ_ENUM_RETURN(ObjectLifeState, i16) GetObjectLifeStateAt(i16 index) {
 
 RVA(0x0000e550, 0x15)
 MapCoord* GetObjectCoordPtr(i16 index) {
-    return &s_objects[index].pos;
+    return &s_objects[index].actor.pos;
 }
 
 RVA(0x0000e570, 0x17)
@@ -964,9 +968,9 @@ i16 GetObjectImageCode(i16 index) {
         imageCode = FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->anim != 0) {
         imageCode = FIELD_OBJECT_IMAGE_LIT | FIELD_OBJECT_IMAGE_REACTION;
-    } else if (object->hidden != false) {
+    } else if (object->actor.hidden != false) {
         imageCode = FIELD_OBJECT_IMAGE_LIT | FIELD_OBJECT_IMAGE_REACTION;
-    } else if (object->acting) {
+    } else if (object->actor.core.acting) {
         imageCode = FIELD_OBJECT_IMAGE_ACTING;
     }
     return imageCode;
@@ -976,14 +980,14 @@ RVA(0x0000e600, 0x77)
 i16 GetObjectFacingImageCode(i16 index) {
     FieldObject* object = &s_objects[index];
     i16 imageCode =
-        s_facingImageCodes[RelativeFacing(g_party.field.pos.direction, object->direction)];
+        s_facingImageCodes[RelativeFacing(g_party.field.pos.direction, object->actor.direction)];
     if (object->redraw != false) {
         imageCode = FIELD_OBJECT_IMAGE_REACTION;
     } else if (object->anim != 0) {
         imageCode = FIELD_OBJECT_IMAGE_LIT | FIELD_OBJECT_IMAGE_REACTION;
-    } else if (object->hidden != false) {
+    } else if (object->actor.hidden != false) {
         imageCode = FIELD_OBJECT_IMAGE_REACTION;
-    } else if (object->acting) {
+    } else if (object->actor.core.acting) {
         imageCode = FIELD_OBJECT_IMAGE_ACTING;
     }
     return imageCode;
@@ -1015,7 +1019,7 @@ i16 AdvanceObjectAnims(void) {
                 s_objects[i].anim++;
             }
             if (s_objects[i].anim > 8) {
-                s_objects[i].hidden = true;
+                s_objects[i].actor.hidden = true;
             }
             RedrawFieldView();
             count++;
@@ -1147,7 +1151,7 @@ void RefreshObjectDraw(
         RequestRefresh();
         return;
     }
-    if (object->hidden != false) {
+    if (object->actor.hidden != false) {
         RequestRefresh();
     }
 }
@@ -1497,12 +1501,12 @@ b16 StepObjectTowardParty(
     if (TestFieldObjectFlag(object, ACTOR_FLAG_ANCHORED)) {
         return false;
     }
-    code = GetMapCellCode(object->pos.x, object->pos.y);
-    visible = GetPartyView(object->pos.x, object->pos.y);
-    visible |= IsCellInView(object->pos.x, object->pos.y);
+    code = GetMapCellCode(object->actor.pos.x, object->actor.pos.y);
+    visible = GetPartyView(object->actor.pos.x, object->actor.pos.y);
+    visible |= IsCellInView(object->actor.pos.x, object->actor.pos.y);
     while (1) {
-        x = object->pos.x;
-        y = object->pos.y;
+        x = object->actor.pos.x;
+        y = object->actor.pos.y;
         turned = false;
         direction = DirectionToParty(x, y);
         direction = TurnDirection(direction, turn);
@@ -1511,7 +1515,7 @@ b16 StepObjectTowardParty(
             return RefreshIfTurned(visible, turned);
         }
         if (!WallStops(GetMapWallKind(x, y, direction), WALL_STOP_MOVEMENT)) {
-            StepMapCoord(&x, &y, object->direction, MOVE_FORWARD);
+            StepMapCoord(&x, &y, object->actor.direction, MOVE_FORWARD);
             WrapMapPosition(&x, &y);
             if (!CellCodeDiffers(code, x, y)
                 && !IsCellBlocked(g_party.field.pos.level, CELL_SCAN_TEST, x, y)) {
@@ -1522,12 +1526,12 @@ b16 StepObjectTowardParty(
             return RefreshIfTurned(visible, turned);
         }
         retried = true;
-        turn = GetPartySide(object->pos.x, object->pos.y, direction);
+        turn = GetPartySide(object->actor.pos.x, object->actor.pos.y, direction);
     }
     visible |= GetPartyView(x, y);
-    object->pos.x = x;
-    object->pos.y = y;
-    object->word21d = 1;
+    object->actor.pos.x = x;
+    object->actor.pos.y = y;
+    object->actor.word21d = 1;
     if (!DistanceFromParty(x, y)) {
         InvalidateSelectedHotspot();
     }
@@ -1540,8 +1544,8 @@ b16 StepObjectTowardParty(
 // Faces the party plus `turn` quarter turns; refreshes when turned in view.
 RVA(0x0000f4e0, 0x66)
 void FaceObjectToParty(FieldObject* object, GZ_ENUM_PARAM(MoveCommand, i16) turn) {
-    i16 x = object->pos.x;
-    i16 y = object->pos.y;
+    i16 x = object->actor.pos.x;
+    i16 y = object->actor.pos.y;
     b16 turned = false;
     b16 view = GetPartyView(x, y);
     i16 direction = DirectionToParty(x, y);
@@ -1587,7 +1591,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
     b16 picked;
     GZ_ENUM_LOCAL(SkillKind, i16) kind;
     picked = false;
-    if (CanUseSkill(skill, (Character*)&object->kind) <= 0) {
+    if (CanUseSkill(skill, &object->actor.core) <= 0) {
         return -1;
     }
     kind = GetSkillKind(skill);
@@ -1606,7 +1610,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
                 if (GetLiveObject(i) >= 0) {
                     target = GetFieldObject(i);
                     coord = GetObjectCoord(i);
-                    if (GetSightCell(object->pos.x, object->pos.y, coord.x, coord.y)
+                    if (GetSightCell(object->actor.pos.x, object->actor.pos.y, coord.x, coord.y)
                         && GetFieldObjectHpPool(object)->cur
                                <= (u16)((GetFieldObjectHpPool(object)->max >> 2) * 3)) {
                         SetFieldSkillCandidate(
@@ -1623,7 +1627,7 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
                 if (GetLiveObject(i) >= 0) {
                     target = GetFieldObject(i);
                     coord = GetObjectCoord(i);
-                    if (GetSightCell(object->pos.x, object->pos.y, coord.x, coord.y)
+                    if (GetSightCell(object->actor.pos.x, object->actor.pos.y, coord.x, coord.y)
                         && ConditionKindApplies(
                             GetSkillEffectCode(GetCachedSkill(skill)),
                             GetFieldObjectConditions(target)
@@ -1647,14 +1651,14 @@ i16 UseObjectSkill(FieldObject* object, i16 skill) {
         if (best.index < 0) {
             return -1;
         }
-        object->pickObject = best.index;
+        object->actor.core.pickObject = best.index;
         picked = true;
-        g_targetId = object->pickObject;
+        g_targetId = object->actor.core.pickObject;
     }
     if (!GetFieldMarker() && !IsWithinRange(GetSkillAttackRange(skill))) {
         return -1;
     }
-    if (IsSkillIdBlocked((Character*)&object->kind, skill) == true) {
+    if (IsSkillIdBlocked(&object->actor.core, skill) == true) {
         return -1;
     }
     return picked != false;
@@ -1671,7 +1675,7 @@ b16 ChooseObjectTarget(FieldObject* object);
 RVA(0x0000f890, 0x490)
 b16 RunObjectStep(FieldObject* object, i16 index) {
     i16 scenes[ATTITUDE_COUNT];
-    Character* actor;
+    FieldActor* actor;
     i16 action;
     i16 tries;
     i16 slot;
@@ -1683,9 +1687,9 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
     }
     if (HasTurnElapsed()) {
         AgeConditions(GetFieldObjectConditions(object), 1);
-        RecoverConditions((Character*)&object->kind);
+        RecoverConditions(&object->actor.core);
     }
-    if (TickActionWait(GetFieldObjectActionWait(object), object->actionSpeed)) {
+    if (TickActionWait(GetFieldObjectActionWait(object), object->actor.core.actionSpeed)) {
         return false;
     }
     ResetActionWaitDelay(GetFieldObjectActionWait(object));
@@ -1693,9 +1697,9 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
         return false;
     }
     SetFieldBusy(1);
-    actor = (Character*)&object->kind;
-    if (!DistanceToParty((FieldActor*)actor)) {
-        AlertActor(actor, ATTITUDE_VERY_HOSTILE);
+    actor = &object->actor;
+    if (!DistanceToParty(actor)) {
+        AlertActor(GetFieldActorCore(actor), ATTITUDE_VERY_HOSTILE);
     }
     StartScriptInCode(object->script->code, 0xff, 0, NewScriptContext(1, actor));
     do {
@@ -1705,20 +1709,20 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
     RetakeDeferredChar(0, result, "\223G\215s\223\256\203t\203\215\201[");
     FreeScriptContext(GetCurrentScript());
     g_actorId = index;
-    action = PickActorAction(actor);
+    action = PickActorAction(GetFieldActorCore(actor));
     if (action > 0) {
         if ((action & CONDITION_ACTION_MASK) == CONDITION_ACTION_NONE) {
             action = (action & CONDITION_ACTION_FLAGS_MASK) | CONDITION_ACTION_ATTACK_OPPONENT;
         }
         action = AdjustActorAction(index, action);
     }
-    switch (object->mode) {
+    switch (object->actor.core.mode) {
         case ACTOR_MODE_ATTACK:
             if (action == ACTOR_ACTION_HANDLED || action == ACTOR_ACTION_ATTACK_QUEUED) {
                 goto attack;
             }
             g_actorId = index;
-            object->mode = ACTOR_MODE_IDLE;
+            object->actor.core.mode = ACTOR_MODE_IDLE;
             SetFieldObjectPickRole(object, PICK_ROLE_ATTACK);
             SetFieldObjectPickTarget(
                 object,
@@ -1727,11 +1731,11 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             g_actionId = 1;
             tries = 0;
             for (;;) {
-                slot = RollEncounterSlot(object->encounterRow);
+                slot = RollEncounterSlot(object->actor.core.encounterRow);
                 if (slot >= 1 && slot <= OBJECT_SKILL_COUNT) {
                     g_actionId = object->skills[slot - 1];
-                    object->pickTarget = g_actionId;
-                    object->pickTargetHigh = 1;
+                    object->actor.core.pickTarget = g_actionId;
+                    object->actor.core.pickTargetHigh = 1;
                     SetFieldObjectPickRole(object, PICK_ROLE_MAGIC);
                     result = UseObjectSkill(object, g_actionId);
                     if (result < 0) {
@@ -1749,7 +1753,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                         goto attack;
                     }
                 } else {
-                    object->mode = ACTOR_MODE_IDLE;
+                    object->actor.core.mode = ACTOR_MODE_IDLE;
                     SetFieldObjectPickRole(object, PICK_ROLE_ATTACK);
                     SetFieldObjectPickTarget(
                         object,
@@ -1774,7 +1778,7 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
                 break;
             }
             if (!PushPromptState(0, 0, 200, 450, 0)) {
-                g_targetId = object->pickObject;
+                g_targetId = object->actor.core.pickObject;
             }
             break;
         case ACTOR_MODE_FLEE:
@@ -1801,10 +1805,10 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             scenes[ATTITUDE_NORMAL] = -1;
             if (IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_V1_0)
                 && IsEventFlagSet(EVENT_FLAG_BANK_OWNED, OWNED_DCS_MABUDACHI)) {
-                object->mode = ACTOR_MODE_IDLE;
+                object->actor.core.mode = ACTOR_MODE_IDLE;
                 break;
             }
-            attitude = object->attitude;
+            attitude = object->actor.core.attitude;
             if (attitude < ATTITUDE_PLEADING || attitude > ATTITUDE_NORMAL) {
                 attitude = ATTITUDE_HOSTILE;
             }
@@ -1815,37 +1819,37 @@ b16 RunObjectStep(FieldObject* object, i16 index) {
             StartActorScene(0xe2, scene, index, actor);
             break;
     }
-    RequestObjectRedraw(object->slot, object->pos.x, object->pos.y);
+    RequestObjectRedraw(object->slot, object->actor.pos.x, object->actor.pos.y);
     return true;
 }
 
 // Picks the party member an object acts on: its party-target skill prompt,
 // or a random member able to act (else any member alive); 0 when there is
 // none. The pick goes to script object B and the actor's pick target.
-b16 BeginPartyTargetSkill(Character* character);
+b16 BeginPartyTargetSkill(CharacterCore* character);
 
 RVA(0x0000fd20, 0x171)
 b16 ChooseObjectTarget(FieldObject* object) {
-    Character* member;
+    CharacterCore* member;
     i16 candidates[PARTY_SIZE];
     i16 count;
     i16 i;
     i16 target;
-    if (object->kind == OBJECT_RECORD_PRIMROSE) {
+    if (object->actor.core.id == OBJECT_RECORD_PRIMROSE) {
         target = FindPartyPositionOfId(OBJECT_RECORD_MARDUK);
         if (target != -1) {
             if (PushPromptState(0, 0, 200, 450, 0)) {
                 return true;
             }
             g_targetId = PartyCombatantId(target);
-            object->pickObject = g_targetId;
+            object->actor.core.pickObject = g_targetId;
             return true;
         }
     }
     if (GetPickBlockingCondition(GetFieldObjectConditions(object))) {
         return false;
     }
-    if (BeginPartyTargetSkill((Character*)&object->kind)) {
+    if (BeginPartyTargetSkill(&object->actor.core)) {
         return true;
     }
     count = 0;
@@ -1870,7 +1874,7 @@ b16 ChooseObjectTarget(FieldObject* object) {
     target = candidates[RandomUpTo(--count)];
     if (!PushPromptState(0, 0, 200, 450, 0)) {
         g_targetId = PartyCombatantId(target);
-        object->pickObject = g_targetId;
+        object->actor.core.pickObject = g_targetId;
     }
     return true;
 }
@@ -1878,7 +1882,7 @@ b16 ChooseObjectTarget(FieldObject* object) {
 // For a member using a party-target skill: opens the target prompt, or
 // targets script object A at once. 0 for other picks.
 RVA(0x0000fea0, 0x88)
-b16 BeginPartyTargetSkill(Character* character) {
+b16 BeginPartyTargetSkill(CharacterCore* character) {
     i16 flags;
     if (character->pickRole != PICK_ROLE_MAGIC) {
         return false;
@@ -2116,10 +2120,10 @@ i16 ScaleLevelGap(i16 a, i16 b) {
 }
 
 static __inline void RecalcObjectStats(FieldObject* object) {
-    ClearStatModifiers(&object->stats);
-    RecalcEquippedStatTotals(&object->stats, GetFieldObjectEquipment(object));
-    RecalcDerivedStats((Character*)&object->kind);
-    ResetBattleStatsToBase(object);
+    ClearStatModifiers(&object->actor.core.stats);
+    RecalcEquippedStatTotals(&object->actor.core.stats, GetFieldObjectEquipment(object));
+    RecalcDerivedStats(&object->actor.core);
+    ResetBattleStatsToBase(&object->actor.core);
 }
 
 // Builds object `object` from its record: identity, pools, stats, item slots
@@ -2129,34 +2133,34 @@ RVA(0x00010470, 0x4b1)
 void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
     i16 i;
     memset(object, 0, sizeof(FieldObject));
-    object->kind = record->id;
-    strncpy(object->namePrefix, record->name, sizeof(object->namePrefix));
-    object->macca = record->macca;
-    object->magnetite = record->magnetite;
-    object->rank = record->level;
-    object->title = 0;
-    object->experience = record->experience;
-    object->byte083 = record->flags.unknownObjectBits;
-    object->pantheon = GetDemonPantheon(record->id);
-    object->alignmentLevelB = ScaleLevelGap(record->alignB[0], record->alignB[1]);
-    object->alignmentLevelA = ScaleLevelGap(record->alignA[0], record->alignA[1]);
-    object->levelBonus = record->levelBonus;
-    object->hundredths = 0;
-    object->stats.base[STAT_INTUITION] = record->stats[STAT_INTUITION];
-    object->stats.base[STAT_MENTAL_STRENGTH] = record->stats[STAT_MENTAL_STRENGTH];
-    object->stats.base[STAT_MAGIC] = record->stats[STAT_MAGIC];
-    object->stats.base[STAT_INTELLIGENCE] = record->stats[STAT_INTELLIGENCE];
-    object->stats.base[STAT_STRENGTH] = record->stats[STAT_STRENGTH];
-    object->stats.base[STAT_VITALITY] = record->stats[STAT_VITALITY];
-    object->stats.base[STAT_PROTECTION] = record->stats[STAT_PROTECTION];
-    object->stats.base[STAT_AGILITY] = record->stats[STAT_AGILITY];
-    object->stats.base[STAT_DEXTERITY] = record->stats[STAT_DEXTERITY];
-    object->stats.base[STAT_CHARM] = record->stats[STAT_CHARM];
-    object->stats.base[STAT_FORTUNE] = record->stats[STAT_FORTUNE];
-    object->actionSpeed = record->actionSpeed;
+    object->actor.core.id = record->id;
+    strncpy(object->actor.core.namePrefix, record->name, sizeof(object->actor.core.namePrefix));
+    object->actor.core.macca = record->macca;
+    object->actor.core.magnetite = record->magnetite;
+    object->actor.core.level = record->level;
+    object->actor.core.title = 0;
+    object->actor.core.experience = record->experience;
+    object->actor.core.unknownIdentityByte = record->flags.unknownObjectBits;
+    object->actor.core.pantheon = GetDemonPantheon(record->id);
+    object->actor.core.alignmentLevelB = ScaleLevelGap(record->alignB[0], record->alignB[1]);
+    object->actor.core.alignmentLevelA = ScaleLevelGap(record->alignA[0], record->alignA[1]);
+    object->actor.core.levelBonus = record->levelBonus;
+    object->actor.core.hundredths = 0;
+    object->actor.core.stats.base[STAT_INTUITION] = record->stats[STAT_INTUITION];
+    object->actor.core.stats.base[STAT_MENTAL_STRENGTH] = record->stats[STAT_MENTAL_STRENGTH];
+    object->actor.core.stats.base[STAT_MAGIC] = record->stats[STAT_MAGIC];
+    object->actor.core.stats.base[STAT_INTELLIGENCE] = record->stats[STAT_INTELLIGENCE];
+    object->actor.core.stats.base[STAT_STRENGTH] = record->stats[STAT_STRENGTH];
+    object->actor.core.stats.base[STAT_VITALITY] = record->stats[STAT_VITALITY];
+    object->actor.core.stats.base[STAT_PROTECTION] = record->stats[STAT_PROTECTION];
+    object->actor.core.stats.base[STAT_AGILITY] = record->stats[STAT_AGILITY];
+    object->actor.core.stats.base[STAT_DEXTERITY] = record->stats[STAT_DEXTERITY];
+    object->actor.core.stats.base[STAT_CHARM] = record->stats[STAT_CHARM];
+    object->actor.core.stats.base[STAT_FORTUNE] = record->stats[STAT_FORTUNE];
+    object->actor.core.actionSpeed = record->actionSpeed;
     GetFieldObjectActionWait(object)->remaining = ACTION_WAIT_RESET - RandomAverage(0, 100, 0);
-    for (i = 0; i < sizeof(object->battleTally); i++) {
-        object->battleTally[i] = 0;
+    for (i = 0; i < sizeof(object->actor.core.battleTally); i++) {
+        object->actor.core.battleTally[i] = 0;
     }
     SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_HEAD], record->items[0]);
     SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_BODY], record->items[1]);
@@ -2179,48 +2183,48 @@ void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
             GetLoadedRecord(GetFieldObjectEquipment(object)[EQUIP_SLOT_GUN].item)
         );
     }
-    NormalizeEquipSlots((Character*)&object->kind);
-    for (i = 0; i < sizeof(object->conditions.bits); i++) {
+    NormalizeEquipSlots(&object->actor.core);
+    for (i = 0; i < sizeof(object->actor.core.conditions.bits); i++) {
         GetFieldObjectConditions(object)->bits[i] = 0;
     }
-    for (i = 0; i < sizeof(object->personalFlags); i++) {
+    for (i = 0; i < sizeof(object->actor.core.personalFlags); i++) {
         GetFieldObjectFlags(object)[i] = 0;
     }
-    object->byte096 = 1;
-    object->acting = false;
-    object->word098 = 0x11;
-    object->attitude = ATTITUDE_NORMAL;
-    object->triggerRange = record->flags.triggerRange;
-    object->mode = ACTOR_MODE_NONE;
-    object->fieldState = 0;
-    object->encounterRow = record->encounterRow;
-    object->shield = 0;
-    for (i = 0; i < sizeof(object->resistance); i++) {
-        object->resistance[i] = record->resistance[i];
+    object->actor.core.unknownRecordState = 1;
+    object->actor.core.acting = false;
+    object->actor.core.unknownRecordWord = 0x11;
+    object->actor.core.attitude = ATTITUDE_NORMAL;
+    object->actor.core.triggerRange = record->flags.triggerRange;
+    object->actor.core.mode = ACTOR_MODE_NONE;
+    object->actor.core.fieldState = 0;
+    object->actor.core.encounterRow = record->encounterRow;
+    object->actor.core.shield = 0;
+    for (i = 0; i < sizeof(object->actor.core.resistance); i++) {
+        object->actor.core.resistance[i] = record->resistance[i];
     }
-    object->moonRow = record->moonRow;
-    object->equipGroup = record->equipGroup;
-    object->pickFlags.recordFlagA = record->flags.pickFlagA;
-    object->pickFlags.recordFlagB = record->flags.pickFlagB;
-    object->pickFlags.itemSkill = false;
-    object->dropChance = record->dropChance;
-    object->pickItem = record->pickItem;
+    object->actor.core.moonRow = record->moonRow;
+    object->actor.core.equipGroup = record->equipGroup;
+    object->actor.core.pickFlags.recordFlagA = record->flags.pickFlagA;
+    object->actor.core.pickFlags.recordFlagB = record->flags.pickFlagB;
+    object->actor.core.pickFlags.itemSkill = false;
+    object->actor.core.dropChance = record->dropChance;
+    object->actor.core.pickItem = record->pickItem;
     for (i = 0; i < AFFILIATION_COUNT; i++) {
-        SetCharacterAffiliation(object, i, record->affiliation[i]);
+        SetCharacterAffiliation(&object->actor.core, i, record->affiliation[i]);
     }
-    ResetWordList(&object->list, OBJECT_SKILL_COUNT);
+    ResetWordList(&object->actor.core.skills, OBJECT_SKILL_COUNT);
     for (i = 0; i < OBJECT_SKILL_COUNT; i++) {
-        SetWord(&object->list, i, record->skills[i]);
+        SetWord(&object->actor.core.skills, i, record->skills[i]);
         object->skills[i] = record->skills[i];
     }
-    object->battleStats[BATTLE_STAT_WEAPON_LEVEL] = 0;
-    object->battleStats[BATTLE_STAT_GUN_LEVEL] = 0;
-    object->battleStats[BATTLE_STAT_MAGIC_LEVEL] = 0;
-    object->battleStats[BATTLE_STAT_DEMON_INTERACTION_LEVEL] = 0;
+    object->actor.core.battleStats[BATTLE_STAT_WEAPON_LEVEL] = 0;
+    object->actor.core.battleStats[BATTLE_STAT_GUN_LEVEL] = 0;
+    object->actor.core.battleStats[BATTLE_STAT_MAGIC_LEVEL] = 0;
+    object->actor.core.battleStats[BATTLE_STAT_DEMON_INTERACTION_LEVEL] = 0;
     RecalcObjectStats(object);
     InitCurMax(GetFieldObjectHpPool(object), record->hp);
     InitCurMax(GetFieldObjectMpPool(object), record->mp);
-    if (object->kind == OBJECT_RECORD_DOPPELGANGER) {
+    if (object->actor.core.id == OBJECT_RECORD_DOPPELGANGER) {
         CopyLeaderIntoObject(object);
     }
 }
@@ -2229,11 +2233,12 @@ void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
 // level, title, the bytes +0x69 (twice), stats, fieldMarkValue and full pools.
 RVA(0x00010930, 0xcb)
 void CopyLeaderIntoObject(FieldObject* object) {
-    Character* leader = GetCharacters();
-    object->rank = leader->level;
-    object->title = leader->title;
-    object->gender = object->byte083 = leader->byte069;
-    object->stats = leader->stats;
+    CharacterCore* leader = GetCharacterCore(GetCharacters());
+    object->actor.core.level = leader->level;
+    object->actor.core.title = leader->title;
+    object->actor.core.gender = object->actor.core.unknownIdentityByte =
+        leader->unknownIdentityByte;
+    object->actor.core.stats = leader->stats;
     GetFieldObjectActionWait(object)->remaining = GetCharacterActionWait(leader)->remaining;
     RecalcObjectStats(object);
     InitCurMax(GetFieldObjectHpPool(object), GetCharacterHpPool(leader)->max);
@@ -2330,7 +2335,7 @@ void AddFamiliarityCount(i16 id, i16 delta) {
 
 // Derives a record's familiarity and level gap once (personal flag 0).
 RVA(0x00010bf0, 0x7b)
-void RefreshFamiliarity(Character* character) {
+void RefreshFamiliarity(CharacterCore* character) {
     i16 value;
     i16 leaderLevel;
     if (TestCharacterFlag(character, ACTOR_FLAG_POINTS_READY)) {
@@ -2338,20 +2343,20 @@ void RefreshFamiliarity(Character* character) {
     }
     value = GetFamiliarityCount(character->id) / 8;
     character->familiarity = ClampShort(value, 0, FAMILIARITY_MAX);
-    leaderLevel = GetRosterLeader()->level;
+    leaderLevel = GetRosterLeader()->core.level;
     value = leaderLevel - character->level;
     character->levelGap = ClampShort(value, 0, UCHAR_MAX);
     SetCharacterFlag(character, ACTOR_FLAG_POINTS_READY);
 }
 
 RVA(0x00010c70, 0x2a)
-void SetLevelGap(Character* character, i16 gap) {
+void SetLevelGap(CharacterCore* character, i16 gap) {
     RefreshFamiliarity(character);
     character->levelGap = ClampShort(gap, 0, UCHAR_MAX);
 }
 
 RVA(0x00010ca0, 0x28)
-void AddLevelGap(Character* character, i16 delta) {
+void AddLevelGap(CharacterCore* character, i16 delta) {
     RefreshFamiliarity(character);
     SetLevelGap(character, character->levelGap + delta);
 }
@@ -2359,7 +2364,7 @@ void AddLevelGap(Character* character, i16 delta) {
 // The familiarity, two more once the DCS Mabudachi is held (its owned flag
 // cleared).
 RVA(0x00010cd0, 0x2e)
-i16 GetFamiliarity(Character* character) {
+i16 GetFamiliarity(CharacterCore* character) {
     i16 familiarity;
     RefreshFamiliarity(character);
     familiarity = character->familiarity;
@@ -2370,18 +2375,18 @@ i16 GetFamiliarity(Character* character) {
 }
 
 RVA(0x00010d00, 0x27)
-void SetFamiliarity(Character* character, i16 familiarity) {
+void SetFamiliarity(CharacterCore* character, i16 familiarity) {
     RefreshFamiliarity(character);
     character->familiarity = ClampShort(familiarity, 0, FAMILIARITY_MAX);
 }
 
 RVA(0x00010d30, 0x20)
-void AddFamiliarity(Character* character, i16 delta) {
+void AddFamiliarity(CharacterCore* character, i16 delta) {
     delta += GetFamiliarity(character);
     SetFamiliarity(character, delta);
 }
 
-static __inline i32 RollCharacterFunds(Character* character) {
+static __inline i32 RollCharacterFunds(CharacterCore* character) {
     i32 score = character->level * 10;
     score += RandomUpTo(10);
     return score;
@@ -2389,30 +2394,30 @@ static __inline i32 RollCharacterFunds(Character* character) {
 
 // The actor's script magnetite roll: ten times its level plus 0..10.
 RVA(0x00010d50, 0x22)
-i32 RollCharacterMagnetite(Character* character) {
+i32 RollCharacterMagnetite(CharacterCore* character) {
     return RollCharacterFunds(character);
 }
 
 // The actor's script macca roll uses the same level-based distribution.
 RVA(0x00010d80, 0x22)
-i32 RollCharacterMacca(Character* character) {
+i32 RollCharacterMacca(CharacterCore* character) {
     return RollCharacterFunds(character);
 }
 
 RVA(0x00010db0, 0x8e)
-i16 AlignmentConflicts(const Character* character) {
+i16 AlignmentConflicts(const CharacterCore* character) {
     GZ_ENUM_LOCAL(AlignmentSide, i16) leaderClass;
     GZ_ENUM_LOCAL(AlignmentSide, i16) characterClass;
     if (character == NULL) {
         return -1;
     }
-    leaderClass = AlignmentClass(GetAlignmentLevelA(GetRosterLeader()));
+    leaderClass = AlignmentClass(GetAlignmentLevelA(&GetRosterLeader()->core));
     characterClass = AlignmentClass(GetAlignmentLevelA(character));
     if ((characterClass < ALIGNMENT_NEUTRAL && leaderClass >= ALIGNMENT_NEUTRAL)
         || (characterClass >= ALIGNMENT_NEUTRAL && leaderClass < ALIGNMENT_NEUTRAL)) {
         return -1;
     }
-    leaderClass = AlignmentClass(GetAlignmentLevelB(GetRosterLeader()));
+    leaderClass = AlignmentClass(GetAlignmentLevelB(&GetRosterLeader()->core));
     characterClass = AlignmentClass(GetAlignmentLevelB(character));
     if (leaderClass + characterClass == 0 && leaderClass != ALIGNMENT_NEUTRAL) {
         return -1;
@@ -2491,7 +2496,7 @@ i16 RollWorldMapEncounter(i16 x, i16 y) {
     i16 cell;
     i16 variant;
     WorldEncounterCell* cells;
-    Character* leader = GetRosterCharacter(ROSTER_LEADER);
+    CharacterCore* leader = GetRosterCharacter(ROSTER_LEADER);
     if (TestCharacterFlag(leader, ACTOR_FLAG_ESTOMA) == true) {
         return -1;
     }
@@ -2603,7 +2608,7 @@ i16 GetPartyEncounterSizeBonus(void) {
     i16 total = 0;
     i16 count = 0;
     i16 i;
-    Character* character;
+    CharacterCore* character;
     for (i = 0; i < PARTY_SIZE; i++) {
         character = GetPartyCharacter(i);
         if (character != NULL && IsHumanCharacter(character)) {
@@ -2686,7 +2691,7 @@ void PrepareFieldRandom(void) {
     i16 along;
     i16 across;
     i16 spread;
-    Character* actor;
+    CharacterCore* actor;
     for (i = 0; i < s_encounterCount; i++) {
         x = g_party.field.pos.x;
         y = g_party.field.pos.y;
@@ -2704,7 +2709,7 @@ void PrepareFieldRandom(void) {
             FIELD_OBJECT_NO_EVENT,
             false
         );
-        actor = GetFieldActor(i);
+        actor = GetFieldActorCore(GetFieldActor(i));
         AlertActor(actor, ATTITUDE_VERY_HOSTILE);
     }
     LoadEnemyGroupSlot(FIELD_LAYER_FIRST, s_encounterGroups[FIELD_LAYER_FIRST]);

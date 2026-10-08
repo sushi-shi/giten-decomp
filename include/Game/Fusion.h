@@ -42,10 +42,10 @@ SetFusionSummaryKind(FusionSummary* summary, i16 kind, i16 resultLevel, i16 sour
     }
 }
 
-void InheritFusionStats(Character* first, Character* second, Character* result);
+void InheritFusionStats(CharacterCore* first, CharacterCore* second, CharacterCore* result);
 void InheritFusionStat(
-    Character* source,
-    Character* result,
+    CharacterCore* source,
+    CharacterCore* result,
     GZ_ENUM_PARAM(CharacterStat, i16) stat
 );
 

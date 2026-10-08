@@ -12,12 +12,12 @@ GZ_ENUM_BEGIN_SPLIT(EquipmentEffectTiming, i16)
     EQUIP_EFFECT_STEP_TICK = 2,
 GZ_ENUM_END_SPLIT(EquipmentEffectTiming)
 void ApplyItemCurse(
-    Character* character,
+    CharacterCore* character,
     i16 item,
     GZ_ENUM_STORAGE(EquipmentEffectTiming, i16) timing
 );
 void ApplyEquipmentEffects(
-    Character* character,
+    CharacterCore* character,
     GZ_ENUM_STORAGE(EquipmentEffectTiming, i16) timing
 );
 

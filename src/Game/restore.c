@@ -129,7 +129,7 @@ DATA(0x00064630)
 static const i16 s_fourBitMasks[7] = {15, 1, 2, 4, 8, 5, 10};
 
 RVA(0x0001fdc0, 0xc1)
-i16 ComputeRestoreAmount(i16 code, Character* user, u16 max) {
+i16 ComputeRestoreAmount(i16 code, CharacterCore* user, u16 max) {
     double amount;
     if (code == RESTORE_AMOUNT_NONE) {
         return 0;
@@ -163,7 +163,7 @@ static __inline void FillRestorePools(CurMax* hpPool, CurMax* mpPool, i16 hp, i1
 
 RVA(0x0001fe90, 0x6f0)
 GZ_ENUM_RETURN(RestoreResult, i16)
-ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, Character* target, i16 mp) {
+ApplyRestoreEffect(GZ_ENUM_PARAM(RestoreEffect, i16) kind, i16 hp, CharacterCore* target, i16 mp) {
     i16 reportCondition;
     i16 revival;
     GZ_ENUM_LOCAL(ConditionChangeResult, i16) sleep;

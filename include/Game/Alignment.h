@@ -41,6 +41,7 @@ GZ_ENUM_RETURN(AlignmentSide, i16) AlignmentClass(i16 value);
 i16 AlignmentChartCell(i16 value);
 
 struct Character;
+struct CharacterCore;
 
 // Moves alignment B by `amount` towards `step`'s side and copies its value
 // to `alignmentLevelB`.
@@ -60,6 +61,6 @@ void ShiftAlignmentA(
 // Nonzero (-1) when `character`'s alignment classes conflict with the roster
 // leader's (opposite sides on A, or opposite nonzero classes on B); also for
 // no character.
-i16 AlignmentConflicts(const struct Character* character);
+i16 AlignmentConflicts(const struct CharacterCore* character);
 
 #endif // GITEN_GAME_ALIGNMENT_H

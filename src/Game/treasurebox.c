@@ -66,10 +66,10 @@
 #include <Game/StatusScreen.h>
 #include <Game/TreasureBox.h>
 #include <Game/WorldMap.h>
-#include <Gfx/ScreenSave.h>
 #include <Gfx/Background.h>
 #include <Gfx/Render.h>
 #include <Gfx/ScreenLayer.h>
+#include <Gfx/ScreenSave.h>
 #include <Gfx/VramAccess.h>
 #include <Giten/Resource.h>
 #include <Input/Mouse.h>
@@ -264,7 +264,7 @@ DATA(0x0007d5cc)
 static MenuBox* s_menu = NULL;
 
 DATA(0x0007d5d0)
-static Character* s_target = NULL;
+static CharacterCore* s_target = NULL;
 
 // The window's step; -1 closes it.
 DATA(0x0007d5d4)
@@ -469,7 +469,7 @@ i16 PickReorderSlot(void) {
 static void AnalyzeMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 
 RVA(0x0001ad40, 0x10)
-void SetAnalyzeTarget(Character* target) {
+void SetAnalyzeTarget(CharacterCore* target) {
     s_target = target;
 }
 
@@ -479,7 +479,7 @@ void SetAnalyzeTarget(Character* target) {
 // screen. Returns -1 once the window is closed, else 0.
 RVA(0x0001ad50, 0x5f0)
 i16 RunAnalyzeWindow(void) {
-    Character* target = s_target;
+    CharacterCore* target = s_target;
     GZ_ENUM_LOCAL(TextEvent, i16) choice;
 
     switch (s_step) {
@@ -636,7 +636,7 @@ i16 RunAnalyzeWindow(void) {
             s_step++;
             copy = GetCharacter(ANALYZE_ROSTER_ENTRY);
             // The copy stops short of alignmentA and what follows it.
-            memcpy(copy, target, offsetof(Character, alignmentA));
+            copy->core = *target;
             s_savedRosterEntry = GetRosterEntry(ANALYZE_ROSTER_ENTRY);
             SetRosterEntry(ANALYZE_ROSTER_ENTRY, copy);
             SetStatusAnalyzeMode(true);
@@ -654,7 +654,7 @@ i16 RunAnalyzeWindow(void) {
             SetRosterEntry(ANALYZE_ROSTER_ENTRY, s_savedRosterEntry);
             s_savedRosterEntry = NULL;
             copy = GetCharacter(ANALYZE_ROSTER_ENTRY);
-            InitWordList(GetCharacterSkills(copy), 0);
+            InitWordList(GetCharacterSkills(GetCharacterCore(copy)), 0);
             break;
         }
     }
@@ -776,7 +776,7 @@ void SetItemMenuCharacter(i16 member) {
         g_itemMenuAmmoType = -1;
         return;
     }
-    ammo = GetGunAmmoType(GetCharacterById(member));
+    ammo = GetGunAmmoType(GetCharacterCore(GetCharacterById(member)));
     s_itemMenuMember = member;
     group = ReadObjectRecordField(member, offsetof(ObjectRecord, equipGroup), sizeof(i16));
     if (s_itemMenu && (s_itemMenuEquipGroup != group || g_itemMenuAmmoType != ammo)) {
@@ -913,14 +913,14 @@ i32 FormatItemMenuEntry(ItemStack entry, i32 numerator, i32 denominator) {
     i32 price;
     if (EquipPartOfItem(record) >= 0 && s_itemMenuEquipGroup != -1) {
         if (GetItemCategory(GetItemStackItem(&entry)) == EQUIP_PART_ACCESSORY) {
-            Character* member = GetCharacterById(s_itemMenuMember);
+            CharacterCore* member = GetCharacterCore(GetCharacterById(s_itemMenuMember));
             if (member && CanEquipItem(member, GetItemStackItem(&entry)) > 0) {
                 marker = 'E';
             }
         } else if (CanGroupEquip(s_itemMenuEquipGroup, equipGroup)) {
-            Character* member;
+            CharacterCore* member;
             marker = 'E';
-            member = GetCharacterById(s_itemMenuMember);
+            member = GetCharacterCore(GetCharacterById(s_itemMenuMember));
             record = GetLoadedRecord(GetItemStackItem(&entry));
             if (record->kind == ITEM_KIND_GUN
                 && GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL) > 0) {
@@ -1298,7 +1298,7 @@ i16* GetLearnableSkillList(i16 id, i16 source) {
 }
 
 RVA(0x0001c330, 0x127)
-i16 TakeLearnableSkill(Character* character, i16* skills) {
+i16 TakeLearnableSkill(CharacterCore* character, i16* skills) {
     i16 id = character->id;
     i16 i;
     i16 skill;
@@ -1338,7 +1338,7 @@ i16 TakeLearnableSkill(Character* character, i16* skills) {
 }
 
 RVA(0x0001c460, 0x173)
-i16 PickGrowthStats(Character* character, i16* picks, i16 turn) {
+i16 PickGrowthStats(CharacterCore* character, i16* picks, i16 turn) {
     memset(picks, -1, AFFILIATION_COUNT * sizeof(i16));
     if (GetCharacterAffiliation(character, 2) >= 0) {
         picks[0] =
@@ -1372,7 +1372,7 @@ i16 PickGrowthStats(Character* character, i16* picks, i16 turn) {
 }
 
 RVA(0x0001c5e0, 0x61)
-void DropTopStatPicks(Character* character, i16* picks) {
+void DropTopStatPicks(CharacterCore* character, i16* picks) {
     i16 i;
     for (i = 0; i < AFFILIATION_COUNT; i++) {
         if (picks[i] >= 0) {
@@ -1408,7 +1408,7 @@ u32 TrainingThreshold(i16 level) {
 // returns the new count.
 RVA(0x0001c690, 0x2c)
 u32 AddTrainingPointsRaw(
-    Character* character,
+    CharacterCore* character,
     GZ_ENUM_PARAM(BattleStatGroup, i16) kind,
     u32 amount
 ) {
@@ -1422,7 +1422,11 @@ u32 AddTrainingPointsRaw(
 }
 
 RVA(0x0001c6c0, 0x24)
-u32 AddTrainingPoints(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind, i16 amount) {
+u32 AddTrainingPoints(
+    CharacterCore* character,
+    GZ_ENUM_PARAM(BattleStatGroup, i16) kind,
+    i16 amount
+) {
     if (kind >= 0 && kind < BATTLE_GROUP_COUNT) {
         return AddTrainingPointsRaw(character, kind, amount);
     }
@@ -1439,7 +1443,7 @@ u32 AddTrainingPoints(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) 
 // Raises training level `kind` (the battle-stat words 0, 6, 12 and 18) while
 // its counter covers the next level's threshold; returns the levels gained.
 RVA(0x0001c6f0, 0x140)
-i16 ApplyTraining(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind) {
+i16 ApplyTraining(CharacterCore* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind) {
     i16 raised = 0;
     switch (kind) {
         case BATTLE_GROUP_WEAPON:
@@ -1477,7 +1481,7 @@ i16 ApplyTraining(Character* character, GZ_ENUM_PARAM(BattleStatGroup, i16) kind
 // Clamps the three affiliations to 0..3 (-1 otherwise), drops repeats and
 // packs the remaining ones to the front.
 RVA(0x0001c830, 0x9b)
-void NormalizeAffiliations(Character* character) {
+void NormalizeAffiliations(CharacterCore* character) {
     i16 i;
     i16 j;
     for (i = 0; i < AFFILIATION_COUNT; i++) {
@@ -1506,7 +1510,7 @@ void NormalizeAffiliations(Character* character) {
 
 // Applies the training of each of the character's affiliations.
 RVA(0x0001c8d0, 0x46)
-void RaiseAffiliationLevels(Character* character) {
+void RaiseAffiliationLevels(CharacterCore* character) {
     if (GetCharacterAffiliation(character, 0) >= 0) {
         ApplyTraining(character, GetCharacterAffiliation(character, 0));
     }
@@ -1562,7 +1566,7 @@ done:
 RVA(0x0001c9f0, 0xee)
 void RunCellTrap(i16 mode, i16 x, i16 y) {
     MapCell cell;
-    Character* member;
+    CharacterCore* member;
     i32 damage;
     i16 hp;
     u8 alignmentMask;
@@ -2602,10 +2606,10 @@ i16 SetInfoBarLayout(i16 layout) {
 
 RVA(0x0001e740, 0x4b)
 void DrawMoneyCounters(i16 mode) {
-    DrawMoneyCounter(mode, 8, RosterMemberAt(ROSTER_LEADER)->magnetite, 0);
-    s_shownMagnetite = RosterMemberAt(ROSTER_LEADER)->magnetite;
-    DrawMoneyCounter(mode, 11, RosterMemberAt(ROSTER_LEADER)->macca, 1);
-    s_shownMacca = RosterMemberAt(ROSTER_LEADER)->macca;
+    DrawMoneyCounter(mode, 8, RosterMemberAt(ROSTER_LEADER)->core.magnetite, 0);
+    s_shownMagnetite = RosterMemberAt(ROSTER_LEADER)->core.magnetite;
+    DrawMoneyCounter(mode, 11, RosterMemberAt(ROSTER_LEADER)->core.macca, 1);
+    s_shownMacca = RosterMemberAt(ROSTER_LEADER)->core.macca;
 }
 
 RVA(0x0001e790, 0xcf)
@@ -2717,8 +2721,8 @@ b16 RefreshInfoBar(i16 force) {
     if (force) {
         DrawInfoBar(s_nextLayout, true);
     } else if (s_shownMoonPhase != g_clock.moonPhase
-               || s_shownMagnetite != RosterMemberAt(ROSTER_LEADER)->magnetite
-               || s_shownMacca != RosterMemberAt(ROSTER_LEADER)->macca) {
+               || s_shownMagnetite != RosterMemberAt(ROSTER_LEADER)->core.magnetite
+               || s_shownMacca != RosterMemberAt(ROSTER_LEADER)->core.macca) {
         DrawInfoBar(s_nextLayout, true);
     }
     s_nextLayout = 1;
@@ -3323,14 +3327,14 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBack(i16 who) {
         i16 code;
         i16 x;
         i16 y;
-        Character* actor;
+        CharacterCore* actor;
         direction = OppositeDirection(g_party.field.pos.direction);
         object = GetLiveObject(who);
         if (object < 0) {
             return FIELD_EFFECT_FAILED;
         }
-        actor = GetFieldActor(object);
-        at = &((FieldActor*)GetFieldActor(object))->pos.x;
+        actor = GetFieldActorCore(GetFieldActor(object));
+        at = &GetFieldActor(object)->pos.x;
         if (TestCharacterFlag(actor, ACTOR_FLAG_ANCHORED)) {
             return FIELD_EFFECT_FAILED;
         }
@@ -3358,7 +3362,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) KnockBack(i16 who) {
 // respawns it instead).
 RVA(0x0001f930, 0x56)
 GZ_ENUM_RETURN(FieldEffectResult, i16) ShieldTarget(void) {
-    Character* target;
+    CharacterCore* target;
     if (g_targetId < 0) {
         target = GetCombatant(g_targetId);
         if (!target) {
@@ -3372,7 +3376,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) ShieldTarget(void) {
 
 RVA(0x0001f990, 0x2d)
 GZ_ENUM_RETURN(FieldEffectResult, i16) SetTargetFlag21(void) {
-    Character* target = GetCombatant(g_targetId);
+    CharacterCore* target = GetCombatant(g_targetId);
     if (!target) {
         return FIELD_EFFECT_FAILED;
     }
@@ -3400,7 +3404,7 @@ b16 ScatterObjects(void) {
 // Sends the party to the return point recorded in the roster leader.
 RVA(0x0001fa30, 0x35)
 b16 ReturnToLeaderWarp(void) {
-    Character* leader = GetRosterCharacter(ROSTER_LEADER);
+    CharacterCore* leader = GetRosterCharacter(ROSTER_LEADER);
     SetReturnPoint(
         leader->returnPosition.area,
         leader->returnPosition.level,
@@ -3414,7 +3418,7 @@ b16 ReturnToLeaderWarp(void) {
 // Sends the party to the cell in front of the leader's marked position.
 RVA(0x0001fa70, 0x6d)
 b16 ReturnToLeaderMark(void) {
-    Character* leader = GetRosterCharacter(ROSTER_LEADER);
+    CharacterCore* leader = GetRosterCharacter(ROSTER_LEADER);
     i16 area = leader->markPosition.area;
     i16 level = leader->markPosition.level;
     i16 x = leader->markPosition.x;
@@ -3452,7 +3456,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) SpawnActorGroup(void) {
     if (object < 0) {
         return FIELD_EFFECT_FAILED;
     }
-    pos = &((FieldActor*)GetFieldActor(object))->pos;
+    pos = &GetFieldActor(object)->pos;
     SpawnSecondGroupActor(pos->x, pos->y, -1);
 }
 
@@ -3461,8 +3465,8 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) SpawnActorGroup(void) {
 // action fails with result 6.
 RVA(0x0001fb80, 0xe4)
 GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void) {
-    Character* actor = GetCombatant(g_actorId);
-    Character* target;
+    CharacterCore* actor = GetCombatant(g_actorId);
+    CharacterCore* target;
     GZ_ENUM_LOCAL(DemonRace, i16) race;
     if (g_targetId >= 0 && GetFieldMarker()) {
         SetActionResult(actor, BATTLE_ACTION_IMMUNE);
@@ -3488,7 +3492,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) SealTarget(void) {
 
 RVA(0x0001fc70, 0x6d)
 GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag23(void) {
-    Character* target = GetCombatant(g_targetId);
+    CharacterCore* target = GetCombatant(g_targetId);
     if (!target) {
         return FIELD_EFFECT_FAILED;
     }
@@ -3505,7 +3509,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag23(void) {
 
 RVA(0x0001fce0, 0x67)
 GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void) {
-    Character* target;
+    CharacterCore* target;
     if (!GetMoonPhase()) {
         return FIELD_EFFECT_FAILED;
     }
@@ -3523,7 +3527,7 @@ GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag25(void) {
 
 RVA(0x0001fd50, 0x67)
 GZ_ENUM_RETURN(FieldEffectResult, i16) RaiseTargetFlag26(void) {
-    Character* target;
+    CharacterCore* target;
     if (!GetMoonPhase()) {
         return FIELD_EFFECT_FAILED;
     }

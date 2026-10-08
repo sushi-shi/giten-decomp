@@ -7,6 +7,7 @@
 #include <Enums.h>
 #include <Game/Character.h>
 #include <Game/DemonPantheon.h>
+#include <Game/FieldActor.h>
 #include <Game/FieldLayerIndex.h>
 #include <Game/FieldSupport.h>
 #include <Game/GameState.h>
@@ -34,10 +35,8 @@ GZ_ENUM_END(FieldObjectImageCode);
 
 // One of the sixteen actors placed on the field map. Layer -1 is a free slot;
 // hidden actors are removed on the next check.
-// @identity-TODO: the shared character prefix has not been factored into its
-// own type. CopyCharacterCore copies from kind through moonRow; pos begins
-// the distinct field tail. A full Character would overlap the script pointer.
-// rank corresponds to Character.level and list to Character.skills. Slots
+// The actor carries the shared state and map position. Event flags, record
+// skill choices and the script remain in the containing field object. Slots
 // 6/7 are the gun/ammunition pair; the ammunition extra field holds the
 // magazine size.
 // The field object table, and the layer of an unused object slot.
@@ -87,80 +86,7 @@ typedef struct FieldObject {
     i16 layer;
     i16 redraw;
     i16 anim;
-    GZ_ENUM_STORAGE(ObjectRecordId, i16) kind;
-    char namePrefix[17];
-    u8 pad02d[0x25];
-    u8 resistance[10];
-    i8 affiliation[AFFILIATION_COUNT];
-    i16 equipGroup;
-    PickFlags pickFlags;
-    u32 trainingPoints[4];
-    // @identity-TODO: three bytes between training points and drop chance.
-    u8 unknownAfterTraining[3];
-    u8 dropChance;
-    i16 pickItem;
-    i16 actionSpeed;
-    u16 conditionActionTicks;
-    u8 encounterRow;
-    i16 shield;
-    u8 pad07f[3];
-    GZ_ENUM_STORAGE(DemonPantheon, u8) pantheon;
-    u8 byte083;
-    GZ_ENUM_STORAGE(Gender, u8) gender;
-    u8 rank;
-    GZ_ENUM_STORAGE(HumanTitle, u8) title;
-    u8 triggerRange;
-    u32 experience;
-    i32 macca;
-    i32 magnetite;
-    i8 alignmentLevelB;
-    i8 alignmentLevelA;
-    u8 byte096;
-    u8 acting;
-    i16 word098;
-    CharacterPools pools;
-    StatBlock stats;
-    i16 battleStats[24];
-    i16 battleStatsShown[24];
-    ConditionSet conditions;
-    ActionWait actionWait;
-    GZ_ENUM_STORAGE(PickRole, i8) pickRole;
-    i16 pickTarget : 15;
-    i16 pickTargetHigh : 1;
-    i16 pickObject : 14;
-    i16 pickCostPaid : 1;
-    i16 pickNoEffect : 1;
-    i8 result : 7;
-    u8 resultFlag : 1;
-    i32 lastChange;
-    i32 selfChange;
-    // @identity-TODO: fifteen bytes the record loader clears as one block.
-    u8 battleTally[15];
-    u16 levelBonus;
-    u16 hundredths;
-    ItemSlot slots[8];
-    u8 levelGap;
-    u8 familiarity;
-    GZ_ENUM_STORAGE(Attitude, u8) attitude;
-    u8 fieldState;
-    GZ_ENUM_STORAGE(ActorMode, u8) mode;
-    u8 pad1e1;
-    u8 personalFlags[32];
-    u32 clearedOnLoad[2];
-    u8 hpRollBonus;
-    WordList list;
-    u8 pad211;
-    i8 moonRow;
-    MapCoord pos;
-    GZ_ENUM_STORAGE(ViewDirection, i16) direction;
-    u8 pad219;
-    u8 byte21a;
-    u8 byte21b;
-    u8 pad21c;
-    i16 word21d;
-    i16 word21f;
-    i16 word221;
-    i16 hidden;
+    FieldActor actor;
     u8 flagBank;
     u8 flagIndex;
     // @identity-TODO: skill words 1..8 a field actor rolls from (index 0 overlaps
@@ -172,39 +98,39 @@ typedef struct FieldObject {
 } FieldObject;
 
 static __inline void SetFieldObjectPickTarget(FieldObject* actor, i16 target) {
-    actor->pickTarget = target;
-    actor->pickTargetHigh = 0;
+    actor->actor.core.pickTarget = target;
+    actor->actor.core.pickTargetHigh = 0;
 }
 
 #define SetObjectDirection(object, facing, changed)                                                \
     do {                                                                                           \
-        if ((facing) != (object)->direction) {                                                     \
+        if ((facing) != (object)->actor.direction) {                                               \
             (changed) = true;                                                                      \
-            (object)->direction = (facing);                                                        \
+            (object)->actor.direction = (facing);                                                  \
         }                                                                                          \
     } while (0)
 
-#define SetFieldObjectPickRole(object, role) ((object)->pickRole = (role))
+#define SetFieldObjectPickRole(object, role) ((object)->actor.core.pickRole = (role))
 
-#define GetFieldObjectEquipment(object) ((object)->slots)
+#define GetFieldObjectEquipment(object) ((object)->actor.core.slots)
 
-#define GetFieldObjectHpPool(object) (&(object)->pools.hp)
+#define GetFieldObjectHpPool(object) (&(object)->actor.core.pools.hp)
 
-#define GetFieldObjectMpPool(object) (&(object)->pools.mp)
+#define GetFieldObjectMpPool(object) (&(object)->actor.core.pools.mp)
 
 #define IsFieldObjectActive(object)                                                                \
-    ((object)->layer != FIELD_LAYER_NONE && (object)->hidden == false)
+    ((object)->layer != FIELD_LAYER_NONE && (object)->actor.hidden == false)
 
 static __inline ActionWait* GetFieldObjectActionWait(FieldObject* actor) {
-    return &actor->actionWait;
+    return &actor->actor.core.actionWait;
 }
 
 static __inline ConditionSet* GetFieldObjectConditions(FieldObject* object) {
-    return &object->conditions;
+    return &object->actor.core.conditions;
 }
 
 static __inline u8* GetFieldObjectFlags(FieldObject* object) {
-    return object->personalFlags;
+    return object->actor.core.personalFlags;
 }
 
 static __inline b32 TestFieldObjectFlag(FieldObject* object, i16 index) {
@@ -233,7 +159,7 @@ i16 RespawnFieldObject(i16 index, b16 alternate, i8 event, b16 fresh);
 void ResetObjectAnims(void);
 void ResetObjectAnim(i16 index);
 FieldObject* GetFieldObject(i16 index);
-Character* GetFieldActor(i16 index);
+FieldActor* GetFieldActor(i16 index);
 b16 IsFieldActor(const void* actor);
 void MarkObjectsOnMap(void);
 MapCoord GetObjectCoord(i16 index);

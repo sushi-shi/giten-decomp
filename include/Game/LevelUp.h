@@ -20,15 +20,15 @@ extern i32 g_rewardMagnetite;
 
 // Battle rewards and the level-up messages after a field battle.
 
-struct Character;
+struct CharacterCore;
 
 // The experience curve: where a level begins, how far past it an amount is,
 // and adding or sharing experience.
 u32 ExperienceForLevel(i16 level, i16 id);
 i32 ExperienceToLevel(i16 level, u32 experience, i16 id);
-i32 AddExperience(struct Character* character, i32 amount);
+i32 AddExperience(struct CharacterCore* character, i32 amount);
 i32 ShareExperience(i32 amount);
-void RaiseExperienceToLevel(struct Character* character);
+void RaiseExperienceToLevel(struct CharacterCore* character);
 
 // Pending levels (of one roster slot, of the party) and the first party member
 // with one.
@@ -37,10 +37,10 @@ i16 CountPartyPendingLevels(void);
 i16 FindLevelUpSlot(void);
 
 // The level's stat growth and the stat-point picks.
-b16 ApplyLevelStatGrowth(struct Character* character);
-i16 IsStatCapped(const struct Character* character, GZ_ENUM_PARAM(CharacterStat, i16) stat);
-i16 CountRaisableStats(const struct Character* character);
-i16 ResolveRaisableStat(const struct Character* character, i16 stat);
+b16 ApplyLevelStatGrowth(struct CharacterCore* character);
+i16 IsStatCapped(const struct CharacterCore* character, GZ_ENUM_PARAM(CharacterStat, i16) stat);
+i16 CountRaisableStats(const struct CharacterCore* character);
+i16 ResolveRaisableStat(const struct CharacterCore* character, i16 stat);
 
 // The battle rewards: the reward screen's click, paying them out, and
 // marking them pending.

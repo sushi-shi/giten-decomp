@@ -21,7 +21,7 @@
 // (+0x1f) are named from this reader only.
 RVA(0x00026070, 0x400)
 void ApplyItemCurse(
-    Character* character,
+    CharacterCore* character,
     i16 item,
     GZ_ENUM_PARAM(EquipmentEffectTiming, i16) timing
 ) {
@@ -157,7 +157,7 @@ void ApplyItemCurse(
 // Applies the curses of all eight equipped items.
 RVA(0x00026470, 0xe0)
 void ApplyEquipmentEffects(
-    Character* character,
+    CharacterCore* character,
     GZ_ENUM_STORAGE(EquipmentEffectTiming, i16) timing
 ) {
     ApplyItemCurse(character, GetCharacterEquipment(character)[EQUIP_SLOT_HEAD].item, timing);

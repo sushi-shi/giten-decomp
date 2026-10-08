@@ -10,13 +10,13 @@
 // familiarity / level-gap bytes derived from them.
 
 void AddFamiliarityCount(i16 id, i16 delta);
-void SetLevelGap(Character* character, i16 gap);
-void AddLevelGap(Character* character, i16 delta);
-void SetFamiliarity(Character* character, i16 familiarity);
-void AddFamiliarity(Character* character, i16 delta);
+void SetLevelGap(CharacterCore* character, i16 gap);
+void AddLevelGap(CharacterCore* character, i16 delta);
+void SetFamiliarity(CharacterCore* character, i16 familiarity);
+void AddFamiliarity(CharacterCore* character, i16 delta);
 void SetAnalyzed(i16 id, i16 on);
-i32 RollCharacterMagnetite(Character* character);
-i32 RollCharacterMacca(Character* character);
+i32 RollCharacterMagnetite(CharacterCore* character);
+i32 RollCharacterMacca(CharacterCore* character);
 
 // The save-file sections of the familiarity counts and the analyzed flags.
 i16 LoadFamiliarityCounts(FILE* fp);

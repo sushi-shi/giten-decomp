@@ -63,11 +63,11 @@ void FusionListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i1
 void FusionSelectionTextHook(i16 plane, i16 event, i16 value);
 i32 CloseFusionPicker(i16 selection);
 i16 CreateFusionInfoPlane(i16 unused);
-void DrawFusionCharacterDetails(i16 plane, Character* character);
+void DrawFusionCharacterDetails(i16 plane, CharacterCore* character);
 void DrawFusionStatGroup(i16 plane, i16 x, i16* stats);
 i16 CloseFusionPreviewOnClick(i16 plane);
 i16 OpenFusionPreviewOnClick(void);
-void DrawFusionPreviewCard(i16 plane, Character* character);
+void DrawFusionPreviewCard(i16 plane, CharacterCore* character);
 i16 CreateFusionPreviewCard(i16 window, i16 slot);
 b16 PreviewFusionCharacter(Character* character);
 b16 CloseFusionPreview(void);

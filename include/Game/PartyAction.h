@@ -13,7 +13,8 @@
 GZ_ENUM_BEGIN_SPLIT(PartyMemberPickResult, i16)
     PARTY_MEMBER_EMPTY = -1,
     PARTY_MEMBER_UNAVAILABLE = 0,
-    PARTY_MEMBER_READY = 1
+    PARTY_MEMBER_READY = 1,
+    PARTY_MEMBER_NOT_READY_LAST = PARTY_MEMBER_UNAVAILABLE
 GZ_ENUM_END_SPLIT(PartyMemberPickResult)
 
 GZ_ENUM_RETURN(PartyMemberPickResult, i16) PickPartyMember(i16 index);
@@ -31,8 +32,8 @@ GZ_ENUM_END_SPLIT(MemberPanelState)
 
 GZ_ENUM_RETURN(MemberPanelState, i16) GetMemberPanelState(i16 member);
 i16 ReadActionResultFlags(void);
-i16 GetActionCondition(Character* actor);
-i16 PickActorAction(Character* actor);
+i16 GetActionCondition(CharacterCore* actor);
+i16 PickActorAction(CharacterCore* actor);
 
 // The random-target picker searches living party members, visible field
 // objects, or both. -100 means neither side supplied a candidate.
@@ -96,14 +97,14 @@ MenuBox* OpenActorCommandMenu(i16 id);
 void ActorCommandMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 i16 PollActorCommandMenu(MenuBox* menu);
 i16 RunActorCommandMenu(i16 id);
-b16 FormatAttackCommand(Character* actor);
-b16 FormatGunCommand(Character* actor);
-b16 FormatMagicCommand(Character* actor);
-b16 FormatItemCommand(Character* actor);
-b16 FormatCompCommand(Character* actor);
-b16 FormatExtraCommand(Character* actor);
-b16 FormatReturnCommand(Character* actor);
-b16 FormatDefenceCommand(Character* actor);
+b16 FormatAttackCommand(CharacterCore* actor);
+b16 FormatGunCommand(CharacterCore* actor);
+b16 FormatMagicCommand(CharacterCore* actor);
+b16 FormatItemCommand(CharacterCore* actor);
+b16 FormatCompCommand(CharacterCore* actor);
+b16 FormatExtraCommand(CharacterCore* actor);
+b16 FormatReturnCommand(CharacterCore* actor);
+b16 FormatDefenceCommand(CharacterCore* actor);
 
 // The command image and handler selected by each row of the character panel.
 // The panel holds eight rows and the ninth handler starts an encounter.
@@ -161,23 +162,23 @@ GZ_ENUM_CONST_END(AttackResistanceEncoding)
 // clang-format on
 
 GZ_ENUM_RETURN(BattleProtectionResult, i16) CheckBattleProtection(
-    Character* actor,
+    CharacterCore* actor,
     i16 attribute,
     GZ_ENUM_PARAM(AttackMode, i16) mode,
     b16 report
 );
 i16 GetActionResistance(
-    Character* actor,
+    CharacterCore* actor,
     i16 attribute,
     GZ_ENUM_PARAM(AttackMode, i16) mode,
     b16 report,
     b16 sameSide
 );
 
-i16 GetSkillResistance(Character* actor, i16 skill, b16 report, b16 sameSide, i16* attribute);
-i16 GetItemResistance(Character* actor, i16 item, b16 report, b16 sameSide, i16* attribute);
-GZ_ENUM_RETURN(AttackAttribute, i16) GetPickedAttackAttribute(Character* actor, i16* condition);
-void ApplyResistanceOutcome(Character* actor, i16 resistance, i32 amount);
+i16 GetSkillResistance(CharacterCore* actor, i16 skill, b16 report, b16 sameSide, i16* attribute);
+i16 GetItemResistance(CharacterCore* actor, i16 item, b16 report, b16 sameSide, i16* attribute);
+GZ_ENUM_RETURN(AttackAttribute, i16) GetPickedAttackAttribute(CharacterCore* actor, i16* condition);
+void ApplyResistanceOutcome(CharacterCore* actor, i16 resistance, i32 amount);
 
 // -1 for two party combatants, 1 for two field objects, otherwise zero.
 // Which sides the current actor and target occupy: two party members, a

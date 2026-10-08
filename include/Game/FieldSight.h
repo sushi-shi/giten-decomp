@@ -4,6 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
+#include <Game/FieldActor.h>
 #include <Game/GameState.h>
 #include <Game/ViewDirection.h>
 #include <Ints.h>
@@ -49,17 +50,6 @@ extern i16 g_viewDepth;
 // @identity-TODO: a stub (returns 0) that picks a layer frame for depth `z`.
 i16 GetLayerImageBand(i16 value);
 u32 GetLayerFrame(u32 image, i16 a, i16 z);
-
-// The actor record at FieldObject +0x1a as other TUs see it (GetFieldActor):
-// a Character up to `alignmentA`, then the object's own map state. Not a
-// whole Character: the object's script pointer at record +0x21d would cross
-// the end of the 0x21f-byte record, and analyze copies an actor only up to
-// alignmentA.
-typedef struct FieldActor {
-    u8 character[0x1f9];
-    MapCoord pos;
-    GZ_ENUM_STORAGE(ViewDirection, i16) direction;
-} FieldActor;
 
 i16 DistanceToParty(FieldActor* actor);
 

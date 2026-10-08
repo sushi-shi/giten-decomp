@@ -86,7 +86,7 @@ extern char* g_statusNumberLabels[40];
 
 // Draws the ten stat totals of `member` at x/y, coloured against `compare`
 // when not NULL.
-i16 DrawStatTotals(i16 x, i16 y, Character* member, Character* compare);
+i16 DrawStatTotals(i16 x, i16 y, CharacterCore* member, CharacterCore* compare);
 
 // Formats roster slot `slot` as status-list row `row` into the scratch
 // buffer; returns the member's id, -1 when the row cannot be picked, -2 when
@@ -153,13 +153,13 @@ void DrawStatusVitals(i16 slot);
 // equipment, skills, roster size and whether the member is fixed.
 void DrawStatusScreen(i16 slot);
 
-i16 OpenStatListWindow(Character* character);
+i16 OpenStatListWindow(CharacterCore* character);
 i16 RunStatPage(i16 command);
 i16 RunAlignmentPage(i16 command);
-void DrawBattleStatsPanel(i16 x, i16 y, Character* member, i16 hideIcons);
+void DrawBattleStatsPanel(i16 x, i16 y, CharacterCore* member, i16 hideIcons);
 
 // Highlighting redraws the first half of the bar only when total >= 50;
 // the normal path redraws the full bar and its text.
-void DrawStatLine(Character* character, i16 stat, i16 highlight, i16 window);
+void DrawStatLine(CharacterCore* character, i16 stat, i16 highlight, i16 window);
 
 #endif // GITEN_GAME_STATUSSCREEN_H

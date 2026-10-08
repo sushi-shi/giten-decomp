@@ -47,6 +47,7 @@ i16 LoadFieldState(FILE* fp);   // g_party, member by member
 i16 LoadAutomapAreas(FILE* fp); // the automap area store
 
 struct Character;
+struct CharacterCore;
 i16 LoadCharacter(FILE* fp, struct Character* character);
 
 // The save writers (charsave): nonzero on failure.
@@ -61,9 +62,9 @@ i16 WriteAutomapAreas(FILE* fp);
 struct Character* FindCharacterById(i16 id);
 
 // The action speed of a character (from its stats and equipment).
-i16 ComputeActionSpeed(struct Character* character);
+i16 ComputeActionSpeed(struct CharacterCore* character);
 
 // Clamps a character's three affiliation bytes to -1..3 and compacts them.
-void NormalizeAffiliations(struct Character* character);
+void NormalizeAffiliations(struct CharacterCore* character);
 
 #endif // GITEN_GAME_SAVEGAME_H

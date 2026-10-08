@@ -41,7 +41,7 @@ MenuBox* OpenEquipMenu(i16 member, MenuBox* old);
 
 // Draws the equipment panel of `member`, comparing with `preview` when not
 // NULL.
-void DrawEquipPanel(Character* member, Character* preview);
+void DrawEquipPanel(CharacterCore* member, CharacterCore* preview);
 
 // Previews equipping bag entry `index` (or removing part `index` when
 // `fromEquipped`), using character 14 to save and restore the member.
@@ -121,7 +121,7 @@ i16 RunItemPage(i16 sub);
 
 // Draws `character`'s eight equipped parts (the three hand parts first) as
 // lines from (x, y) down, 4 apart.
-void DrawEquipLines(Character* character, i16 x, i16 y);
+void DrawEquipLines(CharacterCore* character, i16 x, i16 y);
 
 // The status screen's skill page: lists the member's skills with their costs
 // and opens the picked skill's description; returns the sub-state to resume

@@ -4348,8 +4348,7 @@ i16 SetTextPlaneHighlightMode(i16 plane, i16 mode) {
 
 RVA(0x00052eb0, 0x20)
 void ResetTextPlaneHighlight(i16 plane) {
-    GetTextPlane(plane)->highlightX =
-        GetTextPlane(plane)->highlightY = TEXT_MENU_HIGHLIGHT_NONE;
+    GetTextPlane(plane)->highlightX = GetTextPlane(plane)->highlightY = TEXT_MENU_HIGHLIGHT_NONE;
 }
 
 RVA(0x00052ed0, 0x5c)
@@ -5853,7 +5852,10 @@ void FreeScreenLayers(void) {
 
 RVA(0x00055020, 0x3f)
 b32 DrawPadButton(
-    LPDIRECTDRAWSURFACE surface, GZ_ENUM_PARAM(NavPadButton, i32) button, b32 pressed) {
+    LPDIRECTDRAWSURFACE surface,
+    GZ_ENUM_PARAM(NavPadButton, i32) button,
+    b32 pressed
+) {
     if (button < PAD_FIRST || button > PAD_LAST) {
         return false;
     }
@@ -6137,7 +6139,7 @@ void ReleasePartyPanel(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, b32 dragged) {
         if (GetFieldBattleActive() && !GetTickElapsed()) {
             return;
         }
-        if (PickPartyMember(slot - SCREEN_LAYER_FIRST_PANEL) <= PARTY_MEMBER_UNAVAILABLE) {
+        if (PickPartyMember(slot - SCREEN_LAYER_FIRST_PANEL) <= PARTY_MEMBER_NOT_READY_LAST) {
             return;
         }
         s_shownCharacter = GetPartyMemberId(slot - SCREEN_LAYER_FIRST_PANEL);

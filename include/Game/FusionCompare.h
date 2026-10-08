@@ -21,7 +21,7 @@ void MoveSpecialFusionCharacters(
 b16 MoveSpecialRaceFusionSlot(i16* first, i16* second);
 b16 MoveUnrankedFusionSlot(i16* first, i16* second);
 i16 CompareFusionValues(i16 first, i16 second);
-i16 CompareFusionCharacters(Character* first, Character* second);
+i16 CompareFusionCharacters(CharacterCore* first, CharacterCore* second);
 i16 CompareRosterFusionClasses(i16 first, i16 second);
 
 #endif // GITEN_GAME_FUSIONCOMPARE_H

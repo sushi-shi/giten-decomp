@@ -16,8 +16,8 @@
 
 RVA(0x0000a120, 0x142)
 b16 RollWeaponCondition(
-    Character* attacker,
-    Character* target,
+    CharacterCore* attacker,
+    CharacterCore* target,
     i16 resistance,
     i16 condition,
     i16 mode
@@ -62,7 +62,7 @@ b16 RollWeaponCondition(
 }
 
 RVA(0x0000a270, 0x21c)
-i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result) {
+i32 ComputeWeaponDamage(CharacterCore* attacker, CharacterCore* target, i16 result) {
     double power;
     i16 defense;
     double amount;
@@ -111,7 +111,7 @@ i32 ComputeWeaponDamage(Character* attacker, Character* target, i16 result) {
 }
 
 RVA(0x0000a490, 0x1f5)
-b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance) {
+b16 RollWeaponHit(CharacterCore* attacker, CharacterCore* target, i16 resistance) {
     i32 accuracy;
     i32 evasion;
     i32 attack;
@@ -166,7 +166,12 @@ b16 RollWeaponHit(Character* attacker, Character* target, i16 resistance) {
 }
 
 RVA(0x0000a690, 0x209)
-i16 RollExceptionalWeaponAttack(Character* attacker, Character* target, i16 mode, i16 resistance) {
+i16 RollExceptionalWeaponAttack(
+    CharacterCore* attacker,
+    CharacterCore* target,
+    i16 mode,
+    i16 resistance
+) {
     i32 phase = (g_clock.moonPhase + 13) % 14 + 1;
     i16 modifier;
     i32 attack;
@@ -199,7 +204,7 @@ i16 RollExceptionalWeaponAttack(Character* attacker, Character* target, i16 mode
 }
 
 RVA(0x0000a8a0, 0x179)
-b16 ResolveWeaponAttack(Character* attacker, Character* target, i16 mode) {
+b16 ResolveWeaponAttack(CharacterCore* attacker, CharacterCore* target, i16 mode) {
     i16 result;
     i32 amount = 0;
     ResetActionOutcome();
