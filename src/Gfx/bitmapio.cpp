@@ -1219,13 +1219,13 @@ void LoadSpriteFrames(BmpFile* data, i16 slot, i16 image, i32 size) {
 }
 
 DATA(0x00090bfc)
-static EffectImageCode s_effectImage;
+static EffectImageCode s_effectImage = {0};
 DATA(0x00090c00)
-static i16 s_effectShotX;
+static i16 s_effectShotX = 0;
 DATA(0x00090c04)
-static i16 s_effectShotY;
+static i16 s_effectShotY = 0;
 DATA(0x00090c08)
-static i16 s_effectShotZ;
+static i16 s_effectShotZ = 0;
 
 #define CacheEffectFrame(bitmap, imageCode)                                                        \
     do {                                                                                           \
