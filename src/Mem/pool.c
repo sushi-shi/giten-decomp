@@ -24,6 +24,16 @@ static i16 s_fontBufferFill = 64;
 DATA(0x00068308)
 static i16 s_fontBufferPos = 64;
 
+// @identity-TODO: the original names and Windows decoder readers are unknown.
+DATA(0x00075fc8)
+static b16 s_fontEof = false;
+
+DATA(0x00075fcc)
+static i32 s_fontRemaining = 0;
+
+DATA(0x00075f88)
+static u8 s_fontBuffer[64];
+
 // @dead-code
 // Zero-ref: no direct caller or address-taking reaches this allocator.
 // @identity-TODO: retail uses the pool pointer as a numbered memory handle
