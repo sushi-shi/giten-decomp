@@ -30,11 +30,32 @@ CHANNEL_MACRO = {
     "src_dyninit": "RVA_DYNINIT",
 }
 
-# Bounds read from retail _cinit's push/push/call _initterm sequence. The table
-# is the authoritative census described by
-# https://github.com/sushi-shi/gruntz-decomp/blob/b27b05deb249e4cacbb29f55f17b469ecfe56f26/docs/patterns/crt-xc-table-is-the-static-initializer-census.md.
-XC_START = 0x00208000
-XC_END = 0x002098A0
+def xc_bounds(pe, model=None) -> tuple[int, int]:
+    """Resolve the CRT's XC sentinels from unique claimed data identities."""
+    model = resolve() if model is None else model
+    bounds = []
+    for name in ("___xc_a", "___xc_z"):
+        matches = [b for b in model.data
+                   if b.channel and (b.name == name
+                                     or any(c.name == name for c in b.aliases))]
+        if len(matches) != 1:
+            raise ValueError(f"CRT XC bounds: {name} needs one data identity; "
+                             f"found {len(matches)}")
+        bound = matches[0]
+        if bound.space not in ("rdata", "data") or bound.size < 4:
+            raise ValueError(f"CRT XC bounds: {name} is not initialized DWORD data")
+        bounds.append(bound.rva)
+    start, end = bounds
+    if start % 4 or end % 4 or start >= end:
+        raise ValueError("CRT XC bounds: sentinels must be DWORD-aligned and ordered")
+    regions = pe.data_regions()
+    if not any(lo <= start and end + 4 <= hi
+               for kind, (lo, hi) in regions.items() if kind in ("rdata", "data")):
+        raise ValueError("CRT XC bounds: sentinels exceed one mapped data region")
+    payload = pe.read(start, end + 4 - start)
+    if payload is None or len(payload) != end + 4 - start:
+        raise ValueError("CRT XC bounds: sentinel range is not fully mapped")
+    return start, end
 
 
 def _file(site: str) -> str:
@@ -113,11 +134,10 @@ def _kind(payload: bytes, prev) -> str:
     return "substantive"
 
 
-def _dyninit_roles(pe) -> dict[int, str]:
+def _dyninit_roles(pe, model=None) -> dict[int, str]:
     """Return the XC entry thunks and their real generated bodies by address."""
-    table = pe.read(XC_START, XC_END - XC_START)
-    if table is None:
-        return {}
+    start, end = xc_bounds(pe, model)
+    table = pe.read(start, end - start)
     roles = {}
     for off in range(0, len(table), 4):
         va = struct.unpack_from("<I", table, off)[0]
@@ -164,7 +184,7 @@ def census() -> list[dict]:
     claims.sort(key=lambda row: row[0].rva)
 
     pe = image()
-    dyninit_roles = _dyninit_roles(pe)
+    dyninit_roles = _dyninit_roles(pe, model)
     img, idx = retail(), index()
     rows = []
     for (prev, prev_files), (nxt, next_files) in zip(claims, claims[1:]):
@@ -221,7 +241,10 @@ def main(argv=None) -> int:
     ap.add_argument("--limit", type=int, default=100)
     args = ap.parse_args(argv)
 
-    rows = census()
+    try:
+        rows = census()
+    except ValueError as exc:
+        ap.exit(2, f"giten sema gaps: {exc}\n")
     counts = {kind: sum(row["kind"] == kind for row in rows)
               for kind in ("dyninit-thunk", "dyninit-body", "band", "thunk",
                            "trivial", "substantive", "switch-table")}
