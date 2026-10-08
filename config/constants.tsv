@@ -97,7 +97,7 @@ src/Text/font.cpp	s_hotspotAreas	*	data-or-extent	*	hotspot rectangles in pixels
 src/Game/worldtravel.c	s_travelWeights	*	data-or-extent	*	world-travel weight table; what the values count is unrecovered
 src/Game/clock.c	s_kindFirstRow	*	data-or-extent	*	first image row of each cell kind (-1 none)
 src/Game/clock.c	s_imageFirstRow	*	data-or-extent	*	first image row of each cell image (-1 none)
-src/Game/statusmenu.c	s_statusMenu	*	data-or-extent	*	panel layout: position, row count, row ids and flags
+src/Game/statuspanel.c	s_statusMenu	*	data-or-extent	*	panel layout: position, row count, row ids and flags
 src/Game/fieldscreen.c	s_fieldPanel	*	data-or-extent	*	panel layout: position, row count, row ids and flags
 src/Game/fieldscreen.c	s_worldPanel	*	data-or-extent	*	panel layout: position, row count, row ids and flags
 src/Game/fieldscreen.c	s_commandPanel	*	data-or-extent	*	panel layout: position, row count, row ids and flags
@@ -659,7 +659,7 @@ include/Game/Clock.h	ResetClockPhaseAndTime	0	*	*	the clock restarts at moon pha
 include/Game/Character.h	ClearItemSlot	0	*	*quantity	an empty item slot holds none
 include/Game/Character.h	SetCharacterPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
 include/Game/FieldObject.h	SetFieldObjectPickTarget	0	*	*pickTargetHigh	a pick target fits in its low word
-src/Game/statusmenu.c	DrawStatusLine	2	*	*	two pixels below the line top
+src/Game/statuspanel.c	DrawStatusLine	2	*	*	two pixels below the line top
 include/Ui/Panel.h	InitPanelRow	0	*	*word04	@identity-TODO: panel row word +4 starts at 0
 include/Input/Mouse.h	ClearMouseSelection	-1	*	*	no hovered or selected object
 include/Game/DropTable.h	ClearDropSlot	0	*	*amount	an empty drop slot

@@ -155,11 +155,6 @@ source = "src/Gfx/screensave.c"
 flags = "c"
 
 [[unit]]
-unit = "clickwait"
-source = "src/Game/clickwait.c"
-flags = "c"
-
-[[unit]]
 unit = "menuresult"
 source = "src/Ui/menuresult.c"
 flags = "c"
@@ -272,11 +267,6 @@ flags = "c"
 [[unit]]
 unit = "equipeffect"
 source = "src/Game/equipeffect.c"
-flags = "c"
-
-[[unit]]
-unit = "statusmenu"
-source = "src/Game/statusmenu.c"
 flags = "c"
 
 [[unit]]

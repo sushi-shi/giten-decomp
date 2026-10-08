@@ -38,7 +38,6 @@ bitmapio	50	45
 bitset	5	5
 blit	18	18
 character	171	166
-clickwait	1	1
 clock	74	73
 d3dapp	41	37
 datafile	19	19
@@ -82,8 +81,7 @@ scriptvm	2	2
 shot	15	14
 skilluse	53	51
 statestack	127	124
-statusmenu	9	9
-statuspanel	49	47
+statuspanel	59	54
 textapi	5	5
 textchar	1	0
 textstate	21	20
@@ -359,7 +357,6 @@ character	_UpdateStatTotals	100.0000	100.0000	2	ast4:cba2b2634ff0	0x3dee0	100.00
 character	_WriteCharacter	100.0000	100.0000	6	ast4:2b71f2ee43fa	0x415b0	100.0000	
 character	_WriteCharacters	100.0000	100.0000	1	ast4:a2ab5e47ce82	0x41610	100.0000	
 character	_WriteFieldState	100.0000	100.0000	3	ast4:2cef46513cdc	0x414b0	100.0000	
-clickwait	_TakeClickUnlessCancel	100.0000	100.0000	3	ast4:8302042ff05d	0x41ab0	100.0000	
 clock	_AdvanceClock	100.0000	100.0000	3	ast4:413abb03ef07	0x20b80	100.0000	
 clock	_ApplyClockChanges	100.0000	100.0000	5	ast4:eb4a0381f83a	0x20cf0	100.0000	
 clock	_BuildRoomMap	100.0000	100.0000	1	ast4:4192335696d9	0x211b0	100.0000	
@@ -2264,19 +2261,12 @@ statestack	_ShowStatPointPrompt	100.0000	100.0000	2	ast4:4ce4baf72a97	0x192e0	10
 statestack	_SwapSceneCellParams	100.0000	100.0000	1	ast4:0c2bd9a2e190	0x17ac0	100.0000	
 statestack	_TickStepCounter	100.0000	100.0000	1	ast4:59bba3a6950b	0x19e10	100.0000	
 statestack	_TimeUntilMoonPhase	100.0000	100.0000	1	ast4:3238d651b98a	0x17960	100.0000	
-statusmenu	_CheckStatusMenuItem	100.0000	100.0000	2	ast4:cd6f39ce4d29	0x41a40	100.0000	
-statusmenu	_ClearStatusMenu	100.0000	100.0000	1	ast4:ba4a7d664a72	0x41980	100.0000	
-statusmenu	_DrawStatusLabel	100.0000	100.0000	1	ast4:b583b3c47fe5	0x41940	100.0000	
-statusmenu	_DrawStatusLine	100.0000	100.0000	1	ast4:21bdfccebb85	0x41910	100.0000	
-statusmenu	_PollStatusMenu	100.0000	100.0000	1	ast4:192e422fbbd3	0x41990	100.0000	
-statusmenu	_ResetStatusMenu	100.0000	100.0000	2	ast4:988b51361b40	0x419e0	100.0000	
-statusmenu	_SetStatusMenuItemFlag	100.0000	100.0000	1	ast4:db95b79aee0a	0x419c0	100.0000	
-statusmenu	_SetStatusMenuItemsHidden	100.0000	100.0000	3	ast4:4c875871acd3	0x41a70	100.0000	
-statusmenu	_StatusMenuRowHandler	100.0000	100.0000	1	ast4:012831311098	0x41960	100.0000	
 statuspanel	_AlignmentChartCell	100.0000	100.0000	1	ast4:5f45f3550e71	0x42ca0	100.0000	
 statuspanel	_AttachEntryMenuHandler	100.0000	100.0000	3	ast4:c32183a90bc7	0x444b0	100.0000	
 statuspanel	_AttachItemMenuHandler	100.0000	100.0000	4	ast4:ab2b7a253335	0x44340	100.0000	
 statuspanel	_AttachTextHook	100.0000	100.0000	2	ast4:6b77ed748171	0x44590	100.0000	
+statuspanel	_CheckStatusMenuItem	100.0000	100.0000	2	ast4:cd6f39ce4d29	0x41a40	100.0000	
+statuspanel	_ClearStatusMenu	100.0000	100.0000	1	ast4:ba4a7d664a72	0x41980	100.0000	
 statuspanel	_CreateAttachEntryMenu	100.0000	100.0000	2	ast4:af4b7d214907	0x443d0	100.0000	
 statuspanel	_CreateAttachItemMenu	100.0000	100.0000	3	ast4:414c74afd86d	0x442f0	100.0000	
 statuspanel	_CreateSkillMenu	100.0000	100.0000	7	ast4:8de82fd43701	0x44df0	100.0000	
@@ -2288,16 +2278,18 @@ statuspanel	_DrawEquipLines	100.0000	100.0000	5	ast4:8d4009a3daa4	0x44940	100.00
 statuspanel	_DrawEquipPanel	100.0000	100.0000	5	ast4:05ab62a0f320	0x43820	100.0000	
 statuspanel	_DrawEquipPickRow	100.0000	100.0000	3	ast4:a19933faeb4b	0x45130	100.0000	
 statuspanel	_DrawStatBar	100.0000	100.0000	3	ast4:bb646d1ff7ca	0x42520	100.0000	
-statuspanel	_DrawStatBarSegment	100.0000	100.0000	4	ast4:cea2da87aa3e	0x425c0	100.0000	
+statuspanel	_DrawStatBarSegment	100.0000	99.5312	4	ast4:cea2da87aa3e	0x425c0	100.0000	
 statuspanel	_DrawStatColumn	100.0000	100.0000	1	ast4:c898612a2e45	0x43930	100.0000	
 statuspanel	_DrawStatCompare	100.0000	100.0000	3	ast4:b7bb6fc0b135	0x43a20	100.0000	
-statuspanel	_DrawStatLine	100.0000	100.0000	7	ast4:9288eb18d9ea	0x42830	100.0000	
-statuspanel	_DrawStatList	100.0000	100.0000	7	ast4:89e00770f0fe	0x42450	100.0000	
+statuspanel	_DrawStatLine	100.0000	99.9420	7	ast4:9288eb18d9ea	0x42830	100.0000	
+statuspanel	_DrawStatList	100.0000	99.8857	7	ast4:89e00770f0fe	0x42450	100.0000	
 statuspanel	_DrawStatTotals	100.0000	100.0000	3	ast4:a300b3f936ea	0x42780	100.0000	
 statuspanel	_DrawStatusCapacity	100.0000	100.0000	5	ast4:cd24f7419e40	0x41ee0	100.0000	
 statuspanel	_DrawStatusConditions	100.0000	100.0000	3	ast4:65e53bc38759	0x41d50	100.0000	
 statuspanel	_DrawStatusExperience	100.0000	100.0000	2	ast4:036691f3b75c	0x41ad0	100.0000	
+statuspanel	_DrawStatusLabel	100.0000	100.0000	1	ast4:b583b3c47fe5	0x41940	100.0000	
 statuspanel	_DrawStatusLevel	100.0000	100.0000	4	ast4:07a4595399c6	0x41c30	100.0000	
+statuspanel	_DrawStatusLine	100.0000	100.0000	1	ast4:21bdfccebb85	0x41910	100.0000	
 statuspanel	_DrawStatusMemberPortrait	100.0000	100.0000	4	ast4:f95b98cdcaac	0x41df0	100.0000	
 statuspanel	_DrawStatusName	100.0000	100.0000	4	ast4:bdf46bc46bff	0x41f50	100.0000	
 statuspanel	_DrawStatusNumber	100.0000	100.0000	1	ast4:b262ac355005	0x429c0	100.0000	
@@ -2312,7 +2304,9 @@ statuspanel	_OpenEquipMenu	100.0000	100.0000	2	ast4:c078a5eff1d5	0x43530	100.000
 statuspanel	_OpenItemInfoPlane	100.0000	100.0000	2	ast4:c31aca401dd6	0x44bb0	100.0000	
 statuspanel	_OpenStatListWindow	100.0000	100.0000	2	ast4:0bf0cc45e7aa	0x42670	100.0000	
 statuspanel	_PollEquipPart	99.1191	99.1191	10	ast4:fef079361d60	0x44fb0	99.1191	
+statuspanel	_PollStatusMenu	100.0000	100.0000	1	ast4:192e422fbbd3	0x41990	100.0000	
 statuspanel	_PreviewEquipChange	100.0000	100.0000	15	ast4:b87f28b9b514	0x43ac0	100.0000	
+statuspanel	_ResetStatusMenu	100.0000	100.0000	2	ast4:988b51361b40	0x419e0	100.0000	
 statuspanel	_ResumeStatusPage	100.0000	100.0000	2	ast4:9576287eccc4	0x423e0	100.0000	
 statuspanel	_RunAlignmentPage	100.0000	100.0000	4	ast4:4492ecc116b2	0x42b00	100.0000	
 statuspanel	_RunAttachScreen	100.0000	100.0000	7	ast4:62d4e5fa37ab	0x43d10	100.0000	
@@ -2321,7 +2315,11 @@ statuspanel	_RunItemPage	100.0000	100.0000	5	ast4:82742e32b982	0x44650	100.0000
 statuspanel	_RunSkillPage	100.0000	100.0000	3	ast4:7719aad087e3	0x44c30	100.0000	
 statuspanel	_RunStatPage	100.0000	100.0000	4	ast4:c690252ec675	0x426a0	100.0000	
 statuspanel	_RunStatusCommands	100.0000	100.0000	3	ast4:94b7075502d5	0x42200	100.0000	
+statuspanel	_SetStatusMenuItemFlag	100.0000	100.0000	1	ast4:db95b79aee0a	0x419c0	100.0000	
+statuspanel	_SetStatusMenuItemsHidden	100.0000	100.0000	3	ast4:4c875871acd3	0x41a70	100.0000	
 statuspanel	_SkillListHandler	100.0000	100.0000	6	ast4:208db17c5dea	0x44e50	100.0000	
+statuspanel	_StatusMenuRowHandler	100.0000	100.0000	1	ast4:012831311098	0x41960	100.0000	
+statuspanel	_TakeClickUnlessCancel	100.0000	100.0000	3	ast4:8302042ff05d	0x41ab0	100.0000	
 textapi	_CallTextPlaneHook	100.0000	100.0000	1	ast4:900cc85a6171	0x45300	100.0000	
 textapi	_PaintTextRun	100.0000	100.0000	2	ast4:b879be3ae9ac	0x452c0	100.0000	
 textapi	_RefreshTextPlane	100.0000	100.0000	1	ast4:c2fa9d2eb0fa	0x45280	100.0000	

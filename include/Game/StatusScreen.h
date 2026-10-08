@@ -64,7 +64,7 @@ GZ_ENUM_CONST_END(PickMemberStep)
 i16 RunStatusCommands(void);
 i16 GetStatusAnalyzeMode(void);
 
-// The status screen's command menu (Game/statusmenu.c).
+// The status screen's command menu.
 void ClearStatusMenu(void);
 i16 PollStatusMenu(void);
 // Sets or clears `flag` of item `item` of the status screen's command menu.
