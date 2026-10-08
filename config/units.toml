@@ -55,11 +55,6 @@ source = "src/Script/scriptvm.c"
 flags = "c"
 
 [[unit]]
-unit = "scriptsprite"
-source = "src/Script/scriptsprite.c"
-flags = "c"
-
-[[unit]]
 unit = "fieldview"
 source = "src/Game/fieldview.c"
 flags = "c"

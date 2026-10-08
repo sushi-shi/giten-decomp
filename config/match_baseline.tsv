@@ -84,10 +84,9 @@ scriptactor	202	201
 scriptctx	35	35
 scriptfield	9	9
 scriptop	3	3
-scriptsprite	2	2
 scriptswitch	10	10
 scripttext	59	58
-scriptvars	108	107
+scriptvars	110	110
 scriptvm	2	2
 shot	15	14
 skilluse	53	51
@@ -1892,8 +1891,6 @@ scriptfield	_OpSetFieldParams	100.0000	100.0000	1	ast4:fafde4f73e74	0x32710	100.
 scriptop	_OpIfFlags	100.0000	100.0000	1	ast4:6540ec4fe81c	0x2feb0	100.0000	
 scriptop	_OpSaveDataCommand	100.0000	100.0000	5	ast4:b3b334a96856	0x2fd00	100.0000	
 scriptop	_SetActorMode	100.0000	100.0000	3	ast4:64e364a1a79a	0x2fe80	100.0000	
-scriptsprite	_OpLoadSprite	100.0000	100.0000	4	ast4:ea25fd8f97c4	0x397b0	100.0000	
-scriptsprite	_OpPlaceSprite	100.0000	100.0000	4	ast4:15f249d29a15	0x3a250	100.0000	
 scriptswitch	_OpSwitchOnActorAttrA	100.0000	100.0000	2	ast4:5807ae9b0060	0x32980	100.0000	
 scriptswitch	_OpSwitchOnActorAttrB	100.0000	100.0000	2	ast4:420f1c322375	0x329a0	100.0000	
 scriptswitch	_OpSwitchOnAlignmentA	100.0000	100.0000	2	ast4:465d0f841ce5	0x32900	100.0000	
@@ -2007,10 +2004,12 @@ scriptvars	_OpGetWindowIndent	100.0000	100.0000	1	ast4:cf8564374f85	0x3ae10	100.
 scriptvars	_OpGetWindowScrollStep	100.0000	100.0000	1	ast4:483127971268	0x3ae60	100.0000	
 scriptvars	_OpGetWindowScrollTop	100.0000	100.0000	1	ast4:6e70c8f5fd58	0x3adc0	100.0000	
 scriptvars	_OpHideSprite	100.0000	100.0000	2	ast4:408417758d19	0x3a350	100.0000	
+scriptvars	_OpLoadSprite	100.0000	100.0000	4	ast4:ea25fd8f97c4	0x397b0	100.0000	
 scriptvars	_OpMaskScreenCells	100.0000	100.0000	1	ast4:50fa373044c5	0x3a5b0	100.0000	
 scriptvars	_OpNextChoice	100.0000	100.0000	12	ast4:203012d72fa7	0x3a870	100.0000	
 scriptvars	_OpPauseTickCounter	100.0000	100.0000	1	ast4:150bc7f33631	0x3bb40	100.0000	
 scriptvars	_OpPeekPokeScratch	100.0000	100.0000	2	ast4:bf5ba6de5632	0x3bd40	100.0000	
+scriptvars	_OpPlaceSprite	100.0000	100.0000	4	ast4:15f249d29a15	0x3a250	100.0000	
 scriptvars	_OpPlayAnimation	100.0000	100.0000	1	ast4:6fad5d71ee44	0x3a6e0	100.0000	
 scriptvars	_OpPollMouseClick	100.0000	100.0000	1	ast4:ca6f5ffcbf03	0x3a660	100.0000	
 scriptvars	_OpPrintNumber	100.0000	100.0000	1	ast4:547bd2478b3a	0x3ba30	100.0000	
@@ -2043,7 +2042,7 @@ scriptvars	_PreloadScriptFiles	100.0000	100.0000	1	ast4:86fb5758afa7	0x3b6c0	100
 scriptvars	_PurgeScriptFiles	100.0000	100.0000	2	ast4:f8b500cc117c	0x3b840	100.0000	
 scriptvars	_PushCallFrame	100.0000	100.0000	1	ast4:1a9bdf47d20e	0x3c1f0	100.0000	
 scriptvars	_ReadScriptBlock	100.0000	100.0000	1	ast4:5222408bafab	0x3aa90	100.0000	
-scriptvars	_ReadScriptEntry	100.0000	99.8551	1	ast4:26830310f156	0x3ab10	100.0000	
+scriptvars	_ReadScriptEntry	100.0000	100.0000	1	ast4:26830310f156	0x3ab10	100.0000	
 scriptvars	_ReleaseScriptFiles	100.0000	100.0000	2	ast4:dc83edef2b1d	0x3b810	100.0000	
 scriptvars	_ResizeScriptEntry	100.0000	100.0000	3	ast4:ed41dca651ba	0x3abc0	100.0000	
 scriptvars	_RestoreSystemVars	100.0000	100.0000	1	ast4:4294376734d5	0x3bf30	100.0000	

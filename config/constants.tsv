@@ -140,18 +140,18 @@ src/Game/worldtravel.c	g_worldTravelTerrainFlags	*	data-or-extent	*	the terrain 
 src/Game/fieldscreen.c	g_worldMapOverlayFlags	89	data-or-extent	*	the table's length: one flag per world-map tile variant
 *	*	*	data-or-extent	array extent	the element count of an array, written in its declaration
 *	*	0	data-or-extent	zero fill	the {0} zero fill of static storage
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*== level	a shopkeeper's map level, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality level	a shopkeeper's map level, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*== x	a shopkeeper's map x, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality x	a shopkeeper's map x, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*== y	a shopkeeper's map y, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*equality y	a shopkeeper's map y, beside the developer trace that names the shop
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*== image	a shopkeeper's sprite image number
-src/Script/scriptsprite.c	OpPlaceSprite	*	*	store to [xy]	a sprite position in pixels
-src/Script/scriptsprite.c	OpPlaceSprite	*	*	*== [xy]	a sprite position in pixels
-src/Script/scriptsprite.c	Op*Sprite	*	*	*slot	a sprite slot
-src/Script/scriptsprite.c	Op*Sprite	*	*	*image	a sprite image number
-src/Script/scriptsprite.c	OpLoadSprite	*	*	*arg	the sprite load argument of the Osaki-fox event image the developer trace names
+src/Script/scriptvars.c	OpLoadSprite	*	*	*== level	a shopkeeper's map level, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*equality level	a shopkeeper's map level, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*== x	a shopkeeper's map x, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*equality x	a shopkeeper's map x, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*== y	a shopkeeper's map y, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*equality y	a shopkeeper's map y, beside the developer trace that names the shop
+src/Script/scriptvars.c	OpLoadSprite	*	*	*== image	a shopkeeper's sprite image number
+src/Script/scriptvars.c	OpPlaceSprite	*	*	store to [xy]	a sprite position in pixels
+src/Script/scriptvars.c	OpPlaceSprite	*	*	*== [xy]	a sprite position in pixels
+src/Script/scriptvars.c	Op*Sprite	*	*	*slot	a sprite slot
+src/Script/scriptvars.c	Op*Sprite	*	*	*image	a sprite image number
+src/Script/scriptvars.c	OpLoadSprite	*	*	*arg	the sprite load argument of the Osaki-fox event image the developer trace names
 src/Platform/winmain.cpp	[RD][er][na][dw]*	*	initializer-payload	*	vertex fields of a rendered primitive: screen or world position, colour and texture coordinates
 src/Platform/winmain.cpp	AnimateDoor	*	*	*	door animation geometry: corner offsets, widths and texture u per step
 src/Platform/winmain.cpp	Render[ENT]*	*	store	*	billboard geometry: offsets, spread and texture coordinates
