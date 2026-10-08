@@ -4,7 +4,7 @@
 #include <rva.h>
 
 #include <EnumDomain.h>
-#include <Game/Character.h>
+#include <Game/CharacterCore.h>
 #include <Game/FieldActor.h>
 #include <Game/GameState.h>
 #include <Ints.h>

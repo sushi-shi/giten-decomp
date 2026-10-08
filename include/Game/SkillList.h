@@ -3,7 +3,7 @@
 
 #include <rva.h>
 
-#include <Game/Character.h>
+#include <Game/CharacterCore.h>
 #include <Util/WordList.h>
 
 // Skill lists (and the learning requirement table) end with SKILL_LIST_END.

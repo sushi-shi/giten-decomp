@@ -163,7 +163,7 @@ GZ_ENUM_RETURN(SkillAreaAvailability, i16) CheckSkillArea(i16 id);
 i16 CanUseSkill(i16 id, struct CharacterCore* character);
 GZ_ENUM_RETURN(SkillKind, i32) GetSkillKind(i16 id);
 GZ_ENUM_RETURN(AttackMode, u16) GetSkillMode(i16 id);
-u16 GetSkillFamily(i16 id);
+GZ_ENUM_RETURN(SkillFamily, u16) GetSkillFamily(i16 id);
 u16 GetSkillLevel(i16 id);
 i16 FindSkill(i16 start, u16 a, u16 b, u16 c, i16 maxLevel);
 

@@ -6,7 +6,7 @@
 #include <File/DataFile.h>
 #include <File/DataFileKind.h>
 #include <File/DataTableId.h>
-#include <Game/Character.h>
+#include <Game/CharacterCore.h>
 #include <Game/Field.h>
 #include <Game/GameState.h>
 #include <Game/Skill.h>
@@ -307,7 +307,7 @@ i16 RemoveLowestAffiliatedSkill(CharacterCore* character) {
 // skill `skill`; -1 when none does.
 RVA(0x0002e1a0, 0x37)
 i16 FindSkillAffiliation(CharacterCore* character, i16 skill) {
-    i16 family = GetSkillFamily(skill);
+    GZ_ENUM_LOCAL(SkillFamily, i16) family = GetSkillFamily(skill);
     i16 i;
     for (i = 0; i < AFFILIATION_COUNT; i++) {
         if (GetCharacterAffiliation(character, i)
@@ -545,7 +545,7 @@ GZ_ENUM_RETURN(AttackMode, u16) GetSkillMode(i16 id) {
 }
 
 RVA(0x0002e760, 0x13)
-u16 GetSkillFamily(i16 id) {
+GZ_ENUM_RETURN(SkillFamily, u16) GetSkillFamily(i16 id) {
     return GetCachedSkill(id)->parameters.family;
 }
 
@@ -560,7 +560,7 @@ RVA(0x0002e7a0, 0x73)
 i16 FindSkill(i16 start, u16 a, u16 b, u16 c, i16 maxLevel) {
     i16 id;
     SkillHeader* skill;
-    u16 family;
+    GZ_ENUM_LOCAL(SkillFamily, u16) family;
     for (id = start; id < s_skillCount; id++) {
         skill = GetCachedSkill(id);
         if (skill->parameters.family != SKILL_FAMILY_NONE) {

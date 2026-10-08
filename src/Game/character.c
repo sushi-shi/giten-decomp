@@ -509,9 +509,9 @@ void ResetRosterStatModifiers(void) {
 RVA(0x0003cec0, 0xa3)
 i32 CalcMaxHp(CharacterCore* character) {
     double value = character->level;
-    value *= character->stats.total[STAT_VITALITY];
+    value *= GetStatTotal(character, STAT_VITALITY);
     value *= 0.5;
-    value += character->stats.total[STAT_PROTECTION] + character->stats.total[STAT_FORTUNE] + 5;
+    value += GetStatTotal(character, STAT_PROTECTION) + GetStatTotal(character, STAT_FORTUNE) + 5;
     if (TestCharacterFlag(character, ACTOR_FLAG_MAX_HP_DOUBLE_WEAPON_BOOST) == true) {
         value += value;
     }
