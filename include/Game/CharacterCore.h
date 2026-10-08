@@ -273,6 +273,9 @@ static __inline u8* GetCharacterBattleTallies(CharacterCore* character) {
     return character->battleTally;
 }
 
+#define SetCharacterBattleTally(character, index, value)                                           \
+    (GetCharacterBattleTallies(character)[(index)] = (value))
+
 #define AbsorbShieldDamage(character, damage)                                                      \
     do {                                                                                           \
         (character)->shield -= (damage);                                                           \

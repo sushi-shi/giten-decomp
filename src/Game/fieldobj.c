@@ -2160,7 +2160,7 @@ void InitObjectFromRecord(FieldObject* object, const ObjectRecord* record) {
     object->actor.core.actionSpeed = record->actionSpeed;
     GetFieldObjectActionWait(object)->remaining = ACTION_WAIT_RESET - RandomAverage(0, 100, 0);
     for (i = 0; i < sizeof(object->actor.core.battleTally); i++) {
-        object->actor.core.battleTally[i] = 0;
+        SetCharacterBattleTally(&object->actor.core, i, 0);
     }
     SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_HEAD], record->items[0]);
     SetItemSlotItem(&GetFieldObjectEquipment(object)[EQUIP_SLOT_BODY], record->items[1]);

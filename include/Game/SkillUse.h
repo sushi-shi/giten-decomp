@@ -182,7 +182,7 @@ void ClearBattleTally(CharacterCore* combatant);
 static __inline void ClearAllBattleTallies(CharacterCore* combatant) {
     i16 index;
     for (index = 0; index < sizeof(combatant->battleTally); index++) {
-        GetCharacterBattleTallies(combatant)[index] = 0;
+        SetCharacterBattleTally(combatant, index, 0);
     }
 }
 

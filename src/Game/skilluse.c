@@ -693,7 +693,7 @@ RVA(0x0002b680, 0x18)
 void ClearBattleTally(CharacterCore* combatant) {
     i16 index;
     for (index = 0; index < 14; index++) {
-        GetCharacterBattleTallies(combatant)[index] = 0;
+        SetCharacterBattleTally(combatant, index, 0);
     }
 }
 
@@ -1674,11 +1674,11 @@ void UseBattleTallySkill(CharacterCore* user, CharacterCore* target) {
     if (tally < 0 || tally > 15) {
         tally = BATTLE_TALLY_ALL_BLOCK;
     }
-    GetCharacterBattleTallies(target)[tally] = GetSkillValueA(&s_effectSkill);
+    SetCharacterBattleTally(target, tally, GetSkillValueA(&s_effectSkill));
     if (tally == BATTLE_TALLY_FIRE_BLOCK) {
-        GetCharacterBattleTallies(target)[BATTLE_TALLY_ICE_BLOCK] = 0;
+        SetCharacterBattleTally(target, BATTLE_TALLY_ICE_BLOCK, 0);
     } else if (tally == BATTLE_TALLY_ICE_BLOCK) {
-        GetCharacterBattleTallies(target)[BATTLE_TALLY_FIRE_BLOCK] = 0;
+        SetCharacterBattleTally(target, BATTLE_TALLY_FIRE_BLOCK, 0);
     }
     SetActionOutcome(ACTION_OUTCOME_BATTLE_TALLY);
 }
