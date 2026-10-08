@@ -15,6 +15,7 @@ void* ListNext(void* node);
 
 // The last node of the list that `node` starts.
 void* ListLast(void* node);
+void ListInsertAfter(void* pos, void* node);
 
 // Links `node` after the last node of the list `*list` (or makes it the
 // first); returns that last node (or the list head).

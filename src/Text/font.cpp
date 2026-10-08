@@ -4740,7 +4740,7 @@ void SetTextPlaneMenuOrigin(i16 plane, i16 x, i16 y) {
 // Chooses the highlighted menu line: its value (-1 when disabled or
 // hidden; the line index when the plane has no list), with the click sound.
 RVA(0x000537a0, 0x82)
-static i16 ChooseMenuLine(i16 plane) {
+i16 ChooseMenuLine(i16 plane) {
     TextPlane* p = GetTextPlane(plane);
     i16 index;
     i16 result;
@@ -5624,7 +5624,7 @@ void DrawLayerGauge(i16 slot, u16 value, u16 max, i16 upper) {
 
 // The party panel (0..5) whose 192x64 area holds (x, y), -1 for none.
 RVA(0x00054b30, 0x52)
-static i16 FindPartyPanel(i16 x, i16 y) {
+i16 FindPartyPanel(i16 x, i16 y) {
     i16 i;
 
     for (i = 0; i < PARTY_PANEL_COUNT; i++) {
@@ -5871,7 +5871,7 @@ b32 DrawPadButton(
 // the icon, the toggled layers' frames, the navigation pad with the compass,
 // the party panels; FALSE when a blit fails.
 RVA(0x00055060, 0x155)
-static b32 PaintLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, ScreenLayer* layer) {
+b32 PaintLayer(GZ_ENUM_PARAM(ScreenLayerSlot, i32) slot, ScreenLayer* layer) {
     i32 i;
 
     switch (slot) {

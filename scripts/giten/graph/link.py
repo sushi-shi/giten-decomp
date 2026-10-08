@@ -39,7 +39,7 @@ import struct
 import sys
 from pathlib import Path
 
-from giten.core.paths import REPO
+from giten.core.paths import REPO, RETAIL
 from giten.tool import ToolError
 from giten.tool.wine import era_tool, run, winepath
 
@@ -113,8 +113,9 @@ def collect_objs(objs_dir: Path, *, order: Path | None = None,
     """The objects and their link ORDER.
 
     `order` (one stem or path per line) wins - that is how a hypothesised
-    retail link order is tested; then explicit paths; then every manifest-owned
-    `*.obj` in the directory, sorted. The manifest filter matters: deleting a
+    retail link order is tested; then explicit paths; then the complete retail
+    contribution table, with alphabetical manifest order only when no table
+    rows exist. The manifest filter matters: deleting a
     [[unit]] does not delete its stale object, and a bare glob then links the
     orphan, which surfaces as a phantom LNK2005 against the TU that legitimately
     owns the symbol now - and with no /FORCE that FAILS the link and looks like
@@ -137,6 +138,25 @@ def collect_objs(objs_dir: Path, *, order: Path | None = None,
         raise ToolError(f"--objs-dir not found: {objs_dir}")
     from giten.manifest import units as manifest_units
     owned = {u["unit"] for u in manifest_units()}
+    retail_order = RETAIL / "link_order.tsv"
+    if retail_order.is_file() and any(
+            ln.strip() and not ln.startswith("#")
+            for ln in retail_order.read_text().splitlines()):
+        from giten.core.tsv import read
+        _banner, _header, rows = read(retail_order)
+        names = [row["unit"] for row in rows]
+        if len(names) != len(set(names)):
+            raise ToolError(f"{retail_order}: repeated object unit")
+        if set(names) != owned:
+            missing = sorted(owned - set(names))
+            extra = sorted(set(names) - owned)
+            raise ToolError(f"{retail_order}: object coverage differs from manifest "
+                            f"(missing={missing}, extra={extra})")
+        objs = [objs_dir / f"{name}.obj" for name in names]
+        missing_objs = [str(p) for p in objs if not p.is_file()]
+        if missing_objs:
+            raise ToolError(f"retail link order has missing objects: {missing_objs}")
+        return objs
     objs, orphans = [], []
     for p in sorted(objs_dir.glob("*.obj")):
         (objs if p.stem in owned else orphans).append(p)
@@ -196,7 +216,9 @@ def candidate(out: Path, objs_dir: Path, *, mapfile: Path | None = None,
               res: Path | None = None, order: Path | None = None,
               explicit: list[str] = (), extra_libs: list[str] = (),
               engine_lib: bool = False, incremental: bool = False,
-              base: str = "0x400000", keep_all: bool = True,
+              base: str = "0x400000", keep_all: bool = False,
+              entry: str | None = None,
+              fold_identical: bool = True,
               extra_flags: list[str] = (), dry_run: bool = False) -> dict:
     """Link the candidate image; returns {objs, libs, unresolved, duplicates}.
 
@@ -221,14 +243,16 @@ def candidate(out: Path, objs_dir: Path, *, mapfile: Path | None = None,
         f"/OUT:{winepath(out)}", f"/MAP:{winepath(mapf)}",
         "/NOLOGO", "/SUBSYSTEM:WINDOWS", f"/BASE:{base}",
         "/INCREMENTAL:YES" if incremental else "/INCREMENTAL:NO",
-        f"/ENTRY:{ENTRY}",
         # Retail has NO .reloc and sets IMAGE_FILE_RELOCS_STRIPPED: /FIXED.
         # (The delinker's relocations are synthesized - docs/relocations.md.)
         "/FIXED",
     ]
-    if keep_all:
-        # Keep EVERY function so the map is complete.
-        rsp_lines += ["/OPT:NOREF", "/OPT:NOICF"]
+    if entry:
+        rsp_lines.append(f"/ENTRY:{entry}")
+    # Retail retains ordinary dead code but removes unused CRT COMDATs.
+    # Retail also shares identical CRT wrappers and empty SDK constructors.
+    rsp_lines += ["/OPT:NOREF" if keep_all else "/OPT:REF",
+                  "/OPT:ICF" if fold_identical else "/OPT:NOICF"]
     rsp_lines += list(extra_flags)
 
     libs = [*extra_libs, *(str(a) for a in archives)]
@@ -315,8 +339,15 @@ def main() -> int:
                     help="/INCREMENTAL:YES. Default is NO because retail is a "
                          "flat /FIXED link; use this only to isolate that variable")
     ap.add_argument("--base", default="0x400000", help="image base (/BASE)")
-    ap.add_argument("--opt-ref", dest="keep_all", action="store_false",
-                    help="let the linker strip/fold unreferenced COMDATs")
+    ap.add_argument("--entry", help="explicit startup override; default lets the Windows subsystem select WinMainCRTStartup")
+    selection = ap.add_mutually_exclusive_group()
+    selection.add_argument("--keep-all", dest="keep_all", action="store_true",
+                           help="retain unreferenced COMDATs for contribution analysis")
+    selection.add_argument("--opt-ref", dest="keep_all", action="store_false",
+                           help="remove unreferenced COMDATs (default)")
+    ap.set_defaults(keep_all=False)
+    ap.add_argument("--no-icf", dest="fold_identical", action="store_false",
+                    help="keep identical COMDATs separate for contribution analysis")
     ap.add_argument("--dry-run", action="store_true",
                     help="assemble the response file and stop before link.exe")
     ap.add_argument("flags", nargs=argparse.REMAINDER,
@@ -327,7 +358,8 @@ def main() -> int:
         candidate(a.out, a.objs_dir, mapfile=a.mapfile, res=a.res, order=a.order,
                   explicit=a.obj, extra_libs=a.lib, engine_lib=a.engine_lib,
                   incremental=a.incremental, base=a.base,
-                  keep_all=a.keep_all, extra_flags=extra, dry_run=a.dry_run)
+                  keep_all=a.keep_all, entry=a.entry,
+                  fold_identical=a.fold_identical, extra_flags=extra, dry_run=a.dry_run)
     except (ToolError, OSError) as e:
         print(f"[link] {e}", file=sys.stderr)
         return 1

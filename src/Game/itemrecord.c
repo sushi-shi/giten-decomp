@@ -125,7 +125,7 @@ DATA(0x000911c0)
 ItemRecord g_loadedItem;
 
 RVA(0x00022d00, 0xf)
-static ItemTable* GetItemTableData(void) {
+ItemTable* GetItemTableData(void) {
     return HandleReadPtr(s_itemDataHandle);
 }
 
@@ -925,7 +925,7 @@ i16 FillBagEntry(i16 index, i16 item, u16 amount, u16 limit, i16 attachment, i16
 // @early-stop: retail anchors the scan pointer at the count word; this
 // build keeps it at the item word.
 RVA(0x00023f20, 0x1d0)
-static void CompactBagCore(void) {
+void CompactBagCore(void) {
 #ifdef GITEN_BUGFIX
     // @bug Retail keeps the first BAG_SCENARIO_ENTRY_COUNT scenario entries it finds and clears the
     // rest, which AddScenarioBagItems's overflow into the normal entries would

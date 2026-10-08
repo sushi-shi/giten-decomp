@@ -8,6 +8,15 @@
 
 #include <string.h>
 
+// @identity-TODO: the original name is unknown; no Windows reader survives.
+DATA(0x00068150)
+static i16 s_quadCellSprite[] = {0, 0, 2, 2, 1, 2, 3, 4};
+
+// @identity-TODO: the original name and Windows reader are unknown.
+// Windows retains four DWORD PC-98 graphics plane segments.
+DATA(0x00068160)
+static u32 s_vramPlaneSegments[] = {0xa800, 0xb000, 0xb800, 0xe000};
+
 // @identity-TODO: only the whole legacy image header is copied on Windows;
 // no interpreted reader of these bytes survives in this build.
 DATA(0x00071190)

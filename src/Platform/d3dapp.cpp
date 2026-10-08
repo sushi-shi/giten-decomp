@@ -453,7 +453,7 @@ void SetProjectionMatrix(D3DMATRIX& m, D3DVALUE nearPlane, D3DVALUE scale, D3DVA
 // Keeps the lowest-depth 8-bit-or-deeper colour texture format, and stops at
 // a 16-bit format matching the display's masks.
 RVA(0x000466a0, 0xa5)
-static HRESULT CALLBACK ChooseTextureFormat(LPDDSURFACEDESC desc, LPVOID context) {
+HRESULT CALLBACK ChooseTextureFormat(LPDDSURFACEDESC desc, LPVOID context) {
     DDPIXELFORMAT format = desc->ddpfPixelFormat;
 
     if (format.dwFlags & (DDPF_ALPHAPIXELS | DDPF_ALPHA)) {
@@ -907,7 +907,7 @@ void TraceD3DError(HRESULT result) {
 
 // Keeps the descriptions of the HAL, MMX and ramp devices.
 RVA(0x000477e0, 0x86)
-static HRESULT CALLBACK KeepDeviceDesc(
+HRESULT CALLBACK KeepDeviceDesc(
     LPGUID guid,
     LPSTR description,
     LPSTR name,

@@ -36,7 +36,7 @@
 abortflag	16	16
 bitmapio	50	45
 bitset	5	5
-blit	18	18
+blit	18	17
 character	171	165
 clock	74	73
 d3dapp	41	37
@@ -175,7 +175,7 @@ blit	_DrawImageFrame	100.0000	100.0000	4	ast4:974b6690c146	0x17d0	100.0000
 blit	_GetLegacyImageDrawResult	100.0000	100.0000	3	ast4:eba47d2547b9	0x1830	100.0000	
 blit	_GetLegacySpriteTestResult	100.0000	100.0000	3	ast4:eba47d2547b9	0x1820	100.0000	
 blit	_GetSpriteAlignedX	100.0000	100.0000	1	ast4:8bc238018d49	0x17e0	100.0000	
-blit	_GetSpriteAlignedY	100.0000	100.0000	1	ast4:1cbb45fa3e69	0x1800	100.0000	
+blit	_GetSpriteAlignedY	100.0000	96.1429	1	ast4:1cbb45fa3e69	0x1800	100.0000	
 blit	_PrepareFullSceneSprite	100.0000	100.0000	1	ast4:5dbdf7b63c4a	0x1640	100.0000	
 blit	_PrepareOffsetSceneSprite	100.0000	100.0000	5	ast4:2dc57d91b48b	0x1680	100.0000	
 blit	_PrepareSceneSprite	100.0000	100.0000	2	ast4:36980fdb9ce6	0x1620	100.0000	
@@ -438,7 +438,7 @@ d3dapp	??G@YA?AU_D3DVECTOR@@ABU0@0@Z	100.0000	100.0000	1	header:59f72ca880ca	0x4
 d3dapp	??K@YA?AU_D3DVECTOR@@ABU0@M@Z	100.0000	100.0000	1	header:2af3d3d379b1	0x490b0	100.0000	
 d3dapp	??R_D3DMATRIX@@QAEAAMHH@Z	100.0000	100.0000	1	header:ca71b6f5a005	0x49010	100.0000	
 d3dapp	?AcquireInput@@YAXH@Z	100.0000	100.0000	2	ast4:b7b1f9c78273	0x48e20	100.0000	
-d3dapp	?ChooseTextureFormat@@YGJPAU_DDSURFACEDESC@@PAX@Z	100.0000	100.0000	1	ast4:ce91983dc67f	0x466a0	100.0000	
+d3dapp	?ChooseTextureFormat@@YGJPAU_DDSURFACEDESC@@PAX@Z	100.0000	100.0000	2	ast4:e5cb7bd8460e	0x466a0	100.0000	
 d3dapp	?ClearScreenSurfaces@@YAXXZ	100.0000	100.0000	3	ast4:054853ec20dd	0x48f20	100.0000	
 d3dapp	?CrossProduct@@YA?AU_D3DVECTOR@@ABU1@0@Z	100.0000	100.0000	1	header:c10460422f3d	0x49170	100.0000	
 d3dapp	?DotProduct@@YAMABU_D3DVECTOR@@0@Z	100.0000	100.0000	1	header:eda9abb1977f	0x49140	100.0000	
@@ -446,7 +446,7 @@ d3dapp	?InitDirect3D@@YAHXZ	99.5451	99.5451	12	ast4:1a48b5fec5af	0x47ef0	99.5451
 d3dapp	?InitDirectDraw@@YAHXZ	100.0000	100.0000	5	ast4:9131b6471295	0x479a0	100.0000	
 d3dapp	?InitDirectInput@@YAHXZ	100.0000	100.0000	3	ast4:d153a14233f7	0x48ce0	100.0000	
 d3dapp	?InitDirectSound@@YAHXZ	100.0000	100.0000	3	ast4:1cc662cb2c10	0x488a0	100.0000	
-d3dapp	?KeepDeviceDesc@@YGJPAU_GUID@@PAD1PAU_D3DDeviceDesc@@2PAX@Z	100.0000	100.0000	1	ast4:88c22bd6cdae	0x477e0	100.0000	
+d3dapp	?KeepDeviceDesc@@YGJPAU_GUID@@PAD1PAU_D3DDeviceDesc@@2PAX@Z	100.0000	100.0000	2	ast4:3a0df219f652	0x477e0	100.0000	
 d3dapp	?Magnitude@@YAMABU_D3DVECTOR@@@Z	100.0000	100.0000	1	header:96c4b6ace3bd	0x490f0	100.0000	
 d3dapp	?MultiplyMatrix@@YAXAAU_D3DMATRIX@@00@Z	100.0000	98.9024	1	ast4:732358446015	0x46230	100.0000	
 d3dapp	?Normalize@@YA?AU_D3DVECTOR@@ABU1@@Z	100.0000	100.0000	1	header:9f72dd33a7f5	0x49090	100.0000	
@@ -865,11 +865,11 @@ fieldview	_GetWorldBlockX	100.0000	100.0000	1	ast4:f8229efbeba5	0xcd30	100.0000
 fieldview	_GetWorldBlockY	100.0000	100.0000	1	ast4:d8e5ca90e527	0xcd50	100.0000	
 fieldview	_GetWorldCellAt	100.0000	100.0000	2	ast4:ae961068308a	0xcd70	100.0000	
 fieldview	_GetWorldMapBlock	100.0000	100.0000	1	ast4:8a8bce3c314f	0xccf0	100.0000	
-fieldview	_GridDistance	100.0000	100.0000	1	ast4:49fb4d8573cf	0xbbe0	100.0000	
+fieldview	_GridDistance	100.0000	99.2941	1	ast4:49fb4d8573cf	0xbbe0	100.0000	
 fieldview	_IsCellInViewCone	100.0000	100.0000	3	ast4:1b1689f499d1	0xcba0	100.0000	
 fieldview	_IsWorldCellInMap	100.0000	100.0000	2	ast4:18bc817be615	0xce50	100.0000	
 fieldview	_ListAppend	100.0000	100.0000	1	ast4:e95a56217680	0xbd30	100.0000	
-fieldview	_ListInsertAfter	100.0000	100.0000	1	ast4:417828bb2940	0xbd00	100.0000	
+fieldview	_ListInsertAfter	100.0000	100.0000	2	ast4:d792df3354fe	0xbd00	100.0000	
 fieldview	_ListLast	100.0000	100.0000	3	ast4:2ee50af91093	0xbce0	100.0000	
 fieldview	_ListNext	100.0000	100.0000	1	ast4:c1aae0ec15d5	0xbcd0	100.0000	
 fieldview	_ListPopLast	100.0000	100.0000	1	ast4:c990fd56a574	0xbda0	100.0000	
@@ -877,7 +877,7 @@ fieldview	_ListUnlink	100.0000	100.0000	1	ast4:4dc161f63d68	0xbd70	100.0000
 fieldview	_MarkDrawCell	100.0000	100.0000	2	ast4:af630af08ac4	0xbdf0	100.0000	
 fieldview	_MoveMapCoord	100.0000	100.0000	3	ast4:8679b9801f68	0xce90	100.0000	
 fieldview	_OffsetBy	100.0000	100.0000	4	ast4:9493e66ed5d0	0xb840	100.0000	
-fieldview	_OffsetByWord	100.0000	65.8333	1	ast4:8b33d0680819	0xb830	100.0000	
+fieldview	_OffsetByWord	100.0000	100.0000	1	ast4:8b33d0680819	0xb830	100.0000	
 fieldview	_OffsetCoordClamped	100.0000	100.0000	3	ast4:83d8252d7fa1	0xcf20	100.0000	
 fieldview	_OffsetMapCoord	100.0000	100.0000	1	ast4:45ea23ba56ce	0xcfb0	100.0000	
 fieldview	_OffsetMapCoordFacing	100.0000	100.0000	3	ast4:b0b2a535399f	0xd320	100.0000	
@@ -900,16 +900,16 @@ fieldview	_ViewCellHasWall	100.0000	100.0000	1	ast4:2cf2bd539985	0xc0c0	100.0000
 fieldview	_ViewCellToMapCell	100.0000	100.0000	1	ast4:8db6b24de3d4	0xbfc0	100.0000	
 fieldview	_WallStops	100.0000	100.0000	2	ast4:dc5fed387c4a	0xd1f0	100.0000	
 fieldview	_WallStopsToward	100.0000	100.0000	2	ast4:706f9c57a671	0xd3b0	100.0000	
-font	?ChooseMenuLine@@YAFF@Z	100.0000	100.0000	3	ast4:10dce0e96433	0x537a0	100.0000	
+font	?ChooseMenuLine@@YAFF@Z	100.0000	100.0000	4	ast4:cdf10120641c	0x537a0	100.0000	
 font	?ClickPanelCommand@@YAHI@Z	100.0000	100.0000	3	ast4:f66fc89f9ca9	0x556d0	100.0000	
 font	?CreateScreenLayer@@YAHH@Z	100.0000	100.0000	5	ast4:3bbfae60e2a0	0x551c0	100.0000	
 font	?DrawPadButton@@YAHPAUIDirectDrawSurface@@HH@Z	100.0000	100.0000	4	ast4:2102cc59103d	0x55020	100.0000	
-font	?FindPartyPanel@@YAFFF@Z	100.0000	100.0000	1	ast4:55cf73b582eb	0x54b30	100.0000	
+font	?FindPartyPanel@@YAFFF@Z	100.0000	100.0000	2	ast4:c046a30d01c4	0x54b30	100.0000	
 font	?FreeScreenLayers@@YAXXZ	100.0000	100.0000	2	ast4:a26a0326f136	0x54fd0	100.0000	
 font	?LayerAtPoint@@YAHII@Z	100.0000	100.0000	3	ast4:4b5df0670bc4	0x553d0	100.0000	
 font	?LayerIndexAtPoint@@YAHII@Z	100.0000	100.0000	1	ast4:5873600701c8	0x55520	100.0000	
 font	?PadButtonAtPoint@@YAHII@Z	100.0000	100.0000	2	ast4:5e2400e9c3ec	0x55580	100.0000	
-font	?PaintLayer@@YAHHPAUScreenLayer@@@Z	100.0000	100.0000	5	ast4:54fe01339af7	0x55060	100.0000	
+font	?PaintLayer@@YAHHPAUScreenLayer@@@Z	100.0000	100.0000	6	ast4:4dec62e86173	0x55060	100.0000	
 font	?PlaceDraggedLayer@@YAXH@Z	100.0000	100.0000	2	ast4:f4b8c48b2443	0x558e0	100.0000	
 font	?ReleasePartyPanel@@YAXHH@Z	100.0000	100.0000	5	ast4:d71b0de357fe	0x55760	100.0000	
 font	?UpdateLayerPanels@@YAXXZ	100.0000	100.0000	2	ast4:6367820d49e0	0x559a0	100.0000	
@@ -1229,7 +1229,7 @@ itemrecord	_ClearBag	100.0000	100.0000	2	ast4:3dfe6e5dbfbb	0x23a80	100.0000
 itemrecord	_ClearDropSlots	100.0000	100.0000	2	ast4:7edd9c273302	0x23c00	100.0000	
 itemrecord	_ClearPool	100.0000	100.0000	3	ast4:2456cbb37973	0x23800	100.0000	
 itemrecord	_CompactBag	100.0000	100.0000	3	ast4:7c0b8f46e5fe	0x24310	100.0000	
-itemrecord	_CompactBagCore	98.3557	98.3557	11	ast4:ba3909025e0f	0x23f20	98.3557	
+itemrecord	_CompactBagCore	98.3557	98.3557	12	ast4:db209df3a39f	0x23f20	98.3557	
 itemrecord	_CopyBagEntries	100.0000	100.0000	4	ast4:f8a0bee75677	0x23aa0	100.0000	
 itemrecord	_CountBagEntries	100.0000	100.0000	3	ast4:b6bf1f637d9a	0x24280	100.0000	
 itemrecord	_CountBagItem	100.0000	100.0000	3	ast4:aac11f48a6b8	0x23d10	100.0000	
@@ -1264,7 +1264,7 @@ itemrecord	_GetItemPrice	100.0000	100.0000	3	ast4:76340af6cd25	0x23400	100.0000
 itemrecord	_GetItemRecordData	100.0000	100.0000	4	ast4:df42f878921b	0x22d10	100.0000	
 itemrecord	_GetItemRewardAt	100.0000	100.0000	1	ast4:58a8636e0dd8	0x23380	100.0000	
 itemrecord	_GetItemStackLimit	100.0000	100.0000	4	ast4:d7599b8b4318	0x23480	100.0000	
-itemrecord	_GetItemTableData	100.0000	100.0000	2	ast4:926f224f5235	0x22d00	100.0000	
+itemrecord	_GetItemTableData	100.0000	100.0000	3	ast4:753ed750fcc3	0x22d00	100.0000	
 itemrecord	_GetItemValueHigh	100.0000	100.0000	2	ast4:2e4e4481995a	0x23420	100.0000	
 itemrecord	_GetItemValueLow	100.0000	100.0000	2	ast4:8d85cae5bde2	0x23440	100.0000	
 itemrecord	_GetLoadedRecord	100.0000	100.0000	2	ast4:ca8d60aaa025	0x23460	100.0000	
@@ -2271,7 +2271,7 @@ statuspanel	_CreateAttachEntryMenu	100.0000	100.0000	2	ast4:af4b7d214907	0x443d0
 statuspanel	_CreateAttachItemMenu	100.0000	100.0000	3	ast4:414c74afd86d	0x442f0	100.0000	
 statuspanel	_CreateSkillMenu	100.0000	100.0000	7	ast4:8de82fd43701	0x44df0	100.0000	
 statuspanel	_DrawAlignmentMarker	100.0000	100.0000	5	ast4:70d2952d2b85	0x42c10	100.0000	
-statuspanel	_DrawBattleStatColumn	100.0000	100.0000	1	ast4:a65f3cc52c38	0x42920	100.0000	
+statuspanel	_DrawBattleStatColumn	100.0000	100.0000	2	ast4:82a5402b0eb5	0x42920	100.0000	
 statuspanel	_DrawBattleStatsPanel	100.0000	100.0000	7	ast4:a7776263ff93	0x42a00	100.0000	
 statuspanel	_DrawEquipLine	100.0000	100.0000	5	ast4:e7d16f70959b	0x44ad0	100.0000	
 statuspanel	_DrawEquipLines	100.0000	100.0000	5	ast4:8d4009a3daa4	0x44940	100.0000	
@@ -2282,18 +2282,18 @@ statuspanel	_DrawStatBarSegment	100.0000	100.0000	4	ast4:cea2da87aa3e	0x425c0	10
 statuspanel	_DrawStatColumn	100.0000	100.0000	1	ast4:c898612a2e45	0x43930	100.0000	
 statuspanel	_DrawStatCompare	100.0000	100.0000	3	ast4:b7bb6fc0b135	0x43a20	100.0000	
 statuspanel	_DrawStatLine	100.0000	99.9420	7	ast4:9288eb18d9ea	0x42830	100.0000	
-statuspanel	_DrawStatList	100.0000	100.0000	7	ast4:89e00770f0fe	0x42450	100.0000	
+statuspanel	_DrawStatList	100.0000	100.0000	8	ast4:7e3c581e896c	0x42450	100.0000	
 statuspanel	_DrawStatTotals	100.0000	100.0000	3	ast4:a300b3f936ea	0x42780	100.0000	
-statuspanel	_DrawStatusCapacity	100.0000	100.0000	5	ast4:cd24f7419e40	0x41ee0	100.0000	
-statuspanel	_DrawStatusConditions	100.0000	100.0000	3	ast4:65e53bc38759	0x41d50	100.0000	
-statuspanel	_DrawStatusExperience	100.0000	100.0000	2	ast4:036691f3b75c	0x41ad0	100.0000	
+statuspanel	_DrawStatusCapacity	100.0000	100.0000	6	ast4:63d723b801bc	0x41ee0	100.0000	
+statuspanel	_DrawStatusConditions	100.0000	100.0000	4	ast4:18696162348b	0x41d50	100.0000	
+statuspanel	_DrawStatusExperience	100.0000	100.0000	3	ast4:19166a3cec51	0x41ad0	100.0000	
 statuspanel	_DrawStatusLabel	100.0000	100.0000	1	ast4:b583b3c47fe5	0x41940	100.0000	
-statuspanel	_DrawStatusLevel	100.0000	100.0000	4	ast4:07a4595399c6	0x41c30	100.0000	
+statuspanel	_DrawStatusLevel	100.0000	100.0000	5	ast4:fc77b9938225	0x41c30	100.0000	
 statuspanel	_DrawStatusLine	100.0000	100.0000	1	ast4:21bdfccebb85	0x41910	100.0000	
-statuspanel	_DrawStatusMemberPortrait	100.0000	100.0000	4	ast4:f95b98cdcaac	0x41df0	100.0000	
-statuspanel	_DrawStatusName	100.0000	100.0000	4	ast4:bdf46bc46bff	0x41f50	100.0000	
+statuspanel	_DrawStatusMemberPortrait	100.0000	100.0000	5	ast4:9d24b9624183	0x41df0	100.0000	
+statuspanel	_DrawStatusName	100.0000	100.0000	5	ast4:cd3e3bad22eb	0x41f50	100.0000	
 statuspanel	_DrawStatusNumber	100.0000	100.0000	1	ast4:b262ac355005	0x429c0	100.0000	
-statuspanel	_DrawStatusPools	100.0000	100.0000	3	ast4:e1635b7a3f85	0x41ba0	100.0000	
+statuspanel	_DrawStatusPools	100.0000	100.0000	4	ast4:2af5dd46198c	0x41ba0	100.0000	
 statuspanel	_DrawStatusScreen	100.0000	100.0000	4	ast4:fd62fefebc90	0x42090	100.0000	
 statuspanel	_DrawStatusVitals	100.0000	100.0000	2	ast4:2de793651e4e	0x41cf0	100.0000	
 statuspanel	_EquipMenuHandler	100.0000	100.0000	11	ast4:b2b1b260ce95	0x435a0	100.0000	

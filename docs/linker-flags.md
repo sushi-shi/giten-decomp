@@ -7,13 +7,27 @@ Run `giten link --help` inside `nix develop` for overrides.
 Retail is a flat link: no incremental-link thunk band, the import tables merged
 into `.rdata` (there is no `.idata`), and no `.reloc` with
 `IMAGE_FILE_RELOCS_STRIPPED` set. The candidate therefore uses the Windows
-subsystem, `WinMainCRTStartup` (LIBC's), a map file, an explicit image base,
+subsystem's default `WinMainCRTStartup` (LIBC's), a map file, an explicit image base,
 `/INCREMENTAL:NO` and `/FIXED`; `--incremental` isolates that variable. The
-keep-all mode adds `/OPT:NOREF /OPT:NOICF`. The library line puts `libc.lib`
+default adds `/OPT:REF /OPT:ICF`: retail keeps ordinary dead code but removes
+unreferenced COMDATs. `--keep-all` selects `/OPT:NOREF` for contribution studies;
+it retains unused CRT signal handlers and an import absent from retail.
+`--no-icf` keeps identical COMDATs separate. Retail shares the three identical
+CRT member-call wrappers and the pinned empty SDK constructor bodies. The
+object order comes from the complete, evidence-backed
+`config/retail/link_order.tsv`; an explicit `--order` overrides it. The library
+line puts `libc.lib`
 first and then the eight DLLs in retail's import-descriptor order (KERNEL32,
 USER32, GDI32, ADVAPI32, DDRAW, DSOUND, DINPUT, WINMM), with `dxguid.lib` last.
 Use the generated response file to inspect the exact object order, libraries,
 and options for a particular build.
+
+`config/retail/imports.tsv` records all observed DLL lookup identities, including
+ordinal imports, with the caller symbols and SHA-pinned SDK archive members.
+The import generator preserves genuine SDK members and both archive indexes,
+serializing only the observed hint fields that differ. Replacements occupy
+their original library-line positions. This reconstructs import metadata; it
+does not claim recovery of the original import archives.
 
 Compile matching and final-image matching are different checks. A function's
 normalized COFF match does not establish final RVA placement, import binding,
@@ -30,6 +44,15 @@ After `giten link`, run `giten verify link-tier` (or `--census` for section
 sizes). It reads the candidate EXE/map under `build/exe/`, checks symbol closure
 and section sizes, compares linked bytes of exact functions with relocation
 masking, and compares `.rsrc` with the original's. A masked pointer still needs referent evidence; see [data attribution](data-attribution.md).
+
+For raw binary identity, use
+`giten verify link-tier --strict --report build/link-identity.json`.
+This compares the original executable, full section
+layout, headers, raw linked bytes and references. Only baseline MAX-partial
+function bodies are eligible for exclusion; misplaced bodies and MAX-exact
+current dips remain findings. The report records every exclusion and input
+hash. Equal section sizes or a passing masked comparison alone do not establish
+binary identity.
 
 `giten link` compiles `.rsrc` from the recovered `src/Giten/Giten.rc`; the
 payload files it names come from the original executable supplied through

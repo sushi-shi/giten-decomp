@@ -376,7 +376,7 @@ void* ListLast(void* node) {
 
 // Links the chain that starts at `node` in after `pos`.
 RVA(0x0000bd00, 0x26)
-static void ListInsertAfter(void* pos, void* node) {
+void ListInsertAfter(void* pos, void* node) {
     ListNode* at = pos;
     ListNode* first = node;
     ListNode* last = ListLast(first);

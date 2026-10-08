@@ -248,7 +248,7 @@ char* g_statusNumberLabels[40] = {
 };
 
 RVA(0x00041ad0, 0xc5)
-static i16 DrawStatusExperience(i16 x, i16 y, CharacterCore* member) {
+i16 DrawStatusExperience(i16 x, i16 y, CharacterCore* member) {
     i32 remaining;
 
     sprintf(g_scratchBuffer, "EXP %10ld", GetCharacterExperience(member));
@@ -277,7 +277,7 @@ static i16 DrawStatusExperience(i16 x, i16 y, CharacterCore* member) {
 }
 
 RVA(0x00041ba0, 0x89)
-static i16 DrawStatusPools(i16 x, i16 y, CharacterCore* member) {
+i16 DrawStatusPools(i16 x, i16 y, CharacterCore* member) {
     sprintf(g_scratchBuffer, "HP  %4d\201\136%4d", member->pools.hp.cur, member->pools.hp.max);
     y = DrawStatusLine(
         x,
@@ -295,7 +295,7 @@ static i16 DrawStatusPools(i16 x, i16 y, CharacterCore* member) {
 }
 
 RVA(0x00041c30, 0xb3)
-static i16 DrawStatusLevel(i16 x, i16 y, CharacterCore* member) {
+i16 DrawStatusLevel(i16 x, i16 y, CharacterCore* member) {
     sprintf(g_scratchBuffer, "LEVEL %8d", member->level);
     y = DrawStatusLine(
         x,
@@ -325,7 +325,7 @@ void DrawStatusVitals(i16 slot) {
 }
 
 RVA(0x00041d50, 0x92)
-static i16 DrawStatusConditions(i16 x, i16 y, CharacterCore* member) {
+i16 DrawStatusConditions(i16 x, i16 y, CharacterCore* member) {
     i16 cursor = 0;
     i16 entry;
     const char* name;
@@ -343,7 +343,7 @@ static i16 DrawStatusConditions(i16 x, i16 y, CharacterCore* member) {
 }
 
 RVA(0x00041df0, 0xe1)
-static void DrawStatusMemberPortrait(i16 x, i16 y, CharacterCore* member) {
+void DrawStatusMemberPortrait(i16 x, i16 y, CharacterCore* member) {
     ObjectPicture picture;
     ImageRequest request;
     void* image;
@@ -390,7 +390,7 @@ static void DrawStatusMemberPortrait(i16 x, i16 y, CharacterCore* member) {
 }
 
 RVA(0x00041ee0, 0x6c)
-static i16 DrawStatusCapacity(i16 x, i16 y, CharacterCore* member) {
+i16 DrawStatusCapacity(i16 x, i16 y, CharacterCore* member) {
     if (IsHumanCharacter(member)) {
         sprintf(
             g_scratchBuffer,
@@ -405,7 +405,7 @@ static i16 DrawStatusCapacity(i16 x, i16 y, CharacterCore* member) {
 }
 
 RVA(0x00041f50, 0x131)
-static i16 DrawStatusName(i16 x, i16 y, CharacterCore* member) {
+i16 DrawStatusName(i16 x, i16 y, CharacterCore* member) {
     char name[36];
 
     sprintf(g_scratchBuffer, "%-16.16s", FormatFullName(name, member));
@@ -566,7 +566,7 @@ static i16 DrawStatBarSegment(
 );
 
 RVA(0x00042450, 0xc3)
-static i16 DrawStatList(i16 plane, CharacterCore* member) {
+i16 DrawStatList(i16 plane, CharacterCore* member) {
     i16 stat;
     i16 y;
 
@@ -762,7 +762,7 @@ void DrawStatLine(CharacterCore* member, i16 stat, i16 highlight, i16 window) {
 static i16 DrawStatusNumber(i16 x, i16 y, i16 value);
 
 RVA(0x00042920, 0x96)
-static i16 DrawBattleStatColumn(i16 x, i16 y, i16* stats, i16 icon, i16 id) {
+i16 DrawBattleStatColumn(i16 x, i16 y, i16* stats, i16 icon, i16 id) {
     if (icon >= 0) {
         DrawStatusImage(x, y, s_battleStatIcons[icon]);
     }
