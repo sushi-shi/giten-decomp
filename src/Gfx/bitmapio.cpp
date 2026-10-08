@@ -1,18 +1,20 @@
-// Bitmap I/O: reading BMP files, loading them and bitmap resources into
-// surfaces, the pictures, the textures and the world map tiles. One TU: its
-// .data run holds s_textureDiffuse and s_worldMapRegions, then the literals in
-// first-use order, ReadBitmapFile's before CreatePicture's and ShadeTexture's;
-// s_wallTextureNames opens the next object. ReadBitmapFile calls operator new,
-// so it is C++, with C linkage kept through the headers; PackSurfaceColor and
-// GetWorldMapBlitRects inline, so it is built without /Ob0.
+// @identity-TODO: the original filename and final object boundary are unproven.
+// The display routines reproduce one ordinary initialized-data contribution.
 
 #include <rva.h>
 
+#include <EnumDomain.h>
+#include <Game/AbortFlag.h>
+#include <Game/AreaLevel.h>
+#include <Game/AreaNpc.h>
+#include <Game/MapArea.h>
+#include <Game/ViewDirection.h>
 #include <Gfx/DDError.h>
 #include <Gfx/Texture.h>
 #include <Platform/Com.h>
 #include <Platform/D3DApp.h>
 #include <Platform/GameApi.h>
+#include <Platform/Scene3D.h>
 
 #include <io.h>
 #include <new.h>
@@ -706,4 +708,851 @@ void LoadWorldMapOverlay(BmpFile* bmp, i16 slot) {
         g_viewCachePicture.rect.right = 640;
         g_viewCachePicture.rect.bottom = 328;
     }
+}
+
+RVA(0x00057e80, 0x94)
+void LoadWallTextures(i16 wallSet, i16 variant) {
+    DATA(0x0006ddc8)
+    static const char* s_wallTextureNames[16][4] = {
+        {"w\\wall00_0.bmp", "w\\wall00_1.bmp", "w\\wall00_2.bmp", "w\\wall00_3.bmp"},
+        {"w\\wall01_0.bmp", "w\\wall01_0.bmp", "w\\wall01_0.bmp", "w\\wall01_0.bmp"},
+        {"w\\wall02_0.bmp", "w\\wall02_1.bmp", "w\\wall02_2.bmp", "w\\wall02_0.bmp"},
+        {"w\\wall03_0.bmp", "w\\wall03_1.bmp", "w\\wall03_0.bmp", "w\\wall03_1.bmp"},
+        {"w\\wall04_0.bmp", "w\\wall04_1.bmp", "w\\wall04_2.bmp", "w\\wall04_0.bmp"},
+        {"w\\wall05_0.bmp", "w\\wall05_0.bmp", "w\\wall05_0.bmp", "w\\wall05_0.bmp"},
+        {"w\\wall06_0.bmp", "w\\wall06_1.bmp", "w\\wall06_2.bmp", "w\\wall06_3.bmp"},
+        {"w\\wall07_0.bmp", "w\\wall07_0.bmp", "w\\wall07_0.bmp", "w\\wall07_0.bmp"},
+        {"w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp"},
+        {"w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp"},
+        {"w\\wall10_0.bmp", "w\\wall10_0.bmp", "w\\wall10_0.bmp", "w\\wall10_0.bmp"},
+        {"w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp"},
+        {"w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp"},
+        {"w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp"},
+        {"w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp"},
+        {"w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp", "w\\wall08_0.bmp"},
+    };
+    GZ_ENUM_LOCAL(MapAreaId, u8) area;
+    u8 level;
+    ReleaseTexture(&g_roomTexture);
+    g_fixedLighting = false;
+    if ((wallSet & 0xf) == WALL_TEXTURE_UNLIT) {
+        g_fixedLighting = true;
+    }
+    if (wallSet == WALL_TEXTURE_MAP_OVERRIDE) {
+        area = GetMapArea();
+        level = GetMapLevel();
+        if ((area == MAP_AREA_CHIYODA_LINE && level > 1)
+            || (area == MAP_AREA_HIBIYA_LINE && level < 4)) {
+            LoadTexture(&g_roomTexture, "w\\wall11_0.bmp", true);
+            return;
+        }
+    }
+    LoadTexture(&g_roomTexture, s_wallTextureNames[wallSet & 0xf][variant & 3], true);
+}
+
+RVA(0x00057f20, 0x112)
+b16 DecodeLayerImage(BmpFile* data, i16 layer, i32 size) {
+    b32 loaded = true;
+    BmpFile* bmp = data;
+    i32 frame;
+    u32 consumed;
+    u32 bitmapSize;
+    if (data == NULL) {
+        return loaded;
+    }
+    for (frame = 0; frame < ENEMY_TEXTURE_FRAMES; frame++) {
+        ReleaseTexture(&g_enemyTextures[layer][frame]);
+    }
+    consumed = 0;
+    for (frame = 0; frame < ENEMY_TEXTURE_FRAMES; frame++) {
+        if (consumed > size) {
+            break;
+        }
+        bitmapSize = bmp->file.bfSize;
+        if (!LoadTexture(
+                &g_enemyTextures[layer][frame],
+                // API-forced: borrowed BMP input, selected by fromFile = FALSE.
+                reinterpret_cast<const char*>(bmp),
+                false
+            )) { // API-forced: borrowed BMP input.
+            loaded = false;
+        }
+        // Byte-forced: packed complete BMP files advance by bfSize.
+        bmp = reinterpret_cast<BmpFile*>(
+            reinterpret_cast<u8*>(bmp) + bitmapSize
+        ); // Byte-forced: packed BMPs.
+        consumed += bitmapSize;
+    }
+    if (!loaded) {
+        for (frame = 0; frame < ENEMY_TEXTURE_FRAMES; frame++) {
+            Texture* texture = &g_enemyTextures[layer][frame];
+            ReleaseTextureSurfaces(texture);
+        }
+    }
+    return loaded;
+}
+
+RVA(0x00058040, 0xc4)
+void DecodeLayerImageAlt(BmpFile* data, i16 layer, i32 size) {
+    BmpFile* bmp;
+    i32 frame;
+    u32 consumed;
+    u32 bitmapSize;
+    if (g_enemyPictures[0].id != 0) {
+        return;
+    }
+    bmp = data;
+    if (bmp == NULL) {
+        return;
+    }
+    for (frame = 0; frame < ENEMY_TEXTURE_FRAMES; frame++) {
+        ReleaseTexture(&g_enemyTextures[layer][frame]);
+    }
+    consumed = 0;
+    for (frame = 0; frame < ENEMY_TEXTURE_FRAMES; frame++) {
+        if (consumed > size) {
+            break;
+        }
+        bitmapSize = bmp->file.bfSize;
+        OpenTextureBitmap(
+            &g_enemyTextures[layer][frame],
+            // API-forced: borrowed BMP input, selected by fromFile = FALSE.
+            reinterpret_cast<const char*>(bmp),
+            false
+        ); // API-forced: borrowed BMP input.
+        // Byte-forced: packed complete BMP files advance by bfSize.
+        bmp = reinterpret_cast<BmpFile*>(
+            reinterpret_cast<u8*>(bmp) + bitmapSize
+        ); // Byte-forced: packed BMPs.
+        consumed += bitmapSize;
+    }
+    consumed = 0;
+    for (frame = 0; frame < 6; frame++) {
+        if (consumed > size) {
+            break;
+        }
+        bmp = data;
+        bitmapSize = bmp->file.bfSize;
+        LoadBitmapToSurface16(bmp, &g_enemyPictures[frame].surface, NULL);
+        // Byte-forced: each packed BMP starts after the preceding bfSize bytes.
+        data = reinterpret_cast<BmpFile*>(reinterpret_cast<u8*>(data) + bitmapSize);
+        consumed += bitmapSize;
+    }
+}
+
+RVA(0x00058110, 0x77)
+void LoadObjectTexture(void* image, i16 slot) {
+    if (slot < 0 || slot > OBJECT_TEXTURE_COUNT - 1) {
+        return;
+    }
+    if (image == NULL) {
+        ReleaseTexture(&g_objectTextures[slot]);
+        LoadTexture(&g_objectTextures[slot], "w\\npc.bmp", true);
+    } else {
+        ReleaseTexture(&g_objectTextures[slot]);
+        LoadTexture(
+            &g_objectTextures[slot],
+            // API-forced: borrowed BMP input selected by fromFile = false.
+            static_cast<const char*>(image),
+            false
+        );
+    }
+}
+
+RVA(0x00058190, 0x1f)
+void ReleaseObjectTextures(void) {
+    i32 slot;
+    for (slot = 0; slot < OBJECT_TEXTURE_COUNT; slot++) {
+        ReleaseTexture(&g_objectTextures[slot]);
+    }
+}
+
+DATA(0x0006dca0)
+static RECT s_cursorPreviewRect = {8, 8, 119, 119};
+
+RVA(0x000581b0, 0x10c)
+i16 HitTestWorldMap(i16 x, i16 y, i16 layer) {
+    i32 index = LayerIndexAtPoint(x, y);
+    u16 color;
+    i32 result;
+    if (index >= 0 && g_layerStack[index]->slot != SCREEN_LAYER_AUTOMAP) {
+        return WORLD_MAP_HIT_NONE;
+    }
+    result = WORLD_MAP_HIT_NONE;
+    if (index < 0) {
+        if (layer & 1) {
+            color = ReadSurfaceWord(g_viewCachePicture.surface, x, y, 640);
+        } else {
+            color = ReadSurfaceWord(g_scenePicture.surface, x, y, 640);
+        }
+    } else {
+        x -= g_layerStack[index]->x;
+        y -= g_layerStack[index]->y;
+        result = WORLD_MAP_HIT_AUTOMAP_LAYER;
+        color = ReadSurfaceWord(g_layerStack[index]->canvas, x, y, 128);
+    }
+    if (color == g_markerColors[0].color) {
+        result |= WORLD_MAP_HIT_MARKER_COLOR;
+    } else if (color == g_markerColors[2].color) {
+        result |= WORLD_MAP_HIT_MARKER_COLOR;
+    } else if (color == g_markerColors[3].color) {
+        result |= WORLD_MAP_HIT_MARKER_COLOR;
+    } else if (color == g_markerColors[1].color) {
+        result |= WORLD_MAP_HIT_MARKER_COLOR;
+    } else {
+        result = WORLD_MAP_HIT_NONE;
+    }
+    return result;
+}
+
+// The incoming position is replaced with the current party marker.
+RVA(0x000582c0, 0x64)
+b16 IsWorldMapMarkerNearEdge(i16 x, i16 y) {
+    i16 slot = GetWorldMapMarker(&x, &y);
+    if (slot >= 0 && slot < MAP_SCREEN_COUNT) {
+        x += g_mapScreenOffsets[slot].x;
+        y += g_mapScreenOffsets[slot].y;
+        if (x < 16 || x > 624) {
+            return true;
+        }
+        if (y < 16 || y > 312) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// @identity-TODO: the returned map codes are known by their marker colours.
+RVA(0x00058330, 0xbd)
+u8 ReadWorldMapTileCode(i16 x, i16 y, i16 slot, i16 layer) {
+    u16 color;
+    if (slot < 0) {
+        return 0;
+    }
+    if (slot > 5) {
+        return 0;
+    }
+    x += g_mapScreenOffsets[slot].x;
+    y += g_mapScreenOffsets[slot].y;
+    if (x < 0) {
+        x = 0;
+    } else if (x >= MAP_MARKER_MAX_X) {
+        x = MAP_MARKER_MAX_X;
+    }
+    if (y < 0) {
+        y = 0;
+    } else if (y >= MAP_MARKER_MAX_Y) {
+        y = MAP_MARKER_MAX_Y;
+    }
+    if (layer & 1) {
+        color = ReadSurfaceWord(g_viewCachePicture.surface, x, y, 640);
+    } else {
+        color = ReadSurfaceWord(g_scenePicture.surface, x, y, 640);
+    }
+    if (color == g_markerColors[0].color) {
+        return 15;
+    }
+    if (color == g_markerColors[2].color) {
+        return 4;
+    }
+    if (color == g_markerColors[3].color) {
+        return 5;
+    }
+    if (color == g_markerColors[1].color) {
+        return 2;
+    }
+    return 0;
+}
+
+RVA(0x000583f0, 0x10c)
+void DrawWorldMapCursor(i16 x, i16 y, i16 layer) {
+    RECT source;
+    if (LayerIndexAtPoint(x, y) >= 0) {
+        return;
+    }
+    source.left = x - 7;
+    source.top = y - 7;
+    source.right = source.left + 13;
+    source.bottom = source.top + 13;
+    if (source.left < 0) {
+        source.left = 0;
+        source.right = 13;
+    } else if (source.right >= 640) {
+        source.right = 639;
+        source.left = 626;
+    }
+    if (source.top < 0) {
+        source.top = 0;
+        source.bottom = 13;
+    } else if (source.bottom >= 328) {
+        source.bottom = 327;
+        source.top = 314;
+    }
+    g_screenLayers[SCREEN_LAYER_AUTOMAP]
+        ->canvas->Blt(NULL, NULL, NULL, DDBLT_COLORFILL, &g_clearBltFx);
+    if (layer & 1) {
+        g_screenLayers[SCREEN_LAYER_AUTOMAP]->canvas->Blt(
+            &s_cursorPreviewRect,
+            g_viewCachePicture.surface,
+            &source,
+            DDBLT_KEYSRC,
+            NULL
+        );
+    } else {
+        g_screenLayers[SCREEN_LAYER_AUTOMAP]->canvas->Blt(
+            &s_cursorPreviewRect,
+            g_scenePicture.surface,
+            &source,
+            DDBLT_KEYSRC,
+            NULL
+        );
+    }
+}
+
+// Converts a screen point to an automap cell offset from the map centre
+// (8-pixel cells, 14 x 14 cells).
+RVA(0x00058500, 0x7c)
+void ScreenToAutomapCell(i16* x, i16* y) {
+    *x += -8 - g_screenLayers[SCREEN_LAYER_AUTOMAP]->x;
+    *y += -8 - g_screenLayers[SCREEN_LAYER_AUTOMAP]->y;
+    if (*x < 0) {
+        *x = 0;
+    }
+    if (*x >= 0x70) {
+        *x = 0x6f;
+    }
+    if (*y < 0) {
+        *y = 0;
+    }
+    if (*y >= 0x70) {
+        *y = 0x6f;
+    }
+    *x = *x / 8 - 7;
+    *y = *y / 8 - 7;
+}
+
+RVA(0x00058580, 0xb)
+void ClearSelectedHotspot(void) {
+    g_selectedHotspot = HOTSPOT_NONE;
+}
+
+RVA(0x00058590, 0xa)
+void SetSelectedHotspot(i32 index) {
+    g_selectedHotspot = index;
+}
+
+RVA(0x000585a0, 0x1a)
+i16 GetSelectedHotspotValue(void) {
+    if (g_selectedHotspot < 0) {
+        return FIELD_OBJECT_INDEX_NONE;
+    }
+    return GetHotspot(g_selectedHotspot)->value;
+}
+
+RVA(0x000585c0, 0x2a)
+i16 GetSelectedHotspotObject(void) {
+    if (g_selectedHotspot < 0) {
+        return FIELD_OBJECT_INDEX_NONE;
+    }
+    if (g_screenLayers[SCREEN_LAYER_PANEL]->visible) {
+        return FIELD_OBJECT_INDEX_NONE;
+    }
+    return GetHotspot(g_selectedHotspot)->value;
+}
+
+// Whether a kind-1 hotspot leads to (x, y).
+// @dead-code
+// Zero-ref: no rel32 call/jmp, relocated reference or data slot reaches it
+// (`giten sema xref --tree`); retail keeps it because the link had no /OPT:REF.
+RVA(0x000585f0, 0x48)
+b16 HasHotspotTo(i16 x, i16 y) {
+    u32 i;
+    for (i = 0; i < g_hotspotCount; i++) {
+        if (GetHotspot(i)->kind == HOTSPOT_TARGET && GetHotspot(i)->targetX == x
+            && GetHotspot(i)->targetY == y) {
+            return true;
+        }
+    }
+    return false;
+}
+
+RVA(0x00058640, 0x90)
+i16 CountFieldObjects(void) {
+    char buffer[128];
+    i16 count = IsAbortPending();
+    if (count) {
+        SetAbortPending(false);
+        count = -1;
+    } else if (g_renderMode == RENDER_MODE_VIEW) {
+        u32 i;
+        sprintf(buffer, "\nobjcnt = %d\n", g_hotspotCount);
+        OutputDebugString(buffer);
+        for (i = 0; i < g_hotspotCount; i++) {
+            if (GetHotspot(i)->kind == HOTSPOT_TARGET) {
+                count++;
+            }
+        }
+    } else {
+        count = CountActiveObjects();
+    }
+    return count;
+}
+
+RVA(0x000586d0, 0x27)
+void UnplaceAllSprites(void) {
+    i32 slot;
+    for (slot = 0; slot < SPRITE_SLOT_COUNT; slot++) {
+        g_spriteOrder[slot] = SPRITE_UNPLACED;
+        SetSpriteSlotFrame(GetSpriteSlot(slot), SPRITE_UNPLACED);
+    }
+}
+
+RVA(0x00058700, 0x7a)
+void UnplaceSprite(i16 slot) {
+    i16 order;
+    if (slot < 0 && slot > SPRITE_SLOT_COUNT - 1) {
+        return;
+    }
+    GetSpriteSlot(slot)->group = 0;
+    SetSpriteSlotFrame(GetSpriteSlot(slot), SPRITE_UNPLACED);
+    GetSpriteSlot(slot)->x = 0;
+    GetSpriteSlot(slot)->y = 0;
+    for (order = 0; order < SPRITE_SLOT_COUNT; order++) {
+        if (g_spriteOrder[order] == slot) {
+            // The byte count is deliberately not scaled by the element size.
+            memmove(
+                &g_spriteOrder[order],
+                &g_spriteOrder[order + 1],
+                SPRITE_SLOT_COUNT - 1 - order
+            );
+            g_spriteOrder[SPRITE_SLOT_COUNT - 1] = SPRITE_UNPLACED;
+            return;
+        }
+    }
+}
+
+RVA(0x00058780, 0x71)
+void PlaceSprite(i16 id, i16 slot, i16 frame, i16 x, i16 y) {
+    i16 order;
+    if (slot < 0 || slot > SPRITE_SLOT_COUNT - 1) {
+        return;
+    }
+    GetSpriteSlot(slot)->group = id;
+    SetSpriteSlotFrame(GetSpriteSlot(slot), frame);
+    GetSpriteSlot(slot)->x = x * 8;
+    GetSpriteSlot(slot)->y = y;
+    for (order = 0; order < SPRITE_SLOT_COUNT; order++) {
+        if (g_spriteOrder[order] == SPRITE_UNPLACED) {
+            g_spriteOrder[order] = slot;
+            return;
+        }
+    }
+}
+
+RVA(0x00058800, 0x17)
+b16 IsSpritePlaced(i16 slot) {
+    return GetSpriteSlotFrame(GetSpriteSlot(slot)) != SPRITE_UNPLACED;
+}
+
+RVA(0x00058820, 0x44)
+void FreeSpriteImages(i16 slot) {
+    i32 frame;
+    if (slot < 0 || slot > SPRITE_GROUP_COUNT - 1) {
+        return;
+    }
+    for (frame = 0; frame < SPRITE_FRAME_COUNT; frame++) {
+        ReleaseComObject(GetSpriteFramePicture(slot, frame)->surface);
+        GetSpriteFramePicture(slot, frame)->visible = false;
+    }
+}
+
+RVA(0x00058870, 0x50)
+b16 IsSpriteFrameLoaded(i16 slot, i16 frame) {
+    if (IsSpriteFrameIndexOutOfRange(slot, frame)) {
+        return false;
+    }
+    if (GetSpriteFramePicture(slot, frame)->surface == NULL) {
+        return false;
+    }
+    return GetSpriteFramePicture(slot, frame)->visible != false;
+}
+
+RVA(0x000588c0, 0xd0)
+void LoadSpriteFrames(BmpFile* data, i16 slot, i16 image, i32 size) {
+    BmpFile* bmp;
+    i32 frame;
+    i32 width;
+    i32 height;
+    i32 displayWidth;
+    i32 displayHeight;
+    if (slot < 0 || slot > SPRITE_GROUP_COUNT - 1 || data == NULL) {
+        return;
+    }
+    bmp = data;
+    for (frame = 0; frame < SPRITE_FRAME_COUNT; frame++) {
+        width = bmp->info.biWidth;
+        height = bmp->info.biHeight;
+        displayWidth = width;
+        displayHeight = height;
+        if (image >= 0x2000 && image < 0x3000 && (image & 0xf) == SPRITE_IMAGE_HALF_SIZE) {
+            displayWidth /= 2;
+            displayHeight /= 2;
+        }
+        if (!CreatePicture(
+                GetSpriteFramePicture(slot, frame),
+                displayWidth,
+                displayHeight,
+                width,
+                height,
+                false
+            )) {
+            return;
+        }
+        GetSpriteFramePicture(slot, frame)->id = image;
+        LoadBitmapToSurface16(bmp, &GetSpriteFramePicture(slot, frame)->surface, NULL);
+        bmp = GetNextBitmap(bmp);
+        if (reinterpret_cast<u8*>(data) + size
+            <= reinterpret_cast<u8*>(bmp)) { // Byte-forced: stream end.
+            return;
+        }
+    }
+}
+
+DATA(0x00090bfc)
+static EffectImageCode s_effectImage;
+DATA(0x00090c00)
+static i16 s_effectShotX;
+DATA(0x00090c04)
+static i16 s_effectShotY;
+DATA(0x00090c08)
+static i16 s_effectShotZ;
+
+#define CacheEffectFrame(bitmap, imageCode)                                                        \
+    do {                                                                                           \
+        if (EffectImagesDiffer(s_effectImage, imageCode)) {                                        \
+            LoadBitmapToSurface16(bitmap, &g_effectFramePicture.surface, NULL);                    \
+            s_effectImage = (imageCode);                                                           \
+        }                                                                                          \
+    } while (0)
+
+RVA(0x00058990, 0x4c)
+void ClearEffectLayer(i16 unused) {
+    ClearDisplaySurface(g_backdropPicture.surface, NULL);
+    GetShotPosition(&s_effectShotX, &s_effectShotY, &s_effectShotZ);
+    s_effectImage.frame = 0xfff;
+}
+
+DATA(0x0006dcb0)
+static i16 s_effectLateralOffsets[4] = {60, 0, 0, 0};
+DATA(0x0006dcb8)
+static i16 s_effectHeightOffsets[4] = {0, 80, 56, 55};
+
+// @early-stop register allocation: retail splits the size word into dl and bl,
+// which frees ebx and reloads `code` for the mirror tests; here the low byte is
+// masked from a word copy and `code` stays in ebx through the offsets.
+RVA(0x000589e0, 0x457)
+void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
+    i16 screenX;
+    i16 screenY;
+    i16 frame = ProjectEffectFrame(x, y, &screenX, &screenY);
+    i32 size;
+    BmpFile* bmp = GetEffectFrame(&size, frame);
+    i16 left;
+    i16 right;
+    i16 top;
+    i16 bottom;
+    RECT dest;
+    RECT source;
+    float scaleX;
+    float scaleY;
+    for (u16 i = 0; i < code.frame; i++) {
+        if (!HasBitmapFileSignature(&bmp->file)) {
+            return;
+        }
+        u32 imageSize = bmp->file.bfSize;
+        if (size <= imageSize) {
+            break;
+        }
+        bmp = GetNextBitmap(bmp);
+        size -= imageSize;
+    }
+    if (!HasBitmapFileSignature(&bmp->file)) {
+        return;
+    }
+    CacheEffectFrame(bmp, code);
+    left = GetEffectBitmapOffsetX(bmp) * 8;
+    top = GetEffectBitmapOffsetY(bmp) * 8;
+    const u16 dimensions = bmp->file.bfReserved2;
+    const i32 width = LOBYTE(dimensions) * 8;
+    const i32 height = HIBYTE(dimensions) * 8;
+    if (code.mirrorHorizontal) {
+        left = -1 - left;
+        right = left - width + 1;
+    } else {
+        right = left + width - 1;
+    }
+    if (code.mirrorVertical) {
+        top = -1 - top;
+        bottom = top - height + 1;
+    } else {
+        bottom = top + height - 1;
+    }
+    left += screenX;
+    right += screenX;
+    top += screenY;
+    bottom += screenY;
+    SortShortPair(&left, &right);
+    SortShortPair(&top, &bottom);
+    if (screenX & 7) {
+        right++;
+    }
+    if (left < 0) {
+        left = 0;
+    }
+    if (right > 639) {
+        right = 639;
+    }
+    if (top < 0) {
+        top = 0;
+    }
+    if (bottom > 327) {
+        bottom = 327;
+    }
+    if (left > right || top > bottom) {
+        return;
+    }
+    if (static_cast<i16>(GetEffectImageBase()) == EFFECT_IMAGE_LATERAL_ADJUST && code.frame == 0) {
+        dest.left = screenX < 320 ? left + s_effectLateralOffsets[frame / 2]
+                                  : left - s_effectLateralOffsets[frame / 2];
+        dest.right = screenX < 320 ? right + s_effectLateralOffsets[frame / 2]
+                                   : right - s_effectLateralOffsets[frame / 2];
+    } else {
+        dest.left = left;
+        dest.right = right;
+    }
+    dest.top = top + s_effectHeightOffsets[GetShotPower()];
+    dest.bottom = dest.top + bottom - top;
+    source.left = source.top = 0;
+    source.right = bmp->info.biWidth;
+    source.bottom = bmp->info.biHeight;
+    scaleX = static_cast<float>(dest.right - dest.left) / bmp->info.biWidth;
+    scaleY = static_cast<float>(dest.bottom - dest.top) / bmp->info.biHeight;
+    if (dest.left < 0) {
+        source.left = -dest.left / scaleX;
+        dest.left = 0;
+    }
+    if (dest.top < 0) {
+        source.top = -dest.top / scaleY;
+        dest.top = 0;
+    }
+    if (dest.right > SCREEN_WIDTH) {
+        source.right = (dest.right - SCREEN_WIDTH) / scaleX;
+        source.right = bmp->info.biWidth - source.right;
+        dest.right = SCREEN_WIDTH;
+    }
+    if (dest.bottom > VIEW_HEIGHT) {
+        if (code.mirrorVertical) {
+            source.top = (dest.bottom - VIEW_HEIGHT) / scaleY;
+        } else {
+            source.bottom =
+                bmp->info.biHeight - static_cast<i32>((dest.bottom - VIEW_HEIGHT) / scaleY);
+        }
+        dest.bottom = VIEW_HEIGHT;
+    }
+    DDBLTFX fx;
+    InitEffectBlitFx(fx, code);
+    g_backdropPicture.surface
+        ->Blt(&dest, g_effectFramePicture.surface, &source, DDBLT_DDFX | DDBLT_KEYSRC, &fx);
+    DDSURFACEDESC desc;
+    DDCOLORKEY key;
+    key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_ALL;
+    if (g_backdropPicture.surface->GetSurfaceDesc(&desc) == DD_OK && IsPalettizedSurface(desc)) {
+        key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = BMP_TRANSPARENT_INDEX;
+    }
+    g_backdropPicture.surface->SetColorKey(DDCKEY_SRCBLT, &key);
+}
+
+// @early-stop register allocation: retail holds the vertical offset byte in dl
+// while this source keeps it in cl; the later rectangle arithmetic is the same.
+RVA(0x00058e40, 0x252)
+void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16 y) {
+    BmpFile* bmp = imageData;
+    for (u16 i = 0; i < code.frame; i++) {
+        if (!HasBitmapFileSignature(&bmp->file)) {
+            return;
+        }
+        bmp = GetNextBitmap(bmp);
+    }
+    if (!HasBitmapFileSignature(&bmp->file)) {
+        return;
+    }
+    CacheEffectFrame(bmp, code);
+    i16 screenX;
+    i16 screenY;
+    GetScriptAnimationPosition(x, y, &screenX, &screenY);
+    RECT dest;
+    RECT source;
+    source.left = source.top = 0;
+    source.right = bmp->info.biWidth;
+    source.bottom = bmp->info.biHeight;
+    const i8 horizontalOffset = GetEffectBitmapOffsetX(bmp);
+    dest.left = screenX + horizontalOffset * 8;
+    const i8 verticalOffset = GetEffectBitmapOffsetY(bmp);
+    const i32 topOffset = verticalOffset - bmp->info.biHeight / 2;
+    dest.top = (screenY + topOffset) * 11 / 10;
+    dest.right = dest.left + bmp->info.biWidth;
+    dest.bottom = dest.top + bmp->info.biHeight * 11 / 10;
+    if (dest.left < 0) {
+        source.left = -dest.left;
+        dest.left = 0;
+    }
+    if (dest.top < 0) {
+        dest.bottom -= dest.top;
+        dest.top = 0;
+    }
+    if (dest.right > SCREEN_WIDTH) {
+        source.right = bmp->info.biWidth - dest.right + SCREEN_WIDTH;
+        dest.right = SCREEN_WIDTH;
+    }
+    if (dest.bottom > SCREEN_HEIGHT) {
+        source.bottom = (bmp->info.biHeight - dest.bottom + SCREEN_HEIGHT) * 10 / 11;
+        dest.bottom = SCREEN_HEIGHT;
+    }
+    DDBLTFX fx;
+    InitEffectBlitFx(fx, code);
+    g_backdropPicture.surface
+        ->Blt(&dest, g_effectFramePicture.surface, &source, DDBLT_DDFX | DDBLT_KEYSRC, &fx);
+    DDSURFACEDESC desc;
+    DDCOLORKEY key;
+    key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_ALL;
+    if (g_backdropPicture.surface->GetSurfaceDesc(&desc) == DD_OK && IsPalettizedSurface(desc)) {
+        key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = BMP_TRANSPARENT_INDEX;
+    }
+    g_backdropPicture.surface->SetColorKey(DDCKEY_SRCBLT, &key);
+}
+
+RVA(0x000590a0, 0xd3)
+void CopySurfaceSquare(IDirectDrawSurface* dest, IDirectDrawSurface* source, i32 size) {
+    HDC destDC;
+    HDC sourceDC;
+    DDSURFACEDESC desc;
+    DDCOLORKEY key;
+    u16 color;
+    dest->GetDC(&destDC);
+    source->GetDC(&sourceDC);
+    StretchBlt(destDC, 0, 0, size, size, sourceDC, 0, 0, size, size, SRCCOPY);
+    dest->ReleaseDC(destDC);
+    source->ReleaseDC(sourceDC);
+    ZeroMemory(&desc, sizeof(desc));
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS;
+    desc.ddsCaps.dwCaps = DDSCAPS_SYSTEMMEMORY;
+    dest->Lock(NULL, &desc, DDLOCK_WAIT | DDLOCK_READONLY | DDLOCK_NOSYSLOCK, NULL);
+    color = *static_cast<u16*>(desc.lpSurface);
+    dest->Unlock(desc.lpSurface);
+    key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = color;
+    dest->SetColorKey(DDCKEY_SRCBLT, &key);
+}
+
+#define ClampHotspotTexel(value, extent)                                                           \
+    do {                                                                                           \
+        if ((value) < 0) {                                                                         \
+            (value) = 0;                                                                           \
+        } else if ((value) > (extent) - 1) {                                                       \
+            (value) = (extent) - 1;                                                                \
+        }                                                                                          \
+    } while (0)
+
+RVA(0x00059180, 0x24f)
+b32 ClickHotspotAt(const i32 x, const i32 y) {
+    if (GetTextPlane(0)->visible) {
+        return false;
+    }
+    if (y > VIEW_HEIGHT - 1) {
+        return false;
+    }
+    i32 hit = HOTSPOT_NONE;
+    const GZ_ENUM_LOCAL(ViewDirection, i16) direction = GetMapPosition()->direction;
+    for (i32 i = g_hotspotCount - 1; i >= 0; i--) {
+        const Hotspot* candidate = GetHotspot(i);
+        if (candidate->rect.left > x || candidate->rect.right <= x || candidate->rect.top > y
+            || candidate->rect.bottom <= y) {
+            continue;
+        }
+        const Texture* texture = candidate->texture;
+        const u8* pixels = GetBitmapPixels(texture->image);
+        const u32 width = texture->width;
+        const u32 height = min(256, width);
+        i32 u = (x - candidate->rect.left) * width / (candidate->rect.right - candidate->rect.left);
+        i32 v =
+            height
+            - (y - candidate->rect.top) * height / (candidate->rect.bottom - candidate->rect.top)
+            - 1;
+        ClampHotspotTexel(u, texture->width);
+        ClampHotspotTexel(v, static_cast<i32>(height));
+        if (pixels[v * width + u] == BMP_TRANSPARENT_INDEX) {
+            continue;
+        }
+        if (hit != HOTSPOT_NONE) {
+            const Hotspot* selected = GetHotspot(hit);
+            i32 candidateCoord;
+            i32 selectedCoord;
+            switch (direction) {
+                case VIEW_NORTH:
+                    selectedCoord = selected->targetY;
+                    candidateCoord = candidate->targetY;
+                    goto nearerGreater;
+                case VIEW_EAST:
+                    selectedCoord = selected->targetX;
+                    candidateCoord = candidate->targetX;
+                    goto nearerLess;
+                case VIEW_SOUTH:
+                    selectedCoord = selected->targetY;
+                    candidateCoord = candidate->targetY;
+                    goto nearerLess;
+                default:
+                    selectedCoord = selected->targetX;
+                    candidateCoord = candidate->targetX;
+                    goto nearerGreater;
+                nearerGreater:
+                    if (candidateCoord > selectedCoord) {
+                        hit = i;
+                    }
+                    break;
+                nearerLess:
+                    if (candidateCoord < selectedCoord) {
+                        hit = i;
+                    }
+                    break;
+            }
+        } else {
+            hit = i;
+        }
+    }
+    if (hit < 0) {
+        return false;
+    }
+    const Hotspot* hotspot = GetHotspot(hit);
+    switch (hotspot->kind) {
+        case HOTSPOT_BOX:
+            StartBoxScene(static_cast<TreasureBox*>(hotspot->data));
+            return true;
+        case HOTSPOT_NPC:
+            StartNpcScene(static_cast<AreaNpc*>(hotspot->data));
+            return true;
+        case HOTSPOT_TARGET:
+            if (hit == g_selectedHotspot) {
+                TalkCommand();
+                return true;
+            }
+            if (!AnyObjectInReach() || IsPartyAt(hotspot->targetX, hotspot->targetY)) {
+                g_selectedHotspot = hit;
+            }
+            break;
+    }
+    return true;
 }

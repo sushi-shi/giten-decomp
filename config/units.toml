@@ -185,11 +185,6 @@ source = "src/Game/savegame.c"
 flags = "c"
 
 [[unit]]
-unit = "hotspot"
-source = "src/Ui/hotspot.c"
-flags = "c"
-
-[[unit]]
 unit = "displayconfig"
 source = "src/Gfx/displayconfig.c"
 flags = "c"
@@ -242,11 +237,6 @@ flags = "cpp"
 [[unit]]
 unit = "fieldmain"
 source = "src/Game/fieldmain.c"
-flags = "c"
-
-[[unit]]
-unit = "automap"
-source = "src/Gfx/automap.c"
 flags = "c"
 
 [[unit]]
@@ -325,11 +315,6 @@ source = "src/Script/scriptfield.c"
 flags = "c"
 
 [[unit]]
-unit = "worldmapgfx"
-source = "src/Platform/worldmap.cpp"
-flags = "cpp"
-
-[[unit]]
 unit = "worldtravel"
 source = "src/Game/worldtravel.c"
 flags = "c"
@@ -363,41 +348,6 @@ flags = "c"
 unit = "bitmapio"
 source = "src/Gfx/bitmapio.cpp"
 flags = "c"
-
-[[unit]]
-unit = "sprite"
-source = "src/Gfx/sprite.cpp"
-flags = "cpp-noeh"
-
-[[unit]]
-unit = "objecttexture"
-source = "src/Gfx/objecttexture.c"
-flags = "c"
-
-[[unit]]
-unit = "layertexture"
-source = "src/Gfx/layertexture.cpp"
-flags = "cpp-noeh"
-
-[[unit]]
-unit = "walltexture"
-source = "src/Gfx/walltexture.cpp"
-flags = "cpp-noeh"
-
-[[unit]]
-unit = "surfacecopy"
-source = "src/Gfx/surfacecopy.cpp"
-flags = "cpp-noeh"
-
-[[unit]]
-unit = "hotspotclick"
-source = "src/Ui/hotspotclick.cpp"
-flags = "c"
-
-[[unit]]
-unit = "effectdraw"
-source = "src/Gfx/effectdraw.cpp"
-flags = "cpp-noeh"
 
 [[unit]]
 unit = "devicesettings"

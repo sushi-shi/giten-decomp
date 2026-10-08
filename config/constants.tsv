@@ -623,14 +623,14 @@ src/Gfx/videostate.c	GetPlane*	*	*	*	@identity-TODO: video planes 0..2 map to th
 src/Gfx/displayconfig.c	*	*	*	*	registry value sizes, key-open options and the display-config version (4) Win32 reads and writes
 src/Game/gameloop.c	InitGameData	0xc000	*	*	@identity-TODO: the feature bits set at start-up (TestFeatureMask); their meaning is unrecovered
 src/Game/gameloop.c	StepGame	*	*	*	-1 from the state dispatch or at the quit point asks to quit; the clock ticks with no extra time; a long frame advances play time 31 ms, a short one 24 ms
-src/Ui/hotspot.c	CountFieldObjects	*	*	*	the debug trace buffer size; -1 reports a pending abort in place of a count, which it clears
+src/Gfx/bitmapio.cpp	CountFieldObjects	*	*	*	the debug trace buffer size; -1 reports a pending abort in place of a count, which it clears
 src/Script/windowcolor.c	*	*	*	*	@identity-TODO: the alternate-text window switches: save flag 1, cursor column 0, scroll-top rows 0 and 2, and no text delay
 src/Game/waitstate.c	StepWaitState	1	*	*	a timed wait ends when its frame count reaches 1
 src/Game/waitstate.c	PushMessageBox	0	call-argument	PrintWindowText(*argument 3	attribute 0: print in the plane's own attribute
 src/Text/textchar.c	*	*	*	*	Shift-JIS decoding: a trail byte forms the low byte; codes 0xfe and up are two-byte escapes; a lead byte at the end reads as '※' (0x81a6)
 src/Script/scriptfield.c	OpIfBattleResult	*	*	*g_targetCount	target counts: exactly one, or two or more
 src/Script/scriptfield.c	OpCountObjectsAt	1	call-argument	*	@identity-TODO: CountObjectsAt's third argument, 1 for the script count
-src/Gfx/automap.c	ScreenToAutomapCell	*	*	*	automap screen geometry: an 8-pixel margin, 8 pixels per cell, 0x70 pixels (14 cells) across, and cell 7 at the centre
+src/Gfx/bitmapio.cpp	ScreenToAutomapCell	*	*	*	automap screen geometry: an 8-pixel margin, 8 pixels per cell, 0x70 pixels (14 cells) across, and cell 7 at the centre
 src/Game/equipeffect.c	ApplyItemCurse	*	*	*	curse effects: HP and MP drained per step and chances of 0x40 or 0x20 in RandomUpTo(0xff); items below 1 are none
 include/Game/WorldMap.h	ClampWorldMapViewOrigin	*	*	*	world-map view origin limits in pixels (1664 x 1872), aligned down to 8 pixels
 include/Game/FieldSight.h	PushFieldUsePrompt	*	call-argument	*	@identity-TODO: the use prompt's position (the centre subcell 4 of cell (0, 0), height 0xba) and its sub-state and mode 0
@@ -641,14 +641,14 @@ src/Platform/d3dapp.cpp	*	*	*	*	DirectDraw, Direct3D, DirectSound and DirectInpu
 src/Sound/midistream.cpp	*	*	*	*	MIDI stream buffers: members cleared at construction, 3-word events (4-byte aligned lengths), 16 channels, one MIDI device, API flags left 0
 src/Gfx/bitmapio.cpp	*	*	*	*	BMP reading: 256-entry colour tables, 2 bytes per 16-bit pixel, fread/fseek results, the 640x328 view rectangle, six world-map tile slots (0..5), the diffuse material colour, and API arguments left 0
 src/Platform/joystick.cpp	*	*	*	*	joystick ranges: the axis centre (half the range) and a quarter-range dead zone; GetAsyncKeyState's down bit (0x8000); joystick 1 (id 0)
-src/Gfx/sprite.cpp	*	*	*	*	sprite placement: 8 pixels per column, one-slot shifts of the placement list, and demon images (0x2000..0x2fff) whose low nibble selects the half-size variant
-src/Gfx/layertexture.cpp	DecodeLayerImageAlt	*	*	*	the alternate decode's six pictures and the loaded check on g_enemyPictures[0]; decode offsets start at 0
-src/Gfx/layertexture.cpp	DecodeLayerImage	0	*	*consumed	decode offsets start at 0
-src/Gfx/walltexture.cpp	LoadWallTextures	*	*	*	wall sets: the low nibble selects the set, levels 1..3 its variant
-src/Gfx/effectdraw.cpp	*	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
-src/Platform/worldmap.cpp	*	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
+src/Gfx/bitmapio.cpp	*	*	*	*	sprite placement: 8 pixels per column, one-slot shifts of the placement list, and demon images (0x2000..0x2fff) whose low nibble selects the half-size variant
+src/Gfx/bitmapio.cpp	DecodeLayerImageAlt	*	*	*	the alternate decode's six pictures and the loaded check on g_enemyPictures[0]; decode offsets start at 0
+src/Gfx/bitmapio.cpp	DecodeLayerImage	0	*	*consumed	decode offsets start at 0
+src/Gfx/bitmapio.cpp	LoadWallTextures	*	*	*	wall sets: the low nibble selects the set, levels 1..3 its variant
+src/Gfx/bitmapio.cpp	*	*	*	*	effect sprite geometry: 8-pixel columns, the 640x328 view and 640x480 screen, frame 0xfff (none), per-shot lateral and height offsets, and the 11/10 screen aspect
+src/Gfx/bitmapio.cpp	*	*	*	*	world-map screens: the 640x328 view, 16-pixel edge margins, a 13-pixel cursor, six tile slots, and marker colours 0..3 mapping to codes 15, 2, 4 and 5 (@identity-TODO)
 src/Text/font.cpp	*	*	*	*	the Windows text-plane renderer: accessors answer 0 (lookups -1) for a missing plane, line or cell; 4-bit colour fields of text attributes; 8-pixel cells, 80 columns and glyph buffers; -1 for no highlight or no hit; hook values, header rows and line steps
-src/Gfx/surfacecopy.cpp	CopySurfaceSquare	0	call-argument	StretchBlt(*	the source and destination origins (0, 0)
+src/Gfx/bitmapio.cpp	CopySurfaceSquare	0	call-argument	StretchBlt(*	the source and destination origins (0, 0)
 src/Script/scriptswitch.c	SwitchOnValue	0	call-argument	PushCallFrame(*argument 2	@identity-TODO: PushCallFrame's second argument, 0 for a switch call
 src/Gfx/screensave.c	SetTextCursorOffset	80	*	*	the PC-98 text screen's 80 columns
 src/Gfx/screensave.c	RedrawScreen	*	call-argument	*	@identity-TODO: FieldScreenNop's 0 and RefreshInfoBar's 1 on a full redraw
