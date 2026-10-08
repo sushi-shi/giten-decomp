@@ -105,7 +105,7 @@ MapCoord GetMapCoord(void);
 CharacterCore* AsCharacter(Character* character);
 CharacterCore* GetRosterCharacter(i16 slot);
 i16 FindPartySlot(i16 slot);
-ItemSlot GetEquipSlot(CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part);
+ItemSlot GetEquipSlot(const CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part);
 Character* GetRosterEntry(i16 slot);
 i16 GetPartySlot(i16 index);
 i16 GetRosterCapacity(void);

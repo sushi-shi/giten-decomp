@@ -2581,7 +2581,7 @@ b16 CanGroupEquip(i16 group, i16 item) {
 }
 
 RVA(0x00040290, 0x74)
-GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(ItemRecord* item) {
+GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(const ItemRecord* item) {
     GZ_ENUM_LOCAL(EquipPart, i16) part;
     i16 kind = item->kind;
     kind -= ITEM_KIND_WEAPON;
@@ -2616,7 +2616,7 @@ GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(ItemRecord* item) {
 }
 
 RVA(0x00040310, 0x90)
-ItemSlot GetEquipSlot(CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
+ItemSlot GetEquipSlot(const CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
     ItemSlot none = {ITEM_ID_EMPTY, GEM_ITEM_INDEX_NONE, 0};
     if (character != NULL) {
         switch (part) {
@@ -2647,7 +2647,7 @@ ItemSlot GetRosterEquipSlot(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part) {
 }
 
 RVA(0x000403c0, 0x1b)
-i16 GetEquipItem(CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
+i16 GetEquipItem(const CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
     return GetEquipSlot(character, part).item;
 }
 
@@ -2721,7 +2721,7 @@ i16 AttachEquipItem(i16 member, GZ_ENUM_PARAM(EquipPart, i16) part, i16 index) {
 // -1 without a character or a gun.
 // @identity-TODO: that slot 6 holds the gun is inferred from this use.
 RVA(0x000405e0, 0x36)
-i16 GetGunAmmoType(CharacterCore* character) {
+i16 GetGunAmmoType(const CharacterCore* character) {
     if (!character) {
         return -1;
     }
@@ -2735,7 +2735,7 @@ i16 GetGunAmmoType(CharacterCore* character) {
 // -1. Ammunition (kind 13) must match the equipped gun; anything else must be
 // allowed for the character's equipment group.
 RVA(0x00040620, 0x82)
-GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(CharacterCore* character, i16 item) {
+GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(const CharacterCore* character, i16 item) {
     ItemRecord* record;
     i16 part;
     if (item < 1) {

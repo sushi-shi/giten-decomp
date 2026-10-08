@@ -41,7 +41,7 @@ GZ_ENUM_END_SPLIT(DdsActionResult)
 b16 RunDdsMenu(void);
 b16 RunDdsSummon(void);
 GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void);
-i16 PickDdsRosterMember(i16 step);
+GZ_ENUM_RETURN(DdsRosterPickStep, i16) PickDdsRosterMember(GZ_ENUM_PARAM(DdsRosterPickStep, i16) step);
 void DdsMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16) event);
 GZ_ENUM_RETURN(DdsActionResult, i16) ReturnDdsMember(void);
 i16 PickDdsPurgeMember(void);

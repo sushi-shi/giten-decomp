@@ -3220,7 +3220,7 @@ void CountPlacedNpc(void) {
 
 // The four-direction mask selected by NPC cell code `code`.
 RVA(0x0001f290, 0xe)
-GZ_ENUM_RETURN(NpcDirectionMask, i16) GetNpcImageOfCode(i16 code) {
+GZ_ENUM_RETURN(NpcDirectionMask, i16) GetNpcImageOfCode(GZ_ENUM_PARAM(CellCode, i16) code) {
     return s_npcDirectionMasks[code - CELL_AREA_NPC_MASK_ALL];
 }
 

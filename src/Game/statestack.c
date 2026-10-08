@@ -916,7 +916,7 @@ b16 RunDdsSummon(void) {
 
 RVA(0x00017520, 0x1cc)
 GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
-    i16 step;
+    GZ_ENUM_LOCAL(DdsRosterPickStep, i16) step;
     switch (GetCursorLevel0(&s_summonCursor)) {
         case DDS_SUMMON_CURSOR_PICK_ROSTER:
             step = PickDdsRosterMember(GetCursorLevel1(&s_summonCursor));
@@ -977,7 +977,7 @@ GZ_ENUM_RETURN(DdsActionResult, i16) PickDdsSummon(void) {
 }
 
 RVA(0x000176f0, 0x4a)
-i16 PickDdsRosterMember(i16 step) {
+GZ_ENUM_RETURN(DdsRosterPickStep, i16) PickDdsRosterMember(GZ_ENUM_PARAM(DdsRosterPickStep, i16) step) {
     switch (step) {
         case DDS_ROSTER_PICK_CLOSE:
             RunStatusListPicker(true);

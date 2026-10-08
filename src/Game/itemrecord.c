@@ -505,7 +505,7 @@ i16 RollItemAmount(i16 item, i16 count, i16 random) {
 }
 
 RVA(0x000235a0, 0x50)
-b16 IsEquipCurseActive(CharacterCore* character, i16 part) {
+b16 IsEquipCurseActive(const CharacterCore* character, GZ_ENUM_PARAM(EquipPart, i16) part) {
     ItemSlot slot = GetEquipSlot(character, part);
     ItemRecord* record;
 

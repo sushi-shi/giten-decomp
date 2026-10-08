@@ -3,6 +3,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/CellCode.h>
 #include <Game/RoomRegion.h>
 #include <Gfx/Palette.h>
 #include <Ints.h>
@@ -90,7 +91,7 @@ void EnterRoom(i16 code);
 i16 FindCellObject(i16 id, i16 x, i16 y);
 i16 NextNpcSlot(void);
 void CountPlacedNpc(void);
-GZ_ENUM_RETURN(NpcDirectionMask, i16) GetNpcImageOfCode(i16 code);
+GZ_ENUM_RETURN(NpcDirectionMask, i16) GetNpcImageOfCode(GZ_ENUM_PARAM(CellCode, i16) code);
 void ClearAreaNpcs(void);
 void AddAreaNpc(const u8* record);
 void MarkAreaNpcs(void);

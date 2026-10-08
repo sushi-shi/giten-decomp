@@ -214,7 +214,7 @@ character	_CalcPhysicalDefenseStat	100.0000	100.0000	3	ast4:ed814705bdc7	0x3d240
 character	_CalcWeaponAccuracyStat	100.0000	100.0000	3	ast4:e3ccd4c65b31	0x3d390	100.0000	
 character	_CalcWeaponEvasionStat	100.0000	100.0000	3	ast4:be26a699e6c0	0x3d470	100.0000	
 character	_CalcWeaponPowerStat	100.0000	93.0000	3	ast4:fef729562124	0x3d3f0	100.0000	
-character	_CanEquipItem	100.0000	100.0000	6	ast4:f6d3adaf9c35	0x40620	100.0000	
+character	_CanEquipItem	100.0000	100.0000	7	ast4:79029fc48709	0x40620	100.0000	
 character	_CanGroupEquip	100.0000	100.0000	2	ast4:6670bbd9fbe0	0x40250	100.0000	
 character	_ChangePool	100.0000	100.0000	2	ast4:f26bc8b2eb2c	0x3d130	100.0000	
 character	_ClampLevel	100.0000	100.0000	2	ast4:90b73b3c7f34	0x3dec0	100.0000	
@@ -245,7 +245,7 @@ character	_EaseCondition	100.0000	100.0000	4	ast4:048ecb83ca73	0x3f220	100.0000
 character	_EaseSleep	100.0000	100.0000	3	ast4:f565aa560749	0x3f290	100.0000	
 character	_EmptyPoolMask	100.0000	100.0000	3	ast4:20e911158bb9	0x3d050	100.0000	
 character	_EquipItem	99.8936	99.8936	7	ast4:636012588fc7	0x40710	100.0000	
-character	_EquipPartOfItem	100.0000	100.0000	6	ast4:7a425218a787	0x40290	100.0000	
+character	_EquipPartOfItem	100.0000	100.0000	7	ast4:4716434aa37d	0x40290	100.0000	
 character	_EscalateCondition	100.0000	100.0000	4	ast4:49af7e51192d	0x3f1c0	100.0000	
 character	_ExchangePartySlot	100.0000	100.0000	1	ast4:83a84bfeb7cc	0x3f910	100.0000	
 character	_FillPool	100.0000	100.0000	3	ast4:b6be4d855627	0x3d090	100.0000	
@@ -274,12 +274,12 @@ character	_GetCharacterId	100.0000	100.0000	2	ast4:8266116fb2c5	0x3cd90	100.0000
 character	_GetCharacters	100.0000	100.0000	1	ast4:d424f9172ceb	0x3ce10	100.0000	
 character	_GetConditionName	100.0000	100.0000	2	ast4:d8f0b1c84f13	0x3f350	100.0000	
 character	_GetDisablingCondition	100.0000	100.0000	3	ast4:82148f0e737a	0x3eee0	100.0000	
-character	_GetEquipItem	100.0000	100.0000	3	ast4:badbfe8a77d4	0x403c0	100.0000	
-character	_GetEquipSlot	100.0000	100.0000	6	ast4:b9fd8f03e925	0x40310	100.0000	
+character	_GetEquipItem	100.0000	100.0000	4	ast4:acddd37c9e73	0x403c0	100.0000	
+character	_GetEquipSlot	100.0000	100.0000	7	ast4:621f7b8387d6	0x40310	100.0000	
 character	_GetFatalCondition	100.0000	100.0000	3	ast4:2d482f9deb5b	0x3edd0	100.0000	
 character	_GetFirstConditionIndex	100.0000	100.0000	4	ast4:1e7129e7943b	0x3f380	100.0000	
 character	_GetFirstConditionName	100.0000	100.0000	2	ast4:69dca5258dc6	0x3f2b0	100.0000	
-character	_GetGunAmmoType	100.0000	100.0000	4	ast4:78be51845a16	0x405e0	100.0000	
+character	_GetGunAmmoType	100.0000	100.0000	5	ast4:7a4daf37a2db	0x405e0	100.0000	
 character	_GetPartyCharacter	100.0000	100.0000	2	ast4:56719a73e1ef	0x3ff40	100.0000	
 character	_GetPartyEntry	100.0000	100.0000	1	ast4:9eaffc513555	0x3ff20	100.0000	
 character	_GetPartyMemberId	100.0000	100.0000	2	ast4:ee1fb0ecff44	0x40160	100.0000	
@@ -291,7 +291,7 @@ character	_GetRankScore	100.0000	100.0000	3	ast4:ee45cbe1e88c	0x3f470	100.0000
 character	_GetRosterCharacter	100.0000	100.0000	2	ast4:414e71a32334	0x3fe70	100.0000	
 character	_GetRosterCharacterById	100.0000	100.0000	2	ast4:4fa0fe04af7a	0x3f430	100.0000	
 character	_GetRosterEntry	100.0000	100.0000	2	ast4:4c1047199e07	0x3fe50	100.0000	
-character	_GetRosterEquipSlot	100.0000	100.0000	3	ast4:c205b02b19fa	0x403a0	100.0000	
+character	_GetRosterEquipSlot	100.0000	100.0000	4	ast4:35b97344ac49	0x403a0	100.0000	
 character	_GetRosterId	100.0000	100.0000	2	ast4:32004a1942c7	0x3feb0	100.0000	
 character	_GetRosterLeader	100.0000	100.0000	2	ast4:f24b1f5286f4	0x3fe40	100.0000	
 character	_HasCondition	100.0000	100.0000	3	ast4:16f2687e4d3e	0x3e6b0	100.0000	
@@ -334,7 +334,7 @@ character	_ResetRosterStatModifiers	100.0000	100.0000	7	ast4:4f793d4ddf50	0x3ce2
 character	_RosterSlotOfId	100.0000	100.0000	1	ast4:f1464c926f34	0x40020	100.0000	
 character	_RunStatusListPicker	100.0000	100.0000	1	ast4:db9a63108e05	0x409a0	100.0000	
 character	_ScalePercent999	100.0000	100.0000	1	ast4:1159e1592ecd	0x3dbe0	100.0000	
-character	_SetEquipSlot	100.0000	100.0000	6	ast4:7d94c1b3614e	0x403e0	100.0000	
+character	_SetEquipSlot	100.0000	100.0000	7	ast4:6ec0933379a1	0x403e0	100.0000	
 character	_SetPartySlot	100.0000	100.0000	5	ast4:7aa5e37748dd	0x3ff60	100.0000	
 character	_SetRosterEntry	100.0000	100.0000	2	ast4:08eca45bf323	0x3fed0	100.0000	
 character	_SetStatusColumn	100.0000	100.0000	1	ast4:0afdb85a5909	0x40980	100.0000	
@@ -345,7 +345,7 @@ character	_StatBlend57	100.0000	100.0000	3	ast4:9cbfff0672f4	0x3d1f0	100.0000
 character	_StatBlend80	100.0000	100.0000	3	ast4:1bca10b84c59	0x3d190	100.0000	
 character	_StatusListMenuHandler	100.0000	100.0000	3	ast4:d478f210559b	0x40a80	100.0000	
 character	_SumArmorDefenseBonus	100.0000	100.0000	6	ast4:683e0844463a	0x3d940	100.0000	
-character	_SwapEquipSlot	100.0000	100.0000	2	ast4:9c13f66e1fc0	0x406b0	100.0000	
+character	_SwapEquipSlot	100.0000	100.0000	3	ast4:c8f9b6fb98a8	0x406b0	100.0000	
 character	_SwapPartySlots	100.0000	100.0000	3	ast4:97d5e834c804	0x40180	100.0000	
 character	_TickActionWait	100.0000	100.0000	2	ast4:7f2d07091576	0x3f510	100.0000	
 character	_TickPartyActionWaits	100.0000	100.0000	4	ast4:b096c4b0d6f2	0x3f570	100.0000	
@@ -1274,7 +1274,7 @@ itemrecord	_GiftMenuHandler	100.0000	100.0000	4	ast4:71b59ac2f270	0x25fb0	100.00
 itemrecord	_GivePooledItems	100.0000	100.0000	6	ast4:fb2ad3f4894f	0x23990	100.0000	
 itemrecord	_InflictCondition	100.0000	100.0000	6	ast4:5dab67fbc923	0x25840	100.0000	
 itemrecord	_IsConditionResisted	100.0000	100.0000	4	ast4:59d2d660a703	0x258c0	100.0000	
-itemrecord	_IsEquipCurseActive	100.0000	100.0000	5	ast4:bba99d956677	0x235a0	100.0000	
+itemrecord	_IsEquipCurseActive	100.0000	100.0000	6	ast4:3f770b69f482	0x235a0	100.0000	
 itemrecord	_IsItemGuardingElement	100.0000	100.0000	4	ast4:c95829b51792	0x25350	100.0000	
 itemrecord	_IsSpecialItemExpired	100.0000	100.0000	1	ast4:bff9d22c2a1b	0x25c30	100.0000	
 itemrecord	_ItemResistsCondition	100.0000	100.0000	4	ast4:4bb209f81467	0x259d0	100.0000	
@@ -1806,7 +1806,7 @@ scriptactor	_OpTakeItem	100.0000	100.0000	1	ast4:5f5a5f8298fa	0x356d0	100.0000
 scriptactor	_OpUnsetLongVar	100.0000	100.0000	1	ast4:287b25db0a94	0x33980	100.0000	
 scriptactor	_OpXorLongVar	100.0000	100.0000	1	ast4:975ddd6d1cd4	0x33760	100.0000	
 scriptactor	_OpZeroLongVar	100.0000	100.0000	1	ast4:aad081ef4a8f	0x339a0	100.0000	
-scriptactor	_PickEquipmentReward	100.0000	100.0000	3	ast4:0bfeb29ed639	0x33160	100.0000	
+scriptactor	_PickEquipmentReward	100.0000	100.0000	4	ast4:7d9b13e37b0e	0x33160	100.0000	
 scriptactor	_PlaceScriptActor	100.0000	100.0000	4	ast4:e393dd44d056	0x32dc0	100.0000	
 scriptactor	_PlayScreenTransition	100.0000	100.0000	1	ast4:0c3d6be10272	0x36010	100.0000	
 scriptactor	_PollScriptChoiceMenu	100.0000	100.0000	3	ast4:5894ded71916	0x384f0	100.0000	
@@ -2273,7 +2273,7 @@ statuspanel	_CreateSkillMenu	100.0000	100.0000	7	ast4:8de82fd43701	0x44df0	100.0
 statuspanel	_DrawAlignmentMarker	100.0000	100.0000	5	ast4:70d2952d2b85	0x42c10	100.0000	
 statuspanel	_DrawBattleStatColumn	100.0000	100.0000	1	ast4:a65f3cc52c38	0x42920	100.0000	
 statuspanel	_DrawBattleStatsPanel	100.0000	100.0000	7	ast4:a7776263ff93	0x42a00	100.0000	
-statuspanel	_DrawEquipLine	100.0000	100.0000	4	ast4:fc7ceca376ff	0x44ad0	100.0000	
+statuspanel	_DrawEquipLine	100.0000	100.0000	5	ast4:e7d16f70959b	0x44ad0	100.0000	
 statuspanel	_DrawEquipLines	100.0000	100.0000	5	ast4:8d4009a3daa4	0x44940	100.0000	
 statuspanel	_DrawEquipPanel	100.0000	100.0000	5	ast4:05ab62a0f320	0x43820	100.0000	
 statuspanel	_DrawEquipPickRow	100.0000	100.0000	3	ast4:a19933faeb4b	0x45130	100.0000	
@@ -2296,16 +2296,16 @@ statuspanel	_DrawStatusNumber	100.0000	100.0000	1	ast4:b262ac355005	0x429c0	100.
 statuspanel	_DrawStatusPools	100.0000	100.0000	3	ast4:e1635b7a3f85	0x41ba0	100.0000	
 statuspanel	_DrawStatusScreen	100.0000	100.0000	4	ast4:fd62fefebc90	0x42090	100.0000	
 statuspanel	_DrawStatusVitals	100.0000	100.0000	2	ast4:2de793651e4e	0x41cf0	100.0000	
-statuspanel	_EquipMenuHandler	100.0000	100.0000	10	ast4:3257da8ac596	0x435a0	100.0000	
+statuspanel	_EquipMenuHandler	100.0000	100.0000	11	ast4:b2b1b260ce95	0x435a0	100.0000	
 statuspanel	_ItemListHandler	100.0000	100.0000	10	ast4:92284dd56026	0x44830	100.0000	
 statuspanel	_ListAttachEntries	100.0000	100.0000	2	ast4:9dbdc0dc09a2	0x44440	100.0000	
-statuspanel	_ListEquipCandidates	100.0000	100.0000	5	ast4:d85cf541ed15	0x42cd0	100.0000	
+statuspanel	_ListEquipCandidates	100.0000	100.0000	6	ast4:44fd187dd747	0x42cd0	100.0000	
 statuspanel	_OpenEquipMenu	100.0000	100.0000	2	ast4:c078a5eff1d5	0x43530	100.0000	
 statuspanel	_OpenItemInfoPlane	100.0000	100.0000	2	ast4:c31aca401dd6	0x44bb0	100.0000	
 statuspanel	_OpenStatListWindow	100.0000	100.0000	2	ast4:0bf0cc45e7aa	0x42670	100.0000	
-statuspanel	_PollEquipPart	99.1191	99.1191	10	ast4:fef079361d60	0x44fb0	99.1191	
+statuspanel	_PollEquipPart	99.1191	99.1191	11	ast4:f1ef54b1a6e7	0x44fb0	99.1191	
 statuspanel	_PollStatusMenu	100.0000	100.0000	1	ast4:192e422fbbd3	0x41990	100.0000	
-statuspanel	_PreviewEquipChange	100.0000	100.0000	15	ast4:b87f28b9b514	0x43ac0	100.0000	
+statuspanel	_PreviewEquipChange	100.0000	100.0000	16	ast4:c0aca02bbc6d	0x43ac0	100.0000	
 statuspanel	_ResetStatusMenu	100.0000	100.0000	2	ast4:988b51361b40	0x419e0	100.0000	
 statuspanel	_ResumeStatusPage	100.0000	100.0000	2	ast4:9576287eccc4	0x423e0	100.0000	
 statuspanel	_RunAlignmentPage	100.0000	100.0000	4	ast4:4492ecc116b2	0x42b00	100.0000	
@@ -2396,7 +2396,7 @@ treasurebox	_FindCellObject	100.0000	100.0000	2	ast4:11538dcf1801	0x1f1d0	100.00
 treasurebox	_FindPanelRowAt	100.0000	100.0000	7	ast4:3a26dfd6752a	0x1cc00	100.0000	
 treasurebox	_FindRegionData	100.0000	100.0000	1	ast4:918d532456d1	0x1ecc0	100.0000	
 treasurebox	_FinishDoorStep	100.0000	100.0000	2	ast4:d9c6c0eb0a68	0x1f130	100.0000	
-treasurebox	_FormatItemMenuEntry	100.0000	100.0000	10	ast4:083b5f217166	0x1b960	100.0000	
+treasurebox	_FormatItemMenuEntry	100.0000	100.0000	11	ast4:1e62a19ef290	0x1b960	100.0000	
 treasurebox	_FreeAutomap	100.0000	100.0000	5	ast4:a890f0477b3b	0x1cf40	100.0000	
 treasurebox	_FreeWorldMapEvents	100.0000	100.0000	1	ast4:f2244f18e3aa	0x1b390	100.0000	
 treasurebox	_GetAreaNpc	100.0000	100.0000	2	ast4:2f7a81203589	0x1f4a0	100.0000	
@@ -2480,7 +2480,7 @@ treasurebox	_SealTarget	100.0000	100.0000	6	ast4:2e9d1a776b35	0x1fb80	100.0000
 treasurebox	_SetAnalyzeTarget	100.0000	100.0000	2	ast4:e3c08c747456	0x1ad40	100.0000	
 treasurebox	_SetGridByte	100.0000	100.0000	4	ast4:0efb02f64b84	0x1eaf0	100.0000	
 treasurebox	_SetInfoBarLayout	100.0000	100.0000	1	ast4:cda98ac741f0	0x1e720	100.0000	
-treasurebox	_SetItemMenuCharacter	100.0000	100.0000	3	ast4:8efc341617f9	0x1b5c0	100.0000	
+treasurebox	_SetItemMenuCharacter	100.0000	100.0000	4	ast4:f1ce222842dd	0x1b5c0	100.0000	
 treasurebox	_SetPanelSilent	100.0000	100.0000	1	ast4:45857c633674	0x1cae0	100.0000	
 treasurebox	_SetPrevRegion	100.0000	100.0000	1	ast4:3cd03a5218ba	0x1ee30	100.0000	
 treasurebox	_SetRoomRegion	100.0000	100.0000	1	ast4:4efc4646c363	0x1ead0	100.0000	
