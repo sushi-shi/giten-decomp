@@ -2637,7 +2637,7 @@ winmain	?DrawMouseCursor@@YAXXZ	100.0000	100.0000	3	ast4:12c847ddc90b	0x498d0	10
 winmain	?DrawSceneOverlay@@YAXXZ	100.0000	100.0000	3	ast4:d1ea1bf08b71	0x4da00	100.0000	
 winmain	?DrawSceneSprites@@YAXXZ	96.8229	96.8229	12	ast4:a47a7fbc6a24	0x4e090	96.8229	
 winmain	?DrawScreenFade@@YAXXZ	100.0000	100.0000	5	ast4:f6e5d7e707f5	0x4bc20	100.0000	
-winmain	?DrawSprites@@YAHXZ	100.0000	100.0000	10	ast4:6f4c1b433a0e	0x4dcd0	100.0000	
+winmain	?DrawSprites@@YAHXZ	100.0000	100.0000	11	ast4:a003e9631942	0x4dcd0	100.0000	
 winmain	?DrawStairs@@YAXXZ	100.0000	100.0000	10	ast4:19f55e4533db	0x4da30	100.0000	
 winmain	?Enable@CIme@@QAEHPAXH@Z	100.0000	100.0000	1	cpp:6513158aaf51	0x51210	100.0000	
 winmain	?FreeMesh@@YAXPAUMesh@@@Z	100.0000	100.0000	1	ast4:56d31141aa4a	0x4f3b0	100.0000	

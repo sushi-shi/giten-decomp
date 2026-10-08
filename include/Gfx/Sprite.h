@@ -49,12 +49,15 @@ typedef struct SpriteSlot {
 
 #define GetSpriteSlotFrame(slot) ((slot)->frame)
 
+#define GetSpriteSlotX(slot) ((slot)->x)
+
+#define GetSpriteSlotY(slot) ((slot)->y)
+
 #define SetSpriteSlotFrame(slot, value) ((slot)->frame = (value))
 
 #define GetSpriteFramePicture(group, frame) (&g_spriteImages[(group)][(frame)])
 
-#define GetSpriteSlotPicture(slot)                                                                \
-    GetSpriteFramePicture((slot)->group, GetSpriteSlotFrame(slot))
+#define GetSpriteSlotPicture(slot) GetSpriteFramePicture((slot)->group, GetSpriteSlotFrame(slot))
 
 struct BmpFile;
 

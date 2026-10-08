@@ -2740,9 +2740,9 @@ i32 DrawSprites(void) {
                     g_spritePicture.id = 0;
                 }
             }
-            if (GetSpriteSlot(slot)->y != 0
+            if (GetSpriteSlotY(GetSpriteSlot(slot)) != 0
                 && GetPictureSurfaceWidth(GetSpriteFramePicture(group, frame)) != SCREEN_WIDTH) {
-                top = GetSpriteSlot(slot)->y - rect.bottom / 2;
+                top = GetSpriteSlotY(GetSpriteSlot(slot)) - rect.bottom / 2;
                 if (top > 28) {
                     top -= 28;
                 } else {
@@ -2754,7 +2754,7 @@ i32 DrawSprites(void) {
             if (GetPictureSurfaceWidth(GetSpriteFramePicture(group, frame)) != SCREEN_WIDTH) {
                 i32 width = rect.right - rect.left;
                 i32 height = rect.bottom - rect.top;
-                dest.left = GetSpriteSlot(slot)->x - width * 3 / 8;
+                dest.left = GetSpriteSlotX(GetSpriteSlot(slot)) - width * 3 / 8;
                 dest.top = top + height / 8;
                 dest.right = dest.left + width * 3 / 4;
                 dest.bottom = top + height * 7 / 8;
@@ -2807,8 +2807,8 @@ void DrawSceneSprites(void) {
             continue;
         }
         dest = GetSpriteSlotPicture(slot)->rect;
-        x = slot->x - dest.right / 2;
-        y = slot->y;
+        x = GetSpriteSlotX(slot) - dest.right / 2;
+        y = GetSpriteSlotY(slot);
         lift = dest.bottom * 3 / 4;
         if (y > lift) {
             y -= lift;
