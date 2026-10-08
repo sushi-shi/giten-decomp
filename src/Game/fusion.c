@@ -683,7 +683,7 @@ void InheritFusionStat(
 ) {
     i16 difference = GetBaseStat(source, stat) - GetBaseStat(result, stat);
     if (difference >= 0) {
-        result->stats.base[stat] = ClampTo100(GetBaseStat(result, stat) + difference / 4);
+        SetBaseStat(result, stat, ClampTo100(GetBaseStat(result, stat) + difference / 4));
     }
 }
 

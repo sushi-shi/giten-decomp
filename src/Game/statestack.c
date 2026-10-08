@@ -1708,7 +1708,7 @@ b16 ApplyLevelStatGrowth(CharacterCore* character) {
     } else if (character->level % 3) {
         return false;
     }
-    character->stats.base[STAT_FORTUNE] = ClampTo100(GetBaseStat(character, STAT_FORTUNE) + 1);
+    SetBaseStat(character, STAT_FORTUNE, ClampTo100(GetBaseStat(character, STAT_FORTUNE) + 1));
     return true;
 }
 

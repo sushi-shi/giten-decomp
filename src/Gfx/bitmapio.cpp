@@ -1235,6 +1235,18 @@ static i16 s_effectShotZ;
         }                                                                                          \
     } while (0)
 
+// Descriptor and key retain their caller-scope stack homes.
+#define SetEffectSurfaceColorKey(surface)                                                          \
+    DDSURFACEDESC desc;                                                                            \
+    DDCOLORKEY key;                                                                                \
+    key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;                                      \
+    desc.dwSize = sizeof(desc);                                                                    \
+    desc.dwFlags = DDSD_ALL;                                                                       \
+    if ((surface)->GetSurfaceDesc(&desc) == DD_OK && IsPalettizedSurface(desc)) {                  \
+        key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = BMP_TRANSPARENT_INDEX;              \
+    }                                                                                              \
+    (surface)->SetColorKey(DDCKEY_SRCBLT, &key)
+
 RVA(0x00058990, 0x4c)
 void ClearEffectLayer(i16 unused) {
     ClearDisplaySurface(g_backdropPicture.surface, NULL);
@@ -1363,15 +1375,7 @@ void DrawProjectedEffectSprite(EffectImageCode code, i16 x, i16 y) {
     InitEffectBlitFx(fx, code);
     g_backdropPicture.surface
         ->Blt(&dest, g_effectFramePicture.surface, &source, DDBLT_DDFX | DDBLT_KEYSRC, &fx);
-    DDSURFACEDESC desc;
-    DDCOLORKEY key;
-    key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;
-    desc.dwSize = sizeof(desc);
-    desc.dwFlags = DDSD_ALL;
-    if (g_backdropPicture.surface->GetSurfaceDesc(&desc) == DD_OK && IsPalettizedSurface(desc)) {
-        key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = BMP_TRANSPARENT_INDEX;
-    }
-    g_backdropPicture.surface->SetColorKey(DDCKEY_SRCBLT, &key);
+    SetEffectSurfaceColorKey(g_backdropPicture.surface);
 }
 
 // @early-stop register allocation: retail holds the vertical offset byte in dl
@@ -1424,15 +1428,7 @@ void DrawScreenEffectSprite(BmpFile* imageData, EffectImageCode code, i16 x, i16
     InitEffectBlitFx(fx, code);
     g_backdropPicture.surface
         ->Blt(&dest, g_effectFramePicture.surface, &source, DDBLT_DDFX | DDBLT_KEYSRC, &fx);
-    DDSURFACEDESC desc;
-    DDCOLORKEY key;
-    key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = 0;
-    desc.dwSize = sizeof(desc);
-    desc.dwFlags = DDSD_ALL;
-    if (g_backdropPicture.surface->GetSurfaceDesc(&desc) == DD_OK && IsPalettizedSurface(desc)) {
-        key.dwColorSpaceLowValue = key.dwColorSpaceHighValue = BMP_TRANSPARENT_INDEX;
-    }
-    g_backdropPicture.surface->SetColorKey(DDCKEY_SRCBLT, &key);
+    SetEffectSurfaceColorKey(g_backdropPicture.surface);
 }
 
 RVA(0x000590a0, 0xd3)

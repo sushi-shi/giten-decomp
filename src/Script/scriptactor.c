@@ -2645,8 +2645,8 @@ void OpRebalanceMemberStats(void) {
     if (character) {
         i16 i;
         for (i = 0; i < STAT_COUNT; i++) {
-            i16 sum = character->stats.bonus[i] + character->stats.modifiers[i]
-                      + character->stats.equipment[i] + GetBaseStat(character, i);
+            i16 sum = GetStatBonus(character, i) + GetStatEquipment(character, i)
+                      + GetBaseStat(character, i);
             if (HasCondition(GetCharacterConditions(character), CONDITION_ZOMBIE)) {
                 sum /= 2;
             }

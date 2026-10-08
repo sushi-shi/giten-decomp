@@ -1767,7 +1767,7 @@ scriptactor	_OpPercentLongVar	100.0000	100.0000	1	ast4:4c696ccc9289	0x337f0	100.
 scriptactor	_OpPushReturnTarget	100.0000	100.0000	2	ast4:7960ca1ce99a	0x33f10	100.0000	
 scriptactor	_OpQueueAutoMoves	100.0000	100.0000	2	ast4:ec6e80a2b72f	0x35cf0	100.0000	
 scriptactor	_OpRandLongVar	100.0000	100.0000	1	ast4:b461b0d97a04	0x33b00	100.0000	
-scriptactor	_OpRebalanceMemberStats	100.0000	100.0000	9	ast4:f674b65749c3	0x36560	100.0000	
+scriptactor	_OpRebalanceMemberStats	100.0000	100.0000	10	ast4:4c0b02604a2f	0x36560	100.0000	
 scriptactor	_OpRecoverRosterPool	100.0000	100.0000	8	ast4:23c1c0cdc7a1	0x382b0	100.0000	
 scriptactor	_OpRedrawItemListTotal	100.0000	100.0000	1	ast4:ec74365430b6	0x35770	100.0000	
 scriptactor	_OpRemoveFromRoster	100.0000	100.0000	2	ast4:51b8941d56bf	0x361b0	100.0000	

@@ -368,6 +368,8 @@ GetBaseStat(const CharacterCore* character, GZ_ENUM_PARAM(CharacterStat, i16) st
     return character->stats.base[stat];
 }
 
+#define SetBaseStat(character, stat, value) ((character)->stats.base[(stat)] = (value))
+
 static __inline i32
 GetStatBonus(const CharacterCore* character, GZ_ENUM_PARAM(CharacterStat, i16) stat) {
     return character->stats.bonus[stat] + character->stats.modifiers[stat];
