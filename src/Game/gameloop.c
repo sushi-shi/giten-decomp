@@ -72,6 +72,10 @@ i16 g_cellDestArea = 0;
 DATA(0x000919e2)
 i16 g_featureMask;
 
+// @identity-TODO: original name unknown; no Windows reader survives.
+DATA(0x000712c4)
+static i16 s_legacyListCount = 0;
+
 DATA(0x000712c8)
 i16 g_quitRequest = 0;
 
