@@ -172,7 +172,7 @@ i16 RollExceptionalWeaponAttack(
     i16 mode,
     i16 resistance
 ) {
-    i32 phase = (g_clock.moonPhase + 13) % 14 + 1;
+    i32 phase = GetExceptionalAttackPhase(g_clock.moonPhase);
     i16 modifier;
     i32 attack;
     i32 defense;

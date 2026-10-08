@@ -6,6 +6,7 @@
 #include <EnumDomain.h>
 #include <Game/AttackAttribute.h>
 #include <Game/Character.h>
+#include <Game/Clock.h>
 #include <Game/Condition.h>
 #include <Ints.h>
 
@@ -13,6 +14,10 @@
 extern i16 g_attackResistance;
 extern GZ_ENUM_STORAGE(AttackAttribute, i16) g_attackAttribute;
 extern i16 g_attackCondition;
+
+static __inline i32 GetExceptionalAttackPhase(GZ_ENUM_PARAM(MoonPhase, u8) moonPhase) {
+    return (moonPhase + 13) % 14 + 1;
+}
 
 static __inline double GetExceptionalAttackLuck(CharacterCore* actor) {
     double value = GetStatTotal(actor, STAT_INTUITION);
