@@ -2583,7 +2583,7 @@ b16 CanGroupEquip(i16 group, i16 item) {
 RVA(0x00040290, 0x74)
 GZ_ENUM_RETURN(EquipPart, i16) EquipPartOfItem(const ItemRecord* item) {
     GZ_ENUM_LOCAL(EquipPart, i16) part;
-    i16 kind = item->kind;
+    i16 kind = GetItemRecordKind(item);
     kind -= ITEM_KIND_WEAPON;
     switch (kind) {
         case ITEM_KIND_WEAPON - ITEM_KIND_WEAPON:
@@ -2701,9 +2701,7 @@ void UnequipPart(i16 slot, GZ_ENUM_PARAM(EquipPart, i16) part) {
     item = GetRosterEquipSlot(slot, part);
     SetEquipSlot(slot, part, empty, 1);
     if (item.item != ITEM_ID_EMPTY && item.item != ITEM_ID_NONE) {
-        if (item.quantity < 1) {
-            item.quantity = 1;
-        }
+        NormalizeReturnedItemSlot(&item);
         StoreBagItem(item.item, item.quantity, item.attachment);
     }
 }
@@ -2746,7 +2744,7 @@ GZ_ENUM_RETURN(EquipPart, i16) CanEquipItem(const CharacterCore* character, i16 
     if (part < 0) {
         return EQUIP_PART_NONE;
     }
-    if (record->kind != ITEM_KIND_AMMO) {
+    if (GetItemRecordKind(record) != ITEM_KIND_AMMO) {
         if (!CanGroupEquip(character->equipGroup, GetItemEquipCode(record))) {
             return EQUIP_PART_NONE;
         }
@@ -2793,9 +2791,7 @@ ItemSlot EquipItem(i16 slot, ItemSlot item, i16 count, i16 index) {
             }
         }
         if (old.item != ITEM_ID_EMPTY) {
-            if (old.quantity < 1) {
-                old.quantity = 1;
-            }
+            NormalizeReturnedItemSlot(&old);
             StoreBagItem(old.item, old.quantity, old.attachment);
         }
         CompactBag();

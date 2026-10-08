@@ -2513,7 +2513,7 @@ i16 RunPartyCommandInput(void) {
                 return g_tickElapsed;
             }
             if (character->pickRole == PICK_ROLE_ITEM) {
-                kind = GetLoadedRecord(character->pickTarget)->kind;
+                kind = GetItemRecordKind(GetLoadedRecord(character->pickTarget));
                 if (ItemUseInvokesSkill(kind)) {
                     character->pickFlags.itemSkill = true;
                     character->pickItem = character->pickTarget;

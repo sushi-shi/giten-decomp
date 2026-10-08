@@ -1192,9 +1192,7 @@ i16 RunEquipScreen(i16 key) {
             }
             if (s_equipPage.pick != EQUIP_PART_AMMO) {
                 slot = GetRosterEquipSlot(g_statusMember, s_equipPage.pick);
-                if (slot.quantity < 1) {
-                    slot.quantity = 1;
-                }
+                NormalizeReturnedItemSlot(&slot);
                 StoreBagItem(slot.item, slot.quantity, slot.attachment);
                 ClearItemSlot(&slot);
                 SetEquipSlot(g_statusMember, s_equipPage.pick, slot, 0);
@@ -1267,7 +1265,7 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     return;
                 }
                 record = GetLoadedRecord(item);
-                if (record->kind == ITEM_KIND_FULL_BODY_ARMOR) {
+                if (GetItemRecordKind(record) == ITEM_KIND_FULL_BODY_ARMOR) {
                     cursed = IsEquipCurseActive(member, EQUIP_PART_HEAD);
                     cursed |= IsEquipCurseActive(member, EQUIP_PART_BODY);
                     cursed |= IsEquipCurseActive(member, EQUIP_PART_ARMS);
@@ -1284,7 +1282,7 @@ static void EquipMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, 
                     }
                     record = GetLoadedRecord(item);
                 }
-                if (record->kind == ITEM_KIND_GUN
+                if (GetItemRecordKind(record) == ITEM_KIND_GUN
                     && GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL) > 0) {
                     if (LacksItemRequiredStats(
                             member,

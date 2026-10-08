@@ -1082,7 +1082,7 @@ void PlayActionEffect(i16 stage) {
         user = GetCombatant(g_actorId);
         if (user->pickFlags.itemSkill) {
             item = GetLoadedRecord(user->pickItem);
-            if (item->kind == ITEM_KIND_WEAPON) {
+            if (GetItemRecordKind(item) == ITEM_KIND_WEAPON) {
                 before.script = 0xde;
                 before.entry = 0x44;
                 message = GetSkillMessage(g_actionId, 1);

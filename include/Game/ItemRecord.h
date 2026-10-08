@@ -39,6 +39,8 @@ typedef struct ItemRecord {
     char* description;
 } ItemRecord;
 
+#define GetItemRecordKind(record) ((record)->kind)
+
 static __inline char* GetItemRecordName(const ItemRecord* record) {
     return record->name;
 }

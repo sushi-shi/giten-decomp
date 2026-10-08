@@ -52,6 +52,12 @@ static __inline void ClearItemSlot(ItemSlot* slot) {
     slot->quantity = 0;
 }
 
+static __inline void NormalizeReturnedItemSlot(ItemSlot* slot) {
+    if (slot->quantity < 1) {
+        slot->quantity = 1;
+    }
+}
+
 // The five eleven-stat arrays a character carries after its HP/MP pools;
 // `total` is recomputed as half the sum of the other four (each clamped to
 // 1..100).

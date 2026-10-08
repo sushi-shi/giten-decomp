@@ -2679,7 +2679,7 @@ void ItemListMenuHandler(MenuBox* menu, i16 index, GZ_ENUM_PARAM(MenuEvent, i16)
             {
                 const ItemRecord* record = GetLoadedRecord(GetItemListItem(entries, index));
                 GZ_ENUM_LOCAL(SkillUseModes, u16) modes = GetItemUseModes(record);
-                if (ItemUseInvokesSkill(record->kind)) {
+                if (ItemUseInvokesSkill(GetItemRecordKind(record))) {
                     modes = GetSkillUseModes(GetSkillView(GetItemSkillId(record)));
                 }
                 if (CheckSkillArea(GetItemSkillId(record)) != SKILL_AREA_ALLOWED) {
@@ -2753,7 +2753,7 @@ b16 RunItemUse(void) {
             i16 range;
             GZ_ENUM_LOCAL(TargetPickResult, i16) picked;
             record = GetLoadedRecord(s_useItem);
-            kind = record->kind;
+            kind = GetItemRecordKind(record);
             if (ItemUseInvokesSkill(kind)) {
                 flags = GetSkillTargetFlags(GetItemSkillId(record));
                 range = GetSkillAttackRange(GetItemSkillId(record));
@@ -2827,7 +2827,7 @@ b16 RunItemUse(void) {
             position = FindPartyPositionOfId(s_useMemberId);
             user = GetPartyCharacter(position);
             record = GetLoadedRecord(s_useItem);
-            kind = record->kind;
+            kind = GetItemRecordKind(record);
             if (ItemUseInvokesSkill(kind)) {
                 PickFlags previousFlags;
                 g_actorId = PartyCombatantId(position);

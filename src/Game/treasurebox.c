@@ -1046,7 +1046,7 @@ i32 FormatItemMenuEntry(ItemStack entry, i32 numerator, i32 denominator) {
             marker = 'E';
             member = GetCharacterCore(GetCharacterById(s_itemMenuMember));
             record = GetLoadedRecord(GetItemStackItem(&entry));
-            if (record->kind == ITEM_KIND_GUN
+            if (GetItemRecordKind(record) == ITEM_KIND_GUN
                 && GetBattleStatShown(member, BATTLE_STAT_GUN_LEVEL) > 0) {
                 if (LacksItemRequiredStats(
                         member,
@@ -1609,23 +1609,29 @@ void NormalizeAffiliations(CharacterCore* character) {
     i16 i;
     i16 j;
     for (i = 0; i < AFFILIATION_COUNT; i++) {
-        if (character->affiliation[i] > BATTLE_GROUP_COUNT - 1 || character->affiliation[i] < 0) {
+        if (GetCharacterAffiliation(character, i) > BATTLE_GROUP_COUNT - 1
+            || GetCharacterAffiliation(character, i) < 0) {
             SetCharacterAffiliation(character, i, AFFILIATION_NONE);
         }
     }
     for (i = AFFILIATION_COUNT - 1; i > 0; i--) {
-        if (character->affiliation[i] != AFFILIATION_NONE) {
+        if (GetCharacterAffiliation(character, i) != AFFILIATION_NONE) {
             for (j = i - 1; j >= 0; j--) {
-                if (character->affiliation[i] == character->affiliation[j]) {
+                if (GetCharacterAffiliation(character, i)
+                    == GetCharacterAffiliation(character, j)) {
                     SetCharacterAffiliation(character, i, AFFILIATION_NONE);
                 }
             }
         }
     }
     for (i = 0; i < AFFILIATION_COUNT - 1; i++) {
-        if (character->affiliation[i] < 0) {
+        if (GetCharacterAffiliation(character, i) < 0) {
             for (j = 0; i + j + 1 < AFFILIATION_COUNT; j++) {
-                SetCharacterAffiliation(character, i + j, character->affiliation[i + j + 1]);
+                SetCharacterAffiliation(
+                    character,
+                    i + j,
+                    GetCharacterAffiliation(character, i + j + 1)
+                );
             }
             SetCharacterAffiliation(character, i + j, AFFILIATION_NONE);
         }
