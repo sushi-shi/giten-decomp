@@ -35,6 +35,10 @@ static i16 s_sceneInputSecond = 0;
 DATA(0x00078068)
 static i16 s_sceneFlags = 0;
 
+// @identity-TODO: the original name, signedness and Windows reader are unknown.
+DATA(0x0007806c)
+static i16 s_displayPage = 0;
+
 DATA(0x00078070)
 static i16 s_sceneInputPending = 0;
 

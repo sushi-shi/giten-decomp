@@ -15,6 +15,10 @@
 #include <Ui/Message.h>
 #include <Ui/MessageScript.h>
 
+// @identity-TODO: the original name, signedness and Windows reader are unknown.
+DATA(0x000716e8)
+static i16 s_legacyMessageCount = 0;
+
 // @identity-TODO: the original name, reader and signedness are unknown.
 DATA(0x000682fc)
 static i16 s_legacyMessageValue = 60;
