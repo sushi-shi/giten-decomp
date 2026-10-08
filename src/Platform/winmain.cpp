@@ -813,10 +813,10 @@ static i32 s_clickedButton = 0;
 // The captions of WinMain's failure boxes: empty.
 // @identity-TODO: zeroed arrays in .bss; their declared form is unrecovered.
 DATA(0x00090ae8)
-static char s_directXErrorCaption[4] = {0};
+static char s_directXErrorCaption[] = "";
 
 DATA(0x00090aec)
-static char s_loadErrorCaption[4] = {0};
+static char s_loadErrorCaption[] = "";
 
 RVA(0x00049610, 0x1)
 void DebugTrace(const char* message) {}

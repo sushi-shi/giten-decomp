@@ -748,7 +748,7 @@ fieldscreen	_DdsCommand	100.0000	100.0000	1	ast4:4f5fea213646	0x15430	100.0000
 fieldscreen	_DdsRowHandler	100.0000	100.0000	2	ast4:597ed93fea0b	0x14b90	100.0000	
 fieldscreen	_DefenceCommand	100.0000	100.0000	3	ast4:fcd0e329927b	0x153b0	100.0000	
 fieldscreen	_DiscardWorldMapScreenSave	100.0000	100.0000	1	ast4:c68232b36509	0x167d0	100.0000	
-fieldscreen	_DrawFieldMessage	100.0000	100.0000	6	ast4:9ded681ee4fb	0x160c0	100.0000	
+fieldscreen	_DrawFieldMessage	100.0000	100.0000	7	ast4:b5463de1fb97	0x160c0	100.0000	
 fieldscreen	_DrawPanel	100.0000	99.8947	5	ast4:bca9378a0ab8	0x15940	100.0000	
 fieldscreen	_DrawPanelRow	100.0000	100.0000	4	ast4:f3695090acbf	0x159a0	100.0000	
 fieldscreen	_DrawWorldMapBlock	100.0000	100.0000	1	ast4:a2faa92a1a36	0x16460	100.0000	
@@ -784,7 +784,7 @@ fieldscreen	_HitTestPanelRow	100.0000	100.0000	2	ast4:bee36e8fe076	0x15a70	100.0
 fieldscreen	_InitWorldPanel	100.0000	100.0000	3	ast4:6c34d78e7764	0x16960	100.0000	
 fieldscreen	_IsFieldPanelRowChecked	100.0000	100.0000	4	ast4:835e14749648	0x14f00	100.0000	
 fieldscreen	_ItemCommand	100.0000	100.0000	3	ast4:aa7c8b740bff	0x152a0	100.0000	
-fieldscreen	_ItemRowHandler	100.0000	100.0000	2	ast4:aba34564cb80	0x14ac0	100.0000	
+fieldscreen	_ItemRowHandler	100.0000	100.0000	3	ast4:1268bef32e27	0x14ac0	100.0000	
 fieldscreen	_LoadCommandMenuImage	100.0000	100.0000	2	ast4:47c3c26c9975	0x15840	100.0000	
 fieldscreen	_LoadFieldMessages	100.0000	100.0000	2	ast4:d6e604cd6aa8	0x15d10	100.0000	
 fieldscreen	_LoadMenuImage	100.0000	100.0000	1	ast4:1ad6a5f297b7	0x15900	100.0000	
@@ -2733,7 +2733,7 @@ winmain	_StepBlankRenderMode	100.0000	100.0000	3	ast4:a58611a6f266	0x49d10	100.0
 winmain	_StepScreenFade	92.8750	92.8750	9	ast4:c256fa277206	0x49dd0	92.8750	
 winmain	_StopMusic	100.0000	100.0000	1	ast4:9a90a9874845	0x49a50	100.0000	
 winmain	_WaitFrames	100.0000	100.0000	3	ast4:17fb5f9e053d	0x49f00	100.0000	
-winmain	_WinMain@16	98.4286	98.4286	9	ast4:6477381416d5	0x50f50	98.4286	
+winmain	_WinMain@16	98.4286	98.4286	10	ast4:3b75524d3c10	0x50f50	98.4286	
 worldtravel	_ComputeWorldTravelStep	100.0000	100.0000	1	ast4:e12a994a4863	0x11880	100.0000	
 worldtravel	_DrawWorldMapPlaceName	100.0000	100.0000	3	ast4:d5f2fe4add25	0x121e0	100.0000	
 worldtravel	_ExcludeWorldTravelStep	100.0000	100.0000	2	ast4:1dfc13886e5a	0x11e50	100.0000	

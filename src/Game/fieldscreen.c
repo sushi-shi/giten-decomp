@@ -370,6 +370,12 @@ i16 SkillRowHandler(PanelRow* row, i16 value, i16 op) {
 // and the bag is not empty.
 RVA(0x00014ac0, 0x8a)
 i16 ItemRowHandler(PanelRow* row, i16 value, i16 op) {
+    DATA(0x00068880)
+    static char cannotAct[] = "[ITEM] "
+                "\216g\227p\202\305\202\253\202\351\220l\202\252\213\217\202\334\202\271\202\361";
+    DATA(0x000688a0)
+    static char noItems[] = "[ITEM] \203A\203C\203e\203\200\202\252\227L\202\350\202\334\202\271\202\361";
+
     if (ApplyRowCheck(row, value, op)) {
         if (CanHumanMemberAct()) {
             if (CountBagEntries()) {
@@ -379,7 +385,7 @@ i16 ItemRowHandler(PanelRow* row, i16 value, i16 op) {
                 ClearPanelRowCheck(row);
                 // "[ITEM] アイテムが有りません"
                 ShowMessage(
-                    "[ITEM] \203A\203C\203e\203\200\202\252\227L\202\350\202\334\202\271\202\361",
+                    noItems,
                     -1
                 );
             }
@@ -387,8 +393,7 @@ i16 ItemRowHandler(PanelRow* row, i16 value, i16 op) {
             ClearPanelRowCheck(row);
             // "[ITEM] 使用できる人が居ません"
             ShowMessage(
-                "[ITEM] "
-                "\216g\227p\202\305\202\253\202\351\220l\202\252\213\217\202\334\202\271\202\361",
+                cannotAct,
                 -1
             );
         }
@@ -1285,12 +1290,12 @@ b16 DrawFieldMessage(GZ_ENUM_PARAM(CellCode, i16) code, i16 band, i16 marked) {
     y = 0;
     g_scratchBuffer[0] = 0;
     switch (band) {
-        case TEXT_BAND_RIGHT:
-            strcpy(g_scratchBuffer, text);
+        case TEXT_BAND_LEFT:
             if (marked) {
-                strcat(g_scratchBuffer, "\201\243");
+                strcpy(g_scratchBuffer, "\201\243");
             }
-            x = (78 - strlen(g_scratchBuffer)) * 8;
+            strcat(g_scratchBuffer, text);
+            x = 16;
             y = 62;
             break;
         case TEXT_BAND_CENTER:
@@ -1298,12 +1303,12 @@ b16 DrawFieldMessage(GZ_ENUM_PARAM(CellCode, i16) code, i16 band, i16 marked) {
             x = (40 - strlen(g_scratchBuffer) / 2) * 8;
             y = 40;
             break;
-        case TEXT_BAND_LEFT:
+        case TEXT_BAND_RIGHT:
+            strcpy(g_scratchBuffer, text);
             if (marked) {
-                strcpy(g_scratchBuffer, "\201\243");
+                strcat(g_scratchBuffer, "\201\243");
             }
-            strcat(g_scratchBuffer, text);
-            x = 16;
+            x = (78 - strlen(g_scratchBuffer)) * 8;
             y = 62;
             break;
     }
