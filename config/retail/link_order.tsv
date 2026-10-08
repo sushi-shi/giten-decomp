@@ -64,5 +64,6 @@ seq	unit	start	end	class	module	n	evidence	notes
 59	joystick	0x0492b0	0x049530	cmdline	-	2	functions.tsv+source-owner-pins	original-module-unproven
 60	winmain	0x049530	0x051230	cmdline	-	147	functions.tsv+source-owner-pins	original-module-unproven; includes-owner-pinned-global-initializers
 61	font	0x051230	0x055a00	cmdline	-	150	functions.tsv+source-owner-pins	original-module-unproven
-62	midistream	0x055a00	0x056a70	cmdline	-	35	functions.tsv+source-owner-pins	original-module-unproven; shared-SDK-COMDAT-alias-at-0x0568c0-not-owner-evidence
-63	bitmapio	0x056a70	0x0593d0	cmdline	-	50	functions.tsv+source-owner-pins	original-module-unproven; excludes-IAT-thunks-from-0x0593d0
+62	midistream	0x055a00	0x056a30	cmdline	-	33	functions.tsv+source-owner-pins	original-module-unproven; shared-SDK-COMDAT-alias-at-0x0568c0-not-owner-evidence
+63	mmio	0x056a30	0x056a70	cmdline	-	2	retail-primary-section-COMDAT-seam+CMMIO-owner	original-module-unproven; ordinary-Open-methods-follow-midistream-COMDATs
+64	bitmapio	0x056a70	0x0593d0	cmdline	-	50	functions.tsv+source-owner-pins	original-module-unproven; excludes-IAT-thunks-from-0x0593d0

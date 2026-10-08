@@ -40,6 +40,27 @@ serializing only the observed hint fields that differ. Replacements occupy
 their original library-line positions. This reconstructs import metadata; it
 does not claim recovery of the original import archives.
 
+`config/retail/link_libraries.tsv` pins genuine static-library inputs separately
+from DLL import metadata. `dxguid.lib` comes from the Microsoft DirectX
+Foundations 6.1 SDK: its original `obj\i386\dxguid.obj` member contains all 391
+GUID definitions, and its complete 6,256-byte readonly payload equals the
+original executable. Supply that unmodified archive at
+`build/local/lib/dxguid.lib`; binaries stay outside Git. The validator checks
+the whole archive and member hashes, both Microsoft archive indexes, section
+alignment, definitions, and raw original bytes before selecting it at the
+existing `dxguid.lib` library-line position. Missing or mismatched artifacts
+fail; the installed SDK's different GUID archive is not a fallback.
+
+The contract records the preserved original SDK package's URL, byte count and
+hashes. To recover the artifact, verify the user-supplied `dx61sdkimage.exe`
+against those package hashes, then extract `lib/dxguid.lib`, `dxreadme.txt`, and
+`license/DirectX SDK EULA.txt` with an offline archive tool such as `7z x`.
+Do not run the installer or replace installed SDK headers. Preserve the readme
+and license with the local package, and copy the unchanged library to the
+contract's artifact path. Validate it without linking with
+`python3 -m giten.graph.static_libraries` inside `nix develop`. The validator
+does not synthesize GUID definitions, rewrite archives, or patch an image.
+
 Compile matching and final-image matching are different checks. A function's
 normalized COFF match does not establish final RVA placement, import binding,
 or startup correctness. Use the checks below.

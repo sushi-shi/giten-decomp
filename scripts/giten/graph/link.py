@@ -227,7 +227,7 @@ def candidate(out: Path, objs_dir: Path, *, mapfile: Path | None = None,
     `dry_run` assembles the response file and stops before link.exe - the way
     to inspect the object order and the library line without a linker.
     """
-    from giten.graph import implib
+    from giten.graph import implib, static_libraries
     from giten.tool import link as link_tool
 
     at = None if real_time else datetime.fromtimestamp(
@@ -265,6 +265,10 @@ def candidate(out: Path, objs_dir: Path, *, mapfile: Path | None = None,
     libs = [*extra_libs, *(str(a) for a in archives)]
     made = implib.on_disk() if dry_run else implib.ensure_all()
     synth = {p.name.lower(): str(p) for p in made}
+    try:
+        synth.update({name: str(path) for name, path in static_libraries.on_disk().items()})
+    except (OSError, ValueError) as error:
+        raise ToolError(str(error)) from error
     libs += [synth.get(n, n) for n in LINK_LIBS]           # substitute IN PLACE
     rsp_lines += [winepath(x) if Path(x).exists() else x for x in libs]
     rsp_lines += [f'"{winepath(o)}"' for o in objs]

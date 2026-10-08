@@ -1,0 +1,4 @@
+# Genuine static-library inputs; binaries remain user-supplied under ignored build/.
+# Package metadata records acquisition provenance; archive/member/payload identities are validated before linking.
+library	artifact	archive_size	archive_sha256	member	member_sha256	section	alignment	guid_count	retail_rva	payload_size	payload_sha256	provenance	package_url	package_size	package_sha256	package_sha1	package_md5
+dxguid.lib	build/local/lib/dxguid.lib	43688	92944ec5d1d68779f907d9c95557a2e70d01bb32220c79aefb8b780174ebd492	obj\i386\dxguid.obj	535ce17346f4f984b2343379211385960b6e614508b9c5338eca75e18001cb43	.rdata	8	391	0x064ab8	6256	cb7e08f821be27f234f4b9dd7c3a94a1a5c5ec0b12fe708ba6ab74cdef863b5e	Microsoft DirectX Foundations 6.1 SDK; dx61sdkimage.exe lib/dxguid.lib	https://archive.org/download/dx61sdkimage/dx61sdkimage.exe	75224112	4ce3b6737683cb2ee4a59edd1fbc25f73691acdaa3d5b80d7135d2c0b5dd39b1	6944788e4927ee5c2345fe73ae9d531f9657ab0e	c43d0071c84244858d40a94ed9a37ceb

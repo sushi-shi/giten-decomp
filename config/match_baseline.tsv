@@ -60,7 +60,8 @@ joystick	2	2
 menubox	12	12
 menuresult	2	2
 message	15	15
-midistream	35	34
+midistream	33	32
+mmio	2	2
 motion	43	42
 mouse	10	10
 nibble	4	3
@@ -1370,8 +1371,6 @@ midistream	?FreeBuffers@CMidiStream@@IAEXXZ	100.0000	100.0000	2	ast4:5e70babd170
 midistream	?HasBuffers@CMidiStream@@IAEHXZ	100.0000	100.0000	1	cpp:3324492bb851	0x56a10	100.0000	
 midistream	?LoadFile@CMidiStream@@IAEHPBDH@Z	100.0000	100.0000	2	ast4:bb0c5ae2a53f	0x560c0	100.0000	
 midistream	?OnMessage@CMidiStream@@IAEXPAXIKK@Z	100.0000	100.0000	2	ast4:a9162eae75a2	0x56790	100.0000	
-midistream	?Open@CMMIO@@QAEXAAVCMMMemoryIOInfo@@@Z	100.0000	100.0000	2	ast4:c71b691dae03	0x56a50	100.0000	
-midistream	?Open@CMMIO@@QAEXPADK@Z	100.0000	100.0000	2	ast4:c71b691dae03	0x56a30	100.0000	
 midistream	?Open@CMidiStream@@QAEHPBD0@Z	100.0000	100.0000	3	ast4:9ced4e0601c7	0x561d0	100.0000	
 midistream	?OpenStream@CMidiStream@@IAEHXZ	100.0000	100.0000	2	ast4:af4299bfeffa	0x56220	100.0000	
 midistream	?Pause@CMidiStream@@QAEHXZ	100.0000	100.0000	3	ast4:564cee87a5da	0x56730	100.0000	
@@ -1386,6 +1385,8 @@ midistream	?Restore@CMidiStream@@QAEHXZ	100.0000	100.0000	4	ast4:76106efd3343	0x
 midistream	?SetVolume@CMidiStream@@QAEHKPAK@Z	99.6104	99.6104	5	ast4:3b33c97f8337	0x563b0	99.6104	
 midistream	?Stop@CMidiStream@@QAEHXZ	100.0000	100.0000	2	ast4:7b423bde9cb0	0x55bb0	100.0000	
 midistream	?StreamProc@CMidiStream@@KGXPAXIKKK@Z	100.0000	100.0000	1	ast4:fc99cff63a90	0x56760	100.0000	
+mmio	?Open@CMMIO@@QAEXAAVCMMMemoryIOInfo@@@Z	100.0000	100.0000	2	ast4:c71b691dae03	0x56a50	100.0000	
+mmio	?Open@CMMIO@@QAEXPADK@Z	100.0000	100.0000	2	ast4:c71b691dae03	0x56a30	100.0000	
 motion	_AcquireEffectImageSet	100.0000	100.0000	1	ast4:a53c79acf100	0x4fb0	100.0000	
 motion	_AcquireEffectRecord	100.0000	100.0000	1	ast4:806dd0ddbf97	0x5240	100.0000	
 motion	_ClampEffectCount	100.0000	100.0000	1	ast4:636ac4d4c050	0x4bb0	100.0000	
@@ -1569,7 +1570,7 @@ pool	_CreatePools	100.0000	100.0000	1	ast4:8947b193c3be	0x3520	100.0000
 pool	_FreePools	100.0000	100.0000	2	ast4:07fc03c6b52e	0x3560	100.0000	
 pool	_GetLegacyPoolResetResult	100.0000	100.0000	3	ast4:eba47d2547b9	0x3550	100.0000	
 pool	_GetPoolChunk	100.0000	100.0000	2	ast4:d00151f4e5c4	0x3570	100.0000	
-pool	_ResetPool	100.0000	100.0000	1	ast4:44db8061f7d4	0x34e0	100.0000	
+pool	_ResetPool	100.0000	100.0000	2	ast4:b658a0052052	0x34e0	100.0000	
 recordcache	_AddSkill	100.0000	100.0000	5	ast4:67021d6bdd54	0x2dce0	100.0000	
 recordcache	_BuildLearnableSkillRanks	100.0000	100.0000	7	ast4:d9ad0d1440af	0x2e240	100.0000	
 recordcache	_CacheSkill	100.0000	100.0000	3	ast4:94191c267e2e	0x2e840	100.0000	

@@ -230,6 +230,11 @@ source = "src/Sound/midistream.cpp"
 flags = "cpp"
 
 [[unit]]
+unit = "mmio"
+source = "src/Sound/mmio.cpp"
+flags = "cpp"
+
+[[unit]]
 unit = "fieldmain"
 source = "src/Game/fieldmain.c"
 flags = "c"

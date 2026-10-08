@@ -12,9 +12,10 @@
 #include <string.h>
 
 // Eight-row screen cells with four, three, two or one colour planes.
+// @bug: ResetPool admits index 4, beyond the four pool entries.
 DATA(0x00064288)
-static const i16 s_poolElementSizes[5] =
-    {8 * sizeof(CellRow), 8 * sizeof(CellRow3), 8 * sizeof(CellRow2), 8 * sizeof(CellRow1), 0};
+static const i16 s_poolElementSizes[4] =
+    {8 * sizeof(CellRow), 8 * sizeof(CellRow3), 8 * sizeof(CellRow2), 8 * sizeof(CellRow1)};
 
 // @identity-TODO: the original names are unknown; the decoder has no Windows reader.
 DATA(0x00068304)
