@@ -48,7 +48,7 @@ equipeffect	2	2
 eventflags	28	28
 fieldmain	59	55
 fieldobj	141	138
-fieldscreen	103	102
+fieldscreen	103	103
 fieldview	69	68
 font	150	146
 fusion	114	111
@@ -740,7 +740,7 @@ fieldscreen	_CanRevealAutomapNorth	100.0000	100.0000	5	ast4:52af4b7cb5d3	0x157b0
 fieldscreen	_CanRevealAutomapSouth	100.0000	100.0000	5	ast4:dadc54e450bd	0x15730	100.0000	
 fieldscreen	_ClearEncounterPending	100.0000	100.0000	2	ast4:cb70c19ac0f3	0x154b0	100.0000	
 fieldscreen	_ClearFieldPanelSelection	100.0000	100.0000	3	ast4:7da848677d65	0x169c0	100.0000	
-fieldscreen	_ClearPanel	100.0000	99.8750	5	ast4:cd7b284a60f2	0x159e0	100.0000	
+fieldscreen	_ClearPanel	100.0000	100.0000	5	ast4:cd7b284a60f2	0x159e0	100.0000	
 fieldscreen	_ClearPanelRow	100.0000	100.0000	4	ast4:d62e0f5de08d	0x15a40	100.0000	
 fieldscreen	_ClearWorldMapBlock	100.0000	100.0000	1	ast4:99cd42d365ec	0x163c0	100.0000	
 fieldscreen	_CommandRowHandler	100.0000	100.0000	1	ast4:bfbb829eeb12	0x158e0	100.0000	
@@ -802,7 +802,7 @@ fieldscreen	_RedrawFieldViewAt	100.0000	100.0000	3	ast4:6ecb00429fc9	0x15be0	100
 fieldscreen	_RefreshFieldScene	100.0000	100.0000	1	ast4:482655f96d44	0x14760	100.0000	
 fieldscreen	_ReorderRowHandler	100.0000	100.0000	2	ast4:468fa86595c1	0x14a00	100.0000	
 fieldscreen	_RequestFieldRefresh	100.0000	100.0000	1	ast4:464de1c22714	0x14750	100.0000	
-fieldscreen	_ResetFieldCursors	100.0000	100.0000	1	ast4:d54be1bb7e74	0x15820	100.0000	
+fieldscreen	_ResetFieldCursors	100.0000	100.0000	2	ast4:28804dfdc3ee	0x15820	100.0000	
 fieldscreen	_ResetWorldCursorCell	100.0000	100.0000	1	ast4:7c64d1d6baae	0x14840	100.0000	
 fieldscreen	_ResetWorldMapBlocks	100.0000	100.0000	1	ast4:07738c067671	0x163e0	100.0000	
 fieldscreen	_RestoreWorldMapCursor	100.0000	100.0000	1	ast4:2f55d9b78d55	0x167e0	100.0000	

@@ -131,12 +131,9 @@ static i16 s_effectFramesKey = -1;
 DATA(0x0006869c)
 static i16 s_effectBackdropKey = -1;
 
-// @identity-TODO: two words reset to -1 together.
+// @identity-TODO: the cursor-state selector domain is unrecovered.
 DATA(0x000686a0)
-static i16 s_cursorA = -1;
-
-DATA(0x000686a2)
-static i16 s_cursorB = -1;
+static i16 s_cursorStates[2] = {-1, -1};
 
 // The world panel: seven rows (ids 0..6) sharing one handler.
 DATA(0x000686a8)
@@ -934,7 +931,7 @@ static b16 CanRevealAutomapNorth(i16 x, i16 y) {
 
 RVA(0x00015820, 0x10)
 void ResetFieldCursors(void) {
-    s_cursorA = s_cursorB = -1;
+    s_cursorStates[0] = s_cursorStates[1] = -1;
 }
 
 // @identity-TODO: an empty hook.
