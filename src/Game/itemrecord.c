@@ -1675,6 +1675,15 @@ i16 GetItemMagicPowerBonus(i16 item) {
     return GetItemRecordMagicPowerBonus(DecodeItemRecord(&g_loadedItem, item));
 }
 
+static __inline i16 ClampItemDamageValue(i32 value) {
+    if (value < SHRT_MIN) {
+        value = SHRT_MIN;
+    } else if (value > SHRT_MAX) {
+        value = SHRT_MAX;
+    }
+    return value;
+}
+
 RVA(0x00025100, 0xb5)
 void ApplyItemDamageRatio(i16 item, i16* ratios) {
     i16 code;
@@ -1699,12 +1708,7 @@ void ApplyItemDamageRatio(i16 item, i16* ratios) {
         step++;
     }
     value = (i16)(step * 50) * ratios[slot] / 100;
-    if (value < SHRT_MIN) {
-        value = SHRT_MIN;
-    } else if (value > SHRT_MAX) {
-        value = SHRT_MAX;
-    }
-    ratios[slot] = value;
+    ratios[slot] = ClampItemDamageValue(value);
 }
 
 RVA(0x000251c0, 0x18b)
@@ -1731,12 +1735,7 @@ i16 ScaleDamageByEquipment(CharacterCore* character, i16 damage, i16 element) {
     ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_GUN].item, ratios);
     ApplyItemDamageRatio(GetCharacterEquipment(character)[EQUIP_SLOT_AMMO].item, ratios);
     value = ratios[element] * damage / 100;
-    if (value < SHRT_MIN) {
-        value = SHRT_MIN;
-    } else if (value > SHRT_MAX) {
-        value = SHRT_MAX;
-    }
-    return value;
+    return ClampItemDamageValue(value);
 }
 
 RVA(0x00025350, 0x48)

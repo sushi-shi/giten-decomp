@@ -1222,7 +1222,7 @@ itemrecord	_AddScenarioBagItems	100.0000	100.0000	4	ast4:617ef933f893	0x24210	10
 itemrecord	_AddToBagEntry	100.0000	100.0000	2	ast4:7676672f05f3	0x23dc0	100.0000	
 itemrecord	_AddToPool	100.0000	100.0000	5	ast4:7c6d2932e379	0x23820	100.0000	
 itemrecord	_ApplyEquipmentRegen	100.0000	100.0000	8	ast4:231464d13258	0x254b0	100.0000	
-itemrecord	_ApplyItemDamageRatio	100.0000	100.0000	4	ast4:4084c5223b0e	0x25100	100.0000	
+itemrecord	_ApplyItemDamageRatio	100.0000	100.0000	5	ast4:626b7b01310e	0x25100	100.0000	
 itemrecord	_ApplyItemEffect	100.0000	100.0000	5	ast4:e3db045a9ba8	0x24890	100.0000	
 itemrecord	_AttachBagEntryItem	100.0000	100.0000	3	ast4:8b9a39e5c2bf	0x244d0	100.0000	
 itemrecord	_ClearBag	100.0000	100.0000	2	ast4:3dfe6e5dbfbb	0x23a80	100.0000	
@@ -1298,7 +1298,7 @@ itemrecord	_RunBagDiscardMenu	100.0000	100.0000	6	ast4:4e0974ac0cfb	0x25cb0	100.
 itemrecord	_RunGemItemGift	100.0000	100.0000	4	ast4:983e73e3f2cd	0x25e70	100.0000	
 itemrecord	_SaveGemItems	100.0000	100.0000	4	ast4:eca36c3bd841	0x247c0	100.0000	
 itemrecord	_SaveOrRestoreBag	100.0000	100.0000	1	ast4:800ea88c71fe	0x242b0	100.0000	
-itemrecord	_ScaleDamageByEquipment	100.0000	100.0000	4	ast4:804887ab8b43	0x251c0	100.0000	
+itemrecord	_ScaleDamageByEquipment	100.0000	100.0000	5	ast4:489b849ba7c6	0x251c0	100.0000	
 itemrecord	_SetBagEntry	100.0000	100.0000	2	ast4:98190733ad72	0x23d50	100.0000	
 itemrecord	_SetBagEntryDetail	100.0000	100.0000	1	ast4:4b9f0212423c	0x23e70	100.0000	
 itemrecord	_SetBagQuiet	100.0000	100.0000	2	ast4:1f3321939ca6	0x23690	100.0000	
