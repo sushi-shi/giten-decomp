@@ -220,11 +220,9 @@ static i16 s_savedRemovalDeferred = 0;
 DATA(0x00080d10)
 static b16 s_removalDeferred = false;
 
-// Which hit sound the resolved action plays (0, 1 or 2 pick sounds 0x10,
-// 0x36 and 0x24): set by the effect code (0x42ce57, 0x42d02a).
-// @identity-TODO: what the three outcomes are is unrecovered.
+// Selects the sound for the effect applied by the current action.
 DATA(0x00080d14)
-static i16 s_actionOutcome = 0;
+static GZ_ENUM_STORAGE(ActionOutcome, i16) s_actionOutcome = ACTION_OUTCOME_DEFAULT;
 
 // The actor's and the target's HP before the action.
 DATA(0x00080d18)
@@ -1151,7 +1149,7 @@ void DeferObjectRemoval(void) {
 }
 
 RVA(0x0002c2b0, 0xc)
-void SetActionOutcome(i16 outcome) {
+void SetActionOutcome(GZ_ENUM_PARAM(ActionOutcome, i16) outcome) {
     s_actionOutcome = outcome;
 }
 

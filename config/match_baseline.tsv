@@ -40,7 +40,7 @@ bitset	5	5
 blit	18	18
 character	171	163
 clickwait	1	1
-clock	74	72
+clock	74	73
 d3dapp	41	37
 datafile	19	19
 debugmenu	3	3
@@ -50,7 +50,7 @@ effectdraw	3	1
 equipeffect	2	2
 eventflags	28	28
 fieldmain	59	55
-fieldobj	141	137
+fieldobj	141	138
 fieldscreen	103	101
 fieldview	69	68
 font	150	144
@@ -78,7 +78,7 @@ recordcache	43	42
 restore	3	3
 savegame	14	13
 screensave	9	9
-scriptactor	202	201
+scriptactor	202	202
 scriptctx	35	35
 scriptfield	9	9
 scriptop	3	3
@@ -190,12 +190,12 @@ character	_AttachEquipItem	100.0000	100.0000	2	ast4:323d15267af5	0x40590	100.000
 character	_BuildStatusSlots	100.0000	100.0000	3	ast4:d5ef212a60ff	0x40f40	100.0000	
 character	_CalcGunAccuracyStat	100.0000	100.0000	3	ast4:d1f986db0e56	0x3d2c0	100.0000	
 character	_CalcGunEvasionStat	100.0000	100.0000	3	ast4:52177ff8f0e7	0x3d340	100.0000	
-character	_CalcMagicAccuracyStat	100.0000	100.0000	4	ast4:9cff42d2efd6	0x3d4d0	100.0000	
-character	_CalcMagicDefenseStat	100.0000	100.0000	4	ast4:090fb8d5e01c	0x3d530	100.0000	
+character	_CalcMagicAccuracyStat	100.0000	99.8182	4	ast4:9cff42d2efd6	0x3d4d0	100.0000	
+character	_CalcMagicDefenseStat	100.0000	99.8461	4	ast4:090fb8d5e01c	0x3d530	100.0000	
 character	_CalcMagicEvasionStat	100.0000	99.8182	3	ast4:44073d208ebc	0x3d510	100.0000	
 character	_CalcMagicPowerStat	100.0000	100.0000	3	ast4:f7a2cf1ab61a	0x3d4f0	100.0000	
 character	_CalcMaxHp	99.9583	99.9583	3	ast4:6956e0955c43	0x3cec0	100.0000	
-character	_CalcMaxMp	99.9487	99.9487	6	ast4:3d497b4e0976	0x3cf70	100.0000	
+character	_CalcMaxMp	100.0000	100.0000	6	ast4:3d497b4e0976	0x3cf70	100.0000	
 character	_CalcPhysicalDefenseStat	100.0000	100.0000	3	ast4:ed814705bdc7	0x3d240	100.0000	
 character	_CalcWeaponAccuracyStat	100.0000	100.0000	3	ast4:e3ccd4c65b31	0x3d390	100.0000	
 character	_CalcWeaponEvasionStat	100.0000	100.0000	3	ast4:be26a699e6c0	0x3d470	100.0000	
@@ -302,7 +302,7 @@ character	_NormalizeItemSlot	100.0000	100.0000	4	ast4:395448c587cd	0x408b0	100.0
 character	_PartyAlignmentClass	100.0000	100.0000	3	ast4:12ce0a2411e9	0x3e100	100.0000	
 character	_PayStepUpkeep	100.0000	100.0000	7	ast4:bfd2a411ab94	0x40fa0	100.0000	
 character	_PollPartySlotSelection	100.0000	100.0000	4	ast4:09a8b29e7b87	0x3e590	100.0000	
-character	_PollTextPartySlotSelection	100.0000	96.7347	5	ast4:9cb7224434ef	0x3e3c0	100.0000	
+character	_PollTextPartySlotSelection	100.0000	100.0000	5	ast4:9cb7224434ef	0x3e3c0	100.0000	
 character	_PoolState	100.0000	100.0000	1	ast4:1af164f989da	0x3d030	100.0000	
 character	_ProcessPartyCasualties	100.0000	100.0000	4	ast4:b79a66fb17b0	0x3fce0	100.0000	
 character	_RecalcCharacterStats	100.0000	100.0000	9	ast4:070cd5805fef	0x3c8b0	100.0000	
@@ -361,7 +361,7 @@ clock	_CreateImagePanel	100.0000	100.0000	4	ast4:9bb78193ac21	0x226d0	100.0000
 clock	_CreateKindPanel	100.0000	100.0000	4	ast4:2a787680b556	0x227c0	100.0000	
 clock	_CreatePositionedPanel	100.0000	100.0000	2	ast4:2991c76a7efb	0x22910	100.0000	
 clock	_CreateSequentialPanel	100.0000	100.0000	4	ast4:bda2e42d1a63	0x22870	100.0000	
-clock	_DecodeAreaMap	96.6570	96.6570	16	ast4:16c4c5728279	0x21470	96.6570	
+clock	_DecodeAreaMap	100.0000	100.0000	16	ast4:16c4c5728279	0x21470	100.0000	
 clock	_FindCellKind	100.0000	100.0000	1	ast4:b62158c0f65a	0x21850	100.0000	
 clock	_FindTreasureBoxAt	100.0000	100.0000	2	ast4:a49ea29d4129	0x22560	100.0000	
 clock	_GetAreaLevelCount	100.0000	100.0000	1	ast4:c56d67c3ed6f	0x21710	100.0000	
@@ -684,7 +684,7 @@ fieldobj	_ReadRecordIfWanted	100.0000	100.0000	1	ast4:827bd07863f5	0x10b00	100.0
 fieldobj	_RefreshFamiliarity	100.0000	100.0000	6	ast4:7e90c960d46b	0x10bf0	100.0000	
 fieldobj	_RefreshIfTurned	100.0000	100.0000	3	ast4:5109de859888	0xf220	100.0000	
 fieldobj	_RefreshObjectDraw	100.0000	100.0000	2	ast4:31a0d9fd9052	0xea50	100.0000	
-fieldobj	_RelativeFacing	100.0000	79.6667	1	ast4:06ed36dda83e	0xdf30	100.0000	
+fieldobj	_RelativeFacing	100.0000	100.0000	1	ast4:06ed36dda83e	0xdf30	100.0000	
 fieldobj	_RemoveFieldObject	100.0000	100.0000	8	ast4:4e93d92e9828	0xd7f0	100.0000	
 fieldobj	_ResetFieldLayer	100.0000	100.0000	2	ast4:c5461142d609	0xe7e0	100.0000	
 fieldobj	_ResetFieldObjects	100.0000	100.0000	2	ast4:9d8cdaca0228	0xd940	100.0000	
@@ -1454,7 +1454,7 @@ partyaction	_CloseFieldWindows	100.0000	100.0000	3	ast4:ba29f6114a50	0x93e0	100.
 partyaction	_ComputeGunBurstPower	100.0000	100.0000	2	ast4:afb78321b06d	0x92e0	100.0000	
 partyaction	_ComputeGunDamage	100.0000	100.0000	9	ast4:54f076f4e05a	0x8b40	100.0000	
 partyaction	_ComputeItemDamage	100.0000	100.0000	11	ast4:bc5d803cf672	0xb320	100.0000	
-partyaction	_ComputeSkillDamage	100.0000	100.0000	11	ast4:5beecb3f9114	0xac50	100.0000	
+partyaction	_ComputeSkillDamage	100.0000	98.4266	11	ast4:5beecb3f9114	0xac50	100.0000	
 partyaction	_ComputeWeaponDamage	100.0000	100.0000	8	ast4:5b1daa63cf87	0xa270	100.0000	
 partyaction	_CountPickablePartyMembers	100.0000	100.0000	1	ast4:369e30c28b32	0x5b50	100.0000	
 partyaction	_DelayActionSide	100.0000	100.0000	7	ast4:ae793f3a6563	0x5ff0	100.0000	
@@ -1529,8 +1529,8 @@ partyaction	_ResolveItemAttack	100.0000	100.0000	10	ast4:1bc7d5d9656a	0xb0f0	100
 partyaction	_ResolveSkillAttack	100.0000	100.0000	6	ast4:8799480c2a6c	0xafb0	100.0000	
 partyaction	_ResolveWeaponAttack	100.0000	100.0000	7	ast4:437a759f97b2	0xa8a0	100.0000	
 partyaction	_RestoreSwappedMember	100.0000	100.0000	1	ast4:1f8a2791a0b8	0x9dc0	100.0000	
-partyaction	_RollExceptionalAttack	99.9739	99.9739	7	ast4:1ae49878c61f	0x8700	100.0000	
-partyaction	_RollExceptionalWeaponAttack	99.9869	99.9869	7	ast4:5ca3917acf9c	0xa690	100.0000	
+partyaction	_RollExceptionalAttack	100.0000	100.0000	7	ast4:1ae49878c61f	0x8700	100.0000	
+partyaction	_RollExceptionalWeaponAttack	99.9869	99.9739	7	ast4:5ca3917acf9c	0xa690	100.0000	
 partyaction	_RollGunCondition	100.0000	100.0000	12	ast4:c86f2aa46241	0x8d30	100.0000	
 partyaction	_RollGunHit	100.0000	100.0000	10	ast4:a023cab16310	0x8910	100.0000	
 partyaction	_RollItemCondition	100.0000	100.0000	9	ast4:420983c6677f	0xb4d0	100.0000	
@@ -1540,14 +1540,14 @@ partyaction	_RollSkillHit	100.0000	100.0000	12	ast4:412ab7e73695	0xaa20	100.0000
 partyaction	_RollWeaponCondition	100.0000	100.0000	11	ast4:cf8c24730e0e	0xa120	100.0000	
 partyaction	_RollWeaponHit	100.0000	100.0000	10	ast4:6b1c35f34fed	0xa490	100.0000	
 partyaction	_RunActorCommandMenu	100.0000	100.0000	6	ast4:ffb160627811	0x6460	100.0000	
-partyaction	_RunFieldEncounter	100.0000	100.0000	12	ast4:9d9a97ab753d	0x7390	100.0000	
+partyaction	_RunFieldEncounter	100.0000	99.8723	12	ast4:9d9a97ab753d	0x7390	100.0000	
 partyaction	_RunFieldState	100.0000	100.0000	11	ast4:33e2a0c14617	0x7aa0	100.0000	
 partyaction	_RunItemAttack	100.0000	100.0000	4	ast4:5d94b5820adb	0xb620	100.0000	
 partyaction	_RunMemberPickMenu	100.0000	100.0000	4	ast4:b7394ca2acf7	0x94d0	100.0000	
 partyaction	_RunPartyCommandInput	100.0000	100.0000	24	ast4:46cb059a18cf	0x9620	100.0000	
 partyaction	_RunPartyTurn	100.0000	100.0000	10	ast4:c3ff99887e48	0x8330	100.0000	
 partyaction	_RunPickTargetWindow	100.0000	100.0000	8	ast4:8e9fa1348c0e	0x9e30	100.0000	
-partyaction	_ScaleActionValue	100.0000	92.5000	1	ast4:9dbda73b5e56	0x6a40	100.0000	
+partyaction	_ScaleActionValue	100.0000	100.0000	1	ast4:9dbda73b5e56	0x6a40	100.0000	
 partyaction	_ScaleByFieldRate	100.0000	100.0000	1	ast4:6acb14ed2703	0x72a0	100.0000	
 partyaction	_SetFieldCounts	100.0000	100.0000	1	ast4:fe59ffe4c913	0x7210	100.0000	
 partyaction	_SetFieldPair	100.0000	100.0000	1	ast4:538d4c674ce4	0x7170	100.0000	
@@ -1771,7 +1771,7 @@ scriptactor	_OpPercentLongVar	100.0000	100.0000	1	ast4:4c696ccc9289	0x337f0	100.
 scriptactor	_OpPushReturnTarget	100.0000	100.0000	2	ast4:7960ca1ce99a	0x33f10	100.0000	
 scriptactor	_OpQueueAutoMoves	100.0000	100.0000	2	ast4:ec6e80a2b72f	0x35cf0	100.0000	
 scriptactor	_OpRandLongVar	100.0000	100.0000	1	ast4:b461b0d97a04	0x33b00	100.0000	
-scriptactor	_OpRebalanceMemberStats	100.0000	99.7826	9	ast4:f674b65749c3	0x36560	100.0000	
+scriptactor	_OpRebalanceMemberStats	100.0000	100.0000	9	ast4:f674b65749c3	0x36560	100.0000	
 scriptactor	_OpRecoverRosterPool	100.0000	100.0000	8	ast4:23c1c0cdc7a1	0x382b0	100.0000	
 scriptactor	_OpRedrawItemListTotal	100.0000	100.0000	1	ast4:ec74365430b6	0x35770	100.0000	
 scriptactor	_OpRemoveFromRoster	100.0000	100.0000	2	ast4:51b8941d56bf	0x361b0	100.0000	
@@ -2501,7 +2501,7 @@ treasurebox	_StoreAutomapLevel	100.0000	100.0000	8	ast4:663343ab5c5e	0x1cfc0	100
 treasurebox	_TakeLearnableSkill	100.0000	100.0000	4	ast4:233021340bf7	0x1c330	100.0000	
 treasurebox	_TrainingThreshold	100.0000	100.0000	1	ast4:ef653e6fe1ad	0x1c650	100.0000	
 treasurebox	_TransformAutomapPoint	100.0000	100.0000	1	ast4:52170a1be960	0x1d380	100.0000	
-treasurebox	_UpdateAutomapScrollPanel	100.0000	96.9930	3	ast4:0d20708e69ab	0x1d890	100.0000	
+treasurebox	_UpdateAutomapScrollPanel	100.0000	98.1469	3	ast4:0d20708e69ab	0x1d890	100.0000	
 treasurebox	_UpdateCurrentRoom	100.0000	100.0000	2	ast4:e1d142da7cf8	0x1f070	100.0000	
 treasurebox	_UpdateInfoBar	100.0000	100.0000	3	ast4:da7f1c8a2bf9	0x1ea50	100.0000	
 treasurebox	_WriteAutomapAreas	100.0000	100.0000	8	ast4:991d721f9276	0x1e3c0	100.0000	

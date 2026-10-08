@@ -5,6 +5,7 @@
 
 #include <EnumDomain.h>
 #include <Enums.h>
+#include <Game/ActionOutcome.h>
 #include <Game/Character.h>
 #include <Game/GameState.h>
 #include <Game/Skill.h>
@@ -35,7 +36,7 @@ i16 RemoveCombatTarget(i16 id);
 i16 AddCombatTarget(i16 id, i16 allowDuplicate);
 i16 CountCombatTargets(void);
 
-void SetActionOutcome(i16 outcome);
+void SetActionOutcome(GZ_ENUM_PARAM(ActionOutcome, i16) outcome);
 b32 CannotPaySkill(CharacterCore* character, SkillParameters* skill);
 b32 IsSkillBlocked(CharacterCore* character, SkillParameters* skill);
 b32 IsSkillIdBlocked(CharacterCore* character, i16 id);
